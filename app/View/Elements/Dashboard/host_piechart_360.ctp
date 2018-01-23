@@ -37,13 +37,12 @@
             <div class="text-center font-xs">
                 <?php foreach ($widgetHostStateArray['state'] as $state => $stateCount): ?>
                     <div class="col-md-4 no-padding">
-                        <a href="<?php echo Router::url([
-                            'controller'                                  => 'hosts',
-                            'action'                                      => 'index',
-                            'plugin'                                      => '',
-                            'Filter.Hoststatus.current_state['.$state.']' => 1,
-                            'sort'                                        => 'Hoststatus.last_state_change',
-                            'direction'                                   => 'desc'
+                        <a href="/hosts/index<?php echo Router::queryString([
+                            'filter'    => [
+                                'Hoststatus.current_state' => [$state => 1]
+                            ],
+                            'sort'      => 'Hoststatus.last_state_change',
+                            'direction' => 'desc'
                         ]); ?>">
                             <i class="fa fa-square <?php echo $stateColors[$state] ?>"></i>
                             <?php echo $stateCount.' ('.round($stateCount / $widgetHostStateArray['total'] * 100, 2).' %)'; ?>

@@ -43,7 +43,7 @@ endif;
             <?php echo __('Monitoring'); ?>
             <span>>
                 <?php echo $this->Utils->pluralize($count, __('Contactgroup'), __('Contactgroups')); ?>
-			</span>
+            </span>
             <div class="third_level"> <?php echo __('Delete'); ?></div>
         </h1>
     </div>
@@ -53,7 +53,7 @@ endif;
 <div class="jarviswidget" id="wid-id-0">
     <header>
         <span class="widget-icon hidden-mobile hidden-tablet"> <i class="fa fa-users"></i> </span>
-        <h2 class="hidden-mobile hidden-tablet"><?php echo __('Delete'); ?><?php echo $this->Utils->pluralize($count, __('contactgroup'), __('contactgroups')); ?></h2>
+        <h2 class="hidden-mobile hidden-tablet"><?php echo __('Delete'); ?> <?php echo $this->Utils->pluralize($count, __('contact group'), __('contactgroups')); ?></h2>
         <?php if (isset($back_url)): ?>
             <div class="widget-toolbar hidden-mobile hidden-tablet" role="menu">
                 <?php echo $this->Utils->backButton(__('Back'), $back_url); ?>
@@ -77,7 +77,10 @@ endif;
                             <?php foreach ($contactgroupsToDelete as $key => $contactgroupToDelete): ?>
                                 <li class="list-group-item list-group-item-danger">
                                     <?php echo h($contactgroupToDelete['Container']['name']); ?>
-                                    <?php echo $this->Form->input('Contactgroup.delete.'.$key, ['value' => $contactgroupToDelete['Contactgroup']['id'], 'type' => 'hidden']); ?>
+                                    <?php echo $this->Form->input('Contactgroup.delete.' . $key, [
+                                        'value' => $contactgroupToDelete['Contactgroup']['id'],
+                                        'type' => 'hidden'
+                                    ]); ?>
                                 </li>
                             <?php endforeach; ?>
                         </ul>
@@ -90,9 +93,22 @@ endif;
                                 <strong><i class="fa fa-info-circle"></i> <?php echo __('The following %s can\'t be deleted.', $this->Utils->pluralize($count, __('contactgroup'), __('contactgroups'))); ?>
                                 </strong> <i><?php echo __('(Used by other object)'); ?>:</i>
                             </li>
-                            <?php foreach ($contactgroupsCanotDelete as $contactgroupCanotDelete): ?>
+                            <?php foreach ($contactgroupsCanotDelete as $contactgroupId => $contactgroupCanotDelete): ?>
                                 <li class="list-group-item list-group-item-info">
-                                    <?php echo h($contactgroupCanotDelete); ?>
+                                    <?php
+                                    echo h($contactgroupCanotDelete);
+                                    if($hasRootPrivileges && $this->Acl->hasPermission('usedBy')):
+                                        echo $this->Html->link(__('Used by ...'), [
+                                            'controller' => 'contactgroups',
+                                            'action' => 'usedBy',
+                                            $contactgroupId
+                                        ], [
+                                            'target' => '_blank',
+                                            'icon' => 'fa fa-reply-all fa-flip-horizontal',
+                                            'class' => 'padding-10'
+                                        ]);
+                                    endif;
+                                    ?>
                                 </li>
                             <?php endforeach; ?>
                         </ul>

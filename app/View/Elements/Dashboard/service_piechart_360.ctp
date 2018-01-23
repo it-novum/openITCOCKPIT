@@ -41,13 +41,12 @@
             <div class="text-center font-xs">
                 <?php foreach ($widgetServiceStateArray['state'] as $state => $stateCount): ?>
                     <div class="col-md-3 no-padding">
-                        <a href="<?php echo Router::url([
-                            'controller'                                     => 'services',
-                            'action'                                         => 'index',
-                            'plugin'                                         => '',
-                            'Filter.Servicestatus.current_state['.$state.']' => 1,
-                            'sort'                                           => 'Servicestatus.last_state_change',
-                            'direction'                                      => 'desc'
+                        <a href="/services/index<?php echo Router::queryString([
+                            'filter' => [
+                                'Servicestatus.current_state' => [$state => 1]
+                            ],
+                            'sort' => 'Servicestatus.last_state_change',
+                            'direction' => 'desc'
                         ]); ?>">
                             <i class="fa fa-square <?php echo $state_colors[$state] ?>"></i>
                             <?php echo $stateCount.' ('.round($stateCount / $widgetServiceStateArray['total'] * 100, 2).' %)'; ?>

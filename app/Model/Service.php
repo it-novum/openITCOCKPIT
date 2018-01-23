@@ -820,7 +820,7 @@ class Service extends AppModel {
         return false;
     }
 
-    public function getAjaxServices($containerIds = [], $conditions = [], $servicesIncluding = []){
+    public function getAjaxServices($containerIds = [], $conditions = [], $servicesIncluding = []) {
         if (!is_array($containerIds)) {
             $containerIds = [$containerIds];
         }
@@ -836,83 +836,83 @@ class Service extends AppModel {
         ];
         $conditions = Hash::merge($_conditions, $conditions);
         $services = $this->find('all', [
-            'recursive' => -1,
-            'contain' => [
+            'recursive'  => -1,
+            'contain'    => [
                 'Servicetemplate' => [
                     'fields' => [
                         'Servicetemplate.name'
                     ],
                 ],
-                'Host' => [
+                'Host'            => [
                     'fields' => [
                         'Host.name',
                     ],
                 ],
             ],
-            'fields' => [
+            'fields'     => [
                 'Service.id',
                 'Service.ServiceDescription'
             ],
-            'order' => [
+            'order'      => [
                 'Host.name ASC', 'Service.name ASC', 'Servicetemplate.name ASC',
             ],
             'conditions' => $conditions,
-            'limit' => self::ITN_AJAX_LIMIT
+            'limit'      => self::ITN_AJAX_LIMIT
         ]);
 
         $formattedServices = [];
-        if(!empty($servicesIncluding) && isset($servicesIncluding[0]) && is_array($servicesIncluding[0])){
-            foreach($servicesIncluding as $serviceIncluding){
+        if (!empty($servicesIncluding) && isset($servicesIncluding[0]) && is_array($servicesIncluding[0])) {
+            foreach ($servicesIncluding as $serviceIncluding) {
                 $formattedServices[] = $serviceIncluding['id'];
             }
-        }else{
+        } else {
             $formattedServices = $servicesIncluding;
         }
 
         $servicesIds = [];
-        foreach($services as $service){
+        foreach ($services as $service) {
             $servicesIds[] = $service['Service']['id'];
         }
 
-        if(!empty($formattedServices) && !empty(array_diff($formattedServices, $servicesIds))){
+        if (!empty($formattedServices) && !empty(array_diff($formattedServices, $servicesIds))) {
             $selectedCondition = ['Service.id' => array_diff($formattedServices, $servicesIds)];
             $selectedServices = $this->find('all', [
-                'recursive' => -1,
-                'contain' => [
+                'recursive'  => -1,
+                'contain'    => [
                     'Servicetemplate' => [
                         'fields' => [
                             'Servicetemplate.name'
                         ],
                     ],
-                    'Host' => [
+                    'Host'            => [
                         'fields' => [
                             'Host.name',
                         ],
                     ],
                 ],
-                'fields' => [
+                'fields'     => [
                     'Service.id',
                     'Service.ServiceDescription'
                 ],
-                'order' => [
+                'order'      => [
                     'Host.name ASC', 'Service.name ASC', 'Servicetemplate.name ASC',
                 ],
                 'conditions' => Hash::merge($selectedCondition, $_conditions),
             ]);
 
-            if(!empty($selectedServices)){
+            if (!empty($selectedServices)) {
                 $services = array_merge($services, $selectedServices);
             }
         }
 
         $returnValue = [];
-        foreach($services as $serviceArray){
-            $returnValue[$serviceArray['Host']['id']][$serviceArray['Host']['name']][$serviceArray['Service']['id']] = $serviceArray['Host']['name'].'/'.$serviceArray['Service']['ServiceDescription'];
+        foreach ($services as $serviceArray) {
+            $returnValue[$serviceArray['Host']['id']][$serviceArray['Host']['name']][$serviceArray['Service']['id']] = $serviceArray['Host']['name'] . '/' . $serviceArray['Service']['ServiceDescription'];
         }
         return $returnValue;
     }
 
-    public function servicesByHostContainerIds($containerIds = [], $type = 'all', $conditions = []) {
+    public function servicesByHostContainerIds($containerIds = [], $type = 'all', $conditions = [], $limit = null) {
         if (!is_array($containerIds)) {
             $containerIds = [$containerIds];
         }
@@ -921,12 +921,12 @@ class Service extends AppModel {
 
         $_conditions = [
             'Host.container_id' => $containerIds,
-            'Host.disabled' => 0,
-            'Service.disabled' => 0,
+            'Host.disabled'     => 0,
+            'Service.disabled'  => 0,
         ];
         $conditions = Hash::merge($_conditions, $conditions);
 
-        $result = $this->find('all', [
+        $query = [
             'recursive'  => -1,
             'contain'    => [
                 'Servicetemplate' => [
@@ -961,7 +961,12 @@ class Service extends AppModel {
                 'Host.name ASC', 'Service.name ASC', 'Servicetemplate.name ASC',
             ],
             'conditions' => $conditions,
-        ]);
+        ];
+        if ($limit) {
+            $query['limit'] = $limit;
+        }
+
+        $result = $this->find('all', $query);
 
         if ($type == 'list') {
             $_return = [];
@@ -1141,81 +1146,71 @@ class Service extends AppModel {
             $id = $service['Service']['id'];
         }
 
-        $payload = [
-            'hostUuid'    => $service['Host']['uuid'],
-            'serviceUuid' => $service['Service']['uuid'],
-        ];
         $Changelog = ClassRegistry::init('Changelog');
 
-        if ($this->__allowDelete($id)) {
-
-            if ($this->delete($id)) {
-                //Delete was successfully - delete Graphgenerator configurations
-                $GraphgenTmplConf = ClassRegistry::init('GraphgenTmplConf');
-                $graphgenTmplConfs = $GraphgenTmplConf->find('all', [
-                    'conditions' => [
-                        'GraphgenTmplConf.service_id' => $id,
-                    ],
-                ]);
-                foreach ($graphgenTmplConfs as $graphgenTmplConf) {
-                    $GraphgenTmplConf->delete($graphgenTmplConf['GraphgenTmplConf']['id']);
-                }
-
-                $changelog_data = $Changelog->parseDataForChangelog(
-                    'delete',
-                    'services',
-                    $id,
-                    OBJECT_SERVICE,
-                    $service['Host']['container_id'],
-                    $userId,
-                    $service['Host']['name'] . '/' . (($service['Service']['name'] !== null) ? $service['Service']['name'] : $service['Servicetemplate']['name']),
-                    $service
-                );
-                if ($changelog_data) {
-                    CakeLog::write('log', serialize($changelog_data));
-                }
-
-                $Documentation = ClassRegistry::init('Documentation');
-                //Delete the Documentation of the Host
-                $documentation = $Documentation->findByUuid($service['Service']['uuid']);
-                if (isset($documentation['Documentation']['id'])) {
-                    $Documentation->delete($documentation['Documentation']['id']);
-                    unset($documentation);
-                }
-
-                //Add service to deleted objects table
-                $_serviceName = $service['Service']['name'];
-                if ($service['Service']['name'] == null || $service['Service']['name'] == '') {
-                    $_serviceName = $service['Servicetemplate']['name'];
-                }
-                //Add host to deleted objects table
-                $DeletedService = ClassRegistry::init('DeletedService');
-                $DeletedService->create();
-                $data = [
-                    'DeletedService' => [
-                        'uuid'               => $service['Service']['uuid'],
-                        'host_uuid'          => $service['Host']['uuid'],
-                        'servicetemplate_id' => $service['Service']['servicetemplate_id'],
-                        'host_id'            => $service['Service']['host_id'],
-                        'name'               => $_serviceName,
-                        'description'        => $service['Service']['description'],
-                        'deleted_perfdata'   => 0,
-                    ],
-                ];
-                $DeletedService->save($data);
-
-                /*
-                 * Check if the service was part of an servicegroup, serviceescalation or servicedependency
-                 * If yes, cake delete the records by it self, but may be we have an empty serviceescalation or servicegroup now.
-                 * Nagios don't relay like this so we need to check this and delete the serviceescalation/servicegroup or service dependency if empty
-                 */
-                $this->_clenupServiceEscalationDependencyAndGroup($service);
-
-                //Delete nagios configuration
-                //$this->GearmanClient->sendBackground('deleteServiceConfiguration', $payload);
-
-                return true;
+        if ($this->delete($id)) {
+            //Delete was successfully - delete Graphgenerator configurations
+            $GraphgenTmplConf = ClassRegistry::init('GraphgenTmplConf');
+            $graphgenTmplConfs = $GraphgenTmplConf->find('all', [
+                'conditions' => [
+                    'GraphgenTmplConf.service_id' => $id,
+                ],
+            ]);
+            foreach ($graphgenTmplConfs as $graphgenTmplConf) {
+                $GraphgenTmplConf->delete($graphgenTmplConf['GraphgenTmplConf']['id']);
             }
+
+            $changelog_data = $Changelog->parseDataForChangelog(
+                'delete',
+                'services',
+                $id,
+                OBJECT_SERVICE,
+                $service['Host']['container_id'],
+                $userId,
+                $service['Host']['name'] . '/' . (($service['Service']['name'] !== null) ? $service['Service']['name'] : $service['Servicetemplate']['name']),
+                $service
+            );
+            if ($changelog_data) {
+                CakeLog::write('log', serialize($changelog_data));
+            }
+
+            $Documentation = ClassRegistry::init('Documentation');
+            //Delete the Documentation of the Host
+            $documentation = $Documentation->findByUuid($service['Service']['uuid']);
+            if (isset($documentation['Documentation']['id'])) {
+                $Documentation->delete($documentation['Documentation']['id']);
+                unset($documentation);
+            }
+
+            //Add service to deleted objects table
+            $_serviceName = $service['Service']['name'];
+            if ($service['Service']['name'] == null || $service['Service']['name'] == '') {
+                $_serviceName = $service['Servicetemplate']['name'];
+            }
+            //Add host to deleted objects table
+            $DeletedService = ClassRegistry::init('DeletedService');
+            $DeletedService->create();
+            $data = [
+                'DeletedService' => [
+                    'uuid'               => $service['Service']['uuid'],
+                    'host_uuid'          => $service['Host']['uuid'],
+                    'servicetemplate_id' => $service['Service']['servicetemplate_id'],
+                    'host_id'            => $service['Service']['host_id'],
+                    'name'               => $_serviceName,
+                    'description'        => $service['Service']['description'],
+                    'deleted_perfdata'   => 0,
+                ],
+            ];
+            $DeletedService->save($data);
+
+            /*
+             * Check if the service was part of an servicegroup, serviceescalation or servicedependency
+             * If yes, cake delete the records by it self, but may be we have an empty serviceescalation or servicegroup now.
+             * Nagios don't relay like this so we need to check this and delete the serviceescalation/servicegroup or service dependency if empty
+             */
+            $this->_clenupServiceEscalationDependencyAndGroup($service);
+
+            return true;
         }
 
         return false;
@@ -1257,38 +1252,34 @@ class Service extends AppModel {
         }
     }
 
-    public $usedBy = null;
-
-    public function __allowDelete($serviceId) {
-        //using components in Model is ugly but we need the Constants here
-        App::import('Component', 'Constants');
-        $this->Constants = new ConstantsComponent();
-
-        $moduleConstants = $this->Constants->defines['modules'];
-        $usedBy = [
-            'Service' => [],
-        ];
-
+    /**
+     * @param $service
+     * @param $moduleConstants
+     * @return array
+     */
+    public function isUsedByModules($service, $moduleConstants) {
+        $usedBy = [];
         foreach ($moduleConstants as $moduleName => $value) {
-            if (!empty($serviceId)) {
-                if ($this->checkUsageFlag($serviceId, $value)) {
-                    $usedBy['Service'][$this->humanizeModuleConstantName($moduleName)][] = $serviceId;
-                }
+            if ($service['Service']['usage_flag'] & $value) {
+                $usedBy[$moduleName] = $value;
             }
         }
-
-        if (empty($usedBy['Service'])) {
-            return true;
-        }
-
-        $this->usedBy = $usedBy;
-        return false;
+        return $usedBy;
     }
 
+    /**
+     * @param $name
+     * @return mixed
+     */
     public function humanizeModuleConstantName($name) {
-        return preg_replace('/_MODULE/', '', $name);
+        return str_replace('_MODULE', '', $name);
     }
 
+    /**
+     * @param int $serviceId
+     * @param int $moduleValue
+     * @return bool
+     */
     public function checkUsageFlag($serviceId, $moduleValue) {
         $result = $this->find('first', [
             'recursive'  => -1,
@@ -1316,6 +1307,14 @@ class Service extends AppModel {
         $this->virtualFields['keywords'] = 'IF((Service.tags IS NULL OR Service.tags=""), Servicetemplate.tags, Service.tags)';
     }
 
+    public function virtualFieldsForNotMonitored() {
+        $this->virtualFields['servicename'] = 'IF((Service.name IS NULL OR Service.name=""), Servicetemplate.name, Service.name)';
+    }
+
+    public function virtualFieldsForDisabled() {
+        $this->virtualFieldsForNotMonitored();
+    }
+
     /**
      * @param ServiceConditions $ServiceConditions
      * @param array $conditions
@@ -1327,6 +1326,7 @@ class Service extends AppModel {
             'conditions' => $conditions,
             'contain'    => ['Servicetemplate'],
             'fields'     => [
+                //'DISTINCT (Service.id) as banane', //Fix pagination
                 'Service.id',
                 'Service.uuid',
                 'Service.name',
@@ -1359,6 +1359,7 @@ class Service extends AppModel {
                 'Host.uuid',
                 'Host.description',
                 'Host.address',
+                'Host.satellite_id',
 
                 'Hoststatus.current_state',
                 'Hoststatus.is_flapping',
@@ -1416,5 +1417,263 @@ class Service extends AppModel {
 
         return $query;
 
+    }
+
+    /**
+     * @param ServiceConditions $ServiceConditions
+     * @param array $conditions
+     * @return array
+     */
+    public function getServiceNotMonitoredQuery(ServiceConditions $ServiceConditions, $conditions = []) {
+        $query = [
+            'recursive'  => -1,
+            'conditions' => $conditions,
+            'contain'    => ['Servicetemplate'],
+            'fields'     => [
+                'Service.id',
+                'Service.uuid',
+                'Service.name',
+                'Service.description',
+                'Service.active_checks_enabled',
+
+                'Servicetemplate.id',
+                'Servicetemplate.uuid',
+                'Servicetemplate.name',
+                'Servicetemplate.description',
+                'Servicetemplate.active_checks_enabled',
+
+                'ServiceObject.object_id',
+
+                'Host.name',
+                'Host.id',
+                'Host.uuid',
+                'Host.description',
+                'Host.address',
+            ],
+            'order'      => $ServiceConditions->getOrder(),
+            'joins'      => [
+                [
+                    'table'      => 'hosts',
+                    'type'       => 'INNER',
+                    'alias'      => 'Host',
+                    'conditions' => 'Service.host_id = Host.id',
+                ], [
+                    'table'      => 'nagios_objects',
+                    'type'       => 'LEFT OUTER',
+                    'alias'      => 'ServiceObject',
+                    'conditions' => 'ServiceObject.name1 = Host.uuid AND Service.uuid = ServiceObject.name2 AND ServiceObject.objecttype_id = 2',
+                ]
+            ]
+        ];
+
+        //$query['order'] = Hash::merge(['Service.id' => 'asc'], $ServiceConditions->getOrder());
+        $query['conditions'][] = [
+            "EXISTS (SELECT * FROM hosts_to_containers AS HostsToContainers WHERE HostsToContainers.container_id )" =>
+                $ServiceConditions->getContainerIds()
+        ];
+
+        $query['conditions']['Service.disabled'] = (int)$ServiceConditions->includeDisabled();
+        //$query['conditions']['HostsToContainers.container_id'] = $ServiceConditions->getContainerIds();
+
+        if ($ServiceConditions->getHostId()) {
+            $query['conditions']['Service.host_id'] = $ServiceConditions->getHostId();
+        }
+
+        $query['conditions'][] = 'ServiceObject.name2 IS NULL';
+
+        return $query;
+
+    }
+
+    /**
+     * @param ServiceConditions $ServiceConditions
+     * @param array $conditions
+     * @return array
+     */
+    public function getServiceDisabledQuery(ServiceConditions $ServiceConditions, $conditions = []) {
+        $query = [
+            'recursive'  => -1,
+            'conditions' => $conditions,
+            'contain'    => ['Servicetemplate'],
+            'fields'     => [
+                'Service.id',
+                'Service.uuid',
+                'Service.name',
+
+                'Servicetemplate.id',
+                'Servicetemplate.uuid',
+                'Servicetemplate.name',
+
+                'Host.name',
+                'Host.id',
+                'Host.uuid',
+                'Host.description',
+                'Host.address',
+            ],
+            'order'      => $ServiceConditions->getOrder(),
+            'joins'      => [
+                [
+                    'table'      => 'hosts',
+                    'type'       => 'INNER',
+                    'alias'      => 'Host',
+                    'conditions' => 'Service.host_id = Host.id',
+                ]
+            ]
+        ];
+
+        //$query['order'] = Hash::merge(['Service.id' => 'asc'], $ServiceConditions->getOrder());
+        $query['conditions'][] = [
+            "EXISTS (SELECT * FROM hosts_to_containers AS HostsToContainers WHERE HostsToContainers.container_id )" =>
+                $ServiceConditions->getContainerIds()
+        ];
+
+        $query['conditions']['Service.disabled'] = 1;
+
+        if ($ServiceConditions->getHostId()) {
+            $query['conditions']['Service.host_id'] = $ServiceConditions->getHostId();
+        }
+
+        return $query;
+
+    }
+
+    /**
+     * @param ServiceConditions $ServiceConditions
+     * @param array $conditions
+     * @return array
+     */
+    public function getServiceDeletedQuery(ServiceConditions $ServiceConditions, $conditions = []) {
+        $query = [
+            'recursive'  => -1,
+            'conditions' => $conditions,
+            'fields'     => [
+                'DeletedService.*'
+            ],
+            'order'      => $ServiceConditions->getOrder(),
+        ];
+
+        if ($ServiceConditions->getHostId()) {
+            $query['conditions']['DeletedService.host_id'] = $ServiceConditions->getHostId();
+        }
+
+        return $query;
+
+    }
+
+    /**
+     * @param ServiceConditions $ServiceConditions
+     * @param array $selected
+     * @return array|null
+     */
+    public function getServicesForAngular(ServiceConditions $ServiceConditions, $selected = []) {
+        $query = [
+            'recursive'  => -1,
+            'joins'      => [
+                [
+                    'table'      => 'servicetemplates',
+                    'alias'      => 'Servicetemplate',
+                    'type'       => 'INNER',
+                    'conditions' => [
+                        'Servicetemplate.id = Service.servicetemplate_id',
+                    ],
+                ],
+                [
+                    'table'      => 'hosts',
+                    'alias'      => 'Host',
+                    'type'       => 'INNER',
+                    'conditions' => [
+                        'Host.id = Service.host_id',
+                    ],
+                ],
+                [
+                    'table'      => 'hosts_to_containers',
+                    'alias'      => 'HostsToContainers',
+                    'type'       => 'INNER',
+                    'conditions' => [
+                        'HostsToContainers.host_id = Host.id',
+                    ],
+                ],
+            ],
+            'conditions' => [
+                'OR' => $ServiceConditions->getConditions()
+            ],
+            'order'      => [
+                'Host.name'                                                    => 'ASC',
+                'IF(Service.name IS NULL, Servicetemplate.name, Service.name)' => 'ASC'
+            ],
+            'fields'     => [
+                'Service.id',
+                'Service.name',
+                'Host.id',
+                'Host.name',
+                'Servicetemplate.name'
+
+            ],
+            'group'      => [
+                'Service.id'
+            ],
+            'limit'      => self::ITN_AJAX_LIMIT
+        ];
+
+        if ($ServiceConditions->hasNotConditions()) {
+            $query['conditions']['NOT'] = $ServiceConditions->getNotConditions();
+        }
+        $servicesWithLimit = $this->find('all', $query);
+        $servicesWithLimit = Hash::combine($servicesWithLimit, '{n}.Service.id', '{n}');
+
+        $selectedServices = [];
+        if (!empty($selected)) {
+            $query = [
+                'recursive'  => -1,
+                'joins'      => [
+                    [
+                        'table'      => 'servicetemplates',
+                        'alias'      => 'Servicetemplate',
+                        'type'       => 'INNER',
+                        'conditions' => [
+                            'Servicetemplate.id = Service.servicetemplate_id',
+                        ],
+                    ],
+                    [
+                        'table'      => 'hosts',
+                        'alias'      => 'Host',
+                        'type'       => 'INNER',
+                        'conditions' => [
+                            'Host.id = Service.host_id',
+                        ],
+                    ],
+                    [
+                        'table'      => 'hosts_to_containers',
+                        'alias'      => 'HostsToContainers',
+                        'type'       => 'INNER',
+                        'conditions' => [
+                            'HostsToContainers.host_id = Host.id',
+                        ],
+                    ],
+                ],
+                'conditions' => [
+                    'Service.id' => $selected
+                ],
+                'order'      => [
+                    'Host.name'                                                    => 'ASC',
+                    'IF(Service.name IS NULL, Servicetemplate.name, Service.name)' => 'ASC'
+                ],
+                'fields'     => [
+                    'Service.id',
+                    'Service.name',
+                    'Host.id',
+                    'Host.name',
+                    'Servicetemplate.name'
+
+                ],
+                'group'      => [
+                    'Service.id'
+                ]
+            ];
+            $query['conditions']['HostsToContainers.container_id'] = $ServiceConditions->getContainerIds();
+            $selectedServices = $this->find('all', $query);
+            $selectedServices = Hash::combine($selectedServices, '{n}.Service.id', '{n}');
+        }
+        return $servicesWithLimit + $selectedServices;
     }
 }

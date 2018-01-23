@@ -30,12 +30,13 @@
             <i class="fa fa-file-text-o fa-fw "></i>
             <?php echo __('Reporting'); ?>
             <span>>
-                <?php echo __('Instant Report'); ?>
-			</span>
+                <?php echo __('Instant Report');
+                ?>
+            </span>
         </h1>
     </div>
 </div>
-
+<massdelete></massdelete>
 <section id="widget-grid" class="">
     <div class="row">
         <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
@@ -44,124 +45,267 @@
                     <div class="widget-toolbar" role="menu">
                         <?php
                         if ($this->Acl->hasPermission('add')):
-                            echo $this->Html->link(__('New'), '/'.$this->params['controller'].'/add', ['class' => 'btn btn-xs btn-success', 'icon' => 'fa fa-plus']);
+                            echo $this->Html->link(
+                                __('New'),
+                                '/' . $this->params['controller'] . '/add', [
+                                    'class' => 'btn btn-xs btn-success',
+                                    'icon' => 'fa fa-plus'
+                                ]
+                            );
                             echo " "; //Fix HTML
                         endif;
                         ?>
+                        <button type="button" class="btn btn-xs btn-primary" ng-click="triggerFilter()">
+                            <i class="fa fa-filter"></i>
+                            <?php echo __('Filter'); ?>
+                        </button>
                     </div>
-                    <span class="widget-icon hidden-mobile"> <i class="fa fa-file-image-o"></i> </span>
-                    <h2 class="hidden-mobile"><?php echo __('Instant Reports'); ?></h2>
-                    <ul class="nav nav-tabs pull-right" id="widget-tab-1">
-                        <li class="active">
-                            <a href="/instantreports/index"><i class="fa fa-archive"></i> <span
-                                        class="hidden-mobile hidden-tablet"> <?php echo __('Saved'); ?> </span> </a>
-                        </li>
-                        <?php if ($this->Acl->hasPermission('sendEmailsList')): ?>
-                            <li class="">
-                                <a href="/instantreports/sendEmailsList"><i class="fa fa-paper-plane"></i> <span
-                                            class="hidden-mobile hidden-tablet"> <?php echo __('Send Emails'); ?> </span></a>
-                            </li>
-                        <?php endif; ?>
-
-                    </ul>
                 </header>
                 <div>
                     <div class="widget-body no-padding">
+                        <div class="list-filter well" ng-show="showFilter">
+                            <h3><i class="fa fa-filter"></i> <?php echo __('Filter'); ?></h3>
+                            <div class="row">
+                                <div class="col-xs-12 col-md-6">
+                                    <div class="form-group smart-form">
+                                        <label class="input"> <i class="icon-prepend fa fa-file-text-o"></i>
+                                            <input type="text" class="input-sm"
+                                                   placeholder="<?php echo __('Filter by instant report name'); ?>"
+                                                   ng-model="filter.instantreport.name"
+                                                   ng-model-options="{debounce: 500}">
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-xs-12">
+                                    <div class="pull-right margin-top-10">
+                                        <button type="button" ng-click="resetFilter()"
+                                                class="btn btn-xs btn-danger">
+                                            <?php echo __('Reset Filter'); ?>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-12 col-md-3">
+                                    <fieldset>
+                                        <legend><?php echo __('Evaluation'); ?></legend>
+                                        <div class="form-group smart-form">
+                                            <label class="checkbox small-checkbox-label">
+                                                <input type="checkbox" name="checkbox" checked="checked"
+                                                       ng-model="filter.instantreport.evaluation.hosts"
+                                                       ng-true-value="1"
+                                                       ng-model-options="{debounce: 500}">
+                                                <i class="checkbox-primary"></i>
+                                                <?php echo __('Hosts'); ?>
+                                            </label>
+
+                                            <label class="checkbox small-checkbox-label">
+                                                <input type="checkbox" name="checkbox" checked="checked"
+                                                       ng-model="filter.instantreport.evaluation.hostsandservices"
+                                                       ng-true-value="2"
+                                                       ng-model-options="{debounce: 500}">
+                                                <i class="checkbox-primary"></i>
+                                                <?php echo __('Hosts and Services'); ?>
+                                            </label>
+
+                                            <label class="checkbox small-checkbox-label">
+                                                <input type="checkbox" name="checkbox" checked="checked"
+                                                       ng-model="filter.instantreport.evaluation.services"
+                                                       ng-true-value="3"
+                                                       ng-model-options="{debounce: 500}">
+                                                <i class="checkbox-primary"></i>
+                                                <?php echo __('Services'); ?>
+                                            </label>
+                                        </div>
+                                    </fieldset>
+                                </div>
+                                <div class="col-xs-12 col-md-3">
+                                    <fieldset>
+                                        <legend><?php echo __('Type'); ?></legend>
+                                        <div class="form-group smart-form">
+                                            <label class="checkbox small-checkbox-label">
+                                                <input type="checkbox" name="checkbox" checked="checked"
+                                                       ng-model="filter.instantreport.type.hostgroups"
+                                                       ng-true-value="1"
+                                                       ng-model-options="{debounce: 500}">
+                                                <i class="checkbox-primary"></i>
+                                                <?php echo __('Host groups'); ?>
+                                            </label>
+
+                                            <label class="checkbox small-checkbox-label">
+                                                <input type="checkbox" name="checkbox" checked="checked"
+                                                       ng-model="filter.instantreport.type.hosts"
+                                                       ng-true-value="2"
+                                                       ng-model-options="{debounce: 500}">
+                                                <i class="checkbox-primary"></i>
+                                                <?php echo __('Hosts'); ?>
+                                            </label>
+                                            <label class="checkbox small-checkbox-label">
+                                                <input type="checkbox" name="checkbox" checked="checked"
+                                                       ng-model="filter.instantreport.type.servicegroups"
+                                                       ng-true-value="3"
+                                                       ng-model-options="{debounce: 500}">
+                                                <i class="checkbox-primary"></i>
+                                                <?php echo __('Service groups'); ?>
+                                            </label>
+                                            <label class="checkbox small-checkbox-label">
+                                                <input type="checkbox" name="checkbox" checked="checked"
+                                                       ng-model="filter.instantreport.type.services"
+                                                       ng-true-value="4"
+                                                       ng-model-options="{debounce: 500}">
+                                                <i class="checkbox-primary"></i>
+                                                <?php echo __('Services'); ?>
+                                            </label>
+                                        </div>
+                                    </fieldset>
+                                </div>
+                            </div>
+
+                        </div>
                         <div class="mobile_table">
-                            <table id="timeperiod_list" class="table table-striped table-hover table-bordered smart-form" style="">
+                            <table id="intantreport_list"
+                                   class="table table-striped table-hover table-bordered smart-form"
+                                   style="">
                                 <thead>
                                 <tr>
-                                    <?php $order = $this->Paginator->param('order'); ?>
-                                    <th class="select_datatable no-sort"><?php echo $this->Utils->getDirection($order, 'Instantreport.name');
-                                        echo $this->Paginator->sort('Instantreport.name', 'Name'); ?></th>
-                                    <th class="select_datatable no-sort"><?php echo $this->Utils->getDirection($order, 'Instantreport.evaluation');
-                                        echo $this->Paginator->sort('Instantreport.evaluation', 'Evaluation'); ?></th>
-                                    <th class="no-sort"><?php echo $this->Utils->getDirection($order, 'Instantreport.type');
-                                        echo $this->Paginator->sort('Instantreport.type', 'Type'); ?></th>
-                                    <th class="no-sort"><?php echo $this->Utils->getDirection($order, 'Instantreport.timeperiod_id');
-                                        echo $this->Paginator->sort('Instantreport.timeperiod_id', 'Time period'); ?></th>
-                                    <th class="no-sort"><?php echo $this->Utils->getDirection($order, 'Instantreport.summary');
-                                        echo $this->Paginator->sort('Instantreport.summary', 'Summary display'); ?></th>
-                                    <th class="no-sort text-center" style="width:52px;"><i class="fa fa-gear fa-lg"></i>
+                                    <th class="no-sort" ng-click="orderBy('Instantreport.name')">
+                                        <i class="fa" ng-class="getSortClass('Instantreport.name')"></i>
+                                        <?php echo __('Name'); ?>
+                                    </th>
+                                    <th class="no-sort">
+                                        <?php echo __('Evaluation'); ?>
+                                    </th>
+                                    <th class="no-sort">
+                                        <?php echo __('Type'); ?>
+                                    </th>
+                                    <th class="no-sort" ng-click="orderBy('Timeperiod.name')">
+                                        <i class="fa" ng-class="getSortClass('Timeperiod.name')"></i>
+                                        <?php echo __('Time period'); ?>
+                                    </th>
+                                    <th class="no-sort" ng-click="orderBy('Instantreport.summary')">
+                                        <i class="fa" ng-class="getSortClass('Instantreport.summary')"></i>
+                                        <?php echo __('Summary display'); ?>
+                                    </th>
+                                    <th class="no-sort" ng-click="orderBy('Instantreport.downtimes')">
+                                        <i class="fa" ng-class="getSortClass('Instantreport.downtimes')"></i>
+                                        <?php echo __('Consider downtimes'); ?>
+                                    </th>
+                                    <th class="no-sort">
+                                        <?php echo __('Send interval'); ?>
+                                    </th>
+                                    <th class="no-sort">
+                                        <?php echo __('Send to'); ?>
+                                    </th>
+                                    <th class="no-sort text-center">
+                                        <i class="fa fa-cog fa-lg"></i>
                                     </th>
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <?php foreach ($allInstantReports as $instantReport): ?>
-                                    <?php
-                                        $allowEdit = $this->Acl->isWritableContainer($instantReport['Instantreport']['container_id']);
-                                    ?>
-                                    <tr>
-                                        <td><?= $instantReport['Instantreport']['name']; ?></td>
-                                        <td><?= '<i class="fa fa-'.$evaluations[$instantReport['Instantreport']['evaluation']]['icon'].'"></i> '.$evaluations[$instantReport['Instantreport']['evaluation']]['label']; ?></td>
-                                        <td><?= $types[$instantReport['Instantreport']['type']]; ?></td>
-                                        <td><?= $instantReport['Timeperiod']['name']; ?></td>
-                                        <td class="text-center"><?= $instantReport['Instantreport']['summary'] === '1' ?
-                                                '<i class="fa fa-check fa-lg txt-color-green"></i>' : '<i class="fa fa-times fa-lg txt-color-red"></i>' ?></td>
-                                        <td>
-                                            <div class="btn-group" style="width:52px;">
-                                                <?php if ($this->Acl->hasPermission('edit') && $allowEdit): ?>
-                                                    <a href="<?php echo Router::url(['action' => 'edit', $instantReport['Instantreport']['id']]); ?>"
-                                                       class="btn btn-default">&nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
-                                                <?php else: ?>
-                                                    <a href="javascript:void(0);" class="btn btn-default">&nbsp;<i
-                                                            class="fa fa-cog"></i>&nbsp;</a>
-                                                <?php endif; ?>
-                                                <a href="javascript:void(0);" data-toggle="dropdown"
-                                                   class="btn btn-default dropdown-toggle"><span
+                                <tr ng-repeat="instantreport in instantreports">
+                                    <td>
+                                        {{ instantreport.Instantreport.name }}
+                                    </td>
+                                    <td>
+                                        <i class="fa fa-{{ instantreport.Instantreport.evaluation.icon }}"></i>
+                                        {{ instantreport.Instantreport.evaluation.label }}
+                                    </td>
+                                    <td>
+                                        {{ instantreport.Instantreport.type }}
+                                    </td>
+                                    <td>
+                                        {{ instantreport.Timeperiod.name }}
+                                    </td>
+                                    <td class="text-center">
+                                        <i class="fa
+                                        {{instantreport.Instantreport.summary === '1'
+                                            ? ' fa-check fa-lg text-success'
+                                            : ' fa-times fa-lg text-danger'
+                                        }}
+                                        "></i>
+                                    </td>
+                                    <td class="text-center">
+                                        <i class="fa
+                                        {{instantreport.Instantreport.downtimes === '1'
+                                            ? ' fa-check fa-lg text-success'
+                                            : ' fa-times fa-lg text-danger'
+                                        }}
+                                        "></i>
+                                    </td>
+                                    <td>
+                                        {{ instantreport.Instantreport.send_interval }}
+                                    </td>
+
+                                    <td>
+                                        <ul class="list-unstyled">
+                                            <ul class="list-unstyled">
+                                                <li ng-repeat="user in instantreport.User">
+                                                    <a href="users/edit/{{user.InstantreportsToUser.user_id}}"
+                                                       ng-if="user.allowEdit">
+                                                        {{ user.firstname }} {{ user.lastname }}
+                                                    </a>
+
+                                                    <span ng-if="!user.allowEdit">
+                                                        {{ user.firstname }} {{ user.lastname }}
+                                                    </span>
+                                                </li>
+                                            </ul>
+                                        </ul>
+                                    </td>
+                                    <td class="width-50">
+                                        <div class="btn-group">
+                                            <?php if ($this->Acl->hasPermission('edit')): ?>
+                                                <a href="/instantreports/edit/{{ instantreport.Instantreport.id}}"
+                                                   class="btn btn-default">
+                                                    &nbsp;<i class="fa fa-cog"></i>&nbsp;
+                                                </a>
+                                            <?php else: ?>
+                                                <a href="javascript:void(0);" class="btn btn-default">
+                                                    &nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
+                                            <?php endif; ?>
+                                            <a href="javascript:void(0);" data-toggle="dropdown"
+                                               class="btn btn-default dropdown-toggle"><span
                                                         class="caret"></span></a>
-                                                <ul class="dropdown-menu pull-right">
-                                                    <?php if ($this->Acl->hasPermission('edit') && $allowEdit): ?>
-                                                        <li>
-                                                            <a href="<?php echo Router::url(['action' => 'edit', $instantReport['Instantreport']['id']]); ?>"><i
-                                                                    class="fa fa-cog"></i> <?php echo __('Edit'); ?>
-                                                            </a>
-                                                        </li>
-                                                    <?php endif; ?>
-                                                    <?php if ($this->Acl->hasPermission('generate')): ?>
-                                                        <li>
-                                                            <a href="<?php echo Router::url(['action' => 'generate', $instantReport['Instantreport']['id']]); ?>"><i
-                                                                        class="fa fa-file-image-o"></i> <?php echo __('Generate'); ?>
-                                                            </a>
-                                                        </li>
-                                                    <?php endif; ?>
-                                                    <?php if ($this->Acl->hasPermission('delete') && $allowEdit): ?>
-                                                        <li class="divider"></li>
-                                                        <li>
-                                                            <?php echo $this->Form->postLink('<i class="fa fa-trash-o"></i> '.__('Delete'), ['controller' => 'instantreports', 'action' => 'delete', $instantReport['Instantreport']['id']], ['class' => 'txt-color-red', 'escape' => false]); ?>
-                                                        </li>
-                                                    <?php endif; ?>
-                                                </ul>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                <?php endforeach; ?>
+                                            <ul class="dropdown-menu pull-right"
+                                                id="menuHack-{{instantreport.Instantreport.id}}">
+                                                <?php if ($this->Acl->hasPermission('edit')): ?>
+                                                    <li>
+                                                        <a href="/instantreports/edit/{{instantreport.Instantreport.id}}">
+                                                            <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
+                                                        </a>
+                                                    </li>
+                                                <?php endif; ?>
+                                                <?php if ($this->Acl->hasPermission('generate')): ?>
+                                                    <li>
+                                                        <a href="/instantreports/generate/{{ instantreport.Instantreport.id}}">
+                                                            <i class="fa fa-file-image-o"></i> <?php echo __('Generate'); ?>
+                                                        </a>
+                                                    </li>
+                                                <?php endif; ?>
+                                                <?php if ($this->Acl->hasPermission('delete')): ?>
+                                                    <li class="divider"></li>
+                                                    <li>
+                                                        <a href="javascript:void(0);" class="txt-color-red"
+                                                           ng-click="confirmDelete(getObjectForDelete(instantreport))">
+                                                            <i class="fa fa-trash-o"></i> <?php echo __('Delete'); ?>
+                                                        </a>
+                                                    </li>
+                                                <?php endif; ?>
+                                            </ul>
+                                        </div>
+                                    </td>
+                                </tr>
                                 </tbody>
                             </table>
                         </div>
-                        <?php if (empty($allInstantReports)): ?>
-                            <div class="noMatch">
-                                <center>
-                                    <span class="txt-color-red italic"><?php echo __('No entries match the selection'); ?></span>
-                                </center>
-                            </div>
-                        <?php endif; ?>
-
-                        <div style="padding: 5px 10px;">
-                            <div class="row">
-                                <div class="col-sm-6">
-                                    <div class="dataTables_info" style="line-height: 32px;"
-                                         id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('Page').' {:page} '.__('of').' {:pages}, '.__('Total').' {:count} '.__('entries')); ?></div>
-                                </div>
-                                <div class="col-sm-6 text-right">
-                                    <div class="dataTables_paginate paging_bootstrap">
-                                        <?php echo $this->Paginator->pagination([
-                                            'ul' => 'pagination',
-                                        ]); ?>
-                                    </div>
+                        <div class="row margin-top-10 margin-bottom-10">
+                            <div class="row margin-top-10 margin-bottom-10" ng-show="instantreports.length == 0">
+                                <div class="col-xs-12 text-center txt-color-red italic">
+                                    <?php echo __('No entries match the selection'); ?>
                                 </div>
                             </div>
                         </div>
+                        <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>
                     </div>
                 </div>
             </div>

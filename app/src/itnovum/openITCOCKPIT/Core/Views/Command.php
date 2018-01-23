@@ -115,4 +115,12 @@ class Command {
         return $this->description;
     }
 
+    /**
+     * @return array
+     */
+    public function toArray(){
+        $arr = get_object_vars($this);
+        return $arr;
+    }
+
 }

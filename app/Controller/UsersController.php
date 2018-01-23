@@ -354,6 +354,7 @@ class UsersController extends AppController
                 );
                 if ($this->User->saveAll($this->request->data)) {
                     $this->setFlash(__('User saved successfully'));
+                    Cache::clear(false, 'permissions');
                     $this->redirect(['action' => 'index']);
 
                     return;
@@ -460,5 +461,37 @@ class UsersController extends AppController
         $this->redirect(['action' => 'index']);
 
         return;
+    }
+
+    public function loadUsersByContainerId() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        $containerId = $this->request->query('containerId');
+
+        $users = $this->User->find('list', [
+            'recursive' => -1,
+            'joins'      => [
+                [
+                    'table'      => 'users_to_containers',
+                    'type'       => 'LEFT',
+                    'alias'      => 'UsersToContainer',
+                    'conditions' => 'UsersToContainer.user_id = User.id',
+                ],
+            ],
+            'conditions' => [
+                'UsersToContainer.container_id' => [
+                    ROOT_CONTAINER, $containerId
+                ]
+            ]
+        ]);
+
+        $users = $this->User->makeItJavaScriptAble(
+            $users
+        );
+
+        $this->set(compact(['users']));
+        $this->set('_serialize', ['users']);
     }
 }

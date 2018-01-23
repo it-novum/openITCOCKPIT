@@ -27,6 +27,31 @@ $config = [
     'acl_dependencies' => [
         'AppController'  => ['getNamedParameter', 'isAuthorized', 'flashBack', 'setFlash', 'serviceResponse', 'allowedByContainerId', 'render403', 'checkForUpdates'],
         'always_allowed' => [
+            'Angular'          => [
+                'paginator',
+                'mass_delete',
+                'mass_deactivate',
+                'confirm_delete',
+                'confirm_deactivate',
+                'mass_activate',
+                'user_timezone',
+                'version_check',
+                'menustats',
+                'menu',
+                'websocket_configuration',
+                'export',
+                'not_found',
+                'nested_list',
+                'executing',
+                'acknowledge_service',
+                'downtime_service',
+                'reschedule_host',
+                'downtime_host',
+                'acknowledge_host',
+                'enable_host_notifications',
+                'disable_host_notifications',
+                'system_health'
+            ],
             'Commands'         => [
                 'sortByCommandType',
             ],
@@ -35,6 +60,7 @@ $config = [
             ],
             'Downtimes'        => [
                 'validateDowntimeInputFromBrowser',
+                'validateDowntimeInputFromAngular'
             ],
             'Forward'          => [
                 'index',
@@ -67,7 +93,8 @@ $config = [
                 'grapherTemplate',
                 'grapherZoom',
                 'grapherZoomTemplate',
-                'createGrapherErrorPng'
+                'createGrapherErrorPng',
+                'icon'
             ],
             'Statusmaps'       => [
                 'getHostsAndConnections',
@@ -78,6 +105,7 @@ $config = [
                 'loadServicesByHostId',
                 'loadPerfDataStructures',
                 'loadServiceruleFromService',
+                'getPerfdataByUuid'
             ],
             'Dashboards'       => [
                 'index',
@@ -109,7 +137,10 @@ $config = [
                 'saveMap',
             ],
             'Hosts'            => [
-                'view'
+                'view',
+                'icon',
+                'loadParentHostsByString',
+                'loadParentHostsById'
             ]
         ],
         'dependencies'   => [
@@ -131,7 +162,10 @@ $config = [
                 'delete' => ['mass_delete'],
             ],
             'Timeperiods'           => [
-                'index'  => ['view'],
+                'index'  => [
+                    'view',
+                    'loadTimeperiodsByContainerId'
+                ],
                 'delete' => ['mass_delete'],
             ],
             'Contactgroups'         => [
@@ -150,7 +184,7 @@ $config = [
                 'edit' => ['loadTasksByPlugin'],
             ],
             'Currentstatereports'   => [
-                'index' => ['createPdfReport'],
+                'index' => ['createPdfReport', 'createHtmlReport'],
             ],
             'Downtimereports'       => [
                 'index' => ['createPdfReport'],
@@ -171,12 +205,11 @@ $config = [
             'Hostgroups'            => [
                 'index'    => ['listToPdf', 'view'],
                 'extended' => ['listToPdf', 'loadServicesByHostId'],
-                'add'      => ['loadHosts', 'mass_add', 'loadHosttemplates'],
-                'edit'     => ['loadHosts', 'loadHosttemplates'],
-                'delete'   => ['mass_delete'],
+                'add'      => ['loadHosts', 'mass_add', 'loadHosttemplates', 'loadContainers'],
+                'edit'     => ['loadHosts', 'loadHosttemplates', 'loadContainers'],
             ],
             'Hosts'                 => [
-                'index'      => ['getHostByAjax', 'listToPdf'],
+                'index'      => ['getHostByAjax', 'listToPdf', 'ajaxList', 'loadHostsByContainerId', 'loadHostsByString', 'loadHostById'],
                 'delete'     => ['mass_delete'],
                 'deactivate' => ['mass_deactivate'],
                 'browser'    => ['longOutputByUuid'],
@@ -190,6 +223,7 @@ $config = [
             ],
             'Instantreports'        => [
                 'index' => ['createPdfReport', 'expandServices'],
+                'add'   => ['loadContainers']
             ],
             'Macros'                => [
                 'index' => ['addMacro'],
@@ -208,18 +242,18 @@ $config = [
                 'edit'  => ['loadElementsByContainerId'],
             ],
             'Servicegroups'         => [
-                'index'  => ['listToPdf', 'view'],
-                'add'    => ['loadServices', 'mass_add', 'loadServicetemplates'],
+                'index'  => ['listToPdf', 'view', 'loadServicegroupsByContainerId'],
+                'add'    => ['loadServices', 'mass_add', 'loadServicetemplates', 'loadContainers'],
                 'edit'   => ['loadServices', 'loadServicetemplates'],
                 'delete' => ['mass_delete'],
             ],
             'Services'              => [
-                'deactivate' => ['mass_deactivate'],
-                'index'      => ['serviceByHostId', 'listToPdf', 'loadServices', 'view'],
-                'browser'    => ['servicesByHostId', 'longOutputByUuid'],
-                'delete'     => ['mass_delete'],
-                'add'        => ['loadContactsAndContactgroups', 'loadParametersByCommandId', 'loadNagParametersByCommandId', 'loadArgumentsAdd', 'loadServicetemplatesArguments', 'loadTemplateData', 'addCustomMacro', 'loadTemplateMacros'],
-                'edit'       => ['loadContactsAndContactgroups', 'loadParametersByCommandId', 'loadNagParametersByCommandId', 'loadArgumentsAdd', 'loadServicetemplatesArguments', 'loadTemplateData', 'addCustomMacro', 'loadTemplateMacros'],
+                'deactivate'  => ['mass_deactivate'],
+                'index'       => ['serviceByHostId', 'listToPdf', 'loadServices', 'view', 'loadServicesByContainerId', 'loadServicesByString'],
+                'browser'     => ['servicesByHostId', 'longOutputByUuid'],
+                'add'         => ['loadContactsAndContactgroups', 'loadParametersByCommandId', 'loadNagParametersByCommandId', 'loadArgumentsAdd', 'loadServicetemplatesArguments', 'loadTemplateData', 'addCustomMacro', 'loadTemplateMacros'],
+                'edit'        => ['loadContactsAndContactgroups', 'loadParametersByCommandId', 'loadNagParametersByCommandId', 'loadArgumentsAdd', 'loadServicetemplatesArguments', 'loadTemplateData', 'addCustomMacro', 'loadTemplateMacros'],
+                'serviceList' => ['deleted']
             ],
             'Servicetemplategroups' => [
                 'index' => ['getHostsByHostgroupByAjax', 'loadServicetemplatesByContainerId', 'view'],
@@ -227,12 +261,12 @@ $config = [
                 'edit'  => ['getHostsByHostgroupByAjax', 'loadServicetemplatesByContainerId'],
             ],
             'Servicetemplates'      => [
-                'index' => ['view'],
+                'index' => ['view', 'loadUsersByContainerId'],
                 'add'   => ['loadArguments', 'loadContactsAndContactgroups', 'loadArgumentsAdd', 'loadNagArgumentsAdd', 'addCustomMacro', 'loadParametersByCommandId', 'loadNagParametersByCommandId', 'loadElementsByContainerId'],
                 'edit'  => ['loadArguments', 'loadContactsAndContactgroups', 'loadArgumentsAdd', 'loadNagArgumentsAdd', 'addCustomMacro', 'loadParametersByCommandId', 'loadNagParametersByCommandId', 'loadElementsByContainerId'],
             ],
             'Users'                 => [
-                'index' => ['view'],
+                'index' => ['view', 'loadUsersByContainerId'],
                 'add'   => ['addFromLdap'],
                 'edit'  => ['resetPassword'],
             ],
@@ -267,66 +301,66 @@ $config = [
             ],
             'Notifications'         => [
                 'index' => ['services'],
-            ],
+            ]
         ],
-        'roles_rights' => [
+        'roles_rights'   => [
             'Administrator' => ['*'],
-            'Viewer' => [
-                'Acknowledgements' => ['service', 'host'],
-                'Administrators' => ['index'],
-                'Automaps' => ['index'],
-                'Browsers' => ['index'],
-                'Calendars' => ['index'],
-                'Category' => ['index'],
-                'Changelogs' => ['index'],
-                'Commands' => ['index', 'hostchecks', 'notifications', 'handler'],
-                'Contactgroups' => ['index'],
-                'Contacts' => ['index'],
-                'Containers' => ['index'],
-                'Cronjobs' => ['index'],
-                'Currentstatereports' => ['index'],
-                'DeletedHosts' => ['index'],
-                'Documentations' => ['index', 'view', 'wiki'],
-                'Downtimereports' => ['index', 'host', 'service'],
-                'Exports' => ['index'],
-                'GraphCollections' => ['index', 'display'],
-                'Graphgenerators' => ['index'],
-                'Hostchecks' => ['index'],
-                'Hostdependencies' => ['index'],
-                'Hostescalations' => ['index'],
-                'Hostgroups' => ['index', 'extended'],
-                'Hosts' => ['index', 'notMonitored', 'disabled', 'browser'],
-                'Hosttemplates' => ['index', 'usedBy'],
-                'Instantreports' => ['index'],
-                'Locations' => ['index'],
-                'Logentries' => ['index'],
-                'Login' => ['index', 'login', 'onetimetoken', 'logout', 'auth_required', 'lock'],
-                'Macros' => ['index'],
-                'Nagiostats' => ['index'],
-                'Notifications' => ['index', 'hostNotification', 'serviceNotification'],
-                'Packetmanager' => ['index'],
-                'Proxy' => ['index'],
-                'Qr' => ['index'],
-                'Registers' => ['index'],
-                'Servicechecks' => ['index'],
-                'Servicedependencies' => ['index'],
-                'Serviceescalations' => ['index'],
-                'Servicegroups' => ['index'],
-                'Services' => ['index', 'notMonitored', 'disabled', 'browser', 'serviceList'],
+            'Viewer'        => [
+                'Acknowledgements'      => ['service', 'host'],
+                'Administrators'        => ['index'],
+                'Automaps'              => ['index'],
+                'Browsers'              => ['index'],
+                'Calendars'             => ['index'],
+                'Category'              => ['index'],
+                'Changelogs'            => ['index'],
+                'Commands'              => ['index', 'hostchecks', 'notifications', 'handler'],
+                'Contactgroups'         => ['index'],
+                'Contacts'              => ['index'],
+                'Containers'            => ['index'],
+                'Cronjobs'              => ['index'],
+                'Currentstatereports'   => ['index'],
+                'DeletedHosts'          => ['index'],
+                'Documentations'        => ['index', 'view', 'wiki'],
+                'Downtimereports'       => ['index', 'host', 'service'],
+                'Exports'               => ['index'],
+                'GraphCollections'      => ['index', 'display'],
+                'Graphgenerators'       => ['index'],
+                'Hostchecks'            => ['index'],
+                'Hostdependencies'      => ['index'],
+                'Hostescalations'       => ['index'],
+                'Hostgroups'            => ['index', 'extended'],
+                'Hosts'                 => ['index', 'notMonitored', 'disabled', 'browser'],
+                'Hosttemplates'         => ['index', 'usedBy'],
+                'Instantreports'        => ['index'],
+                'Locations'             => ['index'],
+                'Logentries'            => ['index'],
+                'Login'                 => ['index', 'login', 'onetimetoken', 'logout', 'auth_required', 'lock'],
+                'Macros'                => ['index'],
+                'Nagiostats'            => ['index'],
+                'Notifications'         => ['index', 'hostNotification', 'serviceNotification'],
+                'Packetmanager'         => ['index'],
+                'Proxy'                 => ['index'],
+                'Qr'                    => ['index'],
+                'Registers'             => ['index'],
+                'Servicechecks'         => ['index'],
+                'Servicedependencies'   => ['index'],
+                'Serviceescalations'    => ['index'],
+                'Servicegroups'         => ['index'],
+                'Services'              => ['index', 'notMonitored', 'disabled', 'browser', 'serviceList'],
                 'Servicetemplategroups' => ['index'],
-                'Servicetemplates' => ['index'],
-                'Statehistories' => ['service', 'host'],
-                'Statusmaps' => ['index', 'view'],
-                'Systemdowntimes' => ['index'],
-                'Systemfailures' => ['index'],
-                'Systemsettings' => ['index'],
-                'Tenants' => ['index'],
-                'Timeperiods' => ['index'],
-                'Usergroups' => ['index'],
-                'Users' => ['index'],
-                'Backups' => ['index'],
-                'Supports' => ['index', 'issue'],
-                'Instantreports' => ['index', 'sendEmailsList']
+                'Servicetemplates'      => ['index'],
+                'Statehistories'        => ['service', 'host'],
+                'Statusmaps'            => ['index', 'view'],
+                'Systemdowntimes'       => ['index'],
+                'Systemfailures'        => ['index'],
+                'Systemsettings'        => ['index'],
+                'Tenants'               => ['index'],
+                'Timeperiods'           => ['index'],
+                'Usergroups'            => ['index'],
+                'Users'                 => ['index'],
+                'Backups'               => ['index'],
+                'Supports'              => ['index', 'issue'],
+                'Instantreports'        => ['index', 'sendEmailsList']
             ]
 
         ]

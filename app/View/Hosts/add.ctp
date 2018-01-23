@@ -151,16 +151,32 @@ $notification_settings = [
                                 'label'            => ['text' => __('Hostgroups'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
                                 'wrapInput'        => 'col col-xs-10 col-md-10 col-lg-10',
                             ]);
+                            /*
+                                                        echo $this->Form->input('Host.Parenthost', [
+                                                            //'options'          => $_parenthosts,
+                                                            'data-placeholder' => __('Please select...'),
+                                                            'multiple'         => true,
+                                                            'class'            => 'chosen',
+                                                            'style'            => 'width:100%;',
+                                                            'label'            => ['text' => __('Parent hosts'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
+                                                            'wrapInput'        => 'col col-xs-10 col-md-10 col-lg-10',
+                                                        ]);
+                            */
 
                             echo $this->Form->input('Host.Parenthost', [
-                                'options'          => $_parenthosts,
-                                'data-placeholder' => __('Please select...'),
-                                'multiple'         => true,
-                                'class'            => 'chosen',
-                                'style'            => 'width:100%;',
-                                'label'            => ['text' => __('Parent hosts'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
-                                'wrapInput'        => 'col col-xs-10 col-md-10 col-lg-10',
-                            ]);
+                                    'options'          => [],
+                                    'data-placeholder' => __('Please, start typing...'),
+                                    'class'            => 'chosen,',
+                                    'multiple'         => true,
+                                    'style'            => 'width:100%',
+                                    'label'            => ['text' => __('Parent hosts'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
+                                    'required'         => true,
+                                    'wrapInput'        => 'col col-xs-10 col-md-10 col-lg-10',
+                                    'div'              => [
+                                        'class' => 'form-group required',
+                                    ],
+                                ]
+                            );
 
                             echo $this->Form->input('notes', [
                                 'label'     => ['text' => __('Notes'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
@@ -214,7 +230,7 @@ $notification_settings = [
                             ]); ?>
                             <div class="form-group required <?php echo $this->CustomValidationErrors->errorClass('notification_interval'); ?>">
                                 <label class="col col-md-1 control-label"
-                                       for="HostNotificationinterval"><?php echo __('Notificationinterval'); ?></label>
+                                       for="HostNotificationinterval"><?php echo __('Notification interval'); ?></label>
                                 <div class="col col-md-7 hidden-mobile">
                                     <input type="text" id="HostNotificationinterval" maxlength="255" value=""
                                            class="form-control slider slider-success"
@@ -245,7 +261,7 @@ $notification_settings = [
                                         <?php echo $this->Form->fancyCheckbox($notification_setting, [
                                             'caption'          => ucfirst(preg_replace('/notify_on_/', '', $notification_setting)),
                                             'captionGridClass' => 'col col-xs-2 col-md-2 col-lg-2',
-                                            'icon'             => '<i class="fa '.$icon.'"></i> ',
+                                            'icon'             => '<i class="fa ' . $icon . '"></i> ',
                                             'class'            => 'onoffswitch-checkbox notification_control',
                                             'checked'          => $this->CustomValidationErrors->refill($notification_setting, false),
                                             'wrapGridClass'    => 'col col-xs-2',
@@ -294,7 +310,7 @@ $notification_settings = [
                             <?php echo $this->Form->input('Host.command_id', [
                                 'options'          => $this->Html->chosenPlaceholder($commands),
                                 'data-placeholder' => __('Please select...'),
-                                'label'            => ['text' => __('Checkcommand'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
+                                'label'            => ['text' => __('Check command'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
                                 'class'            => 'chosen col col-xs-12',
                                 'wrapInput'        => 'col col-xs-10 col-md-10 col-lg-10',
                             ]); ?>
@@ -315,7 +331,7 @@ $notification_settings = [
                             ?>
                             <div class="form-group required <?php echo $this->CustomValidationErrors->errorClass('check_interval'); ?>">
                                 <label class="col col-md-1 control-label"
-                                       for="HostCheckinterval"><?php echo __('Checkinterval'); ?></label>
+                                       for="HostCheckinterval"><?php echo __('Check interval'); ?></label>
                                 <div class="col col-xs-7">
                                     <input
                                             type="text"
@@ -343,7 +359,7 @@ $notification_settings = [
                             </div>
                             <div class="form-group required <?php echo $this->CustomValidationErrors->errorClass('retry_interval'); ?>">
                                 <label class="col col-md-1 control-label"
-                                       for="HostCheckinterval"><?php echo __('Retryinterval'); ?></label>
+                                       for="HostCheckinterval"><?php echo __('Retry interval'); ?></label>
                                 <div class="col col-xs-7">
                                     <input type="text" id="HostRetryinterval" maxlength="255"
                                            value="<?php echo $this->CustomValidationErrors->refill('retry_interval', 0); ?>"
@@ -394,7 +410,7 @@ $notification_settings = [
                                     <div class="form-group no-padding">
                                         <?php echo $this->Form->fancyCheckbox($flapDetection_setting, [
                                             'caption'          => ucfirst(preg_replace('/flap_detection_on_/', '', $flapDetection_setting)),
-                                            'icon'             => '<i class="fa '.$icon.'"></i> ',
+                                            'icon'             => '<i class="fa ' . $icon . '"></i> ',
                                             'class'            => 'onoffswitch-checkbox flapdetection_control',
                                             'checked'          => $this->CustomValidationErrors->refill($flapDetection_setting, false),
                                             'wrapGridClass'    => 'col col-xs-2',

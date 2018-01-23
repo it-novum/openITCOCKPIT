@@ -524,6 +524,18 @@ class MapModuleSchema extends CakeSchema {
         'tableParameters' => ['charset' => 'utf8', 'collate' => 'utf8_unicode_ci', 'engine' => 'InnoDB'],
     ];
 
+    public $rotations_to_containers = [
+        'id'              => ['type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'],
+        'container_id'    => ['type' => 'integer', 'null' => false, 'default' => null],
+        'rotation_id'     => ['type' => 'integer', 'null' => false, 'default' => null],
+        'indexes'         => [
+            'PRIMARY'      => ['column' => 'id', 'unique' => 1],
+            'container_id' => ['column' => 'container_id', 'unique' => 0],
+            'rotation_id'  => ['column' => 'rotation_id', 'unique' => 0],
+        ],
+        'tableParameters' => ['charset' => 'utf8', 'collate' => 'utf8_unicode_ci', 'engine' => 'InnoDB'],
+    ];
+
     public $mapicons = [
         'id'              => ['type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'],
         'map_id'          => ['type' => 'integer', 'null' => false, 'default' => null],

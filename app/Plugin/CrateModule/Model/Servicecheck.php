@@ -30,6 +30,7 @@ class Servicecheck extends CrateModuleAppModel {
     public $useTable = 'servicechecks';
     public $tablePrefix = 'statusengine_';
 
+
     public function __construct($id = false, $table = null, $ds = null, $useDynamicAssociations = true){
         parent::__construct($id, $table, $ds, $useDynamicAssociations);
         $this->virtualFields['state_type'] = 'Servicecheck.is_hardstate';
@@ -53,6 +54,10 @@ class Servicecheck extends CrateModuleAppModel {
 
         if(!empty($ServicecheckConditions->getStates())){
             $query['conditions']['state'] = $ServicecheckConditions->getStates();
+        }
+
+        if(!empty($ServicecheckConditions->getStateTypes())){
+            $query['conditions']['is_hardstate'] = (bool)$ServicecheckConditions->getStateTypes()[0];
         }
 
         //Merge ListFilter conditions

@@ -26,6 +26,11 @@
 class Rotation extends MapModuleAppModel
 {
     public $hasAndBelongsToMany = [
+        'Container' => [
+            'className' => 'Container',
+            'joinTable' => 'rotations_to_containers',
+            'dependent' => true,
+        ],
         'Map' => [
             'className' => 'MapModule.Map',
             'joinTable' => 'maps_to_rotations',
@@ -34,6 +39,10 @@ class Rotation extends MapModuleAppModel
     ];
 
     var $validate = [
+        'container_id' => [
+            'rule'    => ['multiple', ['min' => 1]],
+            'message' => 'Please select one or more containers',
+        ],
         'name'     => [
             'notBlank' => [
                 'rule'     => 'notBlank',
@@ -42,11 +51,8 @@ class Rotation extends MapModuleAppModel
             ],
         ],
         'Map'      => [
-            'atLeastOne' => [
-                'rule'     => ['atLeastOne'],
-                'message'  => 'You must specify at least one map',
-                'required' => true,
-            ],
+            'rule'    => ['multiple', ['min' => 1]],
+            'message' => 'Please select one or more Map',
         ],
         'interval' => [
             'notBlank' => [
@@ -59,8 +65,8 @@ class Rotation extends MapModuleAppModel
                 'message' => 'This field needs to be numeric.',
             ],
             'notZero'  => [
-                'rule'     => ['comparison', '>', 0],
-                'message'  => 'Please enter a number > 0.',
+                'rule'     => ['comparison', '>', 10],
+                'message'  => 'Please enter a number > 10.',
                 'required' => true,
             ],
         ],

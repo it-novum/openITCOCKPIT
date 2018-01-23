@@ -616,7 +616,7 @@ $HoststatusIcon = new HoststatusIcon($Hoststatus->currentState());
                                                         $ServicestatusIcon = new ServicestatusIcon($Servicestatus->currentState());
                                                         if ($service['Service']['disabled'] == 0):?>
                                                             <tr>
-                                                                <td class="text-center width-90">
+                                                                <td class="text-center width-90" data-sort="<?php echo $Servicestatus->currentState();?>">
                                                                     <?php
                                                                     if ($Servicestatus->isFlapping()):
                                                                         echo $Servicestatus->getServiceFlappingIconColored();
@@ -721,9 +721,11 @@ $HoststatusIcon = new HoststatusIcon($Hoststatus->currentState());
                                                                 </td>
                                                                 <td data-original-title="<?php echo h($this->Time->format($Servicestatus->getLastStateChange(), $this->Auth->user('dateformat'), false, $this->Auth->user('timezone'))); ?>"
                                                                     data-placement="bottom" rel="tooltip"
-                                                                    data-container="body">
+                                                                    data-container="body"
+                                                                    data-sort="<?php echo $Servicestatus->getLastStateChange();?>"
+                                                                >
                                                                     <?php echo h($this->Utils->secondsInHumanShort(time() - $Servicestatus->getLastStateChange())); ?>
-                                                                </td>
+                                                                    </td>
                                                                 <td><?php echo h($Servicestatus->getOutput()); ?></td>
                                                             </tr>
                                                         <?php endif; ?>
@@ -990,7 +992,11 @@ $HoststatusIcon = new HoststatusIcon($Hoststatus->currentState());
 
             </div>
             <div class="modal-footer">
-                <a href="<?php echo Router::url(['controller' => 'systemdowntimes', 'action' => 'addHostdowntime', 'host_id' => $host['Host']['id']]); ?>"
+                <a href="<?php echo Router::url([
+                        'controller' => 'systemdowntimes',
+                        'action' => 'addHostdowntime',
+                        $host['Host']['id']
+                ]); ?>"
                    class="btn btn-primary pull-left"><i class="fa fa-cogs"></i> <?php echo __('More options'); ?></a>
                 <button type="button" class="btn btn-success" id="submitCommitHostDowntime">
                     <?php echo __('Send'); ?>
@@ -1116,7 +1122,7 @@ $HoststatusIcon = new HoststatusIcon($Hoststatus->currentState());
 
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-success" data-dismiss="modal" id="submitHoststateAck">
+                <button type="submit" class="btn btn-success" data-dismiss="modal" id="submitHoststateAck">
                     <?php echo __('Send'); ?>
                 </button>
                 <button type="button" class="btn btn-default" data-dismiss="modal">

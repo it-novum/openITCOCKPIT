@@ -31,7 +31,7 @@
             <?php echo __('Recurring downtimes'); ?>
             <span>>
                 <?php echo __('List'); ?>
-			</span>
+            </span>
         </h1>
     </div>
     <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
@@ -69,6 +69,11 @@
                                 <?php if ($this->Acl->hasPermission('addServicedowntime', 'systemdowntimes')): ?>
                                     <li>
                                         <a href="<?php echo Router::url(['controller' => 'systemdowntimes', 'action' => 'addServicedowntime']); ?>"><?php echo __('Create service downtime'); ?></a>
+                                    </li>
+                                <?php endif; ?>
+                                <?php if ($this->Acl->hasPermission('addHostdowntime', 'systemdowntimes')): ?>
+                                    <li>
+                                        <a href="<?php echo Router::url(['controller' => 'systemdowntimes', 'action' => 'addContainerdowntime']); ?>"><?php echo __('Create container downtime'); ?></a>
                                     </li>
                                 <?php endif; ?>
                             </ul>
@@ -259,8 +264,8 @@
                                         echo $this->Paginator->sort('Systemdowntime.day_of_month', __('Days of month')); ?></th>
                                     <th class="no-sort"><?php echo $this->Utils->getDirection($order, 'Systemdowntime.from_time');
                                         echo $this->Paginator->sort('Systemdowntime.from_time', __('Start time')); ?></th>
-                                    <th class="no-sort"><?php echo $this->Utils->getDirection($order, 'Systemdowntime.to_time');
-                                        echo $this->Paginator->sort('Systemdowntime.to_time', __('End time')); ?></th>
+                                    <th class="no-sort"><?php echo $this->Utils->getDirection($order, 'Systemdowntime.duration');
+                                        echo $this->Paginator->sort('Systemdowntime.duration', __('Duration')); ?></th>
                                     <th class="no-sort"><?php echo __('Delete'); ?></th>
                                 </tr>
                                 </thead>
@@ -270,6 +275,7 @@
                                     OBJECT_HOST      => __('Host'),
                                     OBJECT_SERVICE   => __('Service'),
                                     OBJECT_HOSTGROUP => __('Host group'),
+                                    OBJECT_NODE      => __('Container'),
                                 ];
                                 $weekdays = [
                                     1 => __('Monday'),
@@ -290,7 +296,7 @@
                                                 case OBJECT_HOST:
                                                     if (isset($systemdowntime['Host']['id']) && $systemdowntime['Host']['id'] !== null): ?>
                                                         <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
-                                                            <a href="/hosts/browser/<?php echo $systemdowntime['Host']['id']; ?>"><?php echo $systemdowntime['Host']['name']; ?></a>
+                                                            <a href="/hosts/browser/<?php echo $systemdowntime['Host']['id']; ?>"><?php echo h($systemdowntime['Host']['name']); ?></a>
                                                         <?php else: ?>
                                                             <?php echo h($systemdowntime['Host']['name']); ?>
                                                         <?php endif; ?>
@@ -331,6 +337,17 @@
                                                         <?php
                                                     endif;
                                                     break;
+
+                                                case OBJECT_NODE:
+                                                    //debug($systemdowntime);
+                                                    if (isset($systemdowntime['Container']['id']) && $systemdowntime['Container']['id'] !== null): ?>
+                                                        <?php echo h($systemdowntime['Container']['name']); ?>
+                                                    <?php else: ?>
+                                                        <span class="muted"><?php echo __('Container deleted'); ?></span>
+                                                    <?php
+                                                    endif;
+                                                    break;
+
                                             endswitch;
                                             ?>
                                         </td>
@@ -364,7 +381,7 @@
                                             ?>
                                         </td>
                                         <td><?php echo $systemdowntime['Systemdowntime']['from_time']; ?></td>
-                                        <td><?php echo $systemdowntime['Systemdowntime']['to_time']; ?></td>
+                                        <td><?php echo $systemdowntime['Systemdowntime']['duration']; ?></td>
                                         <td class="text-center">
                                             <?php
                                             if ($this->Acl->hasPermission('delete', 'systemdowntimes') && $systemdowntime['canDelete']):

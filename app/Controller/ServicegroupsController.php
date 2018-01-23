@@ -22,17 +22,17 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+use itnovum\openITCOCKPIT\Filter\ServicegroupFilter;
 
 
 /**
- * @property Service            $Service
- * @property Servicegroup       $Servicegroup
- * @property Host               $Host
- * @property Servicetemplate    $Servicetemplate
- * @property TreeComponent      $Tree
+ * @property Service $Service
+ * @property Servicegroup $Servicegroup
+ * @property Host $Host
+ * @property Servicetemplate $Servicetemplate
+ * @property TreeComponent $Tree
  */
-class ServicegroupsController extends AppController
-{
+class ServicegroupsController extends AppController {
     public $uses = [
         'Servicegroup',
         'Container',
@@ -40,36 +40,37 @@ class ServicegroupsController extends AppController
         'Servicetemplate',
         'User',
         MONITORING_OBJECTS,
+        MONITORING_SERVICESTATUS,
         'Host',
     ];
-    public $layout = 'Admin.default';
+    //public $layout = 'Admin.default';
+    public $layout = 'angularjs';
     public $components = [
         'Paginator',
         'ListFilter.ListFilter',
         'RequestHandler',
     ];
-    public $helpers = ['ListFilter.ListFilter'];
-
+    public $helpers = [
+        'ListFilter.ListFilter',
+        'Status'
+    ];
     public $listFilters = [
         'index' => [
             'fields' => [
-                'Container.name'           => ['label' => 'Name', 'searchType' => 'wildcard'],
+                'Container.name' => ['label' => 'Name', 'searchType' => 'wildcard'],
                 'Servicegroup.description' => ['label' => 'Alias', 'searchType' => 'wildcard'],
             ],
         ],
     ];
 
-    public function index()
-    {
-        $conditions = [
-            'Container.parent_id' => $this->MY_RIGHTS,
-        ];
-        if (isset($this->Paginator->settings['conditions'])) {
-            $conditions = Hash::merge($this->Paginator->settings['conditions'], $conditions);
+    public function index() {
+        if (!$this->isApiRequest()) {
+            //Only ship template for AngularJs
+            return;
         }
+        $ServicegroupFilter = new ServicegroupFilter($this->request);
         $query = [
             'recursive' => -1,
-            'conditions' => $conditions,
             'contain' => [
                 'Container',
                 'Service' => [
@@ -82,7 +83,8 @@ class ServicegroupsController extends AppController
                             'Servicetemplate.name'
                         ]
                     ],
-                    'Host' =>[
+                    'Host' => [
+                        'Container',
                         'fields' => [
                             'Host.id',
                             'Host.name'
@@ -96,24 +98,60 @@ class ServicegroupsController extends AppController
                         'Servicetemplate.name'
                     ]
                 ]
-            ]
+            ],
+            'conditions' => $ServicegroupFilter->indexFilter(),
+            'order'      => $ServicegroupFilter->getOrderForPaginator('Container.name', 'asc'),
+            'limit'      => $this->Paginator->settings['limit']
         ];
 
-        if ($this->isApiRequest()) {
-            unset($query['limit']);
-            $all_servicegroups = $this->Servicegroup->find('all', $query);
-        } else {
-            $this->Paginator->settings = array_merge($this->Paginator->settings, $query);
-            $all_servicegroups = $this->Paginator->paginate();
+        if (!$this->hasRootPrivileges) {
+            $query['conditions']['Container.parent_id'] = $this->MY_RIGHTS;
         }
-        //Aufruf für json oder xml view: /nagios_module/services.json oder /nagios_module/services.xml
 
+        if ($this->isApiRequest() && !$this->isAngularJsRequest()) {
+            unset($query['limit']);
+            $servicegroups = $this->Servicegroup->find('all', $query);
+        } else {
+            $this->Paginator->settings = $query;
+            $this->Paginator->settings['page'] = $ServicegroupFilter->getPage();
+            $servicegroups = $this->Paginator->paginate();
+        }
+        $all_servicegroups = [];
+        foreach ($servicegroups as $servicegroup) {
+            $servicegroup['Servicegroup']['allowEdit'] = $this->hasPermission('edit', 'servicegroups');;
+            if ($this->hasRootPrivileges === false && $servicegroup['Servicegroup']['allowEdit'] === true) {
+                $servicegroup['Servicegroup']['allowEdit'] = $this->allowedByContainerId($servicegroup['Container']['parent_id']);
+            }
+            foreach ($servicegroup['Service'] as $key => $service) {
+                $servicegroup['Service'][$key]['allowEdit'] = $this->hasPermission('edit', 'services');
+                $servicegroup['Service'][$key]['Host']['allowEdit'] = $this->hasPermission('edit', 'hosts');
+
+                if ($this->hasRootPrivileges === false && $servicegroup['Service'][$key]['Host']['allowEdit'] === true) {
+                    $containerIdsToCheck = Hash::extract($service, 'Service.{n}.Host.HostsToContainer.container_id');
+                    $servicegroup['Service'][$key]['Host']['allowEdit'] = $this->allowedByContainerId($containerIdsToCheck);
+                }
+            }
+
+
+            foreach ($servicegroup['Servicetemplate'] as $key => $servicetemplate) {
+                $servicegroup['Servicetemplate'][$key]['allowEdit'] = $this->hasPermission('edit', 'servicetemplates');
+                if ($this->hasRootPrivileges === false && $servicegroup['Servicetemplate'][$key]['allowEdit'] === true) {
+                    $servicegroup['Servicetemplate'][$key]['allowEdit'] = $this->allowedByContainerId($servicetemplate['container_id']);
+                }
+            }
+            $all_servicegroups[] = [
+                'Servicegroup'      => $servicegroup['Servicegroup'],
+                'Container'         => $servicegroup['Container'],
+                'Service'           => $servicegroup['Service'],
+                'Servicetemplate'   => $servicegroup['Servicetemplate']
+            ];
+
+        }
         $this->set(compact(['all_servicegroups']));
-        $this->set('_serialize', ['all_servicegroups']);
+        $this->set('_serialize', ['all_servicegroups', 'paging']);
     }
 
-    public function view($id = null)
-    {
+    public function view($id = null) {
         if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();
         }
@@ -132,39 +170,35 @@ class ServicegroupsController extends AppController
         $this->set('_serialize', ['servicegroup']);
     }
 
-    public function edit($id = null)
-    {
-        $userId = $this->Auth->user('id');
-        if (!$this->Servicegroup->exists($id)) {
-            throw new NotFoundException(__('Invalid servicegroup'));
+    public function edit($id = null) {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
+            return;
         }
 
-        /*fixme for permissions*/
-        if ($this->hasRootPrivileges === true) {
-            $containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_SERVICEGROUP, [], $this->hasRootPrivileges);
-        } else {
-            $containers = $this->Tree->easyPath($this->getWriteContainers(), OBJECT_SERVICEGROUP, [], $this->hasRootPrivileges);
+        if (!$this->Servicegroup->exists($id)) {
+            throw new NotFoundException(__('Invalid service group'));
         }
 
         $servicegroup = $this->Servicegroup->find('first', [
-            'recursive' => -1,
+            'recursive'  => -1,
             'contain'    => [
                 'Service' => [
-                    'fields'          => [
+                    'fields' => [
                         'Service.id',
-                        'Service.servicetemplate_id',
-                        'Service.name',
+                        'Service.name'
                     ],
-                    'Servicetemplate' => [
+                    'Host'         => [
+                        'fields' => [
+                            'Host.id',
+                            'Host.name'
+                        ]
+                    ],
+                    'Servicetemplate'         => [
                         'fields' => [
                             'Servicetemplate.id',
-                            'Servicetemplate.name',
-                        ],
-                    ],
-                    'Host'            => [
-                        'fields' => [
-                            'Host.name',
-                        ],
+                            'Servicetemplate.name'
+                        ]
                     ],
                 ],
                 'Servicetemplate' => [
@@ -173,66 +207,139 @@ class ServicegroupsController extends AppController
                         'Servicetemplate.name'
                     ]
                 ],
-                'Container',
+                'Container'
             ],
             'conditions' => [
                 'Servicegroup.id' => $id,
             ],
         ]);
-
-        if (!$this->allowedByContainerId(Hash::extract($servicegroup, 'Container.parent_id'))) {
+        if (!$this->allowedByContainerId($servicegroup['Container']['parent_id'])) {
             $this->render403();
-
             return;
         }
-        $services_for_changelog = [];
-        foreach ($servicegroup['Service'] as $service) {
-            $services_for_changelog[] = [
-                'id'   => $service['id'],
-                'name' => $service['Host']['name'].' | '.(($service['name']) ? $service['name'] : $service['Servicetemplate']['name']),
-            ];
-        }
 
-        $serviceIds = [ROOT_CONTAINER];
-        if ($this->request->is('post') == false && $this->request->is('put') == false) {
-            $serviceIds[] = $servicegroup['Container']['parent_id'];
-        } else {
-            $serviceIds[] = $this->request->data['Container']['parent_id'];
-        }
-
-        $serviceIds = $this->Tree->resolveChildrenOfContainerIds($serviceIds);
-        array_unshift($serviceIds, ROOT_CONTAINER);
-        $_services = $this->Service->servicesByHostContainerIds($serviceIds);
-        $servicetemplates = $this->Servicetemplate->servicetemplatesByContainerId($serviceIds, 'list');
-        //Fix that duplicate hostnames dont overwrite the array key!!
-        foreach ($_services as $service) {
-            $hostId = $service['Host']['id'];
-            $hostName = $service['Host']['name'];
-            $serviceId = $service['Service']['id'];
-            $serviceDescription = $service[0]['ServiceDescription'];
-            $services[$hostId][$hostName][$serviceId] = $hostName.'/'.$serviceDescription;
-        }
-        $servicegroup['Service'] = $services_for_changelog; //Services for changelog
+        $ext_data_for_changelog = [];
+        $containerId = $servicegroup['Container']['parent_id'];
         if ($this->request->is('post') || $this->request->is('put')) {
-            $ext_data_for_changelog = [];
-
-            $this->request->data['Service'] = (!empty($this->request->data('Servicegroup.Service'))) ? $this->request->data('Servicegroup.Service') : [];
-            $this->request->data['Servicetemplate'] = (!empty($this->request->data('Servicegroup.Servicetemplate'))) ? $this->request->data('Servicegroup.Servicetemplate') : [];
-
+            $this->request->data['Servicegroup']['id'] = $id;
             if ($this->request->data('Servicegroup.Service')) {
-                $serviceAsList = Hash::combine($_services, '{n}.Service.id', ['%s | %s', '{n}.Host.name', '{n}.0.ServiceDescription']);
                 foreach ($this->request->data['Servicegroup']['Service'] as $service_id) {
+                    $service = $this->Service->find('first', [
+                        'contain'    => [
+                            'Host.name',
+                            'Servicetemplate.name'
+                        ],
+                        'fields'     => [
+                            'Service.id',
+                            'Service.name',
+                        ],
+                        'conditions' => [
+                            'Service.id' => $service_id,
+                        ],
+                    ]);
                     $ext_data_for_changelog['Service'][] = [
-                        'id' => $service_id,
-                        'name' => $serviceAsList[$service_id],
+                        'id'   => $service_id,
+                        'name' => sprintf(
+                            '%s | %s',
+                            $service['Host']['name'],
+                            ($service['Service']['name'])?$service['Service']['name']:$service['Servicetemplate']['name']
+                        )
                     ];
                 }
             }
             if ($this->request->data('Servicegroup.Servicetemplate')) {
                 foreach ($this->request->data['Servicegroup']['Servicetemplate'] as $servicetemplate_id) {
                     $servicetemplate = $this->Servicetemplate->find('first', [
-                        'recursive' => -1,
-                        'contain'    => [],
+                        'recursive'    => -1,
+                        'fields'     => [
+                            'Servicetemplate.id',
+                            'Servicetemplate.name',
+                        ],
+                        'conditions' => [
+                            'Servicetemplate.id' => $servicetemplate_id,
+                        ],
+                    ]);
+                    $ext_data_for_changelog['Servicetemplate'][] = [
+                        'id'   => $servicetemplate_id,
+                        'name' => $servicetemplate['Servicetemplate']['name'],
+                    ];
+                }
+            }
+        }
+
+        if ($this->request->is('post') || $this->request->is('put')) {
+            $userId = $this->Auth->user('id');
+            $this->request->data['Service'] = (!empty($this->request->data('Servicegroup.Service'))) ? $this->request->data('Servicegroup.Service') : [];
+            //Add container id (of the service group container itself) to the request data
+            $this->request->data['Container']['id'] = $servicegroup['Servicegroup']['container_id'];
+            $this->request->data['Servicetemplate'] = (!empty($this->request->data('Servicegroup.Servicetemplate'))) ? $this->request->data('Servicegroup.Servicetemplate') : [];
+            if ($this->Servicegroup->saveAll($this->request->data)) {
+                Cache::clear(false, 'permissions');
+                $changelog_data = $this->Changelog->parseDataForChangelog(
+                    $this->params['action'],
+                    $this->params['controller'],
+                    $this->Servicegroup->id,
+                    OBJECT_SERVICEGROUP,
+                    $this->request->data('Container.parent_id'),
+                    $userId,
+                    $this->request->data('Container.name'),
+                    array_merge($this->request->data, $ext_data_for_changelog),
+                    $servicegroup
+                );
+                if ($changelog_data) {
+                    CakeLog::write('log', serialize($changelog_data));
+                }
+                $this->setFlash(__('<a href="/servicegroups/edit/%s">Servicegroup</a> successfully saved', $this->Servicegroup->id));
+            } else {
+                if ($this->request->ext == 'json') {
+                    $this->serializeErrorMessage();
+                    return;
+                }
+            }
+        }
+        $this->set('servicegroup', $servicegroup);
+        $this->set('_serialize', ['servicegroup']);
+    }
+
+    public function add() {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
+            return;
+        }
+
+        if ($this->request->is('post') || $this->request->is('put')) {
+            $userId = $this->Auth->user('id');
+            $ext_data_for_changelog = [];
+            App::uses('UUID', 'Lib');
+            if ($this->request->data('Servicegroup.Service')) {
+                foreach ($this->request->data['Servicegroup']['Service'] as $service_id) {
+                    $service = $this->Service->find('first', [
+                        'contain'    => [
+                            'Host.name',
+                            'Servicetemplate.name'
+                        ],
+                        'fields'     => [
+                            'Service.id',
+                            'Service.name',
+                        ],
+                        'conditions' => [
+                            'Service.id' => $service_id,
+                        ],
+                    ]);
+                    $ext_data_for_changelog['Service'][] = [
+                        'id'   => $service_id,
+                        'name' => sprintf(
+                            '%s | %s',
+                            $service['Host']['name'],
+                            ($service['Service']['name'])?$service['Service']['name']:$service['Servicetemplate']['name']
+                        )
+                    ];
+                }
+            }
+            if ($this->request->data('Servicegroup.Servicetemplate')) {
+                foreach ($this->request->data['Servicegroup']['Servicetemplate'] as $servicetemplate_id) {
+                    $servicetemplate = $this->Servicetemplate->find('first', [
+                        'recursive'    => -1,
                         'fields'     => [
                             'Servicetemplate.id',
                             'Servicetemplate.name',
@@ -248,113 +355,14 @@ class ServicegroupsController extends AppController
                 }
             }
 
-            if ($this->Servicegroup->saveAll($this->request->data)) {
-                $changelog_data = $this->Changelog->parseDataForChangelog(
-                    $this->params['action'],
-                    $this->params['controller'],
-                    $id,
-                    OBJECT_SERVICEGROUP,
-                    $this->request->data('Container.parent_id'),
-                    $userId,
-                    $this->request->data['Container']['name'],
-                    array_merge($this->request->data, $ext_data_for_changelog),
-                    $servicegroup
-                );
-                if ($changelog_data) {
-                    CakeLog::write('log', serialize($changelog_data));
-                }
-                if ($this->request->ext == 'json') {
-                    $this->serializeId();
-                    return;
-                }
-                $this->setFlash(__('<a href="/servicegroups/edit/%s">Servicegroup</a> successfully saved', $this->Servicegroup->id));
-                $this->redirect(['action' => 'index']);
-            } else {
-                if ($this->request->ext == 'json') {
-                    $this->serializeErrorMessage();
-                    return;
-                }
-                $this->setFlash(__('Servicegroup could not be saved'), false);
-            }
-        }
-        if ($this->request->is('post') == false && $this->request->is('put') == false) {
-            $servicegroup['Servicegroup']['Service'] = Hash::extract($servicegroup['Service'], '{n}.id', '{n}.name');
-        }
-
-        $this->request->data = Hash::merge($servicegroup, $this->request->data);
-        $this->set(compact(['servicegroup', 'containers', 'services', 'servicetemplates']));
-        $this->set('_serialize', ['servicegroup', 'containers', 'services', 'servicetemplates']);
-    }
-
-    public function add()
-    {
-        $userId = $this->Auth->user('id');
-        if ($this->hasRootPrivileges === true) {
-            $containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_SERVICEGROUP, [], $this->hasRootPrivileges);
-        } else {
-            $containers = $this->Tree->easyPath($this->getWriteContainers(), OBJECT_SERVICEGROUP, [], $this->hasRootPrivileges);
-        }
-
-        $services = [];
-        $servicetemplates = [];
-        $this->Frontend->set('data_placeholder', __('Please choose a service'));
-        $this->Frontend->set('data_placeholder_servicetemplate', __('Please choose a service template'));
-        $this->Frontend->set('data_placeholder_empty', __('No entries found'));
-        if ($this->request->is('post') || $this->request->is('put')) {
-            $_services = [];
-            $_servicetemplates = [];
-            if ($this->request->data['Container']['parent_id'] > 0) {
-                $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->request->data['Container']['parent_id'], $this->hasRootPrivileges);
-                $_services = $this->Service->servicesByHostContainerIds($containerIds);
-                $_servicetemplates = $this->Servicetemplate->servicetemplatesByContainerId($containerIds);
-            }
-
-            //Fix that duplicate hostnames dont overwrite the array key!!
-            foreach ($_services as $service) {
-                $services[$service['Host']['id']][$service['Host']['name']][$service['Service']['id']] = $service['Host']['name'].'/'.$service[0]['ServiceDescription'];
-            }
-
-            $ext_data_for_changelog = [];
-            App::uses('UUID', 'Lib');
             $this->request->data['Servicegroup']['uuid'] = UUID::v4();
             $this->request->data['Container']['containertype_id'] = CT_SERVICEGROUP;
-            if (isset($this->request->data['Servicegroup']['Service'])) {
-                $this->request->data['Service'] = $this->request->data['Servicegroup']['Service'];
-            }
-            if ($this->request->data('Servicegroup.Service')) {
-                $serviceAsList = Hash::combine($_services, '{n}.Service.id', ['%s | %s', '{n}.Host.name', '{n}.0.ServiceDescription']);
-                foreach ($this->request->data['Servicegroup']['Service'] as $service_id) {
-                    $ext_data_for_changelog['Service'][] = [
-                        'id' => $service_id,
-                        'name' => $serviceAsList[$service_id],
-                    ];
-                }
-            }
-            if ($this->request->data('Servicegroup.Servicetemplate')) {
-                foreach ($this->request->data['Servicegroup']['Servicetemplate'] as $servicetemplate_id) {
-                    $servicetemplate = $this->Servicetemplate->find('first', [
-                        'recursive' => -1,
-                        'contain'    => [],
-                        'fields'     => [
-                            'Servicetemplate.id',
-                            'Servicetemplate.name',
-                        ],
-                        'conditions' => [
-                            'Servicetemplate.id' => $servicetemplate_id,
-                        ],
-                    ]);
-                    $ext_data_for_changelog['Servicetemplate'][] = [
-                        'id' => $servicetemplate_id,
-                        'name' => $servicetemplates[$servicetemplate_id],
-                    ];
-
-                }
-            }
-            $isJsonRequest = $this->request->ext === 'json';
-
             $this->request->data['Service'] = (!empty($this->request->data('Servicegroup.Service'))) ? $this->request->data('Servicegroup.Service') : [];
             $this->request->data['Servicetemplate'] = (!empty($this->request->data('Servicegroup.Servicetemplate'))) ? $this->request->data('Servicegroup.Servicetemplate') : [];
+
+
             if ($this->Servicegroup->saveAll($this->request->data)) {
+                Cache::clear(false, 'permissions');
                 $changelog_data = $this->Changelog->parseDataForChangelog(
                     $this->params['action'],
                     $this->params['controller'],
@@ -369,28 +377,42 @@ class ServicegroupsController extends AppController
                     CakeLog::write('log', serialize($changelog_data));
                 }
 
-                if ($isJsonRequest) {
+                if ($this->request->ext == 'json') {
+                    if ($this->isAngularJsRequest()) {
+                        $this->setFlash(__('<a href="/servicegroups/edit/%s">Servicegroup</a> successfully saved', $this->Servicegroup->id));
+                    }
                     $this->serializeId();
-
                     return;
-                } else {
-                    $this->setFlash(__('<a href="/servicegroups/edit/%s">Servicegroup</a> successfully saved', $this->Servicegroup->id));
-                    $this->redirect(['action' => 'index']);
                 }
             } else {
-                if ($isJsonRequest) {
+                if ($this->request->ext == 'json') {
                     $this->serializeErrorMessage();
                     return;
-                } else {
-                    $this->setFlash(__('could not save data'), false);
                 }
+                $this->setFlash(__('Could not save data'), false);
             }
         }
-        $this->set(compact(['containers', 'services', 'servicetemplates']));
     }
 
-    public function loadServices($containerId = null)
-    {
+
+    public function loadContainers() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        if ($this->hasRootPrivileges === true) {
+            $containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_SERVICEGROUP, [], $this->hasRootPrivileges);
+        } else {
+            $containers = $this->Tree->easyPath($this->getWriteContainers(), OBJECT_SERVICEGROUP, [], $this->hasRootPrivileges);
+        }
+        $containers = $this->Container->makeItJavaScriptAble($containers);
+
+
+        $this->set('containers', $containers);
+        $this->set('_serialize', ['containers']);
+    }
+
+    public function loadServices($containerId = null) {
         $this->allowOnlyAjaxRequests();
 
         $services = $this->Host->servicesByContainerIds([ROOT_CONTAINER, $containerId], 'list', [
@@ -403,8 +425,7 @@ class ServicegroupsController extends AppController
         $this->set('_serialize', array_keys($data));
     }
 
-    public function loadServicetemplates($containerId = null)
-    {
+    public function loadServicetemplates($containerId = null) {
         $this->allowOnlyAjaxRequests();
 
         $servicetemplates = $this->Servicetemplate->servicetemplatesByContainerId([ROOT_CONTAINER, $containerId], 'list');
@@ -415,8 +436,7 @@ class ServicegroupsController extends AppController
         $this->set('_serialize', array_keys($data));
     }
 
-    public function delete($id = null)
-    {
+    public function delete($id = null) {
         $userId = $this->Auth->user('id');
         if (!$this->request->is('post')) {
             throw new MethodNotAllowedException();
@@ -433,6 +453,7 @@ class ServicegroupsController extends AppController
         }
 
         if ($this->Container->delete($container['Servicegroup']['container_id'], true)) {
+            Cache::clear(false, 'permissions');
             $changelog_data = $this->Changelog->parseDataForChangelog(
                 $this->params['action'],
                 $this->params['controller'],
@@ -454,13 +475,12 @@ class ServicegroupsController extends AppController
         $this->redirect(['action' => 'index']);
     }
 
-    public function mass_delete($id = null)
-    {
+    public function mass_delete($id = null) {
         $userId = $this->Auth->user('id');
         foreach (func_get_args() as $servicegroupId) {
             if ($this->Servicegroup->exists($servicegroupId)) {
                 $servicegroup = $this->Servicegroup->find('first', [
-                    'contain'    => [
+                    'contain' => [
                         'Container',
                         'Service',
                     ],
@@ -487,17 +507,17 @@ class ServicegroupsController extends AppController
                 }
             }
         }
+        Cache::clear(false, 'permissions');
         $this->setFlash(__('Servicegroups deleted'));
         $this->redirect(['action' => 'index']);
     }
 
-    public function mass_add($id = null)
-    {
+    public function mass_add($id = null) {
         if ($this->request->is('post') || $this->request->is('put')) {
             $targetServicegroup = $this->request->data('Servicegroup.id');
             if ($this->Servicegroup->exists($targetServicegroup)) {
                 $servicegroup = $this->Servicegroup->findById($targetServicegroup);
-                //Save old hosts from this hostgroup
+                //Save old services from this service group
                 $servicegroupMembers = [];
                 foreach ($servicegroup['Service'] as $service) {
                     $servicegroupMembers[] = $service['id'];
@@ -508,6 +528,7 @@ class ServicegroupsController extends AppController
                 $servicegroup['Service'] = $servicegroupMembers;
                 $servicegroup['Servicegroup']['Service'] = $servicegroupMembers;
                 if ($this->Servicegroup->saveAll($servicegroup)) {
+                    Cache::clear(false, 'permissions');
                     $this->setFlash(_('Servicegroup appended successfully'));
                     $this->redirect(['action' => 'index']);
                 } else {
@@ -530,188 +551,120 @@ class ServicegroupsController extends AppController
         $this->set('back_url', $this->referer());
     }
 
-    public function listToPdf()
-    {
-        $args = func_get_args();
-        $conditions = [
-            'Container.parent_id' => $this->MY_RIGHTS,
+    public function listToPdf() {
+        $this->layout = 'Admin.default';
+
+        $ServicegroupFilter = new ServicegroupFilter($this->request);
+        $query = [
+            'recursive'  => -1,
+            'contain'    => [
+                'Container',
+                'Service' => [
+                    'fields' => [
+                        'Service.id',
+                        'Service.name',
+                        'Service.uuid'
+                    ],
+                    'Host' => [
+                        'fields' => [
+                            'Host.id',
+                            'Host.name'
+                        ],
+                    ],
+                    'Servicetemplate' => [
+                        'fields' => [
+                            'Servicetemplate.name'
+                        ],
+                    ]
+                ],
+                'Servicetemplate'
+
+            ],
+            'order'      => $ServicegroupFilter->getOrderForPaginator('Container.name', 'asc'),
+            'conditions' => $ServicegroupFilter->indexFilter(),
         ];
 
-        if (is_array($args) && !empty($args)) {
-            if (end($args) == '.pdf' && (sizeof($args) > 1)) {
-                $servicegroup_ids = $args;
-                end($servicegroup_ids);
-                $last_key = key($servicegroup_ids);
-                unset($servicegroup_ids[$last_key]);
 
-                $_conditions = [
-                    'Servicegroup.id' => $servicegroup_ids,
-                ];
-                $conditions = Hash::merge($conditions, $_conditions);
-            } else {
-                $servicegroup_ids = $args;
 
-                $_conditions = [
-                    'Servicegroup.id' => $servicegroup_ids,
-                ];
-                $conditions = Hash::merge($conditions, $_conditions);
+        if (!$this->hasRootPrivileges) {
+            $query['conditions']['Container.parent_id'] = $this->MY_RIGHTS;
+        }
+        $servicegroups = $this->Servicegroup->find('all', $query);
+        $servicegroupCount = count($servicegroups);
+        $serviceUuids = Hash::extract($servicegroups, '{n}.Service.{n}.uuid');
+        $servicegroupstatus = $this->Servicestatus->byUuids(array_unique($serviceUuids));
+        $hostsArray = [];
+        $serviceCount = 0;
+
+        foreach($servicegroups as $servicegroup){
+            foreach($servicegroup['Service'] as $service){
+                $serviceCount++;
+                $hostsArray[$service['Host']['id']] = $service['Host']['name'];
             }
         }
+        $hostCount = sizeof($hostsArray);
+        $this->set(compact('servicegroups', 'servicegroupstatus', 'servicegroupCount', 'hostCount', 'serviceCount'));
 
-        $servicegroups = $this->Servicegroup->find('all', [
-            'recursive'  => -1,
-            'order'      => [
-                'Container.name' => 'ASC',
-            ],
-            'conditions' => $conditions,
-            'joins'      => [
-                [
-                    'table'      => 'containers',
-                    'alias'      => 'Container',
-                    'type'       => 'LEFT',
-                    'conditions' => [
-                        'Servicegroup.container_id = Container.id',
-                    ],
-                ],
-                [
-                    'table'      => 'services_to_servicegroups',
-                    'alias'      => 'servicesToServicegroups',
-                    'type'       => 'LEFT',
-                    'conditions' => [
-                        'servicesToServicegroups.servicegroup_id = Servicegroup.id',
-                    ],
-                ],
-                [
-                    'table'      => 'services',
-                    'alias'      => 'Service',
-                    'type'       => 'LEFT',
-                    'conditions' => [
-                        'Service.id = servicesToServicegroups.service_id',
-                    ],
-                ],
-                [
-                    'table'      => 'servicetemplates',
-                    'alias'      => 'Servicetemplate',
-                    'type'       => 'INNER',
-                    'conditions' => [
-                        'Servicetemplate.id = Service.servicetemplate_id',
-                    ],
-                ],
-                [
-                    'table'      => 'hosts',
-                    'alias'      => 'Host',
-                    'type'       => 'INNER',
-                    'conditions' => [
-                        'Host.id = Service.host_id',
-                    ],
-                ],
-            ],
-            'fields'     => [
-                'Container.name',
-                'Servicegroup.description',
-                'Servicegroup.id',
-                'Service.id',
-                'Service.uuid',
-                'Service.name',
-                'Service.host_id',
-                'Servicetemplate.name',
-                'Host.id',
-                'Host.name',
-            ],
-        ]);
-
-        $serviceUuids = Hash::extract($servicegroups, '{n}.Service.uuid');
-        $servicestatus = $this->Objects->find('all', [
-            'recursive'  => -1,
-            'conditions' => [
-                'name2'         => $serviceUuids,
-                'objecttype_id' => 2,
-            ],
-            'fields'     => [
-                'Servicestatus.current_state',
-                'Servicestatus.is_flapping',
-                'Servicestatus.last_state_change',
-                'Servicestatus.problem_has_been_acknowledged',
-                'Servicestatus.scheduled_downtime_depth',
-                'Servicestatus.last_check',
-                'Servicestatus.next_check',
-                'Servicestatus.output',
-                'Service.id',
-            ],
-            'joins'      => [
-                [
-                    'table'      => 'services',
-                    'alias'      => 'Service',
-                    'type'       => 'LEFT',
-                    'conditions' => [
-                        'Service.uuid = Objects.name2',
-                    ],
-                ],
-                [
-                    'table'      => 'nagios_servicestatus',
-                    'type'       => 'LEFT',
-                    'alias'      => 'Servicestatus',
-                    'conditions' => 'Objects.object_id = Servicestatus.service_object_id',
-                ],
-            ],
-        ]);
-        $servicestatus = Hash::combine($servicestatus, '{n}.Service.id', '{n}.Servicestatus');
-        $servicegroupsAndContainers = Set::combine($servicegroups, '{n}.Servicegroup.id', '{n}.{^(Servicegroup|Container)$}');
-        $servicesByServicegroupId = Set::combine($servicegroups, '{n}.Service.id', '{n}.{^(Service|Servicetemplate|Host)$}', '{n}.Servicegroup.id');
-        $hosts = Hash::combine($servicegroups, '{n}.Service.id', '{n}.Host');
-
-        $servicegroupstatus = [];
-        foreach ($servicegroupsAndContainers as $servicegroupId => $servicegroup) {
-
-            $currentHosts = [];
-            foreach ($servicesByServicegroupId[$servicegroupId] as $serviceId => $service) {
-                //$service['Status'] = $servicestatus[$serviceId];
-                $host = $hosts[$serviceId];
-                $hostId = $host['id'];
-                if (!array_key_exists($hostId, $currentHosts)) {
-                    $currentHosts[$hostId] = $host;
-                }
-                $data = [
-                    'Service'         => $service['Service'],
-                    'Servicetemplate' => $service['Servicetemplate'],
-                    'Servicename'     => (!isset($service['Service']['name']) ? $service['Servicetemplate']['name'] : $service['Service']['name']),
-                    'Status'          => $servicestatus[$serviceId],
-                ];
-                $currentHosts[$hostId]['Services'][] = $data;
-            }
-            $servicegroup['elements'] = $currentHosts;
-            $servicegroupstatus[] = $servicegroup;
-        }
-
-        //counter
-        $servicegroupCount = count($servicegroupstatus);
-        $hostCount = Hash::apply($servicegroupstatus, '{n}.elements.{n}', 'count');
-        $serviceCount = Hash::apply($servicegroupstatus, '{n}.elements.{n}.Services.{n}', 'count');
-
-        $this->set(compact('servicegroupstatus', 'servicegroupCount', 'hostCount', 'serviceCount'));
-
-        $filename = 'Servicegroups_'.strtotime('now').'.pdf';
+        $filename = 'Servicegroups_' . strtotime('now') . '.pdf';
         $binary_path = '/usr/bin/wkhtmltopdf';
         if (file_exists('/usr/local/bin/wkhtmltopdf')) {
             $binary_path = '/usr/local/bin/wkhtmltopdf';
         }
         $this->pdfConfig = [
-            'engine'             => 'CakePdf.WkHtmlToPdf',
-            'margin'             => [
+            'engine' => 'CakePdf.WkHtmlToPdf',
+            'margin' => [
                 'bottom' => 15,
-                'left'   => 0,
-                'right'  => 0,
-                'top'    => 15,
+                'left' => 0,
+                'right' => 0,
+                'top' => 15,
             ],
-            'encoding'           => 'UTF-8',
-            'download'           => true,
-            'binary'             => $binary_path,
-            'orientation'        => 'portrait',
-            'filename'           => $filename,
+            'encoding' => 'UTF-8',
+            'download' => true,
+            'binary' => $binary_path,
+            'orientation' => 'portrait',
+            'filename' => $filename,
             'no-pdf-compression' => '*',
-            'image-dpi'          => '900',
-            'background'         => true,
-            'no-background'      => false,
+            'image-dpi' => '900',
+            'background' => true,
+            'no-background' => false,
         ];
+    }
+
+    public function loadServicegroupsByContainerId() {
+        if (!$this->isApiRequest()) {
+            //Only ship template for AngularJs
+            return;
+        }
+
+        $containerId = $this->request->query('containerId');
+        $selected = $this->request->query('selected');
+        $ServicegroupFilter = new ServicegroupFilter($this->request);
+
+        $containerIds = [ROOT_CONTAINER, $containerId];
+        if ($containerId == ROOT_CONTAINER) {
+            $containerIds = $this->Tree->resolveChildrenOfContainerIds(ROOT_CONTAINER, true);
+        }
+
+        $query = [
+            'recursive' => -1,
+            'contain' => [
+                'Container'
+            ],
+            'order' => $ServicegroupFilter->getOrderForPaginator('Container.name', 'asc'),
+            'conditions' => $ServicegroupFilter->indexFilter(),
+            'limit' => $this->Paginator->settings['limit']
+        ];
+
+        if ($this->isApiRequest() && !$this->isAngularJsRequest()) {
+            unset($query['limit']);
+            $servicegroups = $this->Servicegroup->find('all', $query);
+        } else {
+            $this->Paginator->settings = $query;
+            $this->Paginator->settings['page'] = $ServicegroupFilter->getPage();
+            $servicegroups = $this->Paginator->paginate();
+        }
+
+        $this->set(compact(['servicegroups']));
+        $this->set('_serialize', ['servicegroups']);
     }
 }

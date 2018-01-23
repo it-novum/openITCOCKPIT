@@ -34,6 +34,7 @@ class SystemsettingsController extends AppController
         $all_systemsettings = $this->Systemsetting->findNice();
         if ($this->request->is('post') || $this->request->is('put')) {
             if ($this->Systemsetting->saveAll($this->request->data)) {
+                Cache::clear(false, 'permissions');
 
                 //Update systemname in session
                 $systemsettings = $this->Systemsetting->findAsArraySection('FRONTEND');

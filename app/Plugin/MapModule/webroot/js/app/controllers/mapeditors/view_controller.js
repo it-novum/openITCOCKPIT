@@ -30,7 +30,6 @@ App.Controllers.MapeditorsViewController = Frontend.AppController.extend({
 
     _initialize: function(){
         self = this;
-
         //wait till everything is loaded (needed for the lines)
         $(document).ready(function(){
             $('.elementHover').mouseenter(function(){
@@ -80,7 +79,9 @@ App.Controllers.MapeditorsViewController = Frontend.AppController.extend({
                 window.location.href = url;
             }.bind(this), parseInt(this.getVar('interval') * 1000));
         }
-
+        if (this.getVar('is_fullscren') == true) {
+            $('#MapContainer').css('height', ($(window).height()-96)+'px');
+        }
         //check if there are Gadgets
         if(this.getVar('map_gadgets')){
             var mapGadgets = this.getVar('map_gadgets');

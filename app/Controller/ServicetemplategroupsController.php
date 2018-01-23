@@ -139,6 +139,7 @@ class ServicetemplategroupsController extends AppController
             $this->request->data['Servicetemplate'] = $this->request->data['Servicetemplategroup']['Servicetemplate'];
 
             if ($this->Servicetemplategroup->saveAll($this->request->data)) {
+                Cache::clear(false, 'permissions');
                 $changelog_data = $this->Changelog->parseDataForChangelog(
                     $this->params['action'],
                     $this->params['controller'],
@@ -225,6 +226,7 @@ class ServicetemplategroupsController extends AppController
             $this->request->data['Container']['id'] = $this->request->data['Servicetemplategroup']['container_id'];
 
             if ($this->Servicetemplategroup->saveAll($this->request->data)) {
+                Cache::clear(false, 'permissions');
                 $changelog_data = $this->Changelog->parseDataForChangelog(
                     $this->params['action'],
                     $this->params['controller'],
@@ -305,6 +307,7 @@ class ServicetemplategroupsController extends AppController
                     $data_to_save = $this->Service->prepareForSave([], $service, 'add');
                     $this->Service->create();
                     if ($this->Service->saveAll($data_to_save)) {
+                        Cache::clear(false, 'permissions');
                         $changelog_data = $this->Changelog->parseDataForChangelog(
                             'add',
                             'services',
@@ -391,6 +394,7 @@ class ServicetemplategroupsController extends AppController
                         }
                     }
                 }
+                Cache::clear(false, 'permissions');
                 $this->setFlash(__('Services successfully created'));
                 $this->redirect(['action' => 'index']);
             } else {
@@ -580,6 +584,7 @@ class ServicetemplategroupsController extends AppController
                 }
             }
         }
+        Cache::clear(false, 'permissions');
         $this->setFlash(__('Services successfully created'));
         $this->redirect(['action' => 'index']);
     }
@@ -603,7 +608,8 @@ class ServicetemplategroupsController extends AppController
         $hostgroup = $this->Hostgroup->find('first', [
             'recursive' => -1,
             'contain' => [
-                'Container'
+                'Container',
+                'Host'
             ],
             'conditions' => [
                 'Hostgroup.id' => $id_hostgroup,
@@ -680,6 +686,7 @@ class ServicetemplategroupsController extends AppController
             return;
         }
         if ($this->Container->delete($servicetemplategroup['Servicetemplategroup']['container_id'], true)) {
+            Cache::clear(false, 'permissions');
             $changelog_data = $this->Changelog->parseDataForChangelog(
                 $this->params['action'],
                 $this->params['controller'],

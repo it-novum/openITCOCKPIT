@@ -77,20 +77,18 @@
                                 'selected'         => isset($this->request->data['Instantreport']['report_format']) ? $this->request->data['Instantreport']['report_format'] : 1
                             ]
                         );
-                        ?>
-                        <?php
                         echo $this->Form->input('start_date', [
                             'label' => __('From'),
                             'type'  => 'text',
                             'class' => 'form-control required',
-                            'value' => isset($this->request->data['Instantreport']['start_date']) ? $this->request->data['Instantreport']['start_date'] : date('d.m.Y', strtotime('-15 days')),
+                            'value' => $this->CustomValidationErrors->refill('start_date', date('d.m.Y', strtotime('-15 days'))),
                         ]);
                         echo $this->Form->input('end_date', [
                             'label'    => __('To'),
                             'type'     => 'text',
                             'class'    => 'form-control required',
                             'reguired' => true,
-                            'value'    => isset($this->request->data['Instantreport']['end_date']) ? $this->request->data['Instantreport']['end_date'] : date('d.m.Y'),
+                            'value'    => $this->CustomValidationErrors->refill('end_date', date('d.m.Y', time())),
                         ]);
 
                         echo $this->Form->formActions(__('Create'));

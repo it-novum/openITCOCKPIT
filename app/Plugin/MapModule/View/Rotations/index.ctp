@@ -36,6 +36,8 @@
     </div>
 </div>
 
+<massdelete></massdelete>
+
 <section id="widget-grid" class="">
 
     <div class="row">
@@ -43,125 +45,181 @@
             <div class="jarviswidget jarviswidget-color-blueDark" id="wid-id-1" data-widget-editbutton="false">
                 <header>
                     <div class="widget-toolbar" role="menu">
-                        <?php echo $this->Html->link(__('New'), '/' . $this->params['plugin'] . '/' . $this->params['controller'] . '/add', ['class' => 'btn btn-xs btn-success', 'icon' => 'fa fa-plus']); ?>
-                        <?php echo $this->Html->link(__('Filter'), 'javascript:', ['class' => 'oitc-list-filter btn btn-xs btn-primary toggle', 'hide-on-render' => 'true', 'icon' => 'fa fa-filter']); ?>
-                        <?php
-                        if ($isFilter):
-                            echo $this->ListFilter->resetLink(null, ['class' => 'btn-danger btn-xs', 'icon' => 'fa fa-times'], true);
-                        endif;
-                        ?>
+                        <button type="button" class="btn btn-xs btn-default" ng-click="load()">
+                            <i class="fa fa-refresh"></i>
+                            <?php echo __('Refresh'); ?>
+                        </button>
+
+                        <?php if ($this->Acl->hasPermission('add')): ?>
+                            <a href="/map_module/rotations/add" class="btn btn-xs btn-success">
+                                <i class="fa fa-plus"></i>
+                                <?php echo __('New'); ?>
+                            </a>
+                        <?php endif; ?>
+                        <button type="button" class="btn btn-xs btn-primary" ng-click="triggerFilter()">
+                            <i class="fa fa-filter"></i>
+                            <?php echo __('Filter'); ?>
+                        </button>
                     </div>
-                    <span class="widget-icon hidden-mobile"> <i class="fa fa-retweet"></i> </span>
-                    <h2 class="hidden-mobile"><?php echo __('Map rotations'); ?></h2>
+                    <div class="jarviswidget-ctrls" role="menu">
+                    </div>
+                    <span class="widget-icon"> <i class="fa fa-retweet"></i> </span>
+                    <h2><?php echo __('Map rotations'); ?></h2>
                 </header>
 
                 <div>
-
                     <div class="widget-body no-padding">
-                        <?php echo $this->ListFilter->renderFilterbox($filters, [], '<i class="fa fa-filter"></i> ' . __('Filter'), false, false, true); ?>
-                        <div class="mobile_table">
-                            <table id="datatable_fixed_column"
-                                   class="table table-striped table-hover table-bordered smart-form">
-                                <thead>
-                                <tr>
-                                    <?php $order = $this->Paginator->param('order'); ?>
-                                    <th><?php echo $this->Utils->getDirection($order, 'Rotation.name');
-                                        echo $this->Paginator->sort('Rotation.name', __('Name')); ?></th>
-                                    <th class="no-sort"><?php echo $this->Utils->getDirection($order, 'Rotation.interval');
-                                        echo $this->Paginator->sort('Rotation.interval', __('Interval')); ?></th>
-                                    <th class="no-sort text-center" style="width:52px;"><i class="fa fa-gear fa-lg"></i>
-                                    </th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <?php foreach ($all_rotations as $rotation):
-                                    ?>
-                                    <tr>
-                                        <td>
-                                            <a href="<?php echo Router::url([
-                                                'controller' => 'mapeditors',
-                                                'action'     => 'view',
-                                                'plugin'     => 'map_module',
-                                                'rotate'     => Hash::extract($rotation['Map'], '{n}.id'),
-                                                'interval'   => $rotation['Rotation']['interval'],
-                                            ]); ?>">
-                                                <?php echo h($rotation['Rotation']['name']); ?>
-                                            </a>
-                                        </td>
-                                        <td><?php echo h($rotation['Rotation']['interval']); ?></td>
-                                        <td>
-                                            <div class="btn-group">
-                                                <a href="/<?php echo $this->params['plugin'] . '/' . $this->params['controller']; ?>/edit/<?php echo $rotation['Rotation']['id']; ?>"
-                                                   class="btn btn-default">&nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
-                                                <a href="javascript:void(0);" data-toggle="dropdown"
-                                                   class="btn btn-default dropdown-toggle"><span
-                                                            class="caret"></span></a>
-                                                <ul class="dropdown-menu pull-right">
-                                                    <li>
-                                                        <a href="/<?php echo $this->params['plugin']; ?>/<?php echo $this->params['controller']; ?>/edit/<?php echo $rotation['Rotation']['id']; ?>"><i
-                                                                    class="fa fa-cog"></i> <?php echo __('Edit'); ?></a>
-                                                    </li>
-                                                    <li>
-                                                        <a href="<?php echo Router::url([
-                                                            'controller' => 'mapeditors',
-                                                            'action'     => 'view',
-                                                            'plugin'     => 'map_module',
-                                                            'rotate'     => Hash::extract($rotation['Map'], '{n}.id'),
-                                                            'interval'   => $rotation['Rotation']['interval'],
-                                                        ]); ?>">
-                                                            <i class="fa fa-eye"></i> <?php echo __('View'); ?>
-                                                        </a>
-                                                    </li>
-                                                    <li>
-                                                        <a href="<?php echo Router::url([
-                                                            'controller' => 'mapeditors',
-                                                            'action'     => 'view',
-                                                            'plugin'     => 'map_module',
-                                                            'rotate'     => Hash::extract($rotation['Map'], '{n}.id'),
-                                                            'interval'   => $rotation['Rotation']['interval'],
-                                                            'fullscreen' => 1,
-                                                        ]); ?>">
-                                                            <i class="glyphicon glyphicon-resize-full"></i> <?php echo __('View in fullscreen'); ?>
-                                                        </a>
-                                                    </li>
-                                                    <li class="divider"></li>
-                                                    <li>
-                                                        <?php echo $this->Form->postLink('<i class="fa fa-trash-o"></i> ' . __('Delete'), ['controller' => 'rotations', 'action' => 'delete', $rotation['Rotation']['id']], ['class' => 'txt-color-red', 'escape' => false]); ?>
-                                                    </li>
-                                                </ul>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                <?php endforeach; ?>
-                                </tbody>
-                            </table>
-                        </div>
-                        <?php if (empty($all_rotations)): ?>
-                            <div class="noMatch">
-                                <center>
-                                    <span class="txt-color-red italic"><?php echo __('No entries match the selection'); ?></span>
-                                </center>
-                            </div>
-                        <?php endif; ?>
-                    </div>
-
-                    <div style="padding: 5px 10px;">
-                        <div class="row">
-                            <div class="col-sm-6">
-                                <div class="dataTables_info" style="line-height: 32px;"
-                                     id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('Page') . ' {:page} ' . __('of') . ' {:pages}, ' . __('Total') . ' {:count} ' . __('entries')); ?></div>
-                            </div>
-                            <div class="col-sm-6 text-right">
-                                <div class="dataTables_paginate paging_bootstrap">
-                                    <?php echo $this->Paginator->pagination([
-                                        'ul' => 'pagination',
-                                    ]); ?>
+                        <div class="list-filter well" ng-show="showFilter">
+                            <h3><i class="fa fa-filter"></i> <?php echo __('Filter'); ?></h3>
+                            <div class="row">
+                                <div class="col-xs-12 col-md-6">
+                                    <div class="form-group smart-form">
+                                        <label class="input"> <i class="icon-prepend fa fa-sitemap"></i>
+                                            <input type="text" class="input-sm"
+                                                   placeholder="<?php echo __('Filter by Rotation name'); ?>"
+                                                   ng-model="filter.rotation.name"
+                                                   ng-model-options="{debounce: 500}">
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-xs-12 col-md-6">
+                                    <div class="form-group smart-form">
+                                        <label class="input"> <i class="icon-prepend fa fa-filter"></i>
+                                            <input type="text" class="input-sm"
+                                                   placeholder="<?php echo __('Filter by Rotation Interval'); ?>"
+                                                   ng-model="filter.rotation.interval"
+                                                   ng-model-options="{debounce: 500}">
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-xs-12">
+                                    <div class="pull-right margin-top-10">
+                                        <button type="button" ng-click="resetFilter()"
+                                                class="btn btn-xs btn-danger">
+                                            <?php echo __('Reset Filter'); ?>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
+
+                        <table id="map_list" class="table table-striped table-hover table-bordered smart-form"
+                               style="">
+                            <thead>
+                            <tr>
+                                <th class="no-sort sorting_disabled width-15">
+                                    <i class="fa fa-check-square-o fa-lg"></i>
+                                </th>
+                                <th class="no-sort" ng-click="orderBy('Rotation.name')">
+                                    <i class="fa" ng-class="getSortClass('Rotation.name')"></i>
+                                    <?php echo __('Rotation name'); ?>
+                                </th>
+                                <th class="no-sort" ng-click="orderBy('Rotation.interval')">
+                                    <i class="fa" ng-class="getSortClass('Rotation.interval')"></i>
+                                    <?php echo __('Rotation interval'); ?>
+                                </th>
+                                <th class="no-sort text-center" style="width:60px;">
+                                    <i class="fa fa-gear fa-lg"></i>
+                                </th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr ng-repeat="rotation in rotations">
+                                <td class="text-center" class="width-15">
+                                    <input type="checkbox"
+                                           ng-model="massChange[rotation.Rotation.id]"
+                                           ng-show="rotation.Rotation.allowEdit">
+                                </td>
+                                <td>
+                                    <a ng-if="rotation.Rotation.rotationLink.length" href="/map_module/mapeditors/view/{{ rotation.Rotation.rotationLink }}interval:{{ rotation.Rotation.interval }}" >{{ rotation.Rotation.name }}</a>
+                                    <a ng-if="!rotation.Rotation.rotationLink.length" href="/map_module/rotations/edit/{{ rotation.Rotation.id }}" >{{ rotation.Rotation.name }}</a>
+                                </td>
+                                <td>
+                                    {{ rotation.Rotation.interval }}
+                                </td>
+                                <td>
+                                    <div class="btn-group">
+                                        <?php if ($this->Acl->hasPermission('edit')): ?>
+                                            <a href="/map_module/rotations/edit/{{rotation.Rotation.id}}"
+                                               ng-if="rotation.Rotation.allowEdit"
+                                               class="btn btn-default">&nbsp;<i class="fa fa-cog "></i>&nbsp;</a>
+                                        <?php else: ?>
+                                            <a href="javascript:void(0);" class="btn btn-default">
+                                                &nbsp;
+                                                <i class="fa fa-cog"></i>
+                                                &nbsp;
+                                            </a>
+                                        <?php endif; ?>
+                                        <a href="javascript:void(0);" data-toggle="dropdown"
+                                           class="btn btn-default dropdown-toggle"><span class="caret"></span></a>
+                                        <ul class="dropdown-menu pull-right" id="menuHack-{{rotation.Rotation.id}}">
+                                            <?php if ($this->Acl->hasPermission('edit')): ?>
+                                                <li ng-if="rotation.Rotation.allowEdit">
+                                                    <a href="/map_module/rotations/edit/{{rotation.Rotation.id}}">
+                                                        <i class="fa fa-cog"></i> <?php echo __('Edit Rotation'); ?>
+                                                    </a>
+                                                </li>
+                                                <li class="divider" ng-if="map.Map.allowEdit"></li>
+                                            <?php endif; ?>
+                                            <li ng-if="rotation.Rotation.rotationLink.length">
+                                                <a href="/map_module/mapeditors/view/{{ rotation.Rotation.rotationLink }}interval:{{ rotation.Rotation.interval }}">
+                                                    <i class="fa fa-eye"></i> <?php echo __('View'); ?></a>
+                                            </li>
+                                            <li ng-if="rotation.Rotation.rotationLink.length">
+                                                <a href="/map_module/mapeditors/view/{{ rotation.Rotation.rotationLink }}interval:{{ rotation.Rotation.interval }}/fullscreen:1">
+                                                    <i class="glyphicon glyphicon-resize-full"></i> <?php echo __('View in fullscreen'); ?>
+                                                </a>
+                                            </li>
+                                            <?php if ($this->Acl->hasPermission('delete')): ?>
+                                                <li class="divider" ng-if="rotation.Rotation.allowEdit"></li>
+                                                <li ng-if="rotation.Rotation.allowEdit">
+                                                    <a class="txt-color-red"
+                                                       href="javascript:void(0);" class="txt-color-red"
+                                                       ng-click="confirmDelete(getObjectForDelete(rotation))">
+                                                        <i class="fa fa-trash-o"></i> <?php echo __('Delete'); ?></a>
+                                                </li>
+                                            <?php endif; ?>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <div class="row margin-top-10 margin-bottom-10">
+                            <div class="row margin-top-10 margin-bottom-10" ng-show="rotations.length == 0">
+                                <div class="col-xs-12 text-center txt-color-red italic">
+                                    <?php echo __('No entries match the selection'); ?>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row margin-top-10 margin-bottom-10">
+                            <div class="col-xs-12 col-md-2 text-muted text-center">
+                                <span ng-show="selectedElements > 0">({{selectedElements}})</span>
+                            </div>
+                            <div class="col-xs-12 col-md-2">
+                                <span ng-click="selectAll()" class="pointer">
+                                    <i class="fa fa-lg fa-check-square-o"></i>
+                                    <?php echo __('Select all'); ?>
+                                </span>
+                            </div>
+                            <div class="col-xs-12 col-md-2">
+                                <span ng-click="undoSelection()" class="pointer">
+                                    <i class="fa fa-lg fa-square-o"></i>
+                                    <?php echo __('Undo selection'); ?>
+                                </span>
+                            </div>
+                            <div class="col-xs-12 col-md-2 txt-color-red">
+                                <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">
+                                    <i class="fa fa-lg fa-trash-o"></i>
+                                    <?php echo __('Delete all'); ?>
+                                </span>
+                            </div>
+                        </div>
+                        <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>
                     </div>
                 </div>
             </div>
-    </div>
+        </article>
     </div>
 </section>

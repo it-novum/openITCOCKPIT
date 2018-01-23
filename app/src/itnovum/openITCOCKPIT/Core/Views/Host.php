@@ -77,8 +77,19 @@ class Host {
      */
     private $tags;
 
+    /**
+     * @var bool
+     */
+    private $allow_edit = false;
 
-    public function __construct($host){
+    /**
+     * Host constructor.
+     * @param array $host
+     * @param bool $allowEdit
+     */
+    public function __construct($host, $allowEdit = false){
+        $this->allow_edit = $allowEdit;
+
         if (isset($host['Host']['id'])) {
             $this->id = $host['Host']['id'];
         }
@@ -183,7 +194,7 @@ class Host {
         if($this->satelliteId  === null){
             return false;
         }
-        return ($this->satelliteId !== 0);
+        return ((int)$this->satelliteId !== 0);
     }
 
     /**
@@ -207,6 +218,14 @@ class Host {
         return $this->tags;
     }
 
+    /**
+     * @return array
+     */
+    public function toArray(){
+        $arr = get_object_vars($this);
+        $arr['is_satellite_host'] = $this->isSatelliteHost();
+        return $arr;
+    }
 
 
 }

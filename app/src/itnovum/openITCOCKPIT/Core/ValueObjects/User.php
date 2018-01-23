@@ -43,6 +43,11 @@ class User {
     private $fullName;
 
     /**
+     * @var int
+     */
+    private $id;
+
+    /**
      * User constructor.
      * @param \AuthComponent $Auth
      */
@@ -51,6 +56,7 @@ class User {
 
         $this->recursiveBrowser = (bool)$this->Auth->user('recursive_browser');
         $this->fullName = $this->Auth->user('full_name');
+        $this->id = (int)$this->Auth->user('id');
 
     }
 
@@ -67,5 +73,14 @@ class User {
     public function getFullName(){
         return $this->fullName;
     }
+
+    /**
+     * @return int
+     */
+    public function getId() {
+        return $this->id;
+    }
+
+
 
 }
