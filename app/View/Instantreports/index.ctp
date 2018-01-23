@@ -287,7 +287,7 @@
                                                     <li>
                                                         <a href="javascript:void(0);" class="txt-color-red"
                                                            ng-click="confirmDelete(getObjectForDelete(instantreport))">
-                                                            <i class="fa fa-plug"></i> <?php echo __('Delete'); ?>
+                                                            <i class="fa fa-trash-o"></i> <?php echo __('Delete'); ?>
                                                         </a>
                                                     </li>
                                                 <?php endif; ?>

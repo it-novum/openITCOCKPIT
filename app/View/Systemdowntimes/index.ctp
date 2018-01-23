@@ -31,7 +31,7 @@
             <?php echo __('Recurring downtimes'); ?>
             <span>>
                 <?php echo __('List'); ?>
-			</span>
+            </span>
         </h1>
     </div>
     <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
@@ -69,6 +69,11 @@
                                 <?php if ($this->Acl->hasPermission('addServicedowntime', 'systemdowntimes')): ?>
                                     <li>
                                         <a href="<?php echo Router::url(['controller' => 'systemdowntimes', 'action' => 'addServicedowntime']); ?>"><?php echo __('Create service downtime'); ?></a>
+                                    </li>
+                                <?php endif; ?>
+                                <?php if ($this->Acl->hasPermission('addHostdowntime', 'systemdowntimes')): ?>
+                                    <li>
+                                        <a href="<?php echo Router::url(['controller' => 'systemdowntimes', 'action' => 'addContainerdowntime']); ?>"><?php echo __('Create container downtime'); ?></a>
                                     </li>
                                 <?php endif; ?>
                             </ul>
@@ -291,7 +296,7 @@
                                                 case OBJECT_HOST:
                                                     if (isset($systemdowntime['Host']['id']) && $systemdowntime['Host']['id'] !== null): ?>
                                                         <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
-                                                            <a href="/hosts/browser/<?php echo $systemdowntime['Host']['id']; ?>"><?php echo $systemdowntime['Host']['name']; ?></a>
+                                                            <a href="/hosts/browser/<?php echo $systemdowntime['Host']['id']; ?>"><?php echo h($systemdowntime['Host']['name']); ?></a>
                                                         <?php else: ?>
                                                             <?php echo h($systemdowntime['Host']['name']); ?>
                                                         <?php endif; ?>

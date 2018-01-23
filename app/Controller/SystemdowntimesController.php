@@ -628,6 +628,7 @@ class SystemdowntimesController extends AppController {
 
         $preselectedDowntimetype=$this->Systemsetting->findByKey("FRONTEND.PRESELECTED_DOWNTIME_OPTION")['Systemsetting']['value'];
         $this->set(compact('containers', 'selected', 'preselectedDowntimetype'));
+        $childrenContainers = [];
 
         if ($this->request->is('post') || $this->request->is('put')) {
             if (isset($this->request->data['Systemdowntime']['weekdays']) && is_array($this->request->data['Systemdowntime']['weekdays'])) {
@@ -639,7 +640,7 @@ class SystemdowntimesController extends AppController {
             //get all host UUIDS
             $hostUuids = [];
             foreach ($this->request->data as $request) {
-                $childrenContainers = [];
+
                 if ($request['Systemdowntime']['object_id'] == ROOT_CONTAINER && $request['Systemdowntime']['inherit_downtime'] == 1) {
                     $childrenContainers = $this->Tree->resolveChildrenOfContainerIds($request['Systemdowntime']['object_id'], true);
                 } else if ($request['Systemdowntime']['object_id'] != ROOT_CONTAINER && $request['Systemdowntime']['inherit_downtime'] == 1) {
@@ -781,6 +782,16 @@ class SystemdowntimesController extends AppController {
                     if ($request['Systemdowntime']['is_recurring'] == 1) {
                         $this->Systemdowntime->create();
                         if ($this->Systemdowntime->save($request) && $this->request->ext === 'json') {
+                            $parentContainerId = $request['Systemdowntime']['object_id'];
+                            if(!empty($childrenContainers)){
+                                foreach($childrenContainers as $childrenContainerId){
+                                    if($parentContainerId != $childrenContainerId){
+                                        $request['Systemdowntime']['object_id'] = $childrenContainerId;
+                                        $this->Systemdowntime->create();
+                                        $this->Systemdowntime->save($request);
+                                    }
+                                }
+                            }
                             if ($this->isAngularJsRequest()) {
                                 $flashmessage=__('Recurring Downtime successfully saved');
                             }
