@@ -283,7 +283,6 @@ class RotationsController extends MapModuleAppController {
         }
 
         if ($this->Rotation->delete($id, true)) {
-            $this->setFlash(__('Map rotation deleted successfully'));
             $this->set('message', __('Map rotation deleted successfully'));
             $this->set('_serialize', ['message']);
             return;
