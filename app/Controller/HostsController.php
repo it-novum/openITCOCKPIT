@@ -2694,7 +2694,7 @@ class HostsController extends AppController {
         ];
         $compare_array = [
             'Host'         => [
-                ['Host.{(' . implode('|', array_values(Hash::merge($fields, ['name', 'description', 'address', 'satellite_id', 'host_type']))) . ')}', false],
+                ['Host.{(' . implode('|', array_values(Hash::merge($fields, ['uuid', 'name', 'description', 'address', 'satellite_id', 'host_type']))) . ')}', false],
                 ['{^Contact$}.{^Contact$}.{n}', false],
                 ['{^Contactgroup$}.{^Contactgroup$}.{n}', false],
                 ['{^Hostgroup$}.{^Hostgroup$}.{n}', false],
