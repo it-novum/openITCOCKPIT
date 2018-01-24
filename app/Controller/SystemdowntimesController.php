@@ -132,7 +132,6 @@ class SystemdowntimesController extends AppController {
 
     public function getHostdowntimeRefillData(){
         $this->layout = 'angularjs';
-        $this->autoRender = false;
         if(!$this->isAngularJsRequest()){
             return;
         }
@@ -146,7 +145,8 @@ class SystemdowntimesController extends AppController {
             'comment' => __('In maintenance')
         ];
 
-        echo json_encode($refill);
+        $this->set('refill', $refill);
+        $this->set('_serialize', ['refill']);
     }
 
     public function addHostdowntime() {

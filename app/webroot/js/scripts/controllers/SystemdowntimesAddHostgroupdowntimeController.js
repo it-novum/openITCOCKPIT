@@ -42,12 +42,12 @@ angular.module('openITCOCKPIT')
                     'angular': true
                 }
             }).then(function(result){
-                $scope.post.Systemdowntime.from_date = result.data.from_date;
-                $scope.post.Systemdowntime.from_time = result.data.from_time;
-                $scope.post.Systemdowntime.to_date = result.data.to_date;
-                $scope.post.Systemdowntime.to_time = result.data.to_time;
-                $scope.post.Systemdowntime.comment = result.data.comment;
-                $scope.post.Systemdowntime.duration = result.data.duration;
+                $scope.post.Systemdowntime.from_date = result.data.refill.from_date;
+                $scope.post.Systemdowntime.from_time = result.data.refill.from_time;
+                $scope.post.Systemdowntime.to_date = result.data.refill.to_date;
+                $scope.post.Systemdowntime.to_time = result.data.refill.to_time;
+                $scope.post.Systemdowntime.comment = result.data.refill.comment;
+                $scope.post.Systemdowntime.duration = result.data.refill.duration;
                 $scope.errors = null;
             }, function errorCallback(result){
                 if(result.data.hasOwnProperty('error')){
