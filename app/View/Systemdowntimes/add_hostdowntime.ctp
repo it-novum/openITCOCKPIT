@@ -194,7 +194,8 @@
                                 <label class="col col-md-2 control-label"
                                        for="SystemdowntimeFromDate"><?php echo __('From'); ?></label>
                                 <div class="col col-xs-3 col-md-3" ng-class="{'has-error': errors.from_date}">
-                                    <input type="text" class="form-control" ng-model="post.Systemdowntime.from_date">
+                                    <input type="text" class="form-control" ng-model="post.Systemdowntime.from_date"
+                                           placeholder="<?php echo __('DD.MM.YYYY'); ?>">
                                     <div ng-repeat="error in errors.from_date">
                                         <div class="help-block text-danger">{{ error }}</div>
                                     </div>
@@ -216,7 +217,8 @@
                                 <label class="col col-md-2 control-label"
                                        for="SystemdowntimeToDate"><?php echo __('To'); ?></label>
                                 <div class="col col-xs-3 col-md-3" ng-class="{'has-error': errors.to_date}">
-                                    <input type="text" class="form-control" ng-model="post.Systemdowntime.to_date">
+                                    <input type="text" class="form-control" ng-model="post.Systemdowntime.to_date"
+                                           placeholder="<?php echo __('DD.MM.YYYY'); ?>">
                                     <div ng-repeat="error in errors.to_date">
                                         <div class="help-block text-danger">{{ error }}</div>
                                     </div>
