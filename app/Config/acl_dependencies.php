@@ -143,7 +143,7 @@ $config = [
                 'loadParentHostsById'
             ],
             'Systemdowntimes ' => [
-                'getHostdowntimeRefillData'
+                'getDowntimeData'
             ]
         ],
         'dependencies'   => [
