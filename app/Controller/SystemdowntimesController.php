@@ -129,25 +129,6 @@ class SystemdowntimesController extends AppController {
         $this->set('paginatorLimit', $paginatorLimit);
     }
 
-    public function getDowntimeData() {
-        $this->layout = 'angularjs';
-        if (!$this->isAngularJsRequest()) {
-            return;
-        }
-
-        $refill = [
-            'from_date' => date('d.m.Y'),
-            'from_time' => date('H:i'),
-            'to_date'   => date('d.m.Y'),
-            'to_time'   => date('H:i', time() + 60 * 15),
-            'duration'  => "15",
-            'comment'   => __('In maintenance')
-        ];
-
-        $this->set('refill', $refill);
-        $this->set('_serialize', ['refill']);
-    }
-
     public function addHostdowntime() {
         $this->layout = 'angularjs';
         $flashmessage = "";

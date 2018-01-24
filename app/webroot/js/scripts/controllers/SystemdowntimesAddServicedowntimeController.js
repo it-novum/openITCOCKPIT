@@ -32,7 +32,7 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.loadRefillData = function(){
-            $http.get("/systemdowntimes/getDowntimeData.json", {
+            $http.get("/angular/getDowntimeData.json", {
                 params: {
                     'angular': true
                 }

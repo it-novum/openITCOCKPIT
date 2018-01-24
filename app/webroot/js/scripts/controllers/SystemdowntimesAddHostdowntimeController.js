@@ -41,7 +41,7 @@ angular.module('openITCOCKPIT')
             }).then(function(result){
                 $scope.post.Systemdowntime.downtimetype_id = result.data.preselectedDowntimetype;
             });
-            $http.get("/systemdowntimes/getDowntimeData.json", {
+            $http.get("/angular/getDowntimeData.json", {
                 params: {
                     'angular': true
                 }
