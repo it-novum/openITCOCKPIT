@@ -19,6 +19,7 @@ body {
 
 .main {
     position: relative;
+    overflow: hidden;
 }
 
 a {
@@ -133,7 +134,7 @@ figcaption {
     position:absolute;
     width: 320px;
     color: #fff;
-    padding:10px;;
+    padding:10px;
     background:rgba(25, 33, 49, 0.4);
     display: flex;
     min-height: 100vh;
