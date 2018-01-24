@@ -51,6 +51,7 @@ $config = [
                 'enable_host_notifications',
                 'disable_host_notifications',
                 'system_health',
+                'getDowntimeData'
             ],
             'Commands'         => [
                 'sortByCommandType',
@@ -141,9 +142,6 @@ $config = [
                 'icon',
                 'loadParentHostsByString',
                 'loadParentHostsById'
-            ],
-            'Systemdowntimes ' => [
-                'getHostdowntimeRefillData'
             ]
         ],
         'dependencies'   => [
