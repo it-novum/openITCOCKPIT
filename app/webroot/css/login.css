@@ -75,7 +75,6 @@ a:hover, a:focus {
 }
 
 .login-screen > figure {
-
     animation: imageAnimation 30s linear infinite 0s;
     backface-visibility: hidden;
     background-size: cover;
@@ -97,6 +96,7 @@ figcaption {
     height:50px;
     line-height:50px;
     color: white!important;
+    font-size:11px;
 }
 
 .login-screen > figure:nth-child(1) {
@@ -130,8 +130,15 @@ figcaption {
 }
 
 .login {
+    position:absolute;
     width: 320px;
     color: #fff;
+    padding:10px;;
+    background:rgba(25, 33, 49, 0.4);
+    display: flex;
+    min-height: 100vh;
+    display: flex;
+    flex-direction:column;
 }
 
 .login .login-form {
@@ -157,9 +164,15 @@ figcaption {
 }
 
 .login-form .input-group .form-control::-moz-placeholder {
-    color: #fff;
-    opacity: 0.3;
+    color: #ffffff!important;
+    opacity: 0.9;
 }
+
+::-webkit-input-placeholder {
+    color: #ffffff!important;
+    opacity: 0.9;
+}
+
 
 .login .sign-btn button {
     width: 180px;
@@ -196,7 +209,7 @@ figcaption {
     background: none;
     height: 44px;
     color: #ddd;
-    width: 319px;
+    width: 300px;
 }
 
 .method:focus {

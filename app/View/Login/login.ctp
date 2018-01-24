@@ -18,7 +18,7 @@
 </div>
 
 <div class="login-center">
-    <div class="container min-height" style="padding-top: 20px;">
+    <div class="container min-height">
         <div class="row">
             <div class="col-xs-12">
                 <?php echo $this->Flash->render(); ?>
