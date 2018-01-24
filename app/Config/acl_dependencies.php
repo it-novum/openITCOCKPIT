@@ -50,13 +50,13 @@ $config = [
                 'acknowledge_host',
                 'enable_host_notifications',
                 'disable_host_notifications',
-                'system_health'
+                'system_health',
             ],
             'Commands'         => [
                 'sortByCommandType',
             ],
             'Containers'       => [
-                'byTenantForSelect', 'byTenant',
+                'byTenantForSelect', 'byTenant', 'loadContainersForAngular'
             ],
             'Downtimes'        => [
                 'validateDowntimeInputFromBrowser',
@@ -141,6 +141,9 @@ $config = [
                 'icon',
                 'loadParentHostsByString',
                 'loadParentHostsById'
+            ],
+            'Systemdowntimes ' => [
+                'getHostdowntimeRefillData'
             ]
         ],
         'dependencies'   => [
@@ -203,7 +206,7 @@ $config = [
                 'edit'  => ['loadElementsByContainerId'],
             ],
             'Hostgroups'            => [
-                'index'    => ['listToPdf', 'view'],
+                'index'    => ['listToPdf', 'view', 'loadHostgroupsByString'],
                 'extended' => ['listToPdf', 'loadServicesByHostId'],
                 'add'      => ['loadHosts', 'mass_add', 'loadHosttemplates', 'loadContainers'],
                 'edit'     => ['loadHosts', 'loadHosttemplates', 'loadContainers'],
