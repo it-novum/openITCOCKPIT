@@ -45,11 +45,15 @@ $config = [
             ],
             'Maps'              => [
                 'loadUsersForTenant',
+                'loadContainers',
             ],
             'Mapviews'          => [
                 'refreshNagiosObjects',
             ],
-
+            'Rotations' => [
+                'loadMaps',
+                'loadContainers'
+            ]
         ],
         'dependencies'   => [
         ],
