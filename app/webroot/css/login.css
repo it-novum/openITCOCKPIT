@@ -93,7 +93,7 @@ a:hover, a:focus {
 figcaption {
     position: absolute;
     bottom:0;
-    right:15px;
+    left:15px;
     height:50px;
     line-height:50px;
     color: white!important;
@@ -131,10 +131,10 @@ figcaption {
 }
 
 .login {
+    width:100%;
     position:absolute;
-    width: 320px;
     color: #fff;
-    padding:60px 10px 10px 10px;
+    padding:10px;
     background:rgba(25, 33, 49, 0.4);
     display: flex;
     min-height: 100vh;
@@ -276,23 +276,32 @@ canvas {
 }
 
 .login-center .alert-success {
-    position:absolute;
-    width:100%;
-    top:10px;
-    left:0px;
     background-color: transparent;
     color: #72d473;
     border-color: #02d004;
-    z-index: 2;
 }
 
 .login-center .alert-danger {
-    position:absolute;
-    width:100%;
-    top:10px;
-    left:0px;
     background-color: transparent;
     color: #f3423e;
     border-color: #f51b16;
-    z-index: 2;
 }
+
+.login-header{
+    width:100%;
+    text-align: center;
+    padding-top:50px;
+}
+
+.login-form-div {
+    width: 300px;
+    margin-left:auto;
+    margin-right:auto;
+    padding-top:50px;
+}
+
+.login-alert{
+    width: 100%;
+    padding-right: 15px;
+}
+

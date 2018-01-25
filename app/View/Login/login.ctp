@@ -18,117 +18,117 @@
 </div>
 
 <div class="login-center">
-    <div class="container min-height">
+    <div class="min-height container-fluid">
         <div class="row">
-            <div class="col-xs-12">
-                <?php echo $this->Flash->render(); ?>
-                <?php echo $this->Flash->render('auth'); ?>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-xs-5 col-sm-5 col-md-4  hidden-xs text-center slogan">
-                <h1><?php echo h('openITCOCKPIT'); ?></h1>
-                <h3><?php echo h(ucfirst(Configure::read('general.site_name'))); ?></h3>
-            </div>
-            <div class="col-xs-4 col-md-offset-4">
+            <div class="col-xs-12 col-sm-6 col-md-5 col-lg-3 col-sm-offset-6 col-md-offset-7 col-lg-offset-9">
                 <div class="login" id="card">
-                    <div class="front signin_form">
-                        <p><?php echo __('Login'); ?></p>
-                        <?php echo $this->Form->create('LoginUser', [
-                            'url'           => '/login/login',
-                            'id'            => 'login-form',
-                            'class'         => 'login-form',
-                            'inputDefaults' => [
-                                'wrapInput' => false,
-                                'label'     => false,
-                                'div'       => false,
-                            ],
-                        ]); ?>
+                    <div class="login-alert">
+                        <?php echo $this->Flash->render(); ?>
+                        <?php echo $this->Flash->render('auth'); ?>
+                    </div>
+                    <div class="login-header">
+                        <h1><?php echo h('openITCOCKPIT'); ?></h1>
+                        <h4><?php echo h(ucfirst(Configure::read('general.site_name'))); ?></h4>
+                    </div>
+                    <div class="login-form-div">
+                        <div class="front signin_form">
+                            <p><?php echo __('Login'); ?></p>
+                            <?php echo $this->Form->create('LoginUser', [
+                                'url'           => '/login/login',
+                                'id'            => 'login-form',
+                                'class'         => 'login-form',
+                                'inputDefaults' => [
+                                    'wrapInput' => false,
+                                    'label'     => false,
+                                    'div'       => false,
+                                ],
+                            ]); ?>
 
-                        <?php if ($displayMethod === true): ?>
+                            <?php if ($displayMethod === true): ?>
+                                <div class="form-group">
+                                    <?php echo $this->Form->input('auth_method', [
+                                        'options'       => $authMethods,
+                                        'selected'      => $selectedMethod,
+                                        'class'         => 'method',
+                                        'inputDefaults' => [
+                                            'wrapInput' => false,
+                                            'label'     => false,
+                                            'div'       => false,
+                                        ],
+                                    ]); ?>
+                                </div>
+                            <?php endif; ?>
+
                             <div class="form-group">
-                                <?php echo $this->Form->input('auth_method', [
-                                    'options'       => $authMethods,
-                                    'selected'      => $selectedMethod,
-                                    'class'         => 'method',
-                                    'inputDefaults' => [
-                                        'wrapInput' => false,
-                                        'label'     => false,
-                                        'div'       => false,
-                                    ],
-                                ]); ?>
+                                <div class="input-group">
+                                    <?php echo $this->Form->input('email', [
+                                        'class'         => 'form-control',
+                                        'placeholder'   => __('Type your email'),
+                                        'type'          => 'email',
+                                        'inputDefaults' => [
+                                            'wrapInput' => false,
+                                            'label'     => false,
+                                            'div'       => false,
+                                        ]
+                                    ]); ?>
+                                    <span class="input-group-addon">
+                                        <i class="fa fa-lg fa-user"></i>
+                                    </span>
+                                </div>
                             </div>
-                        <?php endif; ?>
 
-                        <div class="form-group">
-                            <div class="input-group">
-                                <?php echo $this->Form->input('email', [
-                                    'class'         => 'form-control',
-                                    'placeholder'   => __('Type your email'),
-                                    'type'          => 'email',
-                                    'inputDefaults' => [
-                                        'wrapInput' => false,
-                                        'label'     => false,
-                                        'div'       => false,
-                                    ]
-                                ]); ?>
-                                <span class="input-group-addon">
-                                    <i class="fa fa-lg fa-user"></i>
-                                </span>
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <?php echo $this->Form->input('samaccountname', [
+                                        'class'         => 'form-control',
+                                        'placeholder'   => __('Type your LDAP username'),
+                                        'type'          => 'email',
+                                        'inputDefaults' => [
+                                            'wrapInput' => false,
+                                            'label'     => false,
+                                            'div'       => false,
+                                        ]
+                                    ]); ?>
+                                    <span class="input-group-addon">
+                                        <i class="fa fa-lg fa-user"></i>
+                                    </span>
+                                </div>
                             </div>
-                        </div>
 
-                        <div class="form-group">
-                            <div class="input-group">
-                                <?php echo $this->Form->input('samaccountname', [
-                                    'class'         => 'form-control',
-                                    'placeholder'   => __('Type your LDAP username'),
-                                    'type'          => 'email',
-                                    'inputDefaults' => [
-                                        'wrapInput' => false,
-                                        'label'     => false,
-                                        'div'       => false,
-                                    ]
-                                ]); ?>
-                                <span class="input-group-addon">
-                                    <i class="fa fa-lg fa-user"></i>
-                                </span>
+
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <?php echo $this->Form->input('password', [
+                                        'class'         => 'form-control',
+                                        'placeholder'   => __('Type your password'),
+                                        'type'          => 'password',
+                                        'inputDefaults' => [
+                                            'wrapInput' => false,
+                                            'label'     => false,
+                                            'div'       => false,
+                                        ]
+                                    ]); ?>
+                                    <span class="input-group-addon">
+                                        <i class="fa fa-lg fa-lock"></i>
+                                    </span>
+                                </div>
                             </div>
-                        </div>
 
-
-                        <div class="form-group">
-                            <div class="input-group">
-                                <?php echo $this->Form->input('password', [
-                                    'class'         => 'form-control',
-                                    'placeholder'   => __('Type your password'),
-                                    'type'          => 'password',
-                                    'inputDefaults' => [
-                                        'wrapInput' => false,
-                                        'label'     => false,
-                                        'div'       => false,
-                                    ]
-                                ]); ?>
-                                <span class="input-group-addon">
-                                    <i class="fa fa-lg fa-lock"></i>
-                                </span>
+                            <div class="checkbox">
+                                <?php echo $this->Form->input('remember_me', [
+                                    'type'  => 'checkbox',
+                                    'label' => __('Remember me on this computer'),
+                                ]);
+                                ?>
                             </div>
-                        </div>
 
-                        <div class="checkbox">
-                            <?php echo $this->Form->input('remember_me', [
-                                'type'  => 'checkbox',
-                                'label' => __('Remember me on this computer'),
-                            ]);
-                            ?>
+                            <div class="form-group sign-btn">
+                                <button type="submit" class="btn btn-primary pull-right">
+                                    <?php echo __('Sign in'); ?>
+                                </button>
+                            </div>
+                            <?php echo $this->Form->end(); ?>
                         </div>
-
-                        <div class="form-group sign-btn">
-                            <button type="submit" class="btn btn-primary pull-right">
-                                <?php echo __('Sign in'); ?>
-                            </button>
-                        </div>
-                        <?php echo $this->Form->end(); ?>
                     </div>
                 </div>
             </div>
@@ -139,7 +139,7 @@
 
 <div class="footer">
     <div class="container-fluid">
-        <div class="row">
+        <div class="row pull-right">
             <div class="col-xs-12">
                 <a href="https://openitcockpit.io/" target="_blank" class="btn btn-default">
                     <i class="fa fa-lg fa-globe"></i>
