@@ -999,7 +999,7 @@ App.Components.RrdComponent = Frontend.Component.extend({
 		}.bind(this));
 
 		//Create div for popup graph
-		$('body').append('<div id="popupGraphContainer"><div id="graph_legend"></div><div id="popupGraph"><center><br /><i class="fa fa-cog fa-4x fa-spin"></i><br /><br /></div></center></div>');
+		$('body').append('<div id="popupGraphContainer" class="popup-graph-container"><div id="graph_legend"></div><div id="popupGraph"><center><br /><i class="fa fa-cog fa-4x fa-spin"></i><br /><br /></div></center></div>');
 	},
 
 	popupGraph: function(hostUuid, serviceUuid, offset){
