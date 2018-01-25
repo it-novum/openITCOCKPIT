@@ -30,25 +30,16 @@
 
         <h1>Developers</h1>
         <dl>
-            <dt>Teamlead</dt>
-            <dd>Sascha Veres</dd>
-            <dt>Software architect</dt>
+            <dt>Developer</dt>
             <dd>Irina Bering</dd>
-            <dt>Software architect</dt>
             <dd>Daniel Ziegler</dd>
-            <dt>Developer</dt>
             <dd>Maximilian Pappert</dd>
-            <dt>Developer</dt>
-            <dd>Oliver Müller</dd>
-            <dt>Developer</dt>
-            <dd>Christian Fleck</dd>
-            <dt>Developer</dt>
-            <dd>Laziz Karimov</dd>
+            <dd>Timo Triebensky</dd>
         </dl>
 
 
         <h1>Special Thanks</h1>
-        <p>Robert Braun, René Kleffel, Michael Ziegler, Jonas Rottmann, Johannes Drummer, Jens Michelsons, Jeremy Eder and more...</p>
+        <p>Oliver Müller, Laziz Karimov, Robert Braun, René Kleffel, Michael Ziegler, Jonas Rottmann, Johannes Drummer, Jens Michelsons, Jeremy Eder and more...</p>
         <div class="clearfix"></div>
 
         <h1>Special Thanks</h1>
@@ -60,6 +51,7 @@
         <p><?php echo $this->html->image('logos/cakephp.png'); ?></p>
         <p><?php echo $this->html->image('logos/jquery.png'); ?></p>
         <p><?php echo $this->html->image('logos/jquery_ui.png'); ?></p>
+        <p><?php echo $this->html->image('logos/AngularJS-medium.png'); ?></p>
         <div class="clearfix"></div>
 
         <div class="fineprint">All trademarks are the property of the trademark owners.</div>

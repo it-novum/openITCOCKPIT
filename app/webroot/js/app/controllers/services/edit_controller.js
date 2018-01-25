@@ -31,27 +31,27 @@ App.Controllers.ServicesEditController = Frontend.AppController.extend({
 
     components: ['Highlight', 'Ajaxloader', 'CustomVariables'],
 
-    _initialize: function () {
+    _initialize: function(){
         var self = this;
         this.Ajaxloader.setup();
         this.CustomVariables.setup({
             controller: 'Services',
             ajaxUrl: 'addCustomMacro',
             macrotype: 'SERVICE',
-            onClick: function () {
+            onClick: function(){
                 self.servicetemplateManager._onChangeMacro();
                 self.servicetemplateManager._activateOrUpdateMacroRestore();
             }
         });
 
         /* Contact inherit stuff */
-        $('#inheritContacts').click(function () {
+        $('#inheritContacts').click(function(){
             this.inherit();
         }.bind(this));
 
         var $inheritContacts = $('#inheritContacts');
 
-        if ($inheritContacts.prop('checked') == true) {
+        if($inheritContacts.prop('checked') == true){
             $('#serviceContactSelects').block({
                 message: null,
                 overlayCSS: {
@@ -63,10 +63,16 @@ App.Controllers.ServicesEditController = Frontend.AppController.extend({
         }
         /* Contact inherit stuff end */
 
+        $('#yesDeleteService').click(function(){
+            var serviceId = $(this).data('serviceId');
+            //ajax delete
+            self.deleteService(serviceId);
+        });
+
         /*
          * Fix chosen width, if rendered in a tab
          */
-        $("[data-toggle='tab']").click(function () {
+        $("[data-toggle='tab']").click(function(){
             $('.chosen-container').css('width', '100%');
         });
 
@@ -136,14 +142,14 @@ App.Controllers.ServicesEditController = Frontend.AppController.extend({
         /*
          * Freshness settings checkbox control
          */
-        $('input[type="checkbox"]#ServiceFreshnessChecksEnabled').on('change.fresshnessChecks', function () {
+        $('input[type="checkbox"]#ServiceFreshnessChecksEnabled').on('change.fresshnessChecks', function(){
             this.checkFreshnessSettings();
         }.bind(this));
         this.checkFreshnessSettings();
 
         var $serviceNotificationIntervalField = $('#ServiceNotificationinterval');
-        var onSlideStop = function (ev) {
-            if (ev.value == null) {
+        var onSlideStop = function(ev){
+            if(ev.value == null){
                 ev.value = 0;
             }
 
@@ -162,7 +168,7 @@ App.Controllers.ServicesEditController = Frontend.AppController.extend({
         $slider.slider('on', 'slideStop', onSlideStop);
 
         // Input this.fieldMap for sliders
-        var onChangeSliderInput = function () {
+        var onChangeSliderInput = function(){
             var $this = $(this);
             $('#' + $this.attr('slider-for'))
                 .slider('setValue', parseInt($this.val(), 10), true)
@@ -182,18 +188,18 @@ App.Controllers.ServicesEditController = Frontend.AppController.extend({
         /*
          * Bind change event for the check command selectbox
          */
-        $('#ServiceCommandId').on('change.serviceCommand', function () {
+        $('#ServiceCommandId').on('change.serviceCommand', function(){
             self.loadParametersByCommandId($(this).val(), $('#ServiceServicetemplateId').val(), $('#CheckCommandArgs'));
         });
 
         // Bind change event for the check command selectbox
         var $event_handler_command_args = $('#EventhandlerCommandArgs');
-        $('#ServiceEventhandlerCommandId').on('change.commandId', function () {
+        $('#ServiceEventhandlerCommandId').on('change.commandId', function(){
             var id = $(this).val();
-            if (id && id != '0') {
+            if(id && id != '0'){
                 // self.loadParameters(id, $('#EventhandlerCommandArgs'));
                 self.loadNagParametersByCommandId(id, $('#ServiceServicetemplateId').val(), $event_handler_command_args);
-            } else {
+            }else{
                 $event_handler_command_args.html('');
             }
         });
@@ -218,51 +224,51 @@ App.Controllers.ServicesEditController = Frontend.AppController.extend({
             /**
              * Initialize the event listeners.
              */
-            init: function () {
+            init: function(){
                 this.updateServicetemplateValues(	// Updates the fields based on the decision of the user/template.
                     this.initRestoreDefault		// Initializes the restore functionality after the template values have been loaded.
                 );
             },
 
-            _onChangeMacro: function () {
+            _onChangeMacro: function(){
                 var currentValueCount = 0,
                     allCurrentValues = {},
                     caseInsensitive = true; // Thats the default value. It isn't configurable yet.
 
                 var $customVariablesContainer = $('#customVariablesContainer');
-                $customVariablesContainer.children().each(function () {
+                $customVariablesContainer.children().each(function(){
                     var name = $(this).find('.macroName').val();
                     var value = $(this).find('.macroValue').val();
-                    if (caseInsensitive) {
+                    if(caseInsensitive){
                         allCurrentValues[name.toUpperCase()] = value.toUpperCase();
-                    } else {
+                    }else{
                         allCurrentValues[name] = value;
                     }
                     currentValueCount++;
                 });
 
                 var templateValues = {};
-                for (var key in self.servicetemplateManager.currentCustomVariables) {
+                for(var key in self.servicetemplateManager.currentCustomVariables){
                     var obj = self.servicetemplateManager.currentCustomVariables[key];
-                    if (caseInsensitive) {
+                    if(caseInsensitive){
                         templateValues[obj.name.toUpperCase()] = obj.value.toUpperCase();
-                    } else {
+                    }else{
                         templateValues[obj.name] = obj.value;
                     }
                 }
 
                 var isIdenticalWithTemplate = true;
-                if (Object.keys(templateValues).length != currentValueCount) {
+                if(Object.keys(templateValues).length != currentValueCount){
                     isIdenticalWithTemplate = false;
                 }
-                if (isIdenticalWithTemplate) {
-                    for (var name in templateValues) {
-                        if (!allCurrentValues.hasOwnProperty(name)) {
+                if(isIdenticalWithTemplate){
+                    for(var name in templateValues){
+                        if(!allCurrentValues.hasOwnProperty(name)){
                             isIdenticalWithTemplate = false;
                             break;
                         }
 
-                        if (templateValues[name] !== allCurrentValues[name]) {
+                        if(templateValues[name] !== allCurrentValues[name]){
                             isIdenticalWithTemplate = false;
                             break;
                         }
@@ -273,7 +279,7 @@ App.Controllers.ServicesEditController = Frontend.AppController.extend({
             },
 
 
-            _restoreServiceMacrosFromTemplate: function () {
+            _restoreServiceMacrosFromTemplate: function(){
                 //Loading the macros of the servicetemplate
                 self.CustomVariables.loadMacroFromTemplate(
                     self.servicetemplateManager.currentTemplate.id,
@@ -281,7 +287,7 @@ App.Controllers.ServicesEditController = Frontend.AppController.extend({
                 );
             },
 
-            _createOrUpdateMacroRestoreIcon: function (isIdenticalWithTemplate) {
+            _createOrUpdateMacroRestoreIcon: function(isIdenticalWithTemplate){
                 var $macroContainer = $('.service-macro-settings'),
                     $icon = $macroContainer.find('.fa-chain-default, .fa-chain-non-default'),
                     defaultClasses = 'fa fa-chain margin-left-10 ',
@@ -289,14 +295,14 @@ App.Controllers.ServicesEditController = Frontend.AppController.extend({
                     redIconClass = defaultClasses + 'txt-color-red fa-chain-non-default',
                     currentIconClass = (isIdenticalWithTemplate ? greenIconClass : redIconClass);
 
-                if (!$icon.length) { // Create icon.
+                if(!$icon.length){ // Create icon.
                     $icon = $('<i>', {
                         class: currentIconClass
                     });
                     $macroContainer.prepend($icon);
                 }
 
-                if (!isIdenticalWithTemplate) {
+                if(!isIdenticalWithTemplate){
                     $icon.off('click');
                     $icon.on('click', self.servicetemplateManager._restoreServiceMacrosFromTemplate);
                 }
@@ -305,10 +311,10 @@ App.Controllers.ServicesEditController = Frontend.AppController.extend({
                 $icon.attr('class', (isIdenticalWithTemplate ? greenIconClass : redIconClass));
             },
 
-            _activateOrUpdateMacroRestore: function (response) { // Called once a template is chosen.
+            _activateOrUpdateMacroRestore: function(response){ // Called once a template is chosen.
                 var $customVariablesContainer = this;
                 var allCurrentValues = {};
-                $('#customVariablesContainer').children().each(function (index) {
+                $('#customVariablesContainer').children().each(function(index){
                     var fields = {
                         $name: $(this).find('.macroName'),
                         $value: $(this).find('.macroValue')
@@ -316,8 +322,8 @@ App.Controllers.ServicesEditController = Frontend.AppController.extend({
 
                     allCurrentValues[fields.$name.val()] = fields.$value.val();
 
-                    for (var key in fields) {
-                        if (!fields.hasOwnProperty(key)) {
+                    for(var key in fields){
+                        if(!fields.hasOwnProperty(key)){
                             continue;
                         }
                         var $field = fields[key];
@@ -339,8 +345,8 @@ App.Controllers.ServicesEditController = Frontend.AppController.extend({
                 $(document).on('click.macroRemove', '.deleteMacro', self.servicetemplateManager._onChangeMacro);
             },
 
-            deactivateRestoreFunctionality: function () {
-                for (var key in self.fieldMap) {
+            deactivateRestoreFunctionality: function(){
+                for(var key in self.fieldMap){
                     var fieldId = 'Service' + self.fieldMap[key];
                     var $field = $('#' + fieldId);
                     var $fieldFormGroup = $field.parents('.form-group');
@@ -360,60 +366,60 @@ App.Controllers.ServicesEditController = Frontend.AppController.extend({
                 self.servicetemplateManager.isRestoreFunctionalityInitialized = false;
             },
 
-            onClickRestoreDefault: function () {
+            onClickRestoreDefault: function(){
                 var $field = $(this);
                 var fieldType = self.servicetemplateManager.getFieldType($field);
                 var inputId = $field.attr('id') || '';
                 var keyName;
-                if (inputId.match(/stars-rating/)) {
+                if(inputId.match(/stars-rating/)){
                     keyName = getObjectKeyByValue(self.fieldMap, 'stars-rating-5');
-                } else {
+                }else{
                     keyName = getObjectKeyByValue(self.fieldMap, inputId.replace(/^(Service)/, ''));
                 }
                 var templateDefaultValue = self.servicetemplateManager.currentTemplate[keyName];
-                if (typeof templateDefaultValue === 'undefined') {
+                if(typeof templateDefaultValue === 'undefined'){
                     templateDefaultValue = $field.prop('data-template-default');
                 }
-                if (in_array(keyName, ['contact', 'contactgroup', 'servicegroup'])) {
-                    switch (keyName) {
+                if(in_array(keyName, ['contact', 'contactgroup', 'servicegroup'])){
+                    switch(keyName){
                         case 'contact':
-                            templateDefaultValue = self.servicetemplateManager.currentContact.map(function (elem) {
+                            templateDefaultValue = self.servicetemplateManager.currentContact.map(function(elem){
                                 return elem.id
                             });
                             break;
                         case 'contactgroup':
-                            templateDefaultValue = self.servicetemplateManager.currentContactGroup.map(function (elem) {
+                            templateDefaultValue = self.servicetemplateManager.currentContactGroup.map(function(elem){
                                 return elem.id
                             });
                             break;
                         case 'servicegroup':
-                            templateDefaultValue = self.servicetemplateManager.currentServiceGroup.map(function (elem) {
+                            templateDefaultValue = self.servicetemplateManager.currentServiceGroup.map(function(elem){
                                 return elem.id
                             });
                             break;
                     }
                 }
-                if ($field.prop('disabled')) {
+                if($field.prop('disabled')){
                     return;
                 }
-                if (fieldType === 'checkbox') {
+                if(fieldType === 'checkbox'){
                     // FIX: Values like '1', '0', true and false have to be parsed here.
-                    if (templateDefaultValue == '0') {
+                    if(templateDefaultValue == '0'){
                         templateDefaultValue = false;
-                    } else {
+                    }else{
                         templateDefaultValue = !!templateDefaultValue;
                     }
                     $field
                         .prop('checked', templateDefaultValue)
                         .trigger('change');
-                } else if (fieldType === 'select') { // The tag is a <select>
+                }else if(fieldType === 'select'){ // The tag is a <select>
                     $field
                         .val(templateDefaultValue)
                         .trigger('chosen:updated')
                         .trigger('change');
-                } else if (fieldType === 'radio') {
-                    $field.parent().find('input').each(function () {
-                        if ($(this).val() != templateDefaultValue) {
+                }else if(fieldType === 'radio'){
+                    $field.parent().find('input').each(function(){
+                        if($(this).val() != templateDefaultValue){
                             return;
                         }
 
@@ -421,71 +427,71 @@ App.Controllers.ServicesEditController = Frontend.AppController.extend({
                             .prop('checked', true)
                             .trigger('change');
                     });
-                } else if ($field.hasClass('slider')) {
+                }else if($field.hasClass('slider')){
                     var $otherInput = $field.parents('.form-group').find('input[type=number]');
                     $otherInput
                         .val(templateDefaultValue)
                         .trigger('change');
                     $field.trigger('change');
-                } else if ($field.hasClass('tagsinput')) { // Tags input field
+                }else if($field.hasClass('tagsinput')){ // Tags input field
                     var tags = templateDefaultValue.split(',');
                     $field.tagsinput('removeAll');
-                    for (var key in tags) {
+                    for(var key in tags){
                         $field.tagsinput('add', tags[key]);
                     }
-                } else { // Normal (text) input field
+                }else{ // Normal (text) input field
                     $field
                         .val(templateDefaultValue)
                         .trigger('change'); // Trigger the "change" event
                 }
             },
 
-            getFieldType: function ($field) {
+            getFieldType: function($field){
                 var fieldType = $field.attr('type');
-                if (!fieldType) {
+                if(!fieldType){
                     fieldType = $field.prop('tagName').toLowerCase();
                 }
                 return fieldType;
             },
 
-            onChangeField: function (event) {
+            onChangeField: function(event){
                 var $field = $(this);
                 var $label = null;
                 var inputId = $field.attr('id') || '';
                 var keyName;
-                if (inputId.match(/stars-rating/)) {
+                if(inputId.match(/stars-rating/)){
                     keyName = getObjectKeyByValue(self.fieldMap, 'stars-rating-5');
-                } else {
+                }else{
                     keyName = getObjectKeyByValue(self.fieldMap, inputId.replace(/^(Service)/, ''));
                 }
                 var templateDefaultValue = self.servicetemplateManager.currentTemplate[keyName];
                 var templateDefaultTitle = '';
-                if (typeof templateDefaultValue === 'undefined') {
+                if(typeof templateDefaultValue === 'undefined'){
                     templateDefaultValue = $field.prop('data-template-default');
                 }
-                if (in_array(keyName, ['contact', 'contactgroup', 'servicegroup'])) {
-                    switch (keyName) {
+                if(in_array(keyName, ['contact', 'contactgroup', 'servicegroup'])){
+                    switch(keyName){
                         case 'contact':
-                            templateDefaultValue = self.servicetemplateManager.currentContact.map(function (elem) {
+                            templateDefaultValue = self.servicetemplateManager.currentContact.map(function(elem){
                                 return elem.id
                             });
-                            templateDefaultTitle = self.servicetemplateManager.currentContact.map(function (elem) {
+                            templateDefaultTitle = self.servicetemplateManager.currentContact.map(function(elem){
                                 return elem.name
                             });
                             break;
                         case 'contactgroup':
-                            templateDefaultValue = self.servicetemplateManager.currentContactGroup.map(function (elem) {
+                            templateDefaultValue = self.servicetemplateManager.currentContactGroup.map(function(elem){
                                 return elem.id
                             });
-                            templateDefaultTitle = self.servicetemplateManager.currentContactGroup.map(function (elem) {
+                            templateDefaultTitle = self.servicetemplateManager.currentContactGroup.map(function(elem){
                                 return elem.Container.name
                             });
                             break;
                         case 'servicegroup':
-                            templateDefaultValue = self.servicetemplateManager.currentServiceGroup.map(function (elem) {
+                            templateDefaultValue = self.servicetemplateManager.currentServiceGroup.map(function(elem){
                                 return elem.id
                             });
-                            templateDefaultTitle = self.servicetemplateManager.currentServiceGroup.map(function (elem) {
+                            templateDefaultTitle = self.servicetemplateManager.currentServiceGroup.map(function(elem){
                                 return elem.Container.name
                             });
                             break;
@@ -497,26 +503,26 @@ App.Controllers.ServicesEditController = Frontend.AppController.extend({
                 var defaultClassName = 'fa fa-chain fa-chain-default txt-color-green';
                 var defaultTitle = 'Default value';
                 var restoreDefaultTitle;
-                if (templateDefaultTitle != '') {
+                if(templateDefaultTitle != ''){
                     restoreDefaultTitle = 'Restore template default: "' + templateDefaultTitle + '"';
-                } else {
+                }else{
                     restoreDefaultTitle = 'Restore template default: "' + templateDefaultValue + '"';
                 }
 
                 // "null" is no restorable default. Instead it's treated like "do nothing for this field".
-                if (typeof templateDefaultValue === 'undefined' || templateDefaultValue === null) {
+                if(typeof templateDefaultValue === 'undefined' || templateDefaultValue === null){
                     return;
                 }
 
                 // Get the value of the field
                 var fieldValue = null;
-                switch (fieldType) {
+                switch(fieldType){
                     case 'checkbox':
                         fieldValue = $field.is(':checked');
                         // FIX: Values like '1', '0', true and false have to be parsed here.
-                        if (templateDefaultValue == '0') {
+                        if(templateDefaultValue == '0'){
                             templateDefaultValue = false;
-                        } else {
+                        }else{
                             templateDefaultValue = !!templateDefaultValue;
                         }
 
@@ -528,11 +534,11 @@ App.Controllers.ServicesEditController = Frontend.AppController.extend({
 
                     case 'select':
                         fieldValue = $field.val();
-                        if (in_array(keyName, ['contact', 'contactgroup', 'servicegroup'])) {
-                            if (fieldValue === null) {
+                        if(in_array(keyName, ['contact', 'contactgroup', 'servicegroup'])){
+                            if(fieldValue === null){
                                 fieldValue = [];
                             }
-                        } else {
+                        }else{
                             restoreDefaultTitle = 'Restore default: "' + $field.find('option[value="' + templateDefaultValue + '"]').text() + '"';
                         }
                         break;
@@ -542,25 +548,25 @@ App.Controllers.ServicesEditController = Frontend.AppController.extend({
                         break;
                 }
 
-                if (fieldValue === null) {
+                if(fieldValue === null){
                     return;
                 }
 
-                var wrappedOnClickRestore = function () {
+                var wrappedOnClickRestore = function(){
                         self.servicetemplateManager.onClickRestoreDefault.call($field);
                     },
                     $restoreDefaultIcon = $field.parents('.form-group').find('.fa-chain, .fa-chain-broken'),
                     isEqual = (is_scalar(fieldValue) && is_scalar(templateDefaultValue) && fieldValue == templateDefaultValue) ||
                         (is_array(fieldValue) && is_array(templateDefaultValue) && is_array_equal(fieldValue, templateDefaultValue));
 
-                if (isEqual) {
-                    if (!$restoreDefaultIcon.length) { // Icon doesn't exist -> create one
+                if(isEqual){
+                    if(!$restoreDefaultIcon.length){ // Icon doesn't exist -> create one
                         $restoreDefaultIcon = $('<i>', {
                             'class': defaultClassName,
                             'title': defaultTitle
                         });
                         $field.parents('.form-group').append($restoreDefaultIcon);
-                    } else { // Icon exists already
+                    }else{ // Icon exists already
                         $restoreDefaultIcon
                             .attr({
                                 'class': defaultClassName,
@@ -568,21 +574,21 @@ App.Controllers.ServicesEditController = Frontend.AppController.extend({
                             })
                             .off('click')
                     }
-                } else {
-                    if (!$restoreDefaultIcon.length) { // Icon doesn't exist -> create one
+                }else{
+                    if(!$restoreDefaultIcon.length){ // Icon doesn't exist -> create one
                         $restoreDefaultIcon = $('<i>', {
                             'class': nonDefaultClassName,
                             'title': restoreDefaultTitle
                         });
                         $restoreDefaultIcon.on('click', wrappedOnClickRestore);
                         //Don't show icon when contacts or contactgroups are inherited from service or service template
-                        if ($('#inheritContacts').prop('checked') && (keyName == 'contact' || keyName == 'contactgroup')) {
+                        if($('#inheritContacts').prop('checked') && (keyName == 'contact' || keyName == 'contactgroup')){
 
-                        } else {
+                        }else{
                             $field.parents('.form-group').append($restoreDefaultIcon);
                         }
                         //==============
-                    } else { // Icon exists already
+                    }else{ // Icon exists already
                         $restoreDefaultIcon
                             .attr({
                                 'class': nonDefaultClassName,
@@ -597,19 +603,19 @@ App.Controllers.ServicesEditController = Frontend.AppController.extend({
             /**
              * Initalizes the restore functionality. The default values depend on the chosen Servicetemplate.
              */
-            initRestoreDefault: function () {
+            initRestoreDefault: function(){
                 // Bind on all predefined inputs to allow to restore their defaults.
-                for (var key in self.fieldMap) {
-                    if (!self.fieldMap.hasOwnProperty(key)) {
+                for(var key in self.fieldMap){
+                    if(!self.fieldMap.hasOwnProperty(key)){
                         return;
                     }
                     var $field = $('#Service' + self.fieldMap[key]);
                     var fieldType = $field.attr('type');
-                    if (!fieldType && $field.prop('tagName') != null) {
+                    if(!fieldType && $field.prop('tagName') != null){
                         fieldType = $field.prop('tagName').toLowerCase();
                     }
 
-                    switch (fieldType) {
+                    switch(fieldType){
                         case 'text':
                         case 'checkbox':
                             self.servicetemplateManager.onChangeField.call($field); // Call once for this field
@@ -619,9 +625,9 @@ App.Controllers.ServicesEditController = Frontend.AppController.extend({
 
                         case 'radio':
                             var $radioFields = $field.parents('.form-group').find('[name="' + $field.attr('name') + '"]');
-                            $radioFields.each(function () {
+                            $radioFields.each(function(){
                                 self.servicetemplateManager.onChangeField.call($(this));
-                                $(this).on('change.restoreDefault', function () {
+                                $(this).on('change.restoreDefault', function(){
                                     self.servicetemplateManager.onChangeField.call($(this));
                                 });
                             });
@@ -645,13 +651,13 @@ App.Controllers.ServicesEditController = Frontend.AppController.extend({
                 self.servicetemplateManager.isInitializedOnce = true;
             },
 
-            updateServicetemplateValues: function (onComplete) {
+            updateServicetemplateValues: function(onComplete){
                 self.servicetemplateManager.currentTemplate = {};
                 var $selectBoxServicetemplate = $('#ServiceServicetemplateId');
 
-                var ajaxCompleteCallback = function (response) {
+                var ajaxCompleteCallback = function(response){
                     var responseObject = response.responseJSON;
-                    if (responseObject.code === 'not_authenticated' || responseObject.servicetemplate.length == 0) {
+                    if(responseObject.code === 'not_authenticated' || responseObject.servicetemplate.length == 0){
                         return;
                     }
                     var servicetemplateId = $selectBoxServicetemplate.val();
@@ -669,29 +675,29 @@ App.Controllers.ServicesEditController = Frontend.AppController.extend({
                     window.currentServiceGroup = responseObject.servicetemplate.Servicegroup;
                     window.currentCustomVariable = responseObject.servicetemplate.Customvariable;
 
-                    if (self.servicetemplateManager.currentTemplate.id != servicetemplateId) {
+                    if(self.servicetemplateManager.currentTemplate.id != servicetemplateId){
                         self.Ajaxloader.hide();
 
                         return;
                     }
 
-                    if (self.servicetemplateManager.isInitializedOnce) { // After it was initialized once, replace the values
+                    if(self.servicetemplateManager.isInitializedOnce){ // After it was initialized once, replace the values
                         // Update the interface input self.fieldMap out of the service template JSON data
-                        for (var key in self.fieldMap) {
+                        for(var key in self.fieldMap){
                             //modifying values of sliders
-                            if (in_array(key, ['check_interval', 'retry_interval', 'notification_interval'])) {
+                            if(in_array(key, ['check_interval', 'retry_interval', 'notification_interval'])){
                                 self.updateSlider({
                                     value: responseObject.servicetemplate.Servicetemplate[key],
                                     selector: self.fieldMap[key]
                                 });
-                            } else if (key == 'priority') {
+                            }else if(key == 'priority'){
                                 $('#Servicestars-rating-' + responseObject.servicetemplate.Servicetemplate[key])
                                     .prop('checked', true)
                                     .parents('.form-group').find('input[type=radio]');
                                 // .prop('data-template-default', templateDefaultValue);
-                            } else if (key == 'tags') { //modifying value for tags
+                            }else if(key == 'tags'){ //modifying value for tags
                                 self.updateTags({tags: responseObject.servicetemplate.Servicetemplate[key]});
-                            } else if (in_array(key, [ // modifying value for fancy checkboxes
+                            }else if(in_array(key, [ // modifying value for fancy checkboxes
                                     'notify_on_recovery',
                                     'notify_on_warning',
                                     'notify_on_unknown',
@@ -708,22 +714,22 @@ App.Controllers.ServicesEditController = Frontend.AppController.extend({
                                     'freshness_checks_enabled',
                                     'process_performance_data',
                                     'active_checks_enabled'
-                                ])) {
+                                ])){
                                 self.updateCheckbox({
                                     value: responseObject.servicetemplate.Servicetemplate[key],
                                     selector: self.fieldMap[key]
                                 });
-                            } else if (in_array(key, [ // modifying value of selectbox
+                            }else if(in_array(key, [ // modifying value of selectbox
                                     'notify_period_id',
                                     'command_id',
                                     'check_period_id',
                                     'eventhandler_command_id'
-                                ])) {
+                                ])){
                                 self.updateSelectbox({
                                     value: responseObject.servicetemplate.Servicetemplate[key],
                                     selector: self.fieldMap[key]
                                 });
-                            } else {
+                            }else{
                                 //modifying value for default input this.fieldMap
                                 $('#Service' + self.fieldMap[key]).val(responseObject.servicetemplate.Servicetemplate[key]);
                             }
@@ -732,14 +738,14 @@ App.Controllers.ServicesEditController = Frontend.AppController.extend({
                         //Updating associated data
                         //Contacts
                         var selectedContacts = [];
-                        $(responseObject.servicetemplate.Contact).each(function (intIndex, jsonContact) {
+                        $(responseObject.servicetemplate.Contact).each(function(intIndex, jsonContact){
                             selectedContacts.push(jsonContact.id);
                         });
                         self.updateSelectbox({value: selectedContacts, selector: '#ServiceContact', prefix: 'false'});
 
                         //Contactgroups
                         var selectedContactgroups = [];
-                        $(responseObject.servicetemplate.Contactgroup).each(function (intIndex, jsonContactgroup) {
+                        $(responseObject.servicetemplate.Contactgroup).each(function(intIndex, jsonContactgroup){
                             selectedContactgroups.push(jsonContactgroup.id);
                         });
                         self.updateSelectbox({
@@ -750,7 +756,7 @@ App.Controllers.ServicesEditController = Frontend.AppController.extend({
 
                         //Servicegroups
                         var selectedServicegroups = [];
-                        $(responseObject.servicetemplate.Servicegroup).each(function (intIndex, jsonServicegroup) {
+                        $(responseObject.servicetemplate.Servicegroup).each(function(intIndex, jsonServicegroup){
                             selectedServicegroups.push(jsonServicegroup.id);
                         });
                         self.updateSelectbox({
@@ -764,9 +770,9 @@ App.Controllers.ServicesEditController = Frontend.AppController.extend({
                     // Loading the macros of the service template if no own macros exist. Otherwise only create the
                     // restore icon.
                     var serviceHasOwnMacros = $('.service-macro-settings').find('input[type=hidden]').length > 0;
-                    if (serviceHasOwnMacros) {
+                    if(serviceHasOwnMacros){
                         self.servicetemplateManager._activateOrUpdateMacroRestore();
-                    } else {
+                    }else{
                         self.CustomVariables.loadMacroFromTemplate(
                             self.servicetemplateManager.currentTemplate.id,
                             self.servicetemplateManager._activateOrUpdateMacroRestore
@@ -778,10 +784,10 @@ App.Controllers.ServicesEditController = Frontend.AppController.extend({
                     onComplete(); // Gets called only for the first AJAX request
                 };
 
-                var onChangeServicetemplate = function () {
+                var onChangeServicetemplate = function(){
                     self.servicetemplateManager.isRestoreFunctionalityInitialized = true;
                     var templateId = parseInt($(this).val(), 10);
-                    if (templateId <= 0) {
+                    if(templateId <= 0){
                         self.servicetemplateManager.currentTemplate = {};
                         self.servicetemplateManager.deactivateRestoreFunctionality();
 
@@ -795,9 +801,9 @@ App.Controllers.ServicesEditController = Frontend.AppController.extend({
                         url: "/Services/loadTemplateData/" + encodeURIComponent(templateId) + ".json",
                         type: "POST",
                         cache: false,
-                        error: function () {
+                        error: function(){
                         },
-                        success: function () {
+                        success: function(){
                         },
                         complete: ajaxCompleteCallback
                     });
@@ -807,15 +813,15 @@ App.Controllers.ServicesEditController = Frontend.AppController.extend({
                 // $('#ServiceServicetemplateId').on('change.serviceContainer', onChangeServicetemplate);
 
                 // Call first time (without a change to the values of the fields) because the field is obligatory.
-                if (parseInt($selectBoxServicetemplate.val(), 10) > 0) {
+                if(parseInt($selectBoxServicetemplate.val(), 10) > 0){
                     onChangeServicetemplate.call($selectBoxServicetemplate);
 
-                } else {
+                }else{
                     self.servicetemplateManager.isInitializedOnce = true;
                 }
 
                 // Bind change event on the service template selectbox and load the template settings.
-                $selectBoxServicetemplate.on('change.serviceTemplate', function () {
+                $selectBoxServicetemplate.on('change.serviceTemplate', function(){
                     onChangeServicetemplate.call(this);
                     // self.loadParametersFromTemplate($(this).val());
                     // Load the arguments (with values) for the command id and event handler command id fields (once).
@@ -823,7 +829,7 @@ App.Controllers.ServicesEditController = Frontend.AppController.extend({
                         $eventhandlerCommandId = $('#ServiceEventhandlerCommandId'),
                         $serviceTemplateId = $('#ServiceServicetemplateId');
 
-                    self.loadParametersByCommandId($serviceCommandId.val(),$serviceTemplateId.val(), $('#CheckCommandArgs'));
+                    self.loadParametersByCommandId($serviceCommandId.val(), $serviceTemplateId.val(), $('#CheckCommandArgs'));
                     self.loadNagParametersByCommandId($eventhandlerCommandId.val(), $('#ServiceServicetemplateId').val(), $('#EventhandlerCommandArgs'));
                 });
             }
@@ -832,35 +838,73 @@ App.Controllers.ServicesEditController = Frontend.AppController.extend({
         self.servicetemplateManager.init();
     },
 
-    checkFlapDetection: function () {
+    deleteService: function(id){
+        $.ajax({
+            dataType: "json",
+            url: '/services/delete/' + id + '.json',
+            method: 'POST',
+            data: {
+                'angular': true
+            },
+            success: function(response){
+
+                $('#successDelete').show();
+                setTimeout(function(){
+                    window.location.href = '/services/index/';
+                }, 700);
+            },
+            error: function(request, status, error){
+                var errorMsg = request.responseJSON.message;
+                var usedBy = request.responseJSON.usedBy;
+
+                var errorHtml = '<div class="text-danger">';
+                errorHtml += '<div class="text-danger">' + errorMsg + '</div>';
+                for(var key in usedBy){
+                    errorHtml += '<div class="text-danger">';
+                    errorHtml += '<i class="fa fa-times"></i>';
+                    errorHtml += ' ';
+                    errorHtml += '<a class="text-danger" href="' + usedBy[key].baseUrl + id + '">' + usedBy[key].message + '</a>';
+                    errorHtml += '</div>';
+                }
+                errorHtml += '</div>';
+
+                $('#errorOnDelete').html(errorHtml);
+
+            }
+
+        });
+
+    },
+
+    checkFlapDetection: function(){
         var disable = null;
-        if (!$('input[type="checkbox"]#ServiceFlapDetectionEnabled').prop('checked')) {
+        if(!$('input[type="checkbox"]#ServiceFlapDetectionEnabled').prop('checked')){
             disable = true;
         }
         $('.flapdetection_control').prop('disabled', disable);
     },
 
-    checkFreshnessSettings: function () {
+    checkFreshnessSettings: function(){
         var readonly = null;
-        if (!$('input[type="checkbox"]#ServiceFreshnessChecksEnabled').prop('checked')) {
+        if(!$('input[type="checkbox"]#ServiceFreshnessChecksEnabled').prop('checked')){
             readonly = true;
             $('#ServiceFreshnessThreshold').val('');
         }
         $('#ServiceFreshnessThreshold').prop('readonly', readonly);
     },
 
-    updateTags: function (_options) {
+    updateTags: function(_options){
         var options = _options || {};
         options.tags = _options.tags || "";
         options.remove = _options.remove || true;
 
-        if (options.remove === true) {
+        if(options.remove === true){
             this.$tagsinput.tagsinput('removeAll');
         }
         this.$tagsinput.tagsinput('add', options.tags);
     },
 
-    updateSlider: function (_options) {
+    updateSlider: function(_options){
         var options = _options || {};
         options.value = parseInt(_options.value, 10) || 0;
         options.selector = _options.selector || null;
@@ -876,12 +920,12 @@ App.Controllers.ServicesEditController = Frontend.AppController.extend({
         $helptext.html(min + " " + this.lang[1] + " " + this.lang[3] + " " + sec + " " + this.lang[2]);
     },
 
-    updateCheckbox: function (_options) {
+    updateCheckbox: function(_options){
         var options = _options || {};
         options.value = _options.value || null;
         options.selector = _options.selector || '';
 
-        if (options.value === null || options.value == 0 || options.value == false) {
+        if(options.value === null || options.value == 0 || options.value == false){
             $('input[type="checkbox"]#Service' + options.selector).prop('checked', false);
             this.checkFlapDetection();
             return false;
@@ -893,12 +937,12 @@ App.Controllers.ServicesEditController = Frontend.AppController.extend({
         return true;
     },
 
-    updateSelectbox: function (_options) {
+    updateSelectbox: function(_options){
         var options = _options || {};
         options.value = _options.value || 0;
         options.selector = _options.selector || '';
         options.prefix = _options.prefix || "#Service";
-        if (options.prefix == 'false') {
+        if(options.prefix == 'false'){
             options.prefix = '';
         }
 
@@ -906,9 +950,9 @@ App.Controllers.ServicesEditController = Frontend.AppController.extend({
         $(options.prefix + options.selector).trigger("chosen:updated").change();
     },
 
-    loadParametersByCommandId: function (command_id, servicetemplate_id, $target) {
+    loadParametersByCommandId: function(command_id, servicetemplate_id, $target){
         var self = this;
-        if (!command_id || !servicetemplate_id || !$target || !$target.length) {
+        if(!command_id || !servicetemplate_id || !$target || !$target.length){
             throw new Error('Invalid argument given');
         }
         this.Ajaxloader.show();
@@ -916,20 +960,20 @@ App.Controllers.ServicesEditController = Frontend.AppController.extend({
             url: '/Services/loadParametersByCommandId/' + encodeURIComponent(command_id) + '/' + encodeURIComponent(servicetemplate_id),
             type: 'POST',
             cache: false,
-            error: function () {
+            error: function(){
             },
-            success: function () {
+            success: function(){
             },
-            complete: function (response) {
+            complete: function(response){
                 $target.html(response.responseText);
                 self.Ajaxloader.hide();
             }
         });
     },
 
-    loadNagParametersByCommandId: function (command_id, servicetemplate_id, $target) {
+    loadNagParametersByCommandId: function(command_id, servicetemplate_id, $target){
         var self = this;
-        if (!command_id || !servicetemplate_id || !$target || !$target.length) {
+        if(!command_id || !servicetemplate_id || !$target || !$target.length){
             throw new Error('Invalid argument given');
         }
         this.Ajaxloader.show();
@@ -937,11 +981,11 @@ App.Controllers.ServicesEditController = Frontend.AppController.extend({
             url: '/Services/loadNagParametersByCommandId/' + encodeURIComponent(command_id) + '/' + encodeURIComponent(servicetemplate_id),
             type: 'POST',
             cache: false,
-            error: function () {
+            error: function(){
             },
-            success: function () {
+            success: function(){
             },
-            complete: function (response) {
+            complete: function(response){
                 $target.html(response.responseText);
                 self.Ajaxloader.hide();
             }
@@ -952,42 +996,42 @@ App.Controllers.ServicesEditController = Frontend.AppController.extend({
      * @param {String} command_id
      * @param {jQuery} $target
      */
-    loadParameters: function (command_id, $target) {
+    loadParameters: function(command_id, $target){
         this.Ajaxloader.show();
         $.ajax({
             url: "/Services/loadArgumentsAdd/" + encodeURIComponent(command_id),
             type: "POST",
             cache: false,
-            error: function () {
+            error: function(){
             },
-            success: function () {
+            success: function(){
             },
-            complete: function (response) {
+            complete: function(response){
                 $target.html(response.responseText);
                 this.Ajaxloader.hide();
             }.bind(this)
         });
     },
 
-    loadParametersFromTemplate: function (servicetemplate_id) {
+    loadParametersFromTemplate: function(servicetemplate_id){
         $.ajax({
             url: "/Services/loadServicetemplatesArguments/" + encodeURIComponent(servicetemplate_id),
             type: "POST",
             cache: false,
-            error: function () {
+            error: function(){
             },
-            success: function () {
+            success: function(){
             },
-            complete: function (response) {
+            complete: function(response){
                 $('#CheckCommandArgs').html(response.responseText);
                 this.Ajaxloader.hide();
             }.bind(this)
         });
     },
 
-    inherit: function () {
+    inherit: function(){
         $inheritCheckbox = $('#inheritContacts');
-        if ($inheritCheckbox.prop('checked') == true) {
+        if($inheritCheckbox.prop('checked') == true){
             $('#serviceContactSelects').block({
                 message: null,
                 overlayCSS: {
@@ -998,10 +1042,10 @@ App.Controllers.ServicesEditController = Frontend.AppController.extend({
             });
             var Contact = this.getVar('ContactsInherited').Contact;
 
-            if (Contact != null) {
+            if(Contact != null){
                 $('#ServiceContact').val('').trigger('chosen:updated');
-                for (var contactId in Contact) {
-                    if ($('#ServiceContact option[value="' + contactId + '"]').length > 0) {
+                for(var contactId in Contact){
+                    if($('#ServiceContact option[value="' + contactId + '"]').length > 0){
                         $('#ServiceContact option[value="' + contactId + '"]')
                             .val(contactId)
                             .prop('selected', true)
@@ -1012,10 +1056,10 @@ App.Controllers.ServicesEditController = Frontend.AppController.extend({
 
             //Set selected in selectbox for contact groups
             var Contactgroup = this.getVar('ContactsInherited').Contactgroup;
-            if (Contactgroup != null) {
+            if(Contactgroup != null){
                 $('#ServiceContactgroup').val('').trigger('chosen:updated');
-                for (var ContactgroupId in Contactgroup) {
-                    if ($('#ServiceContactgroup option[value="' + ContactgroupId + '"]').length > 0) {
+                for(var ContactgroupId in Contactgroup){
+                    if($('#ServiceContactgroup option[value="' + ContactgroupId + '"]').length > 0){
                         $('#ServiceContactgroup option[value="' + ContactgroupId + '"]')
                             .val(ContactgroupId)
                             .prop('selected', true)
@@ -1026,7 +1070,7 @@ App.Controllers.ServicesEditController = Frontend.AppController.extend({
 
             $('#ServiceContact').prop('readonly', true);
             $('#ServiceContactgroup').prop('readonly', true);
-        } else {
+        }else{
             $('#serviceContactSelects').unblock();
             $('#ServiceContact').prop('readonly', false);
             $('#ServiceContactgroupSelects').unblock();

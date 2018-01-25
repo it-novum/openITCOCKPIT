@@ -23,6 +23,8 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use itnovum\openITCOCKPIT\Core\ContainerConditions;
+use itnovum\openITCOCKPIT\Filter\ContainerFilter;
 
 /**
  * Class Container
@@ -46,9 +48,20 @@ class Container extends AppModel {
             ],
         ],
         'parent_id' => [
-            'rule' => 'notBlank',
-            'message' => 'This field cannot be left blank.',
-            'required' => true,
+            'notBlank' => [
+                'rule' => 'notBlank',
+                'message' => 'This field cannot be left blank.',
+                'required' => true,
+            ],
+            'numeric'  => [
+                'rule'    => 'numeric',
+                'message' => 'This field needs to be numeric.',
+            ],
+            'notZero'  => [
+                'rule'     => ['comparison', '>', 0],
+                'message'  => 'Invalid container.',
+                'required' => true,
+            ],
         ],
     ];
 
@@ -262,5 +275,39 @@ class Container extends AppModel {
         }
 
         return true;
+    }
+
+    public function getContainersForAngular(ContainerConditions $ContainerConditions, $selected = []) {
+        $query = [
+            'recursive'  => -1,
+            'fields' => 'Container.name',
+            'conditions' => $ContainerConditions->getConditionsForFind(),
+            'order'      => [
+                'Container.name' => 'ASC',
+            ],
+            'group' => [
+                'Container.id'
+            ]
+        ];
+        $containersWithLimit = $this->find('list', $query);
+
+        $selectedContainers = [];
+        if (!empty($selected)) {
+            $query = [
+                'recursive'  => -1,
+                'fields' => 'Container.name',
+                'conditions' => [
+                    'Container.id' => $selected
+                ],
+                'order'      => [
+                    'Container.name' => 'ASC',
+                ],
+            ];
+            $selectedContainers = $this->find('list', $query);
+        }
+
+        $containers = $containersWithLimit + $selectedContainers;
+        asort($containers, SORT_FLAG_CASE | SORT_NATURAL);
+        return $containers;
     }
 }

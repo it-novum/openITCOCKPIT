@@ -28,75 +28,116 @@
 
 use MatthiasMullie\Minify;
 
-class CompressShell extends AppShell
-{
+class CompressShell extends AppShell {
 
     //This shell search all javascript files and compress it to one big javascript file
 
-    public function main()
-    {
+    public function main() {
         App::uses('Folder', 'Utility');
         App::uses('File', 'Utility');
         $this->stdout->styles('green', ['text' => 'green']);
 
+        //javascript components
         $this->out('Compress JavaScript controller components...    ', false);
         $components = $this->fetchAllJavaScriptComponents();
         $this->compressFiles($components, 'compressed_components.js');
         $this->minifyJsFile('compressed_components.js');
         $this->out('<green>done</green>');
 
+        //javascript controllers
         $this->out('Compress JavaScript action controllers...    ', false);
         $controllers = $this->fetchAllJavaScriptControllers();
         $this->compressFiles($controllers, 'compressed_controllers.js');
         $this->minifyJsFile('compressed_controllers.js');
         $this->out('<green>done</green>');
+
+        //angular controllers
+        $this->out('Compress Angular controllers...    ', false);
+        $angularControllers = $this->fetchAllAngularControllers();
+        $this->compressFiles($angularControllers, 'compressed_angular_controllers.js');
+        $this->minifyJsFile('compressed_angular_controllers.js');
+        $this->out('<green>done</green>');
+
+        //angular directives
+        $this->out('Compress Angular directives...    ', false);
+        $angularDirectives = $this->fetchAllAngularDirectives();
+        $this->compressFiles($angularDirectives, 'compressed_angular_directives.js');
+        $this->minifyJsFile('compressed_angular_directives.js');
+        $this->out('<green>done</green>');
+
+        //angular services
+        $this->out('Compress Angular services...    ', false);
+        $angularServices = $this->fetchAllAngularServices();
+        $this->compressFiles($angularServices, 'compressed_angular_services.js');
+        $this->minifyJsFile('compressed_angular_services.js');
+        $this->out('<green>done</green>');
     }
 
-    public function fetchAllJavaScriptComponents()
-    {
-        $core = new Folder(WWW_ROOT.'js'.DS.'app'.DS.'components');
+    public function fetchAllJavaScriptComponents() {
+        $core = new Folder(WWW_ROOT . 'js' . DS . 'app' . DS . 'components');
         $components = $core->findRecursive('.*\.js');
 
         foreach (CakePlugin::loaded() as $pluginName) {
-            $plugin = new Folder(APP.'Plugin'.DS.$pluginName.DS.'webroot'.DS.'js'.DS.'app'.DS.'components');
+            $plugin = new Folder(APP . 'Plugin' . DS . $pluginName . DS . 'webroot' . DS . 'js' . DS . 'app' . DS . 'components');
             $components = array_merge($components, $plugin->findRecursive('.*\.js'));
         }
 
-        //remove ._ controller files
-        $_components = [];
-        foreach ($components as $component) {
-            if (!strpos($component, '._')) {
-                $_components[] = $component;
-            }
-        }
-
-        return $_components;
+        return $this->removeDotFiles($components);
     }
 
-    public function fetchAllJavaScriptControllers()
-    {
-        $core = new Folder(WWW_ROOT.'js'.DS.'app'.DS.'controllers');
+    public function fetchAllJavaScriptControllers() {
+        $core = new Folder(WWW_ROOT . 'js' . DS . 'app' . DS . 'controllers');
         $controllers = $core->findRecursive('.*\.js');
 
         foreach (CakePlugin::loaded() as $pluginName) {
-            $plugin = new Folder(APP.'Plugin'.DS.$pluginName.DS.'webroot'.DS.'js'.DS.'app'.DS.'controllers');
+            $plugin = new Folder(APP . 'Plugin' . DS . $pluginName . DS . 'webroot' . DS . 'js' . DS . 'app' . DS . 'controllers');
             $controllers = array_merge($controllers, $plugin->findRecursive('.*\.js'));
         }
 
-        //remove ._ controller files
-        $_controllers = [];
-        foreach ($controllers as $controller) {
-            if (!strpos($controller, '._')) {
-                $_controllers[] = $controller;
-            }
-        }
-
-        return $_controllers;
+        return $this->removeDotFiles($controllers);
     }
 
-    public function compressFiles($files, $outFileName)
-    {
-        $outFile = new File(WWW_ROOT.'js'.DS.$outFileName);
+
+
+    public function fetchAllAngularControllers() {
+        $core = new Folder(WWW_ROOT . 'js' . DS . 'scripts' . DS . 'controllers');
+        $angularControllers = $core->findRecursive('.*\.js');
+
+        foreach (CakePlugin::loaded() as $pluginName) {
+            $plugin = new Folder(APP . 'Plugin' . DS . $pluginName . DS . 'webroot' . DS . 'js' . DS . 'scripts' . DS . 'controllers');
+            $angularControllers = array_merge($angularControllers, $plugin->findRecursive('.*\.js'));
+        }
+
+        return $this->removeDotFiles($angularControllers);
+    }
+
+    public function fetchAllAngularDirectives() {
+        $core = new Folder(WWW_ROOT . 'js' . DS . 'scripts' . DS . 'directives');
+        $angularDirectives = $core->findRecursive('.*\.js');
+
+        foreach (CakePlugin::loaded() as $pluginName) {
+            $plugin = new Folder(APP . 'Plugin' . DS . $pluginName . DS . 'webroot' . DS . 'js' . DS . 'scripts' . DS . 'directives');
+            $angularDirectives = array_merge($angularDirectives, $plugin->findRecursive('.*\.js'));
+        }
+
+        return $this->removeDotFiles($angularDirectives);
+
+    }
+
+    public function fetchAllAngularServices() {
+        $core = new Folder(WWW_ROOT . 'js' . DS . 'scripts' . DS . 'services');
+        $angularServices = $core->findRecursive('.*\.js');
+
+        foreach (CakePlugin::loaded() as $pluginName) {
+            $plugin = new Folder(APP . 'Plugin' . DS . $pluginName . DS . 'webroot' . DS . 'js' . DS . 'scripts' . DS . 'services');
+            $angularServices = array_merge($angularServices, $plugin->findRecursive('.*\.js'));
+        }
+
+        return $this->removeDotFiles($angularServices);
+    }
+
+    public function compressFiles($files, $outFileName) {
+        $outFile = new File(WWW_ROOT . 'js' . DS . $outFileName);
         if ($outFile->exists()) {
             $outFile->delete();
         }
@@ -115,10 +156,9 @@ class CompressShell extends AppShell
         $outFile->close();
     }
 
-    public function minifyJsFile($fileName)
-    {
-        $minifier = new Minify\JS(WWW_ROOT.'js'.DS.$fileName);
-        $file = new File(WWW_ROOT.'js'.DS.$fileName);
+    public function minifyJsFile($fileName) {
+        $minifier = new Minify\JS(WWW_ROOT . 'js' . DS . $fileName);
+        $file = new File(WWW_ROOT . 'js' . DS . $fileName);
         if ($file->exists()) {
             $file->delete();
         }
@@ -127,8 +167,22 @@ class CompressShell extends AppShell
         $file->close();
     }
 
-    public function _welcome()
-    {
+    /**
+     * remove ._ files from the list
+     * @param array $arr
+     * @return array
+     */
+    public function removeDotFiles($items = []){
+        $_items = [];
+        foreach ($items as $item) {
+            if (!strpos($item, '._')) {
+                $_items[] = $item;
+            }
+        }
+        return $_items;
+    }
+
+    public function _welcome() {
         //Disable CakePHP welcome messages
     }
 

@@ -583,5 +583,5 @@ msgstr "Incorrect password."
 #: confirm_new_password
 msgid "user_model.password_requirement_notice"
 msgstr ""
-"The password must consist of 6-12 alphanumeric characters and must contain "
+"The password must consist of 6 alphanumeric characters and must contain "
 "at least one digit."

@@ -477,7 +477,7 @@ class QueryCache
                 $serviceStateArray['in_downtime'][$service['Servicestatus']['current_state']]++;
             }
             if ($service['Servicestatus']['active_checks_enabled'] == 0) {
-                $serviceStateArray['passive'][$service['Servicestatus']['active_checks_enabled']]++;
+                $serviceStateArray['passive'][$service['Servicestatus']['current_state']]++;
             }
 
             if ($service['Hoststatus']['current_state'] > 0) {

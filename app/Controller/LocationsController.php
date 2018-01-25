@@ -103,6 +103,7 @@ class LocationsController extends AppController
             $this->request->data['Location']['uuid'] = UUID::v4();
             $this->request->data['Container']['containertype_id'] = CT_LOCATION;
             if ($this->Location->saveAll($this->request->data)) {
+                Cache::clear(false, 'permissions');
                 if ($this->request->ext == 'json') {
                     $this->serializeId();
 
@@ -149,6 +150,7 @@ class LocationsController extends AppController
             $this->request->data['Container']['id'] = $location['Container']['id'];
             $this->request->data['Container']['containertype_id'] = CT_LOCATION;
             if ($this->Location->saveAll($this->request->data)) {
+                Cache::clear(false, 'permissions');
                 $this->setFlash(__('Location successfully saved'));
                 $this->redirect(['action' => 'index']);
             } else {
@@ -178,6 +180,7 @@ class LocationsController extends AppController
         }
 
         if ($this->Location->__delete($location, $this->Auth->user('id'))) {
+            Cache::clear(false, 'permissions');
             $this->setFlash(__('Location successfully deleted'));
             $this->redirect(['action' => 'index']);
         } else {

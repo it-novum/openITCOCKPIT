@@ -68,7 +68,14 @@ class NestHelper extends AppHelper
                 }
             });
             $html .= '<li class="'.$options['child_li_class'].'" data-id="'.$parent['Container']['id'].'">';
-            $html .= '<div class="'.$options['handle_class'].'" parent-id="'.$parent['Container']['parent_id'].'" containertype-id="'.$parent['Container']['containertype_id'].'" >'.$this->icon($parent['Container']['containertype_id']).$parent['Container']['name'];
+            $html .= '<div 
+                        class="'.$options['handle_class'].'" 
+                        parent-id="'.$parent['Container']['parent_id'].'" 
+                        containertype-id="'.$parent['Container']['containertype_id'].'">
+                        
+                            <i class="fa fa-pencil edit-tenant" id="'.$parent['Container']['id'].'"></i> '.
+                            $this->icon($parent['Container']['containertype_id']).$parent['Container']['name'];
+
             if ($parent['Container']['containertype_id'] == CT_NODE) {
                 $html .= '<button class="btn btn-xs btn-default pull-right" title="delete" data-action="remove">
                             <i class="fa fa-trash txt-color-red" value="'.$parent['Container']['id'].'"></i>

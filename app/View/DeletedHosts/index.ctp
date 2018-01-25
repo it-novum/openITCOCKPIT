@@ -23,17 +23,14 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 ?>
-<?php
 
-$this->Paginator->options(['url' => $this->params['named']]);
-?>
 <div class="row">
     <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
         <h1 class="page-title txt-color-blueDark">
             <i class="fa fa-desktop fa-fw "></i>
             <?php echo __('Hosts') ?>
             <span>>
-                <?php echo __('List'); ?>
+                <?php echo __('Deleted'); ?>
             </span>
         </h1>
     </div>
@@ -47,12 +44,21 @@ $this->Paginator->options(['url' => $this->params['named']]);
             <div class="jarviswidget jarviswidget-color-blueDark" id="wid-id-1" data-widget-editbutton="false">
                 <header>
                     <div class="widget-toolbar" role="menu">
-                        <?php echo $this->Html->link(__('Filter'), 'javascript:', ['class' => 'oitc-list-filter btn btn-xs btn-primary toggle', 'hide-on-render' => 'true', 'icon' => 'fa fa-filter']); ?>
-                        <?php
-                        if ($isFilter):
-                            echo $this->ListFilter->resetLink(null, ['class' => 'btn-danger btn-xs', 'icon' => 'fa fa-times']);
-                        endif;
-                        ?>
+                        <button type="button" class="btn btn-xs btn-default" ng-click="load()">
+                            <i class="fa fa-refresh"></i>
+                            <?php echo __('Refresh'); ?>
+                        </button>
+
+                        <?php if ($this->Acl->hasPermission('add', 'hosts')): ?>
+                            <a href="/hosts/add" class="btn btn-xs btn-success">
+                                <i class="fa fa-plus"></i>
+                                <?php echo __('New'); ?>
+                            </a>
+                        <?php endif; ?>
+                        <button type="button" class="btn btn-xs btn-primary" ng-click="triggerFilter()">
+                            <i class="fa fa-filter"></i>
+                            <?php echo __('Filter'); ?>
+                        </button>
                         <?php echo $this->AdditionalLinks->renderAsLinks($additionalLinksTop); ?>
                     </div>
 
@@ -64,25 +70,29 @@ $this->Paginator->options(['url' => $this->params['named']]);
                     <ul class="nav nav-tabs pull-right" id="widget-tab-1">
                         <?php if ($this->Acl->hasPermission('index', 'hosts')): ?>
                             <li class="">
-                                <a href="<?php echo Router::url(array_merge(['controller' => 'hosts', 'action' => 'index'], $this->params['named'])); ?>"><i class="fa fa-stethoscope"></i> <span
+                                <a href="<?php echo Router::url(array_merge(['controller' => 'hosts', 'action' => 'index'], $this->params['named'])); ?>"><i
+                                            class="fa fa-stethoscope"></i> <span
                                             class="hidden-mobile hidden-tablet"> <?php echo __('Monitored'); ?> </span>
                                 </a>
                             </li>
                         <?php endif; ?>
                         <?php if ($this->Acl->hasPermission('notMonitored', 'hosts')): ?>
                             <li class="">
-                                <a href="<?php echo Router::url(array_merge(['controller' => 'hosts', 'action' => 'notMonitored'], $this->params['named'])); ?>"><i class="fa fa-user-md"></i> <span
+                                <a href="<?php echo Router::url(array_merge(['controller' => 'hosts', 'action' => 'notMonitored'], $this->params['named'])); ?>"><i
+                                            class="fa fa-user-md"></i> <span
                                             class="hidden-mobile hidden-tablet"> <?php echo __('Not monitored'); ?> </span></a>
                             </li>
                         <?php endif; ?>
                         <?php if ($this->Acl->hasPermission('disabled', 'hosts')): ?>
                             <li>
-                                <a href="<?php echo Router::url(array_merge(['controller' => 'hosts', 'action' => 'disabled'], $this->params['named'])); ?>"><i class="fa fa-power-off"></i> <span
+                                <a href="<?php echo Router::url(array_merge(['controller' => 'hosts', 'action' => 'disabled'], $this->params['named'])); ?>"><i
+                                            class="fa fa-power-off"></i> <span
                                             class="hidden-mobile hidden-tablet"> <?php echo __('Disabled'); ?> </span></a>
                             </li>
                         <?php endif; ?>
                         <li class="active">
-                            <a href="<?php echo Router::url(array_merge(['controller' => 'deleted_hosts', 'action' => 'index'], $this->params['named'])); ?>"><i class="fa fa-trash-o"></i> <span
+                            <a href="<?php echo Router::url(array_merge(['controller' => 'deleted_hosts', 'action' => 'index'], $this->params['named'])); ?>"><i
+                                        class="fa fa-trash-o"></i> <span
                                         class="hidden-mobile hidden-tablet"> <?php echo __('Deleted'); ?> </span></a>
                         </li>
                     </ul>
@@ -91,69 +101,94 @@ $this->Paginator->options(['url' => $this->params['named']]);
 
                 <div>
                     <div class="widget-body no-padding">
-                        <?php
-                        $options = ['avoid_cut' => true];
-                        echo $this->ListFilter->renderFilterbox($filters, $options, '<i class="fa fa-filter"></i> '.__('Filter'), false, false);
-                        ?>
-                        <div class="mobile_table">
-                            <table id="host_list" class="table table-striped table-hover table-bordered smart-form" style="">
-                                <thead>
-                                <tr>
-                                    <?php $order = $this->Paginator->param('order'); ?>
-                                    <th><?php echo $this->Utils->getDirection($order, 'DeletedHost.name');
-                                        echo $this->Paginator->sort('DeletedHost.name', 'Hostname'); ?></th>
-                                    <th><?php echo $this->Utils->getDirection($order, 'DeletedHost.uuid');
-                                        echo $this->Paginator->sort('DeletedHost.uuid', __('UUID')); ?></th>
-                                    <th><?php echo $this->Utils->getDirection($order, 'DeletedHost.created');
-                                        echo $this->Paginator->sort('DeletedHost.created', __('Date')); ?></th>
-                                    <th><?php echo $this->Utils->getDirection($order, 'DeletedHost.deleted_perfdata');
-                                        echo $this->Paginator->sort('DeletedHost.deleted_perfdata', __('Performance data deleted')); ?></th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <?php foreach ($deletedHosts as $host): ?>
-                                    <tr>
-                                        <td><?php echo h($host['DeletedHost']['name']); ?></td>
-                                        <td><?php echo h($host['DeletedHost']['uuid']); ?></td>
-                                        <td><?php echo $this->Time->format($host['DeletedHost']['created'], $this->Auth->user('dateformat'), false, $this->Auth->user('timezone')); ?></td>
-                                        <td class="text-center">
-                                            <?php if ($host['DeletedHost']['deleted_perfdata'] == 1): ?>
-                                                <i class="fa fa-check text-success"></i>
-                                            <?php else: ?>
-                                                <i class="fa fa-times txt-color-red"></i>
-                                            <?php endif; ?>
-                                        </td>
-                                    </tr>
-                                <?php endforeach; ?>
-                                </tbody>
-                            </table>
-                        </div>
-                        <?php if (empty($deletedHosts)): ?>
-                            <div class="noMatch">
-                                <center>
-                                    <span class="txt-color-red italic"><?php echo __('No entries match the selection'); ?></span>
-                                </center>
-                            </div>
-                        <?php endif; ?>
 
-                        <div style="padding: 5px 10px;">
+                        <div class="list-filter well" ng-show="showFilter">
+                            <h3><i class="fa fa-filter"></i> <?php echo __('Filter'); ?></h3>
                             <div class="row">
-                                <div class="col-sm-6">
-                                    <div class="dataTables_info" style="line-height: 32px;"
-                                         id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('Page').' {:page} '.__('of').' {:pages}, '.__('Total').' {:count} '.__('entries')); ?></div>
-                                </div>
-                                <div class="col-sm-6 text-right">
-                                    <div class="dataTables_paginate paging_bootstrap">
-                                        <?php echo $this->Paginator->pagination([
-                                            'ul' => 'pagination',
-                                        ]); ?>
+                                <div class="col-xs-12 col-md-6">
+                                    <div class="form-group smart-form">
+                                        <label class="input"> <i class="icon-prepend fa fa-desktop"></i>
+                                            <input type="text" class="input-sm"
+                                                   placeholder="<?php echo __('Filter by host name'); ?>"
+                                                   ng-model="filter.DeletedHost.name"
+                                                   ng-model-options="{debounce: 500}">
+                                        </label>
                                     </div>
                                 </div>
                             </div>
+
+
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <div class="pull-right margin-top-10">
+                                        <button type="button" ng-click="resetFilter()"
+                                                class="btn btn-xs btn-danger">
+                                            <?php echo __('Reset Filter'); ?>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
 
+                        <div class="mobile_table">
+                            <table id="host_list" class="table table-striped table-hover table-bordered smart-form"
+                                   style="">
+                                <thead>
+                                <tr>
+                                    <th class="no-sort" ng-click="orderBy('DeletedHost.name')">
+                                        <i class="fa" ng-class="getSortClass('DeletedHost.name')"></i>
+                                        <?php echo __('Host name'); ?>
+                                    </th>
+                                    <th class="no-sort" ng-click="orderBy('DeletedHost.uuid')">
+                                        <i class="fa" ng-class="getSortClass('DeletedHost.uuid')"></i>
+                                        <?php echo __('UUID'); ?>
+                                    </th>
+                                    <th class="no-sort" ng-click="orderBy('DeletedHost.created')">
+                                        <i class="fa" ng-class="getSortClass('DeletedHost.created')"></i>
+                                        <?php echo __('Date'); ?>
+                                    </th>
+                                    <th class="no-sort" ng-click="orderBy('DeletedHost.deleted_perfdata')">
+                                        <i class="fa" ng-class="getSortClass('DeletedHost.deleted_perfdata')"></i>
+                                        <?php echo __('Performance data deleted'); ?>
+                                    </th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr ng-repeat="host in hosts">
+                                    <td>
+                                        {{ host.DeletedHost.name }}
+                                    </td>
+
+                                    <td>
+                                        {{ host.DeletedHost.uuid }}
+                                    </td>
+
+                                    <td>
+                                        {{ host.DeletedHost.created }}
+                                    </td>
+
+                                    <td class="text-center">
+                                        <i class="fa fa-check text-success" ng-show="host.DeletedHost.perfdataDeleted"></i>
+                                        <i class="fa fa-times txt-color-red" ng-show="!host.DeletedHost.perfdataDeleted"></i>
+                                    </td>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="row margin-top-10 margin-bottom-10">
+                            <div class="row margin-top-10 margin-bottom-10" ng-show="hosts.length == 0">
+                                <div class="col-xs-12 text-center txt-color-red italic">
+                                    <?php echo __('No entries match the selection'); ?>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>
                     </div>
                 </div>
             </div>
+        </article>
     </div>
 </section>

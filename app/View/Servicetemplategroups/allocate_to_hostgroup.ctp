@@ -30,7 +30,7 @@
             <?php echo __('Monitoring'); ?>
             <span>>
                 <?php echo __('Servicetemplategroup'); ?>
-			</span>
+            </span>
             <div class="third_level"> <?php __('Allocate to hostgroup'); ?></div>
         </h1>
     </div>

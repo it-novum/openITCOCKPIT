@@ -23,6 +23,8 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use itnovum\openITCOCKPIT\Filter\ServicetemplateFilter;
+
 class Servicetemplate extends AppModel
 {
     public $hasAndBelongsToMany = [
@@ -459,5 +461,48 @@ class Servicetemplate extends AppModel
         }
 
         return true;
+    }
+
+    /**
+     * @param ServicetemplateFilter $ServicetemplateFilter
+     * @param array $selected
+     * @return array|null
+     */
+    public function getServicetemplatesForAngular($containerIds = [], ServicetemplateFilter $ServicetemplateFilter, $selected = []) {
+        if (!is_array($containerIds)) {
+            $containerIds = [$containerIds];
+        }
+
+        $query = [
+            'recursive'  => -1,
+            'conditions' => $ServicetemplateFilter->ajaxFilter(),
+            'order'      => [
+                'Servicetemplate.name' => 'ASC',
+            ],
+            'limit' => self::ITN_AJAX_LIMIT
+        ];
+
+        $query['conditions']['Servicetemplate.container_id'] = $containerIds;
+
+        $servicetemplatesWithLimit = $this->find('list', $query);
+
+        $selectedServicetemplates = [];
+        if(!empty($selected)){
+            $query = [
+                'recursive'  => -1,
+                'conditions' => [
+                    'Servicetemplate.id' => $selected,
+                    'Servicetemplate.container_id' => $containerIds
+                ],
+                'order'      => [
+                    'Servicetemplate.name' => 'ASC',
+                ],
+            ];
+            $selectedServicetemplates = $this->find('list', $query);
+        }
+
+        $servicetemplates = $servicetemplatesWithLimit + $selectedServicetemplates;
+        asort($servicetemplates, SORT_FLAG_CASE|SORT_NATURAL);
+        return $servicetemplates;
     }
 }

@@ -39,6 +39,7 @@ App.Controllers.GraphgeneratorsViewController = Frontend.AppController.extend({
 
 	_initialize: function(){
 		this.Ajaxloader.setup();
+		this.Time.setup();
 		this.BootstrapModal.setup({
 			content: window.bootstrapModalContent,
 			on_close: function(){
@@ -53,7 +54,7 @@ App.Controllers.GraphgeneratorsViewController = Frontend.AppController.extend({
 
 		this.initValidation(); // This is done once.
 
-		$('#content').css({'backgroundColor':'white'})
+		$('#content').css({'backgroundColor':'white'});
 		this.renderGraphConfiguration(window.App.loaded_graph_config);
 		setTimeout(function () {
 			location.reload(true);

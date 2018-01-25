@@ -321,7 +321,7 @@ App.Components.GadgetComponent = Frontend.Component.extend({
                     break;
             }
         }
-        
+
         svg.linearGradient(defs, 'fadeGreen_' + id, [[0, '#00cc00'], [0.2, '#5BFF5B'], [0.7, '#006600']]);
         svg.linearGradient(defs, 'fadeDarkGreen_' + id, [[0, '#00AD00'], [0.6, '#006600'], [0.7, '#005600']]);
 
@@ -734,12 +734,15 @@ App.Components.GadgetComponent = Frontend.Component.extend({
     },
 
     drawRRDGraph: function (svgContainerId, opt) {
+        var initSizeX = 300;
+        var initSizeY = 173;
+
         var opt = opt || {};
         var id = (opt.id == false || opt.id != null ? opt.id : '');
         var x = opt.x || 0;
         var y = opt.y || 0;
-        var sizeX = opt.sizeX || 300;
-        var sizeY = opt.sizeY || 173;
+        var sizeX = parseInt(opt.sizeX, 10) || initSizeX;
+        var sizeY = parseInt(opt.sizeY, 10) || initSizeY;
         var state = opt.state || '';
         var containSVG = (opt.contain == null ? true : opt.contain);
         var containerData = opt.containerData || false;
@@ -769,7 +772,6 @@ App.Components.GadgetComponent = Frontend.Component.extend({
             }
         }
 
-
         //SVG Container
         $('#' + svgContainerId).css({
             'top': y + 'px',
@@ -785,6 +787,10 @@ App.Components.GadgetComponent = Frontend.Component.extend({
             svg.image(RRDGroup, 0, 0, sizeX, sizeY, imageLink, {});
         } else {
             var defs = svg.defs();
+
+            var scaleX = sizeX/initSizeX;
+            var scaleY = sizeY/initSizeY;
+
             svg.linearGradient(defs, 'fadeGreen', [[0, '#00cc00'], [0.2, '#5BFF5B'], [0.9, '#006600']]);
             svg.linearGradient(defs, 'fadeDarkGreen', [[0, '#00AD00'], [0.6, '#006600'], [0.7, '#005600']]);
 
@@ -798,26 +804,32 @@ App.Components.GadgetComponent = Frontend.Component.extend({
                 fill: 'black',
                 markerUnits: 'strokeWidth',
                 viewBox: '0 0 20 20',
-                fillOpacity: 0.3
+                fillOpacity: 0.3,
+                transform: 'scale('+scaleX+' '+scaleY+')'
             });
             svg.path(markerVert, arrow_path.move(0, 0).line(20, 5).line(0, 10).close());
             svg.line(element_group, startX, 170, startX, 10, {
                 strokeWidth: 1,
                 stroke: 'black',
                 markerEnd: 'url(#myMarker)',
-                fillOpacity: 0.3
+                fillOpacity: 0.3,
+                transform: 'scale('+scaleX+' '+scaleY+')'
             });
             svg.path(markerVert, arrow_path.move(0, 0).line(20, 5).line(0, 10).close());
             svg.line(element_group, startX, 170, 280, 170, {
                 strokeWidth: 1,
                 stroke: 'black',
                 markerEnd: 'url(#myMarker)',
-                fillOpacity: 0.3
+                fillOpacity: 0.3,
+                transform: 'scale('+scaleX+' '+scaleY+')'
             });
 
 
             svg.polygon([[startX, 170], [startX, 40], [30, 75], [50, 70], [80, 110], [110, 85], [140, 90], [170, 100], [200, 130], [230, 100], [260, 95], [280, 60], [280, 170]],
-                {fill: 'url(#fadeGreen)', stroke: 'url(#fadeDarkGreen)', strokeWidth: 1, fillOpacity: 0.5});
+                {fill: '#b2d6a4', stroke: '#a1c593', strokeWidth: 0.5, fillOpacity: 0.5,
+                    transform: 'scale('+scaleX+' '+scaleY+')'
+                });
+
         }
 
         //container Div
