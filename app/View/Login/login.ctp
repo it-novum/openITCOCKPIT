@@ -110,7 +110,7 @@
                                     ]
                                 ]); ?>
                                 <span class="input-group-addon">
-                                    <i class="fa fa-lg fa-user"></i>
+                                    <i class="fa fa-lg fa-lock"></i>
                                 </span>
                             </div>
                         </div>

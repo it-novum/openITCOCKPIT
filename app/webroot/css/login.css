@@ -134,7 +134,7 @@ figcaption {
     position:absolute;
     width: 320px;
     color: #fff;
-    padding:10px;
+    padding:60px 10px 10px 10px;
     background:rgba(25, 33, 49, 0.4);
     display: flex;
     min-height: 100vh;
@@ -276,13 +276,23 @@ canvas {
 }
 
 .login-center .alert-success {
+    position:absolute;
+    width:100%;
+    top:10px;
+    left:0px;
     background-color: transparent;
     color: #72d473;
     border-color: #02d004;
+    z-index: 2;
 }
 
 .login-center .alert-danger {
+    position:absolute;
+    width:100%;
+    top:10px;
+    left:0px;
     background-color: transparent;
     color: #f3423e;
     border-color: #f51b16;
+    z-index: 2;
 }
