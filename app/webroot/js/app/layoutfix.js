@@ -1,7 +1,11 @@
 $(document).ready(function () {
     //Fix left-panel height
-    $('#left-panel').css('height', parseInt($(document).innerHeight()) + 'px');
+    $('#left-panel').css('height', $(document).innerHeight()+ 'px');
 
+    setTimeout(function(){
+        var maxHeightBody = $('nav.ng-isolate-scope').height() > $(document).innerHeight() ? $('nav.ng-isolate-scope').height() : $(document).innerHeight();
+        $('#left-panel').css('height', maxHeightBody+ 'px');
+    }, 1000);
     //Fix drop down issue in mobile tables
     //$('.dropdown-toggle').off();
 
