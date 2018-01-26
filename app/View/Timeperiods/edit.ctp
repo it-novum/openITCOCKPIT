@@ -196,9 +196,13 @@
                     echo $this->Form->input('template.'.sizeof($timeperiod['Timerange']).'.day', [
                             'options'   => $weekdays,
                             'multiple'  => false,
-                            'class'     => 'chosen weekdays',                            'div'       => false,
+                            'class'     => 'weekdays',
+                            'style'     => 'width:100%',
+                            'div'       => false,
                             'wrapInput' => 'col-md-2',
-                            'label'     => ['text' => __('Day'), 'class' => 'col-md-1 no-padding text-right'],
+                            'label'     => ['text' => __('Day'),
+                                'class' => 'col-md-1 no-padding text-right'
+                            ],
                         ]
                     );
 

@@ -159,7 +159,8 @@
                     echo $this->Form->input('template.1.day', [
                             'options'   => $weekdays,
                             'multiple'  => false,
-                            'class'     => 'chosen weekdays',
+                            'class'     => 'weekdays',
+                            'style'     => 'width:100%',
                             'div'       => false,
                             'wrapInput' => 'col-md-2',
                             'label'     => [
