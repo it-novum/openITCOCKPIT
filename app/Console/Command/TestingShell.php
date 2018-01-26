@@ -51,6 +51,7 @@ class TestingShell extends AppShell
         'Servicecommandargumentvalue',
         'Aro',
         'Aco',
+        'Calendar'
     ];
 
     public function main()
@@ -60,6 +61,24 @@ class TestingShell extends AppShell
         /*
          * Lof of space for your experimental code :)
          */
+
+        $calendar = $this->Calendar->find('first', [
+            'recursive' => -1,
+            'conditions' => [
+                'Calendar.id' => 1
+            ],
+            'contain' => ['CalendarHoliday']
+        ]);
+
+        foreach($calendar['CalendarHoliday'] as $holiday){
+            $timestamp = strtotime(sprintf('%s 00:00', $holiday['date']));
+            debug(sprintf('%s 00:00-24:00; %s',
+                strtolower(date('F j', $timestamp)),
+                $holiday['name']
+            ));
+        }
+
+        //debug($calendar);
     }
 
     public function getOptionParser()

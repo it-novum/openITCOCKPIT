@@ -23,8 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class Calendar extends AppModel
-{
+class Calendar extends AppModel {
 
     public $hasMany = [
         'CalendarHoliday' => [
@@ -59,8 +58,7 @@ class Calendar extends AppModel
         ],
     ];
 
-    public function prepareForSave($request_data)
-    {
+    public function prepareForSave($request_data) {
         $holidays = [];
         foreach ($request_data as $date => $holidayValues) {
             $holidays[] = [
@@ -73,8 +71,7 @@ class Calendar extends AppModel
         return $holidays;
     }
 
-    public function calendarsByContainerId($container_ids = [], $type = 'all')
-    {
+    public function calendarsByContainerId($container_ids = [], $type = 'all') {
         if (!is_array($container_ids)) {
             $container_ids = [$container_ids];
         }

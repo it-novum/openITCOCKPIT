@@ -31,7 +31,7 @@
             <?php echo __('Monitoring'); ?>
             <span>>
                 <?php echo __('Time Periods'); ?>
-			</span>
+            </span>
             <div class="third_level"> <?php echo ucfirst($this->params['action']); ?></div>
         </h1>
     </div>
@@ -84,22 +84,22 @@
                         ?>
                         <div class="col-md-10 padding-top-10 required">
                             <?php
-                            echo $this->Form->input('Timerange.'.$key.'.day', [
+                            echo $this->Form->input('Timerange.' . $key . '.day', [
                                     'options'   => $weekdays,
                                     'multiple'  => false,
                                     'class'     => 'chosen weekdays',
                                     'div'       => false,
                                     'wrapInput' => 'col-md-2',
                                     'label'     => [
-                                        'text' => __('Day'),
+                                        'text'  => __('Day'),
                                         'class' => 'col-md-1 no-padding text-right'
                                     ],
                                     'selected'  => $timerange['day'],
                                 ]
                             );
 
-                            echo $this->Form->input('Timerange.'.$key.'.start', [
-                                    'class'       => 'form-control no-padding '.((isset($timerange_errors) && array_key_exists('Timerange.'.$timerange['day'].'.'.$intern_day_counter.'.start', $timerange_errors)) ? 'input_error_field' : ' no-padding'),
+                            echo $this->Form->input('Timerange.' . $key . '.start', [
+                                    'class'       => 'form-control no-padding ' . ((isset($timerange_errors) && array_key_exists('Timerange.' . $timerange['day'] . '.' . $intern_day_counter . '.start', $timerange_errors)) ? 'input_error_field' : ' no-padding'),
                                     'placeholder' => '00:00',
                                     'maxlength'   => 5,
                                     'size'        => 5,
@@ -113,12 +113,12 @@
                                             'class' => 'text-danger',
                                         ],
                                     ],
-                                    'style' => 'height:auto; padding:1px 4px!important;',
+                                    'style'       => 'height:auto; padding:1px 4px!important;',
                                     'errorClass'  => 'text-danger error',
                                 ]
                             );
-                            echo $this->Form->input('Timerange.'.$key.'.end', [
-                                    'class'       => 'form-control no-padding '.((isset($timerange_errors) && array_key_exists('Timerange.'.$timerange['day'].'.'.$intern_day_counter.'.start', $timerange_errors)) ? 'input_error_field' : ' no-padding'),
+                            echo $this->Form->input('Timerange.' . $key . '.end', [
+                                    'class'       => 'form-control no-padding ' . ((isset($timerange_errors) && array_key_exists('Timerange.' . $timerange['day'] . '.' . $intern_day_counter . '.start', $timerange_errors)) ? 'input_error_field' : ' no-padding'),
                                     'placeholder' => '24:00',
                                     'maxlength'   => 5,
                                     'size'        => 5,
@@ -132,7 +132,7 @@
                                             'class' => 'text-danger',
                                         ],
                                     ],
-                                    'style' => 'height:auto; padding:1px 4px!important;',
+                                    'style'       => 'height:auto; padding:1px 4px!important;',
 
                                 ]
                             );
@@ -159,11 +159,12 @@
                     echo $this->Form->input('template.1.day', [
                             'options'   => $weekdays,
                             'multiple'  => false,
-                            'class'     => 'chosen weekdays',
+                            'class'     => 'weekdays',
+                            'style'     => 'width:100%',
                             'div'       => false,
                             'wrapInput' => 'col-md-2',
                             'label'     => [
-                                'text' => __('Day'),
+                                'text'  => __('Day'),
                                 'class' => 'col-md-1 no-padding text-right'
                             ],
                         ]
@@ -171,7 +172,7 @@
 
                     echo $this->Form->input('template.1.start', [
                         'class'       => 'form-control col-xs-8 no-padding',
-                        'style' => 'height:auto; padding:1px 4px!important;',
+                        'style'       => 'height:auto; padding:1px 4px!important;',
                         'placeholder' => '00:00',
                         'maxlength'   => 5,
                         'size'        => 5,
@@ -190,7 +191,7 @@
                     ]);
                     echo $this->Form->input('template.1.end', [
                             'class'       => 'form-control col-xs-8 no-padding',
-                            'style' => 'height:auto; padding:1px 4px!important;',
+                            'style'       => 'height:auto; padding:1px 4px!important;',
                             'placeholder' => '24:00',
                             'maxlength'   => 5,
                             'size'        => 5,
@@ -217,6 +218,24 @@
                 </div>
             </fieldset>
             <div class="row">
+                <div class="col-xs-12">
+                    <fieldset class=" form-inline required padding-10">
+                        <legend class="font-sm">
+                            <div>
+                                <label><?php echo __('Link to calendar:'); ?>  </label>
+                            </div>
+                        </legend>
+                    </fieldset>
+                </div>
+                <?php
+                echo $this->Form->input('Timeperiod.calendar_id', [
+                    'options' => Hash::merge([0 => __('None')], $calendars),
+                    'class'   => 'chosen',
+                    'style'   => 'width: 100%',
+                    'label'   => __('Calendar'),
+                    'selected' => 0,
+                    'help' => __('In addition to the interval defined by the given time ranges, you are able to add 24x7 days using a calendar.')
+                ]); ?>
             </div>
             <?php echo $this->Form->formActions(); ?>
         </div>
