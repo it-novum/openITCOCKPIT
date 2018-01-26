@@ -88,6 +88,7 @@ class NagiosExportTask extends AppShell
         'DeletedHost',
         'Serviceeventcommandargumentvalue',
         'Servicetemplateeventcommandargumentvalue',
+        'Calendar'
     ];
 
     /**
@@ -2179,6 +2180,26 @@ class NagiosExportTask extends AppShell
                 $content .= $this->addContent($weekdays[$weekday], 1, implode(',', $timesArray));
             }
 
+            //Merge Calendar records to timeperiod
+            if($timeperiod['Timeperiod']['calendar_id'] > 0){
+                $calendar = $this->Calendar->find('first', [
+                    'recursive' => -1,
+                    'conditions' => [
+                        'Calendar.id' => $timeperiod['Timeperiod']['calendar_id']
+                    ],
+                    'contain' => ['CalendarHoliday']
+                ]);
+                foreach($calendar['CalendarHoliday'] as $holiday){
+                    $timestamp = strtotime(sprintf('%s 00:00', $holiday['date']));
+
+                    $calendarDay = sprintf('%s 00:00-24:00; %s',
+                        strtolower(date('F j', $timestamp)),
+                        $holiday['name']
+                    );
+                    $content .= $this->addContent($calendarDay, 1);
+                }
+            }
+
             $content .= $this->addContent('}', 0);
 
             if (!$this->conf['minified']) {
@@ -2267,6 +2288,26 @@ class NagiosExportTask extends AppShell
             foreach ($timeRanges as $day => $timeRange) {
                 asort($timeRange);
                 $content .= $this->addContent($day, 1, implode(',', $timeRange));
+            }
+
+            //Merge Calendar records to timeperiod
+            if($timeperiod['Timeperiod']['calendar_id'] > 0){
+                $calendar = $this->Calendar->find('first', [
+                    'recursive' => -1,
+                    'conditions' => [
+                        'Calendar.id' => $timeperiod['Timeperiod']['calendar_id']
+                    ],
+                    'contain' => ['CalendarHoliday']
+                ]);
+                foreach($calendar['CalendarHoliday'] as $holiday){
+                    $timestamp = strtotime(sprintf('%s 00:00', $holiday['date']));
+
+                    $calendarDay = sprintf('%s 00:00-24:00; %s',
+                        strtolower(date('F j', $timestamp)),
+                        $holiday['name']
+                    );
+                    $content .= $this->addContent($calendarDay, 1);
+                }
             }
 
             $content .= $this->addContent('}', 0);

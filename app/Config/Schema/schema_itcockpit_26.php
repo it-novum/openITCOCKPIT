@@ -717,6 +717,7 @@ class AppSchema extends CakeSchema
         'container_id'    => ['type' => 'integer', 'null' => false, 'default' => null, 'length' => 6],
         'name'            => ['type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
         'description'     => ['type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
+        'calendar_id'     => ['type' => 'integer', 'null' => true, 'default' => 0, 'length' => 6],
         'created'         => ['type' => 'datetime', 'null' => false, 'default' => null],
         'modified'        => ['type' => 'datetime', 'null' => false, 'default' => null],
         'indexes'         => [

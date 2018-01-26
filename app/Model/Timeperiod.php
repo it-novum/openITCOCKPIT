@@ -39,6 +39,12 @@ class Timeperiod extends AppModel
         ],
     ];
 
+    /*
+    public $belongsTo = [
+        'Calendar'
+    ];
+    */
+
     var $validate = [
         'container_id'    => [
             'multiple' => [

@@ -250,6 +250,24 @@
                 </div>
             </fieldset>
             <div class="row">
+                <div class="col-xs-12">
+                    <fieldset class=" form-inline required padding-10">
+                        <legend class="font-sm">
+                            <div>
+                                <label><?php echo __('Link to calendar:'); ?>  </label>
+                            </div>
+                        </legend>
+                    </fieldset>
+                </div>
+                <?php
+                echo $this->Form->input('Timeperiod.calendar_id', [
+                    'options' => Hash::merge([0 => __('None')], $calendars),
+                    'class'   => 'chosen',
+                    'style'   => 'width: 100%',
+                    'label'   => __('Calendar'),
+                    'selected' => $timeperiod['Timeperiod']['calendar_id'],
+                    'help' => __('In addition to the interval defined by the given time ranges, you are able to add 24x7 days using a calendar.')
+                ]); ?>
             </div>
             <?php echo $this->Form->formActions(); ?>
         </div>
