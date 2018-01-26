@@ -266,7 +266,7 @@
                     'style'   => 'width: 100%',
                     'label'   => __('Calendar'),
                     'selected' => $timeperiod['Timeperiod']['calendar_id'],
-                    'help' => __('In addition to the interval defined by the given time ranges, you are able to add 24x7 days using a calendar.')
+                    'help' => __('In addition to the interval defined by the given time ranges, you are able to add 24x7 days using a calendar. This will only affect the monitoring engine.')
                 ]); ?>
             </div>
             <?php echo $this->Form->formActions(); ?>
