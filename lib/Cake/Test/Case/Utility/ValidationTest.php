@@ -2,18 +2,18 @@
 /**
  * ValidationTest file
  *
- * CakePHP(tm) Tests <http://book.cakephp.org/2.0/en/development/testing.html>
- * Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
+ * CakePHP(tm) Tests <https://book.cakephp.org/2.0/en/development/testing.html>
+ * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
  *
  * Licensed under The MIT License
  * For full copyright and license information, please see the LICENSE.txt
  * Redistributions of files must retain the above copyright notice.
  *
- * @copyright     Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
- * @link          http://book.cakephp.org/2.0/en/development/testing.html CakePHP(tm) Tests
+ * @copyright     Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
+ * @link          https://book.cakephp.org/2.0/en/development/testing.html CakePHP(tm) Tests
  * @package       Cake.Test.Case.Utility
  * @since         CakePHP(tm) v 1.2.0.4206
- * @license       http://www.opensource.org/licenses/mit-license.php MIT License
+ * @license       https://opensource.org/licenses/mit-license.php MIT License
  */
 
 App::uses('Validation', 'Utility');
@@ -148,6 +148,10 @@ class ValidationTest extends CakeTestCase {
  * @return void
  */
 	public function testNotBlank() {
+		$this->assertTrue(Validation::notBlank(0), 'zero should not be blank');
+		$this->assertTrue(Validation::notBlank(0.0), 'zero should not be blank');
+		$this->assertTrue(Validation::notBlank(0.0 * -1), 'negative 0 should not be blank');
+		$this->assertTrue(Validation::notBlank(-0.0), 'negative 0 should not be blank');
 		$this->assertTrue(Validation::notBlank('abcdefg'));
 		$this->assertTrue(Validation::notBlank('fasdf '));
 		$this->assertTrue(Validation::notBlank('fooo' . chr(243) . 'blabla'));
@@ -325,14 +329,14 @@ class ValidationTest extends CakeTestCase {
 		$this->assertTrue(Validation::cc('214981579370225', array('enroute')));
 		$this->assertTrue(Validation::cc('201447595859877', array('enroute')));
 		//JCB 15 digit
-		$this->assertTrue(Validation::cc('210034762247893', array('jcb')));
+		$this->assertTrue(Validation::cc('213134762247898', array('jcb')));
 		$this->assertTrue(Validation::cc('180078671678892', array('jcb')));
 		$this->assertTrue(Validation::cc('180010559353736', array('jcb')));
-		$this->assertTrue(Validation::cc('210095474464258', array('jcb')));
-		$this->assertTrue(Validation::cc('210006675562188', array('jcb')));
-		$this->assertTrue(Validation::cc('210063299662662', array('jcb')));
+		$this->assertTrue(Validation::cc('213195474464253', array('jcb')));
+		$this->assertTrue(Validation::cc('213106675562183', array('jcb')));
+		$this->assertTrue(Validation::cc('213163299662667', array('jcb')));
 		$this->assertTrue(Validation::cc('180032506857825', array('jcb')));
-		$this->assertTrue(Validation::cc('210057919192738', array('jcb')));
+		$this->assertTrue(Validation::cc('213157919192733', array('jcb')));
 		$this->assertTrue(Validation::cc('180031358949367', array('jcb')));
 		$this->assertTrue(Validation::cc('180033802147846', array('jcb')));
 		//JCB 16 digit
@@ -702,7 +706,7 @@ class ValidationTest extends CakeTestCase {
 		//enRoute
 		$this->assertTrue(Validation::luhn('201496944158937', true));
 		//JCB 15 digit
-		$this->assertTrue(Validation::luhn('210034762247893', true));
+		$this->assertTrue(Validation::luhn('213134762247898', true));
 		//JCB 16 digit
 		$this->assertTrue(Validation::luhn('3096806857839939', true));
 		//Maestro (debit card)
@@ -807,7 +811,7 @@ class ValidationTest extends CakeTestCase {
 		//enRoute
 		$this->assertTrue(Validation::cc('201496944158937', 'all'));
 		//JCB 15 digit
-		$this->assertTrue(Validation::cc('210034762247893', 'all'));
+		$this->assertTrue(Validation::cc('213134762247898', 'all'));
 		//JCB 16 digit
 		$this->assertTrue(Validation::cc('3096806857839939', 'all'));
 		//Maestro (debit card)
@@ -857,7 +861,7 @@ class ValidationTest extends CakeTestCase {
 		//enRoute
 		$this->assertTrue(Validation::cc('201496944158937', 'all', true));
 		//JCB 15 digit
-		$this->assertTrue(Validation::cc('210034762247893', 'all', true));
+		$this->assertTrue(Validation::cc('213134762247898', 'all', true));
 		//JCB 16 digit
 		$this->assertTrue(Validation::cc('3096806857839939', 'all', true));
 		//Maestro (debit card)
@@ -1826,6 +1830,20 @@ class ValidationTest extends CakeTestCase {
 	}
 
 /**
+ * maxLengthBytes method
+ *
+ * @return void
+ */
+	public function testMaxLengthBytes() {
+		$this->assertTrue(Validation::maxLengthBytes('ab', 3));
+		$this->assertTrue(Validation::maxLengthBytes('abc', 3));
+		$this->assertTrue(Validation::maxLengthBytes('ÆΔΩЖÇ', 10));
+		$this->assertTrue(Validation::maxLengthBytes('ÆΔΩЖÇ', 11));
+		$this->assertFalse(Validation::maxLengthBytes('abcd', 3));
+		$this->assertFalse(Validation::maxLengthBytes('ÆΔΩЖÇ', 9));
+	}
+
+/**
  * testMinLength method
  *
  * @return void
@@ -1840,13 +1858,27 @@ class ValidationTest extends CakeTestCase {
 	}
 
 /**
+ * minLengthBytes method
+ *
+ * @return void
+ */
+	public function testMinLengthBytes() {
+		$this->assertFalse(Validation::minLengthBytes('ab', 3));
+		$this->assertFalse(Validation::minLengthBytes('ÆΔΩЖÇ', 11));
+		$this->assertTrue(Validation::minLengthBytes('abc', 3));
+		$this->assertTrue(Validation::minLengthBytes('abcd', 3));
+		$this->assertTrue(Validation::minLengthBytes('ÆΔΩЖÇ', 10));
+		$this->assertTrue(Validation::minLengthBytes('ÆΔΩЖÇ', 9));
+	}
+
+/**
  * testUrl method
  *
  * @return void
  */
 	public function testUrl() {
 		$this->assertTrue(Validation::url('http://www.cakephp.org'));
-		$this->assertTrue(Validation::url('http://cakephp.org'));
+		$this->assertTrue(Validation::url('https://cakephp.org'));
 		$this->assertTrue(Validation::url('http://www.cakephp.org/somewhere#anchor'));
 		$this->assertTrue(Validation::url('http://192.168.0.1'));
 		$this->assertTrue(Validation::url('https://www.cakephp.org'));
@@ -1897,10 +1929,10 @@ class ValidationTest extends CakeTestCase {
 		$this->assertTrue(Validation::url('http://äüö.eräume.foo'));
 
 		$this->assertTrue(Validation::url('http://cakephp.org:80'));
-		$this->assertTrue(Validation::url('http://cakephp.org:443'));
-		$this->assertTrue(Validation::url('http://cakephp.org:2000'));
-		$this->assertTrue(Validation::url('http://cakephp.org:27000'));
-		$this->assertTrue(Validation::url('http://cakephp.org:65000'));
+		$this->assertTrue(Validation::url('https://cakephp.org:443'));
+		$this->assertTrue(Validation::url('https://cakephp.org:2000'));
+		$this->assertTrue(Validation::url('https://cakephp.org:27000'));
+		$this->assertTrue(Validation::url('https://cakephp.org:65000'));
 
 		$this->assertTrue(Validation::url('[2001:0db8::1428:57ab]'));
 		$this->assertTrue(Validation::url('[::1]'));
