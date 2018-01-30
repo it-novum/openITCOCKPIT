@@ -889,6 +889,22 @@ body {
     color: #92A2A8 !important;
 }
 
+.bg-ok, .bg-up {
+    background-color: #449D44 !important;
+}
+
+.bg-warning {
+    background-color: #DF8F1D !important;
+}
+
+.bg-critical, .bg-down {
+    background-color: #C9302C !important;
+}
+
+.bg-unknown, .bg-unreachable {
+    background-color: #92A2A8 !important;
+}
+
 rect.ok {
     fill: #449D44;
 }
