@@ -23,7 +23,7 @@ angular.module('openITCOCKPIT')
                 Host: {
                     name: QueryStringService.getValue('filter[Host.name]', ''),
                     keywords: '',
-                    address: '',
+                    address:  QueryStringService.getValue('filter[Host.address]', ''),
                     satellite_id: []
                 }
             };
