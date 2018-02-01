@@ -750,7 +750,7 @@ of processes.  Search filters can be applied to limit the processes to check.',
                         [
                             'id'           => '23',
                             'name'         => 'check_by_ssh',
-                            'command_line' => '$USER1$/check_by_ssh -H $HOSTADDRESS$ -l $ARG1$ -C $ARG2$',
+                            'command_line' => '$USER1$/check_by_ssh -H $HOSTADDRESS$ -l "$ARG1$" -C "$ARG2$"',
                             'command_type' => '1',
                             'human_args'   => null,
                             'uuid'         => 'fd52f68f-e0f9-4c69-9f69-bc1b2d97188a',

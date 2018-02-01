@@ -41,6 +41,7 @@ App.Controllers.HostsBrowserController = Frontend.AppController.extend({
         });
         this.Qr.setup();
         this.Externalcommand.setup();
+        this.serviceIdToDelete = 0;
 
         var self = this;
 
@@ -190,6 +191,19 @@ App.Controllers.HostsBrowserController = Frontend.AppController.extend({
             var $this = $(this);
             self.execPing($this.attr('target'));
         });
+
+        $('.triggerWorkaroundConfirmDelete').click(function(){
+            var serviceId = $(this).data('serviceId');
+            $('#errorOnDelete').html('');
+            self.serviceIdToDelete = serviceId;
+            $('#workaroundConfirmDelete').modal('show');
+        });
+
+        $('#yesDeleteService').click(function(){
+            //ajax delete
+            self.deleteService(self.serviceIdToDelete);
+            self.serviceIdToDelete = 0;
+        });
     },
 
     validateDowntimeInput: function () {
@@ -248,6 +262,47 @@ App.Controllers.HostsBrowserController = Frontend.AppController.extend({
             }.bind(this),
             complete: function (response) {
             }
+        });
+
+    },
+
+    deleteService: function(id){
+        if(id < 1){
+            return false;
+        }
+        $.ajax({
+            dataType: "json",
+            url: '/services/delete/' + id + '.json',
+            method: 'POST',
+            data: {
+                'angular': true
+            },
+            success: function(response){
+
+                $('#successDelete').show();
+                setTimeout(function(){
+                    location.reload();
+                }, 700);
+            },
+            error: function(request, status, error){
+                var errorMsg = request.responseJSON.message;
+                var usedBy = request.responseJSON.usedBy;
+
+                var errorHtml = '<div class="text-danger">';
+                errorHtml += '<div class="text-danger">' + errorMsg + '</div>';
+                for(var key in usedBy){
+                    errorHtml += '<div class="text-danger">';
+                    errorHtml += '<i class="fa fa-times"></i>';
+                    errorHtml += ' ';
+                    errorHtml += '<a class="text-danger" href="' + usedBy[key].baseUrl + id + '">' + usedBy[key].message + '</a>';
+                    errorHtml += '</div>';
+                }
+                errorHtml += '</div>';
+
+                $('#errorOnDelete').html(errorHtml);
+
+            }
+
         });
 
     }

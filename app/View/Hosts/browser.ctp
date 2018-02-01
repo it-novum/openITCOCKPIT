@@ -99,7 +99,7 @@ $HoststatusIcon = new HoststatusIcon($Hoststatus->currentState());
                                         class="hidden-mobile hidden-tablet"> <?php echo __('Host commands'); ?> </span></a>
                         </li>
                     <?php endif; ?>
-                  
+
                     <?php echo $this->AdditionalLinks->renderAsTabs($additionalLinksTab, null, 'host', 'tabLink'); ?>
 
                     <?php if ($GrafanaDashboardExists): ?>
@@ -199,7 +199,7 @@ $HoststatusIcon = new HoststatusIcon($Hoststatus->currentState());
                                     <?php echo __('The host is currently in a planned maintenance period.'); ?>
                                     <br/><br/>
                                 </p>
-                                <?php
+                            <?php
                             endif;
                             if (!empty($parenthosts)):
                                 foreach ($parenthosts as $parenthost):
@@ -236,7 +236,7 @@ $HoststatusIcon = new HoststatusIcon($Hoststatus->currentState());
                                                 <?php
                                                 echo __('is currently in a scheduled downtime'); ?>
                                             </p>
-                                            <?php
+                                        <?php
                                         endif;
                                     endif;
                                 endforeach;
@@ -418,11 +418,11 @@ $HoststatusIcon = new HoststatusIcon($Hoststatus->currentState());
                             <dl>
                                 <dt><?php echo __('Notification occurs in the following cases'); ?>:</dt>
                                 <?php echo $this->Monitoring->formatNotifyOnHost([
-                                    'notify_on_down' => $host['Host']['notify_on_down'],
+                                    'notify_on_down'        => $host['Host']['notify_on_down'],
                                     'notify_on_unreachable' => $host['Host']['notify_on_unreachable'],
-                                    'notify_on_recovery' => $host['Host']['notify_on_recovery'],
-                                    'notify_on_flapping' => $host['Host']['notify_on_flapping'],
-                                    'notify_on_downtime' => $host['Host']['notify_on_downtime'],
+                                    'notify_on_recovery'    => $host['Host']['notify_on_recovery'],
+                                    'notify_on_flapping'    => $host['Host']['notify_on_flapping'],
+                                    'notify_on_downtime'    => $host['Host']['notify_on_downtime'],
                                 ]); ?>
                             </dl>
                             <?php
@@ -435,7 +435,7 @@ $HoststatusIcon = new HoststatusIcon($Hoststatus->currentState());
                                 ?>
                                 <span class="text-info"><i
                                             class="fa fa-info-circle"></i> <?php echo __('Contacts and Contactgroups are inherited in the following order:'); ?> <?php echo $source; ?></span>
-                                <?php
+                            <?php
                             endif;
                             ?>
                             <?php if (!empty($ContactsInherited['Contact'])): ?>
@@ -616,7 +616,8 @@ $HoststatusIcon = new HoststatusIcon($Hoststatus->currentState());
                                                         $ServicestatusIcon = new ServicestatusIcon($Servicestatus->currentState());
                                                         if ($service['Service']['disabled'] == 0):?>
                                                             <tr>
-                                                                <td class="text-center width-90" data-sort="<?php echo $Servicestatus->currentState();?>">
+                                                                <td class="text-center width-90"
+                                                                    data-sort="<?php echo $Servicestatus->currentState(); ?>">
                                                                     <?php
                                                                     if ($Servicestatus->isFlapping()):
                                                                         echo $Servicestatus->getServiceFlappingIconColored();
@@ -630,7 +631,7 @@ $HoststatusIcon = new HoststatusIcon($Hoststatus->currentState());
                                                                         <?php if ($this->Acl->hasPermission('edit', 'services') && $allowEdit): ?>
                                                                             <a href="<?php echo Router::url([
                                                                                 'controller' => 'services',
-                                                                                'action' => 'edit',
+                                                                                'action'     => 'edit',
                                                                                 $service['Service']['id']
                                                                             ]); ?>" class="btn btn-default">&nbsp;<i
                                                                                         class="fa fa-cog"></i>&nbsp;
@@ -649,7 +650,7 @@ $HoststatusIcon = new HoststatusIcon($Hoststatus->currentState());
                                                                                 <li>
                                                                                     <a href="<?php echo Router::url([
                                                                                         'controller' => 'services',
-                                                                                        'action' => 'edit',
+                                                                                        'action'     => 'edit',
                                                                                         $service['Service']['id']
                                                                                     ]); ?>">
                                                                                         <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
@@ -660,7 +661,7 @@ $HoststatusIcon = new HoststatusIcon($Hoststatus->currentState());
                                                                                 <li>
                                                                                     <a href="<?php echo Router::url([
                                                                                         'controller' => 'services',
-                                                                                        'action' => 'deactivate',
+                                                                                        'action'     => 'deactivate',
                                                                                         $service['Service']['id']
                                                                                     ]); ?>">
                                                                                         <i class="fa fa-plug"></i> <?php echo __('Disable'); ?>
@@ -670,7 +671,13 @@ $HoststatusIcon = new HoststatusIcon($Hoststatus->currentState());
                                                                             <?php if ($this->Acl->hasPermission('delete', 'services') && $allowEdit): ?>
                                                                                 <li class="divider"></li>
                                                                                 <li>
-                                                                                    <?php echo $this->Form->postLink('<i class="fa fa-trash-o"></i> ' . __('Delete'), ['controller' => 'services', 'action' => 'delete', $service['Service']['id']], ['class' => 'txt-color-red', 'escape' => false]); ?>
+                                                                                    <a href="javascript:void(0);"
+                                                                                       class="txt-color-red triggerWorkaroundConfirmDelete"
+                                                                                       data-service-id="<?php echo h($service['Service']['id']); ?>">
+                                                                                        <i class="fa fa-trash-o"></i>
+                                                                                        <?php echo __('Delete'); ?>
+                                                                                    </a>
+                                                                                    <?php //echo $this->Form->postLink('<i class="fa fa-trash-o"></i> ' . __('Delete'), ['controller' => 'services', 'action' => 'delete', $service['Service']['id']], ['class' => 'txt-color-red', 'escape' => false]); ?>
                                                                                 </li>
                                                                             <?php endif; ?>
                                                                         </ul>
@@ -722,10 +729,10 @@ $HoststatusIcon = new HoststatusIcon($Hoststatus->currentState());
                                                                 <td data-original-title="<?php echo h($this->Time->format($Servicestatus->getLastStateChange(), $this->Auth->user('dateformat'), false, $this->Auth->user('timezone'))); ?>"
                                                                     data-placement="bottom" rel="tooltip"
                                                                     data-container="body"
-                                                                    data-sort="<?php echo $Servicestatus->getLastStateChange();?>"
+                                                                    data-sort="<?php echo $Servicestatus->getLastStateChange(); ?>"
                                                                 >
                                                                     <?php echo h($this->Utils->secondsInHumanShort(time() - $Servicestatus->getLastStateChange())); ?>
-                                                                    </td>
+                                                                </td>
                                                                 <td><?php echo h($Servicestatus->getOutput()); ?></td>
                                                             </tr>
                                                         <?php endif; ?>
@@ -993,9 +1000,9 @@ $HoststatusIcon = new HoststatusIcon($Hoststatus->currentState());
             </div>
             <div class="modal-footer">
                 <a href="<?php echo Router::url([
-                        'controller' => 'systemdowntimes',
-                        'action' => 'addHostdowntime',
-                        $host['Host']['id']
+                    'controller' => 'systemdowntimes',
+                    'action'     => 'addHostdowntime',
+                    $host['Host']['id']
                 ]); ?>"
                    class="btn btn-primary pull-left"><i class="fa fa-cogs"></i> <?php echo __('More options'); ?></a>
                 <button type="button" class="btn btn-success" id="submitCommitHostDowntime">
@@ -1211,3 +1218,45 @@ $HoststatusIcon = new HoststatusIcon($Hoststatus->currentState());
 </div>
 
 <?php echo $this->element('qrmodal'); ?>
+
+<div id="workaroundConfirmDelete" class="modal" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-color-danger txt-color-white">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title"><?php echo __('Attention!'); ?></h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <?php echo __('Do you really want delete this service?'); ?>
+                    </div>
+
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12 margin-top-10" id="errorOnDelete"></div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12 margin-top-10" id="successDelete" style="display:none;">
+                        <div class="alert auto-hide alert-success">
+                            <?php echo __('Service deleted successfully'); ?>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" id="yesDeleteService">
+                    <?php echo __('Delete'); ?>
+                </button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">
+                    <?php echo __('Cancel'); ?>
+                </button>
+            </div>
+        </div>
+
+    </div>
+</div>
