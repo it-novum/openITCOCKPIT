@@ -42,6 +42,7 @@ App.Controllers.HostsBrowserController = Frontend.AppController.extend({
         this.Qr.setup();
         this.Externalcommand.setup();
         this.serviceIdToDelete = 0;
+        this.serviceIdToDisable = 0;
 
         var self = this;
 
@@ -204,6 +205,19 @@ App.Controllers.HostsBrowserController = Frontend.AppController.extend({
             self.deleteService(self.serviceIdToDelete);
             self.serviceIdToDelete = 0;
         });
+
+        $('.triggerWorkaroundConfirmDisable').click(function(){
+            var serviceId = $(this).data('serviceId');
+            $('#errorOnDisable').html('');
+            self.serviceIdToDisable = serviceId;
+            $('#workaroundConfirmDisable').modal('show');
+        });
+
+        $('#yesDisableService').click(function(){
+            //ajax delete
+            self.disableService(self.serviceIdToDisable);
+            self.serviceIdToDisable = 0;
+        });
     },
 
     validateDowntimeInput: function () {
@@ -300,6 +314,47 @@ App.Controllers.HostsBrowserController = Frontend.AppController.extend({
                 errorHtml += '</div>';
 
                 $('#errorOnDelete').html(errorHtml);
+
+            }
+
+        });
+
+    },
+
+    disableService: function(id){
+        if(id < 1){
+            return false;
+        }
+        $.ajax({
+            dataType: "json",
+            url: '/services/deactivate/' + id + '.json',
+            method: 'POST',
+            data: {
+                'angular': true
+            },
+            success: function(response){
+
+                $('#successDisabled').show();
+                setTimeout(function(){
+                    location.reload();
+                }, 700);
+            },
+            error: function(request, status, error){
+                var errorMsg = request.responseJSON.message;
+                var usedBy = request.responseJSON.usedBy;
+
+                var errorHtml = '<div class="text-danger">';
+                errorHtml += '<div class="text-danger">' + errorMsg + '</div>';
+                for(var key in usedBy){
+                    errorHtml += '<div class="text-danger">';
+                    errorHtml += '<i class="fa fa-times"></i>';
+                    errorHtml += ' ';
+                    errorHtml += '<a class="text-danger" href="' + usedBy[key].baseUrl + id + '">' + usedBy[key].message + '</a>';
+                    errorHtml += '</div>';
+                }
+                errorHtml += '</div>';
+
+                $('#errorOnDisable').html(errorHtml);
 
             }
 

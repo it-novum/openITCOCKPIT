@@ -659,12 +659,11 @@ $HoststatusIcon = new HoststatusIcon($Hoststatus->currentState());
                                                                             <?php endif; ?>
                                                                             <?php if ($this->Acl->hasPermission('deactivate', 'services') && $allowEdit): ?>
                                                                                 <li>
-                                                                                    <a href="<?php echo Router::url([
-                                                                                        'controller' => 'services',
-                                                                                        'action'     => 'deactivate',
-                                                                                        $service['Service']['id']
-                                                                                    ]); ?>">
-                                                                                        <i class="fa fa-plug"></i> <?php echo __('Disable'); ?>
+                                                                                    <a href="javascript:void(0);"
+                                                                                       class="triggerWorkaroundConfirmDisable"
+                                                                                       data-service-id="<?php echo h($service['Service']['id']); ?>">
+                                                                                        <i class="fa fa fa-plug"></i>
+                                                                                        <?php echo __('Disable'); ?>
                                                                                     </a>
                                                                                 </li>
                                                                             <?php endif; ?>
@@ -677,7 +676,6 @@ $HoststatusIcon = new HoststatusIcon($Hoststatus->currentState());
                                                                                         <i class="fa fa-trash-o"></i>
                                                                                         <?php echo __('Delete'); ?>
                                                                                     </a>
-                                                                                    <?php //echo $this->Form->postLink('<i class="fa fa-trash-o"></i> ' . __('Delete'), ['controller' => 'services', 'action' => 'delete', $service['Service']['id']], ['class' => 'txt-color-red', 'escape' => false]); ?>
                                                                                 </li>
                                                                             <?php endif; ?>
                                                                         </ul>
@@ -1260,3 +1258,46 @@ $HoststatusIcon = new HoststatusIcon($Hoststatus->currentState());
 
     </div>
 </div>
+
+<div id="workaroundConfirmDisable" class="modal" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-color-orange txt-color-white">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title"><?php echo __('Attention!'); ?></h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <?php echo __('Do you really want disable this service?'); ?>
+                    </div>
+
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12 margin-top-10" id="errorOnDisable"></div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12 margin-top-10" id="successDisabled" style="display:none;">
+                        <div class="alert auto-hide alert-success">
+                            <?php echo __('Service disabled successfully'); ?>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-warning" id="yesDisableService">
+                    <?php echo __('Disable'); ?>
+                </button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">
+                    <?php echo __('Cancel'); ?>
+                </button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
