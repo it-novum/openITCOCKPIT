@@ -153,19 +153,19 @@
                                     </td>
                                     <td>
                                         <ul class="list-unstyled">
-                                            <li ng-repeat="service in servicegroup.Service">
-                                                <a href="hosts/edit/{{service.Host.id}}" ng-if="service.Host.allowEdit">
-                                                    {{ service.Host.name }}
+                                            <li ng-repeat="service in servicegroup.Services">
+                                                <a href="/hosts/edit/{{service.Host.id}}" ng-if="service.Host.allow_edit">
+                                                    {{ service.Host.hostname }}
                                                 </a>
-                                                <span ng-if="!service.Host.allowEdit">
-                                                    {{ service.Host.name }}
+                                                <span ng-if="!service.Host.allow_edit">
+                                                    {{ service.Host.hostname }}
                                                 </span>
                                                 /
-                                                <a href="services/edit/{{service.id}}" ng-if="service.allowEdit">
-                                                    {{ (service.name) ? service.name : service.Servicetemplate.name }}
+                                                <a href="/services/edit/{{service.Service.id}}" ng-if="service.Service.allow_edit">
+                                                    {{ service.Service.servicename }}
                                                 </a>
-                                                <span ng-if="!service.allowEdit">
-                                                    {{ (service.name) ? service.name : service.Servicetemplate.name }}
+                                                <span ng-if="!service.Service.allow_edit">
+                                                    {{ service.Service.servicename }}
                                                 </span>
                                             </li>
                                         </ul>

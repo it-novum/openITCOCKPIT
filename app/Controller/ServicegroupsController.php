@@ -127,19 +127,45 @@ class ServicegroupsController extends AppController {
         }
 
         $all_servicegroups = [];
+        $hostContainers = [];
+
         foreach ($servicegroups as $servicegroup) {
             $servicegroup['Servicegroup']['allowEdit'] = $this->hasPermission('edit', 'servicegroups');;
             if ($this->hasRootPrivileges === false && $servicegroup['Servicegroup']['allowEdit'] === true) {
                 $servicegroup['Servicegroup']['allowEdit'] = $this->allowedByContainerId($servicegroup['Container']['parent_id']);
             }
-            foreach ($servicegroup['Service'] as $key => $service) {
-                $servicegroup['Service'][$key]['allowEdit'] = $this->hasPermission('edit', 'services');
-                $servicegroup['Service'][$key]['Host']['allowEdit'] = $this->hasPermission('edit', 'hosts');
-
-                if ($this->hasRootPrivileges === false && $servicegroup['Service'][$key]['Host']['allowEdit'] === true) {
-                    $containerIdsToCheck = Hash::extract($service, 'Service.{n}.Host.HostsToContainer.container_id');
-                    $servicegroup['Service'][$key]['Host']['allowEdit'] = $this->allowedByContainerId($containerIdsToCheck);
+            foreach ($servicegroup['Service'] as $service) {
+                if (!empty($services) && $this->hasRootPrivileges === false && $this->hasPermission('edit', 'hosts') && $this->hasPermission('edit', 'services')) {
+                    $hostContainers[$service['Host']['id']] = Hash::extract($service['Host']['Container'], '{n}.id');
                 }
+            }
+            $all_services = [];
+            foreach ($servicegroup['Service'] as $key => $service) {
+                if ($this->hasRootPrivileges) {
+                    $allowEdit = true;
+                } else {
+                    $containerIds = [];
+                    if (isset($hostContainers[$service['Host']['id']])) {
+                        $containerIds = $hostContainers[$service['Host']['id']];
+                    }
+                    $ContainerPermissions = new ContainerPermissions($this->MY_RIGHTS_LEVEL, $containerIds);
+                    $allowEdit = $ContainerPermissions->hasPermission();
+                }
+
+                $Service = new \itnovum\openITCOCKPIT\Core\Views\Service([
+                    'Service' => $service,
+                    'Servicetemplate' =>  $service['Servicetemplate'],
+                    'Host' => $service['Host']
+                ],
+                    null,
+                    $allowEdit
+                );
+                $Host = new \itnovum\openITCOCKPIT\Core\Views\Host($service, $allowEdit);
+                $tmpRecord = [
+                    'Service'       => $Service->toArray(),
+                    'Host'          => $Host->toArray()
+                ];
+                $all_services[] = $tmpRecord;
             }
 
 
@@ -149,10 +175,23 @@ class ServicegroupsController extends AppController {
                     $servicegroup['Servicetemplate'][$key]['allowEdit'] = $this->allowedByContainerId($servicetemplate['container_id']);
                 }
             }
+
+            # get a list of sort columns and their data to pass to array_multisort
+            $sortAllServices = [];
+            foreach($all_services as $k=>$v) {
+                $sortAllServices['Host']['hostname'][$k] = $v['Host']['hostname'];
+                $sortAllServices['Service']['servicename'][$k] = $v['Service']['servicename'];
+            }
+
+            # sort by host name asc and service name asc
+            if(!empty($all_services)){
+                array_multisort( $sortAllServices['Host']['hostname'], SORT_ASC, $sortAllServices['Service']['servicename'], SORT_ASC, $all_services);
+            }
+
             $all_servicegroups[] = [
                 'Servicegroup' => $servicegroup['Servicegroup'],
                 'Container' => $servicegroup['Container'],
-                'Service' => $servicegroup['Service'],
+                'Services' => $all_services,
                 'Servicetemplate' => $servicegroup['Servicetemplate']
             ];
 
