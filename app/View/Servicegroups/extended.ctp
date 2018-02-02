@@ -24,7 +24,6 @@
 //	confirmation.
 
 
-
 use itnovum\openITCOCKPIT\Core\Servicestatus;
 use itnovum\openITCOCKPIT\Core\HumanTime;
 
@@ -50,97 +49,26 @@ use itnovum\openITCOCKPIT\Core\HumanTime;
 <section id="widget-grid" class="">
     <div class="row">
         <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-
-            <?php
-            //Wee only need the form for the nice markup -.-
-            echo $this->Form->create('extended', [
-                'class' => 'form-horizontal clear',
-            ]);
-            ?>
-            <div class="row">
-                <div class="col col-xs-8">
-                    <?php
-                    /*
-                    echo $this->Form->input('servicegroup_id', [
-                        'options'          => $servicegroups,
-                        'selected'         => $servicegroup['Servicegroup']['id'],
-                        'data-placeholder' => __('Please select...'),
-                        'class'            => 'chosen',
-                        'label'            => false,
-                        'wrapInput'        => 'col col-xs-12',
-                        'style'            => 'width: 100%',
-                    ]);
-                    */
-                    ?>
-                </div>
-                <div class="col col-xs-4" style="padding-left:0;">
-                    <div class="btn-group pull-left" style="padding-top: 2px;">
-                        <?php if ($this->Acl->hasPermission('edit')): ?>
-                            <a href="/<?php echo $this->params['controller']; ?>/edit/<?php //echo $servicegroup['Servicegroup']['id']; ?>"
-                               class="btn btn-default btn-xs">&nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
-                        <?php else: ?>
-                            <a href="javascript:void(0);" class="btn btn-default btn-xs">&nbsp;<i class="fa fa-cog"></i>&nbsp;
-                            </a>
-                        <?php endif; ?>
-                        <a href="javascript:void(0);" data-toggle="dropdown"
-                           class="btn btn-default btn-xs dropdown-toggle"><span class="caret"></span></a>
-                        <ul class="dropdown-menu">
-                            <?php if ($this->Acl->hasPermission('edit')): ?>
-                                <li>
-                                    <a href="/<?php echo $this->params['controller']; ?>/edit/<?php //echo $servicegroup['Servicegroup']['id']; ?>"><i
-                                                class="fa fa-cog"></i> <?php echo __('Edit'); ?></a>
-                                </li>
-                            <?php endif; ?>
-                            <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
-                                <li class="divider"></li>
-                                <li>
-                                    <a href="javascript:void(0);" data-toggle="modal"
-                                       data-target="#nag_command_reschedule"><i
-                                                class="fa fa-refresh"></i> <?php echo __('Reset check time'); ?></a>
-                                </li>
-                                <li>
-                                    <a href="javascript:void(0);" data-toggle="modal"
-                                       data-target="#nag_command_schedule_downtime"><i
-                                                class="fa fa-clock-o"></i> <?php echo __('Set planned maintenance times'); ?>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="javascript:void(0);" data-toggle="modal"
-                                       data-target="#nag_command_ack_state"><i
-                                                class="fa fa-user"></i> <?php echo __('Acknowledge host status'); ?></a>
-                                </li>
-                                <li>
-                                    <a href="javascript:void(0);" data-toggle="modal"
-                                       data-target="#nag_command_disable_notifications"><i
-                                                class="fa fa-envelope-o"></i> <?php echo __('Disable notification'); ?>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="javascript:void(0);" data-toggle="modal"
-                                       data-target="#nag_command_enable_notifications"><i
-                                                class="fa fa-envelope"></i> <?php echo __('Enable notifications'); ?>
-                                    </a>
-                                </li>
-                            <?php endif; ?>
-                            <?php //echo $this->AdditionalLinks->renderAsListItems($additionalLinksList, $servicegroup['Servicegroup']['id']); ?>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-            <?php echo $this->Form->end(); ?>
-
-            <!-- Widget ID (each widget will need unique ID)-->
             <div class="jarviswidget jarviswidget-color-blueDark" id="wid-id-1" data-widget-editbutton="false">
                 <header>
                     <?php if ($this->Acl->hasPermission('add')): ?>
                         <div class="widget-toolbar" role="menu">
-                            <?php echo $this->Html->link(__('New'), '/'.$this->params['controller'].'/add', ['class' => 'btn btn-xs btn-success', 'icon' => 'fa fa-plus']); ?>
+                            <?php echo $this->Html->link(
+                                __('New'), '/' . $this->params['controller'] . '/add', [
+                                'class' => 'btn btn-xs btn-success',
+                                'icon' => 'fa fa-plus'
+                                ]
+                            ); ?>
+                            <button type="button" class="btn btn-xs btn-primary" ng-click="triggerFilter()">
+                                <i class="fa fa-filter"></i>
+                                <?php echo __('Filter'); ?>
+                            </button>
                         </div>
                     <?php endif; ?>
                     <div class="jarviswidget-ctrls" role="menu">
                     </div>
-                    <span class="widget-icon hidden-mobile"> <i class="fa fa-sitemap"></i> </span>
-                    <h2 class="hidden-mobile"><?php //echo h($hostgroup['Container']['name']); ?></h2>
+                    <span class="widget-icon hidden-mobile"> <i class="fa fa-cogs"></i> </span>
+                    <h2 class="hidden-mobile"><?php echo __('Extended overview'); ?></h2>
                     <?php if ($this->Acl->hasPermission('extended')): ?>
                         <ul class="nav nav-tabs pull-right" id="widget-tab-1">
                             <li>
@@ -149,347 +77,243 @@ use itnovum\openITCOCKPIT\Core\HumanTime;
                             </li>
                         </ul>
                     <?php endif; ?>
-                    <div class="widget-toolbar cursor-default hidden-xs hidden-sm hidden-md">
-                        <?php //echo __('UUID: %s', h($hostgroup['Hostgroup']['uuid'])); ?>
-                    </div>
                 </header>
-                <div>
-                    <div class="widget-body no-padding">
-                        <table border="1" class="table table-striped table-hover table-bordered smart-form">
-                            <tr ng-repeat-start="servicegroup in servicegroups" colspan="4">
-                                <td class="width-15">
-                                    <i class="showhide fa fa-plus-square-o pointer font-md" showhide_uuid="05461da5-965d-4f28-8b30-22f5fd5cd5cbc36b8048-93ce-4385-ac19-ab5c90574b77"></i>
-                                </td>
-                                <td colspan="5">
-                                    <a href="servicegroups/edit/{{servicegroup.Servicegroup.id}}" ng-if="servicegroup.Servicegroup.allowEdit">
-                                        {{ servicegroup.Container.name }}
-                                    </a>
-                                    <span ng-if="!servicegroup.Servicegroup.allowEdit">
-                                                    {{ servicegroup.Container.name }}
-                                                </span>
-                                [{{servicegroup.Servicegroup.uuid}}]
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="no-padding text-right" colspan="4">
-                                    <div class="col-md-12 pull-right">
-                                        <div class="col-md-4"></div>
-                                        <div class="col-md-2 bg-ok">
-                                            <div class="padding-5 pull-right">
-                                                <label class="checkbox small-checkbox-label txt-color-white">
-                                                    <input type="checkbox" name="checkbox" checked="checked" ng-model="filter.Servicestatus.current_state.ok" ng-model-options="{debounce: 500}" class="ng-pristine ng-untouched ng-valid ng-empty">
-                                                    <i class="checkbox-success"></i>
-                                                    <strong>
-                                                        {{servicegroup.StatusSummary[0]}} <?php echo __('Ok'); ?>
-                                                    </strong>
-                                                </label>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-2 bg-warning">
-                                            <div class="padding-5 pull-right">
-                                                <label class="checkbox small-checkbox-label txt-color-white">
-                                                    <input type="checkbox" name="checkbox" checked="checked" ng-model="filter.Servicestatus.current_state.warning" ng-model-options="{debounce: 500}" class="ng-pristine ng-untouched ng-valid ng-empty">
-                                                    <i class="checkbox-warning"></i>
-                                                    <strong>
-                                                        {{servicegroup.StatusSummary[1]}} <?php echo __('Warning'); ?>
-                                                    </strong>
-                                                </label>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-2 bg-critical">
-                                            <div class="padding-5 pull-right">
-                                                <label class="checkbox small-checkbox-label txt-color-white">
-                                                    <input type="checkbox" name="checkbox" checked="checked" ng-model="filter.Servicestatus.current_state.critical" ng-model-options="{debounce: 500}" class="ng-pristine ng-untouched ng-valid ng-empty">
-                                                    <i class="checkbox-danger"></i>
-                                                    <strong>
-                                                        {{servicegroup.StatusSummary[2]}} <?php echo __('Critical'); ?>
-                                                    </strong>
-                                                </label>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-2 bg-unknown">
-                                            <div class="padding-5 pull-right">
-                                                <label class="checkbox small-checkbox-label txt-color-white">
-                                                    <input type="checkbox" name="checkbox" checked="checked" ng-model="filter.Servicestatus.current_state.unknown" ng-model-options="{debounce: 500}" class="ng-pristine ng-untouched ng-valid ng-empty">
-                                                    <i class="checkbox-default"></i>
-                                                    <strong>
-                                                        {{servicegroup.StatusSummary[3]}} <?php echo __('Unknown'); ?>
-                                                    </strong>
-                                                </label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr ng-repeat-end ng-repeat="service in servicegroup.Service">
-                                <td></td>
-                                <td class="text-center">
-                                    <servicestatusicon service="service"></servicestatusicon>
-                                </td>
-                                <td class="width-15">
-                                    <a href="javascript:void(0)" class="btn btn-success btn-xs status-circle" style=""></a>
-                                </td>
-                                <td>
-                                    <a href="hosts/edit/{{service.Host.id}}" ng-if="service.Host.allowEdit">
-                                        {{service.Host.name}}
-                                    </a>
-                                    <span ng-if="!service.Host.allowEdit">
-                                        {{service.Host.name}}
-                                    </span>
-                                    /
-                                    <a href="services/edit/{{service.id}}" ng-if="service.allowEdit">
-                                        {{ (service.name) ? service.name : service.Servicetemplate.name }}
-                                    </a>
-                                    <span ng-if="!service.allowEdit">
-                                        {{ (service.name) ? service.name : service.Servicetemplate.name }}
-                                    </span>
-                                </td>
-                            </tr>
-                        </table>
+                <div class="mobile_table">
+                    <div class="list-filter well" ng-show="showFilter">
+                        <h3><i class="fa fa-filter"></i> <?php echo __('Filter'); ?></h3>
+                        <div class="row">
+                            <div class="col-xs-12 col-md-6">
+                                <div class="form-group smart-form">
+                                    <label class="input"> <i class="icon-prepend fa fa-cogs"></i>
+                                        <input type="text" class="input-sm"
+                                               placeholder="<?php echo __('Filter by service group name'); ?>"
+                                               ng-model="filter.Container.name"
+                                               ng-model-options="{debounce: 500}">
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-xs-12 col-md-6">
+                                <div class="form-group smart-form">
+                                    <label class="input"> <i class="icon-prepend fa fa-filter"></i>
+                                        <input type="text" class="input-sm"
+                                               placeholder="<?php echo __('Filter by service group description'); ?>"
+                                               ng-model="filter.Servicegroup.description"
+                                               ng-model-options="{debounce: 500}">
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <div class="pull-right margin-top-10">
+                                    <button type="button" ng-click="resetFilter()"
+                                            class="btn btn-xs btn-danger">
+                                        <?php echo __('Reset Filter'); ?>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
+                    <table class="table table-striped table-hover table-bordered smart-form">
+                        <thead>
+                        <tr>
+                            <th colspan="7" class="no-sort" ng-click="orderBy('Container.name')">
+                                <i class="fa" ng-class="getSortClass('Container.name')"></i>
+                                <?php echo __('Service group name'); ?>
+                            </th>
+                            <th colspan="6" class="no-sort" ng-click="orderBy('Servicegroup.description')">
+                                <i class="fa" ng-class="getSortClass('Servicegroup.description')"></i>
+                                <?php echo __('Service group description'); ?>
+                            </th>
+                        </tr>
+                        </thead>
+                        <tr ng-repeat-start="servicegroup in servicegroups">
+                            <td colspan="7">
+                                <a href="servicegroups/edit/{{servicegroup.Servicegroup.id}}"
+                                   ng-if="servicegroup.Servicegroup.allowEdit">
+                                    {{ servicegroup.Container.name }}
+                                </a>
+                                <span ng-if="!servicegroup.Servicegroup.allowEdit">
+                                    {{ servicegroup.Container.name }}
+                                </span>
+                            </td>
+                            <td colspan="6">
+                                <span ng-if="servicegroup.Servicegroup.description">
+                                    {{servicegroup.Servicegroup.description}}
+                                </span>
+                            </td>
+                        </tr>
+                        <tr ng-if="servicegroup.Services.length > 0">
+                            <td class="no-padding text-right" colspan="13">
+                                <div class="col-md-4">
+                                </div>
+                                <div ng-repeat="(state,stateCount) in servicegroup.StatusSummary"
+                                     class="col-md-2 bg-{{state}}">
+                                    <div class="padding-5 pull-right">
+                                        <label class="checkbox small-checkbox-label txt-color-white">
+                                            <input type="checkbox" name="checkbox" checked="checked"
+                                                   ng-model-options="{debounce: 500}"
+                                                   ng-model="servicegroupsStateFilter[servicegroup.Servicegroup.uuid][$index]"
+                                                   ng-value="$index"
+                                                   class="ng-pristine ng-untouched ng-valid ng-empty">
+                                            <i class="checkbox-{{state}}"></i>
+                                            <strong>
+                                                {{stateCount}} {{state}}
+                                            </strong>
+                                        </label>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr ng-if="servicegroup.Services.length == 0">
+                            <td class="no-padding text-center" colspan="13">
+                                <div class="col-xs-12 text-center txt-color-red italic padding-10">
+                                    <?php echo __('No entries match the selection'); ?>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr ng-repeat-end
+                            ng-show="servicegroupsStateFilter[servicegroup.Servicegroup.uuid][service.Servicestatus.currentState] || service.Servicestatus.currentState == null"
+                            ng-repeat="service in servicegroup.Services">
+                            <td class="text-center">
+                                <servicestatusicon service="service"></servicestatusicon>
+                            </td>
+
+                            <td class="text-center">
+                                <i class="fa fa-lg fa-user"
+                                   ng-show="service.Servicestatus.problemHasBeenAcknowledged"
+                                   ng-if="service.Servicestatus.acknowledgement_type == 1"></i>
+
+                                <i class="fa fa-lg fa-user-o"
+                                   ng-show="service.Servicestatus.problemHasBeenAcknowledged"
+                                   ng-if="service.Servicestatus.acknowledgement_type == 2"
+                                   title="<?php echo __('Sticky Acknowledgedment'); ?>"></i>
+                            </td>
+
+                            <td class="text-center">
+                                <i class="fa fa-lg fa-power-off"
+                                   ng-show="service.Servicestatus.scheduledDowntimeDepth > 0"></i>
+                            </td>
+
+                            <td class="text-center">
+                                <i class="fa fa-lg fa-area-chart"
+                                   ng-mouseenter="mouseenter($event, service.Host, service)"
+                                   ng-mouseleave="mouseleave()"
+                                   ng-if="service.Service.has_graph">
+                                </i>
+                            </td>
+
+                            <td class="text-center">
+                                <strong title="<?php echo __('Passively transferred service'); ?>"
+                                        ng-show="service.Service.active_checks_enabled === false || service.Host.is_satellite_host === true">
+                                    P
+                                </strong>
+                            </td>
+                            <td class="table-color-{{(service.Hoststatus.currentState)?service.Hoststatus.currentState:'disabled'}}">
+                                <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
+                                    <a href="/hosts/browser/{{ service.Host.id }}">
+                                        {{ service.Host.hostname }}
+                                    </a>
+                                <?php else: ?>
+                                    {{ service.Host.hostname }}
+                                <?php endif; ?>
+                            </td>
+                            <td>
+                                <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
+                                    <a href="/services/browser/{{ service.Service.id }}">
+                                        {{ service.Service.servicename }}
+                                    </a>
+                                <?php else: ?>
+                                    {{ service.Service.servicename }}
+                                <?php endif; ?>
+                            </td>
+
+                            <td>
+                                {{ service.Servicestatus.last_state_change }}
+                            </td>
+
+                            <td>
+                                <span ng-if="service.Service.active_checks_enabled && service.Host.is_satellite_host === false">{{ service.Servicestatus.lastCheck }}</span>
+                                <span ng-if="service.Service.active_checks_enabled === false || service.Host.is_satellite_host === true">
+                                        <?php echo __('n/a'); ?>
+                                    </span>
+                            </td>
+
+                            <td>
+                                <span ng-if="service.Service.active_checks_enabled && service.Host.is_satellite_host === false">{{ service.Servicestatus.nextCheck }}</span>
+                                <span ng-if="service.Service.active_checks_enabled === false || service.Host.is_satellite_host === true">
+                                        <?php echo __('n/a'); ?>
+                                    </span>
+                            </td>
+
+                            <td>
+                                {{ service.Servicestatus.output }}
+                            </td>
+
+                            <td class="width-50">
+                                <div class="btn-group">
+                                    <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
+                                        <a href="/services/edit/{{service.Service.id}}"
+                                           ng-if="service.Service.allow_edit"
+                                           class="btn btn-default">
+                                            &nbsp;<i class="fa fa-cog"></i>&nbsp;
+                                        </a>
+                                    <?php else: ?>
+                                        <a href="javascript:void(0);" class="btn btn-default">
+                                            &nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
+                                    <?php endif; ?>
+                                    <a href="javascript:void(0);" data-toggle="dropdown"
+                                       class="btn btn-default dropdown-toggle"><span
+                                                class="caret"></span></a>
+                                    <ul class="dropdown-menu pull-right" id="menuHack-{{servicegroup.Servicegroup.uuid}}-{{service.Service.uuid}}">
+                                        <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
+                                            <li ng-if="service.Service.allow_edit">
+                                                <a href="/services/edit/{{service.Service.id}}">
+                                                    <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
+                                                </a>
+                                            </li>
+                                        <?php endif; ?>
+                                        <?php if ($this->Acl->hasPermission('deactivate', 'services')): ?>
+                                            <li ng-if="service.Service.allow_edit">
+                                                <a href="javascript:void(0);"
+                                                   ng-click="confirmDeactivate(getObjectForDelete(service.Host, service))">
+                                                    <i class="fa fa-plug"></i> <?php echo __('Disable'); ?>
+                                                </a>
+                                            </li>
+                                        <?php endif; ?>
+                                        <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
+                                            <li ng-if="service.Service.allow_edit">
+                                                <?php echo $this->AdditionalLinks->renderAsListItems(
+                                                    $additionalLinksList,
+                                                    '{{service.Service.id}}',
+                                                    [],
+                                                    true
+                                                ); ?>
+                                            </li>
+                                        <?php endif; ?>
+                                        <?php if ($this->Acl->hasPermission('delete', 'services')): ?>
+                                            <li class="divider"></li>
+                                            <li ng-if="service.Service.allow_edit">
+                                                <a href="javascript:void(0);" class="txt-color-red"
+                                                   ng-click="confirmDelete(getObjectForDelete(service.Host, service))">
+                                                    <i class="fa fa-trash-o"></i> <?php echo __('Delete'); ?>
+                                                </a>
+                                            </li>
+                                        <?php endif; ?>
+                                    </ul>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                    <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>
                 </div>
+            </div>
+            <div id="serviceGraphContainer" class="popup-graph-container">
+                <div class="text-center padding-top-20 padding-bottom-20" style="width:100%;" ng-show="isLoadingGraph">
+                    <i class="fa fa-refresh fa-4x fa-spin"></i>
+                </div>
+                <div id="serviceGraphFlot"></div>
             </div>
         </article>
     </div>
 </section>
-
-
-<div class="modal fade" id="nag_command_reschedule" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
-     aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
-                    &times;
-                </button>
-                <h4 class="modal-title" id="myModalLabel"><?php echo __('Reset check time '); ?></h4>
-            </div>
-            <div class="modal-body">
-
-                <div class="row">
-                    <?php
-                    echo $this->Form->create('nag_command', [
-                        'class' => 'form-horizontal clear',
-                    ]); ?>
-                    <?php echo $this->Form->input('rescheduleServicegroup', [
-                        'options' => [
-                            'hostOnly' => __('only Hosts'),
-                            'hostAndServices' => __('Hosts and Services')],
-                            'label' => __('Host check for').':'
-                    ]); ?>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-success" id="submitRescheduleHostgroup" data-dismiss="modal">
-                    <?php echo __('Send'); ?>
-                </button>
-                <button type="button" class="btn btn-default" data-dismiss="modal">
-                    <?php echo __('Cancel'); ?>
-                </button>
-            </div>
-            <?php echo $this->Form->end(); ?>
-        </div>
-    </div>
-</div>
-
-
-<div class="modal fade" id="nag_command_schedule_downtime" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
-     aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
-                    &times;
-                </button>
-                <h4 class="modal-title" id="myModalLabel"><?php echo __('Set planned maintenance times'); ?></h4>
-            </div>
-            <div class="modal-body">
-
-                <div class="row">
-                    <div class="txt-color-red padding-bottom-20" id="validationErrorHostDowntime" style="display:none;">
-                        <i class="fa fa-exclamation-circle"></i> <?php echo __('Please enter a valide date'); ?></div>
-                    <?php
-                    echo $this->Form->create('CommitHostgroupDowntime', [
-                        'class' => 'form-horizontal clear',
-                    ]); ?>
-                    <?php
-                    $hostdowntimetyps = [
-                        0 => __('Individual hosts'),
-                        1 => __('Hosts including services'),
-                        2 => __('Hosts and dependent Hosts (triggered)'),
-                        3 => __('Hosts and dependent Hosts (non-triggered)'),
-                    ];
-                    ?>
-                    <?php echo $this->Form->input('type', ['options' => $hostdowntimetyps, 'label' => __('Maintenance period for').':']) ?>
-                    <?php echo $this->Form->input('comment', ['value' => __('In progress'), 'label' => __('Comment').':']); ?>
-
-                    <!-- from -->
-                    <div class="form-group">
-                        <label class="col col-md-2 control-label"
-                               for="CommitHostgroupDowntimeFromDate"><?php echo __('From'); ?>:</label>
-                        <div class="col col-xs-5" style="padding-right: 0px;">
-                            <input type="text" id="CommitHostgroupDowntimeFromDate" value="<?php echo date('d.m.Y'); ?>"
-                                   class="form-control" name="data[CommitHostgroupDowntime][from_date]">
-                        </div>
-                        <div class="col col-xs-5" style="padding-left: 0px;">
-                            <input type="text" id="CommitHostgroupDowntimeFromTime" value="<?php echo date('h:m'); ?>"
-                                   class="form-control" name="data[CommitHostgroupDowntime][from_time]">
-                        </div>
-                    </div>
-
-                    <!-- to -->
-                    <div class="form-group">
-                        <label class="col col-md-2 control-label"
-                               for="CommitHostgroupDowntimeToDate"><?php echo __('To'); ?>:</label>
-                        <div class="col col-xs-5" style="padding-right: 0px;">
-                            <input type="text" id="CommitHostgroupDowntimeToDate"
-                                   value="<?php echo date('d.m.Y', strtotime('+3 days')); ?>" class="form-control"
-                                   name="data[CommitHostgroupDowntime][to_date]">
-                        </div>
-                        <div class="col col-xs-5" style="padding-left: 0px;">
-                            <input type="text" id="CommitHostgroupDowntimeToTime" value="<?php echo date('h:m'); ?>"
-                                   class="form-control" name="data[CommitHostgroupDowntime][to_time]">
-                        </div>
-                    </div>
-
-                    <?php echo $this->Form->input('author', ['type' => 'hidden', 'value' => $username]) ?>
-                </div>
-
-            </div>
-            <div class="modal-footer">
-                <a href="<?php echo Router::url(['controller' => 'systemdowntimes', 'action' => 'addHostgroupdowntime', 'hostgroup_id' => $hostgroup['Hostgroup']['id']]); ?>"
-                   class="btn btn-primary pull-left"><i class="fa fa-cogs"></i> <?php echo __('More options'); ?></a>
-                <button type="button" class="btn btn-success" id="submitCommitHostgroupDowntime">
-                    <?php echo __('Send'); ?>
-                </button>
-                <button type="button" class="btn btn-default" data-dismiss="modal">
-                    <?php echo __('Cancel'); ?>
-                </button>
-            </div>
-            <?php echo $this->Form->end(); ?>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade" id="nag_command_ack_state" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
-     aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
-                    &times;
-                </button>
-                <h4 class="modal-title" id="myModalLabel"><?php echo __('Acknowledge host status'); ?></h4>
-            </div>
-            <div class="modal-body">
-
-                <div class="row">
-                    <?php
-                    echo $this->Form->create('CommitHostgroupAck', [
-                        'class' => 'form-horizontal clear',
-                    ]); ?>
-                    <?php echo $this->Form->input('type', ['options' => ['hostOnly' => __('Only hosts'), 'hostAndServices' => __('Hosts including services')], 'label' => 'Acknowledge for']); ?>
-                    <?php echo $this->Form->input('comment', ['value' => __('In progress'), 'label' => __('Comment').':']); ?>
-                    <?php echo $this->Form->input('sticky', ['type' => 'checkbox', 'label' => __('Sticky')]); ?>
-                    <?php echo $this->Form->input('author', ['type' => 'hidden', 'value' => $username]) ?>
-                </div>
-
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-success" data-dismiss="modal" id="submitHostgroupAck">
-                    <?php echo __('Send'); ?>
-                </button>
-                <button type="button" class="btn btn-default" data-dismiss="modal">
-                    <?php echo __('Cancel'); ?>
-                </button>
-            </div>
-            <?php echo $this->Form->end(); ?>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade" id="nag_command_disable_notifications" tabindex="-1" role="dialog"
-     aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
-                    &times;
-                </button>
-                <h4 class="modal-title" id="myModalLabel"><?php echo __('Disable notifications'); ?></h4>
-            </div>
-            <div class="modal-body">
-
-                <div class="row">
-                    <?php
-                    echo $this->Form->create('disableNotifications', [
-                        'class' => 'form-horizontal clear',
-                    ]); ?>
-                    <?php echo $this->Form->input('type', ['options' => ['hostOnly' => __('Only hosts'), 'hostAndServices' => __('Hosts including services')], 'label' => 'Notifications']); ?>
-                    <center>
-                        <span class="hintmark">
-                            <?php echo __('Yes, i want temporarily <strong>disable</strong> notifications.'); ?>
-                        </span>
-                    </center>
-
-                    <div class="padding-left-10 padding-top-10">
-                        <span class="note hintmark_before"><?php echo __('This option is only temporary. It does not affect your configuration. This is an external command and only saved in the memory of your monitoring engine'); ?></span>
-                    </div>
-                </div>
-
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-success" data-dismiss="modal" id="submitDisableNotifications">
-                    <?php echo __('Send'); ?>
-                </button>
-                <button type="button" class="btn btn-default" data-dismiss="modal">
-                    <?php echo __('Cancel'); ?>
-                </button>
-            </div>
-            <?php echo $this->Form->end(); ?>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade" id="nag_command_enable_notifications" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
-     aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
-                    &times;
-                </button>
-                <h4 class="modal-title" id="myModalLabel"><?php echo __('Disable notifications'); ?></h4>
-            </div>
-            <div class="modal-body">
-
-                <div class="row">
-                    <?php
-                    echo $this->Form->create('enableNotifications', [
-                        'class' => 'form-horizontal clear',
-                    ]); ?>
-                    <?php echo $this->Form->input('type', ['options' => ['hostOnly' => __('Only hosts'), 'hostAndServices' => __('Hosts including services')], 'label' => 'Notifications']); ?>
-                    <center>
-                        <span class="hintmark">
-                            <?php echo __('Yes, i want temporarily <strong>enable</strong> notifications.'); ?>
-                        </span>
-                    </center>
-
-                    <div class="padding-left-10 padding-top-10">
-                        <span class="note hintmark_before"><?php echo __('This option is only temporary. It does not affect your configuration. This is an external command and only saved in the memory of your monitoring engine'); ?></span>
-                    </div>
-                </div>
-
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-success" data-dismiss="modal" id="submitEnableNotifications">
-                    <?php echo __('Send'); ?>
-                </button>
-                <button type="button" class="btn btn-default" data-dismiss="modal">
-                    <?php echo __('Cancel'); ?>
-                </button>
-            </div>
-            <?php echo $this->Form->end(); ?>
-        </div>
-    </div>
-</div>

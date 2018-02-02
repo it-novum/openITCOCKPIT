@@ -65,6 +65,14 @@
                     </div>
                     <span class="widget-icon hidden-mobile"> <i class="fa fa-cogs"></i> </span>
                     <h2 class="hidden-mobile"><?php echo __('Service Groups'); ?></h2>
+                    <?php if ($this->Acl->hasPermission('extended')): ?>
+                        <ul class="nav nav-tabs pull-right" id="widget-tab-1">
+                            <li>
+                                <a href="/servicegroups/extended"><i class="fa fa-plus-square"></i>
+                                    <span class="hidden-mobile hidden-tablet"><?php echo __('Extended overview'); ?></span></a>
+                            </li>
+                        </ul>
+                    <?php endif; ?>
                 </header>
                 <div>
                     <div class="widget-body no-padding">

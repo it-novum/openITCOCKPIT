@@ -23,6 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use itnovum\openITCOCKPIT\Core\Views\PerfdataChecker;
 use itnovum\openITCOCKPIT\Filter\ServicegroupFilter;
 use itnovum\openITCOCKPIT\Monitoring\QueryHandler;
 use itnovum\openITCOCKPIT\Core\ServiceConditions;
@@ -109,10 +110,9 @@ class ServicegroupsController extends AppController {
                 ]
             ],
             'conditions' => $ServicegroupFilter->indexFilter(),
-            'order'      => $ServicegroupFilter->getOrderForPaginator('Container.name', 'asc'),
-            'limit'      => $this->Paginator->settings['limit']
+            'order' => $ServicegroupFilter->getOrderForPaginator('Container.name', 'asc'),
+            'limit' => $this->Paginator->settings['limit']
         ];
-
         if (!$this->hasRootPrivileges) {
             $query['conditions']['Container.parent_id'] = $this->MY_RIGHTS;
         }
@@ -150,10 +150,10 @@ class ServicegroupsController extends AppController {
                 }
             }
             $all_servicegroups[] = [
-                'Servicegroup'      => $servicegroup['Servicegroup'],
-                'Container'         => $servicegroup['Container'],
-                'Service'           => $servicegroup['Service'],
-                'Servicetemplate'   => $servicegroup['Servicetemplate']
+                'Servicegroup' => $servicegroup['Servicegroup'],
+                'Container' => $servicegroup['Container'],
+                'Service' => $servicegroup['Service'],
+                'Servicetemplate' => $servicegroup['Servicetemplate']
             ];
 
         }
@@ -191,20 +191,20 @@ class ServicegroupsController extends AppController {
         }
 
         $servicegroup = $this->Servicegroup->find('first', [
-            'recursive'  => -1,
-            'contain'    => [
+            'recursive' => -1,
+            'contain' => [
                 'Service' => [
                     'fields' => [
                         'Service.id',
                         'Service.name'
                     ],
-                    'Host'         => [
+                    'Host' => [
                         'fields' => [
                             'Host.id',
                             'Host.name'
                         ]
                     ],
-                    'Servicetemplate'         => [
+                    'Servicetemplate' => [
                         'fields' => [
                             'Servicetemplate.id',
                             'Servicetemplate.name'
@@ -235,11 +235,11 @@ class ServicegroupsController extends AppController {
             if ($this->request->data('Servicegroup.Service')) {
                 foreach ($this->request->data['Servicegroup']['Service'] as $service_id) {
                     $service = $this->Service->find('first', [
-                        'contain'    => [
+                        'contain' => [
                             'Host.name',
                             'Servicetemplate.name'
                         ],
-                        'fields'     => [
+                        'fields' => [
                             'Service.id',
                             'Service.name',
                         ],
@@ -248,11 +248,11 @@ class ServicegroupsController extends AppController {
                         ],
                     ]);
                     $ext_data_for_changelog['Service'][] = [
-                        'id'   => $service_id,
+                        'id' => $service_id,
                         'name' => sprintf(
                             '%s | %s',
                             $service['Host']['name'],
-                            ($service['Service']['name'])?$service['Service']['name']:$service['Servicetemplate']['name']
+                            ($service['Service']['name']) ? $service['Service']['name'] : $service['Servicetemplate']['name']
                         )
                     ];
                 }
@@ -260,8 +260,8 @@ class ServicegroupsController extends AppController {
             if ($this->request->data('Servicegroup.Servicetemplate')) {
                 foreach ($this->request->data['Servicegroup']['Servicetemplate'] as $servicetemplate_id) {
                     $servicetemplate = $this->Servicetemplate->find('first', [
-                        'recursive'    => -1,
-                        'fields'     => [
+                        'recursive' => -1,
+                        'fields' => [
                             'Servicetemplate.id',
                             'Servicetemplate.name',
                         ],
@@ -270,7 +270,7 @@ class ServicegroupsController extends AppController {
                         ],
                     ]);
                     $ext_data_for_changelog['Servicetemplate'][] = [
-                        'id'   => $servicetemplate_id,
+                        'id' => $servicetemplate_id,
                         'name' => $servicetemplate['Servicetemplate']['name'],
                     ];
                 }
@@ -324,11 +324,11 @@ class ServicegroupsController extends AppController {
             if ($this->request->data('Servicegroup.Service')) {
                 foreach ($this->request->data['Servicegroup']['Service'] as $service_id) {
                     $service = $this->Service->find('first', [
-                        'contain'    => [
+                        'contain' => [
                             'Host.name',
                             'Servicetemplate.name'
                         ],
-                        'fields'     => [
+                        'fields' => [
                             'Service.id',
                             'Service.name',
                         ],
@@ -337,11 +337,11 @@ class ServicegroupsController extends AppController {
                         ],
                     ]);
                     $ext_data_for_changelog['Service'][] = [
-                        'id'   => $service_id,
+                        'id' => $service_id,
                         'name' => sprintf(
                             '%s | %s',
                             $service['Host']['name'],
-                            ($service['Service']['name'])?$service['Service']['name']:$service['Servicetemplate']['name']
+                            ($service['Service']['name']) ? $service['Service']['name'] : $service['Servicetemplate']['name']
                         )
                     ];
                 }
@@ -349,8 +349,8 @@ class ServicegroupsController extends AppController {
             if ($this->request->data('Servicegroup.Servicetemplate')) {
                 foreach ($this->request->data['Servicegroup']['Servicetemplate'] as $servicetemplate_id) {
                     $servicetemplate = $this->Servicetemplate->find('first', [
-                        'recursive'    => -1,
-                        'fields'     => [
+                        'recursive' => -1,
+                        'fields' => [
                             'Servicetemplate.id',
                             'Servicetemplate.name',
                         ],
@@ -359,7 +359,7 @@ class ServicegroupsController extends AppController {
                         ],
                     ]);
                     $ext_data_for_changelog['Servicetemplate'][] = [
-                        'id'   => $servicetemplate_id,
+                        'id' => $servicetemplate_id,
                         'name' => $servicetemplate['Servicetemplate']['name'],
                     ];
                 }
@@ -566,8 +566,8 @@ class ServicegroupsController extends AppController {
 
         $ServicegroupFilter = new ServicegroupFilter($this->request);
         $query = [
-            'recursive'  => -1,
-            'contain'    => [
+            'recursive' => -1,
+            'contain' => [
                 'Container',
                 'Service' => [
                     'fields' => [
@@ -590,10 +590,9 @@ class ServicegroupsController extends AppController {
                 'Servicetemplate'
 
             ],
-            'order'      => $ServicegroupFilter->getOrderForPaginator('Container.name', 'asc'),
+            'order' => $ServicegroupFilter->getOrderForPaginator('Container.name', 'asc'),
             'conditions' => $ServicegroupFilter->indexFilter(),
         ];
-
 
 
         if (!$this->hasRootPrivileges) {
@@ -606,8 +605,8 @@ class ServicegroupsController extends AppController {
         $hostsArray = [];
         $serviceCount = 0;
 
-        foreach($servicegroups as $servicegroup){
-            foreach($servicegroup['Service'] as $service){
+        foreach ($servicegroups as $servicegroup) {
+            foreach ($servicegroup['Service'] as $service) {
                 $serviceCount++;
                 $hostsArray[$service['Host']['id']] = $service['Host']['name'];
             }
@@ -681,7 +680,7 @@ class ServicegroupsController extends AppController {
     public function extended() {
         $this->layout = 'angularjs';
         $User = new User($this->Auth);
-
+        $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
         if (!$this->isApiRequest()) {
             $this->set('QueryHandler', new QueryHandler($this->Systemsetting->getQueryHandlerPath()));
             $this->set('username', $User->getFullName());
@@ -698,11 +697,13 @@ class ServicegroupsController extends AppController {
                     'fields' => [
                         'Service.id',
                         'Service.uuid',
-                        'Service.name'
+                        'Service.name',
+                        'Service.active_checks_enabled'
                     ],
                     'Servicetemplate' => [
                         'fields' => [
-                            'Servicetemplate.name'
+                            'Servicetemplate.name',
+                            'Servicetemplate.active_checks_enabled'
                         ]
                     ],
                     'Host' => [
@@ -710,14 +711,15 @@ class ServicegroupsController extends AppController {
                         'fields' => [
                             'Host.id',
                             'Host.uuid',
-                            'Host.name'
+                            'Host.name',
+                            'Host.active_checks_enabled'
                         ]
                     ]
                 ]
             ],
             'conditions' => $ServicegroupFilter->indexFilter(),
-            'order'      => $ServicegroupFilter->getOrderForPaginator('Container.name', 'asc'),
-            'limit'      => $this->Paginator->settings['limit']
+            'order' => $ServicegroupFilter->getOrderForPaginator('Container.name', 'asc'),
+            'limit' => $this->Paginator->settings['limit']
         ];
         if (!$this->hasRootPrivileges) {
             $query['conditions']['Container.parent_id'] = $this->MY_RIGHTS;
@@ -733,64 +735,102 @@ class ServicegroupsController extends AppController {
         }
 
         $this->set('servicegroups', $servicegroups);
-        foreach($servicegroups as $servicegroup){
-            foreach($servicegroup['Service'] as $service) {
+        $hostContainers = [];
+        $hosts = [];
+        $services = [];
+        foreach ($servicegroups as $servicegroup) {
+            foreach ($servicegroup['Service'] as $service) {
                 $hosts[$service['Host']['id']] = $service['Host']['uuid'];
                 $services[$service['id']] = $service['uuid'];
-            }
-        }
-
-        $hoststatus = $this->Hoststatus->byUuid($hosts);
-        $servicestatus = $this->Servicestatus->byUuid($services);
-
-        $all_servicegroups = [];
-        $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
-        foreach ($servicegroups as $servicegroup) {
-            $servicegroup['Servicegroup']['allowEdit'] = $this->hasPermission('edit', 'servicegroups');;
-            if ($this->hasRootPrivileges === false && $servicegroup['Servicegroup']['allowEdit'] === true) {
-                $servicegroup['Servicegroup']['allowEdit'] = $this->allowedByContainerId($servicegroup['Container']['parent_id']);
-            }
-            foreach ($servicegroup['Service'] as $key => $service) {
-
-                /*
-                 *
-                 *  $Host = new \itnovum\openITCOCKPIT\Core\Views\Host($service, $allowEdit);
-            $Hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus($service['Hoststatus'], $UserTime);
-            $Service = new \itnovum\openITCOCKPIT\Core\Views\Service($service, null, $allowEdit);
-            $Servicestatus = new \itnovum\openITCOCKPIT\Core\Servicestatus($service['Servicestatus'], $UserTime);
-                 *
-                 * */
-
-
-                $servicegroup['Service'][$key]['allowEdit'] = $this->hasPermission('edit', 'services');
-                $servicegroup['Service'][$key]['Servicestatus'] = (!empty($servicestatus[$service['uuid']]))?$servicestatus[$service['uuid']]['Servicestatus']
-                    :[];
-                $servicegroup['Service'][$key]['Host']['allowEdit'] = $this->hasPermission('edit', 'hosts');
-                $servicegroup['Service'][$key]['Host']['Hoststatus'] = (!empty($hoststatus[$service['Host']['uuid']]))?$hoststatus[$service['Host']['uuid']]['Hoststatus']
-                    :[];
-
-                if ($this->hasRootPrivileges === false && $servicegroup['Service'][$key]['Host']['allowEdit'] === true) {
-                    $containerIdsToCheck = Hash::extract($service, 'Service.{n}.Host.HostsToContainer.container_id');
-                    $servicegroup['Service'][$key]['Host']['allowEdit'] = $this->allowedByContainerId($containerIdsToCheck);
+                if (!empty($services) && $this->hasRootPrivileges === false && $this->hasPermission('edit', 'hosts') && $this->hasPermission('edit', 'services')) {
+                    $hostContainers[$service['Host']['id']] = Hash::extract($service['Host']['Container'], '{n}.id');
                 }
             }
 
-            $serviceStatusForServicegroup = Hash::apply($servicegroup['Service'], '{n}.Servicestatus.current_state', 'array_count_values');
-            $cumulatedState = max(array_keys($serviceStatusForServicegroup));
+            $hoststatus = $this->Hoststatus->byUuid($hosts);
+            $servicestatus = $this->Servicestatus->byUuid($services);
 
-            //refill missing service states
-            $statusOverview = array_replace(
-                [0 => 0, 1 => 0, 2 => 0, 3 => 0],
-                $serviceStatusForServicegroup
-            );
-            $all_servicegroups[] = [
-                'Servicegroup'      => $servicegroup['Servicegroup'],
-                'Container'         => $servicegroup['Container'],
-                'Service'           => $servicegroup['Service'],
-                'StatusSummary'     => $statusOverview,
-                'CumulatedState'    => $cumulatedState
-            ];
+            $all_servicegroups = [];
+            foreach ($servicegroups as $servicegroup) {
+                $servicegroup['Servicegroup']['allowEdit'] = $this->hasPermission('edit', 'servicegroups');;
+                if ($this->hasRootPrivileges === false && $servicegroup['Servicegroup']['allowEdit'] === true) {
+                    $servicegroup['Servicegroup']['allowEdit'] = $this->allowedByContainerId($servicegroup['Container']['parent_id']);
+                }
+                $all_services = [];
+                foreach ($servicegroup['Service'] as $key => $service) {
+                    if ($this->hasRootPrivileges) {
+                        $allowEdit = true;
+                    } else {
+                        $containerIds = [];
+                        if (isset($hostContainers[$service['Host']['id']])) {
+                            $containerIds = $hostContainers[$service['Host']['id']];
+                        }
+                        $ContainerPermissions = new ContainerPermissions($this->MY_RIGHTS_LEVEL, $containerIds);
+                        $allowEdit = $ContainerPermissions->hasPermission();
+                    }
 
+                    $service['Hoststatus'] = (!empty($hoststatus[$service['Host']['uuid']]))?$hoststatus[$service['Host']['uuid']]['Hoststatus']:[];
+                    $service['Servicestatus'] = (!empty($servicestatus[$service['uuid']]))?$servicestatus[$service['uuid']]['Servicestatus']:[];
+
+                    $Service = new \itnovum\openITCOCKPIT\Core\Views\Service([
+                        'Service' => $service,
+                        'Servicetemplate' =>  $service['Servicetemplate'],
+                        'Host' => $service['Host']
+                    ],
+                        null,
+                        $allowEdit
+                    );
+                    $Host = new \itnovum\openITCOCKPIT\Core\Views\Host($service, $allowEdit);
+                    $Hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus($service['Hoststatus'], $UserTime);
+                    $Servicestatus = new \itnovum\openITCOCKPIT\Core\Servicestatus($service['Servicestatus'], $UserTime);
+                    $PerfdataChecker = new PerfdataChecker($Host, $Service);
+
+                    $tmpRecord = [
+                        'Service'       => $Service->toArray(),
+                        'Host'          => $Host->toArray(),
+                        'Servicestatus' => $Servicestatus->toArray(),
+                        'Hoststatus'    => $Hoststatus->toArray()
+                    ];
+                    $tmpRecord['Service']['has_graph'] = $PerfdataChecker->hasRrdFile();
+                    $all_services[] = $tmpRecord;
+                }
+
+                $serviceStatusForServicegroup = Hash::apply(
+                    $all_services,
+                    '{n}.Servicestatus[isInMonitoring=true].currentState',
+                    'array_count_values'
+                );
+                //refill missing service states
+                $statusOverview = array_replace(
+                    [0 => 0, 1 => 0, 2 => 0, 3 => 0],
+                    $serviceStatusForServicegroup
+                );
+                $statusOverview = array_combine([
+                    __('ok'),
+                    __('warning'),
+                    __('critical'),
+                    __('unknown')],$statusOverview
+                );
+
+                # get a list of sort columns and their data to pass to array_multisort
+                $sortAllServices = [];
+                foreach($all_services as $k=>$v) {
+                    $sortAllServices['Host']['hostname'][$k] = $v['Host']['hostname'];
+                    $sortAllServices['Service']['servicename'][$k] = $v['Service']['servicename'];
+                }
+
+                # sort by host name asc and service name asc
+                if(!empty($all_services)){
+                    array_multisort( $sortAllServices['Host']['hostname'], SORT_ASC, $sortAllServices['Service']['servicename'], SORT_ASC, $all_services);
+                }
+
+                $all_servicegroups[] = [
+                    'Servicegroup' => $servicegroup['Servicegroup'],
+                    'Container' => $servicegroup['Container'],
+                    'Services' => $all_services,
+                    'StatusSummary' => $statusOverview
+                ];
+            }
         }
         $this->set(compact(['all_servicegroups']));
         $this->set('_serialize', ['all_servicegroups', 'paging']);
