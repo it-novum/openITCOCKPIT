@@ -93,6 +93,12 @@ angular.module('openITCOCKPIT')
             }
         };
 
+        $scope.linkForCopy = function(){
+            var baseUrl = '/map_module/maps/copy/';
+            return buildUrl(baseUrl);
+
+        };
+
         //Fire on page load
         defaultFilter();
         SortService.setCallback($scope.load);
