@@ -43,13 +43,8 @@
         <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
             <div class="jarviswidget jarviswidget-color-blueDark" id="wid-id-1" data-widget-editbutton="false">
                 <header>
-                    <div class="widget-toolbar" role="menu">
-
-                    </div>
-                    <div class="jarviswidget-ctrls" role="menu">
-                    </div>
                     <span class="widget-icon"> <i class="fa fa-map-marker"></i> </span>
-                    <h2>Maps </h2>
+                    <h2>Copy Map</h2>
                 </header>
                 <div>
                     <div class="widget-body no-padding">
@@ -57,10 +52,10 @@
                             <div class="row">
                                 <div class="col-xs-12 col-md-9 col-lg-7">
                                     <fieldset>
-                                        <legend> {{ sourceMap.Map.name }}</legend>
+                                        <legend> <?php echo __('Source Map: '); ?> {{ sourceMap.Map.name }}</legend>
                                         <div class="form-group required" ng-class="{'has-error': errors.name}">
                                             <label class="col col-md-2 control-label">
-                                                <?php echo __('Map Name'); ?>
+                                                <?php echo __('New Map Name'); ?>
                                             </label>
                                             <div class="col col-xs-10">
                                                 <input
@@ -75,7 +70,7 @@
 
                                         <div class="form-group required" ng-class="{'has-error': errors.title}">
                                             <label class="col col-md-2 control-label">
-                                                <?php echo __('Map Title'); ?>
+                                                <?php echo __('New Map Title'); ?>
                                             </label>
                                             <div class="col col-xs-10">
                                                 <input
@@ -90,7 +85,7 @@
 
                                         <div class="form-group">
                                             <label class="col col-md-2 control-label">
-                                                <?php echo __('Refresh interval'); ?>
+                                                <?php echo __('New Refresh interval'); ?>
                                             </label>
                                             <div class="col col-xs-10">
                                                 <input class="form-control" type="number"
@@ -101,7 +96,7 @@
                                     </fieldset>
                                 </div>
                                 <br/>
-                                <div class="col-xs-12 margin-top-10">
+                                <div class="col-xs-12 margin-top-10 margin-bottom-10">
                                     <div class="well formactions ">
                                         <div class="pull-right">
                                             <input class="btn btn-primary" type="submit" value="Save">&nbsp;
