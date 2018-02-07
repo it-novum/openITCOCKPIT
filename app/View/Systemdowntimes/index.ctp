@@ -31,7 +31,7 @@
             <?php echo __('Recurring downtimes'); ?>
             <span>>
                 <?php echo __('List'); ?>
-			</span>
+            </span>
         </h1>
     </div>
     <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
@@ -71,6 +71,11 @@
                                         <a href="<?php echo Router::url(['controller' => 'systemdowntimes', 'action' => 'addServicedowntime']); ?>"><?php echo __('Create service downtime'); ?></a>
                                     </li>
                                 <?php endif; ?>
+                                <?php if ($this->Acl->hasPermission('addHostdowntime', 'systemdowntimes')): ?>
+                                    <li>
+                                        <a href="<?php echo Router::url(['controller' => 'systemdowntimes', 'action' => 'addContainerdowntime']); ?>"><?php echo __('Create container downtime'); ?></a>
+                                    </li>
+                                <?php endif; ?>
                             </ul>
                         </div>
                         <?php echo $this->Html->link(__('Filter'), 'javascript:', ['class' => 'oitc-list-filter btn btn-xs btn-primary toggle', 'hide-on-render' => 'true', 'icon' => 'fa fa-filter']); ?>
@@ -83,7 +88,7 @@
                     <div class="widget-toolbar" role="menu">
                         <a href="javascript:void(0);" class="dropdown-toggle selector" data-toggle="dropdown"><i
                                     class="fa fa-lg fa-table"></i></a>
-                        <ul class="dropdown-menu arrow-box-up-right pull-right">
+                        <ul class="dropdown-menu arrow-box-up-right pull-right stayOpenOnClick">
                             <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left"
                                                         my-column="0"><input type="checkbox" class="pull-left"/>
                                     &nbsp; <?php echo __('Object type'); ?></a></li>
@@ -206,7 +211,7 @@
                                 <span id="listoptions_limit"><?php echo $selected; ?></span> <i
                                         class="fa fa-caret-down"></i>
                             </button>
-                            <ul class="dropdown-menu pull-right">
+                            <ul class="dropdown-menu pull-right stayOpenOnClick">
                                 <?php foreach ($listoptions as $listoption): ?>
                                     <li>
                                         <a href="javascript:void(0);" class="listoptions_action"
@@ -239,9 +244,10 @@
                 <div>
 
                     <div class="widget-body no-padding">
-                        <?php echo $this->ListFilter->renderFilterbox($filters, ['formActionParams' => ['url' => Router::url(Hash::merge($this->params['named'], $this->params['pass'], ['Listsettings' => $DowntimeListsettings])), 'merge' => false]], '<i class="fa fa-filter"></i> '.__('Filter'), false, false); ?>
+                        <?php echo $this->ListFilter->renderFilterbox($filters, ['formActionParams' => ['url' => Router::url(Hash::merge($this->params['named'], $this->params['pass'], ['Listsettings' => $DowntimeListsettings])), 'merge' => false]], '<i class="fa fa-filter"></i> ' . __('Filter'), false, false); ?>
                         <div class="mobile_table">
-                            <table id="recurringdowntimes_list" class="table table-striped table-hover table-bordered smart-form"
+                            <table id="recurringdowntimes_list"
+                                   class="table table-striped table-hover table-bordered smart-form"
                                    style="">
                                 <thead>
                                 <tr>
@@ -258,8 +264,8 @@
                                         echo $this->Paginator->sort('Systemdowntime.day_of_month', __('Days of month')); ?></th>
                                     <th class="no-sort"><?php echo $this->Utils->getDirection($order, 'Systemdowntime.from_time');
                                         echo $this->Paginator->sort('Systemdowntime.from_time', __('Start time')); ?></th>
-                                    <th class="no-sort"><?php echo $this->Utils->getDirection($order, 'Systemdowntime.to_time');
-                                        echo $this->Paginator->sort('Systemdowntime.to_time', __('End time')); ?></th>
+                                    <th class="no-sort"><?php echo $this->Utils->getDirection($order, 'Systemdowntime.duration');
+                                        echo $this->Paginator->sort('Systemdowntime.duration', __('Duration')); ?></th>
                                     <th class="no-sort"><?php echo __('Delete'); ?></th>
                                 </tr>
                                 </thead>
@@ -269,6 +275,7 @@
                                     OBJECT_HOST      => __('Host'),
                                     OBJECT_SERVICE   => __('Service'),
                                     OBJECT_HOSTGROUP => __('Host group'),
+                                    OBJECT_NODE      => __('Container'),
                                 ];
                                 $weekdays = [
                                     1 => __('Monday'),
@@ -289,7 +296,7 @@
                                                 case OBJECT_HOST:
                                                     if (isset($systemdowntime['Host']['id']) && $systemdowntime['Host']['id'] !== null): ?>
                                                         <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
-                                                            <a href="/hosts/browser/<?php echo $systemdowntime['Host']['id']; ?>"><?php echo $systemdowntime['Host']['name']; ?></a>
+                                                            <a href="/hosts/browser/<?php echo $systemdowntime['Host']['id']; ?>"><?php echo h($systemdowntime['Host']['name']); ?></a>
                                                         <?php else: ?>
                                                             <?php echo h($systemdowntime['Host']['name']); ?>
                                                         <?php endif; ?>
@@ -330,13 +337,26 @@
                                                         <?php
                                                     endif;
                                                     break;
+
+                                                case OBJECT_NODE:
+                                                    //debug($systemdowntime);
+                                                    if (isset($systemdowntime['Container']['id']) && $systemdowntime['Container']['id'] !== null): ?>
+                                                        <?php echo h($systemdowntime['Container']['name']); ?>
+                                                    <?php else: ?>
+                                                        <span class="muted"><?php echo __('Container deleted'); ?></span>
+                                                    <?php
+                                                    endif;
+                                                    break;
+
                                             endswitch;
                                             ?>
                                         </td>
                                         <td><?php echo $systemdowntime['Systemdowntime']['author']; ?></td>
                                         <td>
-                                            <span class="text-muted">AUTO[<?php echo $systemdowntime['Systemdowntime']['id']; ?>
-                                                ]: </span><?php echo $systemdowntime['Systemdowntime']['comment']; ?>
+                                            <span class="text-muted">
+                                                AUTO[<?php echo $systemdowntime['Systemdowntime']['id']; ?>]:
+                                            </span>
+                                            <?php echo $systemdowntime['Systemdowntime']['comment']; ?>
                                         </td>
                                         <td>
                                             <?php
@@ -361,7 +381,7 @@
                                             ?>
                                         </td>
                                         <td><?php echo $systemdowntime['Systemdowntime']['from_time']; ?></td>
-                                        <td><?php echo $systemdowntime['Systemdowntime']['to_time']; ?></td>
+                                        <td><?php echo $systemdowntime['Systemdowntime']['duration']; ?></td>
                                         <td class="text-center">
                                             <?php
                                             if ($this->Acl->hasPermission('delete', 'systemdowntimes') && $systemdowntime['canDelete']):
@@ -387,7 +407,7 @@
                             <div class="row">
                                 <div class="col-sm-6">
                                     <div class="dataTables_info" style="line-height: 32px;"
-                                         id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('Page').' {:page} '.__('of').' {:pages}, '.__('Total').' {:count} '.__('entries')); ?></div>
+                                         id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('Page') . ' {:page} ' . __('of') . ' {:pages}, ' . __('Total') . ' {:count} ' . __('entries')); ?></div>
                                 </div>
                                 <div class="col-sm-6 text-right">
                                     <div class="dataTables_paginate paging_bootstrap">

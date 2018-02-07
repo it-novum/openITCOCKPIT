@@ -63,7 +63,7 @@
                         'label'            => [
                             'class' => 'col col-xs-1 control-label',
                             'text'  => __('Host'),
-                        ],
+                        ]
                     ]); ?>
 
                     <fieldset>

@@ -24,9 +24,10 @@
 //	confirmation.
 
 App.Controllers.GraphCollectionsDisplayController = Frontend.AppController.extend({
-	components: ['Rrd', 'Ajaxloader'],
+	components: ['Rrd', 'Ajaxloader', 'Time'],
 
 	_initialize: function(){
+		this.Time.setup();
 		var self = this;
 
 		self.bindSelectBoxEvent('#GraphCollectionId', '#render-graph');

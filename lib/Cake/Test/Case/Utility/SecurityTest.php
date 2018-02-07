@@ -1,16 +1,16 @@
 <?php
 /**
- * CakePHP(tm) Tests <http://book.cakephp.org/2.0/en/development/testing.html>
- * Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
+ * CakePHP(tm) Tests <https://book.cakephp.org/2.0/en/development/testing.html>
+ * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
  *
  * Licensed under The MIT License
  * For full copyright and license information, please see the LICENSE.txt
  * Redistributions of files must retain the above copyright notice
  *
- * @copyright     Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
- * @link          http://book.cakephp.org/2.0/en/development/testing.html CakePHP(tm) Tests
+ * @copyright     Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
+ * @link          https://book.cakephp.org/2.0/en/development/testing.html CakePHP(tm) Tests
  * @since         CakePHP(tm) v 1.2.0.5432
- * @license       http://www.opensource.org/licenses/mit-license.php MIT License
+ * @license       https://opensource.org/licenses/mit-license.php MIT License
  */
 
 App::uses('Security', 'Utility');
@@ -328,6 +328,7 @@ class SecurityTest extends CakeTestCase {
  * @return void
  */
 	public function testEncryptDecrypt() {
+		$this->skipIf(!extension_loaded('mcrypt'), 'This test requires mcrypt to be installed');
 		$txt = 'The quick brown fox';
 		$key = 'This key is longer than 32 bytes long.';
 		$result = Security::encrypt($txt, $key);
@@ -342,6 +343,7 @@ class SecurityTest extends CakeTestCase {
  * @return void
  */
 	public function testDecryptKeyFailure() {
+		$this->skipIf(!extension_loaded('mcrypt'), 'This test requires mcrypt to be installed');
 		$txt = 'The quick brown fox';
 		$key = 'This key is longer than 32 bytes long.';
 		Security::encrypt($txt, $key);
@@ -356,6 +358,7 @@ class SecurityTest extends CakeTestCase {
  * @return void
  */
 	public function testDecryptHmacFailure() {
+		$this->skipIf(!extension_loaded('mcrypt'), 'This test requires mcrypt to be installed');
 		$txt = 'The quick brown fox';
 		$key = 'This key is quite long and works well.';
 		$salt = 'this is a delicious salt!';
@@ -372,6 +375,7 @@ class SecurityTest extends CakeTestCase {
  * @return void
  */
 	public function testDecryptHmacSaltFailure() {
+		$this->skipIf(!extension_loaded('mcrypt'), 'This test requires mcrypt to be installed');
 		$txt = 'The quick brown fox';
 		$key = 'This key is quite long and works well.';
 		$salt = 'this is a delicious salt!';
@@ -400,6 +404,7 @@ class SecurityTest extends CakeTestCase {
  * @return void
  */
 	public function testEncryptDecryptFalseyData() {
+		$this->skipIf(!extension_loaded('mcrypt'), 'This test requires mcrypt to be installed');
 		$key = 'This is a key that is long enough to be ok.';
 
 		$result = Security::encrypt('', $key);

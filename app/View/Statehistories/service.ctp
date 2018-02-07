@@ -26,13 +26,9 @@
 use itnovum\openITCOCKPIT\Core\Views\Service;
 use itnovum\openITCOCKPIT\Core\Views\Host;
 use itnovum\openITCOCKPIT\Core\Servicestatus;
-use itnovum\openITCOCKPIT\Core\Views\ServicestatusIcon;
-use itnovum\openITCOCKPIT\Core\Views\StatehistoryService;
-use itnovum\openITCOCKPIT\Core\Views\ListSettingsRenderer;
 
-$ListSettingsRenderer = new ListSettingsRenderer($StatehistoryListsettings);
-$ListSettingsRenderer->setPaginator($this->Paginator);
-
+//Flapping Workaround while the status date is not loaded via Angular
+echo $this->Html->script('lib/FlappingWorkaround.js');
 
 $Service = new Service($service);
 $Host = new Host($service);
@@ -40,8 +36,7 @@ if (!isset($servicestatus['Servicestatus'])):
     $servicestatus['Servicestatus'] = [];
 endif;
 $Servicestatus = new Servicestatus($servicestatus['Servicestatus']);
-
-$this->Paginator->options(['url' => Hash::merge($this->params['named'], $this->params['pass'], ['Listsettings' => $StatehistoryListsettings])]); ?>
+?>
 <div class="row">
     <div class="col-xs-12 col-sm-12 col-md-5 col-lg-5">
         <h1 class="status_headline <?php echo $Servicestatus->ServiceStatusColor(); ?>">
@@ -87,134 +82,18 @@ $this->Paginator->options(['url' => Hash::merge($this->params['named'], $this->p
             <div class="jarviswidget jarviswidget-color-blueDark" id="wid-id-1" data-widget-editbutton="false">
                 <header>
                     <div class="widget-toolbar" role="menu">
-                        <?php echo $this->Html->link(__('Filter'), 'javascript:', ['class' => 'oitc-list-filter btn btn-xs btn-primary toggle', 'hide-on-render' => 'true', 'icon' => 'fa fa-filter']); ?>
-                        <?php
-                        if ($isFilter):
-                            echo $this->ListFilter->resetLink(null, ['class' => 'btn-danger btn-xs', 'icon' => 'fa fa-times']);
-                        endif;
-                        ?>
-                    </div>
-                    <div class="widget-toolbar" role="menu">
-                        <a href="javascript:void(0);" class="dropdown-toggle selector" data-toggle="dropdown">
-                            <i class="fa fa-lg fa-table"></i>
-                        </a>
-                        <ul class="dropdown-menu arrow-box-up-right pull-right">
-                            <li style="width: 100%;">
-                                <a href="javascript:void(0)" class="select_datatable text-left" my-column="0">
-                                    <input type="checkbox" class="pull-left"/>
-                                    &nbsp; <?php echo __('State'); ?>
-                                </a>
-                            </li>
-                            <li style="width: 100%;">
-                                <a href="javascript:void(0)" class="select_datatable text-left" my-column="1">
-                                    <input type="checkbox" class="pull-left"/>
-                                    &nbsp; <?php echo __('Date'); ?>
-                                </a>
-                            </li>
-                            <li style="width: 100%;">
-                                <a href="javascript:void(0)" class="select_datatable text-left" my-column="2">
-                                    <input type="checkbox" class="pull-left"/>
-                                    &nbsp; <?php echo __('Check attempt'); ?>
-                                </a>
-                            </li>
-                            <li style="width: 100%;">
-                                <a href="javascript:void(0)" class="select_datatable text-left" my-column="3">
-                                    <input type="checkbox" class="pull-left"/>
-                                    &nbsp; <?php echo __('Sate type'); ?>
-                                </a>
-                            </li>
-                            <li style="width: 100%;">
-                                <a href="javascript:void(0)" class="select_datatable text-left" my-column="4">
-                                    <input type="checkbox" class="pull-left"/>
-                                    &nbsp; <?php echo __('Service output'); ?>
-                                </a>
-                            </li>
-                        </ul>
-                        <div class="clearfix"></div>
+                        <button type="button" class="btn btn-xs btn-default" ng-click="load()">
+                            <i class="fa fa-refresh"></i>
+                            <?php echo __('Refresh'); ?>
+                        </button>
+
+                        <button type="button" class="btn btn-xs btn-primary" ng-click="triggerFilter()">
+                            <i class="fa fa-filter"></i>
+                            <?php echo __('Filter'); ?>
+                        </button>
                     </div>
 
-                    <div id="switch-1" class="widget-toolbar" role="menu">
-                        <?php
-                        echo $this->Form->create('statehistories', [
-                            'class' => 'form-horizontal clear',
-                            'url' => 'service/' . $Service->getId() //reset the URL on submit
-                        ]);
-                        echo $ListSettingsRenderer->getFromInput();
-                        echo $ListSettingsRenderer->getToInput();
-                        echo $ListSettingsRenderer->getLimitSelect();
-
-                        $state_types = [
-                            'ok' => __('Ok'),
-                            'warning' => __('Warning'),
-                            'critical' => __('Critical'),
-                            'unknown' => __('Unknown'),
-                        ];
-                        $nag_service_state_types = [
-                            'soft' => __('Soft'),
-                            'hard' => __('Hard'),
-                        ];
-
-                        ?>
-
-                        <div class="btn-group">
-                            <button data-toggle="dropdown" class="btn dropdown-toggle btn-xs btn-default">
-                                <?php echo __('State types'); ?> <i class="fa fa-caret-down"></i>
-                            </button>
-                            <ul class="dropdown-menu pull-right">
-                                <?php
-                                foreach ($state_types as $state_type => $name):
-                                    $checked = '';
-                                    if (isset($StatehistoryListsettings['state_types'][$state_type]) && $StatehistoryListsettings['state_types'][$state_type] == 1):
-                                        $checked = 'checked="checked"';
-                                    endif;
-                                    ?>
-                                    <li>
-                                        <input type="hidden" value="0"
-                                               name="data[Listsettings][state_types][<?php echo $state_type; ?>]"/>
-                                    </li>
-                                    <li style="width: 100%;"><a href="javascript:void(0)"
-                                                                class="listoptions_checkbox text-left"><input
-                                                    type="checkbox"
-                                                    name="data[Listsettings][state_types][<?php echo $state_type; ?>]"
-                                                    value="1" <?php echo $checked; ?>/> &nbsp; <?php echo $name; ?></a>
-                                    </li>
-                                <?php endforeach ?>
-                                <li class="divider"></li>
-
-                                <?php
-
-                                foreach ($nag_service_state_types as $state_type => $name):
-                                    $checked = '';
-                                    if (isset($StatehistoryListsettings['nag_state_types'][$state_type]) && $StatehistoryListsettings['nag_state_types'][$state_type] == 1):
-                                        $checked = 'checked="checked"';
-                                    endif;
-                                    ?>
-                                    <li>
-                                        <input type="hidden" value="0"
-                                               name="data[Listsettings][nag_state_types][<?php echo $state_type; ?>]"/>
-                                    </li>
-                                    <li style="width: 100%;"><a href="javascript:void(0)"
-                                                                class="listoptions_checkbox text-left"><input
-                                                    type="checkbox"
-                                                    name="data[Listsettings][nag_state_types][<?php echo $state_type; ?>]"
-                                                    value="1" <?php echo $checked; ?>/> &nbsp; <?php echo $name; ?></a>
-                                    </li>
-                                <?php endforeach ?>
-                            </ul>
-                        </div>
-
-
-                        <?php
-
-                        echo $ListSettingsRenderer->getApply();
-                        echo $this->Form->end();
-                        ?>
-                    </div>
-
-
-
-                    <div class="jarviswidget-ctrls" role="menu">
-                    </div>
+                    <div class="jarviswidget-ctrls" role="menu"></div>
                     <span class="widget-icon"> <i class="fa fa-history"></i> </span>
                     <h2><?php echo __('State history'); ?> </h2>
 
@@ -223,96 +102,192 @@ $this->Paginator->options(['url' => Hash::merge($this->params['named'], $this->p
                 <div>
 
                     <div class="widget-body no-padding">
-                        <?php echo $this->ListFilter->renderFilterbox($filters, ['formActionParams' => ['url' => Router::url(Hash::merge($this->params['named'], $this->params['pass'], ['Listsettings' => $StatehistoryListsettings])), 'merge' => false]], '<i class="fa fa-filter"></i> ' . __('Filter'), false, false); ?>
+
+                        <div class="list-filter well" ng-show="showFilter">
+                            <h3><i class="fa fa-filter"></i> <?php echo __('Filter'); ?></h3>
+                            <div class="row">
+                                <div class="col-xs-12 col-md-6">
+                                    <div class="form-group smart-form">
+                                        <label class="input"> <i class="icon-prepend" style="padding-right:14px;"><?php echo __('From'); ?></i>
+                                            <input type="text" class="input-sm" style="padding-left:50px;"
+                                                   placeholder="<?php echo __('From Date'); ?>"
+                                                   ng-model="filter.from"
+                                                   ng-model-options="{debounce: 500}">
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-xs-12 col-md-6">
+                                    <div class="form-group smart-form">
+                                        <label class="input"> <i class="icon-prepend fa fa-filter"></i>
+                                            <input type="text" class="input-sm"
+                                                   placeholder="<?php echo __('Filter by output'); ?>"
+                                                   ng-model="filter.StatehistoryService.output"
+                                                   ng-model-options="{debounce: 500}">
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="col-xs-12 col-md-6">
+                                    <div class="form-group smart-form">
+                                        <label class="input"> <i class="icon-prepend" style="padding-right:14px;"><?php echo __('To'); ?></i>
+                                            <input type="text" class="input-sm" style="padding-left:50px;"
+                                                   placeholder="<?php echo __('To Date'); ?>"
+                                                   ng-model="filter.to"
+                                                   ng-model-options="{debounce: 500}">
+                                        </label>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="row">
+
+                                <div class="col-xs-12 col-md-3">
+                                    <fieldset>
+                                        <legend><?php echo __('States'); ?></legend>
+                                        <div class="form-group smart-form">
+                                            <label class="checkbox small-checkbox-label">
+                                                <input type="checkbox" name="checkbox" checked="checked"
+                                                       ng-model="filter.StatehistoryService.state.ok"
+                                                       ng-model-options="{debounce: 500}">
+                                                <i class="checkbox-success"></i>
+                                                <?php echo __('Ok'); ?>
+                                            </label>
+
+                                            <label class="checkbox small-checkbox-label">
+                                                <input type="checkbox" name="checkbox" checked="checked"
+                                                       ng-model="filter.StatehistoryService.state.warning"
+                                                       ng-model-options="{debounce: 500}">
+                                                <i class="checkbox-warning"></i>
+                                                <?php echo __('Warning'); ?>
+                                            </label>
+
+                                            <label class="checkbox small-checkbox-label">
+                                                <input type="checkbox" name="checkbox" checked="checked"
+                                                       ng-model="filter.StatehistoryService.state.critical"
+                                                       ng-model-options="{debounce: 500}">
+                                                <i class="checkbox-danger"></i>
+                                                <?php echo __('Critical'); ?>
+                                            </label>
+
+                                            <label class="checkbox small-checkbox-label">
+                                                <input type="checkbox" name="checkbox" checked="checked"
+                                                       ng-model="filter.StatehistoryService.state.unknown"
+                                                       ng-model-options="{debounce: 500}">
+                                                <i class="checkbox-default"></i>
+                                                <?php echo __('Unknown'); ?>
+                                            </label>
+                                        </div>
+                                    </fieldset>
+                                </div>
+
+                                <div class="col-xs-12 col-md-3">
+                                    <fieldset>
+                                        <legend><?php echo __('State Types'); ?></legend>
+                                        <div class="form-group smart-form">
+                                            <label class="checkbox small-checkbox-label">
+                                                <input type="checkbox" name="checkbox" checked="checked"
+                                                       ng-model="filter.StatehistoryService.state_types.soft"
+                                                       ng-model-options="{debounce: 500}">
+                                                <i class="checkbox-primary"></i>
+                                                <?php echo __('Soft'); ?>
+                                            </label>
+
+                                            <label class="checkbox small-checkbox-label">
+                                                <input type="checkbox" name="checkbox" checked="checked"
+                                                       ng-model="filter.StatehistoryService.state_types.hard"
+                                                       ng-model-options="{debounce: 500}">
+                                                <i class="checkbox-primary"></i>
+                                                <?php echo __('Hard'); ?>
+                                            </label>
+
+                                        </div>
+                                    </fieldset>
+                                </div>
+
+                            </div>
+
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <div class="pull-right margin-top-10">
+                                        <button type="button" ng-click="resetFilter()"
+                                                class="btn btn-xs btn-danger">
+                                            <?php echo __('Reset Filter'); ?>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
                         <table id="servicestatehistory_list"
                                class="table table-striped table-hover table-bordered smart-form"
                                style="">
                             <thead>
                             <tr>
-                                <?php $order = $this->Paginator->param('order'); ?>
-                                <th class="no-sort">
-                                    <?php echo $this->Utils->getDirection($order, 'StatehistoryService.state');
-                                    echo $this->Paginator->sort('StatehistoryService.state', __('State')); ?>
+                                <th class="no-sort" ng-click="orderBy('StatehistoryService.state')">
+                                    <i class="fa" ng-class="getSortClass('StatehistoryService.state')"></i>
+                                    <?php echo __('State'); ?>
                                 </th>
-                                <th class="no-sort">
-                                    <?php echo $this->Utils->getDirection($order, 'StatehistoryService.state_time');
-                                    echo $this->Paginator->sort('StatehistoryService.state_time', __('Date')); ?>
+                                <th class="no-sort" ng-click="orderBy('StatehistoryService.state_time')">
+                                    <i class="fa" ng-class="getSortClass('StatehistoryService.state_time')"></i>
+                                    <?php echo __('Date'); ?>
                                 </th>
-                                <th class="no-sort">
-                                    <?php echo $this->Utils->getDirection($order, 'StatehistoryService.current_check_attempt');
-                                    echo $this->Paginator->sort('StatehistoryService.current_check_attempt', __('Check attempt')); ?>
+                                <th class="no-sort" ng-click="orderBy('StatehistoryService.current_check_attempt')">
+                                    <i class="fa" ng-class="getSortClass('StatehistoryService.current_check_attempt')"></i>
+                                    <?php echo __('Check attempt'); ?>
                                 </th>
-                                <th class="no-sort">
-                                    <?php echo $this->Utils->getDirection($order, 'StatehistoryService.state_type');
-                                    echo $this->Paginator->sort('StatehistoryService.state_type', __('State type')); ?>
+                                <th class="no-sort" ng-click="orderBy('StatehistoryService.state_type')">
+                                    <i class="fa" ng-class="getSortClass('StatehistoryService.state_type')"></i>
+                                    <?php echo __('State type'); ?>
                                 </th>
-                                <th class="no-sort">
-                                    <?php echo $this->Utils->getDirection($order, 'StatehistoryService.output');
-                                    echo $this->Paginator->sort('StatehistoryService.output', __('Service output')); ?>
+                                <th class="no-sort" ng-click="orderBy('StatehistoryService.output')">
+                                    <i class="fa" ng-class="getSortClass('StatehistoryService.output')"></i>
+                                    <?php echo __('Service output'); ?>
                                 </th>
                             </tr>
                             </thead>
                             <tbody>
-                            <?php foreach ($all_statehistories as $statehistory):
-                                $StatehistoryService = new StatehistoryService($statehistory['StatehistoryService']);
-                                $StatusIcon = new ServicestatusIcon($StatehistoryService->getState());
-                                ?>
-                                <tr>
+
+                                <tr ng-repeat="StatehistoryService in statehistories">
+
                                     <td class="text-center">
-                                        <?php echo $StatusIcon->getHtmlIcon(); ?>
+                                       <servicestatusicon state="StatehistoryService.StatehistoryService.state"></servicestatusicon>
                                     </td>
                                     <td>
-                                        <?php echo h($this->Time->format(
-                                            $StatehistoryService->getStateTime(),
-                                            $this->Auth->user('dateformat'),
-                                            false,
-                                            $this->Auth->user('timezone')
-                                        )); ?>
+                                        {{ StatehistoryService.StatehistoryService.state_time }}
                                     </td>
                                     <td class="text-center">
-                                        <?php printf('%s/%s',
-                                            h($StatehistoryService->getCurrentCheckAttempt()),
-                                            h($StatehistoryService->getMaxCheckAttempts())
-                                        ); ?>
+                                        {{ StatehistoryService.StatehistoryService.current_check_attempt }}/{{ StatehistoryService.StatehistoryService.max_check_attempts }}
                                     </td>
                                     <td class="text-center">
-                                        <?php echo h($this->Status->humanServiceStateType(
-                                                $StatehistoryService->isHardstate()
-                                        )); ?>
+                                        <span ng-show="StatehistoryService.StatehistoryService.is_hardstate">
+                                            <?php echo __('Hard'); ?>
+                                        </span>
+
+                                        <span ng-show="!StatehistoryService.StatehistoryService.is_hardstate">
+                                            <?php echo __('Soft'); ?>
+                                        </span>
+
                                     </td>
                                     <td>
-                                        <?php echo h($StatehistoryService->getOutput()); ?>
+                                        {{ StatehistoryService.StatehistoryService.output }}
                                     </td>
                                 </tr>
-                            <?php endforeach; ?>
+
                             </tbody>
                         </table>
-                        <?php if (empty($all_statehistories)): ?>
-                            <div class="noMatch">
-                                <center>
-                                    <span class="txt-color-red italic"><?php echo __('No entries match the selection'); ?></span>
-                                </center>
-                            </div>
-                        <?php endif; ?>
 
-                        <div style="padding: 5px 10px;">
-                            <div class="row">
-                                <div class="col-sm-6">
-                                    <div class="dataTables_info" style="line-height: 32px;"
-                                         id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('Page') . ' {:page} ' . __('of') . ' {:pages}, ' . __('Total') . ' {:count} ' . __('entries')); ?></div>
-                                </div>
-                                <div class="col-sm-6 text-right">
-                                    <div class="dataTables_paginate paging_bootstrap">
-                                        <?php echo $this->Paginator->pagination([
-                                            'ul' => 'pagination',
-                                        ]); ?>
-                                    </div>
+                        <div class="row margin-top-10 margin-bottom-10">
+                            <div class="row margin-top-10 margin-bottom-10" ng-show="statehistories.length == 0">
+                                <div class="col-xs-12 text-center txt-color-red italic">
+                                    <?php echo __('No entries match the selection'); ?>
                                 </div>
                             </div>
                         </div>
+
+                        <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>
                     </div>
                 </div>
             </div>
+        </article>
     </div>
 </section>

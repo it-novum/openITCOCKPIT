@@ -61,7 +61,7 @@ App.Controllers.ServicedependenciesEditController = Frontend.AppController.exten
 			}
 		});
 		$('[id^=ServicedependencyService]').change(function(){
-			$this = $(this);
+			var $this = $(this);
 			self.refreshServices($this.val(), $this, $this.attr('target'));
 		});
 		if($('#ServicedependencyService').val() !== null || $('#ServicedependencyServiceDependent').val() !== null){
@@ -77,8 +77,8 @@ App.Controllers.ServicedependenciesEditController = Frontend.AppController.exten
 					$OptionObject.prop('disabled', true);
 				}
 			});
-			$('#ServicedependencyService').trigger("chosen:updated");
-			$('#ServicedependencyServiceDependent').trigger("chosen:updated");
+			$('#ServicedependencyService').trigger("chosen:updated").change();
+			$('#ServicedependencyServiceDependent').trigger("chosen:updated").change();
 		}
 		if($('#ServicedependencyServicegroup').val() !== null || $('#ServicedependencyServicegroupDependent').val() !== null){
 			$('#ServicedependencyServicegroup').children().each(function(intKey, OptionObject){
@@ -93,8 +93,8 @@ App.Controllers.ServicedependenciesEditController = Frontend.AppController.exten
 					$OptionObject.prop('disabled', true);
 				}
 			});
-			$('#ServicedependencyServicegroup').trigger("chosen:updated");
-			$('#ServicedependencyServicegroupDependent').trigger("chosen:updated");
+			$('#ServicedependencyServicegroup').trigger("chosen:updated").change();
+			$('#ServicedependencyServicegroupDependent').trigger("chosen:updated").change();
 		}
 	},
 

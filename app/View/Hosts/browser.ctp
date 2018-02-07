@@ -26,12 +26,14 @@
 use itnovum\openITCOCKPIT\Core\Hoststatus;
 use itnovum\openITCOCKPIT\Core\Servicestatus;
 use itnovum\openITCOCKPIT\Core\Views\AcknowledgementHost;
+use itnovum\openITCOCKPIT\Core\Views\HoststatusIcon;
 use itnovum\openITCOCKPIT\Core\Views\ServicestatusIcon;
 
 if (!isset($hoststatus['Hoststatus'])):
     $hoststatus['Hoststatus'] = [];
 endif;
 $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
+$HoststatusIcon = new HoststatusIcon($Hoststatus->currentState());
 ?>
 <div id="error_msg"></div>
 <div class="alert alert-success alert-block" id="flashSuccess" style="display:none;">
@@ -97,6 +99,9 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
                                         class="hidden-mobile hidden-tablet"> <?php echo __('Host commands'); ?> </span></a>
                         </li>
                     <?php endif; ?>
+
+                    <?php echo $this->AdditionalLinks->renderAsTabs($additionalLinksTab, null, 'host', 'tabLink'); ?>
+
                     <?php if ($GrafanaDashboardExists): ?>
                         <li class="">
                             <a href="#tab5" data-toggle="tab"> <i class="fa fa-lg fa-area-chart"></i> <span
@@ -118,8 +123,17 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
                     <!-- widget body text-->
                     <div class="tab-content padding-10">
                         <div id="tab1" class="tab-pane fade active in">
-                            <?php echo $host['Host']['name']; ?>
-                            <strong><?php echo __('available since:') ?><?php echo $this->Time->format($Hoststatus->getLastHardStateChange(), $this->Auth->user('dateformat'), false, $this->Auth->user('timezone')); ?></strong>
+                            <?php echo h($host['Host']['name']); ?>
+                            <strong>
+                                <?php echo __('is %s since:', $HoststatusIcon->getHumanState()) ?>
+
+                                <?php echo $this->Time->format(
+                                    $Hoststatus->getLastHardStateChange(),
+                                    $this->Auth->user('dateformat'),
+                                    false,
+                                    $this->Auth->user('timezone')
+                                ); ?>
+                            </strong>
                             <br/><br/>
                             <p><?php echo __('The last system check occurred at'); ?>
                                 <strong><?php echo $this->Time->format($Hoststatus->getLastCheck(), $this->Auth->user('dateformat'), false, $this->Auth->user('timezone')); ?></strong>
@@ -144,9 +158,9 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
                                     </span>
                                     <?php
                                     if ($Hoststatus->getAcknowledgementType() == 1):
-                                        echo __('The current status was already acknowledged by');
+                                        echo __('The current status was acknowledged by');
                                     else:
-                                        echo __('The current status was already acknowledged (STICKY) by');
+                                        echo __('The current status was acknowledged (STICKY) by');
                                     endif; ?>
                                     <strong><?php echo h($Acknowledgement->getAuthorName()); ?></strong> (<i
                                             class="fa fa-clock-o"></i>
@@ -168,7 +182,7 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
                                                 ['target' => '_blank']) :
                                             $Acknowledgement->getCommentData();
                                     else:
-                                        echo h($Acknowledgement->getCommentData());
+                                        echo $this->Bbcode->asHtml(h($Acknowledgement->getCommentData()));
                                     endif;
                                     ?>".
 
@@ -185,7 +199,7 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
                                     <?php echo __('The host is currently in a planned maintenance period.'); ?>
                                     <br/><br/>
                                 </p>
-                                <?php
+                            <?php
                             endif;
                             if (!empty($parenthosts)):
                                 foreach ($parenthosts as $parenthost):
@@ -222,7 +236,7 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
                                                 <?php
                                                 echo __('is currently in a scheduled downtime'); ?>
                                             </p>
-                                            <?php
+                                        <?php
                                         endif;
                                     endif;
                                 endforeach;
@@ -390,6 +404,7 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
                                    value="<?php echo $host['Host']['uuid']; ?>"><br/>
                             <strong><?php echo __('IP address'); ?>:</strong>
                             <code><?php echo h($host['Host']['address']); ?></code><br/>
+                            <?php echo $this->AdditionalLinks->renderElements($additionalElementsForm); ?>
                             <strong><?php echo __('Description'); ?>:</strong><br/>
                             <i class="txt-color-blue"><?php echo h($host['Host']['description']); ?></i>
                         </div>
@@ -403,11 +418,11 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
                             <dl>
                                 <dt><?php echo __('Notification occurs in the following cases'); ?>:</dt>
                                 <?php echo $this->Monitoring->formatNotifyOnHost([
-                                    'notify_on_down' => $host['Host']['notify_on_down'],
+                                    'notify_on_down'        => $host['Host']['notify_on_down'],
                                     'notify_on_unreachable' => $host['Host']['notify_on_unreachable'],
-                                    'notify_on_recovery' => $host['Host']['notify_on_recovery'],
-                                    'notify_on_flapping' => $host['Host']['notify_on_flapping'],
-                                    'notify_on_downtime' => $host['Host']['notify_on_downtime'],
+                                    'notify_on_recovery'    => $host['Host']['notify_on_recovery'],
+                                    'notify_on_flapping'    => $host['Host']['notify_on_flapping'],
+                                    'notify_on_downtime'    => $host['Host']['notify_on_downtime'],
                                 ]); ?>
                             </dl>
                             <?php
@@ -420,7 +435,7 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
                                 ?>
                                 <span class="text-info"><i
                                             class="fa fa-info-circle"></i> <?php echo __('Contacts and Contactgroups are inherited in the following order:'); ?> <?php echo $source; ?></span>
-                                <?php
+                            <?php
                             endif;
                             ?>
                             <?php if (!empty($ContactsInherited['Contact'])): ?>
@@ -499,6 +514,10 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
                                 </h5>
                             <?php endif; ?>
                         </div>
+
+                        <!-- render additional Tabs if necessary -->
+                        <?php echo $this->AdditionalLinks->renderAsTabs($additionalLinksTab, null, 'host'); ?>
+
                         <?php if ($GrafanaDashboardExists): ?>
                             <div id="tab5" class="tab-pane fade">
                                 <iframe src="<?php echo $GrafanaConfiguration->getIframeUrl(); ?>" width="100%"
@@ -566,7 +585,8 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
                                                     <tr>
                                                         <?php $order = $this->Paginator->param('order'); ?>
                                                         <th><?php echo __('Servicestatus'); ?></th>
-                                                        <th class="no-sort text-center"><i class="fa fa-gear fa-lg"></i></th>
+                                                        <th class="no-sort text-center"><i class="fa fa-gear fa-lg"></i>
+                                                        </th>
                                                         <th class="text-center"><i class="fa fa-user"
                                                                                    title="<?php echo __('Acknowledgedment'); ?>"></i>
                                                         </th>
@@ -596,7 +616,8 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
                                                         $ServicestatusIcon = new ServicestatusIcon($Servicestatus->currentState());
                                                         if ($service['Service']['disabled'] == 0):?>
                                                             <tr>
-                                                                <td class="text-center width-90">
+                                                                <td class="text-center width-90"
+                                                                    data-sort="<?php echo $Servicestatus->currentState(); ?>">
                                                                     <?php
                                                                     if ($Servicestatus->isFlapping()):
                                                                         echo $Servicestatus->getServiceFlappingIconColored();
@@ -610,16 +631,18 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
                                                                         <?php if ($this->Acl->hasPermission('edit', 'services') && $allowEdit): ?>
                                                                             <a href="<?php echo Router::url([
                                                                                 'controller' => 'services',
-                                                                                'action' => 'edit',
+                                                                                'action'     => 'edit',
                                                                                 $service['Service']['id']
                                                                             ]); ?>" class="btn btn-default">&nbsp;<i
                                                                                         class="fa fa-cog"></i>&nbsp;
                                                                             </a>
                                                                         <?php else: ?>
-                                                                            <a href="javascript:void(0);" class="btn btn-default">&nbsp;<i
+                                                                            <a href="javascript:void(0);"
+                                                                               class="btn btn-default">&nbsp;<i
                                                                                         class="fa fa-cog"></i>&nbsp;</a>
                                                                         <?php endif; ?>
-                                                                        <a href="javascript:void(0);" data-toggle="dropdown"
+                                                                        <a href="javascript:void(0);"
+                                                                           data-toggle="dropdown"
                                                                            class="btn btn-default dropdown-toggle"><span
                                                                                     class="caret"></span></a>
                                                                         <ul class="dropdown-menu">
@@ -627,7 +650,7 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
                                                                                 <li>
                                                                                     <a href="<?php echo Router::url([
                                                                                         'controller' => 'services',
-                                                                                        'action' => 'edit',
+                                                                                        'action'     => 'edit',
                                                                                         $service['Service']['id']
                                                                                     ]); ?>">
                                                                                         <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
@@ -636,19 +659,23 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
                                                                             <?php endif; ?>
                                                                             <?php if ($this->Acl->hasPermission('deactivate', 'services') && $allowEdit): ?>
                                                                                 <li>
-                                                                                    <a href="<?php echo Router::url([
-                                                                                        'controller' => 'services',
-                                                                                        'action' => 'deactivate',
-                                                                                        $service['Service']['id']
-                                                                                    ]); ?>">
-                                                                                        <i class="fa fa-plug"></i> <?php echo __('Disable'); ?>
+                                                                                    <a href="javascript:void(0);"
+                                                                                       class="triggerWorkaroundConfirmDisable"
+                                                                                       data-service-id="<?php echo h($service['Service']['id']); ?>">
+                                                                                        <i class="fa fa fa-plug"></i>
+                                                                                        <?php echo __('Disable'); ?>
                                                                                     </a>
                                                                                 </li>
                                                                             <?php endif; ?>
                                                                             <?php if ($this->Acl->hasPermission('delete', 'services') && $allowEdit): ?>
                                                                                 <li class="divider"></li>
                                                                                 <li>
-                                                                                    <?php echo $this->Form->postLink('<i class="fa fa-trash-o"></i> ' . __('Delete'), ['controller' => 'services', 'action' => 'delete', $service['Service']['id']], ['class' => 'txt-color-red', 'escape' => false]); ?>
+                                                                                    <a href="javascript:void(0);"
+                                                                                       class="txt-color-red triggerWorkaroundConfirmDelete"
+                                                                                       data-service-id="<?php echo h($service['Service']['id']); ?>">
+                                                                                        <i class="fa fa-trash-o"></i>
+                                                                                        <?php echo __('Delete'); ?>
+                                                                                    </a>
                                                                                 </li>
                                                                             <?php endif; ?>
                                                                         </ul>
@@ -699,7 +726,9 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
                                                                 </td>
                                                                 <td data-original-title="<?php echo h($this->Time->format($Servicestatus->getLastStateChange(), $this->Auth->user('dateformat'), false, $this->Auth->user('timezone'))); ?>"
                                                                     data-placement="bottom" rel="tooltip"
-                                                                    data-container="body">
+                                                                    data-container="body"
+                                                                    data-sort="<?php echo $Servicestatus->getLastStateChange(); ?>"
+                                                                >
                                                                     <?php echo h($this->Utils->secondsInHumanShort(time() - $Servicestatus->getLastStateChange())); ?>
                                                                 </td>
                                                                 <td><?php echo h($Servicestatus->getOutput()); ?></td>
@@ -931,7 +960,7 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
                         3 => __('Hosts and dependent Hosts (non-triggered)'),
                     ];
                     ?>
-                    <?php echo $this->Form->input('type', ['options' => $hostdowntimetyps, 'label' => __('Maintenance period for') . ':']) ?>
+                    <?php echo $this->Form->input('type', ['options' => $hostdowntimetyps, 'selected' => $preselectedDowntimetype, 'label' => __('Maintenance period for') . ':']) ?>
                     <?php echo $this->Form->input('comment', ['value' => __('In progress'), 'label' => __('Comment') . ':']); ?>
                     <!-- from -->
                     <div class="form-group">
@@ -968,7 +997,11 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
 
             </div>
             <div class="modal-footer">
-                <a href="<?php echo Router::url(['controller' => 'systemdowntimes', 'action' => 'addHostdowntime', 'host_id' => $host['Host']['id']]); ?>"
+                <a href="<?php echo Router::url([
+                    'controller' => 'systemdowntimes',
+                    'action'     => 'addHostdowntime',
+                    $host['Host']['id']
+                ]); ?>"
                    class="btn btn-primary pull-left"><i class="fa fa-cogs"></i> <?php echo __('More options'); ?></a>
                 <button type="button" class="btn btn-success" id="submitCommitHostDowntime">
                     <?php echo __('Send'); ?>
@@ -1094,7 +1127,7 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
 
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-success" data-dismiss="modal" id="submitHoststateAck">
+                <button type="submit" class="btn btn-success" data-dismiss="modal" id="submitHoststateAck">
                     <?php echo __('Send'); ?>
                 </button>
                 <button type="button" class="btn btn-default" data-dismiss="modal">
@@ -1183,3 +1216,88 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
 </div>
 
 <?php echo $this->element('qrmodal'); ?>
+
+<div id="workaroundConfirmDelete" class="modal" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-color-danger txt-color-white">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title"><?php echo __('Attention!'); ?></h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <?php echo __('Do you really want delete this service?'); ?>
+                    </div>
+
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12 margin-top-10" id="errorOnDelete"></div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12 margin-top-10" id="successDelete" style="display:none;">
+                        <div class="alert auto-hide alert-success">
+                            <?php echo __('Service deleted successfully'); ?>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" id="yesDeleteService">
+                    <?php echo __('Delete'); ?>
+                </button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">
+                    <?php echo __('Cancel'); ?>
+                </button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div id="workaroundConfirmDisable" class="modal" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-color-orange txt-color-white">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title"><?php echo __('Attention!'); ?></h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <?php echo __('Do you really want disable this service?'); ?>
+                    </div>
+
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12 margin-top-10" id="errorOnDisable"></div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12 margin-top-10" id="successDisabled" style="display:none;">
+                        <div class="alert auto-hide alert-success">
+                            <?php echo __('Service disabled successfully'); ?>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-warning" id="yesDisableService">
+                    <?php echo __('Disable'); ?>
+                </button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">
+                    <?php echo __('Cancel'); ?>
+                </button>
+            </div>
+        </div>
+
+    </div>
+</div>
+

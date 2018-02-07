@@ -10,6 +10,15 @@ So easy that everyone can use it: create your entire monitoring configuration wi
 
 ![openITCOCKPIT](https://repo.it-novum.com/oitc/oitc.png "openITCOCKPIT")
 
+# Demo
+Play around with our [Demo](https://demo.openitcockpit.io/) system. Its equipped with the majority of modules that you will get with the community license
+
+Credentials:
+````
+Username(Email): demo@openitcockpit.io
+Password: demo123
+````
+
 # System requirements
 * Ubuntu Linux 64 bit (14.04 LTS "trusty" and 16.04 LTS "xenial"), Debian Linux 64 bit (8 "jessie" and 9 "stretch")
 * 2 CPU cores (x86-64)
@@ -103,7 +112,7 @@ echo 'deb https://packages.openitcockpit.com/repositories/stretch stretch main' 
 ````
 ````
 apt-get update
-apt-get install openitcockpit{,-common,-nagios,-ndoutils,-npcd,-message}
+apt-get install openitcockpit{,-common,-nagios,-statusengine-nagios,-message}
 /usr/share/openitcockpit/app/SETUP.sh
 ````
 

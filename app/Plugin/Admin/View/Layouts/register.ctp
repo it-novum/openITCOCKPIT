@@ -23,9 +23,30 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+$bodyClass = '';
+if ($sideMenuClosed) {
+    $bodyClass = 'minified';
+}
+
+App::uses('Folder', 'Utility');
+$appScripts = [];
+if (ENVIRONMENT === Environments::PRODUCTION) {
+    $compressedAngularControllers = WWW_ROOT . 'js' . DS . 'compressed_angular_controllers.js';
+    $compressedAngularDrectives = WWW_ROOT . 'js' . DS . 'compressed_angular_directives.js';
+    $compressedAngularServices = WWW_ROOT . 'js' . DS . 'compressed_angular_services.js';
+    if (file_exists($compressedAngularControllers) && file_exists($compressedAngularDrectives) && file_exists($compressedAngularServices)) {
+        $appScripts[] = $compressedAngularServices;
+        $appScripts[] = $compressedAngularDrectives;
+        $appScripts[] = $compressedAngularControllers;
+    }
+} else {
+    App::uses('Folder', 'Utility');
+    $ScriptsFolder = new Folder(WWW_ROOT . 'js' . DS . 'scripts' . DS);
+    $appScripts = $ScriptsFolder->findRecursive('.*\.js');
+}
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" ng-app="openITCOCKPIT">
 <head>
     <!--[if IE]>
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
@@ -39,9 +60,17 @@
     <?php
     echo $this->Html->meta('icon');
     echo $this->element('assets');
+
+    printf('<script src="%s"></script>', '/vendor/angular/angular.min.js');
+    printf('<script src="%s"></script>', '/js/scripts/ng.app.js');
+
+    foreach ($appScripts as $appScript):
+        printf('<script src="%s/%s"></script>', Router::fullBaseUrl(), str_replace(WWW_ROOT, '', $appScript));
+    endforeach;
     ?>
 </head>
-<body class="">
+<body class="<?= $bodyClass ?>">
+
 <?php
 echo $this->Html->script('vendor/endcredits/endcredits.js');
 echo $this->Html->css('vendor/endcredits/endcredits.css');
@@ -51,32 +80,39 @@ echo $this->element('credits');
 <?php echo $this->element('Admin.layout/header') ?>
 <?php echo $this->element('Admin.layout/sidebar') ?>
 <div id="uglyDropdownMenuHack"></div>
-<div id="main" role="main">
+<div id="main" role="main" ng-controller="LayoutController">
     <div id="ribbon" class="hidden-mobile hidden-tablet">
         <span class="ribbon-button-alignment"></span>
         <ol class="breadcrumb">
             <li>
-                <a href="<?php Router::url('/'); ?>"><i class="fa fa-home"></i> <?php echo __('Home'); ?></a>
+                <a href="<?php echo $this->webroot; ?>"><i class="fa fa-home"></i> <?php echo __('Home'); ?></a>
             </li>
             <li>
-                <a href="javascript:void(0);"><i class="fa fa-cube"></i> <?php echo $title_for_layout ?></a>
+                <?php echo $this->Html->link($title_for_layout, ['action' => 'index'], ['icon' => 'fa fa-cube']); ?>
             </li>
         </ol>
-        <span id="global_ajax_loader"><i class="fa fa-refresh fa-spin"></i> <?php echo __('Loading data'); ?></span>
+
+        <?php if ($loggedIn && $this->Auth->user('showstatsinmenu')): ?>
+            <menustats></menustats>
+        <?php endif; ?>
+
+        <div class="pull-right">
+            <span id="global_ajax_loader"><i class="fa fa-refresh fa-spin"></i> <?php echo __('Loading data'); ?></span>
+        </div>
+
     </div>
 
     <div id="content" style="opacity: 1;">
         <div class="controller <?php echo $this->name ?>_<?php echo $this->action ?>">
-            <?php echo $this->Session->flash(); ?>
-            <?php echo $this->Session->flash('auth'); ?>
+            <?php echo $this->Flash->render(); ?>
+            <?php echo $this->Flash->render('auth'); ?>
             <?php echo $content_for_layout; ?>
             <?php echo $this->element('Admin.sql_dump'); ?>
         </div>
     </div>
 </div>
-<?php
-// Gibt das div der Tastenkombinationen aus
-echo $this->element('shortcuts');
-?>
+<div id="scroll-top-container">
+    <i class="fa fa-arrow-up fa-2x" title="<?php echo __('Scroll back to top'); ?>"></i>
+</div>
 </body>
 </html>

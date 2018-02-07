@@ -4,18 +4,18 @@
  *
  * Test Case for Shell
  *
- * CakePHP :  Rapid Development Framework (http://cakephp.org)
- * Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
+ * CakePHP :  Rapid Development Framework (https://cakephp.org)
+ * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
  *
  * Licensed under The MIT License
  * For full copyright and license information, please see the LICENSE.txt
  * Redistributions of files must retain the above copyright notice.
  *
- * @copyright     Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
- * @link          http://cakephp.org CakePHP Project
+ * @copyright     Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
+ * @link          https://cakephp.org CakePHP Project
  * @package       Cake.Test.Case.Console.Command
  * @since         CakePHP v 1.2.0.7726
- * @license       http://www.opensource.org/licenses/mit-license.php MIT License
+ * @license       https://opensource.org/licenses/mit-license.php MIT License
  */
 
 App::uses('ShellDispatcher', 'Console');
@@ -749,13 +749,10 @@ class ShellTest extends CakeTestCase {
 	public function testRunCommandBaseclassMethod() {
 		$Mock = $this->getMock('Shell', array('startup', 'getOptionParser', 'out'), array(), '', false);
 		$Parser = $this->getMock('ConsoleOptionParser', array(), array(), '', false);
-
 		$Parser->expects($this->once())->method('help');
 		$Mock->expects($this->once())->method('getOptionParser')
 			->will($this->returnValue($Parser));
-		$Mock->expects($this->never())->method('hr');
 		$Mock->expects($this->once())->method('out');
-
 		$Mock->runCommand('hr', array());
 	}
 
@@ -767,15 +764,38 @@ class ShellTest extends CakeTestCase {
 	public function testRunCommandMissingMethod() {
 		$Mock = $this->getMock('Shell', array('startup', 'getOptionParser', 'out'), array(), '', false);
 		$Parser = $this->getMock('ConsoleOptionParser', array(), array(), '', false);
-
 		$Parser->expects($this->once())->method('help');
-		$Mock->expects($this->never())->method('idontexist');
 		$Mock->expects($this->once())->method('getOptionParser')
 			->will($this->returnValue($Parser));
 		$Mock->expects($this->once())->method('out');
-
 		$result = $Mock->runCommand('idontexist', array());
 		$this->assertFalse($result);
+	}
+
+/**
+ * test unknown option causes display of error and help.
+ *
+ * @return void
+ */
+	public function testRunCommandUnknownOption() {
+		$output = $this->getMock('ConsoleOutput', array(), array(), '', false);
+		$error = $this->getMock('ConsoleOutput', array(), array(), '', false);
+		$in = $this->getMock('ConsoleInput', array(), array(), '', false);
+
+		$Parser = $this->getMock('ConsoleOptionParser', array(), array(), '', false);
+		$Parser->expects($this->once())->method('parse')
+			->with(array('--unknown'))
+			->will($this->throwException(new ConsoleException('Unknown option `unknown`')));
+		$Parser->expects($this->once())->method('help');
+
+		$Shell = $this->getMock('ShellTestShell', array('getOptionParser'), array($output, $error, $in));
+
+		$Shell->expects($this->once())->method('getOptionParser')
+			->will($this->returnValue($Parser));
+		$Shell->stderr->expects($this->once())->method('write');
+		$Shell->stdout->expects($this->once())->method('write');
+
+		$Shell->runCommand('do_something', array('do_something', '--unknown'));
 	}
 
 /**
@@ -1003,31 +1023,27 @@ TEXT;
 
 /**
  * Test that shell loggers do not get overridden in constructor if already configured
- * 
+ *
  * @return void
  */
 	public function testShellLoggersDoNotGetOverridden() {
 		$shell = $this->getMock(
 			"Shell", array(
 				"_loggerIsConfigured",
-				"configureStdOutLogger",
-				"configureStdErrLogger",
+				"_configureStdOutLogger",
+				"_configureStdErrLogger",
 			),
 			array(),
 			"",
 			false
 		);
-
 		$shell->expects($this->exactly(2))
 			->method("_loggerIsConfigured")
 			->will($this->returnValue(true));
-
 		$shell->expects($this->never())
 			->method("_configureStdOutLogger");
-
 		$shell->expects($this->never())
 			->method("_configureStdErrLogger");
-
 		$shell->__construct();
 	}
 }

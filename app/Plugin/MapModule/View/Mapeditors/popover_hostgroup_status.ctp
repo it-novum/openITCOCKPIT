@@ -35,6 +35,7 @@ $hostgroupStatus = $this->Mapstatus->hostgroupstatus($hostgroups[0]['Hostgroup']
 $hostAmount = count($hostgroups[0]['Host']);
 $serviceStateArr = [];
 $hostStateArr = [];
+
 foreach ($hostgroups[0]['Host'] as $counter => $host) {
     //check if the servicestatus array is not empty
     if (!empty($host['Servicestatus'])) {
@@ -117,19 +118,20 @@ $serviceAmount = array_sum($serviceAmountperHost);
             <?php $key = $host['uuid']; ?>
             <tr>
                 <!-- Hostname -->
-                <td title="<?php echo $host['name']; ?>">
-                    <?php echo $host['name']; ?>
+                <td title="<?php echo h($host['name']); ?>">
+                    <?php echo h($host['name']); ?>
                 </td>
                 <!-- State -->
-                <?php $currentHostState = $host['Hoststatus'][0]['Hoststatus']['current_state']; ?>
-                <?php if (isset($serviceStateArr[$key]) && $currentHostState == 0): ?>
+                <?php $currentHostState = $host['Hoststatus'][0]['Hoststatus']['current_state'];
+
+                 if (isset($serviceStateArr[$key]) && $currentHostState == 0): ?>
                     <td class="<?php echo $this->Status->ServiceStatusColorSimple(max($serviceStateArr[$key]))['class']; ?>"><?php echo $this->Status->ServiceStatusColorSimple(max($serviceStateArr[$key]))['human_state']; ?></td>
                 <?php else: ?>
                     <!-- there are no services for this host or the hoststate is NOT "OK" so display the hostdata -->
                     <td class="<?php echo $this->Status->HostStatusColorSimple($currentHostState)['class']; ?>"><?php echo $this->Status->HostStatusColorSimple($currentHostState)['human_state']; ?></td>
                 <?php endif; ?>
                 <!-- Output -->
-                <td title="<?php echo $this->Mapstatus->hoststatus($host['uuid'])['human_state']; ?>" class="cropText"><?php echo $this->Mapstatus->hoststatus($host['uuid'])['human_state']; ?>
+                <td title="<?php echo $this->Mapstatus->hostgroupHoststatus($host)['human_state']; ?>" class="cropText"><?php echo $this->Mapstatus->hostgroupHoststatus($host)['human_state']; ?>
                     . There are <?php echo $serviceAmountperHost[$key]; ?> Services
                 </td>
             </tr>

@@ -30,16 +30,19 @@ App.Controllers.HostsBrowserController = Frontend.AppController.extend({
      */
     $jqconsole: null,
 
-    components: ['WebsocketSudo', 'Ajaxloader', 'Utils', 'Externalcommand', 'Rrd', 'Qr'],
+    components: ['WebsocketSudo', 'Ajaxloader', 'Utils', 'Externalcommand', 'Rrd', 'Qr', 'Time'],
 
     _initialize: function () {
+        this.Time.setup();
         this.Ajaxloader.setup();
         this.Utils.flapping();
         this.Rrd.bindPopup({
-            Time: this.Time,
+            Time: this.Time
         });
         this.Qr.setup();
         this.Externalcommand.setup();
+        this.serviceIdToDelete = 0;
+        this.serviceIdToDisable = 0;
 
         var self = this;
 
@@ -142,12 +145,12 @@ App.Controllers.HostsBrowserController = Frontend.AppController.extend({
 
         this.WebsocketSudo._errorCallback = function () {
             $('#error_msg').html('<div class="alert alert-danger alert-block"><a href="#" data-dismiss="alert" class="close">×</a><h5 class="alert-heading"><i class="fa fa-warning"></i> Error</h5>Could not connect to SudoWebsocket Server</div>');
-        }
+        };
 
         this.WebsocketSudo.connect();
         this.WebsocketSudo._success = function (e) {
             return true;
-        }.bind(this)
+        }.bind(this);
 
         this.WebsocketSudo._callback = function (transmitted) {
             return true;
@@ -188,6 +191,32 @@ App.Controllers.HostsBrowserController = Frontend.AppController.extend({
         $('#runPing').click(function () {
             var $this = $(this);
             self.execPing($this.attr('target'));
+        });
+
+        $('.triggerWorkaroundConfirmDelete').click(function(){
+            var serviceId = $(this).data('serviceId');
+            $('#errorOnDelete').html('');
+            self.serviceIdToDelete = serviceId;
+            $('#workaroundConfirmDelete').modal('show');
+        });
+
+        $('#yesDeleteService').click(function(){
+            //ajax delete
+            self.deleteService(self.serviceIdToDelete);
+            self.serviceIdToDelete = 0;
+        });
+
+        $('.triggerWorkaroundConfirmDisable').click(function(){
+            var serviceId = $(this).data('serviceId');
+            $('#errorOnDisable').html('');
+            self.serviceIdToDisable = serviceId;
+            $('#workaroundConfirmDisable').modal('show');
+        });
+
+        $('#yesDisableService').click(function(){
+            //ajax delete
+            self.disableService(self.serviceIdToDisable);
+            self.serviceIdToDisable = 0;
         });
     },
 
@@ -247,6 +276,88 @@ App.Controllers.HostsBrowserController = Frontend.AppController.extend({
             }.bind(this),
             complete: function (response) {
             }
+        });
+
+    },
+
+    deleteService: function(id){
+        if(id < 1){
+            return false;
+        }
+        $.ajax({
+            dataType: "json",
+            url: '/services/delete/' + id + '.json',
+            method: 'POST',
+            data: {
+                'angular': true
+            },
+            success: function(response){
+
+                $('#successDelete').show();
+                setTimeout(function(){
+                    location.reload();
+                }, 700);
+            },
+            error: function(request, status, error){
+                var errorMsg = request.responseJSON.message;
+                var usedBy = request.responseJSON.usedBy;
+
+                var errorHtml = '<div class="text-danger">';
+                errorHtml += '<div class="text-danger">' + errorMsg + '</div>';
+                for(var key in usedBy){
+                    errorHtml += '<div class="text-danger">';
+                    errorHtml += '<i class="fa fa-times"></i>';
+                    errorHtml += ' ';
+                    errorHtml += '<a class="text-danger" href="' + usedBy[key].baseUrl + id + '">' + usedBy[key].message + '</a>';
+                    errorHtml += '</div>';
+                }
+                errorHtml += '</div>';
+
+                $('#errorOnDelete').html(errorHtml);
+
+            }
+
+        });
+
+    },
+
+    disableService: function(id){
+        if(id < 1){
+            return false;
+        }
+        $.ajax({
+            dataType: "json",
+            url: '/services/deactivate/' + id + '.json',
+            method: 'POST',
+            data: {
+                'angular': true
+            },
+            success: function(response){
+
+                $('#successDisabled').show();
+                setTimeout(function(){
+                    location.reload();
+                }, 700);
+            },
+            error: function(request, status, error){
+                var errorMsg = request.responseJSON.message;
+                var usedBy = request.responseJSON.usedBy;
+
+                var errorHtml = '<div class="text-danger">';
+                errorHtml += '<div class="text-danger">' + errorMsg + '</div>';
+                for(var key in usedBy){
+                    errorHtml += '<div class="text-danger">';
+                    errorHtml += '<i class="fa fa-times"></i>';
+                    errorHtml += ' ';
+                    errorHtml += '<a class="text-danger" href="' + usedBy[key].baseUrl + id + '">' + usedBy[key].message + '</a>';
+                    errorHtml += '</div>';
+                }
+                errorHtml += '</div>';
+
+                $('#errorOnDisable').html(errorHtml);
+
+            }
+
         });
 
     }

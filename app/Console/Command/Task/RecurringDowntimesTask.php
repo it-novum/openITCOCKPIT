@@ -24,8 +24,8 @@
 //	confirmation.
 
 use \itnovum\openITCOCKPIT\Core\Interfaces\CronjobInterface;
-class RecurringDowntimesTask extends AppShell implements CronjobInterface
-{
+
+class RecurringDowntimesTask extends AppShell implements CronjobInterface {
     public $uses = [
         'Systemsetting',
         'Systemdowntimes',
@@ -33,12 +33,12 @@ class RecurringDowntimesTask extends AppShell implements CronjobInterface
         'Hostgroup',
         'Service',
         MONITORING_EXTERNALCOMMAND,
+        'Container'
     ];
 
     public $_systemsettings = [];
 
-    function execute($quiet = false)
-    {
+    function execute($quiet = false) {
         $this->params['quiet'] = $quiet;
         $this->stdout->styles('green', ['text' => 'green']);
 
@@ -47,7 +47,7 @@ class RecurringDowntimesTask extends AppShell implements CronjobInterface
         $this->out('Create recurring downtimes...', false);
 
         if (!file_exists($this->_systemsettings['MONITORING']['MONITORING.STATUS_DAT'])) {
-            $this->out('<error>Error: File '.$this->_systemsettings['MONITORING']['MONITORING.STATUS_DAT'].' does not exists!</error>');
+            $this->out('<error>Error: File ' . $this->_systemsettings['MONITORING']['MONITORING.STATUS_DAT'] . ' does not exists!</error>');
             $this->hr();
 
             return false;
@@ -58,8 +58,7 @@ class RecurringDowntimesTask extends AppShell implements CronjobInterface
         $this->hr();
     }
 
-    public function recurringDowntimes()
-    {
+    public function recurringDowntimes() {
         $all_downtimes = $this->Systemdowntimes->find('all');
         $statusdat = $this->parseStatusDat();
         foreach ($all_downtimes as $downtime) {
@@ -76,64 +75,137 @@ class RecurringDowntimesTask extends AppShell implements CronjobInterface
             if ($downtime['Systemdowntimes']['day_of_month'] !== '' && $downtime['Systemdowntimes']['day_of_month'] !== null) {
                 $days_of_month = explode(',', $downtime['Systemdowntimes']['day_of_month']);
             }
+            $downtimeToTime = strtotime($downtime['Systemdowntimes']['from_time']) + intval($downtime['Systemdowntimes']['duration']) * 60;
 
             if (!empty($weekdays) && !empty($days_of_month)) {
                 if (in_array($current_weekday, $weekdays) && in_array($current_day_of_month, $days_of_month)) {
                     //Example: Today is the 5 day of month and this is a monday
-
-                    //Checking if the downtime is allready set in nagios
-                    if (!$this->checkStatusDatForDowntime($statusdat, $downtime['Systemdowntimes']['id'], $downtime['Systemdowntimes']['comment'])) {
-                        switch ($downtime['Systemdowntimes']['objecttype_id']) {
-                            case OBJECT_HOST:
-                                $host = $this->Host->findById($downtime['Systemdowntimes']['object_id']);
-                                if (empty($host)) {
-                                    // The object for recurring downtime was deleted, so we delete the downtime
-                                    $this->Systemdowntimes->delete($downtime['Systemdowntimes']['id']);
+                    //Check that the end of the downtime is not in the past
+                    if ($this->isTimeInThePast($downtimeToTime) === false) {
+                        //Checking if the downtime is allready set in nagios
+                        if (!$this->checkStatusDatForDowntime($statusdat, $downtime['Systemdowntimes']['id'], $downtime['Systemdowntimes']['comment'])) {
+                            switch ($downtime['Systemdowntimes']['objecttype_id']) {
+                                case OBJECT_HOST:
+                                    $host = $this->Host->find('first', [
+                                        'recursive' => -1,
+                                        'conditions' => [
+                                            'Host.id' => $downtime['Systemdowntimes']['object_id']
+                                        ],
+                                        'fields' => [
+                                            'Host.id',
+                                            'Host.uuid'
+                                        ]
+                                    ]);
+                                    if (empty($host)) {
+                                        // The object for recurring downtime was deleted, so we delete the downtime
+                                        $this->Systemdowntimes->delete($downtime['Systemdowntimes']['id']);
+                                        break;
+                                    }
+                                    $this->Externalcommand->setHostDowntime([
+                                        'hostUuid' => $host['Host']['uuid'],
+                                        'downtimetype' => $downtime['Systemdowntimes']['downtimetype_id'],
+                                        'comment' => 'AUTO[' . $downtime['Systemdowntimes']['id'] . ']: ' . $downtime['Systemdowntimes']['comment'],
+                                        'author' => $downtime['Systemdowntimes']['author'],
+                                        'start' => strtotime($downtime['Systemdowntimes']['from_time']),
+                                        'end' => strtotime($downtime['Systemdowntimes']['from_time']) + intval($downtime['Systemdowntimes']['duration']) * 60,
+                                    ]);
                                     break;
-                                }
-                                $this->Externalcommand->setHostDowntime([
-                                    'hostUuid'     => $host['Host']['uuid'],
-                                    'downtimetype' => $downtime['Systemdowntimes']['downtimetype_id'],
-                                    'comment'      => 'AUTO['.$downtime['Systemdowntimes']['id'].']: '.$downtime['Systemdowntimes']['comment'],
-                                    'author'       => $downtime['Systemdowntimes']['author'],
-                                    'start'        => strtotime($downtime['Systemdowntimes']['from_time']),
-                                    'end'          => strtotime($downtime['Systemdowntimes']['to_time']),
-                                ]);
-                                break;
 
-                            case OBJECT_HOSTGROUP:
-                                $hostgroup = $this->Hostgroup->findById($downtime['Systemdowntimes']['object_id']);
-                                if (empty($hostgroup)) {
-                                    // The object for recurring downtime was deleted, so we delete the downtime
-                                    $this->Systemdowntimes->delete($downtime['Systemdowntimes']['id']);
+                                case OBJECT_HOSTGROUP:
+                                    $hostgroup = $this->Hostgroup->find('first', [
+                                        'recursive' => -1,
+                                        'conditions' => [
+                                            'Hostgroup.id' => $downtime['Systemdowntimes']['object_id']
+                                        ],
+                                        'fields' => [
+                                            'Hostgroup.id',
+                                            'Hostgroup.uuid'
+                                        ]
+                                    ]);
+                                    if (empty($hostgroup)) {
+                                        // The object for recurring downtime was deleted, so we delete the downtime
+                                        $this->Systemdowntimes->delete($downtime['Systemdowntimes']['id']);
+                                        break;
+                                    }
+                                    $this->Externalcommand->setHostgroupDowntime([
+                                        'hostgroupUuid' => $hostgroup['Hostgroup']['uuid'],
+                                        'downtimetype' => $downtime['Systemdowntimes']['downtimetype_id'],
+                                        'comment' => 'AUTO[' . $downtime['Systemdowntimes']['id'] . ']: ' . $downtime['Systemdowntimes']['comment'],
+                                        'author' => $downtime['Systemdowntimes']['author'],
+                                        'start' => strtotime($downtime['Systemdowntimes']['from_time']),
+                                        'end' => strtotime($downtime['Systemdowntimes']['from_time']) + intval($downtime['Systemdowntimes']['duration']) * 60,
+                                    ]);
                                     break;
-                                }
-                                $this->Externalcommand->setHostgroupDowntime([
-                                    'hostgroupUuid' => $hostgroup['Hostgroup']['uuid'],
-                                    'downtimetype'  => $downtime['Systemdowntimes']['downtimetype_id'],
-                                    'comment'       => 'AUTO['.$downtime['Systemdowntimes']['id'].']: '.$downtime['Systemdowntimes']['comment'],
-                                    'author'        => $downtime['Systemdowntimes']['author'],
-                                    'start'         => strtotime($downtime['Systemdowntimes']['from_time']),
-                                    'end'           => strtotime($downtime['Systemdowntimes']['to_time']),
-                                ]);
-                                break;
 
-                            case OBJECT_SERVICE:
-                                $service = $this->Service->findById($downtime['Systemdowntimes']['object_id']);
-                                if (empty($service)) {
-                                    // The object for recurring downtime was deleted, so we delete the downtime
-                                    $this->Systemdowntimes->delete($downtime['Systemdowntimes']['id']);
+                                case OBJECT_SERVICE:
+                                    $service = $this->Service->find('first', [
+                                        'recursive' => -1,
+                                        'contain' => [
+                                            'Host' => [
+                                                'fields' => [
+                                                    'Host.id',
+                                                    'Host.uuid'
+                                                ]
+                                            ]
+                                        ],
+                                        'conditions' => [
+                                            'Service.id' => $downtime['Systemdowntimes']['object_id']
+                                        ],
+                                        'fields' => [
+                                            'Service.id',
+                                            'Service.uuid'
+                                        ]
+                                    ]);
+                                    if (empty($service)) {
+                                        // The object for recurring downtime was deleted, so we delete the downtime
+                                        $this->Systemdowntimes->delete($downtime['Systemdowntimes']['id']);
+                                        break;
+                                    }
+                                    $this->Externalcommand->setServiceDowntime([
+                                        'hostUuid' => $service['Host']['uuid'],
+                                        'serviceUuid' => $service['Service']['uuid'],
+                                        'start' => strtotime($downtime['Systemdowntimes']['from_time']),
+                                        'end' => strtotime($downtime['Systemdowntimes']['from_time']) + intval($downtime['Systemdowntimes']['duration']) * 60,
+                                        'author' => $downtime['Systemdowntimes']['author'],
+                                        'comment' => 'AUTO[' . $downtime['Systemdowntimes']['id'] . ']: ' . $downtime['Systemdowntimes']['comment'],
+                                    ]);
                                     break;
-                                }
-                                $this->Externalcommand->setServiceDowntime([
-                                    'hostUuid'    => $service['Host']['uuid'],
-                                    'serviceUuid' => $service['Service']['uuid'],
-                                    'start'       => strtotime($downtime['Systemdowntimes']['from_time']),
-                                    'end'         => strtotime($downtime['Systemdowntimes']['to_time']),
-                                    'author'      => $downtime['Systemdowntimes']['author'],
-                                    'comment'     => 'AUTO['.$downtime['Systemdowntimes']['id'].']: '.$downtime['Systemdowntimes']['comment'],
-                                ]);
-                                break;
+
+                                case OBJECT_NODE: //Type 4 is Container, object Container does not exists
+                                    debug('test container downtime');
+                                    if (!$this->Container->exists($downtime['Systemdowntimes']['object_id'])) {
+                                        $this->Systemdowntimes->delete($downtime['Systemdowntimes']['id']);
+                                        break;
+                                    }
+                                    $hostUuids = $this->Host->find('list', [
+                                        'recursive' => -1,
+                                        'joins' => [
+                                            [
+                                                'table'      => 'hosts_to_containers',
+                                                'type'       => 'INNER',
+                                                'alias'      => 'HostToContainers',
+                                                'conditions' => 'HostToContainers.host_id = Host.id',
+                                            ]
+                                        ],
+                                        'fields' => [
+                                            'Host.uuid'
+                                        ],
+                                        'conditions' => [
+                                            'HostToContainers.container_id' => $downtime['Systemdowntimes']['object_id'],
+                                            'Host.disabled' => 0
+                                        ]
+                                    ]);
+
+                                    $this->Externalcommand->setContainerDowntime([
+                                        'hostUuids' => $hostUuids,
+                                        'downtimetype' => $downtime['Systemdowntimes']['downtimetype_id'],
+                                        'comment' => 'AUTO[' . $downtime['Systemdowntimes']['id'] . ']: ' . $downtime['Systemdowntimes']['comment'],
+                                        'author' => $downtime['Systemdowntimes']['author'],
+                                        'start' => strtotime($downtime['Systemdowntimes']['from_time']),
+                                        'end' => strtotime($downtime['Systemdowntimes']['from_time']) + intval($downtime['Systemdowntimes']['duration']) * 60,
+                                    ]);
+                                    break;
+                            }
                         }
                     }
                     continue;
@@ -144,58 +216,128 @@ class RecurringDowntimesTask extends AppShell implements CronjobInterface
                 if (in_array($current_weekday, $weekdays)) {
                     //Example: today is monday
                     //Checking if the downtime is allready set in nagios
-                    if (!$this->checkStatusDatForDowntime($statusdat, $downtime['Systemdowntimes']['id'], $downtime['Systemdowntimes']['comment'])) {
-                        switch ($downtime['Systemdowntimes']['objecttype_id']) {
-                            case OBJECT_HOST:
-                                $host = $this->Host->findById($downtime['Systemdowntimes']['object_id']);
-                                if (empty($host)) {
-                                    // The object for recurring downtime was deleted, so we delete the downtime
-                                    $this->Systemdowntimes->delete($downtime['Systemdowntimes']['id']);
+                    //Check that the end of the downtime is not in the past
+                    if ($this->isTimeInThePast($downtimeToTime) === false) {
+                        if (!$this->checkStatusDatForDowntime($statusdat, $downtime['Systemdowntimes']['id'], $downtime['Systemdowntimes']['comment'])) {
+                            switch ($downtime['Systemdowntimes']['objecttype_id']) {
+                                case OBJECT_HOST:
+                                    $host = $this->Host->find('first', [
+                                        'recursive' => -1,
+                                        'conditions' => [
+                                            'Host.id' => $downtime['Systemdowntimes']['object_id']
+                                        ],
+                                        'fields' => [
+                                            'Host.id',
+                                            'Host.uuid'
+                                        ]
+                                    ]);
+                                    if (empty($host)) {
+                                        // The object for recurring downtime was deleted, so we delete the downtime
+                                        $this->Systemdowntimes->delete($downtime['Systemdowntimes']['id']);
+                                        break;
+                                    }
+                                    $this->Externalcommand->setHostDowntime([
+                                        'hostUuid' => $host['Host']['uuid'],
+                                        'downtimetype' => $downtime['Systemdowntimes']['downtimetype_id'],
+                                        'comment' => 'AUTO[' . $downtime['Systemdowntimes']['id'] . ']: ' . $downtime['Systemdowntimes']['comment'],
+                                        'author' => $downtime['Systemdowntimes']['author'],
+                                        'start' => strtotime($downtime['Systemdowntimes']['from_time']),
+                                        'end' => strtotime($downtime['Systemdowntimes']['from_time']) + intval($downtime['Systemdowntimes']['duration']) * 60,
+                                    ]);
                                     break;
-                                }
-                                $this->Externalcommand->setHostDowntime([
-                                    'hostUuid'     => $host['Host']['uuid'],
-                                    'downtimetype' => $downtime['Systemdowntimes']['downtimetype_id'],
-                                    'comment'      => 'AUTO['.$downtime['Systemdowntimes']['id'].']: '.$downtime['Systemdowntimes']['comment'],
-                                    'author'       => $downtime['Systemdowntimes']['author'],
-                                    'start'        => strtotime($downtime['Systemdowntimes']['from_time']),
-                                    'end'          => strtotime($downtime['Systemdowntimes']['to_time']),
-                                ]);
-                                break;
 
-                            case OBJECT_HOSTGROUP:
-                                $hostgroup = $this->Hostgroup->findById($downtime['Systemdowntimes']['object_id']);
-                                if (empty($hostgroup)) {
-                                    // The object for recurring downtime was deleted, so we delete the downtime
-                                    $this->Systemdowntimes->delete($downtime['Systemdowntimes']['id']);
+                                case OBJECT_HOSTGROUP:
+                                    $hostgroup = $this->Hostgroup->find('first', [
+                                        'recursive' => -1,
+                                        'conditions' => [
+                                            'Hostgroup.id' => $downtime['Systemdowntimes']['object_id']
+                                        ],
+                                        'fields' => [
+                                            'Hostgroup.id',
+                                            'Hostgroup.uuid'
+                                        ]
+                                    ]);
+                                    if (empty($hostgroup)) {
+                                        // The object for recurring downtime was deleted, so we delete the downtime
+                                        $this->Systemdowntimes->delete($downtime['Systemdowntimes']['id']);
+                                        break;
+                                    }
+                                    $this->Externalcommand->setHostgroupDowntime([
+                                        'hostgroupUuid' => $hostgroup['Hostgroup']['uuid'],
+                                        'downtimetype' => $downtime['Systemdowntimes']['downtimetype_id'],
+                                        'comment' => 'AUTO[' . $downtime['Systemdowntimes']['id'] . ']: ' . $downtime['Systemdowntimes']['comment'],
+                                        'author' => $downtime['Systemdowntimes']['author'],
+                                        'start' => strtotime($downtime['Systemdowntimes']['from_time']),
+                                        'end' => strtotime($downtime['Systemdowntimes']['from_time']) + intval($downtime['Systemdowntimes']['duration']) * 60,
+                                    ]);
                                     break;
-                                }
-                                $this->Externalcommand->setHostgroupDowntime([
-                                    'hostgroupUuid' => $hostgroup['Hostgroup']['uuid'],
-                                    'downtimetype'  => $downtime['Systemdowntimes']['downtimetype_id'],
-                                    'comment'       => 'AUTO['.$downtime['Systemdowntimes']['id'].']: '.$downtime['Systemdowntimes']['comment'],
-                                    'author'        => $downtime['Systemdowntimes']['author'],
-                                    'start'         => strtotime($downtime['Systemdowntimes']['from_time']),
-                                    'end'           => strtotime($downtime['Systemdowntimes']['to_time']),
-                                ]);
-                                break;
 
-                            case OBJECT_SERVICE:
-                                $service = $this->Service->findById($downtime['Systemdowntimes']['object_id']);
-                                if (empty($service)) {
-                                    // The object for recurring downtime was deleted, so we delete the downtime
-                                    $this->Systemdowntimes->delete($downtime['Systemdowntimes']['id']);
+                                case OBJECT_SERVICE:
+                                    $service = $this->Service->find('first', [
+                                        'recursive' => -1,
+                                        'contain' => [
+                                            'Host' => [
+                                                'fields' => [
+                                                    'Host.id',
+                                                    'Host.uuid'
+                                                ]
+                                            ]
+                                        ],
+                                        'conditions' => [
+                                            'Service.id' => $downtime['Systemdowntimes']['object_id']
+                                        ],
+                                        'fields' => [
+                                            'Service.id',
+                                            'Service.uuid'
+                                        ]
+                                    ]);
+                                    if (empty($service)) {
+                                        // The object for recurring downtime was deleted, so we delete the downtime
+                                        $this->Systemdowntimes->delete($downtime['Systemdowntimes']['id']);
+                                        break;
+                                    }
+                                    $this->Externalcommand->setServiceDowntime([
+                                        'hostUuid' => $service['Host']['uuid'],
+                                        'serviceUuid' => $service['Service']['uuid'],
+                                        'start' => strtotime($downtime['Systemdowntimes']['from_time']),
+                                        'end' => strtotime($downtime['Systemdowntimes']['from_time']) + intval($downtime['Systemdowntimes']['duration']) * 60,
+                                        'author' => $downtime['Systemdowntimes']['author'],
+                                        'comment' => 'AUTO[' . $downtime['Systemdowntimes']['id'] . ']: ' . $downtime['Systemdowntimes']['comment'],
+                                    ]);
                                     break;
-                                }
-                                $this->Externalcommand->setServiceDowntime([
-                                    'hostUuid'    => $service['Host']['uuid'],
-                                    'serviceUuid' => $service['Service']['uuid'],
-                                    'start'       => strtotime($downtime['Systemdowntimes']['from_time']),
-                                    'end'         => strtotime($downtime['Systemdowntimes']['to_time']),
-                                    'author'      => $downtime['Systemdowntimes']['author'],
-                                    'comment'     => 'AUTO['.$downtime['Systemdowntimes']['id'].']: '.$downtime['Systemdowntimes']['comment'],
-                                ]);
-                                break;
+                                case OBJECT_NODE: //Type 4 is Container, object Container does not exists
+                                    if (!$this->Container->exists($downtime['Systemdowntimes']['object_id'])) {
+                                        $this->Systemdowntimes->delete($downtime['Systemdowntimes']['id']);
+                                        break;
+                                    }
+                                    $hostUuids = $this->Host->find('list', [
+                                        'recursive' => -1,
+                                        'joins' => [
+                                            [
+                                                'table'      => 'hosts_to_containers',
+                                                'type'       => 'INNER',
+                                                'alias'      => 'HostToContainers',
+                                                'conditions' => 'HostToContainers.host_id = Host.id',
+                                            ]
+                                        ],
+                                        'fields' => [
+                                            'Host.uuid'
+                                        ],
+                                        'conditions' => [
+                                            'HostToContainers.container_id' => $downtime['Systemdowntimes']['object_id'],
+                                            'Host.disabled' => 0
+                                        ]
+                                    ]);
+                                    $this->Externalcommand->setContainerDowntime([
+                                        'hostUuids' => $hostUuids,
+                                        'downtimetype' => $downtime['Systemdowntimes']['downtimetype_id'],
+                                        'comment' => 'AUTO[' . $downtime['Systemdowntimes']['id'] . ']: ' . $downtime['Systemdowntimes']['comment'],
+                                        'author' => $downtime['Systemdowntimes']['author'],
+                                        'start' => strtotime($downtime['Systemdowntimes']['from_time']),
+                                        'end' => strtotime($downtime['Systemdowntimes']['from_time']) + intval($downtime['Systemdowntimes']['duration']) * 60,
+                                    ]);
+                                    break;
+                            }
                         }
                     }
                     continue;
@@ -205,59 +347,132 @@ class RecurringDowntimesTask extends AppShell implements CronjobInterface
             if (!empty($days_of_month)) {
                 if (in_array($current_day_of_month, $days_of_month)) {
                     //Example: today the 6 or 10 or 30 day of the current month
-                    //Checking if the downtime is allready set in nagios
-                    if (!$this->checkStatusDatForDowntime($statusdat, $downtime['Systemdowntimes']['id'], $downtime['Systemdowntimes']['comment'])) {
-                        switch ($downtime['Systemdowntimes']['objecttype_id']) {
-                            case OBJECT_HOST:
-                                $host = $this->Host->findById($downtime['Systemdowntimes']['object_id']);
-                                if (empty($host)) {
-                                    // The object for recurring downtime was deleted, so we delete the downtime
-                                    $this->Systemdowntimes->delete($downtime['Systemdowntimes']['id']);
-                                    break;
-                                }
-                                $this->Externalcommand->setHostDowntime([
-                                    'hostUuid'     => $host['Host']['uuid'],
-                                    'downtimetype' => $downtime['Systemdowntimes']['downtimetype_id'],
-                                    'comment'      => 'AUTO['.$downtime['Systemdowntimes']['id'].']: '.$downtime['Systemdowntimes']['comment'],
-                                    'author'       => $downtime['Systemdowntimes']['author'],
-                                    'start'        => strtotime($downtime['Systemdowntimes']['from_time']),
-                                    'end'          => strtotime($downtime['Systemdowntimes']['to_time']),
-                                ]);
-                                break;
 
-                            case OBJECT_HOSTGROUP:
-                                $hostgroup = $this->Hostgroup->findById($downtime['Systemdowntimes']['object_id']);
-                                if (empty($hostgroup)) {
-                                    // The object for recurring downtime was deleted, so we delete the downtime
-                                    $this->Systemdowntimes->delete($downtime['Systemdowntimes']['id']);
+                    //Check that the end of the downtime is not in the past
+                    if ($this->isTimeInThePast($downtimeToTime) === false) {
+                        //Checking if the downtime is allready set in nagios
+                        if (!$this->checkStatusDatForDowntime($statusdat, $downtime['Systemdowntimes']['id'], $downtime['Systemdowntimes']['comment'])) {
+                            switch ($downtime['Systemdowntimes']['objecttype_id']) {
+                                case OBJECT_HOST:
+                                    $host = $this->Host->find('first', [
+                                        'recursive' => -1,
+                                        'conditions' => [
+                                            'Host.id' => $downtime['Systemdowntimes']['object_id']
+                                        ],
+                                        'fields' => [
+                                            'Host.id',
+                                            'Host.uuid'
+                                        ]
+                                    ]);
+                                    if (empty($host)) {
+                                        // The object for recurring downtime was deleted, so we delete the downtime
+                                        $this->Systemdowntimes->delete($downtime['Systemdowntimes']['id']);
+                                        break;
+                                    }
+                                    $this->Externalcommand->setHostDowntime([
+                                        'hostUuid' => $host['Host']['uuid'],
+                                        'downtimetype' => $downtime['Systemdowntimes']['downtimetype_id'],
+                                        'comment' => 'AUTO[' . $downtime['Systemdowntimes']['id'] . ']: ' . $downtime['Systemdowntimes']['comment'],
+                                        'author' => $downtime['Systemdowntimes']['author'],
+                                        'start' => strtotime($downtime['Systemdowntimes']['from_time']),
+                                        'end' => strtotime($downtime['Systemdowntimes']['from_time']) + intval($downtime['Systemdowntimes']['duration']) * 60,
+                                    ]);
                                     break;
-                                }
-                                $this->Externalcommand->setHostgroupDowntime([
-                                    'hostgroupUuid' => $hostgroup['Hostgroup']['uuid'],
-                                    'downtimetype'  => $downtime['Systemdowntimes']['downtimetype_id'],
-                                    'comment'       => 'AUTO['.$downtime['Systemdowntimes']['id'].']: '.$downtime['Systemdowntimes']['comment'],
-                                    'author'        => $downtime['Systemdowntimes']['author'],
-                                    'start'         => strtotime($downtime['Systemdowntimes']['from_time']),
-                                    'end'           => strtotime($downtime['Systemdowntimes']['to_time']),
-                                ]);
-                                break;
 
-                            case OBJECT_SERVICE:
-                                $service = $this->Service->findById($downtime['Systemdowntimes']['object_id']);
-                                if (empty($service)) {
-                                    // The object for recurring downtime was deleted, so we delete the downtime
-                                    $this->Systemdowntimes->delete($downtime['Systemdowntimes']['id']);
+                                case OBJECT_HOSTGROUP:
+                                    $hostgroup = $this->Hostgroup->find('first', [
+                                        'recursive' => -1,
+                                        'conditions' => [
+                                            'Hostgroup.id' => $downtime['Systemdowntimes']['object_id']
+                                        ],
+                                        'fields' => [
+                                            'Hostgroup.id',
+                                            'Hostgroup.uuid'
+                                        ]
+                                    ]);
+                                    if (empty($hostgroup)) {
+                                        // The object for recurring downtime was deleted, so we delete the downtime
+                                        $this->Systemdowntimes->delete($downtime['Systemdowntimes']['id']);
+                                        break;
+                                    }
+                                    $this->Externalcommand->setHostgroupDowntime([
+                                        'hostgroupUuid' => $hostgroup['Hostgroup']['uuid'],
+                                        'downtimetype' => $downtime['Systemdowntimes']['downtimetype_id'],
+                                        'comment' => 'AUTO[' . $downtime['Systemdowntimes']['id'] . ']: ' . $downtime['Systemdowntimes']['comment'],
+                                        'author' => $downtime['Systemdowntimes']['author'],
+                                        'start' => strtotime($downtime['Systemdowntimes']['from_time']),
+                                        'end' => strtotime($downtime['Systemdowntimes']['from_time']) + intval($downtime['Systemdowntimes']['duration']) * 60,
+                                    ]);
                                     break;
-                                }
-                                $this->Externalcommand->setServiceDowntime([
-                                    'hostUuid'    => $service['Host']['uuid'],
-                                    'serviceUuid' => $service['Service']['uuid'],
-                                    'start'       => strtotime($downtime['Systemdowntimes']['from_time']),
-                                    'end'         => strtotime($downtime['Systemdowntimes']['to_time']),
-                                    'author'      => $downtime['Systemdowntimes']['author'],
-                                    'comment'     => 'AUTO['.$downtime['Systemdowntimes']['id'].']: '.$downtime['Systemdowntimes']['comment'],
-                                ]);
-                                break;
+
+                                case OBJECT_SERVICE:
+                                    $service = $this->Service->find('first', [
+                                        'recursive' => -1,
+                                        'contain' => [
+                                            'Host' => [
+                                                'fields' => [
+                                                    'Host.id',
+                                                    'Host.uuid'
+                                                ]
+                                            ]
+                                        ],
+                                        'conditions' => [
+                                            'Service.id' => $downtime['Systemdowntimes']['object_id']
+                                        ],
+                                        'fields' => [
+                                            'Service.id',
+                                            'Service.uuid'
+                                        ]
+                                    ]);
+                                    if (empty($service)) {
+                                        // The object for recurring downtime was deleted, so we delete the downtime
+                                        $this->Systemdowntimes->delete($downtime['Systemdowntimes']['id']);
+                                        break;
+                                    }
+                                    $this->Externalcommand->setServiceDowntime([
+                                        'hostUuid' => $service['Host']['uuid'],
+                                        'serviceUuid' => $service['Service']['uuid'],
+                                        'start' => strtotime($downtime['Systemdowntimes']['from_time']),
+                                        'end' => strtotime($downtime['Systemdowntimes']['from_time']) + intval($downtime['Systemdowntimes']['duration']) * 60,
+                                        'author' => $downtime['Systemdowntimes']['author'],
+                                        'comment' => 'AUTO[' . $downtime['Systemdowntimes']['id'] . ']: ' . $downtime['Systemdowntimes']['comment'],
+                                    ]);
+                                    break;
+
+                                case OBJECT_NODE: //Type 4 is Container, object Container does not exists
+                                    if (!$this->Container->exists($downtime['Systemdowntimes']['object_id'])) {
+                                        $this->Systemdowntimes->delete($downtime['Systemdowntimes']['id']);
+                                        break;
+                                    }
+                                    $hostUuids = $this->Host->find('list', [
+                                        'recursive' => -1,
+                                        'joins' => [
+                                            [
+                                                'table'      => 'hosts_to_containers',
+                                                'type'       => 'INNER',
+                                                'alias'      => 'HostToContainers',
+                                                'conditions' => 'HostToContainers.host_id = Host.id',
+                                            ]
+                                        ],
+                                        'fields' => [
+                                            'Host.uuid'
+                                        ],
+                                        'conditions' => [
+                                            'HostToContainers.container_id' => $downtime['Systemdowntimes']['object_id'],
+                                            'Host.disabled' => 0
+                                        ]
+                                    ]);
+
+                                    $this->Externalcommand->setContainerDowntime([
+                                        'hostUuids' => $hostUuids,
+                                        'downtimetype' => $downtime['Systemdowntimes']['downtimetype_id'],
+                                        'comment' => 'AUTO[' . $downtime['Systemdowntimes']['id'] . ']: ' . $downtime['Systemdowntimes']['comment'],
+                                        'author' => $downtime['Systemdowntimes']['author'],
+                                        'start' => strtotime($downtime['Systemdowntimes']['from_time']),
+                                        'end' => strtotime($downtime['Systemdowntimes']['from_time']) + intval($downtime['Systemdowntimes']['duration']) * 60,
+                                    ]);
+                                    break;
+                            }
                         }
                     }
                     continue;
@@ -267,10 +482,16 @@ class RecurringDowntimesTask extends AppShell implements CronjobInterface
         }
     }
 
-    public function checkStatusDatForDowntime($statusdat, $downtime_id, $comment)
-    {
+    public function isTimeInThePast($time) {
+        return $time < time();
+        //debug($time);
+        //$time = str_replace(':', '', $time);
+        //return $time < date('Hi');
+    }
+
+    public function checkStatusDatForDowntime($statusdat, $downtime_id, $comment) {
         foreach ($statusdat as $record) {
-            if ($record['comment'] == 'AUTO['.$downtime_id.']: '.$comment) {
+            if ($record['comment'] == 'AUTO[' . $downtime_id . ']: ' . $comment) {
                 return true;
             }
         }
@@ -278,8 +499,7 @@ class RecurringDowntimesTask extends AppShell implements CronjobInterface
         return false;
     }
 
-    public function parseStatusDat()
-    {
+    public function parseStatusDat() {
         $this->monitoringLog = $this->_systemsettings['MONITORING']['MONITORING.STATUS_DAT'];
         $return = [];
         $saveContent = false;

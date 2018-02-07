@@ -35,39 +35,66 @@ class SearchController extends AppController
             //Default search
             if (isset($this->request->data['SearchDefault'])) {
                 if (empty($this->request->data['SearchDefault']['Servicename']) && !empty($this->request->data['SearchDefault']['Hostname'])) {
-                    //The user is searching for a host, because no service name is given ;-)
-                    $url = ['controller' => 'hosts', 'action' => 'index'];
-                    $url['Filter.Host.name'] = $this->request->data['SearchDefault']['Hostname'];
-                    foreach ($this->request->data['Hoststatus'] as $state => $value) {
-                        if ($value == 1) {
-                            $url['Filter.Hoststatus.current_state['.$state.']'] = 1;
+                    // The user is searching for a host, because no service name is given ;-)
+                    $hoststatus = [];
+                    foreach($this->request->data['Hoststatus'] as $stateId => $value){
+                        if($value === '1'){
+                            $hoststatus[$stateId] = 1;
                         }
                     }
-                    $url['q'] = 1; //Fix for .exe .png and so on
-                    return $this->redirect($url);
+
+                    $url = Router::queryString([
+                        'filter' => [
+                            'Hoststatus.current_state' => $hoststatus,
+                            'Host.name' => $this->request->data['SearchDefault']['Hostname'],
+                        ],
+                        'sort' => 'Hoststatus.last_state_change',
+                        'direction' => 'desc'
+                    ]);
+
+                    return $this->redirect(sprintf('/hosts/index%s', $url));
+
+
                 } elseif (!empty($this->request->data['SearchDefault']['Servicename']) && empty($this->request->data['SearchDefault']['Hostname'])) {
                     // The user typed in a service name but not a host name, so we need to search for the service
-                    $url = ['controller' => 'services', 'action' => 'index'];
-                    $url['Filter.Service.servicename'] = $this->request->data['SearchDefault']['Servicename'];
-                    foreach ($this->request->data['Servicestatus'] as $state => $value) {
-                        if ($value == 1) {
-                            $url['Filter.Servicestatus.current_state['.$state.']'] = 1;
+
+                    $servicestatus = [];
+                    foreach($this->request->data['Servicestatus'] as $stateId => $value){
+                        if($value === '1'){
+                            $servicestatus[$stateId] = 1;
                         }
                     }
-                    $url['q'] = 1; //Fix for .exe .png and so on
-                    return $this->redirect(Hash::merge(['controller' => 'services', 'action' => 'index'], $url));
+
+                    $url = Router::queryString([
+                        'filter' => [
+                            'Servicestatus.current_state' => $servicestatus,
+                            'Service.servicename' => $this->request->data['SearchDefault']['Servicename']
+                        ],
+                        'sort' => 'Servicestatus.last_state_change',
+                        'direction' => 'desc'
+                    ]);
+
+                    return $this->redirect(sprintf('/services/index%s', $url));
                 } elseif (!empty($this->request->data['SearchDefault']['Servicename']) && !empty($this->request->data['SearchDefault']['Hostname'])) {
                     // The user entered a service and a host name, so we need to search for host and service
-                    $url = ['controller' => 'services', 'action' => 'index'];
-                    $url['Filter.Host.name'] = $this->request->data['SearchDefault']['Hostname'];
-                    $url['Filter.Service.servicename'] = $this->request->data['SearchDefault']['Servicename'];
-                    foreach ($this->request->data['Servicestatus'] as $state => $value) {
-                        if ($value == 1) {
-                            $url['Filter.Servicestatus.current_state['.$state.']'] = 1;
+                    $servicestatus = [];
+                    foreach($this->request->data['Servicestatus'] as $stateId => $value){
+                        if($value === '1'){
+                            $servicestatus[$stateId] = 1;
                         }
                     }
-                    $url['q'] = 1; //Fix for .exe .png and so on
-                    return $this->redirect($url);
+
+                    $url = Router::queryString([
+                        'filter' => [
+                            'Servicestatus.current_state' => $servicestatus,
+                            'Service.servicename' => $this->request->data['SearchDefault']['Servicename'],
+                            'Host.name' => $this->request->data['SearchDefault']['Hostname'],
+                        ],
+                        'sort' => 'Servicestatus.last_state_change',
+                        'direction' => 'desc'
+                    ]);
+
+                    return $this->redirect(sprintf('/services/index%s', $url));
                 } else {
                     $this->setFlash(__('Invalid search query'), false);
                 }
@@ -114,12 +141,15 @@ class SearchController extends AppController
 
             //Search for host address
             if (isset($this->request->data['SearchAddress']['Hostaddress'])) {
-                return $this->redirect([
-                    'controller'          => 'hosts',
-                    'action'              => 'index',
-                    'Filter.Host.address' => $this->request->data['SearchAddress']['Hostaddress'],
-                    'q'                   => 1, //the last octett of the ip adress gets cut so we need an additional param
+                $url = Router::queryString([
+                    'filter' => [
+                        'Host.address' => $this->request->data['SearchAddress']['Hostaddress'],
+                    ],
+                    'sort' => 'Hoststatus.last_state_change',
+                    'direction' => 'desc'
                 ]);
+
+                return $this->redirect(sprintf('/hosts/index%s', $url));
             }
 
             //Search for macros

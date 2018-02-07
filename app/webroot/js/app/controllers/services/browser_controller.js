@@ -26,11 +26,12 @@
 App.Controllers.ServicesBrowserController = Frontend.AppController.extend({
 	host_uuid: null,
 	service_uuid: null,
-	components: ['WebsocketSudo', 'Ajaxloader', 'Rrd', 'Externalcommand', 'Utils', 'Qr'],
+	components: ['WebsocketSudo', 'Ajaxloader', 'Rrd', 'Externalcommand', 'Utils', 'Qr', 'Time'],
 
 	_initialize: function(){
 		var self = this;
 
+		self.Time.setup();
 		self.Ajaxloader.setup();
 		self.Externalcommand.setup();
 		self.Utils.flapping();

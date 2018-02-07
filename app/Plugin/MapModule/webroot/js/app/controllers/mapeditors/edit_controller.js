@@ -48,22 +48,33 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
 
     components: ['Ajaxloader', 'Uuid', 'Gadget', 'Grid', 'Line'],
 
-    _initialize: function () {
+    _initialize: function(){
         var self = this;
 
         this.Ajaxloader.setup();
+
+        //load initial data
+        this.loadInitialData('#addHostObjectId');
+        this.loadInitialData('#addServiceHostObjectId');
+        this.loadInitialData('#addHostLineObjectId');
+        this.loadInitialData('#addServiceLineHostObjectId');
+        this.loadInitialData('#addServiceGadgetHostObjectId');
+
+        this.loadElementHostsByAjax();
+        this.loadGadgetHostsByAjax();
+        this.loadLineHostsByAjax();
 
         $(document).on('click', '.background', function () {
             self.changeBackground({el: this});
         });
 
         //on hover on background class show delete button
-        $(document).on('mouseenter', '.background-thumbnail', function () {
+        $(document).on('mouseenter', '.background-thumbnail', function(){
             //append remove background button
             $(this).append('<div class="deleteBackgroundBtn txt-color-blueDark"><i class="fa fa-trash fa-2x"></i></div>');
         });
 
-        $(document).on('click', '.deleteBackgroundBtn', function () {
+        $(document).on('click', '.deleteBackgroundBtn', function(){
             var filename = $(this).parent().find('img').attr('filename-id');
             //write filename to modal dialog
             $('#backgoundFilename').val(filename);
@@ -71,23 +82,23 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
 
         });
 
-        $('#confirmDeleteBackgroundBtn').click(function () {
+        $('#confirmDeleteBackgroundBtn').click(function(){
             var filename = $('#backgoundFilename').val();
             self.deleteBackground(filename);
             $('#deleteBackgroundModal').modal('hide');
         });
 
-        $(document).on('mouseleave', '.background-thumbnail', function () {
+        $(document).on('mouseleave', '.background-thumbnail', function(){
             //delete remove background button
             $(this).children('.deleteBackgroundBtn').remove();
         });
 
-        $(document).on('mouseenter', '.iconset-thumbnail', function () {
+        $(document).on('mouseenter', '.iconset-thumbnail', function(){
             //append remove background button
             $(this).append('<div class="deleteIconsetBtn txt-color-blueDark"><i class="fa fa-trash fa-2x"></i></div>');
         });
 
-        $(document).on('click', '.deleteIconsetBtn', function () {
+        $(document).on('click', '.deleteIconsetBtn', function(){
             var iconSetID = $(this).parent().find('img').attr('iconset-id');
             //write filename to modal dialog
             $('#IconsetId').val(iconSetID);
@@ -95,30 +106,30 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
 
         });
 
-        $('#confirmDeleteIconsetBtn').click(function () {
+        $('#confirmDeleteIconsetBtn').click(function(){
             var iconSetId = $('#IconsetId').val();
             self.deleteIconsSet(iconSetId);
             $('#deleteIconsetModal').modal('hide');
         });
 
-        $(document).on('mouseleave', '.iconset-thumbnail', function () {
+        $(document).on('mouseleave', '.iconset-thumbnail', function(){
             $(this).children('.deleteIconsetBtn').remove();
         });
 
-        $('#autohide_menu').change(function () {
-            if ($(this).prop('checked')) {
+        $('#autohide_menu').change(function(){
+            if($(this).prop('checked')){
                 self.autohideMenuEnabled = true;
-            } else {
+            }else{
                 self.autohideMenuEnabled = false;
                 self.menuAutohide('reset');
             }
         });
 
-        $('#mapMenuMinimizeBtn').click(function () {
+        $('#mapMenuMinimizeBtn').click(function(){
             self.menuAutohide('open');
         });
 
-        $('#mapMenuPanel').mouseleave(function () {
+        $('#mapMenuPanel').mouseleave(function(){
             self.menuAutohide('close');
         });
 
@@ -139,21 +150,21 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
 
         $('#MapGridColor').colorpicker({container: $('#OptionsModal')});
 
-        $('#MapGridColor').on('show', function () {
+        $('#MapGridColor').on('show', function(){
             //set z-index to the colorpicker because otherwise it will appear behind the modal dialog
             // default z-index of modal dialog is 1040
             $('.colorpicker').css({'z-index': '1041'});
         });
 
         //write HEX color direct into the field
-        $('#MapGridColor').change(function () {
+        $('#MapGridColor').change(function(){
             var value = $(this).val();
             $(this).colorpicker('setValue', value);
         })
 
         // grid colorpicker change event
-        $('#MapGridColor').on('changeColor', function (ev) {
-            if (self.gridEnabled) {
+        $('#MapGridColor').on('changeColor', function(ev){
+            if(self.gridEnabled){
                 self.gridColor = ev.color.toHex();
                 //set value to the input field
                 $('#MapGridColor').val(self.gridColor);
@@ -166,20 +177,20 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
             }
         });
 
-        $('#removeBG').click(function () {
+        $('#removeBG').click(function(){
             self.changeBackground({remove: true});
         });
 
         this.$mapContainer = $(self.mapEditorContainer);
 
         //create new text
-        $('#createText').click(function () {
+        $('#createText').click(function(){
             $('#insert-link-area').hide();
             $('#docuText').val('');
             $('#deleteTextPropertiesBtn').hide();
             var textPosition = {};
             //bind click handler to the map after the create text btn was clicked
-            $(self.mapEditorContainer).click(function (e) {
+            $(self.mapEditorContainer).click(function(e){
                 //determine the position where the Text shall be positioned
                 textPosition = {
                     'x': parseInt(e.pageX - $(this).offset().left),
@@ -190,7 +201,7 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
                 var elementUuid = self.Uuid.v4();
                 self.currentText = {};
 
-                if (self.magneticGridEnabled) {
+                if(self.magneticGridEnabled){
                     //magnetic grid enabled
                     //snap to the nearest grid axis
                     var newPosX = self.roundCoordinates(textPosition.x);
@@ -212,7 +223,7 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
                     $(self.mapEditorContainer).unbind('click');
 
                     $('#textWizardModal').modal('show');
-                } else {
+                }else{
                     //grid is disabled
                     //free text creation
                     //console.log('grid isnt active -> free text creation');
@@ -242,7 +253,7 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
         /*
          * save text
          */
-        $('#saveTextPropertiesBtn').click(function () {
+        $('#saveTextPropertiesBtn').click(function(){
             var test = self.currentText
 
             //console.log($('#editText *'));
@@ -256,13 +267,13 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
             self.saveText(self.currentText);
         });
 
-        $('.textElement').dblclick(function () {
+        $('.textElement').dblclick(function(){
             $('#tempTextUUID').val($(this).parent().attr('id'));
             self.editText(this);
             //self.editTextElement(this);
         });
 
-        $('#deleteTextPropertiesBtn').click(function () {
+        $('#deleteTextPropertiesBtn').click(function(){
             var elUuid = $('#tempTextUUID').val();
             self.deleteText(elUuid);
         });
@@ -275,7 +286,7 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
         // 	$(this).css({'line-height':fontSize});
         // });
 
-        $('#dismissTextProperties').click(function () {
+        $('#dismissTextProperties').click(function(){
             //clear form fields
             $('#editTextText').val('');
             $('#editTextFontSize').val('12');
@@ -290,8 +301,8 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
         var $mapGridSizeField = $('#MapGridSizeX');
         var sliderDisabled = true;
         self.gridEnabled = false;
-        $('#enable_Grid_Slider').change(function () {
-            if ($(this).prop('checked')) {
+        $('#enable_Grid_Slider').change(function(){
+            if($(this).prop('checked')){
                 $mapGridSizeField.slider('enable');
                 $('#_MapGridSizeX').prop('disabled', false);
                 $('#MapGridColor').prop('disabled', false);
@@ -304,7 +315,7 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
                 self.showGrid({sizeX: self.gridSizeX, sizeY: self.gridSizeY, gridColor: self.gridColor});
 
                 self.refreshTextSize({fontSize: self.gridSizeX});
-            } else {
+            }else{
                 $mapGridSizeField.slider('disable');
                 $('#_MapGridSizeX').prop('disabled', true);
                 $('#MapGridColor').prop('disabled', true);
@@ -317,8 +328,8 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
         });
 
         //Grid slider
-        var onSlideStop = function (ev) {
-            if (ev.value == null) {
+        var onSlideStop = function(ev){
+            if(ev.value == null){
                 ev.value = 0;
             }
 
@@ -347,7 +358,7 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
 
 
         // Input this.fields for sliders
-        var onChangeSliderInput = function () {
+        var onChangeSliderInput = function(){
             var $this = $(this);
             $('#' + $this.attr('slider-for'))
                 .slider('setValue', parseInt($this.val(), 10))
@@ -360,7 +371,7 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
             .on('change.slider', onChangeSliderInput)
             .on('keyup', onChangeSliderInput);
 
-        $('.slider-input').change(function () {
+        $('.slider-input').change(function(){
             self.gridSizeX = $(this).val();
             self.gridSizeY = $(this).val();
             options = {
@@ -381,31 +392,31 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
 
         self.scaleTextWithGrid = false;
         self.magneticGridEnabled = false;
-        $('#enable_Magnetic_Grid').click(function () {
-            if ($(this).prop('checked')) {
-                if (self.gridEnabled) {
+        $('#enable_Magnetic_Grid').click(function(){
+            if($(this).prop('checked')){
+                if(self.gridEnabled){
                     self.magneticGridEnabled = true;
                 }
-            } else {
+            }else{
                 self.magneticGridEnabled = false;
             }
         });
 
-        $('#enable_Text_Scale_With_Grid').click(function () {
-            if ($(this).prop('checked')) {
-                if (self.gridEnabled && self.magneticGridEnabled) {
+        $('#enable_Text_Scale_With_Grid').click(function(){
+            if($(this).prop('checked')){
+                if(self.gridEnabled && self.magneticGridEnabled){
                     self.scaleTextWithGrid = true;
                 }
-            } else {
+            }else{
                 self.scaleTextWithGrid = false;
             }
         });
 
         //eventlistener for the collapsible grid options
-        $('#enable_Grid_Slider').change(function () {
-            if (self.gridEnabled) {
+        $('#enable_Grid_Slider').change(function(){
+            if(self.gridEnabled){
                 $('#MapGridCollapseOptions').collapse('show');
-            } else {
+            }else{
                 $('#MapGridCollapseOptions').collapse('hide');
             }
 
@@ -420,14 +431,14 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
             maxFilesize: 55, //MB
             acceptedFiles: 'image/*', //mimetypes
             paramName: "file",
-            success: function (obj) {
+            success: function(obj){
                 $('#backgrounds-upload-success').show().append(obj.name + ': Successfully uploaded<br />');
                 self.refreshBackgroundThumbnails();
             },
-            error: function (error, errorMessage, xhr) {
-                if (typeof errorMessage === 'string') {
+            error: function(error, errorMessage, xhr){
+                if(typeof errorMessage === 'string'){
                     $('#backgrounds-upload-error').show().append(error.name + ': ' + errorMessage + '<br />');
-                } else {
+                }else{
                     $('#backgrounds-upload-error').show().append(errorMessage.data.message + '<br />');
                 }
             },
@@ -438,15 +449,15 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
             maxFilesize: 55, //MB
             acceptedFiles: '.zip', //mimetypes
             paramName: "file",
-            success: function (obj) {
+            success: function(obj){
                 $('#icons-upload-success').show().append(obj.name + ': Successfully uploaded<br />');
                 self.refreshItemsThumbnails();
                 self.refreshItemsDropdown();
             },
-            error: function (error, errorMessage, xhr) {
-                if (typeof errorMessage === 'string') {
+            error: function(error, errorMessage, xhr){
+                if(typeof errorMessage === 'string'){
                     $('#icons-upload-error').show().append(error.name + ': ' + errorMessage + '<br />');
-                } else {
+                }else{
                     $('#icons-upload-error').show().append(errorMessage.data.message + '<br />');
                 }
             },
@@ -460,13 +471,13 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
         //prevent Dropzone from throwing unnecessary errors (more than one instance...)
         $('.icons-dropzone').dropzone(dropzoneIconsOptObj);
 
-        $('#background-upload-btn').click(function () {
+        $('#background-upload-btn').click(function(){
             $('#backgrounds-upload-success').hide().html('');
             $('#backgrounds-upload-error').hide().html('');
             Dropzone.forElement(".background-dropzone").removeAllFiles(true);
         });
 
-        $('#icons-upload-btn').click(function () {
+        $('#icons-upload-btn').click(function(){
             $('#icons-upload-success').hide().html('');
             $('#icons-upload-error').hide().html('');
             Dropzone.forElement(".icons-dropzone").removeAllFiles(true);
@@ -511,7 +522,7 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
             }
         }
 
-        for (var i = 0; i < gadgets.length; i++) {
+        for(var i = 0; i < gadgets.length; i++){
             //create the container in the menu panel
             $('#gadget-panel')
                 .append('<div id="' + gadgets[i] + 'ThumbnailContainer" class="drag-element col-xs-6 col-sm-6 col-md-6 backgroundContainer gadget" data-gadget="' + gadgets[i] + '"></div>');
@@ -522,7 +533,7 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
             //draw every gadget
             self.Gadget['draw' + gadgets[i]](gadgets[i] + 'Thumbnail', {id: i, contain: false, demo: true});
 
-            if (gadgets[i] in gadgetScale) {
+            if(gadgets[i] in gadgetScale){
                 //scale the svg tag for every Gadget
                 $('#' + gadgets[i] + 'Thumbnail')
                     .css({
@@ -535,7 +546,7 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
 
                 //ugly fix for style issue in chrome
                 $('#' + gadgets[i] + 'Thumbnail').css({'width': '0px'});
-            } else {
+            }else{
                 //scale the svg tag for every Gadget with deafult values if there is nothing defined in the gadgetScale Obj
                 $('#' + gadgets[i] + 'Thumbnail')
                     .children('svg')
@@ -548,17 +559,21 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
         /*
          * Change event for object selector in modal ELEMENT
          */
-        $('#ElementWizardChoseType').change(function () {
+        $('#ElementWizardChoseType').change(function(){
             var type = $(this).val();
             $('#addElement_' + type).show();
             self.current['type'] = type;
 
-            switch (type) {
+            switch(type){
                 case 'host':
                     $('#addHostX').val(self.current['x']);
                     $('#addHostY').val(self.current['y']);
                     if ('object_id' in self.current) {
-                        $('#addHostObjectId').val(self.current['object_id']).trigger('chosen:updated');
+                        var selector = '#addHostObjectId';
+                        var $selector = $(selector);
+                        self.loadInitialData(selector, self.current['object_id'], function(){
+                            $selector.val(self.current['object_id']).trigger('chosen:updated');
+                        });
                     }
                     //Selected iconset in chosen selectbox
                     $('#addHostIconset').val(self.current['iconset']).trigger("chosen:updated");
@@ -572,12 +587,16 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
                     $('#addServiceX').val(self.current['x']);
                     $('#addServiceY').val(self.current['y']);
                     if ('host_object_id' in self.current) {
-                        //insert the host for the service
-                        $('#addServiceHostObjectId').val(self.current['host_object_id']).trigger('chosen:updated');
-                        //trigger change event so that the services can be loaded
-                        $('#addServiceHostObjectId').change();
+                        var selector = '#addServiceHostObjectId';
+                        var $selector = $(selector);
+                        self.loadInitialData(selector, self.current['host_object_id'], function(){
+                            //insert the host for the service
+                            $selector.val(self.current['host_object_id']).trigger('chosen:updated');
+                            //trigger change event so that the services can be loaded
+                            $selector.change();
+                        });
                     }
-                    if ('object_id' in self.current) {
+                    if('object_id' in self.current){
                         $('#addServiceObjectId').val(self.current['object_id']).trigger('chosen:updated');
 
                     }
@@ -592,7 +611,7 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
                 case 'servicegroup':
                     $('#addServicegroupX').val(self.current['x']);
                     $('#addServicegroupY').val(self.current['y']);
-                    if ('object_id' in self.current) {
+                    if('object_id' in self.current){
                         $('#addServicegroupObjectId').val(self.current['object_id']).trigger('chosen:updated');
                     }
                     //Selected iconset in chosen selectbox
@@ -606,7 +625,7 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
                 case 'hostgroup':
                     $('#addHostgroupX').val(self.current['x']);
                     $('#addHostgroupY').val(self.current['y']);
-                    if ('object_id' in self.current) {
+                    if('object_id' in self.current){
                         $('#addHostgroupObjectId').val(self.current['object_id']).trigger('chosen:updated');
                     }
                     //Selected iconset in chosen selectbox
@@ -620,7 +639,7 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
                 case 'map':
                     $('#addMapX').val(self.current['x']);
                     $('#addMapY').val(self.current['y']);
-                    if ('object_id' in self.current) {
+                    if('object_id' in self.current){
                         $('#addMapObjectId').val(self.current['object_id']).trigger('chosen:updated');
                     }
                     //Selected iconset in chosen selectbox
@@ -638,19 +657,23 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
         /*
          * Change event for object selector in modal LINE
          */
-        $('#LineWizardChoseType').change(function () {
+        $('#LineWizardChoseType').change(function(){
             var type = $(this).val();
             $('#addLine_' + type).show();
             self.currentLine['type'] = type;
 
-            switch (type) {
+            switch(type){
                 case 'host':
                     $('#addHostLineStartX').val(self.currentLine['startX']);
                     $('#addHostLineEndX').val(self.currentLine['endX']);
                     $('#addHostLineStartY').val(self.currentLine['startY']);
                     $('#addHostLineEndY').val(self.currentLine['endY']);
                     if ('object_id' in self.currentLine) {
-                        $('#addHostLineObjectId').val(self.currentLine['object_id']).trigger('chosen:updated');
+                        var selector = '#addHostLineObjectId';
+                        var $selector = $(selector);
+                        self.loadInitialData(selector, self.currentLine['object_id'], function(){
+                            $selector.val(self.currentLine['object_id']).trigger('chosen:updated');
+                        });
                     }
                     //hide other forms
                     $('#addLine_service').hide();
@@ -664,13 +687,17 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
                     $('#addServiceLineStartY').val(self.currentLine['startY']);
                     $('#addServiceLineEndY').val(self.currentLine['endY']);
                     if ('host_object_id' in self.currentLine) {
-                        //insert the host for the service
-                        $('#addServiceLineHostObjectId').val(self.currentLine['host_object_id']).trigger('chosen:updated');
-                        //trigger change event so that the services can be loaded
-                        $('#addServiceLineHostObjectId').change();
+                        var selector = '#addServiceLineHostObjectId';
+                        var $selector = $(selector);
+                        self.loadInitialData(selector, self.currentLine['host_object_id'], function(){
+                            //insert the host for the service
+                            $selector.val(self.currentLine['host_object_id']).trigger('chosen:updated');
+                            //trigger change event so that the services can be loaded
+                            $selector.change();
+                        });
                     }
 
-                    if ('object_id' in self.currentLine) {
+                    if('object_id' in self.currentLine){
                         $('#addServiceLineObjectId').val(self.currentLine['object_id']).trigger('chosen:updated');
                     }
                     //hide other forms
@@ -684,7 +711,7 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
                     $('#addServicegroupLineEndX').val(self.currentLine['endX']);
                     $('#addServicegroupLineStartY').val(self.currentLine['startY']);
                     $('#addServicegroupLineEndY').val(self.currentLine['endY']);
-                    if ('object_id' in self.currentLine) {
+                    if('object_id' in self.currentLine){
                         $('#addServicegroupLineObjectId').val(self.currentLine['object_id']).trigger('chosen:updated');
                     }
                     //hide other forms
@@ -698,7 +725,7 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
                     $('#addHostgroupLineEndX').val(self.currentLine['endX']);
                     $('#addHostgroupLineStartY').val(self.currentLine['startY']);
                     $('#addHostgroupLineEndY').val(self.currentLine['endY']);
-                    if ('object_id' in self.currentLine) {
+                    if('object_id' in self.currentLine){
                         $('#addHostgroupLineObjectId').val(self.currentLine['object_id']).trigger('chosen:updated');
                     }
                     //hide other forms
@@ -725,13 +752,13 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
         /*
          * Change event for object selector in modal GADGET
          */
-        $('#GadgetWizardChoseType').change(function () {
+        $('#GadgetWizardChoseType').change(function(){
             var type = $(this).val();
             type = 'service';
             $('#addGadget_' + type).show();
             self.currentGadget['type'] = type;
 
-            if (self.currentGadget['gadget'] == "RRDGraph") {
+            if(self.currentGadget['gadget'] == "RRDGraph"){
                 var $form = $('#addGadget_' + type).find('form');
                 $form.find('.rrdBackground').removeClass('hidden');
             }
@@ -741,18 +768,24 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
                 $form.find('.showLabel').removeClass('hidden');
             }
 
-            switch (type) {
+            switch(type){
                 case 'service':
+                    console.log(self.currentGadget);
                     $('#addServiceGadgetX').val(self.currentGadget['x']);
                     $('#addServiceGadgetY').val(self.currentGadget['y']);
                     if ('host_object_id' in self.currentGadget) {
-                        //insert the host for the service
-                        $('#addServiceGadgetHostObjectId').val(self.currentGadget['host_object_id']).trigger('chosen:updated');
-                        //trigger change event so that the services can be loaded
-                        $('#addServiceGadgetHostObjectId').change();
+
+                        var selector = '#addServiceGadgetHostObjectId';
+                        var $selector = $(selector);
+                        self.loadInitialData(selector, self.currentGadget['host_object_id'], function(){
+                            //insert the host for the service
+                            $selector.val(self.currentGadget['host_object_id']).trigger('chosen:updated');
+                            //trigger change event so that the services can be loaded
+                            $selector.change();
+                        });
                     }
 
-                    if ('object_id' in self.currentGadget) {
+                    if('object_id' in self.currentGadget){
                         $('#addServiceGadgetObjectId').val(self.currentGadget['object_id']).trigger('chosen:updated');
                     }
                     $('#addServiceGadgetTransparentBackground').prop('checked', parseInt(self.currentGadget['transparent_background']));
@@ -773,43 +806,43 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
         /*
          * Catch modal save event ELEMENT
          */
-        $('#saveElementPropertiesBtn').click(function () {
-            $('#addElement_' + self.current['type'] + ' *').filter(':input').each(function () {
-                if ($(this).hasClass('elementInput')) {
+        $('#saveElementPropertiesBtn').click(function(){
+            $('#addElement_' + self.current['type'] + ' *').filter(':input').each(function(){
+                if($(this).hasClass('elementInput')){
                     self.current[$(this).attr('content')] = $(this).val();
                 }
             });
             //update element if exist
-            if ($('#' + self.current['elementUuid']).length > 0) {
+            if($('#' + self.current['elementUuid']).length > 0){
                 var $currentElement = $('#' + self.current['elementUuid']);
                 $currentElement.css({'top': self.current['y'] + 'px', 'left': self.current['x'] + 'px'});
                 $currentElement.children('img').attr('src', '/map_module/img/items/' + self.current['iconset'] + '/ok.png');
 
-                $currentElement.children().filter(':input').each(function () {
+                $currentElement.children().filter(':input').each(function(){
                     var fieldKey = $(this).data('key');
-                    for (var key in self.current) {
-                        if (fieldKey == key) {
+                    for(var key in self.current){
+                        if(fieldKey == key){
                             $(this).val(self.current[key]);
                         }
                     }
                 });
-            } else {
+            }else{
                 //create new element
                 //Set icon to map
                 //console.log(self.current['type']);
-                if (typeof(self.current['type']) !== 'undefined') {
+                if(typeof(self.current['type']) !== 'undefined'){
                     //create new element
                     //Set icon to map
                     self.$mapContainer.append('<div class="itemElement iconContainer dragElement" id="' + self.current['elementUuid'] + '" style="position:absolute; top: ' + self.current['y'] + 'px; left: ' + self.current['x'] + 'px;"><img src="/map_module/img/items/' + self.current['iconset'] + '/ok.png"></div>');
                     //Save object configuration
                     var $currentElement = $('#' + self.current['elementUuid']);
-                    for (var key in self.current) {
+                    for(var key in self.current){
                         $currentElement.append('<input type="hidden" name="data[Mapitem][' + self.current['elementUuid'] + '][' + key + ']" data-key="' + key + '" value="' + self.current[key] + '" />');
                     }
 
                     //add eventlistener on newly created items
                     var el = document.getElementById(self.current['elementUuid']);
-                    el.addEventListener('dblclick', function () {
+                    el.addEventListener('dblclick', function(){
                         self.editElements(this);
                     });
 
@@ -830,9 +863,9 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
         /*
          * Catch modal save event LINE
          */
-        $('#saveLinePropertiesBtn').click(function () {
-            $('#addLine_' + self.currentLine['type'] + ' *').filter(':input').each(function () {
-                if ($(this).hasClass('lineInput')) {
+        $('#saveLinePropertiesBtn').click(function(){
+            $('#addLine_' + self.currentLine['type'] + ' *').filter(':input').each(function(){
+                if($(this).hasClass('lineInput')){
                     self.currentLine[$(this).attr('content')] = $(this).val();
                 }
             })
@@ -845,14 +878,14 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
             //if true the element is in edit mode
 
             //update line if already exist
-            if ($('#' + self.currentLine['elementUuid']).length > 0) {
+            if($('#' + self.currentLine['elementUuid']).length > 0){
                 //update the hidden form fields of the line
-                $('.lineContainer').filter(function () {
-                    if ($(this).data('lineid') == currentLineId) {
-                        $(this).children().each(function () {
+                $('.lineContainer').filter(function(){
+                    if($(this).data('lineid') == currentLineId){
+                        $(this).children().each(function(){
                             var $currentField = $(this);
-                            for (var key in self.currentLine) {
-                                if ($currentField.data('key') == key) {
+                            for(var key in self.currentLine){
+                                if($currentField.data('key') == key){
                                     $currentField.val(self.currentLine[key]);
                                 }
                             }
@@ -871,8 +904,8 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
 
                 var currentLineContainerUuid = '';
                 var currentLineUuid = '';
-                $('.lineHoverElement').filter(function () {
-                    if ($(this).data('lineId') == currentLineId) {
+                $('.lineHoverElement').filter(function(){
+                    if($(this).data('lineId') == currentLineId){
                         currentLineContainerUuid = $(this).parent().attr('id');
                         currentLineUuid = currentLineContainerUuid.replace(/svgLineContainer_/, '');
                     }
@@ -888,15 +921,15 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
 
                 self.Line.redrawLine(redrawObj);
 
-            } else {
-                if (!self.currentLine['object_id']) {
+            }else{
+                if(!self.currentLine['object_id']){
                     self.currentLine['object_id'] = null;
                 }
                 //create new line
                 //Save object configuration
                 self.$mapContainer.append('<div class="itemElement lineContainer" id="' + self.currentLine['elementUuid'] + '" style="position:absolute; top: ' + self.currentLine['y'] + 'px; left: ' + self.currentLine['x'] + 'px;"></div>');
                 var $currentElement = $('#' + self.currentLine['elementUuid']);
-                for (var key in self.currentLine) {
+                for(var key in self.currentLine){
                     $currentElement.append('<input type="hidden" name="data[Mapline][' + self.currentLine['elementUuid'] + '][' + key + ']" data-key="' + key + '" value="' + self.currentLine[key] + '" />');
                 }
                 //draggable function
@@ -914,26 +947,26 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
         /*
          * Catch modal save event GADGET
          */
-        $('#saveGadgetPropertiesBtn').click(function () {
-            $('#addGadget_' + self.currentGadget['type'] + ' *').filter(':input').each(function () {
-                if ($(this).hasClass('gadgetInput')) {
-                    if ($(this).attr('type') == 'checkbox') {
+        $('#saveGadgetPropertiesBtn').click(function(){
+            $('#addGadget_' + self.currentGadget['type'] + ' *').filter(':input').each(function(){
+                if($(this).hasClass('gadgetInput')){
+                    if($(this).attr('type') == 'checkbox'){
                         self.currentGadget[$(this).attr('content')] = +($(this).prop('checked'));
-                    } else {
+                    }else{
                         self.currentGadget[$(this).attr('content')] = $(this).val();
                     }
 
                 }
             });
             //update Gadget if exist
-            if ($('#' + self.currentGadget['elementUuid']).length > 0) {
+            if($('#' + self.currentGadget['elementUuid']).length > 0){
                 options = {};
 
                 var $currentGadget = $('#' + self.currentGadget['elementUuid']);
-                $currentGadget.children().filter(':input').each(function () {
+                $currentGadget.children().filter(':input').each(function(){
                     var fieldKey = $(this).data('key');
-                    for (var key in self.currentGadget) {
-                        if (fieldKey == key) {
+                    for(var key in self.currentGadget){
+                        if(fieldKey == key){
                             $(this).val(self.currentGadget[key]);
                             options[key] = self.currentGadget[key];
                         }
@@ -944,6 +977,11 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
                     options['fontSize'] = self.currentGadget['font_size'];
                     options['showLabel'] = self.currentGadget['show_label'];
                 }
+                if(typeof(self.currentGadget['size_x']) != null && typeof(self.currentGadget['size_y']) != null){
+                    options['sizeX'] = self.currentGadget['size_x'];
+                    options['sizeY'] = self.currentGadget['size_y'];
+                }
+
                 options['demo'] = true;
 
                 gadgetId = options['id'];
@@ -953,11 +991,11 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
                 var strippedId = gadgetUUID.replace(/svgContainer_/, '');
                 options['id'] = strippedId;
                 //clear the svg element
-                $('#'+gadgetUUID).children('svg').empty();
+                $('#' + gadgetUUID).children('svg').empty();
                 //redraw gadget
                 self.Gadget['draw' + self.currentGadget['gadget']](gadgetUUID, options);
 
-            } else {
+            }else{
                 //create new gadget
                 //Set icon to map
                 self.$mapContainer.append('<div class="itemElement gadgetContainer" id="' + self.currentGadget['elementUuid'] + '" style="position:absolute; top: ' + self.currentGadget['y'] + 'px; left: ' + self.currentGadget['x'] + 'px;"></div>');
@@ -968,17 +1006,21 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
                 $('<div id="svgContainer_' + self.currentGadget['elementUuid'] + '"></div>')
                     .appendTo(self.mapEditorContainer);
 
+                console.log(self.currentGadget);
+
                 //call the gadgetComponent to create the SVG
                 self.Gadget['draw' + self.currentGadget['gadget']]('svgContainer_' + self.currentGadget['elementUuid'], {
                     id: self.currentGadget['elementUuid'],
                     x: self.currentGadget['x'],
                     y: self.currentGadget['y'],
-                    showLabel:self.currentGadget['show_label'],
-                    fontSize:self.currentGadget['font_size'],
+                    sizeX: self.currentGadget['size_x'],
+                    sizeY: self.currentGadget['size_y'],
+                    showLabel: self.currentGadget['show_label'],
+                    fontSize: self.currentGadget['font_size'],
                     demo: true
                 });
                 //fill the hidden data fields for the Gadget
-                for (var key in self.currentGadget) {
+                for(var key in self.currentGadget){
 
                     $currentGadget.append('<input type="hidden" name="data[Mapgadget][' + self.currentGadget['elementUuid'] + '][' + key + ']" data-key="' + key + '" value="' + self.currentGadget[key] + '" />');
                     $('#svgContainer_' + self.currentGadget['elementUuid']).css({'z-index': '2'}).addClass('itemElement dragElement gadgetSVGContainer');
@@ -997,9 +1039,9 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
          * Catch modal edit event from STATELESSICON
          */
 
-        $('#saveStatelessIconPropertiesBtn').click(function () {
-            $('#editStatelessIcons *').filter(':input').each(function () {
-                if ($(this).hasClass('statelessIconInput')) {
+        $('#saveStatelessIconPropertiesBtn').click(function(){
+            $('#editStatelessIcons *').filter(':input').each(function(){
+                if($(this).hasClass('statelessIconInput')){
                     self.currentIcon[$(this).attr('content')] = $(this).val();
                 }
             });
@@ -1008,10 +1050,10 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
             $currentIcon.css({'top': self.currentIcon['y'] + 'px', 'left': self.currentIcon['x'] + 'px'});
             //$currentIcon.children('img').attr('src', '/map_module/img/icons/'+self.currentIcon['iconset']+'/ok.png');
 
-            $currentIcon.children().filter(':input').each(function () {
+            $currentIcon.children().filter(':input').each(function(){
                 var fieldKey = $(this).data('key');
-                for (var key in self.currentIcon) {
-                    if (fieldKey == key) {
+                for(var key in self.currentIcon){
+                    if(fieldKey == key){
                         $(this).val(self.currentIcon[key]);
                     }
                 }
@@ -1023,12 +1065,12 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
         /*
          * Catch modal close event ELEMENT
          */
-        $('#ElementWizardModal').on('hidden.bs.modal', function () {
+        $('#ElementWizardModal').on('hidden.bs.modal', function(){
             $('#ElementWizardChoseType').val('').trigger('chosen:updated');
             //Clear form
-            $("[element-property]").each(function (intKey, object) {
+            $("[element-property]").each(function(intKey, object){
                 var $object = $(object);
-                switch ($object.attr('element-property')) {
+                switch($object.attr('element-property')){
                     case 'chosen':
                         $object.val('').trigger('chosen:updated');
                         break;
@@ -1053,12 +1095,12 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
         /*
          * Catch modal close event LINE
          */
-        $('#LineWizardModal').on('hidden.bs.modal', function () {
+        $('#LineWizardModal').on('hidden.bs.modal', function(){
             $('#LineWizardChoseType').val('').trigger('chosen:updated');
             //Clear form
-            $("[element-property]").each(function (intKey, object) {
+            $("[element-property]").each(function(intKey, object){
                 var $object = $(object);
-                switch ($object.attr('element-property')) {
+                switch($object.attr('element-property')){
                     case 'chosen':
                         $object.val('').trigger('chosen:updated');
                         break;
@@ -1078,12 +1120,12 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
         /*
          * Catch modal close event Gadget
          */
-        $('#GadgetWizardModal').on('hidden.bs.modal', function () {
+        $('#GadgetWizardModal').on('hidden.bs.modal', function(){
             $('#GadgetWizardChoseType').val('').trigger('chosen:updated');
             //Clear form
-            $("[element-property]").each(function (intKey, object) {
+            $("[element-property]").each(function(intKey, object){
                 var $object = $(object);
-                switch ($object.attr('element-property')) {
+                switch($object.attr('element-property')){
                     case 'chosen':
                         $object.val('').trigger('chosen:updated');
                         break;
@@ -1110,6 +1152,7 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
         });
 
         $('#addServiceHostObjectId, #addServiceLineHostObjectId, #addServiceGadgetHostObjectId').change(function () {
+            console.log('change for host dropdown');
             var triggeredType = this.id;
 
             var hostId = $(this).val();
@@ -1118,20 +1161,20 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
                 url: "/map_module/mapeditors/servicesForWizard/" + encodeURIComponent(hostId),
                 type: "POST",
                 dataType: "html",
-                error: function () {
+                error: function(){
                 },
-                success: function () {
+                success: function(){
                 },
-                complete: function (response) {
-                    if (triggeredType == 'addServiceLineHostObjectId') {
+                complete: function(response){
+                    if(triggeredType == 'addServiceLineHostObjectId'){
                         $('#addServiceLineObjectId').html(response.responseText);
                         $('#addServiceLineObjectId').trigger('chosen:updated');
                         $('#addServiceLineObjectId').val(self.currentLine['object_id']).trigger('chosen:updated');
-                    } else if (triggeredType == 'addServiceGadgetHostObjectId') {
+                    }else if(triggeredType == 'addServiceGadgetHostObjectId'){
                         $('#addServiceGadgetObjectId').html(response.responseText);
                         $('#addServiceGadgetObjectId').trigger('chosen:updated');
                         $('#addServiceGadgetObjectId').val(self.currentGadget['object_id']).trigger('chosen:updated');
-                    } else {
+                    }else{
                         $('#addServiceObjectId').html(response.responseText);
                         $('#addServiceObjectId').trigger('chosen:updated');
                         $('#addServiceObjectId').val(self.current['object_id']).trigger('chosen:updated');
@@ -1141,18 +1184,22 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
         })
 
         //open edit mode
-        $(document).ready(function () {
-            $('.itemElement').on('dblclick', function (e) {
+        $(document).ready(function(){
+            $('.itemElement').on('dblclick', function(e){
                 self.editElements(this);
             });
         });
 
 
         //create gadgets if there are some..
-        if (this.getVar('map_gadgets')) {
+        if(this.getVar('map_gadgets')){
             //reconstruct gadgets
             var mapGadgets = this.getVar('map_gadgets');
-            for (var i = 0; i < mapGadgets.length; i++) {
+            for(var i = 0; i < mapGadgets.length; i++){
+                //skip gadgets which are falsely migrated (no gadget name)
+                if(mapGadgets[i]['gadget'] == 'null' || mapGadgets[i]['gadget'] == ''){
+                    continue;
+                }
                 var tempUuid = this.Uuid.v4();
 
                 $('<div id="svgContainer_' + tempUuid + '"></div>')
@@ -1162,17 +1209,21 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
                     gadgetId: mapGadgets[i]['id'],
                 }
 
+                console.log(self.Gadget);
                 self.Gadget['draw' + mapGadgets[i]['gadget']]('svgContainer_' + tempUuid, {
                     id: tempUuid,
                     x: mapGadgets[i]['x'],
                     y: mapGadgets[i]['y'],
+                    sizeX: mapGadgets[i]['size_x'],
+                    sizeY: mapGadgets[i]['size_y'],
                     containerData: containerData,
                     fontSize: mapGadgets[i]['font_size'],
                     showLabel: mapGadgets[i]['show_label'],
                     demo: true
                 });
                 $('#svgContainer_' + tempUuid).css({'z-index': '2'}).attr({'data-gadgetid': mapGadgets[i]['id']}).addClass('itemElement dragElement gadgetSVGContainer');
-            };
+            }
+            ;
         }
 
 
@@ -1180,10 +1231,10 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
         end = [];
         wasClicked = false;
 
-        if ((this.getVar('map_lines'))) {
+        if((this.getVar('map_lines'))){
             var mapLines = this.getVar('map_lines');
 
-            for (var i = 0; i < mapLines.length; i++) {
+            for(var i = 0; i < mapLines.length; i++){
                 var tempUuid = self.Uuid.v4();
 
                 start['x'] = parseInt(mapLines[i]['startX']);
@@ -1194,7 +1245,7 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
                 $('<div id="svgLineContainer_' + tempUuid + '"></div>')
                     .appendTo(this.mapEditorContainer);
                 var drawRect = true;
-                if (mapLines[i].type == 'stateless') {
+                if(mapLines[i].type == 'stateless'){
                     drawRect = false;
                 }
                 var tempObj = {
@@ -1210,14 +1261,14 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
             ;
         }
 
-        $('#createLine').click(function () {
+        $('#createLine').click(function(){
             $(self.mapEditorContainer).css('cursor', 'crosshair');
 
             //show info box
             $('#lineInfoBox').show();
             $('#lineInfoText').text($('#linePoint1').val());
 
-            $(self.mapEditorContainer).click(function (e) {
+            $(self.mapEditorContainer).click(function(e){
                 self.drawLine(e);
             });
         });
@@ -1233,24 +1284,24 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
         this.$textarea = $('#docuText');
 
         // Bind click event for color selector
-        $("[select-color='true']").click(function () {
+        $("[select-color='true']").click(function(){
             var color = $(this).attr('color');
             self.$textarea.surroundSelectedText("[color='" + color + "']", '[/color]');
         });
 
         // Bind click event for font size selector
-        $("[select-fsize='true']").click(function () {
+        $("[select-fsize='true']").click(function(){
             var fontSize = $(this).attr('fsize');
             self.$textarea.surroundSelectedText("[text='" + fontSize + "']", "[/text]");
         });
 
 
         // Bind click event to insert hyperlinks
-        $('#perform-insert-link').click(function () {
+        $('#perform-insert-link').click(function(){
             var url;
-            if ($('#insert-link-type').val() == '0') {
+            if($('#insert-link-type').val() == '0'){
                 url = $('#insert-link-map').val();
-            } else {
+            }else{
                 url = $('#insert-link-url').val();
             }
             var description = $('#insert-link-description').val();
@@ -1262,20 +1313,20 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
             $('#insert-modal-footer').show();
         });
 
-        $('#insert-link-type').change(function () {
-            if ($(this).val() == '0') {
+        $('#insert-link-type').change(function(){
+            if($(this).val() == '0'){
                 $('#link-map-area').show();
                 $('#link-url-area').hide();
-            } else {
+            }else{
                 $('#link-map-area').hide();
                 $('#link-url-area').show();
             }
         });
 
         // Bind other buttons
-        $("[wysiwyg='true']").click(function () {
+        $("[wysiwyg='true']").click(function(){
             var task = $(this).attr('task');
-            switch (task) {
+            switch(task){
                 case 'bold':
                     self.$textarea.surroundSelectedText('[b]', '[/b]');
                     break;
@@ -1306,7 +1357,7 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
             }
         });
 
-        $('#insert-link').click(function () {
+        $('#insert-link').click(function(){
             $('#insert-link-url').val('');
             $('#insert-link-description').val('');
             $('#insert-link-area').show();
@@ -1314,27 +1365,208 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
             $('#insert-modal-footer').hide();
         });
 
-        $('#cancel-insert-link').click(function () {
+        $('#cancel-insert-link').click(function(){
             $('#insert-link-area').hide();
             $('#insert-text-area').show();
             $('#insert-modal-footer').show();
         });
 
-        $('.textElement').each(function () {
+        $('.textElement').each(function(){
             $(this).html(self.convertBb2Html($(this).html()));
         });
     },
 
+    loadLineHostsByAjax:function(){
+        var LineAjaxObj = new ChosenAjax({
+            id: 'addHostLineObjectId' //Target select box
+        });
+
+        LineAjaxObj.setCallback(function(searchString){
+            console.log('Searchstring: ' + searchString);
+
+            $.ajax({
+                dataType: "json",
+                url: '/hosts/loadHostsByString.json',
+                data: {
+                    'angular': true,
+                    'filter[Host.name]': searchString,
+                    'selected[]': [] //ids
+                },
+                success: function(response){
+                    LineAjaxObj.addOptions(response.hosts);
+                }
+            });
+        });
+        LineAjaxObj.render();
+
+
+        var LineServiceHostsAjaxObj = new ChosenAjax({
+            id: 'addServiceLineHostObjectId' //Target select box
+        });
+
+        LineServiceHostsAjaxObj.setCallback(function(searchString){
+            console.log('Searchstring: ' + searchString);
+
+            $.ajax({
+                dataType: "json",
+                url: '/hosts/loadHostsByString.json',
+                data: {
+                    'angular': true,
+                    'filter[Host.name]': searchString,
+                    'selected[]': [] //ids
+                },
+                success: function(response){
+                    LineServiceHostsAjaxObj.addOptions(response.hosts);
+                    //fix for single result in checkbox
+                    if(response.hosts.length == 1){
+                        $('#addServiceLineHostObjectId').trigger('change');
+                    }
+                }
+            });
+        });
+        LineServiceHostsAjaxObj.render();
+    },
+
+    loadGadgetHostsByAjax: function(selectedHostIds){
+        if(selectedHostIds == null || selectedHostIds.length < 1){
+            selectedHostIds = [];
+        }else{
+            if(!Array.isArray(selectedHostIds)){
+                selectedHostIds = [selectedHostIds];
+            }
+        }
+
+        var GadgetAjaxObj = new ChosenAjax({
+            id: 'addServiceGadgetHostObjectId' //Target select box
+        });
+
+        GadgetAjaxObj.setSelected(selectedHostIds);
+
+        GadgetAjaxObj.setCallback(function(searchString){
+            console.log('Searchstring: ' + searchString);
+
+            $.ajax({
+                dataType: "json",
+                url: '/hosts/loadHostsByString.json',
+                data: {
+                    'angular': true,
+                    'filter[Host.name]': searchString,
+                    'selected[]': selectedHostIds //ids
+                },
+                success: function(response){
+                    GadgetAjaxObj.addOptions(response.hosts);
+                    //fix for single result in checkbox
+                    if(response.hosts.length == 1){
+                        $('#addServiceGadgetHostObjectId').trigger('change');
+                    }
+                }
+            });
+        });
+        GadgetAjaxObj.render();
+    },
+
+    loadInitialData: function(selector, selectedHostIds, callback){
+        var self = this;
+        if(selectedHostIds == null || selectedHostIds.length < 1){
+            selectedHostIds = [];
+        }else{
+            if(!Array.isArray(selectedHostIds)){
+                selectedHostIds = [selectedHostIds];
+            }
+        }
+
+        $.ajax({
+            dataType: "json",
+            url: '/hosts/loadHostsByString.json',
+            data: {
+                'angular': true,
+                'selected[]': selectedHostIds //ids
+            },
+            success: function(response){
+                var $selector = $(selector);
+                var list = self.buildList(response.hosts);
+                $selector.append(list);
+                $selector.val(selectedHostIds);
+                $selector.trigger('chosen:updated');
+
+                if(callback != undefined){
+                    callback();
+                }
+            }
+        });
+    },
+
+
+    buildList: function(data){
+        var html = '';
+        for(var i in data){
+            html += '<option value="' + data[i].key + '">'+htmlspecialchars(data[i].value)+'</option>';
+        }
+        return html;
+    },
+
+    loadElementHostsByAjax: function(){
+        var ElementAjaxObj = new ChosenAjax({
+            id: 'addHostObjectId' //Target select box
+        });
+
+        ElementAjaxObj.setCallback(function(searchString){
+            console.log('Searchstring: ' + searchString);
+
+            $.ajax({
+                dataType: "json",
+                url: '/hosts/loadHostsByString.json',
+                data: {
+                    'angular': true,
+                    'filter[Host.name]': searchString,
+                    'selected[]': [] //ids
+                },
+                success: function(response){
+                    ElementAjaxObj.addOptions(response.hosts);
+                }
+            });
+        });
+
+        ElementAjaxObj.render();
+
+        var ElementServiceHostsAjaxObj = new ChosenAjax({
+            id: 'addServiceHostObjectId' //Target select box
+        });
+
+        ElementServiceHostsAjaxObj.setCallback(function(searchString){
+            console.log('Searchstring: ' + searchString);
+
+            $.ajax({
+                dataType: "json",
+                url: '/hosts/loadHostsByString.json',
+                data: {
+                    'angular': true,
+                    'filter[Host.name]': searchString,
+                    'selected[]': [] //ids
+                },
+                success: function(response){
+                    ElementServiceHostsAjaxObj.addOptions(response.hosts);
+                    //fix for single result in checkbox
+                    if(response.hosts.length == 1){
+                        $('#addServiceHostObjectId').trigger('change');
+                    }
+                }
+            });
+        });
+
+        ElementServiceHostsAjaxObj.render();
+    },
+
     getGadgetUuidFromDataUuid: function(dataFieldUuid){
-        if($('#'+dataFieldUuid).length > 0){
-            var gadgetId = $('#'+dataFieldUuid).data('gadgetid');
-            var $element = $(document).find("[data-gadgetid='"+gadgetId+"'][id^='svgContainer_']");
+        if($('#' + dataFieldUuid).length > 0){
+            var gadgetId = $('#' + dataFieldUuid).data('gadgetid');
+            var $element = $(document).find("[data-gadgetid='" + gadgetId + "'][id^='svgContainer_']");
             return $element.attr('id');
         }
         return false;
     },
 
-    convertBb2Html: function (bbCode) {
+    convertBb2Html: function(bbCode){
         var resString = bbCode;
         resString = resString.replace(/(?:\r\n|\r|\n)/g, '<br />');
         resString = resString.replace(/\[b\]/gi, '<strong>');
@@ -1365,15 +1597,15 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
         return resString;
     },
 
-    activateItemsDraggable: function () {
+    activateItemsDraggable: function(){
         var self = this;
         /*
          * Draggable icons
          */
         $(self.mapEditorContainer).droppable({
             accept: '.drag-element',
-            drop: function (e, ui) {
-                if (ui.draggable.hasClass('gadget')) {
+            drop: function(e, ui){
+                if(ui.draggable.hasClass('gadget')){
                     //is gadget
                     var offset = $('#MapContainer').offset();
                     var options = {
@@ -1383,7 +1615,7 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
                         data: ui.draggable.data('gadget'),
                     }
                     self.dropOptions(options);
-                } else if (ui.draggable.hasClass('statelessIcon')) {
+                }else if(ui.draggable.hasClass('statelessIcon')){
                     //is icon
                     var offset = $('#MapContainer').offset();
                     var options = {
@@ -1395,7 +1627,7 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
                     self.dropOptions(options);
 
                     self.saveStatelessIcon();
-                } else {
+                }else{
                     //is item
                     var drop = [];
                     var offset = $('#MapContainer').offset();
@@ -1418,8 +1650,8 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
                 top: 5,
                 left: 5
             },
-            start: function (e, ui) {
-                if (ui.helper.children('img').hasClass('iconset')) {
+            start: function(e, ui){
+                if(ui.helper.children('img').hasClass('iconset')){
                     ui.helper.removeClass('thumbnail');
                 }
                 ui.helper.removeClass('col-xs-6 col-sm-6 col-md-6');
@@ -1434,14 +1666,14 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
      * @param  {object} event The click event when the user clicks on the map after clicking the create line btn
      * @return {void}
      */
-    drawLine: function (event) {
+    drawLine: function(event){
         var offset = $(this.mapEditorContainer).offset();
 
-        if (!wasClicked) {
+        if(!wasClicked){
             //show info box
             $('#lineInfoText').text($('#linePoint2').val());
 
-            if (this.magneticGridEnabled) {
+            if(this.magneticGridEnabled){
                 var positions = {
                     x: event.pageX - offset.left,
                     y: event.pageY - offset.top
@@ -1449,7 +1681,7 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
                 var newPositions = this.magneticPosition(positions);
                 start['x'] = newPositions.x;
                 start['y'] = newPositions.y;
-            } else {
+            }else{
                 start['x'] = event.pageX - offset.left;
                 start['y'] = event.pageY - offset.top;
             }
@@ -1457,10 +1689,10 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
             return true;
         }
 
-        if (wasClicked) {
+        if(wasClicked){
             this.currentLine = [];
 
-            if (this.magneticGridEnabled) {
+            if(this.magneticGridEnabled){
                 var positions = {
                     x: event.pageX - offset.left,
                     y: event.pageY - offset.top
@@ -1468,7 +1700,7 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
                 var newPositions = this.magneticPosition(positions);
                 end['x'] = newPositions.x;
                 end['y'] = newPositions.y;
-            } else {
+            }else{
                 end['x'] = event.pageX - offset.left;
                 end['y'] = event.pageY - offset.top;
             }
@@ -1521,7 +1753,7 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
      * @param  {String} el The item which shall be deleted
      * @return {void}
      */
-    deleteElement: function (el) {
+    deleteElement: function(el){
         //delete element and all its child html elements
         $(el).remove();
         //close modal box
@@ -1536,9 +1768,9 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
      * @param  {string} el The Gadget wich shall be deleted
      * @return {void}
      */
-    deleteGadget: function (el) {
-        $('.gadgetContainer[data-gadgetid]').each(function () {
-            if ($(this).data('gadgetid') == $(el).data('gadgetid')) {
+    deleteGadget: function(el){
+        $('.gadgetContainer[data-gadgetid]').each(function(){
+            if($(this).data('gadgetid') == $(el).data('gadgetid')){
                 //remove the div which contains all the data of the gadget
                 $(this).remove();
             }
@@ -1563,17 +1795,17 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
      * @param  {string} el The Line which shall be deleted
      * @return {void}
      */
-    deleteLine: function (el) {
+    deleteLine: function(el){
         var lineId = $(el).data('lineId');
         var strippedId = el.id.replace(/_rect/, '');
-        $('[id^=' + strippedId + ']').each(function () {
+        $('[id^=' + strippedId + ']').each(function(){
             //remove the line and all elements with the same id except the data container
             $(this).remove();
         });
 
         //get values from input fields
-        $('.itemElement[data-lineId]').each(function () {
-            if ($(this).data('lineid') == lineId) {
+        $('.itemElement[data-lineId]').each(function(){
+            if($(this).data('lineid') == lineId){
                 $(this).remove();
             }
         });
@@ -1587,7 +1819,7 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
      * @param  {string} el The Icon which shall be deleted
      * @return {void}
      */
-    deleteIcon: function (el) {
+    deleteIcon: function(el){
         //delete element and all its child html elements
         $(el).remove();
         //close modal box
@@ -1601,28 +1833,28 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
      *
      * @return {void}
      */
-    makeDraggable: function () {
+    makeDraggable: function(){
         var self = this;
         $('.dragElement').draggable({
-            drag: function (e, ui) {
+            drag: function(e, ui){
                 //snap to grid while dragging
                 var $currentElement = $(this);
-                if (ui.helper.attr('data-gadgetid')) {
+                if(ui.helper.attr('data-gadgetid')){
                     var gadgetId = ui.helper.data('gadgetid');
                     //gadget
-                    $('.gadgetContainer[data-gadgetid]').each(function () {
-                        if ($(this).data('gadgetid') == gadgetId) {
-                            $(this).children().each(function () {
-                                switch ($(this).data('key')) {
+                    $('.gadgetContainer[data-gadgetid]').each(function(){
+                        if($(this).data('gadgetid') == gadgetId){
+                            $(this).children().each(function(){
+                                switch($(this).data('key')){
                                     case 'x':
-                                        if (self.magneticGridEnabled) {
+                                        if(self.magneticGridEnabled){
                                             //snap element to grid
                                             ui.position.left = self.roundCoordinates(ui.position.left);
                                             $currentElement.css({'left': self.roundCoordinates(ui.position.left)});
                                         }
                                         break;
                                     case 'y':
-                                        if (self.magneticGridEnabled) {
+                                        if(self.magneticGridEnabled){
                                             //snap element to grid
                                             ui.position.top = self.roundCoordinates(ui.position.top);
                                             $currentElement.css({'top': self.roundCoordinates(ui.position.top)});
@@ -1632,18 +1864,18 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
                             });
                         }
                     });
-                } else {
-                    ui.helper.children().each(function () {
-                        switch ($(this).data('key')) {
+                }else{
+                    ui.helper.children().each(function(){
+                        switch($(this).data('key')){
                             case 'x':
-                                if (self.magneticGridEnabled) {
+                                if(self.magneticGridEnabled){
                                     //snap element to grid
                                     ui.position.left = self.roundCoordinates(ui.position.left);
                                     $currentElement.css({'left': self.roundCoordinates(ui.position.left)});
                                 }
                                 break;
                             case 'y':
-                                if (self.magneticGridEnabled) {
+                                if(self.magneticGridEnabled){
                                     //snap element to grid
                                     ui.position.top = self.roundCoordinates(ui.position.top);
                                     $currentElement.css({'top': self.roundCoordinates(ui.position.top)});
@@ -1653,32 +1885,32 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
                     });
                 }
             },
-            stop: function (e, ui) {
+            stop: function(e, ui){
                 var $currentElement = $(this);
                 //save the new coordinates on drag to the form fields
-                if (ui.helper.attr('data-gadgetid')) {
+                if(ui.helper.attr('data-gadgetid')){
                     var gadgetId = ui.helper.data('gadgetid');
                     //gadget
-                    $('.gadgetContainer[data-gadgetid]').each(function () {
-                        if ($(this).data('gadgetid') == gadgetId) {
-                            $(this).children().each(function () {
-                                switch ($(this).data('key')) {
+                    $('.gadgetContainer[data-gadgetid]').each(function(){
+                        if($(this).data('gadgetid') == gadgetId){
+                            $(this).children().each(function(){
+                                switch($(this).data('key')){
                                     case 'x':
-                                        if (self.magneticGridEnabled) {
+                                        if(self.magneticGridEnabled){
                                             //snap element to grid
                                             $currentElement.css({'left': self.roundCoordinates(ui.position.left)});
                                             $(this).val(self.roundCoordinates(ui.position.left));
-                                        } else {
+                                        }else{
                                             //free element drag
                                             $(this).val(ui.position.left);
                                         }
                                         break;
                                     case 'y':
-                                        if (self.magneticGridEnabled) {
+                                        if(self.magneticGridEnabled){
                                             //snap element to grid
                                             $currentElement.css({'top': self.roundCoordinates(ui.position.top)});
                                             $(this).val(self.roundCoordinates(ui.position.top));
-                                        } else {
+                                        }else{
                                             //free element drag
                                             $(this).val(ui.position.top);
                                         }
@@ -1687,25 +1919,25 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
                             });
                         }
                     });
-                } else {
-                    ui.helper.children().each(function () {
-                        switch ($(this).data('key')) {
+                }else{
+                    ui.helper.children().each(function(){
+                        switch($(this).data('key')){
                             case 'x':
-                                if (self.magneticGridEnabled) {
+                                if(self.magneticGridEnabled){
                                     //snap element to grid
                                     $currentElement.css({'left': self.roundCoordinates(ui.position.left)});
                                     $(this).val(self.roundCoordinates(ui.position.left));
-                                } else {
+                                }else{
                                     //free element drag
                                     $(this).val(ui.position.left);
                                 }
                                 break;
                             case 'y':
-                                if (self.magneticGridEnabled) {
+                                if(self.magneticGridEnabled){
                                     //snap element to grid
                                     $currentElement.css({'top': self.roundCoordinates(ui.position.top)});
                                     $(this).val(self.roundCoordinates(ui.position.top));
-                                } else {
+                                }else{
                                     //free element drag
                                     $(this).val(ui.position.top);
                                 }
@@ -1724,26 +1956,26 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
      * @param  {object} opt The Options for chaning the Background
      * @return {void}
      */
-    changeBackground: function (opt) {
+    changeBackground: function(opt){
         var self = this;
         var opt = opt || {};
         var el = opt.el || null;
         var remove = opt.remove || false;
         var $mapContainer = $(this.mapEditorContainer);
         var $gridContainer = $('#' + this.gridContainer);
-        if (!remove) {
+        if(!remove){
             var imageSrc = $(el).attr('original');
 
             $mapContainer.css({'background-image': 'url(' + imageSrc + ')', 'background-repeat': 'no-repeat'});
 
             //Resizing the map container to new image size
             var image = new Image();
-            $(image).on('load', function () {
+            $(image).on('load', function(){
 
                 $mapContainer.css({'height': image.height + 'px', 'width': image.width + 'px'});
                 $gridContainer.css({'height': image.height + 'px', 'width': image.width + 'px'});
 
-                if (self.gridEnabled) {
+                if(self.gridEnabled){
                     var options = {
                         sizeX: self.gridSizeX,
                         sizeY: self.gridSizeY,
@@ -1756,7 +1988,7 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
             $('#MapBackground').val($(el).attr('filename'));
 
             $('#removeBG').show();
-        } else {
+        }else{
             //background shall be removed
             $('#MapBackground').val('');
             $mapContainer.css({
@@ -1782,17 +2014,18 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
      * @param  {string} type            The Type of the wizard which shall be triggered after the complete event was fired
      * @return {void}
      */
-    hostFromService: function (serviceObjectId, type) {
+    hostFromService: function(serviceObjectId, type){
         //get the host from a serviceID
         var self = this;
         $.ajax({
             url: "/map_module/mapeditors/hostFromService/" + encodeURIComponent(serviceObjectId),
             type: "POST",
-            dataType: "html",
+            //dataType: "json",
             error: function () {
             },
-            success: function () {
+            success: function(){
             },
+
             complete: function (response) {
                 switch (type) {
                     case 'element':
@@ -1808,6 +2041,7 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
                         $('#LineWizardChoseType').trigger("change");
                         break;
                     case 'gadget':
+
                         self.currentGadget['host_object_id'] = response.responseText;
                         $('#GadgetWizardChoseType').val(self.currentGadget.type);
                         $('#GadgetWizardChoseType').trigger("chosen:updated");
@@ -1826,20 +2060,20 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
      * @param  {string} el The Element which shall be edited
      * @return {void}
      */
-    editElements: function (el) {
+    editElements: function(el){
         var self = this;
         var currentElement = el;
 
-        if ($(currentElement).hasClass('gadgetSVGContainer')) {
+        if($(currentElement).hasClass('gadgetSVGContainer')){
             //gadget
             //check if there is a Gadget id
-            if ($(currentElement).data('gadgetid') != undefined) {
-                if ($('#deleteGadgetBtn').length > 0) {
+            if($(currentElement).data('gadgetid') != undefined){
+                if($('#deleteGadgetBtn').length > 0){
                     $('#deleteGadgetBtn').remove();
                 }
                 $('.gadgetWizardFooter').prepend($('<button>', {
                     id: 'deleteGadgetBtn',
-                    click: function () {
+                    click: function(){
                         self.deleteGadget(currentElement);
                     },
                     type: 'button',
@@ -1859,9 +2093,9 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
                 var gadgetId = $(currentElement).data('gadgetid');
                 gadgetId = parseInt(gadgetId);
                 //get values from input fields
-                $('.gadgetContainer[data-gadgetid]').each(function () {
-                    if ($(this).data('gadgetid') == gadgetId) {
-                        $(this).children().each(function () {
+                $('.gadgetContainer[data-gadgetid]').each(function(){
+                    if($(this).data('gadgetid') == gadgetId){
+                        $(this).children().each(function(){
                             var gadgetKey = $(this).data('key');
                             var gadgetValue = $(this).val();
                             self.currentGadget[gadgetKey] = gadgetValue;
@@ -1870,26 +2104,26 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
                     }
                 });
 
-                if (self.currentGadget.type == 'service') {
+                if(self.currentGadget.type == 'service'){
                     self.hostFromService(self.currentGadget['object_id'], 'gadget');
-                } else {
+                }else{
                     $('#GadgetWizardChoseType').val(self.currentGadget.type);
                     $('#GadgetWizardChoseType').trigger("chosen:updated");
                     $('#GadgetWizardChoseType').trigger("change");
                 }
 
             }
-        } else if ($(currentElement).hasClass('lineSVGContainer')) {
+        }else if($(currentElement).hasClass('lineSVGContainer')){
             //line
             //check if there is a line id
-            if ($(currentElement).data('lineId') != undefined) {
+            if($(currentElement).data('lineId') != undefined){
                 //add delete button if there isnt already one
-                if ($('#deleteLineBtn').length > 0) {
+                if($('#deleteLineBtn').length > 0){
                     $('#deleteLineBtn').remove();
                 }
                 $('.lineWizardFooter').prepend($('<button>', {
                     id: 'deleteLineBtn',
-                    click: function () {
+                    click: function(){
                         self.deleteLine(currentElement);
                     },
                     type: 'button',
@@ -1904,9 +2138,9 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
                 var lineId = $(currentElement).data('lineId');
                 lineId = parseInt(lineId);
                 //get values from input fields
-                $('.itemElement[data-lineId]').each(function () {
-                    if ($(this).data('lineid') == lineId) {
-                        $(this).children().each(function () {
+                $('.itemElement[data-lineId]').each(function(){
+                    if($(this).data('lineid') == lineId){
+                        $(this).children().each(function(){
                             var lineKey = $(this).data('key');
                             var lineValue = $(this).val();
                             self.currentLine[lineKey] = lineValue;
@@ -1915,23 +2149,23 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
                     }
                 });
 
-                if (self.currentLine.type == 'service') {
+                if(self.currentLine.type == 'service'){
                     self.hostFromService(self.currentLine['object_id'], 'line');
-                } else {
+                }else{
                     $('#LineWizardChoseType').val(self.currentLine.type);
                     $('#LineWizardChoseType').trigger("chosen:updated");
                     $('#LineWizardChoseType').trigger("change");
                 }
             }
-        } else if ($(currentElement).hasClass('statelessIconContainer')) {
+        }else if($(currentElement).hasClass('statelessIconContainer')){
             //stateless Icon
             //add delete button if there isnt already one
-            if ($('#deleteStatelessIconBtn').length > 0) {
+            if($('#deleteStatelessIconBtn').length > 0){
                 $('#deleteStatelessIconBtn').remove();
             }
             $('.statelessIconWizardFooter').prepend($('<button>', {
                 id: 'deleteStatelessIconBtn',
-                click: function () {
+                click: function(){
                     self.deleteIcon(currentElement);
                 },
                 type: 'button',
@@ -1941,7 +2175,7 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
 
             self.currentIcon = [];
 
-            $(currentElement).children().filter(':input').each(function () {
+            $(currentElement).children().filter(':input').each(function(){
                 var iconKey = $(this).data('key');
                 var iconValue = $(this).val();
                 self.currentIcon[iconKey] = iconValue;
@@ -1951,15 +2185,15 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
             $('#editStatelessIconX').val(self.currentIcon['x']);
             $('#editStatelessIconY').val(self.currentIcon['y']);
             $('#StatelessIconWizardModal').modal('show');
-        } else {
+        }else{
             //item
             //add delete button if there isnt already one
-            if ($('#deleteElementBtn').length > 0) {
+            if($('#deleteElementBtn').length > 0){
                 $('#deleteElementBtn').remove();
             }
             $('.elementWizardFooter').prepend($('<button>', {
                 id: 'deleteElementBtn',
-                click: function () {
+                click: function(){
                     self.deleteElement(currentElement);
                 },
                 type: 'button',
@@ -1974,16 +2208,16 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
 
             //show modal edit dialog
             $('#ElementWizardModal').modal('show');
-            $(currentElement).children().filter(':input').each(function () {
+            $(currentElement).children().filter(':input').each(function(){
                 var elementKey = $(this).data('key');
                 var elementValue = $(this).val();
                 self.current[elementKey] = elementValue;
             });
             self.current['elementUuid'] = currentElement.id;
 
-            if (self.current.type == 'service') {
+            if(self.current.type == 'service'){
                 self.hostFromService(self.current['object_id'], 'element');
-            } else {
+            }else{
                 $('#ElementWizardChoseType').val(self.current.type);
                 $('#ElementWizardChoseType').trigger("chosen:updated");
                 $('#ElementWizardChoseType').trigger("change");
@@ -1999,7 +2233,7 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
      * @param  {object} options The Grid options
      * @return {void}
      */
-    showGrid: function (options) {
+    showGrid: function(options){
         this.Grid.refreshGrid(this.gridContainer, options);
     },
 
@@ -2009,7 +2243,7 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
      *
      * @return {void}
      */
-    saveStatelessIcon: function () {
+    saveStatelessIcon: function(){
         self = this;
         $mapContainer = $(self.mapEditorContainer);
         //create new element
@@ -2017,13 +2251,13 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
         self.$mapContainer.append('<div class="itemElement statelessIconContainer dragElement" id="' + self.currentIcon['elementUuid'] + '" style="position:absolute; top: ' + self.currentIcon['y'] + 'px; left: ' + self.currentIcon['x'] + 'px;"><img src="/map_module/img/icons/' + self.currentIcon['icon'] + '"></div>');
         //Save object configuration
         var $currentIcon = $('#' + self.currentIcon['elementUuid']);
-        for (var key in self.currentIcon) {
+        for(var key in self.currentIcon){
             $currentIcon.append('<input type="hidden" name="data[Mapicon][' + self.currentIcon['elementUuid'] + '][' + key + ']" data-key="' + key + '" value="' + self.currentIcon[key] + '" />');
         }
 
         //add eventlistener on newly created items
         var el = document.getElementById(self.currentIcon['elementUuid']);
-        el.addEventListener('dblclick', function () {
+        el.addEventListener('dblclick', function(){
             self.editElements(this);
         });
 
@@ -2038,7 +2272,7 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
      * @param  {object} opt the Properties for the Element
      * @return {void}
      */
-    dropOptions: function (opt) {
+    dropOptions: function(opt){
         opt = opt || {};
         var type = opt.type || null; //icon, item, gadget
         var x = opt.x || null;
@@ -2047,12 +2281,12 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
         var icon = opt.icon || null;
         var iconset = opt.iconset || null;
 
-        switch (type) {
+        switch(type){
             case 'item':
                 //is item
                 var drop = [];
                 var offset = $('#MapContainer').offset();
-                if (this.magneticGridEnabled) {
+                if(this.magneticGridEnabled){
                     var positions = {
                         x: x,
                         y: y
@@ -2060,7 +2294,7 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
                     var newPositions = this.magneticPosition(positions);
                     drop['x'] = newPositions.x;
                     drop['y'] = newPositions.y;
-                } else {
+                }else{
                     drop['x'] = parseInt(x);
                     drop['y'] = parseInt(y);
                 }
@@ -2075,7 +2309,7 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
                 break;
             case 'icon':
                 var drop = [];
-                if (this.magneticGridEnabled) {
+                if(this.magneticGridEnabled){
                     var positions = {
                         x: x,
                         y: y
@@ -2083,7 +2317,7 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
                     var newPositions = this.magneticPosition(positions);
                     drop['x'] = newPositions.x;
                     drop['y'] = newPositions.y;
-                } else {
+                }else{
                     drop['x'] = parseInt(x);
                     drop['y'] = parseInt(y);
                 }
@@ -2096,7 +2330,7 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
             case 'gadget':
                 //is gadget
                 var drop = [];
-                if (this.magneticGridEnabled) {
+                if(this.magneticGridEnabled){
                     var positions = {
                         x: x,
                         y: y
@@ -2104,7 +2338,7 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
                     var newPositions = this.magneticPosition(positions);
                     drop['x'] = newPositions.x;
                     drop['y'] = newPositions.y;
-                } else {
+                }else{
                     drop['x'] = parseInt(x);
                     drop['y'] = parseInt(y);
                 }
@@ -2131,13 +2365,13 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
      * @param  {object} opt An Object with x and y coordinate
      * @return {object}     rounded coordinates
      */
-    magneticPosition: function (opt) {
+    magneticPosition: function(opt){
         var opt = opt || {};
         var x = opt.x || null;
         var y = opt.y || null;
 
         var newPosition = {};
-        if (x != undefined && y != undefined) {
+        if(x != undefined && y != undefined){
             newPosition = {
                 x: this.roundCoordinates(x),
                 y: this.roundCoordinates(y)
@@ -2151,21 +2385,21 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
      * Round the Corrdinates up or down which is dependent of the Grid Size and the Position
      * where the element has been dropped (this is used for the magnetic grid)
      *
-     * @param  {string | number} number A single coordinate of the element
+     * @param  {string | number} number A single coordinate of the element
      * @return {number}        the Rounded number
      */
-    roundCoordinates: function (number) {
+    roundCoordinates: function(number){
         //round the coordiantes up or down
 
         number = parseInt(number);
         var gridSize = parseInt(this.gridSizeX);
         var rest = number % gridSize;
         var halfGrid = gridSize / 2
-        if (rest >= halfGrid) {
+        if(rest >= halfGrid){
             //round up
             var value = number % gridSize;
             return number + gridSize - value;
-        } else {
+        }else{
             //round down
             var value = number % gridSize;
             return number - value;
@@ -2179,36 +2413,36 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
      * @param  {String} param The Action of the Menu. Possible Values: open, close, reset
      * @return {void}
      */
-    menuAutohide: function (param) {
+    menuAutohide: function(param){
         var self = this;
         var animationDuration = 200;//ms
-        if (this.autohideMenuEnabled) {
-            if (param == 'open') {
+        if(this.autohideMenuEnabled){
+            if(param == 'open'){
                 //open the menu
-                if (this.menuHidden == true) {
+                if(this.menuHidden == true){
                     var anim2Size = menuPanelSize - 50;
                     $('#mapMenuPanelBody').show();
                     $('#mapMenuPanel').animate({
                         height: self.originalMenuSize + 'px'
                     }, {
                         duration: animationDuration,
-                        start: function () {
+                        start: function(){
                             //show menu btn
                             $('#mapMenuMinimizeBtn').hide(animationDuration);
                         },
-                        complete: function () {
+                        complete: function(){
                             self.menuHidden = false;
                         }
                     })
                 }
             }
-            if (param == 'close') {
+            if(param == 'close'){
                 //close the menu
-                if (this.menuHidden == false) {
+                if(this.menuHidden == false){
                     //menu is not hidden
                     //container which shall be made smaller
                     var menuPanelSize = $('#mapMenuPanel').height();
-                    if (self.originalMenuSize == null) {
+                    if(self.originalMenuSize == null){
                         this.originalMenuSize = menuPanelSize;
                     }
 
@@ -2220,19 +2454,19 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
                         height: '-=' + anim2Size + 'px'
                     }, {
                         duration: animationDuration,
-                        start: function () {
+                        start: function(){
                             //show menu btn
                             $('#mapMenuMinimizeBtn').show(animationDuration);
                         },
-                        complete: function () {
+                        complete: function(){
                             self.menuHidden = true;
                             $('#mapMenuPanelBody').hide();
                         }
                     })
                 }
             }
-        } else {
-            if (param == 'reset') {
+        }else{
+            if(param == 'reset'){
                 //reset / open the menu -> autohide deactivated
                 var anim2Size = menuPanelSize - 50;
                 $('#mapMenuPanelBody').show();
@@ -2240,11 +2474,11 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
                     height: self.originalMenuSize + 'px'
                 }, {
                     duration: animationDuration,
-                    start: function () {
+                    start: function(){
                         //show menu btn
                         $('#mapMenuMinimizeBtn').hide(animationDuration);
                     },
-                    complete: function () {
+                    complete: function(){
                         self.menuHidden = false;
                     }
                 })
@@ -2260,13 +2494,13 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
      * @param  {object} opt The Options Object (currently there is just the font size in it)
      * @return {void}
      */
-    refreshTextSize: function (opt) {
+    refreshTextSize: function(opt){
         var self = this;
         opt = opt || {};
         var newFontSize = opt.fontSize || null;
 
-        if (this.scaleTextWithGrid) {
-            $('.textElement').each(function () {
+        if(this.scaleTextWithGrid){
+            $('.textElement').each(function(){
                 var $parent = $(this).parent();
                 var PosX = $parent.css('left');
                 var PosY = $parent.css('top');
@@ -2285,10 +2519,10 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
      * @param  {object} textObj The Data Object of the Element Which shall be saved
      * @return {void}
      */
-    saveText: function (textObj) {
+    saveText: function(textObj){
         var self = this;
         //check if the Text div already has its hidden fields
-        if ($('#' + textObj.elementUuid + ' *').filter(':input').length <= 0) {
+        if($('#' + textObj.elementUuid + ' *').filter(':input').length <= 0){
             //Fields not exist -> Add mode
             //text field
             $('<div>', {
@@ -2303,7 +2537,7 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
             //append eventlistener
             //add eventlistener on newly created items
             var el = document.getElementById('spanText_' + self.currentText['elementUuid']);
-            el.addEventListener('dblclick', function () {
+            el.addEventListener('dblclick', function(){
                 $('#tempTextUUID').val($(this).parent().attr('id'));
                 self.editText(el);
             });
@@ -2343,14 +2577,14 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
                 .appendTo($('#' + textObj.elementUuid));
 
             self.makeDraggable();
-        } else {
+        }else{
             //Fields exist -> Edit mode
             //change text and font size
             $('#spanText_' + textObj.elementUuid).html(self.convertBb2Html(textObj.text));//.css({'font-size':textObj.font_size+'px'});
             //rearrange the text
             //$('#spanText_'+textObj.elementUuid).basify({fontSize:textObj.font_size});
             //update form fields
-            $('#' + textObj.elementUuid).children().filter(':input').each(function () {
+            $('#' + textObj.elementUuid).children().filter(':input').each(function(){
                 $(this).val(textObj[$(this).data('key')]);
             });
 
@@ -2372,14 +2606,14 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
      * @param  {String} el The HTML String of the Text Layer
      * @return {void}
      */
-    editText: function (el) {
+    editText: function(el){
         var self = this;
         self.currentText = {};
 
         var $parent = $(el).parent()
         self.currentText['elementUuid'] = $parent.attr('id');
 
-        $parent.children().filter(':input').each(function () {
+        $parent.children().filter(':input').each(function(){
             self.currentText[$(this).data('key')] = $(this).val()
         });
         //fill form fields
@@ -2403,52 +2637,52 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
      * @param  {String} uuid The uuid of the Text Layer container
      * @return {void}
      */
-    deleteText: function (uuid) {
+    deleteText: function(uuid){
         //delete Text container and all its fields
         $('#' + uuid).remove();
         $('#textWizardModal').modal('hide');
     },
 
-    capitaliseFirstLetter: function (string) {
+    capitaliseFirstLetter: function(string){
         return string.charAt(0).toUpperCase() + string.slice(1);
     },
 
 
-    refreshBackgroundThumbnails: function () {
+    refreshBackgroundThumbnails: function(){
         var self = this;
         //get new background list by ajax
         $.ajax({
             url: "/map_module/mapeditors/getBackgroundImages",
             type: "POST",
             dataType: "html",
-            success: function (response) {
+            success: function(response){
                 $('#background-panel').empty().html(response);
             }.bind(self)
         });
     },
 
-    refreshItemsThumbnails: function () {
+    refreshItemsThumbnails: function(){
         var self = this;
         $.ajax({
             url: "/map_module/mapeditors/getIconImages",
             type: "POST",
             dataType: "html",
-            success: function (response) {
+            success: function(response){
                 $('#item-panel').empty().html(response);
                 self.activateItemsDraggable();
             }.bind(self)
         });
     },
 
-    refreshItemsDropdown: function () {
+    refreshItemsDropdown: function(){
         var self = this;
         $.ajax({
             url: "/map_module/mapeditors/getIconsetsList",
             type: "POST",
             dataType: "html",
-            error: function () {
+            error: function(){
             },
-            success: function (response) {
+            success: function(response){
                 $('#addHostIconset').empty().html(response);
                 $('#addServiceIconset').empty().html(response);
                 $('#addServicegroupIconset').empty().html(response);
@@ -2458,16 +2692,16 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
         });
     },
 
-    deleteBackground: function (filenameId) {
+    deleteBackground: function(filenameId){
         var self = this;
         //ajax call to delete background
         $.ajax({
             url: "/map_module/BackgroundUploads/delete/" + filenameId,
             type: "POST",
             dataType: "html",
-            error: function () {
+            error: function(){
             },
-            success: function (response) {
+            success: function(response){
                 self.refreshBackgroundThumbnails();
             }.bind(self)
         });
@@ -2475,16 +2709,16 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
         self.changeBackground({remove: true});
     },
 
-    deleteIconsSet: function (iconSetId) {
+    deleteIconsSet: function(iconSetId){
         var self = this;
         //ajax call to delete background
         $.ajax({
             url: "/map_module/BackgroundUploads/deleteIconsSet/" + iconSetId,
             type: "POST",
             dataType: "html",
-            error: function () {
+            error: function(){
             },
-            success: function (response) {
+            success: function(response){
                 self.refreshItemsThumbnails();
                 self.refreshItemsDropdown();
             }.bind(self)

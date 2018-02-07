@@ -97,6 +97,10 @@ class NotificationHost extends CrateModuleAppModel {
             ];
         }
 
+        if(!empty($HostNotificationConditions->getStates())){
+            $query['conditions']['state'] = $HostNotificationConditions->getStates();
+        }
+
         //Merge ListFilter conditions
         $query['conditions'] = Hash::merge($paginatorConditions, $query['conditions']);
 

@@ -23,6 +23,8 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use itnovum\openITCOCKPIT\Filter\HosttemplateFilter;
+
 class Hosttemplate extends AppModel
 {
     var $hasAndBelongsToMany = [
@@ -462,5 +464,43 @@ class Hosttemplate extends AppModel
         }
 
         return true;
+    }
+
+    public function getHosttemplatesForAngular($containerIds = [], HosttemplateFilter $HosttemplateFilter, $selected = []) {
+        if (!is_array($containerIds)) {
+            $containerIds = [$containerIds];
+        }
+
+        $query = [
+            'recursive'  => -1,
+            'conditions' => $HosttemplateFilter->ajaxFilter(),
+            'order'      => [
+                'Hosttemplate.name' => 'ASC',
+            ],
+            'limit' => self::ITN_AJAX_LIMIT
+        ];
+
+        $query['conditions']['Hosttemplate.container_id'] = $containerIds;
+
+        $hosttemplatesWithLimit = $this->find('list', $query);
+
+        $selectedHosttemplates = [];
+        if(!empty($selected)){
+            $query = [
+                'recursive'  => -1,
+                'conditions' => [
+                    'Hosttemplate.id' => $selected,
+                    'Hosttemplate.container_id' => $containerIds
+                ],
+                'order'      => [
+                    'Hosttemplate.name' => 'ASC',
+                ],
+            ];
+            $selectedHosttemplates = $this->find('list', $query);
+        }
+
+        $hosttemplates = $hosttemplatesWithLimit + $selectedHosttemplates;
+        asort($hosttemplates, SORT_FLAG_CASE|SORT_NATURAL);
+        return $hosttemplates;
     }
 }

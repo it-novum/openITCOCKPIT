@@ -33,6 +33,12 @@ class TimeperiodsController extends AppController
     ];
     public $helpers = ['ListFilter.ListFilter'];
 
+    public $uses = [
+        'Timeperiod',
+        'Timerange',
+        'Calendar'
+    ];
+
     public $listFilters = [
         'index' => [
             'fields' => [
@@ -41,6 +47,7 @@ class TimeperiodsController extends AppController
             ],
         ],
     ];
+
 
     function index()
     {
@@ -128,7 +135,21 @@ class TimeperiodsController extends AppController
         }
         array_multisort($day, SORT_ASC, $start, SORT_ASC, $end, SORT_ASC, $timeperiod['Timerange']);
 
-        $this->set(compact(['containers', 'weekdays', 'timeperiod']));
+        $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+        $query = [
+            'recursive'  => -1,
+            'contain'    => [
+                'Container',
+            ],
+            'conditions' => [
+                'Calendar.container_id' => $containerIds,
+            ],
+            'order'      => [
+                'Calendar.name' => 'ASC',
+            ],
+        ];
+        $calendars = $this->Calendar->find('list', $query);
+        $this->set(compact(['containers', 'weekdays', 'timeperiod', 'calendars']));
         $this->set('_serialize', ['timeperiod']);
         if ($this->request->is('post') || $this->request->is('put')) {
             $this->Timeperiod->id = $id;
@@ -236,6 +257,23 @@ class TimeperiodsController extends AppController
                 }
             }
         }
+
+        $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+        $query = [
+            'recursive'  => -1,
+            'contain'    => [
+                'Container',
+            ],
+            'conditions' => [
+                'Calendar.container_id' => $containerIds,
+            ],
+            'order'      => [
+                'Calendar.name' => 'ASC',
+            ],
+        ];
+
+        $calendars = $this->Calendar->find('list', $query);
+        $this->set('calendars', $calendars);
     }
 
     protected function __allowDelete($timeperiod)
@@ -544,5 +582,28 @@ class TimeperiodsController extends AppController
 
         $this->set(compact('timeperiods'));
         $this->set('back_url', $this->referer());
+    }
+
+    public function loadTimeperiodsByContainerId() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        $containerId = $this->request->query('containerId');
+
+        $timeperiods = $this->Timeperiod->find('list', [
+            'conditions' => [
+                'Timeperiod.container_id' => [
+                    ROOT_CONTAINER, $containerId
+                ]
+            ]
+        ]);
+
+        $timeperiods = $this->Timeperiod->makeItJavaScriptAble(
+            $timeperiods
+        );
+
+        $this->set(compact(['timeperiods']));
+        $this->set('_serialize', ['timeperiods']);
     }
 }

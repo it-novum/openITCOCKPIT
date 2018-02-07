@@ -23,7 +23,7 @@ CakePlugin::loadAll();
 //Purifier::config('StandardConfig', $config);
 
 // FIXME: App::uses() doesn't seem to work in this context
-require_once APP.'Lib/AppExceptionRenderer.php';
+require_once APP . 'Lib/AppExceptionRenderer.php';
 
 App::uses('Utils', 'Lib');
 
@@ -59,7 +59,7 @@ Configure::write('Config.language', 'en-us');
 setlocale(LC_ALL, 'en_US');
 
 $defaultTimeZone = 'Europe/Berlin';
-if($dateDefaultTimeZone = date_default_timezone_get()){
+if ($dateDefaultTimeZone = date_default_timezone_get()) {
     $defaultTimeZone = $dateDefaultTimeZone;
 }
 
@@ -73,8 +73,7 @@ Configure::config('silent', new SilentPhpReader());
 
 // Simple function to print multiple data types into the debug log
 if (!function_exists('dlog')) {
-    function dlog()
-    {
+    function dlog() {
         $args = func_get_args();
         foreach ($args as $arg) {
             if (!is_string($arg)) {
@@ -131,8 +130,28 @@ if (php_sapi_name() == 'cli') {
     //));
 } else {
     // Caching Setup
+    /* Cache::config('default', [
+         'engine'      => 'File',
+         'duration'    => '+24hour',
+         'probability' => 100,
+         'path'        => CACHE,
+         'prefix'      => 'app_',
+         'lock'        => false,
+         'serialize'   => true,
+     ]);
+
+     Cache::config('short', [
+         'engine'      => 'File',
+         'duration'    => '+1hour',
+         'probability' => 100,
+         'path'        => CACHE,
+         'prefix'      => 'app_',
+         'lock'        => false,
+         'serialize'   => true,
+     ]); */
+
     Cache::config('default', [
-        'engine'      => 'File',
+        'engine'      => 'Redis',
         'duration'    => '+24hour',
         'probability' => 100,
         'path'        => CACHE,
@@ -142,11 +161,31 @@ if (php_sapi_name() == 'cli') {
     ]);
 
     Cache::config('short', [
-        'engine'      => 'File',
+        'engine'      => 'Redis',
         'duration'    => '+1hour',
         'probability' => 100,
         'path'        => CACHE,
         'prefix'      => 'app_',
+        'lock'        => false,
+        'serialize'   => true,
+    ]);
+
+    Cache::config('long', [
+        'engine'      => 'Redis',
+        'duration'    => '+24hour',
+        'probability' => 100,
+        'path'        => CACHE,
+        'prefix'      => 'long_',
+        'lock'        => false,
+        'serialize'   => true,
+    ]);
+
+    Cache::config('permissions', [
+        'engine'      => 'Redis',
+        'duration'    => '+600 seconds',
+        'probability' => 100,
+        'path'        => CACHE,
+        'prefix'      => 'permissions_',
         'lock'        => false,
         'serialize'   => true,
     ]);
@@ -160,8 +199,8 @@ $modulePlugins = array_filter(CakePlugin::loaded(), function ($value) {
     return strpos($value, 'Module') !== false;
 });
 foreach ($modulePlugins as $pluginName) {
-    if (file_exists(ROOT.'/app/Plugin/'.$pluginName.'/Config/config.php')) {
-        Configure::load($pluginName.'.'.'config');
+    if (file_exists(ROOT . '/app/Plugin/' . $pluginName . '/Config/config.php')) {
+        Configure::load($pluginName . '.' . 'config');
     }
 }
 
@@ -172,7 +211,8 @@ define('PHP_DATEFORMAT', 'd/m/Y');
 
 CakePlugin::load('CakePdf', [
         'bootstrap' => true,
-        'routes'    => true]
+        'routes'    => true
+    ]
 );
 
-require_once APP.'Vendor'.DS.'autoload.php';
+require_once APP . 'Vendor' . DS . 'autoload.php';

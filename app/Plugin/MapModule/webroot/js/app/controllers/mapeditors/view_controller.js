@@ -28,26 +28,25 @@ App.Controllers.MapeditorsViewController = Frontend.AppController.extend({
 
     mapViewContainer: '#jsPlumb_playground',
 
-    _initialize: function () {
+    _initialize: function(){
         self = this;
-
         //wait till everything is loaded (needed for the lines)
-        $(document).ready(function () {
-            $('.elementHover').mouseenter(function () {
+        $(document).ready(function(){
+            $('.elementHover').mouseenter(function(){
                 var el = this;
                 var $popovers = $('#divSmallBoxes').children();
-                $popovers.hide(200, function () {
+                $popovers.hide(200, function(){
                     $(this).remove();
                 });
-                timer = window.setTimeout(function () {
+                timer = window.setTimeout(function(){
                     self.getPopoverInfo(el);
                 }, 400);
             });
 
-            $('.elementHover').mouseleave(function () {
+            $('.elementHover').mouseleave(function(){
                 clearTimeout(timer);
                 var $el = $('#divSmallBoxes').children();
-                $el.hide(200, function () {
+                $el.hide(200, function(){
                     $(this).remove();
                 });
             });
@@ -55,36 +54,38 @@ App.Controllers.MapeditorsViewController = Frontend.AppController.extend({
 
         //reload the page in a 90sec interval
         //Do not refresh inside of a rotation
-        if (self.getVar('interval') == 0) {
-            if (self.getVar('refresh_interval')) {
-                if (self.getVar('refresh_interval') < 10000) {
+        if(self.getVar('interval') == 0){
+            if(self.getVar('refresh_interval')){
+                if(self.getVar('refresh_interval') < 10000){
                     setTimeout(self.refreshPage, 90000);
-                } else {
+                }else{
                     setTimeout(self.refreshPage, self.getVar('refresh_interval'));
                 }
-            } else {
+            }else{
                 setTimeout(self.refreshPage, 90000);
             }
-        } else {
+        }else{
             //fire up rotation timer
-            setTimeout(function () {
+            setTimeout(function(){
                 var rotation_ids = this.getVar('rotation_ids');
                 var url = '/map_module/mapeditors/view'
-                $(rotation_ids).each(function (intKey, value) {
+                $(rotation_ids).each(function(intKey, value){
                     url += '/rotate[' + intKey + ']:' + value;
                 });
                 url += '/interval:' + this.getVar('interval');
-                if (this.getVar('is_fullscren') == true) {
+                if(this.getVar('is_fullscren') == true){
                     url += '/fullscreen:1';
                 }
                 window.location.href = url;
             }.bind(this), parseInt(this.getVar('interval') * 1000));
         }
-
+        if (this.getVar('is_fullscren') == true) {
+            $('#MapContainer').css('height', ($(window).height()-96)+'px');
+        }
         //check if there are Gadgets
-        if (this.getVar('map_gadgets')) {
+        if(this.getVar('map_gadgets')){
             var mapGadgets = this.getVar('map_gadgets');
-            for (var i = 0; i < mapGadgets.length; i++) {
+            for(var i = 0; i < mapGadgets.length; i++){
                 //draw every gadget
                 //self.Gadget is the Gadget Component and the "index" is the function call
                 //eg. drawTacho, drawText, drawCylinder ...
@@ -102,18 +103,19 @@ App.Controllers.MapeditorsViewController = Frontend.AppController.extend({
                 };
                 var options = {
                     id: currentElementData['currentUuid'],
-                    x: mapGadgets[i]['x'], y: mapGadgets[i]['y'],
+                    x: mapGadgets[i]['x'],
+                    y: mapGadgets[i]['y'],
                     containerData: containerData,
                     perfdata: currentElementData['currentPerfdata'],
                     state: state.toString(),
                     flapping: flapping,
                     RRDGraphLink: currentElementData['currentRRDGraphLink'],
                     color: currentElementData['currentColor'],
-                    showLabel:currentElementData['currentShowLabel'],
-                    fontSize:currentElementData['currentFontSize'],
+                    showLabel: currentElementData['currentShowLabel'],
+                    fontSize: currentElementData['currentFontSize'],
                 }
                 //check if the RRD grah link is empty
-                if (!currentElementData['currentRRDGraphLink']) {
+                if(!currentElementData['currentRRDGraphLink']){
                     var opt = {
                         demo: true
                     }
@@ -139,9 +141,9 @@ App.Controllers.MapeditorsViewController = Frontend.AppController.extend({
         svg = $(self.mapViewContainer).svg('get');
 
         //check if there are Lines
-        if (this.getVar('map_lines')) {
+        if(this.getVar('map_lines')){
             var mapLines = this.getVar('map_lines');
-            for (var i = 0; i < mapLines.length; i++) {
+            for(var i = 0; i < mapLines.length; i++){
                 //parse the line coordinates to integer
                 start['x'] = parseInt(mapLines[i]['startX']);
                 start['y'] = parseInt(mapLines[i]['startY']);
@@ -156,7 +158,7 @@ App.Controllers.MapeditorsViewController = Frontend.AppController.extend({
                     .appendTo(this.mapViewContainer);
 
                 var drawRect = true;
-                if (mapLines[i].type == 'stateless') {
+                if(mapLines[i].type == 'stateless'){
                     drawRect = false;
                 }
                 //fill the object for the current line
@@ -176,12 +178,12 @@ App.Controllers.MapeditorsViewController = Frontend.AppController.extend({
             }
             ;
         }
-        $('.textElement').each(function () {
+        $('.textElement').each(function(){
             $(this).html(self.convertBb2Html($(this).html()));
         });
     },
 
-    convertBb2Html: function (bbCode) {
+    convertBb2Html: function(bbCode){
         var resString = bbCode;
         resString = resString.replace(/(?:\r\n|\r|\n)/g, '<br />');
         resString = resString.replace(/\[b\]/gi, '<strong>');
@@ -212,7 +214,7 @@ App.Controllers.MapeditorsViewController = Frontend.AppController.extend({
         return resString;
     },
 
-    getPopoverInfo: function (el) {
+    getPopoverInfo: function(el){
         var $this = $(el);
         var elementType = $this.data('type');
         var elementUuid = $this.data('uuid');
@@ -221,11 +223,11 @@ App.Controllers.MapeditorsViewController = Frontend.AppController.extend({
             url: "/map_module/mapeditors/popover" + elementType + "Status/" + encodeURIComponent(elementUuid),
             type: "POST",
             dataType: "html",
-            error: function () {
+            error: function(){
             },
-            success: function () {
+            success: function(){
             },
-            complete: function (response) {
+            complete: function(response){
                 $.smallBox({
                     title: elementType,
                     content: response.responseText,
@@ -241,11 +243,11 @@ App.Controllers.MapeditorsViewController = Frontend.AppController.extend({
     },
 
 
-    findParentLineData: function (lineId) {
+    findParentLineData: function(lineId){
         var currentData = {};
-        $('.popoverTypeHidden').each(function () {
+        $('.popoverTypeHidden').each(function(){
             var elementLineId = this.id.replace(/popoverType_/, '');
-            if (elementLineId == lineId) {
+            if(elementLineId == lineId){
                 currentData = {
                     currentUuid: $(this).data('uuid'),
                     currentType: $(this).data('type'),
@@ -257,12 +259,12 @@ App.Controllers.MapeditorsViewController = Frontend.AppController.extend({
         return currentData;
     },
 
-    findParentGadgetData: function (gadgetId) {
+    findParentGadgetData: function(gadgetId){
         var currentData = {};
-        $('.popoverGadgetTypeHidden').each(function () {
+        $('.popoverGadgetTypeHidden').each(function(){
             var elementGadgetId = this.id.replace(/popoverGadgetType_/, '');
-            var perfdata = window['popoverGadgetPerfdata_'+elementGadgetId];
-            if (elementGadgetId == gadgetId) {
+            var perfdata = window['popoverGadgetPerfdata_' + elementGadgetId];
+            if(elementGadgetId == gadgetId){
                 currentData = {
                     currentUuid: $(this).data('uuid'),
                     currentType: $(this).data('type'),
@@ -280,19 +282,19 @@ App.Controllers.MapeditorsViewController = Frontend.AppController.extend({
         return currentData;
     },
 
-    refreshPage: function () {
+    refreshPage: function(){
         //refresh page like cmd+shift+r if true
         //should be false, otherwise every 10sec the webserver has to send the whole page new
         var forceGet = false;
         location.reload(forceGet);
     },
 
-    popoverTitle: function () {
+    popoverTitle: function(){
         var elementUuid = $(this).data('uuid');
         return '<h1>' + elementUuid + '</h1>';
     },
 
-    capitaliseFirstLetter: function (string) {
+    capitaliseFirstLetter: function(string){
         return string.charAt(0).toUpperCase() + string.slice(1);
     },
 

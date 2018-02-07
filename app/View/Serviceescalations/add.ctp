@@ -86,7 +86,7 @@
                 'class'            => 'chosen',
                 'multiple'         => true,
                 'style'            => 'width:100%;',
-                'label'            => __('<i class="fa fa-plus-square text-success"></i> Service Groups'),
+                'label'            => '<i class="fa fa-plus-square text-success"></i> ' . __('Service Groups'),
                 'data-placeholder' => __('Please choose a servicegroup'),
                 'wrapInput'        => [
                     'tag'   => 'div',
@@ -100,7 +100,7 @@
                 'class'            => 'chosen',
                 'multiple'         => true,
                 'style'            => 'width:100%;',
-                'label'            => __('<i class="fa fa-minus-square text-danger"></i> Service Groups (excluded)'),
+                'label'            => '<i class="fa fa-minus-square text-danger"></i> ' . __('Service Groups (excluded)'),
                 'data-placeholder' => __('Please choose a servicegroup'),
                 'wrapInput'        => [
                     'tag'   => 'div',

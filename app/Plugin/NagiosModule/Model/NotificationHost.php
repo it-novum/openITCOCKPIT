@@ -157,6 +157,10 @@ class NotificationHost extends NagiosModuleAppModel {
             $query['conditions']['HostsToContainers.container_id'] = $HostNotificationConditions->getContainerIds();
         }
 
+        if(!empty($HostNotificationConditions->getStates())){
+            $query['conditions']['state'] = $HostNotificationConditions->getStates();
+        }
+
         //Merge ListFilter conditions
         $query['conditions'] = Hash::merge($paginatorConditions, $query['conditions']);
 

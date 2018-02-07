@@ -30,7 +30,7 @@
                 <?php echo __('Monitoring'); ?>
                 <span>>
                     <?php echo __('Commands'); ?>
-			</span>
+                </span>
                 <div class="third_level"> <?php echo ucfirst($this->params['action']); ?></div>
             </h1>
         </div>

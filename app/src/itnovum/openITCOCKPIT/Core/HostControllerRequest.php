@@ -25,6 +25,8 @@
 namespace itnovum\openITCOCKPIT\Core;
 
 
+use itnovum\openITCOCKPIT\Filter\HostFilter;
+
 class HostControllerRequest {
 
     /**
@@ -32,14 +34,23 @@ class HostControllerRequest {
      */
     private $request;
 
-    public function __construct(\CakeRequest $request){
+    /**
+     * @var HostFilter
+     */
+    private $HostFilter;
+
+    public function __construct(\CakeRequest $request, HostFilter $HostFilter){
         $this->request = $request;
+        $this->HostFilter = $HostFilter;
     }
 
     /**
      * @return bool
      */
     public function isRequestFromBrowser(){
+        if(isset($this->request->query['BrowserContainerId'])){
+            return true;
+        }
         return isset($this->request->params['named']['BrowserContainerId']);
     }
 
@@ -47,26 +58,28 @@ class HostControllerRequest {
      * @return array
      */
     public function getBrowserContainerIdsByRequest(){
-        $containerIds = $this->request->params['named']['BrowserContainerId'];
+        if(isset($this->request->params['named']['BrowserContainerId'])){
+            $containerIds = $this->request->params['named']['BrowserContainerId'];
+        }
+
+        if(isset($this->request->query['BrowserContainerId'])){
+            $containerIds = $this->request->query['BrowserContainerId'];
+        }
+
         if (!is_array($containerIds)) {
             $containerIds = [$containerIds];
         }
         return $containerIds;
     }
 
+
     /**
-     * @param array $defaultOrder
+     * @param string $sort
+     * @param string $direction
      * @return array
      */
-    public function getOrder($defaultOrder = []){
-        if (isset($this->request['named']['sort']) && isset($this->request['named']['direction'])) {
-            return [
-                $this->request['named']['sort'] => $this->request['named']['direction']
-            ];
-        }
-
-        return $defaultOrder;
-
+    public function getOrder($sort = '', $direction = ''){
+        return $this->HostFilter->getOrderForPaginator($sort, $direction);
     }
 
 }

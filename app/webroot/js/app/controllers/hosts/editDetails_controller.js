@@ -23,55 +23,43 @@
 //	confirmation.
 
 App.Controllers.HostsEditDetailsController = Frontend.AppController.extend({
-	
-	//components: ['Utils', 'Masschange'],
-	
-	_initialize: function(){
-		
-		$('#HostTags').tagsinput();
-		
-		/*
-		 * Bind change event on checkboxes
-		 */
-		$('.parent_checkbox').change(function(){
-			var $this = $(this);
-			if($this.prop('checked')){
-				var $input = $this.parent()
-								.parent()
-									.parent()
-										.parent()
-											.find('.scope')
-												.find(":input" );
 
-				$($input).each(function(key, input){
-					$_input = $(input);
-					if($_input.hasClass('chosen')){
-						$_input.prop('disabled', false);
-						$_input.trigger("chosen:updated");
-					}else{
-						$_input.prop('disabled', false);
-					}
-				});
-			}else{
-				var $input = $this.parent()
-									.parent()
-										.parent()
-											.parent()
-												.find('.scope')
-													.find(":input");
+    _initialize: function(){
 
-				$($input).each(function(key, input){
-					$_input = $(input);
-					if($_input.hasClass('chosen')){
-						$_input.prop('disabled', true);
-						$_input.val('').removeAttr('selected');
-						$_input.trigger("chosen:updated");
-					}else{
-						$_input.val('').removeAttr('checked');
-						$_input.prop('disabled', true);
-					}
-				});
-			}
-		});
-	}
+        $('#HostTags').tagsinput();
+
+        /*
+         * Bind change event on checkboxes
+         */
+        $('.parent_checkbox').change(function(){
+            var $this = $(this);
+            if($this.prop('checked')){
+                var $input = $this.parents('.editHostDetailFormInput').children('.scope').find(':input');
+
+                $($input).each(function(key, input){
+                    $_input = $(input);
+                    if($_input.hasClass('chosen')){
+                        $_input.prop('disabled', false);
+                        $_input.trigger("chosen:updated");
+                    }else{
+                        $_input.prop('disabled', false);
+                    }
+                });
+            }else{
+                var $input = $this.parents('.editHostDetailFormInput').children('.scope').find(':input');
+
+                $($input).each(function(key, input){
+                    $_input = $(input);
+                    if($_input.hasClass('chosen')){
+                        $_input.prop('disabled', true);
+                        $_input.val('').removeAttr('selected');
+                        $_input.trigger("chosen:updated");
+                    }else{
+                        $_input.val('').removeAttr('checked');
+                        $_input.prop('disabled', true);
+                    }
+                });
+            }
+        });
+    }
 });

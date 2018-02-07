@@ -29,7 +29,7 @@ use itnovum\openITCOCKPIT\Grafana\GrafanaApiConfiguration;
 
 class GrafanaConfigurationController extends GrafanaModuleAppController {
 
-    public $layout = 'Admin.default';
+    public $layout = 'angularjs';
 
     public $uses = [
         'Hostgroup',
@@ -44,12 +44,45 @@ class GrafanaConfigurationController extends GrafanaModuleAppController {
     ];
 
     public function index() {
+        //$this->request->data = Hash::merge($grafanaConfiguration, $this->request->data);
+
+        //Save POST||PUT Request
+        if ($this->request->is('post') || $this->request->is('put')) {
+            $_hostgroups = (is_array($this->request->data('GrafanaConfiguration.Hostgroup'))) ? $this->request->data('GrafanaConfiguration.Hostgroup') : [];
+            $_hostgroups_excluded = (is_array($this->request->data('GrafanaConfiguration.Hostgroup_excluded'))) ? $this->request->data('GrafanaConfiguration.Hostgroup_excluded') : [];
+
+            $this->GrafanaConfiguration->set($this->request->data);
+            if ($this->GrafanaConfiguration->validates()) {
+                $this->request->data['GrafanaConfiguration']['id'] = 1;
+                $this->request->data['GrafanaConfigurationHostgroupMembership'] = $this->GrafanaConfiguration->parseHostgroupMembershipData(
+                    $_hostgroups,
+                    $_hostgroups_excluded
+                );
+
+                /* Delete old hostgroup associations */
+                $this->GrafanaConfigurationHostgroupMembership->deleteAll(true);
+
+                if ($this->GrafanaConfiguration->saveAll($this->request->data)) {
+
+                    if ($this->isAngularJsRequest()) {
+                        $this->setFlash(__('Grafana configuration successfully saved'));
+                    }
+                    $this->serializeId();
+                    return;
+                }
+            }else{
+                $this->serializeErrorMessage();
+                return;
+            }
+        }
+
+        //Ship data for GET requests
         $hostgroups = $this->Hostgroup->findList([
-            'recursive' => -1,
-            'contain' => [
+            'recursive'  => -1,
+            'contain'    => [
                 'Container'
             ],
-            'order' => [
+            'order'      => [
                 'Container.name' => 'asc',
             ],
             'conditions' => [
@@ -67,69 +100,93 @@ class GrafanaConfigurationController extends GrafanaModuleAppController {
 
         $grafanaConfiguration = $this->GrafanaConfiguration->find('first', [
             'recursive' => -1,
-            'contain' => [
+            'contain'   => [
                 'GrafanaConfigurationHostgroupMembership'
             ]
         ]);
-        if ($this->request->is('post') || $this->request->is('put')) {
-            $_hostgroups = (is_array($this->request->data('GrafanaConfiguration.Hostgroup'))) ? $this->request->data('GrafanaConfiguration.Hostgroup') : [];
-            $_hostgroups_excluded = (is_array($this->request->data('GrafanaConfiguration.Hostgroup_excluded'))) ? $this->request->data('GrafanaConfiguration.Hostgroup_excluded') : [];
 
-            $this->GrafanaConfiguration->set($this->request->data);
-            if ($this->GrafanaConfiguration->validates()) {
-                $this->request->data['GrafanaConfiguration']['id'] = 1;
-                $this->request->data['GrafanaConfigurationHostgroupMembership'] = $this->GrafanaConfiguration->parseHostgroupMembershipData(
-                    $_hostgroups,
-                    $_hostgroups_excluded
-                );
-
-                /* Delete old hostgroup associations */
-                $this->GrafanaConfigurationHostgroupMembership->deleteAll(true);
-
-                if ($this->GrafanaConfiguration->saveAll($this->request->data)) {
-                    $this->setFlash(__('Configuration saved successfully'));
-                } else {
-                    $this->setFlash(__('Data could not be saved'), false);
-                }
-                $this->redirect([
-                    'controller' => 'grafana_configuration',
-                    'action' => 'index',
-                    'plugin' => 'grafana_module'
-                ]);
-            }
-        } else {
-            if (!empty($grafanaConfiguration['GrafanaConfigurationHostgroupMembership'])) {
-                $grafanaConfiguration['GrafanaConfiguration']['Hostgroup'] = Hash::combine($grafanaConfiguration['GrafanaConfigurationHostgroupMembership'], '{n}[excluded=0].hostgroup_id', '{n}[excluded=0].hostgroup_id');
-                $grafanaConfiguration['GrafanaConfiguration']['Hostgroup_excluded'] = Hash::combine($grafanaConfiguration['GrafanaConfigurationHostgroupMembership'], '{n}[excluded=1].hostgroup_id', '{n}[excluded=1].hostgroup_id');
-            }
-        }
-
-        $this->request->data = Hash::merge($grafanaConfiguration, $this->request->data);
-        $this->set(compact(['hostgroups']));
-    }
-
-    public function testGrafanaConnection(){
-        $this->autoRender = false;
-        $this->allowOnlyAjaxRequests();
-        $grafanaConfiguration = $this->GrafanaConfiguration->find('first', [
-            'recursive' => -1,
-            'contain' => [
-                'GrafanaConfigurationHostgroupMembership'
-            ]
-        ]);
-        $GrafanaApiConfiguration = GrafanaApiConfiguration::fromArray($grafanaConfiguration);
-
-        $client = $this->GrafanaConfiguration->testConnection($GrafanaApiConfiguration, $this->Proxy->getSettings());
-        if ($client instanceof Client) {
-            $status = ['status' => true];
-        } else {
-            $client = (json_decode($client))?json_decode($client):['message' => $client];
-            $status = [
-                'status' => false,
-                'msg' => $client
+        if (empty($grafanaConfiguration)) {
+            //Default GrafanaConfiguration
+            $grafanaConfiguration = [
+                'GrafanaConfiguration' => [
+                    'id'                     => 1, //its 1 every time
+                    'api_url'                => '',
+                    'api_key'                => '',
+                    'graphite_prefix'        => '',
+                    'use_https'              => '1',
+                    'use_proxy'              => '0',
+                    'ignore_ssl_certificate' => '0',
+                    'dashboard_style'        => 'light',
+                    'Hostgroup'              => [],
+                    'Hostgroup_excluded'     => []
+                ]
             ];
         }
 
-        echo json_encode($status);
+        if (!empty($grafanaConfiguration['GrafanaConfigurationHostgroupMembership'])) {
+            $grafanaConfiguration['GrafanaConfiguration']['Hostgroup'] = Hash::combine($grafanaConfiguration['GrafanaConfigurationHostgroupMembership'], '{n}[excluded=0].hostgroup_id', '{n}[excluded=0].hostgroup_id');
+            $grafanaConfiguration['GrafanaConfiguration']['Hostgroup_excluded'] = Hash::combine($grafanaConfiguration['GrafanaConfigurationHostgroupMembership'], '{n}[excluded=1].hostgroup_id', '{n}[excluded=1].hostgroup_id');
+        }
+
+        $this->set('grafanaConfiguration', $grafanaConfiguration);
+        $this->set('_serialize', ['grafanaConfiguration']);
+    }
+
+    public function loadHostgroups() {
+        if (!$this->isApiRequest()) {
+            //Only ship template for AngularJs
+            return;
+        }
+
+        $hostgroups = $this->Hostgroup->findList([
+            'recursive'  => -1,
+            'contain'    => [
+                'Container'
+            ],
+            'order'      => [
+                'Container.name' => 'asc',
+            ],
+            'conditions' => [
+                'Container.parent_id' => $this->MY_RIGHTS,
+            ],
+        ]);
+
+        $hostgroups = $this->Container->makeItJavaScriptAble($hostgroups);
+
+        $this->set('hostgroups', $hostgroups);
+        $this->set('_serialize', ['hostgroups']);
+    }
+
+    public function testGrafanaConnection() {
+        //$this->autoRender = false;
+        //$this->allowOnlyAjaxRequests();
+        if (!$this->isApiRequest()) {
+            //Only ship template for AngularJs
+            return;
+        }
+
+        if ($this->request->is('post') || $this->request->is('put')) {
+            $config = $this->request->data;
+            /*$this->set('config', $config);
+            $this->set('_serialize', ['config']); */
+            //$config = json_decode($config);
+
+            $GrafanaApiConfiguration = GrafanaApiConfiguration::fromArray($config);
+
+            $client = $this->GrafanaConfiguration->testConnection($GrafanaApiConfiguration, $this->Proxy->getSettings());
+            if ($client instanceof Client) {
+                $status = ['status' => true];
+            } else {
+                $client = (json_decode($client)) ? json_decode($client) : ['message' => $client];
+                $status = [
+                    'status' => false,
+                    'msg'    => $client
+                ];
+            }
+
+
+            $this->set('status', $status);
+            $this->set('_serialize', ['status']);
+        }
     }
 }

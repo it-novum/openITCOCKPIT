@@ -68,6 +68,10 @@ class Servicecheck extends NagiosModuleAppModel
             $query['conditions']['state'] = $ServicecheckConditions->getStates();
         }
 
+        if(!empty($ServicecheckConditions->getStateTypes())){
+            $query['conditions']['state_type'] = $ServicecheckConditions->getStateTypes();
+        }
+
         //Merge ListFilter conditions
         $query['conditions'] = Hash::merge($query['conditions'], $paginatorConditions);
 

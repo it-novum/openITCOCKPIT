@@ -53,6 +53,7 @@ class UsersController extends AppController
         'User.full_name' => ['label' => 'Name', 'searchType' => 'wildcard'],
         'User.email'     => ['label' => 'Email', 'searchType' => 'wildcard'],
         'User.company'   => ['label' => 'Company', 'searchType' => 'wildcard'],
+        'User.phone'     => ['label' => 'Phone', 'searchType' => 'wildcard'],
     ]]];
 
 
@@ -87,6 +88,7 @@ class UsersController extends AppController
                 'User.id',
                 'User.email',
                 'User.company',
+                'User.phone',
                 'User.status',
                 'User.full_name',
                 'User.samaccountname',
@@ -352,6 +354,7 @@ class UsersController extends AppController
                 );
                 if ($this->User->saveAll($this->request->data)) {
                     $this->setFlash(__('User saved successfully'));
+                    Cache::clear(false, 'permissions');
                     $this->redirect(['action' => 'index']);
 
                     return;
@@ -365,7 +368,7 @@ class UsersController extends AppController
         $this->request->data = $this->User->find('first', $options);
         $containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_USER, [], $this->hasRootPrivileges);
         $selectedContainers = ($this->request->data('Container')) ? Hash::extract($this->request->data['Container'], '{n}.id') : Hash::extract($permissionsUser['ContainerUserMembership'], '{n}.container_id');
-        $this->set(compact(['containers', 'selectedContainers']));
+        $this->set(compact(['containers', 'selectedContainers', 'permissionsUser']));
         $this->request->data['User']['password'] = '';
 
         $type = 'local';
@@ -458,5 +461,37 @@ class UsersController extends AppController
         $this->redirect(['action' => 'index']);
 
         return;
+    }
+
+    public function loadUsersByContainerId() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        $containerId = $this->request->query('containerId');
+
+        $users = $this->User->find('list', [
+            'recursive' => -1,
+            'joins'      => [
+                [
+                    'table'      => 'users_to_containers',
+                    'type'       => 'LEFT',
+                    'alias'      => 'UsersToContainer',
+                    'conditions' => 'UsersToContainer.user_id = User.id',
+                ],
+            ],
+            'conditions' => [
+                'UsersToContainer.container_id' => [
+                    ROOT_CONTAINER, $containerId
+                ]
+            ]
+        ]);
+
+        $users = $this->User->makeItJavaScriptAble(
+            $users
+        );
+
+        $this->set(compact(['users']));
+        $this->set('_serialize', ['users']);
     }
 }

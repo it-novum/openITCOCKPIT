@@ -42,7 +42,7 @@
         <h2><?php echo $this->action == 'edit' ? __('Edit') : __('Add') ?><?php echo __('User'); ?></h2>
         <div class="widget-toolbar" role="menu">
             <?php if ($this->Acl->hasPermission('delete')): ?>
-                <?php echo $this->Utils->deleteButton(); ?>
+                <?php echo $this->Utils->deleteButton(null, $permissionsUser['User']['id']); ?>
             <?php endif; ?>
             <?php echo $this->Utils->backButton(); ?>
         </div>

@@ -78,6 +78,17 @@ class TenantsController extends AppController
             $all_tenants = $this->Paginator->paginate();
         }
 
+        foreach($all_tenants as $key => $tenant){
+            $all_tenants[$key]['Tenant']['allow_edit'] = false;
+            $tenantContainerId = $tenant['Tenant']['container_id'];
+            if(isset($this->MY_RIGHTS_LEVEL[$tenantContainerId])){
+                if((int)$this->MY_RIGHTS_LEVEL[$tenantContainerId] === WRITE_RIGHT){
+                    $all_tenants[$key]['Tenant']['allow_edit'] = true;
+                }
+            }
+        }
+
+
         $this->set(compact(['all_tenants']));
         $this->set('_serialize', ['all_tenants']);
     }
@@ -113,6 +124,7 @@ class TenantsController extends AppController
 
             $isJsonRequest = $this->request->ext === 'json';
             if ($this->Tenant->saveAll($this->request->data)) {
+                Cache::clear(false, 'permissions');
                 if ($isJsonRequest) {
                     $this->serializeId();
 
@@ -154,6 +166,7 @@ class TenantsController extends AppController
 
         if ($this->Tenant->__allowDelete($container['Tenant']['container_id'])) {
             if ($this->Container->delete($container['Tenant']['container_id'])) {
+                Cache::clear(false, 'permissions');
                 $this->setFlash(__('Tenant deleted'));
                 $this->redirect(['action' => 'index']);
             }
@@ -188,6 +201,7 @@ class TenantsController extends AppController
                 }
             }
         }
+        Cache::clear(false, 'permissions');
 
         //array contains at least one false
         if (in_array(false, $deleteAllowedValues)) {
@@ -228,6 +242,7 @@ class TenantsController extends AppController
                 $this->request->data['Tenant']['expires'] = CakeTime::format($this->request->data['Tenant']['expires'], '%Y-%m-%d');
             }
             if ($this->Tenant->saveAll($this->request->data)) {
+                Cache::clear(false, 'permissions');
                 $this->setFlash(__('Tenant successfully saved'));
                 $this->redirect(['action' => 'index']);
             }

@@ -31,7 +31,7 @@ App.Controllers.HostsEditController = Frontend.AppController.extend({
 
     components: ['Highlight', 'Ajaxloader', 'CustomVariables', 'ContainerSelectbox'],
 
-    _initialize: function() {
+    _initialize: function(){
         var self = this;
 
         this.Ajaxloader.setup();
@@ -43,7 +43,7 @@ App.Controllers.HostsEditController = Frontend.AppController.extend({
             fieldTypes: {
                 hosttemplates: '#HostHosttemplateId',
                 hostgroups: '#HostHostgroup',
-                parenthosts: '#HostParenthost',
+                // parenthosts: '#HostParenthost',
                 timeperiods: '#HostNotifyPeriodId',
                 checkperiods: '#HostCheckPeriodId',
                 contacts: '#HostContact',
@@ -63,6 +63,50 @@ App.Controllers.HostsEditController = Frontend.AppController.extend({
         });
 
 
+        var containerId = $('#HostContainerId').val();
+        var hostID = $('#HostId').val();
+        $.ajax({
+            dataType: "json",
+            url: '/hosts/loadParentHostsById/' + hostID + '.json',
+            data: {
+                'angular': true,
+                //'id': hostID
+            },
+            success: function(response){
+                self.loadInitialData('#HostParenthost', response.parenthost);
+            }
+        });
+
+        var ChosenAjaxObj = new ChosenAjax({
+            id: 'HostParenthost' //Target select box
+        });
+        ChosenAjaxObj.setCallback(function(searchString){
+            var selected = ChosenAjaxObj.getSelected();
+            $.ajax({
+                dataType: "json",
+                url: '/hosts/loadParentHostsByString.json',
+                data: {
+                    'angular': true,
+                    'filter[Host.name]': searchString,
+                    'selected[]': selected,
+                    'containerId': containerId,
+                    'hostId': hostID
+                },
+                success: function(response){
+                    ChosenAjaxObj.addOptions(response.hosts);
+                    ChosenAjaxObj.setSelected(selected);
+                }
+            });
+        });
+
+        $('#yesDeleteHost').click(function(){
+            var hostId = $(this).data('hostId');
+            //ajax delete
+            self.deleteHost(hostId);
+        });
+
+        ChosenAjaxObj.render();
+
         //get the containers for sharing
         if($('#HostSharedContainer').length){
             $('#HostContainerId').change(function(){
@@ -70,7 +114,7 @@ App.Controllers.HostsEditController = Frontend.AppController.extend({
                 var containerId = $(this).val();
                 $(this).attr('oldValue', containerId);
                 $.ajax({
-                    url: '/Hosts/getSharingContainers/'+containerId+'.json',
+                    url: '/Hosts/getSharingContainers/' + containerId + '.json',
                     type: 'post',
                     cache: false,
                     dataType: 'json',
@@ -84,7 +128,7 @@ App.Controllers.HostsEditController = Frontend.AppController.extend({
                             if(Array.isArray(prevSelectedContainer) && _.contains(prevSelectedContainer, key) || key == oldValue){
                                 selected = 'selected';
                             }
-                            html += '<option value="'+key+'" '+selected+'>'+res[key]+'</option>';
+                            html += '<option value="' + key + '" ' + selected + '>' + res[key] + '</option>';
                         }
                         html += '</select>';
                         $hostSharingContainer.html(html);
@@ -107,7 +151,7 @@ App.Controllers.HostsEditController = Frontend.AppController.extend({
          */
         var $inheritContacts = $('#inheritContacts');
 
-        if($inheritContacts.prop('checked') == true) {
+        if($inheritContacts.prop('checked') == true){
             $('#hostContactSelects').block({
                 message: null,
                 overlayCSS: {
@@ -138,7 +182,7 @@ App.Controllers.HostsEditController = Frontend.AppController.extend({
 
         var $inputs = $('#HostAddForm :input');
         var values = {};
-        $inputs.each(function() {
+        $inputs.each(function(){
             if(this.name.length > 0){
                 values[this.name] = $(this).val();
             }
@@ -213,9 +257,9 @@ App.Controllers.HostsEditController = Frontend.AppController.extend({
         this.inputPlaceholder();
         $('input[type="checkbox"]#autoDNSlookup').on('change.inputPlaceholder', function(){
             if($('input[type="checkbox"]#autoDNSlookup').prop('checked') == true){
-                $.cookie('oitc_autoDNSlookup', 'true', { expires: 365 });
+                $.cookie('oitc_autoDNSlookup', 'true', {expires: 365});
             }else{
-                $.cookie('oitc_autoDNSlookup', 'false', { expires: 365 });
+                $.cookie('oitc_autoDNSlookup', 'false', {expires: 365});
             }
 
             this.inputPlaceholder();
@@ -223,7 +267,7 @@ App.Controllers.HostsEditController = Frontend.AppController.extend({
 
         // Automatically DNS lookup after the hostname has changed
         $('#HostName').focusout(function(){
-            if ($('input[type="checkbox"]#autoDNSlookup').prop('checked')){
+            if($('input[type="checkbox"]#autoDNSlookup').prop('checked')){
                 $('.ajax_icon').remove();
                 var icon = '<i class="fa fa-warning fa-lg txt-color-redLight ajax_icon"></i> ';
                 $hostname = $('#HostName');
@@ -236,7 +280,7 @@ App.Controllers.HostsEditController = Frontend.AppController.extend({
                         this.Highlight.highlight($('#HostAddress').parent());
                     }else{
                         $label.html(icon + $label.html());
-                        $note.append('<span class="note ajax_icon">'+this.getVar('dns_hostname_lookup_failed')+'</span>');
+                        $note.append('<span class="note ajax_icon">' + this.getVar('dns_hostname_lookup_failed') + '</span>');
                     }
                     this.Ajaxloader.hide();
                 }.bind(this);
@@ -247,9 +291,11 @@ App.Controllers.HostsEditController = Frontend.AppController.extend({
                         url: "/Hosts/gethostbyname",
                         type: "POST",
                         cache: false,
-                        data: "hostname="+encodeURIComponent($hostname.val()),
-                        error: function(){},
-                        success: function(){},
+                        data: "hostname=" + encodeURIComponent($hostname.val()),
+                        error: function(){
+                        },
+                        success: function(){
+                        },
                         complete: callback
                     });
                 }
@@ -258,7 +304,7 @@ App.Controllers.HostsEditController = Frontend.AppController.extend({
 
         // Automatically host FQDN DNS lookup after a ip address was typed in
         $('#HostAddress').focusout(function(){
-            if ($('input[type="checkbox"]#autoDNSlookup').prop('checked')){
+            if($('input[type="checkbox"]#autoDNSlookup').prop('checked')){
                 $('.ajax_icon').remove();
                 var icon = '<i class="fa fa-warning fa-lg txt-color-redLight ajax_icon"></i> ';
                 $hostaddress = $('#HostAddress');
@@ -270,7 +316,7 @@ App.Controllers.HostsEditController = Frontend.AppController.extend({
                         this.Highlight.highlight($('#HostName').parent());
                     }else{
                         $label.html(icon + $label.html());
-                        $note.append('<span class="note ajax_icon">'+this.getVar('dns_ipaddress_lookup_failed')+'</span>');
+                        $note.append('<span class="note ajax_icon">' + this.getVar('dns_ipaddress_lookup_failed') + '</span>');
                     }
                     this.Ajaxloader.hide();
                 }.bind(this);
@@ -280,8 +326,9 @@ App.Controllers.HostsEditController = Frontend.AppController.extend({
                         url: "/Hosts/gethostbyaddr",
                         type: "POST",
                         cache: false,
-                        data: "address="+encodeURIComponent($hostaddress.val()),
-                        error: function(){},
+                        data: "address=" + encodeURIComponent($hostaddress.val()),
+                        error: function(){
+                        },
                         success: callback,
                         complete: callback
                     });
@@ -307,7 +354,7 @@ App.Controllers.HostsEditController = Frontend.AppController.extend({
         var $hostNotificationIntervalField = $('#HostNotificationinterval');
 
         var $slider = $('input.slider');
-        $slider.slider({ tooltip: 'hide' });
+        $slider.slider({tooltip: 'hide'});
         $slider.slider('on', 'slide', onSlideStop);
         $slider.slider('on', 'slideStop', onSlideStop);
 
@@ -342,14 +389,14 @@ App.Controllers.HostsEditController = Frontend.AppController.extend({
         /**
          * Mainly does two things:
          *
-         *	1.	Fills up the input fields of the form. The values are used from the chosen Hosttemplate.
-         *		This part was refactored.
+         *    1.    Fills up the input fields of the form. The values are used from the chosen Hosttemplate.
+         *        This part was refactored.
          *
-         *	2.	Allows to reset the values to their defaults. The defaults depend on the chosen Hosttemplate.
-         *		This part was newly created.
+         *    2.    Allows to reset the values to their defaults. The defaults depend on the chosen Hosttemplate.
+         *        This part was newly created.
          *
-         *	onChangeField()			- When a field gets changed, this method will be called.
-         *	onClickRestoreDefault()	- A click on the restore button.
+         *    onChangeField()            - When a field gets changed, this method will be called.
+         *    onClickRestoreDefault()    - A click on the restore button.
          */
         self.hosttemplateManager = {
             isRestoreFunctionalityInitialized: false,
@@ -516,13 +563,19 @@ App.Controllers.HostsEditController = Frontend.AppController.extend({
                 if(in_array(keyName, ['contact', 'contactgroup', 'hostgroup'])){
                     switch(keyName){
                         case 'contact':
-                            templateDefaultValue = self.hosttemplateManager.currentContact.map(function(elem){ return elem.id });
+                            templateDefaultValue = self.hosttemplateManager.currentContact.map(function(elem){
+                                return elem.id
+                            });
                             break;
                         case 'contactgroup':
-                            templateDefaultValue = self.hosttemplateManager.currentContactGroup.map(function(elem){ return elem.id });
+                            templateDefaultValue = self.hosttemplateManager.currentContactGroup.map(function(elem){
+                                return elem.id
+                            });
                             break;
                         case 'hostgroup':
-                            templateDefaultValue = self.hosttemplateManager.currentHostGroup.map(function(elem){ return elem.id });
+                            templateDefaultValue = self.hosttemplateManager.currentHostGroup.map(function(elem){
+                                return elem.id
+                            });
                             break;
                     }
                 }
@@ -601,16 +654,28 @@ App.Controllers.HostsEditController = Frontend.AppController.extend({
                 if(in_array(keyName, ['contact', 'contactgroup', 'hostgroup'])){
                     switch(keyName){
                         case 'contact':
-                            templateDefaultValue = self.hosttemplateManager.currentContact.map(function(elem){ return elem.id });
-                            templateDefaultTitle = self.hosttemplateManager.currentContact.map(function(elem){ return elem.name });
+                            templateDefaultValue = self.hosttemplateManager.currentContact.map(function(elem){
+                                return elem.id
+                            });
+                            templateDefaultTitle = self.hosttemplateManager.currentContact.map(function(elem){
+                                return elem.name
+                            });
                             break;
                         case 'contactgroup':
-                            templateDefaultValue = self.hosttemplateManager.currentContactGroup.map(function(elem){ return elem.id });
-                            templateDefaultTitle = self.hosttemplateManager.currentContactGroup.map(function(elem){ return elem.Container.name });
+                            templateDefaultValue = self.hosttemplateManager.currentContactGroup.map(function(elem){
+                                return elem.id
+                            });
+                            templateDefaultTitle = self.hosttemplateManager.currentContactGroup.map(function(elem){
+                                return elem.Container.name
+                            });
                             break;
                         case 'hostgroup':
-                            templateDefaultValue = self.hosttemplateManager.currentHostGroup.map(function(elem){ return elem.id });
-                            templateDefaultTitle = self.hosttemplateManager.currentHostGroup.map(function(elem){ return elem.Container.name });
+                            templateDefaultValue = self.hosttemplateManager.currentHostGroup.map(function(elem){
+                                return elem.id
+                            });
+                            templateDefaultTitle = self.hosttemplateManager.currentHostGroup.map(function(elem){
+                                return elem.Container.name
+                            });
                             break;
                     }
                     templateDefaultTitle = templateDefaultTitle.join(', ');
@@ -819,7 +884,7 @@ App.Controllers.HostsEditController = Frontend.AppController.extend({
                             }else if(in_array(key, ['notify_period_id', 'check_period_id', 'command_id'])){
                                 self.updateSelectbox({value: templateDefaultValue, selector: self.fieldMap[key]});
                             }else if(in_array(key, [
-                                    'notify_on_recovery','notify_on_down', 'notify_on_unreachable',
+                                    'notify_on_recovery', 'notify_on_down', 'notify_on_unreachable',
                                     'notify_on_flapping', 'notify_on_downtime', 'flap_detection_enabled',
                                     'flap_detection_on_unreachable', 'flap_detection_on_down', 'flap_detection_on_up',
                                     'active_checks_enabled'
@@ -845,7 +910,11 @@ App.Controllers.HostsEditController = Frontend.AppController.extend({
                         $(responseObject.hosttemplate.Contactgroup).each(function(intIndex, jsonContactgroup){
                             selectedContactgroups.push(jsonContactgroup.id);
                         });
-                        self.updateSelectbox({value: selectedContactgroups, selector: '#HostContactgroup', prefix: 'false'});
+                        self.updateSelectbox({
+                            value: selectedContactgroups,
+                            selector: '#HostContactgroup',
+                            prefix: 'false'
+                        });
 
                         //Hostgroups
                         var selectedHostgroups = [];
@@ -893,8 +962,10 @@ App.Controllers.HostsEditController = Frontend.AppController.extend({
                         type: "POST",
                         cache: false,
                         dataType: "json",
-                        error: function(){},
-                        success: function(){},
+                        error: function(){
+                        },
+                        success: function(){
+                        },
                         complete: ajaxCompleteCallback
                     });
                 };
@@ -926,6 +997,49 @@ App.Controllers.HostsEditController = Frontend.AppController.extend({
         self.hosttemplateManager.init();
     },
 
+
+    loadInitialData: function(selector, selectedHostIds, callback){
+        var containerId = $('#HostContainerId').val();
+        var self = this;
+
+        if(selectedHostIds == null || selectedHostIds.length < 1){
+            selectedHostIds = [];
+        }else{
+            if(!Array.isArray(selectedHostIds)){
+                selectedHostIds = [selectedHostIds];
+            }
+        }
+
+        $.ajax({
+            dataType: "json",
+            url: '/hosts/loadParentHostsByString.json',
+            data: {
+                'angular': true,
+                'selected[]': selectedHostIds, //ids
+                'containerId': containerId
+            },
+            success: function(response){
+                var $selector = $(selector);
+                var list = self.buildList(response.hosts);
+                $selector.append(list);
+                $selector.val(selectedHostIds);
+                $selector.trigger('chosen:updated');
+
+                if(callback != undefined){
+                    callback();
+                }
+            }
+        });
+    },
+
+    buildList: function(data){
+        var html = '';
+        for(var i in data){
+            html += '<option value="' + data[i].key + '">' + htmlspecialchars(data[i].value) + '</option>';
+        }
+        return html;
+    },
+
     inputPlaceholder: function(){
         var $checkbox = $('input[type="checkbox"]#autoDNSlookup');
         if($.cookie('oitc_autoDNSlookup') == 'false'){
@@ -935,14 +1049,14 @@ App.Controllers.HostsEditController = Frontend.AppController.extend({
             return;
         }
 
-        if ($checkbox.prop('checked')){
+        if($checkbox.prop('checked')){
             $('#HostName').attr('placeholder', this.getVar('hostname_placeholder'));
             $('#HostAddress').attr('placeholder', this.getVar('address_placeholder'));
-            $.cookie('oitc_autoDNSlookup', 'true', { expires: 365 });
+            $.cookie('oitc_autoDNSlookup', 'true', {expires: 365});
         }else{
             $('#HostName').attr('placeholder', '');
             $('#HostAddress').attr('placeholder', '');
-            $.cookie('oitc_autoDNSlookup', 'false', { expires: 365 });
+            $.cookie('oitc_autoDNSlookup', 'false', {expires: 365});
         }
     },
 
@@ -971,12 +1085,12 @@ App.Controllers.HostsEditController = Frontend.AppController.extend({
         var options = _options || {};
         options.value = parseInt(_options.value, 10) || 0;
         options.selector = _options.selector || null;
-        $('#Host'+options.selector).slider('setValue', options.value);
-        $('#_Host'+options.selector).val(options.value);
-        $('#Host'+options.selector).val(options.value);
-        $('_#Host'+options.selector).trigger('keyup');
+        $('#Host' + options.selector).slider('setValue', options.value);
+        $('#_Host' + options.selector).val(options.value);
+        $('#Host' + options.selector).val(options.value);
+        $('_#Host' + options.selector).trigger('keyup');
 
-        $helptext = $('#Host'+options.selector+'_human');
+        $helptext = $('#Host' + options.selector + '_human');
 
         min = parseInt(options.value / 60, 10);
         sec = parseInt(options.value % 60, 10);
@@ -989,12 +1103,12 @@ App.Controllers.HostsEditController = Frontend.AppController.extend({
         options.selector = _options.selector || '';
 
         if(options.value === null || options.value == 0 || options.value == false){
-            $('input[type="checkbox"]#Host'+options.selector).prop('checked', false).trigger('change');
+            $('input[type="checkbox"]#Host' + options.selector).prop('checked', false).trigger('change');
             this.checkFlapDetection();
             return false;
         }
 
-        $('input[type="checkbox"]#Host'+options.selector).prop('checked', true).trigger('change');
+        $('input[type="checkbox"]#Host' + options.selector).prop('checked', true).trigger('change');
 
         this.checkFlapDetection();
         return true;
@@ -1010,18 +1124,20 @@ App.Controllers.HostsEditController = Frontend.AppController.extend({
             options.prefix = '';
         }
 
-        $(options.prefix+options.selector).val(options.value);
-        $(options.prefix+options.selector).trigger("chosen:updated");
+        $(options.prefix + options.selector).val(options.value);
+        $(options.prefix + options.selector).trigger("chosen:updated").change();
     },
 
     loadParametersByCommandId: function(command_id, hosttemplate_id){
         this.Ajaxloader.show();
         $.ajax({
-            url: "/Hosts/loadParametersByCommandId/"+encodeURIComponent(command_id)+"/"+encodeURIComponent(hosttemplate_id),
+            url: "/Hosts/loadParametersByCommandId/" + encodeURIComponent(command_id) + "/" + encodeURIComponent(hosttemplate_id),
             type: "POST",
             cache: false,
-            error: function(){},
-            success: function(){},
+            error: function(){
+            },
+            success: function(){
+            },
             complete: function(response){
                 $('#CheckCommandArgs').html(response.responseText);
                 this.Ajaxloader.hide();
@@ -1032,11 +1148,13 @@ App.Controllers.HostsEditController = Frontend.AppController.extend({
     loadParameters: function(command_id){
         this.Ajaxloader.show();
         $.ajax({
-            url: "/Hosts/loadArgumentsAdd/"+encodeURIComponent(command_id),
+            url: "/Hosts/loadArgumentsAdd/" + encodeURIComponent(command_id),
             type: "POST",
             cache: false,
-            error: function(){},
-            success: function(){},
+            error: function(){
+            },
+            success: function(){
+            },
             complete: function(response){
                 $('#CheckCommandArgs').html(response.responseText);
                 this.Ajaxloader.hide();
@@ -1046,11 +1164,13 @@ App.Controllers.HostsEditController = Frontend.AppController.extend({
 
     loadParametersFromTemplate: function(hosttemplate_id){
         $.ajax({
-            url: "/Hosts/loadHosttemplatesArguments/"+encodeURIComponent(hosttemplate_id),
+            url: "/Hosts/loadHosttemplatesArguments/" + encodeURIComponent(hosttemplate_id),
             type: "POST",
             cache: false,
-            error: function(){},
-            success: function(){},
+            error: function(){
+            },
+            success: function(){
+            },
             complete: function(response){
                 $('#CheckCommandArgs').html(response.responseText);
                 this.Ajaxloader.hide();
@@ -1076,9 +1196,9 @@ App.Controllers.HostsEditController = Frontend.AppController.extend({
 
             if(Contact != null){
                 $('#HostContact').val('').trigger('chosen:updated');
-                for (var contactId in Contact) {
-                    if($('#HostContact option[value="'+contactId+'"]').length > 0){
-                        $('#HostContact option[value="'+contactId+'"]')
+                for(var contactId in Contact){
+                    if($('#HostContact option[value="' + contactId + '"]').length > 0){
+                        $('#HostContact option[value="' + contactId + '"]')
                             .val(contactId)
                             .prop('selected', true)
                     }
@@ -1090,9 +1210,9 @@ App.Controllers.HostsEditController = Frontend.AppController.extend({
             var Contactgroup = this.getVar('ContactsInherited').Contactgroup;
             if(Contactgroup != null){
                 $('#HostContactgroup').val('').trigger('chosen:updated');
-                for (var ContactgroupId in Contactgroup) {
-                    if($('#HostContactgroup option[value="'+ContactgroupId+'"]').length > 0){
-                        $('#HostContactgroup option[value="'+ContactgroupId+'"]')
+                for(var ContactgroupId in Contactgroup){
+                    if($('#HostContactgroup option[value="' + ContactgroupId + '"]').length > 0){
+                        $('#HostContactgroup option[value="' + ContactgroupId + '"]')
                             .val(ContactgroupId)
                             .prop('selected', true)
                     }
@@ -1110,14 +1230,16 @@ App.Controllers.HostsEditController = Frontend.AppController.extend({
         }
     },
 
-    getContainerElements:function(containerId, hosttemplateId){
+    getContainerElements: function(containerId, hosttemplateId){
         this.Ajaxloader.show();
         $.ajax({
-            url: '/Hosts/loadElementsByContainerId/' +containerId+ '/' + encodeURIComponent(this.getVar('hostId')) + '.json',
+            url: '/Hosts/loadElementsByContainerId/' + containerId + '/' + encodeURIComponent(this.getVar('hostId')) + '.json',
             type: "POST",
             cache: false,
-            error: function(){},
-            success: function(){},
+            error: function(){
+            },
+            success: function(){
+            },
             complete: function(response){
                 this.compareContainerElements(response.responseJSON, hosttemplateId);
                 console.log(response.responseJSON);
@@ -1127,18 +1249,56 @@ App.Controllers.HostsEditController = Frontend.AppController.extend({
         });
     },
 
-    compareContainerElements:function(obj, hosttemplateId) {
+    compareContainerElements: function(obj, hosttemplateId){
         console.log(hosttemplateId);
         console.log(obj.hosttemplates);
 
         hosttemplateExists = false;
-        for (var key in obj.hosttemplates) {
-            if (obj.hosttemplates[key].key == hosttemplateId) {
+        for(var key in obj.hosttemplates){
+            if(obj.hosttemplates[key].key == hosttemplateId){
                 //hosttemplate exists in the new container so nothing must be changed
                 hosttemplateExists = true;
             }
         }
         console.log(hosttemplateExists);
+
+    },
+
+    deleteHost: function(id){
+        $.ajax({
+            dataType: "json",
+            url: '/hosts/delete/' + id + '.json',
+            method: 'POST',
+            data: {
+                'angular': true
+            },
+            success: function(response){
+
+                $('#successDelete').show();
+                setTimeout(function(){
+                    window.location.href = '/hosts/index/';
+                }, 700);
+            },
+            error: function(request, status, error){
+                var errorMsg = request.responseJSON.message;
+                var usedBy = request.responseJSON.usedBy;
+
+                var errorHtml = '<div class="text-danger">';
+                errorHtml += '<div class="text-danger">' + errorMsg + '</div>';
+                for(var key in usedBy){
+                    errorHtml += '<div class="text-danger">';
+                    errorHtml += '<i class="fa fa-times"></i>';
+                    errorHtml += ' ';
+                    errorHtml += '<a class="text-danger" href="' + usedBy[key].baseUrl + id + '">' + usedBy[key].message + '</a>';
+                    errorHtml += '</div>';
+                }
+                errorHtml += '</div>';
+
+                $('#errorOnDelete').html(errorHtml);
+
+            }
+
+        });
 
     }
 

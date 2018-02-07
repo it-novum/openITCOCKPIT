@@ -63,11 +63,19 @@ class Service {
     private $host_id;
 
     /**
+     * @var bool
+     */
+    private $allow_edit = false;
+
+    /**
      * Service constructor.
      * @param $service
      * @param null $servicename
+     * @param bool $allowEdit
      */
-    public function __construct($service, $servicename = null){
+    public function __construct($service, $servicename = null, $allowEdit = false){
+        $this->allow_edit = $allowEdit;
+
         if (isset($service['Service']['id'])) {
             $this->id = $service['Service']['id'];
         }
@@ -168,6 +176,13 @@ class Service {
      */
     public function getHostId(){
         return $this->host_id;
+    }
+
+    /**
+     * @return array
+     */
+    public function toArray(){
+        return get_object_vars($this);
     }
 
 }

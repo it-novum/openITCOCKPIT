@@ -23,7 +23,6 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-use itnovum\openITCOCKPIT\Core\HostNotificationConditions;
 use itnovum\openITCOCKPIT\Core\ServiceNotificationConditions;
 
 class NotificationService extends NagiosModuleAppModel {
@@ -181,6 +180,10 @@ class NotificationService extends NagiosModuleAppModel {
 
         if ($ServiceNotificationConditions->hasContainerIds()) {
             $query['conditions']['HostsToContainers.container_id'] = $ServiceNotificationConditions->getContainerIds();
+        }
+
+        if(!empty($ServiceNotificationConditions->getStates())){
+            $query['conditions']['state'] = $ServiceNotificationConditions->getStates();
         }
 
         //Merge ListFilter conditions

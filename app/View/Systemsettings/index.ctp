@@ -71,7 +71,7 @@
                                 <?php $i = 0; ?>
                                 <?php foreach ($all_systemsettings as $key => $values): ?>
                                     <tr>
-                                        <td class="bg-color-lightGray text-primary" colspan="3">
+                                        <td class="service_table_host_header text-primary" colspan="3">
                                             <strong><?php echo $key; ?></strong></td>
                                     <tr>
                                     <?php foreach ($values as $value): ?>
@@ -113,7 +113,6 @@
                                                                 echo $this->Html->createSelect($options, 'data[' . $i . '][Systemsetting][value]', $value['value']);
                                                                 break;
 
-
                                                             case 'FRONTEND.AUTH_METHOD':
                                                                 $options = [
                                                                     'session' => 'PHP session',
@@ -141,7 +140,6 @@
                                                                          name="data[<?php echo $i; ?>][Systemsetting][value]"><?php
                                                                 break;
 
-
                                                             case 'FRONTEND.LDAP.USE_TLS':
                                                             case 'MONITORING.SINGLE_INSTANCE_SYNC':
                                                             case 'MONITORING.HOST_CHECK_ACTIVE_DEFAULT':
@@ -150,6 +148,14 @@
                                                                 $options = [
                                                                     0 => 'False',
                                                                     1 => 'True',
+                                                                ];
+                                                                echo $this->Html->createSelect($options, 'data[' . $i . '][Systemsetting][value]', $value['value']);
+                                                                break;
+
+                                                            case 'FRONTEND.PRESELECTED_DOWNTIME_OPTION':
+                                                                $options = [
+                                                                    '0' => 'Individual host',
+                                                                    '1' => 'Host including services',
                                                                 ];
                                                                 echo $this->Html->createSelect($options, 'data[' . $i . '][Systemsetting][value]', $value['value']);
                                                                 break;

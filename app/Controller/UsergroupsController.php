@@ -166,6 +166,7 @@ class UsergroupsController extends AppController
                 ]);
                 //Save new permissions
                 $this->Acl->Aro->Permission->saveAll($aclData);
+                Cache::clear(false, 'permissions');
                 $this->setFlash(__('User role successfully saved'));
                 $this->redirect(['action' => 'index']);
             } else {

@@ -83,6 +83,11 @@ $this->Paginator->options([
                                         <a href="<?php echo Router::url(['controller' => 'systemdowntimes', 'action' => 'addServicedowntime']); ?>"><?php echo __('Create service downtime'); ?></a>
                                     </li>
                                 <?php endif; ?>
+                                <?php if ($this->Acl->hasPermission('addHostdowntime', 'systemdowntimes')): ?>
+                                    <li>
+                                        <a href="<?php echo Router::url(['controller' => 'systemdowntimes', 'action' => 'addContainerdowntime']); ?>"><?php echo __('Create container downtime'); ?></a>
+                                    </li>
+                                <?php endif; ?>
                             </ul>
                         </div>
                         <?php echo $this->Html->link(__('Filter'), 'javascript:', ['class' => 'oitc-list-filter btn btn-xs btn-primary toggle', 'hide-on-render' => 'true', 'icon' => 'fa fa-filter']); ?>
@@ -187,7 +192,6 @@ $this->Paginator->options([
 
                         <?php echo $ListSettingsRenderer->getLimitSelect(); ?>
 
-
                         <?php
                         $checked = '';
                         if (isset($DowntimeListsettings['hide_expired']) && $DowntimeListsettings['hide_expired'] == 1):
@@ -198,7 +202,7 @@ $this->Paginator->options([
                             <button data-toggle="dropdown" class="btn dropdown-toggle btn-xs btn-default">
                                 <?php echo __('Options'); ?> <i class="fa fa-caret-down"></i>
                             </button>
-                            <ul class="dropdown-menu pull-right">
+                            <ul class="dropdown-menu pull-right stayOpenOnClick">
                                 <li>
                                     <input type="hidden" value="0" name="data[Listsettings][hide_expired]"/>
                                 <li style="width: 100%;"><a href="javascript:void(0)"
@@ -283,13 +287,13 @@ $this->Paginator->options([
                                     ?>
                                     <tr>
                                         <td class="text-center width-5">
-                                           <?php if ($Downtime->isCancellable() && $this->Acl->hasPermission('delete','downtimes') && $downtime['canDelete']): ?>
+                                            <?php if ($Downtime->isCancellable() && $this->Acl->hasPermission('delete', 'downtimes') && $downtime['canDelete']): ?>
                                                 <input type="checkbox" class="massChangeDT"
-                                                    hostname="<?php echo h($Host->getHostname()); ?>"
-                                                    downtimeServicesId="<?php echo $downtime['servicesDown']; ?>"
-                                                    internalDowntimeId="<?php echo h($Downtime->getInternalDowntimeId()); ?>"
-                                                    downtimehistoryId="<?php echo h($Downtime->getDowntimehistoryId()); ?>">
-                                           <?php endif; ?>
+                                                       hostname="<?php echo h($Host->getHostname()); ?>"
+                                                       downtimeServicesId="<?php echo $downtime['servicesDown']; ?>"
+                                                       internalDowntimeId="<?php echo h($Downtime->getInternalDowntimeId()); ?>"
+                                                       downtimehistoryId="<?php echo h($Downtime->getDowntimehistoryId()); ?>">
+                                            <?php endif; ?>
                                         </td>
                                         <td class="text-center">
                                             <?php echo $DowntimeIcon->getIcon(); ?>
@@ -369,7 +373,7 @@ $this->Paginator->options([
                             </div>
                         <?php endif; ?>
 
-                        <?php if($this->Acl->hasPermission('delete','downtimes') && $downtime['canDelete']):
+                        <?php if ($this->Acl->hasPermission('delete', 'downtimes') && $downtime['canDelete']):
                             echo $this->element('downtimes_mass_delete');
                         endif; ?>
 

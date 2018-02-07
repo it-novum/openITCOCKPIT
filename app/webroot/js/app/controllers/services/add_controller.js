@@ -109,6 +109,28 @@ App.Controllers.ServicesAddController = Frontend.AppController.extend({
 		this.$tagsinput = $('.tagsinput');
 		this.$tagsinput.tagsinput();
 
+
+		this.loadInitialData('#ServiceHostId');
+
+        var ChosenAjaxObj = new ChosenAjax({
+            id: 'ServiceHostId' //Target select box
+        });
+        ChosenAjaxObj.setCallback(function(searchString){
+            $.ajax({
+                dataType: "json",
+                url: '/hosts/loadHostsByString.json',
+                data: {
+                    'angular': true,
+                    'filter[Host.name]': searchString
+                },
+                success: function(response){
+                    ChosenAjaxObj.addOptions(response.hosts);
+                }
+            });
+        });
+
+        ChosenAjaxObj.render();
+
 		// Flapdetection checkbox control
 		$('input[type="checkbox"]#ServiceFlapDetectionEnabled').on('change.flapDetect', this.checkFlapDetection);
 
@@ -766,6 +788,47 @@ App.Controllers.ServicesAddController = Frontend.AppController.extend({
 		self.servicetemplateManager.init();
 	},
 
+
+    loadInitialData: function(selector, selectedHostIds, callback){
+        var self = this;
+        if(selectedHostIds == null || selectedHostIds.length < 1){
+            selectedHostIds = [];
+        }else{
+            if(!Array.isArray(selectedHostIds)){
+                selectedHostIds = [selectedHostIds];
+            }
+        }
+
+        $.ajax({
+            dataType: "json",
+            url: '/hosts/loadHostsByString.json',
+            data: {
+                'angular': true,
+                'selected[]': selectedHostIds //ids
+            },
+            success: function(response){
+                var $selector = $(selector);
+                var list = self.buildList(response.hosts);
+                $selector.append(list);
+                $selector.val(selectedHostIds);
+                $selector.trigger('chosen:updated');
+
+                if(callback != undefined){
+                    callback();
+                }
+            }
+        });
+    },
+
+
+    buildList: function(data){
+        var html = '';
+        for(var i in data){
+            html += '<option value="' + data[i].key + '">'+htmlspecialchars(data[i].value)+'</option>';
+        }
+        return html;
+    },
+
 	checkFlapDetection: function(){
 		var disable = null;
 		if(!$('input[type="checkbox"]#ServiceFlapDetectionEnabled').prop('checked')){
@@ -840,7 +903,7 @@ App.Controllers.ServicesAddController = Frontend.AppController.extend({
 		}
 
 		$(options.prefix+options.selector).val(options.value);
-		$(options.prefix+options.selector).trigger("chosen:updated");
+		$(options.prefix+options.selector).trigger("chosen:updated").change();
 	},
 
 	loadParametersByCommandId: function(command_id, servicetemplate_id, $target){

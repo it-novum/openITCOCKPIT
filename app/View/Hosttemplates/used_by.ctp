@@ -36,6 +36,8 @@
     </div>
 </div>
 
+<massdelete></massdelete>
+
 <section id="widget-grid" class="">
 
     <div class="row">
@@ -43,80 +45,90 @@
             <div class="jarviswidget jarviswidget-color-blueDark" id="wid-id-1" data-widget-editbutton="false">
                 <header>
                     <div class="widget-toolbar" role="menu">
-                        <?php echo $this->Utils->backButton(__('Back'), $back_url); ?>
+                        <?php echo $this->Utils->backButton(__('Back'), '/hosttemplates/index'); ?>
                     </div>
 
                     <div class="jarviswidget-ctrls" role="menu">
                     </div>
                     <span class="widget-icon"> <i class="fa fa-code-fork"></i> </span>
                     <h2><?php echo __('Hosttemplate'); ?>
-                        <strong><?php echo h($hosttemplate['Hosttemplate']['name']); ?></strong> <?php echo __('is used by the following'); ?> <?php echo $this->Utils->pluralize($all_hosts, __('host'), __('hosts')); ?>
-                        (<?php echo sizeof($all_hosts); ?>):</h2>
+                        <strong>{{ hosttemplate.Hosttemplate.name }}</strong> <?php echo __('is used by the following'); ?> <?php echo _('hosts'); ?>
+                        ({{ total }}):</h2>
 
                 </header>
-
                 <div>
-
                     <div class="widget-body no-padding">
-                        <table id="host_list" class="table table-striped table-hover table-bordered smart-form" style="">
-                            <thead>
-                            <tr>
-                                <?php $order = $this->Paginator->param('order'); ?>
-                                <th class="no-sort" style="width: 15px;"><i class="fa fa-check-square-o fa-lg"></i></th>
-                                <th class="no-sort"><?php echo __('Host name'); ?></th>
-                            </tr>
-                            </thead>
+                        <table id="host_list" class="table table-striped table-hover table-bordered smart-form"
+                               style="">
                             <tbody>
-                            <?php foreach ($all_hosts as $host): ?>
-                                <?php
-                                //Better performance, than run all the Hash::extracts if not necessary
-                                $hasEditPermission = false;
-                                if ($hasRootPrivileges === true):
-                                    $hasEditPermission = true;
-                                else:
-                                    if ($this->Acl->isWritableContainer(Hash::extract($host, 'Container.{n}.HostsToContainer.container_id'))):
-                                        $hasEditPermission = true;
-                                    endif;
-                                endif;
-                                ?>
-                                <tr>
-                                    <td class="text-center" style="width: 15px;">
-                                        <?php if ($hasEditPermission): ?>
-                                            <input type="checkbox" class="massChange"
-                                                   hostname="<?php echo h($host['Host']['name']); ?>"
-                                                   value="<?php echo $host['Host']['id']; ?>"/>
-                                        <?php endif; ?>
-                                    </td>
-                                    <td>
-                                        <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
-                                            <a href="/hosts/browser/<?php echo $host['Host']['id']; ?>"><?php echo h($host['Host']['name']); ?>
-                                                (<?php echo h($host['Host']['address']); ?>)</a>
-                                        <?php else: ?>
-                                            <?php echo h($host['Host']['name']); ?>
-                                        <?php endif; ?>
-                                        <?php if ($this->Acl->hasPermission('serviceList', 'services')): ?>
-                                            <a class="pull-right txt-color-blueDark"
-                                               href="/services/serviceList/<?php echo $host['Host']['id']; ?>"><i
-                                                        class="fa fa-list"
-                                                        title="<?php echo __('Go to Service list'); ?>"></i></a>
-                                        <?php endif; ?>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
+                            <tr>
+                                <th class="no-sort sorting_disabled width-15">
+                                    <i class="fa fa-check-square-o fa-lg"></i>
+                                </th>
+                                <th>
+                                    <?php echo __('Host Name'); ?>
+                                </th>
+                            </tr>
+                            <tr ng-repeat="host in allHosts">
+
+                                <td class="text-center" class="width-15">
+                                    <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
+                                    <input type="checkbox"
+                                           ng-model="massChange[host.Host.id]">
+                                    <?php endif; ?>
+                                </td>
+                                <td class="">
+                                    <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
+                                        <a href="/hosts/browser/{{ host.Host.id }}" target="_blank">
+                                            {{ host.Host.name }} ({{ host.Host.address }})
+                                        </a>
+                                    <?php else: ?>
+                                        {{ host.Host.name }}
+                                    <?php endif; ?>
+                                    <?php if ($this->Acl->hasPermission('serviceList', 'services')): ?>
+                                        <a class="pull-right txt-color-blueDark"
+                                           href="/services/serviceList/{{ host.Host.id }}"><i
+                                                    class="fa fa-list"
+                                                    title="<?php echo __('Go to Service list'); ?>"></i></a>
+                                    <?php endif; ?>
+                                </td>
+                            </tr>
                             </tbody>
                         </table>
-                        <?php if (empty($all_hosts)): ?>
-                            <div class="noMatch">
-                                <center>
-                                    <span class="txt-color-red italic"><?php echo __('This host template is not used by any host'); ?></span>
-                                </center>
+                        <div class="row margin-top-10 margin-bottom-10">
+                            <div class="row margin-top-10 margin-bottom-10" ng-show="allHosts.length == 0">
+                                <div class="col-xs-12 text-center txt-color-red italic">
+                                    <?php echo __('This host template is not used by any host'); ?>
+                                </div>
                             </div>
-                        <?php endif; ?>
+                        </div>
+
+                        <div class="row margin-top-10 margin-bottom-10">
+                            <div class="col-xs-12 col-md-2 text-muted text-center">
+                                <span ng-show="selectedElements > 0">({{selectedElements}})</span>
+                            </div>
+                            <div class="col-xs-12 col-md-2">
+                                <span ng-click="selectAll()" class="pointer">
+                                    <i class="fa fa-lg fa-check-square-o"></i>
+                                    <?php echo __('Select all'); ?>
+                                </span>
+                            </div>
+                            <div class="col-xs-12 col-md-2">
+                                <span ng-click="undoSelection()" class="pointer">
+                                    <i class="fa fa-lg fa-square-o"></i>
+                                    <?php echo __('Undo selection'); ?>
+                                </span>
+                            </div>
+                            <div class="col-xs-12 col-md-2 txt-color-red">
+                                <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">
+                                    <i class="fa fa-lg fa-trash-o"></i>
+                                    <?php echo __('Delete all'); ?>
+                                </span>
+                            </div>
+                        </div>
                     </div>
-                    <div class="padding-top-10"></div>
-                    <?php echo $this->element('hosttemplate_mass_changes'); ?>
-                    <div class="padding-top-10"></div>
                 </div>
             </div>
+        </article>
     </div>
 </section>

@@ -1,18 +1,15 @@
 <?php
 
-class MapModuleSchema extends CakeSchema
-{
+class MapModuleSchema extends CakeSchema {
 
-    public function before($event = [])
-    {
+    public function before($event = []) {
         $db = ConnectionManager::getDataSource($this->connection);
         $db->cacheSources = false;
 
         return true;
     }
 
-    public function after($event = [])
-    {
+    public function after($event = []) {
         if (isset($event['update'])) {
             switch ($event['update']) {
                 case 'map_uploads':
@@ -485,8 +482,10 @@ class MapModuleSchema extends CakeSchema
         'map_id'                 => ['type' => 'integer', 'null' => false, 'default' => null],
         'x'                      => ['type' => 'integer', 'null' => false, 'default' => 0],
         'y'                      => ['type' => 'integer', 'null' => false, 'default' => 0],
+        'size_x'                 => ['type' => 'integer', 'null' => false, 'default' => 0],
+        'size_y'                 => ['type' => 'integer', 'null' => false, 'default' => 0],
         'limit'                  => ['type' => 'integer', 'null' => true, 'default' => 0],
-        'gadget'                 => ['type' => 'string', 'null' => false, 'default' => null, 'length' => 128, 'collate' => 'utf8_unicode_ci', 'charset' => 'utf8'],
+        'gadget'                 => ['type' => 'string', 'null' => true, 'default' => null, 'length' => 128, 'collate' => 'utf8_unicode_ci', 'charset' => 'utf8'],
         'type'                   => ['type' => 'string', 'null' => false, 'default' => null, 'length' => 20, 'collate' => 'utf8_unicode_ci', 'charset' => 'utf8'],
         'object_id'              => ['type' => 'integer', 'null' => false, 'default' => null],
         'transparent_background' => ['type' => 'integer', 'null' => false, 'default' => 0, 'length' => 5],
@@ -521,6 +520,18 @@ class MapModuleSchema extends CakeSchema
             'PRIMARY'     => ['column' => 'id', 'unique' => 1],
             'map_id'      => ['column' => 'map_id', 'unique' => 0],
             'rotation_id' => ['column' => 'rotation_id', 'unique' => 0],
+        ],
+        'tableParameters' => ['charset' => 'utf8', 'collate' => 'utf8_unicode_ci', 'engine' => 'InnoDB'],
+    ];
+
+    public $rotations_to_containers = [
+        'id'              => ['type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'],
+        'container_id'    => ['type' => 'integer', 'null' => false, 'default' => null],
+        'rotation_id'     => ['type' => 'integer', 'null' => false, 'default' => null],
+        'indexes'         => [
+            'PRIMARY'      => ['column' => 'id', 'unique' => 1],
+            'container_id' => ['column' => 'container_id', 'unique' => 0],
+            'rotation_id'  => ['column' => 'rotation_id', 'unique' => 0],
         ],
         'tableParameters' => ['charset' => 'utf8', 'collate' => 'utf8_unicode_ci', 'engine' => 'InnoDB'],
     ];

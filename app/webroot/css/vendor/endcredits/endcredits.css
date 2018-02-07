@@ -1,6 +1,6 @@
 #titles {
     overflow: hidden;
-    background-color: #000;
+    background-color: #373737;
     font-family: Arial, Helvetica, sans-serif;
     display: none;
     position: absolute;
@@ -50,7 +50,7 @@
     padding: 13px 0 0 0;
     font-family: "Arial Black", sans-serif;
     font-weight: bold;
-    font-size: 20px;    
+    font-size: 20px;
 }
 #credits p {
     width: 508px;

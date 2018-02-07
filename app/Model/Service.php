@@ -29,25 +29,25 @@ class Service extends AppModel {
 
     public $hasAndBelongsToMany = [
         'Contactgroup' => [
-            'className' => 'Contactgroup',
-            'joinTable' => 'contactgroups_to_services',
-            'foreignKey' => 'service_id',
+            'className'             => 'Contactgroup',
+            'joinTable'             => 'contactgroups_to_services',
+            'foreignKey'            => 'service_id',
             'associationForeignKey' => 'contactgroup_id',
-            'unique' => true,
-            'dependent' => true,
+            'unique'                => true,
+            'dependent'             => true,
         ],
-        'Contact' => [
-            'className' => 'Contact',
-            'joinTable' => 'contacts_to_services',
-            'foreignKey' => 'service_id',
+        'Contact'      => [
+            'className'             => 'Contact',
+            'joinTable'             => 'contacts_to_services',
+            'foreignKey'            => 'service_id',
             'associationForeignKey' => 'contact_id',
-            'unique' => true,
-            'dependent' => true,
+            'unique'                => true,
+            'dependent'             => true,
         ],
         'Servicegroup' => [
-            'className' => 'Servicegroup',
-            'joinTable' => 'services_to_servicegroups',
-            'foreignKey' => 'service_id',
+            'className'             => 'Servicegroup',
+            'joinTable'             => 'services_to_servicegroups',
+            'foreignKey'            => 'service_id',
             'associationForeignKey' => 'servicegroup_id',
         ],
     ];
@@ -60,32 +60,32 @@ class Service extends AppModel {
     // ];
 
     public $hasMany = [
-        'Servicecommandargumentvalue' => [
+        'Servicecommandargumentvalue'        => [
             'dependent' => true,
         ],
-        'Serviceeventcommandargumentvalue' => [
+        'Serviceeventcommandargumentvalue'   => [
             'dependent' => true,
         ],
         'ServiceEscalationServiceMembership' => [
-            'className' => 'ServiceescalationServiceMembership',
+            'className'  => 'ServiceescalationServiceMembership',
             'foreignKey' => 'service_id',
-            'dependent' => true,
+            'dependent'  => true,
         ],
         'ServicedependencyServiceMembership' => [
-            'className' => 'ServicedependencyServiceMembership',
+            'className'  => 'ServicedependencyServiceMembership',
             'foreignKey' => 'service_id',
-            'dependent' => true,
+            'dependent'  => true,
         ],
-        'Customvariable' => [
-            'className' => 'Customvariable',
+        'Customvariable'                     => [
+            'className'  => 'Customvariable',
             'foreignKey' => 'object_id',
             'conditions' => [
                 'objecttype_id' => OBJECT_SERVICE,
             ],
-            'dependent' => true,
+            'dependent'  => true,
         ],
-        'Widget' => [
-            'className' => 'Widget',
+        'Widget'                             => [
+            'className'  => 'Widget',
             'foreignKey' => 'service_id',
         ],
     ];
@@ -94,229 +94,229 @@ class Service extends AppModel {
         // 'DashboardWidget',
         'Host',
         'Servicetemplate',
-        'CheckPeriod' => [
-            'className' => 'Timeperiod',
+        'CheckPeriod'         => [
+            'className'  => 'Timeperiod',
             'foreignKey' => 'check_period_id',
         ],
-        'NotifyPeriod' => [
-            'className' => 'Timeperiod',
+        'NotifyPeriod'        => [
+            'className'  => 'Timeperiod',
             'foreignKey' => 'notify_period_id',
         ],
-        'CheckCommand' => [
-            'className' => 'Command',
+        'CheckCommand'        => [
+            'className'  => 'Command',
             'foreignKey' => 'command_id',
         ],
         'EventhandlerCommand' => [
-            'className' => 'Command',
+            'className'  => 'Command',
             'foreignKey' => 'eventhandler_command_id',
         ],
     ];
     public $validate = [
-        'host_id' => [
+        'host_id'                    => [
             'notBlank' => [
-                'rule' => 'notBlank',
-                'message' => 'This field cannot be left blank.',
+                'rule'     => 'notBlank',
+                'message'  => 'This field cannot be left blank.',
                 'required' => true,
             ],
-            'numeric' => [
-                'rule' => 'numeric',
+            'numeric'  => [
+                'rule'    => 'numeric',
                 'message' => 'This field cannot be left blank.',
             ],
-            'notZero' => [
-                'rule' => ['comparison', '>', 0],
-                'message' => 'This field cannot be left blank.',
+            'notZero'  => [
+                'rule'     => ['comparison', '>', 0],
+                'message'  => 'This field cannot be left blank.',
                 'required' => true,
             ],
         ],
-        'servicetemplate_id' => [
+        'servicetemplate_id'         => [
             'notBlank' => [
-                'rule' => 'notBlank',
-                'message' => 'This field cannot be left blank.',
+                'rule'     => 'notBlank',
+                'message'  => 'This field cannot be left blank.',
                 'required' => true,
             ],
-            'numeric' => [
-                'rule' => 'numeric',
+            'numeric'  => [
+                'rule'    => 'numeric',
                 'message' => 'This field cannot be left blank.',
             ],
-            'notZero' => [
-                'rule' => ['comparison', '>', 0],
-                'message' => 'This field cannot be left blank.',
+            'notZero'  => [
+                'rule'     => ['comparison', '>', 0],
+                'message'  => 'This field cannot be left blank.',
                 'required' => true,
             ],
         ],
-        'max_check_attempts' => [
-            'numeric' => [
-                'rule' => 'numeric',
-                'message' => 'This field need to be numeric.',
-                'required' => false,
+        'max_check_attempts'         => [
+            'numeric'    => [
+                'rule'       => 'numeric',
+                'message'    => 'This field need to be numeric.',
+                'required'   => false,
                 'allowEmpty' => true,
             ],
             'comparison' => [
-                'rule' => ['comparison', '>=', 1],
-                'message' => 'This value need to be at least 1',
-                'required' => false,
+                'rule'       => ['comparison', '>=', 1],
+                'message'    => 'This value need to be at least 1',
+                'required'   => false,
                 'allowEmpty' => true,
             ],
         ],
-        'check_interval' => [
-            'numeric' => [
-                'rule' => 'numeric',
-                'message' => 'This field need to be numeric.',
+        'check_interval'             => [
+            'numeric'    => [
+                'rule'       => 'numeric',
+                'message'    => 'This field need to be numeric.',
                 'allowEmpty' => true,
-                'required' => false,
+                'required'   => false,
             ],
             'comparison' => [
-                'rule' => ['comparison', '>=', 1],
-                'message' => 'This value need to be at least 1',
+                'rule'       => ['comparison', '>=', 1],
+                'message'    => 'This value need to be at least 1',
                 'allowEmpty' => true,
-                'required' => false,
+                'required'   => false,
             ],
         ],
-        'retry_interval' => [
-            'numeric' => [
-                'rule' => 'numeric',
-                'message' => 'This field need to be numeric.',
+        'retry_interval'             => [
+            'numeric'    => [
+                'rule'       => 'numeric',
+                'message'    => 'This field need to be numeric.',
                 'allowEmpty' => true,
-                'required' => false,
+                'required'   => false,
             ],
             'comparison' => [
-                'rule' => ['comparison', '>=', 1],
-                'message' => 'This value need to be at least 1',
+                'rule'       => ['comparison', '>=', 1],
+                'message'    => 'This value need to be at least 1',
                 'allowEmpty' => true,
-                'required' => false,
+                'required'   => false,
             ],
         ],
-        'notify_on_recovery' => [
+        'notify_on_recovery'         => [
             'check_options' => [
-                'rule' => ['checkNotificationOptions', 'service'],
-                'message' => 'You have to choose at least one option.',
+                'rule'       => ['checkNotificationOptions', 'service'],
+                'message'    => 'You have to choose at least one option.',
                 'allowEmpty' => true,
-                'required' => false,
+                'required'   => false,
             ],
-            'boolean' => [
-                'rule' => ['boolean'],
+            'boolean'       => [
+                'rule'    => ['boolean'],
                 'message' => 'Incorrect datatype',
             ],
         ],
-        'notify_on_warning' => [
+        'notify_on_warning'          => [
             'check_options' => [
-                'rule' => ['checkNotificationOptions', 'service'],
-                'message' => 'You have to choose at least one option.',
+                'rule'       => ['checkNotificationOptions', 'service'],
+                'message'    => 'You have to choose at least one option.',
                 'allowEmpty' => true,
-                'required' => false,
+                'required'   => false,
             ],
-            'boolean' => [
-                'rule' => ['boolean'],
+            'boolean'       => [
+                'rule'    => ['boolean'],
                 'message' => 'Incorrect datatype',
             ],
         ],
-        'notify_on_unknown' => [
+        'notify_on_unknown'          => [
             'check_options' => [
-                'rule' => ['checkNotificationOptions', 'service'],
-                'message' => 'You have to choose at least one option.',
+                'rule'       => ['checkNotificationOptions', 'service'],
+                'message'    => 'You have to choose at least one option.',
                 'allowEmpty' => true,
-                'required' => false,
+                'required'   => false,
             ],
-            'boolean' => [
-                'rule' => ['boolean'],
+            'boolean'       => [
+                'rule'    => ['boolean'],
                 'message' => 'Incorrect datatype',
             ],
         ],
-        'notify_on_critical' => [
+        'notify_on_critical'         => [
             'check_options' => [
-                'rule' => ['checkNotificationOptions', 'service'],
-                'message' => 'You have to choose at least one option.',
+                'rule'       => ['checkNotificationOptions', 'service'],
+                'message'    => 'You have to choose at least one option.',
                 'allowEmpty' => true,
-                'required' => false,
+                'required'   => false,
             ],
-            'boolean' => [
-                'rule' => ['boolean'],
+            'boolean'       => [
+                'rule'    => ['boolean'],
                 'message' => 'Incorrect datatype',
             ],
         ],
-        'notify_on_flapping' => [
+        'notify_on_flapping'         => [
             'check_options' => [
-                'rule' => ['checkNotificationOptions', 'service'],
-                'message' => 'You have to choose at least one option.',
+                'rule'       => ['checkNotificationOptions', 'service'],
+                'message'    => 'You have to choose at least one option.',
                 'allowEmpty' => true,
-                'required' => false,
+                'required'   => false,
             ],
-            'boolean' => [
-                'rule' => ['boolean'],
+            'boolean'       => [
+                'rule'    => ['boolean'],
                 'message' => 'Incorrect datatype',
             ],
         ],
-        'notify_on_downtime' => [
+        'notify_on_downtime'         => [
             'check_options' => [
-                'rule' => ['checkNotificationOptions', 'service'],
-                'message' => 'You have to choose at least one option.',
+                'rule'       => ['checkNotificationOptions', 'service'],
+                'message'    => 'You have to choose at least one option.',
                 'allowEmpty' => true,
-                'required' => false,
+                'required'   => false,
             ],
-            'boolean' => [
-                'rule' => ['boolean'],
+            'boolean'       => [
+                'rule'    => ['boolean'],
                 'message' => 'Incorrect datatype',
             ],
         ],
-        'notification_interval' => [
-            'numeric' => [
-                'rule' => 'numeric',
-                'message' => 'This field need to be numeric.',
+        'notification_interval'      => [
+            'numeric'    => [
+                'rule'       => 'numeric',
+                'message'    => 'This field need to be numeric.',
                 'allowEmpty' => true,
-                'required' => false,
+                'required'   => false,
             ],
             'comparison' => [
-                'rule' => ['comparison', '>=', 0],
-                'message' => 'This value need to be at least 0',
+                'rule'       => ['comparison', '>=', 0],
+                'message'    => 'This value need to be at least 0',
                 'allowEmpty' => true,
-                'required' => false,
+                'required'   => false,
             ],
         ],
-        'flap_detection_on_ok' => [
+        'flap_detection_on_ok'       => [
             'check_options' => [
-                'rule' => ['checkFlapDetectionOptions', 'service'],
-                'message' => 'You have to choose at least one option.',
-                'required' => false,
+                'rule'       => ['checkFlapDetectionOptions', 'service'],
+                'message'    => 'You have to choose at least one option.',
+                'required'   => false,
                 'allowEmpty' => true,
             ],
-            'boolean' => [
-                'rule' => ['boolean'],
+            'boolean'       => [
+                'rule'    => ['boolean'],
                 'message' => 'Incorrect datatype',
             ],
         ],
-        'flap_detection_on_warning' => [
+        'flap_detection_on_warning'  => [
             'check_options' => [
-                'rule' => ['checkFlapDetectionOptions', 'service'],
-                'message' => 'You have to choose at least one option.',
-                'required' => false,
+                'rule'       => ['checkFlapDetectionOptions', 'service'],
+                'message'    => 'You have to choose at least one option.',
+                'required'   => false,
                 'allowEmpty' => true,
             ],
-            'boolean' => [
-                'rule' => ['boolean'],
+            'boolean'       => [
+                'rule'    => ['boolean'],
                 'message' => 'Incorrect datatype',
             ],
         ],
-        'flap_detection_on_unknown' => [
+        'flap_detection_on_unknown'  => [
             'check_options' => [
-                'rule' => ['checkFlapDetectionOptions', 'service'],
-                'message' => 'You have to choose at least one option.',
-                'required' => false,
+                'rule'       => ['checkFlapDetectionOptions', 'service'],
+                'message'    => 'You have to choose at least one option.',
+                'required'   => false,
                 'allowEmpty' => true,
             ],
-            'boolean' => [
-                'rule' => ['boolean'],
+            'boolean'       => [
+                'rule'    => ['boolean'],
                 'message' => 'Incorrect datatype',
             ],
         ],
         'flap_detection_on_critical' => [
             'check_options' => [
-                'rule' => ['checkFlapDetectionOptions', 'service'],
-                'message' => 'You have to choose at least one option.',
-                'required' => false,
+                'rule'       => ['checkFlapDetectionOptions', 'service'],
+                'message'    => 'You have to choose at least one option.',
+                'required'   => false,
                 'allowEmpty' => true,
             ],
-            'boolean' => [
-                'rule' => ['boolean'],
+            'boolean'       => [
+                'rule'    => ['boolean'],
                 'message' => 'Incorrect datatype',
             ],
         ],
@@ -345,21 +345,21 @@ class Service extends AppModel {
             ],
         ];
 
-/*
-        if (is_object($this->Behaviors->DynamicAssociations)) {
+        /*
+                if (is_object($this->Behaviors->DynamicAssociations)) {
 
 
-            $dynamicAssociations = $this->Behaviors->DynamicAssociations->dynamicAssociationsIgnoreCallback($this->alias);
+                    $dynamicAssociations = $this->Behaviors->DynamicAssociations->dynamicAssociationsIgnoreCallback($this->alias);
 
-            //This is not working, but i dont know why!!
-            //$this->bindModel() not works on delete, so we use the --force method
-            if (!empty($dynamicAssociations) && is_array($dynamicAssociations)) {
-                $this->bindModel($dynamicAssociations, false);
-            }
+                    //This is not working, but i dont know why!!
+                    //$this->bindModel() not works on delete, so we use the --force method
+                    if (!empty($dynamicAssociations) && is_array($dynamicAssociations)) {
+                        $this->bindModel($dynamicAssociations, false);
+                    }
 
 
-        }
-*/
+                }
+        */
 
     }
 
@@ -527,20 +527,20 @@ class Service extends AppModel {
 
         if (isset($request_data['Service'])) {
             $diff_array = Hash::merge($diff_array, [
-                'Service' => [
+                'Service'      => [
                     'servicetemplate_id' => $request_data['Service']['servicetemplate_id'],
-                    'host_id' => $request_data['Service']['host_id'],
+                    'host_id'            => $request_data['Service']['host_id'],
                     /* Set Contact/Contactgroup for custom validation rule*/
-                    'Contact' => [
+                    'Contact'            => [
                         'Contact' => [
                             $contact,
                         ],
                     ],
-                    'Contactgroup' => [
+                    'Contactgroup'       => [
                         $contactGroup,
                     ],
                 ],
-                'Contact' => [
+                'Contact'      => [
                     'Contact' => [
                         $contact,
                     ],
@@ -558,15 +558,17 @@ class Service extends AppModel {
 
         if ($save_mode === 'add') {
             $diff_array = Hash::merge($diff_array,
-                ['Service' => [
-                    'uuid' => UUID::v4(),
-                ],
+                [
+                    'Service' => [
+                        'uuid' => UUID::v4(),
+                    ],
                 ]);
-        } elseif ($save_mode === 'edit') {
+        } else if ($save_mode === 'edit') {
             $diff_array = Hash::merge($diff_array,
-                ['Service' => [
-                    'id' => $request_data['Service']['id'],
-                ],
+                [
+                    'Service' => [
+                        'id' => $request_data['Service']['id'],
+                    ],
                 ]);
         }
 
@@ -601,23 +603,23 @@ class Service extends AppModel {
             'conditions' => [
                 'Service.id' => $id,
             ],
-            'contain' => [
-                'Servicetemplate' => [
-                    'Contact' => [
+            'contain'    => [
+                'Servicetemplate'                  => [
+                    'Contact'                                  => [
                         'fields' => [
                             'id', 'name',
                         ],
                     ],
-                    'Contactgroup' => [
-                        'fields' => ['id'],
+                    'Contactgroup'                             => [
+                        'fields'    => ['id'],
                         'Container' => [
                             'fields' => [
                                 'name',
                             ],
                         ],
                     ],
-                    'Servicegroup' => [
-                        'fields' => [
+                    'Servicegroup'                             => [
+                        'fields'    => [
                             'id'
                         ],
                         'Container' => [
@@ -629,13 +631,13 @@ class Service extends AppModel {
                     'CheckCommand',
                     'CheckPeriod',
                     'NotifyPeriod',
-                    'Customvariable' => [
+                    'Customvariable'                           => [
                         'fields' => [
                             'id', 'name', 'value', 'objecttype_id',
                         ],
                     ],
-                    'Servicetemplatecommandargumentvalue' => [
-                        'fields' => [
+                    'Servicetemplatecommandargumentvalue'      => [
+                        'fields'          => [
                             'commandargument_id', 'value',
                         ],
                         'Commandargument' => [
@@ -643,7 +645,7 @@ class Service extends AppModel {
                         ],
                     ],
                     'Servicetemplateeventcommandargumentvalue' => [
-                        'fields' => [
+                        'fields'          => [
                             'commandargument_id', 'value',
                         ],
                         'Commandargument' => [
@@ -651,11 +653,11 @@ class Service extends AppModel {
                         ],
                     ],
                 ],
-                'Host' => [
-                    'fields' => [
+                'Host'                             => [
+                    'fields'       => [
                         'id', 'name',
                     ],
-                    'Contact' => [
+                    'Contact'      => [
                         'fields' => [
                             'id', 'name',
                         ],
@@ -666,12 +668,12 @@ class Service extends AppModel {
                                 'Container.name',
                             ],
                         ],
-                        'fields' => [
+                        'fields'    => [
                             'Contactgroup.id',
                         ],
                     ],
                     'Hosttemplate' => [
-                        'Contact' => [
+                        'Contact'      => [
                             'fields' => [
                                 'id', 'name',
                             ],
@@ -682,20 +684,20 @@ class Service extends AppModel {
                                     'Container.name',
                                 ],
                             ],
-                            'fields' => [
+                            'fields'    => [
                                 'Contactgroup.id',
                             ],
                         ],
                     ],
                 ],
-                'Contact' => [
+                'Contact'                          => [
                     'fields' => [
                         'id',
                         'name',
                     ],
                 ],
-                'Contactgroup' => [
-                    'fields' => [
+                'Contactgroup'                     => [
+                    'fields'    => [
                         'id'
                     ],
                     'Container' => [
@@ -704,8 +706,8 @@ class Service extends AppModel {
                         ],
                     ],
                 ],
-                'Servicegroup' => [
-                    'fields' => [
+                'Servicegroup'                     => [
+                    'fields'    => [
                         'id'
                     ],
                     'Container' => [
@@ -714,7 +716,7 @@ class Service extends AppModel {
                         ],
                     ],
                 ],
-                'Customvariable' => [
+                'Customvariable'                   => [
                     'fields' => [
                         'id',
                         'name',
@@ -722,8 +724,8 @@ class Service extends AppModel {
                         'objecttype_id',
                     ],
                 ],
-                'Servicecommandargumentvalue' => [
-                    'fields' => [
+                'Servicecommandargumentvalue'      => [
+                    'fields'          => [
                         'id',
                         'commandargument_id',
                         'value',
@@ -736,7 +738,7 @@ class Service extends AppModel {
                     ],
                 ],
                 'Serviceeventcommandargumentvalue' => [
-                    'fields' => [
+                    'fields'          => [
                         'id',
                         'commandargument_id',
                         'value',
@@ -752,7 +754,7 @@ class Service extends AppModel {
                 'CheckPeriod',
                 'NotifyPeriod',
             ],
-            'recursive' => -1,
+            'recursive'  => -1,
         ]);
         $service = $service[0];
         if (!isset($service['Service']['servicetemplate_id']) || $service['Service']['servicetemplate_id'] == 0) {
@@ -780,23 +782,23 @@ class Service extends AppModel {
         $servicegroups = [];
         if (!empty($service['Servicegroup'])) {
             $servicegroups = Hash::combine($service['Servicegroup'], '{n}.id', '{n}.id');
-        } elseif (empty($service['Servicegroup']) && !(empty($service['Servicetemplate']['Servicegroup']))) {
+        } else if (empty($service['Servicegroup']) && !(empty($service['Servicetemplate']['Servicegroup']))) {
             $servicegroups = Hash::combine($service['Servicetemplate']['Servicegroup'], '{n}.id', '{n}.id');
         }
 
         $service = [
-            'Service' => Hash::merge(Hash::filter($service['Service'], ['Service', 'filterNullValues']), Set::classicExtract($service['Servicetemplate'], '{(' . implode('|', array_keys(Hash::diff($service['Service'], Hash::filter($service['Service'], ['Service', 'filterNullValues'])))) . ')}')),
-            'Contact' => Hash::extract((($service['Service']['own_contacts']) ? $service['Contact'] : $service['Servicetemplate']['Contact']), '{n}.id'),
-            'Contactgroup' => Hash::extract((($service['Service']['own_contactgroups']) ? $service['Contactgroup'] : $service['Servicetemplate']['Contactgroup']), '{n}.id'),
-            'Customvariable' => ($service['Service']['own_customvariables']) ? $service['Customvariable'] : $service['Servicetemplate']['Customvariable'],
-            'Servicecommandargumentvalue' => $servicecommandargumentvalue,
+            'Service'                          => Hash::merge(Hash::filter($service['Service'], ['Service', 'filterNullValues']), Set::classicExtract($service['Servicetemplate'], '{(' . implode('|', array_keys(Hash::diff($service['Service'], Hash::filter($service['Service'], ['Service', 'filterNullValues'])))) . ')}')),
+            'Contact'                          => Hash::extract((($service['Service']['own_contacts']) ? $service['Contact'] : $service['Servicetemplate']['Contact']), '{n}.id'),
+            'Contactgroup'                     => Hash::extract((($service['Service']['own_contactgroups']) ? $service['Contactgroup'] : $service['Servicetemplate']['Contactgroup']), '{n}.id'),
+            'Customvariable'                   => ($service['Service']['own_customvariables']) ? $service['Customvariable'] : $service['Servicetemplate']['Customvariable'],
+            'Servicecommandargumentvalue'      => $servicecommandargumentvalue,
             'Serviceeventcommandargumentvalue' => $serviceeventcommandargumentvalue,
-            'Servicetemplate' => $service['Servicetemplate'],
-            'Servicegroup' => $servicegroups,
-            'Host' => $service['Host'],
-            'CheckPeriod' => (empty(Hash::filter($service['CheckPeriod']))) ? $service['Servicetemplate']['CheckPeriod'] : $service['CheckPeriod'],
-            'NotifyPeriod' => (empty(Hash::filter($service['NotifyPeriod']))) ? $service['Servicetemplate']['NotifyPeriod'] : $service['NotifyPeriod'],
-            'CheckCommand' => (empty(Hash::filter($service['CheckCommand']))) ? $service['Servicetemplate']['CheckCommand'] : $service['CheckCommand'],
+            'Servicetemplate'                  => $service['Servicetemplate'],
+            'Servicegroup'                     => $servicegroups,
+            'Host'                             => $service['Host'],
+            'CheckPeriod'                      => (empty(Hash::filter($service['CheckPeriod']))) ? $service['Servicetemplate']['CheckPeriod'] : $service['CheckPeriod'],
+            'NotifyPeriod'                     => (empty(Hash::filter($service['NotifyPeriod']))) ? $service['Servicetemplate']['NotifyPeriod'] : $service['NotifyPeriod'],
+            'CheckCommand'                     => (empty(Hash::filter($service['CheckCommand']))) ? $service['Servicetemplate']['CheckCommand'] : $service['CheckCommand'],
         ];
 
         return $service;
@@ -818,7 +820,7 @@ class Service extends AppModel {
         return false;
     }
 
-    public function getAjaxServices($containerIds = [], $conditions = [], $servicesIncluding = []){
+    public function getAjaxServices($containerIds = [], $conditions = [], $servicesIncluding = []) {
         if (!is_array($containerIds)) {
             $containerIds = [$containerIds];
         }
@@ -827,89 +829,90 @@ class Service extends AppModel {
         $this->virtualFields['ServiceDescription'] = 'IF((Service.name IS NULL OR Service.name = ""), Servicetemplate.name, Service.name)';
 
         $_conditions = [
-            'Host.container_id' => $containerIds,
-            'Host.disabled' => 0,
+            //'Host.container_id' => $containerIds,
+
+            'Host.disabled'    => 0,
             'Service.disabled' => 0,
         ];
         $conditions = Hash::merge($_conditions, $conditions);
         $services = $this->find('all', [
-            'recursive' => -1,
-            'contain' => [
+            'recursive'  => -1,
+            'contain'    => [
                 'Servicetemplate' => [
                     'fields' => [
                         'Servicetemplate.name'
                     ],
                 ],
-                'Host' => [
+                'Host'            => [
                     'fields' => [
                         'Host.name',
                     ],
                 ],
             ],
-            'fields' => [
+            'fields'     => [
                 'Service.id',
                 'Service.ServiceDescription'
             ],
-            'order' => [
+            'order'      => [
                 'Host.name ASC', 'Service.name ASC', 'Servicetemplate.name ASC',
             ],
             'conditions' => $conditions,
-            'limit' => self::ITN_AJAX_LIMIT
+            'limit'      => self::ITN_AJAX_LIMIT
         ]);
 
         $formattedServices = [];
-        if(!empty($servicesIncluding) && is_array($servicesIncluding[0])){
-            foreach($servicesIncluding as $serviceIncluding){
+        if (!empty($servicesIncluding) && isset($servicesIncluding[0]) && is_array($servicesIncluding[0])) {
+            foreach ($servicesIncluding as $serviceIncluding) {
                 $formattedServices[] = $serviceIncluding['id'];
             }
-        }else{
+        } else {
             $formattedServices = $servicesIncluding;
         }
 
         $servicesIds = [];
-        foreach($services as $service){
+        foreach ($services as $service) {
             $servicesIds[] = $service['Service']['id'];
         }
 
-        if(!empty($formattedServices) && !empty(array_diff($formattedServices, $servicesIds))){
+        if (!empty($formattedServices) && !empty(array_diff($formattedServices, $servicesIds))) {
             $selectedCondition = ['Service.id' => array_diff($formattedServices, $servicesIds)];
             $selectedServices = $this->find('all', [
-                'recursive' => -1,
-                'contain' => [
+                'recursive'  => -1,
+                'contain'    => [
                     'Servicetemplate' => [
                         'fields' => [
                             'Servicetemplate.name'
                         ],
                     ],
-                    'Host' => [
+                    'Host'            => [
                         'fields' => [
                             'Host.name',
                         ],
                     ],
                 ],
-                'fields' => [
+                'fields'     => [
                     'Service.id',
                     'Service.ServiceDescription'
                 ],
-                'order' => [
+                'order'      => [
                     'Host.name ASC', 'Service.name ASC', 'Servicetemplate.name ASC',
                 ],
                 'conditions' => Hash::merge($selectedCondition, $_conditions),
             ]);
 
-            if(!empty($selectedServices)){
-                $services = array_merge($selectedServices, $services);
+            if (!empty($selectedServices)) {
+                $services = array_merge($services, $selectedServices);
             }
         }
 
         $returnValue = [];
-        foreach($services as $serviceArray){
-            $returnValue[$serviceArray['Host']['id']][$serviceArray['Host']['name']][$serviceArray['Service']['id']] = $serviceArray['Host']['name'].'/'.$serviceArray['Service']['ServiceDescription'];
+        foreach ($services as $serviceArray) {
+            $returnValue[$serviceArray['Host']['id']][$serviceArray['Host']['name']][$serviceArray['Service']['id']] = $serviceArray['Host']['name'] . '/' . $serviceArray['Service']['ServiceDescription'];
         }
         return $returnValue;
     }
 
-    public function servicesByHostContainerIds($containerIds = [], $type = 'all', $conditions = []) {
+    public function servicesByHostContainerIds($containerIds = [], $type = 'all', $conditions = [], $limit = null) {
         if (!is_array($containerIds)) {
             $containerIds = [$containerIds];
         }
@@ -918,29 +921,35 @@ class Service extends AppModel {
 
         $_conditions = [
             'Host.container_id' => $containerIds,
-            'Host.disabled' => 0,
-            'Service.disabled' => 0,
+            'Host.disabled'     => 0,
+            'Service.disabled'  => 0,
         ];
         $conditions = Hash::merge($_conditions, $conditions);
 
-        $result = $this->find('all', [
-            'recursive' => -1,
-            'contain' => [
+        $query = [
+            'recursive'  => -1,
+            'contain'    => [
                 'Servicetemplate' => [
                     'fields' => [
                         'Servicetemplate.name'
                     ],
                 ],
-                'Host' => [
-                    'fields' => [
+                'Host'            => [
+                    'fields'    => [
                         'Host.name',
                         'Host.uuid',
                         'Host.address',
                         'Host.description'
                     ],
+                    'Container' => [
+                        'conditions' => [
+                            'Container.id' => $containerIds,
+                        ]
+
+                    ]
                 ],
             ],
-            'fields' => [
+            'fields'     => [
                 'Service.id',
                 'IF((Service.name IS NULL OR Service.name = ""), Servicetemplate.name, Service.name) AS ServiceDescription',
                 'IF((Service.description IS NULL OR Service.description = ""), Servicetemplate.description, Service.description) AS ServiceDescr',
@@ -948,11 +957,16 @@ class Service extends AppModel {
                 'Service.service_type',
                 'Service.disabled'
             ],
-            'order' => [
+            'order'      => [
                 'Host.name ASC', 'Service.name ASC', 'Servicetemplate.name ASC',
             ],
             'conditions' => $conditions,
-        ]);
+        ];
+        if ($limit) {
+            $query['limit'] = $limit;
+        }
+
+        $result = $this->find('all', $query);
 
         if ($type == 'list') {
             $_return = [];
@@ -966,6 +980,7 @@ class Service extends AppModel {
         // type all or everything else
         return $result;
     }
+
     public function diffWithTemplate($service, $servicetemplate) {
         $diff_array = [];
         //Service-/Servicetemplate fields
@@ -1002,8 +1017,8 @@ class Service extends AppModel {
         ];
 
         $compare_array = [
-            'Service' => [
-                ['Service.{(' . implode('|', array_values(Hash::merge($fields, ['disabled', 'service_type']))) . ')}', false],
+            'Service'         => [
+                ['Service.{(' . implode('|', array_values(Hash::merge($fields, ['uuid', 'disabled', 'service_type']))) . ')}', false],
                 ['{^Contact$}.{^Contact$}.{n}', false],
                 ['{^Contactgroup$}.{^Contactgroup$}.{n}', false],
                 ['{^Servicegroup$}.{^Servicegroup$}.{n}', false],
@@ -1024,7 +1039,7 @@ class Service extends AppModel {
         foreach ($compare_array['Service'] as $key => $data) {
             $possible_key = preg_replace('/(\{.*\})|(\.)/', '', $data[0]);
             if ($data[0] == 'Servicecommandargumentvalue.{n}.{(commandargument_id|value)}') {
-                if (isset($service['Servicecommandargumentvalue'])) {
+                if (!empty($service['Servicecommandargumentvalue'])) {
                     if (!empty(Hash::diff(Set::classicExtract($service, $data[0]), Set::classicExtract($servicetemplate, $compare_array['Servicetemplate'][$key][0])))) {
                         $diff_data = Set::classicExtract($service, $data[0]);
                         $diff_array['Servicecommandargumentvalue'] = $diff_data;
@@ -1034,8 +1049,8 @@ class Service extends AppModel {
                         $this->prepareForCompare(Set::classicExtract($servicetemplate, $compare_array['Servicetemplate'][$key][0]),
                             $compare_array['Servicetemplate'][$key][1]));
                 }
-            } elseif ($data[0] == 'Serviceeventcommandargumentvalue.{n}.{(commandargument_id|value)}') {
-                if (isset($service['Serviceeventcommandargumentvalue'])) {
+            } else if ($data[0] == 'Serviceeventcommandargumentvalue.{n}.{(commandargument_id|value)}') {
+                if (!empty($service['Serviceeventcommandargumentvalue'])) {
                     if (!empty(Hash::diff(Set::classicExtract($service, $data[0]), Set::classicExtract($servicetemplate, $compare_array['Servicetemplate'][$key][0])))) {
                         $diff_data = Set::classicExtract($service, $data[0]);
                         $diff_array['Serviceeventcommandargumentvalue'] = $diff_data;
@@ -1059,12 +1074,11 @@ class Service extends AppModel {
         return $diff_array;
     }
 
-    public function dataForChangelogCopy($service, $servicetemplate)
-    {
+    public function dataForChangelogCopy($service, $servicetemplate) {
         $servicecommandargumentvalue = [];
         if (!empty($service['Servicecommandargumentvalue'])) {
             $servicecommandargumentvalue = $service['Servicecommandargumentvalue'];
-        }else {
+        } else {
             if ($service['Service']['command_id'] === $servicetemplate['Servicetemplate']['command_id'] || $service['Service']['command_id'] === null) {
                 $servicecommandargumentvalue = $servicetemplate['Servicetemplatecommandargumentvalue'];
             }
@@ -1085,7 +1099,7 @@ class Service extends AppModel {
             'Servicecommandargumentvalue'      => $servicecommandargumentvalue,
             'Serviceeventcommandargumentvalue' => $serviceeventcommandargumentvalue,
             'Servicetemplate'                  => $servicetemplate['Servicetemplate'],
-            'Servicegroup'                     => (!empty($service['Servicegroup']))?$service['Servicegroup']:$servicetemplate['Servicegroup'],
+            'Servicegroup'                     => (!empty($service['Servicegroup'])) ? $service['Servicegroup'] : $servicetemplate['Servicegroup'],
             'Host'                             => $service['Host'],
             'CheckPeriod'                      => (empty(Hash::filter($service['CheckPeriod']))) ? $servicetemplate['CheckPeriod'] : $service['CheckPeriod'],
             'NotifyPeriod'                     => (empty(Hash::filter($service['NotifyPeriod']))) ? $servicetemplate['NotifyPeriod'] : $service['NotifyPeriod'],
@@ -1094,8 +1108,7 @@ class Service extends AppModel {
         return $service;
     }
 
-    public function serviceTypes($task)
-    {
+    public function serviceTypes($task) {
         switch ($task) {
             case 'copy':
                 return [GENERIC_SERVICE];
@@ -1110,15 +1123,15 @@ class Service extends AppModel {
     public function hostHasServiceByServicetemplateId($host_id, $servicetemplate_id) {
         $this->unbindModel([
             'hasAndBelongsToMany' => ['Contactgroup', 'Contact', 'Servicegroup'],
-            'hasMany' => ['Servicecommandargumentvalue', 'Serviceeventcommandargumentvalue', 'ServiceEscalationServiceMembership', 'ServicedependencyServiceMembership', 'Customvariable'],
-            'belongsTo' => ['Host', 'Servicetemplate', 'CheckPeriod', 'NotifyPeriod', 'CheckCommand'],
+            'hasMany'             => ['Servicecommandargumentvalue', 'Serviceeventcommandargumentvalue', 'ServiceEscalationServiceMembership', 'ServicedependencyServiceMembership', 'Customvariable'],
+            'belongsTo'           => ['Host', 'Servicetemplate', 'CheckPeriod', 'NotifyPeriod', 'CheckCommand'],
         ]);
         $result = $this->find('first', [
             'conditions' => [
-                'Service.host_id' => $host_id,
+                'Service.host_id'            => $host_id,
                 'Service.servicetemplate_id' => $servicetemplate_id,
             ],
-            'fields' => ['Service.id'],
+            'fields'     => ['Service.id'],
         ]);
 
         return !empty($result);
@@ -1133,81 +1146,71 @@ class Service extends AppModel {
             $id = $service['Service']['id'];
         }
 
-        $payload = [
-            'hostUuid' => $service['Host']['uuid'],
-            'serviceUuid' => $service['Service']['uuid'],
-        ];
         $Changelog = ClassRegistry::init('Changelog');
 
-        if ($this->__allowDelete($id)) {
-
-            if ($this->delete($id)) {
-                //Delete was successfully - delete Graphgenerator configurations
-                $GraphgenTmplConf = ClassRegistry::init('GraphgenTmplConf');
-                $graphgenTmplConfs = $GraphgenTmplConf->find('all', [
-                    'conditions' => [
-                        'GraphgenTmplConf.service_id' => $id,
-                    ],
-                ]);
-                foreach ($graphgenTmplConfs as $graphgenTmplConf) {
-                    $GraphgenTmplConf->delete($graphgenTmplConf['GraphgenTmplConf']['id']);
-                }
-
-                $changelog_data = $Changelog->parseDataForChangelog(
-                    'delete',
-                    'services',
-                    $id,
-                    OBJECT_SERVICE,
-                    $service['Host']['container_id'],
-                    $userId,
-                    $service['Host']['name'] . '/' . (($service['Service']['name'] !== null) ? $service['Service']['name'] : $service['Servicetemplate']['name']),
-                    $service
-                );
-                if ($changelog_data) {
-                    CakeLog::write('log', serialize($changelog_data));
-                }
-
-                $Documentation = ClassRegistry::init('Documentation');
-                //Delete the Documentation of the Host
-                $documentation = $Documentation->findByUuid($service['Service']['uuid']);
-                if (isset($documentation['Documentation']['id'])) {
-                    $Documentation->delete($documentation['Documentation']['id']);
-                    unset($documentation);
-                }
-
-                //Add service to deleted objects table
-                $_serviceName = $service['Service']['name'];
-                if ($service['Service']['name'] == null || $service['Service']['name'] == '') {
-                    $_serviceName = $service['Servicetemplate']['name'];
-                }
-                //Add host to deleted objects table
-                $DeletedService = ClassRegistry::init('DeletedService');
-                $DeletedService->create();
-                $data = [
-                    'DeletedService' => [
-                        'uuid' => $service['Service']['uuid'],
-                        'host_uuid' => $service['Host']['uuid'],
-                        'servicetemplate_id' => $service['Service']['servicetemplate_id'],
-                        'host_id' => $service['Service']['host_id'],
-                        'name' => $_serviceName,
-                        'description' => $service['Service']['description'],
-                        'deleted_perfdata' => 0,
-                    ],
-                ];
-                $DeletedService->save($data);
-
-                /*
-                 * Check if the service was part of an servicegroup, serviceescalation or servicedependency
-                 * If yes, cake delete the records by it self, but may be we have an empty serviceescalation or servicegroup now.
-                 * Nagios don't relay like this so we need to check this and delete the serviceescalation/servicegroup or service dependency if empty
-                 */
-                $this->_clenupServiceEscalationDependencyAndGroup($service);
-
-                //Delete nagios configuration
-                //$this->GearmanClient->sendBackground('deleteServiceConfiguration', $payload);
-
-                return true;
+        if ($this->delete($id)) {
+            //Delete was successfully - delete Graphgenerator configurations
+            $GraphgenTmplConf = ClassRegistry::init('GraphgenTmplConf');
+            $graphgenTmplConfs = $GraphgenTmplConf->find('all', [
+                'conditions' => [
+                    'GraphgenTmplConf.service_id' => $id,
+                ],
+            ]);
+            foreach ($graphgenTmplConfs as $graphgenTmplConf) {
+                $GraphgenTmplConf->delete($graphgenTmplConf['GraphgenTmplConf']['id']);
             }
+
+            $changelog_data = $Changelog->parseDataForChangelog(
+                'delete',
+                'services',
+                $id,
+                OBJECT_SERVICE,
+                $service['Host']['container_id'],
+                $userId,
+                $service['Host']['name'] . '/' . (($service['Service']['name'] !== null) ? $service['Service']['name'] : $service['Servicetemplate']['name']),
+                $service
+            );
+            if ($changelog_data) {
+                CakeLog::write('log', serialize($changelog_data));
+            }
+
+            $Documentation = ClassRegistry::init('Documentation');
+            //Delete the Documentation of the Host
+            $documentation = $Documentation->findByUuid($service['Service']['uuid']);
+            if (isset($documentation['Documentation']['id'])) {
+                $Documentation->delete($documentation['Documentation']['id']);
+                unset($documentation);
+            }
+
+            //Add service to deleted objects table
+            $_serviceName = $service['Service']['name'];
+            if ($service['Service']['name'] == null || $service['Service']['name'] == '') {
+                $_serviceName = $service['Servicetemplate']['name'];
+            }
+            //Add host to deleted objects table
+            $DeletedService = ClassRegistry::init('DeletedService');
+            $DeletedService->create();
+            $data = [
+                'DeletedService' => [
+                    'uuid'               => $service['Service']['uuid'],
+                    'host_uuid'          => $service['Host']['uuid'],
+                    'servicetemplate_id' => $service['Service']['servicetemplate_id'],
+                    'host_id'            => $service['Service']['host_id'],
+                    'name'               => $_serviceName,
+                    'description'        => $service['Service']['description'],
+                    'deleted_perfdata'   => 0,
+                ],
+            ];
+            $DeletedService->save($data);
+
+            /*
+             * Check if the service was part of an servicegroup, serviceescalation or servicedependency
+             * If yes, cake delete the records by it self, but may be we have an empty serviceescalation or servicegroup now.
+             * Nagios don't relay like this so we need to check this and delete the serviceescalation/servicegroup or service dependency if empty
+             */
+            $this->_clenupServiceEscalationDependencyAndGroup($service);
+
+            return true;
         }
 
         return false;
@@ -1249,46 +1252,42 @@ class Service extends AppModel {
         }
     }
 
-    public $usedBy = null;
-
-    public function __allowDelete($serviceId) {
-        //using components in Model is ugly but we need the Constants here
-        App::import('Component', 'Constants');
-        $this->Constants = new ConstantsComponent();
-
-        $moduleConstants = $this->Constants->defines['modules'];
-        $usedBy = [
-            'Service' => [],
-        ];
-
+    /**
+     * @param $service
+     * @param $moduleConstants
+     * @return array
+     */
+    public function isUsedByModules($service, $moduleConstants) {
+        $usedBy = [];
         foreach ($moduleConstants as $moduleName => $value) {
-            if (!empty($serviceId)) {
-                if ($this->checkUsageFlag($serviceId, $value)) {
-                    $usedBy['Service'][$this->humanizeModuleConstantName($moduleName)][] = $serviceId;
-                }
+            if ($service['Service']['usage_flag'] & $value) {
+                $usedBy[$moduleName] = $value;
             }
         }
-
-        if (empty($usedBy['Service'])) {
-            return true;
-        }
-
-        $this->usedBy = $usedBy;
-        return false;
+        return $usedBy;
     }
 
+    /**
+     * @param $name
+     * @return mixed
+     */
     public function humanizeModuleConstantName($name) {
-        return preg_replace('/_MODULE/', '', $name);
+        return str_replace('_MODULE', '', $name);
     }
 
+    /**
+     * @param int $serviceId
+     * @param int $moduleValue
+     * @return bool
+     */
     public function checkUsageFlag($serviceId, $moduleValue) {
         $result = $this->find('first', [
-            'recursive' => -1,
+            'recursive'  => -1,
             'conditions' => [
                 'Service.id' => $serviceId,
                 //'Service.usage_flag &'.$moduleValue
             ],
-            'fields' => [
+            'fields'     => [
                 'Service.usage_flag'
             ]
         ]);
@@ -1303,9 +1302,17 @@ class Service extends AppModel {
         }
     }
 
-    public function virtualFieldsForIndexAndServiceList(){
+    public function virtualFieldsForIndexAndServiceList() {
         $this->virtualFields['servicename'] = 'IF((Service.name IS NULL OR Service.name=""), Servicetemplate.name, Service.name)';
         $this->virtualFields['keywords'] = 'IF((Service.tags IS NULL OR Service.tags=""), Servicetemplate.tags, Service.tags)';
+    }
+
+    public function virtualFieldsForNotMonitored() {
+        $this->virtualFields['servicename'] = 'IF((Service.name IS NULL OR Service.name=""), Servicetemplate.name, Service.name)';
+    }
+
+    public function virtualFieldsForDisabled() {
+        $this->virtualFieldsForNotMonitored();
     }
 
     /**
@@ -1313,12 +1320,13 @@ class Service extends AppModel {
      * @param array $conditions
      * @return array
      */
-    public function getServiceIndexQuery(ServiceConditions $ServiceConditions, $conditions = []){
+    public function getServiceIndexQuery(ServiceConditions $ServiceConditions, $conditions = []) {
         $query = [
-            'recursive' => -1,
+            'recursive'  => -1,
             'conditions' => $conditions,
-            'contain' => ['Servicetemplate'],
-            'fields' => [
+            'contain'    => ['Servicetemplate'],
+            'fields'     => [
+                //'DISTINCT (Service.id) as banane', //Fix pagination
                 'Service.id',
                 'Service.uuid',
                 'Service.name',
@@ -1351,6 +1359,7 @@ class Service extends AppModel {
                 'Host.uuid',
                 'Host.description',
                 'Host.address',
+                'Host.satellite_id',
 
                 'Hoststatus.current_state',
                 'Hoststatus.is_flapping',
@@ -1358,42 +1367,43 @@ class Service extends AppModel {
 
                 'HostsToContainers.container_id',
             ],
-            'order' => $ServiceConditions->getOrder(),
-            'joins' => [[
-                'table' => 'hosts',
-                'type' => 'INNER',
-                'alias' => 'Host',
-                'conditions' => 'Service.host_id = Host.id',
-            ], [
-                'table' => 'nagios_objects',
-                'type' => 'INNER',
-                'alias' => 'HostObject',
-                'conditions' => 'Host.uuid = HostObject.name1 AND HostObject.objecttype_id = 1',
-            ], [
-                'table' => 'nagios_hoststatus',
-                'type' => 'INNER',
-                'alias' => 'Hoststatus',
-                'conditions' => 'Hoststatus.host_object_id = HostObject.object_id',
-            ], [
-                'table' => 'nagios_objects',
-                'type' => 'INNER',
-                'alias' => 'ServiceObject',
-                'conditions' => 'ServiceObject.name1 = Host.uuid AND Service.uuid = ServiceObject.name2 AND ServiceObject.objecttype_id = 2',
-            ], [
-                'table' => 'nagios_servicestatus',
-                'type' => 'LEFT OUTER',
-                'alias' => 'Servicestatus',
-                'conditions' => 'Servicestatus.service_object_id = ServiceObject.object_id',
-            ], [
-                'table' => 'hosts_to_containers',
-                'alias' => 'HostsToContainers',
-                'type' => 'LEFT',
-                'conditions' => [
-                    'HostsToContainers.host_id = Host.id',
+            'order'      => $ServiceConditions->getOrder(),
+            'joins'      => [
+                [
+                    'table'      => 'hosts',
+                    'type'       => 'INNER',
+                    'alias'      => 'Host',
+                    'conditions' => 'Service.host_id = Host.id',
+                ], [
+                    'table'      => 'nagios_objects',
+                    'type'       => 'INNER',
+                    'alias'      => 'HostObject',
+                    'conditions' => 'Host.uuid = HostObject.name1 AND HostObject.objecttype_id = 1',
+                ], [
+                    'table'      => 'nagios_hoststatus',
+                    'type'       => 'INNER',
+                    'alias'      => 'Hoststatus',
+                    'conditions' => 'Hoststatus.host_object_id = HostObject.object_id',
+                ], [
+                    'table'      => 'nagios_objects',
+                    'type'       => 'INNER',
+                    'alias'      => 'ServiceObject',
+                    'conditions' => 'ServiceObject.name1 = Host.uuid AND Service.uuid = ServiceObject.name2 AND ServiceObject.objecttype_id = 2',
+                ], [
+                    'table'      => 'nagios_servicestatus',
+                    'type'       => 'LEFT OUTER',
+                    'alias'      => 'Servicestatus',
+                    'conditions' => 'Servicestatus.service_object_id = ServiceObject.object_id',
+                ], [
+                    'table'      => 'hosts_to_containers',
+                    'alias'      => 'HostsToContainers',
+                    'type'       => 'LEFT',
+                    'conditions' => [
+                        'HostsToContainers.host_id = Host.id',
+                    ],
                 ],
             ],
-            ],
-            'group' => [
+            'group'      => [
                 'Service.id',
             ],
         ];
@@ -1401,11 +1411,269 @@ class Service extends AppModel {
         $query['conditions']['Service.disabled'] = (int)$ServiceConditions->includeDisabled();
         $query['conditions']['HostsToContainers.container_id'] = $ServiceConditions->getContainerIds();
 
-        if($ServiceConditions->getHostId()){
+        if ($ServiceConditions->getHostId()) {
             $query['conditions']['Service.host_id'] = $ServiceConditions->getHostId();
         }
 
         return $query;
 
+    }
+
+    /**
+     * @param ServiceConditions $ServiceConditions
+     * @param array $conditions
+     * @return array
+     */
+    public function getServiceNotMonitoredQuery(ServiceConditions $ServiceConditions, $conditions = []) {
+        $query = [
+            'recursive'  => -1,
+            'conditions' => $conditions,
+            'contain'    => ['Servicetemplate'],
+            'fields'     => [
+                'Service.id',
+                'Service.uuid',
+                'Service.name',
+                'Service.description',
+                'Service.active_checks_enabled',
+
+                'Servicetemplate.id',
+                'Servicetemplate.uuid',
+                'Servicetemplate.name',
+                'Servicetemplate.description',
+                'Servicetemplate.active_checks_enabled',
+
+                'ServiceObject.object_id',
+
+                'Host.name',
+                'Host.id',
+                'Host.uuid',
+                'Host.description',
+                'Host.address',
+            ],
+            'order'      => $ServiceConditions->getOrder(),
+            'joins'      => [
+                [
+                    'table'      => 'hosts',
+                    'type'       => 'INNER',
+                    'alias'      => 'Host',
+                    'conditions' => 'Service.host_id = Host.id',
+                ], [
+                    'table'      => 'nagios_objects',
+                    'type'       => 'LEFT OUTER',
+                    'alias'      => 'ServiceObject',
+                    'conditions' => 'ServiceObject.name1 = Host.uuid AND Service.uuid = ServiceObject.name2 AND ServiceObject.objecttype_id = 2',
+                ]
+            ]
+        ];
+
+        //$query['order'] = Hash::merge(['Service.id' => 'asc'], $ServiceConditions->getOrder());
+        $query['conditions'][] = [
+            "EXISTS (SELECT * FROM hosts_to_containers AS HostsToContainers WHERE HostsToContainers.container_id )" =>
+                $ServiceConditions->getContainerIds()
+        ];
+
+        $query['conditions']['Service.disabled'] = (int)$ServiceConditions->includeDisabled();
+        //$query['conditions']['HostsToContainers.container_id'] = $ServiceConditions->getContainerIds();
+
+        if ($ServiceConditions->getHostId()) {
+            $query['conditions']['Service.host_id'] = $ServiceConditions->getHostId();
+        }
+
+        $query['conditions'][] = 'ServiceObject.name2 IS NULL';
+
+        return $query;
+
+    }
+
+    /**
+     * @param ServiceConditions $ServiceConditions
+     * @param array $conditions
+     * @return array
+     */
+    public function getServiceDisabledQuery(ServiceConditions $ServiceConditions, $conditions = []) {
+        $query = [
+            'recursive'  => -1,
+            'conditions' => $conditions,
+            'contain'    => ['Servicetemplate'],
+            'fields'     => [
+                'Service.id',
+                'Service.uuid',
+                'Service.name',
+
+                'Servicetemplate.id',
+                'Servicetemplate.uuid',
+                'Servicetemplate.name',
+
+                'Host.name',
+                'Host.id',
+                'Host.uuid',
+                'Host.description',
+                'Host.address',
+            ],
+            'order'      => $ServiceConditions->getOrder(),
+            'joins'      => [
+                [
+                    'table'      => 'hosts',
+                    'type'       => 'INNER',
+                    'alias'      => 'Host',
+                    'conditions' => 'Service.host_id = Host.id',
+                ]
+            ]
+        ];
+
+        //$query['order'] = Hash::merge(['Service.id' => 'asc'], $ServiceConditions->getOrder());
+        $query['conditions'][] = [
+            "EXISTS (SELECT * FROM hosts_to_containers AS HostsToContainers WHERE HostsToContainers.container_id )" =>
+                $ServiceConditions->getContainerIds()
+        ];
+
+        $query['conditions']['Service.disabled'] = 1;
+
+        if ($ServiceConditions->getHostId()) {
+            $query['conditions']['Service.host_id'] = $ServiceConditions->getHostId();
+        }
+
+        return $query;
+
+    }
+
+    /**
+     * @param ServiceConditions $ServiceConditions
+     * @param array $conditions
+     * @return array
+     */
+    public function getServiceDeletedQuery(ServiceConditions $ServiceConditions, $conditions = []) {
+        $query = [
+            'recursive'  => -1,
+            'conditions' => $conditions,
+            'fields'     => [
+                'DeletedService.*'
+            ],
+            'order'      => $ServiceConditions->getOrder(),
+        ];
+
+        if ($ServiceConditions->getHostId()) {
+            $query['conditions']['DeletedService.host_id'] = $ServiceConditions->getHostId();
+        }
+
+        return $query;
+
+    }
+
+    /**
+     * @param ServiceConditions $ServiceConditions
+     * @param array $selected
+     * @return array|null
+     */
+    public function getServicesForAngular(ServiceConditions $ServiceConditions, $selected = []) {
+        $query = [
+            'recursive'  => -1,
+            'joins'      => [
+                [
+                    'table'      => 'servicetemplates',
+                    'alias'      => 'Servicetemplate',
+                    'type'       => 'INNER',
+                    'conditions' => [
+                        'Servicetemplate.id = Service.servicetemplate_id',
+                    ],
+                ],
+                [
+                    'table'      => 'hosts',
+                    'alias'      => 'Host',
+                    'type'       => 'INNER',
+                    'conditions' => [
+                        'Host.id = Service.host_id',
+                    ],
+                ],
+                [
+                    'table'      => 'hosts_to_containers',
+                    'alias'      => 'HostsToContainers',
+                    'type'       => 'INNER',
+                    'conditions' => [
+                        'HostsToContainers.host_id = Host.id',
+                    ],
+                ],
+            ],
+            'conditions' => [
+                'OR' => $ServiceConditions->getConditions()
+            ],
+            'order'      => [
+                'Host.name'                                                    => 'ASC',
+                'IF(Service.name IS NULL, Servicetemplate.name, Service.name)' => 'ASC'
+            ],
+            'fields'     => [
+                'Service.id',
+                'Service.name',
+                'Host.id',
+                'Host.name',
+                'Servicetemplate.name'
+
+            ],
+            'group'      => [
+                'Service.id'
+            ],
+            'limit'      => self::ITN_AJAX_LIMIT
+        ];
+
+        if ($ServiceConditions->hasNotConditions()) {
+            $query['conditions']['NOT'] = $ServiceConditions->getNotConditions();
+        }
+        $servicesWithLimit = $this->find('all', $query);
+        $servicesWithLimit = Hash::combine($servicesWithLimit, '{n}.Service.id', '{n}');
+
+        $selectedServices = [];
+        if (!empty($selected)) {
+            $query = [
+                'recursive'  => -1,
+                'joins'      => [
+                    [
+                        'table'      => 'servicetemplates',
+                        'alias'      => 'Servicetemplate',
+                        'type'       => 'INNER',
+                        'conditions' => [
+                            'Servicetemplate.id = Service.servicetemplate_id',
+                        ],
+                    ],
+                    [
+                        'table'      => 'hosts',
+                        'alias'      => 'Host',
+                        'type'       => 'INNER',
+                        'conditions' => [
+                            'Host.id = Service.host_id',
+                        ],
+                    ],
+                    [
+                        'table'      => 'hosts_to_containers',
+                        'alias'      => 'HostsToContainers',
+                        'type'       => 'INNER',
+                        'conditions' => [
+                            'HostsToContainers.host_id = Host.id',
+                        ],
+                    ],
+                ],
+                'conditions' => [
+                    'Service.id' => $selected
+                ],
+                'order'      => [
+                    'Host.name'                                                    => 'ASC',
+                    'IF(Service.name IS NULL, Servicetemplate.name, Service.name)' => 'ASC'
+                ],
+                'fields'     => [
+                    'Service.id',
+                    'Service.name',
+                    'Host.id',
+                    'Host.name',
+                    'Servicetemplate.name'
+
+                ],
+                'group'      => [
+                    'Service.id'
+                ]
+            ];
+            $query['conditions']['HostsToContainers.container_id'] = $ServiceConditions->getContainerIds();
+            $selectedServices = $this->find('all', $query);
+            $selectedServices = Hash::combine($selectedServices, '{n}.Service.id', '{n}');
+        }
+        return $servicesWithLimit + $selectedServices;
     }
 }

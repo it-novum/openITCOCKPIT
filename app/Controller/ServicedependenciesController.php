@@ -64,8 +64,7 @@ class ServicedependenciesController extends AppController
         'CustomValidationErrors',
     ];
 
-    public function index()
-    {
+    public function index() {
         $options = [
             'recursive'  => -1,
             'conditions' => [
@@ -74,12 +73,19 @@ class ServicedependenciesController extends AppController
             'contain'    => [
                 'ServicedependencyServiceMembership'      => [
                     'Service' => [
-                        'fields'          => ['name'],
+                        'fields'          => [
+                            'name',
+                            'disabled'
+                        ],
                         'Servicetemplate' => [
                             'fields' => ['name'],
                         ],
                         'Host'            => [
-                            'fields' => ['id', 'name'],
+                            'fields' => [
+                                'id',
+                                'name',
+                                'disabled'
+                            ],
                         ],
                     ],
                 ],
@@ -90,11 +96,12 @@ class ServicedependenciesController extends AppController
                         ],
                     ],
                 ],
-                'Timeperiod'                              => [
+                'Timeperiod' => [
                     'fields' => 'name',
                 ],
             ],
         ];
+
         $query = Hash::merge($this->Paginator->settings, $options);
 
         if ($this->isApiRequest) {
@@ -104,6 +111,7 @@ class ServicedependenciesController extends AppController
             $this->Paginator->settings = $query;
             $all_servicedependencies = $this->Paginator->paginate();
         }
+
 
         $this->set('all_servicedependencies', $all_servicedependencies);
         $this->set('_serialize', ['all_servicedependencies']);
@@ -150,13 +158,14 @@ class ServicedependenciesController extends AppController
 
         $containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_SERVICEDEPENDENCY, [], $this->hasRootPrivileges);
         $servicegroups = $this->Servicegroup->servicegroupsByContainerId($serviceDependencyContainerIds, 'list', 'id');
+
         $services = $this->Host->servicesByContainerIds($serviceDependencyContainerIds, 'list', [
             'prefixHostname' => true,
             'delimiter'      => '/',
             'forOptiongroup' => true,
         ]);
-        $timeperiods = $this->Timeperiod->timeperiodsByContainerId($serviceDependencyContainerIds, 'list');
 
+        $timeperiods = $this->Timeperiod->timeperiodsByContainerId($serviceDependencyContainerIds, 'list');
 
         if ($this->request->is('post') || $this->request->is('put')) {
             $containerId = $this->request->data('Servicedependency.container_id');
@@ -164,12 +173,13 @@ class ServicedependenciesController extends AppController
                 // If the container ID has been changed, fill the variables
 
                 $containerIds = $this->Tree->resolveChildrenOfContainerIds($containerId);
-                $servicegroups = $this->Servicegroup->servicegroupsByContainerId($containerIds, 'list', 'id');
                 $services = $this->Host->servicesByContainerIds($containerIds, 'list', [
                     'prefixHostname' => true,
                     'delimiter'      => '/',
                     'forOptiongroup' => true,
                 ]);
+
+                $servicegroups = $this->Servicegroup->servicegroupsByContainerId($containerIds, 'list', 'id');
                 $timeperiods = $this->Timeperiod->timeperiodsByContainerId($containerIds, 'list');
             }
 
@@ -245,6 +255,8 @@ class ServicedependenciesController extends AppController
         $services = [];
         $servicegroups = [];
         $timeperiods = [];
+        $this->Frontend->set('data_placeholder', __('Please, start typing...'));
+        $this->Frontend->set('data_placeholder_empty', __('No entries found'));
 
         if ($this->request->is('post') || $this->request->is('put')) {
             App::uses('UUID', 'Lib');
@@ -261,7 +273,6 @@ class ServicedependenciesController extends AppController
             if ($this->Servicedependency->saveAll($this->request->data)) {
                 if ($isJsonRequest) {
                     $this->serializeId();
-
                     return;
                 } else {
                     $this->setFlash(__('Servicedependency successfully saved'));
@@ -270,7 +281,6 @@ class ServicedependenciesController extends AppController
             } else {
                 if ($isJsonRequest) {
                     $this->serializeErrorMessage();
-
                     return;
                 } else {
                     $this->setFlash(__('Servicedependency could not be saved'), false);
@@ -334,7 +344,7 @@ class ServicedependenciesController extends AppController
         );
         $servicegroups = $this->Servicegroup->servicegroupsByContainerId($containerIds, 'list', 'id');
         $services = $this->Host->servicesByContainerIds($containerIds, 'list', [
-            'forOptiongroup' => true,
+            'forOptiongroup' => true
         ]);
         $timeperiodContainerIds = $this->Tree->resolveChildrenOfContainerIds($containerId,
             false,

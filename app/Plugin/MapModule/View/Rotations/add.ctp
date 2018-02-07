@@ -47,38 +47,83 @@
     </header>
     <div>
         <div class="widget-body">
-            <div class="row">
-                <div class="col-xs-12 col-md-12 col-lg-12">
-                    <?php
-                    echo $this->Form->create('Rotation', [
-                        'class' => 'form-horizontal clear',
-                    ]);
+            <form ng-submit="submit();" class="form-horizontal">
+                <div class="row">
+                    <div class="form-group required" ng-class="{'has-error': errors.container_id}">
+                        <label class="col col-md-2 control-label">
+                            <?php echo __('Container'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+                            <select
+                                    id="RotationContainer"
+                                    data-placeholder="<?php echo __('Please choose'); ?>"
+                                    class="form-control"
+                                    chosen="containers"
+                                    ng-options="container.key as container.value for container in containers"
+                                    ng-model="post.Rotation.container_id"
+                                    multiple>
+                            </select>
+                            <div ng-repeat="error in errors.container_id">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+                    </div>
 
-                    echo $this->Form->input('name', [
-                        'label'     => ['text' => __('Name'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
-                        'wrapInput' => 'col-xs-10 col-md-10 col-lg-10',
-                    ]);
+                    <div class="form-group required" ng-class="{'has-error': errors.name}">
+                        <label class="col col-md-2 control-label">
+                            <?php echo __('Rotation Name'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+                            <input
+                                    class="form-control"
+                                    type="text"
+                                    ng-model="post.Rotation.name">
+                            <div ng-repeat="error in errors.name">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+                    </div>
 
-                    echo $this->Form->input('interval', [
-                        'label'     => ['text' => __('Interval'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
-                        'wrapInput' => 'col-xs-10 col-md-10 col-lg-10',
-                        'value'     => 90,
-                        'help'      => __('Interval in seconds'),
-                    ]);
+                    <div class="form-group">
+                        <label class="col col-md-2 control-label">
+                            <?php echo __('Rotation interval'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+                            <input class="form-control" type="number" ng-model="post.Rotation.interval" min="10"
+                                   step="5">
+                        </div>
+                    </div>
 
-                    echo $this->Form->input('Rotation.Map', [
-                        'options'   => $maps,
-                        'multiple'  => true,
-                        'class'     => 'chosen',
-                        'style'     => 'width:100%;',
-                        'label'     => ['text' => __('Maps'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
-                        'wrapInput' => 'col-xs-10 col-md-10 col-lg-10',
-                    ]);
-                    ?>
+                    <div class="form-group required" ng-class="{'has-error': errors.Map}">
+                        <label class="col col-md-2 control-label">
+                            <?php echo __('Maps'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+                            <select
+                                    id="RotationMaps"
+                                    data-placeholder="<?php echo __('Please choose'); ?>"
+                                    class="form-control"
+                                    chosen="maps"
+                                    ng-options="map.key as map.value for map in maps"
+                                    ng-model="post.Rotation.Map"
+                                    multiple>
+                            </select>
+                            <div ng-repeat="error in errors.Map">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12 margin-top-10">
+                        <div class="well formactions ">
+                            <div class="pull-right">
+                                <input class="btn btn-primary" type="submit" value="Save">&nbsp;
+                                <a href="/map_module/rotations/index" class="btn btn-default">Cancel</a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </div>
-            <?php echo $this->Form->formActions(); ?>
+            </form>
         </div>
     </div>
 </div>
-

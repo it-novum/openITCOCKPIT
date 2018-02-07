@@ -12,8 +12,8 @@ $(document).ready(function () {
 
     $('a[name=creditos]').click(function (e) {
         e.preventDefault();
-        
-        var maskHeight = $(document).height();
+
+        var maskHeight = $(window).height();
         var maskWidth = $(window).width();
 
         $('#titles').css({

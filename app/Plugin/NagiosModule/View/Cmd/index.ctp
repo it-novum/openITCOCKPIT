@@ -30,7 +30,7 @@
             <?php echo __('Monitoring'); ?>
             <span>>
                 <?php echo __('External Commands'); ?>
-			</span>
+            </span>
         </h1>
     </div>
 </div>
@@ -47,9 +47,9 @@
                 <div class="col-xs-12 col-md-12 col-lg-12">
                     <div class="padding-bottom-10">
                         <i class="fa fa-info-circle text-info"></i>
-                        <?php echo __('In some cases you may be need to send an external command to the monitoring engine for transmit a passive service state or something like this.'); ?>
+                        <?php echo __('In some cases you may need to send an external command to the monitoring engine for transmitting a passive service state or something similiar.'); ?>
                         <br/>
-                        <?php echo __('This interface was designed to help you create this commands by generating an example for each supported command. Additionally you see a list of supported parameters and defualt values'); ?>
+                        <?php echo __('This interface was designed to help you create these commands by generating an example for each supported command. Additionally you see a list of supported parameters and default values'); ?>
                     </div>
 
                     <?php

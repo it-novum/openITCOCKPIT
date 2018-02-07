@@ -28,6 +28,9 @@ app/webroot/img/graphs/*
 app/webroot/img/charts/*
 app/webroot/js/compressed_components.js
 app/webroot/js/compressed_controllers.js
+app/webroot/js/compressed_angular_controllers.js
+app/webroot/js/compressed_angular_directives.js
+app/webroot/js/compressed_angular_services.js
 app/Plugin/ArchiveMigration
 app/Plugin/AutoreportModule
 app/Plugin/AutoreportModule/webroot/tmp/*
@@ -43,6 +46,7 @@ app/Plugin/MapModule/webroot/img/icons/*
 app/Plugin/MassenversandDeModule
 app/Plugin/MkModule
 app/Plugin/SAPModule
+app/Plugin/SlackModule
 app/Plugin/MaximoModule
 app/Plugin/AlfrescoModule
 app/Plugin/LinuxBasicMonitoringModule
@@ -57,4 +61,17 @@ app/docs/en/api/systemsettings.md
 tests
 app/webroot/img/logo_custom.png
 app/webroot/img/logo_small_custom.png
+
+!app/Vendor/
+app/Vendor/*
+!app/Vendor/adldap
+!app/Vendor/Date
+!app/Vendor/Oauth2
+!app/Vendor/imageSmoothArc.php
+!app/Vendor/qqFileUploader.php
+app/composer.lock
+
+Vendor
+Vendor/*
+
 

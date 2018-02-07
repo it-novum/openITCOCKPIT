@@ -34,6 +34,8 @@ class LoginController extends AppController
     public $uses = ['User', 'SystemContent', 'Systemsetting', 'Container', 'Oauth2client'];
     public $components = ['Ldap'];
 
+    public $layout = 'login';
+
     public function beforeFilter()
     {
         $this->Auth->allow();
@@ -222,7 +224,7 @@ class LoginController extends AppController
                 }
             } else {
                 if ($redirectBack) {
-                    $this->Session->setFlash(__('login.username_and_password_dont_match'), 'layout/header_auth_flash', [], 'header_auth');
+                    $this->setFlash(__('login.username_and_password_dont_match'), false);
                     $this->redirect($this->request->referer());
 
                     return;
@@ -273,7 +275,7 @@ class LoginController extends AppController
                 $this->setFlash(__('Wrong One-time password'), false);
             }
         }
-        $this->layout = 'lock';
+        //$this->layout = 'lock';
         $_user = $this->User->findById($id);
         $this->_systemsettings = $this->Systemsetting->findAsArray();
 

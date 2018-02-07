@@ -25,18 +25,13 @@
 
 $config = [
     'acl_dependencies' => [
-        'always_allowed' => [
-            'Commands'         => [
-                'sortByCommandType',
-            ],
-
-        ],
+        'always_allowed' => [],
         'dependencies'   => [
             'GrafanaConfiguration' => [
-                'index' => ['testGrafanaConnection'],
+                'index' => ['testGrafanaConnection', 'loadHostgroups'],
             ],
         ],
-        'roles_rights' => [
+        'roles_rights'   => [
             'Administrator' => ['*'],
         ]
     ],

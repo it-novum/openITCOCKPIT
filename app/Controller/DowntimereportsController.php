@@ -25,12 +25,11 @@
 
 /**
  * @property Downtimereport $Downtimereport
- * @property Host           $Host
- * @property Service        $Service
- * @property Timeperiod     $Timeperiod
+ * @property Host $Host
+ * @property Service $Service
+ * @property Timeperiod $Timeperiod
  */
-class DowntimereportsController extends AppController
-{
+class DowntimereportsController extends AppController {
     public $layout = 'Admin.default';
     public $uses = [
         MONITORING_OBJECTS,
@@ -41,8 +40,7 @@ class DowntimereportsController extends AppController
         'Timeperiod',
     ];
 
-    public function index()
-    {
+    public function index() {
         $userContainerIds = $this->Tree->resolveChildrenOfContainerIds(
             $this->MY_RIGHTS,
             $this->hasRootPrivileges);
@@ -55,8 +53,8 @@ class DowntimereportsController extends AppController
             $this->Downtimereport->set($this->request->data);
             if ($this->Downtimereport->validates()) {
                 $downtimes = ['Hosts' => [], 'Services' => []];
-                $startDate = $this->request->data('Downtimereport.start_date').' 00:00:00';
-                $endDate = $this->request->data('Downtimereport.end_date').' 23:59:59';
+                $startDate = $this->request->data('Downtimereport.start_date') . ' 00:00:00';
+                $endDate = $this->request->data('Downtimereport.end_date') . ' 23:59:59';
                 $downtimeReportDetails = [
                     'startDate' => $startDate,
                     'endDate'   => $endDate,
@@ -78,14 +76,14 @@ class DowntimereportsController extends AppController
                         'conditions' => [
                             'Downtime.downtime_type' => 2,
                             'OR'                     => [
-                                '"'.$startDateSqlFormat.'"
+                                '"' . $startDateSqlFormat . '"
 								BETWEEN Downtime.scheduled_start_time
 								AND Downtime.scheduled_end_time',
-                                '"'.$endDateSqlFormat.'"
+                                '"' . $endDateSqlFormat . '"
 								BETWEEN Downtime.scheduled_start_time
 								AND Downtime.scheduled_end_time',
-                                'Downtime.scheduled_start_time BETWEEN "'.$startDateSqlFormat.'"
-								AND "'.$endDateSqlFormat.'"',
+                                'Downtime.scheduled_start_time BETWEEN "' . $startDateSqlFormat . '"
+								AND "' . $endDateSqlFormat . '"',
                             ],
                             'Downtime.was_cancelled' => 0,
                             'Objects.object_id = Downtime.object_id',
@@ -119,14 +117,14 @@ class DowntimereportsController extends AppController
                         'conditions' => [
                             'Downtime.downtime_type' => 1,
                             'OR'                     => [
-                                '"'.$startDateSqlFormat.'"
+                                '"' . $startDateSqlFormat . '"
 								BETWEEN Downtime.scheduled_start_time
 								AND Downtime.scheduled_end_time',
-                                '"'.$endDateSqlFormat.'"
+                                '"' . $endDateSqlFormat . '"
 								BETWEEN Downtime.scheduled_start_time
 								AND Downtime.scheduled_end_time',
-                                'Downtime.scheduled_start_time BETWEEN "'.$startDateSqlFormat.'"
-								AND "'.$endDateSqlFormat.'"',
+                                'Downtime.scheduled_start_time BETWEEN "' . $startDateSqlFormat . '"
+								AND "' . $endDateSqlFormat . '"',
                             ],
                             'Downtime.was_cancelled' => 0,
                             'Objects.object_id = Downtime.object_id',
@@ -192,8 +190,8 @@ class DowntimereportsController extends AppController
                                     ],
                                     'conditions' => [
                                         'Statehistory.state_time
-										BETWEEN "'.$startDateSqlFormat.'"
-										AND "'.$endDateSqlFormat.'"',
+										BETWEEN "' . $startDateSqlFormat . '"
+										AND "' . $endDateSqlFormat . '"',
                                     ],
                                     'order'      => [
                                         'Statehistory.state_time',
@@ -224,7 +222,7 @@ class DowntimereportsController extends AppController
                             //add host name to downtime array
                             if (array_key_exists($hostUuid, $downtimeHosts)) {
                                 $downtimeHosts = Hash::insert($downtimeHosts,
-                                    $hostUuid.'.{n}.data',
+                                    $hostUuid . '.{n}.data',
                                     [
                                         'host' => $stateHistoryWithObject[0]['Host']['name'],
                                     ]
@@ -270,8 +268,8 @@ class DowntimereportsController extends AppController
                                     ],
                                     'conditions' => [
                                         'Statehistory.state_time
-										BETWEEN "'.$startDateSqlFormat.'"
-										AND "'.$endDateSqlFormat.'"',
+										BETWEEN "' . $startDateSqlFormat . '"
+										AND "' . $endDateSqlFormat . '"',
                                     ],
                                     'order'      => [
                                         'Statehistory.state_time',
@@ -285,7 +283,7 @@ class DowntimereportsController extends AppController
                         if (!empty($stateHistoryWithObject)) {
                             if (array_key_exists($stateHistoryWithObject[0]['Service']['uuid'], $downtimeServices)) {
                                 $downtimeServices = Hash::insert($downtimeServices,
-                                    $stateHistoryWithObject[0]['Service']['uuid'].'.{n}.data',
+                                    $stateHistoryWithObject[0]['Service']['uuid'] . '.{n}.data',
                                     [
                                         'host'    => $stateHistoryWithObject[0]['Service']['Host']['name'],
                                         'service' => ($stateHistoryWithObject[0]['Service']['name']) ? $stateHistoryWithObject[0]['Service']['name'] : $stateHistoryWithObject[0]['Service']['Servicetemplate']['name'],
@@ -374,15 +372,17 @@ class DowntimereportsController extends AppController
                         $this->render('/Elements/load_downtime_report_data');
                     }
                 } else {
-                    $this->Session->setFlash(__('No downtimes within specified time found ('.$this->request->data('Downtimereport.start_date').' - '.$this->request->data('Downtimereport.end_date').')!'), 'default', ['class' => 'alert auto-hide alert-info']);
+                    $this->setFlash(
+                        __('No downtimes within specified time found (' . $this->request->data('Downtimereport.start_date') . ' - ' . $this->request->data('Downtimereport.end_date') . ') !'),
+                        'info'
+                    );
                 }
             }
         }
         $this->set(compact(['container', 'timeperiods', 'userContainerId']));
     }
 
-    public function createPdfReport()
-    {
+    public function createPdfReport() {
         $this->set('downtimeReportData', $this->Session->read('downtimeReportData'));
         $this->set('downtimeReportDetails', $this->Session->read('downtimeReportDetails'));
         if ($this->Session->check('downtimeReportData')) {

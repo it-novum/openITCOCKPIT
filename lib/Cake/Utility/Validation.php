@@ -1,16 +1,16 @@
 <?php
 /**
- * CakePHP(tm) : Rapid Development Framework (http://cakephp.org)
- * Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
+ * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
+ * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
  *
  * Licensed under The MIT License
  * For full copyright and license information, please see the LICENSE.txt
  * Redistributions of files must retain the above copyright notice.
  *
- * @copyright     Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
- * @link          http://cakephp.org CakePHP(tm) Project
+ * @copyright     Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
+ * @link          https://cakephp.org CakePHP(tm) Project
  * @since         CakePHP(tm) v 1.2.0.3830
- * @license       http://www.opensource.org/licenses/mit-license.php MIT License
+ * @license       https://opensource.org/licenses/mit-license.php MIT License
  */
 
 App::uses('Multibyte', 'I18n');
@@ -66,19 +66,14 @@ class Validation {
  *
  * Returns true if string contains something other than whitespace
  *
- * $check can be passed as an array:
- * array('check' => 'valueToCheck');
- *
- * @param string|array $check Value to check
+ * @param string $check Value to check
  * @return bool Success
  */
 	public static function notBlank($check) {
-		if (!is_scalar($check)) {
+		if (empty($check) && !is_bool($check) && !is_numeric($check)) {
 			return false;
 		}
-		if (empty($check) && (string)$check !== '0') {
-			return false;
-		}
+
 		return static::_check($check, '/[^\s]+/m');
 	}
 
@@ -180,7 +175,7 @@ class Validation {
 				'disc'		=> '/^(?:6011|650\\d)\\d{12}$/',
 				'electron'	=> '/^(?:417500|4917\\d{2}|4913\\d{2})\\d{10}$/',
 				'enroute'	=> '/^2(?:014|149)\\d{11}$/',
-				'jcb'		=> '/^(3\\d{4}|2100|1800)\\d{11}$/',
+				'jcb'		=> '/^(3\\d{4}|2131|1800)\\d{11}$/',
 				'maestro'	=> '/^(?:5020|6\\d{3})\\d{12}$/',
 				'mc'		=> '/^(5[1-5]\\d{14})|(2(?:22[1-9]|2[3-9][0-9]|[3-6][0-9]{2}|7[0-1][0-9]|720)\\d{12})$/',
 				'solo'		=> '/^(6334[5-9][0-9]|6767[0-9]{2})\\d{10}(\\d{2,3})?$/',
@@ -483,7 +478,7 @@ class Validation {
 			if (function_exists('checkdnsrr') && checkdnsrr($regs[1], 'MX')) {
 				return true;
 			}
-			return is_array(gethostbynamel($regs[1]));
+			return is_array(gethostbynamel($regs[1] . '.'));
 		}
 		return false;
 	}
@@ -539,7 +534,7 @@ class Validation {
 	}
 
 /**
- * Checks whether the length of a string is greater or equal to a minimal length.
+ * Checks whether the length of a string (in characters) is greater or equal to a minimal length.
  *
  * @param string $check The string to test
  * @param int $min The minimal string length
@@ -550,7 +545,7 @@ class Validation {
 	}
 
 /**
- * Checks whether the length of a string is smaller or equal to a maximal length..
+ * Checks whether the length of a string (in characters) is smaller or equal to a maximal length..
  *
  * @param string $check The string to test
  * @param int $max The maximal string length
@@ -558,6 +553,28 @@ class Validation {
  */
 	public static function maxLength($check, $max) {
 		return mb_strlen($check) <= $max;
+	}
+
+/**
+ * Checks whether the length of a string (in bytes) is greater or equal to a minimal length.
+ *
+ * @param string $check The string to test
+ * @param int $min The minimal string length
+ * @return bool Success
+ */
+	public static function minLengthBytes($check, $min) {
+		return strlen($check) >= $min;
+	}
+
+/**
+ * Checks whether the length of a string (in bytes) is smaller or equal to a maximal length..
+ *
+ * @param string $check The string to test
+ * @param int $max The maximal string length
+ * @return bool Success
+ */
+	public static function maxLengthBytes($check, $max) {
+		return strlen($check) <= $max;
 	}
 
 /**

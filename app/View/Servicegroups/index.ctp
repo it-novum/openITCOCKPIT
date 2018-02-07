@@ -24,17 +24,19 @@
 //	confirmation.
 ?>
 <?php $this->Paginator->options(['url' => $this->params['named']]); ?>
-<div class="row">
+<div class="row" xmlns="http://www.w3.org/1999/html">
     <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
         <h1 class="page-title txt-color-blueDark">
             <i class="fa fa-cogs fa-fw "></i>
             <?php echo __('Monitoring'); ?>
             <span>>
                 <?php echo __('Service Groups'); ?>
-			</span>
+            </span>
         </h1>
     </div>
 </div>
+
+<massdelete></massdelete>
 
 <section id="widget-grid" class="">
     <div class="row">
@@ -42,37 +44,23 @@
             <div class="jarviswidget jarviswidget-color-blueDark" id="wid-id-1" data-widget-editbutton="false">
                 <header>
                     <div class="widget-toolbar" role="menu">
-                        <?php
-                        if ($this->Acl->hasPermission('add')):
-                            echo $this->Html->link(__('New'), '/'.$this->params['controller'].'/add', ['class' => 'btn btn-xs btn-success', 'icon' => 'fa fa-plus']);
-                            echo " "; //Fiox HTML
-                        endif;
-                        echo $this->Html->link(__('Filter'), 'javascript:', ['class' => 'oitc-list-filter btn btn-xs btn-primary toggle', 'hide-on-render' => 'true', 'icon' => 'fa fa-filter']);
-                        if ($isFilter):
-                            echo " "; //Fix HTML
-                            echo $this->ListFilter->resetLink(null, ['class' => 'btn-danger btn-xs', 'icon' => 'fa fa-times']);
-                        endif;
-                        ?>
+                        <button type="button" class="btn btn-xs btn-default" ng-click="load()">
+                            <i class="fa fa-refresh"></i>
+                            <?php echo __('Refresh'); ?>
+                        </button>
+
+                        <?php if ($this->Acl->hasPermission('add')): ?>
+                            <a href="/servicegroups/add" class="btn btn-xs btn-success">
+                                <i class="fa fa-plus"></i>
+                                <?php echo __('New'); ?>
+                            </a>
+                        <?php endif; ?>
+                        <button type="button" class="btn btn-xs btn-primary" ng-click="triggerFilter()">
+                            <i class="fa fa-filter"></i>
+                            <?php echo __('Filter'); ?>
+                        </button>
                     </div>
-                    <div class="widget-toolbar" role="menu">
-                        <a href="javascript:void(0);" class="dropdown-toggle selector" data-toggle="dropdown"><i
-                                    class="fa fa-lg fa-table"></i></a>
-                        <ul class="dropdown-menu arrow-box-up-right pull-right">
-                            <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left"
-                                                        my-column="1"><input type="checkbox" class="pull-left"/>
-                                    &nbsp; <?php echo __('Service Group Name'); ?></a></li>
-                            <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left"
-                                                        my-column="2"><input type="checkbox" class="pull-left"/>
-                                    &nbsp; <?php echo __('Description'); ?></a></li>
-                            <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left"
-                                                        my-column="3"><input type="checkbox" class="pull-left"/>
-                                    &nbsp; <?php echo __('Services'); ?></a></li>
-                            <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left"
-                                                        my-column="4"><input type="checkbox" class="pull-left"/>
-                                    &nbsp; <?php echo __('Service Templates'); ?></a></li>
-                        </ul>
-                        <div class="clearfix"></div>
-                    </div>
+
                     <div class="jarviswidget-ctrls" role="menu">
                     </div>
                     <span class="widget-icon hidden-mobile"> <i class="fa fa-cogs"></i> </span>
@@ -80,117 +68,168 @@
                 </header>
                 <div>
                     <div class="widget-body no-padding">
-                        <?php echo $this->ListFilter->renderFilterbox($filters, [], '<i class="fa fa-filter"></i> '.__('Filter'), false, false); ?>
+
+                        <div class="list-filter well" ng-show="showFilter">
+                            <h3><i class="fa fa-filter"></i> <?php echo __('Filter'); ?></h3>
+                            <div class="row">
+                                <div class="col-xs-12 col-md-6">
+                                    <div class="form-group smart-form">
+                                        <label class="input"> <i class="icon-prepend fa fa-cogs"></i>
+                                            <input type="text" class="input-sm"
+                                                   placeholder="<?php echo __('Filter by service group name'); ?>"
+                                                   ng-model="filter.container.name"
+                                                   ng-model-options="{debounce: 500}">
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-xs-12 col-md-6">
+                                    <div class="form-group smart-form">
+                                        <label class="input"> <i class="icon-prepend fa fa-filter"></i>
+                                            <input type="text" class="input-sm"
+                                                   placeholder="<?php echo __('Filter by description'); ?>"
+                                                   ng-model="filter.servicegroup.description"
+                                                   ng-model-options="{debounce: 500}">
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-xs-12">
+                                    <div class="pull-right margin-top-10">
+                                        <button type="button" ng-click="resetFilter()"
+                                                class="btn btn-xs btn-danger">
+                                            <?php echo __('Reset Filter'); ?>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="mobile_table">
                             <table id="servicegroup_list" class="table table-striped table-hover table-bordered smart-form"
                                    style="">
                                 <thead>
                                 <tr>
-                                    <?php $order = $this->Paginator->param('order'); ?>
-                                    <th class="no-sort" style="width: 15px;"><i class="fa fa-check-square-o fa-lg"></i>
+                                    <th class="no-sort sorting_disabled width-15">
+                                        <i class="fa fa-check-square-o fa-lg"></i>
                                     </th>
-                                    <th class="select_datatable no-sort"><?php echo $this->Utils->getDirection($order, 'Container.name');
-                                        echo $this->Paginator->sort('Container.name', __('Servicegroup name')); ?></th>
-                                    <th class="no-sort"><?php echo $this->Utils->getDirection($order, 'Servicegroup.description');
-                                        echo $this->Paginator->sort('Servicegroup.description', __('Description')); ?></th>
-                                    <th class="no-sort"><?php echo __('Services'); ?></th>
-                                    <th class="no-sort"><?php echo __('Service Templates'); ?></th>
-                                    <th class="no-sort"></th>
+                                    <th class="no-sort" ng-click="orderBy('Container.name')">
+                                        <i class="fa" ng-class="getSortClass('Container.name')"></i>
+                                        <?php echo __('Service group name'); ?>
+                                    </th>
+                                    <th class="no-sort" ng-click="orderBy('Servicegroup.description')">
+                                        <i class="fa" ng-class="getSortClass('Servicegroup.description')"></i>
+                                        <?php echo __('Description'); ?>
+                                    </th>
+                                    <th class="no-sort">
+                                        <?php echo __('Assigned services'); ?>
+                                    </th>
+                                    <th class="no-sort">
+                                        <?php echo __('Assigned service templates'); ?>
+                                    </th>
+                                    <th class="no-sort text-center">
+                                        <i class="fa fa-cog fa-lg"></i>
+                                    </th>
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <?php foreach ($all_servicegroups as $servicegroup): ?>
-                                    <?php $allowEdit = $this->Acl->isWritableContainer($servicegroup['Container']['parent_id']); ?>
-                                    <tr>
-                                        <td class="text-center">
-                                            <?php if ($this->Acl->hasPermission('edit') && $allowEdit): ?>
-                                                <input class="massChange" type="checkbox"
-                                                       name="servicegroup[<?php echo $servicegroup['Servicegroup']['id']; ?>]"
-                                                       servicegroupname="<?php echo h($servicegroup['Container']['name']); ?>"
-                                                       value="<?php echo $servicegroup['Servicegroup']['id']; ?>"/>
-                                            <?php endif; ?>
-                                        </td>
-                                        <td><?php echo $servicegroup['Container']['name']; ?></td>
-                                        <td><?php echo $servicegroup['Servicegroup']['description']; ?></td>
-                                        <td>
+                                <tr ng-repeat="servicegroup in servicegroups">
+                                    <td class="text-center" class="width-15">
+                                        <input type="checkbox"
+                                               ng-model="massChange[servicegroup.Servicegroup.id]"
+                                               ng-show="servicegroup.Servicegroup.allowEdit">
+                                    </td>
+                                    <td>
+                                        {{ servicegroup.Container.name }}
+                                    </td>
+                                    <td>
+                                        {{ servicegroup.Servicegroup.description }}
+                                    </td>
+                                    <td>
+                                        <ul class="list-unstyled">
+                                            <li ng-repeat="service in servicegroup.Service">
+                                                <a href="hosts/edit/{{service.Host.id}}" ng-if="service.Host.allowEdit">
+                                                    {{ service.Host.name }}
+                                                </a>
+                                                <span ng-if="!service.Host.allowEdit">
+                                                    {{ service.Host.name }}
+                                                </span>
+                                                /
+                                                <a href="services/edit/{{service.id}}" ng-if="service.allowEdit">
+                                                    {{ (service.name) ? service.name : service.Servicetemplate.name }}
+                                                </a>
+                                                <span ng-if="!service.allowEdit">
+                                                    {{ (service.name) ? service.name : service.Servicetemplate.name }}
+                                                </span>
+                                            </li>
+                                        </ul>
+                                    </td>
+                                    <td>
+                                        <ul class="list-unstyled">
                                             <ul class="list-unstyled">
-                                                <?php
-                                                foreach ($servicegroup['Service'] as $service):
-                                                    echo '<li>';
-                                                    $serviceName = $service['name'];
-                                                    if ($serviceName === null || $serviceName === ''):
-                                                        $serviceName = $service['Servicetemplate']['name'];
-                                                    endif;
-                                                    if ($this->Acl->hasPermission('edit', 'hosts')): ?>
-                                                        <a href="<?php echo Router::url(['controller' => 'hosts', 'action' => 'edit', $service['Host']['id']]); ?>"><?php echo h($service['Host']['name']); ?></a>
-                                                        <?php
-                                                    else:
-                                                        echo h($service['Host']['name']);
-                                                    endif;
-                                                    echo "/";
-                                                    if ($this->Acl->hasPermission('edit', 'services')): ?>
-                                                        <a href="<?php echo Router::url(['controller' => 'services', 'action' => 'edit', $service['id']]); ?>"><?php echo h($serviceName); ?></a>
-                                                        <?php
-                                                    else:
-                                                        echo h($serviceName);
-                                                    endif;
-                                                    echo '</li>';
-                                                endforeach;
-                                                ?>
+                                                <li ng-repeat="servicetemplate in servicegroup.Servicetemplate">
+                                                    <a href="servicetemplates/edit/{{servicetemplate.id}}"
+                                                       ng-if="servicetemplate.allowEdit">
+                                                        {{ servicetemplate.name }}
+                                                    </a>
+
+                                                    <span ng-if="!servicetemplate.allowEdit">
+                                                        {{ servicetemplate.name }}
+                                                    </span>
+                                                </li>
                                             </ul>
-                                        </td>
-                                        <td>
-                                            <ul class="list-unstyled">
-                                                <?php
-                                                foreach ($servicegroup['Servicetemplate'] as $servicetemplate):
-                                                    echo '<li>';
-                                                    if ($this->Acl->hasPermission('edit', 'servicetemplates')): ?>
-                                                        <a href="<?php echo Router::url(['controller' => 'servicetemplates', 'action' => 'edit', $servicetemplate['id']]); ?>"><?php echo h($servicetemplate['template_name'].' ('.$servicetemplate['name'].')'); ?></a>
-                                                        <?php
-                                                    else:
-                                                        echo h($servicetemplate['name']);
-                                                    endif;
-                                                    echo '</li>';
-                                                endforeach;
-                                                ?>
-                                            </ul>
-                                        </td>
-                                        <td>
-                                            <center>
-                                                <?php if ($this->Acl->hasPermission('edit') && $allowEdit): ?>
-                                                    <a href="/<?php echo $this->params['controller']; ?>/edit/<?php echo $servicegroup['Servicegroup']['id']; ?>"
-                                                       data-original-title="<?php echo __('edit'); ?>"><i id="list_edit"
-                                                                                                          class="fa fa-gear fa-lg txt-color-teal"></i></a>
-                                                <?php endif; ?>
-                                            </center>
-                                        </td>
-                                    </tr>
-                                <?php endforeach; ?>
+                                        </ul>
+                                    </td>
+                                    <td class="text-center">
+                                        <a href="/servicegroups/edit/{{servicegroup.Servicegroup.id}}"
+                                           ng-if="servicegroup.Servicegroup.allowEdit">
+                                            <i class="fa fa-cog fa-lg txt-color-teal"></i>
+                                        </a>
+                                    </td>
+                                </tr>
                                 </tbody>
                             </table>
                         </div>
 
-                        <?php echo $this->element('servicegroup_mass_changes'); ?>
-
-                        <div style="padding: 5px 10px;">
-                            <div class="row">
-                                <div class="col-sm-6">
-                                    <div class="dataTables_info" style="line-height: 32px;"
-                                         id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('Page').' {:page} '.__('of').' {:pages}, '.__('Total').' {:count} '.__('entries')); ?></div>
-                                </div>
-                                <div class="col-sm-6 text-right">
-                                    <div class="dataTables_paginate paging_bootstrap">
-                                        <?php echo $this->Paginator->pagination([
-                                            'ul' => 'pagination',
-                                        ]); ?>
-                                    </div>
+                        <div class="row margin-top-10 margin-bottom-10">
+                            <div class="row margin-top-10 margin-bottom-10" ng-show="servicegroups.length == 0">
+                                <div class="col-xs-12 text-center txt-color-red italic">
+                                    <?php echo __('No entries match the selection'); ?>
                                 </div>
                             </div>
                         </div>
+
+                        <div class="row margin-top-10 margin-bottom-10">
+                            <div class="col-xs-12 col-md-2 text-muted text-center">
+                                <span ng-show="selectedElements > 0">({{selectedElements}})</span>
+                            </div>
+                            <div class="col-xs-12 col-md-2">
+                                <span ng-click="selectAll()" class="pointer">
+                                    <i class="fa fa-lg fa-check-square-o"></i>
+                                    <?php echo __('Select all'); ?>
+                                </span>
+                            </div>
+                            <div class="col-xs-12 col-md-2">
+                                <span ng-click="undoSelection()" class="pointer">
+                                    <i class="fa fa-lg fa-square-o"></i>
+                                    <?php echo __('Undo selection'); ?>
+                                </span>
+                            </div>
+                            <div class="col-xs-12 col-md-2 txt-color-red">
+                                <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">
+                                    <i class="fa fa-lg fa-trash-o"></i>
+                                    <?php echo __('Delete all'); ?>
+                                </span>
+                            </div>
+                            <div class="col-xs-12 col-md-2">
+                                <a ng-href="{{ linkForPdf() }}" class="a-clean">
+                                    <i class="fa fa-lg fa-file-pdf-o"></i>
+                                    <?php echo __('List as PDF'); ?>
+                                </a>
+                            </div>
+                        </div>
+                        <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>
                     </div>
-
                 </div>
-
             </div>
+        </article>
     </div>
 </section>

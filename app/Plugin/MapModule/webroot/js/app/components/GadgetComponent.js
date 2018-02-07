@@ -278,39 +278,58 @@ App.Components.GadgetComponent = Frontend.Component.extend({
         //max min current_value
         if (perfdata[0] != undefined) {
             if (perfdata[0].max != '') {
-                value = parseInt(perfdata[0].current_value) / parseInt(perfdata[0].max) * 100;
+                value = (parseInt(perfdata[0].current_value) / parseInt(perfdata[0].max))*100;
+                //todo fix me
+                if(value > 90){
+                    value = 90;
+                }
             } else {
                 value = 0;
             }
         }
-
         x = 0;
         y = 10;
-
         //radii for the ellipse
         var rx = width / 2;
         var ry = 10;
-
         //calculate positions for the Cylinder
         var ellipseCx = x + rx;
-        var ellipseBottomCy = y + height;
+        var ellipseBottomCy = height;
         var rectX = x;
         var rectY = y;
         var ellipseTopCy = y;
-
-        var pxValue = height * (value / 100);
-        var newRectY = (height - pxValue) + rectY;
+        var pxValue = height * value/100;
+        var newRectY = (height - pxValue);
         var newTopEllipseY = newRectY;
-
-        var topEllipseColor = color;
 
         //the id schema must be like this "cyliner_"+id
         var cylinder = svg.group('cylinder_' + id);
         var cylinerGroup = svg.group(cylinder, 'cylinder_' + id)
         var defs = svg.defs();
+        var stateColor = 'Gray';
+
+        if (opt.state) {
+            switch (opt.state) {
+                case '0':
+                    stateColor = 'Green';
+                    break;
+                case '1':
+                    stateColor = 'Yellow';
+                    break;
+                case '2':
+                    stateColor = 'Red';
+                    break;
+            }
+        }
 
         svg.linearGradient(defs, 'fadeGreen_' + id, [[0, '#00cc00'], [0.2, '#5BFF5B'], [0.7, '#006600']]);
         svg.linearGradient(defs, 'fadeDarkGreen_' + id, [[0, '#00AD00'], [0.6, '#006600'], [0.7, '#005600']]);
+
+        svg.linearGradient(defs, 'fadeYellow_' + id, [[0, '#FFCC00'], [0.2, '#FFFF5B'], [0.7, '#E5BB00']]);
+        svg.linearGradient(defs, 'fadeDarkYellow_' + id, [[0, '#FFAD00'], [0.6, '#E5BB00'], [0.7, '#E2B100']]);
+
+        svg.linearGradient(defs, 'fadeRed_' + id, [[0, '#CE0D00'], [0.2, '#FF0000'], [0.7, '#BF1600']]);
+        svg.linearGradient(defs, 'fadeDarkRed_' + id, [[0, '#c91400'], [0.6, '#BF1600'], [0.7, '#BF0600']]);
 
         svg.linearGradient(defs, 'fadeGray_' + id, [[0.0, '#AFAFAF'], [0.2, '#FFFFFF'], [0.7, '#AFAFAF'], [1.0, '#A0A0A0']], 0, 0, 1);
         svg.linearGradient(defs, 'fadeDarkGray_' + id, [[0.0, '#757575'], [0.2, '#939393'], [1.0, '#757575']]);
@@ -319,42 +338,53 @@ App.Components.GadgetComponent = Frontend.Component.extend({
         //outer Cylinder
         //bottom ellipse
         svg.ellipse(cylinerGroup, ellipseCx, ellipseBottomCy - 10, rx, ry, {
-            fill: 'url(#fadeGray_' + id + ')', fillOpacity: 0.2
+            fill: 'url(#fadeDarkGray_' + id + ')',
+            fillOpacity: 0.1,
+            id: 'background_' + id,
+            strokeWidth: 2,
+            stroke: '#CECECE',
+            strokeOpacity: 0.5
+        });
+
+        //inner Cylinder (the value)
+        //bottom ellipse
+        svg.ellipse(cylinerGroup, ellipseCx, ellipseBottomCy - 10 , rx, ry, {
+            fill: 'url(#fadeDark'+stateColor+'_' + id + ')',
+            fillOpacity: 0.8
+
         });
         //center rect
-        svg.rect(cylinerGroup, rectX, rectY - 10, width, height + 10, rx, ry, {
+        if(value > 1){
+            svg.rect(cylinerGroup, rectX, newRectY - 10 , width, pxValue + 10, rx, ry, {
+                fill: 'url(#fade'+stateColor+'_' + id + ')',
+                fillOpacity: 0.9
+            });
+            //top ellipse
+            svg.ellipse(cylinerGroup, ellipseCx, newTopEllipseY, rx, ry, {
+                fill: 'url(#fadeDark' + stateColor + '_' + id + ')',
+                fillOpacity: 0.8
+            });
+        }
+        //outer Cylinder
+        //top ellipse
+        svg.ellipse(cylinerGroup, ellipseCx, ellipseTopCy, rx, ry, {
+            fill: 'url(#fadeDarkGray_' + id + ')',
+            fillOpacity: 0.0,
+            strokeWidth: 2,
+            stroke: '#CECECE',
+            strokeOpacity: 0.4
+        });
+
+        //center rect
+        svg.rect(cylinerGroup, rectX, rectY - 10, width, height , rx, ry, {
                 fill: 'url(#fadeGray_' + id + ')',
                 fillOpacity: 0.5,
                 id: 'background_' + id,
                 strokeWidth: 2,
                 stroke: '#CECECE',
-                strokeOpacity: 0.2
+                strokeOpacity: 0.3
             }
         );
-        //top ellipse
-        svg.ellipse(cylinerGroup, ellipseCx, ellipseTopCy, rx, ry, {
-            fill: 'url(#fadeDarkGray_' + id + ')',
-            fillOpacity: 0.3,
-            strokeWidth: 2,
-            stroke: '#CECECE',
-            strokeOpacity: 0.2
-        });
-
-        //inner Cylinder (the value)
-        if (value > 1) {
-            //bottom ellipse
-            svg.ellipse(cylinerGroup, ellipseCx, ellipseBottomCy - 11, rx, ry, {
-                fill: 'url(#fadeGreen_' + id + ')'
-            });
-            //center rect
-            svg.rect(cylinerGroup, rectX, newRectY - 10, width, pxValue, {
-                fill: 'url(#fadeGreen_' + id + ')'
-            });
-        }
-        //top ellipse
-        svg.ellipse(cylinerGroup, ellipseCx, newTopEllipseY - 10, rx, ry, {
-            fill: 'url(#fade' + ((value == 1) ? 'darkGray' : 'Green') + '_' + id + ')'
-        });
 
         //container Div
         if (containSVG) {
@@ -704,12 +734,15 @@ App.Components.GadgetComponent = Frontend.Component.extend({
     },
 
     drawRRDGraph: function (svgContainerId, opt) {
+        var initSizeX = 300;
+        var initSizeY = 173;
+
         var opt = opt || {};
         var id = (opt.id == false || opt.id != null ? opt.id : '');
         var x = opt.x || 0;
         var y = opt.y || 0;
-        var sizeX = opt.sizeX || 300;
-        var sizeY = opt.sizeY || 173;
+        var sizeX = parseInt(opt.sizeX, 10) || initSizeX;
+        var sizeY = parseInt(opt.sizeY, 10) || initSizeY;
         var state = opt.state || '';
         var containSVG = (opt.contain == null ? true : opt.contain);
         var containerData = opt.containerData || false;
@@ -739,7 +772,6 @@ App.Components.GadgetComponent = Frontend.Component.extend({
             }
         }
 
-
         //SVG Container
         $('#' + svgContainerId).css({
             'top': y + 'px',
@@ -755,6 +787,10 @@ App.Components.GadgetComponent = Frontend.Component.extend({
             svg.image(RRDGroup, 0, 0, sizeX, sizeY, imageLink, {});
         } else {
             var defs = svg.defs();
+
+            var scaleX = sizeX/initSizeX;
+            var scaleY = sizeY/initSizeY;
+
             svg.linearGradient(defs, 'fadeGreen', [[0, '#00cc00'], [0.2, '#5BFF5B'], [0.9, '#006600']]);
             svg.linearGradient(defs, 'fadeDarkGreen', [[0, '#00AD00'], [0.6, '#006600'], [0.7, '#005600']]);
 
@@ -768,26 +804,32 @@ App.Components.GadgetComponent = Frontend.Component.extend({
                 fill: 'black',
                 markerUnits: 'strokeWidth',
                 viewBox: '0 0 20 20',
-                fillOpacity: 0.3
+                fillOpacity: 0.3,
+                transform: 'scale('+scaleX+' '+scaleY+')'
             });
             svg.path(markerVert, arrow_path.move(0, 0).line(20, 5).line(0, 10).close());
             svg.line(element_group, startX, 170, startX, 10, {
                 strokeWidth: 1,
                 stroke: 'black',
                 markerEnd: 'url(#myMarker)',
-                fillOpacity: 0.3
+                fillOpacity: 0.3,
+                transform: 'scale('+scaleX+' '+scaleY+')'
             });
             svg.path(markerVert, arrow_path.move(0, 0).line(20, 5).line(0, 10).close());
             svg.line(element_group, startX, 170, 280, 170, {
                 strokeWidth: 1,
                 stroke: 'black',
                 markerEnd: 'url(#myMarker)',
-                fillOpacity: 0.3
+                fillOpacity: 0.3,
+                transform: 'scale('+scaleX+' '+scaleY+')'
             });
 
 
             svg.polygon([[startX, 170], [startX, 40], [30, 75], [50, 70], [80, 110], [110, 85], [140, 90], [170, 100], [200, 130], [230, 100], [260, 95], [280, 60], [280, 170]],
-                {fill: 'url(#fadeGreen)', stroke: 'url(#fadeDarkGreen)', strokeWidth: 1, fillOpacity: 0.5});
+                {fill: '#b2d6a4', stroke: '#a1c593', strokeWidth: 0.5, fillOpacity: 0.5,
+                    transform: 'scale('+scaleX+' '+scaleY+')'
+                });
+
         }
 
         //container Div

@@ -68,4 +68,12 @@ class Contact {
         return $this->name;
     }
 
+    /**
+     * @return array
+     */
+    public function toArray(){
+        $arr = get_object_vars($this);
+        return $arr;
+    }
+
 }

@@ -42,9 +42,9 @@ class SyncTablesShell extends AppShell {
     ];
 
     public function main(){
-        //$this->syncHosts();
-        //$this->syncContacts();
-        //$this->syncCommands();
+        $this->syncHosts();
+        $this->syncContacts();
+        $this->syncCommands();
         $this->syncServices();
 
     }

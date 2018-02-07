@@ -80,6 +80,8 @@
                                             echo $this->Paginator->sort('full_name', __('Full name')); ?></th>
                                         <th><?php echo $this->Utils->getDirection($order, 'email');
                                             echo $this->Paginator->sort('email', __('Email')); ?></th>
+                                        <th><?php echo $this->Utils->getDirection($order, 'phone');
+                                            echo $this->Paginator->sort('phone', __('Phone')); ?></th>
                                         <th><?php echo $this->Utils->getDirection($order, 'company');
                                             echo $this->Paginator->sort('company', __('Company')); ?></th>
                                         <th><?php echo $this->Utils->getDirection($order, 'Usergroup.name');
@@ -96,6 +98,7 @@
                                         <tr>
                                             <td><?php echo h($user['User']['full_name']); ?></td>
                                             <td><?php echo $this->Html->link(h($user['User']['email']), 'mailto:'.$user['User']['email']); ?></td>
+                                            <td><?php echo h($user['User']['phone']); ?></td>
                                             <td><?php echo h($user['User']['company']); ?></td>
                                             <td><?php echo h($user['Usergroup']['name']); ?></td>
                                             <td><?php echo h(Status::getDescription($user['User']['status'])); ?></td>

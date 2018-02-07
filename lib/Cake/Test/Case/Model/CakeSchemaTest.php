@@ -2,18 +2,18 @@
 /**
  * Test for Schema database management
  *
- * CakePHP(tm) Tests <http://book.cakephp.org/2.0/en/development/testing.html>
- * Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
+ * CakePHP(tm) Tests <https://book.cakephp.org/2.0/en/development/testing.html>
+ * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
  *
  * Licensed under The MIT License
  * For full copyright and license information, please see the LICENSE.txt
  * Redistributions of files must retain the above copyright notice
  *
- * @copyright     Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
- * @link          http://book.cakephp.org/2.0/en/development/testing.html CakePHP(tm) Tests
+ * @copyright     Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
+ * @link          https://book.cakephp.org/2.0/en/development/testing.html CakePHP(tm) Tests
  * @package       Cake.Test.Case.Model
  * @since         CakePHP(tm) v 1.2.0.5550
- * @license       http://www.opensource.org/licenses/mit-license.php MIT License
+ * @license       https://opensource.org/licenses/mit-license.php MIT License
  */
 
 App::uses('CakeSchema', 'Model');
@@ -173,6 +173,9 @@ class TestAppSchema extends CakeSchema {
 		'float_field' => array('type' => 'float', 'null' => false, 'length' => '5,2', 'default' => ''),
 		'decimal_field' => array('type' => 'decimal', 'length' => '6,3', 'default' => '0.000'),
 		'huge_int' => array('type' => 'biginteger'),
+		'normal_int' => array('type' => 'integer'),
+		'small_int' => array('type' => 'smallinteger'),
+		'tiny_int' => array('type' => 'tinyinteger'),
 		'bool' => array('type' => 'boolean', 'null' => false, 'default' => false),
 		'indexes' => array('PRIMARY' => array('column' => 'id', 'unique' => true)),
 		'tableParameters' => array()
@@ -360,6 +363,39 @@ class SchemaCrossDatabaseFixture extends CakeTestFixture {
 	public $records = array(
 		array('id' => 1, 'name' => 'First'),
 		array('id' => 2, 'name' => 'Second'),
+	);
+}
+
+/**
+ * NonConventionalPrimaryKeyFixture class
+ *
+ * @package       Cake.Test.Case.Model
+ */
+class NonConventionalPrimaryKeyFixture extends CakeTestFixture {
+
+/**
+ * name property
+ *
+ * @var string
+ */
+	public $name = 'NonConventional';
+
+/**
+ * table property
+ *
+ * @var string
+ */
+	public $table = 'non_conventional';
+
+/**
+ * fields property
+ *
+ * @var array
+ */
+	public $fields = array(
+		'version_id' => array('type' => 'integer', 'key' => 'primary'),
+		'id' => array('type' => 'integer'),
+		'name' => 'string'
 	);
 }
 
@@ -647,6 +683,33 @@ class CakeSchemaTest extends CakeTestCase {
 		$this->assertTrue(isset($read['tables']['cross_database']));
 
 		$fixture->drop($db);
+	}
+
+/**
+ * testSchemaRead method when a primary key is on a non-conventional column
+ *
+ * @return void
+ */
+	public function testSchemaReadWithNonConventionalPrimaryKey() {
+		$db = ConnectionManager::getDataSource('test');
+		$fixture = new NonConventionalPrimaryKeyFixture();
+		$fixture->create($db);
+
+		$read = $this->Schema->read(array(
+			'connection' => 'test',
+			'name' => 'TestApp',
+			'models' => false
+		));
+		$fixture->drop($db);
+
+		$this->assertArrayHasKey('non_conventional', $read['tables']);
+		$versionIdHasKey = isset($read['tables']['non_conventional']['version_id']['key']);
+		$this->assertTrue($versionIdHasKey, 'version_id key should be set');
+		$versionIdKeyIsPrimary = $read['tables']['non_conventional']['version_id']['key'] === 'primary';
+		$this->assertTrue($versionIdKeyIsPrimary, 'version_id key should be primary');
+
+		$idHasKey = isset($read['tables']['non_conventional']['id']['key']);
+		$this->assertFalse($idHasKey, 'id key should not be set');
 	}
 
 /**
