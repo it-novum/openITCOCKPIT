@@ -22,22 +22,20 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
-/**
- * @deprecated Do not you this Model anymore
- */
-class Downtime extends NagiosModuleAppModel
-{
-    public $useTable = 'downtimehistory';
-    public $primaryKey = 'downtimehistory_id';
-    public $tablePrefix = 'nagios_';
-    public $recursive = 2;
-    public $belongsTo = [
-        'Objects' => [
-            'className'  => 'NagiosModule.Objects',
-            'foreignKey' => 'object_id',
-        ],
-    ];
-
-    //See http://nagios.sourceforge.net/docs/ndoutils/NDOUtils_DB_Model.pdf and search for "downtimehistory Table"
-    public $downtime_type = '1,2';
-}
+?>
+<div class="row">
+    <div class="col-xs-12 col-md-2 text-muted">
+        <center><span id="selectionCount"></span></center>
+    </div>
+    <div class="col-xs-12 col-md-2 "><span id="selectAllDowntimes" class="pointer"><i
+                class="fa fa-lg fa-check-square-o"></i> <?php echo __('Select all'); ?></span></div>
+    <div class="col-xs-12 col-md-2"><span id="untickAllDowntimes" class="pointer"><i
+                class="fa fa-lg fa-square-o"></i> <?php echo __('Undo selection'); ?></span></div>
+    <div class="col-xs-12 col-md-2">
+        <?php if ($this->Acl->hasPermission('delete','Services','')): ?>
+            <a href="javascript:void(0);" id="deleteAllServiceDowntimes" class="txt-color-red"
+               style="text-decoration: none;"> <i
+                    class="fa fa-lg fa-trash-o"></i> <?php echo __('Delete'); ?></a>
+        <?php endif; ?>
+    </div>
+</div>

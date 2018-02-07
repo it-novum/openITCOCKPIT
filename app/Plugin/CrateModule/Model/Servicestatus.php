@@ -39,9 +39,7 @@ class Servicestatus extends CrateModuleAppModel {
      *
      * @return array
      */
-    private function byUuidMagic($uuid = null, $options = []){
-        $return = [];
-
+    private function byUuidMagic($uuid = null, $options = []) {
         $_options = [
             'conditions' => [
                 'Servicestatus.service_description' => $uuid,
@@ -60,6 +58,9 @@ class Servicestatus extends CrateModuleAppModel {
 
         $dbresult = $this->find($findType, $options);
 
+        if (empty($dbresult)) {
+            return false;
+        }
         if ($findType === 'first') {
             return [
                 'Servicestatus' => $dbresult['Servicestatus'],
@@ -75,18 +76,18 @@ class Servicestatus extends CrateModuleAppModel {
         return $result;
     }
 
-    public function byUuid($uuid, $options = []){
+    public function byUuid($uuid, $options = []) {
         return $this->byUuidMagic($uuid, $options);
     }
 
-    public function byUuids($uuids, $options = []){
+    public function byUuids($uuids, $options = []) {
         if (!is_array($uuids)) {
             throw new InvalidArgumentException('$uuids need to be an array!');
         }
         return $this->byUuidMagic($uuids, $options);
     }
 
-    public function virtualFieldsForIndexAndServiceList(){
+    public function virtualFieldsForIndexAndServiceList() {
         $this->virtualFields['"Service.servicename"'] = 'Service.name';
 
     }
@@ -96,7 +97,7 @@ class Servicestatus extends CrateModuleAppModel {
      * @param array $conditions
      * @return array
      */
-    public function getServiceIndexQuery(ServiceConditions $ServiceConditions, $conditions = []){
+    public function getServiceIndexQuery(ServiceConditions $ServiceConditions, $conditions = []) {
         if (isset($conditions['Service.keywords rlike'])) {
             $values = [];
             foreach (explode('|', $conditions['Service.keywords rlike']) as $value) {
@@ -106,23 +107,23 @@ class Servicestatus extends CrateModuleAppModel {
             $conditions['Service.tags rlike'] = implode('|', $values);
         }
 
-        if(isset($conditions['Servicestatus.problem_has_been_acknowledged'])){
+        if (isset($conditions['Servicestatus.problem_has_been_acknowledged'])) {
             $acknowledgedCondition = [];
-            foreach($conditions['Servicestatus.problem_has_been_acknowledged'] as $condition){
+            foreach ($conditions['Servicestatus.problem_has_been_acknowledged'] as $condition) {
                 $acknowledgedCondition[] = (bool)$condition;
             }
             $conditions['Servicestatus.problem_has_been_acknowledged'] = $acknowledgedCondition;
         }
 
-        if(isset($conditions['Servicestatus.active_checks_enabled'])){
+        if (isset($conditions['Servicestatus.active_checks_enabled'])) {
             $ActiveChecksEnabledCondition = [];
-            foreach($conditions['Servicestatus.active_checks_enabled'] as $condition){
+            foreach ($conditions['Servicestatus.active_checks_enabled'] as $condition) {
                 $ActiveChecksEnabledCondition[] = (bool)$condition;
             }
             $conditions['Servicestatus.active_checks_enabled'] = $ActiveChecksEnabledCondition;
         }
 
-        if(isset($conditions['Service.servicename LIKE'])){
+        if (isset($conditions['Service.servicename LIKE'])) {
             $serviceNameCondition = $conditions['Service.servicename LIKE'];
             unset($conditions['Service.servicename LIKE']);
             $conditions['Service.name LIKE'] = $serviceNameCondition;
@@ -191,7 +192,7 @@ class Servicestatus extends CrateModuleAppModel {
             'order' => $ServiceConditions->getOrder()
         ];
 
-        if($ServiceConditions->getHostId()){
+        if ($ServiceConditions->getHostId()) {
             $query['conditions']['Service.host_id'] = $ServiceConditions->getHostId();
         }
 

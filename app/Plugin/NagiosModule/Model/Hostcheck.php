@@ -35,6 +35,7 @@ class Hostcheck extends NagiosModuleAppModel
         'Objects' => [
             'className'  => 'NagiosModule.Objects',
             'foreignKey' => 'host_object_id',
+            'type' => 'INNER'
         ],
     ];
 
@@ -50,6 +51,14 @@ class Hostcheck extends NagiosModuleAppModel
                 'start_time >' => date('Y-m-d H:i:s', $HostcheckConditions->getFrom()),
                 'start_time <' => date('Y-m-d H:i:s', $HostcheckConditions->getTo())
             ],
+            'fields' => [
+                'Hostcheck.state',
+                'Hostcheck.start_time',
+                'Hostcheck.current_check_attempt',
+                'Hostcheck.max_check_attempts',
+                'Hostcheck.state_type',
+                'Hostcheck.output',
+            ],
             'order' => $HostcheckConditions->getOrder(),
             'limit' => $HostcheckConditions->getLimit(),
         ];
@@ -63,7 +72,7 @@ class Hostcheck extends NagiosModuleAppModel
         }
 
         //Merge ListFilter conditions
-        $query['conditions'] = Hash::merge($paginatorConditions, $query['conditions']);
+        $query['conditions'] = Hash::merge($query['conditions'], $paginatorConditions);
 
         return $query;
     }

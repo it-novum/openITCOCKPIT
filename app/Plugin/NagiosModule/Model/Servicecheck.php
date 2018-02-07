@@ -35,6 +35,7 @@ class Servicecheck extends NagiosModuleAppModel
         'Objects' => [
             'className'  => 'NagiosModule.Objects',
             'foreignKey' => 'service_object_id',
+            'type' => 'INNER'
         ],
     ];
 
@@ -50,6 +51,15 @@ class Servicecheck extends NagiosModuleAppModel
                 'start_time >' => date('Y-m-d H:i:s', $ServicecheckConditions->getFrom()),
                 'start_time <' => date('Y-m-d H:i:s', $ServicecheckConditions->getTo())
             ],
+            'fields' => [
+                'Servicecheck.state',
+                'Servicecheck.start_time',
+                'Servicecheck.current_check_attempt',
+                'Servicecheck.max_check_attempts',
+                'Servicecheck.state_type',
+                'Servicecheck.output',
+                'Servicecheck.perfdata'
+            ],
             'order' => $ServicecheckConditions->getOrder(),
             'limit' => $ServicecheckConditions->getLimit(),
         ];
@@ -63,7 +73,7 @@ class Servicecheck extends NagiosModuleAppModel
         }
 
         //Merge ListFilter conditions
-        $query['conditions'] = Hash::merge($paginatorConditions, $query['conditions']);
+        $query['conditions'] = Hash::merge($query['conditions'], $paginatorConditions);
 
         return $query;
     }

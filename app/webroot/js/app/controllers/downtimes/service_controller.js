@@ -25,10 +25,14 @@
 App.Controllers.DowntimesServiceController = Frontend.AppController.extend({
     $table: null,
 
-    components: ['WebsocketSudo', 'Externalcommand', 'Ajaxloader'],
+    components: ['WebsocketSudo', 'Externalcommand', 'Ajaxloader', 'Masschange'],
 
     _initialize: function () {
         var self = this;
+        this.Masschange.setup({
+            'controller': 'downtimes',
+            'useDeleteMessage': "false"
+        });
         $('.select_datatable').click(function () {
             self.fnShowHide($(this).attr('my-column'), $(this).children());
         });
