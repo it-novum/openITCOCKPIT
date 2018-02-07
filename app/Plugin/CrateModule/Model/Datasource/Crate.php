@@ -143,6 +143,21 @@ class Crate extends DboSource {
 
     public function __construct($config = null, $autoConnect = true){
         $this->config = Hash::merge($this->_baseConfig, $config);
+
+        $vars = [
+            'HTTP_PROXY',
+            'http_proxy',
+            'HTTPS_PROXY',
+            'https_proxy',
+            'FTP_PROXY',
+            'ftp_proxy',
+            'NO_PROXY',
+            'no_proxy'
+        ];
+        foreach($vars as $var){
+            putenv($var);
+        }
+
         parent::__construct($config, $autoConnect);
     }
 
@@ -1041,3 +1056,4 @@ class Crate extends DboSource {
     }
 
 }
+
