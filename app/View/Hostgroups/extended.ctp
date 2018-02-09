@@ -398,7 +398,7 @@ use itnovum\openITCOCKPIT\Core\HumanTime;
             </div>
             <?php else: ?>
 
-                <div class="alert alert-danger alert-block">
+                <div class="alert alert-info alert-block">
                     <h4 class="alert-heading"><i class="fa fa-exclamation-circle"></i> <?php echo __('No host groups available'); ?></h4>
                 </div>
 
