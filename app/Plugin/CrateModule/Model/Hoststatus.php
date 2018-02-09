@@ -39,6 +39,9 @@ class Hoststatus extends CrateModuleAppModel {
      * @return array
      */
     private function byUuidMagic($uuid = null, $options = []){
+        if($uuid === null || empty($uuid)){
+            return [];
+        }
         $_options = [
             'conditions' => [
                 'Hoststatus.hostname' => $uuid,
@@ -103,11 +106,7 @@ class Hoststatus extends CrateModuleAppModel {
         }
 
         if(isset($conditions['Hoststatus.problem_has_been_acknowledged'])){
-            $acknowledgedCondition = [];
-            foreach($conditions['Hoststatus.problem_has_been_acknowledged'] as $condition){
-                $acknowledgedCondition[] = (bool)$condition;
-            }
-            $conditions['Hoststatus.problem_has_been_acknowledged'] = $acknowledgedCondition;
+            $conditions['Hoststatus.problem_has_been_acknowledged'] = (bool)$conditions['Hoststatus.problem_has_been_acknowledged'];
         }
 
         $query = [
@@ -130,6 +129,7 @@ class Hoststatus extends CrateModuleAppModel {
             ],
             'order' => $HostConditions->getOrder()
         ];
+        //debug($query);
         return $query;
     }
 }

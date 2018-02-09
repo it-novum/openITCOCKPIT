@@ -46,6 +46,9 @@ class Hoststatus extends NagiosModuleAppModel
      */
     private function byUuidMagic($uuid = null, $options = [])
     {
+        if($uuid === null || empty($uuid)){
+            return [];
+        }
         $return = [];
 
         $_options = [

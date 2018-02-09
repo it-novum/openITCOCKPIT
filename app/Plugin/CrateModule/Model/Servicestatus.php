@@ -40,6 +40,9 @@ class Servicestatus extends CrateModuleAppModel {
      * @return array
      */
     private function byUuidMagic($uuid = null, $options = []) {
+        if($uuid === null || empty($uuid)){
+            return [];
+        }
         $_options = [
             'conditions' => [
                 'Servicestatus.service_description' => $uuid,
@@ -108,20 +111,13 @@ class Servicestatus extends CrateModuleAppModel {
         }
 
         if (isset($conditions['Servicestatus.problem_has_been_acknowledged'])) {
-            $acknowledgedCondition = [];
-            foreach ($conditions['Servicestatus.problem_has_been_acknowledged'] as $condition) {
-                $acknowledgedCondition[] = (bool)$condition;
-            }
-            $conditions['Servicestatus.problem_has_been_acknowledged'] = $acknowledgedCondition;
+            $conditions['Servicestatus.problem_has_been_acknowledged'] = (bool)$conditions['Servicestatus.problem_has_been_acknowledged'];
         }
 
         if (isset($conditions['Servicestatus.active_checks_enabled'])) {
-            $ActiveChecksEnabledCondition = [];
-            foreach ($conditions['Servicestatus.active_checks_enabled'] as $condition) {
-                $ActiveChecksEnabledCondition[] = (bool)$condition;
-            }
-            $conditions['Servicestatus.active_checks_enabled'] = $ActiveChecksEnabledCondition;
+            $conditions['Servicestatus.active_checks_enabled'] = (bool)$conditions['Servicestatus.active_checks_enabled'];
         }
+
 
         if (isset($conditions['Service.servicename LIKE'])) {
             $serviceNameCondition = $conditions['Service.servicename LIKE'];
@@ -167,7 +163,7 @@ class Servicestatus extends CrateModuleAppModel {
             'joins' => [
                 [
                     'table' => 'openitcockpit_hosts',
-                    'type' => 'LEFT',
+                    'type' => 'INNER',
                     'alias' => 'Host',
                     'conditions' => 'Host.uuid = Servicestatus.hostname',
                 ],
