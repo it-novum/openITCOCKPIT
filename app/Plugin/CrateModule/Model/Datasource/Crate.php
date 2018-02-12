@@ -336,10 +336,20 @@ class Crate extends DboSource {
             $modelsInQuery = array_merge($this->joinedModels, [$this->modelName]);
 
             foreach ($queryData['fields'] as $fieldInQuery) {
+
                 $fieldInQuery = trim($fieldInQuery);
 
                 foreach ($modelsInQuery as $modelInQuery) {
                     if (strpos($fieldInQuery, $modelInQuery . '.') !== 0) {
+                        //Is this may be a virtual field?
+                        //COUNT(DISTINCT Hoststatus.hostname) AS count
+                        foreach($this->Model->virtualFields as $virtualField => $realField){
+                            if ($fieldInQuery == sprintf('%s AS %s', $realField, $virtualField)) {
+                                $this->fieldsInQuery[] = $virtualField;
+                                continue 3;
+                            }
+                        }
+
                         continue;
                     }
                     if ($fieldInQuery === sprintf('%s.*', $modelInQuery)) {
@@ -352,6 +362,7 @@ class Crate extends DboSource {
                         foreach ($this->Model->virtualFields as $virtualField => $realField) {
                             if ($fieldInQuery === sprintf('%s AS %s', $realField, $virtualField)) {
                                 $isVirtualField = true;
+                                //Hoststatus.statetype => Hoststatus.is_hardstate
                                 $this->fieldsInQuery[] = sprintf('%s.%s', $this->modelName, $virtualField);
                             }
                         }
@@ -556,7 +567,6 @@ class Crate extends DboSource {
             $query->bindValue($i++, $offset, PDO::PARAM_INT);
             $attachedParameters[] = $offset;
         }
-
 
         return $this->executeQuery($query, $queryTemplate, [], $attachedParameters);
     }
@@ -916,6 +926,8 @@ class Crate extends DboSource {
             if (!empty($this->joins)) {
                 return $this->formatResultFindAllWithJoins($dbResult);
             }
+            debug($dbResult);
+
             return $this->formatResultFindAll($dbResult);
 
         }
@@ -963,6 +975,13 @@ class Crate extends DboSource {
 
                     if (isset($record[$keyInRecord])) {
                         $result[$modelName][$column] = $record[$keyInRecord];
+                    }else{
+                        foreach($this->Model->virtualFields as $virtualField => $realField){
+                            if($keyInRecord === sprintf('%s AS %s', $realField, $virtualField)){
+                                $result[][$virtualField] = $record[$virtualField];
+                            }
+
+                        }
                     }
                 }
             }

@@ -1489,4 +1489,116 @@ class Host extends AppModel {
         return $query;
     }
 
+    /**
+     * @param array $MY_RIGHTS
+     * @return array
+     */
+    public function getHoststatusCount($MY_RIGHTS){
+        $hoststatusCount = [
+            '1' => 0,
+            '2' => 0,
+        ];
+
+        $hoststatusCountResult = $this->find('all', [
+            'conditions' => [
+                'Host.disabled'                  => 0,
+                'HostObject.is_active'           => 1,
+                'HostsToContainers.container_id' => $MY_RIGHTS,
+                'Hoststatus.current_state >'     => 0,
+            ],
+            'contain'    => [],
+            'fields'     => [
+                'Hoststatus.current_state',
+                'COUNT(DISTINCT Hoststatus.host_object_id) AS count',
+            ],
+            'group'      => [
+                'Hoststatus.current_state',
+            ],
+            'joins'      => [
+                [
+                    'table'      => 'nagios_objects',
+                    'type'       => 'INNER',
+                    'alias'      => 'HostObject',
+                    'conditions' => 'Host.uuid = HostObject.name1 AND HostObject.objecttype_id = 1',
+                ],
+
+                [
+                    'table'      => 'nagios_hoststatus',
+                    'type'       => 'INNER',
+                    'alias'      => 'Hoststatus',
+                    'conditions' => 'Hoststatus.host_object_id = HostObject.object_id',
+                ],
+
+                [
+                    'table'      => 'hosts_to_containers',
+                    'alias'      => 'HostsToContainers',
+                    'type'       => 'INNER',
+                    'conditions' => [
+                        'HostsToContainers.host_id = Host.id',
+                    ],
+                ],
+            ],
+        ]);
+        foreach ($hoststatusCountResult as $hoststatus) {
+            $hoststatusCount[$hoststatus['Hoststatus']['current_state']] = (int)$hoststatus[0]['count'];
+        }
+        return $hoststatusCount;
+    }
+
+    public function getServicestatusCount($MY_RIGHTS){
+        $servicestatusCount = [
+            '1' => 0,
+            '2' => 0,
+            '3' => 0,
+        ];
+
+        $servicestatusCountResult = $this->Host->find('all', [
+            'conditions' => [
+                'Service.disabled'               => 0,
+                'Servicestatus.current_state >'  => 0,
+                'ServiceObject.is_active'        => 1,
+                'HostsToContainers.container_id' => $MY_RIGHTS,
+
+            ],
+            'contain'    => [],
+            'fields'     => [
+                'Servicestatus.current_state',
+                'COUNT(DISTINCT Servicestatus.service_object_id) AS count',
+            ],
+            'group'      => [
+                'Servicestatus.current_state',
+            ],
+            'joins'      => [
+                [
+                    'table'      => 'hosts_to_containers',
+                    'type'       => 'INNER',
+                    'alias'      => 'HostsToContainers',
+                    'conditions' => 'HostsToContainers.host_id = Host.id',
+                ],
+                [
+                    'table'      => 'services',
+                    'type'       => 'INNER',
+                    'alias'      => 'Service',
+                    'conditions' => 'Service.host_id = Host.id',
+                ],
+                [
+                    'table'      => 'nagios_objects',
+                    'type'       => 'INNER',
+                    'alias'      => 'ServiceObject',
+                    'conditions' => 'ServiceObject.name2 = Service.uuid',
+                ],
+                [
+                    'table'      => 'nagios_servicestatus',
+                    'type'       => 'INNER',
+                    'alias'      => 'Servicestatus',
+                    'conditions' => 'Servicestatus.service_object_id = ServiceObject.object_id',
+                ],
+            ],
+        ]);
+        foreach ($servicestatusCountResult as $servicestatus) {
+            $servicestatusCount[$servicestatus['Servicestatus']['current_state']] = (int)$servicestatus[0]['count'];
+        }
+        return $servicestatusCount;
+    }
+
 }
