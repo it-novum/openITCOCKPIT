@@ -22,9 +22,43 @@
 //  License agreement and license key will be shipped with the order
 //  confirmation.
 
-$config = [
-    // @todo enable mysql by default!
-    'dbbackend' => 'Nagios',
-    //'dbbackend' => 'Crate',
-];
 
+namespace itnovum\openITCOCKPIT\Core;
+
+
+class HoststatusConditions {
+
+    /**
+     * @var array
+     */
+    private $conditions = [];
+
+    /**
+     * @var DbBackend
+     */
+    private $DbBackend;
+
+    public function __construct(DbBackend $DbBackend) {
+        $this->DbBackend = $DbBackend;
+    }
+
+    private function addCondition($field) {
+        $this->conditions[] = $field;
+    }
+
+    public function getConditions() {
+        return $this->conditions;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasConditions(){
+        return !empty($this->conditions);
+    }
+
+    public function hostsDownAndUnreachable(){
+        $this->addCondition('Hoststatus.current_state > 0');
+        return $this;
+    }
+}

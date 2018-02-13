@@ -23,8 +23,17 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use itnovum\openITCOCKPIT\Core\DbBackend;
+use itnovum\openITCOCKPIT\Core\HoststatusFields;
+use itnovum\openITCOCKPIT\Core\ServicestatusFields;
+
 class Externalcommand extends NagiosModuleAppModel {
     public $useTable = false;
+
+    /**
+     * @var null|DbBackend
+     */
+    private $DbBackend = null;
 
     /**
      * Check if nagios.cmd exits and fopen() it
@@ -449,11 +458,15 @@ class Externalcommand extends NagiosModuleAppModel {
 
             if (isset($hostAndServices['Service']) && !empty($hostAndServices['Service'])) {
                 $serviceUuids = Hash::extract($hostAndServices['Service'], '{n}.uuid');
-                $servicestatus = $this->Servicestatus->byUuid($serviceUuids, [
-                    'fields' => [
-                        'Servicestatus.current_state',
-                    ],
-                ]);
+
+                if($this->DbBackend === null) {
+                    Configure::load('dbbackend');
+                    $this->DbBackend = new DbBackend(Configure::read('dbbackend'));
+                }
+
+                $ServicestatusFields = new ServicestatusFields($this->DbBackend);
+                $ServicestatusFields->currentState();
+                $servicestatus = $this->Servicestatus->byUuid($serviceUuids, $ServicestatusFields);
 
                 foreach ($hostAndServices['Service'] as $service) {
                     if (isset($servicestatus[$service['uuid']]['Servicestatus']['current_state'])) {
@@ -490,12 +503,15 @@ class Externalcommand extends NagiosModuleAppModel {
 
         $options = Hash::merge($_options, $options);
 
+        if($this->DbBackend === null) {
+            Configure::load('dbbackend');
+            $this->DbBackend = new DbBackend(Configure::read('dbbackend'));
+        }
+
         $this->Hoststatus = ClassRegistry::init(MONITORING_HOSTSTATUS);
-        $hoststatus = $this->Hoststatus->byUuid($options['hostUuid'], [
-            'fields' => [
-                'Hoststatus.current_state',
-            ],
-        ]);
+        $HoststatusFields = new HoststatusFields($this->DbBackend);
+        $HoststatusFields->currentState();
+        $hoststatus = $this->Hoststatus->byUuid($options['hostUuid'], $HoststatusFields);
 
         if (isset($hoststatus['Hoststatus']['current_state'])) {
             if ($hoststatus['Hoststatus']['current_state'] > 0) {
@@ -527,11 +543,16 @@ class Externalcommand extends NagiosModuleAppModel {
 
             if (isset($hostAndServices['Service']) && !empty($hostAndServices['Service'])) {
                 $serviceUuids = Hash::extract($hostAndServices['Service'], '{n}.uuid');
-                $servicestatus = $this->Servicestatus->byUuid($serviceUuids, [
-                    'fields' => [
-                        'Servicestatus.current_state',
-                    ],
-                ]);
+
+                if($this->DbBackend === null) {
+                    Configure::load('dbbackend');
+                    $this->DbBackend = new DbBackend(Configure::read('dbbackend'));
+                }
+
+                $ServicestatusFields = new ServicestatusFields($this->DbBackend);
+                $ServicestatusFields->currentState();
+
+                $servicestatus = $this->Servicestatus->byUuid($serviceUuids, $ServicestatusFields);
 
                 foreach ($hostAndServices['Service'] as $service) {
                     if (isset($servicestatus[$service['uuid']]['Servicestatus']['current_state'])) {
@@ -579,11 +600,17 @@ class Externalcommand extends NagiosModuleAppModel {
         ]);
         if (isset($hostgroup['Host']) && !empty($hostgroup['Host'])) {
             $hostUuids = Hash::extract($hostgroup, 'Host.{n}.uuid');
-            $hoststatus = $this->Hoststatus->byUuid($hostUuids, [
-                'fields' => [
-                    'Hoststatus.current_state',
-                ],
-            ]);
+
+            if($this->DbBackend === null) {
+                Configure::load('dbbackend');
+                $this->DbBackend = new DbBackend(Configure::read('dbbackend'));
+            }
+
+            $this->Hoststatus = ClassRegistry::init(MONITORING_HOSTSTATUS);
+            $HoststatusFields = new HoststatusFields($this->DbBackend);
+            $HoststatusFields->currentState();
+
+            $hoststatus = $this->Hoststatus->byUuid($hostUuids, $HoststatusFields);
 
             foreach ($hostgroup['Host'] as $host) {
                 if (isset($hoststatus[$host['uuid']]['Hoststatus']['current_state'])) {
@@ -632,11 +659,16 @@ class Externalcommand extends NagiosModuleAppModel {
      */
     public function setServiceAckWithQuery($options) {
         $this->Servicestatus = ClassRegistry::init(MONITORING_SERVICESTATUS);
-        $servicestatus = $this->Servicestatus->byUuid($options['serviceUuid'], [
-            'fields' => [
-                'Servicestatus.current_state',
-            ],
-        ]);
+
+        if($this->DbBackend === null) {
+            Configure::load('dbbackend');
+            $this->DbBackend = new DbBackend(Configure::read('dbbackend'));
+        }
+
+        $ServicestatusFields = new ServicestatusFields($this->DbBackend);
+        $ServicestatusFields->currentState();
+
+        $servicestatus = $this->Servicestatus->byUuid($options['serviceUuid'], $ServicestatusFields);
         if (isset($servicestatus['Servicestatus']['current_state'])) {
             if ($servicestatus['Servicestatus']['current_state'] > 0) {
                 $this->setServiceAck(['hostUuid' => $options['hostUuid'], 'serviceUuid' => $options['serviceUuid'], 'author' => $options['author'], 'comment' => $options['comment'], 'sticky' => $options['sticky']]);

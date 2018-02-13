@@ -23,6 +23,8 @@
 //  confirmation.
 
 use itnovum\openITCOCKPIT\Core\ServiceConditions;
+use itnovum\openITCOCKPIT\Core\ServicestatusConditions;
+use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 
 class Servicestatus extends CrateModuleAppModel {
 
@@ -32,27 +34,28 @@ class Servicestatus extends CrateModuleAppModel {
 
 
     /**
-     * Return the service status as array for given uuid as string or array
-     *
-     * @param    string $uuid UUID or array $uuid you want to get service status for
-     * @param    array $options for the find request (see cakephp's find for all options)
-     *
-     * @return array
+     * @param null $uuid
+     * @param ServicestatusFields $ServicestatusFields
+     * @param null|ServicestatusConditions $ServicestatusConditions
+     * @return array|bool
      */
-    private function byUuidMagic($uuid = null, $options = []) {
+    private function byUuidMagic($uuid = null, ServicestatusFields $ServicestatusFields, $ServicestatusConditions = null) {
         if($uuid === null || empty($uuid)){
             return [];
         }
-        $_options = [
-            'conditions' => [
-                'Servicestatus.service_description' => $uuid,
-            ],
+
+        $options = [
+            'fields' => $ServicestatusFields->getFields(),
         ];
 
-        $options = Hash::merge($_options, $options);
-        if (isset($options['fields'])) {
-            $options['fields'][] = 'Servicestatus.service_description';
+        if ($ServicestatusConditions !== null) {
+            if ($ServicestatusConditions->hasConditions()) {
+                $options['conditions'] = $ServicestatusConditions->getConditions();
+            }
         }
+        $options['conditions']['Servicestatus.service_description'] = $uuid;
+
+        $options['fields'][] = 'Servicestatus.service_description';
 
         $findType = 'all';
         if (!is_array($uuid)) {
@@ -79,15 +82,27 @@ class Servicestatus extends CrateModuleAppModel {
         return $result;
     }
 
-    public function byUuid($uuid, $options = []) {
-        return $this->byUuidMagic($uuid, $options);
+    /**
+     * @param $uuid
+     * @param ServicestatusFields $ServicestatusFields
+     * @param null|ServicestatusConditions $ServicestatusConditions
+     * @return array
+     */
+    public function byUuid($uuid, ServicestatusFields $ServicestatusFields, $ServicestatusConditions = null) {
+        return $this->byUuidMagic($uuid, $ServicestatusFields, $ServicestatusConditions);
     }
 
-    public function byUuids($uuids, $options = []) {
+    /**
+     * @param array $uuids
+     * @param ServicestatusFields $ServicestatusFields
+     * @param null|ServicestatusConditions $ServicestatusConditions
+     * @return array
+     */
+    public function byUuids($uuids, ServicestatusFields $ServicestatusFields, $ServicestatusConditions = null) {
         if (!is_array($uuids)) {
             throw new InvalidArgumentException('$uuids need to be an array!');
         }
-        return $this->byUuidMagic($uuids, $options);
+        return $this->byUuidMagic($uuids, $ServicestatusFields, $ServicestatusConditions);
     }
 
     public function virtualFieldsForIndexAndServiceList() {

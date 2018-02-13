@@ -27,6 +27,9 @@
 use itnovum\openITCOCKPIT\Core\CustomVariableDiffer;
 use \itnovum\openITCOCKPIT\Core\HostControllerRequest;
 use \itnovum\openITCOCKPIT\Core\HostConditions;
+use itnovum\openITCOCKPIT\Core\HoststatusConditions;
+use itnovum\openITCOCKPIT\Core\HoststatusFields;
+use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Core\ModuleManager;
 use itnovum\openITCOCKPIT\Core\Views\ContainerPermissions;
@@ -248,7 +251,9 @@ class HostsController extends AppController {
             return;
         }
 
-        $hoststatus = $this->Hoststatus->byUuid($host['Host']['uuid']);
+        $HoststatusFields = new HoststatusFields($this->DbBackend);
+        $HoststatusFields->wildcard();
+        $hoststatus = $this->Hoststatus->byUuid($host['Host']['uuid'], $HoststatusFields);
         if (empty($hoststatus)) {
             $hoststatus = [
                 'Hoststatus' => []
@@ -2226,13 +2231,20 @@ class HostsController extends AppController {
                 'Host.id' => $id
             ]
         ]);
-        $hoststatus = $this->Hoststatus->byUuid($host['Host']['uuid']);
+
+        $HoststatusFields = new HoststatusFields($this->DbBackend);
+        $HoststatusFields->wildcard();
+        $HoststatusConditions = new HoststatusConditions($this->DbBackend);
+        $HoststatusConditions->hostsDownAndUnreachable();
+
+        $hoststatus = $this->Hoststatus->byUuid($host['Host']['uuid'], $HoststatusFields);
         $parenthosts = $host['Parenthost'];
-        $parentHostStatus = $this->Hoststatus->byUuid(Hash::extract($host['Parenthost'], '{n}.uuid'), [
-            'conditions' => [
-                'Hoststatus.current_state > 0'
-            ]
-        ]);
+        $parentHostStatus = $this->Hoststatus->byUuid(
+            Hash::extract($host['Parenthost'], '{n}.uuid'),
+            $HoststatusFields,
+            $HoststatusConditions
+        );
+
         $browseByUUID = false;
         $conditionsToFind = ['Host.id' => $id];
         if (preg_match('/\-/', $id)) {
@@ -2363,7 +2375,12 @@ class HostsController extends AppController {
             'conditions' => ['key' => 'TICKET_SYSTEM.URL'],
         ]);
 
-        $servicestatus = $this->Servicestatus->byUuid(Hash::extract($services, '{n}.Service.uuid'));
+        $ServicestatusFields = new ServicestatusFields($this->DbBackend);
+        $ServicestatusFields->wildcard();
+        $servicestatus = $this->Servicestatus->byUuid(
+            Hash::extract($services, '{n}.Service.uuid'),
+            $ServicestatusFields
+        );
         $username = $this->Auth->user('full_name');
 
         $mainContainer = $this->Tree->treePath($host['Host']['container_id'], ['delimiter' => '/']);
@@ -2430,11 +2447,9 @@ class HostsController extends AppController {
             ]
         ]);
         if (!empty($result)) {
-            $hoststatus = $this->Hoststatus->byUuid($result['Host']['uuid'], [
-                'fields' => [
-                    'Hoststatus.long_output'
-                ]
-            ]);
+            $Hoststatusfields = new HoststatusFields($this->DbBackend);
+            $Hoststatusfields->longOutput();
+            $hoststatus = $this->Hoststatus->byUuid($result['Host']['uuid'], $Hoststatusfields);
             if (!empty($hoststatus)) {
                 if ($parseBbcode === true) {
                     if ($nl2br === true) {

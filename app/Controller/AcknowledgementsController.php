@@ -25,6 +25,8 @@
 
 use itnovum\openITCOCKPIT\Core\AcknowledgedServiceConditions;
 use itnovum\openITCOCKPIT\Core\AcknowledgedHostConditions;
+use itnovum\openITCOCKPIT\Core\HoststatusFields;
+use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
 
 class AcknowledgementsController extends AppController {
@@ -99,12 +101,9 @@ class AcknowledgementsController extends AppController {
             }
 
             //Get meta data and push to front end
-            $servicestatus = $this->Servicestatus->byUuid($service['Service']['uuid'], [
-                'fields' => [
-                    'Servicestatus.current_state',
-                    'Servicestatus.is_flapping'
-                ],
-            ]);
+            $ServicestatusFields = new ServicestatusFields($this->DbBackend);
+            $ServicestatusFields->currentState()->isFlapping();
+            $servicestatus = $this->Servicestatus->byUuid($service['Service']['uuid'], $ServicestatusFields);
             $docuExists = $this->Documentation->existsForUuid($service['Service']['uuid']);
             $this->set(compact(['service', 'servicestatus', 'docuExists', 'allowEdit']));
             return;
@@ -197,12 +196,9 @@ class AcknowledgementsController extends AppController {
             }
 
             //Get meta data and push to front end
-            $hoststatus = $this->Hoststatus->byUuid($host['Host']['uuid'], [
-                'fields' => [
-                    'Hoststatus.current_state',
-                    'Hoststatus.is_flapping'
-                ],
-            ]);
+            $HoststatusFields = new HoststatusFields($this->DbBackend);
+            $HoststatusFields->currentState()->isFlapping();
+            $hoststatus = $this->Hoststatus->byUuid($host['Host']['uuid'], $HoststatusFields);
             $docuExists = $this->Documentation->existsForUuid($host['Host']['uuid']);
             $this->set(compact(['host', 'hoststatus', 'docuExists']));
             return;

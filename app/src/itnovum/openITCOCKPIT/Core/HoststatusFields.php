@@ -28,11 +28,17 @@ namespace itnovum\openITCOCKPIT\Core;
 
 class HoststatusFields {
 
+    /**
+     * @var array
+     */
     private $fields = [];
 
+    /**
+     * @var DbBackend
+     */
     private $DbBackend;
 
-    public function __construct($DbBackend) {
+    public function __construct(DbBackend $DbBackend) {
         $this->DbBackend = $DbBackend;
     }
 
@@ -42,6 +48,11 @@ class HoststatusFields {
 
     public function getFields() {
         return $this->fields;
+    }
+
+    public function wildcard() {
+        $this->addField('Hoststatus.*');
+        return $this;
     }
 
     public function acknowledgementType() {

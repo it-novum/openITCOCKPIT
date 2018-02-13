@@ -22,6 +22,9 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+use itnovum\openITCOCKPIT\Core\HoststatusFields;
+use itnovum\openITCOCKPIT\Core\ServicestatusConditions;
+use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 
 
 /**
@@ -40,18 +43,18 @@ class CurrentstatereportsController extends AppController {
         'Service',
     ];
 
-    public function index () {
+    public function index() {
         $this->layout = 'angularjs';
         $userContainerId = $this->Auth->user('container_id');
         $currentStateData = [];
         $serviceStatusExists = false;
         //ContainerID => 1 for ROOT Container
 
-        $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS,$this->hasRootPrivileges);
+        $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS, $this->hasRootPrivileges);
         $services = Hash::combine($this->Service->servicesByHostContainerIds($containerIds),
-            '{n}.Service.id','{n}'
+            '{n}.Service.id', '{n}'
         );
-        $this->set(compact(['services','userContainerId']));
+        $this->set(compact(['services', 'userContainerId']));
 
 
         if ($this->request->is('post') || $this->request->is('put')) {
@@ -59,21 +62,23 @@ class CurrentstatereportsController extends AppController {
             if ($this->Currentstatereport->validates()) {
                 foreach ($this->request->data('Currentstatereport.Service') as $serviceId) {
                     if (empty($services[$serviceId]['Service']['uuid'])) continue;
-                    $servicestatus = $this->Servicestatus->byUuid($services[$serviceId]['Service']['uuid'],[
-                        'conditions' => [
-                            'Servicestatus.current_state' => $this->request->data('Currentstatereport.current_state'),
-                        ],
-                    ]);
+                    $ServicestatusFields = new ServicestatusFields($this->DbBackend);
+                    $ServicestatusFields->wildcard();
+                    $ServicestatusConditions = new ServicestatusConditions($this->DbBackend);
+                    $ServicestatusConditions->currentState($this->request->data('Currentstatereport.current_state'));
+                    $servicestatus = $this->Servicestatus->byUuid(
+                        $services[$serviceId]['Service']['uuid'],
+                        $ServicestatusFields,
+                        $ServicestatusConditions
+                    );
                     if (!isset($currentStateData[$services[$serviceId]['Host']['uuid']]['Host'])) {
-                        $hoststatus = $this->Hoststatus->byUuid($services[$serviceId]['Host']['uuid'],[
-                                'fields' => [
-                                    'Hoststatus.current_state',
-                                    'Hoststatus.perfdata',
-                                    'Hoststatus.output',
-                                    'Hoststatus.last_state_change',
-                                ],
-                            ]
-                        );
+                        $HoststatusFields = new HoststatusFields($this->DbBackend);
+                        $HoststatusFields
+                            ->currentState()
+                            ->perfdata()
+                            ->output()
+                            ->lastStateChange();
+                        $hoststatus = $this->Hoststatus->byUuid($services[$serviceId]['Host']['uuid'], $HoststatusFields);
                         $currentStateData[$services[$serviceId]['Host']['uuid']]['Host'] = [
                             'id'          => $services[$serviceId]['Host']['id'],
                             'name'        => $services[$serviceId]['Host']['name'],
@@ -122,23 +127,23 @@ class CurrentstatereportsController extends AppController {
                 }
 
                 if (!$serviceStatusExists) {
-                    $this->set('response',[
+                    $this->set('response', [
                         'status'     => 200,
                         'statusText' => 'Ok',
                         'message'    => __('No service status information within specified filter found')
                     ]);
-                    $this->set('_serialize',['response']);
+                    $this->set('_serialize', ['response']);
                     return;
                 }
 
-                $this->Session->write('currentStateData',$currentStateData);
+                $this->Session->write('currentStateData', $currentStateData);
 
 
-                $this->set('response',[
+                $this->set('response', [
                     'status'     => 201,
                     'statusText' => 'Created'
                 ]);
-                $this->set('_serialize',['response']);
+                $this->set('_serialize', ['response']);
                 $this->response->statusCode(201);
 
                 return;
@@ -158,8 +163,8 @@ class CurrentstatereportsController extends AppController {
         }
     }
 
-    public function createHtmlReport(){
-        $this->set('currentStateData',$this->Session->read('currentStateData'));
+    public function createHtmlReport() {
+        $this->set('currentStateData', $this->Session->read('currentStateData'));
         if ($this->Session->check('currentStateData')) {
             $this->Session->delete('currentStateData');
         }
@@ -167,8 +172,8 @@ class CurrentstatereportsController extends AppController {
 
     }
 
-    public function createPdfReport () {
-        $this->set('currentStateData',$this->Session->read('currentStateData'));
+    public function createPdfReport() {
+        $this->set('currentStateData', $this->Session->read('currentStateData'));
         if ($this->Session->check('currentStateData')) {
             $this->Session->delete('currentStateData');
         }

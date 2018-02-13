@@ -23,6 +23,8 @@
 //  confirmation.
 
 use itnovum\openITCOCKPIT\Core\HostConditions;
+use itnovum\openITCOCKPIT\Core\HoststatusConditions;
+use itnovum\openITCOCKPIT\Core\HoststatusFields;
 
 class Hoststatus extends CrateModuleAppModel {
 
@@ -31,27 +33,28 @@ class Hoststatus extends CrateModuleAppModel {
     public $tablePrefix = 'statusengine_';
 
     /**
-     * Return the host status as array for given uuid as stirng or array
-     *
-     * @param          string $uuid UUID or array $uuid you want to get host status for
-     * @param    array $options for the find request (see cakephp's find for all options)
-     *
-     * @return array
+     * @param null $uuid
+     * @param HoststatusFields $HoststatusFields
+     * @param HoststatusConditions|null $HoststatusConditions
+     * @return array|bool
      */
-    private function byUuidMagic($uuid = null, $options = []){
-        if($uuid === null || empty($uuid)){
+    private function byUuidMagic($uuid = null, HoststatusFields $HoststatusFields, $HoststatusConditions = null) {
+        if ($uuid === null || empty($uuid)) {
             return [];
         }
-        $_options = [
-            'conditions' => [
-                'Hoststatus.hostname' => $uuid,
-            ],
+
+        $options = [
+            'fields' => $HoststatusFields->getFields(),
         ];
 
-        $options = Hash::merge($_options, $options);
-        if (isset($options['fields'])) {
-            $options['fields'][] = 'Hoststatus.hostname';
+        if ($HoststatusConditions !== null) {
+            if ($HoststatusConditions->hasConditions()) {
+                $options['conditions'] = $HoststatusConditions->getConditions();
+            }
         }
+        $options['conditions']['Hoststatus.hostname'] = $uuid;
+
+        $options['fields'][] = 'Hoststatus.hostname';
 
         $findType = 'all';
         if (!is_array($uuid)) {
@@ -64,14 +67,14 @@ class Hoststatus extends CrateModuleAppModel {
             return false;
         }
 
-        if($findType === 'first'){
+        if ($findType === 'first') {
             return [
                 'Hoststatus' => $dbresult['Hoststatus'],
             ];
         }
 
         $result = [];
-        foreach($dbresult as $record){
+        foreach ($dbresult as $record) {
             $result[$record['Hoststatus']['hostname']] = [
                 'Hoststatus' => $record['Hoststatus'],
             ];
@@ -79,15 +82,27 @@ class Hoststatus extends CrateModuleAppModel {
         return $result;
     }
 
-    public function byUuid($uuid, $options = []){
-        return $this->byUuidMagic($uuid, $options);
+    /**
+     * @param $uuid
+     * @param HoststatusFields $HoststatusFields
+     * @param HoststatusConditions|null $HoststatusConditions
+     * @return array|string
+     */
+    public function byUuid($uuid, HoststatusFields $HoststatusFields, $HoststatusConditions = null) {
+        return $this->byUuidMagic($uuid, $HoststatusFields, $HoststatusConditions);
     }
 
-    public function byUuids($uuids, $options = []){
-        if(!is_array($uuids)){
+    /**
+     * @param $uuids
+     * @param HoststatusFields $HoststatusFields
+     * @param HoststatusConditions|null $HoststatusConditions
+     * @return array
+     */
+    public function byUuids($uuids, HoststatusFields $HoststatusFields, $HoststatusConditions = null) {
+        if (!is_array($uuids)) {
             throw new InvalidArgumentException('$uuids need to be an array!');
         }
-        return $this->byUuidMagic($uuids, $options);
+        return $this->byUuidMagic($uuids, $HoststatusFields, $HoststatusConditions);
     }
 
     /**
@@ -95,7 +110,7 @@ class Hoststatus extends CrateModuleAppModel {
      * @param array $conditions
      * @return array
      */
-    public function getHostIndexQuery(HostConditions $HostConditions, $conditions = []){
+    public function getHostIndexQuery(HostConditions $HostConditions, $conditions = []) {
         if (isset($conditions['Host.keywords rlike'])) {
             $values = [];
             foreach (explode('|', $conditions['Host.keywords rlike']) as $value) {
@@ -105,29 +120,29 @@ class Hoststatus extends CrateModuleAppModel {
             $conditions['Host.tags rlike'] = implode('|', $values);
         }
 
-        if(isset($conditions['Hoststatus.problem_has_been_acknowledged'])){
+        if (isset($conditions['Hoststatus.problem_has_been_acknowledged'])) {
             $conditions['Hoststatus.problem_has_been_acknowledged'] = (bool)$conditions['Hoststatus.problem_has_been_acknowledged'];
         }
 
         $query = [
-            'fields' => [
+            'fields'           => [
                 'Hoststatus.*',
                 'Host.*'
             ],
-            'joins' => [
+            'joins'            => [
                 [
-                    'table' => 'openitcockpit_hosts',
-                    'type' => 'INNER',
-                    'alias' => 'Host',
+                    'table'      => 'openitcockpit_hosts',
+                    'type'       => 'INNER',
+                    'alias'      => 'Host',
                     'conditions' => 'Host.uuid = Hoststatus.hostname',
                 ]
             ],
-            'conditions' => $conditions,
+            'conditions'       => $conditions,
             'array_difference' => [
                 'Host.container_ids' =>
                     $HostConditions->getContainerIds(),
             ],
-            'order' => $HostConditions->getOrder()
+            'order'            => $HostConditions->getOrder()
         ];
         //debug($query);
         return $query;

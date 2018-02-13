@@ -24,8 +24,10 @@
 //	confirmation.
 
 use itnovum\openITCOCKPIT\Core\CustomVariableDiffer;
+use itnovum\openITCOCKPIT\Core\HoststatusFields;
 use itnovum\openITCOCKPIT\Core\ServiceConditions;
 use itnovum\openITCOCKPIT\Core\ServiceControllerRequest;
+use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Core\Views\ContainerPermissions;
 use itnovum\openITCOCKPIT\Core\Views\PerfdataChecker;
@@ -249,7 +251,9 @@ class ServicesController extends AppController {
             return;
         }
 
-        $servicestatus = $this->Servicestatus->byUuid($service['Service']['uuid']);
+        $ServicestatusFields = new ServicestatusFields($this->DbBackend);
+        $ServicestatusFields->wildcard();
+        $servicestatus = $this->Servicestatus->byUuid($service['Service']['uuid'], $ServicestatusFields);
         if (empty($servicestatus)) {
             $servicestatus = [
                 'Servicestatus' => [],
@@ -331,7 +335,9 @@ class ServicesController extends AppController {
             }
         }
 
-        $hoststatusCache = $this->Hoststatus->byUuid(array_unique(Hash::extract($services, '{n}.Host.uuid')));
+        $HoststatusFields = new HoststatusFields($this->DbBackend);
+        $HoststatusFields->currentState();
+        $hoststatusCache = $this->Hoststatus->byUuid(array_unique(Hash::extract($services, '{n}.Host.uuid')), $HoststatusFields);
 
 
         $all_services = [];
@@ -428,7 +434,9 @@ class ServicesController extends AppController {
             }
         }
 
-        $hoststatusCache = $this->Hoststatus->byUuid(array_unique(Hash::extract($services, '{n}.Host.uuid')));
+        $HoststatusFields = new HoststatusFields($this->DbBackend);
+        $HoststatusFields->currentState();
+        $hoststatusCache = $this->Hoststatus->byUuid(array_unique(Hash::extract($services, '{n}.Host.uuid')), $HoststatusFields);
 
 
         $all_services = [];
@@ -1947,11 +1955,15 @@ class ServicesController extends AppController {
         $service['CheckPeriod'] = $_service['CheckPeriod'];
         unset($_service);
 
-        $servicestatus = $this->Servicestatus->byUuid($service['Service']['uuid']);
-        $hoststatus = $this->Hoststatus->byUuid($service['Host']['uuid']);
+        $HoststatusFields = new HoststatusFields($this->DbBackend);
+        $HoststatusFields->wildcard();
+        $ServicestatusFields = new ServicestatusFields($this->DbBackend);
+        $ServicestatusFields->wildcard();
+        $servicestatus = $this->Servicestatus->byUuid($service['Service']['uuid'], $ServicestatusFields);
+        $hoststatus = $this->Hoststatus->byUuid($service['Host']['uuid'], $HoststatusFields);
 
         if (isset($servicestatus['Servicestatus']) && $servicestatus['Servicestatus']['problem_has_been_acknowledged'] > 0) {
-            $acknowledged = $this->AcknowledgedService->byUuid($service['Service']['uuid']);
+            $acknowledged = $this->AcknowledgedService->byUuid($service['Service']['uuid'], $ServicestatusFields);
             if (empty($acknowledged)) {
                 $acknowledged = [];
             }
@@ -2326,7 +2338,9 @@ class ServicesController extends AppController {
         ]);
 
 
-        $servicestatus = $this->Servicestatus->byUuid($service['Service']['uuid']);
+        $ServicestatusFields = new ServicestatusFields($this->DbBackend);
+        $ServicestatusFields->wildcard();
+        $servicestatus = $this->Servicestatus->byUuid($service['Service']['uuid'], $ServicestatusFields);
         $showThresholds = is_null($this->Session->read('service_thresholds_' . $id)) ? '1' : $this->Session->read('service_thresholds_' . $id);
         $this->set(compact(['service', 'servicestatus', 'allowEdit', 'services', 'docuExists', 'showThresholds']));
     }
@@ -2415,7 +2429,9 @@ class ServicesController extends AppController {
             $commandUuid = $service['Servicetemplate']['CheckCommand']['uuid'];
         }
 
-        $servicestatus = $this->Servicestatus->byUuid($service['Service']['uuid']);
+        $ServicestatusField = new ServicestatusFields($this->DbBackend);
+        $ServicestatusField->wildcard();
+        $servicestatus = $this->Servicestatus->byUuid($service['Service']['uuid'], $ServicestatusField);
         $this->set(compact(['service', 'servicestatus', 'allowEdit', 'services', 'docuExists', 'commandUuid']));
 
     }
@@ -2576,11 +2592,9 @@ class ServicesController extends AppController {
             ]
         ]);
         if (!empty($result)) {
-            $servicestatus = $this->Servicestatus->byUuid($result['Service']['uuid'], [
-                'fields' => [
-                    'Servicestatus.long_output'
-                ]
-            ]);
+            $ServicestatusFields = new ServicestatusFields($this->DbBackend);
+            $ServicestatusFields->longOutput();
+            $servicestatus = $this->Servicestatus->byUuid($result['Service']['uuid'], $ServicestatusFields);
             if (isset($servicestatus['Servicestatus']['long_output'])) {
                 if ($parseBbcode === true) {
                     if ($nl2br === true) {

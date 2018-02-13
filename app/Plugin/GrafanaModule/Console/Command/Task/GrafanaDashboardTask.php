@@ -1,9 +1,12 @@
 <?php
 
 use GuzzleHttp\Client;
+use itnovum\openITCOCKPIT\Core\DbBackend;
 use \itnovum\openITCOCKPIT\Core\Interfaces\CronjobInterface;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Exception\BadResponseException;
+use itnovum\openITCOCKPIT\Core\ServicestatusConditions;
+use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\ValueObjects\Perfdata;
 use itnovum\openITCOCKPIT\Grafana\GrafanaDashboard;
 use itnovum\openITCOCKPIT\Grafana\GrafanaPanel;
@@ -45,7 +48,7 @@ class GrafanaDashboardTask extends AppShell implements CronjobInterface {
     public function execute($quiet = false) {
         $grafanaConfiguration = $this->GrafanaConfiguration->find('first', [
             'recursive' => -1,
-            'contain' => [
+            'contain'   => [
                 'GrafanaConfigurationHostgroupMembership'
             ]
         ]);
@@ -77,12 +80,12 @@ class GrafanaDashboardTask extends AppShell implements CronjobInterface {
     public function createDashboard() {
         $hosts = $this->Host->find('all', [
             'recursive' => -1,
-            'fields' => [
+            'fields'    => [
                 'Host.id',
                 'Host.uuid'
             ],
-            'contain' => [
-                'Hostgroup' => [
+            'contain'   => [
+                'Hostgroup'    => [
                     'fields' => [
                         'Hostgroup.id'
                     ]
@@ -126,8 +129,8 @@ class GrafanaDashboardTask extends AppShell implements CronjobInterface {
                     $this->GrafanaDashboard->save([
                         'GrafanaDashboard' => [
                             'configuration_id' => 1,
-                            'host_id'=> $id,
-                            'host_uuid' => $hostData['uuid']
+                            'host_id'          => $id,
+                            'host_uuid'        => $hostData['uuid']
                         ]
                     ]);
                 }
@@ -140,15 +143,15 @@ class GrafanaDashboardTask extends AppShell implements CronjobInterface {
             'conditions' => [
                 'Host.id' => $hostId,
             ],
-            'fields' => [
+            'fields'     => [
                 'Host.id',
                 'Host.name',
                 'Host.uuid',
                 'Host.address'
             ],
-            'contain' => [
+            'contain'    => [
                 'Service' => [
-                    'fields' => [
+                    'fields'          => [
                         'Service.id',
                         'Service.name',
                         'Service.uuid',
@@ -165,11 +168,19 @@ class GrafanaDashboardTask extends AppShell implements CronjobInterface {
                 ]
             ]
         ]);
-        $servicestatus = $this->Servicestatus->byUuid(Hash::extract($host, 'Service.{n}.uuid'), [
-            'conditions' => [
-                'Servicestatus.perfdata IS NOT NULL'
-            ]
-        ]);
+
+        Configure::load('dbbackend');
+        $DbBackend = new DbBackend(Configure::read('dbbackend'));
+        $ServicestatusFields = new ServicestatusFields($DbBackend);
+        $ServicestatusFields->perfdata();
+        $ServicestatusConditions = new ServicestatusConditions($DbBackend);
+        $ServicestatusConditions->perfdataIsNotNull();
+        $servicestatus = $this->Servicestatus->byUuid(
+            Hash::extract($host, 'Service.{n}.uuid'),
+            $ServicestatusFields,
+            $ServicestatusConditions
+        );
+
         if (empty($servicestatus)) {
             return false;
         }
@@ -241,16 +252,16 @@ class GrafanaDashboardTask extends AppShell implements CronjobInterface {
     }
 
 
-    private function getGrafanaDashboardsByTag($tag){
+    private function getGrafanaDashboardsByTag($tag) {
         try {
-            $request = new Request('GET', $this->GrafanaApiConfiguration->getApiUrl() . '/search?tag='.$tag);
+            $request = new Request('GET', $this->GrafanaApiConfiguration->getApiUrl() . '/search?tag=' . $tag);
             $response = $this->client->send($request);
         } catch (BadResponseException $e) {
             $response = $e->getResponse();
             $responseBody = $response->getBody()->getContents();
             $this->out('<error>' . $responseBody . '</error>');
         }
-        if($response->getStatusCode() == 200){
+        if ($response->getStatusCode() == 200) {
             $body = $response->getBody();
             $response = json_decode($body->getContents());
             return $response;
@@ -261,28 +272,28 @@ class GrafanaDashboardTask extends AppShell implements CronjobInterface {
      * Delete all Dashboards with the given tag
      * @param $tag
      */
-    private function deleteDashboards($tag){
-        try{
-            if(empty($tag)){
+    private function deleteDashboards($tag) {
+        try {
+            if (empty($tag)) {
                 throw new Exception('No Tag given');
             }
 
             $json = $this->getGrafanaDashboardsByTag($tag);
             $dashboardsToDelete = Hash::extract($json, '{n}.title');
 
-            foreach ($dashboardsToDelete as $dashboardSlug){
+            foreach ($dashboardsToDelete as $dashboardSlug) {
                 $request = new Request('DELETE', $this->GrafanaApiConfiguration->getApiUrl() . '/dashboards/db/' . $dashboardSlug);
                 $response = $this->client->send($request);
 
-                if($response->getStatusCode() == 200){
+                if ($response->getStatusCode() == 200) {
                     $body = $response->getBody();
                     $response = json_decode($body->getContents());
-                    $this->out('<success>Dashboard '.$dashboardSlug.' deleted!</success>');
+                    $this->out('<success>Dashboard ' . $dashboardSlug . ' deleted!</success>');
                 }
             }
-        }catch(Exception $e){
-            $this->out('<error>'.$e->getMessage().'</error>');
-        }catch(BadRequestException $e){
+        } catch (Exception $e) {
+            $this->out('<error>' . $e->getMessage() . '</error>');
+        } catch (BadRequestException $e) {
             $response = $e->getResponse();
             $responseBody = $response->getBody()->getContents();
             $this->out('<error>' . $responseBody . '</error>');

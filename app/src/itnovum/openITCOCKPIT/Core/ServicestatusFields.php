@@ -28,68 +28,78 @@ namespace itnovum\openITCOCKPIT\Core;
 
 class ServicestatusFields {
 
+    /**
+     * @var array
+     */
     private $fields = [];
 
-    private $DbBackend;
+    /**
+     * @var DbBackend
+     */
 
-    public function __construct($DbBackend) {
+    public function __construct(DbBackend $DbBackend) {
         $this->DbBackend = $DbBackend;
     }
 
-    private function addField($field){
+    private function addField($field) {
         $this->fields[] = $field;
     }
 
-    public function getFields(){
+    public function getFields() {
         return $this->fields;
     }
 
-    public function statusUpdateTime(){
+    public function wildcard() {
+        $this->addField('Servicestatus.*');
+        return $this;
+    }
+
+    public function statusUpdateTime() {
         $this->addField('Servicestatus.status_update_time');
         return $this;
     }
 
-    public function output(){
+    public function output() {
         $this->addField('Servicestatus.output');
         return $this;
     }
 
-    public function longOutput(){
+    public function longOutput() {
         $this->addField('Servicestatus.long_output');
         return $this;
     }
 
-    public function perfdata(){
+    public function perfdata() {
         $this->addField('Servicestatus.perfdata');
         return $this;
     }
 
-    public function currentState(){
+    public function currentState() {
         $this->addField('Servicestatus.current_state');
         return $this;
     }
 
-    public function currentCheckAttempt(){
+    public function currentCheckAttempt() {
         $this->addField('Servicestatus.current_check_attempt');
         return $this;
     }
 
-    public function maxCheckAttempts(){
+    public function maxCheckAttempts() {
         $this->addField('Servicestatus.max_check_attempts');
         return $this;
     }
 
-    public function lastCheck(){
+    public function lastCheck() {
         $this->addField('Servicestatus.last_check');
         return $this;
     }
 
-    public function nextCheck(){
+    public function nextCheck() {
         $this->addField('Servicestatus.next_check');
         return $this;
     }
 
-    public function isPassiveCheck(){
+    public function isPassiveCheck() {
         if ($this->DbBackend->isCrateDB()) {
             $this->addField('Servicestatus.is_passive_check');
         }
@@ -100,22 +110,22 @@ class ServicestatusFields {
         return $this;
     }
 
-    public function lastStateChange(){
+    public function lastStateChange() {
         $this->addField('Servicestatus.last_state_change');
         return $this;
     }
 
-    public function lastHardStateChange(){
+    public function lastHardStateChange() {
         $this->addField('Servicestatus.last_hard_state_change');
         return $this;
     }
 
-    public function lastHardState(){
+    public function lastHardState() {
         $this->addField('Servicestatus.last_hard_state');
         return $this;
     }
 
-    public function isHardstate(){
+    public function isHardstate() {
         if ($this->DbBackend->isCrateDB()) {
             $this->addField('Servicestatus.is_hardstate');
         }
@@ -126,92 +136,92 @@ class ServicestatusFields {
         return $this;
     }
 
-    public function lastNotification(){
+    public function lastNotification() {
         $this->addField('Servicestatus.last_notification');
         return $this;
     }
 
-    public function nextNotification(){
+    public function nextNotification() {
         $this->addField('Servicestatus.next_notification');
         return $this;
     }
 
-    public function notificationsEnabled(){
+    public function notificationsEnabled() {
         $this->addField('Servicestatus.notifications_enabled');
         return $this;
     }
 
-    public function problemHasBeenAcknowledged(){
+    public function problemHasBeenAcknowledged() {
         $this->addField('Servicestatus.problem_has_been_acknowledged');
         return $this;
     }
 
-    public function acknowledgementType(){
+    public function acknowledgementType() {
         $this->addField('Servicestatus.acknowledgement_type');
         return $this;
     }
 
-    public function passiveChecksEnabled(){
+    public function passiveChecksEnabled() {
         $this->addField('Servicestatus.passive_checks_enabled');
         return $this;
     }
 
-    public function activeChecksEnabled(){
+    public function activeChecksEnabled() {
         $this->addField('Servicestatus.active_checks_enabled');
         return $this;
     }
 
-    public function eventHandlerEnabled(){
+    public function eventHandlerEnabled() {
         $this->addField('Servicestatus.event_handler_enabled');
         return $this;
     }
 
-    public function flapDetectionEnabled(){
+    public function flapDetectionEnabled() {
         $this->addField('Servicestatus.flap_detection_enabled');
         return $this;
     }
 
-    public function isFlapping(){
+    public function isFlapping() {
         $this->addField('Servicestatus.is_flapping');
         return $this;
     }
 
-    public function latency(){
+    public function latency() {
         $this->addField('Servicestatus.latency');
         return $this;
     }
 
-    public function executionTime(){
+    public function executionTime() {
         $this->addField('Servicestatus.execution_time');
         return $this;
     }
 
-    public function scheduledDowntimeDepth(){
+    public function scheduledDowntimeDepth() {
         $this->addField('Servicestatus.scheduled_downtime_depth');
         return $this;
     }
 
-    public function processPerformanceData(){
+    public function processPerformanceData() {
         $this->addField('Servicestatus.process_performance_data');
         return $this;
     }
 
-    public function obsessOverService(){
+    public function obsessOverService() {
         $this->addField('Servicestatus.obsess_over_service');
         return $this;
     }
 
-    public function normalCheckInterval(){
+    public function normalCheckInterval() {
         $this->addField('Servicestatus.normal_check_interval');
         return $this;
     }
 
-    public function retryCheckInterval(){
+    public function retryCheckInterval() {
         $this->addField('Servicestatus.retry_check_interval');
         return $this;
     }
 
-    public function checkTimeperiod(){
+    public function checkTimeperiod() {
         if ($this->DbBackend->isCrateDB()) {
             $this->addField('Servicestatus.check_timeperiod');
         }
@@ -222,7 +232,7 @@ class ServicestatusFields {
         return $this;
     }
 
-    public function nodeName(){
+    public function nodeName() {
         if ($this->DbBackend->isCrateDB()) {
             $this->addField('Servicestatus.node_name');
         }
@@ -233,42 +243,42 @@ class ServicestatusFields {
         return $this;
     }
 
-    public function lastTimeOk(){
+    public function lastTimeOk() {
         $this->addField('Servicestatus.last_time_ok');
         return $this;
     }
 
-    public function lastTimeWarning(){
+    public function lastTimeWarning() {
         $this->addField('Servicestatus.last_time_warning');
         return $this;
     }
 
-    public function lastTimeCritical(){
+    public function lastTimeCritical() {
         $this->addField('Servicestatus.last_time_critical');
         return $this;
     }
 
-    public function lastTimeUnknown(){
+    public function lastTimeUnknown() {
         $this->addField('Servicestatus.last_time_unknown');
         return $this;
     }
 
-    public function currentNotificationNumber(){
+    public function currentNotificationNumber() {
         $this->addField('Servicestatus.current_notification_number');
         return $this;
     }
 
-    public function percentStateChange(){
+    public function percentStateChange() {
         $this->addField('Servicestatus.percent_state_change');
         return $this;
     }
 
-    public function eventHandler(){
+    public function eventHandler() {
         $this->addField('Servicestatus.event_handler');
         return $this;
     }
 
-    public function checkCommand(){
+    public function checkCommand() {
         $this->addField('Servicestatus.check_command');
         return $this;
     }
