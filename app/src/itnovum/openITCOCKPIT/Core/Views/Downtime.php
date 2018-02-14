@@ -77,8 +77,23 @@ class Downtime {
      */
     private $wasCancelled;
 
+    /**
+     * @var bool
+     */
+    private $allowEdit = false;
 
-    public function __construct($downtime) {
+
+    /**
+     * @var UserTime|null
+     */
+    private $UserTime;
+
+    /**
+     * Downtime constructor.
+     * @param $downtime
+     * @param bool $allowEdit
+     */
+    public function __construct($downtime, $allowEdit = false, $UserTime = null) {
         if (isset($downtime['author_name'])) {
             $this->authorName = $downtime['author_name'];
         }
@@ -118,6 +133,9 @@ class Downtime {
         if (isset($downtime['was_cancelled'])) {
             $this->wasCancelled = (bool)$downtime['was_cancelled'];
         }
+        $this->allowEdit = $allowEdit;
+
+        $this->UserTime = $UserTime;
     }
 
     /**
@@ -216,11 +234,47 @@ class Downtime {
         return false;
     }
 
+    /**
+     * @return bool
+     */
     public function isExpired() {
         if ($this->wasStarted() && $this->getScheduledEndTime() < time() && $this->wasCancelled() === false) {
             return true;
         }
         return false;
+    }
+
+    /**
+     * @return bool
+     */
+    public function allowEdit(){
+        return $this->allowEdit;
+    }
+
+    /**
+     * @return array
+     */
+    public function toArray(){
+        $arr = get_object_vars($this);
+        if(isset($arr['UserTime'])){
+            unset($arr['UserTime']);
+        }
+
+        if($this->UserTime !== null) {
+            $arr['scheduledStartTime'] = $this->UserTime->format($this->getScheduledStartTime());
+            $arr['scheduledEndTime'] = $this->UserTime->format($this->getScheduledEndTime());
+            $arr['entryTime'] = $this->UserTime->format($this->getEntryTime());
+            $arr['durationHuman'] = $this->UserTime->secondsInHumanShort($this->getDuration());
+        }else{
+            $arr['scheduledStartTime'] = $this->getScheduledStartTime();
+            $arr['scheduledEndTime'] = $this->getScheduledEndTime();
+            $arr['entryTime'] = $this->getEntryTime();
+            $arr['durationHuman'] = $this->getDuration();
+        }
+        $arr['isCancellable'] = $this->isCancellable();
+        $arr['isRunning'] = $this->isRunning();
+        $arr['isExpired'] = $this->isExpired();
+        return $arr;
     }
 
 }

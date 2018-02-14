@@ -51,7 +51,8 @@ $config = [
                 'enable_host_notifications',
                 'disable_host_notifications',
                 'system_health',
-                'getDowntimeData'
+                'getDowntimeData',
+                'mass_delete_host_downtimes'
             ],
             'Commands'         => [
                 'sortByCommandType',
@@ -61,7 +62,8 @@ $config = [
             ],
             'Downtimes'        => [
                 'validateDowntimeInputFromBrowser',
-                'validateDowntimeInputFromAngular'
+                'validateDowntimeInputFromAngular',
+                'icon'
             ],
             'Forward'          => [
                 'index',

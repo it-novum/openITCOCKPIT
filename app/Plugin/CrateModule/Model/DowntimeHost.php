@@ -30,7 +30,12 @@ class DowntimeHost extends CrateModuleAppModel {
     public $useTable = 'host_downtimehistory';
     public $tablePrefix = 'statusengine_';
 
-    public function getQuery(DowntimeHostConditions $Conditions, $paginatorConditions) {
+    /**
+     * @param DowntimeHostConditions $Conditions
+     * @param array $filterConditions
+     * @return array
+     */
+    public function getQuery(DowntimeHostConditions $Conditions, $filterConditions = []) {
         $fields = [
             'DowntimeHost.author_name',
             'DowntimeHost.comment_data',
@@ -82,8 +87,7 @@ class DowntimeHost extends CrateModuleAppModel {
             ];
         }
 
-        //Merge ListFilter conditions
-        $query['conditions'] = Hash::merge($paginatorConditions, $query['conditions']);
+        $query['conditions'] = Hash::merge($query['conditions'], $filterConditions);
 
         return $query;
     }
