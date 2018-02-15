@@ -1,7 +1,7 @@
 angular.module('openITCOCKPIT')
-    .controller('DowntimesHostController', function($scope, $http, $rootScope, $httpParamSerializer, SortService, QueryStringService, MassChangeService){
+    .controller('DowntimesServiceController', function($scope, $http, $rootScope, $httpParamSerializer, SortService, QueryStringService, MassChangeService){
 
-        SortService.setSort(QueryStringService.getValue('sort', 'DowntimeHost.scheduled_start_time'));
+        SortService.setSort(QueryStringService.getValue('sort', 'DowntimeService.scheduled_start_time'));
         SortService.setDirection(QueryStringService.getValue('direction', 'desc'));
         $scope.currentPage = 1;
 
@@ -11,13 +11,16 @@ angular.module('openITCOCKPIT')
         /*** Filter Settings ***/
         var defaultFilter = function(){
             $scope.filter = {
-                DowntimeHost: {
+                DowntimeService: {
                     author_name: '',
                     comment_data: '',
                     was_cancelled: false,
                     was_not_cancelled: false
                 },
                 Host: {
+                    name: ''
+                },
+                Service: {
                     name: ''
                 },
                 from: date('d.m.Y H:i', now.getTime()/1000 - (3600 * 24 * 30)),
@@ -38,26 +41,27 @@ angular.module('openITCOCKPIT')
 
         $scope.load = function(){
             var wasCancelled = '';
-            if($scope.filter.DowntimeHost.was_cancelled ^ $scope.filter.DowntimeHost.was_not_cancelled){
-                wasCancelled = $scope.filter.DowntimeHost.was_cancelled === true;
+            if($scope.filter.DowntimeService.was_cancelled ^ $scope.filter.DowntimeService.was_not_cancelled){
+                wasCancelled = $scope.filter.DowntimeService.was_cancelled === true;
             }
-            $http.get("/downtimes/host.json", {
+            $http.get("/downtimes/service.json", {
                 params: {
                     'angular': true,
                     'sort': SortService.getSort(),
                     'page': $scope.currentPage,
                     'direction': SortService.getDirection(),
-                    'filter[DowntimeHost.author_name]': $scope.filter.DowntimeHost.author_name,
-                    'filter[DowntimeHost.comment_data]': $scope.filter.DowntimeHost.comment_data,
-                    'filter[DowntimeHost.was_cancelled]': wasCancelled,
+                    'filter[DowntimeService.author_name]': $scope.filter.DowntimeService.author_name,
+                    'filter[DowntimeService.comment_data]': $scope.filter.DowntimeService.comment_data,
+                    'filter[DowntimeService.was_cancelled]': wasCancelled,
                     'filter[Host.name]': $scope.filter.Host.name,
+                    'filter[Service.name]': $scope.filter.Service.name,
                     'filter[from]': $scope.filter.from,
                     'filter[to]': $scope.filter.to,
                     'filter[hideExpired]': $scope.filter.hideExpired,
                     'filter[isRunning]': $scope.filter.isRunning
                 }
             }).then(function(result){
-                $scope.downtimes = result.data.all_host_downtimes;
+                $scope.downtimes = result.data.all_service_downtimes;
                 $scope.paging = result.data.paging;
                 $scope.init = false;
             });
@@ -83,8 +87,10 @@ angular.module('openITCOCKPIT')
         $scope.selectAll = function(){
             if($scope.downtimes){
                 for(var key in $scope.downtimes){
-                    var id = $scope.downtimes[key].DowntimeHost.internalDowntimeId;
-                    $scope.massChange[id] = true;
+                    if($scope.downtimes[key].DowntimeService.allowEdit && $scope.downtimes[key].DowntimeService.isCancellable){
+                        var id = $scope.downtimes[key].DowntimeService.internalDowntimeId;
+                        $scope.massChange[id] = true;
+                    }
                 }
             }
         };
@@ -97,7 +103,7 @@ angular.module('openITCOCKPIT')
 
         $scope.getObjectForDelete = function(downtime){
             var object = {};
-            object[downtime.DowntimeHost.internalDowntimeId] = downtime.Host.hostname;
+            object[downtime.DowntimeService.internalDowntimeId] = downtime.Host.hostname;
             return object;
         };
 
@@ -106,10 +112,8 @@ angular.module('openITCOCKPIT')
             var selectedObjects = MassChangeService.getSelected();
             for(var key in $scope.downtimes){
                 for(var id in selectedObjects){
-                    if($scope.downtimes[key].DowntimeHost.allowEdit && $scope.downtimes[key].DowntimeHost.isCancellable){
-                        if(id == $scope.downtimes[key].DowntimeHost.internalDowntimeId){
-                            objects[id] = $scope.downtimes[key].Host.hostname;
-                        }
+                    if(id == $scope.downtimes[key].DowntimeService.internalDowntimeId){
+                        objects[id] = $scope.downtimes[key].Host.hostname;
                     }
                 }
             }

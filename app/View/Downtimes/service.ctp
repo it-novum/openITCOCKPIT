@@ -313,7 +313,7 @@
                                             <button
                                                     class="btn btn-xs btn-danger"
                                                     ng-if="downtime.DowntimeService.allowEdit && downtime.DowntimeService.isCancellable"
-                                                    ng-click="confirmHostDowntimeDelete(getObjectForDelete(downtime))">
+                                                    ng-click="confirmServiceDowntimeDelete(getObjectForDelete(downtime))">
                                                 <i class="fa fa-trash-o"></i> <?php echo __('Delete'); ?>
                                             </button>
                                         <?php endif; ?>

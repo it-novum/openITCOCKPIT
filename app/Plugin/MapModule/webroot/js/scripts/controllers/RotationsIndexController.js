@@ -59,8 +59,10 @@ angular.module('openITCOCKPIT')
         $scope.selectAll = function(){
             if($scope.rotations){
                 for(var key in $scope.rotations){
-                    var id = $scope.rotations[key].Rotation.id;
-                    $scope.massChange[id] = true;
+                    if($scope.rotations[key].Rotation.allowEdit){
+                        var id = $scope.rotations[key].Rotation.id;
+                        $scope.massChange[id] = true;
+                    }
                 }
             }
         };

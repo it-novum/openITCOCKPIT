@@ -31,7 +31,7 @@
             <?php echo __('Hosttemplate'); ?>
             <span>>
                 <?php echo __('used by...'); ?>
-			</span>
+            </span>
         </h1>
     </div>
 </div>
@@ -74,16 +74,17 @@
                                 <td class="text-center" class="width-15">
                                     <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
                                     <input type="checkbox"
+                                           ng-if="host.Host.allow_edit"
                                            ng-model="massChange[host.Host.id]">
                                     <?php endif; ?>
                                 </td>
                                 <td class="">
                                     <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
                                         <a href="/hosts/browser/{{ host.Host.id }}" target="_blank">
-                                            {{ host.Host.name }} ({{ host.Host.address }})
+                                            {{ host.Host.hostname }} ({{ host.Host.address }})
                                         </a>
                                     <?php else: ?>
-                                        {{ host.Host.name }}
+                                        {{ host.Host.hostname }}
                                     <?php endif; ?>
                                     <?php if ($this->Acl->hasPermission('serviceList', 'services')): ?>
                                         <a class="pull-right txt-color-blueDark"
