@@ -59,34 +59,7 @@
                             <?php echo __('Refresh'); ?>
                         </button>
 
-                        <div class="btn-group">
-                            <button data-toggle="dropdown" class="btn dropdown-toggle btn-xs btn-success">
-                                <span><i class="fa fa-plus"></i> <?php echo __('Create downtime'); ?></span> <i
-                                        class="fa fa-caret-down"></i>
-                            </button>
-                            <ul class="dropdown-menu pull-right">
-                                <?php if ($this->Acl->hasPermission('addHostdowntime', 'systemdowntimes')): ?>
-                                    <li>
-                                        <a href="<?php echo Router::url(['controller' => 'systemdowntimes', 'action' => 'addHostdowntime']); ?>"><?php echo __('Create host downtime'); ?></a>
-                                    </li>
-                                <?php endif; ?>
-                                <?php if ($this->Acl->hasPermission('addHostdowntime', 'systemdowntimes')): ?>
-                                    <li>
-                                        <a href="<?php echo Router::url(['controller' => 'systemdowntimes', 'action' => 'addHostgroupdowntime']); ?>"><?php echo __('Create hostgroup downtime'); ?></a>
-                                    </li>
-                                <?php endif; ?>
-                                <?php if ($this->Acl->hasPermission('addServicedowntime', 'systemdowntimes')): ?>
-                                    <li>
-                                        <a href="<?php echo Router::url(['controller' => 'systemdowntimes', 'action' => 'addServicedowntime']); ?>"><?php echo __('Create service downtime'); ?></a>
-                                    </li>
-                                <?php endif; ?>
-                                <?php if ($this->Acl->hasPermission('addHostdowntime', 'systemdowntimes')): ?>
-                                    <li>
-                                        <a href="<?php echo Router::url(['controller' => 'systemdowntimes', 'action' => 'addContainerdowntime']); ?>"><?php echo __('Create container downtime'); ?></a>
-                                    </li>
-                                <?php endif; ?>
-                            </ul>
-                        </div>
+                        <?php echo $this->element('Downtimes/create_dropdown'); ?>
 
                         <button type="button" class="btn btn-xs btn-primary" ng-click="triggerFilter()">
                             <i class="fa fa-filter"></i>
@@ -99,7 +72,7 @@
 
                     <span class="widget-icon hidden-mobile"> <i class="fa fa-power-off"></i> </span>
                     <h2 class="hidden-mobile"><?php echo __('Host downtimes overview'); ?> </h2>
-
+                    <?php echo $this->element('Downtimes/tabs'); ?>
                 </header>
                 <div>
 
@@ -267,7 +240,7 @@
                                     <td class="width-5">
                                         <input type="checkbox"
                                                ng-model="massChange[downtime.DowntimeHost.internalDowntimeId]"
-                                               ng-show="downtime.DowntimeHost.allowEdit">
+                                               ng-show="downtime.DowntimeHost.allowEdit && downtime.DowntimeHost.isCancellable">
                                     </td>
 
                                     <td class="text-center">

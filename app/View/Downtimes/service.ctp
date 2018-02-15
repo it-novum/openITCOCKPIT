@@ -22,17 +22,8 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+?>
 
-use itnovum\openITCOCKPIT\Core\Views\Downtime;
-use itnovum\openITCOCKPIT\Core\Views\DowntimeIcon;
-use itnovum\openITCOCKPIT\Core\Views\Host;
-use itnovum\openITCOCKPIT\Core\Views\Service;
-use itnovum\openITCOCKPIT\Core\Views\ListSettingsRenderer;
-
-$ListSettingsRenderer = new ListSettingsRenderer($DowntimeListsettings);
-$ListSettingsRenderer->setPaginator($this->Paginator);
-
-$this->Paginator->options(['url' => Hash::merge($this->params['named'], $this->params['pass'], ['Listsettings' => $DowntimeListsettings])]); ?>
 <div class="row">
     <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
         <h1 class="page-title txt-color-blueDark">
@@ -40,6 +31,7 @@ $this->Paginator->options(['url' => Hash::merge($this->params['named'], $this->p
             <?php echo __('Downtimes'); ?>
             <span>>
                 <?php echo __('Services'); ?>
+                > <?php echo __('Overview'); ?>
             </span>
         </h1>
     </div>
@@ -52,377 +44,323 @@ $this->Paginator->options(['url' => Hash::merge($this->params['named'], $this->p
     <?php echo __('Page refresh in'); ?> <span id="autoRefreshCounter"></span> <?php echo __('seconds...'); ?>
 </div>
 
+<mass-delete-service-downtimes></mass-delete-service-downtimes>
+
 <section id="widget-grid" class="">
+
     <div class="row">
+
         <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
             <div class="jarviswidget jarviswidget-color-blueDark" id="wid-id-1" data-widget-editbutton="false">
                 <header>
                     <div class="widget-toolbar" role="menu">
-                        <div class="btn-group">
-                            <button data-toggle="dropdown" class="btn dropdown-toggle btn-xs btn-success">
-                                <span><i class="fa fa-plus"></i> <?php echo __('Create downtime'); ?></span> <i
-                                        class="fa fa-caret-down"></i>
-                            </button>
-                            <ul class="dropdown-menu pull-right">
-                                <?php if ($this->Acl->hasPermission('addHostdowntime', 'systemdowntimes')): ?>
-                                    <li>
-                                        <a href="<?php echo Router::url(['controller' => 'systemdowntimes', 'action' => 'addHostdowntime']); ?>"><?php echo __('Create host downtime'); ?></a>
-                                    </li>
-                                <?php endif; ?>
-                                <?php if ($this->Acl->hasPermission('addHostdowntime', 'systemdowntimes')): ?>
-                                    <li>
-                                        <a href="<?php echo Router::url(['controller' => 'systemdowntimes', 'action' => 'addHostgroupdowntime']); ?>"><?php echo __('Create hostgroup downtime'); ?></a>
-                                    </li>
-                                <?php endif; ?>
-                                <?php if ($this->Acl->hasPermission('addServicedowntime', 'systemdowntimes')): ?>
-                                    <li>
-                                        <a href="<?php echo Router::url(['controller' => 'systemdowntimes', 'action' => 'addServicedowntime']); ?>"><?php echo __('Create service downtime'); ?></a>
-                                    </li>
-                                <?php endif; ?>
-                                <?php if ($this->Acl->hasPermission('addHostdowntime', 'systemdowntimes')): ?>
-                                    <li>
-                                        <a href="<?php echo Router::url(['controller' => 'systemdowntimes', 'action' => 'addContainerdowntime']); ?>"><?php echo __('Create container downtime'); ?></a>
-                                    </li>
-                                <?php endif; ?>
-                            </ul>
-                        </div>
-                        <?php echo $this->Html->link(__('Filter'), 'javascript:', ['class' => 'oitc-list-filter btn btn-xs btn-primary toggle', 'hide-on-render' => 'true', 'icon' => 'fa fa-filter']); ?>
-                        <?php
-                        if ($isFilter):
-                            echo $this->ListFilter->resetLink(null, ['class' => 'btn-danger btn-xs', 'icon' => 'fa fa-times']);
-                        endif;
-                        ?>
-                    </div>
-                    <div class="widget-toolbar" role="menu">
-                        <a href="javascript:void(0);" class="dropdown-toggle selector" data-toggle="dropdown"><i
-                                    class="fa fa-lg fa-table"></i></a>
-                        <ul class="dropdown-menu arrow-box-up-right pull-right">
-                            <li style="width: 100%;">
-                                <a href="javascript:void(0)" class="select_datatable text-left" my-column="1">
-                                    <input type="checkbox" class="pull-left"/>
-                                    &nbsp;<?php echo __('Host'); ?>
-                                </a>
-                            </li>
-                            <li style="width: 100%;">
-                                <a href="javascript:void(0)" class="select_datatable text-left" my-column="2">
-                                    <input type="checkbox" class="pull-left"/>
-                                    &nbsp;<?php echo __('Service'); ?>
-                                </a>
-                            </li>
-                            <li style="width: 100%;">
-                                <a href="javascript:void(0)" class="select_datatable text-left" my-column="3">
-                                    <input type="checkbox" class="pull-left"/>
-                                    &nbsp;<?php echo __('User'); ?>
-                                </a>
-                            </li>
-                            <li style="width: 100%;">
-                                <a href="javascript:void(0)" class="select_datatable text-left" my-column="4">
-                                    <input type="checkbox" class="pull-left"/>
-                                    &nbsp;<?php echo __('Comment'); ?>
-                                </a>
-                            </li>
-                            <li style="width: 100%;">
-                                <a href="javascript:void(0)" class="select_datatable text-left" my-column="5">
-                                    <input type="checkbox" class="pull-left"/>
-                                    &nbsp;<?php echo __('Created'); ?>
-                                </a>
-                            </li>
-                            <li style="width: 100%;">
-                                <a href="javascript:void(0)" class="select_datatable text-left" my-column="6">
-                                    <input type="checkbox" class="pull-left"/>
-                                    &nbsp;<?php echo __('Start'); ?>
-                                </a>
-                            </li>
-                            <li style="width: 100%;">
-                                <a href="javascript:void(0)" class="select_datatable text-left" my-column="7">
-                                    <input type="checkbox" class="pull-left"/>
-                                    &nbsp;<?php echo __('End'); ?>
-                                </a>
-                            </li>
-                            <li style="width: 100%;">
-                                <a href="javascript:void(0)" class="select_datatable text-left" my-column="8">
-                                    <input type="checkbox" class="pull-left"/>
-                                    &nbsp;<?php echo __('Duration'); ?>
-                                </a>
-                            </li>
-                            <li style="width: 100%;">
-                                <a href="javascript:void(0)" class="select_datatable text-left" my-column="9">
-                                    <input type="checkbox" class="pull-left"/>
-                                    &nbsp;<?php echo __('Was cancelled'); ?>
-                                </a>
-                            </li>
-                        </ul>
-                        <div class="clearfix"></div>
+                        <button type="button" class="btn btn-xs btn-default" ng-click="load()">
+                            <i class="fa fa-refresh"></i>
+                            <?php echo __('Refresh'); ?>
+                        </button>
+
+                        <?php echo $this->element('Downtimes/create_dropdown'); ?>
+
+                        <button type="button" class="btn btn-xs btn-primary" ng-click="triggerFilter()">
+                            <i class="fa fa-filter"></i>
+                            <?php echo __('Filter'); ?>
+                        </button>
                     </div>
 
-                    <div id="switch-1" class="widget-toolbar" role="menu">
-                        <?php
-                        echo $this->Form->create('downtimes', [
-                            'class' => 'form-horizontal clear',
-                            'url'   => 'service' //reset the URL on submit
-                        ]);
 
-                        echo $ListSettingsRenderer->getFromInput();
-                        echo $ListSettingsRenderer->getToInput();
-                        ?>
+                    <div class="jarviswidget-ctrls" role="menu"></div>
 
-
-                        <div class="btn-group">
-                            <button data-toggle="dropdown" class="btn dropdown-toggle btn-xs btn-default">
-                                <span id="listoptions_view"><span
-                                            class="hidden-mobile"><?php echo __('Host downtimes'); ?></span></span> <i
-                                        class="fa fa-caret-down"></i>
-                            </button>
-                            <ul class="dropdown-menu pull-right">
-                                <?php if ($this->Acl->hasPermission('host', 'downtimes')): ?>
-                                    <li>
-                                        <a href="<?php echo Router::url(['controller' => 'downtimes', 'action' => 'host']); ?>"><?php echo __('Host downtimes'); ?></a>
-                                    </li>
-                                <?php endif; ?>
-                                <?php if ($this->Acl->hasPermission('service', 'downtimes')): ?>
-                                    <li>
-                                        <a href="<?php echo Router::url(['controller' => 'downtimes', 'action' => 'service']); ?>"><?php echo __('Service downtimes'); ?></a>
-                                    </li>
-                                <?php endif; ?>
-                                <?php if ($this->Acl->hasPermission('index', 'systemdowntimes')): ?>
-                                    <li>
-                                        <a href="<?php echo Router::url(['controller' => 'systemdowntimes', 'action' => 'index']); ?>"><?php echo __('Recurring downtimes'); ?></a>
-                                    </li>
-                                <?php endif; ?>
-                            </ul>
-                        </div>
-
-                        <?php echo $ListSettingsRenderer->getLimitSelect(); ?>
-
-                        <?php
-                        $checked = '';
-                        if (isset($DowntimeListsettings['hide_expired']) && $DowntimeListsettings['hide_expired'] == 1):
-                            $checked = 'checked="checked"';
-                        endif;
-                        ?>
-                        <div class="btn-group hidden-mobile">
-                            <button data-toggle="dropdown" class="btn dropdown-toggle btn-xs btn-default">
-                                <?php echo __('Options'); ?> <i class="fa fa-caret-down"></i>
-                            </button>
-                            <ul class="dropdown-menu pull-right stayOpenOnClick">
-                                <li>
-                                    <input type="hidden" value="0" name="data[Listsettings][hide_expired]"/>
-                                <li style="width: 100%;"><a href="javascript:void(0)"
-                                                            class="listoptions_checkbox text-left"><input
-                                                type="checkbox" name="data[Listsettings][hide_expired]"
-                                                value="1" <?php echo $checked; ?>/>
-                                        &nbsp; <?php echo __('Hide expired'); ?></a></li>
-                                </li>
-                            </ul>
-                        </div>
-                        <?php
-                        echo $ListSettingsRenderer->getApply();
-                        echo $this->Form->end();
-                        ?>
-                    </div>
-
-                    <div class="jarviswidget-ctrls" role="menu">
-                    </div>
                     <span class="widget-icon hidden-mobile"> <i class="fa fa-power-off"></i> </span>
-                    <h2 class="hidden-mobile"><?php echo __('Service downtimes'); ?> </h2>
-
+                    <h2 class="hidden-mobile"><?php echo __('Service downtimes overview'); ?> </h2>
+                    <?php echo $this->element('Downtimes/tabs'); ?>
                 </header>
                 <div>
+
                     <div class="widget-body no-padding">
-                        <?php echo $this->ListFilter->renderFilterbox($filters, [
-                            'formActionParams' => [
-                                'url'   => Router::url(
-                                    Hash::merge(
-                                        $this->params['named'],
-                                        $this->params['pass'],
-                                        ['Listsettings' => $DowntimeListsettings]
-                                    )),
-                                'merge' => false
-                            ]
-                        ], '<i class="fa fa-filter"></i> ' . __('Filter'), false, false); ?>
+
+                        <div class="list-filter well" ng-show="showFilter">
+                            <h3><i class="fa fa-filter"></i> <?php echo __('Filter'); ?></h3>
+                            <div class="row">
+                                <div class="col-xs-12 col-md-6">
+                                    <div class="form-group smart-form">
+                                        <label class="input"> <i class="icon-prepend"
+                                                                 style="padding-right:14px;"><?php echo __('From'); ?></i>
+                                            <input type="text" class="input-sm" style="padding-left:50px;"
+                                                   placeholder="<?php echo __('From Date'); ?>"
+                                                   ng-model="filter.from"
+                                                   ng-model-options="{debounce: 500}">
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-xs-12 col-md-6">
+                                    <div class="form-group smart-form">
+                                        <label class="input"> <i class="icon-prepend fa fa-user"></i>
+                                            <input type="text" class="input-sm"
+                                                   placeholder="<?php echo __('Filter by user'); ?>"
+                                                   ng-model="filter.DowntimeService.author_name"
+                                                   ng-model-options="{debounce: 500}">
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="col-xs-12 col-md-6">
+                                    <div class="form-group smart-form">
+                                        <label class="input"> <i class="icon-prepend"
+                                                                 style="padding-right:14px;"><?php echo __('To'); ?></i>
+                                            <input type="text" class="input-sm" style="padding-left:50px;"
+                                                   placeholder="<?php echo __('To Date'); ?>"
+                                                   ng-model="filter.to"
+                                                   ng-model-options="{debounce: 500}">
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="col-xs-12 col-md-6">
+                                    <div class="form-group smart-form">
+                                        <label class="input"> <i class="icon-prepend fa fa-filter"></i>
+                                            <input type="text" class="input-sm"
+                                                   placeholder="<?php echo __('Filter by comment'); ?>"
+                                                   ng-model="filter.DowntimeService.comment_data"
+                                                   ng-model-options="{debounce: 500}">
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="col-xs-12 col-md-6">
+                                    <div class="form-group smart-form">
+                                        <label class="input"> <i class="icon-prepend fa fa-desktop"></i>
+                                            <input type="text" class="input-sm"
+                                                   placeholder="<?php echo __('Filter by host name'); ?>"
+                                                   ng-model="filter.Host.name"
+                                                   ng-model-options="{debounce: 500}">
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-xs-12 col-md-6">
+                                    <div class="form-group smart-form">
+                                        <label class="input"> <i class="icon-prepend fa fa-cog"></i>
+                                            <input type="text" class="input-sm"
+                                                   placeholder="<?php echo __('Filter by service name'); ?>"
+                                                   ng-model="filter.Service.name"
+                                                   ng-model-options="{debounce: 500}">
+                                        </label>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="row">
+
+                                <div class="col-xs-12 col-md-3">
+                                    <fieldset>
+                                        <legend><?php echo __('Options'); ?></legend>
+                                        <div class="form-group smart-form">
+                                            <label class="checkbox small-checkbox-label">
+                                                <input type="checkbox" name="checkbox" checked="checked"
+                                                       ng-model="filter.isRunning"
+                                                       ng-model-options="{debounce: 500}">
+                                                <i class="checkbox-primary"></i>
+                                                <?php echo __('Is running'); ?>
+                                            </label>
+
+                                            <label class="checkbox small-checkbox-label">
+                                                <input type="checkbox" name="checkbox" checked="checked"
+                                                       ng-model="filter.DowntimeService.was_not_cancelled"
+                                                       ng-model-options="{debounce: 500}">
+                                                <i class="checkbox-primary"></i>
+                                                <?php echo __('Was not cancelled'); ?>
+                                            </label>
+
+                                            <label class="checkbox small-checkbox-label">
+                                                <input type="checkbox" name="checkbox" checked="checked"
+                                                       ng-model="filter.DowntimeService.was_cancelled"
+                                                       ng-model-options="{debounce: 500}">
+                                                <i class="checkbox-primary"></i>
+                                                <?php echo __('Was cancelled'); ?>
+                                            </label>
+
+                                            <label class="checkbox small-checkbox-label">
+                                                <input type="checkbox" name="checkbox" checked="checked"
+                                                       ng-model="filter.hideExpired"
+                                                       ng-model-options="{debounce: 500}">
+                                                <i class="checkbox-primary"></i>
+                                                <?php echo __('Hide expired'); ?>
+                                            </label>
+                                        </div>
+                                    </fieldset>
+                                </div>
+
+                            </div>
+
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <div class="pull-right margin-top-10">
+                                        <button type="button" ng-click="resetFilter()"
+                                                class="btn btn-xs btn-danger">
+                                            <?php echo __('Reset Filter'); ?>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="mobile_table">
                             <table id="servicedowntimes_list"
-                                   class="table table-striped table-hover table-bordered smart-form"
-                                   style="">
+                                   class="table table-striped table-hover table-bordered smart-form" style="">
                                 <thead>
                                 <tr>
-                                    <?php $order = $this->Paginator->param('order'); ?>
                                     <th class="no-sort text-center"><i class="fa fa-check-square-o fa-lg"></i></th>
                                     <th class="no-sort"><?php echo __('Running'); ?></th>
-                                    <th class="no-sort">
-                                        <?php echo $this->Utils->getDirection($order, 'Host.name');
-                                        echo $this->Paginator->sort('Host.name', __('Host')); ?>
+                                    <th class="no-sort" ng-click="orderBy('Host.name')">
+                                        <i class="fa" ng-class="getSortClass('Host.name')"></i>
+                                        <?php echo __('Host'); ?>
                                     </th>
-                                    <th class="no-sort">
-                                        <?php echo $this->Utils->getDirection($order, 'Service.name');
-                                        echo $this->Paginator->sort('Service.name', __('Service')); ?>
+                                    <th class="no-sort" ng-click="orderBy('Service.name')">
+                                        <i class="fa" ng-class="getSortClass('Service.name')"></i>
+                                        <?php echo __('Service'); ?>
                                     </th>
-                                    <th class="no-sort">
-                                        <?php echo $this->Utils->getDirection($order, 'DowntimeService.author_name');
-                                        echo $this->Paginator->sort('DowntimeService.author_name', __('User')); ?>
+                                    <th class="no-sort" ng-click="orderBy('DowntimeService.author_name')">
+                                        <i class="fa" ng-class="getSortClass('DowntimeService.author_name')"></i>
+                                        <?php echo __('User'); ?>
                                     </th>
-                                    <th class="no-sort">
-                                        <?php echo $this->Utils->getDirection($order, 'DowntimeService.comment_data');
-                                        echo $this->Paginator->sort('DowntimeService.comment_data', __('Comment')); ?>
+                                    <th class="no-sort" ng-click="orderBy('DowntimeService.comment_data')">
+                                        <i class="fa" ng-class="getSortClass('DowntimeService.comment_data')"></i>
+                                        <?php echo __('Comment'); ?>
                                     </th>
-                                    <th class="no-sort">
-                                        <?php echo $this->Utils->getDirection($order, 'DowntimeService.entry_time');
-                                        echo $this->Paginator->sort('DowntimeService.entry_time', __('Created')); ?>
+                                    <th class="no-sort" ng-click="orderBy('DowntimeService.entry_time')">
+                                        <i class="fa" ng-class="getSortClass('DowntimeService.entry_time')"></i>
+                                        <?php echo __('Created'); ?>
                                     </th>
-                                    <th class="no-sort">
-                                        <?php echo $this->Utils->getDirection($order, 'DowntimeService.scheduled_start_time');
-                                        echo $this->Paginator->sort('DowntimeService.scheduled_start_time', __('Start')); ?>
+                                    <th class="no-sort" ng-click="orderBy('DowntimeService.scheduled_start_time')">
+                                        <i class="fa" ng-class="getSortClass('DowntimeService.scheduled_start_time')"></i>
+                                        <?php echo __('Start'); ?>
                                     </th>
-                                    <th class="no-sort">
-                                        <?php echo $this->Utils->getDirection($order, 'DowntimeService.scheduled_end_time');
-                                        echo $this->Paginator->sort('DowntimeService.scheduled_end_time', __('End')); ?>
+                                    <th class="no-sort" ng-click="orderBy('DowntimeService.scheduled_end_time')">
+                                        <i class="fa" ng-class="getSortClass('DowntimeService.scheduled_end_time')"></i>
+                                        <?php echo __('End'); ?>
                                     </th>
-                                    <th class="no-sort">
-                                        <?php echo $this->Utils->getDirection($order, 'DowntimeService.duration');
-                                        echo $this->Paginator->sort('DowntimeService.duration', __('Duration')); ?>
+                                    <th class="no-sort" ng-click="orderBy('DowntimeService.duration')">
+                                        <i class="fa" ng-class="getSortClass('DowntimeService.duration')"></i>
+                                        <?php echo __('Duration'); ?>
                                     </th>
-                                    <th class="no-sort">
-                                        <?php echo $this->Utils->getDirection($order, 'DowntimeService.was_cancelled');
-                                        echo $this->Paginator->sort('DowntimeService.was_cancelled', __('Was cancelled')); ?>
+                                    <th class="no-sort" ng-click="orderBy('DowntimeService.was_cancelled')">
+                                        <i class="fa" ng-class="getSortClass('DowntimeService.was_cancelled')"></i>
+                                        <?php echo __('Was cancelled'); ?>
                                     </th>
                                     <th class="no-sort"><?php echo __('Delete'); ?></th>
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <?php foreach ($all_downtimes as $downtime):
-                                    $Downtime = new Downtime($downtime['DowntimeService']);
-                                    $DowntimeIcon = new DowntimeIcon($Downtime);
-                                    $Host = new Host($downtime);
-                                    $Service = new Service($downtime);
-                                    ?>
-                                    <tr>
-                                        <td class="text-center width-5">
-                                            <?php if ($Downtime->isCancellable() && $this->Acl->hasPermission('delete','downtimes') && $downtime['canDelete']): ?>
-                                                <input type="checkbox" class="massChangeDT"
-                                                       downtimeServicesId=""
-                                                       internalDowntimeId="<?php echo h($Downtime->getInternalDowntimeId()); ?>"
-                                                       downtimehistoryId="<?php echo h($Downtime->getDowntimehistoryId()); ?>">
-                                            <?php endif; ?>
-                                        </td>
-                                        <td class="text-center">
-                                            <?php echo $DowntimeIcon->getIcon(); ?>
-                                        </td>
-                                        <td>
-                                            <?php
-                                            if ($Host->getId()): ?>
-                                                <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
-                                                    <a href="<?php echo Router::url([
-                                                        'controller' => 'hosts',
-                                                        'action'     => 'browser',
-                                                        $Host->getId()
-                                                    ]); ?>">
-                                                        <?php echo h($Host->getHostname()); ?>
-                                                    </a>
-                                                <?php else: ?>
-                                                    <?php echo h($Host->getHostname()); ?>
-                                                <?php endif; ?>
-                                            <?php else: ?>
-                                                <span class="muted italic"><?php echo __('Host deleted'); ?></span>
-                                            <?php endif; ?>
-                                        </td>
-                                        <td>
-                                            <?php
-                                            if ($Service->getId()):
-                                                if ($this->Acl->hasPermission('browser', 'services')): ?>
-                                                    <a href="<?php echo Router::url([
-                                                        'controller' => 'services',
-                                                        'action'     => 'browser',
-                                                        $Service->getId()
-                                                    ]); ?>">
-                                                        <?php echo h($Service->getServicename()); ?>
-                                                    </a>
-                                                <?php else: ?>
-                                                    <?php echo h($Service->getServicename()); ?>
-                                                <?php endif; ?>
-                                            <?php else: ?>
-                                                <span class="muted italic"><?php echo __('Service deleted'); ?></span>
-                                            <?php endif; ?>
-                                        </td>
-                                        <td><?php echo h($Downtime->getAuthorName()); ?></td>
-                                        <td><?php echo h($Downtime->getCommentData()); ?></td>
-                                        <td>
-                                            <?php echo $this->Time->format(
-                                                $Downtime->getEntryTime(),
-                                                $this->Auth->user('dateformat'),
-                                                false,
-                                                $this->Auth->user('timezone')); ?>
-                                        </td>
-                                        <td>
-                                            <?php echo $this->Time->format(
-                                                $Downtime->getScheduledStartTime(),
-                                                $this->Auth->user('dateformat'),
-                                                false,
-                                                $this->Auth->user('timezone')); ?>
-                                        </td>
-                                        <td>
-                                            <?php echo $this->Time->format(
-                                                $Downtime->getScheduledEndTime(),
-                                                $this->Auth->user('dateformat'),
-                                                false,
-                                                $this->Auth->user('timezone')); ?>
-                                        </td>
-                                        <td><?php echo $this->Utils->secondsInHuman($Downtime->getDuration()); ?></td>
-                                        <td>
-                                            <?php
-                                            if ($Downtime->wasCancelled()):
-                                                echo __('Yes');
-                                            else:
-                                                echo __('No');
-                                            endif;
-                                            ?>
-                                        </td>
-                                        <td class="text-center">
-                                            <?php if ($Downtime->isCancellable()): ?>
-                                                <?php if ($this->Acl->hasPermission('delete', 'downtimes') && $downtime['canDelete']): ?>
-                                                    <a class="btn btn-danger btn-xs delete_downtime"
-                                                       href="javascript:void(0)"
-                                                       internal-downtime-id="<?php echo h($Downtime->getInternalDowntimeId()); ?>"
-                                                       downtimehistory-id="<?php echo h($Downtime->getDowntimehistoryId()); ?>"><i
-                                                                class="fa fa-trash-o"></i> <?php echo __('Delete'); ?>
-                                                    </a>
-                                                <?php endif; ?>
-                                            <?php endif; ?>
-                                        </td>
-                                    </tr>
-                                <?php endforeach; ?>
+                                <tr ng-repeat="downtime in downtimes">
+                                    <td class="width-5">
+                                        <input type="checkbox"
+                                               ng-model="massChange[downtime.DowntimeService.internalDowntimeId]"
+                                               ng-show="downtime.DowntimeService.allowEdit && downtime.DowntimeService.isCancellable">
+                                    </td>
+
+                                    <td class="text-center">
+                                        <downtimeicon downtime="downtime.DowntimeService"></downtimeicon>
+                                    </td>
+
+                                    <td>
+                                        <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
+                                            <a href="/hosts/browser/{{ downtime.Host.id }}">
+                                                {{ downtime.Host.hostname }}
+                                            </a>
+                                        <?php else: ?>
+                                            {{ downtime.Host.hostname }}
+                                        <?php endif; ?>
+                                    </td>
+                                    <td>
+                                        <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
+                                            <a href="/services/browser/{{ downtime.Service.id }}">
+                                                {{ downtime.Service.servicename }}
+                                            </a>
+                                        <?php else: ?>
+                                            {{ downtime.Service.servicename }}
+                                        <?php endif; ?>
+                                    </td>
+                                    <td>
+                                        {{downtime.DowntimeService.authorName}}
+                                    </td>
+
+                                    <td>
+                                        {{downtime.DowntimeService.commentData}}
+                                    </td>
+
+                                    <td>
+                                        {{downtime.DowntimeService.entryTime}}
+                                    </td>
+
+                                    <td>
+                                        {{downtime.DowntimeService.scheduledStartTime}}
+                                    </td>
+
+                                    <td>
+                                        {{downtime.DowntimeService.scheduledEndTime}}
+                                    </td>
+
+                                    <td>
+                                        {{downtime.DowntimeService.durationHuman}}
+                                    </td>
+
+                                    <td>
+                                        <span ng-if="downtime.DowntimeService.wasCancelled"><?php echo __('Yes'); ?></span>
+                                        <span ng-if="!downtime.DowntimeService.wasCancelled"><?php echo __('No'); ?></span>
+                                    </td>
+
+                                    <td>
+                                        <?php if ($this->Acl->hasPermission('delete', 'downtimes')): ?>
+                                            <button
+                                                    class="btn btn-xs btn-danger"
+                                                    ng-if="downtime.DowntimeService.allowEdit && downtime.DowntimeService.isCancellable"
+                                                    ng-click="confirmHostDowntimeDelete(getObjectForDelete(downtime))">
+                                                <i class="fa fa-trash-o"></i> <?php echo __('Delete'); ?>
+                                            </button>
+                                        <?php endif; ?>
+                                    </td>
+
+                                </tr>
+
+                                <tr>
                                 </tbody>
                             </table>
-                        </div>
-                        <?php if (empty($all_downtimes)): ?>
-                            <div class="noMatch">
-                                <center>
-                                    <span class="txt-color-red italic"><?php echo __('No entries match the selection'); ?></span>
-                                </center>
-                            </div>
-                        <?php endif; ?>
-
-                        <?php if($this->Acl->hasPermission('delete','downtimes') && $downtime['canDelete']):
-                            echo $this->element('downtimes_mass_service_delete');
-                        endif; ?>
-
-                        <div style="padding: 5px 10px;">
-                            <div class="row">
-                                <div class="col-sm-6">
-                                    <div class="dataTables_info" style="line-height: 32px;"
-                                         id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('Page') . ' {:page} ' . __('of') . ' {:pages}, ' . __('Total') . ' {:count} ' . __('entries')); ?></div>
-                                </div>
-                                <div class="col-sm-6 text-right">
-                                    <div class="dataTables_paginate paging_bootstrap">
-                                        <?php echo $this->Paginator->pagination([
-                                            'ul' => 'pagination',
-                                        ]); ?>
+                            <div class="row margin-top-10 margin-bottom-10">
+                                <div class="row margin-top-10 margin-bottom-10" ng-show="downtimes.length == 0">
+                                    <div class="col-xs-12 text-center txt-color-red italic">
+                                        <?php echo __('No entries match the selection'); ?>
                                     </div>
                                 </div>
                             </div>
+
+                            <div class="row margin-top-10 margin-bottom-10">
+                                <div class="col-xs-12 col-md-2 text-muted text-center">
+                                    <span ng-show="selectedElements > 0">({{selectedElements}})</span>
+                                </div>
+                                <div class="col-xs-12 col-md-2">
+                                <span ng-click="selectAll()" class="pointer">
+                                    <i class="fa fa-lg fa-check-square-o"></i>
+                                    <?php echo __('Select all'); ?>
+                                </span>
+                                </div>
+                                <div class="col-xs-12 col-md-2">
+                                <span ng-click="undoSelection()" class="pointer">
+                                    <i class="fa fa-lg fa-square-o"></i>
+                                    <?php echo __('Undo selection'); ?>
+                                </span>
+                                </div>
+                                <div class="col-xs-12 col-md-2 txt-color-red">
+                                <span ng-click="confirmHostDowntimeDelete(getObjectsForDelete())" class="pointer">
+                                    <i class="fa fa-lg fa-trash-o"></i>
+                                    <?php echo __('Delete'); ?>
+                                </span>
+                                </div>
+                            </div>
+
+                            <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>
                         </div>
                     </div>
                 </div>
             </div>
+        </article>
     </div>
 </section>
-

@@ -120,6 +120,13 @@ class DowntimeService extends NagiosModuleAppModel {
 
         //Merge ListFilter conditions
         $query['conditions'] = Hash::merge($paginatorConditions, $query['conditions']);
+
+        if($Conditions->isRunning()){
+            $query['conditions']['DowntimeService.scheduled_end_time >'] = date('Y-m-d H:i:s', time());
+            $query['conditions']['DowntimeService.was_started'] = 1;
+            $query['conditions']['DowntimeService.was_cancelled'] = 0;
+        }
+
         return $query;
     }
 

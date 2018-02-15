@@ -24,7 +24,9 @@
 //	confirmation.
 
 use itnovum\openITCOCKPIT\Core\AngularJS\Request\HostDowntimesControllerRequest;
+use itnovum\openITCOCKPIT\Core\AngularJS\Request\ServiceDowntimesControllerRequest;
 use itnovum\openITCOCKPIT\Core\DowntimeHostConditions;
+use itnovum\openITCOCKPIT\Core\DowntimeServiceConditions;
 use itnovum\openITCOCKPIT\Core\Views\ContainerPermissions;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
 
@@ -93,7 +95,6 @@ class DowntimesController extends AppController {
             foreach ($_hostContainers as $host) {
                 $hostContainers[$host['Host']['id']] = Hash::extract($host['Container'], '{n}.id');
             }
-            debug($hostContainers);
         }
 
         //Prepare data for API
@@ -128,6 +129,85 @@ class DowntimesController extends AppController {
 
 
     public function service() {
+        $this->layout = 'angularjs';
+        if (!$this->isAngularJsRequest()) {
+            return;
+        }
+
+        $AngularServiceDowntimesControllerRequest = new ServiceDowntimesControllerRequest($this->request);
+
+        //Process conditions
+        $DowntimeServiceConditions = new DowntimeServiceConditions();
+        $DowntimeServiceConditions->setLimit($this->Paginator->settings['limit']);
+        $DowntimeServiceConditions->setFrom($AngularServiceDowntimesControllerRequest->getFrom());
+        $DowntimeServiceConditions->setTo($AngularServiceDowntimesControllerRequest->getTo());
+        $DowntimeServiceConditions->setHideExpired($AngularServiceDowntimesControllerRequest->hideExpired());
+        $DowntimeServiceConditions->setIsRunning($AngularServiceDowntimesControllerRequest->isRunning());
+        $DowntimeServiceConditions->setContainerIds($this->MY_RIGHTS);
+        $DowntimeServiceConditions->setOrder($AngularServiceDowntimesControllerRequest->getOrderForPaginator('DowntimeService.scheduled_start_time', 'desc'));
+
+        $this->Paginator->settings = $this->DowntimeService->getQuery($DowntimeServiceConditions, $AngularServiceDowntimesControllerRequest->getIndexFilters());
+        $this->Paginator->settings['page'] = $AngularServiceDowntimesControllerRequest->getPage();
+
+        $serviceDowntimes = $this->Paginator->paginate(
+            $this->DowntimeService->alias,
+            [],
+            [key($this->Paginator->settings['order'])]
+        );
+
+        //Load containers for hosts, for non root users
+        $hostContainers = [];
+        if (!empty($serviceDowntimes) && $this->hasRootPrivileges === false && $this->hasPermission('edit', 'hosts')) {
+            $hostIds = array_unique(Hash::extract($serviceDowntimes, '{n}.Host.id'));
+            $_hostContainers = $this->Host->find('all', [
+                'contain'    => [
+                    'Container',
+                ],
+                'fields'     => [
+                    'Host.id',
+                    'Container.*',
+                ],
+                'conditions' => [
+                    'Host.id' => $hostIds,
+                ],
+            ]);
+            foreach ($_hostContainers as $host) {
+                $hostContainers[$host['Host']['id']] = Hash::extract($host['Container'], '{n}.id');
+            }
+        }
+
+        //Prepare data for API
+        $all_service_downtimes = [];
+        $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
+        foreach ($serviceDowntimes as $serviceDowntime) {
+            if ($this->hasRootPrivileges) {
+                $allowEdit = true;
+            } else {
+                $containerIds = [];
+                if (isset($hostContainers[$serviceDowntime['Host']['id']])) {
+                    $containerIds = $hostContainers[$serviceDowntime['Host']['id']];
+                }
+                $ContainerPermissions = new ContainerPermissions($this->MY_RIGHTS_LEVEL, $containerIds);
+                $allowEdit = $ContainerPermissions->hasPermission();
+            }
+
+            $Host = new \itnovum\openITCOCKPIT\Core\Views\Host($serviceDowntime, $allowEdit);
+            $Service = new \itnovum\openITCOCKPIT\Core\Views\Service($serviceDowntime, null, $allowEdit);
+            $ServiceDowntime = new \itnovum\openITCOCKPIT\Core\Views\Downtime($serviceDowntime['DowntimeService'], $allowEdit, $UserTime);
+
+            $all_service_downtimes[] = [
+                'Host'            => $Host->toArray(),
+                'Service'         => $Service->toArray(),
+                'DowntimeService' => $ServiceDowntime->toArray()
+            ];
+        }
+
+
+        $this->set('all_service_downtimes', $all_service_downtimes);
+        $this->set('_serialize', ['all_service_downtimes', 'paging']);
+
+
+        return;
         $paginatorLimit = $this->Paginator->settings['limit'];
         $requestSettings = $this->Downtime->serviceListSettings($this->request, $this->MY_RIGHTS, $paginatorLimit);
 
