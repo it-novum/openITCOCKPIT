@@ -89,7 +89,43 @@ class DowntimeHost extends CrateModuleAppModel {
 
         $query['conditions'] = Hash::merge($query['conditions'], $filterConditions);
 
+        if($Conditions->isRunning()){
+            $query['conditions']['DowntimeHost.scheduled_end_time >'] = time();
+            $query['conditions']['DowntimeHost.was_started'] = true;
+            $query['conditions']['DowntimeHost.was_cancelled'] = false;
+        }
+
+
         return $query;
+    }
+
+    /**
+     * @param int $internalDowntimeId
+     * @return array
+     */
+    public function getHostUuidWithDowntimeByInternalDowntimeId($internalDowntimeId) {
+        $query = [
+            'fields'     => [
+                'DowntimeHost.*',
+
+            ],
+            'conditions' => [
+                'DowntimeHost.internal_downtime_id' => $internalDowntimeId
+            ]
+        ];
+
+        $result = $this->find('first', $query);
+        if(empty($result)){
+            return [];
+        }
+
+        return [
+            'DowntimeHost' => $result['DowntimeHost'],
+            'Host' => [
+                'uuid' => $result['DowntimeHost']['hostname']
+            ]
+        ];
+
     }
 
 }

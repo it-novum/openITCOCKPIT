@@ -283,7 +283,6 @@ class DowntimesController extends AppController {
                             $Downtime
                         );
                     }
-
                 }
 
                 //Delete Host downtime

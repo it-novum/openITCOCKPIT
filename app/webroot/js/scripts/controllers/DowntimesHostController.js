@@ -17,6 +17,9 @@ angular.module('openITCOCKPIT')
                     was_cancelled: false,
                     was_not_cancelled: false
                 },
+                Host: {
+                    name: ''
+                },
                 from: date('d.m.Y H:i', now.getTime()/1000 - (3600 * 24 * 30)),
                 to: date('d.m.Y H:i', now.getTime()/1000 + (3600 * 24 * 30 * 2)),
                 isRunning: false,
@@ -47,6 +50,7 @@ angular.module('openITCOCKPIT')
                     'filter[DowntimeHost.author_name]': $scope.filter.DowntimeHost.author_name,
                     'filter[DowntimeHost.comment_data]': $scope.filter.DowntimeHost.comment_data,
                     'filter[DowntimeHost.was_cancelled]': wasCancelled,
+                    'filter[Host.name]': $scope.filter.Host.name,
                     'filter[from]': $scope.filter.from,
                     'filter[to]': $scope.filter.to,
                     'filter[hideExpired]': $scope.filter.hideExpired,

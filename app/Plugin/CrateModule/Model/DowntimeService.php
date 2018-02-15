@@ -114,17 +114,14 @@ class DowntimeService extends CrateModuleAppModel {
             ],
             'fields'     => [
                 'DowntimeService.internal_downtime_id',
-            ],
-            'joins'      => [
-                [
-                    'table'      => 'openitcockpit_services',
-                    'type'       => 'INNER',
-                    'alias'      => 'Service',
-                    'conditions' => 'Service.uuid = DowntimeService.service_description',
-                ]
             ]
         ];
-        return $this->find('all', $query);
+        $result = $this->find('all', $query);
+        if(empty($result)){
+            return [];
+        }
+
+        return Hash::extract($result, '{n}.DowntimeService.internal_downtime_id');
     }
 
 }

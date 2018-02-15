@@ -36,7 +36,7 @@
 ></i>
 
 <i
-        ng-if="downtime.wasCancelled && downtime.wasStarted"
+        ng-if="downtime.wasCancelled"
         title="<?php echo __('Downtime was cancelled') ?>"
         class="fa fa-power-off fa-lg txt-color-red"
 ></i>
