@@ -170,6 +170,14 @@
 
                                             <label class="checkbox small-checkbox-label">
                                                 <input type="checkbox" name="checkbox" checked="checked"
+                                                       ng-model="filter.DowntimeHost.was_not_cancelled"
+                                                       ng-model-options="{debounce: 500}">
+                                                <i class="checkbox-primary"></i>
+                                                <?php echo __('Was not cancelled'); ?>
+                                            </label>
+
+                                            <label class="checkbox small-checkbox-label">
+                                                <input type="checkbox" name="checkbox" checked="checked"
                                                        ng-model="filter.DowntimeHost.was_cancelled"
                                                        ng-model-options="{debounce: 500}">
                                                 <i class="checkbox-primary"></i>

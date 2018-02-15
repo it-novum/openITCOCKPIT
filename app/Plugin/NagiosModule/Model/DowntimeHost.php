@@ -100,8 +100,13 @@ class DowntimeHost extends NagiosModuleAppModel {
         if ($Conditions->hideExpired()) {
             $query['conditions']['DowntimeHost.scheduled_end_time >'] = date('Y-m-d H:i:s', time());
         }
-
         $query['conditions'] = Hash::merge($query['conditions'], $filterConditions);
+
+        if($Conditions->isRunning()){
+            $query['conditions']['DowntimeHost.scheduled_end_time >'] = date('Y-m-d H:i:s', time());
+            $query['conditions']['DowntimeHost.was_started'] = 1;
+            $query['conditions']['DowntimeHost.was_cancelled'] = 0;
+        }
 
         return $query;
     }

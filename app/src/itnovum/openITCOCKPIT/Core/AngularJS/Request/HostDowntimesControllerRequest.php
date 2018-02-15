@@ -56,4 +56,11 @@ class HostDowntimesControllerRequest extends AngularRequest {
         }
         return true;
     }
+
+    public function isRunning(){
+        if($this->queryHasField('isRunning')){
+            return $this->getQueryFieldValue('isRunning') === 'true';
+        }
+        return false;
+    }
 }

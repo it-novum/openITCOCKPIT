@@ -39,6 +39,11 @@ class DowntimeHostConditions extends ListSettingsConditions {
     protected $hideExpired = false;
 
     /**
+     * @var bool
+     */
+    protected $isRunning = false;
+
+    /**
      * @param bool $value
      */
     public function setHideExpired($value) {
@@ -52,5 +57,18 @@ class DowntimeHostConditions extends ListSettingsConditions {
         return $this->hideExpired;
     }
 
+    /**
+     * @param $value
+     */
+    public function setIsRunning($value) {
+        $this->isRunning = (bool)$value;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isRunning(){
+        return $this->isRunning;
+    }
 }
 

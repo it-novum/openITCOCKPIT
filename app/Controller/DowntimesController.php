@@ -60,6 +60,7 @@ class DowntimesController extends AppController {
         $DowntimeHostConditions->setFrom($AngularHostDowntimesControllerRequest->getFrom());
         $DowntimeHostConditions->setTo($AngularHostDowntimesControllerRequest->getTo());
         $DowntimeHostConditions->setHideExpired($AngularHostDowntimesControllerRequest->hideExpired());
+        $DowntimeHostConditions->setIsRunning($AngularHostDowntimesControllerRequest->isRunning());
         $DowntimeHostConditions->setContainerIds($this->MY_RIGHTS);
         $DowntimeHostConditions->setOrder($AngularHostDowntimesControllerRequest->getOrderForPaginator('DowntimeHost.scheduled_start_time', 'desc'));
 

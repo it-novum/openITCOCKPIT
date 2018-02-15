@@ -14,7 +14,8 @@ angular.module('openITCOCKPIT')
                 DowntimeHost: {
                     author_name: '',
                     comment_data: '',
-                    was_cancelled: ''
+                    was_cancelled: false,
+                    was_not_cancelled: false
                 },
                 from: date('d.m.Y H:i', now.getTime()/1000 - (3600 * 24 * 30)),
                 to: date('d.m.Y H:i', now.getTime()/1000 + (3600 * 24 * 30 * 2)),
@@ -33,7 +34,10 @@ angular.module('openITCOCKPIT')
 
 
         $scope.load = function(){
-
+            var wasCancelled = '';
+            if($scope.filter.DowntimeHost.was_cancelled ^ $scope.filter.DowntimeHost.was_not_cancelled){
+                wasCancelled = $scope.filter.DowntimeHost.was_cancelled === true;
+            }
             $http.get("/downtimes/host.json", {
                 params: {
                     'angular': true,
@@ -42,10 +46,11 @@ angular.module('openITCOCKPIT')
                     'direction': SortService.getDirection(),
                     'filter[DowntimeHost.author_name]': $scope.filter.DowntimeHost.author_name,
                     'filter[DowntimeHost.comment_data]': $scope.filter.DowntimeHost.comment_data,
-                    'filter[DowntimeHost.was_cancelled]': $scope.filter.DowntimeHost.was_cancelled,
+                    'filter[DowntimeHost.was_cancelled]': wasCancelled,
                     'filter[from]': $scope.filter.from,
                     'filter[to]': $scope.filter.to,
-                    'filter[hideExpired]': $scope.filter.hideExpired
+                    'filter[hideExpired]': $scope.filter.hideExpired,
+                    'filter[isRunning]': $scope.filter.isRunning
                 }
             }).then(function(result){
                 $scope.downtimes = result.data.all_host_downtimes;
