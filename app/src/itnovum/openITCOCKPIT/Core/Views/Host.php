@@ -135,6 +135,11 @@ class Host {
             }
         }
 
+        if (isset($host['Host']['Container'])) {
+            //MySQL belongsTo
+            $this->containerIds = \Hash::extract($host['Host']['Container'], '{n}.HostsToContainer.container_id');
+        }
+
         if (isset($host['Host']['container_ids'])) {
             //CrateDB
             $this->containerIds = $host['Host']['container_ids'];

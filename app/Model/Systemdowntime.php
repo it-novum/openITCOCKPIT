@@ -23,6 +23,9 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use itnovum\openITCOCKPIT\Core\SystemdowntimesConditions;
+use itnovum\openITCOCKPIT\Core\SystemdowntimesHostConditions;
+
 class Systemdowntime extends AppModel {
 
 
@@ -201,86 +204,6 @@ class Systemdowntime extends AppModel {
         return false;
     }
 
-    public function listSettings ($cakeRequest,$limit = 25) {
-        $requestData = $cakeRequest->data;
-
-        if (isset($cakeRequest->params['named']['Listsettings'])) {
-            $requestData['Listsettings'] = $cakeRequest->params['named']['Listsettings'];
-        }
-        $requestParams = $cakeRequest->params;
-
-        $return = [
-            'paginator'    => [
-                'limit' => $limit,
-            ],
-            'Listsettings' => [
-                'limit' => $limit,
-            ],
-            'conditions'   => [],
-            'default'      => [
-                'recursive' => -1,
-                'fields'    => ['Systemdowntime.*','Host.*','Hostgroup.*','Service.*','Servicetemplate.*','Container.*','ServiceHost.container_id'],
-                'joins'     => [
-                    [
-                        'table'      => 'hosts',
-                        'type'       => 'LEFT',
-                        'alias'      => 'Host',
-                        'conditions' => '(Systemdowntime.objecttype_id = ' . OBJECT_HOST . ' AND Host.id = Systemdowntime.object_id)',
-                    ],
-
-                    [
-                        'table'      => 'services',
-                        'type'       => 'LEFT',
-                        'alias'      => 'Service',
-                        'conditions' => '(Systemdowntime.objecttype_id = ' . OBJECT_SERVICE . ' AND Service.id = Systemdowntime.object_id)',
-                    ],
-
-                    [
-                        'table'      => 'hosts',
-                        'type'       => 'LEFT',
-                        'alias'      => 'ServiceHost',
-                        'conditions' => '(Systemdowntime.objecttype_id = ' . OBJECT_SERVICE . ' AND Service.host_id = ServiceHost.id)',
-                    ],
-
-                    [
-                        'table'      => 'servicetemplates',
-                        'type'       => 'LEFT OUTER',
-                        'alias'      => 'Servicetemplate',
-                        'conditions' => 'Servicetemplate.id = Service.servicetemplate_id',
-                    ],
-
-                    [
-                        'table'      => 'hostgroups',
-                        'type'       => 'LEFT',
-                        'alias'      => 'Hostgroup',
-                        'conditions' => '(Systemdowntime.objecttype_id = ' . OBJECT_HOSTGROUP . ' AND Hostgroup.id = Systemdowntime.object_id)',
-                    ],
-
-                    [
-                        'table'      => 'containers',
-                        'type'       => 'LEFT OUTER',
-                        'alias'      => 'Container',
-                        'conditions' => 'Container.id = Hostgroup.container_id',
-                    ],
-
-                ],
-                'findType'  => 'all',
-            ],
-        ];
-
-
-        if (isset($requestParams['named']['sort']) && isset($requestParams['named']['direction'])) {
-            $return['paginator']['order'] = [$requestParams['named']['sort'] => $requestParams['named']['direction']];
-        }
-
-        if (isset($requestData['Listsettings']['limit']) && is_numeric($requestData['Listsettings']['limit'])) {
-            $return['paginator']['limit'] = $requestData['Listsettings']['limit'];
-            $return['Listsettings']['limit'] = $return['paginator']['limit'];
-        }
-
-
-        return $return;
-    }
 
     /**
      * Custom Validation Rule: Ensures a selected date is in the past.
@@ -331,4 +254,44 @@ class Systemdowntime extends AppModel {
         }
         return !empty($this->data[$this->name]['weekdays']) || !empty($this->data[$this->name]['day_of_month']);
     }
+
+    /**
+     * @return array
+     */
+    public function getRecurringHostDowntimesQuery(SystemdowntimesConditions $Conditions, $filterConditions = []){
+        $this->bindModel([
+            'belongsTo' => [
+                'Host' => [
+                    'className'  => 'Host',
+                    'foreignKey' => 'object_id',
+                    'type'       => 'INNER',
+                    'conditions' => [
+                        'Systemdowntime.objecttype_id' => OBJECT_HOST
+                    ]
+                ],
+            ]
+        ]);
+        $query = [
+            'recursive' => -1,
+            'contain'   => [
+                'Host' => [
+                    'Container' => [
+                        'conditions' => [
+                            'Container.id' => $Conditions->getContainerIds()
+                        ]
+                    ]
+                ],
+                'Host.id',
+                'Host.uuid',
+                'Host.name'
+            ],
+            'conditions' => [],
+            'order' => $Conditions->getOrder()
+        ];
+
+        $query['conditions'] = Hash::merge($query['conditions'], $filterConditions);
+
+        return $query;
+    }
+
 }

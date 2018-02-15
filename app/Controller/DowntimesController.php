@@ -205,37 +205,6 @@ class DowntimesController extends AppController {
 
         $this->set('all_service_downtimes', $all_service_downtimes);
         $this->set('_serialize', ['all_service_downtimes', 'paging']);
-
-
-        return;
-        $paginatorLimit = $this->Paginator->settings['limit'];
-        $requestSettings = $this->Downtime->serviceListSettings($this->request, $this->MY_RIGHTS, $paginatorLimit);
-
-        if (isset($this->Paginator->settings['conditions'])) {
-            $this->Paginator->settings['conditions'] = Hash::merge($this->Paginator->settings['conditions'], $requestSettings['conditions']);
-        } else {
-            $this->Paginator->settings['conditions'] = $requestSettings['conditions'];
-        }
-
-        $this->Paginator->settings['limit'] = $requestSettings['paginator']['limit'];
-        $this->Paginator->settings['order'] = $requestSettings['paginator']['order'];
-        $this->Paginator->settings['conditions'] = Hash::merge($this->Paginator->settings['conditions'], $requestSettings['conditions']);
-        $this->Paginator->settings = Hash::merge($this->Paginator->settings, $requestSettings['default']);
-
-        //--force --doit --yes-i-know-what-i-do
-        // force the order of joined tables
-        $all_downtimes = $this->Paginator->paginate(null, [], [key($this->Paginator->settings['order'])]);
-        foreach ($all_downtimes as $dKey => $downtime) {
-            if (isset($this->MY_RIGHTS_LEVEL[$downtime['HostsToContainers']['container_id']]) && $this->MY_RIGHTS_LEVEL[$downtime['HostsToContainers']['container_id']] == WRITE_RIGHT) {
-                $all_downtimes[$dKey]['canDelete'] = true;
-            } else {
-                $all_downtimes[$dKey]['canDelete'] = false;
-            }
-
-        }
-        $this->set(compact(['all_downtimes', 'paginatorLimit']));
-        $this->set('DowntimeListsettings', $requestSettings['Listsettings']);
-
     }
 
     public function index() {

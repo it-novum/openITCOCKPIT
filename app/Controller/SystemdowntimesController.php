@@ -22,6 +22,11 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+use itnovum\openITCOCKPIT\Core\AngularJS\Request\AngularRequest;
+use itnovum\openITCOCKPIT\Core\SystemdowntimesConditions;
+use itnovum\openITCOCKPIT\Core\SystemdowntimesHostConditions;
+use itnovum\openITCOCKPIT\Core\Views\ContainerPermissions;
+use itnovum\openITCOCKPIT\Filter\SystemdowntimesFilter;
 
 
 /**
@@ -54,79 +59,86 @@ class SystemdowntimesController extends AppController {
     ];
     public $layout = 'Admin.default';
 
-    public function index() {
-        $paginatorLimit = $this->Paginator->settings['limit'];
-        $requestSettings = $this->Systemdowntime->listSettings($this->request, $paginatorLimit);
 
-        if (isset($this->Paginator->settings['conditions'])) {
-            $this->Paginator->settings['conditions'] = Hash::merge($this->Paginator->settings['conditions'], $requestSettings['conditions']);
-        } else {
-            $this->Paginator->settings['conditions'] = $requestSettings['conditions'];
+    public function index() {
+        if (isset($this->PERMISSIONS['systemdowntimes']['host'])) {
+            $this->redirect(['action' => 'host']);
         }
 
-        $this->Paginator->settings['limit'] = $requestSettings['paginator']['limit'];
-        $this->Paginator->settings['conditions'] = Hash::merge($this->Paginator->settings['conditions'], $requestSettings['conditions']);
-        $this->Paginator->settings = Hash::merge($this->Paginator->settings, $requestSettings['default']);
+        if (isset($this->PERMISSIONS['systemdowntimes']['service'])) {
+            $this->redirect(['action' => 'service']);
+        }
 
-        $containerList = $this->Container->find("list");
-        $all_systemdowntimes = $this->Paginator->paginate();
-        foreach ($all_systemdowntimes as $dKey => $systemdowntime) {
-            switch ($systemdowntime['Systemdowntime']['objecttype_id']) {
-                case OBJECT_HOST:
-                    if (isset($this->MY_RIGHTS_LEVEL[$systemdowntime['Host']['container_id']]) &&
-                        $this->MY_RIGHTS_LEVEL[$systemdowntime['Host']['container_id']] == WRITE_RIGHT) {
-                        $all_systemdowntimes[$dKey]['canDelete'] = true;
-                    } else {
-                        $all_systemdowntimes[$dKey]['canDelete'] = false;
-                    }
-                    break;
+        if (isset($this->PERMISSIONS['systemdowntimes']['hostgroup'])) {
+            $this->redirect(['action' => 'hostgroup']);
+        }
 
-                case OBJECT_SERVICE:
-                    if (isset($this->MY_RIGHTS_LEVEL[$systemdowntime['ServiceHost']['container_id']]) &&
-                        $this->MY_RIGHTS_LEVEL[$systemdowntime['ServiceHost']['container_id']] == WRITE_RIGHT) {
-                        $all_systemdowntimes[$dKey]['canDelete'] = true;
-                    } else {
-                        $all_systemdowntimes[$dKey]['canDelete'] = false;
-                    }
-                    break;
+        if (isset($this->PERMISSIONS['systemdowntimes']['node'])) {
+            $this->redirect(['action' => 'node']);
+        }
 
-                case OBJECT_HOSTGROUP:
-                    if (isset($this->MY_RIGHTS_LEVEL[$systemdowntime['Hostgroup']['container_id']]) &&
-                        $this->MY_RIGHTS_LEVEL[$systemdowntime['Hostgroup']['container_id']] == WRITE_RIGHT) {
-                        $all_systemdowntimes[$dKey]['canDelete'] = true;
-                    } else if (isset($this->MY_RIGHTS_LEVEL[$systemdowntime['Hostgroup']['container_id']]) &&
-                        $this->MY_RIGHTS_LEVEL[$systemdowntime['Hostgroup']['container_id']] == READ_RIGHT) {
-                        $all_systemdowntimes[$dKey]['canDelete'] = false;
-                    } else {
-                        unset($all_systemdowntimes[$dKey]);
-                    }
-                    break;
+        $this->render403();
+    }
 
-                case OBJECT_NODE:
-                    $all_systemdowntimes[$dKey]['Container']['id'] = $systemdowntime['Systemdowntime']['object_id'];
-                    $systemdowntime['Container']['id'] = $systemdowntime['Systemdowntime']['object_id'];
-                    $all_systemdowntimes[$dKey]['Container']['name'] = $containerList[$systemdowntime['Container']['id']];
+    public function host() {
+        $this->layout = 'angularjs';
 
-                    if (isset($this->MY_RIGHTS_LEVEL[$systemdowntime['Container']['id']]) &&
-                        $this->MY_RIGHTS_LEVEL[$systemdowntime['Container']['id']] == WRITE_RIGHT) {
-                        $all_systemdowntimes[$dKey]['canDelete'] = true;
-                    } else if (isset($this->MY_RIGHTS_LEVEL[$systemdowntime['Container']['id']]) &&
-                        $this->MY_RIGHTS_LEVEL[$systemdowntime['Container']['id']] == READ_RIGHT) {
-                        $all_systemdowntimes[$dKey]['canDelete'] = false;
-                    } else {
-                        unset($all_systemdowntimes[$dKey]);
-                    }
-                    break;
+        if (!$this->isAngularJsRequest()) {
+            //Only ship template
+            return;
+        }
 
-                default:
-                    $all_systemdowntimes[$dKey]['canDelete'] = false;
+        $SystemdowntimesFilter = new SystemdowntimesFilter($this->request);
+        $AngularRequest = new AngularRequest($this->request);
+        $Conditions = new SystemdowntimesConditions();
+
+        $Conditions->setContainerIds($this->MY_RIGHTS);
+        $Conditions->setOrder($AngularRequest->getOrderForPaginator('Systemdowntime.from_time', 'desc'));
+
+
+        $this->Paginator->settings = $this->Systemdowntime->getRecurringHostDowntimesQuery($Conditions, $SystemdowntimesFilter->hostFilter());
+        $this->Paginator->settings['page'] = $AngularRequest->getPage();
+
+        $hostRecurringDowntimes = $this->Paginator->paginate(
+            $this->Systemdowntime->alias,
+            [],
+            [key($this->Paginator->settings['order'])]
+        );
+
+        $all_host_recurring_downtimes = [];
+        foreach ($hostRecurringDowntimes as $hostRecurringDowntime) {
+            $Host = new \itnovum\openITCOCKPIT\Core\Views\Host($hostRecurringDowntime);
+            $Systemdowntime = new \itnovum\openITCOCKPIT\Core\Views\Systemdowntime($hostRecurringDowntime);
+            if ($this->hasRootPrivileges) {
+                $allowEdit = true;
+            } else {
+                $ContainerPermissions = new ContainerPermissions($this->MY_RIGHTS_LEVEL, $Host->getContainerIds());
+                $allowEdit = $ContainerPermissions->hasPermission();
             }
 
+            $tmpRecord = [
+                'Host'           => $Host->toArray(),
+                'Systemdowntime' => $Systemdowntime->toArray()
+            ];
+            $tmpRecord['Host']['allow_edit'] = $allowEdit;
+            $all_host_recurring_downtimes[] = $tmpRecord;
         }
 
-        $this->set('DowntimeListsettings', $requestSettings['Listsettings']);
-        $this->set('all_systemdowntimes', $all_systemdowntimes);
-        $this->set('paginatorLimit', $paginatorLimit);
+        $this->set('all_host_recurring_downtimes', $all_host_recurring_downtimes);
+        $this->set('_serialize', ['all_host_recurring_downtimes', 'paging']);
+
+    }
+
+    public function service() {
+
+    }
+
+    public function hostgroup() {
+
+    }
+
+    public function node() {
+
     }
 
     public function addHostdowntime() {
