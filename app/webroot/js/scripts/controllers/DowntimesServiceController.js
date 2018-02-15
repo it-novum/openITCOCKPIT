@@ -103,7 +103,7 @@ angular.module('openITCOCKPIT')
 
         $scope.getObjectForDelete = function(downtime){
             var object = {};
-            object[downtime.DowntimeService.internalDowntimeId] = downtime.Host.hostname;
+            object[downtime.DowntimeService.internalDowntimeId] = downtime.Service.name;
             return object;
         };
 
@@ -113,7 +113,7 @@ angular.module('openITCOCKPIT')
             for(var key in $scope.downtimes){
                 for(var id in selectedObjects){
                     if(id == $scope.downtimes[key].DowntimeService.internalDowntimeId){
-                        objects[id] = $scope.downtimes[key].Host.hostname;
+                        objects[id] = $scope.downtimes[key].Service.name;
                     }
                 }
             }

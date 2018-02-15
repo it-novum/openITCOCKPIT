@@ -52,7 +52,8 @@ $config = [
                 'disable_host_notifications',
                 'system_health',
                 'getDowntimeData',
-                'mass_delete_host_downtimes'
+                'mass_delete_host_downtimes',
+                'mass_delete_service_downtimes'
             ],
             'Commands'         => [
                 'sortByCommandType',

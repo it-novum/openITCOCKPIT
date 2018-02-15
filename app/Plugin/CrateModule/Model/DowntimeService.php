@@ -96,6 +96,13 @@ class DowntimeService extends CrateModuleAppModel {
 
         //Merge ListFilter conditions
         $query['conditions'] = Hash::merge($paginatorConditions, $query['conditions']);
+        if(isset($query['conditions']['DowntimeService.was_started'])){
+            $query['conditions']['DowntimeService.was_started'] = (bool)$query['conditions']['DowntimeService.was_started'];
+        }
+
+        if(isset($query['conditions']['DowntimeService.was_cancelled'])){
+            $query['conditions']['DowntimeService.was_cancelled'] = (bool)$query['conditions']['DowntimeService.was_cancelled'];
+        }
 
         if($Conditions->isRunning()){
             $query['conditions']['DowntimeService.scheduled_end_time >'] = time();

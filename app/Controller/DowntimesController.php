@@ -389,7 +389,13 @@ class DowntimesController extends AppController {
                 break;
 
             default:
-                //service dinge
+                $this->GearmanClient->client->doBackground(
+                    "oitc_gearman",
+                    Security::cipher(serialize([
+                        'task'                 => 'deleteServiceDowntime',
+                        'internal_downtime_id' => $internalDowntimeId
+                    ]), $this->Config['password'])
+                );
                 break;
         }
         $this->set('success', true);

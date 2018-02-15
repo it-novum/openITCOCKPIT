@@ -88,6 +88,13 @@ class DowntimeHost extends CrateModuleAppModel {
         }
 
         $query['conditions'] = Hash::merge($query['conditions'], $filterConditions);
+        if(isset($query['conditions']['DowntimeHost.was_started'])){
+            $query['conditions']['DowntimeHost.was_started'] = (bool)$query['conditions']['DowntimeHost.was_started'];
+        }
+
+        if(isset($query['conditions']['DowntimeHost.was_cancelled'])){
+            $query['conditions']['DowntimeHost.was_cancelled'] = (bool)$query['conditions']['DowntimeHost.was_cancelled'];
+        }
 
         if($Conditions->isRunning()){
             $query['conditions']['DowntimeHost.scheduled_end_time >'] = time();

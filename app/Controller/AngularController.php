@@ -450,4 +450,9 @@ class AngularController extends AppController {
         return;
     }
 
+
+    public function mass_delete_service_downtimes(){
+        return;
+    }
+
 }

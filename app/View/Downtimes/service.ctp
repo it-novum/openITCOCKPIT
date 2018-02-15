@@ -349,7 +349,7 @@
                                 </span>
                                 </div>
                                 <div class="col-xs-12 col-md-2 txt-color-red">
-                                <span ng-click="confirmHostDowntimeDelete(getObjectsForDelete())" class="pointer">
+                                <span ng-click="confirmServiceDowntimeDelete(getObjectsForDelete())" class="pointer">
                                     <i class="fa fa-lg fa-trash-o"></i>
                                     <?php echo __('Delete'); ?>
                                 </span>
