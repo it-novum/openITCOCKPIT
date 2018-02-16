@@ -24,13 +24,13 @@
 //	confirmation.
 
 ?>
-<?php if($this->request->params['action'] == 'browser' && $this->request->params['controller'] == 'hosts'): ?>
-<span data-original-title="<?php echo __('Reset check time'); ?>" data-placement="bottom" rel="tooltip"
-      class="btn btn-default btn-sm" data-toggle="modal" data-target="#nag_command_reschedule">
+<?php if ($this->request->params['action'] == 'browser' && $this->request->params['controller'] == 'hosts'): ?>
+    <span data-original-title="<?php echo __('Reset check time'); ?>" data-placement="bottom" rel="tooltip"
+          class="btn btn-default btn-sm" data-toggle="modal" data-target="#nag_command_reschedule">
     <i class="fa fa-refresh fa-lg"></i>
 </span>
 <?php endif; ?>
-<?php if ($this->Acl->hasPermission('view', 'documentations') && $host['Host']['host_type'] == GENERIC_HOST): ?>
+<?php if ($this->Acl->hasPermission('view','documentations') && $host['Host']['host_type'] == GENERIC_HOST): ?>
     <span style="position:relative;">
         <a href="/documentations/view/<?php echo $host['Host']['uuid']; ?>/host"
            data-original-title="<?php echo __('Documentation'); ?>" data-placement="bottom" rel="tooltip"
@@ -40,25 +40,30 @@
         <?php endif; ?>
     </span>
 <?php endif; ?>
-<?php if ($this->Acl->hasPermission('hostNotification', 'notifications')): ?>
+<?php if ($this->Acl->hasPermission('hostNotification','notifications')): ?>
     <a href="/notifications/hostNotification/<?php echo $host['Host']['id']; ?>"
        data-original-title="<?php echo __('Notifications'); ?>" data-placement="bottom" rel="tooltip"
        class="btn btn-default btn-sm"><i class="fa fa-envelope  fa-lg"></i></a>
 <?php endif; ?>
-<?php if ($this->Acl->hasPermission('index', 'hostchecks')): ?>
+<?php if ($this->Acl->hasPermission('index','hostchecks')): ?>
     <a href="/hostchecks/index/<?php echo $host['Host']['id']; ?>"
        data-original-title="<?php echo __('Check history'); ?>" data-placement="bottom" rel="tooltip"
        class="btn btn-default btn-sm"><i class="fa fa-check-square-o fa-lg"></i></a>
 <?php endif; ?>
-<?php if ($this->Acl->hasPermission('host', 'statehistories')): ?>
+<?php if ($this->Acl->hasPermission('host','statehistories')): ?>
     <a href="/statehistories/host/<?php echo $host['Host']['id']; ?>"
        data-original-title="<?php echo __('State history'); ?>" data-placement="bottom" rel="tooltip"
        class="btn btn-default btn-sm"><i class="fa fa-history fa-lg"></i></a>
 <?php endif; ?>
-<?php if ($this->Acl->hasPermission('host', 'acknowledgements')): ?>
+<?php if ($this->Acl->hasPermission('host','acknowledgements')): ?>
     <a href="/acknowledgements/host/<?php echo $host['Host']['id']; ?>"
        data-original-title="<?php echo _('Acknowledgement history'); ?>" data-placement="bottom" rel="tooltip"
        class="btn btn-default btn-sm"><i class="fa fa-user fa-lg"></i></a>
+<?php endif; ?>
+<?php if ($this->Acl->hasPermission('host','downtimes')): ?>
+    <a href="/downtimes/host/Filter.Host.name:<?php echo $host['Host']['name']; ?>/Listsettings[limit]:25/Listsettings[hide_expired]:1/"
+       data-original-title="<?php echo _('Edit Downtimes'); ?>" data-placement="bottom" rel="tooltip"
+       class="btn btn-default btn-sm"><i class="fa fa-power-off fa-lg"></i></a>
 <?php endif; ?>
 <?php if ($host['Host']['host_url'] !== '' && $host['Host']['host_url'] !== null):
     $HostMacroReplacerMenu = new \itnovum\openITCOCKPIT\Core\HostMacroReplacer($host);
@@ -76,20 +81,20 @@
     <a href="javascript:void(0);" data-toggle="dropdown" class="btn btn-default dropdown-toggle btn-sm"><span
                 class="caret"></span></a>
     <ul class="dropdown-menu dropdown-menu-right">
-        <?php if ($this->Acl->hasPermission('serviceList', 'services')): ?>
+        <?php if ($this->Acl->hasPermission('serviceList','services')): ?>
             <li>
                 <a href="/services/serviceList/<?php echo $host['Host']['id']; ?>"><i
                             class="fa fa-list"></i> <?php echo __('Service list'); ?></a>
             </li>
         <?php endif; ?>
-        <?php if ($this->Acl->hasPermission('allocateToHost', 'servicetemplategroups')): ?>
+        <?php if ($this->Acl->hasPermission('allocateToHost','servicetemplategroups')): ?>
             <li>
                 <a href="/hosts/allocateServiceTemplateGroup/<?php echo $host['Host']['id']; ?>"><i
                             class="fa fa-external-link"></i> <?php echo __('Allocate Servicetemplategroup'); ?></a>
             </li>
         <?php endif; ?>
         <?php if ($this->params['controller'] == 'hosts' && $this->params['action'] == 'browser'): ?>
-            <?php if ($this->Acl->hasPermission('index', 'qr')): ?>
+            <?php if ($this->Acl->hasPermission('index','qr')): ?>
                 <li>
                     <a href="javascript:void(0);" data-toggle="modal" data-target="#qrmodal" id="qropen"><i
                                 class="fa fa-qrcode"></i> <?php echo __('Scan code'); ?></a>
@@ -107,7 +112,7 @@
             if (!empty($additionalLinksList)):
                 echo '<li class="divider"></li>';
             endif;
-            echo $this->AdditionalLinks->renderAsListItems($additionalLinksList, $host['Host']['id']);
+            echo $this->AdditionalLinks->renderAsListItems($additionalLinksList,$host['Host']['id']);
         endif;
         ?>
     </ul>
