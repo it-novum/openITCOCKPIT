@@ -42,4 +42,20 @@ class SystemdowntimesFilter extends Filter {
         return $this->getConditionsByFilters($filters);
     }
 
+    /**
+     * @return array
+     */
+    public function serviceFilter(){
+        $filters = [
+            'like' => [
+                'Host.name',
+                'Systemdowntime.author',
+                'Systemdowntime.comment',
+                'servicename'
+            ],
+        ];
+
+        return $this->getConditionsByFilters($filters);
+    }
+
 }

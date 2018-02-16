@@ -25,7 +25,7 @@
 <ul class="nav nav-tabs pull-right" id="widget-tab-1">
     <?php if ($this->Acl->hasPermission('host', 'systemdowntimes')): ?>
         <li class="<?php echo ($this->action === 'host')?'active':''; ?>">
-            <a href="<?php echo Router::url(['controller' => 'downtimes', 'action' => 'host']); ?>">
+            <a href="<?php echo Router::url(['controller' => 'systemdowntimes', 'action' => 'host']); ?>">
                 <i class="fa fa-desktop"></i>
                 <span class="hidden-mobile hidden-tablet"> <?php echo __('Host'); ?></span>
             </a>

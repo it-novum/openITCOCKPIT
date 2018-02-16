@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('SystemdowntimesHostController', function($scope, $http, $rootScope, $httpParamSerializer, SortService, QueryStringService, MassChangeService){
+    .controller('SystemdowntimesServiceController', function($scope, $http, $rootScope, $httpParamSerializer, SortService, QueryStringService, MassChangeService){
 
         SortService.setSort(QueryStringService.getValue('sort', 'Systemdowntime.from_time'));
         SortService.setDirection(QueryStringService.getValue('direction', 'desc'));
@@ -16,7 +16,8 @@ angular.module('openITCOCKPIT')
                 Systemdowntime: {
                     author: '',
                     comment: ''
-                }
+                },
+                servicename: ''
             };
         };
         /*** Filter end ***/
@@ -30,13 +31,14 @@ angular.module('openITCOCKPIT')
 
 
         $scope.load = function(){
-            $http.get("/systemdowntimes/host.json", {
+            $http.get("/systemdowntimes/service.json", {
                 params: {
                     'angular': true,
                     'sort': SortService.getSort(),
                     'page': $scope.currentPage,
                     'direction': SortService.getDirection(),
                     'filter[Host.name]': $scope.filter.Host.name,
+                    'filter[servicename]': $scope.filter.servicename,
                     'filter[Systemdowntime.author]': $scope.filter.Systemdowntime.author,
                     'filter[Systemdowntime.comment]': $scope.filter.Systemdowntime.comment
                 }

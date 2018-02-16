@@ -130,7 +130,79 @@ class SystemdowntimesController extends AppController {
     }
 
     public function service() {
+        $this->layout = 'angularjs';
+        if (!$this->isAngularJsRequest()) {
+            //Only ship template
+            return;
+        }
 
+        $SystemdowntimesFilter = new SystemdowntimesFilter($this->request);
+        $AngularRequest = new AngularRequest($this->request);
+        $Conditions = new SystemdowntimesConditions();
+
+        $Conditions->setContainerIds($this->MY_RIGHTS);
+        $Conditions->setOrder($AngularRequest->getOrderForPaginator('Systemdowntime.from_time', 'desc'));
+
+
+        $this->Paginator->settings = $this->Systemdowntime->getRecurringServiceDowntimesQuery($Conditions, $SystemdowntimesFilter->serviceFilter());
+        $this->Paginator->settings['page'] = $AngularRequest->getPage();
+
+        $serviceRecurringDowntimes = $this->Paginator->paginate(
+            $this->Systemdowntime->alias,
+            [],
+            [key($this->Paginator->settings['order'])]
+        );
+
+
+        $hostContainers = [];
+        if (!empty($serviceRecurringDowntimes) && $this->hasRootPrivileges === false && $this->hasPermission('edit', 'hosts') && $this->hasPermission('edit', 'services')) {
+            $hostIds = array_unique(Hash::extract($serviceRecurringDowntimes, '{n}.Host.id'));
+            $_hostContainers = $this->Host->find('all', [
+                'contain'    => [
+                    'Container',
+                ],
+                'fields'     => [
+                    'Host.id',
+                    'Container.*',
+                ],
+                'conditions' => [
+                    'Host.id' => $hostIds,
+                ],
+            ]);
+            foreach ($_hostContainers as $host) {
+                $hostContainers[$host['Host']['id']] = Hash::extract($host['Container'], '{n}.id');
+            }
+        }
+
+
+        $all_host_recurring_downtimes = [];
+        foreach ($serviceRecurringDowntimes as $serviceRecurringDowntime) {
+            $Host = new \itnovum\openITCOCKPIT\Core\Views\Host($serviceRecurringDowntime);
+            $Service = new \itnovum\openITCOCKPIT\Core\Views\Service($serviceRecurringDowntime);
+            $Systemdowntime = new \itnovum\openITCOCKPIT\Core\Views\Systemdowntime($serviceRecurringDowntime);
+            if ($this->hasRootPrivileges) {
+                $allowEdit = true;
+            } else {
+                $containerIds = [];
+                if (isset($hostContainers[$service['Host']['id']])) {
+                    $containerIds = $hostContainers[$serviceRecurringDowntime['Host']['id']];
+                }
+                $ContainerPermissions = new ContainerPermissions($this->MY_RIGHTS_LEVEL, $containerIds);
+                $allowEdit = $ContainerPermissions->hasPermission();
+            }
+
+            $tmpRecord = [
+                'Host'           => $Host->toArray(),
+                'Service'        => $Service->toArray(),
+                'Systemdowntime' => $Systemdowntime->toArray()
+            ];
+            $tmpRecord['Host']['allow_edit'] = $allowEdit;
+            $tmpRecord['Service']['allow_edit'] = $allowEdit;
+            $all_host_recurring_downtimes[] = $tmpRecord;
+        }
+
+        $this->set('all_host_recurring_downtimes', $all_host_recurring_downtimes);
+        $this->set('_serialize', ['all_host_recurring_downtimes', 'paging']);
     }
 
     public function hostgroup() {
@@ -834,24 +906,38 @@ class SystemdowntimesController extends AppController {
     }
 
 
-    public function delete($id = null, $cascade = true) {
+    public function delete($id = null) {
         if (!$this->request->is('post')) {
             throw new MethodNotAllowedException();
         }
+
 
         $this->Systemdowntime->id = $id;
         if (!$this->Systemdowntime->exists()) {
             throw new NotFoundException(__('Invalide downtime'));
         }
 
-        $systemdowntime = $this->Systemdowntime->findById($id);
+        $systemdowntime = $this->Systemdowntime->find('first', [
+            'recursive'  => -1,
+            'conditions' => [
+                'Systemdowntime.id' => $id
+            ]
+        ]);
 
-        if ($this->Systemdowntime->delete()) {
-            $this->setFlash(__('Recurring downtime deleted'));
-            $this->redirect(['action' => 'index']);
+        if (empty($systemdowntime)) {
+            return;
         }
-        $this->setFlash(__('Could not delete recurring downtime'));
-        $this->redirect(['action' => 'index']);
+
+
+        if ($this->Systemdowntime->delete($systemdowntime['Systemdowntime']['id'])) {
+            $this->set('success', true);
+            $this->set('message', __('Systemdowntime successfully deleted'));
+            $this->set('_serialize', ['success', 'message']);
+            return;
+        }
+        $this->set('success', false);
+        $this->set('message', __('Error while deleting systemdowntime'));
+        $this->set('_serialize', ['success', 'message']);
 
     }
 

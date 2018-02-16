@@ -29,7 +29,7 @@
             <i class="fa fa-history fa-flip-horizontal fa-fw "></i>
             <?php echo __('Recurring downtimes'); ?>
             <span>>
-                <?php echo __('Hosts'); ?>
+                <?php echo __('Services'); ?>
                 > <?php echo __('Overview'); ?>
             </span>
         </h1>
@@ -71,7 +71,7 @@
                     <div class="jarviswidget-ctrls" role="menu"></div>
 
                     <span class="widget-icon hidden-mobile"> <i class="fa fa-history fa-flip-horizontal"></i> </span>
-                    <h2 class="hidden-mobile"><?php echo __('Recurring host downtimes overview'); ?> </h2>
+                    <h2 class="hidden-mobile"><?php echo __('Recurring service downtimes overview'); ?> </h2>
                     <?php echo $this->element('Systemdowntimes/tabs'); ?>
                 </header>
 
@@ -90,6 +90,17 @@
                                                 <input type="text" class="input-sm"
                                                        placeholder="<?php echo __('Filter by host name'); ?>"
                                                        ng-model="filter.Host.name"
+                                                       ng-model-options="{debounce: 500}">
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-xs-12 col-md-6">
+                                        <div class="form-group smart-form">
+                                            <label class="input"> <i class="icon-prepend fa fa-cog"></i>
+                                                <input type="text" class="input-sm"
+                                                       placeholder="<?php echo __('Filter by service name'); ?>"
+                                                       ng-model="filter.servicename"
                                                        ng-model-options="{debounce: 500}">
                                             </label>
                                         </div>
@@ -143,6 +154,11 @@
                                         <?php echo __('Host name'); ?>
                                     </th>
 
+                                    <th class="no-sort" ng-click="orderBy('servicename')">
+                                        <i class="fa" ng-class="getSortClass('servicename')"></i>
+                                        <?php echo __('Service name'); ?>
+                                    </th>
+
                                     <th class="no-sort" ng-click="orderBy('Systemdowntime.author')">
                                         <i class="fa" ng-class="getSortClass('Systemdowntime.author')"></i>
                                         <?php echo __('User'); ?>
@@ -186,6 +202,16 @@
                                             </a>
                                         <?php else: ?>
                                             {{ downtime.Host.hostname }}
+                                        <?php endif; ?>
+                                    </td>
+
+                                    <td>
+                                        <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
+                                            <a href="/services/browser/{{ downtime.Service.id }}">
+                                                {{ downtime.Service.servicename }}
+                                            </a>
+                                        <?php else: ?>
+                                            {{ downtime.Service.servicename }}
                                         <?php endif; ?>
                                     </td>
 
