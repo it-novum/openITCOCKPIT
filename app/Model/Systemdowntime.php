@@ -24,7 +24,6 @@
 //	confirmation.
 
 use itnovum\openITCOCKPIT\Core\SystemdowntimesConditions;
-use itnovum\openITCOCKPIT\Core\SystemdowntimesHostConditions;
 
 class Systemdowntime extends AppModel {
 
@@ -202,6 +201,42 @@ class Systemdowntime extends AppModel {
             return true;
         }
         return false;
+    }
+
+    /**
+     * @return array
+     */
+    public function getValidationRulesForRecurringDowntimes(){
+        $validate = Hash::merge(
+            $this->validate,
+            [
+                'from_date' => [
+                    'notBlank' => [
+                        'required'   => false,
+                        'allowEmpty' => true,
+                    ],
+                ],
+                'to_date'   => [
+                    'notBlank' => [
+                        'required'   => false,
+                        'allowEmpty' => true,
+                    ]
+                ],
+                'from_time' => [
+                    'notBlank' => [
+                        'required'   => true,
+                        'allowEmpty' => false,
+                    ],
+                ],
+                'to_time'   => [
+                    'notBlank' => [
+                        'required'   => false,
+                        'allowEmpty' => true,
+                    ],
+                ]
+            ]
+        );
+        return $validate;
     }
 
 
