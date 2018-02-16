@@ -72,4 +72,8 @@ class SystemdowntimesFilter extends Filter {
 
         return $this->getConditionsByFilters($filters);
     }
+
+    public function nodeFilter(){
+        return $this->hostgroupFilter();
+    }
 }

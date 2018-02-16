@@ -387,4 +387,34 @@ class Systemdowntime extends AppModel {
 
         return $query;
     }
+
+    public function getRecurringNodeDowntimesQuery(SystemdowntimesConditions $Conditions, $filterConditions = []) {
+        $query = [
+            'recursive'  => -1,
+            'fields'     => [
+                'Systemdowntime.*',
+                'Container.id',
+                'Container.name'
+            ],
+            'joins'      => [
+                [
+                    'table'      => 'containers',
+                    'type'       => 'INNER',
+                    'alias'      => 'Container',
+                    'conditions' => [
+                        'Container.id = Systemdowntime.object_id',
+                        'Systemdowntime.objecttype_id' => OBJECT_NODE
+                    ]
+                ]
+            ],
+            'conditions' => [
+                'Container.id' => $Conditions->getContainerIds()
+            ],
+            'order'      => $Conditions->getOrder()
+        ];
+
+        $query['conditions'] = Hash::merge($query['conditions'], $filterConditions);
+
+        return $query;
+    }
 }

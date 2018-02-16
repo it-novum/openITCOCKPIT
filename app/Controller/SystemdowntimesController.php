@@ -254,7 +254,50 @@ class SystemdowntimesController extends AppController {
     }
 
     public function node() {
+        $this->layout = 'angularjs';
 
+        if (!$this->isAngularJsRequest()) {
+            //Only ship template
+            return;
+        }
+
+        $SystemdowntimesFilter = new SystemdowntimesFilter($this->request);
+        $AngularRequest = new AngularRequest($this->request);
+        $Conditions = new SystemdowntimesConditions();
+
+        $Conditions->setContainerIds($this->MY_RIGHTS);
+        $Conditions->setOrder($AngularRequest->getOrderForPaginator('Systemdowntime.from_time', 'desc'));
+
+
+        $this->Paginator->settings = $this->Systemdowntime->getRecurringNodeDowntimesQuery($Conditions, $SystemdowntimesFilter->nodeFilter());
+        $this->Paginator->settings['page'] = $AngularRequest->getPage();
+
+        $nodeRecurringDowntimes = $this->Paginator->paginate(
+            $this->Systemdowntime->alias,
+            [],
+            [key($this->Paginator->settings['order'])]
+        );
+
+        $all_node_recurring_downtimes = [];
+        foreach ($nodeRecurringDowntimes as $nodeRecurringDowntime) {
+            $Systemdowntime = new \itnovum\openITCOCKPIT\Core\Views\Systemdowntime($nodeRecurringDowntime);
+            if ($this->hasRootPrivileges) {
+                $allowEdit = true;
+            } else {
+                $ContainerPermissions = new ContainerPermissions($this->MY_RIGHTS_LEVEL, [$nodeRecurringDowntime['Container']['id']]);
+                $allowEdit = $ContainerPermissions->hasPermission();
+            }
+
+            $tmpRecord = [
+                'Systemdowntime' => $Systemdowntime->toArray(),
+                'Container' => $nodeRecurringDowntime['Container'],
+            ];
+            $tmpRecord['Container']['allow_edit'] = $allowEdit;
+            $all_node_recurring_downtimes[] = $tmpRecord;
+        }
+
+        $this->set('all_node_recurring_downtimes', $all_node_recurring_downtimes);
+        $this->set('_serialize', ['all_node_recurring_downtimes', 'paging']);
     }
 
     public function addHostdowntime() {
