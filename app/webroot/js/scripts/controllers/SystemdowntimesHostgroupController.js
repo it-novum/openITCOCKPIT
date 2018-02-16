@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('SystemdowntimesServiceController', function($scope, $http, $rootScope, $httpParamSerializer, SortService, QueryStringService, MassChangeService){
+    .controller('SystemdowntimesHostgroupController', function($scope, $http, $rootScope, $httpParamSerializer, SortService, QueryStringService, MassChangeService){
 
         SortService.setSort(QueryStringService.getValue('sort', 'Systemdowntime.from_time'));
         SortService.setDirection(QueryStringService.getValue('direction', 'desc'));
@@ -10,14 +10,13 @@ angular.module('openITCOCKPIT')
         /*** Filter Settings ***/
         var defaultFilter = function(){
             $scope.filter = {
-                Host: {
+                Container: {
                     name: ''
                 },
                 Systemdowntime: {
                     author: '',
                     comment: ''
-                },
-                servicename: ''
+                }
             };
         };
         /*** Filter end ***/
@@ -31,19 +30,18 @@ angular.module('openITCOCKPIT')
 
 
         $scope.load = function(){
-            $http.get("/systemdowntimes/service.json", {
+            $http.get("/systemdowntimes/hostgroup.json", {
                 params: {
                     'angular': true,
                     'sort': SortService.getSort(),
                     'page': $scope.currentPage,
                     'direction': SortService.getDirection(),
-                    'filter[Host.name]': $scope.filter.Host.name,
-                    'filter[servicename]': $scope.filter.servicename,
+                    'filter[Container.name]': $scope.filter.Container.name,
                     'filter[Systemdowntime.author]': $scope.filter.Systemdowntime.author,
                     'filter[Systemdowntime.comment]': $scope.filter.Systemdowntime.comment
                 }
             }).then(function(result){
-                $scope.systemdowntimes = result.data.all_service_recurring_downtimes;
+                $scope.systemdowntimes = result.data.all_hostgroup_recurring_downtimes;
                 $scope.paging = result.data.paging;
                 $scope.init = false;
             });
@@ -69,7 +67,7 @@ angular.module('openITCOCKPIT')
         $scope.selectAll = function(){
             if($scope.systemdowntimes){
                 for(var key in $scope.systemdowntimes){
-                    if($scope.systemdowntimes[key].Host.allow_edit){
+                    if($scope.systemdowntimes[key].Hostgroup.allow_edit){
                         var id = $scope.systemdowntimes[key].Systemdowntime.id;
                         $scope.massChange[id] = true;
                     }
@@ -85,7 +83,7 @@ angular.module('openITCOCKPIT')
 
         $scope.getObjectForDelete = function(downtime){
             var object = {};
-            object[downtime.Systemdowntime.id] = downtime.Host.hostname;
+            object[downtime.Systemdowntime.id] = downtime.Container.name;
             return object;
         };
 
@@ -95,7 +93,7 @@ angular.module('openITCOCKPIT')
             for(var key in $scope.systemdowntimes){
                 for(var id in selectedObjects){
                     if(id == $scope.systemdowntimes[key].Systemdowntime.id){
-                        objects[id] = $scope.systemdowntimes[key].Host.hostname;
+                        objects[id] = $scope.systemdowntimes[key].Container.name;
                     }
                 }
             }

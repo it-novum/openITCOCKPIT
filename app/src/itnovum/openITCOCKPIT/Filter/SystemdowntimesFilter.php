@@ -58,4 +58,18 @@ class SystemdowntimesFilter extends Filter {
         return $this->getConditionsByFilters($filters);
     }
 
+    /**
+     * @return array
+     */
+    public function hostgroupFilter(){
+        $filters = [
+            'like' => [
+                'Container.name',
+                'Systemdowntime.author',
+                'Systemdowntime.comment'
+            ],
+        ];
+
+        return $this->getConditionsByFilters($filters);
+    }
 }

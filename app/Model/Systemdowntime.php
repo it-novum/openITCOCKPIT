@@ -349,4 +349,42 @@ class Systemdowntime extends AppModel {
         return $query;
     }
 
+    /**
+     * @return array
+     */
+    public function getRecurringHostgroupDowntimesQuery(SystemdowntimesConditions $Conditions, $filterConditions = []) {
+        $query = [
+            'recursive'  => -1,
+            'fields'     => [
+                'Systemdowntime.*',
+                'Hostgroup.id',
+                'Hostgroup.container_id',
+                'Container.name'
+            ],
+            'joins'      => [
+                [
+                    'table'      => 'hostgroups',
+                    'type'       => 'INNER',
+                    'alias'      => 'Hostgroup',
+                    'conditions' => [
+                        'Hostgroup.id = Systemdowntime.object_id',
+                        'Systemdowntime.objecttype_id' => OBJECT_HOSTGROUP
+                    ]
+                ], [
+                    'table'      => 'containers',
+                    'type'       => 'INNER',
+                    'alias'      => 'Container',
+                    'conditions' => 'Container.id = Hostgroup.container_id'
+                ]
+            ],
+            'conditions' => [
+                'Container.id' => $Conditions->getContainerIds()
+            ],
+            'order'      => $Conditions->getOrder()
+        ];
+
+        $query['conditions'] = Hash::merge($query['conditions'], $filterConditions);
+
+        return $query;
+    }
 }

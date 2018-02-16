@@ -40,15 +40,15 @@
         </li>
     <?php endif; ?>
     <?php if ($this->Acl->hasPermission('hostgroup', 'systemdowntimes')): ?>
-        <li class="<?php echo ($this->action === 'index')?'active':''; ?>">
-            <a href="<?php echo Router::url(['controller' => 'systemdowntimes', 'action' => 'hosgroup']); ?>">
+        <li class="<?php echo ($this->action === 'hostgroup')?'active':''; ?>">
+            <a href="<?php echo Router::url(['controller' => 'systemdowntimes', 'action' => 'hostgroup']); ?>">
                 <i class="fa fa-sitemap"></i>
                 <span class="hidden-mobile hidden-tablet"> <?php echo __('Hostgroup'); ?></span>
             </a>
         </li>
     <?php endif; ?>
     <?php if ($this->Acl->hasPermission('node', 'systemdowntimes')): ?>
-        <li class="<?php echo ($this->action === 'index')?'active':''; ?>">
+        <li class="<?php echo ($this->action === 'node')?'active':''; ?>">
             <a href="<?php echo Router::url(['controller' => 'systemdowntimes', 'action' => 'node']); ?>">
                 <i class="fa fa-chain"></i>
                 <span class="hidden-mobile hidden-tablet"> <?php echo __('Container'); ?></span>
