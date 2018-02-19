@@ -79,25 +79,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="form-group">
-                    <label class="col col-md-2 control-label">
-                        <?php echo __('Evaluation');?>
-                    </label>
-                    <div class="col col-xs-10">
-                        <label class="padding-right-10" for="InstantreportEvaluation1">
-                            <input type="radio" name="data[Instantreport][evaluation]" id="InstantreportEvaluation1" value="1">
-                            <i class="fa fa-desktop"></i> <?php echo __('Hosts'); ?>
-                        </label>
-                        <label class="padding-right-10" for="InstantreportEvaluation2">
-                            <input type="radio" name="data[Instantreport][evaluation]" id="InstantreportEvaluation2" value="2" checked="checked">
-                            <i class="fa fa-cogs"></i> <?php echo __('Host and Services'); ?>
-                        </label>
-                        <label class="padding-right-10" for="InstantreportEvaluation3">
-                            <input type="radio" name="data[Instantreport][evaluation]" id="InstantreportEvaluation3" value="3">
-                            <i class="fa fa-cog"></i> <?php echo __('Services'); ?>
-                        </label>
-                    </div>
-                </div>
+
                 <div class="form-group required">
                     <label class="col col-md-2 control-label" for="InstantreportType">
                         <?php echo __('Type');?>
@@ -112,6 +94,11 @@
                             <option value="3"><?php echo __('Service groups'); ?></option>
                             <option value="4"><?php echo __('Services'); ?></option>
                         </select>
+                    </div>
+                    <div class="col col-md-offset-2 col-md-10">
+                        <div class="help-block">
+                            <?php echo __('Select the object type, which should be evaluated by the report.'); ?>
+                        </div>
                     </div>
                 </div>
                 <div ng-switch="post.Instantreport.type">
@@ -199,6 +186,32 @@
                         </div>
                     </div>
                 </div>
+
+                <div class="form-group">
+                    <label class="col col-md-2 control-label">
+                        <?php echo __('Evaluation');?>
+                    </label>
+                    <div class="col col-xs-10">
+                        <label class="padding-right-10" for="InstantreportEvaluation1">
+                            <input type="radio" name="data[Instantreport][evaluation]" id="InstantreportEvaluation1" value="1">
+                            <i class="fa fa-desktop"></i> <?php echo __('Hosts'); ?>
+                        </label>
+                        <label class="padding-right-10" for="InstantreportEvaluation2">
+                            <input type="radio" name="data[Instantreport][evaluation]" id="InstantreportEvaluation2" value="2" checked="checked">
+                            <i class="fa fa-cogs"></i> <?php echo __('Host and Services'); ?>
+                        </label>
+                        <label class="padding-right-10" for="InstantreportEvaluation3">
+                            <input type="radio" name="data[Instantreport][evaluation]" id="InstantreportEvaluation3" value="3">
+                            <i class="fa fa-cog"></i> <?php echo __('Services'); ?>
+                        </label>
+                    </div>
+                    <div class="col col-md-offset-2 col-md-10">
+                        <div class="help-block">
+                            <?php echo __('Choose if only host, host and services or only services should be evaluated.'); ?>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="form-group required" ng-class="{'has-error': errors.timeperiod_id}">
                     <label class="col col-md-2 control-label">
                         <?php echo __('Timeperiod'); ?>
