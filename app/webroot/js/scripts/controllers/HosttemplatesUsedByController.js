@@ -34,8 +34,10 @@ angular.module('openITCOCKPIT')
         $scope.selectAll = function(){
             if($scope.allHosts){
                 for(var key in $scope.allHosts){
-                    var id = $scope.allHosts[key].Host.id;
-                    $scope.massChange[id] = true;
+                    if($scope.allHosts[key].Host.allow_edit){
+                        var id = $scope.allHosts[key].Host.id;
+                        $scope.massChange[id] = true;
+                    }
                 }
             }
         };

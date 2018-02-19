@@ -96,6 +96,20 @@ class DowntimeService extends CrateModuleAppModel {
 
         //Merge ListFilter conditions
         $query['conditions'] = Hash::merge($paginatorConditions, $query['conditions']);
+        if(isset($query['conditions']['DowntimeService.was_started'])){
+            $query['conditions']['DowntimeService.was_started'] = (bool)$query['conditions']['DowntimeService.was_started'];
+        }
+
+        if(isset($query['conditions']['DowntimeService.was_cancelled'])){
+            $query['conditions']['DowntimeService.was_cancelled'] = (bool)$query['conditions']['DowntimeService.was_cancelled'];
+        }
+
+        if($Conditions->isRunning()){
+            $query['conditions']['DowntimeService.scheduled_end_time >'] = time();
+            $query['conditions']['DowntimeService.was_started'] = true;
+            $query['conditions']['DowntimeService.was_cancelled'] = false;
+        }
+
 
         return $query;
     }
@@ -114,17 +128,14 @@ class DowntimeService extends CrateModuleAppModel {
             ],
             'fields'     => [
                 'DowntimeService.internal_downtime_id',
-            ],
-            'joins'      => [
-                [
-                    'table'      => 'openitcockpit_services',
-                    'type'       => 'INNER',
-                    'alias'      => 'Service',
-                    'conditions' => 'Service.uuid = DowntimeService.service_description',
-                ]
             ]
         ];
-        return $this->find('all', $query);
+        $result = $this->find('all', $query);
+        if(empty($result)){
+            return [];
+        }
+
+        return Hash::extract($result, '{n}.DowntimeService.internal_downtime_id');
     }
 
 }

@@ -51,7 +51,9 @@ $config = [
                 'enable_host_notifications',
                 'disable_host_notifications',
                 'system_health',
-                'getDowntimeData'
+                'getDowntimeData',
+                'mass_delete_host_downtimes',
+                'mass_delete_service_downtimes'
             ],
             'Commands'         => [
                 'sortByCommandType',
@@ -61,7 +63,8 @@ $config = [
             ],
             'Downtimes'        => [
                 'validateDowntimeInputFromBrowser',
-                'validateDowntimeInputFromAngular'
+                'validateDowntimeInputFromAngular',
+                'icon'
             ],
             'Forward'          => [
                 'index',
@@ -355,7 +358,7 @@ $config = [
                 'Statusmaps'            => ['index', 'view'],
                 'Systemdowntimes'       => ['index'],
                 'Systemfailures'        => ['index'],
-                'Systemsettings'        => ['index'],
+                'Systemsettings'        => ['index', 'host', 'service', 'hostgroup', 'node'],
                 'Tenants'               => ['index'],
                 'Timeperiods'           => ['index'],
                 'Usergroups'            => ['index'],

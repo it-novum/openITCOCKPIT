@@ -69,7 +69,7 @@ angular.module('openITCOCKPIT')
                 function(result){
                     $scope.errors = null;
                     if($scope.post.Systemdowntime.is_recurring){
-                        window.location.href = '/systemdowntimes';
+                        window.location.href = '/systemdowntimes/hostgroup';
                     }else{
                         window.location.href = '/downtimes/host';
                     }
@@ -77,7 +77,7 @@ angular.module('openITCOCKPIT')
                 function errorCallback(result){
                     console.error(result.data);
                     if(result.data.hasOwnProperty('error')){
-                        $scope.errors = result.data.error;
+                        $scope.errors = result.data.error[0];
                     }
                 }
             );

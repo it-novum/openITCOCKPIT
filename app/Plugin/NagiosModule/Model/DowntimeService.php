@@ -43,8 +43,8 @@ class DowntimeService extends NagiosModuleAppModel {
 
     public function getQuery(DowntimeServiceConditions $Conditions, $paginatorConditions) {
         $query = [
-            'recursive' => -1,
-            'fields'    => [
+            'recursive'  => -1,
+            'fields'     => [
                 'DowntimeService.author_name',
                 'DowntimeService.comment_data',
                 'DowntimeService.entry_time',
@@ -66,7 +66,7 @@ class DowntimeService extends NagiosModuleAppModel {
                 'Servicetemplate.name',
                 'HostsToContainers.container_id',
             ],
-            'joins'     => [
+            'joins'      => [
                 [
                     'table'      => 'nagios_objects',
                     'type'       => 'INNER',
@@ -120,6 +120,13 @@ class DowntimeService extends NagiosModuleAppModel {
 
         //Merge ListFilter conditions
         $query['conditions'] = Hash::merge($paginatorConditions, $query['conditions']);
+
+        if($Conditions->isRunning()){
+            $query['conditions']['DowntimeService.scheduled_end_time >'] = date('Y-m-d H:i:s', time());
+            $query['conditions']['DowntimeService.was_started'] = 1;
+            $query['conditions']['DowntimeService.was_cancelled'] = 0;
+        }
+
         return $query;
     }
 
@@ -127,8 +134,8 @@ class DowntimeService extends NagiosModuleAppModel {
         $query = [
             'conditions' => [
                 'DowntimeService.downtime_type'        => 1,
-                'Service.host_id'               => $hostId,
-                'DowntimeService.scheduled_start_time' => date('Y-m-d H:i:s',$Downtime->getScheduledStartTime()),
+                'Service.host_id'                      => $hostId,
+                'DowntimeService.scheduled_start_time' => date('Y-m-d H:i:s', $Downtime->getScheduledStartTime()),
                 'DowntimeService.scheduled_end_time'   => date('Y-m-d H:i:s', $Downtime->getScheduledEndTime())
             ],
             'fields'     => [
@@ -143,7 +150,12 @@ class DowntimeService extends NagiosModuleAppModel {
                 ]
             ]
         ];
-        return $this->find('all', $query);
+        $result = $this->find('all', $query);
+        if(empty($result)){
+            return [];
+        }
+
+        return Hash::extract($result, '{n}.DowntimeService.internal_downtime_id');
     }
 
 

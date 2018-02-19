@@ -23,6 +23,8 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use itnovum\openITCOCKPIT\Core\SystemdowntimesConditions;
+
 class Systemdowntime extends AppModel {
 
 
@@ -33,7 +35,7 @@ class Systemdowntime extends AppModel {
         ],
         'object_id'    => [
             'multiple' => [
-                'rule'     => ['multiple',['min' => 1]],
+                'rule'     => ['multiple', ['min' => 1]],
                 'message'  => 'Please select at least 1 object',
                 'required' => true,
             ],
@@ -50,7 +52,7 @@ class Systemdowntime extends AppModel {
                 'required' => true,
             ],
             'date'       => [
-                'rule'    => ['date','dmy'],
+                'rule'    => ['date', 'dmy'],
                 'message' => 'Please enter a valid date',
             ],
             'comparison' => [
@@ -82,7 +84,7 @@ class Systemdowntime extends AppModel {
                 'required' => true,
             ],
             'date'          => [
-                'rule'    => ['date','dmy'],
+                'rule'    => ['date', 'dmy'],
                 'message' => 'Please enter a valid date',
             ],
             'checkPastDate' => [
@@ -97,12 +99,12 @@ class Systemdowntime extends AppModel {
             ],
         ],
         'to_time'      => [
-            'notBlank'   => [
+            'notBlank'      => [
                 'rule'     => 'notBlank',
                 'message'  => 'This field cannot be left blank.',
                 'required' => true,
             ],
-            'time'       => [
+            'time'          => [
                 'rule'    => 'time',
                 'message' => 'Please enter a valid time',
             ],
@@ -111,7 +113,7 @@ class Systemdowntime extends AppModel {
                 'message'  => 'The "to" time should be in the future and not the past',
                 'required' => true
             ],
-            'comparison' => [
+            'comparison'    => [
                 'rule'     => ['timeComparison'],
                 'message'  => 'The "from" time must occur before the "to" time',
                 'required' => true
@@ -139,7 +141,7 @@ class Systemdowntime extends AppModel {
             ],
         ],
         'duration'     => [
-            'notBlank' => [
+            'notBlank'         => [
                 'rule'     => 'notBlank',
                 'message'  => 'This field cannot be left blank.',
                 'required' => true,
@@ -152,7 +154,7 @@ class Systemdowntime extends AppModel {
         ]
     ];
 
-    public function checkDowntimeSettings () {
+    public function checkDowntimeSettings() {
         if (isset($this->data['Systemdowntime']['downtimetype'])) {
             if ($this->data['Systemdowntime']['is_recurring'] == 1) {
                 return $this->validateRecurring($this->data);
@@ -162,23 +164,23 @@ class Systemdowntime extends AppModel {
         return false;
     }
 
-    public function validateRecurring ($request) {
+    public function validateRecurring($request) {
         //Validate days from selectbox
         if ($request['Systemdowntime']['weekdays'] != '') {
-            $valideDays = [1,2,3,4,5,6,7];
-            $_expldoe = explode(',',$request['Systemdowntime']['weekdays']);
+            $valideDays = [1, 2, 3, 4, 5, 6, 7];
+            $_expldoe = explode(',', $request['Systemdowntime']['weekdays']);
             foreach ($_expldoe as $day) {
-                if ($day !== '' && $day !== null && !in_array($day,$valideDays)) {
+                if ($day !== '' && $day !== null && !in_array($day, $valideDays)) {
                     return false;
                 }
             }
         }
 
         if ($request['Systemdowntime']['day_of_month'] != '') {
-            $valideDays = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31];
-            $_expldoe = explode(',',$request['Systemdowntime']['day_of_month']);
+            $valideDays = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31];
+            $_expldoe = explode(',', $request['Systemdowntime']['day_of_month']);
             foreach ($_expldoe as $day) {
-                if ($day !== '' && $day !== null && !in_array($day,$valideDays)) {
+                if ($day !== '' && $day !== null && !in_array($day, $valideDays)) {
                     return false;
                 }
             }
@@ -187,100 +189,56 @@ class Systemdowntime extends AppModel {
         return true;
     }
 
-    public function validateDuration(){
+    public function validateDuration() {
         if ($this->data['Systemdowntime']['is_recurring'] == 0) {
             return true;
         }
-        if(empty($this->data['Systemdowntime']['duration'])){
+        if (empty($this->data['Systemdowntime']['duration'])) {
             return false;
         }
         if (!empty($this->data['Systemdowntime']['duration']) &&
-                is_numeric($this->data['Systemdowntime']['duration']) && $this->data['Systemdowntime']['duration'] > 0) {
+            is_numeric($this->data['Systemdowntime']['duration']) && $this->data['Systemdowntime']['duration'] > 0) {
             return true;
         }
         return false;
     }
 
-    public function listSettings ($cakeRequest,$limit = 25) {
-        $requestData = $cakeRequest->data;
-
-        if (isset($cakeRequest->params['named']['Listsettings'])) {
-            $requestData['Listsettings'] = $cakeRequest->params['named']['Listsettings'];
-        }
-        $requestParams = $cakeRequest->params;
-
-        $return = [
-            'paginator'    => [
-                'limit' => $limit,
-            ],
-            'Listsettings' => [
-                'limit' => $limit,
-            ],
-            'conditions'   => [],
-            'default'      => [
-                'recursive' => -1,
-                'fields'    => ['Systemdowntime.*','Host.*','Hostgroup.*','Service.*','Servicetemplate.*','Container.*','ServiceHost.container_id'],
-                'joins'     => [
-                    [
-                        'table'      => 'hosts',
-                        'type'       => 'LEFT',
-                        'alias'      => 'Host',
-                        'conditions' => '(Systemdowntime.objecttype_id = ' . OBJECT_HOST . ' AND Host.id = Systemdowntime.object_id)',
+    /**
+     * @return array
+     */
+    public function getValidationRulesForRecurringDowntimes(){
+        $validate = Hash::merge(
+            $this->validate,
+            [
+                'from_date' => [
+                    'notBlank' => [
+                        'required'   => false,
+                        'allowEmpty' => true,
                     ],
-
-                    [
-                        'table'      => 'services',
-                        'type'       => 'LEFT',
-                        'alias'      => 'Service',
-                        'conditions' => '(Systemdowntime.objecttype_id = ' . OBJECT_SERVICE . ' AND Service.id = Systemdowntime.object_id)',
-                    ],
-
-                    [
-                        'table'      => 'hosts',
-                        'type'       => 'LEFT',
-                        'alias'      => 'ServiceHost',
-                        'conditions' => '(Systemdowntime.objecttype_id = ' . OBJECT_SERVICE . ' AND Service.host_id = ServiceHost.id)',
-                    ],
-
-                    [
-                        'table'      => 'servicetemplates',
-                        'type'       => 'LEFT OUTER',
-                        'alias'      => 'Servicetemplate',
-                        'conditions' => 'Servicetemplate.id = Service.servicetemplate_id',
-                    ],
-
-                    [
-                        'table'      => 'hostgroups',
-                        'type'       => 'LEFT',
-                        'alias'      => 'Hostgroup',
-                        'conditions' => '(Systemdowntime.objecttype_id = ' . OBJECT_HOSTGROUP . ' AND Hostgroup.id = Systemdowntime.object_id)',
-                    ],
-
-                    [
-                        'table'      => 'containers',
-                        'type'       => 'LEFT OUTER',
-                        'alias'      => 'Container',
-                        'conditions' => 'Container.id = Hostgroup.container_id',
-                    ],
-
                 ],
-                'findType'  => 'all',
-            ],
-        ];
-
-
-        if (isset($requestParams['named']['sort']) && isset($requestParams['named']['direction'])) {
-            $return['paginator']['order'] = [$requestParams['named']['sort'] => $requestParams['named']['direction']];
-        }
-
-        if (isset($requestData['Listsettings']['limit']) && is_numeric($requestData['Listsettings']['limit'])) {
-            $return['paginator']['limit'] = $requestData['Listsettings']['limit'];
-            $return['Listsettings']['limit'] = $return['paginator']['limit'];
-        }
-
-
-        return $return;
+                'to_date'   => [
+                    'notBlank' => [
+                        'required'   => false,
+                        'allowEmpty' => true,
+                    ]
+                ],
+                'from_time' => [
+                    'notBlank' => [
+                        'required'   => true,
+                        'allowEmpty' => false,
+                    ],
+                ],
+                'to_time'   => [
+                    'notBlank' => [
+                        'required'   => false,
+                        'allowEmpty' => true,
+                    ],
+                ]
+            ]
+        );
+        return $validate;
     }
+
 
     /**
      * Custom Validation Rule: Ensures a selected date is in the past.
@@ -288,34 +246,34 @@ class Systemdowntime extends AppModel {
      * @param array $check Contains the value passed from the view to be validated
      * @return boolean False if in the future, True otherwise
      */
-    public function checkPastDate () {
+    public function checkPastDate() {
         if ($this->data[$this->name]['is_recurring']) {
             return true;
         }
         //return CakeTime::fromString($this->data[$this->alias]['to_date'] . ' ' . $this->data[$this->alias]['to_time']) > time();
-        return CakeTime::fromString($this->data[$this->alias]['to_date']) >= CakeTime::fromString(date("d.m.Y",time()));
+        return CakeTime::fromString($this->data[$this->alias]['to_date']) >= CakeTime::fromString(date("d.m.Y", time()));
     }
 
-    public function checkPastTime () {
-        if(CakeTime::fromString($this->data[$this->alias]['to_date']) > CakeTime::fromString(date("d.m.Y",time()))){
+    public function checkPastTime() {
+        if (CakeTime::fromString($this->data[$this->alias]['to_date']) > CakeTime::fromString(date("d.m.Y", time()))) {
             return true;
         }
         return CakeTime::fromString($this->data[$this->alias]['to_date'] . ' ' . $this->data[$this->alias]['to_time']) > time();
     }
 
-    function dateComparison () {
+    function dateComparison() {
         if ($this->data[$this->name]['is_recurring']) {
             return true;
         }
-        return Validation::comparison(CakeTime::fromString($this->data[$this->alias]['from_date']),'<=',CakeTime::fromString($this->data[$this->alias]['to_date']));
+        return Validation::comparison(CakeTime::fromString($this->data[$this->alias]['from_date']), '<=', CakeTime::fromString($this->data[$this->alias]['to_date']));
     }
 
-    function timeComparison () {
+    function timeComparison() {
         if ($this->data[$this->name]['is_recurring']) {
             return Validation::time($this->data[$this->alias]['from_time']);
         }
-        if (Validation::comparison($this->data[$this->alias]['from_date'],'==',$this->data[$this->alias]['to_date'])) {
-            return Validation::comparison($this->data[$this->alias]['from_time'],'<',$this->data[$this->alias]['to_time']);
+        if (Validation::comparison($this->data[$this->alias]['from_date'], '==', $this->data[$this->alias]['to_date'])) {
+            return Validation::comparison($this->data[$this->alias]['from_time'], '<', $this->data[$this->alias]['to_time']);
         } else {
             return true;
         }
@@ -325,10 +283,173 @@ class Systemdowntime extends AppModel {
     /*
     Custom validation rule for recurring downtimes
     */
-    public function atLeastOne () {
+    public function atLeastOne() {
         if (!$this->data[$this->name]['is_recurring']) {
             return true;
         }
         return !empty($this->data[$this->name]['weekdays']) || !empty($this->data[$this->name]['day_of_month']);
+    }
+
+    /**
+     * @return array
+     */
+    public function getRecurringHostDowntimesQuery(SystemdowntimesConditions $Conditions, $filterConditions = []) {
+        $this->bindModel([
+            'belongsTo' => [
+                'Host' => [
+                    'className'  => 'Host',
+                    'foreignKey' => 'object_id',
+                    'type'       => 'INNER',
+                    'conditions' => [
+                        'Systemdowntime.objecttype_id' => OBJECT_HOST
+                    ]
+                ],
+            ]
+        ]);
+        $query = [
+            'recursive'  => -1,
+            'contain'    => [
+                'Host' => [
+                    'Container' => [
+                        'conditions' => [
+                            'Container.id' => $Conditions->getContainerIds()
+                        ]
+                    ]
+                ],
+                'Host.id',
+                'Host.uuid',
+                'Host.name'
+            ],
+            'conditions' => [],
+            'order'      => $Conditions->getOrder()
+        ];
+
+        $query['conditions'] = Hash::merge($query['conditions'], $filterConditions);
+
+        return $query;
+    }
+
+    /**
+     * @return array
+     */
+    public function getRecurringServiceDowntimesQuery(SystemdowntimesConditions $Conditions, $filterConditions = []) {
+        $this->virtualFields['servicename'] = 'IF((Service.name IS NULL OR Service.name=""), Servicetemplate.name, Service.name)';
+        $query = [
+            'recursive'  => -1,
+            'fields'     => [
+                'Systemdowntime.*',
+                'Service.id',
+                'Service.host_id',
+                'Service.name',
+                'Servicetemplate.name',
+                'Host.id',
+                'Host.name'
+            ],
+            'joins'      => [
+                [
+                    'table'      => 'services',
+                    'type'       => 'INNER',
+                    'alias'      => 'Service',
+                    'conditions' => [
+                        'Service.id = Systemdowntime.object_id',
+                        'Systemdowntime.objecttype_id' => OBJECT_SERVICE
+                    ]
+                ], [
+                    'table'      => 'servicetemplates',
+                    'type'       => 'INNER',
+                    'alias'      => 'Servicetemplate',
+                    'conditions' => 'Servicetemplate.id = Service.servicetemplate_id',
+                ], [
+                    'table'      => 'hosts',
+                    'type'       => 'INNER',
+                    'alias'      => 'Host',
+                    'conditions' => 'Service.host_id = Host.id',
+                ], [
+                    'table'      => 'hosts_to_containers',
+                    'alias'      => 'HostsToContainers',
+                    'type'       => 'INNER',
+                    'conditions' => [
+                        'HostsToContainers.host_id = Host.id',
+                    ],
+                ],
+            ],
+            'conditions' => [
+                'HostsToContainers.container_id' => $Conditions->getContainerIds()
+            ],
+            'order'      => $Conditions->getOrder()
+        ];
+
+        $query['conditions'] = Hash::merge($query['conditions'], $filterConditions);
+
+        return $query;
+    }
+
+    /**
+     * @return array
+     */
+    public function getRecurringHostgroupDowntimesQuery(SystemdowntimesConditions $Conditions, $filterConditions = []) {
+        $query = [
+            'recursive'  => -1,
+            'fields'     => [
+                'Systemdowntime.*',
+                'Hostgroup.id',
+                'Hostgroup.container_id',
+                'Container.name'
+            ],
+            'joins'      => [
+                [
+                    'table'      => 'hostgroups',
+                    'type'       => 'INNER',
+                    'alias'      => 'Hostgroup',
+                    'conditions' => [
+                        'Hostgroup.id = Systemdowntime.object_id',
+                        'Systemdowntime.objecttype_id' => OBJECT_HOSTGROUP
+                    ]
+                ], [
+                    'table'      => 'containers',
+                    'type'       => 'INNER',
+                    'alias'      => 'Container',
+                    'conditions' => 'Container.id = Hostgroup.container_id'
+                ]
+            ],
+            'conditions' => [
+                'Container.id' => $Conditions->getContainerIds()
+            ],
+            'order'      => $Conditions->getOrder()
+        ];
+
+        $query['conditions'] = Hash::merge($query['conditions'], $filterConditions);
+
+        return $query;
+    }
+
+    public function getRecurringNodeDowntimesQuery(SystemdowntimesConditions $Conditions, $filterConditions = []) {
+        $query = [
+            'recursive'  => -1,
+            'fields'     => [
+                'Systemdowntime.*',
+                'Container.id',
+                'Container.name'
+            ],
+            'joins'      => [
+                [
+                    'table'      => 'containers',
+                    'type'       => 'INNER',
+                    'alias'      => 'Container',
+                    'conditions' => [
+                        'Container.id = Systemdowntime.object_id',
+                        'Systemdowntime.objecttype_id' => OBJECT_NODE
+                    ]
+                ]
+            ],
+            'conditions' => [
+                'Container.id' => $Conditions->getContainerIds()
+            ],
+            'order'      => $Conditions->getOrder()
+        ];
+
+        $query['conditions'] = Hash::merge($query['conditions'], $filterConditions);
+
+        return $query;
     }
 }

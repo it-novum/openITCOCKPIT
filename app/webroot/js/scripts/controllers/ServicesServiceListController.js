@@ -184,8 +184,10 @@ angular.module('openITCOCKPIT')
         $scope.selectAll = function(){
             if($scope.services){
                 for(var key in $scope.services){
-                    var id = $scope.services[key].Service.id;
-                    $scope.massChange[id] = true;
+                    if($scope.services[key].Service.allow_edit){
+                        var id = $scope.services[key].Service.id;
+                        $scope.massChange[id] = true;
+                    }
                 }
             }
         };
