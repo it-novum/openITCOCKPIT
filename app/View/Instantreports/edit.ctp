@@ -127,7 +127,7 @@
                                     data-placeholder="<?php echo __('Please choose'); ?>"
                                     class="form-control"
                                     chosen="hostgroups"
-                                    ng-options="hostgroup.Hostgroup.id as hostgroup.Container.name for hostgroup in hostgroups"
+                                    ng-options="hostgroup.key as hostgroup.value for hostgroup in hostgroups"
                                     ng-model="post.Instantreport.Hostgroup">
                             </select>
                             <div ng-repeat="error in errors.Hostgroup">
@@ -167,7 +167,7 @@
                                     data-placeholder="<?php echo __('Please choose'); ?>"
                                     class="form-control"
                                     chosen="servicegroups"
-                                    ng-options="servicegroup.Servicegroup.id as servicegroup.Container.name for servicegroup in servicegroups"
+                                    ng-options="servicegroup.key as servicegroup.value for servicegroup in servicegroups"
                                     ng-model="post.Instantreport.Servicegroup">
                             </select>
                             <div ng-repeat="error in errors.Servicegroup">
