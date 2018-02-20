@@ -757,7 +757,7 @@ class InstantreportsController extends AppController {
                     'contain'    => [
                         'Servicegroup' => [
                             'Service' => [
-                                'fields' => [
+                                'fields'          => [
                                     'Service.uuid',
                                     'Service.name'
                                 ],
@@ -766,7 +766,7 @@ class InstantreportsController extends AppController {
                                         'Servicetemplate.name'
                                     ]
                                 ],
-                                'Host' => [
+                                'Host'            => [
                                     'fields' => [
                                         'Host.name',
                                         'Host.uuid'
