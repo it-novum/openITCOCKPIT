@@ -25,8 +25,17 @@
 
 use itnovum\openITCOCKPIT\Core\Views\Logo;
 
-$totalHostsData[0] = $totalHostsData[1] = $totalHostsData[2] = 0;
-$totalServicesData[0] = $totalServicesData[1] = $totalServicesData[2] = $totalServicesData[3] = 0;
+$totalHostsData = [
+    0 => 0,
+    1 => 0,
+    2 => 0
+];
+$totalServicesData = [
+    0 => 0,
+    1 => 0,
+    2 => 0,
+    3 => 0
+];
 $Logo = new Logo();
 ?>
 <div class="jarviswidget">
@@ -68,7 +77,7 @@ $Logo = new Logo();
                                 <div class="well padding-bottom-10">
                                     <?php if (!$instantReportDetails['onlyServices'] && isset($hostData[0], $hostData[1], $hostData[2]) && array_sum(
                                             [$hostData[0], $hostData[1], $hostData[2]]
-                                        )>0): ?>
+                                        ) > 0): ?>
                                         <div class="row margin-top-10 font-md padding-bottom-20">
                                             <div class="col-md-12 text-left">
                                                 <?php
@@ -89,13 +98,13 @@ $Logo = new Logo();
                                                         ?>
                                                     </em>
 
-                                                    <?php
+                                                <?php
                                                 endfor;
                                                 ?>
                                             </div>
                                         </div>
                                     <?php
-                                    elseif(!$instantReportDetails['onlyServices'] && isset($hostData[0], $hostData[1], $hostData[2]) && array_sum(
+                                    elseif (!$instantReportDetails['onlyServices'] && isset($hostData[0], $hostData[1], $hostData[2]) && array_sum(
                                             [$hostData[0], $hostData[1], $hostData[2]]
                                         ) === 0):?>
                                         <i class="fa fa-info-circle txt-color-blueDark"></i>
@@ -109,10 +118,11 @@ $Logo = new Logo();
                                                 if (isset($serviceData[0], $serviceData[1], $serviceData[2], $serviceData[3]) &&
                                                     array_sum(
                                                         [$serviceData[0], $serviceData[1], $serviceData[2], $serviceData[3]]
-                                                    )>0
+                                                    ) > 0
                                                 ):?>
-                                                    <div class="padding-top-10 padding-bottom-5"><i
-                                                                class="fa fa-gear"></i> <?php echo h($serviceData['Service']['name']); ?>
+                                                    <div class="padding-top-10 padding-bottom-5">
+                                                        <i class="fa fa-gear"></i>
+                                                        <?php echo h($serviceData['Service']['name']); ?>
                                                     </div>
                                                     <div class="padding-left-20 text-left">
                                                         <?php
@@ -133,7 +143,7 @@ $Logo = new Logo();
                                                                 ?>
                                                             </em>
 
-                                                            <?php
+                                                        <?php
                                                         endfor; ?>
                                                     </div>
                                                 <?php endif;
@@ -146,7 +156,7 @@ $Logo = new Logo();
                         </article>
                     </div>
                 </section>
-                <?php
+            <?php
             endforeach;
         elseif (!empty($instantReportData)):
             foreach ($instantReportData['Hosts'] as $hostUuid => $hostData):
@@ -196,7 +206,7 @@ $Logo = new Logo();
                                                 echo round($totalHostsData[$i] / $totalTimeHosts * 100, 2) . ' % (' . $this->Status->humanSimpleHostStatus($i) . ')';
                                                 ?>
                                             </em>
-                                            <?php
+                                        <?php
                                         endfor;
                                         ?>
                                     </div>
@@ -206,7 +216,7 @@ $Logo = new Logo();
                     </article>
                 </div>
             </section>
-            <?php
+        <?php
         elseif (!$instantReportDetails['onlyServices'] && $totalTimeHosts == 0):?>
             <section id="widget-grid" class="">
                 <div class="row">
@@ -217,7 +227,7 @@ $Logo = new Logo();
                     </div>
                 </div>
             </section>
-            <?php
+        <?php
         endif; ?>
             <?php if (!$instantReportDetails['onlyHosts'] && $totalTimeServices != 0): ?>
             <section id="widget-grid" class="">
@@ -247,7 +257,7 @@ $Logo = new Logo();
                                                 ?>
                                             </em>
 
-                                            <?php
+                                        <?php
                                         endfor;
                                         ?>
                                     </div>
@@ -257,7 +267,7 @@ $Logo = new Logo();
                     </article>
                 </div>
             </section>
-            <?php
+        <?php
         elseif (!$instantReportDetails['onlyHosts'] && $totalTimeServices == 0):?>
             <section id="widget-grid" class="">
                 <div class="row">
@@ -268,7 +278,7 @@ $Logo = new Logo();
                     </div>
                 </div>
             </section>
-            <?php
+        <?php
         endif;
         endif;
 
@@ -292,7 +302,7 @@ $Logo = new Logo();
                                         <div>
                                             <i class="fa fa-desktop"></i> <?php echo h($hostName); ?>
                                         </div>
-                                        <?php
+                                    <?php
                                     endforeach;
                                 endif;
                                 foreach ($servicesNotMonitored as $serviceId => $serviceArray):?>
@@ -303,7 +313,7 @@ $Logo = new Logo();
                                         echo h(' (' . $serviceArray['Host']['name'] . ')');
                                         ?>
                                     </div>
-                                    <?php
+                                <?php
                                 endforeach;
                                 ?>
                             </div>

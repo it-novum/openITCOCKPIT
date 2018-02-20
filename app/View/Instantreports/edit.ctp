@@ -85,8 +85,7 @@
                         <?php echo __('Type');?>
                     </label>
                     <div class="col col-xs-10">
-                        <select name="data[Instantreport][type]"
-                                ng-model="post.Instantreport.type"
+                        <select ng-model="post.Instantreport.type"
                                 chosen="types"
                                 id="InstantreportType" required="required" class="form-control chosen" ng-change="changeType()">
                             <option value="1"><?php echo __('Host groups'); ?></option>
@@ -193,15 +192,24 @@
                     </label>
                     <div class="col col-xs-10">
                         <label class="padding-right-10" for="InstantreportEvaluation1">
-                            <input type="radio" name="data[Instantreport][evaluation]" id="InstantreportEvaluation1" value="1">
+                            <input type="radio"
+                                   ng-model="post.Instantreport.evaluation"
+                                   id="InstantreportEvaluation1"
+                                   value="1">
                             <i class="fa fa-desktop"></i> <?php echo __('Hosts'); ?>
                         </label>
                         <label class="padding-right-10" for="InstantreportEvaluation2">
-                            <input type="radio" name="data[Instantreport][evaluation]" id="InstantreportEvaluation2" value="2" checked="checked">
+                            <input type="radio"
+                                   ng-model="post.Instantreport.evaluation"
+                                   id="InstantreportEvaluation2"
+                                   value="2">
                             <i class="fa fa-cogs"></i> <?php echo __('Host and Services'); ?>
                         </label>
                         <label class="padding-right-10" for="InstantreportEvaluation3">
-                            <input type="radio" name="data[Instantreport][evaluation]" id="InstantreportEvaluation3" value="3">
+                            <input type="radio"
+                                   ng-model="post.Instantreport.evaluation"
+                                   id="InstantreportEvaluation3"
+                                   value="3">
                             <i class="fa fa-cog"></i> <?php echo __('Services'); ?>
                         </label>
                     </div>
@@ -235,8 +243,10 @@
                         <?php echo __('Reflection state'); ?>
                     </label>
                     <div class="col col-xs-10">
-                        <select name="data[Instantreport][reflection]" class="form-control" id="InstantreportReflection"
-                                chosen="states"  ng-model="post.Instantreport.reflection">
+                        <select class="form-control"
+                                id="InstantreportReflection"
+                                chosen="states"
+                                ng-model="post.Instantreport.reflection">
                             <option value="1"><?php echo __('soft and hard state'); ?></option>
                             <option value="2"><?php echo __('only hard state'); ?></option>
                         </select>
@@ -282,9 +292,9 @@
                         </label>
                         <div class="col col-xs-10">
                             <select
-                                    name="data[Instantreport][send_interval]"
                                     data-placeholder="<?php __('Please select...'); ?>"
-                                    class="chosen form-control" id="InstantreportSendInterval"
+                                    class="chosen form-control"
+                                    id="InstantreportSendInterval"
                                     chosen="send_interval"
                                     ng-model="post.Instantreport.send_interval">
                                 <option value="1"><?php echo __('DAY'); ?></option>

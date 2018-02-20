@@ -226,7 +226,7 @@ $config = [
                 'edit'  => ['addCustomMacro', 'loadArguments', 'loadArgumentsAdd', 'loadElementsByContainerId'],
             ],
             'Instantreports'        => [
-                'index' => ['createPdfReport', 'expandServices'],
+                'index' => ['createPdfReport'],
                 'add'   => ['loadContainers']
             ],
             'Macros'                => [
