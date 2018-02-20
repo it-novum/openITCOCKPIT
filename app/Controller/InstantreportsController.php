@@ -27,7 +27,6 @@ use itnovum\openITCOCKPIT\Core\DowntimeServiceConditions;
 use itnovum\openITCOCKPIT\Core\StatehistoryHostConditions;
 use itnovum\openITCOCKPIT\Core\StatehistoryServiceConditions;
 use itnovum\openITCOCKPIT\Core\ValueObjects\StateTypes;
-use itnovum\openITCOCKPIT\Core\Views\UserTime;
 use itnovum\openITCOCKPIT\Filter\InstantreportFilter;
 
 
@@ -272,7 +271,6 @@ class InstantreportsController extends AppController {
     private function generateReport($instantReport, $baseStartDate, $baseEndDate, $reportFormat) {
         $startDate = $baseStartDate . ' 00:00:00';
         $endDate = $baseEndDate . ' 23:59:59';
-        $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
 
         $instantReportDetails = [
             'startDate' => $startDate,
