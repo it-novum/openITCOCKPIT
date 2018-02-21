@@ -643,7 +643,11 @@ class InstantreportsController extends AppController {
                         ]
                     ],
                     Instantreport::EVALUATION_SERVICES       => [
-                        'Host.uuid' => [
+                        'Host' => [
+                            'fields'  => [
+                                'Host.uuid',
+                                'Host.name'
+                            ],
                             'Service' => [
                                 'fields'          => [
                                     'Service.uuid',
@@ -827,7 +831,7 @@ class InstantreportsController extends AppController {
 
                 if ($instantReport['Instantreport']['evaluation'] == Instantreport::EVALUATION_HOSTS) {
                     $objectsForInstantReport['Hosts'] = array_unique(
-                        Hash::combine($instantReportServices['Service'], '{n}.Host.{n}.uuid', '{n}.Host.{n}.name')
+                        Hash::combine($instantReportServices['Service'], '{n}.Host.uuid', '{n}.Host.name')
                     );
                 }
 

@@ -46,7 +46,7 @@
     </header>
     <div class="widget-body">
         <form ng-submit="submit();" class="form-horizontal">
-            <div class="row">{{errors}}
+            <div class="row">
                 <div class="form-group required" ng-class="{'has-error': errors.container_id}">
                     <label class="col col-md-2 control-label">
                         <?php echo __('Container'); ?>
