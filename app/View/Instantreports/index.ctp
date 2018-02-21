@@ -172,6 +172,9 @@
                                    style="">
                                 <thead>
                                 <tr>
+                                    <th class="no-sort sorting_disabled width-15">
+                                        <i class="fa fa-check-square-o fa-lg"></i>
+                                    </th>
                                     <th class="no-sort" ng-click="orderBy('Instantreport.name')">
                                         <i class="fa" ng-class="getSortClass('Instantreport.name')"></i>
                                         <?php echo __('Name'); ?>
@@ -207,6 +210,12 @@
                                 </thead>
                                 <tbody>
                                 <tr ng-repeat="instantreport in instantreports">
+                                    <td class="text-center" class="width-15">
+                                        <?php if ($this->Acl->hasPermission('delete')): ?>
+                                        <input type="checkbox"
+                                               ng-model="massChange[instantreport.Instantreport.id]">
+                                        <?php endif; ?>
+                                    </td>
                                     <td>
                                         {{ instantreport.Instantreport.name }}
                                     </td>
@@ -307,6 +316,29 @@
                                 <div class="col-xs-12 text-center txt-color-red italic">
                                     <?php echo __('No entries match the selection'); ?>
                                 </div>
+                            </div>
+                        </div>
+                        <div class="row margin-top-10 margin-bottom-10">
+                            <div class="col-xs-12 col-md-2 text-muted text-center">
+                                <span ng-show="selectedElements > 0">({{selectedElements}})</span>
+                            </div>
+                            <div class="col-xs-12 col-md-2">
+                                <span ng-click="selectAll()" class="pointer">
+                                    <i class="fa fa-lg fa-check-square-o"></i>
+                                    <?php echo __('Select all'); ?>
+                                </span>
+                            </div>
+                            <div class="col-xs-12 col-md-2">
+                                <span ng-click="undoSelection()" class="pointer">
+                                    <i class="fa fa-lg fa-square-o"></i>
+                                    <?php echo __('Undo selection'); ?>
+                                </span>
+                            </div>
+                            <div class="col-xs-12 col-md-2 txt-color-red">
+                                <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">
+                                    <i class="fa fa-lg fa-trash-o"></i>
+                                    <?php echo __('Delete all'); ?>
+                                </span>
                             </div>
                         </div>
                         <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>
