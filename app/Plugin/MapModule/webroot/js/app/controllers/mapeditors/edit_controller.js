@@ -783,7 +783,6 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
 
             switch(type){
                 case 'service':
-                    console.log(self.currentGadget);
                     $('#addServiceGadgetX').val(self.currentGadget['x']);
                     $('#addServiceGadgetY').val(self.currentGadget['y']);
                     $('#addServiceGadgetZIndex').val(self.currentGadget['z_index']);
@@ -996,6 +995,8 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
                     options['sizeY'] = self.currentGadget['size_y'];
                 }
 
+                options['z_index'] = self.currentGadget['z_index'];
+
                 options['demo'] = true;
 
                 gadgetId = options['id'];
@@ -1020,8 +1021,6 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
                 $('<div id="svgContainer_' + self.currentGadget['elementUuid'] + '"></div>')
                     .appendTo(self.mapEditorContainer);
 
-                console.log(self.currentGadget);
-
                 //call the gadgetComponent to create the SVG
                 self.Gadget['draw' + self.currentGadget['gadget']]('svgContainer_' + self.currentGadget['elementUuid'], {
                     id: self.currentGadget['elementUuid'],
@@ -1035,9 +1034,8 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
                 });
                 //fill the hidden data fields for the Gadget
                 for(var key in self.currentGadget){
-
                     $currentGadget.append('<input type="hidden" name="data[Mapgadget][' + self.currentGadget['elementUuid'] + '][' + key + ']" data-key="' + key + '" value="' + self.currentGadget[key] + '" />');
-                    $('#svgContainer_' + self.currentGadget['elementUuid']).css({'z-index': '2'}).addClass('itemElement dragElement gadgetSVGContainer');
+                    $('#svgContainer_' + self.currentGadget['elementUuid']).css({'z-index': self.currentGadget['z_index']}).addClass('itemElement dragElement gadgetSVGContainer');
                 }
 
                 $('#' + self.currentGadget['elementUuid']).append('<div class="saveBeforeEdit">Please Save before edit!</div>');
@@ -1222,7 +1220,6 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
                     gadgetId: mapGadgets[i]['id'],
                 }
 
-                console.log(self.Gadget);
                 self.Gadget['draw' + mapGadgets[i]['gadget']]('svgContainer_' + tempUuid, {
                     id: tempUuid,
                     x: mapGadgets[i]['x'],
@@ -1234,7 +1231,7 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
                     showLabel: mapGadgets[i]['show_label'],
                     demo: true
                 });
-                $('#svgContainer_' + tempUuid).css({'z-index': '2'}).attr({'data-gadgetid': mapGadgets[i]['id']}).addClass('itemElement dragElement gadgetSVGContainer');
+                $('#svgContainer_' + tempUuid).css({'z-index': mapGadgets[i]['z_index']}).attr({'data-gadgetid': mapGadgets[i]['id']}).addClass('itemElement dragElement gadgetSVGContainer');
             }
             ;
         }
