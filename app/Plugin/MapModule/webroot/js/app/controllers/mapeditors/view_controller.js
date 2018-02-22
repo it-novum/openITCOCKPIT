@@ -113,6 +113,7 @@ App.Controllers.MapeditorsViewController = Frontend.AppController.extend({
                     color: currentElementData['currentColor'],
                     showLabel: currentElementData['currentShowLabel'],
                     fontSize: currentElementData['currentFontSize'],
+                    z_index:currentElementData['currentZIndex']
                 }
                 //check if the RRD grah link is empty
                 if(!currentElementData['currentRRDGraphLink']){
@@ -161,6 +162,7 @@ App.Controllers.MapeditorsViewController = Frontend.AppController.extend({
                 if(mapLines[i].type == 'stateless'){
                     drawRect = false;
                 }
+
                 //fill the object for the current line
                 var tempObj = {
                     id: tempUuid,
@@ -171,7 +173,8 @@ App.Controllers.MapeditorsViewController = Frontend.AppController.extend({
                     link: true,
                     linkData: '',
                     objData: currentElementData,
-                    drawRect: drawRect
+                    drawRect: drawRect,
+                    z_index: currentElementData['currentZIndex']
                 };
                 //draw the Lines
                 self.Line.drawSVGLine(tempObj);
@@ -253,6 +256,7 @@ App.Controllers.MapeditorsViewController = Frontend.AppController.extend({
                     currentType: $(this).data('type'),
                     currentColor: $(this).data('color'),
                     currentLink: $(this).data('link'),
+                    currentZIndex: $(this).data('zindex'),
                 }
             }
         });
@@ -276,6 +280,7 @@ App.Controllers.MapeditorsViewController = Frontend.AppController.extend({
                     currentColor: $(this).data('color'),
                     currentShowLabel: $(this).data('showlabel'),
                     currentFontSize: $(this).data('fontsize'),
+                    currentZIndex: $(this).data('zindex'),
                 }
             }
         });

@@ -1751,7 +1751,6 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
             //close info box
             $('#lineInfoBox').hide();
 
-
             //show modal edit dialog
             $('#LineWizardModal').modal('show');
         }
