@@ -914,7 +914,6 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
                 end['x'] = parseInt(self.currentLine.endX);
                 end['y'] = parseInt(self.currentLine.endY);
 
-
                 var currentLineContainerUuid = '';
                 var currentLineUuid = '';
                 $('.lineHoverElement').filter(function(){
@@ -929,6 +928,7 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
                     id: currentLineUuid,
                     svgContainer: currentLineContainerUuid,
                     lineId: currentLineId,
+                    z_index: self.currentLine['z_index']
                 }
 
 
@@ -1264,11 +1264,11 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
                     lineId: mapLines[i]['id'],
                     id: tempUuid,
                     svgContainer: 'svgLineContainer_' + tempUuid,
+                    z_index: mapLines[i]['z_index']
                     //drawRect:drawRect,
                 };
                 self.Line.drawSVGLine(tempObj);
             }
-            ;
         }
 
         $('#createLine').click(function(){
@@ -1741,6 +1741,7 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
             this.currentLine['startY'] = parseInt(obj.start['y']);
             this.currentLine['endY'] = parseInt(obj.end['y']);
             this.currentLine['iconset'] = 'std_line';
+            this.currentLine['z_index'] = this.defaultZIndex;
 
             $(this.mapEditorContainer).css('cursor', 'auto');
             $(this.mapEditorContainer).unbind('click');
