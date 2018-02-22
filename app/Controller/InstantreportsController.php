@@ -353,6 +353,7 @@ class InstantreportsController extends AppController {
                     $StatehistoryHost = new \itnovum\openITCOCKPIT\Core\Views\StatehistoryHost($statehistory['StatehistoryHost']);
                     $all_statehistories[$hostUuid]['Statehistory'][] = $StatehistoryHost->toArray();
                 }
+
                 if (empty($all_statehistories[$hostUuid]['Statehistory'])) {
                     //Host has no state history record for selected time range
                     //Get last available state history record for this host

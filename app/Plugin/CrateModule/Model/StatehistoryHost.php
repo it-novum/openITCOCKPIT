@@ -71,4 +71,21 @@ class StatehistoryHost extends CrateModuleAppModel {
         return $query;
     }
 
+    /**
+     * @param StatehistoryHostConditions $StatehistoryHostConditions
+     * @return array
+     */
+    public function getLastRecord(StatehistoryHostConditions $StatehistoryHostConditions) {
+        $query = [
+            'conditions' => [
+                'hostname' => $StatehistoryHostConditions->getHostUuid(),
+                'state_time <=' => $StatehistoryHostConditions->getFrom(),
+            ],
+            'order'      => [
+                'state_time' => 'DESC'
+            ],
+        ];
+
+        return $query;
+    }
 }

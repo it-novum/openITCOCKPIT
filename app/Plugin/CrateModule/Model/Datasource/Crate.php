@@ -426,7 +426,6 @@ class Crate extends DboSource {
                 }
             }
         }
-
         if (!empty($queryData['array_difference'])) {
             //WHERE array_difference([1,2], Host.container_ids) != [1,2]
             foreach ($queryData['array_difference'] as $field => $values) {
@@ -442,6 +441,21 @@ class Crate extends DboSource {
             }
         }
 
+        if (!empty($queryData['or'])) {
+            //WHERE OR multiple 'OR' conditions
+            $conditionValues = [];
+            foreach ($queryData['or'] as $key => $value) {
+                $conditionValues[] = key($queryData['or'][$key]);
+            }
+
+            $queryTemplate = sprintf(
+                '%s %s (%s)',
+                $queryTemplate,
+                ($hasWhere) ? 'AND' : 'WHERE',
+                implode(' OR ', $conditionValues)
+            );
+
+        }
         if (!empty($queryData['group'])) {
             $groupBy = [];
             foreach ($queryData['group'] as $column) {
@@ -489,7 +503,6 @@ class Crate extends DboSource {
         if (!empty($queryData['offset']) && $this->findType !== 'count') {
             $queryTemplate = sprintf('%s OFFSET ?', $queryTemplate);
         }
-
         $attachedParameters = [];
         $query = $this->_connection->prepare($queryTemplate);
         $i = 1;
@@ -539,6 +552,18 @@ class Crate extends DboSource {
                     $attachedParameters[] = $values;
                 }
 
+            }
+        }
+
+        if (!empty($queryData['or'])) {
+            //WHERE OR multiple 'OR' conditions
+            foreach ($queryData['or'] as $conditionValues) {
+                foreach($conditionValues as $condition => $bindValues){
+                    foreach($bindValues as $key => $value){
+                        $query->bindValue($i++, $value, PDO::PARAM_TIMESTAMP);
+                        $attachedParameters[] = $value;
+                    }
+                }
             }
         }
 
@@ -895,7 +920,6 @@ class Crate extends DboSource {
                     ]
                 ];
             }
-
             $merge = [];
             foreach ($dbResult as $record) {
                 $merge[] = array_combine($this->fieldsInQuery, $record);
@@ -910,8 +934,6 @@ class Crate extends DboSource {
                 }
                 return $this->formatResultFindAll($dbResult);
             }
-
-            $result = [];
 
             if (!empty($this->joins)) {
                 return $this->formatResultFindAllWithJoins($dbResult);

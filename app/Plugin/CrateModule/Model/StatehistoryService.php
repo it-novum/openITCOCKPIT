@@ -71,4 +71,21 @@ class StatehistoryService extends CrateModuleAppModel {
         return $query;
     }
 
+    /**
+     * @param StatehistoryServiceConditions $StatehistoryServiceConditions
+     * @return array
+     */
+    public function getLastRecord(StatehistoryServiceConditions $StatehistoryServiceConditions) {
+        $query = [
+            'conditions' => [
+                'service_description' => $StatehistoryServiceConditions->getServiceUuid(),
+                'state_time <=' => $StatehistoryServiceConditions->getFrom(),
+            ],
+            'order'      => [
+                'state_time' => 'DESC'
+            ],
+        ];
+
+        return $query;
+    }
 }
