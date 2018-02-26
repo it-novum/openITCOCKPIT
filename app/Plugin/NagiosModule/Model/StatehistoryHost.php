@@ -53,9 +53,12 @@ class StatehistoryHost extends NagiosModuleAppModel {
                 'StatehistoryHost.state_time >' => date('Y-m-d H:i:s', $StatehistoryHostConditions->getFrom()),
                 'StatehistoryHost.state_time <' => date('Y-m-d H:i:s', $StatehistoryHostConditions->getTo())
             ],
-            'order'      => $StatehistoryHostConditions->getOrder(),
-            'limit'      => $StatehistoryHostConditions->getLimit(),
+            'order'      => $StatehistoryHostConditions->getOrder()
         ];
+
+        if ($StatehistoryHostConditions->getUseLimit()) {
+            $query['limit'] = $StatehistoryHostConditions->getLimit();
+        }
 
         if (!empty($StatehistoryHostConditions->getStates())) {
             $query['conditions']['StatehistoryHost.state'] = $StatehistoryHostConditions->getStates();

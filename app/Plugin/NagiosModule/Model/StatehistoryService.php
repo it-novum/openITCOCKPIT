@@ -54,9 +54,12 @@ class StatehistoryService extends NagiosModuleAppModel
                 'StatehistoryService.state_time >' => date('Y-m-d H:i:s', $StatehistoryServiceConditions->getFrom()),
                 'StatehistoryService.state_time <' => date('Y-m-d H:i:s', $StatehistoryServiceConditions->getTo())
             ],
-            'order' => $StatehistoryServiceConditions->getOrder(),
-            'limit' => $StatehistoryServiceConditions->getLimit(),
+            'order' => $StatehistoryServiceConditions->getOrder()
         ];
+
+        if($StatehistoryServiceConditions->getUseLimit()){
+            $query['limit'] = $StatehistoryServiceConditions->getLimit();
+        }
 
         if(!empty($StatehistoryServiceConditions->getStates())){
             $query['conditions']['StatehistoryService.state'] = $StatehistoryServiceConditions->getStates();

@@ -343,7 +343,7 @@ class InstantreportsController extends AppController {
                 $Conditions->setFrom(strtotime($startDate));
                 $Conditions->setTo(strtotime($endDate));
                 $Conditions->setHostUuid($hostUuid);
-                $Conditions->setLimit(9999999);
+                $Conditions->setUseLimit(false);
 
                 //Query state history records for hosts
                 $query = $this->StatehistoryHost->getQuery($Conditions);
@@ -449,7 +449,7 @@ class InstantreportsController extends AppController {
                     $Conditions->setFrom(strtotime($startDate));
                     $Conditions->setTo(strtotime($endDate));
                     $Conditions->setServiceUuid($serviceUuid);
-                    $Conditions->setLimit(9999999);
+                    $Conditions->setUseLimit(false);
 
                     //Query state history records for services
                     $query = $this->StatehistoryService->getQuery($Conditions);

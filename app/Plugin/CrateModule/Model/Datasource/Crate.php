@@ -30,7 +30,7 @@ class Crate extends DboSource {
 
     protected $_baseConfig = [
         'host' => '127.0.0.1:4200',
-        'timeout' => 1
+        'timeout' => 5
     ];
 
     /**

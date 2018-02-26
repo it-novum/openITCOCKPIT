@@ -49,8 +49,11 @@ class StatehistoryHost extends CrateModuleAppModel {
                 'state_time <' => $StatehistoryHostConditions->getTo()
             ],
             'order' => $StatehistoryHostConditions->getOrder(),
-            'limit' => $StatehistoryHostConditions->getLimit(),
         ];
+
+        if ($StatehistoryHostConditions->getUseLimit()) {
+            $query['limit'] = $StatehistoryHostConditions->getLimit();
+        }
 
         if(!empty($StatehistoryHostConditions->getStates())){
             $query['conditions']['state'] = $StatehistoryHostConditions->getStates();

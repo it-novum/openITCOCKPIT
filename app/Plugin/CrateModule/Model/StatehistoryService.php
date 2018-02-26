@@ -49,10 +49,13 @@ class StatehistoryService extends CrateModuleAppModel {
                 'state_time <' => $StatehistoryServiceConditions->getTo()
             ],
             'order' => $StatehistoryServiceConditions->getOrder(),
-            'limit' => $StatehistoryServiceConditions->getLimit(),
         ];
 
-        if(!empty($StatehistoryServiceConditions->getStates())){
+        if($StatehistoryServiceConditions->getUseLimit()){
+            $query['limit'] = $StatehistoryServiceConditions->getLimit();
+        }
+
+        if(!empty($StatehistoryServiceConditions->getStates()) && sizeof($StatehistoryServiceConditions->getStates()) < 4){
             $query['conditions']['state'] = $StatehistoryServiceConditions->getStates();
         }
 
