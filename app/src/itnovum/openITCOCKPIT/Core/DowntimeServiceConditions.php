@@ -43,6 +43,11 @@ class DowntimeServiceConditions extends ListSettingsConditions {
      */
     protected $isRunning = false;
 
+    /**
+     * @var array
+     */
+    private $serviceUuids = [];
+
 
     /**
      * @param bool $value
@@ -72,5 +77,29 @@ class DowntimeServiceConditions extends ListSettingsConditions {
         return $this->isRunning;
     }
 
+
+    /**
+     * @param array $uuids
+     */
+    public function setServiceUuid($uuids = []){
+        if(!is_array($uuids)){
+            $uuids = [$uuids];
+        }
+        $this->serviceUuids = $uuids;
+    }
+
+    /**
+     * @return array
+     */
+    public function getServiceUuids(){
+        return $this->serviceUuids;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasServiceUuids() {
+        return !empty($this->serviceUuids);
+    }
 }
 

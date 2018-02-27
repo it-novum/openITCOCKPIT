@@ -158,5 +158,49 @@ class DowntimeService extends NagiosModuleAppModel {
         return Hash::extract($result, '{n}.DowntimeService.internal_downtime_id');
     }
 
+    /**
+     * @param DowntimeServiceConditions $Conditions
+     * @return array
+     */
+    public function getQueryForReporting(DowntimeServiceConditions $Conditions) {
+        $query = [
+            'recursive'  => -1,
+            'fields'     => [
+                'DowntimeService.author_name',
+                'DowntimeService.comment_data',
+                'DowntimeService.scheduled_start_time',
+                'DowntimeService.scheduled_end_time',
+                'DowntimeService.duration',
+                'DowntimeService.was_started',
+                'DowntimeService.was_cancelled',
+            ],
+            'joins'      => [
+                [
+                    'table'      => 'nagios_objects',
+                    'type'       => 'INNER',
+                    'alias'      => 'Objects',
+                    'conditions' => 'Objects.object_id = DowntimeService.object_id AND DowntimeService.downtime_type = 1' //Downtime.downtime_type = 1 Service downtime
+                ],
+            ],
+            'order'      => $Conditions->getOrder(),
+            'conditions' => [
+                'OR' => [
+                    '"' . date('Y-m-d H:i:s', $Conditions->getFrom()) . '"
+                                        BETWEEN DowntimeService.scheduled_start_time
+                                        AND DowntimeService.scheduled_end_time',
+                    '"' . date('Y-m-d H:i:s', $Conditions->getTo()) . '"
+                                        BETWEEN DowntimeService.scheduled_start_time
+                                        AND DowntimeService.scheduled_end_time',
+                    'DowntimeService.scheduled_start_time BETWEEN "' . date('Y-m-d H:i:s', $Conditions->getFrom()) . '"
+                                        AND "' . date('Y-m-d H:i:s', $Conditions->getTo()) . '"',
+                ]
+            ]
+        ];
 
+        if ($Conditions->hasServiceUuids()) {
+            $query['conditions']['Objects.name2'] = $Conditions->getServiceUuids();
+        }
+
+        return $query;
+    }
 }

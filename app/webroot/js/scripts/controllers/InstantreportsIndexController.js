@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('InstantreportsIndexController', function($scope, $http, SortService){
+    .controller('InstantreportsIndexController', function($scope, $http, SortService, MassChangeService){
 
         SortService.setSort('Instantreport.name');
         SortService.setDirection('asc');
@@ -25,6 +25,7 @@ angular.module('openITCOCKPIT')
             };
         };
         /*** Filter end ***/
+        $scope.massChange = {};
         $scope.selectedElements = 0;
         $scope.deleteUrl = '/instantreports/delete/';
 
@@ -72,10 +73,45 @@ angular.module('openITCOCKPIT')
 
         $scope.resetFilter = function(){
             defaultFilter();
+            $scope.undoSelection();
+        };
+
+        $scope.undoSelection = function(){
+            MassChangeService.clearSelection();
+            $scope.massChange = MassChangeService.getSelected();
+            $scope.selectedElements = MassChangeService.getCount();
+        };
+
+        $scope.selectAll = function(){
+            if($scope.instantreports){
+                for(var key in $scope.instantreports){
+                    var id = $scope.instantreports[key].Instantreport.id;
+                    $scope.massChange[id] = true;
+                }
+            }
+        };
+
+        $scope.getObjectsForDelete = function(){
+            var objects = {};
+            var selectedObjects = MassChangeService.getSelected();
+            for(var key in $scope.instantreports){
+                for(var id in selectedObjects){
+                    if(id == $scope.instantreports[key].Instantreport.id){
+                        objects[id] = $scope.instantreports[key].Instantreport.name;
+                    }
+
+                }
+            }
+            return objects;
+        };
+
+        $scope.getObjectForDelete = function(instantreport){
+            var object = {};
+            object[instantreport.Instantreport.id] = instantreport.Instantreport.name;
+            return object;
         };
 
         $scope.changepage = function(page){
-            console.log('CurrentPage : '+$scope.currentPage);
             if(page !== $scope.currentPage){
                 $scope.currentPage = page;
                 $scope.load();
@@ -95,5 +131,10 @@ angular.module('openITCOCKPIT')
 
         $scope.$watch('filter', function(){
             $scope.load();
+        }, true);
+
+        $scope.$watch('massChange', function(){
+            MassChangeService.setSelected($scope.massChange);
+            $scope.selectedElements = MassChangeService.getCount();
         }, true);
     });

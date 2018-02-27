@@ -44,6 +44,11 @@ class DowntimeHostConditions extends ListSettingsConditions {
     protected $isRunning = false;
 
     /**
+     * @var array
+     */
+    private $hostUuids = [];
+
+    /**
      * @param bool $value
      */
     public function setHideExpired($value) {
@@ -69,6 +74,30 @@ class DowntimeHostConditions extends ListSettingsConditions {
      */
     public function isRunning(){
         return $this->isRunning;
+    }
+
+    /**
+     * @param array $uuids
+     */
+    public function setHostUuid($uuids = []){
+        if(!is_array($uuids)){
+            $uuids = [$uuids];
+        }
+        $this->hostUuids = $uuids;
+    }
+
+    /**
+     * @return array
+     */
+    public function getHostUuids(){
+        return $this->hostUuids;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasHostUuids() {
+        return !empty($this->hostUuids);
     }
 }
 

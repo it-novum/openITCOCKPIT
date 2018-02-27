@@ -25,12 +25,23 @@
 
 use itnovum\openITCOCKPIT\Core\Views\Logo;
 
-$totalHostsData[0] = $totalHostsData[1] = $totalHostsData[2] = 0;
-$totalServicesData[0] = $totalServicesData[1] = $totalServicesData[2] = $totalServicesData[3] = 0;
+$totalHostsData = [
+    0 => 0,
+    1 => 0,
+    2 => 0
+];
+$totalServicesData = [
+    0 => 0,
+    1 => 0,
+    2 => 0,
+    3 => 0
+];
 $Logo = new Logo();
 ?>
 <div class="jarviswidget">
     <header>
+        <span class="widget-icon hidden-mobile hidden-tablet"> <i class="fa fa-file-image-o"></i> </span>
+        <h2 class="hidden-mobile hidden-tablet"><?php echo __(h($instantReportDetails['name'])); ?></h2>
         <div class="widget-toolbar" role="menu">
             <?php echo $this->Utils->backButton() ?>
         </div>
@@ -59,8 +70,8 @@ $Logo = new Logo();
             foreach ($instantReportData['Hosts'] as $hostUuid => $hostData):?>
                 <section id="widget-grid" class="">
                     <div class="row">
-                        <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12 sortable-grid ui-sortable">
-                            <div class="jarviswidget jarviswidget-sortable" role="widget">
+                        <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                            <div class="jarviswidget" role="widget">
                                 <header role="heading">
                                     <h2><i class="fa fa-desktop"></i> <?php echo h($hostData['Host']['name']); ?>
                                     </h2>
@@ -68,7 +79,7 @@ $Logo = new Logo();
                                 <div class="well padding-bottom-10">
                                     <?php if (!$instantReportDetails['onlyServices'] && isset($hostData[0], $hostData[1], $hostData[2]) && array_sum(
                                             [$hostData[0], $hostData[1], $hostData[2]]
-                                        )>0): ?>
+                                        ) > 0): ?>
                                         <div class="row margin-top-10 font-md padding-bottom-20">
                                             <div class="col-md-12 text-left">
                                                 <?php
@@ -89,13 +100,13 @@ $Logo = new Logo();
                                                         ?>
                                                     </em>
 
-                                                    <?php
+                                                <?php
                                                 endfor;
                                                 ?>
                                             </div>
                                         </div>
                                     <?php
-                                    elseif(!$instantReportDetails['onlyServices'] && isset($hostData[0], $hostData[1], $hostData[2]) && array_sum(
+                                    elseif (!$instantReportDetails['onlyServices'] && isset($hostData[0], $hostData[1], $hostData[2]) && array_sum(
                                             [$hostData[0], $hostData[1], $hostData[2]]
                                         ) === 0):?>
                                         <i class="fa fa-info-circle txt-color-blueDark"></i>
@@ -109,10 +120,11 @@ $Logo = new Logo();
                                                 if (isset($serviceData[0], $serviceData[1], $serviceData[2], $serviceData[3]) &&
                                                     array_sum(
                                                         [$serviceData[0], $serviceData[1], $serviceData[2], $serviceData[3]]
-                                                    )>0
+                                                    ) > 0
                                                 ):?>
-                                                    <div class="padding-top-10 padding-bottom-5"><i
-                                                                class="fa fa-gear"></i> <?php echo h($serviceData['Service']['name']); ?>
+                                                    <div class="padding-top-10 padding-bottom-5">
+                                                        <i class="fa fa-gear"></i>
+                                                        <?php echo h($serviceData['Service']['name']); ?>
                                                     </div>
                                                     <div class="padding-left-20 text-left">
                                                         <?php
@@ -133,11 +145,16 @@ $Logo = new Logo();
                                                                 ?>
                                                             </em>
 
-                                                            <?php
+                                                        <?php
                                                         endfor; ?>
                                                     </div>
                                                 <?php endif;
                                             endforeach;
+                                        else:
+                                            if ($instantReportDetails['onlyHosts'] === false):
+                                                echo '<i class="fa fa-info-circle txt-color-blueDark"></i> ';
+                                                echo __('There are no services defined.');
+                                            endif;
                                         endif;
                                         ?>
                                     </div>
@@ -146,7 +163,7 @@ $Logo = new Logo();
                         </article>
                     </div>
                 </section>
-                <?php
+            <?php
             endforeach;
         elseif (!empty($instantReportData)):
             foreach ($instantReportData['Hosts'] as $hostUuid => $hostData):
@@ -173,8 +190,8 @@ $Logo = new Logo();
             <?php if (!$instantReportDetails['onlyServices'] && $totalTimeHosts != 0): ?>
             <section id="widget-grid" class="">
                 <div class="row">
-                    <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12 sortable-grid ui-sortable">
-                        <div class="jarviswidget jarviswidget-sortable" role="widget">
+                    <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                        <div class="jarviswidget" role="widget">
                             <header role="heading">
                                 <h2><i class="fa fa-desktop"></i> <?= __('Hosts summary') ?></h2>
                             </header>
@@ -196,7 +213,7 @@ $Logo = new Logo();
                                                 echo round($totalHostsData[$i] / $totalTimeHosts * 100, 2) . ' % (' . $this->Status->humanSimpleHostStatus($i) . ')';
                                                 ?>
                                             </em>
-                                            <?php
+                                        <?php
                                         endfor;
                                         ?>
                                     </div>
@@ -206,7 +223,7 @@ $Logo = new Logo();
                     </article>
                 </div>
             </section>
-            <?php
+        <?php
         elseif (!$instantReportDetails['onlyServices'] && $totalTimeHosts == 0):?>
             <section id="widget-grid" class="">
                 <div class="row">
@@ -217,13 +234,13 @@ $Logo = new Logo();
                     </div>
                 </div>
             </section>
-            <?php
+        <?php
         endif; ?>
             <?php if (!$instantReportDetails['onlyHosts'] && $totalTimeServices != 0): ?>
             <section id="widget-grid" class="">
                 <div class="row">
-                    <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12 sortable-grid ui-sortable">
-                        <div class="jarviswidget jarviswidget-sortable" role="widget">
+                    <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                        <div class="jarviswidget" role="widget">
                             <header role="heading">
                                 <h2><i class="fa fa-gear"></i> <?= __('Services summary') ?></h2>
                             </header>
@@ -247,7 +264,7 @@ $Logo = new Logo();
                                                 ?>
                                             </em>
 
-                                            <?php
+                                        <?php
                                         endfor;
                                         ?>
                                     </div>
@@ -257,7 +274,7 @@ $Logo = new Logo();
                     </article>
                 </div>
             </section>
-            <?php
+        <?php
         elseif (!$instantReportDetails['onlyHosts'] && $totalTimeServices == 0):?>
             <section id="widget-grid" class="">
                 <div class="row">
@@ -268,7 +285,7 @@ $Logo = new Logo();
                     </div>
                 </div>
             </section>
-            <?php
+        <?php
         endif;
         endif;
 
@@ -278,8 +295,8 @@ $Logo = new Logo();
         if (!empty($hostsNotMonitored) || !empty($servicesNotMonitored)): ?>
             <section id="widget-grid" class="">
                 <div class="row">
-                    <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12 sortable-grid ui-sortable">
-                        <div class="jarviswidget jarviswidget-sortable" role="widget">
+                    <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                        <div class="jarviswidget" role="widget">
                             <header role="heading">
                                 <h2>
                                     <i class="fa fa-user-md"></i> <?php echo __('Not monitored'); ?>
@@ -292,7 +309,7 @@ $Logo = new Logo();
                                         <div>
                                             <i class="fa fa-desktop"></i> <?php echo h($hostName); ?>
                                         </div>
-                                        <?php
+                                    <?php
                                     endforeach;
                                 endif;
                                 foreach ($servicesNotMonitored as $serviceId => $serviceArray):?>
@@ -303,7 +320,7 @@ $Logo = new Logo();
                                         echo h(' (' . $serviceArray['Host']['name'] . ')');
                                         ?>
                                     </div>
-                                    <?php
+                                <?php
                                 endforeach;
                                 ?>
                             </div>
@@ -315,7 +332,7 @@ $Logo = new Logo();
 
         <?php if (empty($instantReportData)): ?>
             <div class="row margin-bottom-10">
-                <div class="col-md-12">No hosts/services found</div>
+                <div class="col-md-12"><?php echo __('No hosts/services found'); ?></div>
             </div>
         <?php endif; ?>
     </div>

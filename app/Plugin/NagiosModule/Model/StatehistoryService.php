@@ -54,9 +54,12 @@ class StatehistoryService extends NagiosModuleAppModel
                 'StatehistoryService.state_time >' => date('Y-m-d H:i:s', $StatehistoryServiceConditions->getFrom()),
                 'StatehistoryService.state_time <' => date('Y-m-d H:i:s', $StatehistoryServiceConditions->getTo())
             ],
-            'order' => $StatehistoryServiceConditions->getOrder(),
-            'limit' => $StatehistoryServiceConditions->getLimit(),
+            'order' => $StatehistoryServiceConditions->getOrder()
         ];
+
+        if($StatehistoryServiceConditions->getUseLimit()){
+            $query['limit'] = $StatehistoryServiceConditions->getLimit();
+        }
 
         if(!empty($StatehistoryServiceConditions->getStates())){
             $query['conditions']['StatehistoryService.state'] = $StatehistoryServiceConditions->getStates();
@@ -68,6 +71,42 @@ class StatehistoryService extends NagiosModuleAppModel
 
         $query['conditions'] = Hash::merge($paginatorConditions, $query['conditions']);
 
+        return $query;
+    }
+
+    /**
+     * @param StatehistoryServiceConditions $StatehistoryServiceConditions
+     * @return array
+     */
+    public function getLastRecord(StatehistoryServiceConditions $StatehistoryServiceConditions) {
+        $query = [
+            'recursive'  => -1,
+            'fields'     => [
+                'StatehistoryService.object_id',
+                'StatehistoryService.state_time',
+                'StatehistoryService.state',
+                'StatehistoryService.state_type',
+                'StatehistoryService.last_state',
+                'StatehistoryService.last_hard_state'
+            ],
+            'joins'      => [
+                [
+                    'table'      => 'nagios_objects',
+                    'type'       => 'INNER',
+                    'alias'      => 'Objects',
+                    'conditions' => 'Objects.object_id = StatehistoryService.object_id AND Objects.objecttype_id =2'
+                ],
+            ],
+            'conditions' => [
+                'AND' => [
+                    'Objects.name2' => $StatehistoryServiceConditions->getServiceUuid(),
+                    'StatehistoryService.state_time <= "' . date('Y-m-d H:i:s', $StatehistoryServiceConditions->getFrom()) . '"'
+                ],
+            ],
+            'order'      => [
+                'StatehistoryService.state_time' => 'DESC'
+            ],
+        ];
         return $query;
     }
 }

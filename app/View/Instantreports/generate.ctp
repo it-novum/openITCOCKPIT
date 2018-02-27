@@ -30,7 +30,7 @@
             <?php echo __('Reporting'); ?>
             <span>>
                 <?php echo __('Instant Report'); ?>
-			</span>
+            </span>
         </h1>
     </div>
 </div>

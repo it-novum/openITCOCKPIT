@@ -115,6 +115,38 @@ class DowntimeService extends CrateModuleAppModel {
     }
 
     /**
+     * @param DowntimeServiceConditions $Conditions
+     * @return array
+     */
+    public function getQueryForReporting(DowntimeServiceConditions $Conditions) {
+        $query = [
+            'fields'     => [
+                'DowntimeHost.author_name',
+                'DowntimeHost.comment_data',
+                'DowntimeHost.scheduled_start_time',
+                'DowntimeHost.scheduled_end_time',
+                'DowntimeHost.duration',
+                'DowntimeHost.was_started',
+                'DowntimeHost.was_cancelled',
+            ],
+            'order'      => $Conditions->getOrder()
+        ];
+
+        if ($Conditions->hasServiceUuids()) {
+            $query['conditions']['DowntimeService.service_description'] = $Conditions->getServiceUuids();
+        }
+
+
+        $query['or'] = [
+            ['? BETWEEN DowntimeService.scheduled_start_time AND DowntimeService.scheduled_end_time' => [$Conditions->getFrom()]],
+            ['? BETWEEN DowntimeService.scheduled_start_time AND DowntimeService.scheduled_end_time' => [$Conditions->getTo()]],
+            ['DowntimeService.scheduled_start_time BETWEEN ? AND ?' => [$Conditions->getFrom(), $Conditions->getTo()]]
+        ];
+
+        return $query;
+    }
+
+    /**
      * @param $hostId
      * @param Downtime $Downtime
      * @return array|null

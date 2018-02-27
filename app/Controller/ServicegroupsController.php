@@ -664,6 +664,14 @@ class ServicegroupsController extends AppController {
             $servicegroups = $this->Paginator->paginate();
         }
 
+        $servicegroups = $this->Servicegroup->makeItJavaScriptAble(
+            Hash::combine(
+                $servicegroups,
+                '{n}.Servicegroup.id',
+                '{n}.Container.name'
+            )
+        );
+
         $this->set(compact(['servicegroups']));
         $this->set('_serialize', ['servicegroups']);
     }

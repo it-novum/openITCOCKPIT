@@ -22,6 +22,11 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+use itnovum\openITCOCKPIT\Core\DowntimeHostConditions;
+use itnovum\openITCOCKPIT\Core\DowntimeServiceConditions;
+use itnovum\openITCOCKPIT\Core\StatehistoryHostConditions;
+use itnovum\openITCOCKPIT\Core\StatehistoryServiceConditions;
+use itnovum\openITCOCKPIT\Core\ValueObjects\StateTypes;
 use itnovum\openITCOCKPIT\Filter\InstantreportFilter;
 
 
@@ -30,6 +35,9 @@ use itnovum\openITCOCKPIT\Filter\InstantreportFilter;
  * @property Host $Host
  * @property Service $Service
  * @property Timeperiod $Timeperiod
+ * @property StatehistoryHost $StatehistoryHost
+ * @property DowntimeHost $DowntimeHost
+ * @property StatehistoryService $StatehistoryService
  */
 class InstantreportsController extends AppController {
 
@@ -50,6 +58,10 @@ class InstantreportsController extends AppController {
         'Host',
         'Service',
         'Timeperiod',
+        MONITORING_STATEHISTORY_HOST,
+        MONITORING_STATEHISTORY_SERVICE,
+        MONITORING_DOWNTIME_HOST,
+        MONITORING_DOWNTIME_SERVICE
     ];
 
     public function index() {
@@ -62,18 +74,18 @@ class InstantreportsController extends AppController {
         $InstantreportFilter = new InstantreportFilter($this->request);
 
         $options = [
-            'recursive' => -1,
+            'recursive'  => -1,
             'conditions' => [
                 'Instantreport.container_id' => $this->MY_RIGHTS
             ],
-            'contain' => [
+            'contain'    => [
                 'Timeperiod.name',
                 'User.firstname',
                 'User.lastname'
             ],
-            'order' => $InstantreportFilter->getOrderForPaginator('Instantreport.name', 'asc'),
+            'order'      => $InstantreportFilter->getOrderForPaginator('Instantreport.name', 'asc'),
             'conditions' => $InstantreportFilter->indexFilter(),
-            'limit' => $this->Paginator->settings['limit']
+            'limit'      => $this->Paginator->settings['limit']
         ];
 
         if ($this->isApiRequest() && !$this->isAngularJsRequest()) {
@@ -109,6 +121,10 @@ class InstantreportsController extends AppController {
         }
         if ($this->request->is('post') || $this->request->is('put')) {
             $this->request->data['User'] = $this->request->data('Instantreport.User');
+            if ($this->request->data('Instantreport.send_email') == 0) {
+                $this->request->data['Instantreport']['send_interval'] = 0;
+                $this->request->data['User'] = [];
+            }
             $this->request->data['Hostgroup'] = $this->request->data('Instantreport.Hostgroup');
             $this->request->data['Host'] = $this->request->data('Instantreport.Host');
             $this->request->data['Servicegroup'] = $this->request->data('Instantreport.Servicegroup');
@@ -143,8 +159,8 @@ class InstantreportsController extends AppController {
 
 
         $instantreport = $this->Instantreport->find('first', [
-            'recursive' => -1,
-            'contain' => [
+            'recursive'  => -1,
+            'contain'    => [
                 'User.id',
                 'Host.id',
                 'Service.id',
@@ -164,6 +180,10 @@ class InstantreportsController extends AppController {
         if ($this->request->is('post') || $this->request->is('put')) {
             $this->request->data['Instantreport']['id'] = $id;
             $this->request->data['User'] = $this->request->data('Instantreport.User');
+            if ($this->request->data('Instantreport.send_email') == 0) {
+                $this->request->data['Instantreport']['send_interval'] = 0;
+                $this->request->data['User'] = [];
+            }
             $this->request->data['Hostgroup'] = $this->request->data('Instantreport.Hostgroup');
             $this->request->data['Host'] = $this->request->data('Instantreport.Host');
             $this->request->data['Servicegroup'] = $this->request->data('Instantreport.Servicegroup');
@@ -189,7 +209,7 @@ class InstantreportsController extends AppController {
 
     public function generate($id = null) {
         $instantReport = $this->Instantreport->find('first', [
-            'recursive' => -1,
+            'recursive'  => -1,
             'conditions' => [
                 'Instantreport.id' => $id,
             ]
@@ -203,11 +223,11 @@ class InstantreportsController extends AppController {
             return;
         } else {
             $options = [
-                'recursive' => -1,
+                'recursive'  => -1,
                 'conditions' => [
                     'Instantreport.container_id' => $this->MY_RIGHTS,
                 ],
-                'order' => [
+                'order'      => [
                     'Instantreport.name' => 'asc'
                 ]
             ];
@@ -221,7 +241,7 @@ class InstantreportsController extends AppController {
             if ($this->request->is('post') || $this->request->is('put')) {
                 if ($this->Instantreport->validates()) {
                     $instantReport = $this->Instantreport->find('first', [
-                        'recursive' => -1,
+                        'recursive'  => -1,
                         'conditions' => [
                             'Instantreport.id' => $this->request->data['Instantreport']['id'],
                         ]
@@ -241,9 +261,9 @@ class InstantreportsController extends AppController {
             }
         }
         $this->set([
-            'id' => $id,
+            'id'                => $id,
             'allInstantReports' => $allInstantReports,
-            'reportFormats' => $reportFormats
+            'reportFormats'     => $reportFormats
         ]);
 
     }
@@ -251,9 +271,10 @@ class InstantreportsController extends AppController {
     private function generateReport($instantReport, $baseStartDate, $baseEndDate, $reportFormat) {
         $startDate = $baseStartDate . ' 00:00:00';
         $endDate = $baseEndDate . ' 23:59:59';
+
         $instantReportDetails = [
             'startDate' => $startDate,
-            'endDate' => $endDate,
+            'endDate'   => $endDate,
         ];
         $instantReportDetails['onlyHosts'] = ($instantReport['Instantreport']['evaluation'] == 1);
         $instantReportDetails['onlyServices'] = ($instantReport['Instantreport']['evaluation'] == 3);
@@ -274,6 +295,13 @@ class InstantreportsController extends AppController {
                     $timeperiod['Timerange']),
                 '{n}.is_downtime', false
             );
+
+            //Default time slices (no downtimes in report)
+            if ($instantReport['Instantreport']['downtimes'] !== '1') {
+                $timeSlices = $timeSlicesGlobal;
+            }
+
+
             $startDateSqlFormat = date('Y-m-d H:i:s', strtotime($startDate));
             $endDateSqlFormat = date('Y-m-d H:i:s', strtotime($endDate));
 
@@ -282,7 +310,7 @@ class InstantreportsController extends AppController {
             if ($instantReport['Instantreport']['downtimes'] === '1') {
                 $this->loadModel('Systemfailure');
                 $globalDowntimes = $this->Systemfailure->find('all', [
-                    'recursive' => -1,
+                    'recursive'  => -1,
                     'conditions' => [
                         'OR' => [
                             '"' . $startDateSqlFormat . '"
@@ -299,138 +327,106 @@ class InstantreportsController extends AppController {
                 $globalDowntimes = ['Systemfailure' => Hash::extract($globalDowntimes, '{n}.Systemfailure')];
             }
 
-            $this->loadModel(MONITORING_OBJECTS);
-            $this->loadModel(MONITORING_STATEHISTORY);
-            $this->Objects->bindModel([
-                'hasMany' => [
-                    'Statehistory' => [
-                        'className' => MONITORING_STATEHISTORY,
-                    ],
-                    'Downtime' => [
-                        'className' => MONITORING_DOWNTIME,
-                        'conditions' => [
-                            'Downtime.was_cancelled' => '0',
-                        ],
-                    ],
-                ],
-            ]);
             $totalTime = Hash::apply(Hash::map($timeSlicesGlobal, '{n}', ['Instantreport', 'calculateTotalTime']), '{n}', 'array_sum');
             $instantReportDetails['totalTime'] = $totalTime;
 
-            foreach ($allHostsServices['Hosts'] as $hostUuid) {
-                $downtimes = [];
-                $stateHistoryWithObject = $this->Objects->find('all', [
-                    'recursive' => -1,
-                    'contain' => [
-                        'Host' => [
-                            'fields' => [
-                                'id',
-                                'name',
-                                'uuid'
-                            ],
-                        ],
-                        'Statehistory' => [
-                            'fields' => [
-                                'object_id', 'state_time', 'state', 'state_type', 'last_state', 'last_hard_state',
-                            ],
-                            'conditions' => [
-                                'Statehistory.state_time
-                                    BETWEEN "' . $startDateSqlFormat . '"
-                                    AND "' . $endDateSqlFormat . '"',
-                            ],
-                            'order' => [
-                                'Statehistory.state_time',
-                            ],
-                        ],
-                        'Downtime' => [
-                            'fields' => [
-                                'downtimehistory_id', 'scheduled_start_time AS start_time', 'scheduled_end_time AS end_time',
-                            ],
-                            'conditions' => [
-                                'OR' => [
-                                    '"' . $startDateSqlFormat . '"
-                                        BETWEEN Downtime.scheduled_start_time
-                                        AND Downtime.scheduled_end_time',
-                                    '"' . $endDateSqlFormat . '"
-                                        BETWEEN Downtime.scheduled_start_time
-                                        AND Downtime.scheduled_end_time',
-                                    'Downtime.scheduled_start_time BETWEEN "' . $startDateSqlFormat . '"
-                                        AND "' . $endDateSqlFormat . '"',
-                                ],
-                            ],
-                        ],
-                    ],
-                    'conditions' => [
-                        'Objects.name1' => $hostUuid
-                    ],
-                ]);
-                if (!empty($stateHistoryWithObject)) {
-                    if (empty($stateHistoryWithObject[0]['Statehistory'])) {
-                        $stateHistoryWithPrev = $this->Statehistory->find('first', [
-                            'recursive' => -1,
-                            'fields' => ['Statehistory.object_id', 'Statehistory.state_time', 'Statehistory.state', 'Statehistory.state_type', 'Statehistory.last_state', 'Statehistory.last_hard_state'],
-                            'conditions' => [
-                                'AND' => [
-                                    'Statehistory.object_id' => $stateHistoryWithObject[0]['Objects']['object_id'],
-                                    'Statehistory.state_time <= "' . $startDateSqlFormat . '"'
-                                ],
-                            ],
-                            'order' => ['Statehistory.state_time' => 'DESC'],
+            foreach ($allHostsServices['Hosts'] as $hostUuid => $name) {
+                //Process conditions
+                $Conditions = new StatehistoryHostConditions();
+                $Conditions->setOrder(['StatehistoryHost.state_time' => 'asc']);
 
-                        ]);
+                if ($instantReport['Instantreport']['reflection'] == Instantreport::STATE_HARD_ONLY) {
+                    $StateTypes = new StateTypes();
+                    $StateTypes->setStateType(1, true);
+                    $Conditions->setStateTypes($StateTypes);
+                }
+                $Conditions->setFrom(strtotime($startDate));
+                $Conditions->setTo(strtotime($endDate));
+                $Conditions->setHostUuid($hostUuid);
+                $Conditions->setUseLimit(false);
+
+                //Query state history records for hosts
+                $query = $this->StatehistoryHost->getQuery($Conditions);
+                $statehistories = $this->StatehistoryHost->find('all', $query);
+                $all_statehistories[$hostUuid] = [];
+                foreach ($statehistories as $statehistory) {
+                    $StatehistoryHost = new \itnovum\openITCOCKPIT\Core\Views\StatehistoryHost($statehistory['StatehistoryHost']);
+                    $all_statehistories[$hostUuid]['Statehistory'][] = $StatehistoryHost->toArray();
+                }
+
+                if (empty($all_statehistories[$hostUuid]['Statehistory'])) {
+                    //Host has no state history record for selected time range
+                    //Get last available state history record for this host
+                    $query = $this->StatehistoryHost->getLastRecord($Conditions);
+                    $record = $this->StatehistoryHost->find('first', $query);
+                    if (!empty($record)) {
+                        $record['StatehistoryHost']['state_time'] = $startDateSqlFormat;
+                        $StatehistoryHost = new \itnovum\openITCOCKPIT\Core\Views\StatehistoryHost($record['StatehistoryHost']);
+                        $all_statehistories[$hostUuid]['Statehistory'][] = $StatehistoryHost->toArray();
                     }
-                    if (!empty($stateHistoryWithPrev)) {
-                        $stateHistoryWithObject[0]['Statehistory'][0] = $stateHistoryWithPrev['Statehistory'];
-                        $stateHistoryWithObject[0]['Statehistory'][0]['state_time'] = $startDateSqlFormat;
+                }
+
+
+                if ($instantReport['Instantreport']['downtimes'] == '1') {
+                    //Query downtime records for hosts
+                    $DowntimeHostConditions = new DowntimeHostConditions();
+                    $DowntimeHostConditions->setOrder(['DowntimeHost.scheduled_start_time' => 'asc']);
+                    $DowntimeHostConditions->setFrom(strtotime($startDate));
+                    $DowntimeHostConditions->setTo(strtotime($endDate));
+                    $DowntimeHostConditions->setHostUuid($hostUuid);
+
+
+                    $query = $this->DowntimeHost->getQueryForReporting($DowntimeHostConditions);
+                    $downtimes = $this->DowntimeHost->find('all', $query);
+
+                    //Merge monitoring downtimes with openITCOCKPIT system failures
+                    $downtimes = $this->Instantreport->mergeDowntimesWithSystemfailures(
+                        'DowntimeHost',
+                        $downtimes,
+                        $globalDowntimes['Systemfailure']
+                    );
+
+
+                    $downtimesAndSystemfailures = [];
+                    foreach ($downtimes as $downtime) {
+                        $DowntimeHost = new \itnovum\openITCOCKPIT\Core\Views\Downtime($downtime['DowntimeHost']);
+                        $downtimesAndSystemfailures[] = [
+                            'DowntimeHost' => $DowntimeHost->toArray()
+                        ];
                     }
-                    if ($instantReport['Instantreport']['downtimes'] !== '1') {
-                        $timeSlices = $timeSlicesGlobal;
-                    } else {
-                        $downtimes = Hash::sort(
-                            Hash::filter(
-                                array_merge(
-                                    $globalDowntimes['Systemfailure'],
-                                    $stateHistoryWithObject[0]['Downtime']
-                                )
-                            ), '{n}.start_time', 'ASC'
+
+                    $timeSlices = $timeSlicesGlobal; //Default time slice if no downtime will be found
+                    if (!empty($downtimesAndSystemfailures)) {
+                        $downtimesFiltered = $this->Instantreport->mergeTimeOverlapping(
+                            array_map(
+                                function ($downtime) {
+                                    return [
+                                        'start_time' => $downtime['DowntimeHost']['scheduledStartTime'],
+                                        'end_time'   => $downtime['DowntimeHost']['scheduledEndTime'],
+                                    ];
+                                },
+                                $downtimesAndSystemfailures
+                            )
                         );
-                        if (!empty($downtimes)) {
-                            $downtimesFiltered = $this->Instantreport->mergeTimeOverlapping(
-                                array_map(
-                                    function ($downtimes) {
-                                        return [
-                                            'start_time' => strtotime($downtimes['start_time']),
-                                            'end_time' => strtotime($downtimes['end_time']),
-                                        ];
-                                    },
-                                    $downtimes
-                                )
-                            );
-                            $timeSlices = $this->Instantreport->setDowntimesInTimeslices(
-                                $timeSlicesGlobal,
-                                $downtimesFiltered
-                            );
-                            unset($downtimesFiltered);
-                        } else {
-                            $timeSlices = $timeSlicesGlobal;
-                        }
+                        $timeSlices = $this->Instantreport->setDowntimesInTimeslices(
+                            $timeSlicesGlobal,
+                            $downtimesFiltered
+                        );
+                        unset($downtimesFiltered);
                     }
+                }
+                $stateHistoryWithObject[$hostUuid] = $all_statehistories[$hostUuid];
 
+                if (!empty($stateHistoryWithObject)) {
                     $instantReportData['Hosts'][$hostUuid] = $this->Instantreport->generateInstantreportData(
-                        $totalTime,
                         $timeSlices,
                         $stateHistoryWithObject,
                         $instantReport['Instantreport']['reflection'] == Instantreport::STATE_HARD_ONLY,
                         true
                     );
-                    $instantReportData['Hosts'][$hostUuid] = Hash::insert(
-                        $instantReportData['Hosts'][$hostUuid],
-                        'Host',
-                        [
-                            'name' => $stateHistoryWithObject[0]['Host']['name'],
-                        ]
-                    );
-                    unset($timeSlices, $stateHistoryWithObject);
+                    $instantReportData['Hosts'][$hostUuid]['Host']['name'] = $name;
+
+                    unset($stateHistoryWithObject);
                 } else {
                     $instantReportData['Hosts'][$hostUuid]['HostsNotMonitored'] = $this->Host->find('list', [
                         'conditions' => [
@@ -438,103 +434,85 @@ class InstantreportsController extends AppController {
                         ],
                     ]);
                 }
-
             }
-            foreach ($allHostsServices['Services'] as $serviceUuid) {
-                $downtimes = [];
-                $stateHistoryWithObject = $this->Objects->find('all', [
-                    'recursive' => -1,
-                    'contain' => [
-                        'Service' => [
-                            'Host' => [
-                                'fields' => [
-                                    'id',
-                                    'name',
-                                    'uuid'
-                                ],
-                            ],
-                            'Servicetemplate' => [
-                                'fields' => [
-                                    'id', 'name',
-                                ],
-                            ],
-                            'fields' => [
-                                'id', 'name',
-                            ],
-                        ],
-                        'Statehistory' => [
-                            'fields' => [
-                                'object_id', 'state_time', 'state', 'state_type', 'last_state', 'last_hard_state',
-                            ],
-                            'conditions' => [
-                                'Statehistory.state_time
-                                        BETWEEN "' . $startDateSqlFormat . '"
-                                        AND "' . $endDateSqlFormat . '"',
-                            ],
-                        ],
-                        'Downtime' => [
-                            'fields' => [
-                                'downtimehistory_id', 'scheduled_start_time AS start_time', 'scheduled_end_time AS end_time', 'author_name', 'comment_data',
-                            ],
-                            'conditions' => [
-                                'OR' => [
-                                    '"' . $startDateSqlFormat . '"
-                                                    BETWEEN Downtime.scheduled_start_time
-                                                    AND Downtime.scheduled_end_time',
-                                    '"' . $endDateSqlFormat . '"
-                                                    BETWEEN Downtime.scheduled_start_time
-                                                    AND Downtime.scheduled_end_time',
-                                    'Downtime.scheduled_start_time BETWEEN "' . $startDateSqlFormat . '"
-                                                    AND "' . $endDateSqlFormat . '"',
-                                ],
-                            ],
-                        ],
-                    ],
-                    'conditions' => [
-                        'Objects.name2' => $serviceUuid,
-                    ],
-                ]);
+            foreach ($allHostsServices['Services'] as $hostUuid => $services) {
+                foreach ($services as $serviceUuid => $name) {
+                    //Process conditions
+                    $Conditions = new StatehistoryServiceConditions();
+                    $Conditions->setOrder(['StatehistoryService.state_time' => 'asc']);
 
-                if (!empty($stateHistoryWithObject)) {
-                    if (empty($stateHistoryWithObject[0]['Statehistory'])) {
-                        $stateHistoryWithPrev = $this->Statehistory->find('first', [
-                            'recursive' => -1,
-                            'fields' => ['Statehistory.object_id', 'Statehistory.state_time', 'Statehistory.state', 'Statehistory.state_type', 'Statehistory.last_state', 'Statehistory.last_hard_state'],
-                            'conditions' => [
-                                'AND' => [
-                                    'Statehistory.object_id' => $stateHistoryWithObject[0]['Objects']['object_id'],
-                                    'Statehistory.state_time <= "' . $startDateSqlFormat . '"'
-                                ],
-                            ],
-                            'order' => ['Statehistory.state_time' => 'DESC'],
+                    if ($instantReport['Instantreport']['reflection'] == Instantreport::STATE_HARD_ONLY) {
+                        $StateTypes = new StateTypes();
+                        $StateTypes->setStateType(1, true);
+                        $Conditions->setStateTypes($StateTypes);
+                    }
+                    $Conditions->setFrom(strtotime($startDate));
+                    $Conditions->setTo(strtotime($endDate));
+                    $Conditions->setServiceUuid($serviceUuid);
+                    $Conditions->setUseLimit(false);
 
-                        ]);
+                    //Query state history records for services
+                    $query = $this->StatehistoryService->getQuery($Conditions);
+                    $statehistories = $this->StatehistoryService->find('all', $query);
+
+                    $all_statehistories[$serviceUuid] = [];
+                    foreach ($statehistories as $statehistory) {
+                        $StatehistoryService = new \itnovum\openITCOCKPIT\Core\Views\StatehistoryService($statehistory['StatehistoryService']);
+                        $all_statehistories[$serviceUuid]['Statehistory'][] = $StatehistoryService->toArray();
                     }
-                    if (!empty($stateHistoryWithPrev)) {
-                        $stateHistoryWithObject[0]['Statehistory'][0] = $stateHistoryWithPrev['Statehistory'];
-                        $stateHistoryWithObject[0]['Statehistory'][0]['state_time'] = $startDateSqlFormat;
+
+                    if (empty($all_statehistories[$serviceUuid]['Statehistory'])) {
+                        //Service has no state history record for selected time range
+                        //Get last available state history record for this service
+                        $query = $this->StatehistoryService->getLastRecord($Conditions);
+                        $record = $this->StatehistoryService->find('first', $query);
+                        if (!empty($record)) {
+                            $record['StatehistoryService']['state_time'] = $startDateSqlFormat;
+                            $StatehistoryService = new \itnovum\openITCOCKPIT\Core\Views\StatehistoryService($record['StatehistoryService']);
+                            $all_statehistories[$serviceUuid]['Statehistory'][] = $StatehistoryService->toArray();
+                        }
                     }
-                    if ($instantReport['Instantreport']['downtimes'] !== '1') {
-                        $timeSlices = $timeSlicesGlobal;
-                    } else {
-                        $downtimes = Hash::sort(
-                            Hash::filter(
-                                array_merge(
-                                    $globalDowntimes['Systemfailure'],
-                                    $stateHistoryWithObject[0]['Downtime']
-                                )
-                            ), '{n}.start_time', 'ASC'
+
+
+                    if ($instantReport['Instantreport']['downtimes'] == '1') {
+                        //Query downtime records for hosts
+                        $DowntimeServiceConditions = new DowntimeServiceConditions();
+                        $DowntimeServiceConditions->setOrder(['DowntimeService.scheduled_start_time' => 'asc']);
+                        $DowntimeServiceConditions->setFrom(strtotime($startDate));
+                        $DowntimeServiceConditions->setTo(strtotime($endDate));
+                        $DowntimeServiceConditions->setServiceUuid($serviceUuid);
+
+
+                        $query = $this->DowntimeService->getQueryForReporting($DowntimeServiceConditions);
+                        $downtimes = $this->DowntimeService->find('all', $query);
+
+                        //Merge monitoring downtimes with openITCOCKPIT system failures
+                        $downtimes = $this->Instantreport->mergeDowntimesWithSystemfailures(
+                            'DowntimeService',
+                            $downtimes,
+                            $globalDowntimes['Systemfailure']
                         );
-                        if (!empty($downtimes)) {
+
+
+                        $downtimesAndSystemfailures = [];
+                        foreach ($downtimes as $downtime) {
+                            $DowntimeService = new \itnovum\openITCOCKPIT\Core\Views\Downtime($downtime['DowntimeService']);
+                            $downtimesAndSystemfailures[] = [
+                                'DowntimeService' => $DowntimeService->toArray()
+                            ];
+                        }
+
+                        $timeSlices = $timeSlicesGlobal;
+                        if (!empty($downtimesAndSystemfailures)) {
                             $downtimesFiltered = $this->Instantreport->mergeTimeOverlapping(
                                 array_map(
-                                    function ($downtimes) {
+                                    function ($downtime) {
                                         return [
-                                            'start_time' => strtotime($downtimes['start_time']),
-                                            'end_time' => strtotime($downtimes['end_time']),
+                                            'start_time' => $downtime['DowntimeService']['scheduledStartTime'],
+                                            'end_time'   => $downtime['DowntimeService']['scheduledEndTime'],
                                         ];
                                     },
-                                    $downtimes
+                                    $downtimesAndSystemfailures
                                 )
                             );
                             $timeSlices = $this->Instantreport->setDowntimesInTimeslices(
@@ -542,63 +520,54 @@ class InstantreportsController extends AppController {
                                 $downtimesFiltered
                             );
                             unset($downtimesFiltered);
-                        } else {
-                            $timeSlices = $timeSlicesGlobal;
                         }
                     }
-                    $hostUuid = $stateHistoryWithObject[0]['Service']['Host']['uuid'];
-                    if (empty($instantReportData['Hosts'][$hostUuid]['Host']['name'])) {
-                        $instantReportData['Hosts'][$hostUuid]['Host']['name'] = $stateHistoryWithObject[0]['Service']['Host']['name'];
+                    $stateHistoryWithObject[$serviceUuid] = $all_statehistories[$serviceUuid];
+
+                    if (!empty($stateHistoryWithObject)) {
+                        $instantReportData['Hosts'][$hostUuid]['Services'][$serviceUuid] = $this->Instantreport->generateInstantreportData(
+                            $timeSlices,
+                            $stateHistoryWithObject,
+                            $instantReport['Instantreport']['reflection'] == Instantreport::STATE_HARD_ONLY,
+                            false
+                        );
+                        $instantReportData['Hosts'][$hostUuid]['Services'][$serviceUuid]['Service']['name'] = $name;
+
+                        unset($stateHistoryWithObject);
+                    } else {
+                        $instantReportService = $this->Service->find('first', [
+                            'recursive'  => -1,
+                            'contain'    => [
+                                'Host'            => [
+                                    'fields' => [
+                                        'Host.uuid',
+                                        'Host.name'
+                                    ]
+                                ],
+                                'Servicetemplate' => [
+                                    'fields' => 'Servicetemplate.name',
+                                ],
+                            ],
+                            'conditions' => [
+                                'Service.uuid' => $serviceUuid,
+                            ],
+                            'fields'     => [
+                                'Service.name',
+                            ],
+                        ]);
+                        $instantReportData['Hosts'][$instantReportService['Host']['uuid']]['Services']['ServicesNotMonitored'][$serviceUuid] = $instantReportService;
                     }
-                    $instantReportData['Hosts'][$hostUuid]['Services'][$serviceUuid] = $this->Instantreport->generateInstantreportData(
-                        $totalTime,
-                        $timeSlices,
-                        $stateHistoryWithObject,
-                        $instantReport['Instantreport']['reflection'] == Instantreport::STATE_HARD_ONLY,
-                        false
-                    );
-
-                    $instantReportData['Hosts'][$hostUuid]['Services'][$serviceUuid] = Hash::insert(
-                        $instantReportData['Hosts'][$hostUuid]['Services'][$serviceUuid],
-                        'Service',
-                        [
-                            'name' => ($stateHistoryWithObject[0]['Service']['name']) ? $stateHistoryWithObject[0]['Service']['name'] : $stateHistoryWithObject[0]['Service']['Servicetemplate']['name'],
-                        ]
-                    );
-                    unset($timeSlices, $stateHistoryWithObject);
-                } else {
-                    $instantReportService = $this->Service->find('first', [
-                        'recursive' => -1,
-                        'contain' => [
-                            'Host' => [
-                                'fields' => [
-                                    'Host.uuid',
-                                    'Host.name'
-                                ]
-                            ],
-                            'Servicetemplate' => [
-                                'fields' => 'Servicetemplate.name',
-                            ],
-                        ],
-                        'conditions' => [
-                            'Service.uuid' => $serviceUuid,
-                        ],
-                        'fields' => [
-                            'Service.name',
-                        ],
-                    ]);
-                    $instantReportData['Hosts'][$instantReportService['Host']['uuid']]['Services']['ServicesNotMonitored'][$serviceUuid] = $instantReportService;
                 }
-
             }
         }
+
         if ($reportFormat == Instantreport::FORMAT_PDF) {
             if (empty($this->cronFromDate)) {
                 $this->Session->write('instantReportData', $instantReportData);
                 $this->Session->write('instantReportDetails', $instantReportDetails);
                 $this->redirect([
                     'action' => 'createPdfReport',
-                    'ext' => 'pdf',
+                    'ext'    => 'pdf',
                 ]);
             } else {
                 $binary_path = '/usr/bin/wkhtmltopdf';
@@ -606,22 +575,22 @@ class InstantreportsController extends AppController {
                     $binary_path = '/usr/local/bin/wkhtmltopdf';
                 }
                 $CakePdf = new CakePdf([
-                    'engine' => 'CakePdf.WkHtmlToPdf',
-                    'margin' => [
+                    'engine'             => 'CakePdf.WkHtmlToPdf',
+                    'margin'             => [
                         'bottom' => 15,
-                        'left' => 0,
-                        'right' => 0,
-                        'top' => 15,
+                        'left'   => 0,
+                        'right'  => 0,
+                        'top'    => 15,
                     ],
-                    'encoding' => 'UTF-8',
-                    'download' => false,
-                    'binary' => $binary_path,
-                    'orientation' => 'portrait',
-                    'filename' => sprintf('InstantReport_%s.pdf', $instantReport['Instantreport']['name']),
+                    'encoding'           => 'UTF-8',
+                    'download'           => false,
+                    'binary'             => $binary_path,
+                    'orientation'        => 'portrait',
+                    'filename'           => sprintf('InstantReport_%s.pdf', $instantReport['Instantreport']['name']),
                     'no-pdf-compression' => '*',
-                    'image-dpi' => '900',
-                    'background' => true,
-                    'no-background' => false,
+                    'image-dpi'          => '900',
+                    'background'         => true,
+                    'no-background'      => false,
                 ]);
 
                 $CakePdf->_engineClass->binary = $binary_path;
@@ -646,29 +615,77 @@ class InstantreportsController extends AppController {
          */
 
         $objectsForInstantReport = [
-            'Hosts' => [],
+            'Hosts'    => [],
             'Services' => []
         ];
         switch ($instantReport['Instantreport']['type']) {
             case Instantreport::TYPE_HOSTGROUPS:      //-> 1
                 $containArray = [
-                    1 => [
-                        'Host.uuid'
-                    ],
-                    2 => [
-                        'Host.uuid' => [
-                            'Service.uuid'
+                    Instantreport::EVALUATION_HOSTS          => [
+                        'Host' => [
+                            'fields' => [
+                                'Host.uuid',
+                                'Host.name'
+                            ],
+                            'conditions' => [
+                                'Host.disabled' => 0
+                            ]
                         ]
                     ],
-                    3 => [
-                        'Host.uuid' => [
-                            'Service.uuid'
+                    Instantreport::EVALUATION_HOSTS_SERVICES => [
+                        'Host' => [
+                            'fields'  => [
+                                'Host.uuid',
+                                'Host.name'
+                            ],
+                            'Service' => [
+                                'fields'          => [
+                                    'Service.uuid',
+                                    'Service.name'
+                                ],
+                                'Servicetemplate' => [
+                                    'fields' => [
+                                        'Servicetemplate.name'
+                                    ]
+                                ],
+                                'conditions' => [
+                                    'Service.disabled' => 0
+                                ]
+                            ],
+                            'conditions' => [
+                                'Host.disabled' => 0
+                            ]
+                        ]
+                    ],
+                    Instantreport::EVALUATION_SERVICES       => [
+                        'Host' => [
+                            'fields'  => [
+                                'Host.uuid',
+                                'Host.name'
+                            ],
+                            'conditions' => [
+                                'Host.disabled' => 0
+                            ],
+                            'Service' => [
+                                'fields'          => [
+                                    'Service.uuid',
+                                    'Service.name'
+                                ],
+                                'conditions' => [
+                                    'Service.disabled' => 0
+                                ],
+                                'Servicetemplate' => [
+                                    'fields' => [
+                                        'Servicetemplate.name'
+                                    ]
+                                ]
+                            ]
                         ]
                     ],
                 ];
                 $instantReportHostgroups = $this->Instantreport->find('first', [
-                    'recursive' => -1,
-                    'contain' => [
+                    'recursive'  => -1,
+                    'contain'    => [
                         'Hostgroup' =>
                             $containArray[$instantReport['Instantreport']['evaluation']]
                     ],
@@ -676,122 +693,201 @@ class InstantreportsController extends AppController {
                         'Instantreport.id' => $instantReport['Instantreport']['id']
                     ]
                 ]);
-                if ($instantReport['Instantreport']['evaluation'] == Instantreport::EVALUATION_HOSTS ||
-                    $instantReport['Instantreport']['evaluation'] == Instantreport::EVALUATION_HOSTS_SERVICES) {
+                if ($instantReport['Instantreport']['evaluation'] == Instantreport::EVALUATION_HOSTS) {
                     $objectsForInstantReport['Hosts'] = array_unique(
-                        Hash::extract($instantReportHostgroups['Hostgroup'], '{n}.Host.{n}.uuid')
+                        Hash::combine($instantReportHostgroups['Hostgroup'], '{n}.Host.{n}.uuid', '{n}.Host.{n}.name')
                     );
                 }
                 if ($instantReport['Instantreport']['evaluation'] == Instantreport::EVALUATION_HOSTS_SERVICES ||
                     $instantReport['Instantreport']['evaluation'] == Instantreport::EVALUATION_SERVICES) {
-                    $objectsForInstantReport['Services'] = array_unique(
-                        Hash::extract($instantReportHostgroups['Hostgroup'], '{n}.Host.{n}.Service.{n}.uuid')
-                    );
+                    foreach ($instantReportHostgroups['Hostgroup'] as $hostgroup) {
+                        foreach ($hostgroup['Host'] as $host) {
+                            $objectsForInstantReport['Hosts'][$host['uuid']] = $host['name'];
+                            foreach ($host['Service'] as $service) {
+                                $serviceName = $service['name'];
+                                if ($serviceName === null || $serviceName === '') {
+                                    $serviceName = $service['Servicetemplate']['name'];
+                                }
+                                $objectsForInstantReport['Services'][$host['uuid']][$service['uuid']] = $serviceName;
+                            }
+                        }
+                    }
                 }
                 return $objectsForInstantReport;
             case Instantreport::TYPE_HOSTS:           //-> 2
                 $containArray = [
-                    1 => [],
-                    2 => [
-                        'Service.uuid'
+                    Instantreport::EVALUATION_HOSTS          => [
+                        'Host' => [
+                            'fields' => [
+                                'Host.name',
+                                'Host.uuid'
+                            ],
+                            'conditions' => [
+                                'Host.disabled' => 0
+                            ]
+                        ]
                     ],
-                    3 => [
-                        'Service.uuid'
+                    Instantreport::EVALUATION_HOSTS_SERVICES => [
+                        'Host' => [
+                            'fields'  => [
+                                'Host.name',
+                                'Host.uuid'
+                            ],
+                            'conditions' => [
+                                'Host.disabled' => 0
+                            ],
+                            'Service' => [
+                                'fields'          => [
+                                    'Service.uuid',
+                                    'Service.name'
+                                ],
+                                'Servicetemplate' => [
+                                    'fields' => [
+                                        'Servicetemplate.name'
+                                    ]
+                                ],
+                                'conditions' => [
+                                    'Service.disabled' => 0
+                                ]
+                            ]
+                        ]
                     ]
                 ];
+                $containArray[Instantreport::EVALUATION_SERVICES] = $containArray[Instantreport::EVALUATION_HOSTS_SERVICES];
                 $instantReportHosts = $this->Instantreport->find('first', [
-                    'recursive' => -1,
-                    'contain' => [
-                        'Host.uuid' =>
-                            $containArray[$instantReport['Instantreport']['evaluation']]
-                    ],
+                    'recursive'  => -1,
+                    'contain'    => $containArray[$instantReport['Instantreport']['evaluation']],
                     'conditions' => [
                         'Instantreport.id' => $instantReport['Instantreport']['id']
                     ]
                 ]);
-                if ($instantReport['Instantreport']['evaluation'] == Instantreport::EVALUATION_HOSTS ||
-                    $instantReport['Instantreport']['evaluation'] == Instantreport::EVALUATION_HOSTS_SERVICES) {
+
+                if ($instantReport['Instantreport']['evaluation'] == Instantreport::EVALUATION_HOSTS) {
                     $objectsForInstantReport['Hosts'] = array_unique(
-                        Hash::extract($instantReportHosts['Host'], '{n}.uuid')
+                        Hash::combine($instantReportHosts['Host'], '{n}.uuid', '{n}.name')
                     );
                 }
                 if ($instantReport['Instantreport']['evaluation'] == Instantreport::EVALUATION_HOSTS_SERVICES ||
                     $instantReport['Instantreport']['evaluation'] == Instantreport::EVALUATION_SERVICES) {
-                    $objectsForInstantReport['Services'] = array_unique(
-                        Hash::extract($instantReportHosts['Host'], '{n}.Service.{n}.uuid')
-                    );
+
+                    foreach ($instantReportHosts['Host'] as $host) {
+                        $objectsForInstantReport['Hosts'][$host['uuid']] = $host['name'];
+                        foreach ($host['Service'] as $service) {
+                            $serviceName = $service['name'];
+                            if ($serviceName === null || $serviceName === '') {
+                                $serviceName = $service['Servicetemplate']['name'];
+                            }
+                            $objectsForInstantReport['Services'][$host['uuid']][$service['uuid']] = $serviceName;
+                        }
+                    }
                 }
                 return $objectsForInstantReport;
             case Instantreport::TYPE_SERVICEGROUPS:   //-> 3
-                $containArray = [
-                    1 => [
-                        'Service.uuid' => [
-                            'Host.uuid'
-                        ]
-                    ],
-                    2 => [
-                        'Service.uuid' => [
-                            'Host.uuid'
-                        ]
-                    ],
-                    3 => [
-                        'Service.uuid'
-                    ]
-                ];
+
                 $instantReportServicegroups = $this->Instantreport->find('first', [
-                    'recursive' => -1,
-                    'contain' => [
-                        'Servicegroup' =>
-                            $containArray[$instantReport['Instantreport']['evaluation']]
+                    'recursive'  => -1,
+                    'contain'    => [
+                        'Servicegroup' => [
+                            'Service' => [
+                                'fields'          => [
+                                    'Service.uuid',
+                                    'Service.name'
+                                ],
+                                'conditions' => [
+                                    'Service.disabled' => 0
+                                ],
+                                'Servicetemplate' => [
+                                    'fields' => [
+                                        'Servicetemplate.name'
+                                    ]
+                                ],
+                                'Host'            => [
+                                    'fields' => [
+                                        'Host.name',
+                                        'Host.uuid'
+                                    ],
+                                    'conditions' => [
+                                        'Host.disabled' => 0
+                                    ]
+                                ]
+                            ]
+                        ]
                     ],
                     'conditions' => [
                         'Instantreport.id' => $instantReport['Instantreport']['id']
                     ]
                 ]);
-                if ($instantReport['Instantreport']['evaluation'] == Instantreport::EVALUATION_HOSTS ||
-                    $instantReport['Instantreport']['evaluation'] == Instantreport::EVALUATION_HOSTS_SERVICES) {
+                if ($instantReport['Instantreport']['evaluation'] == Instantreport::EVALUATION_HOSTS) {
                     $objectsForInstantReport['Hosts'] = array_unique(
-                        Hash::extract($instantReportServicegroups['Servicegroup'], '{n}.Service.{n}.Host.uuid')
+                        Hash::combine($instantReportServicegroups['Servicegroup'], '{n}.Service.{n}.Host.uuid', '{n}.Service.{n}.Host.name')
                     );
                 }
+
                 if ($instantReport['Instantreport']['evaluation'] == Instantreport::EVALUATION_HOSTS_SERVICES ||
                     $instantReport['Instantreport']['evaluation'] == Instantreport::EVALUATION_SERVICES) {
-                    $objectsForInstantReport['Services'] = array_unique(
-                        Hash::extract($instantReportServicegroups['Servicegroup'], '{n}.Service.{n}.uuid')
-                    );
+                    foreach ($instantReportServicegroups['Servicegroup'] as $servicegroup) {
+                        foreach ($servicegroup['Service'] as $service) {
+                            $serviceName = $service['name'];
+                            if ($serviceName === null || $serviceName === '') {
+                                $serviceName = $service['Servicetemplate']['name'];
+                            }
+                            $objectsForInstantReport['Hosts'][$service['Host']['uuid']] = $service['Host']['name'];
+                            $objectsForInstantReport['Services'][$service['Host']['uuid']][$service['uuid']] = $serviceName;
+                        }
+                    }
                 }
                 return $objectsForInstantReport;
             case Instantreport::TYPE_SERVICES:        //-> 4
-                $containArray = [
-                    1 => [
-                        'Host.uuid'
-                    ],
-                    2 => [
-                        'Host.uuid'
-                    ],
-                    3 => []
-                ];
                 $instantReportServices = $this->Instantreport->find('first', [
-                    'recursive' => -1,
-                    'contain' => [
-                        'Service.uuid' =>
-                            $containArray[$instantReport['Instantreport']['evaluation']]
+                    'recursive'  => -1,
+                    'contain'    => [
+                        'Service' => [
+                            'Servicetemplate' => [
+                                'fields' => [
+                                    'Servicetemplate.name'
+                                ]
+                            ],
+                            'Host'            => [
+                                'fields' => [
+                                    'Host.uuid',
+                                    'Host.name'
+                                ],
+                                'conditions' => [
+                                    'Host.disabled' => 0
+                                ]
+                            ],
+                            'fields'          => [
+                                'Service.name',
+                                'Service.uuid'
+                            ],
+                            'conditions' => [
+                                'Service.disabled' => 0
+                            ]
+                        ]
                     ],
                     'conditions' => [
                         'Instantreport.id' => $instantReport['Instantreport']['id']
                     ]
                 ]);
-                if ($instantReport['Instantreport']['evaluation'] == Instantreport::EVALUATION_HOSTS ||
-                    $instantReport['Instantreport']['evaluation'] == Instantreport::EVALUATION_HOSTS_SERVICES) {
+
+
+                if ($instantReport['Instantreport']['evaluation'] == Instantreport::EVALUATION_HOSTS) {
                     $objectsForInstantReport['Hosts'] = array_unique(
-                        Hash::extract($instantReportServices['Service'], '{n}.Host.uuid')
+                        Hash::combine($instantReportServices['Service'], '{n}.Host.uuid', '{n}.Host.name')
                     );
                 }
+
                 if ($instantReport['Instantreport']['evaluation'] == Instantreport::EVALUATION_HOSTS_SERVICES ||
                     $instantReport['Instantreport']['evaluation'] == Instantreport::EVALUATION_SERVICES) {
-                    $objectsForInstantReport['Services'] = array_unique(
-                        Hash::extract($instantReportServices['Service'], '{n}.uuid')
-                    );
+
+                    foreach ($instantReportServices['Service'] as $service) {
+                        $serviceName = $service['name'];
+                        if ($serviceName === null || $serviceName === '') {
+                            $serviceName = $service['Servicetemplate']['name'];
+                        }
+                        $objectsForInstantReport['Hosts'][$service['Host']['uuid']] = $service['Host']['name'];
+                        $objectsForInstantReport['Services'][$service['Host']['uuid']][$service['uuid']] = $serviceName;
+                    }
                 }
                 return $objectsForInstantReport;
         }
@@ -806,8 +902,8 @@ class InstantreportsController extends AppController {
             throw new MethodNotAllowedException();
         }
         $instantreport = $this->Instantreport->find('first', [
-            'recursive' => -1,
-            'contain' => [
+            'recursive'  => -1,
+            'contain'    => [
                 'Container'
             ],
             'conditions' => [
@@ -856,27 +952,23 @@ class InstantreportsController extends AppController {
             $binary_path = '/usr/local/bin/wkhtmltopdf';
         }
         $this->pdfConfig = [
-            'engine' => 'CakePdf.WkHtmlToPdf',
-            'margin' => [
+            'engine'             => 'CakePdf.WkHtmlToPdf',
+            'margin'             => [
                 'bottom' => 5,
-                'left' => 0,
-                'right' => 0,
-                'top' => 5,
+                'left'   => 0,
+                'right'  => 0,
+                'top'    => 5,
             ],
-            'encoding' => 'UTF-8',
-            'download' => true,
-            'binary' => $binary_path,
-            'orientation' => 'portrait',
-            'filename' => sprintf('Instantreport_%s.pdf', $reportName),
+            'encoding'           => 'UTF-8',
+            'download'           => true,
+            'binary'             => $binary_path,
+            'orientation'        => 'portrait',
+            'filename'           => sprintf('Instantreport_%s.pdf', $reportName),
             'no-pdf-compression' => '*',
-            'image-dpi' => '900',
-            'background' => true,
-            'no-background' => false,
+            'image-dpi'          => '900',
+            'background'         => true,
+            'no-background'      => false,
         ];
-    }
-
-    public function expandServices($data) {
-        return explode('|', $data);
     }
 
     public function loadContainers() {

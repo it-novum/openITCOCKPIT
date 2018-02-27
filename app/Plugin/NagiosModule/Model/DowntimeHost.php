@@ -112,6 +112,52 @@ class DowntimeHost extends NagiosModuleAppModel {
     }
 
     /**
+     * @param DowntimeHostConditions $Conditions
+     * @return array
+     */
+    public function getQueryForReporting(DowntimeHostConditions $Conditions) {
+        $query = [
+            'recursive'  => -1,
+            'fields'     => [
+                'DowntimeHost.author_name',
+                'DowntimeHost.comment_data',
+                'DowntimeHost.scheduled_start_time',
+                'DowntimeHost.scheduled_end_time',
+                'DowntimeHost.duration',
+                'DowntimeHost.was_started',
+                'DowntimeHost.was_cancelled',
+            ],
+            'joins'      => [
+                [
+                    'table'      => 'nagios_objects',
+                    'type'       => 'INNER',
+                    'alias'      => 'Objects',
+                    'conditions' => 'Objects.object_id = DowntimeHost.object_id AND DowntimeHost.downtime_type = 2' //Downtime.downtime_type = 2 Host downtime
+                ],
+            ],
+            'order'      => $Conditions->getOrder(),
+            'conditions' => [
+                'OR' => [
+                    '"' . date('Y-m-d H:i:s', $Conditions->getFrom()) . '"
+                                        BETWEEN DowntimeHost.scheduled_start_time
+                                        AND DowntimeHost.scheduled_end_time',
+                    '"' . date('Y-m-d H:i:s', $Conditions->getTo()) . '"
+                                        BETWEEN DowntimeHost.scheduled_start_time
+                                        AND DowntimeHost.scheduled_end_time',
+                    'DowntimeHost.scheduled_start_time BETWEEN "' . date('Y-m-d H:i:s', $Conditions->getFrom()) . '"
+                                        AND "' . date('Y-m-d H:i:s', $Conditions->getTo()) . '"',
+                ]
+            ]
+        ];
+
+        if ($Conditions->hasHostUuids()) {
+            $query['conditions']['Objects.name1'] = $Conditions->getHostUuids();
+        }
+
+        return $query;
+    }
+
+    /**
      * @param int $internalDowntimeId
      * @return array
      */

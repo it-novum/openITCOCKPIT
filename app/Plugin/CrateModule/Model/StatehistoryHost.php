@@ -49,8 +49,11 @@ class StatehistoryHost extends CrateModuleAppModel {
                 'state_time <' => $StatehistoryHostConditions->getTo()
             ],
             'order' => $StatehistoryHostConditions->getOrder(),
-            'limit' => $StatehistoryHostConditions->getLimit(),
         ];
+
+        if ($StatehistoryHostConditions->getUseLimit()) {
+            $query['limit'] = $StatehistoryHostConditions->getLimit();
+        }
 
         if(!empty($StatehistoryHostConditions->getStates())){
             $query['conditions']['state'] = $StatehistoryHostConditions->getStates();
@@ -71,4 +74,21 @@ class StatehistoryHost extends CrateModuleAppModel {
         return $query;
     }
 
+    /**
+     * @param StatehistoryHostConditions $StatehistoryHostConditions
+     * @return array
+     */
+    public function getLastRecord(StatehistoryHostConditions $StatehistoryHostConditions) {
+        $query = [
+            'conditions' => [
+                'hostname' => $StatehistoryHostConditions->getHostUuid(),
+                'state_time <=' => $StatehistoryHostConditions->getFrom(),
+            ],
+            'order'      => [
+                'state_time' => 'DESC'
+            ],
+        ];
+
+        return $query;
+    }
 }
