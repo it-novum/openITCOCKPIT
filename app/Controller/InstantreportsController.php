@@ -454,6 +454,7 @@ class InstantreportsController extends AppController {
                     //Query state history records for services
                     $query = $this->StatehistoryService->getQuery($Conditions);
                     $statehistories = $this->StatehistoryService->find('all', $query);
+
                     $all_statehistories[$serviceUuid] = [];
                     foreach ($statehistories as $statehistory) {
                         $StatehistoryService = new \itnovum\openITCOCKPIT\Core\Views\StatehistoryService($statehistory['StatehistoryService']);
@@ -621,8 +622,15 @@ class InstantreportsController extends AppController {
             case Instantreport::TYPE_HOSTGROUPS:      //-> 1
                 $containArray = [
                     Instantreport::EVALUATION_HOSTS          => [
-                        'Host.uuid',
-                        'Host.name'
+                        'Host' => [
+                            'fields' => [
+                                'Host.uuid',
+                                'Host.name'
+                            ],
+                            'conditions' => [
+                                'Host.disabled' => 0
+                            ]
+                        ]
                     ],
                     Instantreport::EVALUATION_HOSTS_SERVICES => [
                         'Host' => [
@@ -639,7 +647,13 @@ class InstantreportsController extends AppController {
                                     'fields' => [
                                         'Servicetemplate.name'
                                     ]
+                                ],
+                                'conditions' => [
+                                    'Service.disabled' => 0
                                 ]
+                            ],
+                            'conditions' => [
+                                'Host.disabled' => 0
                             ]
                         ]
                     ],
@@ -649,10 +663,16 @@ class InstantreportsController extends AppController {
                                 'Host.uuid',
                                 'Host.name'
                             ],
+                            'conditions' => [
+                                'Host.disabled' => 0
+                            ],
                             'Service' => [
                                 'fields'          => [
                                     'Service.uuid',
                                     'Service.name'
+                                ],
+                                'conditions' => [
+                                    'Service.disabled' => 0
                                 ],
                                 'Servicetemplate' => [
                                     'fields' => [
@@ -701,6 +721,9 @@ class InstantreportsController extends AppController {
                             'fields' => [
                                 'Host.name',
                                 'Host.uuid'
+                            ],
+                            'conditions' => [
+                                'Host.disabled' => 0
                             ]
                         ]
                     ],
@@ -709,6 +732,9 @@ class InstantreportsController extends AppController {
                             'fields'  => [
                                 'Host.name',
                                 'Host.uuid'
+                            ],
+                            'conditions' => [
+                                'Host.disabled' => 0
                             ],
                             'Service' => [
                                 'fields'          => [
@@ -719,6 +745,9 @@ class InstantreportsController extends AppController {
                                     'fields' => [
                                         'Servicetemplate.name'
                                     ]
+                                ],
+                                'conditions' => [
+                                    'Service.disabled' => 0
                                 ]
                             ]
                         ]
@@ -764,6 +793,9 @@ class InstantreportsController extends AppController {
                                     'Service.uuid',
                                     'Service.name'
                                 ],
+                                'conditions' => [
+                                    'Service.disabled' => 0
+                                ],
                                 'Servicetemplate' => [
                                     'fields' => [
                                         'Servicetemplate.name'
@@ -773,6 +805,9 @@ class InstantreportsController extends AppController {
                                     'fields' => [
                                         'Host.name',
                                         'Host.uuid'
+                                    ],
+                                    'conditions' => [
+                                        'Host.disabled' => 0
                                     ]
                                 ]
                             ]
@@ -816,11 +851,17 @@ class InstantreportsController extends AppController {
                                 'fields' => [
                                     'Host.uuid',
                                     'Host.name'
+                                ],
+                                'conditions' => [
+                                    'Host.disabled' => 0
                                 ]
                             ],
                             'fields'          => [
                                 'Service.name',
                                 'Service.uuid'
+                            ],
+                            'conditions' => [
+                                'Service.disabled' => 0
                             ]
                         ]
                     ],

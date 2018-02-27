@@ -70,8 +70,8 @@ $Logo = new Logo();
             foreach ($instantReportData['Hosts'] as $hostUuid => $hostData):?>
                 <section id="widget-grid" class="">
                     <div class="row">
-                        <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12 sortable-grid ui-sortable">
-                            <div class="jarviswidget jarviswidget-sortable" role="widget">
+                        <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                            <div class="jarviswidget" role="widget">
                                 <header role="heading">
                                     <h2><i class="fa fa-desktop"></i> <?php echo h($hostData['Host']['name']); ?>
                                     </h2>
@@ -150,6 +150,11 @@ $Logo = new Logo();
                                                     </div>
                                                 <?php endif;
                                             endforeach;
+                                        else:
+                                            if ($instantReportDetails['onlyHosts'] === false):
+                                                echo '<i class="fa fa-info-circle txt-color-blueDark"></i> ';
+                                                echo __('There are no services defined.');
+                                            endif;
                                         endif;
                                         ?>
                                     </div>
@@ -185,8 +190,8 @@ $Logo = new Logo();
             <?php if (!$instantReportDetails['onlyServices'] && $totalTimeHosts != 0): ?>
             <section id="widget-grid" class="">
                 <div class="row">
-                    <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12 sortable-grid ui-sortable">
-                        <div class="jarviswidget jarviswidget-sortable" role="widget">
+                    <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                        <div class="jarviswidget" role="widget">
                             <header role="heading">
                                 <h2><i class="fa fa-desktop"></i> <?= __('Hosts summary') ?></h2>
                             </header>
@@ -234,8 +239,8 @@ $Logo = new Logo();
             <?php if (!$instantReportDetails['onlyHosts'] && $totalTimeServices != 0): ?>
             <section id="widget-grid" class="">
                 <div class="row">
-                    <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12 sortable-grid ui-sortable">
-                        <div class="jarviswidget jarviswidget-sortable" role="widget">
+                    <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                        <div class="jarviswidget" role="widget">
                             <header role="heading">
                                 <h2><i class="fa fa-gear"></i> <?= __('Services summary') ?></h2>
                             </header>
@@ -290,8 +295,8 @@ $Logo = new Logo();
         if (!empty($hostsNotMonitored) || !empty($servicesNotMonitored)): ?>
             <section id="widget-grid" class="">
                 <div class="row">
-                    <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12 sortable-grid ui-sortable">
-                        <div class="jarviswidget jarviswidget-sortable" role="widget">
+                    <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                        <div class="jarviswidget" role="widget">
                             <header role="heading">
                                 <h2>
                                     <i class="fa fa-user-md"></i> <?php echo __('Not monitored'); ?>
@@ -327,7 +332,7 @@ $Logo = new Logo();
 
         <?php if (empty($instantReportData)): ?>
             <div class="row margin-bottom-10">
-                <div class="col-md-12">No hosts/services found</div>
+                <div class="col-md-12"><?php echo __('No hosts/services found'); ?></div>
             </div>
         <?php endif; ?>
     </div>

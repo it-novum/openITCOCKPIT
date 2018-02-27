@@ -99,7 +99,7 @@ class StatehistoryService extends NagiosModuleAppModel
             ],
             'conditions' => [
                 'AND' => [
-                    'Objects.name1' => $StatehistoryServiceConditions->getServiceUuid(),
+                    'Objects.name2' => $StatehistoryServiceConditions->getServiceUuid(),
                     'StatehistoryService.state_time <= "' . date('Y-m-d H:i:s', $StatehistoryServiceConditions->getFrom()) . '"'
                 ],
             ],
