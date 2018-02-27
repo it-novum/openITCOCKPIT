@@ -730,10 +730,6 @@ class AppController extends Controller {
                     return true;
                 }
 
-                if ($this->isApiRequest() && !$this->isAngularJsRequest()) {
-                    throw new ForbiddenException('403 Forbidden');
-                }
-
                 return false;
             });
             $MY_WRITE_RIGHTS = array_keys($MY_WRITE_RIGHTS);
