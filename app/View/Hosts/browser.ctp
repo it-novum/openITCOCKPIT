@@ -23,26 +23,9 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-use itnovum\openITCOCKPIT\Core\Hoststatus;
-use itnovum\openITCOCKPIT\Core\Servicestatus;
-use itnovum\openITCOCKPIT\Core\Views\AcknowledgementHost;
-use itnovum\openITCOCKPIT\Core\Views\HoststatusIcon;
-use itnovum\openITCOCKPIT\Core\Views\ServicestatusIcon;
+$Hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus([]);
 
-if (!isset($hoststatus['Hoststatus'])):
-    $hoststatus['Hoststatus'] = [];
-endif;
-$Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
-$HoststatusIcon = new HoststatusIcon($Hoststatus->currentState());
-?>
-<div id="error_msg"></div>
-<div class="alert alert-success alert-block" id="flashSuccess" style="display:none;">
-    <a href="#" data-dismiss="alert" class="close">×</a>
-    <h4 class="alert-heading"><i class="fa fa-check-circle-o"></i> <?php echo __('Command sent successfully'); ?></h4>
-    <?php echo __('Page refresh in'); ?> <span id="autoRefreshCounter"></span> <?php echo __('seconds...'); ?>
-</div>
-
-<?php if (!$QueryHandler->exists()): ?>
+if (!$QueryHandler->exists()): ?>
     <div class="alert alert-danger alert-block">
         <a href="#" data-dismiss="alert" class="close">×</a>
         <h4 class="alert-heading"><i class="fa fa-warning"></i> <?php echo __('Monitoring Engine is not running!'); ?>
@@ -50,16 +33,16 @@ $HoststatusIcon = new HoststatusIcon($Hoststatus->currentState());
         <?php echo __('File %s does not exists', $QueryHandler->getPath()); ?>
     </div>
 <?php endif; ?>
-<div class="alert auto-hide alert-danger" id="flashFailed"
-     style="display:none"><?php echo __('Error while sending command'); ?></div>
+
+
 <div class="row">
     <div class="col-xs-12 col-sm-7 col-md-6 col-lg-6">
-        <h1 class="status_headline <?php echo $Hoststatus->HostStatusColor(); ?>">
-            <?php echo $Hoststatus->getHostFlappingIconColored(); ?>
+        <h1 class="status_headline" ng-class="hostStatusTextClass">
+            <hoststatusicon host="hoststateForIcon" ng-if="hoststateForIcon"></hoststatusicon>
             <i class="fa fa-desktop fa-fw"></i>
-            <?php echo h($host['Host']['name']); ?>
+            {{ mergedHost.Host.name }}
             <span>
-                (<?php echo h($host['Host']['address']); ?>)
+                ({{ mergedHost.Host.address }})
             </span>
         </h1>
     </div>
@@ -73,30 +56,37 @@ $HoststatusIcon = new HoststatusIcon($Hoststatus->currentState());
 </div>
 
 <div class="row">
-    <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12 sortable-grid ui-sortable">
-        <div data-widget-custombutton="false" data-widget-fullscreenbutton="false" data-widget-deletebutton="false"
-             data-widget-togglebutton="false" data-widget-editbutton="false" data-widget-colorbutton="false"
-             id="wid-id-11" class="jarviswidget jarviswidget-sortable" role="widget">
+    <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+        <div class="jarviswidget" role="widget">
             <header role="heading">
-                <h2 class="hidden-mobile hidden-tablet"><strong><?php echo __('Host'); ?>:</strong></h2>
+                <h2 class="hidden-mobile hidden-tablet"><strong><?php echo __('Host'); ?>:</strong> {{
+                    mergedHost.Host.name }}</h2>
                 <ul class="nav nav-tabs pull-right" id="widget-tab-1">
                     <li class="active">
-                        <a href="#tab1" data-toggle="tab"> <i class="fa fa-lg fa-info"></i> <span
-                                    class="hidden-mobile hidden-tablet"> <?php echo __('Status information'); ?></span>
+                        <a href="#tab1" data-toggle="tab">
+                            <i class="fa fa-lg fa-info"></i>
+                            <span class="hidden-mobile hidden-tablet"> <?php echo __('Status information'); ?></span>
+                        </a>
+                    </li>
+                    <?php /*
+                    <li class="">
+                        <a href="#tab2" data-toggle="tab">
+                            <i class="fa fa-lg fa-hdd-o"></i>
+                            <span class="hidden-mobile hidden-tablet"> <?php echo __('Device information'); ?> </span>
                         </a>
                     </li>
                     <li class="">
-                        <a href="#tab2" data-toggle="tab"> <i class="fa fa-lg fa-hdd-o"></i> <span
-                                    class="hidden-mobile hidden-tablet"> <?php echo __('Device information'); ?> </span></a>
-                    </li>
-                    <li class="">
-                        <a href="#tab3" data-toggle="tab"> <i class="fa fa-lg fa-envelope-o"></i> <span
-                                    class="hidden-mobile hidden-tablet"> <?php echo __('Notification information'); ?> </span></a>
+                        <a href="#tab3" data-toggle="tab">
+                            <i class="fa fa-lg fa-envelope-o"></i>
+                            <span class="hidden-mobile hidden-tablet"> <?php echo __('Notification information'); ?> </span>
+                        </a>
                     </li>
                     <?php if ($allowEdit): ?>
                         <li class="">
-                            <a href="#tab4" data-toggle="tab"> <i class="fa fa-lg fa-desktop"></i> <span
-                                        class="hidden-mobile hidden-tablet"> <?php echo __('Host commands'); ?> </span></a>
+                            <a href="#tab4" data-toggle="tab">
+                                <i class="fa fa-lg fa-desktop"></i>
+                                <span class="hidden-mobile hidden-tablet"> <?php echo __('Host commands'); ?> </span>
+                            </a>
                         </li>
                     <?php endif; ?>
 
@@ -104,28 +94,487 @@ $HoststatusIcon = new HoststatusIcon($Hoststatus->currentState());
 
                     <?php if ($GrafanaDashboardExists): ?>
                         <li class="">
-                            <a href="#tab5" data-toggle="tab"> <i class="fa fa-lg fa-area-chart"></i> <span
-                                        class="hidden-mobile hidden-tablet"> <?php echo __('Grafana'); ?> </span></a>
+                            <a href="#tab5" data-toggle="tab">
+                                <i class="fa fa-lg fa-area-chart"></i>
+                                <span class="hidden-mobile hidden-tablet"> <?php echo __('Grafana'); ?> </span>
+                            </a>
                         </li>
                     <?php endif; ?>
+                    */ ?>
                 </ul>
-                <span class="jarviswidget-loader"><i class="fa fa-refresh fa-spin"></i></span>
-            </header>
-            <!-- widget div-->
-            <div role="content">
-                <!-- widget edit box -->
-                <div class="jarviswidget-editbox">
-                    <!-- This area used as dropdown edit box -->
+
+                <div class="widget-toolbar" role="menu">
+                    <button type="button" class="btn btn-xs btn-default" ng-click="load()">
+                        <i class="fa fa-refresh"></i>
+                        <?php echo __('Refresh'); ?>
+                    </button>
                 </div>
-                <!-- end widget edit box -->
-                <!-- widget content -->
+            </header>
+
+            <div role="content">
+
                 <div class="widget-body no-padding">
-                    <!-- widget body text-->
-                    <div class="tab-content padding-10">
+                    <div class="tab-content no-padding">
                         <div id="tab1" class="tab-pane fade active in">
-                            <?php echo h($host['Host']['name']); ?>
+                            <div class="hidden-sm hidden-md hidden-lg">
+                                <div class="row" style="background:#5cb85c;">
+                                    <div class="col-xs-6">
+                                        <?php echo __('State'); ?>
+                                    </div>
+                                    <div class="col-xs-6">
+                                        {{ hoststatus.currentState | hostStatusName }}
+                                    </div>
+                                </div>
+                                <div class="row" style="background:#5cb85c;">
+                                    <div class="col-xs-6">
+                                        <?php echo __('State since'); ?>
+                                    </div>
+                                    <div class="col-xs-6">
+                                        {{ hoststatus.last_state_change }}
+                                    </div>
+                                </div>
+                                <div class="row" style="background:#5cb85c;">
+                                    <div class="col-xs-6">
+                                        <?php echo __('Last check'); ?>
+                                    </div>
+                                    <div class="col-xs-6">
+                                        {{ hoststatus.lastCheck }}
+                                    </div>
+                                </div>
+                                <div class="row" style="background:#5cb85c;">
+                                    <div class="col-xs-6">
+                                        <?php echo __(' Next check'); ?>
+                                    </div>
+                                    <div class="col-xs-6">
+                                        {{ hoststatus.nextCheck }}
+                                    </div>
+                                </div>
+                                <div class="row" style="background:#5cb85c;" ng-show="hoststatus.isHardstate">
+                                    <div class="col-xs-6">
+                                        <?php echo __('State type'); ?>
+                                    </div>
+                                    <div class="col-xs-6">
+                                        <?php echo __('Hard state'); ?>
+                                        ({{hoststatus.current_check_attempt}}/{{hoststatus.max_check_attempts}})
+                                    </div>
+                                </div>
+                                <div class="row" style="background:#5cb85c;" ng-show="!hoststatus.isHardstate">
+                                    <div class="col-xs-6">
+                                        <?php echo __('State type'); ?>
+                                    </div>
+                                    <div class="col-xs-6">
+                                        <?php echo __('Soft state'); ?>
+                                        ({{hoststatus.current_check_attempt}}/{{hoststatus.max_check_attempts}})
+                                    </div>
+                                </div>
+
+                                <div class="row text-center padding-top-10 padding-bottom-10"
+                                     style="background:#5cb85c;">
+                                    <div class="btn-group" role="group" aria-label="Basic example">
+                                        <button type="button" class="btn btn-default">
+                                            <i class="fa fa-refresh"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-default">
+                                            <i class="fa fa-power-off"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-default">
+                                            <i class="fa fa-user"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-default">
+                                            <i class="fa fa-download"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-default">
+                                            <i class="fa fa-adjust"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-default">
+                                            <i class="fa fa-envelope"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <div class="row" style="display: flex;">
+                                <div class="col-xs-12 col-sm-6 col-md-7 col-lg-9  padding-10">
+                                    <div class="row">
+
+                                        <div class="col-xs-12">
+                                            <h3 class="margin-top-0"><?php echo __('Host overview'); ?></h3>
+                                        </div>
+                                        <div class="col-xs-12 col-sm-12 col-md-6">
+                                            <table class="table table-bordered">
+                                                <tr>
+                                                    <td><?php echo __('IP address'); ?></td>
+                                                    <td>{{ mergedHost.Host.address }}</td>
+                                                </tr>
+
+                                                <tr>
+                                                    <td><?php echo __('Flap detection enabled'); ?></td>
+                                                    <td>
+                                                        <span class="label label-danger"
+                                                              ng-show="hoststatus.flap_detection_enabled">
+                                                            <?php echo __('Yes'); ?>
+                                                        </span>
+
+                                                        <span class="label label-success"
+                                                              ng-show="!hoststatus.flap_detection_enabled">
+                                                            <?php echo __('No'); ?>
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </div>
+
+                                        <div class="col-xs-12 col-sm-12 col-md-6">
+                                            <table class="table table-bordered">
+                                                <tr>
+                                                    <td><?php echo __('Priority'); ?></td>
+                                                    <td>
+                                                        <i class="fa fa-fire"
+                                                           style="color:#3276B1; font-size:17px;"></i>
+                                                        <i class="fa fa-fire" style="color:#CCC; font-size:17px;"></i>
+                                                        <i class="fa fa-fire" style="color:#CCC; font-size:17px;"></i>
+                                                        <i class="fa fa-fire" style="color:red; font-size:17px;"></i>
+                                                        <i class="fa fa-fire" style="color:red; font-size:17px;"></i>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td><?php echo __('UUID'); ?></td>
+                                                    <td>
+                                                        <code>{{ mergedHost.Host.uuid }}</code>
+                                                        <span
+                                                                class="btn btn-default btn-xs"
+                                                                onclick="$('#host-uuid-copy').show().select();document.execCommand('copy');$('#host-uuid-copy').hide();"
+                                                                title="<?php echo __('Copy to clipboard'); ?>">
+                                                            <i class="fa fa-copy"></i>
+                                                        </span>
+                                                        <input type="text" style="display:none;" id="host-uuid-copy"
+                                                               value="{{ mergedHost.Host.uuid }}"
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </div>
+
+                                        <div class="col-xs-12">
+                                            <table class="table table-bordered">
+                                                <tr>
+                                                    <td><?php echo __('Container'); ?></td>
+                                                    <td>/{{mainContainer}}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><?php echo __('Shared containers'); ?></td>
+                                                    <td>
+                                                        <div ng-repeat="sharedContainer in sharedContainers">
+                                                            /{{sharedContainer}}
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                                <tr ng-show="mergedHost.Host.description">
+                                                    <td><?php echo __('Description'); ?></td>
+                                                    <td>
+                                                        {{mergedHost.Host.description}}
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                    </div>
+
+
+                                    <div class="row">
+                                        <div class="col-xs-12">
+                                            <h3 class="margin-top-5"><?php echo __('Status overview'); ?></h3>
+                                        </div>
+                                    </div>
+
+                                    <div class="row" ng-show="hoststatus.isFlapping">
+                                        <div class="col-xs-12">
+                                            <div class="alert alert-warning">
+                                                <i class="fa-fw fa fa-warning"></i>
+                                                <strong><?php echo ('Warning'); ?></strong>
+                                                <?php echo __('The state of this host is currently flapping!'); ?>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-xs-12 col-sm-12 col-md-9">
+                                            <table class="table table-bordered">
+                                                <tr>
+                                                    <td><?php echo __('Check command'); ?></td>
+                                                    <td>
+                                                        <?php if ($this->Acl->hasPermission('edit', 'commands')): ?>
+                                                            <a href="/commands/edit/{{ mergedHost.CheckCommand.id }}">
+                                                                {{ mergedHost.CheckCommand.name }}
+                                                            </a>
+                                                        <?php else: ?>
+                                                            {{ mergedHost.CheckCommand.name }}
+                                                        <?php endif; ?>
+                                                    </td>
+                                                </tr>
+
+                                                <tr>
+                                                    <td><?php echo __('Command line'); ?></td>
+                                                    <td>
+                                                        <code class="no-background">
+                                                            {{ mergedHost.hostCommandLine }}
+                                                        </code>
+                                                    </td>
+                                                </tr>
+
+                                                <tr>
+                                                    <td><?php echo __('Output'); ?></td>
+                                                    <td>
+                                                        <code class="no-background" ng-class="hostStatusTextClass">
+                                                            {{ hoststatus.output }}
+                                                        </code>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </div>
+
+                                        <div class="col-xs-12 col-sm-12 col-md-3">
+                                            <table class="table table-bordered">
+                                                <tr>
+                                                    <td><?php echo __('Check period'); ?></td>
+                                                    <td>
+                                                        {{ mergedHost.CheckPeriod.name }}
+                                                    </td>
+                                                </tr>
+
+                                                <tr>
+                                                    <td><?php echo __('Check interval'); ?></td>
+                                                    <td>
+                                                        {{ mergedHost.checkIntervalHuman }}
+                                                    </td>
+                                                </tr>
+
+                                                <tr>
+                                                    <td><?php echo __('Retry interval'); ?></td>
+                                                    <td>
+                                                        {{ mergedHost.retryIntervalHuman }}
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-xs-12" ng-show="hoststatus.longOutputHtml">
+                                            <div><?php echo __('Long output'); ?></div>
+                                            <div class="well">
+                                                <code class="no-background">
+                                                    <div ng-bind-html="hoststatus.longOutputHtml | trustAsHtml"></div>
+                                                </code>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-xs-12">
+                                            <h3 class="margin-top-5"><?php echo __('Notification overview'); ?></h3>
+                                        </div>
+
+
+                                        <div class="col-xs-12 col-sm-12 col-md-6">
+                                            <div class="alert alert-info"
+                                                 ng-show="mergedHost.areContactsFromHosttemplate">
+                                                <i class="fa-fw fa fa-info"></i>
+                                                <strong><?php echo __('Info'); ?>:</strong>
+                                                <?php echo __('Contacts got inherit from host template'); ?>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-xs-12 col-sm-12 col-md-6">
+                                            <table class="table table-bordered">
+                                                <tr ng-show="mergedHost.Contact.length">
+                                                    <td><?php echo __('Contacts'); ?></td>
+                                                    <td>
+                                                        <div ng-repeat="contact in mergedHost.Contact">
+                                                            <?php if ($this->Acl->hasPermission('edit', 'contacts')): ?>
+                                                                <a
+                                                                        href="/contacts/edit/{{contact.id}}"
+                                                                        ng-if="contact.allowEdit">
+                                                                    {{contact.name}}
+                                                                </a>
+                                                                <span ng-if="!contact.allowEdit">{{contact.name}}</span>
+                                                            <?php else: ?>
+                                                                {{contact.name}}
+                                                            <?php endif; ?>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+
+                                                <tr ng-show="mergedHost.Contactgroup.length">
+                                                    <td><?php echo __('Contact groups'); ?></td>
+                                                    <td>
+                                                        <div ng-repeat="contactgroup in mergedHost.Contactgroup">
+                                                            <?php if ($this->Acl->hasPermission('edit', 'contactgroups')): ?>
+                                                                <a
+                                                                        href="/contactgroups/edit/{{contactgroup.id}}"
+                                                                        ng-if="contactgroup.allowEdit">
+                                                                    {{contactgroup.Container.name}}
+                                                                </a>
+                                                                <span ng-if="!contactgroup.allowEdit">
+                                                                    {{contactgroup.Container.name}}
+                                                                </span>
+                                                            <?php else: ?>
+                                                                {{contactgroup.Container.name}}
+                                                            <?php endif; ?>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </div>
+
+                                        <div class="col-xs-12 col-sm-12 col-md-6">
+                                            <table class="table table-bordered">
+                                                <tr>
+                                                    <td><?php echo __('Notification period'); ?></td>
+                                                    <td>{{ mergedHost.NotifyPeriod.name }}</td>
+                                                </tr>
+
+                                                <tr>
+                                                    <td><?php echo __('Notification interval'); ?></td>
+                                                    <td>{{ mergedHost.notificationIntervalHuman }}</td>
+                                                </tr>
+
+                                                <tr>
+                                                    <td><?php echo __('Notifications enabled'); ?></td>
+                                                    <td>
+                                                        <span class="label label-success"
+                                                              ng-show="hoststatus.notifications_enabled">
+                                                            <?php echo __('Yes'); ?>
+                                                        </span>
+
+                                                        <span class="label label-danger"
+                                                              ng-show="!hoststatus.notifications_enabled">
+                                                            <?php echo __('No'); ?>
+                                                        </span>
+                                                    </td>
+                                                </tr>
+
+                                                <tr>
+                                                    <td><?php echo __('Notify on'); ?></td>
+                                                    <td>
+                                                        <span class="label label-success"
+                                                              ng-show="mergedHost.Host.notify_on_recovery"
+                                                              style="margin-right: 2px;">
+                                                            <?php echo __('Recover'); ?>
+                                                        </span>
+
+                                                        <span class="label label-danger"
+                                                              ng-show="mergedHost.Host.notify_on_down"
+                                                              style="margin-right: 2px;">
+                                                            <?php echo __('Down'); ?>
+                                                        </span>
+
+                                                        <span class="label label-default"
+                                                              ng-show="mergedHost.Host.notify_on_unreachable"
+                                                              style="margin-right: 2px;">
+                                                            <?php echo __('Unreachable'); ?>
+                                                        </span>
+
+                                                        <span class="label label-primary"
+                                                              ng-show="mergedHost.Host.notify_on_flapping"
+                                                              style="margin-right: 2px;">
+                                                            <?php echo __('Flapping'); ?>
+                                                        </span>
+
+                                                        <span class="label label-primary"
+                                                              ng-show="mergedHost.Host.notify_on_downtime"
+                                                              style="margin-right: 2px;">
+                                                            <?php echo __('Downtime'); ?>
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="col-sm-6 col-md-5 col-lg-3 no-padding hidden-xs"
+                                     style="background:#5cb85c;">
+
+                                    <div class="text-center">
+                                        <h1 class="font-size-50">
+                                            {{ hoststatus.currentState | hostStatusName }}
+                                        </h1>
+                                    </div>
+
+                                    <div class="text-center">
+                                        <div><?php echo __('State since'); ?></div>
+                                        <h3 class="margin-top-0">{{ hoststatus.last_state_change }}</h3>
+                                    </div>
+
+                                    <div class="text-center">
+                                        <div><?php echo __('Last check'); ?></div>
+                                        <h3 class="margin-top-0">{{ hoststatus.lastCheck }}</h3>
+                                    </div>
+
+                                    <div class="text-center">
+                                        <div><?php echo __('Next check'); ?></div>
+                                        <h3 class="margin-top-0">
+                                            {{ hoststatus.nextCheck }}
+                                            <small style="color: #333;"
+                                                   ng-show="hoststatus.latency > 1">
+                                                (+ {{ hoststatus.latency }})
+                                            </small>
+                                        </h3>
+                                    </div>
+
+                                    <div class="text-center">
+                                        <div><?php echo __('State type'); ?></div>
+                                        <h3 class="margin-top-0" ng-show="hoststatus.isHardstate">
+                                            <?php echo __('Hard state'); ?>
+                                            ({{hoststatus.current_check_attempt}}/{{hoststatus.max_check_attempts}})
+                                        </h3>
+
+                                        <h3 class="margin-top-0" ng-show="!hoststatus.isHardstate">
+                                            <?php echo __('Soft state'); ?>
+                                            ({{hoststatus.current_check_attempt}}/{{hoststatus.max_check_attempts}})
+                                        </h3>
+                                    </div>
+
+                                    <div class="browser-action">
+                                        <i class="fa fa-refresh"></i>
+                                        <?php echo __('Reset check time '); ?>
+                                    </div>
+
+                                    <div class="browser-action margin-top-10">
+                                        <i class="fa fa-power-off"></i>
+                                        <?php echo __('Set planned maintenance times'); ?>
+                                    </div>
+
+                                    <div class="browser-action margin-top-10">
+                                        <i class="fa fa-user"></i>
+                                        <?php echo __('Acknowledge host status'); ?>
+                                    </div>
+
+                                    <div class="browser-action margin-top-10">
+                                        <i class="fa fa-download"></i>
+                                        <?php echo __('Passive transfer check result'); ?>
+                                    </div>
+
+                                    <div class="browser-action margin-top-10">
+                                        <i class="fa fa-adjust"></i>
+                                        <?php echo __('Enables/disables flap detection'); ?>
+                                    </div>
+
+                                    <div class="browser-action margin-top-10">
+                                        <i class="fa fa-envelope"></i>
+                                        <?php echo __('Send custom host notification '); ?>
+                                    </div>
+
+                                </div>
+                            </div>
+
+
+                            <?php /*
+                            {{ host.hostname }}
                             <strong>
-                                <?php echo __('is %s since:', $HoststatusIcon->getHumanState()) ?>
+                                <?php echo __('is %s since:', 'Unreachable') ?>
 
                                 <?php echo $this->Time->format(
                                     $Hoststatus->getLastHardStateChange(),
@@ -372,6 +821,7 @@ $HoststatusIcon = new HoststatusIcon($Hoststatus->currentState());
                                     </dd>
                                 <?php endif; ?>
                             </dl>
+                            */ ?>
 
                         </div>
                         <div id="tab2" class="tab-pane fade">

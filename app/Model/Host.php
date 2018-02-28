@@ -1489,4 +1489,64 @@ class Host extends AppModel {
         return $query;
     }
 
+    /**
+     * @param int $hostId
+     * @return array
+     */
+    public function getQueryForBrowser($hostId) {
+        return [
+            'recursive'  => -1,
+            'contain'    => [
+                'Parenthost'               => [
+                    'fields' => [
+                        'uuid',
+                        'name'
+                    ]
+                ],
+                'Hosttemplate',
+                'CheckPeriod',
+                'NotifyPeriod',
+                'CheckCommand',
+                'Contact'                  => [
+                    'fields' => [
+                        'id',
+                        'name',
+                    ],
+                    'Container'
+                ],
+                'Contactgroup'             => [
+                    'fields'    => ['id'],
+                    'Container' => [
+                        'fields' => [
+                            'name',
+                            'parent_id'
+                        ],
+                    ],
+                ],
+                'Customvariable'           => [
+                    'fields' => [
+                        'id', 'name', 'value', 'objecttype_id',
+                    ],
+                ],
+                'Hostcommandargumentvalue' => [
+                    'fields'          => [
+                        'id',
+                        'commandargument_id',
+                        'value',
+                    ],
+                    'Commandargument' => [
+                        'fields' => [
+                            'id',
+                            'human_name',
+                            'name'
+                        ],
+                    ],
+                ],
+            ],
+            'conditions' => [
+                'Host.id' => $hostId
+            ]
+        ];
+    }
+
 }

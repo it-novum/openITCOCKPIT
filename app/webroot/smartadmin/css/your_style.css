@@ -1735,3 +1735,21 @@ label[class^='aco-host']:after, label[class^='aco-service']:after {
 .ajax-notifications {
     height: 378px;
 }
+
+.browser-action{
+    background-color: rgba(255, 255, 255, 0.3);
+    width: 100%;
+    min-height: 50px;
+    font-size: 20px;
+    text-align: center;
+    padding-top: 7px;
+}
+
+.browser-action:hover{
+    background-color: rgba(255, 255, 255, 0.5);
+    cursor: pointer;
+}
+
+.font-size-50{
+    font-size: 50px;
+}

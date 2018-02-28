@@ -127,6 +127,11 @@ class MonitoringHelper extends AppHelper
         return ['string' => __('Off'), 'html' => '<span class="label bg-color-red">'.__('Off').'</span>', 'value' => $flapDetectionEnabledFromConfig];
     }
 
+    /**
+     * @param $notifications
+     * @return string
+     * @deprecated
+     */
     public function formatNotifyOnHost($notifications)
     {
         $_options = [

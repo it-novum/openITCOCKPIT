@@ -23,7 +23,7 @@ angular.module('openITCOCKPIT', [])
         $httpProvider.interceptors.push("httpInterceptor");
 
         $httpProvider.defaults.cache = false;
-        if (!$httpProvider.defaults.headers.get) {
+        if(!$httpProvider.defaults.headers.get){
             $httpProvider.defaults.headers.get = {};
         }
         // disable IE ajax request caching
@@ -66,8 +66,10 @@ angular.module('openITCOCKPIT', [])
 
             switch(hoststatusId){
                 case 0:
+                case '0':
                     return 'Up';
                 case 1:
+                case '1':
                     return 'Down';
                 default:
                     return 'Unreachable';
@@ -84,10 +86,13 @@ angular.module('openITCOCKPIT', [])
 
             switch(servicestatusId){
                 case 0:
+                case '0':
                     return 'Ok';
                 case 1:
+                case '1':
                     return 'Warning';
                 case 2:
+                case '2':
                     return 'Critical';
                 default:
                     return 'Unknown';
@@ -102,13 +107,19 @@ angular.module('openITCOCKPIT', [])
         }
     })
 
-    .filter('highlight', function($sce) {
-        return function(title, searchString) {
-            if (searchString) title = title.replace(new RegExp('('+searchString+')', 'gi'),
+    .filter('highlight', function($sce){
+        return function(title, searchString){
+            if(searchString) title = title.replace(new RegExp('(' + searchString + ')', 'gi'),
                 '<span class="search-highlight">$1</span>');
 
             return $sce.trustAsHtml(title)
         }
+    })
+
+    .filter('trustAsHtml', function($sce){
+        return function(text){
+            return $sce.trustAsHtml(text);
+        };
     })
 
     .run(function($rootScope, SortService){

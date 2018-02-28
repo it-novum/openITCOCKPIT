@@ -24,6 +24,7 @@
 
 namespace itnovum\openITCOCKPIT\Core;
 
+use CakeTime;
 use itnovum\openITCOCKPIT\Core\Views\HoststatusIcon;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
 
@@ -110,6 +111,11 @@ class Hoststatus {
     private $current_check_attempt;
 
     /**
+     * @var int
+     */
+    private $max_check_attempts;
+
+    /**
      * @var float
      */
     private $latency;
@@ -184,12 +190,16 @@ class Hoststatus {
             $this->current_check_attempt = $data['current_check_attempt'];
         }
 
+        if(isset($data['max_check_attempts'])) {
+            $this->max_check_attempts = $data['max_check_attempts'];
+        }
+
         if (isset($data['long_output'])) {
             $this->long_output = $data['long_output'];
         }
 
         if (isset($data['latency'])) {
-            $this->latency = $data['latency'];
+            $this->latency = (float)$data['latency'];
         }
 
         $this->UserTime = $UserTime;
@@ -373,6 +383,11 @@ class Hoststatus {
         return $this->current_check_attempt;
     }
 
+    public function getMaxCheckAttempts(){
+        return $this->max_check_attempts;
+    }
+
+
     public function getLatency(){
         return $this->latency;
     }
@@ -433,8 +448,22 @@ class Hoststatus {
             $arr['lastCheck'] = $this->getLastCheck();
             $arr['nextCheck'] = $this->getNextCheck();
         }
+
+        $arr['isHardstate'] = $this->isHardState();
         $arr['problemHasBeenAcknowledged'] = $this->isAcknowledged();
         $arr['isInMonitoring'] = $this->isInMonitoring();
+        return $arr;
+    }
+
+    /**
+     * @return array
+     */
+    public function toArrayForBrowser(){
+        $arr = $this->toArray();
+        $arr['lastHardStateChange'] = $this->UserTime->secondsInHumanShort($this->getLastHardStateChange());
+        $arr['last_state_change'] = $this->UserTime->secondsInHumanShort($this->getLastStateChange());
+        $arr['lastCheck'] = CakeTime::timeAgoInWords($this->getLastCheck());
+        $arr['nextCheck'] = CakeTime::timeAgoInWords($this->getNextCheck());
         return $arr;
     }
 }
