@@ -26,7 +26,7 @@
 ?>
 <?php if($this->request->params['action'] == 'browser' && $this->request->params['controller'] == 'hosts'): ?>
 <span data-original-title="<?php echo __('Reset check time'); ?>" data-placement="bottom" rel="tooltip"
-      class="btn btn-default btn-sm" data-toggle="modal" data-target="#nag_command_reschedule">
+      class="btn btn-default btn-sm" ng-click="rescheduleHost(getObjectsForExternalCommand())">
     <i class="fa fa-refresh fa-lg"></i>
 </span>
 <?php endif; ?>
@@ -89,12 +89,6 @@
             </li>
         <?php endif; ?>
         <?php if ($this->params['controller'] == 'hosts' && $this->params['action'] == 'browser'): ?>
-            <?php if ($this->Acl->hasPermission('index', 'qr')): ?>
-                <li>
-                    <a href="javascript:void(0);" data-toggle="modal" data-target="#qrmodal" id="qropen"><i
-                                class="fa fa-qrcode"></i> <?php echo __('Scan code'); ?></a>
-                </li>
-            <?php endif; ?>
             <?php if ($this->Acl->hasPermission('ping')): ?>
                 <li>
                     <a href="javascript:void(0);" data-toggle="modal" data-target="#pingmodal" id="pingopen"><i

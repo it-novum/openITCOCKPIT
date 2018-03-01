@@ -53,7 +53,11 @@ $config = [
                 'system_health',
                 'getDowntimeData',
                 'mass_delete_host_downtimes',
-                'mass_delete_service_downtimes'
+                'mass_delete_service_downtimes',
+                'submit_host_result',
+                'disable_host_flap_detection',
+                'enable_host_flap_detection',
+                'send_host_notification'
             ],
             'Commands'         => [
                 'sortByCommandType',

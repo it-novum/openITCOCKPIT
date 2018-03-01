@@ -2281,11 +2281,29 @@ class HostsController extends AppController {
         }
 
         if (!$this->isAngularJsRequest()) {
+            $User = new User($this->Auth);
+
+            $grafanaDashboard = null;
+            $GrafanaDashboardExists = false;
+            $ModuleManager = new ModuleManager('GrafanaModule');
+            if ($ModuleManager->moduleExists()) {
+                $this->loadModel('GrafanaModule.GrafanaDashboard');
+                $this->loadModel('GrafanaModule.GrafanaConfiguration');
+                $grafanaConfiguration = $this->GrafanaConfiguration->find('first');
+                if (!empty($grafanaConfiguration) && $this->GrafanaDashboard->existsForUuid($rawHost['Host']['uuid'])) {
+                    $GrafanaDashboardExists = true;
+                    $GrafanaConfiguration = \itnovum\openITCOCKPIT\Grafana\GrafanaApiConfiguration::fromArray($grafanaConfiguration);
+                    $GrafanaConfiguration->setHostUuid($rawHost['Host']['uuid']);
+                    $this->set('GrafanaConfiguration', $GrafanaConfiguration);
+                }
+            }
+            $this->set('GrafanaDashboardExists', $GrafanaDashboardExists);
+
+            $this->set('username', $User->getFullName());
             $this->set('host', $rawHost);
             $this->set('allowEdit', $allowEdit);
             $this->set('docuExists', $this->Documentation->existsForUuid($rawHost['Host']['uuid']));
             $this->set('QueryHandler', new QueryHandler($this->Systemsetting->getQueryHandlerPath()));
-            $this->set('GrafanaDashboardExists', false); // Remove me
             //Only ship template
             return;
         }
@@ -2315,6 +2333,7 @@ class HostsController extends AppController {
         ];
 
         $mergedHost['Host']['allowEdit'] = $allowEdit;
+        $mergedHost['Host']['satelliteId'] = $mergedHost['Host']['satellite_id'];
         $mergedHost['checkIntervalHuman']   = $UserTime->secondsInHumanShort($mergedHost['Host']['check_interval']);
         $mergedHost['retryIntervalHuman']   = $UserTime->secondsInHumanShort($mergedHost['Host']['retry_interval']);
         $mergedHost['notificationIntervalHuman']   = $UserTime->secondsInHumanShort($mergedHost['Host']['notification_interval']);
@@ -2418,20 +2437,6 @@ class HostsController extends AppController {
             ]);
         }
 
-        $grafanaDashboard = null;
-        $GrafanaDashboardExists = false;
-        if (in_array('GrafanaModule', CakePlugin::loaded())) {
-            $this->loadModel('GrafanaModule.GrafanaDashboard');
-            $this->loadModel('GrafanaModule.GrafanaConfiguration');
-            $grafanaConfiguration = $this->GrafanaConfiguration->find('first');
-            if (!empty($grafanaConfiguration) && $this->GrafanaDashboard->existsForUuid($host['Host']['uuid'])) {
-                $GrafanaDashboardExists = true;
-                $GrafanaConfiguration = \itnovum\openITCOCKPIT\Grafana\GrafanaApiConfiguration::fromArray($grafanaConfiguration);
-                $GrafanaConfiguration->setHostUuid($host['Host']['uuid']);
-                $this->set('GrafanaConfiguration', $GrafanaConfiguration);
-            }
-        }
-        $this->set('GrafanaDashboardExists', $GrafanaDashboardExists);
 
 
         $acknowledged = [];
