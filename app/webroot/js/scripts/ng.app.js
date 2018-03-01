@@ -71,8 +71,11 @@ angular.module('openITCOCKPIT', [])
                 case 1:
                 case '1':
                     return 'Down';
-                default:
+                case 2:
+                case '2':
                     return 'Unreachable';
+                default:
+                    return 'Not in monitoring';
             }
 
         }

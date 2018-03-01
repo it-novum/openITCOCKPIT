@@ -35,6 +35,7 @@ use itnovum\openITCOCKPIT\Core\HosttemplateMerger;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Core\ModuleManager;
+use itnovum\openITCOCKPIT\Core\Views\AcknowledgementHost;
 use itnovum\openITCOCKPIT\Core\Views\ContainerPermissions;
 use itnovum\openITCOCKPIT\Core\Views\HostPerfdataChecker;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
@@ -57,6 +58,7 @@ use itnovum\openITCOCKPIT\Core\HostSharingPermissions;
  * @property Hosttemplate $Hosttemplate
  * @property Hostgroup $Hostgroup
  * @property Timeperiod $Timeperiod
+ * @property DowntimeHost $DowntimeHost
  */
 class HostsController extends AppController {
     public $layout = 'Admin.default';
@@ -98,7 +100,8 @@ class HostsController extends AppController {
         'Hostgroup',
         'Timeperiod',
         'Servicetemplategroup',
-        'Service'
+        'Service',
+        MONITORING_DOWNTIME_HOST
     ];
 
     public function index() {
@@ -2385,17 +2388,32 @@ class HostsController extends AppController {
         $HoststatusConditions->hostsDownAndUnreachable();
 
         $hoststatus = $this->Hoststatus->byUuid($host['Host']['uuid'], $HoststatusFields);
+        if(empty($hoststatus)){
+            //Empty host state for Hoststatus object
+            $hoststatus = [
+                'Hoststatus' => []
+            ];
+        }
         $Hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus($hoststatus['Hoststatus'], $UserTime);
         $hoststatus = $Hoststatus->toArrayForBrowser();
         $hoststatus['longOutputHtml'] = $this->Bbcode->nagiosNl2br($this->Bbcode->asHtml($Hoststatus->getLongOutput(), true));
 
 
+
         $parenthosts = $host['Parenthost'];
-        $parentHostStatus = $this->Hoststatus->byUuid(
+        $ParentHoststatusFields = new HoststatusFields($this->DbBackend);
+        $ParentHoststatusFields->currentState()->lastStateChange();
+        $parentHostStatusRaw = $this->Hoststatus->byUuid(
             Hash::extract($host['Parenthost'], '{n}.uuid'),
-            $HoststatusFields,
+            $ParentHoststatusFields,
             $HoststatusConditions
         );
+
+        $parentHostStatus = [];
+        foreach($parentHostStatusRaw as $uuid => $parentHoststatus){
+            $ParentHoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus($parentHoststatus['Hoststatus'], $UserTime);
+            $parentHostStatus[$uuid] = $ParentHoststatus->toArrayForBrowser();
+        }
 
         //Get Containers
         $mainContainer = $this->Tree->treePath($rawHost['Host']['container_id'], ['delimiter' => '/']);
@@ -2407,35 +2425,41 @@ class HostsController extends AppController {
             }
         }
 
+        $acknowledgement = [];
+        if($Hoststatus->isAcknowledged()){
+            $acknowledgement = $this->AcknowledgedHost->byHostUuid($host['Host']['uuid']);
+            $Acknowledgement = new AcknowledgementHost($acknowledgement['AcknowledgedHost'], $UserTime);
+            $acknowledgement = $Acknowledgement->toArray();
+        }
+
+        $downtime = [];
+        if($Hoststatus->isInDowntime()){
+            $downtime = $this->DowntimeHost->byHostUuid($host['Host']['uuid']);
+            $Downtime = new \itnovum\openITCOCKPIT\Core\Views\Downtime($downtime['DowntimeHost'], $allowEdit, $UserTime);
+            $downtime = $Downtime->toArray();
+        }
 
         $this->set('mergedHost', $mergedHost);
         $this->set('hoststatus', $hoststatus);
         $this->set('mainContainer', $mainContainer);
         $this->set('sharedContainers', $sharedContainers);
+        $this->set('parenthosts', $parenthosts);
+        $this->set('parentHostStatus', $parentHostStatus);
+        $this->set('acknowledgement', $acknowledgement);
+        $this->set('downtime', $downtime);
         $this->set('_serialize', [
             'mergedHost',
             'hoststatus',
             'mainContainer',
-            'sharedContainers'
+            'sharedContainers',
+            'parenthosts',
+            'parentHostStatus',
+            'acknowledgement',
+            'downtime'
         ]);
 
         return;
 
-
-        $parenthosts = [];
-        if (!empty($host['Parenthost'])) {
-            $parenthosts = $this->Host->find('all', [
-                'recursive'  => -1,
-                'conditions' => [
-                    'Host.id' => $host['Parenthost'],
-                ],
-                'fields'     => [
-                    'Host.id',
-                    'Host.uuid',
-                    'Host.name',
-                ],
-            ]);
-        }
 
 
 
@@ -2448,47 +2472,8 @@ class HostsController extends AppController {
         ]);
 
 
-        $username = $this->Auth->user('full_name');
-
-        $mainContainer = $this->Tree->treePath($host['Host']['container_id'], ['delimiter' => '/']);
-        //get the already shared containers
-        if (is_array($host['Container']) && !empty($host['Container'])) {
-            foreach ($host['Container'] as $container) {
-                if ($container != $host['Host']['container_id']) {
-                    $sharedContainers[] = $this->Tree->treePath($container, ['delimiter' => '/']);
-                }
-            }
-        } else {
-            $sharedContainers = [];
-        }
 
 
-        $this->set(compact([
-                'host',
-                'hoststatus',
-                'servicestatus',
-                'services',
-                'username',
-                'commandarguments',
-                'acknowledged',
-                'ContactsInherited',
-                'parenthosts',
-                'parentHostStatus',
-                'allowEdit',
-                'ticketSystem',
-                'mainContainer',
-                'sharedContainers',
-                'grafanaDashboard'
-            ])
-        );
-
-        $this->Frontend->setJson('dateformat', MY_DATEFORMAT);
-        $this->Frontend->setJson('hostUuid', $host['Host']['uuid']);
-
-        $this->set('QueryHandler', new QueryHandler($this->Systemsetting->getQueryHandlerPath()));
-
-        $preselectedDowntimetype = $this->Systemsetting->findByKey("FRONTEND.PRESELECTED_DOWNTIME_OPTION");
-        $this->set('preselectedDowntimetype', $preselectedDowntimetype['Systemsetting']['value']);
     }
 
     /**

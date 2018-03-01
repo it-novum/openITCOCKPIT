@@ -1499,6 +1499,7 @@ class Host extends AppModel {
             'contain'    => [
                 'Parenthost'               => [
                     'fields' => [
+                        'id',
                         'uuid',
                         'name'
                     ]

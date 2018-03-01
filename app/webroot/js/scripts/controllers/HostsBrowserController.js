@@ -11,7 +11,10 @@ angular.module('openITCOCKPIT')
         $scope.deleteUrl = '/services/delete/';
         $scope.deactivateUrl = '/services/deactivate/';
         $scope.activateUrl = '/services/enable/';
-        
+
+        $scope.parentHostProblems = {};
+        $scope.hasParentHostProblems = false;
+
         //There is no service status for not monitored services :)
         $scope.fakeServicestatus = {
             Servicestatus: {
@@ -53,6 +56,14 @@ angular.module('openITCOCKPIT')
                 $scope.mainContainer = result.data.mainContainer;
                 $scope.sharedContainers = result.data.sharedContainers;
                 $scope.hostStatusTextClass = getHoststatusTextColor();
+
+                $scope.parenthosts = result.data.parenthosts;
+                $scope.parentHoststatus = result.data.parentHostStatus;
+                buildParentHostProblems();
+
+                $scope.acknowledgement = result.data.acknowledgement;
+
+                $scope.downtime = result.data.downtime;
 
                 $scope.priorities = {
                     1: false,
@@ -175,6 +186,12 @@ angular.module('openITCOCKPIT')
         $scope.getObjectForDelete = function(hostname, service){
             var object = {};
             object[service.Service.id] = hostname + '/' + service.Service.servicename;
+            return object;
+        };
+
+        $scope.getObjectForDowntimeDelete = function(){
+            var object = {};
+            object[$scope.downtime.internalDowntimeId] = $scope.mergedHost.Host.tname;
             return object;
         };
 
@@ -322,6 +339,22 @@ angular.module('openITCOCKPIT')
             self.plot = $.plot('#serviceGraphFlot', graph_data, options);
         };
 
+        $scope.stateIsUp = function(){
+            return parseInt($scope.hoststatus.currentState, 10) === 0;
+        };
+
+        $scope.stateIsDown = function(){
+            return parseInt($scope.hoststatus.currentState, 10) === 1;
+        };
+
+        $scope.stateIsUnreachable = function(){
+            return parseInt($scope.hoststatus.currentState, 10) === 2;
+        };
+
+        $scope.stateIsNotInMonitoring = function(){
+            return !$scope.hoststatus.isInMonitoring;
+        };
+
         var getHoststatusTextColor = function(){
             switch($scope.hoststatus.currentState){
                 case 0:
@@ -338,6 +371,25 @@ angular.module('openITCOCKPIT')
             }
             return 'txt-primary';
         };
+
+        var buildParentHostProblems = function(){
+            $scope.hasParentHostProblems = false;
+            for(var key in $scope.parenthosts){
+                var parentHostUuid = $scope.parenthosts[key].uuid;
+                if($scope.parentHoststatus.hasOwnProperty(parentHostUuid)){
+                    if($scope.parentHoststatus[parentHostUuid].currentState > 0){
+                        $scope.parentHostProblems[parentHostUuid] = {
+                            id: $scope.parenthosts[key].id,
+                            name: $scope.parenthosts[key].name,
+                            state: $scope.parentHoststatus[parentHostUuid].currentState
+                        };
+                        $scope.hasParentHostProblems = true;
+                    }
+                }
+            }
+        };
+
+
 
         $scope.loadHost();
         $scope.loadTimezone();

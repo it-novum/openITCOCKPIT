@@ -101,8 +101,10 @@ if (!$QueryHandler->exists()): ?>
                 <div class="widget-body no-padding">
                     <div class="tab-content no-padding">
                         <div id="tab1" class="tab-pane fade active in">
-                            <div class="hidden-sm hidden-md hidden-lg">
-                                <div class="row" style="background:#5cb85c;">
+                            <div class="hidden-sm hidden-md hidden-lg"
+                                 ng-class="{'browser-state-green': stateIsUp(), 'browser-state-red': stateIsDown(), 'browser-state-gray': stateIsUnreachable(), 'browser-state-blue': stateIsNotInMonitoring()}"
+                                 ng-if="hoststatus">
+                                <div class="row">
                                     <div class="col-xs-6">
                                         <?php echo __('State'); ?>
                                     </div>
@@ -110,7 +112,7 @@ if (!$QueryHandler->exists()): ?>
                                         {{ hoststatus.currentState | hostStatusName }}
                                     </div>
                                 </div>
-                                <div class="row" style="background:#5cb85c;">
+                                <div class="row">
                                     <div class="col-xs-6">
                                         <?php echo __('State since'); ?>
                                     </div>
@@ -118,7 +120,7 @@ if (!$QueryHandler->exists()): ?>
                                         {{ hoststatus.last_state_change }}
                                     </div>
                                 </div>
-                                <div class="row" style="background:#5cb85c;">
+                                <div class="row">
                                     <div class="col-xs-6">
                                         <?php echo __('Last check'); ?>
                                     </div>
@@ -126,7 +128,7 @@ if (!$QueryHandler->exists()): ?>
                                         {{ hoststatus.lastCheck }}
                                     </div>
                                 </div>
-                                <div class="row" style="background:#5cb85c;">
+                                <div class="row">
                                     <div class="col-xs-6">
                                         <?php echo __(' Next check'); ?>
                                     </div>
@@ -134,7 +136,7 @@ if (!$QueryHandler->exists()): ?>
                                         {{ hoststatus.nextCheck }}
                                     </div>
                                 </div>
-                                <div class="row" style="background:#5cb85c;" ng-show="hoststatus.isHardstate">
+                                <div class="row" ng-show="hoststatus.isHardstate">
                                     <div class="col-xs-6">
                                         <?php echo __('State type'); ?>
                                     </div>
@@ -143,7 +145,7 @@ if (!$QueryHandler->exists()): ?>
                                         ({{hoststatus.current_check_attempt}}/{{hoststatus.max_check_attempts}})
                                     </div>
                                 </div>
-                                <div class="row" style="background:#5cb85c;" ng-show="!hoststatus.isHardstate">
+                                <div class="row" ng-show="!hoststatus.isHardstate">
                                     <div class="col-xs-6">
                                         <?php echo __('State type'); ?>
                                     </div>
@@ -153,8 +155,7 @@ if (!$QueryHandler->exists()): ?>
                                     </div>
                                 </div>
 
-                                <div class="row text-center padding-top-10 padding-bottom-10"
-                                     style="background:#5cb85c;">
+                                <div class="row text-center padding-top-10 padding-bottom-10">
                                     <div class="btn-group" role="group" aria-label="Basic example">
                                         <button type="button"
                                                 class="btn btn-default"
@@ -220,15 +221,108 @@ if (!$QueryHandler->exists()): ?>
                                         </div>
                                     </div>
 
-                                    <div class="row" ng-show="hoststatus.isFlapping">
-                                        <div class="col-xs-12">
-                                            <div class="alert alert-warning">
-                                                <i class="fa-fw fa fa-warning"></i>
-                                                <strong><?php echo('Warning'); ?></strong>
-                                                <?php echo __('The state of this host is currently flapping!'); ?>
+                                    <div class="row" ng-show="hoststatus.scheduledDowntimeDepth > 0">
+                                        <div class="col-xs-12 margin-bottom-10">
+                                            <div class="browser-border padding-10" style="width: 100%;">
+
+                                                <div class="row">
+                                                    <div class="col-xs-12 col-sm-11 no-padding">
+                                                        <div>
+                                                            <h4 class="no-padding">
+                                                                <i class="fa fa-power-off"></i>
+                                                                <?php echo __('The host is currently in a planned maintenance period'); ?>
+                                                            </h4>
+                                                        </div>
+                                                        <div class="padding-top-5">
+                                                            <?php echo __('Downtime was set by'); ?>
+                                                            <b>{{downtime.authorName}}</b>
+                                                            <?php echo __('with an duration of'); ?>
+                                                            <b>{{downtime.durationHuman}}</b>.
+                                                        </div>
+                                                        <div class="padding-top-5">
+                                                            <?php echo __('Comment: '); ?>
+                                                            {{downtime.commentData}}
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-xs-12 col-sm-1 no-padding">
+                                                        <?php if ($this->Acl->hasPermission('delete', 'downtimes')): ?>
+                                                            <button
+                                                                    class="btn btn-xs btn-danger"
+                                                                    ng-if="downtime.allowEdit && downtime.isCancellable"
+                                                                    ng-click="confirmHostDowntimeDelete(getObjectForDelete())">
+                                                                <i class="fa fa-trash-o"></i> <?php echo __('Delete'); ?>
+                                                            </button>
+                                                        <?php endif; ?>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
+
+                                    <div class="row" ng-show="hoststatus.problemHasBeenAcknowledged">
+                                        <div class="col-xs-12 margin-bottom-10">
+                                            <div class="browser-border padding-10" style="width: 100%;">
+                                                <div>
+                                                    <h4 class="no-padding">
+                                                        <i class="fa fa-user" ng-show="!acknowledgement.is_sticky"></i>
+                                                        <i class="fa fa-user-o" ng-show="acknowledgement.is_sticky"></i>
+                                                        <?php echo __('State of host is acknowledged'); ?>
+                                                        <span ng-show="acknowledgement.is_sticky">
+                                                            (<?php echo __('Sticky'); ?>)
+                                                        </span>
+                                                    </h4>
+                                                </div>
+                                                <div class="padding-top-5">
+                                                    <?php echo __('Acknowledgement was set by'); ?>
+                                                    <b>{{acknowledgement.author_name}}</b>
+                                                    <?php echo __('at'); ?>
+                                                    {{acknowledgement.entry_time}}
+                                                </div>
+                                                <div class="padding-top-5">
+                                                    <?php echo __('Comment: '); ?>
+                                                    {{acknowledgement.comment_data}}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                    <div class="row" ng-show="hoststatus.isFlapping">
+                                        <div class="col-xs-12 margin-bottom-10">
+                                            <div class="browser-border padding-10" style="width: 100%;">
+                                                <div>
+                                                    <h4 class="no-padding txt-color-orangeDark">
+                                                        <i class="fa fa-exclamation-triangle"></i>
+                                                        <?php echo __('The state of this host is currently flapping!'); ?>
+                                                    </h4>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row" ng-show="hasParentHostProblems">
+                                        <div class="col-xs-12 margin-bottom-10">
+                                            <div class="browser-border padding-10" style="width: 100%;">
+                                                <div>
+                                                    <h4 class="no-padding text-info">
+                                                        <i class="fa fa-exclamation-triangle"></i>
+                                                        <?php echo __('Problem with parent host detected!'); ?>
+                                                    </h4>
+                                                </div>
+                                                <div>
+                                                    <ul>
+                                                        <li ng-repeat="parentHostProblem in parentHostProblems">
+                                                            <a href="/hosts/browser/{{parentHostProblem.id}}">
+                                                                {{parentHostProblem.name}}
+                                                            </a>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
 
                                     <div class="row">
                                         <div class="col-xs-12 col-sm-12 col-md-9">
@@ -300,6 +394,37 @@ if (!$QueryHandler->exists()): ?>
                                                     <div ng-bind-html="hoststatus.longOutputHtml | trustAsHtml"></div>
                                                 </code>
                                             </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row" ng-show="parenthosts.length">
+                                        <div class="col-xs-12">
+                                            <h3 class="margin-top-5"><?php echo __('Parent host overview'); ?></h3>
+                                        </div>
+
+
+                                        <div class="col-xs-12 col-sm-12">
+                                            <table class="table table-bordered">
+                                                <tr>
+                                                    <th class="width-130"><?php echo __('Parent host state'); ?></th>
+                                                    <th><?php echo __('Parent host name'); ?></th>
+                                                    <th><?php echo __('Laste state change'); ?></th>
+                                                </tr>
+                                                <tr ng-repeat="parenthost in parenthosts">
+                                                    <td class="text-center">
+                                                        <hoststatusicon
+                                                                state="parentHoststatus[parenthost.uuid].currentState"></hoststatusicon>
+                                                    </td>
+                                                    <td>
+                                                        <a href="/hosts/browser/{{parenthost.id}}">
+                                                            {{ parenthost.name }}
+                                                        </a>
+                                                    </td>
+                                                    <td>
+                                                        {{ parentHoststatus[parenthost.uuid].last_state_change }}
+                                                    </td>
+                                                </tr>
+                                            </table>
                                         </div>
                                     </div>
 
@@ -429,25 +554,26 @@ if (!$QueryHandler->exists()): ?>
 
                                 </div>
                                 <div class="col-sm-6 col-md-5 col-lg-3 no-padding hidden-xs"
-                                     style="background:#5cb85c;">
+                                     ng-class="{'browser-state-green': stateIsUp(), 'browser-state-red': stateIsDown(), 'browser-state-gray': stateIsUnreachable(), 'browser-state-blue': stateIsNotInMonitoring()}"
+                                     ng-if="hoststatus">
 
-                                    <div class="text-center">
+                                    <div class="text-center txt-color-white">
                                         <h1 class="font-size-50">
                                             {{ hoststatus.currentState | hostStatusName }}
                                         </h1>
                                     </div>
 
-                                    <div class="text-center">
+                                    <div class="text-center txt-color-white">
                                         <div><?php echo __('State since'); ?></div>
                                         <h3 class="margin-top-0">{{ hoststatus.last_state_change }}</h3>
                                     </div>
 
-                                    <div class="text-center">
+                                    <div class="text-center txt-color-white">
                                         <div><?php echo __('Last check'); ?></div>
                                         <h3 class="margin-top-0">{{ hoststatus.lastCheck }}</h3>
                                     </div>
 
-                                    <div class="text-center">
+                                    <div class="text-center txt-color-white">
                                         <div><?php echo __('Next check'); ?></div>
                                         <h3 class="margin-top-0">
                                             {{ hoststatus.nextCheck }}
@@ -458,7 +584,7 @@ if (!$QueryHandler->exists()): ?>
                                         </h3>
                                     </div>
 
-                                    <div class="text-center">
+                                    <div class="text-center txt-color-white">
                                         <div><?php echo __('State type'); ?></div>
                                         <h3 class="margin-top-0" ng-show="hoststatus.isHardstate">
                                             <?php echo __('Hard state'); ?>
@@ -1147,3 +1273,4 @@ if (!$QueryHandler->exists()): ?>
 <enable-host-flap-detection></enable-host-flap-detection>
 <disable-host-flap-detection></disable-host-flap-detection>
 <send-host-notification author="<?php echo h($username); ?>"></send-host-notification>
+<mass-delete-host-downtimes></mass-delete-host-downtimes>

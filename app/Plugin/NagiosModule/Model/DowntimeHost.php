@@ -196,4 +196,37 @@ class DowntimeHost extends NagiosModuleAppModel {
 
     }
 
+    /**
+     * @param string $uuid
+     * @return array|null
+     */
+    public function byHostUuid($uuid = null)
+    {
+        if ($uuid !== null) {
+            $downtime = $this->find('first', [
+                'recursive'  => -1,
+                'conditions' => [
+                    'Objects.name1'         => $uuid,
+                    'Objects.objecttype_id' => 1,
+                ],
+                'order'      => [
+                    'DowntimeHost.entry_time' => 'DESC',
+                ],
+                'joins'      => [
+                    [
+                        'table'      => 'nagios_objects',
+                        'type'       => 'INNER',
+                        'alias'      => 'Objects',
+                        'conditions' => 'Objects.object_id = DowntimeHost.object_id AND DowntimeHost.downtime_type = 2' //Downtime.downtime_type = 2 Host downtime
+                    ]
+                ]
+            ]);
+
+            return $downtime;
+
+        }
+
+        return [];
+    }
+
 }
