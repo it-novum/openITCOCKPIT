@@ -68,7 +68,7 @@
        rel="tooltip" target="_blank" class="btn btn-default btn-sm"><i class="fa fa-external-link fa-lg"></i></a>
 <?php endif; ?>
 <?php if ($this->Acl->hasPermission('edit') && $allowEdit): ?>
-    <a href="/hosts/edit/<?php echo $host['Host']['id']; ?>" data-original-title="<?php echo __('Edit host'); ?>"
+    <a href="/hosts/edit/<?php echo $host['Host']['id']; ?>/_controller:hosts/_action:browser/_id:<?php echo $host['Host']['id']; ?>/" data-original-title="<?php echo __('Edit host'); ?>"
        data-placement="bottom" rel="tooltip" class="btn btn-default btn-sm"><i class="fa fa-cog fa-lg"></i></a>
 <?php endif; ?>
 <div class="btn-group">

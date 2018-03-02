@@ -817,24 +817,6 @@ class Host extends AppModel {
         return false;
     }
 
-    public function redirect($params = [], $default = []) {
-        $redirect = [];
-
-        if (isset($params['named']['_controller'])) {
-            $redirect['controller'] = $params['named']['_controller'];
-        }
-
-        if (isset($params['named']['_action'])) {
-            $redirect['action'] = $params['named']['_action'];
-        }
-
-        if (!empty($default)) {
-            $redirect = Hash::merge($default, $redirect);
-        }
-
-        return $redirect;
-    }
-
 
     public $additionalValidationRules = [];
     public $additionalData = [];

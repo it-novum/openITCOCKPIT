@@ -701,10 +701,7 @@ class ServicesController extends AppController {
                     $this->serializeId();
                 } else {
                     $this->setFlash(__('<a href="/services/edit/%s">Service</a> created successfully', $this->Service->id));
-                    $redirect = $this->Service->redirect($this->request->params, ['action' => 'notMonitored']);
-                    if($redirect['action'] === 'serviceList' || $redirect['action'] === 'browser'){
-                        $redirect[] = $hostId;
-                    }
+                    $redirect = $this->Service->redirect($this->request->params, ['action' => 'index']);
                     $this->redirect($redirect);
                 }
             } else {
