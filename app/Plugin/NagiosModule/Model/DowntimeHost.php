@@ -146,7 +146,9 @@ class DowntimeHost extends NagiosModuleAppModel {
                                         AND DowntimeHost.scheduled_end_time',
                     'DowntimeHost.scheduled_start_time BETWEEN "' . date('Y-m-d H:i:s', $Conditions->getFrom()) . '"
                                         AND "' . date('Y-m-d H:i:s', $Conditions->getTo()) . '"',
-                ]
+                ],
+                'DowntimeHost.was_cancelled' => 0
+
             ]
         ];
 

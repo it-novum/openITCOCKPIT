@@ -51,6 +51,11 @@ class StatehistoryHostConditions extends ListSettingsConditions {
     private $useLimit = true;
 
     /**
+     * @var bool
+     */
+    private $hardStateTypeAndUpState = false;
+
+    /**
      * @param string $hostUuid
      */
     public function setHostUuid($hostUuid){
@@ -90,5 +95,17 @@ class StatehistoryHostConditions extends ListSettingsConditions {
         return $this->useLimit;
     }
 
-}
+    /**
+     * @param $value
+     */
+    public function setHardStateTypeAndUpState($value){
+        $this->hardStateTypeAndUpState = (bool)$value;
+    }
 
+    /**
+     * @return bool
+     */
+    public function hardStateTypeAndUpState(){
+        return $this->hardStateTypeAndUpState;
+    }
+}

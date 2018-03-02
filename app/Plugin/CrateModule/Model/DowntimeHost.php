@@ -121,7 +121,10 @@ class DowntimeHost extends CrateModuleAppModel {
                 'DowntimeHost.was_started',
                 'DowntimeHost.was_cancelled',
             ],
-            'order'      => $Conditions->getOrder()
+            'order'      => $Conditions->getOrder(),
+            'conditions' => [
+                'DowntimeHost.was_cancelled' => false
+            ]
         ];
 
         if ($Conditions->hasHostUuids()) {
