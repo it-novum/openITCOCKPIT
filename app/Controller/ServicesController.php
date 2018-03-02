@@ -570,6 +570,7 @@ class ServicesController extends AppController {
         if (!empty($this->request->params['pass'])) {
             $hostId = $this->request->params['pass'][0];
         }
+        $this->Frontend->setJson('hostId', $hostId);
 
         //Fix that we dont lose any unsaved host macros, because of vaildation error
         if (isset($this->request->data['Customvariable'])) {
@@ -700,7 +701,11 @@ class ServicesController extends AppController {
                     $this->serializeId();
                 } else {
                     $this->setFlash(__('<a href="/services/edit/%s">Service</a> created successfully', $this->Service->id));
-                    $this->redirect(['action' => 'notMonitored']);
+                    $redirect = $this->Service->redirect($this->request->params, ['action' => 'notMonitored']);
+                    if($redirect['action'] === 'serviceList' || $redirect['action'] === 'browser'){
+                        $redirect[] = $hostId;
+                    }
+                    $this->redirect($redirect);
                 }
             } else {
                 if ($isJsonRequest) {

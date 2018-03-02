@@ -6,10 +6,16 @@ angular.module('openITCOCKPIT').directive('enableHostFlapDetection', function($h
         controller: function($scope){
 
             var objects = {};
+            var callbackName = false;
+
             $scope.isEnableingHostFlapDetection = false;
 
             $scope.setEnableHostFlapDetectionObjects = function(_objects){
                 objects = _objects;
+            };
+
+            $scope.setEnableHostFlapDetectionCallback = function(_callback){
+                callbackName = _callback;
             };
 
             $scope.doEnableHostFlapDetection = function(){
@@ -29,6 +35,11 @@ angular.module('openITCOCKPIT').directive('enableHostFlapDetection', function($h
                         1 //Enable flap detection
                     ]));
                 }
+
+                //Call callback function if given
+                if(callbackName){
+                    $scope[callbackName]();
+                }
                 $timeout(function(){
                     $scope.isEnableingHostFlapDetection = false;
                     $scope.percentage = 0;
@@ -43,6 +54,11 @@ angular.module('openITCOCKPIT').directive('enableHostFlapDetection', function($h
                 if(Object.keys(objects).length === 0){
                     return;
                 }
+
+                if(attr.hasOwnProperty('callback')){
+                    $scope.setEnableHostFlapDetectionCallback(attr.callback);
+                }
+
                 $('#angularEnableHostFalpDetectionModal').modal('show');
                 $scope.setEnableHostFlapDetectionObjects(objects);
             };

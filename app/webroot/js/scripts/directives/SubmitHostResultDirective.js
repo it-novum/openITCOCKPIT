@@ -7,6 +7,8 @@ angular.module('openITCOCKPIT').directive('submitHostResult', function($http, Su
 
             var objects = {};
             var maxCheckAttempts = 10;
+            var callbackName = false;
+
             $scope.isSubmittingHostResult = false;
             $scope.passiveHostState = "0";
             $scope.passiveHostResult = {
@@ -22,6 +24,10 @@ angular.module('openITCOCKPIT').directive('submitHostResult', function($http, Su
 
             $scope.setMaxCheckAttemptsHost = function(_maxCheckAttempts){
                 maxCheckAttempts = _maxCheckAttempts;
+            };
+
+            $scope.setHostResultCallback = function(_callback){
+                callbackName = _callback;
             };
 
 
@@ -51,6 +57,11 @@ angular.module('openITCOCKPIT').directive('submitHostResult', function($http, Su
                         sendMaxCheckAttempts
                     ]));
                 }
+
+                //Call callback function if given
+                if(callbackName){
+                    $scope[callbackName]();
+                }
                 $timeout(function(){
                     $scope.isSubmittingHostResult = false;
                     $scope.percentage = 0;
@@ -65,6 +76,11 @@ angular.module('openITCOCKPIT').directive('submitHostResult', function($http, Su
                 if(Object.keys(objects).length === 0){
                     return;
                 }
+
+                if(attr.hasOwnProperty('callback')){
+                    $scope.setHostResultCallback(attr.callback);
+                }
+
                 $('#angularSubmitHostResultModal').modal('show');
                 $scope.setHostResultObjects(objects);
 

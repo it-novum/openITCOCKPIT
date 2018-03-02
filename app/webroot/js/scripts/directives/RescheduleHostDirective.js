@@ -6,11 +6,18 @@ angular.module('openITCOCKPIT').directive('rescheduleHost', function($http, Sudo
         controller: function($scope){
 
             var objects = {};
+
+            var callbackName = false;
+
             $scope.isReschedulingHosts = false;
             $scope.hostReschedulingType = 'hostAndServices';
 
             $scope.setHostRescheduleObjects = function(_objects){
                 objects = _objects;
+            };
+
+            $scope.setHostRescheduleCallback = function(_callback){
+                callbackName = _callback;
             };
 
             $scope.doHostReschedule = function(){
@@ -31,6 +38,12 @@ angular.module('openITCOCKPIT').directive('rescheduleHost', function($http, Sudo
                         object.Host.satelliteId
                     ]));
                 }
+
+                //Call callback function if given
+                if(callbackName){
+                    $scope[callbackName]();
+                }
+
                 $timeout(function(){
                     $scope.isReschedulingHosts = false;
                     $scope.percentage = 0;
@@ -45,6 +58,11 @@ angular.module('openITCOCKPIT').directive('rescheduleHost', function($http, Sudo
                 if(Object.keys(objects).length === 0){
                     return;
                 }
+
+                if(attr.hasOwnProperty('callback')){
+                    $scope.setHostRescheduleCallback(attr.callback);
+                }
+
                 $('#angularRescheduleHostModal').modal('show');
                 $scope.setHostRescheduleObjects(objects);
             };

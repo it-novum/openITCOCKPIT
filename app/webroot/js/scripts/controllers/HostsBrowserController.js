@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('HostsBrowserController', function($scope, $rootScope, $http, QueryStringService, SortService){
+    .controller('HostsBrowserController', function($scope, $rootScope, $http, QueryStringService, SortService, $interval){
 
         $scope.id = QueryStringService.getCakeId();
 
@@ -14,6 +14,8 @@ angular.module('openITCOCKPIT')
 
         $scope.parentHostProblems = {};
         $scope.hasParentHostProblems = false;
+
+        $scope.showFlashSuccess = false;
 
         //There is no service status for not monitored services :)
         $scope.fakeServicestatus = {
@@ -40,6 +42,21 @@ angular.module('openITCOCKPIT')
         $scope.init = true;
 
         $scope.hostStatusTextClass = 'txt-primary';
+
+        var flappingInterval;
+
+        $scope.showFlashMsg = function(){
+            $scope.showFlashSuccess = true;
+            $scope.autoRefreshCounter = 5;
+            var interval = $interval(function(){
+                $scope.autoRefreshCounter--;
+                if($scope.autoRefreshCounter === 0){
+                    $scope.loadHost();
+                    $interval.cancel(interval);
+                    $scope.showFlashSuccess = false;
+                }
+            }, 1000);
+        };
 
         $scope.loadHost = function(){
             $http.get("/hosts/browser/"+$scope.id+".json", {
@@ -355,6 +372,24 @@ angular.module('openITCOCKPIT')
             return !$scope.hoststatus.isInMonitoring;
         };
 
+        $scope.startFlapping = function(){
+            $scope.stopFlapping();
+            flappingInterval = $interval(function(){
+                if($scope.flappingState === 0){
+                    $scope.flappingState = 1;
+                }else{
+                    $scope.flappingState = 0;
+                }
+            }, 750);
+        };
+
+        $scope.stopFlapping = function(){
+            if(flappingInterval){
+                $interval.cancel(flappingInterval);
+            }
+            flappingInterval = null;
+        };
+
         var getHoststatusTextColor = function(){
             switch($scope.hoststatus.currentState){
                 case 0:
@@ -402,5 +437,20 @@ angular.module('openITCOCKPIT')
             $scope.currentPage = 1;
             $scope.load();
         }, true);
+
+        $scope.$watch('hoststatus.isFlapping', function(){
+            if($scope.hoststatus){
+                if($scope.hoststatus.hasOwnProperty('isFlapping')){
+                    if($scope.hoststatus.isFlapping === true){
+                        $scope.startFlapping();
+                    }
+
+                    if($scope.hoststatus.isFlapping === false){
+                        $scope.stopFlapping();
+                    }
+
+                }
+            }
+        });
 
     });

@@ -7,6 +7,8 @@ angular.module('openITCOCKPIT').directive('sendHostNotification', function($http
 
             var objects = {};
             var author = 'Unknown';
+            var callbackName = false;
+
             $scope.isSubmittingHostNotification = false;
             $scope.sendHostNotification = {
                 comment: 'Test notification',
@@ -20,6 +22,10 @@ angular.module('openITCOCKPIT').directive('sendHostNotification', function($http
 
             $scope.setHostNotificationAuthor = function(_author){
                 author = _author;
+            };
+
+            $scope.setHostNotificationCallback = function(_callback){
+                callbackName = _callback;
             };
 
 
@@ -56,6 +62,10 @@ angular.module('openITCOCKPIT').directive('sendHostNotification', function($http
                         $scope.sendHostNotification.comment
                     ]));
                 }
+                //Call callback function if given
+                if(callbackName){
+                    $scope[callbackName]();
+                }
                 $timeout(function(){
                     $scope.isSubmittingHostNotification = false;
                     $scope.percentage = 0;
@@ -70,6 +80,12 @@ angular.module('openITCOCKPIT').directive('sendHostNotification', function($http
                 if(Object.keys(objects).length === 0){
                     return;
                 }
+
+                if(attr.hasOwnProperty('callback')){
+                    $scope.setHostNotificationCallback(attr.callback);
+                }
+
+
                 $('#angularSubmitHostNotificationModal').modal('show');
                 $scope.setHostNotificationObjects(objects);
 

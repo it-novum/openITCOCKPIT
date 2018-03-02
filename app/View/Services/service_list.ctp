@@ -136,7 +136,7 @@
                             </button>
 
                             <?php if ($this->Acl->hasPermission('add', 'services')): ?>
-                                <a href="/services/add/{{host.Host.id}}" class="btn btn-xs btn-success">
+                                <a href="/services/add/{{ host.Host.id }}/_controller:services/_action:serviceList/" class="btn btn-xs btn-success">
                                     <i class="fa fa-plus"></i>
                                     <?php echo __('Add'); ?>
                                 </a>

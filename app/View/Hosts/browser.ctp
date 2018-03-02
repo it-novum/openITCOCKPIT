@@ -34,11 +34,21 @@ if (!$QueryHandler->exists()): ?>
     </div>
 <?php endif; ?>
 
+<div class="alert alert-success alert-block" ng-show="showFlashSuccess">
+    <a href="#" data-dismiss="alert" class="close">×</a>
+    <h4 class="alert-heading"><i class="fa fa-check-circle-o"></i> <?php echo __('Command sent successfully'); ?></h4>
+    <?php echo __('Data refresh in'); ?> {{ autoRefreshCounter }} <?php echo __('seconds...'); ?>
+</div>
 
 <div class="row">
     <div class="col-xs-12 col-sm-7 col-md-6 col-lg-6">
         <h1 class="status_headline" ng-class="hostStatusTextClass">
-            <hoststatusicon host="hoststateForIcon" ng-if="hoststateForIcon"></hoststatusicon>
+
+            <span class="flapping_airport stateClass" ng-show="hoststatus.isFlapping">
+                <i class="fa" ng-class="flappingState === 1 ? 'fa-circle' : 'fa-circle-o'"></i>
+                <i class="fa" ng-class="flappingState === 0 ? 'fa-circle' : 'fa-circle-o'"></i>
+            </span>
+
             <i class="fa fa-desktop fa-fw"></i>
             {{ mergedHost.Host.name }}
             <span>
@@ -240,6 +250,14 @@ if (!$QueryHandler->exists()): ?>
                                                             <b>{{downtime.durationHuman}}</b>.
                                                         </div>
                                                         <div class="padding-top-5">
+                                                            <small>
+                                                                <?php echo __('Start time:'); ?>
+                                                                {{ downtime.scheduledStartTime }}
+                                                                <?php echo __('End time:'); ?>
+                                                                {{ downtime.scheduledEndTime }}
+                                                            </small>
+                                                        </div>
+                                                        <div class="padding-top-5">
                                                             <?php echo __('Comment: '); ?>
                                                             {{downtime.commentData}}
                                                         </div>
@@ -250,7 +268,7 @@ if (!$QueryHandler->exists()): ?>
                                                             <button
                                                                     class="btn btn-xs btn-danger"
                                                                     ng-if="downtime.allowEdit && downtime.isCancellable"
-                                                                    ng-click="confirmHostDowntimeDelete(getObjectForDelete())">
+                                                                    ng-click="confirmHostDowntimeDelete(getObjectForDowntimeDelete())">
                                                                 <i class="fa fa-trash-o"></i> <?php echo __('Delete'); ?>
                                                             </button>
                                                         <?php endif; ?>
@@ -281,7 +299,7 @@ if (!$QueryHandler->exists()): ?>
                                                 </div>
                                                 <div class="padding-top-5">
                                                     <?php echo __('Comment: '); ?>
-                                                    {{acknowledgement.comment_data}}
+                                                    <div style="display:inline" ng-bind-html="acknowledgement.commentDataHtml | trustAsHtml"></div>
                                                 </div>
                                             </div>
                                         </div>
@@ -782,6 +800,14 @@ if (!$QueryHandler->exists()): ?>
                         <i class="fa fa-refresh"></i>
                         <?php echo __('Refresh'); ?>
                     </button>
+
+                    <?php if ($this->Acl->hasPermission('add', 'services')): ?>
+                        <a href="/services/add/{{ mergedHost.Host.id }}/_controller:hosts/_action:browser/" class="btn btn-xs btn-success">
+                            <i class="fa fa-plus"></i>
+                            <?php echo __('Add'); ?>
+                        </a>
+                    <?php endif; ?>
+
                 </div>
                 <span class="widget-icon hidden-mobile"> <i class="fa fa-cogs"></i> </span>
                 <h2 class="hidden-mobile"><?php echo __('Service overview'); ?></h2>
@@ -1264,13 +1290,13 @@ if (!$QueryHandler->exists()): ?>
     </article>
 </article>
 
-<reschedule-host></reschedule-host>
-<disable-host-notifications></disable-host-notifications>
-<enable-host-notifications></enable-host-notifications>
-<acknowledge-host author="<?php echo h($username); ?>"></acknowledge-host>
-<host-downtime author="<?php echo h($username); ?>"></host-downtime>
-<submit-host-result max-check-attempts="{{hoststatus.max_check_attempts}}"></submit-host-result>
-<enable-host-flap-detection></enable-host-flap-detection>
-<disable-host-flap-detection></disable-host-flap-detection>
-<send-host-notification author="<?php echo h($username); ?>"></send-host-notification>
-<mass-delete-host-downtimes></mass-delete-host-downtimes>
+<reschedule-host callback="showFlashMsg"></reschedule-host>
+<disable-host-notifications callback="showFlashMsg"></disable-host-notifications>
+<enable-host-notifications callback="showFlashMsg"></enable-host-notifications>
+<acknowledge-host author="<?php echo h($username); ?>" callback="showFlashMsg"></acknowledge-host>
+<host-downtime author="<?php echo h($username); ?>" callback="showFlashMsg"></host-downtime>
+<submit-host-result max-check-attempts="{{hoststatus.max_check_attempts}}" callback="showFlashMsg"></submit-host-result>
+<enable-host-flap-detection callback="showFlashMsg"></enable-host-flap-detection>
+<disable-host-flap-detection callback="showFlashMsg"></disable-host-flap-detection>
+<send-host-notification author="<?php echo h($username); ?>" callback="showFlashMsg"></send-host-notification>
+<mass-delete-host-downtimes delete-url="/downtimes/delete/" callback="showFlashMsg"></mass-delete-host-downtimes>

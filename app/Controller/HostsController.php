@@ -2315,7 +2315,6 @@ class HostsController extends AppController {
         $host = $this->Host->find('first', $hostQuery);
 
 
-
         $hosttemplateQuery = $this->Hosttemplate->getQueryForBrowser($host['Host']['hosttemplate_id']);
         $hosttemplate = $this->Hosttemplate->find('first', $hosttemplateQuery);
 
@@ -2337,9 +2336,9 @@ class HostsController extends AppController {
 
         $mergedHost['Host']['allowEdit'] = $allowEdit;
         $mergedHost['Host']['satelliteId'] = $mergedHost['Host']['satellite_id'];
-        $mergedHost['checkIntervalHuman']   = $UserTime->secondsInHumanShort($mergedHost['Host']['check_interval']);
-        $mergedHost['retryIntervalHuman']   = $UserTime->secondsInHumanShort($mergedHost['Host']['retry_interval']);
-        $mergedHost['notificationIntervalHuman']   = $UserTime->secondsInHumanShort($mergedHost['Host']['notification_interval']);
+        $mergedHost['checkIntervalHuman'] = $UserTime->secondsInHumanShort($mergedHost['Host']['check_interval']);
+        $mergedHost['retryIntervalHuman'] = $UserTime->secondsInHumanShort($mergedHost['Host']['retry_interval']);
+        $mergedHost['notificationIntervalHuman'] = $UserTime->secondsInHumanShort($mergedHost['Host']['notification_interval']);
 
 
         // Replace $HOSTNAME$
@@ -2378,7 +2377,7 @@ class HostsController extends AppController {
         }
 
         //Check permissions for Contact groups
-        foreach($mergedHost['Contactgroup'] as $key => $contactgroup){
+        foreach ($mergedHost['Contactgroup'] as $key => $contactgroup) {
             $mergedHost['Contactgroup'][$key]['allowEdit'] = $this->isWritableContainer($contactgroup['Container']['parent_id']);
         }
 
@@ -2388,7 +2387,7 @@ class HostsController extends AppController {
         $HoststatusConditions->hostsDownAndUnreachable();
 
         $hoststatus = $this->Hoststatus->byUuid($host['Host']['uuid'], $HoststatusFields);
-        if(empty($hoststatus)){
+        if (empty($hoststatus)) {
             //Empty host state for Hoststatus object
             $hoststatus = [
                 'Hoststatus' => []
@@ -2397,7 +2396,6 @@ class HostsController extends AppController {
         $Hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus($hoststatus['Hoststatus'], $UserTime);
         $hoststatus = $Hoststatus->toArrayForBrowser();
         $hoststatus['longOutputHtml'] = $this->Bbcode->nagiosNl2br($this->Bbcode->asHtml($Hoststatus->getLongOutput(), true));
-
 
 
         $parenthosts = $host['Parenthost'];
@@ -2410,7 +2408,7 @@ class HostsController extends AppController {
         );
 
         $parentHostStatus = [];
-        foreach($parentHostStatusRaw as $uuid => $parentHoststatus){
+        foreach ($parentHostStatusRaw as $uuid => $parentHoststatus) {
             $ParentHoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus($parentHoststatus['Hoststatus'], $UserTime);
             $parentHostStatus[$uuid] = $ParentHoststatus->toArrayForBrowser();
         }
@@ -2426,14 +2424,37 @@ class HostsController extends AppController {
         }
 
         $acknowledgement = [];
-        if($Hoststatus->isAcknowledged()){
+        if ($Hoststatus->isAcknowledged()) {
             $acknowledgement = $this->AcknowledgedHost->byHostUuid($host['Host']['uuid']);
             $Acknowledgement = new AcknowledgementHost($acknowledgement['AcknowledgedHost'], $UserTime);
             $acknowledgement = $Acknowledgement->toArray();
+
+            $ticketSystem = $this->Systemsetting->find('first', [
+                'conditions' => ['key' => 'TICKET_SYSTEM.URL'],
+            ]);
+
+            $ticketDetails = [];
+            if (!empty($ticketSystem['Systemsetting']['value']) && preg_match('/^(Ticket)_?(\d+);?(\d+)/', $Acknowledgement->getCommentData(), $ticketDetails)) {
+                $commentDataHtml = $Acknowledgement->getCommentData();
+                if (isset($ticketDetails[1], $ticketDetails[3], $ticketDetails[2])) {
+                    $commentDataHtml = sprintf(
+                        '<a href="%s%s" target="_blank">%s %s</a>',
+                        $ticketSystem['Systemsetting']['value'],
+                        $ticketDetails[3],
+                        $ticketDetails[1],
+                        $ticketDetails[2]
+                    );
+                }
+            } else {
+                $commentDataHtml = $this->Bbcode->asHtml($Acknowledgement->getCommentData(), true);
+            }
+
+            $acknowledgement['commentDataHtml'] = $commentDataHtml;
+
         }
 
         $downtime = [];
-        if($Hoststatus->isInDowntime()){
+        if ($Hoststatus->isInDowntime()) {
             $downtime = $this->DowntimeHost->byHostUuid($host['Host']['uuid']);
             $Downtime = new \itnovum\openITCOCKPIT\Core\Views\Downtime($downtime['DowntimeHost'], $allowEdit, $UserTime);
             $downtime = $Downtime->toArray();
@@ -2457,23 +2478,6 @@ class HostsController extends AppController {
             'acknowledgement',
             'downtime'
         ]);
-
-        return;
-
-
-
-
-        $acknowledged = [];
-        if (!empty($hoststatus) && $hoststatus['Hoststatus']['problem_has_been_acknowledged'] > 0) {
-            $acknowledged = $this->AcknowledgedHost->byHostUuid($host['Host']['uuid']);
-        }
-        $ticketSystem = $this->Systemsetting->find('first', [
-            'conditions' => ['key' => 'TICKET_SYSTEM.URL'],
-        ]);
-
-
-
-
     }
 
     /**
