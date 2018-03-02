@@ -17,6 +17,8 @@ angular.module('openITCOCKPIT')
 
         $scope.showFlashSuccess = false;
 
+        $scope.pingResult = [];
+
         //There is no service status for not monitored services :)
         $scope.fakeServicestatus = {
             Servicestatus: {
@@ -388,6 +390,20 @@ angular.module('openITCOCKPIT')
                 $interval.cancel(flappingInterval);
             }
             flappingInterval = null;
+        };
+
+        $scope.ping = function(){
+            $scope.pingResult = [];
+            $scope.isPinging = true;
+            $http.get("/hosts/ping.json", {
+                params: {
+                    'angular': true,
+                    'address': $scope.mergedHost.Host.address
+                }
+            }).then(function(result){
+                $scope.pingResult = result.data.output;
+                $scope.isPinging = false;
+            });
         };
 
         var getHoststatusTextColor = function(){

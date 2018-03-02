@@ -2975,9 +2975,10 @@ class HostsController extends AppController {
     }
 
     public function ping() {
-        $this->allowOnlyAjaxRequests();
+        //$this->allowOnlyAjaxRequests();
         $output = [];
-        exec('ping ' . escapeshellarg($this->getNamedParameter('address', '')) . ' -c 4 -W 5', $output);
+        $address = $this->request->query('address');
+        exec('ping ' . escapeshellarg($address) . ' -c 4 -W 5', $output);
 
         $this->set('output', $output);
         $this->set('_serialize', ['output']);
