@@ -795,6 +795,22 @@ if (!$QueryHandler->exists()): ?>
                                                         <?php endif; ?>
                                                     </td>
                                                 </tr>
+
+                                                <tr ng-show="tags.length">
+                                                    <td><?php echo __('Tags'); ?></td>
+                                                    <td>
+                                                        <span class="label label-primary"
+                                                              ng-repeat="tag in tags"
+                                                              style="margin-right: 2px;">{{tag}}</span>
+                                                    </td>
+                                                </tr>
+
+                                                <tr ng-show="mergedHost.Host.notes">
+                                                    <td><?php echo __('Notes'); ?></td>
+                                                    <td>
+                                                        {{mergedHost.Host.notes}}
+                                                    </td>
+                                                </tr>
                                                 <tr ng-show="mergedHost.Host.description">
                                                     <td><?php echo __('Description'); ?></td>
                                                     <td>

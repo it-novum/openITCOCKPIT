@@ -19,6 +19,8 @@ angular.module('openITCOCKPIT')
 
         $scope.canSubmitExternalCommands = false;
 
+        $scope.tags = [];
+
         $scope.pingResult = [];
 
         //There is no service status for not monitored services :)
@@ -69,6 +71,7 @@ angular.module('openITCOCKPIT')
                 }
             }).then(function(result){
                 $scope.mergedHost = result.data.mergedHost;
+                $scope.tags = $scope.mergedHost.Host.tags.split(',');
                 $scope.hoststatus = result.data.hoststatus;
                 $scope.hoststateForIcon = {
                     Hoststatus: $scope.hoststatus
