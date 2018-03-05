@@ -451,7 +451,7 @@
                                                             </a>
                                                         </li>
                                                     <?php endif; ?>
-                                                    <?php if ($this->Acl->hasPermission('edit', 'Services')): ?>
+                                                    <?php if ($this->Acl->hasPermission('externalcommands', 'hosts')): ?>
                                                         <li class="divider"></li>
                                                         <li>
                                                             <a href="javascript:void(0);"
