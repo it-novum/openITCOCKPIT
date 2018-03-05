@@ -2460,6 +2460,8 @@ class HostsController extends AppController {
             $downtime = $Downtime->toArray();
         }
 
+        $canSubmitExternalCommands = $this->hasPermission('externalcommands', 'hosts');
+
         $this->set('mergedHost', $mergedHost);
         $this->set('hoststatus', $hoststatus);
         $this->set('mainContainer', $mainContainer);
@@ -2468,6 +2470,7 @@ class HostsController extends AppController {
         $this->set('parentHostStatus', $parentHostStatus);
         $this->set('acknowledgement', $acknowledgement);
         $this->set('downtime', $downtime);
+        $this->set('canSubmitExternalCommands', $canSubmitExternalCommands);
         $this->set('_serialize', [
             'mergedHost',
             'hoststatus',
@@ -2476,7 +2479,8 @@ class HostsController extends AppController {
             'parenthosts',
             'parentHostStatus',
             'acknowledgement',
-            'downtime'
+            'downtime',
+            'canSubmitExternalCommands'
         ]);
     }
 
@@ -3067,8 +3071,13 @@ class HostsController extends AppController {
         $this->set('_serialize', ['hosttemplates', 'hostgroups', 'parenthosts', 'timeperiods', 'checkperiods', 'contacts', 'contactgroups']);
     }
 
-    //Acl
+    //Only for ACLs
     public function checkcommand() {
+        return null;
+    }
+
+    //Only for ACLs
+    public function externalcommands() {
         return null;
     }
 

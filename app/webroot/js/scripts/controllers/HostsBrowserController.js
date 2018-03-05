@@ -17,6 +17,8 @@ angular.module('openITCOCKPIT')
 
         $scope.showFlashSuccess = false;
 
+        $scope.canSubmitExternalCommands = false;
+
         $scope.pingResult = [];
 
         //There is no service status for not monitored services :)
@@ -83,6 +85,8 @@ angular.module('openITCOCKPIT')
                 $scope.acknowledgement = result.data.acknowledgement;
 
                 $scope.downtime = result.data.downtime;
+
+                $scope.canSubmitExternalCommands = result.data.canSubmitExternalCommands;
 
                 $scope.priorities = {
                     1: false,

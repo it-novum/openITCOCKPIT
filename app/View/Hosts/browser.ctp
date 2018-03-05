@@ -122,101 +122,104 @@ if (!$QueryHandler->exists()): ?>
                                         {{ hoststatus.currentState | hostStatusName }}
                                     </div>
                                 </div>
-                                <div class="row">
-                                    <div class="col-xs-6">
-                                        <?php echo __('State since'); ?>
-                                    </div>
-                                    <div class="col-xs-6">
-                                        {{ hoststatus.last_state_change }}
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-xs-6">
-                                        <?php echo __('Last check'); ?>
-                                    </div>
-                                    <div class="col-xs-6">
-                                        {{ hoststatus.lastCheck }}
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-xs-6">
-                                        <?php echo __(' Next check'); ?>
-                                    </div>
-                                    <div class="col-xs-6">
-                                        {{ hoststatus.nextCheck }}
-                                    </div>
-                                </div>
-                                <div class="row" ng-show="hoststatus.isHardstate">
-                                    <div class="col-xs-6">
-                                        <?php echo __('State type'); ?>
-                                    </div>
-                                    <div class="col-xs-6">
-                                        <?php echo __('Hard state'); ?>
-                                        ({{hoststatus.current_check_attempt}}/{{hoststatus.max_check_attempts}})
-                                    </div>
-                                </div>
-                                <div class="row" ng-show="!hoststatus.isHardstate">
-                                    <div class="col-xs-6">
-                                        <?php echo __('State type'); ?>
-                                    </div>
-                                    <div class="col-xs-6">
-                                        <?php echo __('Soft state'); ?>
-                                        ({{hoststatus.current_check_attempt}}/{{hoststatus.max_check_attempts}})
-                                    </div>
-                                </div>
 
-                                <div class="row text-center padding-top-10 padding-bottom-10">
-                                    <div class="btn-group" role="group" aria-label="Basic example">
-                                        <button type="button"
-                                                class="btn btn-default"
-                                                ng-click="rescheduleHost(getObjectsForExternalCommand())">
-                                            <i class="fa fa-refresh"></i>
-                                        </button>
+                                <div ng-show="hoststatus.isInMonitoring">
+                                    <div class="row">
+                                        <div class="col-xs-6">
+                                            <?php echo __('State since'); ?>
+                                        </div>
+                                        <div class="col-xs-6">
+                                            {{ hoststatus.last_state_change }}
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-xs-6">
+                                            <?php echo __('Last check'); ?>
+                                        </div>
+                                        <div class="col-xs-6">
+                                            {{ hoststatus.lastCheck }}
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-xs-6">
+                                            <?php echo __(' Next check'); ?>
+                                        </div>
+                                        <div class="col-xs-6">
+                                            {{ hoststatus.nextCheck }}
+                                        </div>
+                                    </div>
+                                    <div class="row" ng-show="hoststatus.isHardstate">
+                                        <div class="col-xs-6">
+                                            <?php echo __('State type'); ?>
+                                        </div>
+                                        <div class="col-xs-6">
+                                            <?php echo __('Hard state'); ?>
+                                            ({{hoststatus.current_check_attempt}}/{{hoststatus.max_check_attempts}})
+                                        </div>
+                                    </div>
+                                    <div class="row" ng-show="!hoststatus.isHardstate">
+                                        <div class="col-xs-6">
+                                            <?php echo __('State type'); ?>
+                                        </div>
+                                        <div class="col-xs-6">
+                                            <?php echo __('Soft state'); ?>
+                                            ({{hoststatus.current_check_attempt}}/{{hoststatus.max_check_attempts}})
+                                        </div>
+                                    </div>
 
-                                        <button type="button"
-                                                class="btn btn-default"
-                                                ng-click="hostDowntime(getObjectsForExternalCommand())">
-                                            <i class="fa fa-power-off"></i>
-                                        </button>
+                                    <div class="row text-center padding-top-10 padding-bottom-10" ng-show="canSubmitExternalCommands">
+                                        <div class="btn-group" role="group" aria-label="Basic example">
+                                            <button type="button"
+                                                    class="btn btn-default"
+                                                    ng-click="rescheduleHost(getObjectsForExternalCommand())">
+                                                <i class="fa fa-refresh"></i>
+                                            </button>
 
-                                        <button type="button"
-                                                class="btn btn-default"
-                                                ng-show="hoststatus.currentState > 0"
-                                                ng-click="acknowledgeHost(getObjectsForExternalCommand())">
-                                            <i class="fa fa-user"></i>
-                                        </button>
+                                            <button type="button"
+                                                    class="btn btn-default"
+                                                    ng-click="hostDowntime(getObjectsForExternalCommand())">
+                                                <i class="fa fa-power-off"></i>
+                                            </button>
 
-                                        <button type="button"
-                                                class="btn btn-default"
-                                                ng-click="submitHostResult(getObjectsForExternalCommand())">
-                                            <i class="fa fa-download"></i>
-                                        </button>
+                                            <button type="button"
+                                                    class="btn btn-default"
+                                                    ng-show="hoststatus.currentState > 0"
+                                                    ng-click="acknowledgeHost(getObjectsForExternalCommand())">
+                                                <i class="fa fa-user"></i>
+                                            </button>
 
-                                        <button type="button"
-                                                class="btn btn-default"
-                                                ng-click="enableHostFlapDetection(getObjectsForExternalCommand())"
-                                                ng-show="!hoststatus.flap_detection_enabled">
-                                            <i class="fa fa-adjust"></i>
-                                        </button>
-                                        <button type="button"
-                                                class="btn btn-default"
-                                                ng-click="disableHostFlapDetection(getObjectsForExternalCommand())"
-                                                ng-show="hoststatus.flap_detection_enabled">
-                                            <i class="fa fa-adjust"></i>
-                                        </button>
+                                            <button type="button"
+                                                    class="btn btn-default"
+                                                    ng-click="submitHostResult(getObjectsForExternalCommand())">
+                                                <i class="fa fa-download"></i>
+                                            </button>
 
-                                        <button type="button"
-                                                class="btn btn-default"
-                                                ng-click="enableHostNotifications(getObjectsForExternalCommand())"
-                                                ng-show="!hoststatus.notifications_enabled">
-                                            <i class="fa fa-envelope"></i>
-                                        </button>
-                                        <button type="button"
-                                                class="btn btn-default"
-                                                ng-click="disableHostNotifications(getObjectsForExternalCommand())"
-                                                ng-show="hoststatus.notifications_enabled">
-                                            <i class="fa fa-envelope-o"></i>
-                                        </button>
+                                            <button type="button"
+                                                    class="btn btn-default"
+                                                    ng-click="enableHostFlapDetection(getObjectsForExternalCommand())"
+                                                    ng-show="!hoststatus.flap_detection_enabled">
+                                                <i class="fa fa-adjust"></i>
+                                            </button>
+                                            <button type="button"
+                                                    class="btn btn-default"
+                                                    ng-click="disableHostFlapDetection(getObjectsForExternalCommand())"
+                                                    ng-show="hoststatus.flap_detection_enabled">
+                                                <i class="fa fa-adjust"></i>
+                                            </button>
+
+                                            <button type="button"
+                                                    class="btn btn-default"
+                                                    ng-click="enableHostNotifications(getObjectsForExternalCommand())"
+                                                    ng-show="!hoststatus.notifications_enabled">
+                                                <i class="fa fa-envelope"></i>
+                                            </button>
+                                            <button type="button"
+                                                    class="btn btn-default"
+                                                    ng-click="disableHostNotifications(getObjectsForExternalCommand())"
+                                                    ng-show="hoststatus.notifications_enabled">
+                                                <i class="fa fa-envelope-o"></i>
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -299,7 +302,8 @@ if (!$QueryHandler->exists()): ?>
                                                 </div>
                                                 <div class="padding-top-5">
                                                     <?php echo __('Comment: '); ?>
-                                                    <div style="display:inline" ng-bind-html="acknowledgement.commentDataHtml | trustAsHtml"></div>
+                                                    <div style="display:inline"
+                                                         ng-bind-html="acknowledgement.commentDataHtml | trustAsHtml"></div>
                                                 </div>
                                             </div>
                                         </div>
@@ -581,97 +585,101 @@ if (!$QueryHandler->exists()): ?>
                                         </h1>
                                     </div>
 
-                                    <div class="text-center txt-color-white">
-                                        <div><?php echo __('State since'); ?></div>
-                                        <h3 class="margin-top-0">{{ hoststatus.last_state_change }}</h3>
-                                    </div>
+                                    <div ng-show="hoststatus.isInMonitoring">
+                                        <div class="text-center txt-color-white">
+                                            <div><?php echo __('State since'); ?></div>
+                                            <h3 class="margin-top-0">{{ hoststatus.last_state_change }}</h3>
+                                        </div>
 
-                                    <div class="text-center txt-color-white">
-                                        <div><?php echo __('Last check'); ?></div>
-                                        <h3 class="margin-top-0">{{ hoststatus.lastCheck }}</h3>
-                                    </div>
+                                        <div class="text-center txt-color-white">
+                                            <div><?php echo __('Last check'); ?></div>
+                                            <h3 class="margin-top-0">{{ hoststatus.lastCheck }}</h3>
+                                        </div>
 
-                                    <div class="text-center txt-color-white">
-                                        <div><?php echo __('Next check'); ?></div>
-                                        <h3 class="margin-top-0">
-                                            {{ hoststatus.nextCheck }}
-                                            <small style="color: #333;"
-                                                   ng-show="hoststatus.latency > 1">
-                                                (+ {{ hoststatus.latency }})
-                                            </small>
-                                        </h3>
-                                    </div>
+                                        <div class="text-center txt-color-white">
+                                            <div><?php echo __('Next check'); ?></div>
+                                            <h3 class="margin-top-0">
+                                                {{ hoststatus.nextCheck }}
+                                                <small style="color: #333;"
+                                                       ng-show="hoststatus.latency > 1">
+                                                    (+ {{ hoststatus.latency }})
+                                                </small>
+                                            </h3>
+                                        </div>
 
-                                    <div class="text-center txt-color-white">
-                                        <div><?php echo __('State type'); ?></div>
-                                        <h3 class="margin-top-0" ng-show="hoststatus.isHardstate">
-                                            <?php echo __('Hard state'); ?>
-                                            ({{hoststatus.current_check_attempt}}/{{hoststatus.max_check_attempts}})
-                                        </h3>
+                                        <div class="text-center txt-color-white">
+                                            <div><?php echo __('State type'); ?></div>
+                                            <h3 class="margin-top-0" ng-show="hoststatus.isHardstate">
+                                                <?php echo __('Hard state'); ?>
+                                                ({{hoststatus.current_check_attempt}}/{{hoststatus.max_check_attempts}})
+                                            </h3>
 
-                                        <h3 class="margin-top-0" ng-show="!hoststatus.isHardstate">
-                                            <?php echo __('Soft state'); ?>
-                                            ({{hoststatus.current_check_attempt}}/{{hoststatus.max_check_attempts}})
-                                        </h3>
-                                    </div>
+                                            <h3 class="margin-top-0" ng-show="!hoststatus.isHardstate">
+                                                <?php echo __('Soft state'); ?>
+                                                ({{hoststatus.current_check_attempt}}/{{hoststatus.max_check_attempts}})
+                                            </h3>
+                                        </div>
 
-                                    <div class="browser-action"
-                                         ng-click="rescheduleHost(getObjectsForExternalCommand())">
-                                        <i class="fa fa-refresh"></i>
-                                        <?php echo __('Reset check time '); ?>
-                                    </div>
+                                        <div ng-if="canSubmitExternalCommands">
+                                            <div class="browser-action"
+                                                 ng-click="rescheduleHost(getObjectsForExternalCommand())">
+                                                <i class="fa fa-refresh"></i>
+                                                <?php echo __('Reset check time '); ?>
+                                            </div>
 
-                                    <div class="browser-action margin-top-10"
-                                         ng-click="hostDowntime(getObjectsForExternalCommand())">
-                                        <i class="fa fa-power-off"></i>
-                                        <?php echo __('Schedule maintenance'); ?>
-                                    </div>
+                                            <div class="browser-action margin-top-10"
+                                                 ng-click="hostDowntime(getObjectsForExternalCommand())">
+                                                <i class="fa fa-power-off"></i>
+                                                <?php echo __('Schedule maintenance'); ?>
+                                            </div>
 
-                                    <div class="browser-action margin-top-10"
-                                         ng-show="hoststatus.currentState > 0"
-                                         ng-click="acknowledgeHost(getObjectsForExternalCommand())">
-                                        <i class="fa fa-user"></i>
-                                        <?php echo __('Acknowledge host status'); ?>
-                                    </div>
+                                            <div class="browser-action margin-top-10"
+                                                 ng-show="hoststatus.currentState > 0"
+                                                 ng-click="acknowledgeHost(getObjectsForExternalCommand())">
+                                                <i class="fa fa-user"></i>
+                                                <?php echo __('Acknowledge host status'); ?>
+                                            </div>
 
-                                    <div class="browser-action margin-top-10"
-                                         ng-click="submitHostResult(getObjectsForExternalCommand())">
-                                        <i class="fa fa-download"></i>
-                                        <?php echo __('Passive transfer check result'); ?>
-                                    </div>
+                                            <div class="browser-action margin-top-10"
+                                                 ng-click="submitHostResult(getObjectsForExternalCommand())">
+                                                <i class="fa fa-download"></i>
+                                                <?php echo __('Passive transfer check result'); ?>
+                                            </div>
 
-                                    <div class="browser-action margin-top-10"
-                                         ng-click="enableHostFlapDetection(getObjectsForExternalCommand())"
-                                         ng-show="!hoststatus.flap_detection_enabled">
-                                        <i class="fa fa-adjust"></i>
-                                        <?php echo __('Enable flap detection'); ?>
-                                    </div>
+                                            <div class="browser-action margin-top-10"
+                                                 ng-click="enableHostFlapDetection(getObjectsForExternalCommand())"
+                                                 ng-show="!hoststatus.flap_detection_enabled">
+                                                <i class="fa fa-adjust"></i>
+                                                <?php echo __('Enable flap detection'); ?>
+                                            </div>
 
-                                    <div class="browser-action margin-top-10"
-                                         ng-click="disableHostFlapDetection(getObjectsForExternalCommand())"
-                                         ng-show="hoststatus.flap_detection_enabled">
-                                        <i class="fa fa-adjust"></i>
-                                        <?php echo __('Disable flap detection'); ?>
-                                    </div>
+                                            <div class="browser-action margin-top-10"
+                                                 ng-click="disableHostFlapDetection(getObjectsForExternalCommand())"
+                                                 ng-show="hoststatus.flap_detection_enabled">
+                                                <i class="fa fa-adjust"></i>
+                                                <?php echo __('Disable flap detection'); ?>
+                                            </div>
 
-                                    <div class="browser-action margin-top-10"
-                                         ng-click="enableHostNotifications(getObjectsForExternalCommand())"
-                                         ng-show="!hoststatus.notifications_enabled">
-                                        <i class="fa fa-envelope"></i>
-                                        <?php echo __('Enable notifications'); ?>
-                                    </div>
+                                            <div class="browser-action margin-top-10"
+                                                 ng-click="enableHostNotifications(getObjectsForExternalCommand())"
+                                                 ng-show="!hoststatus.notifications_enabled">
+                                                <i class="fa fa-envelope"></i>
+                                                <?php echo __('Enable notifications'); ?>
+                                            </div>
 
-                                    <div class="browser-action margin-top-10"
-                                         ng-click="disableHostNotifications(getObjectsForExternalCommand())"
-                                         ng-show="hoststatus.notifications_enabled">
-                                        <i class="fa fa-envelope-o"></i>
-                                        <?php echo __('Disable notifications'); ?>
-                                    </div>
+                                            <div class="browser-action margin-top-10"
+                                                 ng-click="disableHostNotifications(getObjectsForExternalCommand())"
+                                                 ng-show="hoststatus.notifications_enabled">
+                                                <i class="fa fa-envelope-o"></i>
+                                                <?php echo __('Disable notifications'); ?>
+                                            </div>
 
-                                    <div class="browser-action margin-top-10"
-                                         ng-click="submitHostNotification(getObjectsForExternalCommand())">
-                                        <i class="fa fa-envelope"></i>
-                                        <?php echo __('Send custom host notification '); ?>
+                                            <div class="browser-action margin-top-10"
+                                                 ng-click="submitHostNotification(getObjectsForExternalCommand())">
+                                                <i class="fa fa-envelope"></i>
+                                                <?php echo __('Send custom host notification '); ?>
+                                            </div>
+                                        </div>
                                     </div>
 
                                 </div>
@@ -802,7 +810,8 @@ if (!$QueryHandler->exists()): ?>
                     </button>
 
                     <?php if ($this->Acl->hasPermission('add', 'services')): ?>
-                        <a href="/services/add/{{ mergedHost.Host.id }}/_controller:hosts/_action:browser/_id:{{ mergedHost.Host.id }}/" class="btn btn-xs btn-success">
+                        <a href="/services/add/{{ mergedHost.Host.id }}/_controller:hosts/_action:browser/_id:{{ mergedHost.Host.id }}/"
+                           class="btn btn-xs btn-success">
                             <i class="fa fa-plus"></i>
                             <?php echo __('Add'); ?>
                         </a>
@@ -1333,7 +1342,6 @@ if (!$QueryHandler->exists()): ?>
         </div>
     </div>
 </div>
-
 
 
 <reschedule-host callback="showFlashMsg"></reschedule-host>
