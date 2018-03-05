@@ -167,7 +167,8 @@ if (!$QueryHandler->exists()): ?>
                                         </div>
                                     </div>
 
-                                    <div class="row text-center padding-top-10 padding-bottom-10" ng-show="canSubmitExternalCommands">
+                                    <div class="row text-center padding-top-10 padding-bottom-10"
+                                         ng-show="canSubmitExternalCommands && mergedHost.Host.allowEdit">
                                         <div class="btn-group" role="group" aria-label="Basic example">
                                             <button type="button"
                                                     class="btn btn-default"
@@ -620,7 +621,7 @@ if (!$QueryHandler->exists()): ?>
                                             </h3>
                                         </div>
 
-                                        <div ng-if="canSubmitExternalCommands">
+                                        <div ng-if="canSubmitExternalCommands && mergedHost.Host.allowEdit">
                                             <div class="browser-action"
                                                  ng-click="rescheduleHost(getObjectsForExternalCommand())">
                                                 <i class="fa fa-refresh"></i>
@@ -752,14 +753,46 @@ if (!$QueryHandler->exists()): ?>
                                             <table class="table table-bordered">
                                                 <tr>
                                                     <td><?php echo __('Container'); ?></td>
-                                                    <td>/{{mainContainer}}</td>
+
+                                                    <td>
+                                                        <?php if ($this->Acl->hasPermission('index', 'browsers')): ?>
+                                                            <a href="/browsers/tenantBrowser/{{mergedHost.Host.container_id}}"
+                                                               ng-if="mergedHost.Host.container_id != 1">
+                                                                /{{mainContainer}}
+                                                            </a>
+
+                                                            <a href="/browsers/index"
+                                                               ng-if="mergedHost.Host.container_id == 1">
+                                                                /{{mainContainer}}
+                                                            </a>
+                                                        <?php else: ?>
+                                                            <div ng-repeat="(key, value) in sharedContainers">
+                                                                /{{mainContainer}}
+                                                            </div>
+                                                        <?php endif; ?>
+                                                    </td>
+
                                                 </tr>
                                                 <tr>
                                                     <td><?php echo __('Shared containers'); ?></td>
                                                     <td>
-                                                        <div ng-repeat="sharedContainer in sharedContainers">
-                                                            /{{sharedContainer}}
-                                                        </div>
+
+                                                        <?php if ($this->Acl->hasPermission('index', 'browsers')): ?>
+                                                            <div ng-repeat="(key, value) in sharedContainers">
+                                                                <a href="/browsers/tenantBrowser/{{key}}"
+                                                                   ng-if="key != 1">
+                                                                    /{{value}}
+                                                                </a>
+
+                                                                <a href="/browsers/index" ng-if="key == 1">
+                                                                    /{{value}}
+                                                                </a>
+                                                            </div>
+                                                        <?php else: ?>
+                                                            <div ng-repeat="(key, value) in sharedContainers">
+                                                                /{{value}}
+                                                            </div>
+                                                        <?php endif; ?>
                                                     </td>
                                                 </tr>
                                                 <tr ng-show="mergedHost.Host.description">

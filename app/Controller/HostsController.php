@@ -2419,7 +2419,7 @@ class HostsController extends AppController {
         $sharedContainers = [];
         foreach ($rawHost['Container'] as $container) {
             if (isset($container['id']) && $container['id'] != $rawHost['Host']['container_id']) {
-                $sharedContainers[] = $this->Tree->treePath($container['id'], ['delimiter' => '/']);
+                $sharedContainers[$container['id']] = $this->Tree->treePath($container['id'], ['delimiter' => '/']);
             }
         }
 
