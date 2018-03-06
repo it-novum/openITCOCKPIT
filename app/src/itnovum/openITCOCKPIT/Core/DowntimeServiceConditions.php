@@ -39,6 +39,17 @@ class DowntimeServiceConditions extends ListSettingsConditions {
     protected $hideExpired = false;
 
     /**
+     * @var bool
+     */
+    protected $isRunning = false;
+
+    /**
+     * @var array
+     */
+    private $serviceUuids = [];
+
+
+    /**
      * @param bool $value
      */
     public function setHideExpired($value) {
@@ -52,5 +63,43 @@ class DowntimeServiceConditions extends ListSettingsConditions {
         return $this->hideExpired;
     }
 
+    /**
+     * @param $value
+     */
+    public function setIsRunning($value) {
+        $this->isRunning = (bool)$value;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isRunning(){
+        return $this->isRunning;
+    }
+
+
+    /**
+     * @param array $uuids
+     */
+    public function setServiceUuid($uuids = []){
+        if(!is_array($uuids)){
+            $uuids = [$uuids];
+        }
+        $this->serviceUuids = $uuids;
+    }
+
+    /**
+     * @return array
+     */
+    public function getServiceUuids(){
+        return $this->serviceUuids;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasServiceUuids() {
+        return !empty($this->serviceUuids);
+    }
 }
 

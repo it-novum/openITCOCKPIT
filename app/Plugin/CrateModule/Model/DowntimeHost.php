@@ -30,7 +30,12 @@ class DowntimeHost extends CrateModuleAppModel {
     public $useTable = 'host_downtimehistory';
     public $tablePrefix = 'statusengine_';
 
-    public function getQuery(DowntimeHostConditions $Conditions, $paginatorConditions) {
+    /**
+     * @param DowntimeHostConditions $Conditions
+     * @param array $filterConditions
+     * @return array
+     */
+    public function getQuery(DowntimeHostConditions $Conditions, $filterConditions = []) {
         $fields = [
             'DowntimeHost.author_name',
             'DowntimeHost.comment_data',
@@ -82,10 +87,84 @@ class DowntimeHost extends CrateModuleAppModel {
             ];
         }
 
-        //Merge ListFilter conditions
-        $query['conditions'] = Hash::merge($paginatorConditions, $query['conditions']);
+        $query['conditions'] = Hash::merge($query['conditions'], $filterConditions);
+        if(isset($query['conditions']['DowntimeHost.was_started'])){
+            $query['conditions']['DowntimeHost.was_started'] = (bool)$query['conditions']['DowntimeHost.was_started'];
+        }
+
+        if(isset($query['conditions']['DowntimeHost.was_cancelled'])){
+            $query['conditions']['DowntimeHost.was_cancelled'] = (bool)$query['conditions']['DowntimeHost.was_cancelled'];
+        }
+
+        if($Conditions->isRunning()){
+            $query['conditions']['DowntimeHost.scheduled_end_time >'] = time();
+            $query['conditions']['DowntimeHost.was_started'] = true;
+            $query['conditions']['DowntimeHost.was_cancelled'] = false;
+        }
+
 
         return $query;
+    }
+
+    /**
+     * @param DowntimeHostConditions $Conditions
+     * @return array
+     */
+    public function getQueryForReporting(DowntimeHostConditions $Conditions) {
+        $query = [
+            'fields'     => [
+                'DowntimeHost.author_name',
+                'DowntimeHost.comment_data',
+                'DowntimeHost.scheduled_start_time',
+                'DowntimeHost.scheduled_end_time',
+                'DowntimeHost.duration',
+                'DowntimeHost.was_started',
+                'DowntimeHost.was_cancelled',
+            ],
+            'order'      => $Conditions->getOrder()
+        ];
+
+        if ($Conditions->hasHostUuids()) {
+            $query['conditions']['DowntimeHost.hostname'] = $Conditions->getHostUuids();
+        }
+
+
+        $query['or'] = [
+            ['? BETWEEN DowntimeHost.scheduled_start_time AND DowntimeHost.scheduled_end_time' => [$Conditions->getFrom()]],
+            ['? BETWEEN DowntimeHost.scheduled_start_time AND DowntimeHost.scheduled_end_time' => [$Conditions->getTo()]],
+            ['DowntimeHost.scheduled_start_time BETWEEN ? AND ?' => [$Conditions->getFrom(), $Conditions->getTo()]]
+        ];
+
+        return $query;
+    }
+
+    /**
+     * @param int $internalDowntimeId
+     * @return array
+     */
+    public function getHostUuidWithDowntimeByInternalDowntimeId($internalDowntimeId) {
+        $query = [
+            'fields'     => [
+                'DowntimeHost.*',
+
+            ],
+            'conditions' => [
+                'DowntimeHost.internal_downtime_id' => $internalDowntimeId
+            ]
+        ];
+
+        $result = $this->find('first', $query);
+        if(empty($result)){
+            return [];
+        }
+
+        return [
+            'DowntimeHost' => $result['DowntimeHost'],
+            'Host' => [
+                'uuid' => $result['DowntimeHost']['hostname']
+            ]
+        ];
+
     }
 
 }

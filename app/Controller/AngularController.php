@@ -446,4 +446,13 @@ class AngularController extends AppController {
         $this->state = $state;
     }
 
+    public function mass_delete_host_downtimes(){
+        return;
+    }
+
+
+    public function mass_delete_service_downtimes(){
+        return;
+    }
+
 }

@@ -70,11 +70,12 @@ angular.module('openITCOCKPIT')
                 $scope.post.Systemdowntime.to_date = null;
                 $scope.post.Systemdowntime.from_date = null;
             }
+            console.log($scope.post);
             $http.post("/systemdowntimes/addHostdowntime.json?angular=true", $scope.post).then(
                 function(result){
                     $scope.errors = null;
                     if($scope.post.Systemdowntime.is_recurring){
-                        window.location.href = '/systemdowntimes';
+                        window.location.href = '/systemdowntimes/host';
                     }else{
                         window.location.href = '/downtimes/host';
                     }
@@ -82,14 +83,14 @@ angular.module('openITCOCKPIT')
                 function errorCallback(result){
                     console.error(result.data);
                     if(result.data.hasOwnProperty('error')){
-                        $scope.errors = result.data.error;
+                        $scope.errors = result.data.error[0];
                     }
                 }
             );
         };
 
         $scope.loadHosts = function(searchString){
-            $http.get("/hosts/loadHostsByString.json", {
+            $http.get("/hosts/loadHostsByString/1.json", {
                 params: {
                     'angular': true,
                     'filter[Host.name]': searchString,

@@ -22,52 +22,54 @@
 //  License agreement and license key will be shipped with the order
 //  confirmation.
 
-namespace itnovum\openITCOCKPIT\Core\Views;
+namespace itnovum\openITCOCKPIT\Core;
 
 
-class DowntimeIcon {
-
-    /**
-     * @var Downtime
-     */
-    private $Downtime;
+class SystemdowntimesConditions {
 
     /**
-     * DowntimeIcon constructor.
-     * @param Downtime $Downtime
+     * @var array
      */
-    public function __construct(Downtime $Downtime) {
-        $this->Downtime = $Downtime;
+    private $containerIds = [];
+
+    /**
+     * @var array
+     */
+    private $order = [];
+
+    /**
+     * @return array
+     */
+    public function getContainerIds(){
+        return $this->containerIds;
     }
 
     /**
-     * @return string
+     * @param array $containerIds
      */
-    public function getLabel(){
-        if($this->Downtime->isRunning()){
-            return __('Downtime currently running');
-        }
-
-        if($this->Downtime->isExpired()){
-            return __('Downtime is expired');
-        }
-
-        if($this->Downtime->wasCancelled() && $this->Downtime->wasStarted()){
-            return __('Downtime was cancelled');
-        }
-
-        return __('Downtime not started yet');
+    public function setContainerIds($containerIds){
+        $this->containerIds = $containerIds;
     }
 
     /**
-     * @return string
+     * @return bool
      */
-    public function getIcon(){
-        $basicIcon = '<i title="%s" class="fa fa-power-off fa-lg %s"></i>';
-        if($this->Downtime->isRunning()){
-            return sprintf($basicIcon, $this->getLabel(), 'txt-color-green');
-        }
-        return sprintf($basicIcon, $this->getLabel(), 'txt-color-red');
+    public function hasContainer(){
+        return !empty($this->containerIds);
+    }
+
+    /**
+     * @param array $order
+     */
+    public function setOrder($order = []){
+        $this->order = $order;
+    }
+
+    /**
+     * @return array
+     */
+    public function getOrder(){
+        return $this->order;
     }
 
 }

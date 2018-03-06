@@ -658,6 +658,14 @@ class HostgroupsController extends AppController {
             $hostgroups = $this->Paginator->paginate();
         }
 
+        $hostgroups = $this->Hostgroup->makeItJavaScriptAble(
+            Hash::combine(
+                $hostgroups,
+                '{n}.Hostgroup.id',
+                '{n}.Container.name'
+            )
+        );
+
         $this->set(compact(['hostgroups']));
         $this->set('_serialize', ['hostgroups']);
     }

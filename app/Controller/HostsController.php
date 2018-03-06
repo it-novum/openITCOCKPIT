@@ -3160,7 +3160,10 @@ class HostsController extends AppController {
         $this->set('_serialize', ['hosts']);
     }
 
-    public function loadHostsByString() {
+    /**
+     * @param bool $onlyHostsWithWritePermission
+     */
+    public function loadHostsByString($onlyHostsWithWritePermission = false) {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
@@ -3172,6 +3175,16 @@ class HostsController extends AppController {
 
         $HostCondition = new HostConditions($HostFilter->ajaxFilter());
         $HostCondition->setContainerIds($this->MY_RIGHTS);
+        if($onlyHostsWithWritePermission){
+            $writeContainers = [];
+            foreach($this->MY_RIGHTS_LEVEL as $containerId => $rightLevel){
+                $rightLevel = (int)$rightLevel;
+                if($rightLevel === WRITE_RIGHT){
+                    $writeContainers[$containerId] = $rightLevel;
+                }
+            }
+            $HostCondition->setContainerIds(array_keys($writeContainers));
+        }
 
         $hosts = $this->Host->makeItJavaScriptAble(
             $this->Host->getHostsForAngular($HostCondition, $selected)
