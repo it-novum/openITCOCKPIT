@@ -532,7 +532,6 @@ class MapeditorsController extends MapModuleAppController {
                     }
                 }
             }
-           debug($hostgroups);
         }
 
         //get the Servicegroupstatus
