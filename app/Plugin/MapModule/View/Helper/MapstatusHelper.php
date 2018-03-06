@@ -290,10 +290,10 @@ class MapstatusHelper extends AppHelper {
     public function hostgroupstatus($uuid) {
         $cumulative_service_state = false;
         if (!empty($this->hostgroupstatus[$uuid])) {
-            $cumulative_host_state = Hash::apply($this->hostgroupstatus[$uuid], '{n}.Hoststatus.Hoststatus.current_state', 'max');
+            $cumulative_host_state = Hash::apply($this->hostgroupstatus[$uuid], '{n}.Hoststatus.current_state', 'max');
             if($cumulative_host_state == 0){
                 foreach ($this->hostgroupstatus[$uuid] as $key => $hosts) {
-                    $currentStates = Hash::extract($hosts, 'Servicestatus.{n}.Servicestatus.current_state');
+                    $currentStates = Hash::extract($hosts, 'Servicestatus.{n}.current_state');
                     if (is_array($currentStates) && !empty($currentStates)) {
                         $current_cumulative_service_state = Hash::apply($currentStates, '{n}', 'max');
                         if (isset($current_cumulative_service_state)) {
