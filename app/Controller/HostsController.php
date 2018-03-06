@@ -59,6 +59,7 @@ use itnovum\openITCOCKPIT\Core\HostSharingPermissions;
  * @property Hostgroup $Hostgroup
  * @property Timeperiod $Timeperiod
  * @property DowntimeHost $DowntimeHost
+ * @property BbcodeComponent $Bbcode
  */
 class HostsController extends AppController {
     public $layout = 'Admin.default';
@@ -2255,9 +2256,11 @@ class HostsController extends AppController {
             'fields'     => [
                 'Host.id',
                 'Host.uuid',
+                'Host.name',
+                'Host.address',
                 'Host.container_id',
                 'Host.host_type',
-                'Host.host_url'
+                'Host.host_url',
             ],
             'contain'    => [
                 'Container'
@@ -2335,7 +2338,8 @@ class HostsController extends AppController {
         ];
 
         $mergedHost['Host']['allowEdit'] = $allowEdit;
-        $mergedHost['Host']['satelliteId'] = $mergedHost['Host']['satellite_id'];
+        $mergedHost['Host']['satelliteId'] = (int)$mergedHost['Host']['satellite_id'];
+        $mergedHost['Host']['is_satellite_host'] = $mergedHost['Host']['satelliteId'] !== 0;
         $mergedHost['checkIntervalHuman'] = $UserTime->secondsInHumanShort($mergedHost['Host']['check_interval']);
         $mergedHost['retryIntervalHuman'] = $UserTime->secondsInHumanShort($mergedHost['Host']['retry_interval']);
         $mergedHost['notificationIntervalHuman'] = $UserTime->secondsInHumanShort($mergedHost['Host']['notification_interval']);

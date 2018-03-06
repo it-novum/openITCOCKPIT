@@ -7,7 +7,7 @@ angular.module('openITCOCKPIT').directive('serviceDowntime', function($http, Sud
 
 
             $scope.doDowntime = false;
-            $scope.downtime = {
+            $scope.downtimeModal = {
                 comment: '',
                 from_date: '',
                 from_time: '',
@@ -18,6 +18,8 @@ angular.module('openITCOCKPIT').directive('serviceDowntime', function($http, Sud
             var objects = {};
             var author = '';
 
+            var callbackName = false;
+
             $scope.setServiceDowntimeObjects = function(_objects){
                 objects = _objects;
             };
@@ -26,11 +28,15 @@ angular.module('openITCOCKPIT').directive('serviceDowntime', function($http, Sud
                 author = _author;
             };
 
+            $scope.setServiceDowntimeCallback = function(_callback){
+                callbackName = _callback;
+            };
+
             $scope.doServiceDowntime = function(){
 
 
                 $http.post("/downtimes/validateDowntimeInputFromAngular.json?angular=true",
-                    $scope.downtime
+                    $scope.downtimeModal
                 ).then(function(result){
                     var count = Object.keys(objects).length;
                     var i = 0;
@@ -45,11 +51,15 @@ angular.module('openITCOCKPIT').directive('serviceDowntime', function($http, Sud
                         SudoService.send(SudoService.toJson('submitServiceDowntime', [
                             object.Host.uuid,
                             object.Service.uuid,
-                            $scope.downtime.from_date + ' ' + $scope.downtime.from_time,
-                            $scope.downtime.to_date + ' ' + $scope.downtime.to_time,
-                            $scope.downtime.comment,
+                            $scope.downtimeModal.from_date + ' ' + $scope.downtimeModal.from_time,
+                            $scope.downtimeModal.to_date + ' ' + $scope.downtimeModal.to_time,
+                            $scope.downtimeModal.comment,
                             author
                         ]));
+                    }
+                    //Call callback function if given
+                    if(callbackName){
+                        $scope[callbackName]();
                     }
                     $timeout(function(){
                         $scope.doDowntime = false;
@@ -71,6 +81,11 @@ angular.module('openITCOCKPIT').directive('serviceDowntime', function($http, Sud
                 if(Object.keys(objects).length === 0){
                     return;
                 }
+
+                if(attr.hasOwnProperty('callback')){
+                    $scope.setServiceDowntimeCallback(attr.callback);
+                }
+
                 $scope.setServiceDowntimeObjects(objects);
 
                 $scope.setServiceDowntimeAuthor(attr.author);

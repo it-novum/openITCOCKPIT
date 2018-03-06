@@ -170,5 +170,27 @@ class DowntimeService extends CrateModuleAppModel {
         return Hash::extract($result, '{n}.DowntimeService.internal_downtime_id');
     }
 
+    /**
+     * @param string $uuid
+     * @return array|null
+     */
+    public function byServiceUuid($uuid = null){
+        if ($uuid !== null) {
+            $downtime = $this->find('first', [
+                'conditions' => [
+                    'service_description' => $uuid,
+                ],
+                'order' => [
+                    'DowntimeService.entry_time' => 'DESC',
+                ],
+            ]);
+
+            return $downtime;
+
+        }
+
+        return [];
+    }
+
 }
 

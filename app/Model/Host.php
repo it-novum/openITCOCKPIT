@@ -1532,4 +1532,64 @@ class Host extends AppModel {
         ];
     }
 
+    /**
+     * @param int $hostId
+     * @return array
+     */
+    public function getQueryForServiceBrowser($hostId){
+        return [
+            'recursive'  => -1,
+            'fields'     => [
+                'Host.id',
+                'Host.uuid',
+                'Host.name',
+                'Host.address',
+                'Host.container_id',
+                'Host.satellite_id'
+            ],
+            'contain'    => [
+                'Container',
+                'Contact'      => [
+                    'fields' => [
+                        'id',
+                        'name'
+                    ],
+                ],
+                'Contactgroup' => [
+                    'Container' => [
+                        'fields' => [
+                            'Container.name',
+                            'Container.parent_id'
+                        ],
+                    ],
+                    'fields'    => [
+                        'Contactgroup.id',
+                    ],
+                ],
+                'Hosttemplate' => [
+                    'Contact'      => [
+                        'fields' => [
+                            'id', 'name',
+                        ],
+                        'Container'
+                    ],
+                    'Contactgroup' => [
+                        'Container' => [
+                            'fields' => [
+                                'Container.name',
+                                'Container.parent_id'
+                            ],
+                        ],
+                        'fields'    => [
+                            'Contactgroup.id',
+                        ],
+                    ],
+                ],
+            ],
+            'conditions' => [
+                'Host.id' => $hostId
+            ]
+        ];
+    }
+
 }

@@ -97,8 +97,11 @@ angular.module('openITCOCKPIT', [])
                 case 2:
                 case '2':
                     return 'Critical';
-                default:
+                case 3:
+                case '3':
                     return 'Unknown';
+                default:
+                    return 'Not in monitoring';
             }
 
         }

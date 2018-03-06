@@ -596,7 +596,7 @@ $notification_settings = [
                                 'selected'         => $service['Service']['eventhandler_command_id'],
                                 'wrapInput'        => 'col col-xs-10 col-md-10 col-lg-10',
                             ]); ?>
-                            <!-- <div id="EventhandlerCommandArgs"></div> -->
+
                             <div id="EventhandlerCommandArgs">
                                 <?php
                                 if (!empty($eventhandler_commandarguments)):
@@ -671,7 +671,7 @@ $notification_settings = [
                     </div>
                 </div>
             </div>
-            <
+            
             <br/>
             <?php echo $this->Form->formActions(); ?>
 

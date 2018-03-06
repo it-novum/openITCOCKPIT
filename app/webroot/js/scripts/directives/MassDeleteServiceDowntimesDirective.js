@@ -11,8 +11,14 @@ angular.module('openITCOCKPIT').directive('massDeleteServiceDowntimes', function
             $scope.percentage = 0;
             $scope.isDeleting = false;
 
+            $scope.myDeleteUrl = $scope.deleteUrl;
+
             $scope.setObjectsForMassServiceDowntimeDelete = function(objects){
                 $scope.objects = objects;
+            };
+
+            $scope.setCallbackForMassServiceDowntimeDelete = function(_callback){
+                callbackName = _callback;
             };
 
 
@@ -25,7 +31,7 @@ angular.module('openITCOCKPIT').directive('massDeleteServiceDowntimes', function
                     var data = {
                         type: 'service'
                     };
-                    $http.post($scope.deleteUrl + id + ".json", data).then(
+                    $http.post($scope.myDeleteUrl + id + ".json", data).then(
                         function(result){
                             i++;
                             $scope.percentage = Math.round(i / count * 100);
@@ -33,7 +39,12 @@ angular.module('openITCOCKPIT').directive('massDeleteServiceDowntimes', function
                             if(i === count){
                                 $scope.isDeleting = false;
                                 $scope.percentage = 0;
-                                $scope.load();
+                                //Call callback function if given
+                                if(callbackName){
+                                    $scope[callbackName]();
+                                }else{
+                                    $scope.load();
+                                }
                                 $('#angularMassDeleteServiceDowntimes').modal('hide');
                             }
                         });
@@ -44,6 +55,15 @@ angular.module('openITCOCKPIT').directive('massDeleteServiceDowntimes', function
 
         link: function($scope, element, attr){
             $scope.confirmServiceDowntimeDelete = function(objects){
+
+                if(attr.hasOwnProperty('deleteUrl')){
+                    $scope.myDeleteUrl = attr.deleteUrl;
+                }
+
+                if(attr.hasOwnProperty('callback')){
+                    $scope.setCallbackForMassServiceDowntimeDelete(attr.callback);
+                }
+
                 $scope.setObjectsForMassServiceDowntimeDelete(objects);
                 $('#angularMassDeleteServiceDowntimes').modal('show');
             };

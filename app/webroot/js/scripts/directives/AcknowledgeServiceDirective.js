@@ -15,12 +15,18 @@ angular.module('openITCOCKPIT').directive('acknowledgeService', function($http, 
             var objects = {};
             var author = '';
 
+            var callbackName = false;
+
             $scope.setServiceAckObjects = function(_objects){
                 objects = _objects;
             };
 
             $scope.setServiceAckAuthor = function(_author){
                 author = _author;
+            };
+
+            $scope.setServiceAckCallback = function(_callback){
+                callbackName = _callback;
             };
 
             $scope.doAcknowledgeService = function(){
@@ -53,6 +59,11 @@ angular.module('openITCOCKPIT').directive('acknowledgeService', function($http, 
                         sticky
                     ]));
                 }
+
+                //Call callback function if given
+                if(callbackName){
+                    $scope[callbackName]();
+                }
                 $timeout(function(){
                     $scope.doAck = false;
                     $scope.percentage = 0;
@@ -67,6 +78,11 @@ angular.module('openITCOCKPIT').directive('acknowledgeService', function($http, 
                 if(Object.keys(objects).length === 0){
                     return;
                 }
+
+                if(attr.hasOwnProperty('callback')){
+                    $scope.setServiceAckCallback(attr.callback);
+                }
+
                 $scope.setServiceAckObjects(objects);
 
                 $scope.setServiceAckAuthor(attr.author);

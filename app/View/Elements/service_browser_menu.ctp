@@ -71,11 +71,11 @@
 <?php endif; ?>
 <?php if ($allowEdit): ?>
     <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
-        <a href="/hosts/edit/<?php echo $service['Host']['id']; ?>" data-original-title="<?php echo _('Edit host'); ?>"
+        <a href="/hosts/edit/<?php echo $service['Host']['id']; ?>/_controller:services/_action:browser/_id:<?php echo $service['Service']['id']; ?>/" data-original-title="<?php echo _('Edit host'); ?>"
            data-placement="bottom" rel="tooltip" class="btn btn-default btn-sm"><i class="fa fa-cog fa-lg"></i></a>
     <?php endif; ?>
     <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
-        <a href="/services/edit/<?php echo $service['Service']['id']; ?>"
+        <a href="/services/edit/<?php echo $service['Service']['id']; ?>/_controller:services/_action:browser/_id:<?php echo $service['Service']['id']; ?>/"
            data-original-title="<?php echo _('Edit service'); ?>" data-placement="bottom" rel="tooltip"
            class="btn btn-default btn-sm"><i class="fa fa-cogs fa-lg"></i></a>
     <?php endif; ?>
@@ -92,14 +92,7 @@
                                 class="fa fa-area-chart"></i> <?php echo __('Grapher'); ?></a>
                 </li>
             <?php endif; ?>
-            <?php if ($this->params['controller'] == 'services' && $this->params['action'] == 'browser'): ?>
-                <?php if ($this->Acl->hasPermission('index', 'qr')): ?>
-                    <li>
-                        <a href="javascript:void(0);" data-toggle="modal" data-target="#qrmodal" id="qropen"><i
-                                    class="fa fa-qrcode"></i> <?php echo __('Scan code'); ?></a>
-                    </li>
-                <?php endif; ?>
-            <?php endif; ?>
+
             <?php if ($this->Acl->hasPermission('edit', 'services')):
                 if (!empty($additionalLinksList)):
                     echo '<li class="divider"></li>';

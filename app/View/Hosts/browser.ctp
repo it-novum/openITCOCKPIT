@@ -462,7 +462,7 @@ if (!$QueryHandler->exists()): ?>
                                                  ng-show="mergedHost.areContactsFromHosttemplate">
                                                 <i class="fa-fw fa fa-info"></i>
                                                 <strong><?php echo __('Info'); ?>:</strong>
-                                                <?php echo __('Contacts got inherit from host template'); ?>
+                                                <?php echo __('Contacts have been inherited from the host template'); ?>
                                             </div>
                                         </div>
                                     </div>
@@ -805,6 +805,16 @@ if (!$QueryHandler->exists()): ?>
                                                     </td>
                                                 </tr>
 
+                                                <tr ng-show="mergedHost.Host.is_satellite_host">
+                                                    <td><?php echo __('Satellite'); ?></td>
+                                                    <td>
+                                                        <satellite-name
+                                                                satellite-id="mergedHost.Host.satelliteId"
+                                                                ng-if="mergedHost.Host.is_satellite_host"
+                                                        ></satellite-name>
+                                                    </td>
+                                                </tr>
+
                                                 <tr ng-show="mergedHost.Host.notes">
                                                     <td><?php echo __('Notes'); ?></td>
                                                     <td>
@@ -842,8 +852,6 @@ if (!$QueryHandler->exists()): ?>
         </div>
     </article>
 
-
-    <!-- new angular -->
 
     <massdelete></massdelete>
     <massdeactivate></massdeactivate>
