@@ -23,12 +23,12 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class Mapeditor extends MapModuleAppModel
-{
+class Mapeditor extends MapModuleAppModel {
     public $useTable = false;
 
-    public function prepareForSave($request)
-    {
+    //@TODO check this file for obsolete functions!
+
+    public function prepareForSave($request) {
         $filtered = [];
         foreach ($request as $key => $mapObject) {
             if ($key !== 'Map') {
@@ -87,8 +87,7 @@ class Mapeditor extends MapModuleAppModel
      *
      * @return Array          Array with ids to delete
      */
-    public function getObsoleteIds($oldData, $newData)
-    {
+    public function getObsoleteIds($oldData, $newData) {
         $idsToDelete = [];
         foreach ($oldData as $key => $data) {
             $idsToDelete[$key] = array_diff(Hash::extract($data, '{n}.id'), (!empty($newData[$key])) ? Hash::extract($newData[$key], '{s}.id') : []);
@@ -105,8 +104,7 @@ class Mapeditor extends MapModuleAppModel
      *
      * @return Array the map elements
      */
-    public function mapStatus($id, $iterations = 0)
-    {
+    public function mapStatus($id, $iterations = 0) {
         $Mapitem = ClassRegistry::init('Mapitem');
         $Mapline = ClassRegistry::init('Mapline');
         $Mapgadget = ClassRegistry::init('Mapgadget');
@@ -151,8 +149,8 @@ class Mapeditor extends MapModuleAppModel
         ]);
 
         $mapstatus = [];
-        if(!empty($mapElements['items'])){
-            if($iterations <= 1) {
+        if (!empty($mapElements['items'])) {
+            if ($iterations <= 1) {
                 $iterations++;
                 foreach ($mapElements['items'] as $item) {
                     if ($item['Mapitem']['type'] == 'map') {
@@ -162,7 +160,6 @@ class Mapeditor extends MapModuleAppModel
                 }
             }
         }
-
 
 
         //get the service ids
@@ -243,16 +240,16 @@ class Mapeditor extends MapModuleAppModel
         }
 
 
-        if(!empty($mapstatus)){
-            foreach ($mapstatus as $mapstate){
+        if (!empty($mapstatus)) {
+            foreach ($mapstatus as $mapstate) {
                 $statusObjects = array_merge_recursive($statusObjects, $mapstate);
             }
 
             $tmpMapstatusObj = [];
-            foreach ($statusObjects as $key => $statusObject){
-                if(!empty($statusObject)){
-                    foreach ($statusObject as $soKey => $obj){
-                        if(!empty($obj)){
+            foreach ($statusObjects as $key => $statusObject) {
+                if (!empty($statusObject)) {
+                    foreach ($statusObject as $soKey => $obj) {
+                        if (!empty($obj)) {
                             $tmpMapstatusObj[$key][] = $obj;
                         }
 
@@ -273,8 +270,7 @@ class Mapeditor extends MapModuleAppModel
      *
      * @return Array Hoststatus array
      */
-    protected function _hoststatus($conditions, $fields = null)
-    {
+    protected function _hoststatus($conditions, $fields = null) {
         $_conditions = ['Objects.objecttype_id' => 1];
         $conditions = Hash::merge($conditions, $_conditions);
 
@@ -306,12 +302,11 @@ class Mapeditor extends MapModuleAppModel
      *
      * @param  Array $conditions
      * @param  Array $fields
-     * @param  Bool  $getServiceInfo set to true if you also want to get the service and servicetemplate data
+     * @param  Bool $getServiceInfo set to true if you also want to get the service and servicetemplate data
      *
      * @return Array Servicestatus array
      */
-    protected function _servicestatus($conditions, $fields = null, $getServiceInfo = false, $type = 'all')
-    {
+    protected function _servicestatus($conditions, $fields = null, $getServiceInfo = false, $type = 'all') {
         $_conditions = ['Objects.objecttype_id' => 2];
         $conditions = Hash::merge($conditions, $_conditions);
 
@@ -378,14 +373,13 @@ class Mapeditor extends MapModuleAppModel
      * get hoststatus by uuid
      * @author Maximilian Pappert <maximilian.pappert@it-novum.com>
      *
-     * @param  Mixed $uuid   String or array of uuids
+     * @param  Mixed $uuid String or array of uuids
      * @param  Array $fields fields which should be returned
      *
      * @return Mixed         false if there wasnt uuid submitted, empty array if nothing found or filled array on
      *                       success
      */
-    public function getHoststatusByUuid($uuid = [], $fields = null)
-    {
+    public function getHoststatusByUuid($uuid = [], $fields = null) {
         if (empty($uuid)) {
             return false;
         }
@@ -402,14 +396,13 @@ class Mapeditor extends MapModuleAppModel
      * get servicestatus by HOST uuid
      * @author Maximilian Pappert <maximilian.pappert@it-novum.com>
      *
-     * @param  Mixed $uuid   String or Array of Uuids
+     * @param  Mixed $uuid String or Array of Uuids
      * @param  Array $fields fields which should be returned
      *
      * @return Mixed         false if there wasnt uuid submitted, empty array if nothing found or filled array on
      *                       success
      */
-    public function getServicestatusByHostUuid($uuid = null, $fields = null)
-    {
+    public function getServicestatusByHostUuid($uuid = null, $fields = null) {
         if (empty($uuid)) {
             return false;
         }
@@ -426,14 +419,13 @@ class Mapeditor extends MapModuleAppModel
      * get servcestatus by uuid
      * @author Maximilian Pappert <maximilian.pappert@it-novum.com>
      *
-     * @param  Mixed $uuid   String or Array of Uuids
+     * @param  Mixed $uuid String or Array of Uuids
      * @param  Array $fields fields which should be returned
      *
      * @return Mixed         false if there wasnt uuid submitted, empty array if nothing found or filled array on
      *                       success
      */
-    public function getServicestatusByUuid($uuid = null, $fields = null)
-    {
+    public function getServicestatusByUuid($uuid = null, $fields = null) {
         if (empty($uuid)) {
             return false;
         }
@@ -450,14 +442,13 @@ class Mapeditor extends MapModuleAppModel
      * get servicegroupstatus by uuid
      * @author Maximilian Pappert <maximilian.pappert@it-novum.com>
      *
-     * @param  Mixed $uuid   String or Array of Uuids
+     * @param  Mixed $uuid String or Array of Uuids
      * @param  Array $fields fields which should be returned
      *
      * @return Mixed         false if there wasnt uuid submitted, empty array if nothing found or filled array on
      *                       success
      */
-    public function getServicegroupstatusByUuid($uuid = null, $fields = null)
-    {
+    public function getServicegroupstatusByUuid($uuid = null, $fields = null) {
         if (empty($uuid)) {
             return false;
         }
@@ -499,15 +490,14 @@ class Mapeditor extends MapModuleAppModel
      * get hostgroupstate by uuid
      * @author Maximilian Pappert <maximilian.pappert@it-novum.com>
      *
-     * @param  Mixed $uuid          String or Array of Uuids
-     * @param  Array $hostFields    fields of the hosts which should be returned
+     * @param  Mixed $uuid String or Array of Uuids
+     * @param  Array $hostFields fields of the hosts which should be returned
      * @param  Array $serviceFields fields of the services which should be returned
      *
      * @return Mixed                false if there wasnt uuid submitted, empty array if nothing found or filled array
      *                              on success
      */
-    public function getHostgroupstatusByUuid($uuid = null, $hostFields = null, $serviceFields = null)
-    {
+    public function getHostgroupstatusByUuid($uuid = null, $hostFields = null, $serviceFields = null) {
         if (empty($uuid)) {
             return false;
         }
@@ -548,21 +538,21 @@ class Mapeditor extends MapModuleAppModel
         foreach ($hostgroupstatus as $hgKey => $hostgroup) {
             foreach ($HostgroupHostUuids as $key => $hostUuid) {
                 $conditions = [
-                    'Objects.name1' => $hostUuid,
+                    'Objects.name1'     => $hostUuid,
                     'Objects.is_active' => 1,
                 ];
 
-                if(empty($hoststatusMapping[$hostUuid])){
+                if (empty($hoststatusMapping[$hostUuid])) {
                     $hoststatusMapping[$hostUuid] = $this->_hoststatus($conditions, $hostFields);
                     $hostgroupHostStatus = $hoststatusMapping[$hostUuid];
-                }else{
+                } else {
                     $hostgroupHostStatus = $hoststatusMapping[$hostUuid];
                 }
 
-                if(empty($servicestatusMapping[$hostUuid])){
+                if (empty($servicestatusMapping[$hostUuid])) {
                     $servicestatusMapping[$hostUuid] = $this->_servicestatus($conditions, $serviceFields);
                     $hostgroupServiceStatus = $servicestatusMapping[$hostUuid];
-                }else{
+                } else {
                     $hostgroupServiceStatus = $servicestatusMapping[$hostUuid];
                 }
 
@@ -575,8 +565,7 @@ class Mapeditor extends MapModuleAppModel
         return $hostgroupstatus;
     }
 
-    public function getMapElements($type = 'Mapitem', $conditions = null, $fields = null)
-    {
+    public function getMapElements($type = 'Mapitem', $conditions = null, $fields = null) {
         $joins = [
             [
                 'table'      => 'hosts',
@@ -585,8 +574,8 @@ class Mapeditor extends MapModuleAppModel
                 'conditions' => [
                     [
                         'AND' => [
-                            'Host.id = '.$type.'.object_id',
-                            ''.$type.'.type' => 'host',
+                            'Host.id = ' . $type . '.object_id',
+                            '' . $type . '.type' => 'host',
                         ],
                     ],
                 ],
@@ -598,8 +587,8 @@ class Mapeditor extends MapModuleAppModel
                 'conditions' => [
                     [
                         'AND' => [
-                            'Service.id = '.$type.'.object_id',
-                            ''.$type.'.type' => 'service',
+                            'Service.id = ' . $type . '.object_id',
+                            '' . $type . '.type' => 'service',
                         ],
                     ],
                 ],
@@ -611,8 +600,8 @@ class Mapeditor extends MapModuleAppModel
                 'conditions' => [
                     [
                         'AND' => [
-                            'Hostgroup.id = '.$type.'.object_id',
-                            ''.$type.'.type' => 'hostgroup',
+                            'Hostgroup.id = ' . $type . '.object_id',
+                            '' . $type . '.type' => 'hostgroup',
                         ],
                     ],
                 ],
@@ -624,8 +613,8 @@ class Mapeditor extends MapModuleAppModel
                 'conditions' => [
                     [
                         'AND' => [
-                            'Servicegroup.id = '.$type.'.object_id',
-                            ''.$type.'.type' => 'servicegroup',
+                            'Servicegroup.id = ' . $type . '.object_id',
+                            '' . $type . '.type' => 'servicegroup',
                         ],
                     ],
                 ],
@@ -665,6 +654,144 @@ class Mapeditor extends MapModuleAppModel
             'conditions' => $conditions,
             'fields'     => $fields,
             'joins'      => $joins,
+        ]);
+
+        return $result;
+    }
+
+
+    /**
+     *
+     *
+     */
+
+
+    public function getHostInfoByUuids($uuids) {
+        if (!is_array($uuids)) {
+            $uuids = [$uuids];
+        }
+
+        $this->Host = ClassRegistry::init('Host');
+
+        $result = $this->Host->find('all', [
+            'recursive'  => -1,
+            'conditions' => [
+                'Host.uuid' => $uuids
+            ],
+            'fields'     => [
+                'Host.id',
+                'Host.uuid',
+                'Host.name',
+                'Host.address',
+                'Host.description',
+                'Host.disabled'
+            ]
+        ]);
+        return $result;
+    }
+
+    public function getServiceInfoByHostIds($hostIds) {
+        if (!is_array($hostIds)) {
+            $hostIds = [$hostIds];
+        }
+
+        $this->Service = ClassRegistry::init('Service');
+
+        $result = $this->Service->find('all', [
+            'recursive'  => -1,
+            'conditions' => [
+                'Service.host_id' => $hostIds
+            ],
+            'fields'     => [
+                'Service.host_id',
+                'Service.uuid',
+                'Service.disabled',
+                'IF(Service.name IS NULL, Servicetemplate.name, Service.name) AS ServiceName',
+                'IF(Service.name IS NULL, Servicetemplate.description, Service.description) AS ServiceDescription',
+            ],
+            'joins'      => [
+                [
+                    'table'      => 'servicetemplates',
+                    'type'       => 'INNER',
+                    'alias'      => 'Servicetemplate',
+                    'conditions' => [
+                        'Servicetemplate.id = Service.servicetemplate_id',
+                    ],
+                ],
+            ]
+        ]);
+        return $result;
+    }
+
+    public function getServiceInfoByUuids($uuids) {
+        if (!is_array($uuids)) {
+            $uuids = [$uuids];
+        }
+
+        $this->Service = ClassRegistry::init('Service');
+
+        $result = $this->Service->find('all', [
+            'recursive'  => -1,
+            'conditions' => [
+                'Service.uuid' => $uuids
+            ],
+            'fields'     => [
+                'Service.host_id',
+                'Service.uuid',
+                'Service.disabled',
+                'IF(Service.name IS NULL, Servicetemplate.name, Service.name) AS ServiceName',
+                'IF(Service.name IS NULL, Servicetemplate.description, Service.description) AS ServiceDescription',
+            ],
+            'joins'      => [
+                [
+                    'table'      => 'servicetemplates',
+                    'type'       => 'INNER',
+                    'alias'      => 'Servicetemplate',
+                    'conditions' => [
+                        'Servicetemplate.id = Service.servicetemplate_id',
+                    ],
+                ],
+            ]
+        ]);
+        return $result;
+    }
+
+    public function getHostgroupInfoByUuids($uuids) {
+        if (!is_array($uuids)) {
+            $uuids = [$uuids];
+        }
+
+        $this->Hostgroup = ClassRegistry::init('Hostgroup');
+
+        $result = $this->Hostgroup->find('all', [
+            'recursive'  => -1,
+            'conditions' => [
+                'Hostgroup.uuid' => $uuids
+            ],
+            'fields'     => [
+                'Hostgroup.id',
+                'Hostgroup.uuid',
+                'Hostgroup.container_id',
+                'Hostgroup.description',
+                'Hostgroup.hostgroup_url',
+            ],
+            'contain'    => [
+                'Container' => [
+                    'fields' => [
+                        'Container.name',
+                    ],
+                ],
+                'Host'      => [
+                    'fields' => [
+                        'Host.id',
+                        'Host.name',
+                        'Host.uuid',
+                        'Host.description',
+                        'Host.address',
+                        'Host.disabled',
+                    ],
+                ],
+            ],
         ]);
 
         return $result;
