@@ -2131,75 +2131,82 @@ class ServicesController extends AppController {
         $acknowledgement = [];
         if ($Servicestatus->isAcknowledged()) {
             $acknowledgement = $this->AcknowledgedService->byServiceUuid($service['Service']['uuid']);
-            $Acknowledgement = new AcknowledgementService($acknowledgement['AcknowledgedService'], $UserTime);
-            $acknowledgement = $Acknowledgement->toArray();
+            if(!empty($acknowledgement)) {
+                $Acknowledgement = new AcknowledgementService($acknowledgement['AcknowledgedService'], $UserTime);
+                $acknowledgement = $Acknowledgement->toArray();
 
-            $ticketSystem = $this->Systemsetting->find('first', [
-                'conditions' => ['key' => 'TICKET_SYSTEM.URL'],
-            ]);
+                $ticketSystem = $this->Systemsetting->find('first', [
+                    'conditions' => ['key' => 'TICKET_SYSTEM.URL'],
+                ]);
 
-            $ticketDetails = [];
-            if (!empty($ticketSystem['Systemsetting']['value']) && preg_match('/^(Ticket)_?(\d+);?(\d+)/', $Acknowledgement->getCommentData(), $ticketDetails)) {
-                $commentDataHtml = $Acknowledgement->getCommentData();
-                if (isset($ticketDetails[1], $ticketDetails[3], $ticketDetails[2])) {
-                    $commentDataHtml = sprintf(
-                        '<a href="%s%s" target="_blank">%s %s</a>',
-                        $ticketSystem['Systemsetting']['value'],
-                        $ticketDetails[3],
-                        $ticketDetails[1],
-                        $ticketDetails[2]
-                    );
+                $ticketDetails = [];
+                if (!empty($ticketSystem['Systemsetting']['value']) && preg_match('/^(Ticket)_?(\d+);?(\d+)/', $Acknowledgement->getCommentData(), $ticketDetails)) {
+                    $commentDataHtml = $Acknowledgement->getCommentData();
+                    if (isset($ticketDetails[1], $ticketDetails[3], $ticketDetails[2])) {
+                        $commentDataHtml = sprintf(
+                            '<a href="%s%s" target="_blank">%s %s</a>',
+                            $ticketSystem['Systemsetting']['value'],
+                            $ticketDetails[3],
+                            $ticketDetails[1],
+                            $ticketDetails[2]
+                        );
+                    }
+                } else {
+                    $commentDataHtml = $this->Bbcode->asHtml($Acknowledgement->getCommentData(), true);
                 }
-            } else {
-                $commentDataHtml = $this->Bbcode->asHtml($Acknowledgement->getCommentData(), true);
+
+                $acknowledgement['commentDataHtml'] = $commentDataHtml;
             }
-
-            $acknowledgement['commentDataHtml'] = $commentDataHtml;
-
         }
 
         $downtime = [];
         if ($Servicestatus->isInDowntime()) {
             $downtime = $this->DowntimeService->byServiceUuid($service['Service']['uuid']);
-            $Downtime = new \itnovum\openITCOCKPIT\Core\Views\Downtime($downtime['DowntimeService'], $allowEdit, $UserTime);
-            $downtime = $Downtime->toArray();
+            if(!empty($downtime)) {
+                $Downtime = new \itnovum\openITCOCKPIT\Core\Views\Downtime($downtime['DowntimeService'], $allowEdit, $UserTime);
+                $downtime = $Downtime->toArray();
+            }
         }
 
         //Get Host Ack and Donwtime
         $hostDowntime = [];
         if ($Hoststatus->isInDowntime()) {
             $hostDowntime = $this->DowntimeHost->byHostUuid($rawHost['Host']['uuid']);
-            $DowntimeHost = new \itnovum\openITCOCKPIT\Core\Views\Downtime($hostDowntime['DowntimeHost'], $allowEdit, $UserTime);
-            $hostDowntime = $DowntimeHost->toArray();
+            if(!empty($hostDowntime)) {
+                $DowntimeHost = new \itnovum\openITCOCKPIT\Core\Views\Downtime($hostDowntime['DowntimeHost'], $allowEdit, $UserTime);
+                $hostDowntime = $DowntimeHost->toArray();
+            }
         }
 
         $hostAcknowledgement = [];
         if ($Hoststatus->isAcknowledged()) {
             $hostAcknowledgement = $this->AcknowledgedHost->byHostUuid($rawHost['Host']['uuid']);
-            $AcknowledgementHost = new AcknowledgementHost($hostAcknowledgement['AcknowledgedHost'], $UserTime);
-            $hostAcknowledgement = $AcknowledgementHost->toArray();
+            if(!empty($hostAcknowledgement)) {
+                $AcknowledgementHost = new AcknowledgementHost($hostAcknowledgement['AcknowledgedHost'], $UserTime);
+                $hostAcknowledgement = $AcknowledgementHost->toArray();
 
-            $ticketSystem = $this->Systemsetting->find('first', [
-                'conditions' => ['key' => 'TICKET_SYSTEM.URL'],
-            ]);
+                $ticketSystem = $this->Systemsetting->find('first', [
+                    'conditions' => ['key' => 'TICKET_SYSTEM.URL'],
+                ]);
 
-            $ticketDetails = [];
-            if (!empty($ticketSystem['Systemsetting']['value']) && preg_match('/^(Ticket)_?(\d+);?(\d+)/', $AcknowledgementHost->getCommentData(), $ticketDetails)) {
-                $commentDataHtml = $AcknowledgementHost->getCommentData();
-                if (isset($ticketDetails[1], $ticketDetails[3], $ticketDetails[2])) {
-                    $commentDataHtml = sprintf(
-                        '<a href="%s%s" target="_blank">%s %s</a>',
-                        $ticketSystem['Systemsetting']['value'],
-                        $ticketDetails[3],
-                        $ticketDetails[1],
-                        $ticketDetails[2]
-                    );
+                $ticketDetails = [];
+                if (!empty($ticketSystem['Systemsetting']['value']) && preg_match('/^(Ticket)_?(\d+);?(\d+)/', $AcknowledgementHost->getCommentData(), $ticketDetails)) {
+                    $commentDataHtml = $AcknowledgementHost->getCommentData();
+                    if (isset($ticketDetails[1], $ticketDetails[3], $ticketDetails[2])) {
+                        $commentDataHtml = sprintf(
+                            '<a href="%s%s" target="_blank">%s %s</a>',
+                            $ticketSystem['Systemsetting']['value'],
+                            $ticketDetails[3],
+                            $ticketDetails[1],
+                            $ticketDetails[2]
+                        );
+                    }
+                } else {
+                    $commentDataHtml = $this->Bbcode->asHtml($AcknowledgementHost->getCommentData(), true);
                 }
-            } else {
-                $commentDataHtml = $this->Bbcode->asHtml($AcknowledgementHost->getCommentData(), true);
-            }
 
-            $hostAcknowledgement['commentDataHtml'] = $commentDataHtml;
+                $hostAcknowledgement['commentDataHtml'] = $commentDataHtml;
+            }
         }
 
 
