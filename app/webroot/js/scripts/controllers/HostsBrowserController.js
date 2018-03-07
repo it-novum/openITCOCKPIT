@@ -217,7 +217,7 @@ angular.module('openITCOCKPIT')
 
         $scope.getObjectForDowntimeDelete = function(){
             var object = {};
-            object[$scope.downtime.internalDowntimeId] = $scope.mergedHost.Host.tname;
+            object[$scope.downtime.internalDowntimeId] = $scope.mergedHost.Host.name;
             return object;
         };
 
@@ -306,7 +306,7 @@ angular.module('openITCOCKPIT')
                 legend: false,
                 grid: {
                     hoverable: true,
-                    markings: self.threshold_lines,
+                    markings: [],
                     borderWidth: {
                         top: 1,
                         right: 1,

@@ -7,14 +7,14 @@ angular.module('openITCOCKPIT').directive('massDeleteServiceDowntimes', function
         controller: function($scope){
 
             $scope.includeServices = true;
-            $scope.objects = {};
             $scope.percentage = 0;
             $scope.isDeleting = false;
 
+            var objects = {};
             $scope.myDeleteUrl = $scope.deleteUrl;
 
-            $scope.setObjectsForMassServiceDowntimeDelete = function(objects){
-                $scope.objects = objects;
+            $scope.setObjectsForMassServiceDowntimeDelete = function(_objects){
+                objects = _objects;
             };
 
             $scope.setCallbackForMassServiceDowntimeDelete = function(_callback){
@@ -22,12 +22,12 @@ angular.module('openITCOCKPIT').directive('massDeleteServiceDowntimes', function
             };
 
 
-            $scope.delete = function(){
+            $scope.doDeleteServiceDowntime = function(){
                 $scope.isDeleting = true;
-                var count = Object.keys($scope.objects).length;
+                var count = Object.keys(objects).length;
                 var i = 0;
 
-                for(var id in $scope.objects){
+                for(var id in objects){
                     var data = {
                         type: 'service'
                     };

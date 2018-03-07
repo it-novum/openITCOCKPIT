@@ -68,6 +68,8 @@ class Servicestatus {
 
     private $latency;
 
+    private $max_check_attempts;
+
     /**
      * @var UserTime|null
      */
@@ -152,6 +154,10 @@ class Servicestatus {
 
         if (isset($data['latency'])) {
             $this->latency = $data['latency'];
+        }
+
+        if(isset($data['max_check_attempts'])){
+            $this->max_check_attempts = (int)$data['max_check_attempts'];
         }
 
         $this->UserTime = $UserTime;
@@ -393,6 +399,10 @@ class Servicestatus {
      */
     public function isInMonitoring(){
         return !is_null($this->currentState);
+    }
+
+    public function getMaxCheckAttempts(){
+        return $this->max_check_attempts;
     }
 
     /**

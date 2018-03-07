@@ -34,6 +34,7 @@ use itnovum\openITCOCKPIT\Core\ServiceMacroReplacer;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\ServicetemplateMerger;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
+use itnovum\openITCOCKPIT\Core\Views\AcknowledgementHost;
 use itnovum\openITCOCKPIT\Core\Views\AcknowledgementService;
 use itnovum\openITCOCKPIT\Core\Views\ContainerPermissions;
 use itnovum\openITCOCKPIT\Core\Views\PerfdataChecker;
@@ -101,6 +102,7 @@ class ServicesController extends AppController {
         'Servicetemplateeventcommandargumentvalue',
         MONITORING_HOSTSTATUS,
         MONITORING_SERVICESTATUS,
+        MONITORING_ACKNOWLEDGED_HOST,
         MONITORING_ACKNOWLEDGED_SERVICE,
         MONITORING_OBJECTS,
         'DeletedService',
@@ -108,6 +110,7 @@ class ServicesController extends AppController {
         'Container',
         'Documentation',
         'Systemsetting',
+        MONITORING_DOWNTIME_HOST,
         MONITORING_DOWNTIME_SERVICE
     ];
 
@@ -1950,6 +1953,11 @@ class ServicesController extends AppController {
 
         $rawHost = $this->Host->find('first', $this->Host->getQueryForServiceBrowser($rawService['Service']['host_id']));
 
+        $PerfdataChecker = new PerfdataChecker(
+            new \itnovum\openITCOCKPIT\Core\Views\Host($rawHost),
+            new \itnovum\openITCOCKPIT\Core\Views\Service($rawService)
+        );
+
         $containerIdsToCheck = Hash::extract($rawHost, 'Container.{n}.HostsToContainer.container_id');
         $containerIdsToCheck[] = $rawHost['Host']['container_id'];
 
@@ -2034,6 +2042,7 @@ class ServicesController extends AppController {
 
 
         $mergedService['Service']['allowEdit'] = $allowEdit;
+        $mergedService['Service']['has_graph'] = $PerfdataChecker->hasRrdFile();
         $mergedService['checkIntervalHuman'] = $UserTime->secondsInHumanShort($mergedService['Service']['check_interval']);
         $mergedService['retryIntervalHuman'] = $UserTime->secondsInHumanShort($mergedService['Service']['retry_interval']);
         $mergedService['notificationIntervalHuman'] = $UserTime->secondsInHumanShort($mergedService['Service']['notification_interval']);
@@ -2156,6 +2165,44 @@ class ServicesController extends AppController {
             $downtime = $Downtime->toArray();
         }
 
+        //Get Host Ack and Donwtime
+        $hostDowntime = [];
+        if ($Hoststatus->isInDowntime()) {
+            $hostDowntime = $this->DowntimeHost->byHostUuid($rawHost['Host']['uuid']);
+            $DowntimeHost = new \itnovum\openITCOCKPIT\Core\Views\Downtime($hostDowntime['DowntimeHost'], $allowEdit, $UserTime);
+            $hostDowntime = $DowntimeHost->toArray();
+        }
+
+        $hostAcknowledgement = [];
+        if ($Hoststatus->isAcknowledged()) {
+            $hostAcknowledgement = $this->AcknowledgedHost->byHostUuid($rawHost['Host']['uuid']);
+            $AcknowledgementHost = new AcknowledgementHost($hostAcknowledgement['AcknowledgedHost'], $UserTime);
+            $hostAcknowledgement = $AcknowledgementHost->toArray();
+
+            $ticketSystem = $this->Systemsetting->find('first', [
+                'conditions' => ['key' => 'TICKET_SYSTEM.URL'],
+            ]);
+
+            $ticketDetails = [];
+            if (!empty($ticketSystem['Systemsetting']['value']) && preg_match('/^(Ticket)_?(\d+);?(\d+)/', $AcknowledgementHost->getCommentData(), $ticketDetails)) {
+                $commentDataHtml = $AcknowledgementHost->getCommentData();
+                if (isset($ticketDetails[1], $ticketDetails[3], $ticketDetails[2])) {
+                    $commentDataHtml = sprintf(
+                        '<a href="%s%s" target="_blank">%s %s</a>',
+                        $ticketSystem['Systemsetting']['value'],
+                        $ticketDetails[3],
+                        $ticketDetails[1],
+                        $ticketDetails[2]
+                    );
+                }
+            } else {
+                $commentDataHtml = $this->Bbcode->asHtml($AcknowledgementHost->getCommentData(), true);
+            }
+
+            $hostAcknowledgement['commentDataHtml'] = $commentDataHtml;
+        }
+
+
         $canSubmitExternalCommands = $this->hasPermission('externalcommands', 'hosts');
 
         $this->set('mergedService', $mergedService);
@@ -2166,6 +2213,8 @@ class ServicesController extends AppController {
         $this->set('servicestatus', $servicestatus);
         $this->set('acknowledgement', $acknowledgement);
         $this->set('downtime', $downtime);
+        $this->set('hostDowntime', $hostDowntime);
+        $this->set('hostAcknowledgement', $hostAcknowledgement);
         $this->set('canSubmitExternalCommands', $canSubmitExternalCommands);
         $this->set('_serialize', [
             'mergedService',
@@ -2175,7 +2224,9 @@ class ServicesController extends AppController {
             'contacts',
             'contactgroups',
             'acknowledgement',
+            'hostAcknowledgement',
             'downtime',
+            'hostDowntime',
             'canSubmitExternalCommands'
         ]);
 

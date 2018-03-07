@@ -127,7 +127,10 @@ class Hoststatus {
 
     public function __construct($data, $UserTime = null){
         if (isset($data['current_state'])) {
-            $this->currentState = $data['current_state'];
+            $this->currentState = (int)$data['current_state'];
+            if($data['current_state'] === null){
+                $this->currentState = null;
+            }
         }
 
         if (isset($data['is_flapping'])) {

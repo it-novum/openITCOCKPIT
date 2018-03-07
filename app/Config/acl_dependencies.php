@@ -57,7 +57,13 @@ $config = [
                 'submit_host_result',
                 'disable_host_flap_detection',
                 'enable_host_flap_detection',
-                'send_host_notification'
+                'send_host_notification',
+                'submit_service_result',
+                'disable_service_flap_detection',
+                'enable_service_flap_detection',
+                'send_service_notification',
+                'enable_service_notifications',
+                'disable_service_notifications'
             ],
             'Commands'         => [
                 'sortByCommandType',

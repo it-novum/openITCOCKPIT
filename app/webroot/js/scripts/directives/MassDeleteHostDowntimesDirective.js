@@ -7,28 +7,28 @@ angular.module('openITCOCKPIT').directive('massDeleteHostDowntimes', function($h
         controller: function($scope){
 
             $scope.includeServices = true;
-            $scope.objects = {};
             $scope.percentage = 0;
             $scope.isDeleting = false;
 
             $scope.myDeleteUrl = $scope.deleteUrl;
 
+            var objects = {};
             var callbackName = false;
 
-            $scope.setObjectsForMassHostDowntimeDelete = function(objects){
-                $scope.objects = objects;
+            $scope.setObjectsForMassHostDowntimeDelete = function(_objects){
+                objects = _objects;
             };
 
             $scope.setCallbackForMassHostDowntimeDelete = function(_callback){
                 callbackName = _callback;
             };
 
-            $scope.delete = function(){
+            $scope.doDeleteHostDowntime = function(){
                 $scope.isDeleting = true;
-                var count = Object.keys($scope.objects).length;
+                var count = Object.keys(objects).length;
                 var i = 0;
 
-                for(var id in $scope.objects){
+                for(var id in objects){
                     var data = {
                         includeServices: $scope.includeServices,
                         type: 'host'

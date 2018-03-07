@@ -185,32 +185,32 @@ if (!$QueryHandler->exists()): ?>
 
                                             <button type="button"
                                                     class="btn btn-default"
-                                                    ng-click="submitHostResult(getObjectsForExternalCommand())">
+                                                    ng-click="submitServiceResult(getObjectsForExternalCommand())">
                                                 <i class="fa fa-download"></i>
                                             </button>
 
                                             <button type="button"
                                                     class="btn btn-default"
-                                                    ng-click="enableHostFlapDetection(getObjectsForExternalCommand())"
+                                                    ng-click="enableServiceFlapDetection(getObjectsForExternalCommand())"
                                                     ng-show="!servicestatus.flap_detection_enabled">
                                                 <i class="fa fa-adjust"></i>
                                             </button>
                                             <button type="button"
                                                     class="btn btn-default"
-                                                    ng-click="disableHostFlapDetection(getObjectsForExternalCommand())"
+                                                    ng-click="disableServiceFlapDetection(getObjectsForExternalCommand())"
                                                     ng-show="servicestatus.flap_detection_enabled">
                                                 <i class="fa fa-adjust"></i>
                                             </button>
 
                                             <button type="button"
                                                     class="btn btn-default"
-                                                    ng-click="enableHostNotifications(getObjectsForExternalCommand())"
+                                                    ng-click="enableServiceNotifications(getObjectsForExternalCommand())"
                                                     ng-show="!servicestatus.notifications_enabled">
                                                 <i class="fa fa-envelope"></i>
                                             </button>
                                             <button type="button"
                                                     class="btn btn-default"
-                                                    ng-click="disableHostNotifications(getObjectsForExternalCommand())"
+                                                    ng-click="disableServiceNotifications(getObjectsForExternalCommand())"
                                                     ng-show="servicestatus.notifications_enabled">
                                                 <i class="fa fa-envelope-o"></i>
                                             </button>
@@ -318,23 +318,98 @@ if (!$QueryHandler->exists()): ?>
                                         </div>
                                     </div>
 
-                                    <div class="row" ng-show="hasParentHostProblems">
+                                    <div class="row" ng-show="hoststatus.currentState > 0">
                                         <div class="col-xs-12 margin-bottom-10">
                                             <div class="browser-border padding-10" style="width: 100%;">
                                                 <div>
                                                     <h4 class="no-padding text-info">
                                                         <i class="fa fa-exclamation-triangle"></i>
-                                                        <?php echo __('Problem with parent host detected!'); ?>
+                                                        <?php echo __('Problem with host detected!'); ?>
                                                     </h4>
                                                 </div>
                                                 <div>
-                                                    <ul>
-                                                        <li ng-repeat="parentHostProblem in parentHostProblems">
-                                                            <a href="/hosts/browser/{{parentHostProblem.id}}">
-                                                                {{parentHostProblem.name}}
-                                                            </a>
-                                                        </li>
-                                                    </ul>
+                                                    <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
+                                                    <a href="/hosts/browser/{{host.Host.id}}">
+                                                        {{host.Host.name}}
+                                                    </a>
+                                                    <?php else: ?>
+                                                        {{host.Host.name}}
+                                                    <?php endif; ?>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row" ng-show="hoststatus.scheduledDowntimeDepth > 0">
+                                        <div class="col-xs-12 margin-bottom-10">
+                                            <div class="browser-border padding-10" style="width: 100%;">
+
+                                                <div class="row">
+                                                    <div class="col-xs-12 col-sm-11 no-padding">
+                                                        <div>
+                                                            <h4 class="no-padding">
+                                                                <i class="fa fa-power-off"></i>
+                                                                <?php echo __('The host of this service is currently in a planned maintenance period'); ?>
+                                                            </h4>
+                                                        </div>
+                                                        <div class="padding-top-5">
+                                                            <?php echo __('Downtime was set by'); ?>
+                                                            <b>{{hostDowntime.authorName}}</b>
+                                                            <?php echo __('with an duration of'); ?>
+                                                            <b>{{hostDowntime.durationHuman}}</b>.
+                                                        </div>
+                                                        <div class="padding-top-5">
+                                                            <small>
+                                                                <?php echo __('Start time:'); ?>
+                                                                {{ hostDowntime.scheduledStartTime }}
+                                                                <?php echo __('End time:'); ?>
+                                                                {{ hostDowntime.scheduledEndTime }}
+                                                            </small>
+                                                        </div>
+                                                        <div class="padding-top-5">
+                                                            <?php echo __('Comment: '); ?>
+                                                            {{hostDowntime.commentData}}
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-xs-12 col-sm-1 no-padding">
+                                                        <?php if ($this->Acl->hasPermission('delete', 'downtimes')): ?>
+                                                            <button
+                                                                    class="btn btn-xs btn-danger"
+                                                                    ng-if="hostDowntime.allowEdit && hostDowntime.isCancellable"
+                                                                    ng-click="confirmHostDowntimeDelete(getObjectForHostDowntimeDelete())">
+                                                                <i class="fa fa-trash-o"></i> <?php echo __('Delete'); ?>
+                                                            </button>
+                                                        <?php endif; ?>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row" ng-show="hoststatus.problemHasBeenAcknowledged">
+                                        <div class="col-xs-12 margin-bottom-10">
+                                            <div class="browser-border padding-10" style="width: 100%;">
+                                                <div>
+                                                    <h4 class="no-padding">
+                                                        <i class="fa fa-user" ng-show="!hostAcknowledgement.is_sticky"></i>
+                                                        <i class="fa fa-user-o" ng-show="hostAcknowledgement.is_sticky"></i>
+                                                        <?php echo __('State of host is acknowledged'); ?>
+                                                        <span ng-show="hostAcknowledgement.is_sticky">
+                                                            (<?php echo __('Sticky'); ?>)
+                                                        </span>
+                                                    </h4>
+                                                </div>
+                                                <div class="padding-top-5">
+                                                    <?php echo __('Acknowledgement was set by'); ?>
+                                                    <b>{{hostAcknowledgement.author_name}}</b>
+                                                    <?php echo __('at'); ?>
+                                                    {{hostAcknowledgement.entry_time}}
+                                                </div>
+                                                <div class="padding-top-5">
+                                                    <?php echo __('Comment: '); ?>
+                                                    <div style="display:inline"
+                                                         ng-bind-html="hostAcknowledgement.commentDataHtml | trustAsHtml"></div>
                                                 </div>
                                             </div>
                                         </div>
@@ -375,7 +450,7 @@ if (!$QueryHandler->exists()): ?>
                                                     </td>
                                                 </tr>
 
-                                                <tr>
+                                                <tr ng-show="servicestatus.perfdata">
                                                     <td><?php echo __('Performance data'); ?></td>
                                                     <td>
                                                         <code class="no-background" ng-class="serviceStatusTextClass">
@@ -423,31 +498,37 @@ if (!$QueryHandler->exists()): ?>
                                         </div>
                                     </div>
 
-                                    <div class="row" ng-show="parenthosts.length">
+                                    <div class="row">
                                         <div class="col-xs-12">
-                                            <h3 class="margin-top-5"><?php echo __('Parent host overview'); ?></h3>
+                                            <h3 class="margin-top-5"><?php echo __('Host state overview'); ?></h3>
                                         </div>
 
 
                                         <div class="col-xs-12 col-sm-12">
                                             <table class="table table-bordered">
                                                 <tr>
-                                                    <th class="width-130"><?php echo __('Parent host state'); ?></th>
-                                                    <th><?php echo __('Parent host name'); ?></th>
+                                                    <th class="width-130"><?php echo __('Host state'); ?></th>
+                                                    <th><?php echo __('Host name'); ?></th>
                                                     <th><?php echo __('Laste state change'); ?></th>
                                                 </tr>
-                                                <tr ng-repeat="parenthost in parenthosts">
+                                                <tr>
                                                     <td class="text-center">
                                                         <hoststatusicon
-                                                                state="parentHoststatus[parenthost.uuid].currentState"></hoststatusicon>
+                                                                ng-if="hoststatus"
+                                                                state="hoststatus.currentState"
+                                                        ></hoststatusicon>
                                                     </td>
                                                     <td>
-                                                        <a href="/hosts/browser/{{parenthost.id}}">
-                                                            {{ parenthost.name }}
+                                                        <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
+                                                        <a href="/hosts/browser/{{host.Host.id}}">
+                                                            {{ host.Host.name }}
                                                         </a>
+                                                        <?php else: ?>
+                                                            {{ host.Host.name }}
+                                                        <?php endif; ?>
                                                     </td>
                                                     <td>
-                                                        {{ parentHoststatus[parenthost.uuid].last_state_change }}
+                                                        {{ hoststatus.last_state_change }}
                                                     </td>
                                                 </tr>
                                             </table>
@@ -669,41 +750,41 @@ if (!$QueryHandler->exists()): ?>
                                             </div>
 
                                             <div class="browser-action margin-top-10"
-                                                 ng-click="submitHostResult(getObjectsForExternalCommand())">
+                                                 ng-click="submitServiceResult(getObjectsForExternalCommand())">
                                                 <i class="fa fa-download"></i>
                                                 <?php echo __('Passive transfer check result'); ?>
                                             </div>
 
                                             <div class="browser-action margin-top-10"
-                                                 ng-click="enableHostFlapDetection(getObjectsForExternalCommand())"
+                                                 ng-click="enableServiceFlapDetection(getObjectsForExternalCommand())"
                                                  ng-show="!servicestatus.flap_detection_enabled">
                                                 <i class="fa fa-adjust"></i>
                                                 <?php echo __('Enable flap detection'); ?>
                                             </div>
 
                                             <div class="browser-action margin-top-10"
-                                                 ng-click="disableHostFlapDetection(getObjectsForExternalCommand())"
+                                                 ng-click="disableServiceFlapDetection(getObjectsForExternalCommand())"
                                                  ng-show="servicestatus.flap_detection_enabled">
                                                 <i class="fa fa-adjust"></i>
                                                 <?php echo __('Disable flap detection'); ?>
                                             </div>
 
                                             <div class="browser-action margin-top-10"
-                                                 ng-click="enableHostNotifications(getObjectsForExternalCommand())"
+                                                 ng-click="enableServiceNotifications(getObjectsForExternalCommand())"
                                                  ng-show="!servicestatus.notifications_enabled">
                                                 <i class="fa fa-envelope"></i>
                                                 <?php echo __('Enable notifications'); ?>
                                             </div>
 
                                             <div class="browser-action margin-top-10"
-                                                 ng-click="disableHostNotifications(getObjectsForExternalCommand())"
+                                                 ng-click="disableServiceNotifications(getObjectsForExternalCommand())"
                                                  ng-show="servicestatus.notifications_enabled">
                                                 <i class="fa fa-envelope-o"></i>
                                                 <?php echo __('Disable notifications'); ?>
                                             </div>
 
                                             <div class="browser-action margin-top-10"
-                                                 ng-click="submitHostNotification(getObjectsForExternalCommand())">
+                                                 ng-click="submitServiceNotification(getObjectsForExternalCommand())">
                                                 <i class="fa fa-envelope"></i>
                                                 <?php echo __('Send custom service notification '); ?>
                                             </div>
@@ -819,28 +900,89 @@ if (!$QueryHandler->exists()): ?>
 
 
 
-    <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+    <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12" ng-show="mergedService.Service.has_graph">
         <div class="jarviswidget" role="widget">
             <header>
                 <div class="widget-toolbar" role="menu">
                     <button type="button" class="btn btn-xs btn-default" ng-click="load()">
-                        <i class="fa fa-refresh"></i>
+                        <i class="fa fa-refresh" ng-class="{'fa-spin': isLoadingGraph}"></i>
                         <?php echo __('Refresh'); ?>
                     </button>
-
-
                 </div>
+
+                <div class="widget-toolbar" role="menu">
+                    <div class="btn-group">
+                        <button class="btn btn-xs btn-default" data-toggle="dropdown" >
+                            <?php echo __('Select time range'); ?>
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu pull-right">
+                            <li>
+                                <a href="javascript:void(0);" ng-click="changeGraphTimespan(1)">
+                                    <?php echo __('1 hour'); ?>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="javascript:void(0);" ng-click="changeGraphTimespan(2)">
+                                    <?php echo __('2 hours'); ?>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="javascript:void(0);" ng-click="changeGraphTimespan(4)">
+                                    <?php echo __('4 hours'); ?>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="javascript:void(0);" ng-click="changeGraphTimespan(8)">
+                                    <?php echo __('8 hours'); ?>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="javascript:void(0);" ng-click="changeGraphTimespan(24)">
+                                    <?php echo __('1 day'); ?>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="javascript:void(0);" ng-click="changeGraphTimespan(24*2)">
+                                    <?php echo __('2 days'); ?>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="javascript:void(0);" ng-click="changeGraphTimespan(24*5)">
+                                    <?php echo __('5 days'); ?>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="widget-toolbar" role="menu">
+                    <div class="btn-group">
+                        <button class="btn btn-xs btn-default" data-toggle="dropdown" >
+                            <?php echo __('Select data source'); ?>
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu pull-right">
+                            <li ng-repeat="(dsId, dsName) in dataSources">
+                                <a href="javascript:void(0);" ng-click="changeDataSource(dsId)">
+                                    {{dsName}}
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+
                 <span class="widget-icon hidden-mobile"> <i class="fa fa-area-chart"></i> </span>
                 <h2 class="hidden-mobile"><?php echo __('Service graphs'); ?></h2>
-
             </header>
             <div>
                 <div class="jarviswidget-editbox"></div>
-                <div class="widget-body no-padding">
-                    <div class="tab-content">
+                <div class="widget-body">
 
+                        <div id="graph_data_tooltip"></div>
+                        <div id="graphCanvas" style="height: 500px;"></div>
 
-                    </div>
                 </div>
             </div>
         </div>
@@ -853,13 +995,14 @@ if (!$QueryHandler->exists()): ?>
 <service-downtime author="<?php echo h($username); ?>" callback="showFlashMsg"></service-downtime>
 <mass-delete-service-downtimes delete-url="/downtimes/delete/" callback="showFlashMsg"></mass-delete-service-downtimes>
 <acknowledge-service author="<?php echo h($username); ?>" callback="showFlashMsg"></acknowledge-service>
+<submit-service-result max-check-attempts="{{mergedService.Service.max_check_attempts}}" callback="showFlashMsg"></submit-service-result>
+<enable-service-flap-detection callback="showFlashMsg"></enable-service-flap-detection>
+<disable-service-flap-detection callback="showFlashMsg"></disable-service-flap-detection>
+<enable-service-flap-detection callback="showFlashMsg"></enable-service-flap-detection>
+<disable-service-notifications callback="showFlashMsg"></disable-service-notifications>
+<enable-service-notifications callback="showFlashMsg"></enable-service-notifications>
+<send-service-notification author="<?php echo h($username); ?>" callback="showFlashMsg"></send-service-notification>
 
+<mass-delete-host-downtimes delete-url="/downtimes/delete/" callback="showFlashMsg"></mass-delete-host-downtimes>
 
-
-<disable-host-notifications callback="showFlashMsg"></disable-host-notifications>
-<enable-host-notifications callback="showFlashMsg"></enable-host-notifications>
-<submit-host-result max-check-attempts="{{hoststatus.max_check_attempts}}" callback="showFlashMsg"></submit-host-result>
-<enable-host-flap-detection callback="showFlashMsg"></enable-host-flap-detection>
-<disable-host-flap-detection callback="showFlashMsg"></disable-host-flap-detection>
-<send-host-notification author="<?php echo h($username); ?>" callback="showFlashMsg"></send-host-notification>
 

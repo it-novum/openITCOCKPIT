@@ -2454,7 +2454,6 @@ class HostsController extends AppController {
             }
 
             $acknowledgement['commentDataHtml'] = $commentDataHtml;
-
         }
 
         $downtime = [];

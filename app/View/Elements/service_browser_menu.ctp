@@ -97,6 +97,9 @@
                 if (!empty($additionalLinksList)):
                     echo '<li class="divider"></li>';
                 endif;// @TODO extend additional links mit service object
+                if($service['Service']['name'] === null || $service['Service']['name'] === ''):
+                    $service['Service']['name'] = $service['Servicetemplate']['name'];
+                endif;
                 echo $this->AdditionalLinks->renderAsListItems($additionalLinksList, $service['Service']['id'], $service);
             endif; ?>
         </ul>
