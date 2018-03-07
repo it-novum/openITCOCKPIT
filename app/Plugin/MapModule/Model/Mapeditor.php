@@ -796,4 +796,41 @@ class Mapeditor extends MapModuleAppModel {
 
         return $result;
     }
+
+
+    public function getServicegroupInfoByUuids($uuids) {
+        if (!is_array($uuids)) {
+            $uuids = [$uuids];
+        }
+
+        $this->Servicegroup = ClassRegistry::init('Servicegroup');
+
+        $result = $this->Servicegroup->find('all', [
+            'recursive'  => -1,
+            'conditions' => [
+                'Servicegroup.uuid' => $uuids
+            ],
+            'fields'     => [
+                'Servicegroup.id',
+                'Servicegroup.uuid',
+                'Servicegroup.container_id',
+                'Servicegroup.description',
+                'Servicegroup.servicegroup_url',
+            ],
+            'contain'    => [
+                'Container' => [
+                    'fields' => [
+                        'Container.name'
+                    ]
+                ],
+                'Service' => [
+                    'fields' => [
+                        'Service.uuid',
+                    ]
+                ]
+            ]
+        ]);
+
+        return $result;
+    }
 }

@@ -161,8 +161,7 @@ class MapeditorsController extends MapModuleAppController {
         ]);
 
         $hostgroup = $this->Hostgroup->hostgroupsByContainerId($this->MY_RIGHTS, 'list', 'id');
-        $servicegroup = $this->Servicegroup->servicegroupsByContainerId($this->MY_RIGHTS, 'list');
-
+        $servicegroup = $this->Servicegroup->servicegroupsByContainerId($this->MY_RIGHTS, 'list', 'id');
         $backgroundThumbs = $this->Background->findBackgrounds();
         $iconSets = $this->Background->findIconsets();
         $icons = $this->Background->findIcons();
@@ -413,14 +412,13 @@ class MapeditorsController extends MapModuleAppController {
             $mapIds = Hash::extract($mapElements['map_items'], '{n}.SubMap.id');
         }
 
-        $hostFields = new HoststatusFields($this->DbBackend);
-        $serviceFields = new ServicestatusFields($this->DbBackend);
         $hoststatusConditions = new HoststatusConditions($this->DbBackend);
         $servicestatusConditions = new ServicestatusConditions($this->DbBackend);
-        //$servicestatusConditions->
 
         //get the Hoststatus
         if (!empty($uuidsByItemType['host'])) {
+            $hostFields = new HoststatusFields($this->DbBackend);
+            $serviceFields = new ServicestatusFields($this->DbBackend);
 
             $hostFields
                 ->output()
@@ -455,9 +453,9 @@ class MapeditorsController extends MapModuleAppController {
             $hostServiceUuids = Hash::extract($servicedata, '{n}.Service.uuid');
             $servicestatus = $this->Servicestatus->ByUuids($hostServiceUuids, $serviceFields, $servicestatusConditions);
 
-            foreach ($servicedata as $key => $service){
+            foreach ($servicedata as $key => $service) {
                 $serviceuuid = $service['Service']['uuid'];
-                if(isset($servicestatus[$serviceuuid])){
+                if (isset($servicestatus[$serviceuuid])) {
                     $servicedata[$key] = array_merge($servicedata[$key], $servicestatus[$serviceuuid]);
                 }
             }
@@ -466,11 +464,11 @@ class MapeditorsController extends MapModuleAppController {
                 $hostuuid = $host['Host']['uuid'];
                 $hostid = $host['Host']['id'];
                 if (isset($hoststatus[$hostuuid])) {
-                    if($host['Host']['disabled'] == 0){
+                    if ($host['Host']['disabled'] == 0) {
                         $hostdata[$key] = array_merge($hostdata[$key], $hoststatus[$hostuuid]);
                         if (isset($hostdata[$key]['Hoststatus'])) {
-                            foreach ($servicedata as $service){
-                                if($hostid == $service['Service']['host_id'] && $service['Service']['disabled'] == 0){
+                            foreach ($servicedata as $service) {
+                                if ($hostid == $service['Service']['host_id'] && $service['Service']['disabled'] == 0) {
                                     $hostdata[$key]['Hoststatus']['Servicestatus'][] = $service;
                                 }
                             }
@@ -483,6 +481,9 @@ class MapeditorsController extends MapModuleAppController {
 
         //get the Hostgroupstatus
         if (!empty($uuidsByItemType['hostgroup'])) {
+            $hostFields = new HoststatusFields($this->DbBackend);
+            $serviceFields = new ServicestatusFields($this->DbBackend);
+
             $hostFields
                 ->currentState()
                 ->problemHasBeenAcknowledged()
@@ -504,12 +505,12 @@ class MapeditorsController extends MapModuleAppController {
 
             //we dont need the Servicedata but the mapping to the host id
             $servicestatusByHostId = [];
-            foreach ($servicedata as $service){
+            foreach ($servicedata as $service) {
                 $service = $service['Service'];
                 $currentServiceUuid = $service['uuid'];
                 $currentHostId = $service['host_id'];
-                foreach ($hostgroupServicestatus as $serviceuuid => $servicestate){
-                    if($currentServiceUuid == $serviceuuid){
+                foreach ($hostgroupServicestatus as $serviceuuid => $servicestate) {
+                    if ($currentServiceUuid == $serviceuuid) {
                         $servicestatusByHostId[$currentHostId][] = $servicestate['Servicestatus'];
                         break;
                     }
@@ -517,18 +518,18 @@ class MapeditorsController extends MapModuleAppController {
             }
 
 
-            foreach ($hostgroups as $key => $hostgroup){
-                foreach ($hostgroup['Host'] as $hKey => $host){
-                    if($host['disabled'] == 0){
+            foreach ($hostgroups as $key => $hostgroup) {
+                foreach ($hostgroup['Host'] as $hKey => $host) {
+                    if ($host['disabled'] == 0) {
                         $currentHostId = $host['id'];
-                       $hostgroups[$key]['Host'][$hKey] = array_merge($hostgroups[$key]['Host'][$hKey], $hostgroupHostStatus[$host['uuid']]);
-                       if(!empty($servicestatusByHostId)){
-                           foreach ($servicedata as $service){
-                               if($host['id'] == $service['Service']['host_id'] && $service['Service']['disabled'] == 0){
-                                   $hostgroups[$key]['Host'][$hKey]['Servicestatus'] = $servicestatusByHostId[$currentHostId];
-                               }
-                           }
-                       }
+                        $hostgroups[$key]['Host'][$hKey] = array_merge($hostgroups[$key]['Host'][$hKey], $hostgroupHostStatus[$host['uuid']]);
+                        if (!empty($servicestatusByHostId)) {
+                            foreach ($servicedata as $service) {
+                                if ($host['id'] == $service['Service']['host_id'] && $service['Service']['disabled'] == 0) {
+                                    $hostgroups[$key]['Host'][$hKey]['Servicestatus'] = $servicestatusByHostId[$currentHostId];
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -536,12 +537,20 @@ class MapeditorsController extends MapModuleAppController {
 
         //get the Servicegroupstatus
         if (!empty($uuidsByItemType['servicegroup'])) {
+            $serviceFields = new ServicestatusFields($this->DbBackend);
+            $serviceFields->currentState();
             $servicegroupUuids = Hash::extract($uuidsByItemType['servicegroup'], '{n}.uuid');
-            $servicegroups = $this->Mapeditor->getServicegroupstatusByUuid($servicegroupUuids);
+            $servicegroups = $this->Mapeditor->getServicegroupInfoByUuids($servicegroupUuids);
+            $serviceUuids = Hash::extract($servicegroups, '{n}.Service.{n}.uuid');
+            $servicestatus = $this->Servicestatus->byUuids($serviceUuids, $serviceFields, $servicestatusConditions);
+            if (!empty($servicestatus)) {
+                $servicegroups['Servicestatus'] = $servicestatus;
+            }
         }
 
         //get the Servicestatus
         if (!empty($uuidsByItemType['service'])) {
+            $serviceFields = new ServicestatusFields($this->DbBackend);
             $serviceFields
                 ->currentState()
                 ->problemHasBeenAcknowledged()
@@ -560,10 +569,10 @@ class MapeditorsController extends MapModuleAppController {
             $servicestatus = $this->Servicestatus->ByUuids($serviceUuids, $serviceFields, $servicestatusConditions);
             $servicedata = $this->Mapeditor->getServiceInfoByUuids($serviceUuids);
 
-            foreach ($servicedata as $key => $service){
+            foreach ($servicedata as $key => $service) {
                 $serviceuuid = $service['Service']['uuid'];
-                if(isset($servicestatus[$serviceuuid])){
-                    if($service['Service']['disabled'] == 0){
+                if (isset($servicestatus[$serviceuuid])) {
+                    if ($service['Service']['disabled'] == 0) {
                         $servicedata[$key] = array_merge($servicedata[$key], $servicestatus[$serviceuuid]);
                     }
                 }

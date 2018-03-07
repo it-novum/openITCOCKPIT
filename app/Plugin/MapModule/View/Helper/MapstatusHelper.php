@@ -49,8 +49,6 @@ class MapstatusHelper extends AppHelper {
                 foreach ($servicestatus as $uuid => $ss) {
                     $this->servicestatus[$uuid] = $ss['Servicestatus'];
                     array_push($this->servicestatus[$uuid], $ss['Service']);
-                   // array_push($this->servicestatus[$uuid], $ss['Servicetemplate']);
-                   // array_push($this->servicestatus[$uuid], $ss['Objects']);
                 }
             }
         }
@@ -118,8 +116,6 @@ class MapstatusHelper extends AppHelper {
             foreach ($hostServiceStatus as $uuid => $hss) {
                 $this->servicestatus[$uuid] = $hss['Servicestatus'];
                 array_push($this->servicestatus[$uuid], $hss['Service']);
-               // array_push($this->servicestatus[$uuid], $hss['Servicetemplate']);
-               // array_push($this->servicestatus[$uuid], $hss['Objects']);
             }
             foreach ($hostServiceStatus as $uuid => $hss) {
                 $hostServiceStates[$uuid] = $this->servicestatus($uuid);
