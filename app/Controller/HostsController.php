@@ -1543,9 +1543,10 @@ class HostsController extends AppController {
             }
         }
 
+        //both types must be host, otherwise the serviceUsedBy site with the host id will be displayed wich results in an error
         $usedBy = Hash::merge(
             $this->getUsedByForFrontend($usedBy['host'], 'host'),
-            $this->getUsedByForFrontend($usedBy['service'], 'service')
+            $this->getUsedByForFrontend($usedBy['service'], 'host')
         );
 
         $this->response->statusCode(400);

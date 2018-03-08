@@ -450,6 +450,7 @@ class MapModuleSchema extends CakeSchema {
         'iconset'         => ['type' => 'string', 'null' => false, 'default' => null, 'length' => 128, 'collate' => 'utf8_unicode_ci', 'charset' => 'utf8'],
         'type'            => ['type' => 'string', 'null' => false, 'default' => null, 'length' => 20, 'collate' => 'utf8_unicode_ci', 'charset' => 'utf8'],
         'object_id'       => ['type' => 'integer', 'null' => false, 'default' => null],
+        'z_index'         => ['type' => 'integer', 'null' => false, 'default' => 0],
         'created'         => ['type' => 'datetime', 'null' => false, 'default' => null],
         'modified'        => ['type' => 'datetime', 'null' => false, 'default' => null],
         'indexes'         => [
@@ -469,6 +470,7 @@ class MapModuleSchema extends CakeSchema {
         'iconset'         => ['type' => 'string', 'null' => false, 'default' => null, 'length' => 128, 'collate' => 'utf8_unicode_ci', 'charset' => 'utf8'],
         'type'            => ['type' => 'string', 'null' => false, 'default' => null, 'length' => 20, 'collate' => 'utf8_unicode_ci', 'charset' => 'utf8'],
         'object_id'       => ['type' => 'integer', 'null' => true, 'default' => null],
+        'z_index'         => ['type' => 'integer', 'null' => false, 'default' => 0],
         'created'         => ['type' => 'datetime', 'null' => false, 'default' => null],
         'modified'        => ['type' => 'datetime', 'null' => false, 'default' => null],
         'indexes'         => [
@@ -491,6 +493,7 @@ class MapModuleSchema extends CakeSchema {
         'transparent_background' => ['type' => 'integer', 'null' => false, 'default' => 0, 'length' => 5],
         'show_label'             => ['type' => 'integer', 'null' => false, 'default' => 1, 'length' => 5],
         'font_size'              => ['type' => 'integer', 'null' => false, 'default' => 13],
+        'z_index'                => ['type' => 'integer', 'null' => false, 'default' => 0],
         'created'                => ['type' => 'datetime', 'null' => false, 'default' => null],
         'modified'               => ['type' => 'datetime', 'null' => false, 'default' => null],
         'indexes'                => [
@@ -542,6 +545,7 @@ class MapModuleSchema extends CakeSchema {
         'x'               => ['type' => 'integer', 'null' => false, 'default' => 0],
         'y'               => ['type' => 'integer', 'null' => false, 'default' => 0],
         'icon'            => ['type' => 'string', 'null' => false, 'default' => null, 'length' => 128, 'collate' => 'utf8_unicode_ci', 'charset' => 'utf8'],
+        'z_index'         => ['type' => 'integer', 'null' => false, 'default' => 0],
         'created'         => ['type' => 'datetime', 'null' => false, 'default' => null],
         'modified'        => ['type' => 'datetime', 'null' => false, 'default' => null],
         'indexes'         => [
@@ -557,6 +561,7 @@ class MapModuleSchema extends CakeSchema {
         'y'               => ['type' => 'integer', 'null' => false, 'default' => 0],
         'text'            => ['type' => 'string', 'length' => 256, 'null' => false, 'default' => 0, 'collate' => 'utf8_unicode_ci', 'charset' => 'utf8'],
         'font_size'       => ['type' => 'integer', 'null' => false, 'default' => 11],
+        'z_index'         => ['type' => 'integer', 'null' => false, 'default' => 0],
         'created'         => ['type' => 'datetime', 'null' => false, 'default' => null],
         'modified'        => ['type' => 'datetime', 'null' => false, 'default' => null],
         'indexes'         => [

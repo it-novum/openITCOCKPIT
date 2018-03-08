@@ -24,8 +24,7 @@
 //	confirmation.
 
 
-class Map extends MapModuleAppModel
-{
+class Map extends MapModuleAppModel {
 
     public $hasAndBelongsToMany = [
         'Container' => [
@@ -88,8 +87,51 @@ class Map extends MapModuleAppModel
     /*
         Custom validation rule for map field
     */
-    public function atLeastOne($data)
-    {
+    public function atLeastOne($data) {
         return !empty($this->data[$this->name]['container_id']);
     }
+
+
+    public function transformForCopy($data, $newMapId){
+        $newMap = [];
+        foreach ($data as $elementType => $sourceMap){
+            if($elementType == 'Container' || $elementType == 'Map' || $elementType == 'Rotation'){
+                continue;
+            }
+
+            foreach ($sourceMap as $key => $elementData){
+                //remove useless stuff
+                unset($sourceMap[$key]['id']);
+                unset($sourceMap[$key]['created']);
+                unset($sourceMap[$key]['modified']);
+                //set new map id for every element
+                $sourceMap[$key]['map_id'] = $newMapId;
+            }
+
+            switch($elementType){
+                case 'Mapitem':
+                    $newMap['Mapitem'] = $sourceMap;
+                    break;
+                case 'Mapline':
+                    $newMap['Mapline'] = $sourceMap;
+                    break;
+
+                case 'Mapgadget':
+                    $newMap['Mapgadget'] = $sourceMap;
+                    break;
+
+                case 'Mapicon':
+                    $newMap['Mapicon'] = $sourceMap;
+                    break;
+
+                case 'Maptext':
+                    $newMap['Maptext'] = $sourceMap;
+                    break;
+            }
+        }
+
+        return $newMap;
+
+    }
+
 }

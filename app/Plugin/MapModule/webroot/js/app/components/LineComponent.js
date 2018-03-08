@@ -38,6 +38,7 @@ App.Components.LineComponent = Frontend.Component.extend({
         var objData = opt.objData || ''; //optional but mandatory if link == true
         var lineStatusColor = objData.currentColor || '#5CB85C';
         var drawRect = (opt.drawRect == null) ? true : opt.drawRect;
+        var zIndex = opt.z_index || 0;
 
         var boxes = this.calculateLineBoxCenterPosition(opt);
 
@@ -50,7 +51,8 @@ App.Components.LineComponent = Frontend.Component.extend({
             'top': svgContainerTop + 'px',
             'left': svgContainerLeft + 'px',
             'width': svgContainerWidth + 'px',
-            'position': 'absolute'
+            'position': 'absolute',
+            'z-index': zIndex
         }).svg();
 
         var svg = $('#' + svgContainer).svg('get');
