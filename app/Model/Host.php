@@ -1534,7 +1534,7 @@ class Host extends AppModel {
             '3' => 0,
         ];
 
-        $servicestatusCountResult = $this->Host->find('all', [
+        $servicestatusCountResult = $this->find('all', [
             'conditions' => [
                 'Service.disabled'               => 0,
                 'Servicestatus.current_state >'  => 0,

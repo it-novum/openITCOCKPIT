@@ -23,6 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use itnovum\openITCOCKPIT\Core\HoststatusFields;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\Views\PerfdataChecker;
 use itnovum\openITCOCKPIT\Filter\ServicegroupFilter;
@@ -74,32 +75,7 @@ class ServicegroupsController extends AppController {
         $query = [
             'recursive'  => -1,
             'contain'    => [
-                'Container',
-                'Service'         => [
-                    'fields'          => [
-                        'Service.id',
-                        'Service.name'
-                    ],
-                    'Servicetemplate' => [
-                        'fields' => [
-                            'Servicetemplate.name'
-                        ]
-                    ],
-                    'Host'            => [
-                        'Container',
-                        'fields' => [
-                            'Host.id',
-                            'Host.name'
-                        ]
-                    ]
-                ],
-                'Servicetemplate' => [
-                    'fields' => [
-                        'Servicetemplate.id',
-                        'Servicetemplate.template_name',
-                        'Servicetemplate.name'
-                    ]
-                ]
+                'Container'
             ],
             'conditions' => $ServicegroupFilter->indexFilter(),
             'order' => $ServicegroupFilter->getOrderForPaginator('Container.name', 'asc'),
@@ -119,72 +95,16 @@ class ServicegroupsController extends AppController {
         }
 
         $all_servicegroups = [];
-        $hostContainers = [];
 
         foreach ($servicegroups as $servicegroup) {
             $servicegroup['Servicegroup']['allowEdit'] = $this->hasPermission('edit', 'servicegroups');;
             if ($this->hasRootPrivileges === false && $servicegroup['Servicegroup']['allowEdit'] === true) {
                 $servicegroup['Servicegroup']['allowEdit'] = $this->allowedByContainerId($servicegroup['Container']['parent_id']);
             }
-            foreach ($servicegroup['Service'] as $service) {
-                if (!empty($services) && $this->hasRootPrivileges === false && $this->hasPermission('edit', 'hosts') && $this->hasPermission('edit', 'services')) {
-                    $hostContainers[$service['Host']['id']] = Hash::extract($service['Host']['Container'], '{n}.id');
-                }
-            }
-            $all_services = [];
-            foreach ($servicegroup['Service'] as $key => $service) {
-                if ($this->hasRootPrivileges) {
-                    $allowEdit = true;
-                } else {
-                    $containerIds = [];
-                    if (isset($hostContainers[$service['Host']['id']])) {
-                        $containerIds = $hostContainers[$service['Host']['id']];
-                    }
-                    $ContainerPermissions = new ContainerPermissions($this->MY_RIGHTS_LEVEL, $containerIds);
-                    $allowEdit = $ContainerPermissions->hasPermission();
-                }
-
-                $Service = new \itnovum\openITCOCKPIT\Core\Views\Service([
-                    'Service' => $service,
-                    'Servicetemplate' =>  $service['Servicetemplate'],
-                    'Host' => $service['Host']
-                ],
-                    null,
-                    $allowEdit
-                );
-                $Host = new \itnovum\openITCOCKPIT\Core\Views\Host($service, $allowEdit);
-                $tmpRecord = [
-                    'Service'       => $Service->toArray(),
-                    'Host'          => $Host->toArray()
-                ];
-                $all_services[] = $tmpRecord;
-            }
-
-
-            foreach ($servicegroup['Servicetemplate'] as $key => $servicetemplate) {
-                $servicegroup['Servicetemplate'][$key]['allowEdit'] = $this->hasPermission('edit', 'servicetemplates');
-                if ($this->hasRootPrivileges === false && $servicegroup['Servicetemplate'][$key]['allowEdit'] === true) {
-                    $servicegroup['Servicetemplate'][$key]['allowEdit'] = $this->allowedByContainerId($servicetemplate['container_id']);
-                }
-            }
-
-            # get a list of sort columns and their data to pass to array_multisort
-            $sortAllServices = [];
-            foreach($all_services as $k=>$v) {
-                $sortAllServices['Host']['hostname'][$k] = $v['Host']['hostname'];
-                $sortAllServices['Service']['servicename'][$k] = $v['Service']['servicename'];
-            }
-
-            # sort by host name asc and service name asc
-            if(!empty($all_services)){
-                array_multisort( $sortAllServices['Host']['hostname'], SORT_ASC, $sortAllServices['Service']['servicename'], SORT_ASC, $all_services);
-            }
 
             $all_servicegroups[] = [
                 'Servicegroup'    => $servicegroup['Servicegroup'],
-                'Container'       => $servicegroup['Container'],
-                'Service'         => $servicegroup['Service'],
-                'Servicetemplate' => $servicegroup['Servicetemplate']
+                'Container'       => $servicegroup['Container']
             ];
 
         }
@@ -796,8 +716,19 @@ class ServicegroupsController extends AppController {
                 }
             }
 
-            $hoststatus = $this->Hoststatus->byUuid($hosts);
-            $servicestatus = $this->Servicestatus->byUuid($services);
+            $HoststatusFields = new HoststatusFields($this->DbBackend);
+            $HoststatusFields->currentState();
+            $ServicestatusFields = new ServicestatusFields($this->DbBackend);
+            $ServicestatusFields
+                ->currentState()
+                ->lastStateChange()
+                ->lastCheck()
+                ->nextCheck()
+                ->output()
+                ->problemHasBeenAcknowledged()
+                ->scheduledDowntimeDepth();
+            $hoststatus = $this->Hoststatus->byUuid($hosts, $HoststatusFields);
+            $servicestatus = $this->Servicestatus->byUuid($services, $ServicestatusFields);
 
             $all_servicegroups = [];
             foreach ($servicegroups as $servicegroup) {

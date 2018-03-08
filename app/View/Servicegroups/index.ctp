@@ -127,12 +127,6 @@
                                         <i class="fa" ng-class="getSortClass('Servicegroup.description')"></i>
                                         <?php echo __('Description'); ?>
                                     </th>
-                                    <th class="no-sort">
-                                        <?php echo __('Assigned services'); ?>
-                                    </th>
-                                    <th class="no-sort">
-                                        <?php echo __('Assigned service templates'); ?>
-                                    </th>
                                     <th class="no-sort text-center">
                                         <i class="fa fa-cog fa-lg"></i>
                                     </th>
@@ -150,41 +144,6 @@
                                     </td>
                                     <td>
                                         {{ servicegroup.Servicegroup.description }}
-                                    </td>
-                                    <td>
-                                        <ul class="list-unstyled">
-                                            <li ng-repeat="service in servicegroup.Services">
-                                                <a href="/hosts/edit/{{service.Host.id}}" ng-if="service.Host.allow_edit">
-                                                    {{ service.Host.hostname }}
-                                                </a>
-                                                <span ng-if="!service.Host.allow_edit">
-                                                    {{ service.Host.hostname }}
-                                                </span>
-                                                /
-                                                <a href="/services/edit/{{service.Service.id}}" ng-if="service.Service.allow_edit">
-                                                    {{ service.Service.servicename }}
-                                                </a>
-                                                <span ng-if="!service.Service.allow_edit">
-                                                    {{ service.Service.servicename }}
-                                                </span>
-                                            </li>
-                                        </ul>
-                                    </td>
-                                    <td>
-                                        <ul class="list-unstyled">
-                                            <ul class="list-unstyled">
-                                                <li ng-repeat="servicetemplate in servicegroup.Servicetemplate">
-                                                    <a href="servicetemplates/edit/{{servicetemplate.id}}"
-                                                       ng-if="servicetemplate.allowEdit">
-                                                        {{ servicetemplate.name }}
-                                                    </a>
-
-                                                    <span ng-if="!servicetemplate.allowEdit">
-                                                        {{ servicetemplate.name }}
-                                                    </span>
-                                                </li>
-                                            </ul>
-                                        </ul>
                                     </td>
                                     <td class="text-center">
                                         <a href="/servicegroups/edit/{{servicegroup.Servicegroup.id}}"
