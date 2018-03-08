@@ -34,7 +34,7 @@ $config = [
             ],
         ],
 
-        'maps' => [
+        'maps'          => [
             'url'      => ['controller' => 'statusmaps', 'action' => 'index', 'plugin' => ''],
             'title'    => 'Maps',
             'icon'     => 'map-marker',
@@ -54,7 +54,7 @@ $config = [
                 ],
             ],
         ],
-        'admin' => [
+        'admin'         => [
             'url'      => ['controller' => 'changelogs', 'action' => 'index', 'plugin' => ''],
             'title'    => 'Administration',
             'icon'     => 'cogs',
@@ -249,6 +249,13 @@ $config = [
                     'parent_controller' => 'itc',
                     'fallback_actions'  => ['host', 'service'],
                 ],
+                'itc_recurring_downtimes'  => [
+                    'url'               => ['controller' => 'systemdowntimes', 'action' => 'index'],
+                    'title'             => 'Recurring downtimes',
+                    'icon'              => 'history fa-flip-horizontal',
+                    'parent_controller' => 'itc',
+                    'fallback_actions'  => ['host', 'service'],
+                ],
                 'itc_logentries'           => [
                     'url'               => ['controller' => 'logentries', 'action' => 'index'],
                     'title'             => 'Log Entries',
@@ -345,13 +352,13 @@ $config = [
             'icon'  => 'book',
             'order' => 6,
         ],
-        'support'     => [
+        'support'       => [
             'url'      => ['controller' => 'supports', 'action' => 'index', 'plugin' => ''],
             'title'    => 'Support',
             'icon'     => 'life-ring',
             'order'    => 999,
             'children' => [
-                'issue_collector'      => [
+                'issue_collector' => [
                     'url'               => ['controller' => 'supports', 'action' => 'issue'],
                     'title'             => 'Report an issue',
                     'icon'              => 'bug',

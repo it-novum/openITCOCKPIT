@@ -32,6 +32,9 @@
                                 <i class="checkbox-primary"></i>
                                 <?php echo __('Sticky'); ?>
                             </label>
+                            <div class="helptext">
+                                <?php echo __('Sticky acknowledgements will be stay until the service is back in state Ok'); ?>
+                            </div>
                         </div>
                     </div>
 

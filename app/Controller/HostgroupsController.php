@@ -25,6 +25,7 @@
 
 use itnovum\openITCOCKPIT\Core\HostConditions;
 use itnovum\openITCOCKPIT\Core\HostgroupConditions;
+use itnovum\openITCOCKPIT\Core\HoststatusFields;
 use itnovum\openITCOCKPIT\Filter\HostFilter;
 use itnovum\openITCOCKPIT\Filter\HostgroupFilter;
 use itnovum\openITCOCKPIT\Filter\HosttemplateFilter;
@@ -657,6 +658,14 @@ class HostgroupsController extends AppController {
             $hostgroups = $this->Paginator->paginate();
         }
 
+        $hostgroups = $this->Hostgroup->makeItJavaScriptAble(
+            Hash::combine(
+                $hostgroups,
+                '{n}.Hostgroup.id',
+                '{n}.Container.name'
+            )
+        );
+
         $this->set(compact(['hostgroups']));
         $this->set('_serialize', ['hostgroups']);
     }
@@ -850,7 +859,9 @@ class HostgroupsController extends AppController {
         foreach ($hostgroups as $hgKey => $hostgroup) {
             $hostgroupHostUuids = Hash::extract($hostgroup, 'Host.{n}.uuid');
             $hostgroupHostCount += count($hostgroupHostUuids);
-            $hoststatusOfHostgroup = $this->Hoststatus->byUuids($hostgroupHostUuids);
+            $HoststatusFields = new HoststatusFields($this->DbBackend);
+            $HoststatusFields->wildcard();
+            $hoststatusOfHostgroup = $this->Hoststatus->byUuids($hostgroupHostUuids, $HoststatusFields);
             $hostgroups[$hgKey]['all_hoststatus'] = $hoststatusOfHostgroup;
         }
 

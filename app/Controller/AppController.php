@@ -33,6 +33,7 @@ App::uses('Controller', 'Controller');
 App::uses('CakeTime', 'Utility');
 App::uses('AuthActions', 'Lib');
 App::uses('User', 'Model');
+App::uses('UUID', 'Lib');
 
 use itnovum\openITCOCKPIT\Core\DbBackend;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
@@ -252,9 +253,9 @@ class AppController extends Controller {
             }
 
             $permissionsForCache = [
-                'MY_RIGHTS' => array_unique($rights),
-                'MY_RIGHTS_LEVEL' => $rights_levels,
-                'PERMISSIONS' => $permissions,
+                'MY_RIGHTS'         => array_unique($rights),
+                'MY_RIGHTS_LEVEL'   => $rights_levels,
+                'PERMISSIONS'       => $permissions,
                 'hasRootPrivileges' => $this->hasRootPrivileges
             ];
             Cache::write($cacheKey, $permissionsForCache, 'permissions');
@@ -383,6 +384,59 @@ class AppController extends Controller {
             // won't work.
             $this->Frontend->beforeRender($this);
         }
+
+        if (class_exists('ConnectionManager') && Configure::read('debug') == 2) {
+            $noLogs = !isset($sqlLogs);
+            if ($noLogs):
+                $sources = ConnectionManager::sourceList();
+
+                $sqlLogs = [];
+                foreach ($sources as $source):
+                    $db = ConnectionManager::getDataSource($source);
+                    if (!method_exists($db, 'getLog')):
+                        continue;
+                    endif;
+                    $sqlLogs[$source] = $db->getLog();
+                endforeach;
+            endif;
+            $queryLog = LOGS . 'query.log';
+            $logfile = fopen($queryLog, 'a+');
+
+            foreach ($sqlLogs as $datasource => $log) {
+                fwrite($logfile, sprintf(
+                    '******** DS "%s" %s queries took %s ms ********%s',
+                    $datasource,
+                    $log['count'],
+                    $log['time'],
+                    PHP_EOL
+                ));
+                foreach ($log['log'] as $query) {
+                    fwrite($logfile, sprintf(
+                        '-- [%s] Affected %s, num. Rows %s, %s ms%s',
+                        date('H:i:s'),
+                        $query['affected'],
+                        $query['numRows'],
+                        $query['took'],
+                        PHP_EOL
+                    ));
+                    fwrite($logfile, sprintf(
+                        '%s%s-- Params:%s%s',
+                        $query['query'],
+                        PHP_EOL,
+                        implode(',', $query['params']),
+                        PHP_EOL
+                    ));
+                }
+            }
+            fwrite($logfile, sprintf(
+                '--------------------------------%s%s',
+                PHP_EOL,
+                PHP_EOL
+            ));
+
+            fclose($logfile);
+        }
+
 
         parent::beforeRender();
     }
@@ -677,10 +731,6 @@ class AppController extends Controller {
                     return true;
                 }
 
-                if ($this->isApiRequest() && !$this->isAngularJsRequest()) {
-                    throw new ForbiddenException('403 Forbidden');
-                }
-
                 return false;
             });
             $MY_WRITE_RIGHTS = array_keys($MY_WRITE_RIGHTS);
@@ -743,6 +793,20 @@ class AppController extends Controller {
         }
 
         return isset($this->PERMISSIONS[$plugin][$controller][$action]);
+    }
+
+    /**
+     * @param $containerId
+     * @return bool
+     */
+    protected function isWritableContainer($containerId){
+        if($this->hasRootPrivileges === true){
+            return true;
+        }
+        if(isset($this->MY_RIGHTS_LEVEL[$containerId])){
+            return (int)$this->MY_RIGHTS_LEVEL[$containerId] === WRITE_RIGHT;
+        }
+        return false;
     }
 
     public function render403($options = []) {
@@ -814,23 +878,23 @@ class AppController extends Controller {
                 case AUTOREPORT_MODULE:
                     $result[] = [
                         'baseUrl' => Router::url([
-                            'controller' => 'autoreports',
-                            'action'     => $action,
-                            'plugin'     => 'autoreport_module',
-                        ]).'/',
+                                'controller' => 'autoreports',
+                                'action'     => $action,
+                                'plugin'     => 'autoreport_module',
+                            ]) . '/',
                         'message' => __('Used by Autoreport module'),
-                        'module' => 'AutoreportModule'
+                        'module'  => 'AutoreportModule'
                     ];
                     break;
                 case EVENTCORRELATION_MODULE:
                     $result[] = [
                         'baseUrl' => Router::url([
-                            'controller' => 'eventcorrelations',
-                            'action'     => $action,
-                            'plugin'     => 'eventcorrelation_module',
-                        ]).'/',
+                                'controller' => 'eventcorrelations',
+                                'action'     => $action,
+                                'plugin'     => 'eventcorrelation_module',
+                            ]) . '/',
                         'message' => __('Used by Eventcorrelation module'),
-                        'module' => 'EventcorrelationModule'
+                        'module'  => 'EventcorrelationModule'
                     ];
                     break;
                 default:

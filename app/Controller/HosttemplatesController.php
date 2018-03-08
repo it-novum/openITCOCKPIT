@@ -22,6 +22,7 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+use itnovum\openITCOCKPIT\Core\Views\ContainerPermissions;
 
 
 /**
@@ -1176,18 +1177,14 @@ class HosttemplatesController extends AppController {
             throw new NotFoundException(__('Invalid hosttemplate'));
         }
 
-        $hosttemplate = $this->Hosttemplate->findById($id /*, [
-            'recursive' => -1,
-            'fields' => [
-                'Hosttemplate.name',
-                'Hosttemplate.id'
-            ]
-        ]*/);
 
         $hosttemplate = $this->Hosttemplate->find('first', [
             'recursive' => -1,
             'fields' => [
                 'Hosttemplate.name'
+            ],
+            'conditions' => [
+                'Hosttemplate.id' => $id
             ]
         ]);
 
@@ -1197,7 +1194,7 @@ class HosttemplatesController extends AppController {
         }
 
         $this->loadModel('Host');
-        $all_hosts = $this->Host->find('all', [
+        $hosts = $this->Host->find('all', [
             'recursive' => -1,
             'order' => [
                 'Host.name' => 'ASC',
@@ -1216,6 +1213,9 @@ class HosttemplatesController extends AppController {
                 'HostsToContainers.container_id' => $this->MY_RIGHTS,
                 'Host.hosttemplate_id' => $id,
             ],
+            'contain' => [
+                'Container'
+            ],
             'fields' => [
                 'Host.id',
                 'Host.uuid',
@@ -1224,6 +1224,22 @@ class HosttemplatesController extends AppController {
             ],
             'group' => 'Host.id'
         ]);
+
+        $all_hosts = [];
+        foreach($hosts as $host){
+            $Host = new \itnovum\openITCOCKPIT\Core\Views\Host($host);
+            if ($this->hasRootPrivileges) {
+                $allowEdit = true;
+            } else {
+                $ContainerPermissions = new ContainerPermissions($this->MY_RIGHTS_LEVEL, $Host->getContainerIds());
+                $allowEdit = $ContainerPermissions->hasPermission();
+            }
+            $tmpRecord = [
+                'Host' => $Host->toArray()
+            ];
+            $tmpRecord['Host']['allow_edit'] = $allowEdit;
+            $all_hosts[] = $tmpRecord;
+        }
 
 
         $this->set(compact(['all_hosts', 'hosttemplate']));

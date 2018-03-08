@@ -589,7 +589,8 @@ $this->Paginator->options(['url' => $this->params['named']]);
                                         <?php endif; ?>
                                         <?php if ($this->Acl->hasPermission('deactivate', 'Hosts', '')): ?>
                                             <li>
-                                                <a ng-click="confirmDeactivate(getObjectsForDelete())" class="a-clean pointer">
+                                                <a ng-click="confirmDeactivate(getObjectsForDelete())"
+                                                   class="a-clean pointer">
                                                     <i class="fa fa-plug"></i> <?php echo __('Disable'); ?>
                                                 </a>
                                             </li>
@@ -608,42 +609,44 @@ $this->Paginator->options(['url' => $this->params['named']]);
                                             </a>
                                         </li>
 
-                                        <li class="divider"></li>
+                                        <?php if ($this->Acl->hasPermission('externalcommands', 'hosts')): ?>
+                                            <li class="divider"></li>
 
-                                        <li>
-                                            <a href="javascript:void(0);"
-                                               ng-click="rescheduleHost(getObjectsForExternalCommand())">
-                                                <i class="fa fa-refresh"></i> <?php echo __('Reset check time'); ?>
-                                            </a>
-                                        </li>
+                                            <li>
+                                                <a href="javascript:void(0);"
+                                                   ng-click="rescheduleHost(getObjectsForExternalCommand())">
+                                                    <i class="fa fa-refresh"></i> <?php echo __('Reset check time'); ?>
+                                                </a>
+                                            </li>
 
-                                        <li>
-                                            <a href="javascript:void(0);"
-                                               ng-click="hostDowntime(getObjectsForExternalCommand())">
-                                                <i class="fa fa-clock-o"></i> <?php echo __('Set planned maintenance times'); ?>
-                                            </a>
-                                        </li>
+                                            <li>
+                                                <a href="javascript:void(0);"
+                                                   ng-click="hostDowntime(getObjectsForExternalCommand())">
+                                                    <i class="fa fa-clock-o"></i> <?php echo __('Set planned maintenance times'); ?>
+                                                </a>
+                                            </li>
 
-                                        <li>
-                                            <a href="javascript:void(0);"
-                                               ng-click="acknowledgeHost(getObjectsForExternalCommand())">
-                                                <i class="fa fa-user"></i> <?php echo __('Acknowledge host status'); ?>
-                                            </a>
-                                        </li>
+                                            <li>
+                                                <a href="javascript:void(0);"
+                                                   ng-click="acknowledgeHost(getObjectsForExternalCommand())">
+                                                    <i class="fa fa-user"></i> <?php echo __('Acknowledge host status'); ?>
+                                                </a>
+                                            </li>
 
-                                        <li>
-                                            <a href="javascript:void(0);"
-                                               ng-click="disableHostNotifications(getObjectsForExternalCommand())">
-                                                <i class="fa fa-envelope-o"></i> <?php echo __('Disable notifications'); ?>
-                                            </a>
-                                        </li>
+                                            <li>
+                                                <a href="javascript:void(0);"
+                                                   ng-click="disableHostNotifications(getObjectsForExternalCommand())">
+                                                    <i class="fa fa-envelope-o"></i> <?php echo __('Disable notifications'); ?>
+                                                </a>
+                                            </li>
 
-                                        <li>
-                                            <a href="javascript:void(0);"
-                                               ng-click="enableHostNotifications(getObjectsForExternalCommand())">
-                                                <i class="fa fa-envelope"></i> <?php echo __('Enable notifications'); ?>
-                                            </a>
-                                        </li>
+                                            <li>
+                                                <a href="javascript:void(0);"
+                                                   ng-click="enableHostNotifications(getObjectsForExternalCommand())">
+                                                    <i class="fa fa-envelope"></i> <?php echo __('Enable notifications'); ?>
+                                                </a>
+                                            </li>
+                                        <?php endif; ?>
                                     </ul>
                                 </div>
                             </div>

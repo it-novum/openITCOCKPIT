@@ -7,7 +7,7 @@ angular.module('openITCOCKPIT').directive('hostDowntime', function($http, SudoSe
 
 
             $scope.doDowntime = false;
-            $scope.downtime = {
+            $scope.downtimeModal = {
                 comment: '',
                 from_date: '',
                 from_time: '',
@@ -18,6 +18,7 @@ angular.module('openITCOCKPIT').directive('hostDowntime', function($http, SudoSe
 
             var objects = {};
             var author = '';
+            var callbackName = false;
 
             $scope.setHostDowntimeObjects = function(_objects){
                 objects = _objects;
@@ -27,13 +28,17 @@ angular.module('openITCOCKPIT').directive('hostDowntime', function($http, SudoSe
                 author = _author;
             };
 
+            $scope.setHostDowntimeCallback = function(_callback){
+                callbackName = _callback;
+            };
+
             $scope.loadHostdowntimeDefaultSelection = function(){
                 $http.get("/angular/downtime_host.json", {
                     params: {
                         'angular': true
                     }
                 }).then(function(result){
-                    $scope.downtime.hostDowntimeType = String(result.data.preselectedDowntimetype);
+                    $scope.downtimeModal.hostDowntimeType = String(result.data.preselectedDowntimetype);
                 });
             };
 
@@ -41,7 +46,7 @@ angular.module('openITCOCKPIT').directive('hostDowntime', function($http, SudoSe
 
 
                 $http.post("/downtimes/validateDowntimeInputFromAngular.json?angular=true",
-                    $scope.downtime
+                    $scope.downtimeModal
                 ).then(function(result){
                     var count = Object.keys(objects).length;
                     var i = 0;
@@ -55,12 +60,17 @@ angular.module('openITCOCKPIT').directive('hostDowntime', function($http, SudoSe
                         $scope.percentage = Math.round(i / count * 100);
                         SudoService.send(SudoService.toJson('submitHostDowntime', [
                             object.Host.uuid,
-                            $scope.downtime.from_date + ' ' + $scope.downtime.from_time,
-                            $scope.downtime.to_date + ' ' + $scope.downtime.to_time,
-                            $scope.downtime.comment,
+                            $scope.downtimeModal.from_date + ' ' + $scope.downtimeModal.from_time,
+                            $scope.downtimeModal.to_date + ' ' + $scope.downtimeModal.to_time,
+                            $scope.downtimeModal.comment,
                             author,
-                            $scope.downtime.hostDowntimeType
+                            $scope.downtimeModal.hostDowntimeType
                         ]));
+                    }
+
+                    //Call callback function if given
+                    if(callbackName){
+                        $scope[callbackName]();
                     }
                     $timeout(function(){
                         $scope.doDowntime = false;
@@ -82,6 +92,11 @@ angular.module('openITCOCKPIT').directive('hostDowntime', function($http, SudoSe
                 if(Object.keys(objects).length === 0){
                     return;
                 }
+
+                if(attr.hasOwnProperty('callback')){
+                    $scope.setHostDowntimeCallback(attr.callback);
+                }
+
                 $scope.setHostDowntimeObjects(objects);
 
                 $scope.setHostDowntimeAuthor(attr.author);

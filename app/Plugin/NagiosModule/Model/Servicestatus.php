@@ -23,6 +23,9 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use itnovum\openITCOCKPIT\Core\ServicestatusConditions;
+use itnovum\openITCOCKPIT\Core\ServicestatusFields;
+
 class Servicestatus extends NagiosModuleAppModel
 {
     //public $useDbConfig = 'nagios';
@@ -37,29 +40,31 @@ class Servicestatus extends NagiosModuleAppModel
     ];
 
     /**
-     * Return the service status as array for given uuid as string or array
-     *
-     * @param   string|array $uuid    UUID or array $uuid you want to get service status for
-     * @param   array        $options for the find request (see cakephp's find for all options)
-     *
-     * @return array
+     * @param null $uuid
+     * @param ServicestatusFields $ServicestatusFields
+     * @param null|ServicestatusConditions $ServicestatusConditions
+     * @return array|bool
      */
-    private function byUuidMagic($uuid = null, $options = [])
+    private function byUuidMagic($uuid = null, ServicestatusFields $ServicestatusFields, $ServicestatusConditions = null)
     {
+        if($uuid === null || empty($uuid)){
+            return [];
+        }
         $return = [];
 
-        $_options = [
-            'conditions' => [
-                'Objects.name2'         => $uuid,
-                'Objects.objecttype_id' => 2,
-            ],
-            'fields' => [
-                'Servicestatus.*',
-                'Objects.name2'
-            ]
+        $options = [
+            'fields' => $ServicestatusFields->getFields(),
         ];
 
-        $options = Hash::merge($_options, $options);
+        $options['fields'][] = 'Objects.name2';
+
+        if ($ServicestatusConditions !== null) {
+            if ($ServicestatusConditions->hasConditions()) {
+                $options['conditions'] = $ServicestatusConditions->getConditions();
+            }
+        }
+        $options['conditions']['Objects.name2'] = $uuid;
+        $options['conditions']['Objects.objecttype_id'] = 2;
 
         $findType = 'all';
         if (!is_array($uuid)) {
@@ -88,15 +93,27 @@ class Servicestatus extends NagiosModuleAppModel
 
     }
 
-    public function byUuid($uuid, $options = []){
-        return $this->byUuidMagic($uuid, $options);
+    /**
+     * @param string $uuid
+     * @param ServicestatusFields $ServicestatusFields
+     * @param null|ServicestatusConditions $ServicestatusConditions
+     * @return array|bool
+     */
+    public function byUuid($uuid, ServicestatusFields $ServicestatusFields, $ServicestatusConditions = null){
+        return $this->byUuidMagic($uuid, $ServicestatusFields, $ServicestatusConditions);
     }
 
-    public function byUuids($uuids, $options = []){
+    /**
+     * @param array $uuids
+     * @param ServicestatusFields $ServicestatusFields
+     * @param null|ServicestatusConditions $ServicestatusConditions
+     * @return array|bool
+     */
+    public function byUuids($uuids, ServicestatusFields $ServicestatusFields, $ServicestatusConditions = null){
         if(!is_array($uuids)){
             throw new InvalidArgumentException('$uuids need to be an array!');
         }
-        return $this->byUuidMagic($uuids, $options);
+        return $this->byUuidMagic($uuids, $ServicestatusFields, $ServicestatusConditions);
     }
 
 }

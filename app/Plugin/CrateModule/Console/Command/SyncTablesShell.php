@@ -70,7 +70,8 @@ class SyncTablesShell extends AppShell {
                 'Host.container_id',
                 'Host.active_checks_enabled',
                 'Host.tags',
-                'Host.satellite_id'
+                'Host.satellite_id',
+                'Host.disabled'
             ]
         ]);
 
@@ -107,7 +108,8 @@ class SyncTablesShell extends AppShell {
                     'container_ids' => $containerIds,
                     'container_id' => (int)$host['Host']['container_id'],
                     'tags' => $tags,
-                    'hosttemplate_id' => (int)$host['Host']['hosttemplate_id']
+                    'hosttemplate_id' => (int)$host['Host']['hosttemplate_id'],
+                    'disabled' => (bool)$host['Host']['disabled'],
                 ]
             ];
         }
@@ -174,6 +176,7 @@ class SyncTablesShell extends AppShell {
                 'Service.active_checks_enabled',
                 'Service.tags',
                 'Service.host_id',
+                'Service.disabled'
             ],
             'contain' => [
                 'Servicetemplate' => [
@@ -221,7 +224,8 @@ class SyncTablesShell extends AppShell {
                     'active_checks_enabled' => $activeChecksEnabled,
                     'active_checks_enabled_from_template' => $activeChecksEnabledFromTemplate,
                     'tags' => $tags,
-                    'tags_from_template' => $tagFromTemplate
+                    'tags_from_template' => $tagFromTemplate,
+                    'disabled' => (bool)$service['Service']['disabled'],
                 ]
             ];
         }

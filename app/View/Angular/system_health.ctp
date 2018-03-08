@@ -31,7 +31,7 @@
                             <i class="fa fa-warning text-danger"></i>
                             <strong><?php echo __('Critical'); ?></strong>
                             <br/>
-                            <i><?php echo __('Gearman job server not reachable'); ?></i>
+                            <i><?php echo __('Gearman job server not reachable!'); ?></i>
                         </p>
                     </div>
                 </span>
@@ -44,7 +44,7 @@
                             <i class="fa fa-warning text-danger"></i>
                             <strong><?php echo __('Critical'); ?></strong>
                             <br/>
-                            <i><?php echo __('Service gearman_worker is not running'); ?></i>
+                            <i><?php echo __('Service gearman_worker is not running!'); ?></i>
                         </p>
                     </div>
                 </span>
@@ -109,7 +109,7 @@
                             <i class="fa fa-warning warning"></i>
                             <strong><?php echo __('Warning'); ?></strong>
                             <br/>
-                            <i><?php echo __('Service sudo_server is not running'); ?></i>
+                            <i><?php echo __('Service sudo_server is not running!'); ?></i>
                         </p>
                     </div>
                 </span>
@@ -122,7 +122,7 @@
                             <i class="fa fa-warning warning"></i>
                             <strong><?php echo __('Warning'); ?></strong>
                             <br/>
-                            <i><?php echo __('Service oitc_cmd is not running'); ?></i>
+                            <i><?php echo __('Service oitc_cmd is not running!'); ?></i>
                         </p>
                     </div>
                 </span>
@@ -135,7 +135,7 @@
                             <i class="fa fa-warning text-danger"></i>
                             <strong><?php echo __('Critical'); ?></strong>
                             <br/>
-                            <i><?php echo __('Current CPU load is to high!'); ?></i>
+                            <i><?php echo __('Current CPU load is too high!'); ?></i>
                             <br/>
                             <i>{{ systemHealth.load.load1 }}, {{ systemHealth.load.load5 }}, {{ systemHealth.load.load15 }}</i>
                         </p>
@@ -147,7 +147,7 @@
                 <span>
                     <div class="bar-holder no-padding">
                         <p class="margin-bottom-5">
-                            <i><?php echo __('High memory usage'); ?></i>
+                            <i><?php echo __('High memory usage.'); ?></i>
                             <span class="pull-right semi-bold text-muted">
                                 {{ systemHealth.memory_usage.memory.percentage }}%
                             </span>
@@ -181,7 +181,7 @@
                 <span>
                     <div class="bar-holder no-padding">
                         <p class="margin-bottom-5">
-                            <i><?php echo __('Low disk space left for mountpoint'); ?></i>
+                            <i><?php echo __('Low disk space left for mountpoint:'); ?></i>
                             <br/>
                             <i>"{{ disk.mountpoint }}"</i>
                             <span class="pull-right semi-bold text-muted">
@@ -202,7 +202,7 @@
                             <i class="fa fa-warning warning"></i>
                             <strong><?php echo __('Warning'); ?></strong>
                             <br/>
-                            <i><?php echo __('Service phpnsta is not running'); ?></i>
+                            <i><?php echo __('Service phpnsta is not running!'); ?></i>
                         </p>
                     </div>
                 </span>

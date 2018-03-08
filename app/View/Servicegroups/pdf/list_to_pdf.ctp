@@ -26,6 +26,7 @@
 use itnovum\openITCOCKPIT\Core\Views\Logo;
 
 $Logo = new Logo();
+
 ?>
 <head>
 

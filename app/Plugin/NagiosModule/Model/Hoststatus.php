@@ -23,8 +23,10 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class Hoststatus extends NagiosModuleAppModel
-{
+use itnovum\openITCOCKPIT\Core\HoststatusConditions;
+use itnovum\openITCOCKPIT\Core\HoststatusFields;
+
+class Hoststatus extends NagiosModuleAppModel {
     //public $useDbConfig = 'nagios';
     public $useTable = 'hoststatus';
     public $primaryKey = 'hoststatus_id';
@@ -37,29 +39,30 @@ class Hoststatus extends NagiosModuleAppModel
     ];
 
     /**
-     * Return the host status as array for given uuid as string or array
-     *
-     * @param   string|array $uuid    UUID or array $uuid you want to get host status for
-     * @param   array        $options for the find request (see cakephp's find for all options)
-     *
+     * @param null $uuid
+     * @param HoststatusFields $HoststatusFields
+     * @param HoststatusConditions|null $HoststatusConditions
      * @return array
      */
-    private function byUuidMagic($uuid = null, $options = [])
-    {
+    private function byUuidMagic($uuid = null, HoststatusFields $HoststatusFields, $HoststatusConditions = null) {
+        if ($uuid === null || empty($uuid)) {
+            return [];
+        }
         $return = [];
 
-        $_options = [
-            'conditions' => [
-                'Objects.name1'         => $uuid,
-                'Objects.objecttype_id' => 1,
-            ],
-            'fields' => [
-                'Hoststatus.*',
-                'Objects.name1'
-            ]
+        $options = [
+            'fields' => $HoststatusFields->getFields(),
         ];
 
-        $options = Hash::merge($_options, $options);
+        $options['fields'][] = 'Objects.name1';
+
+        if ($HoststatusConditions !== null) {
+            if ($HoststatusConditions->hasConditions()) {
+                $options['conditions'] = $HoststatusConditions->getConditions();
+            }
+        }
+        $options['conditions']['Objects.name1'] = $uuid;
+        $options['conditions']['Objects.objecttype_id'] = 1;
 
         $findType = 'all';
         if (!is_array($uuid)) {
@@ -69,8 +72,8 @@ class Hoststatus extends NagiosModuleAppModel
 
         $dbresult = $this->find($findType, $options);
 
-        if($findType === 'first'){
-            if(empty($dbresult)){
+        if ($findType === 'first') {
+            if (empty($dbresult)) {
                 return [];
             }
             return [
@@ -79,7 +82,7 @@ class Hoststatus extends NagiosModuleAppModel
         }
 
         $result = [];
-        foreach($dbresult as $record){
+        foreach ($dbresult as $record) {
             $result[$record['Objects']['name1']] = [
                 'Hoststatus' => $record['Hoststatus'],
             ];
@@ -88,14 +91,26 @@ class Hoststatus extends NagiosModuleAppModel
 
     }
 
-    public function byUuid($uuid, $options = []){
-        return $this->byUuidMagic($uuid, $options);
+    /**
+     * @param $uuid
+     * @param HoststatusFields $HoststatusFields
+     * @param HoststatusConditions|null $HoststatusConditions
+     * @return array|string
+     */
+    public function byUuid($uuid, HoststatusFields $HoststatusFields, $HoststatusConditions = null) {
+        return $this->byUuidMagic($uuid, $HoststatusFields, $HoststatusConditions);
     }
 
-    public function byUuids($uuids, $options = []){
-        if(!is_array($uuids)){
+    /**
+     * @param $uuids
+     * @param HoststatusFields $HoststatusFields
+     * @param HoststatusConditions|null $HoststatusConditions
+     * @return array
+     */
+    public function byUuids($uuids, HoststatusFields $HoststatusFields, $HoststatusConditions = null) {
+        if (!is_array($uuids)) {
             throw new InvalidArgumentException('$uuids need to be an array!');
         }
-        return $this->byUuidMagic($uuids, $options);
+        return $this->byUuidMagic($uuids, $HoststatusFields, $HoststatusConditions);
     }
 }

@@ -127,6 +127,11 @@ class MonitoringHelper extends AppHelper
         return ['string' => __('Off'), 'html' => '<span class="label bg-color-red">'.__('Off').'</span>', 'value' => $flapDetectionEnabledFromConfig];
     }
 
+    /**
+     * @param $notifications
+     * @return string
+     * @deprecated
+     */
     public function formatNotifyOnHost($notifications)
     {
         $_options = [
@@ -223,53 +228,6 @@ class MonitoringHelper extends AppHelper
         return false;
     }
 
-    /**
-     * Check if a downtime is currently running and return
-     * an array full with usefull stuff
-     *
-     * @param integer $was_started        , from downtimehistory table
-     * @param string  $scheduled_end_time from downtimhistory table
-     *
-     * @return array with icon, state as bool and label
-     * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
-     * @since  3.0
-     */
-    public function isDowntimeRunning($was_started, $scheduled_end_time, $was_cancelled = 0)
-    {
-        if ($was_started == 1 && strtotime($scheduled_end_time) > time() && $was_cancelled == 0) {
-            $label = __('Downtime currently running');
-
-            return [
-                'label' => $label,
-                'html'  => '<i title="'.$label.'" class="fa fa-power-off fa-lg txt-color-green"></i>',
-                'value' => true,
-            ];
-        } elseif ($was_started == 1 && strtotime($scheduled_end_time) < time() && $was_cancelled == 0) {
-            $label = __('Downtime is expired');
-
-            return [
-                'label' => $label,
-                'html'  => '<i title="'.$label.'" class="fa fa-power-off fa-lg txt-color-red"></i>',
-                'value' => false,
-            ];
-        } elseif ($was_started == 1 && $was_cancelled == 1) {
-            $label = __('Downtime was cancelled');
-
-            return [
-                'label' => $label,
-                'html'  => '<i title="'.$label.'" class="fa fa-power-off fa-lg txt-color-red"></i>',
-                'value' => false,
-            ];
-        }
-
-        $label = __('Downtime not started yet');
-
-        return [
-            'label' => $label,
-            'html'  => '<i title="'.$label.'" class="fa fa-power-off fa-lg txt-color-red"></i>',
-            'value' => false,
-        ];
-    }
 
     /**
      * Return an `<a />` with the status icon of a notification

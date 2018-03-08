@@ -200,8 +200,10 @@ angular.module('openITCOCKPIT')
         $scope.selectAll = function(){
             if($scope.services){
                 for(var key in $scope.serverResult){
-                    var id = $scope.serverResult[key].Service.id;
-                    $scope.massChange[id] = true;
+                    if($scope.serverResult[key].Service.allow_edit){
+                        var id = $scope.serverResult[key].Service.id;
+                        $scope.massChange[id] = true;
+                    }
                 }
             }
         };
@@ -370,7 +372,7 @@ angular.module('openITCOCKPIT')
                 legend: false,
                 grid: {
                     hoverable: true,
-                    markings: self.threshold_lines,
+                    markings: [],
                     borderWidth: {
                         top: 1,
                         right: 1,

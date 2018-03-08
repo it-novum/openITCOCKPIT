@@ -24,6 +24,7 @@
 //	confirmation.
 
 use itnovum\openITCOCKPIT\Core\HostcheckConditions;
+use itnovum\openITCOCKPIT\Core\HoststatusFields;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
 
 class HostchecksController extends AppController {
@@ -78,12 +79,10 @@ class HostchecksController extends AppController {
             }
 
             //Get meta data and push to front end
-            $hoststatus = $this->Hoststatus->byUuid($host['Host']['uuid'], [
-                'fields' => [
-                    'Hoststatus.current_state',
-                    'Hoststatus.is_flapping'
-                ],
-            ]);
+            $HoststatusFields = new HoststatusFields($this->DbBackend);
+            $HoststatusFields->currentState()->isFlapping();
+
+            $hoststatus = $this->Hoststatus->byUuid($host['Host']['uuid'], $HoststatusFields);
             $docuExists = $this->Documentation->existsForUuid($host['Host']['uuid']);
             $this->set(compact(['host', 'hoststatus', 'docuExists']));
             return;
