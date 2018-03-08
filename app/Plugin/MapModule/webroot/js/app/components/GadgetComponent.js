@@ -42,13 +42,15 @@ App.Components.GadgetComponent = Frontend.Component.extend({
         var containerData = opt.containerData || false;
         var perfdata = opt.perfdata || false;
         var showPercentScale = opt.showPercentScale || true;
+        var zIndex = opt.z_index || 0;
 
         $('#' + svgContainerId).css({
             'top': y + 'px',
             'left': x + 'px',
             'height': radius * 2 + 10 + 'px',
             'width': radius * 2 + 10 + 'px',
-            'position': 'absolute'
+            'position': 'absolute',
+            'z-index': zIndex
         }).svg();
         var svg = $('#' + svgContainerId).svg('get');
 
@@ -265,13 +267,15 @@ App.Components.GadgetComponent = Frontend.Component.extend({
         var containSVG = (opt.contain == null ? true : opt.contain);
         var containerData = opt.containerData || false;
         var perfdata = opt.perfdata || false;
+        var zIndex = opt.z_index || 0;
 
         $('#' + svgContainerId).css({
             'top': y + 'px',
             'left': x + 'px',
             'height': height + 25 + 'px',
             'width': width + 'px',
-            'position': 'absolute'
+            'position': 'absolute',
+            'z-index': zIndex
         }).svg();
         var svg = $('#' + svgContainerId).svg('get');
 
@@ -425,7 +429,14 @@ App.Components.GadgetComponent = Frontend.Component.extend({
         var perfdata = opt.perfdata || false;
         var showLabel = (opt.showLabel == null ? true : opt.showLabel);
         var fontSize = opt.fontSize || 13;//px
-        $('#' + svgContainerId).css({'top': textY + 'px', 'left': textX + 'px', 'position': 'absolute'}).svg();
+        var zIndex = opt.z_index || 0;
+
+        $('#' + svgContainerId).css({
+            'top': textY + 'px',
+            'left': textX + 'px',
+            'position': 'absolute',
+            'z-index': zIndex
+        }).svg();
         var svg = $('#' + svgContainerId).svg('get');
 
         textY = fontSize;
@@ -526,6 +537,7 @@ App.Components.GadgetComponent = Frontend.Component.extend({
         var flapping = (opt.flapping == null ? false : opt.flapping);
         var containSVG = (opt.contain == null ? true : opt.contain);
         var containerData = opt.containerData || false;
+        var zIndex = opt.z_index || 0;
         var lightRadius = 17;
         var showGreen = false;
         var showYellow = false;
@@ -568,7 +580,8 @@ App.Components.GadgetComponent = Frontend.Component.extend({
             'left': x + 'px',
             'position': 'absolute',
             'height': sizeY,
-            'width': sizeX + 40
+            'width': sizeX + 40,
+            'z-index': zIndex
         }).svg();
         var svg = $('#' + svgContainerId).svg('get');
 
@@ -748,6 +761,7 @@ App.Components.GadgetComponent = Frontend.Component.extend({
         var containerData = opt.containerData || false;
         var RRDLink = opt.RRDGraphLink || null;
         var demo = opt.demo || false;
+        var zIndex = opt.z_index || 0;
 
         if (!demo) {
             var imageLink = '';
@@ -778,7 +792,8 @@ App.Components.GadgetComponent = Frontend.Component.extend({
             'left': x + 'px',
             'position': 'absolute',
             'height': sizeY,
-            'width': sizeX
+            'width': sizeX,
+            'z-index': zIndex
         }).svg();
         var svg = $('#' + svgContainerId).svg('get');
 
