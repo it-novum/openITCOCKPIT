@@ -51,7 +51,19 @@ $config = [
                 'enable_host_notifications',
                 'disable_host_notifications',
                 'system_health',
-                'getDowntimeData'
+                'getDowntimeData',
+                'mass_delete_host_downtimes',
+                'mass_delete_service_downtimes',
+                'submit_host_result',
+                'disable_host_flap_detection',
+                'enable_host_flap_detection',
+                'send_host_notification',
+                'submit_service_result',
+                'disable_service_flap_detection',
+                'enable_service_flap_detection',
+                'send_service_notification',
+                'enable_service_notifications',
+                'disable_service_notifications'
             ],
             'Commands'         => [
                 'sortByCommandType',
@@ -61,7 +73,8 @@ $config = [
             ],
             'Downtimes'        => [
                 'validateDowntimeInputFromBrowser',
-                'validateDowntimeInputFromAngular'
+                'validateDowntimeInputFromAngular',
+                'icon'
             ],
             'Forward'          => [
                 'index',
@@ -223,7 +236,7 @@ $config = [
                 'edit'  => ['addCustomMacro', 'loadArguments', 'loadArgumentsAdd', 'loadElementsByContainerId'],
             ],
             'Instantreports'        => [
-                'index' => ['createPdfReport', 'expandServices'],
+                'index' => ['createPdfReport'],
                 'add'   => ['loadContainers']
             ],
             'Macros'                => [
@@ -355,7 +368,7 @@ $config = [
                 'Statusmaps'            => ['index', 'view'],
                 'Systemdowntimes'       => ['index'],
                 'Systemfailures'        => ['index'],
-                'Systemsettings'        => ['index'],
+                'Systemsettings'        => ['index', 'host', 'service', 'hostgroup', 'node'],
                 'Tenants'               => ['index'],
                 'Timeperiods'           => ['index'],
                 'Usergroups'            => ['index'],

@@ -135,11 +135,11 @@ App.Controllers.AutomapsViewController = Frontend.AppController.extend({
                 self.currentServiceUuid = response.responseJSON.service.Service.uuid;
 
 
-                if(parseInt(response.responseJSON.servicestatus.Servicestatus.scheduled_downtime_depth, 10) > 0){
+                if(response.responseJSON.servicestatus.Servicestatus.scheduled_downtime_depth){
                     $('#modalDowntime').show();
                 }
 
-                if(parseInt(response.responseJSON.servicestatus.Servicestatus.problem_has_been_acknowledged, 10) == 1){
+                if(response.responseJSON.servicestatus.Servicestatus.problem_has_been_acknowledged){
                     $('#modalAck').show();
                     $('#modalAckText').text(response.responseJSON.acknowledged);
                 }

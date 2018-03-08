@@ -49,10 +49,18 @@ $Logo = new Logo();
     endforeach; ?>
 </head>
 <body class="">
-
 <div class="well">
     <div class="row no-padding">
         <div class="col-md-9 text-left">
+            <i class="fa fa-file-image-o txt-color-blueDark"></i>
+            <?php echo __(h($instantReportDetails['name'])); ?>
+        </div>
+        <div class="col-md-3 text-left">
+            <img src="<?php echo $Logo->getLogoPdfPath(); ?>" width="200"/>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-9 text-left padding-bottom-10">
             <i class="fa fa-calendar txt-color-blueDark"></i>
             <?php
             echo __('Analysis period: ');
@@ -61,9 +69,6 @@ $Logo = new Logo();
             <?php
             echo h($this->Time->format($instantReportDetails['endDate'], $this->Auth->user('dateformat'), false, $this->Auth->user('timezone')));
             ?>
-        </div>
-        <div class="col-md-3 text-left">
-            <img src="<?php echo $Logo->getLogoPdfPath(); ?>" width="200"/>
         </div>
     </div>
     <?php

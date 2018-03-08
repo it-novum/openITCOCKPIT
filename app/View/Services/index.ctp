@@ -551,7 +551,7 @@
                                                 <i class="fa fa-file-pdf-o"></i> <?php echo __('List as PDF'); ?>
                                             </a>
                                         </li>
-                                        <?php if ($this->Acl->hasPermission('edit', 'Services')): ?>
+                                        <?php if ($this->Acl->hasPermission('externalcommands', 'hosts')): ?>
                                             <li>
                                                 <a href="javascript:void(0);"
                                                    ng-click="reschedule(getObjectsForExternalCommand())">

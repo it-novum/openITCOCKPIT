@@ -81,11 +81,7 @@ angular.module('openITCOCKPIT').directive('menu', function($http, $timeout, $htt
                 }
 
                 if(keyCode === RETURN_KEY && $scope.menuFilterPosition === -1){
-
-                    window.location.href = '/hosts/index?' + $httpParamSerializer({
-                        'filter[Host.name]': encodeURI($scope.menuFilter)
-
-                    });
+                    window.location.href = '/hosts/index?filter[Host.name]=' + rawurlencode($scope.menuFilter);
                 }
 
                 if(keyCode !== ARROW_KEY_UP && keyCode !== ARROW_KEY_DOWN){

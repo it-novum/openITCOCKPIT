@@ -31,17 +31,15 @@ class DowntimeHost extends NagiosModuleAppModel {
     public $primaryKey = 'downtimehistory_id';
     public $tablePrefix = 'nagios_';
     public $recursive = 2;
-    public $belongsTo = [
-        'Objects' => [
-            'className'  => 'NagiosModule.Objects',
-            'foreignKey' => 'object_id',
-        ],
-    ];
 
-    //See http://nagios.sourceforge.net/docs/ndoutils/NDOUtils_DB_Model.pdf and search for "downtimehistory Table"
-    public $downtime_type = '1,2';
 
-    public function getQuery(DowntimeHostConditions $Conditions, $paginatorConditions) {
+
+    /**
+     * @param DowntimeHostConditions $Conditions
+     * @param array $filterConditions
+     * @return array
+     */
+    public function getQuery(DowntimeHostConditions $Conditions, $filterConditions = []) {
         $query = [
             'recursive'  => -1,
             'fields'     => [
@@ -102,12 +100,135 @@ class DowntimeHost extends NagiosModuleAppModel {
         if ($Conditions->hideExpired()) {
             $query['conditions']['DowntimeHost.scheduled_end_time >'] = date('Y-m-d H:i:s', time());
         }
+        $query['conditions'] = Hash::merge($query['conditions'], $filterConditions);
 
-
-        //Merge ListFilter conditions
-        $query['conditions'] = Hash::merge($paginatorConditions, $query['conditions']);
+        if($Conditions->isRunning()){
+            $query['conditions']['DowntimeHost.scheduled_end_time >'] = date('Y-m-d H:i:s', time());
+            $query['conditions']['DowntimeHost.was_started'] = 1;
+            $query['conditions']['DowntimeHost.was_cancelled'] = 0;
+        }
 
         return $query;
+    }
+
+    /**
+     * @param DowntimeHostConditions $Conditions
+     * @return array
+     */
+    public function getQueryForReporting(DowntimeHostConditions $Conditions) {
+        $query = [
+            'recursive'  => -1,
+            'fields'     => [
+                'DowntimeHost.author_name',
+                'DowntimeHost.comment_data',
+                'DowntimeHost.scheduled_start_time',
+                'DowntimeHost.scheduled_end_time',
+                'DowntimeHost.duration',
+                'DowntimeHost.was_started',
+                'DowntimeHost.was_cancelled',
+            ],
+            'joins'      => [
+                [
+                    'table'      => 'nagios_objects',
+                    'type'       => 'INNER',
+                    'alias'      => 'Objects',
+                    'conditions' => 'Objects.object_id = DowntimeHost.object_id AND DowntimeHost.downtime_type = 2' //Downtime.downtime_type = 2 Host downtime
+                ],
+            ],
+            'order'      => $Conditions->getOrder(),
+            'conditions' => [
+                'OR' => [
+                    '"' . date('Y-m-d H:i:s', $Conditions->getFrom()) . '"
+                                        BETWEEN DowntimeHost.scheduled_start_time
+                                        AND DowntimeHost.scheduled_end_time',
+                    '"' . date('Y-m-d H:i:s', $Conditions->getTo()) . '"
+                                        BETWEEN DowntimeHost.scheduled_start_time
+                                        AND DowntimeHost.scheduled_end_time',
+                    'DowntimeHost.scheduled_start_time BETWEEN "' . date('Y-m-d H:i:s', $Conditions->getFrom()) . '"
+                                        AND "' . date('Y-m-d H:i:s', $Conditions->getTo()) . '"',
+                ],
+                'DowntimeHost.was_cancelled' => 0
+
+            ]
+        ];
+
+        if ($Conditions->hasHostUuids()) {
+            $query['conditions']['Objects.name1'] = $Conditions->getHostUuids();
+        }
+
+        return $query;
+    }
+
+    /**
+     * @param int $internalDowntimeId
+     * @return array
+     */
+    public function getHostUuidWithDowntimeByInternalDowntimeId($internalDowntimeId) {
+        $query = [
+            'recursive'  => -1,
+            'fields'     => [
+                'DowntimeHost.*',
+                'Objects.name1',
+
+            ],
+            'joins'      => [
+                [
+                    'table'      => 'nagios_objects',
+                    'type'       => 'INNER',
+                    'alias'      => 'Objects',
+                    'conditions' => 'Objects.object_id = DowntimeHost.object_id AND DowntimeHost.downtime_type = 2' //Downtime.downtime_type = 2 Host downtime
+                ]
+            ],
+            'conditions' => [
+                'DowntimeHost.internal_downtime_id' => $internalDowntimeId
+            ]
+        ];
+
+        $result = $this->find('first', $query);
+        if(empty($result)){
+            return [];
+        }
+
+        return [
+            'DowntimeHost' => $result['DowntimeHost'],
+            'Host' => [
+                'uuid' => $result['Objects']['name1']
+            ]
+        ];
+
+    }
+
+    /**
+     * @param string $uuid
+     * @return array|null
+     */
+    public function byHostUuid($uuid = null)
+    {
+        if ($uuid !== null) {
+            $downtime = $this->find('first', [
+                'recursive'  => -1,
+                'conditions' => [
+                    'Objects.name1'         => $uuid,
+                    'Objects.objecttype_id' => 1,
+                ],
+                'order'      => [
+                    'DowntimeHost.entry_time' => 'DESC',
+                ],
+                'joins'      => [
+                    [
+                        'table'      => 'nagios_objects',
+                        'type'       => 'INNER',
+                        'alias'      => 'Objects',
+                        'conditions' => 'Objects.object_id = DowntimeHost.object_id AND DowntimeHost.downtime_type = 2' //Downtime.downtime_type = 2 Host downtime
+                    ]
+                ]
+            ]);
+
+            return $downtime;
+
+        }
+
+        return [];
     }
 
 }

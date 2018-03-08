@@ -817,24 +817,6 @@ class Host extends AppModel {
         return false;
     }
 
-    public function redirect($params = [], $default = []) {
-        $redirect = [];
-
-        if (isset($params['named']['_controller'])) {
-            $redirect['controller'] = $params['named']['_controller'];
-        }
-
-        if (isset($params['named']['_action'])) {
-            $redirect['action'] = $params['named']['_action'];
-        }
-
-        if (!empty($default)) {
-            $redirect = Hash::merge($default, $redirect);
-        }
-
-        return $redirect;
-    }
-
 
     public $additionalValidationRules = [];
     public $additionalData = [];
@@ -1600,5 +1582,125 @@ class Host extends AppModel {
         }
         return $servicestatusCount;
     }
+    
+    /**
+     * @param int $hostId
+     * @return array
+     */
+    public function getQueryForBrowser($hostId) {
+        return [
+            'recursive'  => -1,
+            'contain'    => [
+                'Parenthost'               => [
+                    'fields' => [
+                        'id',
+                        'uuid',
+                        'name'
+                    ]
+                ],
+                'Hosttemplate',
+                'CheckPeriod',
+                'NotifyPeriod',
+                'CheckCommand',
+                'Contact'                  => [
+                    'fields' => [
+                        'id',
+                        'name',
+                    ],
+                    'Container'
+                ],
+                'Contactgroup'             => [
+                    'fields'    => ['id'],
+                    'Container' => [
+                        'fields' => [
+                            'name',
+                            'parent_id'
+                        ],
+                    ],
+                ],
+                'Customvariable'           => [
+                    'fields' => [
+                        'id', 'name', 'value', 'objecttype_id',
+                    ],
+                ],
+                'Hostcommandargumentvalue' => [
+                    'fields'          => [
+                        'id',
+                        'commandargument_id',
+                        'value',
+                    ],
+                    'Commandargument' => [
+                        'fields' => [
+                            'id',
+                            'human_name',
+                            'name'
+                        ],
+                    ],
+                ],
+            ],
+            'conditions' => [
+                'Host.id' => $hostId
+            ]
+        ];
+    }
 
+    /**
+     * @param int $hostId
+     * @return array
+     */
+    public function getQueryForServiceBrowser($hostId){
+        return [
+            'recursive'  => -1,
+            'fields'     => [
+                'Host.id',
+                'Host.uuid',
+                'Host.name',
+                'Host.address',
+                'Host.container_id',
+                'Host.satellite_id'
+            ],
+            'contain'    => [
+                'Container',
+                'Contact'      => [
+                    'fields' => [
+                        'id',
+                        'name'
+                    ],
+                ],
+                'Contactgroup' => [
+                    'Container' => [
+                        'fields' => [
+                            'Container.name',
+                            'Container.parent_id'
+                        ],
+                    ],
+                    'fields'    => [
+                        'Contactgroup.id',
+                    ],
+                ],
+                'Hosttemplate' => [
+                    'Contact'      => [
+                        'fields' => [
+                            'id', 'name',
+                        ],
+                        'Container'
+                    ],
+                    'Contactgroup' => [
+                        'Container' => [
+                            'fields' => [
+                                'Container.name',
+                                'Container.parent_id'
+                            ],
+                        ],
+                        'fields'    => [
+                            'Contactgroup.id',
+                        ],
+                    ],
+                ],
+            ],
+            'conditions' => [
+                'Host.id' => $hostId
+            ]
+        ];
+    }
 }

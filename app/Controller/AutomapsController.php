@@ -24,6 +24,8 @@
 //	confirmation.
 
 use itnovum\openITCOCKPIT\Core\ContainerRepository;
+use itnovum\openITCOCKPIT\Core\ServicestatusFields;
+use itnovum\openITCOCKPIT\Core\Views\UserTime;
 
 class AutomapsController extends AppController {
     public $layout = 'Admin.default';
@@ -51,7 +53,7 @@ class AutomapsController extends AppController {
     public $listFilters = [
         'index' => [
             'fields' => [
-                'Automap.name' => ['label' => 'Name', 'searchType' => 'wildcard'],
+                'Automap.name'        => ['label' => 'Name', 'searchType' => 'wildcard'],
                 'Automap.description' => ['label' => 'Description', 'searchType' => 'wildcard'],
             ],
         ]
@@ -324,7 +326,21 @@ class AutomapsController extends AppController {
             $serviceName = $service['Service']['name'];
         }
 
-        $servicestatus = $this->Servicestatus->byUuid($service['Service']['uuid']);
+        $ServicestatusFields = new ServicestatusFields($this->DbBackend);
+        $ServicestatusFields
+            ->currentState()
+            ->isHardstate()
+            ->lastStateChange()
+            ->perfdata()
+            ->output()
+            ->lastCheck()
+            ->scheduledDowntimeDepth()
+            ->problemHasBeenAcknowledged();
+        $servicestatus = $this->Servicestatus->byUuid($service['Service']['uuid'], $ServicestatusFields);
+
+
+        $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
+        $Servicestatus = new \itnovum\openITCOCKPIT\Core\Servicestatus($servicestatus['Servicestatus'], $UserTime);
 
         $exitCodes = [
             0 => __('Ok'),
@@ -333,28 +349,23 @@ class AutomapsController extends AppController {
             3 => __('Unknown'),
         ];
 
-        $stateTypes = [
-            0 => __('Soft'),
-            1 => __('Hard'),
-        ];
-
         $servicestatus = [
             'Servicestatus' => [
-                'current_state'                 => $exitCodes[$servicestatus['Servicestatus']['current_state']],
-                'state_type'                    => $stateTypes[$servicestatus['Servicestatus']['state_type']],
-                'last_state_change'             => CakeTime::format($servicestatus['Servicestatus']['last_state_change'], $this->Auth->user('dateformat'), false, $this->Auth->user('timezone')),
-                'perfdata'                      => h($servicestatus['Servicestatus']['perfdata']),
-                'output'                        => h($servicestatus['Servicestatus']['output']),
-                'last_check'                    => CakeTime::format($servicestatus['Servicestatus']['last_check'], $this->Auth->user('dateformat'), false, $this->Auth->user('timezone')),
-                'scheduled_downtime_depth'      => $servicestatus['Servicestatus']['scheduled_downtime_depth'],
-                'problem_has_been_acknowledged' => $servicestatus['Servicestatus']['problem_has_been_acknowledged'],
+                'current_state'                 => $exitCodes[$Servicestatus->currentState()],
+                'state_type'                    => ($Servicestatus->isHardState())?__('Hard'):__('Soft'),
+                'last_state_change'             => $Servicestatus->getLastStateChange(),
+                'perfdata'                      => h($Servicestatus->getPerfdata()),
+                'output'                        => h($Servicestatus->getOutput()),
+                'last_check'                    => $Servicestatus->getLastCheck(),
+                'scheduled_downtime_depth'      => $Servicestatus->isInDowntime(),
+                'problem_has_been_acknowledged' => $Servicestatus->isAcknowledged(),
             ],
         ];
 
         $acknowledged = [];
-        if ($servicestatus['Servicestatus']['problem_has_been_acknowledged'] == 1) {
+        if ($Servicestatus->isAcknowledged()) {
             $acknowledged = $this->Acknowledged->byUuid($service['Service']['uuid']);
-            $acknowledged = __('The current status was acknowledged by').' <strong>'.h($acknowledged[0]['Acknowledged']['author_name']).'</strong> '.__('with the comment').' "'.h($acknowledged[0]['Acknowledged']['comment_data']).'"';
+            $acknowledged = __('The current status was acknowledged by') . ' <strong>' . h($acknowledged[0]['Acknowledged']['author_name']) . '</strong> ' . __('with the comment') . ' "' . h($acknowledged[0]['Acknowledged']['comment_data']) . '"';
         }
 
 

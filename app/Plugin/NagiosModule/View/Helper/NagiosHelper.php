@@ -35,6 +35,11 @@ class NagiosHelper extends AppHelper
         return ['string' => __('Off'), 'html' => '<span class="label bg-color-red">'.__('Off').'</span>'];
     }
 
+    /**
+     * @param $notifications
+     * @return string
+     * @deprecated
+     */
     public function formatNotifyOnHost($notifications)
     {
         $_options = [

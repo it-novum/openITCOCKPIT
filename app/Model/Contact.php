@@ -286,6 +286,8 @@ class Contact extends AppModel
         }
         $tenantContainerIds = array_unique($tenantContainerIds);
 
+        $containerIds = array_unique(array_merge($tenantContainerIds, $container_ids));
+
         return $this->find($type, [
             'joins'      => [
                 ['table'      => 'contacts_to_containers',
@@ -297,7 +299,7 @@ class Contact extends AppModel
                 ],
             ],
             'conditions' => [
-                'ContactsToContainers.container_id' => $tenantContainerIds,
+                'ContactsToContainers.container_id' => $containerIds,
             ],
             'order'      => [
                 'Contact.name' => 'ASC',

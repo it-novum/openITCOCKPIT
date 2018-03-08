@@ -31,7 +31,7 @@
             <?php echo __('Service Template'); ?>
             <span>>
                 <?php echo __('used by...'); ?>
-			</span>
+            </span>
         </h1>
     </div>
 </div>

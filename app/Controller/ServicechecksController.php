@@ -24,6 +24,7 @@
 //	confirmation.
 
 use itnovum\openITCOCKPIT\Core\ServicechecksConditions;
+use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
 
 class ServicechecksController extends AppController {
@@ -99,12 +100,9 @@ class ServicechecksController extends AppController {
             }
 
             //Get meta data and push to front end
-            $servicestatus = $this->Servicestatus->byUuid($service['Service']['uuid'], [
-                'fields' => [
-                    'Servicestatus.current_state',
-                    'Servicestatus.is_flapping'
-                ],
-            ]);
+            $ServicestatusFields = new ServicestatusFields($this->DbBackend);
+            $ServicestatusFields->currentState()->isFlapping();
+            $servicestatus = $this->Servicestatus->byUuid($service['Service']['uuid'], $ServicestatusFields);
             $docuExists = $this->Documentation->existsForUuid($service['Service']['uuid']);
             $this->set(compact(['service', 'servicestatus', 'docuExists', 'allowEdit']));
             return;

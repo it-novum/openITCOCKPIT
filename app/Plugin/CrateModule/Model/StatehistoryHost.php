@@ -49,10 +49,13 @@ class StatehistoryHost extends CrateModuleAppModel {
                 'state_time <' => $StatehistoryHostConditions->getTo()
             ],
             'order' => $StatehistoryHostConditions->getOrder(),
-            'limit' => $StatehistoryHostConditions->getLimit(),
         ];
 
-        if(!empty($StatehistoryHostConditions->getStates())){
+        if ($StatehistoryHostConditions->getUseLimit()) {
+            $query['limit'] = $StatehistoryHostConditions->getLimit();
+        }
+
+        if(!empty($StatehistoryHostConditions->getStates() && sizeof($StatehistoryHostConditions->getStates()) < 3)){
             $query['conditions']['state'] = $StatehistoryHostConditions->getStates();
         }
 
@@ -66,9 +69,34 @@ class StatehistoryHost extends CrateModuleAppModel {
             }
         }
 
+        if($StatehistoryHostConditions->hardStateTypeAndUpState()){
+            $query['or'] =  [
+                ['StatehistoryHost.is_hardstate = ?' => [1]],
+                ['StatehistoryHost.state = ?' => [0]],
+            ];
+        }
+
+
         $query['conditions'] = Hash::merge($paginatorConditions, $query['conditions']);
 
         return $query;
     }
 
+    /**
+     * @param StatehistoryHostConditions $StatehistoryHostConditions
+     * @return array
+     */
+    public function getLastRecord(StatehistoryHostConditions $StatehistoryHostConditions) {
+        $query = [
+            'conditions' => [
+                'hostname' => $StatehistoryHostConditions->getHostUuid(),
+                'state_time <=' => $StatehistoryHostConditions->getFrom(),
+            ],
+            'order'      => [
+                'state_time' => 'DESC'
+            ],
+        ];
+
+        return $query;
+    }
 }

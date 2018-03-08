@@ -33,6 +33,7 @@ App::uses('Controller', 'Controller');
 App::uses('CakeTime', 'Utility');
 App::uses('AuthActions', 'Lib');
 App::uses('User', 'Model');
+App::uses('UUID', 'Lib');
 
 use itnovum\openITCOCKPIT\Core\DbBackend;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
@@ -730,10 +731,6 @@ class AppController extends Controller {
                     return true;
                 }
 
-                if ($this->isApiRequest() && !$this->isAngularJsRequest()) {
-                    throw new ForbiddenException('403 Forbidden');
-                }
-
                 return false;
             });
             $MY_WRITE_RIGHTS = array_keys($MY_WRITE_RIGHTS);
@@ -796,6 +793,20 @@ class AppController extends Controller {
         }
 
         return isset($this->PERMISSIONS[$plugin][$controller][$action]);
+    }
+
+    /**
+     * @param $containerId
+     * @return bool
+     */
+    protected function isWritableContainer($containerId){
+        if($this->hasRootPrivileges === true){
+            return true;
+        }
+        if(isset($this->MY_RIGHTS_LEVEL[$containerId])){
+            return (int)$this->MY_RIGHTS_LEVEL[$containerId] === WRITE_RIGHT;
+        }
+        return false;
     }
 
     public function render403($options = []) {

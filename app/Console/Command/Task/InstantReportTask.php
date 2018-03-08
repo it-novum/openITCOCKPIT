@@ -26,10 +26,15 @@ use \itnovum\openITCOCKPIT\Core\Interfaces\CronjobInterface;
 
 class InstantReportTask extends AppShell implements CronjobInterface
 {
-    public $uses = ['Instantreport', 'Systemsetting'];
+    public $uses = [
+        'Instantreport',
+        'Systemsetting'
+    ];
     public $_systemsettings;
 
     public function execute($quiet = false){
+        App::uses('Folder', 'Utility');
+        App::uses('CakeEmail','Network/Email');
         $this->_systemsettings = $this->Systemsetting->findAsArraySection('MONITORING');
         $this->params['quiet'] = $quiet;
         $this->stdout->styles('green', ['text' => 'green']);

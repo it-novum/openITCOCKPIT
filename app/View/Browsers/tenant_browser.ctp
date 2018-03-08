@@ -48,7 +48,7 @@ use itnovum\openITCOCKPIT\Core\Hoststatus;
 </ol>
 
 <div class="row">
-    <article class="col-sm-2 col-md-2 col-lg-2">
+    <article class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
         <div class="jarviswidget node-list" role="widget">
             <header>
                 <span class="widget-icon"> <i class="fa fa-list-ul"></i></span>
@@ -64,14 +64,20 @@ use itnovum\openITCOCKPIT\Core\Hoststatus;
                                 $faClass = $this->BrowserMisc->containertypeIcon($b['containertype_id']);
                                 ?>
                                 <i class="fa <?php echo $faClass; ?>"></i>
-                                <?php echo $this->Html->link($b['name'], ['action' => 'tenantBrowser', $b['id']], ['class' => 'searchMe']); ?>
+                                <?php echo $this->Html->link($b['name'], [
+                                    'action' => 'tenantBrowser',
+                                    $b['id']
+                                ], [
+                                    'class' => 'searchMe',
+                                    'title' => $b['name']
+                                ]); ?>
                             </div>
                         <?php endforeach; ?>
                     </div>
                 </div>
             </div>
     </article>
-    <article class="col-sm-5 col-md-5 col-lg-5 sortable-grid ui-sortable">
+    <article class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
         <div class="jarviswidget">
             <header>
                 <span class="widget-icon"> <i class="fa fa-pie-chart"></i></span>
@@ -118,7 +124,7 @@ use itnovum\openITCOCKPIT\Core\Hoststatus;
 
             </div>
     </article>
-    <article class="col-sm-5 col-md-5 col-lg-5 sortable-grid ui-sortable">
+    <article class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
         <div class="jarviswidget">
             <header>
                 <span class="widget-icon"> <i class="fa fa-pie-chart"></i></i></span>
@@ -220,7 +226,8 @@ use itnovum\openITCOCKPIT\Core\Hoststatus;
                                     endif;
                                     ?>
                                     <tr>
-                                        <td class="text-center width-75" data-sort="<?php echo $Hoststatus->currentState();?>">
+                                        <td class="text-center width-75"
+                                            data-sort="<?php echo $Hoststatus->currentState(); ?>">
                                             <?php
                                             if ($Hoststatus->isFlapping() == 1):
                                                 echo $Hoststatus->getHostFlappingIconColored();

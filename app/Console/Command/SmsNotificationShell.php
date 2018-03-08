@@ -38,6 +38,10 @@
  *   /usr/share/openitcockpit/app/Console/cake sms_notification -q --address 128.1.1.85 -m nrpe --type Service --contactpager $CONTACTPAGER$ --hostname "$HOSTNAME$" --servicedesc "$SERVICEDESC$" --notificationtype "$NOTIFICATIONTYPE$"
  */
 
+use itnovum\openITCOCKPIT\Core\DbBackend;
+use itnovum\openITCOCKPIT\Core\HoststatusFields;
+use itnovum\openITCOCKPIT\Core\ServicestatusFields;
+
 class SmsNotificationShell extends AppShell
 {
     public $uses = [
@@ -61,6 +65,9 @@ class SmsNotificationShell extends AppShell
             ],
         ];
 
+        Configure::load('dbbackend');
+        $DbBackend = new DbBackend(Configure::read('dbbackend'));
+
         $address = $this->params['address'];
         $method = 'nrpe';
         if (isset($this->params['method'])) {
@@ -71,11 +78,9 @@ class SmsNotificationShell extends AppShell
             if ($this->params['type'] === 'Host' || $this->params['type'] === 'host') {
                 $hostUuid = $this->params['hostname'];
                 $hostname = $this->getHostname($hostUuid);
-                $hoststatus = $this->Hoststatus->byUuid($hostUuid, [
-                    'fields' => [
-                        'Hoststatus.output',
-                    ],
-                ]);
+                $HoststatusFields = new HoststatusFields($DbBackend);
+                $HoststatusFields->output();
+                $hoststatus = $this->Hoststatus->byUuid($hostUuid, $HoststatusFields);
                 switch ($method) {
                     case 'nrpe':
                         $args = vsprintf($this->config['nrpe']['command_template_host'], [
@@ -102,11 +107,9 @@ class SmsNotificationShell extends AppShell
                 $serviceUuid = $this->params['servicedesc'];
                 $hostname = $this->getHostname($hostUuid);
                 $servicename = $this->getServicename($serviceUuid);
-                $servicestatus = $this->Servicestatus->byUuid($serviceUuid, [
-                    'fields' => [
-                        'Servicestatus.output',
-                    ],
-                ]);
+                $ServicestatusFields = new ServicestatusFields($DbBackend);
+                $ServicestatusFields->output();
+                $servicestatus = $this->Servicestatus->byUuid($serviceUuid, $ServicestatusFields);
                 switch ($method) {
                     case 'nrpe':
                         $args = vsprintf($this->config['nrpe']['command_template_service'], [
