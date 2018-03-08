@@ -8,6 +8,10 @@ angular.module('openITCOCKPIT')
         $scope.init = true;
         $scope.servicegroupsStateFilter = {};
 
+        $scope.deleteUrl = '/services/delete/';
+        $scope.deactivateUrl = '/services/deactivate/';
+        $scope.activateUrl = '/services/enable/';
+
         /*** Filter Settings ***/
         var defaultFilter = function(){
             $scope.filter = {
@@ -59,6 +63,12 @@ angular.module('openITCOCKPIT')
             defaultFilter();
             $scope.load();
 
+        };
+
+        $scope.getObjectForDelete = function(host, service){
+            var object = {};
+            object[service.Service.id] = host.hostname + '/' + service.Service.servicename;
+            return object;
         };
 
         $scope.mouseenter = function($event, host, service){

@@ -737,7 +737,8 @@ class ServicegroupsController extends AppController {
                         'Service.id',
                         'Service.uuid',
                         'Service.name',
-                        'Service.active_checks_enabled'
+                        'Service.active_checks_enabled',
+                        'Service.disabled'
                     ],
                     'Servicetemplate' => [
                         'fields' => [

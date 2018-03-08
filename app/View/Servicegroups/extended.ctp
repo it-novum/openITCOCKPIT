@@ -46,25 +46,38 @@ use itnovum\openITCOCKPIT\Core\HumanTime;
         </h1>
     </div>
 </div>
+
+<massdelete></massdelete>
+<massdeactivate></massdeactivate>
+<massactivate></massactivate>
+
 <section id="widget-grid" class="">
     <div class="row">
         <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
             <div class="jarviswidget jarviswidget-color-blueDark" id="wid-id-1" data-widget-editbutton="false">
                 <header>
-                    <?php if ($this->Acl->hasPermission('add')): ?>
-                        <div class="widget-toolbar" role="menu">
+                    <div class="widget-toolbar" role="menu">
+
+                        <button type="button" class="btn btn-xs btn-default" ng-click="load()">
+                            <i class="fa fa-refresh"></i>
+                            <?php echo __('Refresh'); ?>
+                        </button>
+
+                        <?php if ($this->Acl->hasPermission('add')): ?>
                             <?php echo $this->Html->link(
                                 __('New'), '/' . $this->params['controller'] . '/add', [
-                                'class' => 'btn btn-xs btn-success',
-                                'icon' => 'fa fa-plus'
+                                    'class' => 'btn btn-xs btn-success',
+                                    'icon'  => 'fa fa-plus'
                                 ]
                             ); ?>
-                            <button type="button" class="btn btn-xs btn-primary" ng-click="triggerFilter()">
-                                <i class="fa fa-filter"></i>
-                                <?php echo __('Filter'); ?>
-                            </button>
-                        </div>
-                    <?php endif; ?>
+                        <?php endif; ?>
+
+                        <button type="button" class="btn btn-xs btn-primary" ng-click="triggerFilter()">
+                            <i class="fa fa-filter"></i>
+                            <?php echo __('Filter'); ?>
+                        </button>
+                    </div>
+
                     <div class="jarviswidget-ctrls" role="menu">
                     </div>
                     <span class="widget-icon hidden-mobile"> <i class="fa fa-cogs"></i> </span>
@@ -265,7 +278,8 @@ use itnovum\openITCOCKPIT\Core\HumanTime;
                                     <a href="javascript:void(0);" data-toggle="dropdown"
                                        class="btn btn-default dropdown-toggle"><span
                                                 class="caret"></span></a>
-                                    <ul class="dropdown-menu pull-right" id="menuHack-{{servicegroup.Servicegroup.uuid}}-{{service.Service.uuid}}">
+                                    <ul class="dropdown-menu pull-right"
+                                        id="menuHack-{{servicegroup.Servicegroup.uuid}}-{{service.Service.uuid}}">
                                         <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
                                             <li ng-if="service.Service.allow_edit">
                                                 <a href="/services/edit/{{service.Service.id}}">
@@ -274,10 +288,18 @@ use itnovum\openITCOCKPIT\Core\HumanTime;
                                             </li>
                                         <?php endif; ?>
                                         <?php if ($this->Acl->hasPermission('deactivate', 'services')): ?>
-                                            <li ng-if="service.Service.allow_edit">
+                                            <li ng-if="service.Service.allow_edit && !service.Service.disabled">
                                                 <a href="javascript:void(0);"
                                                    ng-click="confirmDeactivate(getObjectForDelete(service.Host, service))">
                                                     <i class="fa fa-plug"></i> <?php echo __('Disable'); ?>
+                                                </a>
+                                            </li>
+                                        <?php endif; ?>
+                                        <?php if ($this->Acl->hasPermission('enable', 'services')): ?>
+                                            <li ng-if="service.Service.allow_edit && service.Service.disabled">
+                                                <a href="javascript:void(0);"
+                                                   ng-click="confirmActivate(getObjectForDelete(service.Host, service))">
+                                                    <i class="fa fa-plug"></i> <?php echo __('Enable'); ?>
                                                 </a>
                                             </li>
                                         <?php endif; ?>
