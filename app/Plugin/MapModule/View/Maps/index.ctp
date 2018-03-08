@@ -165,7 +165,7 @@
                                                 </li>
                                                 <li class="divider" ng-if="map.Map.allowEdit"></li>
                                             <?php endif; ?>
-                                            <?php if ($this->Acl->hasPermission('edit')): ?>
+                                            <?php if ($this->Acl->hasPermission('copy', 'maps')): ?>
                                             <li ng-if="map.Map.allowCopy">
                                                 <a href="/map_module/maps/copy/{{map.Map.id}}">
                                                     <i class="fa fa-edit"></i> <?php echo __('Copy'); ?>
