@@ -60,12 +60,19 @@ class StatehistoryHost extends NagiosModuleAppModel {
             $query['limit'] = $StatehistoryHostConditions->getLimit();
         }
 
-        if (!empty($StatehistoryHostConditions->getStates())) {
+        if(!empty($StatehistoryHostConditions->getStates() && sizeof($StatehistoryHostConditions->getStates()) < 3)){
             $query['conditions']['StatehistoryHost.state'] = $StatehistoryHostConditions->getStates();
         }
 
         if (!empty($StatehistoryHostConditions->getStateTypes())) {
             $query['conditions']['StatehistoryHost.state_type'] = $StatehistoryHostConditions->getStateTypes();
+        }
+
+        if($StatehistoryHostConditions->hardStateTypeAndUpState()){
+            $query['conditions']['OR'] = [
+                'StatehistoryHost.state_type' => 1,
+                'StatehistoryHost.state' => 0
+            ];
         }
 
         $query['conditions'] = Hash::merge($paginatorConditions, $query['conditions']);

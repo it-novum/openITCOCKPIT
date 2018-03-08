@@ -73,8 +73,7 @@ class DateRangeBehavior extends ModelBehavior
     public function mergeTimeOverlapping(&$Model, $timeslice_array)
     {
         $next_key = 0;
-        $sizeOf = sizeof($timeslice_array);
-        for ($i = 0; $i < $sizeOf; $i++) {
+        for ($i = 0; $i <= sizeof($timeslice_array); $i++) {
             $next_key++;
             if (isset($timeslice_array[$next_key]) && isset($timeslice_array[$i])) {
                 if ($this->dateIsBetween($timeslice_array[$i]['start_time'], $timeslice_array[$i]['end_time'], $timeslice_array[$next_key]['start_time'])

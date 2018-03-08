@@ -55,7 +55,7 @@ class StatehistoryHost extends CrateModuleAppModel {
             $query['limit'] = $StatehistoryHostConditions->getLimit();
         }
 
-        if(!empty($StatehistoryHostConditions->getStates())){
+        if(!empty($StatehistoryHostConditions->getStates() && sizeof($StatehistoryHostConditions->getStates()) < 3)){
             $query['conditions']['state'] = $StatehistoryHostConditions->getStates();
         }
 
@@ -68,6 +68,14 @@ class StatehistoryHost extends CrateModuleAppModel {
                 $query['conditions']['is_hardstate'] = true;
             }
         }
+
+        if($StatehistoryHostConditions->hardStateTypeAndUpState()){
+            $query['or'] =  [
+                ['StatehistoryHost.is_hardstate = ?' => [1]],
+                ['StatehistoryHost.state = ?' => [0]],
+            ];
+        }
+
 
         $query['conditions'] = Hash::merge($paginatorConditions, $query['conditions']);
 
