@@ -98,13 +98,16 @@ class MapsController extends MapModuleAppController {
 
         foreach ($all_maps as $key => $all_map) {
             $all_maps[$key]['Map']['allowEdit'] = false;
+            $all_maps[$key]['Map']['allowCopy'] = false;
             if ($this->hasRootPrivileges == true) {
                 $all_maps[$key]['Map']['allowEdit'] = true;
+                $all_maps[$key]['Map']['allowCopy'] = true;
                 continue;
             }
             foreach ($all_map['Container'] as $cKey => $container) {
                 if ($this->MY_RIGHTS_LEVEL[$container['id']] == WRITE_RIGHT) {
                     $all_maps[$key]['Map']['allowEdit'] = true;
+                    $all_maps[$key]['Map']['allowCopy'] = true;
                     continue;
                 }
             }
@@ -180,11 +183,11 @@ class MapsController extends MapModuleAppController {
         }
 
         $map = $this->Map->find('first', [
-            'recursive' => -1,
+            'recursive'  => -1,
             'conditions' => [
                 'Map.id' => $id
             ],
-            'contain' => [
+            'contain'    => [
                 'Container' => [
                     'fields' => ['id', 'name'],
                 ]
@@ -257,5 +260,72 @@ class MapsController extends MapModuleAppController {
         $this->response->statusCode(400);
         $this->set('message', __('Could not delete Map'));
         $this->set('_serialize', ['message']);
+    }
+
+
+    public function copy($id = null) {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
+            return;
+        }
+
+        $sourceMap = $this->Map->find('first', [
+            //'recursive' => -1,
+            'conditions' => [
+                'Map.id' => $id
+            ],
+        ]);
+
+
+        $this->set('sourceMap', $sourceMap);
+        $this->set('_serialize', ['sourceMap']);
+
+        if ($this->request->is('post') || $this->request->is('put')) {
+
+            $newMapData = $this->request->data;
+
+            if (empty($newMapData['Map']['refresh_interval'])) {
+                $newMapData['Map']['refresh_interval'] = 90000;
+            } else {
+                if ($newMapData['Map']['refresh_interval'] < 10) {
+                    $newMapData['Map']['refresh_interval'] = 10;
+                }
+                $newMapData['Map']['refresh_interval'] = ((int)$newMapData['Map']['refresh_interval'] * 1000);
+            }
+
+            $sourceMapContainer = Hash::extract($sourceMap['Container'], '{n}.id');
+            $newMap = [];
+            $newMap['Map'] = [
+                'name'             => $newMapData['Map']['name'],
+                'title'            => $newMapData['Map']['title'],
+                'background'       => $sourceMap['Map']['background'],
+                'refresh_interval' => $newMapData['Map']['refresh_interval'],
+                'container_id'     => $sourceMapContainer
+            ];
+            $newMap['Container'] = $sourceMapContainer;
+
+            $this->Map->create();
+            $newMapId = $this->Map->id;
+            $newMapElements = $this->Map->transformForCopy($sourceMap, $newMapId);
+            $newMap = array_merge($newMap, $newMapElements);
+
+            if ($this->Map->saveAll($newMap)) {
+                if ($this->request->ext === 'json') {
+                    if ($this->isAngularJsRequest()) {
+                        $this->setFlash(__('<a href="/map_module/maps/edit/%s">Map</a> successfully copied', $this->Map->id));
+                    }
+                    $this->serializeId();
+                    return;
+                }
+            } else {
+                if ($this->request->ext === 'json') {
+                    $this->serializeErrorMessage();
+                    return;
+                }
+                $this->setFlash(__('could not save data'), false);
+            }
+        }
+
+
     }
 }
