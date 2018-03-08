@@ -323,7 +323,7 @@
                         ?>
                         <!-- Mapitems -->
                         <div id="<?php echo $uuid; ?>" class="itemElement iconContainer dragElement"
-                             style="position:absolute; top: <?php echo $item['y']; ?>px; left: <?php echo $item['x']; ?>px;">
+                             style="position:absolute; top: <?php echo $item['y']; ?>px; left: <?php echo $item['x']; ?>px;z-index:<?php echo $item['z_index']; ?>">
                             <img src="/map_module/img/items/<?php echo $item['iconset']; ?>/ok.png"
                                  onerror="this.src='/map_module/img/items/missing.png';">
                             <input type="hidden" data-key="id" name="data[Mapitem][<?php echo $uuid; ?>][id]"
@@ -332,6 +332,8 @@
                                    value="<?php echo $item['x']; ?>"/>
                             <input type="hidden" data-key="y" name="data[Mapitem][<?php echo $uuid; ?>][y]"
                                    value="<?php echo $item['y']; ?>"/>
+                            <input type="hidden" data-key="z_index" name="data[Mapitem][<?php echo $uuid; ?>][z_index]"
+                                   value="<?php echo $item['z_index']; ?>"/>
                             <input type="hidden" data-key="limit" name="data[Mapitem][<?php echo $uuid; ?>][limit]"
                                    value="<?php echo $item['limit']; ?>"/>
                             <input type="hidden" data-key="iconset" name="data[Mapitem][<?php echo $uuid; ?>][iconset]"
@@ -359,6 +361,8 @@
                             <input type="hidden" class="itemElementSVG" data-key="startY"
                                    name="data[Mapline][<?php echo $uuid; ?>][startY]"
                                    value="<?php echo $line['startY']; ?>"/>
+                            <input type="hidden" data-key="z_index" name="data[Mapline][<?php echo $uuid; ?>][z_index]"
+                                   value="<?php echo $line['z_index']; ?>"/>
                             <input type="hidden" class="itemElementSVG" data-key="endY"
                                    name="data[Mapline][<?php echo $uuid; ?>][endY]"
                                    value="<?php echo $line['endY']; ?>"/>
@@ -390,6 +394,9 @@
                                    value="<?php echo $gadget['size_y']; ?>"/>
                             <input type="hidden" data-key="limit" name="data[Mapgadget][<?php echo $uuid; ?>][limit]"
                                    value="<?php echo $gadget['limit']; ?>"/>
+                            <input type="hidden" data-key="z_index"
+                                   name="data[Mapgadget][<?php echo $uuid; ?>][z_index]"
+                                   value="<?php echo $gadget['z_index']; ?>"/>
                             <input type="hidden" data-key="gadget" name="data[Mapgadget][<?php echo $uuid; ?>][gadget]"
                                    value="<?php echo $gadget['gadget']; ?>"/>
                             <input type="hidden" data-key="type" name="data[Mapgadget][<?php echo $uuid; ?>][type]"
@@ -412,7 +419,7 @@
                         <?php $uuid = UUID::v4(); ?>
                         <!-- Mapicons -->
                         <div id="<?php echo $uuid; ?>" class="itemElement statelessIconContainer dragElement"
-                             style="position:absolute; top: <?php echo $icon['y']; ?>px; left: <?php echo $icon['x']; ?>px;">
+                             style="position:absolute; top: <?php echo $icon['y']; ?>px; left: <?php echo $icon['x']; ?>px; z-index:<?php echo $icon['z_index']; ?>">
                             <img src="/map_module/img/icons/<?php echo $icon['icon']; ?>"
                                  onerror="this.src='/map_module/img/items/missing.png';">
                             <input type="hidden" data-key="id" name="data[Mapicon][<?php echo $uuid; ?>][id]"
@@ -421,6 +428,8 @@
                                    value="<?php echo $icon['x']; ?>"/>
                             <input type="hidden" data-key="y" name="data[Mapicon][<?php echo $uuid; ?>][y]"
                                    value="<?php echo $icon['y']; ?>"/>
+                            <input type="hidden" data-key="z_index" name="data[Mapicon][<?php echo $uuid; ?>][z_index]"
+                                   value="<?php echo $icon['z_index']; ?>"/>
                             <input type="hidden" data-key="icon" name="data[Mapicon][<?php echo $uuid; ?>][icon]"
                                    value="<?php echo $icon['icon']; ?>"/>
                         </div>
@@ -429,7 +438,7 @@
                         <?php $uuid = UUID::v4(); ?>
                         <!-- Maptext -->
                         <div id="<?php echo $uuid; ?>" class="textContainer dragElement"
-                             style="position:absolute;top:<?php echo $text['y']; ?>px; left: <?php echo $text['x']; ?>px;">
+                             style="position:absolute;top:<?php echo $text['y']; ?>px; left: <?php echo $text['x']; ?>px;z-index:<?php echo $text['z_index']; ?>">
                             <div id="spanText_<?php echo $uuid; ?>" class="textElement"
                                  style="position:absolute;font-size:11px;"><?php echo $text['text']; ?></div>
                             <input type="hidden" data-key="id" name="data[Maptext][<?php echo $uuid; ?>][id]"
@@ -438,6 +447,8 @@
                                    value="<?php echo $text['x']; ?>"/>
                             <input type="hidden" data-key="y" name="data[Maptext][<?php echo $uuid; ?>][y]"
                                    value="<?php echo $text['y']; ?>"/>
+                            <input type="hidden" data-key="z_index" name="data[Maptext][<?php echo $uuid; ?>][z_index]"
+                                   value="<?php echo $text['z_index']; ?>"/>
                             <input type="hidden" data-key="text" name="data[Maptext][<?php echo $uuid; ?>][text]"
                                    value="<?php echo $text['text']; ?>"/>
                         </div>
@@ -518,7 +529,7 @@
                                                      iconset="<?php echo $iconset['savedName']; ?>">
                                             </div>
                                         </div>
-                                        <?php
+                                    <?php
                                     endforeach;
                                     ?>
                                 </div>
@@ -644,6 +655,20 @@
                                         );
                                         echo $this->Form->input('x', ['value' => 0, 'label' => __('Position X'), 'wrapInput' => 'col col-xs-8', 'class' => 'form-control elementInput', 'element-property' => 'text', 'content' => 'x']);
                                         echo $this->Form->input('y', ['value' => 0, 'label' => __('Position Y'), 'wrapInput' => 'col col-xs-8', 'class' => 'form-control elementInput', 'element-property' => 'text', 'content' => 'y']);
+
+                                        echo $this->Form->input('z_index', [
+                                                'type'             => 'number',
+                                                'value'            => 0,
+                                                'min'              => 0,
+                                                'step'             => 1,
+                                                'label'            => __('Z Index'),
+                                                'wrapInput'        => 'col col-xs-8',
+                                                'class'            => 'form-control elementInput',
+                                                'element-property' => 'number',
+                                                'content'          => 'z_index'
+                                            ]
+                                        );
+
                                         //	echo $this->Form->input('limit', ['value' => 0, 'label' => __('Hover child limit'), 'wrapInput' => 'col col-xs-8', 'class' => 'elementInput' ,'element-property' => 'text', 'content' => 'limit']);
                                         $_iconset = [];
                                         foreach ($iconSets['items']['iconsets'] as $name) {
@@ -661,6 +686,8 @@
                                                 'content'          => 'iconset',
                                             ]
                                         );
+
+
                                         echo $this->Form->end();
                                         ?>
                                     </div>
@@ -696,6 +723,20 @@
                                         );
                                         echo $this->Form->input('x', ['value' => 0, 'label' => __('Position X'), 'wrapInput' => 'col col-xs-8', 'class' => 'form-control elementInput', 'element-property' => 'text', 'content' => 'x']);
                                         echo $this->Form->input('y', ['value' => 0, 'label' => __('Position Y'), 'wrapInput' => 'col col-xs-8', 'class' => 'form-control elementInput', 'element-property' => 'text', 'content' => 'y']);
+
+                                        echo $this->Form->input('z_index', [
+                                                'type'             => 'number',
+                                                'value'            => 0,
+                                                'min'              => 0,
+                                                'step'             => 1,
+                                                'label'            => __('Z Index'),
+                                                'wrapInput'        => 'col col-xs-8',
+                                                'class'            => 'form-control elementInput',
+                                                'element-property' => 'number',
+                                                'content'          => 'z_index'
+                                            ]
+                                        );
+
                                         //echo $this->Form->input('limit', ['value' => 0, 'label' => __('Hover child limit'), 'wrapInput' => 'col col-xs-8', 'class' => 'elementInput' ,'element-property' => 'text', 'content' => 'limit']);
                                         echo $this->Form->input('iconset', [
                                                 'options'          => $this->Html->chosenPlaceholder($_iconset),
@@ -733,6 +774,20 @@
                                         );
                                         echo $this->Form->input('x', ['value' => 0, 'label' => __('Position X'), 'wrapInput' => 'col col-xs-8', 'class' => 'form-control elementInput', 'element-property' => 'text', 'content' => 'x']);
                                         echo $this->Form->input('y', ['value' => 0, 'label' => __('Position Y'), 'wrapInput' => 'col col-xs-8', 'class' => 'form-control elementInput', 'element-property' => 'text', 'content' => 'y']);
+
+                                        echo $this->Form->input('z_index', [
+                                                'type'             => 'number',
+                                                'value'            => 0,
+                                                'min'              => 0,
+                                                'step'             => 1,
+                                                'label'            => __('Z Index'),
+                                                'wrapInput'        => 'col col-xs-8',
+                                                'class'            => 'form-control elementInput',
+                                                'element-property' => 'number',
+                                                'content'          => 'z_index'
+                                            ]
+                                        );
+
                                         //echo $this->Form->input('limit', ['value' => 0, 'label' => __('Hover child limit'), 'wrapInput' => 'col col-xs-8', 'class' => 'elementInput' ,'element-property' => 'text', 'content' => 'limit']);
                                         echo $this->Form->input('iconset', [
                                                 'options'          => $this->Html->chosenPlaceholder($_iconset),
@@ -770,6 +825,20 @@
                                         );
                                         echo $this->Form->input('x', ['value' => 0, 'label' => __('Position X'), 'wrapInput' => 'col col-xs-8', 'class' => 'form-control elementInput', 'element-property' => 'text', 'content' => 'x']);
                                         echo $this->Form->input('y', ['value' => 0, 'label' => __('Position Y'), 'wrapInput' => 'col col-xs-8', 'class' => 'form-control elementInput', 'element-property' => 'text', 'content' => 'y']);
+
+                                        echo $this->Form->input('z_index', [
+                                                'type'             => 'number',
+                                                'value'            => 0,
+                                                'min'              => 0,
+                                                'step'             => 1,
+                                                'label'            => __('Z Index'),
+                                                'wrapInput'        => 'col col-xs-8',
+                                                'class'            => 'form-control elementInput',
+                                                'element-property' => 'number',
+                                                'content'          => 'z_index'
+                                            ]
+                                        );
+
                                         //echo $this->Form->input('limit', ['value' => 0, 'label' => __('Hover child limit'), 'wrapInput' => 'col col-xs-8', 'class' => 'elementInput' ,'element-property' => 'text', 'content' => 'limit']);
                                         echo $this->Form->input('iconset', [
                                                 'options'          => $this->Html->chosenPlaceholder($_iconset),
@@ -807,6 +876,20 @@
                                         );
                                         echo $this->Form->input('x', ['value' => 0, 'label' => __('Position X'), 'wrapInput' => 'col col-xs-8', 'class' => 'form-control elementInput', 'element-property' => 'text', 'content' => 'x']);
                                         echo $this->Form->input('y', ['value' => 0, 'label' => __('Position Y'), 'wrapInput' => 'col col-xs-8', 'class' => 'form-control elementInput', 'element-property' => 'text', 'content' => 'y']);
+
+                                        echo $this->Form->input('z_index', [
+                                                'type'             => 'number',
+                                                'value'            => 0,
+                                                'min'              => 0,
+                                                'step'             => 1,
+                                                'label'            => __('Z Index'),
+                                                'wrapInput'        => 'col col-xs-8',
+                                                'class'            => 'form-control elementInput',
+                                                'element-property' => 'number',
+                                                'content'          => 'z_index'
+                                            ]
+                                        );
+
                                         //echo $this->Form->input('limit', ['value' => 0, 'label' => __('Hover child limit'), 'wrapInput' => 'col col-xs-8', 'class' => 'elementInput' ,'element-property' => 'text', 'content' => 'limit']);
                                         echo $this->Form->input('iconset', [
                                                 'options'          => $this->Html->chosenPlaceholder($_iconset),
@@ -889,6 +972,18 @@
                                         echo $this->Form->input('endX', ['value' => 0, 'label' => __('End X'), 'wrapInput' => 'col col-xs-8', 'class' => 'form-control lineInput', 'element-property' => 'text', 'content' => 'endX']);
                                         echo $this->Form->input('startY', ['value' => 0, 'label' => __('Start Y'), 'wrapInput' => 'col col-xs-8', 'class' => 'form-control lineInput', 'element-property' => 'text', 'content' => 'startY']);
                                         echo $this->Form->input('endY', ['value' => 0, 'label' => __('End Y'), 'wrapInput' => 'col col-xs-8', 'class' => 'form-control lineInput', 'element-property' => 'text', 'content' => 'endY']);
+                                        echo $this->Form->input('z_index', [
+                                                'type'             => 'number',
+                                                'value'            => 0,
+                                                'min'              => 0,
+                                                'step'             => 1,
+                                                'label'            => __('Z Index'),
+                                                'wrapInput'        => 'col col-xs-8',
+                                                'class'            => 'form-control lineInput',
+                                                'element-property' => 'number',
+                                                'content'          => 'z_index'
+                                            ]
+                                        );
                                         //echo $this->Form->input('limit', ['value' => 0, 'label' => __('Hover child limit'), 'wrapInput' => 'col col-xs-8', 'class' => 'lineInput' ,'element-property' => 'text', 'content' => 'limit']);
                                         echo $this->Form->end();
                                         ?>
@@ -927,6 +1022,18 @@
                                         echo $this->Form->input('endX', ['value' => 0, 'label' => __('End X'), 'wrapInput' => 'col col-xs-8', 'class' => 'form-control lineInput', 'element-property' => 'text', 'content' => 'endX']);
                                         echo $this->Form->input('startY', ['value' => 0, 'label' => __('Start Y'), 'wrapInput' => 'col col-xs-8', 'class' => 'form-control lineInput', 'element-property' => 'text', 'content' => 'startY']);
                                         echo $this->Form->input('endY', ['value' => 0, 'label' => __('End Y'), 'wrapInput' => 'col col-xs-8', 'class' => 'form-control lineInput', 'element-property' => 'text', 'content' => 'endY']);
+                                        echo $this->Form->input('z_index', [
+                                                'type'             => 'number',
+                                                'value'            => 0,
+                                                'min'              => 0,
+                                                'step'             => 1,
+                                                'label'            => __('Z Index'),
+                                                'wrapInput'        => 'col col-xs-8',
+                                                'class'            => 'form-control lineInput',
+                                                'element-property' => 'number',
+                                                'content'          => 'z_index'
+                                            ]
+                                        );
                                         //echo $this->Form->input('limit', ['value' => 0, 'label' => __('Hover child limit'), 'wrapInput' => 'col col-xs-8', 'class' => 'lineInput' ,'element-property' => 'text', 'content' => 'limit']);
                                         echo $this->Form->end();
                                         ?>
@@ -954,6 +1061,18 @@
                                         echo $this->Form->input('endX', ['value' => 0, 'label' => __('End X'), 'wrapInput' => 'col col-xs-8', 'class' => 'lineInput', 'element-property' => 'text', 'content' => 'endX']);
                                         echo $this->Form->input('startY', ['value' => 0, 'label' => __('Start Y'), 'wrapInput' => 'col col-xs-8', 'class' => 'lineInput', 'element-property' => 'text', 'content' => 'startY']);
                                         echo $this->Form->input('endY', ['value' => 0, 'label' => __('End Y'), 'wrapInput' => 'col col-xs-8', 'class' => 'lineInput', 'element-property' => 'text', 'content' => 'endY']);
+                                        echo $this->Form->input('z_index', [
+                                                'type'             => 'number',
+                                                'value'            => 0,
+                                                'min'              => 0,
+                                                'step'             => 1,
+                                                'label'            => __('Z Index'),
+                                                'wrapInput'        => 'col col-xs-8',
+                                                'class'            => 'form-control lineInput',
+                                                'element-property' => 'number',
+                                                'content'          => 'z_index'
+                                            ]
+                                        );
                                         //echo $this->Form->input('limit', ['value' => 0, 'label' => __('Hover child limit'), 'wrapInput' => 'col col-xs-8', 'class' => 'lineInput' ,'element-property' => 'text', 'content' => 'limit']);
                                         echo $this->Form->end();
                                         ?>
@@ -981,6 +1100,18 @@
                                         echo $this->Form->input('endX', ['value' => 0, 'label' => __('End X'), 'wrapInput' => 'col col-xs-8', 'class' => 'lineInput', 'element-property' => 'text', 'content' => 'endX']);
                                         echo $this->Form->input('startY', ['value' => 0, 'label' => __('Start Y'), 'wrapInput' => 'col col-xs-8', 'class' => 'lineInput', 'element-property' => 'text', 'content' => 'startY']);
                                         echo $this->Form->input('endY', ['value' => 0, 'label' => __('End Y'), 'wrapInput' => 'col col-xs-8', 'class' => 'lineInput', 'element-property' => 'text', 'content' => 'endY']);
+                                        echo $this->Form->input('z_index', [
+                                                'type'             => 'number',
+                                                'value'            => 0,
+                                                'min'              => 0,
+                                                'step'             => 1,
+                                                'label'            => __('Z Index'),
+                                                'wrapInput'        => 'col col-xs-8',
+                                                'class'            => 'form-control lineInput',
+                                                'element-property' => 'number',
+                                                'content'          => 'z_index'
+                                            ]
+                                        );
                                         //echo $this->Form->input('limit', ['value' => 0, 'label' => __('Hover child limit'), 'wrapInput' => 'col col-xs-8', 'class' => 'lineInput' ,'element-property' => 'text', 'content' => 'limit']);
                                         echo $this->Form->end();
                                         ?>
@@ -995,6 +1126,18 @@
                                         echo $this->Form->input('endX', ['value' => 0, 'label' => __('End X'), 'wrapInput' => 'col col-xs-8', 'class' => 'lineInput', 'element-property' => 'text', 'content' => 'endX']);
                                         echo $this->Form->input('startY', ['value' => 0, 'label' => __('Start Y'), 'wrapInput' => 'col col-xs-8', 'class' => 'lineInput', 'element-property' => 'text', 'content' => 'startY']);
                                         echo $this->Form->input('endY', ['value' => 0, 'label' => __('End Y'), 'wrapInput' => 'col col-xs-8', 'class' => 'lineInput', 'element-property' => 'text', 'content' => 'endY']);
+                                        echo $this->Form->input('z_index', [
+                                                'type'             => 'number',
+                                                'value'            => 0,
+                                                'min'              => 0,
+                                                'step'             => 1,
+                                                'label'            => __('Z Index'),
+                                                'wrapInput'        => 'col col-xs-8',
+                                                'class'            => 'form-control lineInput',
+                                                'element-property' => 'number',
+                                                'content'          => 'z_index'
+                                            ]
+                                        );
                                         //echo $this->Form->input('limit', ['value' => 0, 'label' => __('Hover child limit'), 'wrapInput' => 'col col-xs-8', 'class' => 'lineInput' ,'element-property' => 'text', 'content' => 'limit']);
                                         echo $this->Form->end();
                                         ?>
@@ -1083,22 +1226,34 @@
                                         ]);
 
                                         echo $this->Form->input('size_x', [
-                                            'value'             => 0,
-                                            'label'             => __('Size X'),
-                                            'wrapInput'         => 'col col-xs-8',
-                                            'class'             => 'gadgetInput',
-                                            'element-property'  => 'text',
-                                            'content'           => 'size_x'
+                                            'value'            => 0,
+                                            'label'            => __('Size X'),
+                                            'wrapInput'        => 'col col-xs-8',
+                                            'class'            => 'gadgetInput',
+                                            'element-property' => 'text',
+                                            'content'          => 'size_x'
                                         ]);
 
                                         echo $this->Form->input('size_y', [
-                                            'value'             => 0,
-                                            'label'             => __('Size Y'),
-                                            'wrapInput'         => 'col col-xs-8',
-                                            'class'             => 'gadgetInput',
-                                            'element-property'  => 'text',
-                                            'content'           => 'size_y'
+                                            'value'            => 0,
+                                            'label'            => __('Size Y'),
+                                            'wrapInput'        => 'col col-xs-8',
+                                            'class'            => 'gadgetInput',
+                                            'element-property' => 'text',
+                                            'content'          => 'size_y'
                                         ]);
+                                        echo $this->Form->input('z_index', [
+                                                'type'             => 'number',
+                                                'value'            => 0,
+                                                'min'              => 0,
+                                                'step'             => 1,
+                                                'label'            => __('Z Index'),
+                                                'wrapInput'        => 'col col-xs-8',
+                                                'class'            => 'form-control gadgetInput',
+                                                'element-property' => 'number',
+                                                'content'          => 'z_index'
+                                            ]
+                                        );
                                         echo $this->Form->fancyCheckbox('transparent_background', [
                                             'caption'          => __('Transparent Background'),
                                             'captionGridClass' => 'col col-md-4 hidden rrdBackground',
@@ -1119,7 +1274,7 @@
                                             'caption'          => __('Font Size'),
                                             'captionGridClass' => 'col col-md-3 gadgetFontSize hidden',
                                             'wrapGridClass'    => 'col col-xs-9 gadgetFontSize hidden',
-                                            'wrapInput'       => 'col col-xs-8',
+                                            'wrapInput'        => 'col col-xs-8',
                                             'class'            => 'form-control gadgetInput',
                                             'element-property' => 'text',
                                             'content'          => 'font_size'
@@ -1168,6 +1323,18 @@
                                         ]);
                                         echo $this->Form->input('x', ['value' => 0, 'label' => __('Position X'), 'wrapInput' => 'col col-xs-8', 'class' => 'statelessIconInput', 'element-property' => 'text', 'content' => 'x']);
                                         echo $this->Form->input('y', ['value' => 0, 'label' => __('Position Y'), 'wrapInput' => 'col col-xs-8', 'class' => 'statelessIconInput', 'class' => 'statelessIconInput', 'element-property' => 'text', 'content' => 'y']);
+                                        echo $this->Form->input('z_index', [
+                                                'type'             => 'number',
+                                                'value'            => 0,
+                                                'min'              => 0,
+                                                'step'             => 1,
+                                                'label'            => __('Z Index'),
+                                                'wrapInput'        => 'col col-xs-8',
+                                                'class'            => 'form-control statelessIconInput',
+                                                'element-property' => 'number',
+                                                'content'          => 'z_index'
+                                            ]
+                                        );
                                         echo $this->Form->end();
                                         ?>
                                     </div>
@@ -1450,6 +1617,18 @@
                                         <?php
                                         //										echo $this->Form->input('text', ['label' => __('Text'), 'wrapInput' => 'col col-xs-8', 'class' => 'textInput' ,'element-property' => 'text', 'content' => 'text', 'placeholder' => __('Please Enter your Text')]);
                                         //										echo $this->Form->input('font_size', ['value' => 12, 'label' => __('Font Size'), 'wrapInput' => 'col col-xs-8', 'class' => 'textInput' ,'element-property' => 'font_size', 'content' => 'font_size']);
+                                        echo $this->Form->input('z_index', [
+                                                'type'             => 'number',
+                                                'value'            => 0,
+                                                'min'              => 0,
+                                                'step'             => 1,
+                                                'label'            => __('Z Index'),
+                                                'wrapInput'        => 'col col-xs-8',
+                                                'class'            => 'form-control textInput',
+                                                'element-property' => 'number',
+                                                'content'          => 'z_index'
+                                            ]
+                                        );
                                         echo $this->Form->end();
                                         ?>
                                     </div>

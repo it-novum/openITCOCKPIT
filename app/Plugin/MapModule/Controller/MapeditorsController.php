@@ -107,7 +107,6 @@ class MapeditorsController extends MapModuleAppController {
                     ]);
                 }
             }
-
             if ($this->Map->saveAll($request)) {
                 if ($this->request->ext === 'json') {
                     $this->serializeId();
@@ -125,12 +124,6 @@ class MapeditorsController extends MapModuleAppController {
                 $this->setFlash(__('Data could not be saved'), false);
             }
         }
-        $this->Frontend->setJson('lang_minutes', __('minutes'));
-        $this->Frontend->setJson('lang_seconds', __('seconds'));
-        $this->Frontend->setJson('lang_and', __('and'));
-        $this->Frontend->setJson('map_lines', Hash::Extract($map, 'Mapline.{n}'));
-        $this->Frontend->setJson('map_gadgets', Hash::Extract($map, 'Mapgadget.{n}'));
-
         $hosts = $this->Host->hostsByContainerId($this->MY_RIGHTS, 'list', [], 'id', 15);
 
         $hostgroup = $this->Hostgroup->hostgroupsByContainerId($this->MY_RIGHTS, 'list', 'id');
@@ -141,7 +134,6 @@ class MapeditorsController extends MapModuleAppController {
         $icons = $this->Background->findIcons();
 
         $this->Frontend->setJson('backgroundThumbs', $backgroundThumbs);
-
         $this->set(compact([
             'map',
             'maps',
@@ -153,6 +145,12 @@ class MapeditorsController extends MapModuleAppController {
             'iconSets',
             'icons'
         ]));
+
+        $this->Frontend->setJson('lang_minutes', __('minutes'));
+        $this->Frontend->setJson('lang_seconds', __('seconds'));
+        $this->Frontend->setJson('lang_and', __('and'));
+        $this->Frontend->setJson('map_lines', Hash::Extract($map, 'Mapline.{n}'));
+        $this->Frontend->setJson('map_gadgets', Hash::Extract($map, 'Mapgadget.{n}'));
     }
 
     public function getIconImages() {

@@ -140,7 +140,7 @@
                          class="elementHover iconContainer"
                          data-type="<?php echo ucfirst($item['Mapitem']['type']); ?>"
                          data-uuid="<?php echo $item['SubMap']['id']; ?>"
-                         style="position:absolute; top: <?php echo $item['Mapitem']['y']; ?>px; left: <?php echo $item['Mapitem']['x']; ?>px;">
+                         style="position:absolute; top: <?php echo $item['Mapitem']['y']; ?>px; left: <?php echo $item['Mapitem']['x']; ?>px; z-index: <?php echo $item['Mapitem']['z_index']; ?>">
                         <?php
                         if (array_key_exists('fullscreen', $this->params['named'])) {
                             echo '<a target="_parent" href="/map_module/mapeditors/view/' . $item['Mapitem']['object_id'] . '/fullscreen:1">';
@@ -153,7 +153,7 @@
                              class="elementHover iconContainer"
                              data-type="<?php echo ucfirst($item['Mapitem']['type']); ?>"
                              data-uuid="<?php echo $item[ucfirst($item['Mapitem']['type'])]['uuid']; ?>"
-                             style="position:absolute; top: <?php echo $item['Mapitem']['y']; ?>px; left: <?php echo $item['Mapitem']['x']; ?>px;">
+                             style="position:absolute; top: <?php echo $item['Mapitem']['y']; ?>px; left: <?php echo $item['Mapitem']['x']; ?>px;  z-index: <?php echo $item['Mapitem']['z_index']; ?>">
                             <?php
                             if ($item['Mapitem']['type'] !== 'servicegroup'):
                             ?>
@@ -216,7 +216,8 @@
                                     <input type="hidden"
                                            id="statelessLine_<?php echo $line['Mapline']['id']; ?>"
                                            data-type="<?php echo $line['Mapline']['type']; ?>"
-                                           data-color="#00FF00">
+                                           data-color="#00FF00"
+                                           data-zIndex="<?php echo $line['Mapline']['z_index']; ?>">
                                 </div>
                             <?php else: ?>
                                 <div id="<?php echo $uuid; ?>" data-lineId="<?php echo $line['Mapline']['id'] ?>"
@@ -230,7 +231,8 @@
                                            data-type="<?php echo $line['Mapline']['type']; ?>"
                                            data-uuid="<?php echo $line[ucfirst($line['Mapline']['type'])]['uuid']; ?>"
                                            data-color="<?php echo $lineColor['hexColor']; ?>"
-                                           data-link="/<?php echo Inflector::pluralize($line['Mapline']['type']); ?>/browser/<?php echo $line[ucfirst($line['Mapline']['type'])]['id']; ?>">
+                                           data-link="/<?php echo Inflector::pluralize($line['Mapline']['type']); ?>/browser/<?php echo $line[ucfirst($line['Mapline']['type'])]['id']; ?>"
+                                           data-zIndex="<?php echo $line['Mapline']['z_index']; ?>">
                                 </div>
                             <?php endif; ?>
                             <?php endforeach;
@@ -330,7 +332,8 @@
                                                     data-flapping='<?php echo (isset($state['is_flapping'])) ? $state['is_flapping'] : 0 ?>'
                                                     data-color='<?php echo $gadgetColor['hexColor']; ?>'
                                                     data-showLabel='<?php echo $gadget['Mapgadget']['show_label']; ?>'
-                                                    data-fontSize='<?php echo $gadget['Mapgadget']['font_size']; ?>'>
+                                                    data-fontSize='<?php echo $gadget['Mapgadget']['font_size']; ?>'
+                                                    data-zIndex='<?php echo $gadget['Mapgadget']['z_index']; ?>'>
 
                                             <script> var popoverGadgetPerfdata_<?php echo $gadget['Mapgadget']['id']; ?> = <?php echo (empty($state['perfdata'])) ? '""' : json_encode($this->Perfdata->parsePerfData($state['perfdata'])); ?></script>
                                         <?php endif; ?>
@@ -343,7 +346,7 @@
                         <?php foreach ($map['Mapicon'] as $key => $icon):
                             $uuid = UUID::v4(); ?>
                             <div id="<?php echo $uuid; ?>" class="statelessIconContainer"
-                                 style="position:absolute;top:<?php echo $icon['y']; ?>px;left:<?php echo $icon['x']; ?>px;">
+                                 style="position:absolute;top:<?php echo $icon['y']; ?>px;left:<?php echo $icon['x']; ?>px; z-index: <?php echo $icon['z_index']; ?>">
                                 <img src="/map_module/img/icons/<?php echo $icon['icon']; ?>"
                                      onerror="this.src='/map_module/img/items/missing.png';"/>
                             </div>
@@ -354,7 +357,7 @@
                             foreach ($mapElements['map_texts'] as $text):
                                 $uuid = UUID::v4(); ?>
                                 <div id="<?php echo $uuid; ?>" class="textContainer"
-                                     style="position:absolute;top:<?php echo $text['Maptext']['y']; ?>px;left:<?php echo $text['Maptext']['x']; ?>px;">
+                                     style="position:absolute;top:<?php echo $text['Maptext']['y']; ?>px;left:<?php echo $text['Maptext']['x']; ?>px; z-index: <?php echo $text['Maptext']['z_index']; ?>">
                                     <span id="spanText_<?php echo $uuid; ?>" class="textElement"
                                           style="font-size:11px;"><?php echo $text['Maptext']['text']; ?></span>
                                 </div>
