@@ -74,20 +74,6 @@ class HostgroupsController extends AppController {
             'recursive'  => -1,
             'contain'    => [
                 'Container',
-                'Host'         => [
-                    'fields' => [
-                        'Host.id',
-                        'Host.name'
-                    ],
-                    'Container'
-                ],
-                'Hosttemplate' => [
-                    'fields' => [
-                        'Hosttemplate.id',
-                        'Hosttemplate.name'
-                    ],
-                    'Container'
-                ]
             ],
             'order'      => $HostgroupFilter->getOrderForPaginator('Container.name', 'asc'),
             'conditions' => $HostgroupFilter->indexFilter(),
@@ -112,26 +98,10 @@ class HostgroupsController extends AppController {
             if ($this->hasRootPrivileges === false && $hostgroup['Hostgroup']['allowEdit'] === true) {
                 $hostgroup['Hostgroup']['allowEdit'] = $this->allowedByContainerId($hostgroup['Container']['parent_id']);
             }
-            foreach ($hostgroup['Host'] as $key => $host) {
-                $hostgroup['Host'][$key]['allowEdit'] = $this->hasPermission('edit', 'hosts');
-                if ($this->hasRootPrivileges === false && $hostgroup['Host'][$key]['allowEdit'] === true) {
-                    $containerIdsToCheck = Hash::extract($host, 'Container.{n}.HostsToContainer.container_id');
-                    $hostgroup['Host'][$key]['allowEdit'] = $this->allowedByContainerId($containerIdsToCheck);
-                }
-            }
-
-            foreach ($hostgroup['Hosttemplate'] as $key => $hosttemplate) {
-                $hostgroup['Hosttemplate'][$key]['allowEdit'] = $this->hasPermission('edit', 'hosttemplates');
-                if ($this->hasRootPrivileges === false && $hostgroup['Hosttemplate'][$key]['allowEdit'] === true) {
-                    $hostgroup['Hosttemplate'][$key]['allowEdit'] = $this->allowedByContainerId($hosttemplate['container_id']);
-                }
-            }
 
             $all_hostgroups[] = [
                 'Hostgroup'    => $hostgroup['Hostgroup'],
                 'Container'    => $hostgroup['Container'],
-                'Host'         => $hostgroup['Host'],
-                'Hosttemplate' => $hostgroup['Hosttemplate']
             ];
 
         }
