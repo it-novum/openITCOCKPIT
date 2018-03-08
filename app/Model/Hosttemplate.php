@@ -25,8 +25,7 @@
 
 use itnovum\openITCOCKPIT\Filter\HosttemplateFilter;
 
-class Hosttemplate extends AppModel
-{
+class Hosttemplate extends AppModel {
     var $hasAndBelongsToMany = [
         'Contactgroup' => [
             'className'             => 'Contactgroup',
@@ -329,8 +328,7 @@ class Hosttemplate extends AppModel
         ],
     ];
 
-    public function __construct($id = false, $table = null, $ds = null)
-    {
+    public function __construct($id = false, $table = null, $ds = null) {
         parent::__construct($id, $table, $ds);
         App::uses('UUID', 'Lib');
         $this->notification_options = [
@@ -352,8 +350,7 @@ class Hosttemplate extends AppModel
         ];
     }
 
-    function checkNotificationOptions($data, $notification_type)
-    {
+    function checkNotificationOptions($data, $notification_type) {
         foreach ($this->data as $request) {
             foreach ($request as $request_key => $request_value) {
                 if (in_array($request_key, $this->notification_options[$notification_type], true) && $request_value == 1) {
@@ -365,8 +362,7 @@ class Hosttemplate extends AppModel
         return false;
     }
 
-    function checkFlapDetectionOptions($data, $flapdetection_type)
-    {
+    function checkFlapDetectionOptions($data, $flapdetection_type) {
         if (isset($this->data['Hosttemplate']['flap_detection_enabled']) && (boolean)$this->data['Hosttemplate']['flap_detection_enabled'] === true) {
             foreach ($this->data as $request) {
                 foreach ($request as $request_key => $request_value) {
@@ -382,16 +378,14 @@ class Hosttemplate extends AppModel
         return true;
     }
 
-    public function createUUID()
-    {
+    public function createUUID() {
         return UUID::v4();
     }
 
     /*
     Custom validation rule for contact and/or contactgroup fields
     */
-    public function atLeastOne($data)
-    {
+    public function atLeastOne($data) {
         return !empty($this->data[$this->name]['Contact']) || !empty($this->data[$this->name]['Contactgroup']);
     }
 
@@ -407,15 +401,14 @@ class Hosttemplate extends AppModel
             'conditions' => [
                 $conditions
             ],
-            'order' => [
+            'order'      => [
                 'Hosttemplate.name' => 'ASC',
             ],
         ]);
     }
 
 
-    public function __allowDelete($hosttemplateId)
-    {
+    public function __allowDelete($hosttemplateId) {
         $Host = ClassRegistry::init('Host');
         $hosts = $Host->find('all', [
             'recursive'  => -1,
@@ -477,7 +470,7 @@ class Hosttemplate extends AppModel
             'order'      => [
                 'Hosttemplate.name' => 'ASC',
             ],
-            'limit' => self::ITN_AJAX_LIMIT
+            'limit'      => self::ITN_AJAX_LIMIT
         ];
 
         $query['conditions']['Hosttemplate.container_id'] = $containerIds;
@@ -485,11 +478,11 @@ class Hosttemplate extends AppModel
         $hosttemplatesWithLimit = $this->find('list', $query);
 
         $selectedHosttemplates = [];
-        if(!empty($selected)){
+        if (!empty($selected)) {
             $query = [
                 'recursive'  => -1,
                 'conditions' => [
-                    'Hosttemplate.id' => $selected,
+                    'Hosttemplate.id'           => $selected,
                     'Hosttemplate.container_id' => $containerIds
                 ],
                 'order'      => [
@@ -500,7 +493,65 @@ class Hosttemplate extends AppModel
         }
 
         $hosttemplates = $hosttemplatesWithLimit + $selectedHosttemplates;
-        asort($hosttemplates, SORT_FLAG_CASE|SORT_NATURAL);
+        asort($hosttemplates, SORT_FLAG_CASE | SORT_NATURAL);
         return $hosttemplates;
+    }
+
+    /**
+     * @param int $hosttemplateId
+     * @return array
+     */
+    public function getQueryForBrowser($hosttemplateId) {
+        return [
+            'recursive'  => -1,
+            'contain'    => [
+                'CheckPeriod',
+                'NotifyPeriod',
+                'CheckCommand',
+                'Contact'                          => [
+                    'fields' => [
+                        'id',
+                        'name'
+                    ],
+                    'Container'
+                ],
+                'Contactgroup'                     => [
+                    'fields'    => [
+                        'id'
+                    ],
+                    'Container' => [
+                        'fields' => [
+                            'name',
+                            'parent_id'
+                        ],
+                    ],
+                ],
+                'Customvariable'                   => [
+                    'fields' => [
+                        'id',
+                        'name',
+                        'value',
+                        'objecttype_id',
+                    ],
+                ],
+                'Hosttemplatecommandargumentvalue' => [
+                    'fields'          => [
+                        'id',
+                        'commandargument_id',
+                        'value',
+                    ],
+                    'Commandargument' => [
+                        'fields' => [
+                            'id',
+                            'human_name',
+                            'name'
+                        ],
+                    ],
+                ],
+            ],
+            'conditions' => [
+                'Hosttemplate.id' => $hosttemplateId
+            ]
+        ];
     }
 }

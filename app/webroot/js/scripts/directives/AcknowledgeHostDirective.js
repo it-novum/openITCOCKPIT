@@ -15,6 +15,7 @@ angular.module('openITCOCKPIT').directive('acknowledgeHost', function($http, Sud
 
             var objects = {};
             var author = '';
+            var callbackName = false;
 
             $scope.setHostAckObjects = function(_objects){
                 objects = _objects;
@@ -22,6 +23,10 @@ angular.module('openITCOCKPIT').directive('acknowledgeHost', function($http, Sud
 
             $scope.setHostAckAuthor = function(_author){
                 author = _author;
+            };
+
+            $scope.setHostAckCallback = function(_callback){
+                callbackName = _callback;
             };
 
             $scope.doAcknowledgeHost = function(){
@@ -54,6 +59,11 @@ angular.module('openITCOCKPIT').directive('acknowledgeHost', function($http, Sud
                         $scope.hostAckType
                     ]));
                 }
+
+                //Call callback function if given
+                if(callbackName){
+                    $scope[callbackName]();
+                }
                 $timeout(function(){
                     $scope.doHostAck = false;
                     $scope.percentage = 0;
@@ -68,6 +78,11 @@ angular.module('openITCOCKPIT').directive('acknowledgeHost', function($http, Sud
                 if(Object.keys(objects).length === 0){
                     return;
                 }
+                if(attr.hasOwnProperty('callback')){
+                    $scope.setHostAckCallback(attr.callback);
+                }
+
+
                 $scope.setHostAckObjects(objects);
 
                 $scope.setHostAckAuthor(attr.author);

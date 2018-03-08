@@ -16,7 +16,7 @@
                         <section class="smart-form">
                             <label class="label"><?php echo __('Maintenance period for'); ?></label>
                             <label class="select">
-                                <select ng-model="downtime.hostDowntimeType">
+                                <select ng-model="downtimeModal.hostDowntimeType">
                                     <option value="0"><?php echo __('Individual hosts'); ?></option>
                                     <option value="1"><?php echo __('Hosts including services'); ?></option>
                                     <option value="2"><?php echo __('Hosts and dependent Hosts (triggered)'); ?></option>
@@ -39,11 +39,11 @@
                                     class="form-control"
                                     placeholder="<?php echo __('In progress'); ?>"
                                     type="text"
-                                    ng-model="downtime.comment"
-                                    ng-init="downtime.comment='<?php echo __('In progress'); ?>'"
+                                    ng-model="downtimeModal.comment"
+                                    ng-init="downtimeModal.comment='<?php echo __('In progress'); ?>'"
                         </div>
                     </div>
-                    <div ng-repeat="error in errors.Downtime.comment" class="col-md-offset-2 col-xs-12 col-md-10">
+                    <div ng-repeat="error in errors.downtimeModal.comment" class="col-md-offset-2 col-xs-12 col-md-10">
                         <div class="help-block text-danger-important">{{ error }}</div>
                     </div>
                 </div>
@@ -57,14 +57,14 @@
                         </label>
                         <div class="col col-xs-5" style="padding-right: 0px;">
                             <input class="form-control"
-                                   ng-model="downtime.from_date"
-                                   ng-init="downtime.from_date='<?php echo date('d.m.Y'); ?>'"
+                                   ng-model="downtimeModal.from_date"
+                                   ng-init="downtimeModal.from_date='<?php echo date('d.m.Y'); ?>'"
                                    type="text">
                         </div>
                         <div class="col col-xs-5" style="padding-left: 0px;">
                             <input class="form-control"
-                                   ng-model="downtime.from_time"
-                                   ng-init="downtime.from_time='<?php echo date('H:i'); ?>'"
+                                   ng-model="downtimeModal.from_time"
+                                   ng-init="downtimeModal.from_time='<?php echo date('H:i'); ?>'"
                                    type="text">
                         </div>
                         <div ng-repeat="error in errors.Downtime.from_date" class="col-md-offset-2 col-xs-12 col-md-10">
@@ -82,14 +82,14 @@
                         </label>
                         <div class="col col-xs-5" style="padding-right: 0px;">
                             <input class="form-control"
-                                   ng-model="downtime.to_date"
-                                   ng-init="downtime.to_date='<?php echo date('d.m.Y', time() + 60 * 15); ?>'"
+                                   ng-model="downtimeModal.to_date"
+                                   ng-init="downtimeModal.to_date='<?php echo date('d.m.Y', time() + 60 * 15); ?>'"
                                    type="text">
                         </div>
                         <div class="col col-xs-5" style="padding-left: 0px;">
                             <input class="form-control"
-                                   ng-model="downtime.to_time"
-                                   ng-init="downtime.to_time='<?php echo date('H:i', time() + 60 * 15); ?>'"
+                                   ng-model="downtimeModal.to_time"
+                                   ng-init="downtimeModal.to_time='<?php echo date('H:i', time() + 60 * 15); ?>'"
                                    type="text">
                         </div>
                         <div ng-repeat="error in errors.Downtime.to_date" class="col-md-offset-2 col-xs-12 col-md-10">

@@ -41,7 +41,7 @@ use itnovum\openITCOCKPIT\Core\Hoststatus;
 </ol>
 
 <div class="row">
-    <article class="col-sm-2 col-md-2 col-lg-2">
+    <article class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
         <div class="jarviswidget node-list" role="widget">
             <header>
                 <span class="widget-icon"> <i class="fa fa-list-ul"></i></span>
@@ -54,7 +54,14 @@ use itnovum\openITCOCKPIT\Core\Hoststatus;
                         <?php foreach ($tenants as $tenantContainerId => $tenantName): ?>
                             <div class="ellipsis searchContainer">
                                 <i class="fa fa-home"></i>
-                                <?php echo $this->Html->link($tenantName, ['action' => 'tenantBrowser', $tenantContainerId], ['class' => 'searchMe']); ?>
+                                <?php echo $this->Html->link(
+                                    $tenantName, [
+                                    'action' => 'tenantBrowser',
+                                    $tenantContainerId
+                                ], [
+                                    'class' => 'searchMe',
+                                    'title' => $tenantName
+                                ]); ?>
                             </div>
                         <?php endforeach; ?>
                     </div>
@@ -77,7 +84,7 @@ use itnovum\openITCOCKPIT\Core\Hoststatus;
             </div> -->
         </div>
     </article>
-    <article class="col-sm-5 col-md-5 col-lg-5">
+    <article class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
         <div class="jarviswidget" style="position: relative; opacity: 1; left: 0px; top: 0px;"  role="widget">
             <header>
                 <span class="widget-icon"> <i class="fa fa-pie-chart"></i></span>
@@ -103,14 +110,14 @@ use itnovum\openITCOCKPIT\Core\Hoststatus;
                             <?php
                             foreach ($state_array_host as $state => $state_count):?>
                                 <div class="col-md-4 no-padding">
-                                        <a href="/hosts/index<?php echo Router::queryString([
-                                            'filter'             => [
-                                                'Hoststatus.current_state' => [$state => 1]
-                                            ],
-                                            'sort'               => 'Hoststatus.last_state_change',
-                                            'direction'          => 'desc',
-                                            'BrowserContainerId' => ROOT_CONTAINER
-                                        ]); ?>">
+                                    <a href="/hosts/index<?php echo Router::queryString([
+                                        'filter'             => [
+                                            'Hoststatus.current_state' => [$state => 1]
+                                        ],
+                                        'sort'               => 'Hoststatus.last_state_change',
+                                        'direction'          => 'desc',
+                                        'BrowserContainerId' => ROOT_CONTAINER
+                                    ]); ?>">
                                         <i class="fa fa-square <?php echo $state_colors[$state] ?>"></i>
                                         <?php echo $state_count . ' (' . round($state_count / $state_total * 100, 2) . ' %)'; ?>
                                     </a>
@@ -124,7 +131,7 @@ use itnovum\openITCOCKPIT\Core\Hoststatus;
 
             </div>
     </article>
-    <article class="col-sm-5 col-md-5 col-lg-5 sortable-grid ui-sortable">
+    <article class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
         <div class="jarviswidget jarviswidget-sortable" id="wid-id-12" data-widget-deletebutton="false"
               data-widget-colorbutton="false"  data-widget-fullscreenbutton="true"  data-widget-editbutton="true"
               data-widget-togglebutton="false"  style="position: relative; opacity: 1; left: 0px; top: 0px;"
@@ -231,7 +238,8 @@ use itnovum\openITCOCKPIT\Core\Hoststatus;
                                     endif;
                                     ?>
                                     <tr>
-                                        <td class="text-center width-75" data-sort="<?php echo $Hoststatus->currentState();?>">
+                                        <td class="text-center width-75"
+                                            data-sort="<?php echo $Hoststatus->currentState(); ?>">
                                             <?php
                                             if ($Hoststatus->isFlapping()):
                                                 echo $Hoststatus->getHostFlappingIconColored();

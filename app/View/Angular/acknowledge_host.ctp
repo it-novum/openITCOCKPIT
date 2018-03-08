@@ -48,6 +48,9 @@
                                 <i class="checkbox-primary"></i>
                                 <?php echo __('Sticky'); ?>
                             </label>
+                            <div class="helptext">
+                                <?php echo __('Sticky acknowledgements will be stay until the host is back in state Up'); ?>
+                            </div>
                         </div>
                     </div>
 

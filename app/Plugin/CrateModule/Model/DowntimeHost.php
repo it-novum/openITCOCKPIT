@@ -167,5 +167,27 @@ class DowntimeHost extends CrateModuleAppModel {
 
     }
 
+    /**
+     * @param string $uuid
+     * @return array|null
+     */
+    public function byHostUuid($uuid = null){
+        if ($uuid !== null) {
+            $downtime = $this->find('first', [
+                'conditions' => [
+                    'hostname' => $uuid,
+                ],
+                'order' => [
+                    'DowntimeHost.entry_time' => 'DESC',
+                ],
+            ]);
+
+            return $downtime;
+
+        }
+
+        return [];
+    }
+
 }
 

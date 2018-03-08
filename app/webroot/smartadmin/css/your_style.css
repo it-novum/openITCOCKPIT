@@ -1586,10 +1586,10 @@ label[class^='aco-host']:after, label[class^='aco-service']:after {
     text-align: center;
 }
 
-/*.small-checkbox-label {
-	padding-left: 0px !important;
-	margin-right: 23px !important;
-}*/
+.small-checkbox-label-table {
+    padding-left: 0px !important;
+    margin-right: 23px !important;
+}
 
 .checkbox-success {
     border-color: #409240 !important;
@@ -1734,4 +1734,50 @@ label[class^='aco-host']:after, label[class^='aco-service']:after {
 
 .ajax-notifications {
     height: 378px;
+}
+
+.browser-action{
+    background-color: rgba(255, 255, 255, 0.3);
+    width: 100%;
+    min-height: 40px;
+    font-size: 16px;
+    text-align: center;
+    padding-top: 7px;
+}
+
+.browser-action:hover{
+    background-color: rgba(255, 255, 255, 0.5);
+    cursor: pointer;
+}
+
+.font-size-50{
+    font-size: 50px;
+}
+
+.text-lightGray{
+    color: #CCC;
+}
+
+.browser-state-green{
+    background-color: #5cb85c;
+}
+
+.browser-state-yellow{
+    background-color: #de8201;
+}
+
+.browser-state-red{
+    background-color: #D9534F;
+}
+
+.browser-state-gray{
+    background-color: #92a2a8;
+}
+
+.browser-state-blue{
+    background-color: #3276B1;
+}
+
+.browser-border {
+    border: 1px solid #ddd;
 }

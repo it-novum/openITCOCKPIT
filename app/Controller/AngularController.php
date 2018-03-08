@@ -455,4 +455,45 @@ class AngularController extends AppController {
         return;
     }
 
+    public function submit_host_result(){
+        return;
+    }
+
+    public function disable_host_flap_detection(){
+        return;
+    }
+
+    public function enable_host_flap_detection(){
+        return;
+    }
+
+    public function send_host_notification(){
+        return;
+    }
+
+    public function submit_service_result(){
+        return;
+    }
+
+    public function disable_service_flap_detection(){
+        return;
+    }
+
+    public function enable_service_flap_detection(){
+        return;
+    }
+
+    public function send_service_notification(){
+        return;
+    }
+
+    public function enable_service_notifications() {
+        //Only ship HTML template
+        return;
+    }
+
+    public function disable_service_notifications() {
+        //Only ship HTML template
+        return;
+    }
 }

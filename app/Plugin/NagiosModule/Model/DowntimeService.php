@@ -203,4 +203,37 @@ class DowntimeService extends NagiosModuleAppModel {
 
         return $query;
     }
+
+    /**
+     * @param string $uuid
+     * @return array|null
+     */
+    public function byServiceUuid($uuid = null)
+    {
+        if ($uuid !== null) {
+            $downtime = $this->find('first', [
+                'recursive'  => -1,
+                'conditions' => [
+                    'Objects.name2'         => $uuid,
+                    'Objects.objecttype_id' => 2,
+                ],
+                'order'      => [
+                    'DowntimeService.entry_time' => 'DESC',
+                ],
+                'joins'      => [
+                    [
+                        'table'      => 'nagios_objects',
+                        'type'       => 'INNER',
+                        'alias'      => 'Objects',
+                        'conditions' => 'Objects.object_id = DowntimeService.object_id AND DowntimeService.downtime_type = 1' //Downtime.downtime_type = 1 Service downtime
+                    ]
+                ]
+            ]);
+
+            return $downtime;
+
+        }
+
+        return [];
+    }
 }

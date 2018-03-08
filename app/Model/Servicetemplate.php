@@ -25,8 +25,7 @@
 
 use itnovum\openITCOCKPIT\Filter\ServicetemplateFilter;
 
-class Servicetemplate extends AppModel
-{
+class Servicetemplate extends AppModel {
     public $hasAndBelongsToMany = [
         'Contactgroup'         => [
             'className'             => 'Contactgroup',
@@ -45,13 +44,13 @@ class Servicetemplate extends AppModel
             'dependent'             => true,
         ],
         'Servicetemplategroup' => [
-            'joinTable'  => 'servicetemplates_to_servicetemplategroups',
-            'foreignKey' => 'servicetemplate_id',
+            'joinTable'             => 'servicetemplates_to_servicetemplategroups',
+            'foreignKey'            => 'servicetemplate_id',
             'associationForeignKey' => 'servicetemplategroup_id',
-            'unique'     => true,
-            'dependent'  => true,
+            'unique'                => true,
+            'dependent'             => true,
         ],
-        'Servicegroup'    => [
+        'Servicegroup'         => [
             'className'             => 'Servicegroup',
             'joinTable'             => 'servicetemplates_to_servicegroups',
             'foreignKey'            => 'servicetemplate_id',
@@ -343,8 +342,7 @@ class Servicetemplate extends AppModel
         ],
     ];
 
-    function __construct($id = false, $table = null, $ds = null)
-    {
+    function __construct($id = false, $table = null, $ds = null) {
         parent::__construct($id, $table, $ds);
         App::uses('UUID', 'Lib');
         $this->notification_options = [
@@ -368,8 +366,7 @@ class Servicetemplate extends AppModel
         ];
     }
 
-    function checkNotificationOptions($data, $notification_type)
-    {
+    function checkNotificationOptions($data, $notification_type) {
         foreach ($this->data as $request) {
             foreach ($request as $request_key => $request_value) {
                 if (in_array($request_key, $this->notification_options[$notification_type], true) && $request_value == 1) {
@@ -381,8 +378,7 @@ class Servicetemplate extends AppModel
         return false;
     }
 
-    function checkFlapDetectionOptions($data, $flapdetection_type)
-    {
+    function checkFlapDetectionOptions($data, $flapdetection_type) {
         if (isset($this->data['Servicetemplate']['flap_detection_enabled']) && (boolean)$this->data['Servicetemplate']['flap_detection_enabled'] === true) {
             foreach ($this->data as $request) {
                 foreach ($request as $request_key => $request_value) {
@@ -398,8 +394,7 @@ class Servicetemplate extends AppModel
         return true;
     }
 
-    public function servicetemplatesByContainerId($container_ids = [], $type = 'all', $servicetemplate_type = GENERIC_SERVICE, $ignoreType = false)
-    {
+    public function servicetemplatesByContainerId($container_ids = [], $type = 'all', $servicetemplate_type = GENERIC_SERVICE, $ignoreType = false) {
         $conditions = [
             'Servicetemplate.container_id' => $container_ids,
         ];
@@ -408,25 +403,23 @@ class Servicetemplate extends AppModel
         }
 
         return $this->find($type, [
-            'recursive' => -1,
+            'recursive'  => -1,
             'conditions' => $conditions,
             'order'      => [
                 'Servicetemplate.template_name' => 'ASC',
             ],
-            'fields' => [
+            'fields'     => [
                 'Servicetemplate.id',
                 'Servicetemplate.template_name'
             ]
         ]);
     }
 
-    public function createUUID()
-    {
+    public function createUUID() {
         return UUID::v4();
     }
 
-    public function __allowDelete($servicetemplateId)
-    {
+    public function __allowDelete($servicetemplateId) {
         $Service = ClassRegistry::init('Service');
         $services = $Service->find('all', [
             'recursive'  => -1,
@@ -479,7 +472,7 @@ class Servicetemplate extends AppModel
             'order'      => [
                 'Servicetemplate.name' => 'ASC',
             ],
-            'limit' => self::ITN_AJAX_LIMIT
+            'limit'      => self::ITN_AJAX_LIMIT
         ];
 
         $query['conditions']['Servicetemplate.container_id'] = $containerIds;
@@ -487,11 +480,11 @@ class Servicetemplate extends AppModel
         $servicetemplatesWithLimit = $this->find('list', $query);
 
         $selectedServicetemplates = [];
-        if(!empty($selected)){
+        if (!empty($selected)) {
             $query = [
                 'recursive'  => -1,
                 'conditions' => [
-                    'Servicetemplate.id' => $selected,
+                    'Servicetemplate.id'           => $selected,
                     'Servicetemplate.container_id' => $containerIds
                 ],
                 'order'      => [
@@ -502,7 +495,78 @@ class Servicetemplate extends AppModel
         }
 
         $servicetemplates = $servicetemplatesWithLimit + $selectedServicetemplates;
-        asort($servicetemplates, SORT_FLAG_CASE|SORT_NATURAL);
+        asort($servicetemplates, SORT_FLAG_CASE | SORT_NATURAL);
         return $servicetemplates;
+    }
+
+    /**
+     * @param int $servicetemplateId
+     * @return array
+     */
+    public function getQueryForBrowser($servicetemplateId) {
+        return [
+            'recursive'  => -1,
+            'contain'    => [
+                'Contact'                                  => [
+                    'fields' => [
+                        'id',
+                        'name',
+                    ],
+                    'Container'
+                ],
+                'Contactgroup'                             => [
+                    'fields'    => [
+                        'id',
+                    ],
+                    'Container' => [
+                        'fields' => [
+                            'name',
+                            'parent_id'
+                        ],
+                    ],
+                ],
+
+                'CheckCommand',
+                'CheckPeriod',
+                'NotifyPeriod',
+                'Customvariable'                           => [
+                    'fields' => [
+                        'id',
+                        'name',
+                        'value',
+                        'objecttype_id',
+                    ],
+                ],
+                'Servicetemplatecommandargumentvalue'      => [
+                    'fields'          => [
+                        'commandargument_id',
+                        'value',
+                    ],
+                    'Commandargument' => [
+                        'fields' => [
+                            'human_name',
+                            'command_id',
+                            'name'
+                        ],
+                    ],
+                ],
+                'Servicetemplateeventcommandargumentvalue' => [
+                    'fields'          => [
+                        'commandargument_id',
+                        'value',
+                    ],
+                    'Commandargument' => [
+                        'fields' => [
+                            'human_name',
+                            'command_id',
+                            'name'
+                        ],
+                    ],
+                ],
+            ],
+            'conditions' => [
+                'Servicetemplate.id' => $servicetemplateId
+            ]
+        ];
     }
 }

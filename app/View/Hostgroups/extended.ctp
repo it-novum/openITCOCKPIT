@@ -91,7 +91,7 @@ use itnovum\openITCOCKPIT\Core\HumanTime;
                                                 class="fa fa-cog"></i> <?php echo __('Edit'); ?></a>
                                 </li>
                             <?php endif; ?>
-                            <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
+                            <?php if ($this->Acl->hasPermission('externalcommands', 'hosts')): ?>
                                 <li class="divider"></li>
                                 <li>
                                     <a href="javascript:void(0);" data-toggle="modal"
