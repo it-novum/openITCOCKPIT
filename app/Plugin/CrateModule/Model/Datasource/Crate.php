@@ -948,7 +948,6 @@ class Crate extends DboSource {
             if (!empty($this->joins)) {
                 return $this->formatResultFindAllWithJoins($dbResult);
             }
-            debug($dbResult);
 
             return $this->formatResultFindAll($dbResult);
 
