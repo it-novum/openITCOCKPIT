@@ -68,6 +68,11 @@ class Service {
     private $allow_edit = false;
 
     /**
+     * @var bool
+     */
+    private $disabled = false;
+
+    /**
      * Service constructor.
      * @param $service
      * @param null $servicename
@@ -116,6 +121,10 @@ class Service {
 
         if (isset($service['Host']['id'])) {
             $this->host_id = (int)$service['Host']['id'];
+        }
+
+        if (isset($service['Service']['disabled'])) {
+            $this->disabled = (bool)$service['Service']['disabled'];
         }
 
     }

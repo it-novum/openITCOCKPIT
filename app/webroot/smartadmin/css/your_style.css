@@ -889,6 +889,37 @@ body {
     color: #92A2A8 !important;
 }
 
+.bg-ok, .bg-up {
+    background-color: #449D44 !important;
+}
+
+.bg-warning {
+    background-color: #DF8F1D !important;
+}
+
+.bg-critical, .bg-down {
+    background-color: #C9302C !important;
+}
+
+.bg-unknown, .bg-unreachable {
+    background-color: #92A2A8 !important;
+}
+
+.table-color-0 {
+    background-color: #dff0d8!important;
+}
+
+.table-color-1 {
+    background-color: #f2dede!important;
+}
+
+.table-color-2 {
+    background-color: #d6dde7!important;
+}
+.table-color-disabled{
+    background-color: #c3d9f7!important;
+}
+
 rect.ok {
     fill: #449D44;
 }
@@ -1614,6 +1645,31 @@ label[class^='aco-host']:after, label[class^='aco-service']:after {
 .checkbox-danger:after {
     color: #A90329 !important;
 }
+
+.checkbox-ok {
+    border-color: #409240 !important;
+}
+
+.checkbox-ok:after {
+    color: #5cb85c !important;
+}
+
+.checkbox-critical {
+    border-color: #A90329 !important;
+}
+
+.checkbox-critical:after {
+    color: #A90329 !important;
+}
+
+.checkbox-unknown {
+    border-color: #4c4f53 !important;
+}
+
+.checkbox-unknown:after {
+    color: #92a2a8 !important;
+}
+
 
 .checkbox-default {
     border-color: #4c4f53 !important;
