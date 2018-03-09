@@ -222,7 +222,7 @@ use itnovum\openITCOCKPIT\Core\HumanTime;
                                     P
                                 </strong>
                             </td>
-                            <td class="table-color-{{(service.Hoststatus.currentState)?service.Hoststatus.currentState:'disabled'}}">
+                            <td class="table-color-{{(service.Hoststatus.currentState !== null)?service.Hoststatus.currentState:'disabled'}}">
                                 <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
                                     <a href="/hosts/browser/{{ service.Host.id }}">
                                         {{ service.Host.hostname }}
