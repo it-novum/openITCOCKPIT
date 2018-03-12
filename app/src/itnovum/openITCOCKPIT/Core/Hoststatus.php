@@ -463,8 +463,8 @@ class Hoststatus {
      */
     public function toArrayForBrowser(){
         $arr = $this->toArray();
-        $arr['lastHardStateChange'] = $this->UserTime->secondsInHumanShort($this->getLastHardStateChange());
-        $arr['last_state_change'] = $this->UserTime->secondsInHumanShort($this->getLastStateChange());
+        $arr['lastHardStateChange'] = $this->UserTime->secondsInHumanShort(time()- $this->getLastHardStateChange());
+        $arr['last_state_change'] = $this->UserTime->secondsInHumanShort(time() - $this->getLastStateChange());
         $arr['lastCheck'] = CakeTime::timeAgoInWords($this->getLastCheck());
         $arr['nextCheck'] = CakeTime::timeAgoInWords($this->getNextCheck());
         return $arr;
