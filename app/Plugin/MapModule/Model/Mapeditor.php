@@ -26,6 +26,11 @@
 class Mapeditor extends MapModuleAppModel {
     public $useTable = false;
 
+    /**
+     * @var array used for recursive mapstatus
+     */
+    public $mapElements = [];
+
     //@TODO check this file for obsolete functions!
 
     public function prepareForSave($request) {
@@ -96,170 +101,6 @@ class Mapeditor extends MapModuleAppModel {
         return $idsToDelete;
     }
 
-    /**
-     * return states of all elements from a specific map
-     * @author Maximilian Pappert <maximilian.pappert@it-novum.com>
-     *
-     * @param  $id the Id of the map
-     *
-     * @return Array the map elements
-     */
-    public function mapStatus($id, $iterations = 0) {
-        $Mapitem = ClassRegistry::init('Mapitem');
-        $Mapline = ClassRegistry::init('Mapline');
-        $Mapgadget = ClassRegistry::init('Mapgadget');
-        $Host = ClassRegistry::init('Host');
-        $Service = ClassRegistry::init('Service');
-        $Servicegroup = ClassRegistry::init('Servicegroup');
-        $Hostgroup = ClassRegistry::init('Hostgroup');
-        $this->Objects = ClassRegistry::init(MONITORING_OBJECTS);
-
-        $mapElements = [];
-        $statusObjects = [];
-        $mapElements['items'] = $Mapitem->find('all', [
-            'recursive'  => -1,
-            'conditions' => [
-                'map_id' => $id,
-            ],
-            'fields'     => [
-                'Mapitem.type',
-                'Mapitem.object_id',
-            ],
-        ]);
-        $mapElements['lines'] = $Mapline->find('all', [
-            'recursive'  => -1,
-            'conditions' => [
-                'map_id' => $id,
-            ],
-            'fields'     => [
-                'Mapline.type',
-                'Mapline.object_id',
-            ],
-        ]);
-
-        $mapElements['gadgets'] = $Mapgadget->find('all', [
-            'recursive'  => -1,
-            'conditions' => [
-                'map_id' => $id,
-            ],
-            'fields'     => [
-                'Mapgadget.type',
-                'Mapgadget.object_id',
-            ],
-        ]);
-
-        $mapstatus = [];
-        if (!empty($mapElements['items'])) {
-            if ($iterations <= 1) {
-                $iterations++;
-                foreach ($mapElements['items'] as $item) {
-                    if ($item['Mapitem']['type'] == 'map') {
-                        $mapId = $item['Mapitem']['object_id'];
-                        $mapstatus[] = $this->mapStatus($mapId, $iterations);
-                    }
-                }
-            }
-        }
-
-
-        //get the service ids
-        $mapServices = Hash::extract($mapElements, '{s}.{n}.{s}[type=/service$/].object_id');
-        //resolve the serviceids into uuids
-        $serviceUuids = $Service->find('list', [
-            'recursive'  => -1,
-            'conditions' => [
-                'Service.id' => $mapServices,
-            ],
-            'fields'     => [
-                'Service.uuid',
-            ],
-        ]);
-        //get the servicestatus
-        $statusObjects['servicestatus'] = $this->_servicestatus(['Objects.name2' => $serviceUuids], ['Servicestatus.problem_has_been_acknowledged']);
-
-        //get the host ids
-        $mapHosts = Hash::extract($mapElements, '{s}.{n}.{s}[type=/host$/].object_id');
-        //resolve the hostids into uuids
-        $hostUuids = $Host->find('list', [
-            'recursive'  => -1,
-            'conditions' => [
-                'Host.id' => $mapHosts,
-            ],
-            'fields'     => [
-                'Host.uuid',
-            ],
-        ]);
-        //get the hoststatus
-        $statusObjects['hoststatus'] = [
-            $this->_hoststatus(['Objects.name1' => $hostUuids], ['Hoststatus.problem_has_been_acknowledged']),
-        ];
-        //get the servicestatus for every host
-        foreach ($statusObjects['hoststatus'][0] as $key => $hoststatusObject) {
-            $statusObjects['hoststatus'][0][$key]['Servicestatus'] = $this->_servicestatus(['Objects.name1' => $hoststatusObject['Objects']['name1']], ['Servicestatus.problem_has_been_acknowledged']);
-
-        }
-
-        //get the servicegroup ids
-        $mapServicegroups = Hash::extract($mapElements, '{s}.{n}.{s}[type=/servicegroup$/].object_id');
-
-        $ServicegroupServiceUuids = $Servicegroup->find('all', [
-            'recursive'  => -1,
-            'conditions' => [
-                'Servicegroup.id' => $mapServicegroups,
-            ],
-            'contain'    => [
-                'Service.uuid',
-            ],
-        ]);
-
-        $ServicegroupServiceUuids = Hash::extract($ServicegroupServiceUuids, '{n}.Service.{n}.uuid');
-        foreach ($ServicegroupServiceUuids as $key => $serviceuuid) {
-            $statusObjects['servicegroupstatus'][0][$key]['Servicestatus'] = $this->_servicestatus(['Objects.name2' => $serviceuuid]);
-        }
-
-        //get the hostgroup ids
-        $mapHostgroups = Hash::extract($mapElements, '{s}.{n}.{s}[type=/hostgroup$/].object_id');
-
-        $HostgroupHostUuids = $Hostgroup->find('all', [
-            //'recursive' => -1,
-            'conditions' => [
-                'Hostgroup.id' => $mapHostgroups,
-            ],
-            'contain'    => [
-                'Host.uuid',
-            ],
-        ]);
-
-        $HostgroupHostUuids = Hash::extract($HostgroupHostUuids, '{n}.Host.{n}.uuid');
-        $statusObjects['hostgroupstatus'] = [
-            $this->_hoststatus(['Objects.name1' => $HostgroupHostUuids]),
-        ];
-
-        foreach ($statusObjects['hostgroupstatus'][0] as $key => $hoststatusObject) {
-            $statusObjects['hostgroupstatus'][0][$key]['Servicestatus'] = $this->_servicestatus(['Objects.name1' => $hoststatusObject['Objects']['name1']]);
-        }
-
-
-        if (!empty($mapstatus)) {
-            foreach ($mapstatus as $mapstate) {
-                $statusObjects = array_merge_recursive($statusObjects, $mapstate);
-            }
-
-            $tmpMapstatusObj = [];
-            foreach ($statusObjects as $key => $statusObject) {
-                if (!empty($statusObject)) {
-                    foreach ($statusObject as $soKey => $obj) {
-                        if (!empty($obj)) {
-                            $tmpMapstatusObj[$key][] = $obj;
-                        }
-
-                    }
-                }
-            }
-            $statusObjects = $tmpMapstatusObj;
-        }
-        return $statusObjects;
-    }
 
     /**
      * return the Hoststatus for the given array of conditions
@@ -823,7 +664,7 @@ class Mapeditor extends MapModuleAppModel {
                         'Container.name'
                     ]
                 ],
-                'Service' => [
+                'Service'   => [
                     'fields' => [
                         'Service.uuid',
                     ]
@@ -832,5 +673,326 @@ class Mapeditor extends MapModuleAppModel {
         ]);
 
         return $result;
+    }
+
+
+    /**
+     * return states of all elements from a specific map
+     * @author Maximilian Pappert <maximilian.pappert@it-novum.com>
+     *
+     * @param  $id the Id of the map
+     *
+     * @return Array the map elements
+     */
+    public function mapStatus($id, $iterations = 0) {
+        $Mapitem = ClassRegistry::init('Mapitem');
+        $Mapline = ClassRegistry::init('Mapline');
+        $Mapgadget = ClassRegistry::init('Mapgadget');
+        $Host = ClassRegistry::init('Host');
+        $Service = ClassRegistry::init('Service');
+        $Servicegroup = ClassRegistry::init('Servicegroup');
+        $Hostgroup = ClassRegistry::init('Hostgroup');
+        $this->Objects = ClassRegistry::init(MONITORING_OBJECTS);
+
+        $mapElements = [];
+        $statusObjects = [];
+        $mapElements['items'] = $Mapitem->find('all', [
+            'recursive'  => -1,
+            'conditions' => [
+                'map_id' => $id,
+            ],
+            'fields'     => [
+                'Mapitem.type',
+                'Mapitem.object_id',
+            ],
+        ]);
+        $mapElements['lines'] = $Mapline->find('all', [
+            'recursive'  => -1,
+            'conditions' => [
+                'map_id' => $id,
+            ],
+            'fields'     => [
+                'Mapline.type',
+                'Mapline.object_id',
+            ],
+        ]);
+
+        $mapElements['gadgets'] = $Mapgadget->find('all', [
+            'recursive'  => -1,
+            'conditions' => [
+                'map_id' => $id,
+            ],
+            'fields'     => [
+                'Mapgadget.type',
+                'Mapgadget.object_id',
+            ],
+        ]);
+
+        $mapstatus = [];
+        if (!empty($mapElements['items'])) {
+            if ($iterations <= 1) {
+                $iterations++;
+                foreach ($mapElements['items'] as $item) {
+                    if ($item['Mapitem']['type'] == 'map') {
+                        $mapId = $item['Mapitem']['object_id'];
+                        $mapstatus[] = $this->mapStatus($mapId, $iterations);
+                    }
+                }
+            }
+        }
+
+
+        //get the service ids
+        $mapServices = Hash::extract($mapElements, '{s}.{n}.{s}[type=/service$/].object_id');
+        //resolve the serviceids into uuids
+        $serviceUuids = $Service->find('list', [
+            'recursive'  => -1,
+            'conditions' => [
+                'Service.id' => $mapServices,
+            ],
+            'fields'     => [
+                'Service.uuid',
+            ],
+        ]);
+        //get the servicestatus
+        $statusObjects['servicestatus'] = $this->_servicestatus(['Objects.name2' => $serviceUuids], ['Servicestatus.problem_has_been_acknowledged']);
+
+        //get the host ids
+        $mapHosts = Hash::extract($mapElements, '{s}.{n}.{s}[type=/host$/].object_id');
+        //resolve the hostids into uuids
+        $hostUuids = $Host->find('list', [
+            'recursive'  => -1,
+            'conditions' => [
+                'Host.id' => $mapHosts,
+            ],
+            'fields'     => [
+                'Host.uuid',
+            ],
+        ]);
+        //get the hoststatus
+        $statusObjects['hoststatus'] = [
+            $this->_hoststatus(['Objects.name1' => $hostUuids], ['Hoststatus.problem_has_been_acknowledged']),
+        ];
+        //get the servicestatus for every host
+        foreach ($statusObjects['hoststatus'][0] as $key => $hoststatusObject) {
+            $statusObjects['hoststatus'][0][$key]['Servicestatus'] = $this->_servicestatus(['Objects.name1' => $hoststatusObject['Objects']['name1']], ['Servicestatus.problem_has_been_acknowledged']);
+
+        }
+
+        //get the servicegroup ids
+        $mapServicegroups = Hash::extract($mapElements, '{s}.{n}.{s}[type=/servicegroup$/].object_id');
+
+        $ServicegroupServiceUuids = $Servicegroup->find('all', [
+            'recursive'  => -1,
+            'conditions' => [
+                'Servicegroup.id' => $mapServicegroups,
+            ],
+            'contain'    => [
+                'Service.uuid',
+            ],
+        ]);
+
+        $ServicegroupServiceUuids = Hash::extract($ServicegroupServiceUuids, '{n}.Service.{n}.uuid');
+        foreach ($ServicegroupServiceUuids as $key => $serviceuuid) {
+            $statusObjects['servicegroupstatus'][0][$key]['Servicestatus'] = $this->_servicestatus(['Objects.name2' => $serviceuuid]);
+        }
+
+        //get the hostgroup ids
+        $mapHostgroups = Hash::extract($mapElements, '{s}.{n}.{s}[type=/hostgroup$/].object_id');
+
+        $HostgroupHostUuids = $Hostgroup->find('all', [
+            //'recursive' => -1,
+            'conditions' => [
+                'Hostgroup.id' => $mapHostgroups,
+            ],
+            'contain'    => [
+                'Host.uuid',
+            ],
+        ]);
+
+        $HostgroupHostUuids = Hash::extract($HostgroupHostUuids, '{n}.Host.{n}.uuid');
+        $statusObjects['hostgroupstatus'] = [
+            $this->_hoststatus(['Objects.name1' => $HostgroupHostUuids]),
+        ];
+
+        foreach ($statusObjects['hostgroupstatus'][0] as $key => $hoststatusObject) {
+            $statusObjects['hostgroupstatus'][0][$key]['Servicestatus'] = $this->_servicestatus(['Objects.name1' => $hoststatusObject['Objects']['name1']]);
+        }
+
+
+        if (!empty($mapstatus)) {
+            foreach ($mapstatus as $mapstate) {
+                $statusObjects = array_merge_recursive($statusObjects, $mapstate);
+            }
+
+            $tmpMapstatusObj = [];
+            foreach ($statusObjects as $key => $statusObject) {
+                if (!empty($statusObject)) {
+                    foreach ($statusObject as $soKey => $obj) {
+                        if (!empty($obj)) {
+                            $tmpMapstatusObj[$key][] = $obj;
+                        }
+
+                    }
+                }
+            }
+            $statusObjects = $tmpMapstatusObj;
+        }
+        return $statusObjects;
+    }
+
+    public function getMapElementUuids($mapIds) {
+        if (!is_array($mapIds)) {
+            $mapIds = [$mapIds];
+        }
+
+        $mapElements = [];
+        foreach ($mapIds as $mapId) {
+            //debug($this->getDeepMapElements($mapId));
+            $mapElements[$mapId] = $this->getDeepMapElements($mapId);
+        }
+
+        //get the element ids
+        $mapElementIds = [];
+        $mapElementIds['service'] = array_unique(Hash::extract($mapElements, '{n}.{n}.{s}.{n}.{s}[type=/service$/].object_id'));
+        $mapElementIds['host'] = array_unique(Hash::extract($mapElements, '{n}.{n}.{s}.{n}.{s}[type=/host$/].object_id'));
+        $mapElementIds['servicegroup'] = array_unique(Hash::extract($mapElements, '{n}.{n}.{s}.{n}.{s}[type=/servicegroup$/].object_id'));
+        $mapElementIds['hostgroup'] = array_unique(Hash::extract($mapElements, '{n}.{n}.{s}.{n}.{s}[type=/hostgroup$/].object_id'));
+
+        $this->Host = ClassRegistry::init('Host');
+        $this->Service = ClassRegistry::init('Service');
+        $this->Servicegroup = ClassRegistry::init('Servicegroup');
+        $this->Hostgroup = ClassRegistry::init('Hostgroup');
+
+
+        $mapElementUuids = [];
+        foreach ($mapElementIds as $type => $ids){
+            if(empty($type)){
+                continue;
+            }
+            switch($type){
+                case 'service':
+                    $mapElementUuids['service'] = $this->Service->find('all',[
+                        'recursive' => -1,
+                        'conditions' => [
+                            'Service.id' => $ids
+                        ],
+                        'fields' => [
+                            'Service.uuid'
+                        ]
+                    ]);
+                    break;
+                case 'host':
+                    $mapElementUuids['host'] = $this->Host->find('all',[
+                        'recursive' => -1,
+                        'conditions' => [
+                            'Host.id' => $ids
+                        ],
+                        'fields' => [
+                            'Host.uuid'
+                        ]
+                    ]);
+                    break;
+                case 'servicegroup':
+                    $mapElementUuids['servicegroup'] = $this->Servicegroup->find('all',[
+                        'recursive' => -1,
+                        'conditions' => [
+                            'Servicegroup.id' => $ids
+                        ],
+                        'fields' => [
+                            'Servicegroup.uuid'
+                        ]
+                    ]);
+                    break;
+                case 'hostgroup':
+                    $mapElementUuids['hostgroup'] = $this->Hostgroup->find('all',[
+                        'recursive' => -1,
+                        'conditions' => [
+                            'Hostgroup.id' => $ids
+                        ],
+                        'fields' => [
+                            'Hostgroup.uuid'
+                        ]
+                    ]);
+                    break;
+            }
+        }
+
+        foreach ($mapElementUuids as $type => $elementUuids){
+            $mapElementUuids[$type] = Hash::extract($elementUuids, '{n}.{s}.uuid');
+        }
+        return $mapElementUuids;
+    }
+
+
+
+    public function getDeepMapElements($mapId, $iteratedMaps = []) {
+        $this->mapElements[$mapId] = $this->getMapStatusElementsByMapId($mapId);
+        $maxDepth = 2; // +1 = maximum number of map depth
+        if (sizeof($iteratedMaps) < $maxDepth) {
+            if (isset($this->mapElements[$mapId]['items']) && !empty($this->mapElements[$mapId]['items'])) {
+                foreach ($this->mapElements[$mapId]['items'] as $element) {
+                    if ($element['Mapitem']['type'] != 'map') {
+                        continue;
+                    }
+                    $currentMapId = $element['Mapitem']['object_id'];
+                    if (!in_array($currentMapId, $iteratedMaps)) {
+                        $iteratedMaps[] = $currentMapId;
+                        //next iteration
+                        return $this->getDeepMapElements($currentMapId, $iteratedMaps);
+                    } else {
+                        continue;
+                    }
+                }
+            }
+        } else {
+            //max depth reached
+            return $this->mapElements;
+        }
+        //there are no further child maps
+        return $this->mapElements;
+    }
+
+
+    public function getMapStatusElementsByMapId($mapId) {
+        $Mapitem = ClassRegistry::init('Mapitem');
+        $Mapline = ClassRegistry::init('Mapline');
+        $Mapgadget = ClassRegistry::init('Mapgadget');
+
+        $mapElements = [];
+        $statusObjects = [];
+        $mapElements['items'] = $Mapitem->find('all', [
+            'recursive'  => -1,
+            'conditions' => [
+                'map_id' => $mapId,
+            ],
+            'fields'     => [
+                'Mapitem.type',
+                'Mapitem.object_id',
+            ],
+        ]);
+        $mapElements['lines'] = $Mapline->find('all', [
+            'recursive'  => -1,
+            'conditions' => [
+                'map_id' => $mapId,
+            ],
+            'fields'     => [
+                'Mapline.type',
+                'Mapline.object_id',
+            ],
+        ]);
+
+        $mapElements['gadgets'] = $Mapgadget->find('all', [
+            'recursive'  => -1,
+            'conditions' => [
+                'map_id' => $mapId,
+            ],
+            'fields'     => [
+                'Mapgadget.type',
+                'Mapgadget.object_id',
+            ],
+        ]);
+
+        return $mapElements;
     }
 }

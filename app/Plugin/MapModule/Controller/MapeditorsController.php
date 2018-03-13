@@ -602,9 +602,15 @@ class MapeditorsController extends MapModuleAppController {
         }
 
         if (!empty($mapIds)) {
-            foreach ($mapIds as $id) {
-                $mapstatus[$id] = $this->Mapeditor->mapStatus($id);
-            }
+            $mapElementUuids = $this->Mapeditor->getMapElementUuids($mapIds);
+            debug($mapElementUuids);
+
+            /*foreach ($mapIds as $id) {
+                debug($id);
+                debug($this->Mapeditor->getDeepMapElements($id));
+                $mapstatus[$id] = $this->Mapeditor->getDeepMapElements($id);
+                //$mapstatus[$id] = $this->Mapeditor->mapStatus($id);
+            }*/
         }
 
         $this->set(compact([
