@@ -23,8 +23,11 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 ?>
-<?php if($this->request->params['action'] == 'browser' && $this->request->params['controller'] == 'services'): ?>
-<span class="btn btn-default btn-sm nag_command submitRescheduleService">
+<?php if ($this->request->params['action'] == 'browser' && $this->request->params['controller'] == 'services'): ?>
+    <span
+            ng-if="canSubmitExternalCommands && mergedService.Service.allowEdit"
+            ng-click="reschedule(getObjectsForExternalCommand())"
+            class="btn btn-default btn-sm">
     <i class="fa fa-refresh fa-lg"></i>
 </span>
 <?php endif; ?>
@@ -71,7 +74,8 @@
 <?php endif; ?>
 <?php if ($allowEdit): ?>
     <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
-        <a href="/hosts/edit/<?php echo $service['Host']['id']; ?>/_controller:services/_action:browser/_id:<?php echo $service['Service']['id']; ?>/" data-original-title="<?php echo _('Edit host'); ?>"
+        <a href="/hosts/edit/<?php echo $service['Host']['id']; ?>/_controller:services/_action:browser/_id:<?php echo $service['Service']['id']; ?>/"
+           data-original-title="<?php echo _('Edit host'); ?>"
            data-placement="bottom" rel="tooltip" class="btn btn-default btn-sm"><i class="fa fa-cog fa-lg"></i></a>
     <?php endif; ?>
     <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
@@ -97,7 +101,7 @@
                 if (!empty($additionalLinksList)):
                     echo '<li class="divider"></li>';
                 endif;// @TODO extend additional links mit service object
-                if($service['Service']['name'] === null || $service['Service']['name'] === ''):
+                if ($service['Service']['name'] === null || $service['Service']['name'] === ''):
                     $service['Service']['name'] = $service['Servicetemplate']['name'];
                 endif;
                 echo $this->AdditionalLinks->renderAsListItems($additionalLinksList, $service['Service']['id'], $service);
