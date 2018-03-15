@@ -23,6 +23,11 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use phpseclib\Crypt\RSA;
+use phpseclib\Net\SFTP;
+use phpseclib\Net\SSH2;
+use Symfony\Component\Finder\Finder;
+
 class AfterExportTask extends AppShell
 {
 
@@ -74,19 +79,19 @@ class AfterExportTask extends AppShell
             }
 
             $this->out('Connect to '.$satellite['Satellite']['name'].' ('.$satellite['Satellite']['address'].')', false);
-            $sshConnection = ssh2_connect($satellite['Satellite']['address'], $this->conf['SSH']['port']);
-            $loggedIn = ssh2_auth_pubkey_file(
-                $sshConnection,
-                $this->conf['SSH']['username'],
-                $this->conf['SSH']['public_key'],
-                $this->conf['SSH']['private_key']
-            );
-            if ($loggedIn !== true){
+
+            $key = new RSA();
+            $key->loadKey(file_get_contents($this->conf['SSH']['private_key']));
+
+            $ssh = new SSH2($satellite['Satellite']['address'], $this->conf['SSH']['port']);
+
+            if(!$ssh->login($this->conf['SSH']['username'], $key)){
                 throw new Exception('Login failed!');
             }
+
             $this->out('<green> ok</green>');
 
-            //Creat SFTP Ressource
+            //Create SFTP Ressource
             if (!is_dir(Configure::read('nagios.export.satellite_path').$satellite['Satellite']['id'])) {
                 throw new Exception('No derectory in nagios.export.satellite_path was found!');
             }
@@ -94,20 +99,41 @@ class AfterExportTask extends AppShell
 
             //Delete target on remote host
             $this->out('Delete old monitoring configuration', false);
-            $result = $this->execOverSsh($sshConnection, '/bin/bash -c \'rm -rf '.$this->conf['REMOTE']['path'].'/config\'');
+            $result = $this->execOverSsh($ssh, '/bin/bash -c \'rm -rf '.$this->conf['REMOTE']['path'].'/config\'');
+
+
             $this->out('<green> ok</green>');
 
             //Copy new files
             $this->out('Copy new configuration', false);
             if ($this->conf['SSH']['use_rsync'] === false) {
                 $this->out(' using PHP', false);
-                $sftp = ssh2_sftp($sshConnection);
-                @$folder->copy([
-                    'to'        => 'ssh2.sftp://'.$sftp.$this->conf['REMOTE']['path'],
-                    'from'      => Configure::read('nagios.export.satellite_path').$satellite['Satellite']['id'],
-                    //'mode' => 0644,
-                    'recursive' => true,
-                ]);
+
+
+                $sftpKey = new RSA();
+                $sftpKey->loadKey(file_get_contents($this->conf['SSH']['private_key']));
+
+                $sftp = new SFTP($satellite['Satellite']['address']);
+
+                if(!$sftp->login($this->conf['SSH']['username'], $sftpKey)){
+                    throw new Exception('Login failed!');
+                }
+
+                $finder = new Finder();
+                $files = $finder->files()->in(Configure::read('nagios.export.satellite_path').$satellite['Satellite']['id']);
+                foreach($files as $file){
+                    //debug($file->getRealPath()); //'/opt/openitc/nagios/satellites/1/config/hosttemplates/hosttemplates_minified.cfg'
+                  //  debug($file->getRelativePath()); //'config/hosttemplates'
+                  //  debug($file->getRelativePathname()); //'config/hosttemplates/hosttemplates_minified.cfg'
+
+                    $to = $this->conf['REMOTE']['path'].$file->getRelativePathname();
+                    $toDir = $this->conf['REMOTE']['path'].$file->getRelativePath();
+                    $from = $file->getRealPath();
+                    $sftp->mkdir($toDir, -1, true);
+                    $sftp->chdir($to);
+                    $sftp->put($to, $from, SFTP::SOURCE_LOCAL_FILE);
+                }
+
                 $this->out('<green> ok</green>');
             } else {
                 $this->out(' using rsync', false);
@@ -130,13 +156,13 @@ class AfterExportTask extends AppShell
 
             //Restart remote monitoring engine
             $this->out('Restart remote monitoring engine', false);
-            $result = $this->execOverSsh($sshConnection, "/bin/bash -c '".$this->conf['SSH']['restart_command']."'");
+            $result = $this->execOverSsh($ssh, "/bin/bash -c '".$this->conf['SSH']['restart_command']."'");
             $this->out('<green> ok</green>');
 
             //Execute remote commands - if any
             foreach ($this->conf['SSH']['remote_command'] as $remoteCommand) {
                 $this->out('Execute external command '.$remoteCommand, false);
-                $result = $this->execOverSsh($sshConnection, $remoteCommand);
+                $result = $this->execOverSsh($ssh, $remoteCommand);
                 $this->out('<green> ok</green>');
             }
 
@@ -164,14 +190,9 @@ class AfterExportTask extends AppShell
 
     public function execOverSsh($sshConnection, $command)
     {
-        $stream = ssh2_exec($sshConnection, $command);
-        $errorStream = ssh2_fetch_stream($stream, SSH2_STREAM_STDERR);
-        stream_set_blocking($errorStream, true);
-        stream_set_blocking($stream, true);
-        $stdout = stream_get_contents($stream);
-        $stderr = stream_get_contents($errorStream);
-        fclose($stream);
-        fclose($errorStream);
+        $sshConnection->enableQuietMode();
+        $stdout = $sshConnection->exec($command);
+        $stderr = $sshConnection->getStdError();
 
         return [
             'stdout' => $stdout,
