@@ -23,6 +23,8 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use itnovum\openITCOCKPIT\Core\DbBackend;
+use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\Views\Logo;
 
 class NagiosNotificationTask extends AppShell {
@@ -151,8 +153,14 @@ class NagiosNotificationTask extends AppShell {
                 'CRITICAL' => 2,
                 'UNKNOWN'  => 3
             ];
+
+            Configure::load('dbbackend');
+            $DbBackend = new DbBackend(Configure::read('dbbackend'));
+            $ServicestatusFields = new ServicestatusFields($DbBackend);
+            $ServicestatusFields->currentState();
+
             $evcTree = $this->Eventcorrelation->getEvcTreeData($parameters['hostId'], []);
-            $servicestatus = $this->Servicestatus->byUuid(Hash::extract($evcTree, '{n}.{*}.{n}.Service.uuid'));
+            $servicestatus = $this->Servicestatus->byUuid(Hash::extract($evcTree, '{n}.{*}.{n}.Service.uuid'), $ServicestatusFields);
             $servicestatus[$parameters['serviceUuid']]['current_state'] = $parameters['servicestate'];
             $parameters['evcTree'] = $evcTree;
             $parameters['servicestatus'] = $servicestatus;

@@ -25,6 +25,7 @@
 
 use itnovum\openITCOCKPIT\Core\HostConditions;
 use itnovum\openITCOCKPIT\Core\HostgroupConditions;
+use itnovum\openITCOCKPIT\Core\HoststatusFields;
 use itnovum\openITCOCKPIT\Filter\HostFilter;
 use itnovum\openITCOCKPIT\Filter\HostgroupFilter;
 use itnovum\openITCOCKPIT\Filter\HosttemplateFilter;
@@ -73,20 +74,6 @@ class HostgroupsController extends AppController {
             'recursive'  => -1,
             'contain'    => [
                 'Container',
-                'Host'         => [
-                    'fields' => [
-                        'Host.id',
-                        'Host.name'
-                    ],
-                    'Container'
-                ],
-                'Hosttemplate' => [
-                    'fields' => [
-                        'Hosttemplate.id',
-                        'Hosttemplate.name'
-                    ],
-                    'Container'
-                ]
             ],
             'order'      => $HostgroupFilter->getOrderForPaginator('Container.name', 'asc'),
             'conditions' => $HostgroupFilter->indexFilter(),
@@ -111,26 +98,10 @@ class HostgroupsController extends AppController {
             if ($this->hasRootPrivileges === false && $hostgroup['Hostgroup']['allowEdit'] === true) {
                 $hostgroup['Hostgroup']['allowEdit'] = $this->allowedByContainerId($hostgroup['Container']['parent_id']);
             }
-            foreach ($hostgroup['Host'] as $key => $host) {
-                $hostgroup['Host'][$key]['allowEdit'] = $this->hasPermission('edit', 'hosts');
-                if ($this->hasRootPrivileges === false && $hostgroup['Host'][$key]['allowEdit'] === true) {
-                    $containerIdsToCheck = Hash::extract($host, 'Container.{n}.HostsToContainer.container_id');
-                    $hostgroup['Host'][$key]['allowEdit'] = $this->allowedByContainerId($containerIdsToCheck);
-                }
-            }
-
-            foreach ($hostgroup['Hosttemplate'] as $key => $hosttemplate) {
-                $hostgroup['Hosttemplate'][$key]['allowEdit'] = $this->hasPermission('edit', 'hosttemplates');
-                if ($this->hasRootPrivileges === false && $hostgroup['Hosttemplate'][$key]['allowEdit'] === true) {
-                    $hostgroup['Hosttemplate'][$key]['allowEdit'] = $this->allowedByContainerId($hosttemplate['container_id']);
-                }
-            }
 
             $all_hostgroups[] = [
                 'Hostgroup'    => $hostgroup['Hostgroup'],
                 'Container'    => $hostgroup['Container'],
-                'Host'         => $hostgroup['Host'],
-                'Hosttemplate' => $hostgroup['Hosttemplate']
             ];
 
         }
@@ -657,6 +628,14 @@ class HostgroupsController extends AppController {
             $hostgroups = $this->Paginator->paginate();
         }
 
+        $hostgroups = $this->Hostgroup->makeItJavaScriptAble(
+            Hash::combine(
+                $hostgroups,
+                '{n}.Hostgroup.id',
+                '{n}.Container.name'
+            )
+        );
+
         $this->set(compact(['hostgroups']));
         $this->set('_serialize', ['hostgroups']);
     }
@@ -850,7 +829,9 @@ class HostgroupsController extends AppController {
         foreach ($hostgroups as $hgKey => $hostgroup) {
             $hostgroupHostUuids = Hash::extract($hostgroup, 'Host.{n}.uuid');
             $hostgroupHostCount += count($hostgroupHostUuids);
-            $hoststatusOfHostgroup = $this->Hoststatus->byUuids($hostgroupHostUuids);
+            $HoststatusFields = new HoststatusFields($this->DbBackend);
+            $HoststatusFields->wildcard();
+            $hoststatusOfHostgroup = $this->Hoststatus->byUuids($hostgroupHostUuids, $HoststatusFields);
             $hostgroups[$hgKey]['all_hoststatus'] = $hoststatusOfHostgroup;
         }
 

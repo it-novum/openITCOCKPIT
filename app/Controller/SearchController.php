@@ -141,12 +141,15 @@ class SearchController extends AppController
 
             //Search for host address
             if (isset($this->request->data['SearchAddress']['Hostaddress'])) {
-                return $this->redirect([
-                    'controller'          => 'hosts',
-                    'action'              => 'index',
-                    'Filter.Host.address' => $this->request->data['SearchAddress']['Hostaddress'],
-                    'q'                   => 1, //the last octett of the ip adress gets cut so we need an additional param
+                $url = Router::queryString([
+                    'filter' => [
+                        'Host.address' => $this->request->data['SearchAddress']['Hostaddress'],
+                    ],
+                    'sort' => 'Hoststatus.last_state_change',
+                    'direction' => 'desc'
                 ]);
+
+                return $this->redirect(sprintf('/hosts/index%s', $url));
             }
 
             //Search for macros

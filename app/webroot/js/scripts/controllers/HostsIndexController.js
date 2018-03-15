@@ -23,7 +23,7 @@ angular.module('openITCOCKPIT')
                 Host: {
                     name: QueryStringService.getValue('filter[Host.name]', ''),
                     keywords: '',
-                    address: '',
+                    address:  QueryStringService.getValue('filter[Host.address]', ''),
                     satellite_id: []
                 }
             };
@@ -90,8 +90,10 @@ angular.module('openITCOCKPIT')
         $scope.selectAll = function(){
             if($scope.hosts){
                 for(var key in $scope.hosts){
-                    var id = $scope.hosts[key].Host.id;
-                    $scope.massChange[id] = true;
+                    if($scope.hosts[key].Host.allow_edit){
+                        var id = $scope.hosts[key].Host.id;
+                        $scope.massChange[id] = true;
+                    }
                 }
             }
         };

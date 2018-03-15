@@ -30,7 +30,7 @@ class Crate extends DboSource {
 
     protected $_baseConfig = [
         'host' => '127.0.0.1:4200',
-        'timeout' => 1
+        'timeout' => 5
     ];
 
     /**
@@ -143,6 +143,21 @@ class Crate extends DboSource {
 
     public function __construct($config = null, $autoConnect = true){
         $this->config = Hash::merge($this->_baseConfig, $config);
+
+        $vars = [
+            'HTTP_PROXY',
+            'http_proxy',
+            'HTTPS_PROXY',
+            'https_proxy',
+            'FTP_PROXY',
+            'ftp_proxy',
+            'NO_PROXY',
+            'no_proxy'
+        ];
+        foreach($vars as $var){
+            putenv($var);
+        }
+
         parent::__construct($config, $autoConnect);
     }
 
@@ -321,10 +336,20 @@ class Crate extends DboSource {
             $modelsInQuery = array_merge($this->joinedModels, [$this->modelName]);
 
             foreach ($queryData['fields'] as $fieldInQuery) {
+
                 $fieldInQuery = trim($fieldInQuery);
 
                 foreach ($modelsInQuery as $modelInQuery) {
                     if (strpos($fieldInQuery, $modelInQuery . '.') !== 0) {
+                        //Is this may be a virtual field?
+                        //COUNT(DISTINCT Hoststatus.hostname) AS count
+                        foreach($this->Model->virtualFields as $virtualField => $realField){
+                            if ($fieldInQuery == sprintf('%s AS %s', $realField, $virtualField)) {
+                                $this->fieldsInQuery[] = $virtualField;
+                                continue 3;
+                            }
+                        }
+
                         continue;
                     }
                     if ($fieldInQuery === sprintf('%s.*', $modelInQuery)) {
@@ -337,6 +362,7 @@ class Crate extends DboSource {
                         foreach ($this->Model->virtualFields as $virtualField => $realField) {
                             if ($fieldInQuery === sprintf('%s AS %s', $realField, $virtualField)) {
                                 $isVirtualField = true;
+                                //Hoststatus.statetype => Hoststatus.is_hardstate
                                 $this->fieldsInQuery[] = sprintf('%s.%s', $this->modelName, $virtualField);
                             }
                         }
@@ -411,7 +437,6 @@ class Crate extends DboSource {
                 }
             }
         }
-
         if (!empty($queryData['array_difference'])) {
             //WHERE array_difference([1,2], Host.container_ids) != [1,2]
             foreach ($queryData['array_difference'] as $field => $values) {
@@ -427,6 +452,21 @@ class Crate extends DboSource {
             }
         }
 
+        if (!empty($queryData['or'])) {
+            //WHERE OR multiple 'OR' conditions
+            $conditionValues = [];
+            foreach ($queryData['or'] as $key => $value) {
+                $conditionValues[] = key($queryData['or'][$key]);
+            }
+
+            $queryTemplate = sprintf(
+                '%s %s (%s)',
+                $queryTemplate,
+                ($hasWhere) ? 'AND' : 'WHERE',
+                implode(' OR ', $conditionValues)
+            );
+
+        }
         if (!empty($queryData['group'])) {
             $groupBy = [];
             foreach ($queryData['group'] as $column) {
@@ -474,7 +514,6 @@ class Crate extends DboSource {
         if (!empty($queryData['offset']) && $this->findType !== 'count') {
             $queryTemplate = sprintf('%s OFFSET ?', $queryTemplate);
         }
-
         $attachedParameters = [];
         $query = $this->_connection->prepare($queryTemplate);
         $i = 1;
@@ -527,6 +566,18 @@ class Crate extends DboSource {
             }
         }
 
+        if (!empty($queryData['or'])) {
+            //WHERE OR multiple 'OR' conditions
+            foreach ($queryData['or'] as $conditionValues) {
+                foreach($conditionValues as $condition => $bindValues){
+                    foreach($bindValues as $key => $value){
+                        $query->bindValue($i++, $value, PDO::PARAM_TIMESTAMP);
+                        $attachedParameters[] = $value;
+                    }
+                }
+            }
+        }
+
         if (!empty($queryData['limit']) && $this->findType !== 'count') {
             $query->bindValue($i++, $queryData['limit'], PDO::PARAM_INT);
             $attachedParameters[] = $queryData['limit'];
@@ -541,7 +592,6 @@ class Crate extends DboSource {
             $query->bindValue($i++, $offset, PDO::PARAM_INT);
             $attachedParameters[] = $offset;
         }
-
 
         return $this->executeQuery($query, $queryTemplate, [], $attachedParameters);
     }
@@ -880,7 +930,6 @@ class Crate extends DboSource {
                     ]
                 ];
             }
-
             $merge = [];
             foreach ($dbResult as $record) {
                 $merge[] = array_combine($this->fieldsInQuery, $record);
@@ -896,11 +945,10 @@ class Crate extends DboSource {
                 return $this->formatResultFindAll($dbResult);
             }
 
-            $result = [];
-
             if (!empty($this->joins)) {
                 return $this->formatResultFindAllWithJoins($dbResult);
             }
+
             return $this->formatResultFindAll($dbResult);
 
         }
@@ -948,6 +996,13 @@ class Crate extends DboSource {
 
                     if (isset($record[$keyInRecord])) {
                         $result[$modelName][$column] = $record[$keyInRecord];
+                    }else{
+                        foreach($this->Model->virtualFields as $virtualField => $realField){
+                            if($keyInRecord === sprintf('%s AS %s', $realField, $virtualField)){
+                                $result[][$virtualField] = $record[$virtualField];
+                            }
+
+                        }
                     }
                 }
             }
@@ -1041,3 +1096,4 @@ class Crate extends DboSource {
     }
 
 }
+

@@ -107,7 +107,6 @@ class MapeditorsController extends MapModuleAppController {
                     ]);
                 }
             }
-
             if ($this->Map->saveAll($request)) {
                 if ($this->request->ext === 'json') {
                     $this->serializeId();
@@ -125,35 +124,8 @@ class MapeditorsController extends MapModuleAppController {
                 $this->setFlash(__('Data could not be saved'), false);
             }
         }
-        $this->Frontend->setJson('lang_minutes', __('minutes'));
-        $this->Frontend->setJson('lang_seconds', __('seconds'));
-        $this->Frontend->setJson('lang_and', __('and'));
-        $this->Frontend->setJson('map_lines', Hash::Extract($map, 'Mapline.{n}'));
-        $this->Frontend->setJson('map_gadgets', Hash::Extract($map, 'Mapgadget.{n}'));
-        
         $hosts = $this->Host->hostsByContainerId($this->MY_RIGHTS, 'list', [], 'id', 15);
 
-        $keys = array_keys($hosts);
-
-        $services = $this->Service->find('all',[
-            'recursive' => -1,
-            'conditions' => [
-                'Service.host_id' => $keys
-            ],
-            'fields' => [
-                'Service.id',
-                'IF((Service.name IS NULL OR Service.name = ""), Servicetemplate.name, Service.name) AS ServiceDescription',
-                'Service.uuid',
-            ],
-            'contain' => [
-                'Servicetemplate' => [
-                    'fields' => [
-                        'Servicetemplate.name'
-                    ],
-                ],
-            ]
-        ]);
-      
         $hostgroup = $this->Hostgroup->hostgroupsByContainerId($this->MY_RIGHTS, 'list', 'id');
         $servicegroup = $this->Servicegroup->servicegroupsByContainerId($this->MY_RIGHTS, 'list');
 
@@ -162,7 +134,6 @@ class MapeditorsController extends MapModuleAppController {
         $icons = $this->Background->findIcons();
 
         $this->Frontend->setJson('backgroundThumbs', $backgroundThumbs);
-
         $this->set(compact([
             'map',
             'maps',
@@ -174,6 +145,12 @@ class MapeditorsController extends MapModuleAppController {
             'iconSets',
             'icons'
         ]));
+
+        $this->Frontend->setJson('lang_minutes', __('minutes'));
+        $this->Frontend->setJson('lang_seconds', __('seconds'));
+        $this->Frontend->setJson('lang_and', __('and'));
+        $this->Frontend->setJson('map_lines', Hash::Extract($map, 'Mapline.{n}'));
+        $this->Frontend->setJson('map_gadgets', Hash::Extract($map, 'Mapgadget.{n}'));
     }
 
     public function getIconImages() {
@@ -699,6 +676,7 @@ class MapeditorsController extends MapModuleAppController {
                 'Service.name ASC', 'Servicetemplate.name ASC',
             ],
             'conditions' => [
+                'Service.disabled' => 0,
                 'Host.id' => $hostId,
             ],
         ]);

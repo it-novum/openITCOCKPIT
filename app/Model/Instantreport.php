@@ -23,6 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+
 class Instantreport extends AppModel {
 
     CONST EVALUATION_HOSTS = 1;
@@ -57,7 +58,7 @@ class Instantreport extends AppModel {
             'unique'                => true,
             'dependent'             => true,
         ],
-        'Host'    => [
+        'Host'         => [
             'className'             => 'Host',
             'joinTable'             => 'instantreports_to_hosts',
             'foreignKey'            => 'instantreport_id',
@@ -65,7 +66,7 @@ class Instantreport extends AppModel {
             'unique'                => true,
             'dependent'             => true,
         ],
-        'Servicegroup'    => [
+        'Servicegroup' => [
             'className'             => 'Servicegroup',
             'joinTable'             => 'instantreports_to_servicegroups',
             'foreignKey'            => 'instantreport_id',
@@ -73,7 +74,7 @@ class Instantreport extends AppModel {
             'unique'                => true,
             'dependent'             => true,
         ],
-        'Service'    => [
+        'Service'      => [
             'className'             => 'Service',
             'joinTable'             => 'instantreports_to_services',
             'foreignKey'            => 'instantreport_id',
@@ -81,7 +82,7 @@ class Instantreport extends AppModel {
             'unique'                => true,
             'dependent'             => true,
         ],
-        'User'    => [
+        'User'         => [
             'className'             => 'User',
             'joinTable'             => 'instantreports_to_users',
             'foreignKey'            => 'instantreport_id',
@@ -91,63 +92,63 @@ class Instantreport extends AppModel {
         ],
     ];
     var $belongsTo = [
-        'Container'    => [
+        'Container'  => [
             'className'  => 'Container',
             'foreignKey' => 'container_id',
         ],
-        'Timeperiod'    => [
+        'Timeperiod' => [
             'className'  => 'Timeperiod',
             'foreignKey' => 'timeperiod_id',
         ],
     ];
     public $validate = [
-        'name' => [
+        'name'          => [
             'notBlank' => [
-                'rule' => 'notBlank',
+                'rule'     => 'notBlank',
                 'required' => true,
-                'message' => 'This field cannot be left blank',
+                'message'  => 'This field cannot be left blank',
             ],
         ],
-        'type' => [
+        'type'          => [
             'notBlank' => [
-                'rule' => 'notBlank',
+                'rule'     => 'notBlank',
                 'required' => true,
-                'message' => 'This field cannot be left blank',
+                'message'  => 'This field cannot be left blank',
             ],
         ],
-        'container_id' => [
+        'container_id'  => [
             'rule'     => 'notBlank',
             'message'  => 'This field cannot be left blank.',
             'required' => true,
         ],
-        'Hostgroup'          => [
+        'Hostgroup'     => [
             'atLeastOne' => [
-                'rule'     => ['atLeastOne'],
-                'message'  => 'You must specify at least one option',
+                'rule'    => ['atLeastOne'],
+                'message' => 'You must specify at least one option',
             ],
         ],
-        'Servicegroup'       => [
+        'Servicegroup'  => [
             'atLeastOne' => [
-                'rule'     => ['atLeastOne'],
-                'message'  => 'You must specify at least one option',
+                'rule'    => ['atLeastOne'],
+                'message' => 'You must specify at least one option',
             ],
         ],
         'Host'          => [
             'atLeastOne' => [
-                'rule'     => ['atLeastOne'],
-                'message'  => 'You must specify at least one option',
+                'rule'    => ['atLeastOne'],
+                'message' => 'You must specify at least one option',
             ],
         ],
         'Service'       => [
             'atLeastOne' => [
-                'rule'     => ['atLeastOne'],
-                'message'  => 'You must specify at least one option',
+                'rule'    => ['atLeastOne'],
+                'message' => 'You must specify at least one option',
             ],
         ],
         'User'          => [
             'atLeastOneUser' => [
-                'rule'     => ['atLeastOneUser'],
-                'message'  => 'You must specify at least one user'
+                'rule'    => ['atLeastOneUser'],
+                'message' => 'You must specify at least one user'
             ],
         ],
         'timeperiod_id' => [
@@ -165,48 +166,50 @@ class Instantreport extends AppModel {
     ];
 
     public $validateCreateReport = [
-        'id' => [
+        'id'         => [
             'notBlank' => [
                 'allowEmpty' => false,
-                'rule' => ['multiple', [
-                    'min' => 1,
-                ]],
-                'message' => 'This field cannot be left blank',
-                'required' => true,
+                'rule'       => [
+                    'multiple', [
+                        'min' => 1,
+                    ]
+                ],
+                'message'    => 'This field cannot be left blank',
+                'required'   => true,
             ],
         ],
         'start_date' => [
-            'notBlank' => [
-                'rule' => 'notBlank',
+            'notBlank'      => [
+                'rule'     => 'notBlank',
                 'required' => true,
-                'message' => 'This field cannot be left blank',
+                'message'  => 'This field cannot be left blank',
             ],
-            'date' => [
-                'rule' => ['date', 'dmy'],
+            'date'          => [
+                'rule'     => ['date', 'dmy'],
                 'required' => true,
-                'message' => 'Enter a valid date',
+                'message'  => 'Enter a valid date',
             ],
             'validateDates' => [
-                'rule' => ['validateDates', ['start_date', 'end_date']],
+                'rule'     => ['validateDates', ['start_date', 'end_date']],
                 'required' => true,
-                'message' => '"To" must not be earlier than "From"',
+                'message'  => '"To" must not be earlier than "From"',
             ],
         ],
-        'end_date' => [
-            'notBlank' => [
-                'rule' => 'notBlank',
+        'end_date'   => [
+            'notBlank'      => [
+                'rule'     => 'notBlank',
                 'required' => true,
-                'message' => 'This field cannot be left blank',
+                'message'  => 'This field cannot be left blank',
             ],
-            'date' => [
-                'rule' => ['date', 'dmy'],
+            'date'          => [
+                'rule'     => ['date', 'dmy'],
                 'required' => true,
-                'message' => 'Enter a valid date',
+                'message'  => 'Enter a valid date',
             ],
             'validateDates' => [
-                'rule' => ['validateDates', ['start_date', 'end_date']],
+                'rule'     => ['validateDates', ['start_date', 'end_date']],
                 'required' => true,
-                'message' => '"To" must not be earlier than "From"',
+                'message'  => '"To" must not be earlier than "From"',
             ],
         ],
     ];
@@ -229,7 +232,7 @@ class Instantreport extends AppModel {
     public function beforeValidate($options = []) {
         $router_params = Router::getParams();
         if (isset($router_params['action'])) {
-            if($router_params['action'] === 'generate'){
+            if ($router_params['action'] === 'generate') {
                 $this->validate = $this->validateCreateReport;
             }
         }
@@ -246,25 +249,23 @@ class Instantreport extends AppModel {
     */
     public function atLeastOne() {
         return !empty($this->data['Instantreport']['Hostgroup'])
-            ^!empty($this->data['Instantreport']['Servicegroup'])
-            ^!empty($this->data['Instantreport']['Host'])
-            ^!empty($this->data['Instantreport']['Service']);
+            ^ !empty($this->data['Instantreport']['Servicegroup'])
+            ^ !empty($this->data['Instantreport']['Host'])
+            ^ !empty($this->data['Instantreport']['Service']);
 
     }
 
-    public function atLeastOneUser(){
+    public function atLeastOneUser() {
         // XNOR Operator (false and false) = true and (true and true) = true
         // if send_email true and user list is not empty, if send_mail false and user list is empty
         return !(!(($this->data['Instantreport']['send_email'] === true) ^ empty($this->data['Instantreport']['User'])));
     }
 
-    public function notZero($fieldName)
-    {
+    public function notZero($fieldName) {
         return !($this->data[$this->name][key($fieldName)] == '0');
     }
 
-    public function timeRanges($data)
-    {
+    public function timeRanges($data) {
         $timeperiod = ClassRegistry::init('Timeperiod', false);
         $selectedTimeperiod = $timeperiod->findById($data['timeperiod_id']);
 
@@ -274,24 +275,21 @@ class Instantreport extends AppModel {
     /**
      * Generate date for host/service objects
      *
-     * @param integer $totalTime              total time of all time ranges
-     * @param array   $timeSlices             => Time ranges for evaluation period
-     * @param array   $stateHistoryWithObject => Array with object data and state history array
-     * @param boolean $checkHard_state        use hard and soft state or only hard state for evaluation
-     * @param boolean $objectHost             , if object host => 1, else service => 0
+     * @param array $timeSlices => Time ranges for evaluation period
+     * @param array $stateHistoryWithObject => Array with object data and state history array
+     * @param boolean $checkHard_state use hard and soft state or only hard state for evaluation
+     * @param boolean $objectHost , if object host => 1, else service => 0
      * @param         array                   downtimes array, use downtimes array if report setting
      *                                                  "consider_downtimes" => true
      *
      * @return array $instantreportData for host/service object
      */
-    public function generateInstantreportData($totalTime, $timeSlices, $stateHistoryWithObject, $checkHardState, $objectHost = false)
-    {
+    public function generateInstantreportData($timeSlices, $stateHistoryWithObject, $checkHardState, $objectHost = false) {
         $stateArray = array_fill(0, ($objectHost) ? 3 : 4, 0); // host states => 0,1,2; service states => 0,1,2,3
         $stateOk = 0;
         $stateUnknown = ($objectHost) ? 2 : 3;//if the end of date in the future
         $evaluationData = $stateArray;
-
-        $stateHistoryArray = Hash::extract($stateHistoryWithObject, '{n}.Statehistory.{n}');
+        $stateHistoryArray = Hash::extract($stateHistoryWithObject, '{s}.Statehistory.{n}');
         $outageState = ($objectHost) ? 1 : 2; // 1 for host down and 2 for service critical
         $setInitialState = false;
         $currentState = 0;
@@ -303,7 +301,7 @@ class Instantreport extends AppModel {
             $isDowntime = $timeSlice['is_downtime'];
             reset($stateHistoryArray);
             foreach ($stateHistoryArray as $key => $stateHistory) {
-                $stateTimeTimestamp = strtotime($stateHistory['state_time']);
+                $stateTimeTimestamp = $stateHistory['state_time'];
                 if (!$setInitialState) {
                     $currentState = ($checkHardState) ? $stateHistory['last_hard_state'] : $stateHistory['last_state'];
                     $currentState = ($currentState == -1) ? 0 : $currentState;
@@ -314,7 +312,9 @@ class Instantreport extends AppModel {
                     break;
                 }
                 if ($stateTimeTimestamp <= $timeSlice['start']) {
-                    $currentState = ($stateHistory['state'] == 0 || !$checkHardState || ($checkHardState && ($checkHardState && $stateHistory['state_type']))) ? $stateHistory['state'] : $currentState;
+                    if($stateHistory['state'] == 0 || !$checkHardState || ($checkHardState && ($checkHardState && $stateHistory['is_hardstate']))){
+                        $currentState = $stateHistory['state'];
+                    }
                     //unset($stateHistoryArray[$key]);
                     continue;
                 }
@@ -325,7 +325,7 @@ class Instantreport extends AppModel {
                     } else {
                         $evaluationData[$currentState] += $stateTimeTimestamp - $time;
                     }
-                    $currentState = ($stateHistory['state'] == 0 || !$checkHardState || ($checkHardState && ($checkHardState && $stateHistory['state_type']))) ? $stateHistory['state'] : $currentState;
+                    $currentState = ($stateHistory['state'] == 0 || !$checkHardState || ($checkHardState && ($checkHardState && $stateHistory['is_hardstate']))) ? $stateHistory['state'] : $currentState;
                     $time = $stateTimeTimestamp;
                     unset($stateHistoryArray[$key]);
                 }
@@ -348,42 +348,42 @@ class Instantreport extends AppModel {
 
     public function getTypes() {
         return [
-            self::TYPE_HOSTGROUPS => __('Host groups'),
+            self::TYPE_HOSTGROUPS    => __('Host groups'),
             self::TYPE_SERVICEGROUPS => __('Service groups'),
-            self::TYPE_HOSTS => __('Hosts'),
-            self::TYPE_SERVICES => __('Services')
+            self::TYPE_HOSTS         => __('Hosts'),
+            self::TYPE_SERVICES      => __('Services')
         ];
     }
 
-    public function getEvaluations(){
+    public function getEvaluations() {
         return [
-            self::EVALUATION_HOSTS => ['label' => __('Hosts '), 'icon' => 'desktop'],
+            self::EVALUATION_HOSTS          => ['label' => __('Hosts '), 'icon' => 'desktop'],
             self::EVALUATION_HOSTS_SERVICES => ['label' => __('Hosts and Services '), 'icon' => 'cogs'],
-            self::EVALUATION_SERVICES => ['label' => __('Services '), 'icon' => 'cog']
+            self::EVALUATION_SERVICES       => ['label' => __('Services '), 'icon' => 'cog']
         ];
     }
 
-    public function getReportFormats(){
+    public function getReportFormats() {
         return [
-            self::FORMAT_PDF => __('PDF'),
+            self::FORMAT_PDF  => __('PDF'),
             self::FORMAT_HTML => __('HTML')
         ];
     }
 
-    public function getReflectionStates(){
+    public function getReflectionStates() {
         return [
             self::STATE_SOFT_HARD => __('soft and hard state'),
             self::STATE_HARD_ONLY => __('only hard state')
         ];
     }
 
-    public function getSendIntervals(){
+    public function getSendIntervals() {
         return [
-            self::SEND_NEVER => __('Never'),
-            self::SEND_DAILY => __('Daily'),
-            self::SEND_WEEKLY => __('Weekly'),
+            self::SEND_NEVER   => __('Never'),
+            self::SEND_DAILY   => __('Daily'),
+            self::SEND_WEEKLY  => __('Weekly'),
             self::SEND_MONTHLY => __('Monthly'),
-            self::SEND_YEARLY => __('Yearly')
+            self::SEND_YEARLY  => __('Yearly')
         ];
     }
 
@@ -423,7 +423,7 @@ class Instantreport extends AppModel {
 
     public function reportStartTime($sendInterval) {
         $now = $this->reportEndTime($sendInterval);
-        $dateNow = new DateTime(date('d.m.Y H:i:s',$now));
+        $dateNow = new DateTime(date('d.m.Y H:i:s', $now));
         switch ($sendInterval) {
             case self::SEND_WEEKLY:
                 $dateNow->modify('last Monday');
@@ -458,5 +458,53 @@ class Instantreport extends AppModel {
 
         $dateNow->setTime(23, 59, 59);
         return $dateNow->getTimestamp();
+    }
+
+    /**
+     * @param string $key
+     * @param array $downtimes
+     * @param array $systemfailures
+     * @return array
+     */
+    public function mergeDowntimesWithSystemfailures($key = 'DowntimeHost', $downtimes = [], $systemfailures = []) {
+        if (empty($systemfailures)) {
+            return $downtimes;
+        }
+
+        //If downtimes are empty set $useTimetamp = true, systemfailures (start_time and end_time) are always in mysql datetime format
+        $useTimetamp = true;
+        if(!empty($downtimes)){
+            $useTimetamp = is_numeric($downtimes[0][$key]['scheduled_start_time']);
+
+        }
+        foreach ($systemfailures as $systemfailure) {
+            $start = strtotime($systemfailure['start_time']);
+            $end = strtotime($systemfailure['end_time']);
+
+            if($useTimetamp === true) {
+                $scheduled_start_time = $start;
+                $scheduled_end_time = $end;
+            }
+
+            if($useTimetamp === false) {
+                $scheduled_start_time = date('Y-m-d H:i:s', $start);
+                $scheduled_end_time = date('Y-m-d H:i:s', $end);
+            }
+
+            $duration = $end - $start;
+            $downtimes[] = [
+                $key => [
+                    'author_name'          => 'Unknown',
+                    'comment_data'         => $systemfailure['comment'],
+                    'scheduled_start_time' => $scheduled_start_time,
+                    'scheduled_end_time'   => $scheduled_end_time,
+                    'duration'             => $duration,
+                    'was_started'          => (($start < time()) ? true : false),
+                    'was_cancelled'        => false
+                ]
+            ];
+        }
+
+        return Hash::sort($downtimes, '{n}.' . $key . '.scheduled_start_time', 'ASC');
     }
 }

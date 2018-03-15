@@ -23,106 +23,188 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use itnovum\openITCOCKPIT\Core\AngularJS\Request\HostDowntimesControllerRequest;
+use itnovum\openITCOCKPIT\Core\AngularJS\Request\ServiceDowntimesControllerRequest;
+use itnovum\openITCOCKPIT\Core\DowntimeHostConditions;
+use itnovum\openITCOCKPIT\Core\DowntimeServiceConditions;
+use itnovum\openITCOCKPIT\Core\Views\ContainerPermissions;
+use itnovum\openITCOCKPIT\Core\Views\UserTime;
+
 class DowntimesController extends AppController {
 
     /*
      * Attention! In this case we load an external Model from the monitoring plugin! The Controller
      * use this external model to fetch the required data out of the database
      */
-    public $uses = [MONITORING_DOWNTIME, 'Host', 'Service', 'Hostgroup'];
-
-    public $components = ['Paginator', 'ListFilter.ListFilter', 'RequestHandler'];
-    public $helpers = ['ListFilter.ListFilter', 'Status', 'Monitoring', 'CustomValidationErrors', 'Uuid'];
-    public $layout = 'Admin.default';
-
-    public $listFilters = [
-        'host'    => [
-            'fields' => [
-                'Host.name'             => ['label' => 'Host', 'searchType' => 'wildcard'],
-                'Downtime.author_name'  => ['label' => 'User', 'searchType' => 'wildcard'],
-                'Downtime.comment_data' => ['label' => 'Comment', 'searchType' => 'wildcard'],
-            ],
-        ],
-        'service' => [
-            'fields' => [
-                'Host.name'             => ['label' => 'Host', 'searchType' => 'wildcard'],
-                'Downtime.author_name'  => ['label' => 'User', 'searchType' => 'wildcard'],
-                'Downtime.comment_data' => ['label' => 'Comment', 'searchType' => 'wildcard'],
-            ],
-        ],
+    public $uses = [
+        MONITORING_DOWNTIME_HOST,
+        MONITORING_DOWNTIME_SERVICE,
+        'Host',
+        'Service'
     ];
 
-    public function host() {
-        $paginatorLimit = $this->Paginator->settings['limit'];
-        $requestSettings = $this->Downtime->hostListSettings($this->request, $this->MY_RIGHTS, $paginatorLimit);
+    public $helpers = ['Uuid'];
+    public $layout = 'Admin.default';
 
-        if (isset($this->Paginator->settings['conditions'])) {
-            $this->Paginator->settings['conditions'] = Hash::merge($this->Paginator->settings['conditions'], $requestSettings['conditions']);
-        } else {
-            $this->Paginator->settings['conditions'] = $requestSettings['conditions'];
+    public $components = ['GearmanClient'];
+
+    public function host() {
+        $this->layout = 'angularjs';
+        if (!$this->isAngularJsRequest()) {
+            return;
         }
 
-        $this->Paginator->settings['limit'] = $requestSettings['paginator']['limit'];
-        $this->Paginator->settings['order'] = $requestSettings['paginator']['order'];
-        $this->Paginator->settings['conditions'] = Hash::merge($this->Paginator->settings['conditions'], $requestSettings['conditions']);
-        $this->Paginator->settings['joins'] = [
+        $AngularHostDowntimesControllerRequest = new HostDowntimesControllerRequest($this->request);
 
-        ];
-        $this->Paginator->settings = Hash::merge($this->Paginator->settings, $requestSettings['default']);
+        //Process conditions
+        $DowntimeHostConditions = new DowntimeHostConditions();
+        $DowntimeHostConditions->setLimit($this->Paginator->settings['limit']);
+        $DowntimeHostConditions->setFrom($AngularHostDowntimesControllerRequest->getFrom());
+        $DowntimeHostConditions->setTo($AngularHostDowntimesControllerRequest->getTo());
+        $DowntimeHostConditions->setHideExpired($AngularHostDowntimesControllerRequest->hideExpired());
+        $DowntimeHostConditions->setIsRunning($AngularHostDowntimesControllerRequest->isRunning());
+        $DowntimeHostConditions->setContainerIds($this->MY_RIGHTS);
+        $DowntimeHostConditions->setOrder($AngularHostDowntimesControllerRequest->getOrderForPaginator('DowntimeHost.scheduled_start_time', 'desc'));
 
-        //--force --doit --yes-i-know-what-i-do
-        // force the order of joined tables
-        $all_downtimes = $this->Paginator->paginate(null, [], [key($this->Paginator->settings['order'])]);
-        foreach ($all_downtimes as $dKey => $downtime) {
-            if (isset($this->MY_RIGHTS_LEVEL[$downtime['HostsToContainers']['container_id']]) && $this->MY_RIGHTS_LEVEL[$downtime['HostsToContainers']['container_id']] == WRITE_RIGHT) {
-                $all_downtimes[$dKey]['canDelete'] = true;
-                $serviceDowntimes = $this->Downtime->getServiceDowntimesForHost($downtime['Host']['id'], $downtime['Downtime']['scheduled_start_time'], $downtime['Downtime']['scheduled_end_time']);
-                $all_downtimes[$dKey]['servicesDown'] = '0';
-                if (count($serviceDowntimes) > 0) {
-                    foreach ($serviceDowntimes as $serviceDowntime) {
-                        $all_downtimes[$dKey]['servicesDown'] .= ',' . $serviceDowntime['Downtime']['internal_downtime_id'];
-                    }
-                }
+        $this->Paginator->settings = $this->DowntimeHost->getQuery($DowntimeHostConditions, $AngularHostDowntimesControllerRequest->getIndexFilters());
+        $this->Paginator->settings['page'] = $AngularHostDowntimesControllerRequest->getPage();
+
+        $hostDowntimes = $this->Paginator->paginate(
+            $this->DowntimeHost->alias,
+            [],
+            [key($this->Paginator->settings['order'])]
+        );
+
+
+        //Load containers for hosts, for non root users
+        $hostContainers = [];
+        if (!empty($hostDowntimes) && $this->hasRootPrivileges === false && $this->hasPermission('edit', 'hosts')) {
+            $hostIds = array_unique(Hash::extract($hostDowntimes, '{n}.Host.id'));
+            $_hostContainers = $this->Host->find('all', [
+                'contain'    => [
+                    'Container',
+                ],
+                'fields'     => [
+                    'Host.id',
+                    'Container.*',
+                ],
+                'conditions' => [
+                    'Host.id' => $hostIds,
+                ],
+            ]);
+            foreach ($_hostContainers as $host) {
+                $hostContainers[$host['Host']['id']] = Hash::extract($host['Container'], '{n}.id');
+            }
+        }
+
+        //Prepare data for API
+        $all_host_downtimes = [];
+        $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
+        foreach ($hostDowntimes as $hostDowntime) {
+            if ($this->hasRootPrivileges) {
+                $allowEdit = true;
             } else {
-                $all_downtimes[$dKey]['canDelete'] = false;
+                $containerIds = [];
+                if (isset($hostContainers[$hostDowntime['Host']['id']])) {
+                    $containerIds = $hostContainers[$hostDowntime['Host']['id']];
+                }
+                $ContainerPermissions = new ContainerPermissions($this->MY_RIGHTS_LEVEL, $containerIds);
+                $allowEdit = $ContainerPermissions->hasPermission();
             }
 
+            $Host = new \itnovum\openITCOCKPIT\Core\Views\Host($hostDowntime, $allowEdit);
+            $HostDowntime = new \itnovum\openITCOCKPIT\Core\Views\Downtime($hostDowntime['DowntimeHost'], $allowEdit, $UserTime);
+
+            $all_host_downtimes[] = [
+                'Host'         => $Host->toArray(),
+                'DowntimeHost' => $HostDowntime->toArray()
+            ];
         }
 
-        $this->set(compact(['all_downtimes', 'paginatorLimit']));
-        $this->set('DowntimeListsettings', $requestSettings['Listsettings']);
+
+        $this->set('all_host_downtimes', $all_host_downtimes);
+        $this->set('_serialize', ['all_host_downtimes', 'paging']);
+
     }
 
 
     public function service() {
-        $paginatorLimit = $this->Paginator->settings['limit'];
-        $requestSettings = $this->Downtime->serviceListSettings($this->request, $this->MY_RIGHTS, $paginatorLimit);
-
-        if (isset($this->Paginator->settings['conditions'])) {
-            $this->Paginator->settings['conditions'] = Hash::merge($this->Paginator->settings['conditions'], $requestSettings['conditions']);
-        } else {
-            $this->Paginator->settings['conditions'] = $requestSettings['conditions'];
+        $this->layout = 'angularjs';
+        if (!$this->isAngularJsRequest()) {
+            return;
         }
 
-        $this->Paginator->settings['limit'] = $requestSettings['paginator']['limit'];
-        $this->Paginator->settings['order'] = $requestSettings['paginator']['order'];
-        $this->Paginator->settings['conditions'] = Hash::merge($this->Paginator->settings['conditions'], $requestSettings['conditions']);
-        $this->Paginator->settings = Hash::merge($this->Paginator->settings, $requestSettings['default']);
+        $AngularServiceDowntimesControllerRequest = new ServiceDowntimesControllerRequest($this->request);
 
-        //--force --doit --yes-i-know-what-i-do
-        // force the order of joined tables
-        $all_downtimes = $this->Paginator->paginate(null, [], [key($this->Paginator->settings['order'])]);
-        foreach ($all_downtimes as $dKey => $downtime) {
-            if (isset($this->MY_RIGHTS_LEVEL[$downtime['HostsToContainers']['container_id']]) && $this->MY_RIGHTS_LEVEL[$downtime['HostsToContainers']['container_id']] == WRITE_RIGHT) {
-                $all_downtimes[$dKey]['canDelete'] = true;
+        //Process conditions
+        $DowntimeServiceConditions = new DowntimeServiceConditions();
+        $DowntimeServiceConditions->setLimit($this->Paginator->settings['limit']);
+        $DowntimeServiceConditions->setFrom($AngularServiceDowntimesControllerRequest->getFrom());
+        $DowntimeServiceConditions->setTo($AngularServiceDowntimesControllerRequest->getTo());
+        $DowntimeServiceConditions->setHideExpired($AngularServiceDowntimesControllerRequest->hideExpired());
+        $DowntimeServiceConditions->setIsRunning($AngularServiceDowntimesControllerRequest->isRunning());
+        $DowntimeServiceConditions->setContainerIds($this->MY_RIGHTS);
+        $DowntimeServiceConditions->setOrder($AngularServiceDowntimesControllerRequest->getOrderForPaginator('DowntimeService.scheduled_start_time', 'desc'));
+
+        $this->Paginator->settings = $this->DowntimeService->getQuery($DowntimeServiceConditions, $AngularServiceDowntimesControllerRequest->getIndexFilters());
+        $this->Paginator->settings['page'] = $AngularServiceDowntimesControllerRequest->getPage();
+
+        $serviceDowntimes = $this->Paginator->paginate(
+            $this->DowntimeService->alias,
+            [],
+            [key($this->Paginator->settings['order'])]
+        );
+
+        //Load containers for hosts, for non root users
+        $hostContainers = [];
+        if (!empty($serviceDowntimes) && $this->hasRootPrivileges === false && $this->hasPermission('edit', 'hosts')) {
+            $hostIds = array_unique(Hash::extract($serviceDowntimes, '{n}.Host.id'));
+            $_hostContainers = $this->Host->find('all', [
+                'contain'    => [
+                    'Container',
+                ],
+                'fields'     => [
+                    'Host.id',
+                    'Container.*',
+                ],
+                'conditions' => [
+                    'Host.id' => $hostIds,
+                ],
+            ]);
+            foreach ($_hostContainers as $host) {
+                $hostContainers[$host['Host']['id']] = Hash::extract($host['Container'], '{n}.id');
+            }
+        }
+
+        //Prepare data for API
+        $all_service_downtimes = [];
+        $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
+        foreach ($serviceDowntimes as $serviceDowntime) {
+            if ($this->hasRootPrivileges) {
+                $allowEdit = true;
             } else {
-                $all_downtimes[$dKey]['canDelete'] = false;
+                $containerIds = [];
+                if (isset($hostContainers[$serviceDowntime['Host']['id']])) {
+                    $containerIds = $hostContainers[$serviceDowntime['Host']['id']];
+                }
+                $ContainerPermissions = new ContainerPermissions($this->MY_RIGHTS_LEVEL, $containerIds);
+                $allowEdit = $ContainerPermissions->hasPermission();
             }
 
-        }
-        $this->set(compact(['all_downtimes', 'paginatorLimit']));
-        $this->set('DowntimeListsettings', $requestSettings['Listsettings']);
+            $Host = new \itnovum\openITCOCKPIT\Core\Views\Host($serviceDowntime, $allowEdit);
+            $Service = new \itnovum\openITCOCKPIT\Core\Views\Service($serviceDowntime, null, $allowEdit);
+            $ServiceDowntime = new \itnovum\openITCOCKPIT\Core\Views\Downtime($serviceDowntime['DowntimeService'], $allowEdit, $UserTime);
 
+            $all_service_downtimes[] = [
+                'Host'            => $Host->toArray(),
+                'Service'         => $Service->toArray(),
+                'DowntimeService' => $ServiceDowntime->toArray()
+            ];
+        }
+
+
+        $this->set('all_service_downtimes', $all_service_downtimes);
+        $this->set('_serialize', ['all_service_downtimes', 'paging']);
     }
 
     public function index() {
@@ -160,38 +242,38 @@ class DowntimesController extends AppController {
             $error['Downtime']['comment'][] = __('Comment can not be empty');
         }
 
-        if(!isset($data['from_date']) || strlen($data['from_date']) === 0){
+        if (!isset($data['from_date']) || strlen($data['from_date']) === 0) {
             $error['Downtime']['from_date'][] = __('Start date can not be empty');
         }
 
-        if(!isset($data['from_time']) || strlen($data['from_time']) === 0){
+        if (!isset($data['from_time']) || strlen($data['from_time']) === 0) {
             $error['Downtime']['from_time'][] = __('Start time can not be empty');
         }
 
-        if(!isset($data['to_date']) || strlen($data['to_date']) === 0){
+        if (!isset($data['to_date']) || strlen($data['to_date']) === 0) {
             $error['Downtime']['to_date'][] = __('End date can not be empty');
         }
 
-        if(!isset($data['to_time']) || strlen($data['to_time']) === 0){
+        if (!isset($data['to_time']) || strlen($data['to_time']) === 0) {
             $error['Downtime']['to_time'][] = __('End time can not be empty');
         }
 
-        if(empty($error['Downtime'])) {
+        if (empty($error['Downtime'])) {
             $start = sprintf('%s %s', $data['from_date'], $data['from_time']);
             $end = sprintf('%s %s', $data['to_date'], $data['to_time']);
-            if(strtotime($start) === false){
+            if (strtotime($start) === false) {
                 $error['Downtime']['from_date'][] = __('Date is not valid');
             }
 
-            if(strtotime($end) === false){
+            if (strtotime($end) === false) {
                 $error['Downtime']['to_date'][] = __('Date is not valid');
             }
         }
 
-        if(!empty($error['Downtime'])){
+        if (!empty($error['Downtime'])) {
             $this->response->statusCode(400);
             $this->set('success', false);
-        }else{
+        } else {
             $this->set('success', true);
         }
 
@@ -199,7 +281,100 @@ class DowntimesController extends AppController {
         $this->set('_serialize', ['error', 'success']);
     }
 
-    public function delete() {
-        // creating rights downtimes.delete
+    /**
+     * @param int $internalDowntimeId
+     */
+    public function delete($internalDowntimeId = null) {
+        if (!$this->request->is('post')) {
+            throw new MethodNotAllowedException();
+        }
+
+        if ($internalDowntimeId === null || !is_numeric($internalDowntimeId)) {
+            throw new InvalidArgumentException('$internalDowntimeId needs to be an integer!');
+        }
+
+        if (!isset($this->request->data['type'])) {
+            throw new InvalidArgumentException('Parameter type is missing');
+        }
+
+        Configure::load('gearman');
+        $this->Config = Configure::read('gearman');
+
+        $this->GearmanClient->client->setTimeout(5000);
+        $gearmanReachable = @$this->GearmanClient->client->ping(true);
+
+        switch ($this->request->data['type']) {
+            case 'host':
+                //host dinge
+                $includeServices = true;
+                if (isset($this->request->data['includeServices'])) {
+                    $includeServices = (bool)$this->request->data['includeServices'];
+                }
+
+                $servicesInternalDowntimeIds = [];
+                if ($includeServices) {
+                    //Find current downtime
+                    $downtime = $this->DowntimeHost->getHostUuidWithDowntimeByInternalDowntimeId($internalDowntimeId);
+                    $Downtime = new \itnovum\openITCOCKPIT\Core\Views\Downtime($downtime['DowntimeHost']);
+                    $host = $this->Host->find('first', [
+                        'recursive'  => -1,
+                        'conditions' => [
+                            'Host.uuid' => $downtime['Host']['uuid']
+                        ],
+                        'fields'     => [
+                            'Host.id'
+                        ],
+                    ]);
+
+                    if (!empty($host)) {
+                        $servicesInternalDowntimeIds = $this->DowntimeService->getServiceDowntimesByHostAndDowntime(
+                            $host['Host']['id'],
+                            $Downtime
+                        );
+                    }
+                }
+
+                //Delete Host downtime
+                $this->GearmanClient->client->doBackground(
+                    "oitc_gearman",
+                    Security::cipher(serialize([
+                        'task'                 => 'deleteHostDowntime',
+                        'internal_downtime_id' => $internalDowntimeId
+                    ]), $this->Config['password'])
+                );
+
+                //Delete corresponding service downtimes
+                foreach ($servicesInternalDowntimeIds as $serviceInternalDowntimeId) {
+                    $this->GearmanClient->client->doBackground(
+                        "oitc_gearman",
+                        Security::cipher(serialize([
+                            'task'                 => 'deleteServiceDowntime',
+                            'internal_downtime_id' => $serviceInternalDowntimeId
+                        ]), $this->Config['password'])
+                    );
+                }
+
+
+                break;
+
+            default:
+                $this->GearmanClient->client->doBackground(
+                    "oitc_gearman",
+                    Security::cipher(serialize([
+                        'task'                 => 'deleteServiceDowntime',
+                        'internal_downtime_id' => $internalDowntimeId
+                    ]), $this->Config['password'])
+                );
+                break;
+        }
+        $this->set('success', true);
+        $this->set('message', __('Successfully'));
+        $this->set('_serialize', ['success', 'message']);
+    }
+
+    public function icon() {
+        $this->layout = 'blank';
+        //Only ship template
+        return;
     }
 }

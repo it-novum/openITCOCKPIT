@@ -9,8 +9,14 @@ angular.module('openITCOCKPIT').directive('enableHostNotifications', function($h
             $scope.isEnableingHostNotifications = false;
             $scope.enableHostNotificationsType = 'hostOnly';
 
+            var callbackName = false;
+
             $scope.setEnableHostNotificationsObjects = function(_objects){
                 objects = _objects;
+            };
+
+            $scope.setEnableHostNotificationsCallback = function(_callback){
+                callbackName = _callback;
             };
 
             $scope.doEnableHostNotifications = function(){
@@ -30,6 +36,11 @@ angular.module('openITCOCKPIT').directive('enableHostNotifications', function($h
                         $scope.enableHostNotificationsType
                     ]));
                 }
+
+                //Call callback function if given
+                if(callbackName){
+                    $scope[callbackName]();
+                }
                 $timeout(function(){
                     $scope.isEnableingHostNotifications = false;
                     $scope.percentage = 0;
@@ -44,6 +55,11 @@ angular.module('openITCOCKPIT').directive('enableHostNotifications', function($h
                 if(Object.keys(objects).length === 0){
                     return;
                 }
+
+                if(attr.hasOwnProperty('callback')){
+                    $scope.setEnableHostNotificationsCallback(attr.callback);
+                }
+
                 $('#angularEnableHostNotificationsModal').modal('show');
                 $scope.setEnableHostNotificationsObjects(objects);
             };

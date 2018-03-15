@@ -43,7 +43,12 @@ class ContainerPermissions {
      * @param array $ContainersToCheck
      */
     public function __construct($MY_RIGHTS_LEVEL, $ContainersToCheck = []) {
-        $this->MY_RIGHTS_LEVEL = $MY_RIGHTS_LEVEL;
+        foreach($MY_RIGHTS_LEVEL as $containerId => $rightLevel){
+            $rightLevel = (int)$rightLevel;
+            if($rightLevel === WRITE_RIGHT){
+                $this->MY_RIGHTS_LEVEL[$containerId] = $rightLevel;
+            }
+        }
         $this->Containers = $ContainersToCheck;
     }
 

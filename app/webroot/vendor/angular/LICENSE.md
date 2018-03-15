@@ -1,6 +1,10 @@
 The MIT License (MIT)
 
+<<<<<<< HEAD:app/Vendor/composer/LICENSE
+Copyright (c) Nils Adermann, Jordi Boggiano
+=======
 Copyright (c) 2016 Angular
+>>>>>>> development:app/webroot/vendor/angular/LICENSE.md
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

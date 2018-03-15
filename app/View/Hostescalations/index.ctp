@@ -31,7 +31,7 @@
                 <?php echo __('Monitoring'); ?>
                 <span>>
                     <?php echo __('Host Escalations'); ?>
-			</span>
+                </span>
             </h1>
         </div>
     </div>
@@ -150,7 +150,7 @@
                                                         echo '<li>';
                                                         if ($this->Acl->hasPermission('edit', 'hosts')):
                                                             echo $this->Html->link(
-                                                                $host['Host']['name'],
+                                                                h($host['Host']['name']),
                                                                 [
                                                                     'controller' => 'hosts',
                                                                     'action'     => 'edit',
@@ -178,7 +178,7 @@
                                                         echo '<li>';
                                                         if ($this->Acl->hasPermission('edit', 'hosts')):
                                                             echo $this->Html->link(
-                                                                $host_excluded['Host']['name'],
+                                                                h($host_excluded['Host']['name']),
                                                                 [
                                                                     'controller' => 'hosts',
                                                                     'action'     => 'edit',

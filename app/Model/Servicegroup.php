@@ -29,17 +29,17 @@
  * a servoce belongsTo a container (many to one)
  */
 
-class Servicegroup extends AppModel
-{
+class Servicegroup extends AppModel {
 
     public $belongsTo = [
         'Container' => [
             'foreignKey' => 'container_id',
             'className'  => 'Container',
-        ]];
+        ]
+    ];
 
     public $hasAndBelongsToMany = [
-        'Service' => [
+        'Service'         => [
             'joinTable'  => 'services_to_servicegroups',
             'foreignKey' => 'servicegroup_id',
             'unique'     => true,
@@ -75,15 +75,13 @@ class Servicegroup extends AppModel
         ],
     ];
 
-    public function __construct($id = false, $table = null, $ds = null)
-    {
+    public function __construct($id = false, $table = null, $ds = null) {
         parent::__construct($id, $table, $ds);
         App::uses('UUID', 'Lib');
         $this->Service = ClassRegistry::init('Service');
     }
 
-    public function servicegroupsByContainerId($container_ids = [], $type = 'all', $index = 'id')
-    {
+    public function servicegroupsByContainerId($container_ids = [], $type = 'all', $index = 'id') {
         //Lookup for the tenant container of $container_id
         $this->Container = ClassRegistry::init('Container');
         $tenant = [];
@@ -97,33 +95,36 @@ class Servicegroup extends AppModel
             switch ($type) {
                 case 'all':
                     return $this->find('all', [
-                        'conditions' => [
-                            'Container.parent_id'        => array_unique(array_values($tenant)),
-                            'Container.containertype_id' => CT_SERVICEGROUP,
-                        ],
-                        'recursive'  => -1,
-                        'order'      => [
-                            'Container.name' => 'ASC',
-                        ],
-                        'contain' => [
-                            'Container'
+                        'recursive' => -1,
+                        'contain'   => [
+                            'Container' => [
+                                'conditions' => [
+                                    'Container.parent_id'        => array_unique(array_values($tenant)),
+                                    'Container.containertype_id' => CT_SERVICEGROUP,
+                                ],
+
+                                'order' => [
+                                    'Container.name' => 'ASC',
+                                ],
+                            ]
                         ]
                     ]);
 
                 default:
                     $return = [];
                     $results = $this->find('all', [
-                        'conditions' => [
-                            'Container.parent_id'        => array_unique(array_values($tenant)),
-                            'Container.containertype_id' => CT_SERVICEGROUP,
-                        ],
-                        'recursive'  => -1,
-                        'contain' => ['Container'],
-                        'order'      => [
-                            'Container.name' => 'ASC',
-                        ],
-                        'contain' => [
-                            'Container'
+                        'recursive' => -1,
+                        'contain'   => [
+                            'Container' => [
+                                'conditions' => [
+                                    'Container.parent_id'        => array_unique(array_values($tenant)),
+                                    'Container.containertype_id' => CT_SERVICEGROUP,
+                                ],
+
+                                'order' => [
+                                    'Container.name' => 'ASC',
+                                ],
+                            ]
                         ]
                     ]);
                     foreach ($results as $result) {

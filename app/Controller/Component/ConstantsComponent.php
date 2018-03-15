@@ -43,11 +43,18 @@ class ConstantsComponent extends Component {
 
         $this->defines['monitoring'] = [
             //Models
+
             'MONITORING_HOSTSTATUS'                => $monitoring . 'Module.Hoststatus',
             'MONITORING_SERVICESTATUS'             => $monitoring . 'Module.Servicestatus',
             'MONITORING_OBJECTS'                   => $monitoring . 'Module.Objects',
-            'MONITORING_EXTERNALCOMMAND'           => $monitoring . 'Module.Externalcommand',
+
+            //'MONITORING_EXTERNALCOMMAND'           => $monitoring . 'Module.Externalcommand',
+            //Externalcommand Model dont use a table, so it is always NagiosModule
+            'MONITORING_EXTERNALCOMMAND'           => 'NagiosModule.Externalcommand',
+
             'MONITORING_DOWNTIME'                  => $monitoring . 'Module.Downtime',
+            'MONITORING_DOWNTIME_HOST'             => $monitoring . 'Module.DowntimeHost',
+            'MONITORING_DOWNTIME_SERVICE'          => $monitoring . 'Module.DowntimeService',
             'MONITORING_LOGENTRY'                  => $monitoring . 'Module.Logentry',
             'MONITORING_NAGIOSTAT'                 => $monitoring . 'Module.Nagiostat',
             'MONITORING_NOTIFICATION'              => $monitoring . 'Module.Notification',

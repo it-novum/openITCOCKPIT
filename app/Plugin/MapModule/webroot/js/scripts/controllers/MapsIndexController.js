@@ -59,9 +59,11 @@ angular.module('openITCOCKPIT')
         $scope.selectAll = function(){
             if($scope.maps){
                 for(var key in $scope.maps){
-                    var id = $scope.maps[key].Map.id;
-                    $scope.massChange[id] = true;
-                    $scope.selectedElements = MassChangeService.getCount();
+                    if($scope.maps[key].Map.allowEdit){
+                        var id = $scope.maps[key].Map.id;
+                        $scope.massChange[id] = true;
+                        $scope.selectedElements = MassChangeService.getCount();
+                    }
                 }
             }
         };
@@ -91,6 +93,12 @@ angular.module('openITCOCKPIT')
                 $scope.currentPage = page;
                 $scope.load();
             }
+        };
+
+        $scope.linkForCopy = function(){
+            var baseUrl = '/map_module/maps/copy/';
+            return buildUrl(baseUrl);
+
         };
 
         //Fire on page load

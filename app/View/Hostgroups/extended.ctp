@@ -54,6 +54,7 @@ use itnovum\openITCOCKPIT\Core\HumanTime;
         <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
 
             <?php
+            if(!empty($hostgroup)):
             //Wee only need the form for the nice markup -.-
             echo $this->Form->create('extended', [
                 'class' => 'form-horizontal clear',
@@ -91,7 +92,7 @@ use itnovum\openITCOCKPIT\Core\HumanTime;
                                                 class="fa fa-cog"></i> <?php echo __('Edit'); ?></a>
                                 </li>
                             <?php endif; ?>
-                            <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
+                            <?php if ($this->Acl->hasPermission('externalcommands', 'hosts')): ?>
                                 <li class="divider"></li>
                                 <li>
                                     <a href="javascript:void(0);" data-toggle="modal"
@@ -395,6 +396,13 @@ use itnovum\openITCOCKPIT\Core\HumanTime;
                     </div>
                 </div>
             </div>
+            <?php else: ?>
+
+                <div class="alert alert-info alert-block">
+                    <h4 class="alert-heading"><i class="fa fa-exclamation-circle"></i> <?php echo __('No host groups available'); ?></h4>
+                </div>
+
+            <?php endif; ?>
         </article>
     </div>
 </section>

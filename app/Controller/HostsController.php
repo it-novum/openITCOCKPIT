@@ -24,11 +24,18 @@
 //	confirmation.
 
 
+use itnovum\openITCOCKPIT\Core\CustomMacroReplacer;
 use itnovum\openITCOCKPIT\Core\CustomVariableDiffer;
 use \itnovum\openITCOCKPIT\Core\HostControllerRequest;
 use \itnovum\openITCOCKPIT\Core\HostConditions;
+use itnovum\openITCOCKPIT\Core\HostMacroReplacer;
+use itnovum\openITCOCKPIT\Core\HoststatusConditions;
+use itnovum\openITCOCKPIT\Core\HoststatusFields;
+use itnovum\openITCOCKPIT\Core\HosttemplateMerger;
+use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Core\ModuleManager;
+use itnovum\openITCOCKPIT\Core\Views\AcknowledgementHost;
 use itnovum\openITCOCKPIT\Core\Views\ContainerPermissions;
 use itnovum\openITCOCKPIT\Core\Views\HostPerfdataChecker;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
@@ -51,6 +58,8 @@ use itnovum\openITCOCKPIT\Core\HostSharingPermissions;
  * @property Hosttemplate $Hosttemplate
  * @property Hostgroup $Hostgroup
  * @property Timeperiod $Timeperiod
+ * @property DowntimeHost $DowntimeHost
+ * @property BbcodeComponent $Bbcode
  */
 class HostsController extends AppController {
     public $layout = 'Admin.default';
@@ -92,7 +101,8 @@ class HostsController extends AppController {
         'Hostgroup',
         'Timeperiod',
         'Servicetemplategroup',
-        'Service'
+        'Service',
+        MONITORING_DOWNTIME_HOST
     ];
 
     public function index() {
@@ -248,7 +258,9 @@ class HostsController extends AppController {
             return;
         }
 
-        $hoststatus = $this->Hoststatus->byUuid($host['Host']['uuid']);
+        $HoststatusFields = new HoststatusFields($this->DbBackend);
+        $HoststatusFields->wildcard();
+        $hoststatus = $this->Hoststatus->byUuid($host['Host']['uuid'], $HoststatusFields);
         if (empty($hoststatus)) {
             $hoststatus = [
                 'Hoststatus' => []
@@ -1431,9 +1443,9 @@ class HostsController extends AppController {
             }
 
             $tmpRecord = [
-                'Host'       => $Host->toArray(),
+                'Host'         => $Host->toArray(),
                 'Hosttemplate' => $Hosttemplate->toArray(),
-                'Hoststatus' => [
+                'Hoststatus'   => [
                     'isInMonitoring' => false,
                     'currentState'   => -1
                 ]
@@ -1531,9 +1543,10 @@ class HostsController extends AppController {
             }
         }
 
+        //both types must be host, otherwise the serviceUsedBy site with the host id will be displayed wich results in an error
         $usedBy = Hash::merge(
             $this->getUsedByForFrontend($usedBy['host'], 'host'),
-            $this->getUsedByForFrontend($usedBy['service'], 'service')
+            $this->getUsedByForFrontend($usedBy['service'], 'host')
         );
 
         $this->response->statusCode(400);
@@ -2207,205 +2220,276 @@ class HostsController extends AppController {
     }
 
 
-    public function browser($id = null) {
+    public function browser($idOrUuid = null) {
+        $this->layout = 'angularjs';
+
+        $id = $idOrUuid;
+        if (!is_numeric($idOrUuid)) {
+            if (preg_match(UUID::regex(), $idOrUuid)) {
+                $lookupHost = $this->Host->find('first', [
+                    'recursive'  => -1,
+                    'fields'     => [
+                        'Host.id'
+                    ],
+                    'conditions' => [
+                        'Host.uuid' => $idOrUuid
+                    ]
+                ]);
+                if (empty($lookupHost)) {
+                    throw new NotFoundException(__('Invalid host'));
+                }
+                $this->redirect([
+                    'controller' => 'hosts',
+                    'action'     => 'browser',
+                    $lookupHost['Host']['id']
+                ]);
+                return;
+            }
+        }
+        unset($idOrUuid);
+
         if (!$this->Host->exists($id)) {
             throw new NotFoundException(__('Invalid host'));
         }
 
-        $host = $this->Host->find('first', [
+        $rawHost = $this->Host->find('first', [
             'recursive'  => -1,
+            'fields'     => [
+                'Host.id',
+                'Host.uuid',
+                'Host.name',
+                'Host.address',
+                'Host.container_id',
+                'Host.host_type',
+                'Host.host_url',
+            ],
             'contain'    => [
-                'Parenthost' => [
-                    'fields' => [
-                        'uuid',
-                        'name'
-                    ]
-                ]
+                'Container'
             ],
             'conditions' => [
                 'Host.id' => $id
             ]
         ]);
-        $hoststatus = $this->Hoststatus->byUuid($host['Host']['uuid']);
-        $parenthosts = $host['Parenthost'];
-        $parentHostStatus = $this->Hoststatus->byUuid(Hash::extract($host['Parenthost'], '{n}.uuid'), [
-            'conditions' => [
-                'Hoststatus.current_state > 0'
-            ]
-        ]);
-        $browseByUUID = false;
-        $conditionsToFind = ['Host.id' => $id];
-        if (preg_match('/\-/', $id)) {
-            $browseByUUID = true;
-            $conditionsToFind = ['Host.uuid' => $id];
-        }
 
-        $_host = $this->Host->find('first', [
-            'conditions' => $conditionsToFind,
-            'contain'    => [
-                'Contactgroup' => [
-                    'Container',
-                ],
-                'Contact',
-                'Hostcommandargumentvalue',
-                'Container',
-            ],
-        ]);
-
-        if (empty($_host)) {
-            throw new NotFoundException(__('Host not found'));
-        }
-        if ($browseByUUID) {
-            $id = $_host['Host']['id'];
-        }
-
-        // $uses is not the best choise at this point.
-        // due to loadModel() we get the results we need
-        $this->loadModel('Service');
-        $host = $this->Host->prepareForView($id);
-
-
-        $containerIdsToCheck = Hash::extract($_host, 'Container.{n}.HostsToContainer.container_id');
-        $containerIdsToCheck[] = $_host['Host']['container_id'];
+        $containerIdsToCheck = Hash::extract($rawHost, 'Container.{n}.HostsToContainer.container_id');
+        $containerIdsToCheck[] = $rawHost['Host']['container_id'];
 
         //Check if user is permitted to see this object
         if (!$this->allowedByContainerId($containerIdsToCheck, false)) {
             $this->render403();
-
             return;
         }
 
-        //Check if user is permitted to edit this object
-        $allowEdit = false;
-        if ($this->allowedByContainerId($containerIdsToCheck)) {
+        if ($this->hasRootPrivileges) {
             $allowEdit = true;
-        }
-
-        $services = $this->Service->find('all', [
-            'recursive'  => -1,
-            'conditions' => [
-                'Service.host_id' => $id,
-            ],
-            'fields'     => [
-                'Service.id',
-                'Service.uuid',
-                'Service.name',
-                'Servicetemplate.name',
-                'Servicetemplate.active_checks_enabled',
-                'Service.disabled',
-                'Service.active_checks_enabled',
-                'Host.uuid',
-            ],
-            'contain'    => [
-                'Host',
-                'Servicetemplate',
-            ],
-            'order'      => 'Service.name',
-        ]);
-
-
-        $commandarguments = [];
-        if (!empty($_host['Hostcommandargumentvalue'])) {
-            //The service has own command argument values
-            $_commandarguments = $this->Hostcommandargumentvalue->findAllByHostId($_host['Host']['id']);
-            $_commandarguments = Hash::sort($_commandarguments, '{n}.Commandargument.name', 'asc', 'natural');
-            foreach ($_commandarguments as $commandargument) {
-                $commandarguments[$commandargument['Commandargument']['name']] = $commandargument['Hostcommandargumentvalue']['value'];
-            }
         } else {
-            //The service command arguments are from the template
-            $_commandarguments = $this->Hosttemplatecommandargumentvalue->findAllByHosttemplateId($host['Hosttemplate']['id']);
-            $_commandarguments = Hash::sort($_commandarguments, '{n}.Commandargument.name', 'asc', 'natural');
-            foreach ($_commandarguments as $commandargument) {
-                $commandarguments[$commandargument['Commandargument']['name']] = $commandargument['Hosttemplatecommandargumentvalue']['value'];
-            }
+            $ContainerPermissions = new ContainerPermissions($this->MY_RIGHTS_LEVEL, $containerIdsToCheck);
+            $allowEdit = $ContainerPermissions->hasPermission();
         }
 
-        $ContactsInherited = $this->__inheritContactsAndContactgroups($host, $_host);
+        if (!$this->isAngularJsRequest()) {
+            $User = new User($this->Auth);
 
-        $parenthosts = [];
-        if (!empty($host['Parenthost'])) {
-            $parenthosts = $this->Host->find('all', [
-                'recursive'  => -1,
-                'conditions' => [
-                    'Host.id' => $host['Parenthost'],
-                ],
-                'fields'     => [
-                    'Host.id',
-                    'Host.uuid',
-                    'Host.name',
-                ],
-            ]);
-        }
-        $docuExists = $this->Documentation->existsForUuid($host['Host']['uuid']);
-
-        $grafanaDashboard = null;
-        $GrafanaDashboardExists = false;
-        if (in_array('GrafanaModule', CakePlugin::loaded())) {
-            $this->loadModel('GrafanaModule.GrafanaDashboard');
-            $this->loadModel('GrafanaModule.GrafanaConfiguration');
-            $grafanaConfiguration = $this->GrafanaConfiguration->find('first');
-            if (!empty($grafanaConfiguration) && $this->GrafanaDashboard->existsForUuid($host['Host']['uuid'])) {
-                $GrafanaDashboardExists = true;
-                $GrafanaConfiguration = \itnovum\openITCOCKPIT\Grafana\GrafanaApiConfiguration::fromArray($grafanaConfiguration);
-                $GrafanaConfiguration->setHostUuid($host['Host']['uuid']);
-                $this->set('GrafanaConfiguration', $GrafanaConfiguration);
-            }
-        }
-        $this->set('GrafanaDashboardExists', $GrafanaDashboardExists);
-
-
-        $acknowledged = [];
-        if (!empty($hoststatus) && $hoststatus['Hoststatus']['problem_has_been_acknowledged'] > 0) {
-            $acknowledged = $this->AcknowledgedHost->byHostUuid($host['Host']['uuid']);
-        }
-        $ticketSystem = $this->Systemsetting->find('first', [
-            'conditions' => ['key' => 'TICKET_SYSTEM.URL'],
-        ]);
-
-        $servicestatus = $this->Servicestatus->byUuid(Hash::extract($services, '{n}.Service.uuid'));
-        $username = $this->Auth->user('full_name');
-
-        $mainContainer = $this->Tree->treePath($host['Host']['container_id'], ['delimiter' => '/']);
-        //get the already shared containers
-        if (is_array($host['Container']) && !empty($host['Container'])) {
-            foreach ($host['Container'] as $container) {
-                if ($container != $host['Host']['container_id']) {
-                    $sharedContainers[] = $this->Tree->treePath($container, ['delimiter' => '/']);
+            $grafanaDashboard = null;
+            $GrafanaDashboardExists = false;
+            $ModuleManager = new ModuleManager('GrafanaModule');
+            if ($ModuleManager->moduleExists()) {
+                $this->loadModel('GrafanaModule.GrafanaDashboard');
+                $this->loadModel('GrafanaModule.GrafanaConfiguration');
+                $grafanaConfiguration = $this->GrafanaConfiguration->find('first');
+                if (!empty($grafanaConfiguration) && $this->GrafanaDashboard->existsForUuid($rawHost['Host']['uuid'])) {
+                    $GrafanaDashboardExists = true;
+                    $GrafanaConfiguration = \itnovum\openITCOCKPIT\Grafana\GrafanaApiConfiguration::fromArray($grafanaConfiguration);
+                    $GrafanaConfiguration->setHostUuid($rawHost['Host']['uuid']);
+                    $this->set('GrafanaConfiguration', $GrafanaConfiguration);
                 }
             }
-        } else {
-            $sharedContainers = [];
+            $this->set('GrafanaDashboardExists', $GrafanaDashboardExists);
+
+            $this->set('username', $User->getFullName());
+            $this->set('host', $rawHost);
+            $this->set('allowEdit', $allowEdit);
+            $this->set('docuExists', $this->Documentation->existsForUuid($rawHost['Host']['uuid']));
+            $this->set('QueryHandler', new QueryHandler($this->Systemsetting->getQueryHandlerPath()));
+            //Only ship template
+            return;
         }
 
+        $hostQuery = $this->Host->getQueryForBrowser($id);
+        $host = $this->Host->find('first', $hostQuery);
 
-        $this->set(compact([
-                'host',
-                'hoststatus',
-                'servicestatus',
-                'services',
-                'username',
-                'commandarguments',
-                'acknowledged',
-                'docuExists',
-                'ContactsInherited',
-                'parenthosts',
-                'parentHostStatus',
-                'allowEdit',
-                'ticketSystem',
-                'mainContainer',
-                'sharedContainers',
-                'grafanaDashboard'
-            ])
+
+        $hosttemplateQuery = $this->Hosttemplate->getQueryForBrowser($host['Host']['hosttemplate_id']);
+        $hosttemplate = $this->Hosttemplate->find('first', $hosttemplateQuery);
+
+
+        $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
+        $HosttemplateMerger = new HosttemplateMerger($host, $hosttemplate);
+        $mergedHost = [
+            'Host'                        => $HosttemplateMerger->mergeHostWithTemplate(),
+            'CheckPeriod'                 => $HosttemplateMerger->mergeCheckPeriod(),
+            'NotifyPeriod'                => $HosttemplateMerger->mergeNotifyPeriod(),
+            'CheckCommand'                => $HosttemplateMerger->mergeCheckCommand(),
+            'Customvariable'              => $HosttemplateMerger->mergeCustomvariables(),
+            'Hostcommandargumentvalue'    => $HosttemplateMerger->mergeCommandargumentsForReplace(),
+            'Contactgroup'                => $HosttemplateMerger->mergeContactgroups(),
+            'Contact'                     => $HosttemplateMerger->mergeContacts(),
+            'areContactsFromHost'         => $HosttemplateMerger->areContactsFromHost(),
+            'areContactsFromHosttemplate' => $HosttemplateMerger->areContactsFromHosttemplate(),
+        ];
+
+        $mergedHost['Host']['allowEdit'] = $allowEdit;
+        $mergedHost['Host']['satelliteId'] = (int)$mergedHost['Host']['satellite_id'];
+        $mergedHost['Host']['is_satellite_host'] = $mergedHost['Host']['satelliteId'] !== 0;
+        $mergedHost['checkIntervalHuman'] = $UserTime->secondsInHumanShort($mergedHost['Host']['check_interval']);
+        $mergedHost['retryIntervalHuman'] = $UserTime->secondsInHumanShort($mergedHost['Host']['retry_interval']);
+        $mergedHost['notificationIntervalHuman'] = $UserTime->secondsInHumanShort($mergedHost['Host']['notification_interval']);
+
+
+        // Replace $HOSTNAME$
+        $HostMacroReplacerCommandLine = new HostMacroReplacer($host);
+        $hostCommandLine = $HostMacroReplacerCommandLine->replaceBasicMacros($mergedHost['CheckCommand']['command_line']);
+
+        // Replace $_HOSTFOOBAR$
+        $HostCustomMacroReplacerCommandLine = new CustomMacroReplacer($mergedHost['Customvariable'], OBJECT_HOST);
+        $hostCommandLine = $HostCustomMacroReplacerCommandLine->replaceAllMacros($hostCommandLine);
+
+        // Replace Command args $ARGx$
+        $hostCommandLine = str_replace(
+            array_keys($mergedHost['Hostcommandargumentvalue']),
+            array_values($mergedHost['Hostcommandargumentvalue']),
+            $hostCommandLine
         );
 
-        $this->Frontend->setJson('dateformat', MY_DATEFORMAT);
-        $this->Frontend->setJson('hostUuid', $host['Host']['uuid']);
+        $mergedHost['hostCommandLine'] = $hostCommandLine;
 
-        $this->set('QueryHandler', new QueryHandler($this->Systemsetting->getQueryHandlerPath()));
+        //Check permissions for Contacts
+        $contactsWithContainers = [];
+        $writeContainers = $this->getWriteContainers();
+        foreach ($mergedHost['Contact'] as $key => $contact) {
+            $contactsWithContainers[$contact['id']] = [];
+            foreach ($contact['Container'] as $container) {
+                $contactsWithContainers[$contact['id']][] = $container['id'];
+            }
 
-        $preselectedDowntimetype = $this->Systemsetting->findByKey("FRONTEND.PRESELECTED_DOWNTIME_OPTION");
-        $this->set('preselectedDowntimetype', $preselectedDowntimetype['Systemsetting']['value']);
+            $mergedHost['Contact'][$key]['allowEdit'] = true;
+            if ($this->hasRootPrivileges === false) {
+                $all_contacts[$key]['allowEdit'] = false;
+                if (!empty(array_intersect($contactsWithContainers[$contact['id']], $writeContainers))) {
+                    $all_contacts[$key]['allowEdit'] = true;
+                }
+            }
+        }
+
+        //Check permissions for Contact groups
+        foreach ($mergedHost['Contactgroup'] as $key => $contactgroup) {
+            $mergedHost['Contactgroup'][$key]['allowEdit'] = $this->isWritableContainer($contactgroup['Container']['parent_id']);
+        }
+
+        $HoststatusFields = new HoststatusFields($this->DbBackend);
+        $HoststatusFields->wildcard();
+        $HoststatusConditions = new HoststatusConditions($this->DbBackend);
+        $HoststatusConditions->hostsDownAndUnreachable();
+
+        $hoststatus = $this->Hoststatus->byUuid($host['Host']['uuid'], $HoststatusFields);
+        if (empty($hoststatus)) {
+            //Empty host state for Hoststatus object
+            $hoststatus = [
+                'Hoststatus' => []
+            ];
+        }
+        $Hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus($hoststatus['Hoststatus'], $UserTime);
+        $hoststatus = $Hoststatus->toArrayForBrowser();
+        $hoststatus['longOutputHtml'] = $this->Bbcode->nagiosNl2br($this->Bbcode->asHtml($Hoststatus->getLongOutput(), true));
+
+
+        $parenthosts = $host['Parenthost'];
+        $ParentHoststatusFields = new HoststatusFields($this->DbBackend);
+        $ParentHoststatusFields->currentState()->lastStateChange();
+        $parentHostStatusRaw = $this->Hoststatus->byUuid(
+            Hash::extract($host['Parenthost'], '{n}.uuid'),
+            $ParentHoststatusFields,
+            $HoststatusConditions
+        );
+
+        $parentHostStatus = [];
+        foreach ($parentHostStatusRaw as $uuid => $parentHoststatus) {
+            $ParentHoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus($parentHoststatus['Hoststatus'], $UserTime);
+            $parentHostStatus[$uuid] = $ParentHoststatus->toArrayForBrowser();
+        }
+
+        //Get Containers
+        $mainContainer = $this->Tree->treePath($rawHost['Host']['container_id'], ['delimiter' => '/']);
+        //Add shared containers
+        $sharedContainers = [];
+        foreach ($rawHost['Container'] as $container) {
+            if (isset($container['id']) && $container['id'] != $rawHost['Host']['container_id']) {
+                $sharedContainers[$container['id']] = $this->Tree->treePath($container['id'], ['delimiter' => '/']);
+            }
+        }
+
+        $acknowledgement = [];
+        if ($Hoststatus->isAcknowledged()) {
+            $acknowledgement = $this->AcknowledgedHost->byHostUuid($host['Host']['uuid']);
+            if(!empty($acknowledgement)) {
+                $Acknowledgement = new AcknowledgementHost($acknowledgement['AcknowledgedHost'], $UserTime);
+                $acknowledgement = $Acknowledgement->toArray();
+
+                $ticketSystem = $this->Systemsetting->find('first', [
+                    'conditions' => ['key' => 'TICKET_SYSTEM.URL'],
+                ]);
+
+                $ticketDetails = [];
+                if (!empty($ticketSystem['Systemsetting']['value']) && preg_match('/^(Ticket)_?(\d+);?(\d+)/', $Acknowledgement->getCommentData(), $ticketDetails)) {
+                    $commentDataHtml = $Acknowledgement->getCommentData();
+                    if (isset($ticketDetails[1], $ticketDetails[3], $ticketDetails[2])) {
+                        $commentDataHtml = sprintf(
+                            '<a href="%s%s" target="_blank">%s %s</a>',
+                            $ticketSystem['Systemsetting']['value'],
+                            $ticketDetails[3],
+                            $ticketDetails[1],
+                            $ticketDetails[2]
+                        );
+                    }
+                } else {
+                    $commentDataHtml = $this->Bbcode->asHtml($Acknowledgement->getCommentData(), true);
+                }
+
+                $acknowledgement['commentDataHtml'] = $commentDataHtml;
+            }
+        }
+
+        $downtime = [];
+        if ($Hoststatus->isInDowntime()) {
+            $downtime = $this->DowntimeHost->byHostUuid($host['Host']['uuid']);
+            if(!empty($downtime)) {
+                $Downtime = new \itnovum\openITCOCKPIT\Core\Views\Downtime($downtime['DowntimeHost'], $allowEdit, $UserTime);
+                $downtime = $Downtime->toArray();
+            }
+        }
+
+        $canSubmitExternalCommands = $this->hasPermission('externalcommands', 'hosts');
+
+        $this->set('mergedHost', $mergedHost);
+        $this->set('hoststatus', $hoststatus);
+        $this->set('mainContainer', $mainContainer);
+        $this->set('sharedContainers', $sharedContainers);
+        $this->set('parenthosts', $parenthosts);
+        $this->set('parentHostStatus', $parentHostStatus);
+        $this->set('acknowledgement', $acknowledgement);
+        $this->set('downtime', $downtime);
+        $this->set('canSubmitExternalCommands', $canSubmitExternalCommands);
+        $this->set('_serialize', [
+            'mergedHost',
+            'hoststatus',
+            'mainContainer',
+            'sharedContainers',
+            'parenthosts',
+            'parentHostStatus',
+            'acknowledgement',
+            'downtime',
+            'canSubmitExternalCommands'
+        ]);
     }
 
     /**
@@ -2430,11 +2514,9 @@ class HostsController extends AppController {
             ]
         ]);
         if (!empty($result)) {
-            $hoststatus = $this->Hoststatus->byUuid($result['Host']['uuid'], [
-                'fields' => [
-                    'Hoststatus.long_output'
-                ]
-            ]);
+            $Hoststatusfields = new HoststatusFields($this->DbBackend);
+            $Hoststatusfields->longOutput();
+            $hoststatus = $this->Hoststatus->byUuid($result['Host']['uuid'], $Hoststatusfields);
             if (!empty($hoststatus)) {
                 if ($parseBbcode === true) {
                     if ($nl2br === true) {
@@ -2905,9 +2987,10 @@ class HostsController extends AppController {
     }
 
     public function ping() {
-        $this->allowOnlyAjaxRequests();
+        //$this->allowOnlyAjaxRequests();
         $output = [];
-        exec('ping ' . escapeshellarg($this->getNamedParameter('address', '')) . ' -c 4 -W 5', $output);
+        $address = $this->request->query('address');
+        exec('ping ' . escapeshellarg($address) . ' -c 4 -W 5', $output);
 
         $this->set('output', $output);
         $this->set('_serialize', ['output']);
@@ -2996,8 +3079,13 @@ class HostsController extends AppController {
         $this->set('_serialize', ['hosttemplates', 'hostgroups', 'parenthosts', 'timeperiods', 'checkperiods', 'contacts', 'contactgroups']);
     }
 
-    //Acl
+    //Only for ACLs
     public function checkcommand() {
+        return null;
+    }
+
+    //Only for ACLs
+    public function externalcommands() {
         return null;
     }
 
@@ -3145,7 +3233,10 @@ class HostsController extends AppController {
         $this->set('_serialize', ['hosts']);
     }
 
-    public function loadHostsByString() {
+    /**
+     * @param bool $onlyHostsWithWritePermission
+     */
+    public function loadHostsByString($onlyHostsWithWritePermission = false) {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
@@ -3157,6 +3248,16 @@ class HostsController extends AppController {
 
         $HostCondition = new HostConditions($HostFilter->ajaxFilter());
         $HostCondition->setContainerIds($this->MY_RIGHTS);
+        if ($onlyHostsWithWritePermission) {
+            $writeContainers = [];
+            foreach ($this->MY_RIGHTS_LEVEL as $containerId => $rightLevel) {
+                $rightLevel = (int)$rightLevel;
+                if ($rightLevel === WRITE_RIGHT) {
+                    $writeContainers[$containerId] = $rightLevel;
+                }
+            }
+            $HostCondition->setContainerIds(array_keys($writeContainers));
+        }
 
         $hosts = $this->Host->makeItJavaScriptAble(
             $this->Host->getHostsForAngular($HostCondition, $selected)
@@ -3206,7 +3307,7 @@ class HostsController extends AppController {
             'conditions' => [
                 'Host.id' => $id
             ],
-            'contain' => [
+            'contain'    => [
                 'Parenthost'
             ]
         ]);

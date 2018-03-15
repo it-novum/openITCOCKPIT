@@ -65,6 +65,14 @@
                     </div>
                     <span class="widget-icon hidden-mobile"> <i class="fa fa-cogs"></i> </span>
                     <h2 class="hidden-mobile"><?php echo __('Service Groups'); ?></h2>
+                    <?php if ($this->Acl->hasPermission('extended')): ?>
+                        <ul class="nav nav-tabs pull-right" id="widget-tab-1">
+                            <li>
+                                <a href="/servicegroups/extended"><i class="fa fa-plus-square"></i>
+                                    <span class="hidden-mobile hidden-tablet"><?php echo __('Extended overview'); ?></span></a>
+                            </li>
+                        </ul>
+                    <?php endif; ?>
                 </header>
                 <div>
                     <div class="widget-body no-padding">
@@ -119,12 +127,6 @@
                                         <i class="fa" ng-class="getSortClass('Servicegroup.description')"></i>
                                         <?php echo __('Description'); ?>
                                     </th>
-                                    <th class="no-sort">
-                                        <?php echo __('Assigned services'); ?>
-                                    </th>
-                                    <th class="no-sort">
-                                        <?php echo __('Assigned service templates'); ?>
-                                    </th>
                                     <th class="no-sort text-center">
                                         <i class="fa fa-cog fa-lg"></i>
                                     </th>
@@ -142,41 +144,6 @@
                                     </td>
                                     <td>
                                         {{ servicegroup.Servicegroup.description }}
-                                    </td>
-                                    <td>
-                                        <ul class="list-unstyled">
-                                            <li ng-repeat="service in servicegroup.Service">
-                                                <a href="hosts/edit/{{service.Host.id}}" ng-if="service.Host.allowEdit">
-                                                    {{ service.Host.name }}
-                                                </a>
-                                                <span ng-if="!service.Host.allowEdit">
-                                                    {{ service.Host.name }}
-                                                </span>
-                                                /
-                                                <a href="services/edit/{{service.id}}" ng-if="service.allowEdit">
-                                                    {{ (service.name) ? service.name : service.Servicetemplate.name }}
-                                                </a>
-                                                <span ng-if="!service.allowEdit">
-                                                    {{ (service.name) ? service.name : service.Servicetemplate.name }}
-                                                </span>
-                                            </li>
-                                        </ul>
-                                    </td>
-                                    <td>
-                                        <ul class="list-unstyled">
-                                            <ul class="list-unstyled">
-                                                <li ng-repeat="servicetemplate in servicegroup.Servicetemplate">
-                                                    <a href="servicetemplates/edit/{{servicetemplate.id}}"
-                                                       ng-if="servicetemplate.allowEdit">
-                                                        {{ servicetemplate.name }}
-                                                    </a>
-
-                                                    <span ng-if="!servicetemplate.allowEdit">
-                                                        {{ servicetemplate.name }}
-                                                    </span>
-                                                </li>
-                                            </ul>
-                                        </ul>
                                     </td>
                                     <td class="text-center">
                                         <a href="/servicegroups/edit/{{servicegroup.Servicegroup.id}}"

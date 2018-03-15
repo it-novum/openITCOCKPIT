@@ -95,7 +95,7 @@ class NotificationService extends NagiosModuleAppModel {
 
                 [
                     'table' => 'services',
-                    'type' => 'LEFT OUTER',
+                    'type' => 'INNER',
                     'alias' => 'Service',
                     'conditions' => 'Objects.name2 = Service.uuid',
                 ],
@@ -162,7 +162,8 @@ class NotificationService extends NagiosModuleAppModel {
             'conditions' => [
                 'NotificationService.start_time >' => date('Y-m-d H:i:s', $ServiceNotificationConditions->getFrom()),
                 'NotificationService.start_time <' => date('Y-m-d H:i:s', $ServiceNotificationConditions->getTo()),
-                'NotificationService.notification_type' => 1
+                'NotificationService.notification_type' => 1,
+                'NotificationService.contacts_notified > 0'
             ],
 
             'group' => [

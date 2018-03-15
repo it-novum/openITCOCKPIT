@@ -69,6 +69,27 @@
                         </div>
                     </div>
 
+                    <div class="form-group">
+                        <label for="DowntimeIsRecurring" class="col col-md-2 control-label">
+                            <?php echo __('Recursive container lookup'); ?>
+                        </label>
+                        <span class="onoffswitch margin-left-15">
+                            <input class="onoffswitch-checkbox"
+                                   value="1"
+                                   ng-model="Downtime.is_inherit"
+                                   id="DowntimeIsInherit"
+                                   type="checkbox">
+                            <label for="DowntimeIsInherit" class="onoffswitch-label">
+                                <span data-swchoff-text="Off" data-swchon-text="On" class="onoffswitch-inner"></span>
+                                <span class="onoffswitch-switch"></span>
+                            </label>
+                        </span>
+
+                        <div class="col col-md-offset-2 col-md-10">
+                            <span class="help-block"><?php echo __('Will also create a downtime for all children containers'); ?></span>
+                        </div>
+                    </div>
+
                     <div class="form-group required" ng-class="{'has-error': errors.downtimetype_id}">
                         <label class="col col-md-2 control-label">
                             <?php echo __('Maintenance period for'); ?>
@@ -98,23 +119,6 @@
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
                         </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="DowntimeIsRecurring" class="col col-md-2 control-label">
-                            <?php echo __('Inherit downtime'); ?>
-                        </label>
-                        <span class="onoffswitch margin-left-15">
-                            <input class="onoffswitch-checkbox"
-                                   value="1"
-                                   ng-model="Downtime.is_inherit"
-                                   id="DowntimeIsInherit"
-                                   type="checkbox">
-                            <label for="DowntimeIsInherit" class="onoffswitch-label">
-                                <span data-swchoff-text="Off" data-swchon-text="On" class="onoffswitch-inner"></span>
-                                <span class="onoffswitch-switch"></span>
-                            </label>
-                        </span>
                     </div>
 
                     <div class="form-group">

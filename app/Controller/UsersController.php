@@ -467,26 +467,26 @@ class UsersController extends AppController
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
+        $containers = [ROOT_CONTAINER];
 
         $containerId = $this->request->query('containerId');
-
+        if(in_array($containerId, $containers, true)){
+            $containers[] = $containerId;
+        }
         $users = $this->User->find('list', [
             'recursive' => -1,
             'joins'      => [
                 [
                     'table'      => 'users_to_containers',
-                    'type'       => 'LEFT',
+                    'type'       => 'INNER',
                     'alias'      => 'UsersToContainer',
                     'conditions' => 'UsersToContainer.user_id = User.id',
                 ],
             ],
             'conditions' => [
-                'UsersToContainer.container_id' => [
-                    ROOT_CONTAINER, $containerId
-                ]
+                'UsersToContainer.container_id' => $containers
             ]
         ]);
-
         $users = $this->User->makeItJavaScriptAble(
             $users
         );

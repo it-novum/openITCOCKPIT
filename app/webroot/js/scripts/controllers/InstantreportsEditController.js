@@ -57,12 +57,11 @@ angular.module('openITCOCKPIT')
                     selectedHosts.push(parseInt(instantreport.Host[key].id, 10));
                 }
                 for (key in instantreport.Service) {
-                    selectedServices.push(parseInt(instantreport.Service[key].id, 10));
+                    selectedServices.push(instantreport.Service[key].id);
                 }
                 for (key in instantreport.User) {
                     selectedUsers.push(parseInt(instantreport.User[key].id, 10));
                 }
-
                 $scope.post.Instantreport.Hostgroup = selectedHostgroups;
                 $scope.post.Instantreport.Servicegroup = selectedServicegroups;
                 $scope.post.Instantreport.Host = selectedHosts;
@@ -71,7 +70,7 @@ angular.module('openITCOCKPIT')
                 $scope.post.Instantreport.container_id = parseInt(instantreport.Instantreport.container_id, 10);
                 $scope.post.Instantreport.name = instantreport.Instantreport.name;
                 $scope.post.Instantreport.type = instantreport.Instantreport.type;
-                $scope.post.Instantreport.timeperiod_id = instantreport.Instantreport.timeperiod_id;
+                $scope.post.Instantreport.timeperiod_id = parseInt(instantreport.Instantreport.timeperiod_id, 10);
                 $scope.post.Instantreport.reflection = instantreport.Instantreport.reflection;
                 $scope.post.Instantreport.summary = parseInt(instantreport.Instantreport.summary, 10) === 1;
                 $scope.post.Instantreport.downtimes = parseInt(instantreport.Instantreport.downtimes, 10) === 1;
@@ -116,7 +115,8 @@ angular.module('openITCOCKPIT')
                 $http.get("/hostgroups/loadHosgroupsByContainerId.json", {
                     params: {
                         'angular': true,
-                        'containerId': $scope.post.Instantreport.container_id
+                        'containerId': $scope.post.Instantreport.container_id,
+                        'selected[]': $scope.post.Instantreport.Hostgroup
                     }
                 }).then(function (result) {
                     $scope.hostgroups = result.data.hostgroups;
@@ -147,7 +147,8 @@ angular.module('openITCOCKPIT')
                 $http.get("/servicegroups/loadServicegroupsByContainerId.json", {
                     params: {
                         'angular': true,
-                        'containerId': $scope.post.Instantreport.container_id
+                        'containerId': $scope.post.Instantreport.container_id,
+                        'selected[]': $scope.post.Instantreport.Servicegroup
                     }
                 }).then(function (result) {
                     $scope.servicegroups = result.data.servicegroups;
@@ -176,8 +177,7 @@ angular.module('openITCOCKPIT')
             $http.get("/users/loadUsersByContainerId.json", {
                 params: {
                     'angular': true,
-                    'containerId': $scope.post.Instantreport.container_id,
-                    'selected[]': $scope.post.Instantreport.User
+                    'containerId': $scope.post.Instantreport.container_id
                 }
             }).then(function(result){
                 $scope.users = result.data.users;
