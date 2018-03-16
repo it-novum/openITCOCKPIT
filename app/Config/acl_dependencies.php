@@ -346,7 +346,6 @@ $config = [
                 'Hostgroups'            => ['index', 'extended'],
                 'Hosts'                 => ['index', 'notMonitored', 'disabled', 'browser'],
                 'Hosttemplates'         => ['index', 'usedBy'],
-                'Instantreports'        => ['index'],
                 'Locations'             => ['index'],
                 'Logentries'            => ['index'],
                 'Login'                 => ['index', 'login', 'onetimetoken', 'logout', 'auth_required', 'lock'],

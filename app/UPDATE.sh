@@ -1,8 +1,9 @@
 #!/bin/bash
 if [[ $1 == "--help" ]]; then
     echo "Supported parameters:"
-    echo "--roles    Restore all default user role permissions"
-    echo "--rights   Reset file permissions"
+    echo "--roles          Restore all default user role permissions"
+    echo "--roles-admin    Restore all default user role permissions for Administrator role"
+    echo "--rights         Reset file permissions"
 
     exit 0
 fi
@@ -113,6 +114,10 @@ for i in "$@"; do
     case $i in
         --roles)
             oitc roles
+        ;;
+
+        --roles-admin)
+            oitc roles --admin
         ;;
 
         --rights)
