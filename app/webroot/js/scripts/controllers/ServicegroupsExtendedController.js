@@ -1,10 +1,6 @@
 angular.module('openITCOCKPIT')
-    .controller('ServicegroupsExtendedController', function($scope, $http,  SortService, QueryStringService){
+    .controller('ServicegroupsExtendedController', function($scope, $http,  QueryStringService){
 
-        SortService.setSort('Container.name');
-        SortService.setDirection('asc');
-
-        $scope.currentPage = 1;
         $scope.init = true;
         $scope.servicegroupsStateFilter = {};
 
@@ -12,14 +8,21 @@ angular.module('openITCOCKPIT')
         $scope.deactivateUrl = '/services/deactivate/';
         $scope.activateUrl = '/services/enable/';
 
+        $scope.post = {
+            Servicegroup: {
+                id: null
+            }
+        };
+
         /*** Filter Settings ***/
         var defaultFilter = function(){
             $scope.filter = {
-                Servicegroup: {
-                    description: QueryStringService.getValue('filter[Servicegroup.description]', '')
+                Service: {
+                    name: QueryStringService.getValue('filter[Service.servicename]', ''),
+                    keywords: ''
                 },
-                Container: {
-                    name: QueryStringService.getValue('filter[Container.name]', ''),
+                Host: {
+                    name: QueryStringService.getValue('filter[Host.name]', '')
                 }
             };
         };
@@ -29,39 +32,30 @@ angular.module('openITCOCKPIT')
         $scope.load = function(){
             $http.get("/servicegroups/extended.json", {
                 params: {
-                    'angular': true,
-                    'sort': SortService.getSort(),
-                    'page': $scope.currentPage,
-                    'direction': SortService.getDirection(),
-                    'filter[Container.name]': $scope.filter.Container.name,
-                    'filter[Servicegroup.description]': $scope.filter.Servicegroup.description
+                    'angular': true
                 }
             }).then(function(result){
-                $scope.servicegroups = result.data.all_servicegroups;
-                angular.forEach($scope.servicegroups, function (value, key) {
-                    $scope.servicegroupsStateFilter[value.Servicegroup.uuid] = {
+                $scope.servicegroups = result.data.servicegroups;
+                $scope.init = false;
+            });
+        };
+
+        $scope.loadServicesWithStatus = function(){
+            if($scope.post.Servicegroup.id) {
+                $http.get("/servicegroups/loadServicegroupWithServicesById/" + $scope.post.Servicegroup.id +".json", {
+                    params: {
+                        'angular': true
+                    }
+                }).then(function (result) {
+                    $scope.servicegroup = result.data.servicegroup;
+                    $scope.servicegroupsStateFilter = {
                         0 : true,
                         1 : true,
                         2 : true,
                         3 : true
                     };
                 });
-                $scope.init = false;
-                $scope.paging = result.data.paging;
-            });
-        };
-
-        $scope.triggerFilter = function(){
-            if($scope.showFilter === true){
-                $scope.showFilter = false;
-            }else{
-                $scope.showFilter = true;
             }
-        };
-
-        $scope.resetFilter = function(){
-            defaultFilter();
-            $scope.load();
 
         };
 
@@ -223,10 +217,17 @@ angular.module('openITCOCKPIT')
         //Fire on page load
         defaultFilter();
         $scope.loadTimezone();
-        SortService.setCallback($scope.load);
 
         $scope.$watch('filter', function(){
             $scope.currentPage = 1;
             $scope.load();
+            $scope.loadServicesWithStatus('');
+        }, true);
+
+        $scope.$watch('post.Servicegroup.id', function(){
+            if($scope.init){
+                return;
+            }
+            $scope.loadServicesWithStatus('');
         }, true);
     });

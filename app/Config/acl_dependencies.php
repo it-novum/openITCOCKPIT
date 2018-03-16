@@ -255,11 +255,12 @@ $config = [
                 'add'   => ['loadElementsByContainerId'],
                 'edit'  => ['loadElementsByContainerId'],
             ],
-            'Servicegroups'         => [
-                'index'  => ['listToPdf', 'view', 'loadServicegroupsByContainerId'],
-                'add'    => ['loadServices', 'mass_add', 'loadServicetemplates', 'loadContainers'],
-                'edit'   => ['loadServices', 'loadServicetemplates'],
-                'delete' => ['mass_delete'],
+            'Servicegroups' => [
+                'index'  =>     ['listToPdf', 'view', 'loadServicegroupsByContainerId'],
+                'add'    =>     ['loadServices', 'mass_add', 'loadServicetemplates', 'loadContainers'],
+                'edit'   =>     ['loadServices', 'loadServicetemplates'],
+                'delete' =>     ['mass_delete'],
+                'extended' =>   ['loadServicegroupWithServicesById']
             ],
             'Services'              => [
                 'deactivate'  => ['mass_deactivate'],
