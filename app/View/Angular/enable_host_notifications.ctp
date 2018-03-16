@@ -27,7 +27,7 @@
                     <div class="col-xs-12 text-center">
                         <div class="well">
                             <span class="hintmark">
-                                <?php echo __('Yes, i want temporarily <strong>enable</strong> notifications.'); ?>
+                                <?php echo __('Yes, I would like to temporarily <strong>enable</strong> notifications.'); ?>
                             </span>
                             <div class="padding-left-10 padding-top-10">
                                 <span class="note hintmark_before">
