@@ -995,4 +995,114 @@ class Mapeditor extends MapModuleAppModel {
 
         return $mapElements;
     }
+
+    public function getHoststatus($uuids, $hoststatusConditions, $servicestatusConditions, $hostFields = [], $serviceFields = []){
+        $this->Hoststatus = ClassRegistry::init('Hoststatus');
+        $this->Servicestatus = ClassRegistry::init('Servicestatus');
+        $hoststatus = $this->Hoststatus->ByUuids($uuids, $hostFields, $hoststatusConditions);
+        $hostdata = $this->getHostInfoByUuids($uuids);
+        $hostIds = Hash::extract($hostdata, '{n}.Host.id');
+
+        $servicedata = $this->getServiceInfoByHostIds($hostIds);
+        $hostServiceUuids = Hash::extract($servicedata, '{n}.Service.uuid');
+        $servicestatus = $this->Servicestatus->ByUuids($hostServiceUuids, $serviceFields, $servicestatusConditions);
+
+        foreach ($servicedata as $key => $service) {
+            $serviceuuid = $service['Service']['uuid'];
+            if (isset($servicestatus[$serviceuuid])) {
+                $servicedata[$key] = array_merge($servicedata[$key], $servicestatus[$serviceuuid]);
+            }
+        }
+
+        foreach ($hostdata as $key => $host) {
+            $hostuuid = $host['Host']['uuid'];
+            $hostid = $host['Host']['id'];
+            if (isset($hoststatus[$hostuuid])) {
+                if ($host['Host']['disabled'] == 0) {
+                    $hostdata[$key] = array_merge($hostdata[$key], $hoststatus[$hostuuid]);
+                    if (isset($hostdata[$key]['Hoststatus'])) {
+                        foreach ($servicedata as $service) {
+                            if ($hostid == $service['Service']['host_id'] && $service['Service']['disabled'] == 0) {
+                                $hostdata[$key]['Hoststatus']['Servicestatus'][] = $service;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return Hash::combine($hostdata, '{n}.Host.uuid', '{n}');
+    }
+
+    public function getServicestatus($uuids, $servicestatusConditions, $serviceFields = []){
+        $this->Servicestatus = ClassRegistry::init('Servicestatus');
+        $servicestatus = $this->Servicestatus->ByUuids($uuids, $serviceFields, $servicestatusConditions);
+        $servicedata = $this->getServiceInfoByUuids($uuids);
+
+        foreach ($servicedata as $key => $service) {
+            $serviceuuid = $service['Service']['uuid'];
+            if (isset($servicestatus[$serviceuuid])) {
+                if ($service['Service']['disabled'] == 0) {
+                    $servicedata[$key] = array_merge($servicedata[$key], $servicestatus[$serviceuuid]);
+                }
+            }
+        }
+        return Hash::combine($servicedata, '{n}.Service.uuid', '{n}');
+    }
+
+    public function getServicegroupstatus($uuids, $servicestatusConditions, $serviceFields = []){
+        $this->Servicestatus = ClassRegistry::init('Servicestatus');
+        $servicegroups = $this->getServicegroupInfoByUuids($uuids);
+        $serviceUuids = Hash::extract($servicegroups, '{n}.Service.{n}.uuid');
+        $servicestatus = $this->Servicestatus->byUuids($serviceUuids, $serviceFields, $servicestatusConditions);
+        if (!empty($servicestatus)) {
+            $servicegroups['Servicestatus'] = $servicestatus;
+        }
+    }
+
+    public function getHostgroupstatus($uuids, $hoststatusConditions, $servicestatusConditions, $hostFields = [], $serviceFields = []){
+        $this->Hoststatus = ClassRegistry::init('Hoststatus');
+        $this->Servicestatus = ClassRegistry::init('Servicestatus');
+
+        $hostgroups = $this->getHostgroupInfoByUuids($uuids);
+
+        $hostids = Hash::extract($hostgroups, '{n}.Host.{n}.id');
+        $hostuuids = Hash::extract($hostgroups, '{n}.Host.{n}.uuid');
+        $hostgroupHostStatus = $this->Hoststatus->byUuids($hostuuids, $hostFields, $hoststatusConditions);
+        $servicedata = $this->getServiceInfoByHostIds($hostids);
+        $serviceUuids = Hash::extract($servicedata, '{n}.Service.uuid');
+        $hostgroupServicestatus = $this->Servicestatus->byUuids($serviceUuids, $serviceFields, $servicestatusConditions);
+
+        //we dont need the Servicedata but the mapping to the host id
+        $servicestatusByHostId = [];
+        foreach ($servicedata as $service) {
+            $service = $service['Service'];
+            $currentServiceUuid = $service['uuid'];
+            $currentHostId = $service['host_id'];
+            foreach ($hostgroupServicestatus as $serviceuuid => $servicestate) {
+                if ($currentServiceUuid == $serviceuuid) {
+                    $servicestatusByHostId[$currentHostId][] = $servicestate['Servicestatus'];
+                    break;
+                }
+            }
+        }
+
+
+        foreach ($hostgroups as $key => $hostgroup) {
+            foreach ($hostgroup['Host'] as $hKey => $host) {
+                if ($host['disabled'] == 0) {
+                    $currentHostId = $host['id'];
+                    $hostgroups[$key]['Host'][$hKey] = array_merge($hostgroups[$key]['Host'][$hKey], $hostgroupHostStatus[$host['uuid']]);
+                    if (!empty($servicestatusByHostId)) {
+                        foreach ($servicedata as $service) {
+                            if ($host['id'] == $service['Service']['host_id'] && $service['Service']['disabled'] == 0) {
+                                $hostgroups[$key]['Host'][$hKey]['Servicestatus'] = $servicestatusByHostId[$currentHostId];
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return $hostgroups;
+    }
 }

@@ -604,13 +604,84 @@ class MapeditorsController extends MapModuleAppController {
         if (!empty($mapIds)) {
             $mapElementUuids = $this->Mapeditor->getMapElementUuids($mapIds);
             debug($mapElementUuids);
+            $mapstatus = [];
+            foreach($mapElementUuids as $type => $uuids){
+                switch($type){
+                    case 'host':
+                        $hostFields = new HoststatusFields($this->DbBackend);
+                        $serviceFields = new ServicestatusFields($this->DbBackend);
 
-            /*foreach ($mapIds as $id) {
-                debug($id);
-                debug($this->Mapeditor->getDeepMapElements($id));
-                $mapstatus[$id] = $this->Mapeditor->getDeepMapElements($id);
-                //$mapstatus[$id] = $this->Mapeditor->mapStatus($id);
-            }*/
+                        $hostFields
+                            ->output()
+                            ->longOutput()
+                            ->perfdata()
+                            ->lastCheck()
+                            ->nextCheck()
+                            ->lastStateChange()
+                            ->problemHasBeenAcknowledged()
+                            ->scheduledDowntimeDepth()
+                            ->isFlapping()
+                            ->currentCheckAttempt()
+                            ->maxCheckAttempts()
+                            ->currentState();
+
+                        $serviceFields
+                            ->problemHasBeenAcknowledged()
+                            ->scheduledDowntimeDepth()
+                            ->isFlapping()
+                            ->perfdata()
+                            ->output()
+                            ->currentState();
+
+                        $mapstatus['host'] = $this->Hoststatus->ByUuids($hostUuids, $hostFields, $hoststatusConditions);
+
+                        debug($this->Mapeditor->getHoststatus($uuids, $hoststatusConditions, $servicestatusConditions, $hostFields, $serviceFields));
+
+                        break;
+                    case 'service':
+                        $serviceFields = new ServicestatusFields($this->DbBackend);
+                        $serviceFields
+                            ->currentState()
+                            ->problemHasBeenAcknowledged()
+                            ->scheduledDowntimeDepth()
+                            ->isFlapping()
+                            ->perfdata()
+                            ->output()
+                            ->longOutput()
+                            ->currentCheckAttempt()
+                            ->maxCheckAttempts()
+                            ->lastCheck()
+                            ->nextCheck()
+                            ->lastStateChange();
+
+                        $this->Mapeditor->getServicestatus($uuids, $servicestatusConditions, $serviceFields);
+
+                        break;
+                    case 'servicegroup':
+                        $serviceFields = new ServicestatusFields($this->DbBackend);
+                        $serviceFields->currentState();
+                        $this->Mapeditor->getServicegroupstatus($uuids, $servicestatusConditions, $serviceFields);
+
+                        break;
+                    case 'hostgroup':
+                        $hostFields = new HoststatusFields($this->DbBackend);
+                        $serviceFields = new ServicestatusFields($this->DbBackend);
+                        $hostFields
+                            ->currentState()
+                            ->problemHasBeenAcknowledged()
+                            ->scheduledDowntimeDepth()
+                            ->isFlapping();
+
+                        $serviceFields->currentState();
+                        $this->Mapeditor->getHostgroupstatus($uuids, $hoststatusConditions, $servicestatusConditions, $hostFields, $serviceFields);
+
+                        break;
+                    default:
+                        //no appropriate type found -> continue
+                        continue;
+                        break;
+                }
+            }
         }
 
         $this->set(compact([
