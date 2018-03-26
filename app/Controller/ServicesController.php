@@ -1951,6 +1951,10 @@ class ServicesController extends AppController {
             ]
         ]);
 
+        if($rawService['Service']['service_url'] === '' || $rawService['Service']['service_url'] === null){
+            $rawService['Service']['service_url'] = $rawService['Servicetemplate']['service_url'];
+        }
+
         $rawHost = $this->Host->find('first', $this->Host->getQueryForServiceBrowser($rawService['Service']['host_id']));
 
         $PerfdataChecker = new PerfdataChecker(
