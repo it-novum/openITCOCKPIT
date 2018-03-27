@@ -79,4 +79,30 @@ class ServicestatusConditions {
         }
         return $this;
     }
+
+    /**
+     * @param int $value
+     */
+    public function setProblemHasBeenAcknowledged($value){
+        $value = (int)$value;
+        if($this->DbBackend->isNdoUtils()) {
+            $this->conditions['Servicestatus.problem_has_been_acknowledged'] = $value;
+        }
+
+        if($this->DbBackend->isCrateDb()){
+            $this->conditions['Servicestatus.problem_has_been_acknowledged'] = (bool)$value;
+        }
+    }
+
+    /**
+     * @param int $value
+     */
+    public function setScheduledDowntimeDepth($value){
+        $value = (int)$value;
+        if($value === 0){
+            $this->conditions['Servicestatus.scheduled_downtime_depth >'] = $value;
+        }else{
+            $this->conditions['Servicestatus.scheduled_downtime_depth'] = $value;
+        }
+    }
 }
