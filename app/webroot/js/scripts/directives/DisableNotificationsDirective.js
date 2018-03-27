@@ -5,6 +5,12 @@ angular.module('openITCOCKPIT').directive('disableNotifications', function($http
 
         controller: function($scope){
 
+            var callbackName = false;
+
+            $scope.setDisableNotificationsCallback = function(_callback){
+                callbackName = _callback;
+            };
+
             $scope.doDisableNotifications = function(objects){
                 var count = Object.keys(objects).length;
                 var i = 0;
@@ -20,6 +26,12 @@ angular.module('openITCOCKPIT').directive('disableNotifications', function($http
                         object.Service.uuid
                     ]));
                 }
+
+                //Call callback function if given
+                if(callbackName){
+                    $scope[callbackName]();
+                }
+
                 $timeout(function(){
                     $scope.percentage = 0;
                     $('#angularDisableNotificationsModal').modal('hide');
@@ -33,6 +45,11 @@ angular.module('openITCOCKPIT').directive('disableNotifications', function($http
                 if(Object.keys(objects).length === 0){
                     return;
                 }
+
+                if(attr.hasOwnProperty('callback')){
+                    $scope.setDisableNotificationsCallback(attr.callback);
+                }
+
                 $('#angularDisableNotificationsModal').modal('show');
                 $scope.doDisableNotifications(objects);
             };

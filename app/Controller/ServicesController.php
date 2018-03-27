@@ -3236,6 +3236,11 @@ class ServicesController extends AppController {
         return null;
     }
 
+    //Only for ACLs
+    public function externalcommands() {
+        return null;
+    }
+
     public function icon() {
         $this->layout = 'blank';
         //Only ship HTML Template

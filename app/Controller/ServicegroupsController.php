@@ -462,7 +462,9 @@ class ServicegroupsController extends AppController {
                 ->nextCheck()
                 ->output()
                 ->problemHasBeenAcknowledged()
-                ->scheduledDowntimeDepth();
+                ->acknowledgementType()
+                ->scheduledDowntimeDepth()
+                ->notificationsEnabled();
             $hoststatus = $this->Hoststatus->byUuid($hosts, $HoststatusFields);
             $servicestatus = $this->Servicestatus->byUuid($services, $ServicestatusFields);
 
@@ -719,12 +721,14 @@ class ServicegroupsController extends AppController {
         $ServicestatusFields = new ServicestatusFields($this->DbBackend);
         $ServicestatusFields
             ->currentState()
-            ->problemHasBeenAcknowledged()
-            ->scheduledDowntimeDepth()
             ->lastStateChange()
             ->lastCheck()
             ->nextCheck()
-            ->output();
+            ->output()
+            ->problemHasBeenAcknowledged()
+            ->acknowledgementType()
+            ->scheduledDowntimeDepth()
+            ->notificationsEnabled();
         $servicegroupstatus = $this->Servicestatus->byUuids(array_unique($serviceUuids), $ServicestatusFields);
         $hostsArray = [];
         $serviceCount = 0;
@@ -811,16 +815,12 @@ class ServicegroupsController extends AppController {
 
     public function extended() {
         $this->layout = 'angularjs';
+        $User = new User($this->Auth);
+
         if (!$this->isApiRequest()) {
             //Only ship template for AngularJs
-            return;
-        }
-
-        $User = new User($this->Auth);
-        if (!$this->isApiRequest()) {
             $this->set('QueryHandler', new QueryHandler($this->Systemsetting->getQueryHandlerPath()));
             $this->set('username', $User->getFullName());
-            //Only ship HTML template
             return;
         }
 
@@ -848,6 +848,6 @@ class ServicegroupsController extends AppController {
         }
 
         $this->set('servicegroups', $servicegroups);
-        $this->set('_serialize', ['servicegroups']);
+        $this->set('_serialize', ['servicegroups', 'username']);
     }
 }

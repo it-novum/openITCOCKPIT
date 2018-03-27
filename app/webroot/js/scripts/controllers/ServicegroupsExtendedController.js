@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('ServicegroupsExtendedController', function($scope, $http,  QueryStringService){
+    .controller('ServicegroupsExtendedController', function($scope, $http, $interval){
 
         $scope.init = true;
         $scope.servicegroupsStateFilter = {};
@@ -14,20 +14,6 @@ angular.module('openITCOCKPIT')
             }
         };
 
-        /*** Filter Settings ***/
-        var defaultFilter = function(){
-            $scope.filter = {
-                Service: {
-                    name: QueryStringService.getValue('filter[Service.servicename]', ''),
-                    keywords: ''
-                },
-                Host: {
-                    name: QueryStringService.getValue('filter[Host.name]', '')
-                }
-            };
-        };
-        /*** Filter end ***/
-        $scope.showFilter = false;
 
         $scope.load = function(){
             $http.get("/servicegroups/extended.json", {
@@ -207,22 +193,61 @@ angular.module('openITCOCKPIT')
             self.plot = $.plot('#serviceGraphFlot', graph_data, options);
         };
 
-        $scope.changepage = function(page){
-            if(page !== $scope.currentPage){
-                $scope.currentPage = page;
-                $scope.load();
+        $scope.getObjectsForExternalCommand = function(){
+            var objects = {};
+            if($scope.post.Servicegroup.id) {
+                for(var key in $scope.servicegroup.Services){
+                    if($scope.servicegroup.Services[key].Service.allow_edit){
+                        objects[$scope.servicegroup.Services[key].Service.id] = $scope.servicegroup.Services[key];
+                    }
+                }
             }
+            return objects;
+        };
+
+        $scope.getNotOkObjectsForExternalCommand = function(){
+            var objects = {};
+            if($scope.post.Servicegroup.id) {
+                for(var key in $scope.servicegroup.Services){
+                    if($scope.servicegroup.Services[key].Service.allow_edit &&
+                        $scope.servicegroup.Services[key].Servicestatus.currentState > 0){
+                        objects[$scope.servicegroup.Services[key].Service.id] = $scope.servicegroup.Services[key];
+                    }
+                }
+            }
+            return objects;
+        };
+
+        $scope.getObjectsForNotificationsExternalCommand = function(notificationsEnabled){
+            var objects = {};
+            if($scope.post.Servicegroup.id) {
+                for(var key in $scope.servicegroup.Services){
+                    if($scope.servicegroup.Services[key].Service.allow_edit &&
+                        $scope.servicegroup.Services[key].Servicestatus.notifications_enabled === notificationsEnabled){
+
+                        objects[$scope.servicegroup.Services[key].Service.id] = $scope.servicegroup.Services[key];
+                    }
+                }
+            }
+            return objects;
+        };
+
+        $scope.showFlashMsg = function(){
+            $scope.showFlashSuccess = true;
+            $scope.autoRefreshCounter = 5;
+            var interval = $interval(function(){
+                $scope.autoRefreshCounter--;
+                if($scope.autoRefreshCounter === 0){
+                    $scope.loadServicesWithStatus('');
+                    $interval.cancel(interval);
+                    $scope.showFlashSuccess = false;
+                }
+            }, 1000);
         };
 
         //Fire on page load
-        defaultFilter();
         $scope.loadTimezone();
-
-        $scope.$watch('filter', function(){
-            $scope.currentPage = 1;
-            $scope.load();
-            $scope.loadServicesWithStatus('');
-        }, true);
+        $scope.load();
 
         $scope.$watch('post.Servicegroup.id', function(){
             if($scope.init){

@@ -23,18 +23,13 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-
-use itnovum\openITCOCKPIT\Core\Servicestatus;
-use itnovum\openITCOCKPIT\Core\HumanTime;
-
 ?>
 <div id="error_msg"></div>
-<div class="alert alert-success alert-block" id="flashSuccess" style="display:none;">
+<div class="alert alert-success alert-block" ng-show="showFlashSuccess">
     <a href="#" data-dismiss="alert" class="close">×</a>
     <h4 class="alert-heading"><i class="fa fa-check-circle-o"></i> <?php echo __('Command sent successfully'); ?></h4>
-    <?php echo __('Page refresh in'); ?> <span id="autoRefreshCounter"></span> <?php echo __('seconds...'); ?>
+    <?php echo __('Data refresh in'); ?> {{ autoRefreshCounter }} <?php echo __('seconds...'); ?>
 </div>
-
 <div class="row">
     <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
         <h1 class="page-title txt-color-blueDark">
@@ -46,20 +41,90 @@ use itnovum\openITCOCKPIT\Core\HumanTime;
         </h1>
     </div>
 </div>
-<div class="col col-xs-12 padding-20">
-    <select
-            ng-if="servicegroups.length > 0"
-            ng-init="post.Servicegroup.id = servicegroups[0].Servicegroup.id"
-            class="form-control"
-            chosen="servicegroups"
-            ng-options="servicegroup.Servicegroup.id as servicegroup.Container.name for servicegroup in servicegroups"
-            ng-model="post.Servicegroup.id">
-    </select>
+<div class="row padding-bottom-10">
+    <div class="col col-xs-11">
+        <select
+                ng-if="servicegroups.length > 0"
+                ng-init="post.Servicegroup.id = servicegroups[0].Servicegroup.id"
+                class="form-control"
+                chosen="servicegroups"
+                ng-options="servicegroup.Servicegroup.id as servicegroup.Container.name for servicegroup in servicegroups"
+                ng-model="post.Servicegroup.id">
+        </select>
+    </div>
+    <div class="col col-xs-1">
+        <div class="btn-group">
+            <?php if ($this->Acl->hasPermission('edit')): ?>
+                <a href="/servicegroups/edit/{{post.Servicegroup.id}}"
+                   class="btn btn-default btn-md">&nbsp;<i class="fa fa-md fa-cog"></i>
+                </a>
+            <?php else: ?>
+                <a href="javascript:void(0);" class="btn btn-default btn-md">&nbsp;<i class="fa fa-cog"></i>&nbsp;
+                </a>
+            <?php endif; ?>
+            <a href="javascript:void(0);" data-toggle="dropdown"
+               class="btn btn-default btn-md dropdown-toggle" ng-if="servicegroup.Services.length > 0">
+                <span class="caret"></span>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-right" ng-if="servicegroup.Services.length > 0">
+                <?php if ($this->Acl->hasPermission('edit')): ?>
+                    <li>
+                        <a href="/servicegroups/edit/{{post.Servicegroup.id}}">
+                            <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
+                        </a>
+                    </li>
+                <?php endif; ?>
+                <?php if ($this->Acl->hasPermission('externalcommands', 'services')): ?>
+                    <li class="divider"></li>
+                    <li>
+                        <a href="javascript:void(0);" data-toggle="modal"
+                            data-target="#nag_command_reschedule"
+                            ng-click="reschedule(getObjectsForExternalCommand())">
+                            <i class="fa fa-refresh"></i> <?php echo __('Reset check time'); ?>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0);" data-toggle="modal"
+                           data-target="#nag_command_schedule_downtime"
+                           ng-click="serviceDowntime(getObjectsForExternalCommand())">
+                            <i class="fa fa-clock-o"></i> <?php echo __('Set planned maintenance times'); ?>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0);" data-toggle="modal"
+                           data-target="#nag_command_ack_state"
+                           ng-click="acknowledgeService(getNotOkObjectsForExternalCommand())">
+                            <i class="fa fa-user"></i> <?php echo __('Acknowledge service status'); ?>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0);" data-toggle="modal"
+                           data-target="#nag_command_disable_notifications"
+                           ng-click="disableNotifications(getObjectsForExternalCommand())">
+                            <i class="fa fa-envelope-o"></i> <?php echo __('Disable notification'); ?>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0);" data-toggle="modal"
+                           data-target="#nag_command_enable_notifications"
+                           ng-click="enableNotifications(getObjectsForExternalCommand())">
+                            <i class="fa fa-envelope"></i> <?php echo __('Enable notifications'); ?>
+                        </a>
+                    </li>
+                <?php endif; ?>
+            </ul>
+        </div>
+    </div>
 </div>
 
 <massdelete></massdelete>
 <massdeactivate></massdeactivate>
 <massactivate></massactivate>
+<reschedule-service callback="showFlashMsg"></reschedule-service>
+<disable-notifications callback="showFlashMsg"></disable-notifications>
+<enable-notifications callback="showFlashMsg"></enable-notifications>
+<acknowledge-service author="<?php echo h($username); ?>" callback="showFlashMsg"></acknowledge-service>
+<service-downtime author="<?php echo h($username); ?>"></service-downtime>
 
 <section id="widget-grid" class="">
     <div class="row">
@@ -68,7 +133,7 @@ use itnovum\openITCOCKPIT\Core\HumanTime;
                 <header>
                     <div class="widget-toolbar" role="menu">
 
-                        <button type="button" class="btn btn-xs btn-default" ng-click="load()">
+                        <button type="button" class="btn btn-xs btn-default" ng-click="loadServicesWithStatus()">
                             <i class="fa fa-refresh"></i>
                             <?php echo __('Refresh'); ?>
                         </button>
@@ -99,7 +164,7 @@ use itnovum\openITCOCKPIT\Core\HumanTime;
                         </div>
                     <?php endif; ?>
                 </header>
-                <div class="mobile_table">
+                <div>
                     <table class="table table-striped table-hover table-bordered smart-form">
                         <thead>
                             <tr ng-if="servicegroup.Services.length > 0">
@@ -124,7 +189,6 @@ use itnovum\openITCOCKPIT\Core\HumanTime;
                                     </div>
                                 </td>
                             </tr>
-                            <tr>
                             <tr>
                                 <th>
                                     <?php echo __('Status'); ?>
@@ -304,7 +368,7 @@ use itnovum\openITCOCKPIT\Core\HumanTime;
                             </tr>
                         </tbody>
                     </table>
-                    <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>
+                    <br />
                 </div>
             </div>
             <div id="serviceGraphContainer" class="popup-graph-container">
