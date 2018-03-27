@@ -41,7 +41,7 @@
         </h1>
     </div>
 </div>
-<div class="row padding-bottom-10">
+<div class="row padding-bottom-10" ng-if="servicegroups.length > 0">
     <div class="col col-xs-11">
         <select
                 ng-if="servicegroups.length > 0"
@@ -126,14 +126,14 @@
 <acknowledge-service author="<?php echo h($username); ?>" callback="showFlashMsg"></acknowledge-service>
 <service-downtime author="<?php echo h($username); ?>"></service-downtime>
 
-<section id="widget-grid" class="">
+<section id="widget-grid">
     <div class="row">
         <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
             <div class="jarviswidget jarviswidget-color-blueDark" id="wid-id-1" data-widget-editbutton="false">
                 <header>
                     <div class="widget-toolbar" role="menu">
 
-                        <button type="button" class="btn btn-xs btn-default" ng-click="loadServicesWithStatus()">
+                        <button type="button" class="btn btn-xs btn-default" ng-click="loadServicesWithStatus()" ng-if="servicegroup">
                             <i class="fa fa-refresh"></i>
                             <?php echo __('Refresh'); ?>
                         </button>
@@ -147,11 +147,10 @@
                             ); ?>
                         <?php endif; ?>
                     </div>
-
-                    <div class="jarviswidget-ctrls" role="menu">
-                    </div>
                     <span class="widget-icon hidden-mobile"> <i class="fa fa-cogs"></i> </span>
-                    <h2 class="hidden-mobile">{{servicegroup.Container.name}}</h2>
+                    <h2 class="hidden-mobile">
+                        {{(servicegroup.Container.name) && servicegroup.Container.name || '<?php echo __('Service Groups (0)'); ?>'}}
+                    </h2>
                     <?php if ($this->Acl->hasPermission('extended')): ?>
                         <ul class="nav nav-tabs pull-right" id="widget-tab-1">
                             <li>
@@ -159,13 +158,13 @@
                                     <span class="hidden-mobile hidden-tablet"><?php echo __('Default overview'); ?></span></a>
                             </li>
                         </ul>
-                        <div class="widget-toolbar cursor-default hidden-xs hidden-sm hidden-md">
+                        <div class="widget-toolbar cursor-default hidden-xs hidden-sm hidden-md" ng-if="servicegroup">
                             <?php echo __('UUID: '); ?>{{servicegroup.Servicegroup.uuid}}
                         </div>
                     <?php endif; ?>
                 </header>
                 <div>
-                    <table class="table table-striped table-hover table-bordered smart-form">
+                    <table class="table table-striped table-hover table-bordered smart-form" ng-if="servicegroup">
                         <thead>
                             <tr ng-if="servicegroup.Services.length > 0">
                                 <td class="no-padding text-right" colspan="13">
@@ -368,6 +367,9 @@
                             </tr>
                         </tbody>
                     </table>
+                    <div class="col-xs-12 text-center txt-color-red italic padding-10" ng-if!="servicegroup">
+                        <?php echo __('No entries match the selection'); ?>
+                    </div>
                     <br />
                 </div>
             </div>
