@@ -34,6 +34,11 @@ class QueryLogShell extends AppShell {
      */
     private $prettyPrint = false;
 
+    /**
+     * @var bool
+     */
+    private $hidePermissionQueries = false;
+
     public function main() {
         App::uses('SqlFormatter', 'Lib');
 
@@ -43,6 +48,10 @@ class QueryLogShell extends AppShell {
 
         if (array_key_exists('pretty', $this->params)) {
             $this->prettyPrint = true;
+        }
+
+        if (array_key_exists('hide-acl', $this->params)) {
+            $this->hidePermissionQueries = true;
         }
 
         $this->tailf();
@@ -78,9 +87,19 @@ class QueryLogShell extends AppShell {
 
             $string = fgets($pipes[1], 1024);
 
-            if($this->prettyPrint) {
+            if ($this->hidePermissionQueries) {
+                $acoQuery = 'SELECT `Aco`.`id`, `Aco`.`parent_id`';
+                $aroQuery = 'SELECT `Aro`.`id`, `Aro`.`parent_id`';
+                $permissionQuery = 'SELECT `Permission`.`id`, `Permission`.`aro_id`';
+
+                if (strstr($string, $acoQuery) || strstr($string, $aroQuery) || strstr($string, $permissionQuery)) {
+                    continue;
+                }
+            }
+
+            if ($this->prettyPrint) {
                 $this->out(SqlFormatter::format($string), false);
-            }else{
+            } else {
                 $this->out(SqlFormatter::highlight($string), false);
             }
         }
@@ -89,7 +108,8 @@ class QueryLogShell extends AppShell {
     public function getOptionParser() {
         $parser = parent::getOptionParser();
         $parser->addOptions([
-            'pretty' => ['short' => 'p', 'help' => __d('oitc_console', 'Pretty print sql queries')],
+            'pretty'   => ['short' => 'p', 'help' => __d('oitc_console', 'Pretty print sql queries')],
+            'hide-acl' => ['short' => 'a', 'help' => __d('oitc_console', 'Hide ARO and ACO queries')],
             'type'     => ['short' => 't', 'help' => __d('oitc_console', 'Type of the notification host or service')],
             'hostname' => ['help' => __d('oitc_console', 'The uuid of the host')],
         ]);
