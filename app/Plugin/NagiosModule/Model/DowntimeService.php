@@ -173,6 +173,8 @@ class DowntimeService extends NagiosModuleAppModel {
                 'DowntimeService.duration',
                 'DowntimeService.was_started',
                 'DowntimeService.was_cancelled',
+                'Host.uuid',
+                'Service.uuid'
             ],
             'joins'      => [
                 [
@@ -181,6 +183,18 @@ class DowntimeService extends NagiosModuleAppModel {
                     'alias'      => 'Objects',
                     'conditions' => 'Objects.object_id = DowntimeService.object_id AND DowntimeService.downtime_type = 1' //Downtime.downtime_type = 1 Service downtime
                 ],
+                [
+                    'table'      => 'hosts',
+                    'type'       => 'INNER',
+                    'alias'      => 'Host',
+                    'conditions' => 'Host.uuid = DowntimeService.hostname' //Downtime.downtime_type = 1 Service downtime
+                ],
+                [
+                    'table'      => 'services',
+                    'type'       => 'INNER',
+                    'alias'      => 'Service',
+                    'conditions' => 'Service.uuid = Objects.name2',
+                ]
             ],
             'order'      => $Conditions->getOrder(),
             'conditions' => [
@@ -197,9 +211,14 @@ class DowntimeService extends NagiosModuleAppModel {
             ]
         ];
 
+        if ($Conditions->hasHostUuids()) {
+            $query['conditions']['Objects.name1'] = $Conditions->getHostUuids();
+        }
+
         if ($Conditions->hasServiceUuids()) {
             $query['conditions']['Objects.name2'] = $Conditions->getServiceUuids();
         }
+
 
         return $query;
     }
