@@ -272,6 +272,7 @@ class AdministratorsController extends AppController
 
         $RepositoryChecker = new RepositoryChecker();
 
+        $this->set('isDebuggingMode', Configure::read('debug') == 2);
         $this->set(compact([
             'disks',
             'memory',
@@ -309,6 +310,10 @@ class AdministratorsController extends AppController
             $this->setFlash(__('An error occured while sending test mail: %s', $ex->getMessage()), false);
             return $this->redirect(['action' => 'debug']);
         }
+    }
+
+    public function querylog(){
+        $this->layout = 'angularjs';
     }
 }
 

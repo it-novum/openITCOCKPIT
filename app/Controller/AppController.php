@@ -403,37 +403,20 @@ class AppController extends Controller {
             $logfile = fopen($queryLog, 'a+');
 
             foreach ($sqlLogs as $datasource => $log) {
-                fwrite($logfile, sprintf(
-                    '******** DS "%s" %s queries took %s ms ********%s',
-                    $datasource,
-                    $log['count'],
-                    $log['time'],
-                    PHP_EOL
-                ));
+
+                $queriesAsJson = [
+                    'datasource' => $datasource,
+                    'count' => $log['count'],
+                    'time' => $log['time'],
+                    'queries' => []
+                ];
+
                 foreach ($log['log'] as $query) {
-                    fwrite($logfile, sprintf(
-                        '-- [%s] Affected %s, num. Rows %s, %s ms%s',
-                        date('H:i:s'),
-                        $query['affected'],
-                        $query['numRows'],
-                        $query['took'],
-                        PHP_EOL
-                    ));
-                    fwrite($logfile, sprintf(
-                        '%s%s-- Params:%s%s',
-                        $query['query'],
-                        PHP_EOL,
-                        implode(',', $query['params']),
-                        PHP_EOL
-                    ));
+                    $queriesAsJson['queries'][] = $query;
                 }
             }
-            fwrite($logfile, sprintf(
-                '--------------------------------%s%s',
-                PHP_EOL,
-                PHP_EOL
-            ));
 
+            fwrite($logfile, json_encode($queriesAsJson).PHP_EOL);
             fclose($logfile);
         }
 
