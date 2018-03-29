@@ -63,7 +63,8 @@ $config = [
                 'enable_service_flap_detection',
                 'send_service_notification',
                 'enable_service_notifications',
-                'disable_service_notifications'
+                'disable_service_notifications',
+                'getPieChart'
             ],
             'Commands'         => [
                 'sortByCommandType',

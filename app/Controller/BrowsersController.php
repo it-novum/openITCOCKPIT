@@ -161,22 +161,6 @@ class BrowsersController extends AppController {
         ]));
     }
 
-    public function refreshBrowser(){
-        if (!$this->request->is('post')) {
-            throw new MethodNotAllowedException();
-        }
-
-        $currentFlag = $this->Auth->user('recursive_browser');
-        if ($this->request->is('post') || $this->request->is('put')) {
-            $this->User->id = $this->Auth->user('id');
-            /*if($this->User->saveField('recursive_browser',$recursive)){
-                $this->setFlash(__('Recursive flag saved'));
-                return $this->redirect(['action' => 'index']);
-            }
-            $this->setFlash(__('Recursive flag could not be saved'), false);
-            return $this->redirect(['action' => 'index']);*/
-        }
-    }
 
     protected function __getTenants(){
         return $this->Tenant->tenantsByContainerId(

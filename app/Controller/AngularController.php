@@ -23,6 +23,7 @@
 //  confirmation.
 
 use \itnovum\openITCOCKPIT\Core\ValueObjects\User;
+use itnovum\openITCOCKPIT\Core\Views\PieChart;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
 
 /**
@@ -139,12 +140,12 @@ class AngularController extends AppController {
         ];
 
         if ($showstatsinmenu) {
-            if($this->DbBackend->isNdoUtils()){
+            if ($this->DbBackend->isNdoUtils()) {
                 $hoststatusCount = $this->Host->getHoststatusCount($this->MY_RIGHTS);
                 $servicestatusCount = $this->Host->getServicestatusCount($this->MY_RIGHTS);
             }
 
-            if($this->DbBackend->isCrateDb()){
+            if ($this->DbBackend->isCrateDb()) {
                 $hoststatusCount = $this->Hoststatus->getHoststatusCount($this->MY_RIGHTS);
                 $servicestatusCount = $this->Servicestatus->getServicestatusCount($this->MY_RIGHTS);
             }
@@ -368,44 +369,44 @@ class AngularController extends AppController {
         $this->state = $state;
     }
 
-    public function mass_delete_host_downtimes(){
+    public function mass_delete_host_downtimes() {
         return;
     }
 
 
-    public function mass_delete_service_downtimes(){
+    public function mass_delete_service_downtimes() {
         return;
     }
 
-    public function submit_host_result(){
+    public function submit_host_result() {
         return;
     }
 
-    public function disable_host_flap_detection(){
+    public function disable_host_flap_detection() {
         return;
     }
 
-    public function enable_host_flap_detection(){
+    public function enable_host_flap_detection() {
         return;
     }
 
-    public function send_host_notification(){
+    public function send_host_notification() {
         return;
     }
 
-    public function submit_service_result(){
+    public function submit_service_result() {
         return;
     }
 
-    public function disable_service_flap_detection(){
+    public function disable_service_flap_detection() {
         return;
     }
 
-    public function enable_service_flap_detection(){
+    public function enable_service_flap_detection() {
         return;
     }
 
-    public function send_service_notification(){
+    public function send_service_notification() {
         return;
     }
 
@@ -417,5 +418,31 @@ class AngularController extends AppController {
     public function disable_service_notifications() {
         //Only ship HTML template
         return;
+    }
+
+    /**
+     * @param int $up up|ok
+     * @param int $down down|warning
+     * @param int $unreachable unreachable|critical
+     * @param int $unknown unknown
+     * @throws Exception
+     */
+    public function getPieChart($up = 0, $down = 0, $unreachable = 1, $unknown = null) {
+        $PieChart = new PieChart();
+
+        $chartData = [$up, $down, $unreachable];
+        if ($unknown !== null) {
+            $chartData = [$up, $down, $unreachable, $unknown];
+        }
+
+        $PieChart->createPieChart($chartData);
+
+        $image = $PieChart->getImage();
+
+        $this->layout = false;
+        $this->render = false;
+        header('Content-Type: image/png');
+        imagepng($image, null, 0);
+        imagedestroy($image);
     }
 }
