@@ -40,6 +40,7 @@ class AngularController extends AppController {
     public $uses = [
         'Host',
         'Service',
+        'Container',
         MONITORING_HOSTSTATUS,
         MONITORING_SERVICESTATUS
     ];
@@ -141,18 +142,114 @@ class AngularController extends AppController {
 
         if ($showstatsinmenu) {
             if ($this->DbBackend->isNdoUtils()) {
-                $hoststatusCount = $this->Host->getHoststatusCount($this->MY_RIGHTS);
-                $servicestatusCount = $this->Host->getServicestatusCount($this->MY_RIGHTS);
+                $hoststatusCount = $this->Host->getHoststatusCount($this->MY_RIGHTS, false);
+                $servicestatusCount = $this->Host->getServicestatusCount($this->MY_RIGHTS, false);
             }
 
             if ($this->DbBackend->isCrateDb()) {
-                $hoststatusCount = $this->Hoststatus->getHoststatusCount($this->MY_RIGHTS);
-                $servicestatusCount = $this->Servicestatus->getServicestatusCount($this->MY_RIGHTS);
+                $hoststatusCount = $this->Hoststatus->getHoststatusCount($this->MY_RIGHTS, false);
+                $servicestatusCount = $this->Servicestatus->getServicestatusCount($this->MY_RIGHTS, false);
             }
 
         }
         $this->set(compact(['showstatsinmenu', 'hoststatusCount', 'servicestatusCount']));
         $this->set('_serialize', ['showstatsinmenu', 'hoststatusCount', 'servicestatusCount']);
+    }
+
+    public function statuscount() {
+        if (!$this->isApiRequest()) {
+            throw new RuntimeException('Only for API requests');
+        }
+
+        $recursive = false;
+        if($this->request->query('recursive') === 'true'){
+            $recursive = true;
+        }
+
+        $containerIds = $this->request->query('containerIds');
+        if(!is_numeric($containerIds) && !is_array($containerIds)){
+            $containerIds = ROOT_CONTAINER;
+        }
+
+        if(!is_array($containerIds)){
+            $containerIds = [$containerIds];
+        }
+
+        if ($recursive) {
+            //get recursive container ids
+            $containerIdToResolve = $containerIds;
+            $containerIdsResolved = Hash::extract($this->Container->children($containerIdToResolve[0], false, ['Container.id']), '{n}.Container.id');
+            $recursiveContainerIds = [];
+            foreach ($containerIdsResolved as $containerId) {
+                if (in_array($containerId, $this->MY_RIGHTS)) {
+                    $recursiveContainerIds[] = $containerId;
+                }
+            }
+            $containerIds = array_merge($containerIds, $recursiveContainerIds);
+        }
+
+        $hoststatusCount = [
+            '0' => 0,
+            '1' => 0,
+            '2' => 0,
+        ];
+
+        $servicestatusCount = [
+            '0' => 0,
+            '1' => 0,
+            '2' => 0,
+            '3' => 0,
+        ];
+
+
+        if ($this->DbBackend->isNdoUtils()) {
+            $hoststatusCount = $this->Host->getHoststatusCount($containerIds, true);
+            $servicestatusCount = $this->Host->getServicestatusCount($containerIds, true);
+        }
+
+        if ($this->DbBackend->isCrateDb()) {
+            $hoststatusCount = $this->Hoststatus->getHoststatusCount($containerIds, true);
+            $servicestatusCount = $this->Servicestatus->getServicestatusCount($containerIds, true);
+        }
+
+        $hoststatusSum = array_sum($hoststatusCount);
+        $servicestatusSum = array_sum($servicestatusCount);
+
+        $hoststatusCountPercentage = [];
+        $servicestatusCountPercentage = [];
+        foreach($hoststatusCount as $stateId => $count){
+            if($hoststatusSum > 0) {
+                $hoststatusCountPercentage[$stateId] = round($count / $hoststatusSum * 100, 2);
+            }else{
+                $hoststatusCountPercentage[$stateId] = 0;
+            }
+        }
+
+        foreach($servicestatusCount as $stateId => $count){
+            if($servicestatusSum > 0) {
+                $servicestatusCountPercentage[$stateId] = round($count / $servicestatusSum * 100, 2);
+            }else{
+                $servicestatusCountPercentage[$stateId] = 0;
+            }
+        }
+
+
+        $this->set(compact([
+            'hoststatusCount',
+            'servicestatusCount',
+            'hoststatusSum',
+            'servicestatusSum',
+            'hoststatusCountPercentage',
+            'servicestatusCountPercentage'
+        ]));
+        $this->set('_serialize', [
+            'hoststatusCount',
+            'servicestatusCount',
+            'hoststatusSum',
+            'servicestatusSum',
+            'hoststatusCountPercentage',
+            'servicestatusCountPercentage'
+        ]);
     }
 
     public function menu() {
@@ -196,6 +293,12 @@ class AngularController extends AppController {
     }
 
     public function not_found() {
+        $this->layout = 'Admin.default';
+        //Only ship HTML template
+        return;
+    }
+
+    public function forbidden() {
         $this->layout = 'Admin.default';
         //Only ship HTML template
         return;

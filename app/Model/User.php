@@ -361,7 +361,6 @@ class User extends AppModel
             $id = $this->id;
         }
         $Container = ClassRegistry::init('Container');
-        $Tenant = ClassRegistry::init('Tenant');
         $user = $this->findById($id);
         $tenants = [];
         foreach ($user['ContainerUserMembership'] as $_container) {

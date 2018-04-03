@@ -1473,20 +1473,20 @@ class Host extends AppModel {
 
     /**
      * @param array $MY_RIGHTS
+     * @param bool $includeOkState
      * @return array
      */
-    public function getHoststatusCount($MY_RIGHTS){
+    public function getHoststatusCount($MY_RIGHTS, $includeOkState = false){
         $hoststatusCount = [
             '1' => 0,
             '2' => 0,
         ];
 
-        $hoststatusCountResult = $this->find('all', [
+        $query = [
             'conditions' => [
                 'Host.disabled'                  => 0,
                 'HostObject.is_active'           => 1,
-                'HostsToContainers.container_id' => $MY_RIGHTS,
-                'Hoststatus.current_state >'     => 0,
+                'HostsToContainers.container_id' => $MY_RIGHTS
             ],
             'contain'    => [],
             'fields'     => [
@@ -1520,24 +1520,34 @@ class Host extends AppModel {
                     ],
                 ],
             ],
-        ]);
+        ];
+
+        if($includeOkState === false){
+            $query['conditions']['Hoststatus.current_state >'] = 0;
+        }
+
+        $hoststatusCountResult = $this->find('all', $query);
         foreach ($hoststatusCountResult as $hoststatus) {
             $hoststatusCount[$hoststatus['Hoststatus']['current_state']] = (int)$hoststatus[0]['count'];
         }
         return $hoststatusCount;
     }
 
-    public function getServicestatusCount($MY_RIGHTS){
+    /**
+     * @param array $MY_RIGHTS
+     * @param bool $includeOkState
+     * @return array
+     */
+    public function getServicestatusCount($MY_RIGHTS, $includeOkState = false){
         $servicestatusCount = [
             '1' => 0,
             '2' => 0,
             '3' => 0,
         ];
 
-        $servicestatusCountResult = $this->find('all', [
+        $query = [
             'conditions' => [
                 'Service.disabled'               => 0,
-                'Servicestatus.current_state >'  => 0,
                 'ServiceObject.is_active'        => 1,
                 'HostsToContainers.container_id' => $MY_RIGHTS,
 
@@ -1576,7 +1586,13 @@ class Host extends AppModel {
                     'conditions' => 'Servicestatus.service_object_id = ServiceObject.object_id',
                 ],
             ],
-        ]);
+        ];
+
+        if($includeOkState === false){
+            $query['conditions']['Servicestatus.current_state >'] = 0;
+        }
+
+        $servicestatusCountResult = $this->find('all', $query);
         foreach ($servicestatusCountResult as $servicestatus) {
             $servicestatusCount[$servicestatus['Servicestatus']['current_state']] = (int)$servicestatus[0]['count'];
         }
