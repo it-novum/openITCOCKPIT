@@ -432,7 +432,7 @@ use itnovum\openITCOCKPIT\Core\Hoststatus;
                                style="">
                             <thead>
                             <tr>
-                                <th colspan="2" class="no-sort" ng-click="orderBy('Hoststatus.current_state')">
+                                <th colspan="2" class="no-sort width-90" ng-click="orderBy('Hoststatus.current_state')">
                                     <i class="fa" ng-class="getSortClass('Hoststatus.current_state')"></i>
                                     <?php echo __('Hoststatus'); ?>
                                 </th>

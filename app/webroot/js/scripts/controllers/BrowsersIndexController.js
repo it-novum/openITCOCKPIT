@@ -2,7 +2,7 @@ angular.module('openITCOCKPIT')
     .controller('BrowsersIndexController', function($scope, $http, $rootScope, $httpParamSerializer, SortService, MassChangeService, QueryStringService){
         SortService.setSort(QueryStringService.getValue('sort', 'Hoststatus.current_state'));
         SortService.setDirection(QueryStringService.getValue('direction', 'desc'));
-        $scope.containerId = 1; //ROOT_CONTAINER
+        $scope.containerId = parseInt(QueryStringService.getValue('containerId', 1), 10); //Default ROOT_CONTAINER
 
         $scope.containers = [];
         $scope.containerFilter = '';
