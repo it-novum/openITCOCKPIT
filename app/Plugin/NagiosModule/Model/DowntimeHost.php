@@ -139,7 +139,7 @@ class DowntimeHost extends NagiosModuleAppModel {
                     'table'      => 'hosts',
                     'type'       => 'INNER',
                     'alias'      => 'Host',
-                    'conditions' => 'Host.uuid = Objects.name1 AND DowntimeHost.downtime_type = 2' //Downtime.downtime_type = 2 Host downtime
+                    'conditions' => 'Host.uuid = Objects.name1 AND Objects.objecttype_id = 1' // Objects.objecttype_id = 1
                 ],
             ],
             'order'      => $Conditions->getOrder(),

@@ -36,8 +36,6 @@ use itnovum\openITCOCKPIT\Core\StatehistoryServiceConditions;
 class DowntimereportsController extends AppController {
     public $layout = 'Admin.default';
     public $uses = [
-        //MONITORING_OBJECTS,
-        //MONITORING_DOWNTIME,
         'Downtimereport',
         'Host',
         'Service',
@@ -65,7 +63,7 @@ class DowntimereportsController extends AppController {
                 $endDate = $this->request->data('Downtimereport.end_date') . ' 23:59:59';
                 $downtimeReportDetails = [
                     'startDate' => $startDate,
-                    'endDate'   => $endDate,
+                    'endDate' => $endDate,
                 ];
 
                 $startTimeStamp = strtotime($startDate);
@@ -73,7 +71,7 @@ class DowntimereportsController extends AppController {
 
                 $downtimeReportDetails = [
                     'startDate' => $startDate,
-                    'endDate'   => $endDate,
+                    'endDate' => $endDate,
                 ];
                 $timeperiod = $this->Timeperiod->find('first', [
                     'conditions' => [
@@ -87,7 +85,6 @@ class DowntimereportsController extends AppController {
                 $DowntimeHostConditions->setHostUuid($hostsUuids);
                 $query = $this->DowntimeHost->getQueryForReporting($DowntimeHostConditions);
                 $downtimes['Hosts'] = $this->DowntimeHost->find('all', $query);
-
                 if ($this->request->data('Downtimereport.evaluationMethod') == 'DowntimereportService') {
                     $DowntimeServiceConditions = new DowntimeServiceConditions();
 
@@ -116,38 +113,54 @@ class DowntimereportsController extends AppController {
                         )
                     );
 
-                    $downtimeHosts = Hash::combine(
-                        $downtimes['Hosts'],
-                        '{n}.Host.uuid', '{n}.DowntimeHost'
-                    );
-
+                    foreach ($downtimes['Hosts'] as $downtimeHost) {
+                        $downtimeHosts[$downtimeHost['Host']['uuid']][] = $downtimeHost['DowntimeHost'];
+                    }
                     foreach ($hostUuids as $hostUuid) {
-                        $HostConditions = new StatehistoryHostConditions();
-                        $HostConditions->setOrder(['StatehistoryHost.state_time' => 'asc']);
-                        if ($this->request->data('Downtimereport.check_hard_state')) {
-                            $HostConditions->setHardStateTypeAndUpState(true);
-                        }
-                        $HostConditions->setFrom($startTimeStamp);
-                        $HostConditions->setTo($endTimeStamp);
-                        $HostConditions->setHostUuid($hostUuid);
-                        $HostConditions->setUseLimit(false);
+                        $host = $this->Host->find('first', [
+                            'recursive' => -1,
+                            'conditions' => [
+                                'Host.uuid' => $hostUuid,
+                            ],
+                            'fields' => [
+                                'Host.id',
+                                'Host.uuid',
+                                'Host.name',
+                                'Host.description',
+                                'Host.address'
+                            ],
+                            'condition' => [
+                                'Host.uuid' => $hostUuid
+                            ]
+                        ]);
+                        if (!empty($host)) {
+                            $HostConditions = new StatehistoryHostConditions();
+                            $HostConditions->setOrder(['StatehistoryHost.state_time' => 'asc']);
+                            if ($this->request->data('Downtimereport.check_hard_state')) {
+                                $HostConditions->setHardStateTypeAndUpState(true);
+                            }
+                            $HostConditions->setFrom($startTimeStamp);
+                            $HostConditions->setTo($endTimeStamp);
+                            $HostConditions->setHostUuid($hostUuid);
+                            $HostConditions->setUseLimit(false);
 
-                        //Query state history records for hosts
-                        $query = $this->StatehistoryHost->getQuery($HostConditions);
-                        $stateHistoryWithObject = $this->StatehistoryHost->find('all', $query);
+                            //Query state history records for hosts
+                            $query = $this->StatehistoryHost->getQuery($HostConditions);
+                            $stateHistoryWithObject = $this->StatehistoryHost->find('all', $query);
 
-                        if (!empty($stateHistoryWithObject)) {
-                            $host = $this->Host->find('first', [
-                               'recursive' => 1,
-                               'fields' => [
-                                   'Host.id',
-                                   'Host.name',
-                                   'Host.description',
-                                   'Host.address'
-                               ]
-                            ]);
+                            if (empty($stateHistoryWithObject)) {
+                                //Host has no state history record for selected time range
+                                //Get last available state history record for this host
+                                $query = $this->StatehistoryHost->getLastRecord($HostConditions);
+                                $record = $this->StatehistoryHost->find('first', $query);
+                                if (!empty($record)) {
+                                    $record['StatehistoryHost']['state_time'] = $startTimeStamp;
+                                    $StatehistoryHost = new \itnovum\openITCOCKPIT\Core\Views\StatehistoryHost($record['StatehistoryHost']);
+                                    $stateHistoryWithObject = $StatehistoryHost->toArray();
+                                }
+                            }
 
-                            if(!empty($host)){
+                            if (!empty($stateHistoryWithObject)) {
                                 $downtimeReportData['Hosts'][$hostUuid] = $this->Downtimereport->generateDowntimereportData(
                                     $timeSlices,
                                     $stateHistoryWithObject,
@@ -158,10 +171,10 @@ class DowntimereportsController extends AppController {
                                     $downtimeReportData['Hosts'][$hostUuid],
                                     'Host',
                                     [
-                                        'id'          => $host['Host']['id'],
-                                        'name'        => $host['Host']['name'],
+                                        'id' => $host['Host']['id'],
+                                        'name' => $host['Host']['name'],
                                         'description' => $host['Host']['description'],
-                                        'address'     => $host['Host']['address'],
+                                        'address' => $host['Host']['address'],
                                     ]
                                 );
                                 //add host name to downtime array
@@ -173,22 +186,17 @@ class DowntimereportsController extends AppController {
                                         ]
                                     );
                                 }
-                            }
+                                unset($stateHistoryWithObject);
 
-                            unset($stateHistoryWithObject);
-                        } else {
-                            $downtimeReportData['Hosts'][$hostUuid]['HostsNotMonitored'] = $this->Host->find('list', [
-                                'conditions' => [
-                                    'Host.uuid' => $hostUuid,
-                                ],
-                            ]);
+                            }else {
+                                $downtimeReportData['Hosts'][$hostUuid]['HostsNotMonitored'] = $host;
+                                unset($downtimeHosts[$hostUuid]);
+                            }
                         }
                     }
-
-                    $downtimeServices = Hash::combine(
-                        $downtimes['Services'],
-                        '{n}.Service.uuid', '{n}.DowntimeService'
-                    );
+                    foreach ($downtimes['Services'] as $downtimeService) {
+                        $downtimeServices[$downtimeService['Service']['uuid']][] = $downtimeService['DowntimeService'];
+                    }
 
                     $serviceUuids = array_unique(Hash::extract($downtimes['Services'], '{n}.Service.uuid'));
                     unset($downtimes);
@@ -208,37 +216,49 @@ class DowntimereportsController extends AppController {
                         $query = $this->StatehistoryService->getQuery($ServiceConditions);
                         $stateHistoryWithObject = $this->StatehistoryService->find('all', $query);
 
+                        if (empty($stateHistoryWithObject)) {
+                            //Service has no state history record for selected time range
+                            //Get last available state history record for this service
+                            $query = $this->StatehistoryService->getLastRecord($ServiceConditions);
+                            $record = $this->StatehistoryService->find('first', $query);
+                            if (!empty($record)) {
+                                $record['StatehistoryService']['state_time'] = $startTimeStamp;
+                                $StatehistoryService = new \itnovum\openITCOCKPIT\Core\Views\StatehistoryService($record['StatehistoryService']);
+                                $stateHistoryWithObject = $StatehistoryService->toArray();
+                            }
+                        }
+
                         if (!empty($stateHistoryWithObject)) {
                             $service = $this->Service->find('first', [
-                               'recursive' => -1,
-                               'contain' => [
-                                   'Servicetemplate' => [
-                                       'fields' => [
-                                           'Servicetemplate.id',
-                                           'Servicetemplate.name'
-                                       ]
-                                   ],
-                                   'Host' => [
-                                       'fields' => [
-                                           'Host.uuid',
-                                           'Host.name'
-                                       ]
-                                   ]
-                               ],
-                               'fields' => [
-                                   'Service.id',
-                                   'Service.name'
-                               ],
-                               'conditions' => [
-                                   'Service.uuid' => $serviceUuid
-                               ]
+                                'recursive' => -1,
+                                'contain' => [
+                                    'Servicetemplate' => [
+                                        'fields' => [
+                                            'Servicetemplate.id',
+                                            'Servicetemplate.name'
+                                        ]
+                                    ],
+                                    'Host' => [
+                                        'fields' => [
+                                            'Host.uuid',
+                                            'Host.name'
+                                        ]
+                                    ]
+                                ],
+                                'fields' => [
+                                    'Service.id',
+                                    'Service.name'
+                                ],
+                                'conditions' => [
+                                    'Service.uuid' => $serviceUuid
+                                ]
                             ]);
-                            if(!empty($service)){
+                            if (!empty($service)) {
                                 if (array_key_exists($serviceUuid, $downtimeServices)) {
                                     $downtimeServices = Hash::insert($downtimeServices,
                                         $serviceUuid . '.{n}.data',
                                         [
-                                            'host'    => $service['Host']['name'],
+                                            'host' => $service['Host']['name'],
                                             'service' => ($service['Service']['name']) ? $service['Service']['name'] : $service['Servicetemplate']['name'],
                                         ]
                                     );
@@ -249,55 +269,56 @@ class DowntimereportsController extends AppController {
                                     $this->request->data('Downtimereport.check_hard_state'),
                                     false
                                 );
-                                $downtimeReportData['Hosts'][$service['Host']['uuid']]['Services'][$serviceUuid]  = Hash::insert(
+                                $downtimeReportData['Hosts'][$service['Host']['uuid']]['Services'][$serviceUuid] = Hash::insert(
                                     $downtimeReportData['Hosts'][$service['Host']['uuid']]['Services'][$serviceUuid],
                                     'Service',
                                     [
-                                        'id'              => $service['Service']['id'],
-                                        'name'            => ($service['Service']['name']) ? $service['Service']['name'] : $service['Servicetemplate']['name'],
+                                        'id' => $service['Service']['id'],
+                                        'name' => ($service['Service']['name']) ? $service['Service']['name'] : $service['Servicetemplate']['name'],
                                         'Servicetemplate' => [
-                                            'id'   => $service['Servicetemplate']['id'],
+                                            'id' => $service['Servicetemplate']['id'],
                                             'name' => $service['Servicetemplate']['name'],
                                         ],
                                     ]
                                 );
                             }
                             unset($stateHistoryWithObject);
+                        } else {
+                            unset($downtimeServices[$serviceUuid]);
                         }
                     }
-
                     if ($this->request->data('Downtimereport.report_format') == 'pdf') {
                         $this->Session->write('downtimeReportData', $downtimeReportData);
+                        $allHostsWithOutages = Hash::sort(Hash::extract($downtimeReportData['Hosts'], '{s}[0<'.$downtimeReportDetails['totalTime'].']'), '{n}.Host.0', 'ASC');
+
                         $this->Session->write('downtimeReportDetails', $downtimeReportDetails);
                         $this->redirect([
                             'action' => 'createPdfReport',
-                            'ext'    => 'pdf',
+                            'ext' => 'pdf',
                         ]);
                     } else {
                         //remove uuid as key from downtime array
-                        debug($downtimeHosts);
-                        $filteredHostsDowntimes = Hash::extract($downtimeHosts, '{s}');
+                        $filteredHostsDowntimes = Hash::extract($downtimeHosts, '{s}.{n}');
                         $filteredServicesDowntimes = Hash::extract($downtimeServices, '{s}.{n}');
-                        debug($filteredHostsDowntimes);
                         unset($downtimeHosts, $downtimeServices);
                         $this->Frontend->setJson('downtimeReportDetails', [
                             'startDate' => CakeTime::format(
                                 $downtimeReportDetails['startDate'], '%Y, %m, %d', false, $this->Auth->user('timezone')
                             ),
-                            'endDate'   => CakeTime::format(
+                            'endDate' => CakeTime::format(
                                 $downtimeReportDetails['endDate'], '%Y, %m, %d', false, $this->Auth->user('timezone')
                             ),
                         ]);
                         $this->Frontend->setJson('hostDowntimes', array_map(
                                 function ($filteredHostsDowntimes) {
                                     return [
-                                        'author_name'          => $filteredHostsDowntimes['author_name'],
-                                        'comment_data'         => $filteredHostsDowntimes['comment_data'],
-                                        'host'                 => $filteredHostsDowntimes['data']['host'],
+                                        'author_name' => $filteredHostsDowntimes['author_name'],
+                                        'comment_data' => $filteredHostsDowntimes['comment_data'],
+                                        'host' => $filteredHostsDowntimes['data']['host'],
                                         'scheduled_start_time' => CakeTime::format(
                                             $filteredHostsDowntimes['scheduled_start_time'], '%Y %m %d %H:%M', false, $this->Auth->user('timezone')
                                         ),
-                                        'scheduled_end_time'   => CakeTime::format(
+                                        'scheduled_end_time' => CakeTime::format(
                                             $filteredHostsDowntimes['scheduled_end_time'], '%Y %m %d %H:%M', false, $this->Auth->user('timezone')
                                         ),
                                     ];
@@ -309,14 +330,14 @@ class DowntimereportsController extends AppController {
                         $this->Frontend->setJson('serviceDowntimes', array_map(
                                 function ($filteredServicesDowntimes) {
                                     return [
-                                        'author_name'          => $filteredServicesDowntimes['author_name'],
-                                        'comment_data'         => $filteredServicesDowntimes['comment_data'],
-                                        'host'                 => $filteredServicesDowntimes['data']['host'],
-                                        'service'              => $filteredServicesDowntimes['data']['service'],
+                                        'author_name' => $filteredServicesDowntimes['author_name'],
+                                        'comment_data' => $filteredServicesDowntimes['comment_data'],
+                                        'host' => $filteredServicesDowntimes['data']['host'],
+                                        'service' => $filteredServicesDowntimes['data']['service'],
                                         'scheduled_start_time' => CakeTime::format(
                                             $filteredServicesDowntimes['scheduled_start_time'], '%Y %m %d %H:%M', false, $this->Auth->user('timezone')
                                         ),
-                                        'scheduled_end_time'   => CakeTime::format(
+                                        'scheduled_end_time' => CakeTime::format(
                                             $filteredServicesDowntimes['scheduled_end_time'], '%Y %m %d %H:%M', false, $this->Auth->user('timezone')
                                         ),
                                     ];
@@ -348,28 +369,27 @@ class DowntimereportsController extends AppController {
         if ($this->Session->check('downtimeReportDetails')) {
             $this->Session->delete('downtimeReportDetails');
         }
-
         $binary_path = '/usr/bin/wkhtmltopdf';
         if (file_exists('/usr/local/bin/wkhtmltopdf')) {
             $binary_path = '/usr/local/bin/wkhtmltopdf';
         }
         $this->pdfConfig = [
-            'engine'             => 'CakePdf.WkHtmlToPdf',
-            'margin'             => [
+            'engine' => 'CakePdf.WkHtmlToPdf',
+            'margin' => [
                 'bottom' => 15,
-                'left'   => 0,
-                'right'  => 0,
-                'top'    => 15,
+                'left' => 0,
+                'right' => 0,
+                'top' => 15,
             ],
-            'encoding'           => 'UTF-8',
-            'download'           => true,
-            'binary'             => $binary_path,
-            'orientation'        => 'portrait',
-            'filename'           => 'Downtimereport.pdf',
+            'encoding' => 'UTF-8',
+            'download' => true,
+            'binary' => $binary_path,
+            'orientation' => 'portrait',
+            'filename' => 'Downtimereport.pdf',
             'no-pdf-compression' => '*',
-            'image-dpi'          => '900',
-            'background'         => true,
-            'no-background'      => false,
+            'image-dpi' => '900',
+            'background' => true,
+            'no-background' => false,
         ];
     }
 }
