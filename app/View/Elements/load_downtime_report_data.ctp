@@ -371,7 +371,11 @@ $Logo = new Logo();
                 </section>
                 <?php
             endif;
-            $hostsNotMonitored = Hash::extract($downtimeReportData['Hosts'], '{s}.HostsNotMonitored');
+            $hostsNotMonitored = Hash::sort(
+                Hash::extract(
+                    $downtimeReportData['Hosts'], '{s}.HostsNotMonitored'),
+                '{n}.Host.name', 'asc'
+            );
             if (!empty($hostsNotMonitored)): ?>
                 <section>
                     <div class="row">
@@ -415,81 +419,83 @@ $Logo = new Logo();
                                                 <div class="col-md-9">
                                                     <?php echo h($hostNotMonitored['Host']['address']); ?>
                                                 </div>
-                                            </div>
-                                        </div>
-                                        <?php
-                                        $services = [];
-                                        if (isset($downtimeReportData['Hosts'][$hostNotMonitored['Host']['uuid']]['Services'])):
-                                            $servicesWithOutages = Hash::sort(
-                                            Hash::extract(
-                                                $downtimeReportData['Hosts'][$hostNotMonitored['Host']['uuid']]['Services'],
-                                                '{s}[0<'.$downtimeReportDetails['totalTime'].']'),
-                                            '{n}.Services.{s}.Service.name',
-                                            'ASC');
-                                            if (!empty($servicesWithOutages)):?>
-                                                <div class="col-md-9 padding-top-10 padding-bottom-10">
-                                                    <strong>
-                                                        <?php echo __('Involved in outages (Services):'); ?>
-                                                    </strong>
-                                                </div>
-                                                <?php
-                                                foreach ($servicesWithOutages as $serviceWithOutages):?>
-                                                    <div class="col-md-12">
+                                            <?php
+                                            $services = [];
+                                            if (isset($downtimeReportData['Hosts'][$hostNotMonitored['Host']['uuid']]['Services'])):
+                                                $servicesWithOutages = Hash::sort(
+                                                Hash::extract(
+                                                    $downtimeReportData['Hosts'][$hostNotMonitored['Host']['uuid']]['Services'],
+                                                    '{s}[0<'.$downtimeReportDetails['totalTime'].']'),
+                                                '{n}.Services.{s}.Service.name',
+                                                'ASC');
+                                                if (!empty($servicesWithOutages)):?>
+                                                    <div class="col-md-9 padding-top-10 padding-bottom-10">
                                                         <strong>
-                                                            <i class="fa fa-cog"></i> <?php echo $this->Html->link(h($serviceWithOutages['Service']['name']), [
-                                                                'action'     => 'browser',
-                                                                'controller' => 'services',
-                                                                $serviceWithOutages['Service']['id'],
-                                                            ], ['class' => 'txt-color-blueDark']);
-                                                            ?>
+                                                            <?php echo __('Involved in outages (Services):'); ?>
                                                         </strong>
                                                     </div>
-                                                    <div class="col-md-3 text-right padding-right-20 text-info">
-                                                        <?php echo __('Servicetemplate:'); ?>
-                                                    </div>
-                                                    <div class="col-md-9 txt-color-blue">
-                                                        <?php echo $this->Html->link(h($serviceWithOutages['Service']['Servicetemplate']['name']), [
-                                                            'action'     => 'edit',
-                                                            'controller' => 'servicetemplates',
-                                                            $serviceWithOutages['Service']['Servicetemplate']['id'],
-                                                        ], ['class' => 'text-info']
-                                                        );
-                                                        ?>
-                                                    </div>
-                                                    <div class="col-md-3 text-right padding-bottom-10">
+                                                    <?php
+                                                    foreach ($servicesWithOutages as $serviceWithOutages):?>
+                                                        <div class="col-md-12">
+                                                            <strong>
+                                                                <i class="fa fa-cog"></i> <?php echo $this->Html->link(h($serviceWithOutages['Service']['name']), [
+                                                                    'action'     => 'browser',
+                                                                    'controller' => 'services',
+                                                                    $serviceWithOutages['Service']['id'],
+                                                                ], ['class' => 'txt-color-blueDark']);
+                                                                ?>
+                                                            </strong>
+                                                        </div>
+                                                        <div class="col-md-3 text-right padding-right-20 text-info">
+                                                            <?php echo __('Servicetemplate:'); ?>
+                                                        </div>
+                                                        <div class="col-md-9 txt-color-blue">
+                                                            <?php echo $this->Html->link(h($serviceWithOutages['Service']['Servicetemplate']['name']), [
+                                                                'action'     => 'edit',
+                                                                'controller' => 'servicetemplates',
+                                                                $serviceWithOutages['Service']['Servicetemplate']['id'],
+                                                            ], ['class' => 'text-info']
+                                                            );
+                                                            ?>
+                                                        </div>
+                                                        <div class="col-md-3 text-right padding-bottom-10">
+                                                            <?php
+                                                            $overview_chart = $this->PieChart->createPieChart([$serviceWithOutages[0], $serviceWithOutages[1], $serviceWithOutages[2], $serviceWithOutages[3]]);
+                                                            echo $this->Html->image(
+                                                                '/img/charts/'.$overview_chart, [
+                                                                    'width' => '100',
+                                                                ]
+                                                            ); ?>
+                                                        </div>
                                                         <?php
-                                                        $overview_chart = $this->PieChart->createPieChart([$serviceWithOutages[0], $serviceWithOutages[1], $serviceWithOutages[2], $serviceWithOutages[3]]);
-                                                        echo $this->Html->image(
-                                                            '/img/charts/'.$overview_chart, [
-                                                                'width' => '100',
-                                                            ]
-                                                        ); ?>
-                                                    </div>
-                                                    <?php
-                                                    for ($i = 0; $i <= 3; $i++):?>
-                                                        <div class="col-md-3 text-right">
-                                                            <em>
-                                                                <?php echo $this->Status->humanSimpleServiceStatus($i); ?>
-                                                            </em>
-                                                        </div>
-                                                        <div class="col-md-3 <?php echo $this->Status->ServiceStatusColorSimple($i)['class']; ?> downtime-report-state-overview font-sm">
-                                                            <strong>
-                                                                <?php
-                                                                $percent_value = $serviceWithOutages[$i] / $downtimeReportDetails['totalTime'] * 100;
-                                                                echo (fmod($percent_value, 1) == 0) ? $percent_value : number_format($percent_value, 3); ?>
-                                                                %
-                                                            </strong>
-                                                        </div>
-                                                        <div class="col-md-3 <?php echo $this->Status->ServiceStatusColorSimple($i)['class']; ?> downtime-report-state-overview font-sm">
-                                                            <strong>
-                                                                <?php echo '('.$this->Utils->secondsInHumanShort($serviceWithOutages[$i]).')'; ?>
-                                                            </strong>
-                                                        </div>
-                                                    <?php
-                                                    endfor;
-                                                endforeach;
+                                                        for ($i = 0; $i <= 3; $i++):?>
+                                                            <div class="col-md-3 text-right">
+                                                                <em>
+                                                                    <?php echo $this->Status->humanSimpleServiceStatus($i); ?>
+                                                                </em>
+                                                            </div>
+                                                            <div class="col-md-3 <?php echo $this->Status->ServiceStatusColorSimple($i)['class']; ?> downtime-report-state-overview font-sm">
+                                                                <strong>
+                                                                    <?php
+                                                                    $percent_value = $serviceWithOutages[$i] / $downtimeReportDetails['totalTime'] * 100;
+                                                                    echo (fmod($percent_value, 1) == 0) ? $percent_value : number_format($percent_value, 3); ?>
+                                                                    %
+                                                                </strong>
+                                                            </div>
+                                                            <div class="col-md-3 <?php echo $this->Status->ServiceStatusColorSimple($i)['class']; ?> downtime-report-state-overview font-sm">
+                                                                <strong>
+                                                                    <?php echo '('.$this->Utils->secondsInHumanShort($serviceWithOutages[$i]).')'; ?>
+                                                                </strong>
+                                                            </div>
+                                                        <?php
+                                                        endfor;
+                                                    endforeach;
+                                                endif;
                                             endif;
-                                        endif;
+                                            ?>
+                                            </div>
+                                        </div>
+                                    <?php
                                     endforeach; ?>
                                 </div>
                             </div>

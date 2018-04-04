@@ -289,8 +289,6 @@ class DowntimereportsController extends AppController {
                     }
                     if ($this->request->data('Downtimereport.report_format') == 'pdf') {
                         $this->Session->write('downtimeReportData', $downtimeReportData);
-                        $allHostsWithOutages = Hash::sort(Hash::extract($downtimeReportData['Hosts'], '{s}[0<'.$downtimeReportDetails['totalTime'].']'), '{n}.Host.0', 'ASC');
-
                         $this->Session->write('downtimeReportDetails', $downtimeReportDetails);
                         $this->redirect([
                             'action' => 'createPdfReport',
