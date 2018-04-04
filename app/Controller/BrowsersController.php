@@ -31,24 +31,20 @@ use itnovum\openITCOCKPIT\Monitoring\QueryHandler;
 /**
  * Class BrowsersController
  * @property Container Container
+ * @property Systemsetting Systemsetting
+ * @property Browser Browser
+ * @property Tenant Tenant
+ * @property AppAuthComponent Auth
  */
 class BrowsersController extends AppController {
 
     public $layout = 'angularjs';
-    public $helpers = [
-        'PieChart',
-        'BrowserMisc',
-        'Status',
-        'Monitoring',
-    ];
+
     public $uses = [
-        MONITORING_HOSTSTATUS,
-        MONITORING_SERVICESTATUS,
-        'Host',
-        'Service',
+        'Systemsetting',
         'Container',
-        'Tenant',
         'Browser',
+        'Tenant'
     ];
 
     public $components = [
@@ -56,45 +52,6 @@ class BrowsersController extends AppController {
     ];
 
     function index($containerId = null) {
-        if ($containerId === null) {
-            $containerId = ROOT_CONTAINER;
-        }
-
-        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
-
-
-        $top_node = $this->Container->findById(ROOT_CONTAINER);
-        $parents = $this->Container->getPath($top_node['Container']['parent_id']);
-
-        $tenants = $this->getTenants();
-        natcasesort($tenants);
-
-
-        $hostQuery = $this->Browser->hostsQuery(ROOT_CONTAINER);
-        $serviceQuery = $this->Browser->serviceQuery(ROOT_CONTAINER);
-        if ($User->isRecursiveBrowserEnabled()) {
-            $hostQuery = $this->Browser->hostsQuery($this->MY_RIGHTS);
-            $serviceQuery = $this->Browser->serviceQuery($this->MY_RIGHTS);
-        }
-
-        $hosts = $this->Host->find('all', $hostQuery);
-        $services = $this->Service->find('all', $serviceQuery);
-
-        $state_array_host = $this->Browser->countHoststate($hosts);
-        $state_array_service = $this->Browser->countServicestate($services);
-
-        $this->set(compact([
-            'recursive',
-            'parents',
-            'top_node',
-            'state_array_host',
-            'state_array_service',
-            'tenants',
-            'hosts',
-        ]));
-
-
-        /***** NEW ***/
         $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
 
         if (!$this->isApiRequest()) {
@@ -167,84 +124,6 @@ class BrowsersController extends AppController {
         $this->set('_serialize', ['containers', 'recursiveBrowser', 'breadcrumbs']);
     }
 
-
-    function tenantBrowser($id) {
-        if (!$this->Container->exists($id)) {
-            throw new NotFoundException(__('Invalid container'));
-        }
-        $MY_RIGHTS_WITH_TENANT = array_merge($this->MY_RIGHTS, array_keys($this->getTenants()));
-
-        if (!$this->hasRootPrivileges) {
-            if (!in_array($id, $MY_RIGHTS_WITH_TENANT)) {
-                $this->render403();
-
-                return;
-            }
-        }
-
-        if ($this->hasRootPrivileges === true) {
-            $browser = Hash::extract($this->Container->children($id, true), '{n}.Container[containertype_id=/^(' . CT_GLOBAL . '|' . CT_TENANT . '|' . CT_LOCATION . '|' . CT_NODE . ')$/]');
-        } else {
-            $containerNest = Hash::nest($this->Container->children($id));
-            $browser = $this->Browser->getFirstContainers($containerNest, $this->MY_RIGHTS, [CT_GLOBAL, CT_TENANT, CT_LOCATION, CT_NODE]);
-        }
-
-        $browser = Hash::sort($browser, '{n}.name', 'asc', ['type' => 'regular', 'ignoreCase' => true]);
-
-        if ($this->hasRootPrivileges === false) {
-            foreach ($browser as $key => $containerRecord) {
-                if (!in_array($containerRecord['id'], $this->MY_RIGHTS)) {
-                    unset($browser[$key]);
-                }
-            }
-        }
-
-        $recursive = $this->Auth->user('recursive_browser');
-
-        $hosts = $services = [];
-        if (in_array($id, $this->MY_RIGHTS)) {
-            $lookupIds = $id;
-            if ($recursive) {
-                if ($this->hasRootPrivileges === true) {
-                    //root user
-                    $lookupIds = Hash::extract($this->Container->children($id), '{n}.Container[containertype_id=/^(' . CT_GLOBAL . '|' . CT_TENANT . '|' . CT_LOCATION . '|' . CT_NODE . ')$/].id');
-                    $lookupIds = array_merge($lookupIds, [$id]);
-                } else {
-                    //non root user
-                    $lookupIds = Hash::extract($this->Container->children($id), '{n}.Container[containertype_id=/^(' . CT_GLOBAL . '|' . CT_TENANT . '|' . CT_LOCATION . '|' . CT_NODE . ')$/].id');
-                    $lookupIds = array_merge($lookupIds, [$id]);
-                    if (is_array($lookupIds) && !empty($lookupIds)) {
-                        foreach ($lookupIds as $key => $currentId) {
-                            if (!in_array($currentId, $this->MY_RIGHTS)) {
-                                unset($lookupIds[$key]);
-                            }
-                        }
-                    }
-                }
-            }
-
-            $query = $this->Browser->hostsQuery($lookupIds);
-            $this->Paginator->settings = array_merge($this->Paginator->settings, $query);
-            $hostsForCounter = $this->Host->find('all', $query);
-            $hosts = $this->Paginator->paginate('Host');
-            $query = $this->Browser->serviceQuery($lookupIds);
-            $services = $this->Service->find('all', $query);
-        }
-        $state_array_host = $this->Browser->countHoststate($hostsForCounter);
-        $state_array_service = $this->Browser->countServicestate($services);
-
-        $currentContainer = $this->Container->findById($id);
-        $parents = $this->Container->getPath($currentContainer['Container']['parent_id']);
-        $this->set(compact([
-            'currentContainer',
-            'browser',
-            'parents',
-            'state_array_host',
-            'state_array_service',
-            'hosts',
-            'MY_RIGHTS_WITH_TENANT',
-        ]));
-    }
 
     /**
      * @return mixed

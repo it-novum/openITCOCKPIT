@@ -160,6 +160,10 @@ class Hoststatus extends CrateModuleAppModel {
             '1' => 0,
             '2' => 0,
         ];
+        if($includeOkState === true){
+            $hoststatusCount['0'] = 0;
+        }
+
         $this->virtualFields = [
             'count' => 'COUNT(DISTINCT Hoststatus.hostname)'
         ];

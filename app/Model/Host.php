@@ -1481,6 +1481,9 @@ class Host extends AppModel {
             '1' => 0,
             '2' => 0,
         ];
+        if($includeOkState === true){
+            $hoststatusCount['0'] = 0;
+        }
 
         $query = [
             'conditions' => [
@@ -1544,6 +1547,9 @@ class Host extends AppModel {
             '2' => 0,
             '3' => 0,
         ];
+        if($includeOkState === true){
+            $servicestatusCount['0'] = 0;
+        }
 
         $query = [
             'conditions' => [

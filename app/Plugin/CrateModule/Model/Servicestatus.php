@@ -221,6 +221,9 @@ class Servicestatus extends CrateModuleAppModel {
             '2' => 0,
             '3' => 0,
         ];
+        if($includeOkState === true){
+            $servicestatusCount['0'] = 0;
+        }
 
         $this->virtualFields = [
             'count' => 'COUNT(DISTINCT Servicestatus.service_description)'
