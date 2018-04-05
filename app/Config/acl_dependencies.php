@@ -88,6 +88,9 @@ $config = [
             'Profile'          => [
                 'edit',
                 'deleteImage',
+                'apikey',
+                'edit_apikey',
+                'delete_apikey'
             ],
             'Proxy'            => [
                 'getSettings',

@@ -44,7 +44,7 @@ use itnovum\openITCOCKPIT\Core\ValueObjects\User;
  * @property Systemsetting $Systemsetting
  * @property SessionComponent $Session
  * @property FrontendComponent $Frontend
- * @property AppAuthComponent $AppAuth
+ * @property AppAuthComponent $Auth
  * @property CookieComponent $Cookie
  * @property RequestHandlerComponent $RequestHandler
  * @property PaginatorComponent $Paginator
@@ -52,6 +52,8 @@ use itnovum\openITCOCKPIT\Core\ValueObjects\User;
  * @property ConstantsComponent $Constants
  * @property TreeComponent $Tree
  * @property AdditionalLinksComponent $AdditionalLinks
+ * @property CakeRequest $request
+ * @property CakeResponse $response
  */
 class AppController extends Controller {
 
@@ -142,12 +144,21 @@ class AppController extends Controller {
      */
     protected $DbBackend;
 
-
     /**
      * Called before every controller actions. Should not be overridden.
      * @return void
      */
     public function beforeFilter() {
+
+        //Is this a request with API Key?
+        $headerContent = $this->request->header('Authorization');
+        if ($headerContent && strpos($headerContent, 'X-OITC-API') === 0) {
+            $this->Auth->sessionKey = false;
+            $user = $this->Auth->tryToGetUser($this->request);
+            if($user) {
+                $this->Auth->login($user, 'session');
+            }
+        }
 
         //DANGER ZONE - ALLOW ALL ACTIONS
         //$this->Auth->allow();
@@ -158,6 +169,7 @@ class AppController extends Controller {
 
         $this->Auth->authorize = 'Actions';
         //$this->Auth->authorize = 'Controller';
+
         $this->_beforeAction();
         if (!$this->Auth->loggedIn() && $this->action != 'logout') {
             if ($this->Auth->autoLogin()) {
@@ -700,6 +712,19 @@ class AppController extends Controller {
             $this->response->statusCode(400);
         }
         $name = Inflector::singularize($this->name);
+        $error = $this->{$name}->validationErrors;
+        $this->set(compact('error'));
+        $this->set('_serialize', ['error']);
+    }
+
+    /**
+     * @param string $modelName
+     */
+    protected function serializeErrorMessageFromModel($modelName) {
+        if ($this->isAngularJsRequest()) {
+            $this->response->statusCode(400);
+        }
+        $name = Inflector::singularize($modelName);
         $error = $this->{$name}->validationErrors;
         $this->set(compact('error'));
         $this->set('_serialize', ['error']);

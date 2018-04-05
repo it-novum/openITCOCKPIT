@@ -38,6 +38,11 @@ class User extends AppModel
             'foreignKey' => 'user_id',
             'dependent'  => true,
         ],
+        'Apikey' => [
+            'className'  => 'Apikey',
+            'foreignKey' => 'user_id',
+            'dependent'  => true,
+        ],
     ];
 
     public $belongsTo = ['Usergroup'];
