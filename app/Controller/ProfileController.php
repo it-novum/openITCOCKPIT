@@ -261,6 +261,39 @@ class ProfileController extends AppController
         }
     }
 
+    public function create_apikey(){
+        $this->layout = 'blank';
+        if(!$this->isAngularJsRequest()){
+            //Only ship template
+            return;
+        }
+
+        if($this->request->is('get')){
+            //Generate new API key
+            $bytes = openssl_random_pseudo_bytes(80, $cstrong);
+            $apikey   = bin2hex($bytes);
+            $this->set('apikey', $apikey);
+            $this->set('_serialize', ['apikey']);
+            return;
+        }
+
+        if($this->request->is('post')){
+            $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+            //Save new API key
+            $apikey = $this->request->data;
+            $apikey['Apikey']['user_id'] = $User->getId();
+
+            $this->Apikey->create();
+            if(!$this->Apikey->save($apikey)){
+                $this->serializeErrorMessageFromModel('Apikey');
+                return;
+            }
+            $this->set('message', __('API key created successfully'));
+            $this->set('_serialize', ['message']);
+            return;
+        }
+    }
+
     public function delete_apikey($id = null){
         $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
         $apiKey = $this->Apikey->find('first', [

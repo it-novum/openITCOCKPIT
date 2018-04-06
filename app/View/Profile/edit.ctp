@@ -247,7 +247,7 @@
                 <?php echo __('Refresh'); ?>
             </button>
 
-            <button type="button" class="btn btn-xs btn-success" ng-click="load()">
+            <button type="button" class="btn btn-xs btn-success" ng-click="createApiKey()">
                 <i class="fa fa-key"></i>
                 <?php echo __('Create new API key'); ?>
             </button>
@@ -298,4 +298,6 @@
     </div>
 </div>
 
+<create-apikey-directive></create-apikey-directive>
 <edit-apikey-directive></edit-apikey-directive>
+

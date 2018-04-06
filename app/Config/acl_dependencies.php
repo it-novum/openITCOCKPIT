@@ -90,7 +90,8 @@ $config = [
                 'deleteImage',
                 'apikey',
                 'edit_apikey',
-                'delete_apikey'
+                'delete_apikey',
+                'create_apikey'
             ],
             'Proxy'            => [
                 'getSettings',
