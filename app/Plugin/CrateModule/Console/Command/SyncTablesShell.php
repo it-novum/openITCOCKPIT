@@ -161,42 +161,10 @@ class SyncTablesShell extends AppShell {
 
         $crateService = [];
         foreach ($services as $service) {
-            $serviceName = $service['Service']['name'];
-            $nameFromTemplate = false;
-            if ($serviceName === null || $serviceName === '') {
-                $serviceName = $service['Servicetemplate']['name'];
-                $nameFromTemplate = true;
-            }
+            $CrateService = new \itnovum\openITCOCKPIT\Crate\CrateService($service['Service']['id']);
+            $CrateService->setDataFromFindResult($service);
 
-            $activeChecksEnabled = $service['Service']['active_checks_enabled'];
-            $activeChecksEnabledFromTemplate = false;
-            if ($activeChecksEnabled === null || $activeChecksEnabled === '') {
-                $activeChecksEnabled = $service['Servicetemplate']['active_checks_enabled'];
-                $activeChecksEnabledFromTemplate = true;
-            }
-
-            $tags = $service['Service']['tags'];
-            $tagFromTemplate = false;
-            if ($tags === null || $tags === '') {
-                $tags = $service['Servicetemplate']['tags'];
-                $tagFromTemplate = true;
-            }
-
-            $crateService[] = [
-                'CrateService' => [
-                    'id'                                  => (int)$service['Service']['id'],
-                    'uuid'                                => $service['Service']['uuid'],
-                    'name'                                => $serviceName,
-                    'servicetemplate_id'                  => (int)$service['Service']['servicetemplate_id'],
-                    'host_id'                             => (int)$service['Service']['host_id'],
-                    'name_from_template'                  => $nameFromTemplate,
-                    'active_checks_enabled'               => $activeChecksEnabled,
-                    'active_checks_enabled_from_template' => $activeChecksEnabledFromTemplate,
-                    'tags'                                => $tags,
-                    'tags_from_template'                  => $tagFromTemplate,
-                    'disabled'                            => (bool)$service['Service']['disabled'],
-                ]
-            ];
+            $crateService[] = $CrateService->getDataForSave();
         }
 
         $this->CrateService->saveAll($crateService);

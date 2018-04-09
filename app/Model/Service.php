@@ -1748,4 +1748,23 @@ class Service extends AppModel {
             ]
         ];
     }
+
+    /**
+     * @param bool $created
+     * @param array $options
+     * @return bool|void
+     */
+    public function afterSave($created, $options = []) {
+        if ($this->DbBackend->isCrateDb() && isset($this->data['Service']['id'])) {
+            //Save data also to CrateDB
+            $CrateService = new \itnovum\openITCOCKPIT\Crate\CrateService($this->data['Service']['id']);
+            $service = $this->find('first', $CrateService->getFindQuery());
+            $CrateService->setDataFromFindResult($service);
+
+            $CrateServiceModel = ClassRegistry::init('CrateModule.CrateService');
+            $CrateServiceModel->save($CrateService->getDataForSave());
+        }
+
+        parent::afterSave($created, $options);
+    }
 }
