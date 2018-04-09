@@ -255,6 +255,24 @@ class Contact extends AppModel
         return true;
     }
 
+    /**
+     * @param bool $created
+     * @param array $options
+     * @return bool|void
+     */
+    public function afterSave($created, $options = [])
+    {
+        if ($this->DbBackend->isCrateDb() && isset($this->data['Contact']['id'])) {
+            //Save data also to CrateDB
+            $CrateContact = new \itnovum\openITCOCKPIT\Crate\CrateContact($this->data['Contact']['id']);
+            $contact = $this->find('first', $CrateContact->getFindQuery());
+            $CrateContact->setDataFromFindResult($contact);
+
+            $CrateContactModel = ClassRegistry::init('CrateModule.CrateContact');
+            $CrateContactModel->save($CrateContact->getDataForSave());
+        }
+        parent::afterSave($created, $options);
+    }
 
     public function contactsByContainerId($container_ids = [], $type = 'all')
     {

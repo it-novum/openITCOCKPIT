@@ -47,9 +47,12 @@ class SyncTablesShell extends AppShell {
         $this->syncCommands();
         $this->syncServices();
 
+        $this->info('Synchronization done.');
     }
 
     public function syncHosts() {
+        $this->info('Start synchronization for host objects');
+
         $hosts = $this->Host->find('all', [
             'recursive' => -1,
             'contain'   => [
@@ -74,9 +77,18 @@ class SyncTablesShell extends AppShell {
                 'Host.disabled'
             ]
         ]);
+        $sizeof = sizeof($hosts);
 
         $crateHosts = [];
-        foreach ($hosts as $host) {
+        foreach ($hosts as $i => $host) {
+            $this->out(sprintf(
+                'Synchronize host %s/%s. (%s)            %s',
+                ($i + 1),
+                $sizeof,
+                substr($host['Host']['name'], 0, 25),
+                "\r"
+            ), false);
+
             $CrateHost = new \itnovum\openITCOCKPIT\Crate\CrateHost($host['Host']['id']);
             $CrateHost->setDataFromFindResult($host);
 
@@ -84,29 +96,41 @@ class SyncTablesShell extends AppShell {
         }
 
         $this->CrateHost->saveAll($crateHosts);
+        $this->out('');
     }
 
     public function syncContacts() {
+        $this->info('Start synchronization for contact objects');
+
+
         $contacts = $this->Contact->find('all', [
             'recursive' => -1,
         ]);
+        $sizeof = sizeof($contacts);
 
         $crateContact = [];
-        foreach ($contacts as $contact) {
-            $crateContact[] = [
-                'CrateContact' => [
-                    'id'   => (int)$contact['Contact']['id'],
-                    'uuid' => $contact['Contact']['uuid'],
-                    'name' => $contact['Contact']['name'],
-                ]
-            ];
+        foreach ($contacts as $i => $contact) {
+            $this->out(sprintf(
+                'Synchronize contact %s/%s. (%s)            %s',
+                ($i + 1),
+                $sizeof,
+                substr($contact['Contact']['name'], 0, 25),
+                "\r"
+            ), false);
+
+            $CrateContact = new \itnovum\openITCOCKPIT\Crate\CrateContact($contact['Contact']['id']);
+            $CrateContact->setDataFromFindResult($contact);
+            $crateContact[] = $CrateContact->getDataForSave();
         }
 
         $this->CrateContact->saveAll($crateContact);
-
+        $this->out('');
     }
 
     public function syncCommands() {
+        $this->info('Start synchronization for command objects');
+
+
         $commands = $this->Command->find('all', [
             'recursive'  => -1,
             'fields'     => [
@@ -119,19 +143,30 @@ class SyncTablesShell extends AppShell {
                 'Command.command_type' => NOTIFICATION_COMMAND
             ]
         ]);
+        $sizeof = sizeof($commands);
 
         $crateCommand = [];
-        foreach ($commands as $command) {
+        foreach ($commands as $i => $command) {
+            $this->out(sprintf(
+                'Synchronize command %s/%s. (%s)            %s',
+                ($i + 1),
+                $sizeof,
+                substr($command['Command']['name'], 0, 25),
+                "\r"
+            ), false);
+
             $CrateCommand = new \itnovum\openITCOCKPIT\Crate\CrateCommand($command['Command']['id']);
             $CrateCommand->setDataFromFindResult($command);
             $crateCommand[] = $CrateCommand->getDataForSave();
         }
 
         $this->CrateCommand->saveAll($crateCommand);
-
+        $this->out('');
     }
 
     public function syncServices() {
+        $this->info('Start synchronization for service objects');
+
         $services = $this->Service->find('all', [
             'recursive' => -1,
             'fields'    => [
@@ -155,9 +190,23 @@ class SyncTablesShell extends AppShell {
                 ]
             ]
         ]);
+        $sizeof = sizeof($services);
 
         $crateService = [];
-        foreach ($services as $service) {
+        foreach ($services as $i => $service) {
+            $serviceName = $service['Service']['name'];
+            if ($serviceName === null || $serviceName === '') {
+                $serviceName = $service['Servicetemplate']['name'];
+            }
+
+            $this->out(sprintf(
+                'Synchronize command %s/%s. (%s/%s)            %s',
+                ($i + 1),
+                $sizeof,
+                substr($service['Service']['host_id'], 0, 25),
+                substr($serviceName, 0, 25),
+                "\r"
+            ), false);
             $CrateService = new \itnovum\openITCOCKPIT\Crate\CrateService($service['Service']['id']);
             $CrateService->setDataFromFindResult($service);
 
@@ -165,8 +214,12 @@ class SyncTablesShell extends AppShell {
         }
 
         $this->CrateService->saveAll($crateService);
+        $this->out('');
     }
 
+    public function info($msg) {
+        $this->out('<info>[' . date('H:i:s') . '] ' . $msg . '</info>');
+    }
 
     public function getOptionParser() {
         $parser = parent::getOptionParser();
@@ -176,5 +229,12 @@ class SyncTablesShell extends AppShell {
         ]);
 
         return $parser;
+    }
+
+    public function _welcome() {
+        $this->out('');
+        $this->out('<info>openITCOCKPIT - Synchronize MySQL with CrateDB</info>');
+        $this->hr();
+        $this->out('');
     }
 }
