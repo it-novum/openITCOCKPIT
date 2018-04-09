@@ -166,6 +166,11 @@ class Command extends AppModel
         return $this->find($type, Hash::merge($_options, $options));
     }
 
+    /**
+     * @param bool $created
+     * @param array $options
+     * @return bool|void
+     */
     public function afterSave($created, $options = [])
     {
         parent::afterSave($created, $options);
@@ -178,6 +183,21 @@ class Command extends AppModel
                 return $element;
             }, $this->lastInsertedData);
         }
+
+
+        if ($this->DbBackend->isCrateDb() && isset($this->data['Command']['id'])) {
+            if(isset($this->data['Command']['command_type']) && $this->data['Command']['command_type'] == NOTIFICATION_COMMAND) {
+                //Save data also to CrateDB
+                $CrateCommand = new \itnovum\openITCOCKPIT\Crate\CrateCommand($this->data['Command']['id']);
+                $command = $this->find('first', $CrateCommand->getFindQuery());
+                $CrateCommand->setDataFromFindResult($command);
+
+                $CrateCommandModel = ClassRegistry::init('CrateModule.CrateCommand');
+                $CrateCommandModel->save($CrateCommand->getDataForSave());
+            }
+        }
+
+
     }
 
     public function getConsoleWelcome($systemname)

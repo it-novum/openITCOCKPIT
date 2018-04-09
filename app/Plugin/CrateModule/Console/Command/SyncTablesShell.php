@@ -112,7 +112,8 @@ class SyncTablesShell extends AppShell {
             'fields'     => [
                 'Command.id',
                 'Command.name',
-                'Command.uuid'
+                'Command.uuid',
+                'Command.command_type'
             ],
             'conditions' => [
                 'Command.command_type' => NOTIFICATION_COMMAND
@@ -121,13 +122,9 @@ class SyncTablesShell extends AppShell {
 
         $crateCommand = [];
         foreach ($commands as $command) {
-            $crateCommand[] = [
-                'CrateCommand' => [
-                    'id'   => (int)$command['Command']['id'],
-                    'uuid' => $command['Command']['uuid'],
-                    'name' => $command['Command']['name'],
-                ]
-            ];
+            $CrateCommand = new \itnovum\openITCOCKPIT\Crate\CrateCommand($command['Command']['id']);
+            $CrateCommand->setDataFromFindResult($command);
+            $crateCommand[] = $CrateCommand->getDataForSave();
         }
 
         $this->CrateCommand->saveAll($crateCommand);

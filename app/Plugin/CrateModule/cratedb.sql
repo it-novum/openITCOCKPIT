@@ -23,7 +23,8 @@ CREATE TABLE IF NOT EXISTS openitcockpit_contacts (
 CREATE TABLE IF NOT EXISTS openitcockpit_commands (
   id int,
   uuid string,
-  name string
+  name string,
+  command_type int
   ) CLUSTERED INTO 4 shards with (number_of_replicas = '1-all');
 
 CREATE TABLE IF NOT EXISTS openitcockpit_services (
