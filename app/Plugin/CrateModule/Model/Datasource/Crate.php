@@ -29,7 +29,7 @@ class Crate extends DboSource {
     public $description = "CrateDB DBO Driver";
 
     protected $_baseConfig = [
-        'host' => '127.0.0.1:4200',
+        'host'    => '127.0.0.1:4200',
         'timeout' => 5
     ];
 
@@ -48,7 +48,7 @@ class Crate extends DboSource {
      *
      * @var array
      */
-    protected $_sqlOps = array('like', 'ilike', 'rlike', 'or', 'not', 'in', 'between', 'regexp', 'similar to', '~*', 'IS NULL');
+    protected $_sqlOps = ['like', 'ilike', 'rlike', 'or', 'not', 'in', 'between', 'regexp', 'similar to', '~*', 'IS NULL'];
 
     /**
      * @var array
@@ -63,17 +63,17 @@ class Crate extends DboSource {
     /**
      * @var array
      */
-    protected $_queryDefaults = array(
-        'conditions' => array(),
-        'fields' => null,
-        'table' => null,
-        'alias' => null,
-        'order' => null,
-        'limit' => null,
-        'joins' => array(),
-        'group' => null,
-        'offset' => null
-    );
+    protected $_queryDefaults = [
+        'conditions' => [],
+        'fields'     => null,
+        'table'      => null,
+        'alias'      => null,
+        'order'      => null,
+        'limit'      => null,
+        'joins'      => [],
+        'group'      => null,
+        'offset'     => null
+    ];
 
     /**
      * @var array
@@ -96,52 +96,52 @@ class Crate extends DboSource {
      */
     private $tablePrefix;
 
-    public $fieldParameters = array(
-        'charset' => array('value' => 'CHARACTER SET', 'quote' => false, 'join' => ' ', 'column' => false, 'position' => 'beforeDefault'),
-        'collate' => array('value' => 'COLLATE', 'quote' => false, 'join' => ' ', 'column' => 'Collation', 'position' => 'beforeDefault'),
-        'comment' => array('value' => 'COMMENT', 'quote' => true, 'join' => ' ', 'column' => 'Comment', 'position' => 'afterDefault'),
-        'unsigned' => array(
-            'value' => 'UNSIGNED', 'quote' => false, 'join' => ' ', 'column' => false, 'position' => 'beforeDefault',
-            'noVal' => true,
-            'options' => array(true),
-            'types' => array('integer', 'float', 'decimal', 'biginteger')
-        )
-    );
+    public $fieldParameters = [
+        'charset'  => ['value' => 'CHARACTER SET', 'quote' => false, 'join' => ' ', 'column' => false, 'position' => 'beforeDefault'],
+        'collate'  => ['value' => 'COLLATE', 'quote' => false, 'join' => ' ', 'column' => 'Collation', 'position' => 'beforeDefault'],
+        'comment'  => ['value' => 'COMMENT', 'quote' => true, 'join' => ' ', 'column' => 'Comment', 'position' => 'afterDefault'],
+        'unsigned' => [
+            'value'   => 'UNSIGNED', 'quote' => false, 'join' => ' ', 'column' => false, 'position' => 'beforeDefault',
+            'noVal'   => true,
+            'options' => [true],
+            'types'   => ['integer', 'float', 'decimal', 'biginteger']
+        ]
+    ];
 
     /**
      * List of table engine specific parameters used on table creating
      *
      * @var array
      */
-    public $tableParameters = array(
-        'charset' => array('value' => 'DEFAULT CHARSET', 'quote' => false, 'join' => '=', 'column' => 'charset'),
-        'collate' => array('value' => 'COLLATE', 'quote' => false, 'join' => '=', 'column' => 'Collation'),
-        'engine' => array('value' => 'ENGINE', 'quote' => false, 'join' => '=', 'column' => 'Engine'),
-        'comment' => array('value' => 'COMMENT', 'quote' => true, 'join' => '=', 'column' => 'Comment'),
-    );
+    public $tableParameters = [
+        'charset' => ['value' => 'DEFAULT CHARSET', 'quote' => false, 'join' => '=', 'column' => 'charset'],
+        'collate' => ['value' => 'COLLATE', 'quote' => false, 'join' => '=', 'column' => 'Collation'],
+        'engine'  => ['value' => 'ENGINE', 'quote' => false, 'join' => '=', 'column' => 'Engine'],
+        'comment' => ['value' => 'COMMENT', 'quote' => true, 'join' => '=', 'column' => 'Comment'],
+    ];
 
     /**
      * MySQL column definition
      *
      * @var array
      */
-    public $columns = array(
-        'primary_key' => array('name' => 'NOT NULL AUTO_INCREMENT'),
-        'string' => array('name' => 'varchar', 'limit' => '255'),
-        'text' => array('name' => 'text'),
-        'biginteger' => array('name' => 'bigint', 'limit' => '20'),
-        'integer' => array('name' => 'int', 'limit' => '11', 'formatter' => 'intval'),
-        'float' => array('name' => 'float', 'formatter' => 'floatval'),
-        'decimal' => array('name' => 'decimal', 'formatter' => 'floatval'),
-        'datetime' => array('name' => 'datetime', 'format' => 'Y-m-d H:i:s', 'formatter' => 'date'),
-        'timestamp' => array('name' => 'timestamp', 'format' => 'Y-m-d H:i:s', 'formatter' => 'date'),
-        'time' => array('name' => 'time', 'format' => 'H:i:s', 'formatter' => 'date'),
-        'date' => array('name' => 'date', 'format' => 'Y-m-d', 'formatter' => 'date'),
-        'binary' => array('name' => 'blob'),
-        'boolean' => array('name' => 'tinyint', 'limit' => '1')
-    );
+    public $columns = [
+        'primary_key' => ['name' => 'NOT NULL AUTO_INCREMENT'],
+        'string'      => ['name' => 'varchar', 'limit' => '255'],
+        'text'        => ['name' => 'text'],
+        'biginteger'  => ['name' => 'bigint', 'limit' => '20'],
+        'integer'     => ['name' => 'int', 'limit' => '11', 'formatter' => 'intval'],
+        'float'       => ['name' => 'float', 'formatter' => 'floatval'],
+        'decimal'     => ['name' => 'decimal', 'formatter' => 'floatval'],
+        'datetime'    => ['name' => 'datetime', 'format' => 'Y-m-d H:i:s', 'formatter' => 'date'],
+        'timestamp'   => ['name' => 'timestamp', 'format' => 'Y-m-d H:i:s', 'formatter' => 'date'],
+        'time'        => ['name' => 'time', 'format' => 'H:i:s', 'formatter' => 'date'],
+        'date'        => ['name' => 'date', 'format' => 'Y-m-d', 'formatter' => 'date'],
+        'binary'      => ['name' => 'blob'],
+        'boolean'     => ['name' => 'tinyint', 'limit' => '1']
+    ];
 
-    public function __construct($config = null, $autoConnect = true){
+    public function __construct($config = null, $autoConnect = true) {
         $this->config = Hash::merge($this->_baseConfig, $config);
 
         $vars = [
@@ -154,14 +154,14 @@ class Crate extends DboSource {
             'NO_PROXY',
             'no_proxy'
         ];
-        foreach($vars as $var){
+        foreach ($vars as $var) {
             putenv($var);
         }
 
         parent::__construct($config, $autoConnect);
     }
 
-    public function listSources($data = null){
+    public function listSources($data = null) {
         return null;
     }
 
@@ -170,7 +170,7 @@ class Crate extends DboSource {
      * @param Model|string $model
      * @return array|bool
      */
-    function describe($model){
+    function describe($model) {
         $table = $this->fullTableName($model, false);
 
         if (!isset($this->tableMetaData[$model->alias])) {
@@ -181,10 +181,10 @@ class Crate extends DboSource {
 
         foreach ($this->tableMetaData[$model->alias] as $column) {
             $fields[$column['column_name']] = [
-                'type' => $column['data_type'],
-                'null' => null,
-                'default' => null,
-                'length' => null,
+                'type'     => $column['data_type'],
+                'null'     => null,
+                'default'  => null,
+                'length'   => null,
                 'unsigned' => null
             ];
         }
@@ -194,11 +194,11 @@ class Crate extends DboSource {
             $realField = $this->removeModelAlias($realField, $model);
             if (isset($fields[$realField])) {
                 $fields[$virtualField] = [
-                    'type' => $fields[$realField]['type'],
-                    'null' => false,
-                    'default' => false,
-                    'length' => false,
-                    'unsigned' => false,
+                    'type'      => $fields[$realField]['type'],
+                    'null'      => false,
+                    'default'   => false,
+                    'length'    => false,
+                    'unsigned'  => false,
                     'isVirtual' => true
                 ];
             }
@@ -212,7 +212,7 @@ class Crate extends DboSource {
     }
 
 
-    public function connect(){
+    public function connect() {
         $dsn = sprintf('crate:%s', $this->config['host']);
         $flags = [
             PDO::ATTR_TIMEOUT => $this->config['timeout']
@@ -227,10 +227,10 @@ class Crate extends DboSource {
             $this->connected = true;
 
         } catch (PDOException $e) {
-            throw new MissingConnectionException(array(
-                'class' => get_class($this),
+            throw new MissingConnectionException([
+                'class'   => get_class($this),
                 'message' => $e->getMessage()
-            ));
+            ]);
         }
 
 
@@ -243,7 +243,7 @@ class Crate extends DboSource {
      * @param string $sql
      * @return bool|PDOStatement
      */
-    protected function __execute(PDOStatement $query, $sql){
+    protected function __execute(PDOStatement $query, $sql) {
         try {
             //$query->setFetchMode(PDO::FETCH_ASSOC);
             if (!$query->execute()) {
@@ -275,7 +275,7 @@ class Crate extends DboSource {
      * @param null $recursive
      * @return array|int
      */
-    public function read(Model $Model, $queryData = array(), $recursive = null){
+    public function read(Model $Model, $queryData = [], $recursive = null) {
         $this->findType = $Model->findQueryType;
         $this->modelName = $Model->alias;
         $this->tableName = $Model->table;
@@ -323,7 +323,7 @@ class Crate extends DboSource {
         return $this->fetchAllCrate();
     }
 
-    public function buildSelectQuery($queryData){
+    public function buildSelectQuery($queryData) {
         $queryTemplate = 'SELECT %s FROM %s AS %s ';
         if ($this->findType === 'count') {
             $queryTemplate = sprintf($queryTemplate, 'COUNT(*) as count', $this->tablePrefix . $this->tableName, $this->modelName);
@@ -343,7 +343,7 @@ class Crate extends DboSource {
                     if (strpos($fieldInQuery, $modelInQuery . '.') !== 0) {
                         //Is this may be a virtual field?
                         //COUNT(DISTINCT Hoststatus.hostname) AS count
-                        foreach($this->Model->virtualFields as $virtualField => $realField){
+                        foreach ($this->Model->virtualFields as $virtualField => $realField) {
                             if ($fieldInQuery == sprintf('%s AS %s', $realField, $virtualField)) {
                                 $this->fieldsInQuery[] = $virtualField;
                                 continue 3;
@@ -395,7 +395,7 @@ class Crate extends DboSource {
                 $column = $result['key'];
 
                 $isVirtualField = false;
-                if($this->isVirtualField($column)){
+                if ($this->isVirtualField($column)) {
                     $isVirtualField = true;
                     $column = sprintf('%s%s%s', $this->startQuote, $column, $this->endQuote);
                 }
@@ -493,7 +493,7 @@ class Crate extends DboSource {
                     $orderBy[] = sprintf('%s %s', $column, $direction);
                 }
 
-                if($this->isVirtualField($column)){
+                if ($this->isVirtualField($column)) {
                     $column = sprintf('%s%s%s', $this->startQuote, $column, $this->endQuote);
                     $direction = $this->getDirection($direction);
                     $orderBy[] = sprintf('%s %s', $column, $direction);
@@ -523,7 +523,7 @@ class Crate extends DboSource {
                 $column = $result['key'];
 
                 $isVirtualField = false;
-                if($this->isVirtualField($column)){
+                if ($this->isVirtualField($column)) {
                     $isVirtualField = true;
                 }
 
@@ -538,7 +538,7 @@ class Crate extends DboSource {
                                 $attachedParameters[] = $value;
                             }
                         }
-                    } elseif (is_bool($result['value'])) {
+                    } else if (is_bool($result['value'])) {
                         $query->bindValue($i++, $result['value'], PDO::PARAM_BOOL);
                         $attachedParameters[] = $result['value'] ? 'true' : 'false';
                     } else {
@@ -569,8 +569,8 @@ class Crate extends DboSource {
         if (!empty($queryData['or'])) {
             //WHERE OR multiple 'OR' conditions
             foreach ($queryData['or'] as $conditionValues) {
-                foreach($conditionValues as $condition => $bindValues){
-                    foreach($bindValues as $key => $value){
+                foreach ($conditionValues as $condition => $bindValues) {
+                    foreach ($bindValues as $key => $value) {
                         $query->bindValue($i++, $value, PDO::PARAM_TIMESTAMP);
                         $attachedParameters[] = $value;
                     }
@@ -596,7 +596,7 @@ class Crate extends DboSource {
         return $this->executeQuery($query, $queryTemplate, [], $attachedParameters);
     }
 
-    public function create(Model $Model, $fields = null, $values = null){
+    public function create(Model $Model, $fields = null, $values = null) {
 
         $this->findType = $Model->findQueryType;
         $this->modelName = $Model->alias;
@@ -612,7 +612,7 @@ class Crate extends DboSource {
         return $this->buildInsertQuery($Model, $fields, $values);
     }
 
-    public function buildInsertQuery($Model, $fields, $values){
+    public function buildInsertQuery($Model, $fields, $values) {
         $placeHolders = [];
         foreach ($fields as $field) {
             $placeHolders[] = '?';
@@ -656,11 +656,100 @@ class Crate extends DboSource {
         return $this->executeQuery($query, $queryTemplate, [], $values);
     }
 
+    public function update(Model $model, $fields = [], $values = null, $conditions = null) {
+        if (!in_array($model->primaryKey, $fields, true)) {
+            return false;
+        }
+
+
+        $this->modelName = $model->alias;
+        $this->tableName = $model->table;
+        $this->tablePrefix = $model->tablePrefix;
+
+        $this->Model = $model;
+
+        if (!isset($this->tableMetaData[$this->modelName])) {
+            $this->getTableMetaInformation($this->tablePrefix . $this->tableName);
+        }
+
+        if ($conditions === null) {
+            $conditions = sprintf('%s=?', $model->primaryKey);
+        }
+
+        $query = $this->buildUpdateQuery($model, $fields, $values, $conditions);
+        try {
+            if (!$query->execute()) {
+                $query->closeCursor();
+                return false;
+            }
+            return true;
+        } catch (Exception $e) {
+            if (isset($query->queryString)) {
+                $e->queryString = $query->queryString;
+            }
+            throw $e;
+        }
+    }
+
+    /**
+     * @param Model $Model
+     * @param array $fields
+     * @param array $values
+     * @param string $conditions
+     * @return mixed
+     */
+    public function buildUpdateQuery(Model $Model, $fields, $values, $conditions) {
+        $data = array_combine($fields, $values);
+
+        $queryTemplate = sprintf('UPDATE %s SET ', $this->tablePrefix . $this->tableName);
+        $placeHolders = [];
+        foreach ($data as $field => $value) {
+            if ($field === $Model->primaryKey) {
+                continue;
+            }
+            $placeHolders[] = sprintf('%s=?', $field);
+        }
+        $queryTemplate .= implode(',', $placeHolders);
+
+        $queryTemplate .= ' WHERE '.$conditions;
+
+        $query = $this->_connection->prepare($queryTemplate);
+        $i = 1;
+        foreach ($data as $field => $value) {
+            if($field === $Model->primaryKey){
+                continue;
+            }
+
+            switch ($this->getColumnType($field)) {
+                case 'integer':
+                    $query->bindValue($i++, $value, PDO::PARAM_INT);
+                    break;
+
+                case 'boolean':
+                    $query->bindValue($i++, (bool)$value, PDO::PARAM_BOOL);
+                    break;
+
+                case 'array':
+                    $query->bindValue($i++, $value, PDO::PARAM_ARRAY);
+                    break;
+
+                default:
+                    $query->bindValue($i++, $value);
+            }
+        }
+
+        //Add primary key condition
+        $query->bindValue($i++, $data[$Model->primaryKey], PDO::PARAM_INT);
+
+        return $query;
+    }
+
+
     /**
      * @param $columnName
      * @return bool
      */
-    public function isVirtualField($columnName){
+    public function isVirtualField($columnName) {
         if (isset($this->Model->virtualFields[$columnName])) {
             return true;
         }
@@ -688,7 +777,7 @@ class Crate extends DboSource {
      * @param null $model
      * @return string
      */
-    public function removeModelAlias($columnName, $model = null){
+    public function removeModelAlias($columnName, $model = null) {
         if ($model === null) {
             $modelName = $this->modelName;
         } else {
@@ -705,7 +794,7 @@ class Crate extends DboSource {
      * @param $columnName
      * @return null|string
      */
-    public function getColumnType($columnName){
+    public function getColumnType($columnName) {
         $columnType = null;
         foreach ($this->tableMetaData[$this->modelName] as $column) {
             if ($column['column_name'] === $columnName) {
@@ -726,7 +815,7 @@ class Crate extends DboSource {
      * @param int $recursionLevel
      * @return bool
      */
-    public function columnExists($columnNameSource, $modelName = null, $recursionLevel = 0){
+    public function columnExists($columnNameSource, $modelName = null, $recursionLevel = 0) {
         if ($modelName === null) {
             $modelName = $this->modelName;
         }
@@ -768,7 +857,7 @@ class Crate extends DboSource {
      * @param string $direction
      * @return string
      */
-    public function getDirection($direction){
+    public function getDirection($direction) {
         $direction = strtoupper($direction);
         if (!in_array($direction, ['ASC', 'DESC'], true)) {
             return 'ASC';
@@ -782,7 +871,7 @@ class Crate extends DboSource {
      * @param Model|null $Model
      * @return array
      */
-    protected function _parseKey($key, $value, Model $Model = null){
+    protected function _parseKey($key, $value, Model $Model = null) {
         //$query['conditions'][] = 'Hoststatus.hostname IS NULL';
         if (is_numeric($key)) {
             $key = $value;
@@ -832,7 +921,7 @@ class Crate extends DboSource {
                     $operator = 'NOT IN';
                     break;
             }
-        } elseif ($null || $value === 'NULL') {
+        } else if ($null || $value === 'NULL') {
             switch ($operator) {
                 case '=':
                     $operator = 'IS';
@@ -858,17 +947,17 @@ class Crate extends DboSource {
         }
 
         return [
-            'key' => $key,
-            'value' => $value,
+            'key'      => $key,
+            'value'    => $value,
             'operator' => $operator,
-            'bound' => $bound
+            'bound'    => $bound
         ];
     }
 
     /**
      * @param string $tableName
      */
-    public function getTableMetaInformation($tableName, $model = null){
+    public function getTableMetaInformation($tableName, $model = null) {
         if ($model === null) {
             $modelName = $this->modelName;
         } else {
@@ -891,8 +980,8 @@ class Crate extends DboSource {
      * @param array $params
      * @return array|bool|PDOStatement
      */
-    public function executeQuery(PDOStatement $query, $sql, $options = array(), $params = array()){
-        $options += array('log' => $this->fullDebug);
+    public function executeQuery(PDOStatement $query, $sql, $options = [], $params = []) {
+        $options += ['log' => $this->fullDebug];
 
         $t = microtime(true);
         $this->_result = $this->__execute($query, $sql);
@@ -909,7 +998,7 @@ class Crate extends DboSource {
     /**
      * @return array|int
      */
-    public function fetchAllCrate(){
+    public function fetchAllCrate() {
         if ($this->hasResult()) {
             if ($this->findType === 'count') {
                 $this->_result->setFetchMode(PDO::FETCH_ASSOC);
@@ -960,7 +1049,7 @@ class Crate extends DboSource {
      * @param array $dbResult
      * @return array
      */
-    public function formatResultFindAllWithJoins($dbResult = []){
+    public function formatResultFindAllWithJoins($dbResult = []) {
         $results = [];
         $fields = [];
 
@@ -996,9 +1085,9 @@ class Crate extends DboSource {
 
                     if (isset($record[$keyInRecord])) {
                         $result[$modelName][$column] = $record[$keyInRecord];
-                    }else{
-                        foreach($this->Model->virtualFields as $virtualField => $realField){
-                            if($keyInRecord === sprintf('%s AS %s', $realField, $virtualField)){
+                    } else {
+                        foreach ($this->Model->virtualFields as $virtualField => $realField) {
+                            if ($keyInRecord === sprintf('%s AS %s', $realField, $virtualField)) {
                                 $result[][$virtualField] = $record[$virtualField];
                             }
 
@@ -1019,7 +1108,7 @@ class Crate extends DboSource {
      * @param array $dbResult
      * @return array
      */
-    public function formatResultFindAll($dbResult = []){
+    public function formatResultFindAll($dbResult = []) {
         $result = [];
         $key = $this->modelName . '.';
         foreach ($dbResult as $i => $dbRecord) {
@@ -1041,7 +1130,7 @@ class Crate extends DboSource {
      * @param array $params Values binded to the query (prepared statements)
      * @return void
      */
-    public function logQuery($sql, $params = array()){
+    public function logQuery($sql, $params = []) {
         $queryParts = explode('?', $sql);
         $_sql = '';
         foreach ($queryParts as $key => $part) {
@@ -1071,13 +1160,13 @@ class Crate extends DboSource {
 
         $this->_queriesCnt++;
         $this->_queriesTime += $this->took;
-        $this->_queriesLog[] = array(
-            'query' => $sql,
-            'params' => $params,
+        $this->_queriesLog[] = [
+            'query'    => $sql,
+            'params'   => $params,
             'affected' => $this->affected,
-            'numRows' => $this->numRows,
-            'took' => $this->took
-        );
+            'numRows'  => $this->numRows,
+            'took'     => $this->took
+        ];
         if (count($this->_queriesLog) > $this->_queriesLogMax) {
             array_shift($this->_queriesLog);
         }
@@ -1091,7 +1180,7 @@ class Crate extends DboSource {
      * @param bool $quote Whether or not the field should be cast to a string.
      * @return bool Converted boolean value
      */
-    public function boolean($data, $quote = false){
+    public function boolean($data, $quote = false) {
         return $data;
     }
 

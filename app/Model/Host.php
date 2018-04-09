@@ -25,11 +25,13 @@
 
 App::uses('ValidationCollection', 'Lib');
 
+use itnovum\openITCOCKPIT\Core\DbBackend;
 use itnovum\openITCOCKPIT\Core\HostConditions;
 use itnovum\openITCOCKPIT\Filter\HostFilter;
 
 /**
  * @property ParentHost $ParentHost
+ * @property DbBackend $DbBackend
  */
 class Host extends AppModel {
 
@@ -1475,7 +1477,7 @@ class Host extends AppModel {
      * @param array $MY_RIGHTS
      * @return array
      */
-    public function getHoststatusCount($MY_RIGHTS){
+    public function getHoststatusCount($MY_RIGHTS) {
         $hoststatusCount = [
             '1' => 0,
             '2' => 0,
@@ -1527,7 +1529,7 @@ class Host extends AppModel {
         return $hoststatusCount;
     }
 
-    public function getServicestatusCount($MY_RIGHTS){
+    public function getServicestatusCount($MY_RIGHTS) {
         $servicestatusCount = [
             '1' => 0,
             '2' => 0,
@@ -1582,7 +1584,7 @@ class Host extends AppModel {
         }
         return $servicestatusCount;
     }
-    
+
     /**
      * @param int $hostId
      * @return array
@@ -1648,7 +1650,7 @@ class Host extends AppModel {
      * @param int $hostId
      * @return array
      */
-    public function getQueryForServiceBrowser($hostId){
+    public function getQueryForServiceBrowser($hostId) {
         return [
             'recursive'  => -1,
             'fields'     => [
@@ -1702,5 +1704,24 @@ class Host extends AppModel {
                 'Host.id' => $hostId
             ]
         ];
+    }
+
+    /**
+     * @param bool $created
+     * @param array $options
+     * @return bool|void
+     */
+    public function afterSave($created, $options = []) {
+        if ($this->DbBackend->isCrateDb() && isset($this->data['Host']['id'])) {
+            //Save data also to CrateDB
+            $CrateHost = new \itnovum\openITCOCKPIT\Crate\CrateHost($this->data['Host']['id']);
+            $host = $this->find('first', $CrateHost->getFindQuery());
+            $CrateHost->setDataFromFindResult($host);
+
+            $CrateHostModel = ClassRegistry::init('CrateModule.CrateHost');
+            $CrateHostModel->save($CrateHost->getDataForSave());
+        }
+
+        parent::afterSave($created, $options);
     }
 }

@@ -41,7 +41,7 @@ class SyncTablesShell extends AppShell {
 
     ];
 
-    public function main(){
+    public function main() {
         $this->syncHosts();
         $this->syncContacts();
         $this->syncCommands();
@@ -49,10 +49,10 @@ class SyncTablesShell extends AppShell {
 
     }
 
-    public function syncHosts(){
+    public function syncHosts() {
         $hosts = $this->Host->find('all', [
             'recursive' => -1,
-            'contain' => [
+            'contain'   => [
                 'Container',
                 'Hosttemplate' => [
                     'fields' => [
@@ -61,7 +61,7 @@ class SyncTablesShell extends AppShell {
                     ]
                 ]
             ],
-            'fields' => [
+            'fields'    => [
                 'Host.id',
                 'Host.name',
                 'Host.uuid',
@@ -77,47 +77,16 @@ class SyncTablesShell extends AppShell {
 
         $crateHosts = [];
         foreach ($hosts as $host) {
-            $containerIds = [];
-            $_containerIds = Hash::extract($host, 'Container.{n}.HostsToContainer.container_id');
-            foreach ($_containerIds as $_containerId) {
-                $containerIds[] = (int)$_containerId;
-            }
+            $CrateHost = new \itnovum\openITCOCKPIT\Crate\CrateHost($host['Host']['id']);
+            $CrateHost->setDataFromFindResult($host);
 
-            if (!in_array((int)$host['Host']['container_id'], $containerIds, true)) {
-                $containerIds[] = (int)$host['Host']['container_id'];
-            }
-
-            $active_checks_enabled = $host['Hosttemplate']['active_checks_enabled'];
-            if ($host['Host']['active_checks_enabled'] !== null) {
-                $active_checks_enabled = $host['Host']['active_checks_enabled'];
-            }
-
-            $tags = $host['Hosttemplate']['tags'];
-            if ($host['Host']['tags']) {
-                $tags = $host['Host']['tags'];
-            }
-
-            $crateHosts[] = [
-                'CrateHost' => [
-                    'id' => $host['Host']['id'],
-                    'name' => $host['Host']['name'],
-                    'uuid' => $host['Host']['uuid'],
-                    'address' => $host['Host']['address'],
-                    'active_checks_enabled' => (int)$active_checks_enabled,
-                    'satellite_id' => (int)$host['Host']['satellite_id'],
-                    'container_ids' => $containerIds,
-                    'container_id' => (int)$host['Host']['container_id'],
-                    'tags' => $tags,
-                    'hosttemplate_id' => (int)$host['Host']['hosttemplate_id'],
-                    'disabled' => (bool)$host['Host']['disabled'],
-                ]
-            ];
+            $crateHosts[] = $CrateHost->getDataForSave();
         }
 
         $this->CrateHost->saveAll($crateHosts);
     }
 
-    public function syncContacts(){
+    public function syncContacts() {
         $contacts = $this->Contact->find('all', [
             'recursive' => -1,
         ]);
@@ -126,7 +95,7 @@ class SyncTablesShell extends AppShell {
         foreach ($contacts as $contact) {
             $crateContact[] = [
                 'CrateContact' => [
-                    'id' => (int)$contact['Contact']['id'],
+                    'id'   => (int)$contact['Contact']['id'],
                     'uuid' => $contact['Contact']['uuid'],
                     'name' => $contact['Contact']['name'],
                 ]
@@ -137,10 +106,10 @@ class SyncTablesShell extends AppShell {
 
     }
 
-    public function syncCommands(){
+    public function syncCommands() {
         $commands = $this->Command->find('all', [
-            'recursive' => -1,
-            'fields' => [
+            'recursive'  => -1,
+            'fields'     => [
                 'Command.id',
                 'Command.name',
                 'Command.uuid'
@@ -154,7 +123,7 @@ class SyncTablesShell extends AppShell {
         foreach ($commands as $command) {
             $crateCommand[] = [
                 'CrateCommand' => [
-                    'id' => (int)$command['Command']['id'],
+                    'id'   => (int)$command['Command']['id'],
                     'uuid' => $command['Command']['uuid'],
                     'name' => $command['Command']['name'],
                 ]
@@ -165,10 +134,10 @@ class SyncTablesShell extends AppShell {
 
     }
 
-    public function syncServices(){
+    public function syncServices() {
         $services = $this->Service->find('all', [
             'recursive' => -1,
-            'fields' => [
+            'fields'    => [
                 'Service.id',
                 'Service.uuid',
                 'Service.name',
@@ -178,7 +147,7 @@ class SyncTablesShell extends AppShell {
                 'Service.host_id',
                 'Service.disabled'
             ],
-            'contain' => [
+            'contain'   => [
                 'Servicetemplate' => [
                     'fields' => [
                         'Servicetemplate.id',
@@ -215,17 +184,17 @@ class SyncTablesShell extends AppShell {
 
             $crateService[] = [
                 'CrateService' => [
-                    'id' => (int)$service['Service']['id'],
-                    'uuid' => $service['Service']['uuid'],
-                    'name' => $serviceName,
-                    'servicetemplate_id' => (int)$service['Service']['servicetemplate_id'],
-                    'host_id' => (int)$service['Service']['host_id'],
-                    'name_from_template' => $nameFromTemplate,
-                    'active_checks_enabled' => $activeChecksEnabled,
+                    'id'                                  => (int)$service['Service']['id'],
+                    'uuid'                                => $service['Service']['uuid'],
+                    'name'                                => $serviceName,
+                    'servicetemplate_id'                  => (int)$service['Service']['servicetemplate_id'],
+                    'host_id'                             => (int)$service['Service']['host_id'],
+                    'name_from_template'                  => $nameFromTemplate,
+                    'active_checks_enabled'               => $activeChecksEnabled,
                     'active_checks_enabled_from_template' => $activeChecksEnabledFromTemplate,
-                    'tags' => $tags,
-                    'tags_from_template' => $tagFromTemplate,
-                    'disabled' => (bool)$service['Service']['disabled'],
+                    'tags'                                => $tags,
+                    'tags_from_template'                  => $tagFromTemplate,
+                    'disabled'                            => (bool)$service['Service']['disabled'],
                 ]
             ];
         }
@@ -234,10 +203,10 @@ class SyncTablesShell extends AppShell {
     }
 
 
-    public function getOptionParser(){
+    public function getOptionParser() {
         $parser = parent::getOptionParser();
         $parser->addOptions([
-            'type' => ['short' => 't', 'help' => __d('oitc_console', 'Type of the notification host or service')],
+            'type'     => ['short' => 't', 'help' => __d('oitc_console', 'Type of the notification host or service')],
             'hostname' => ['help' => __d('oitc_console', 'The uuid of the host')],
         ]);
 
