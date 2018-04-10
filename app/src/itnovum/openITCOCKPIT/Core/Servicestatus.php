@@ -25,6 +25,7 @@
 namespace itnovum\openITCOCKPIT\Core;
 
 
+use CakeTime;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
 
 class Servicestatus {
@@ -66,6 +67,8 @@ class Servicestatus {
     private $perfdata;
 
     private $latency;
+
+    private $max_check_attempts;
 
     /**
      * @var UserTime|null
@@ -151,6 +154,10 @@ class Servicestatus {
 
         if (isset($data['latency'])) {
             $this->latency = $data['latency'];
+        }
+
+        if(isset($data['max_check_attempts'])){
+            $this->max_check_attempts = (int)$data['max_check_attempts'];
         }
 
         $this->UserTime = $UserTime;
@@ -394,6 +401,10 @@ class Servicestatus {
         return !is_null($this->currentState);
     }
 
+    public function getMaxCheckAttempts(){
+        return $this->max_check_attempts;
+    }
+
     /**
      * @return array
      */
@@ -414,8 +425,22 @@ class Servicestatus {
             $arr['lastCheck'] = $this->getLastCheck();
             $arr['nextCheck'] = $this->getNextCheck();
         }
+
+        $arr['isHardstate'] = $this->isHardState();
         $arr['problemHasBeenAcknowledged'] = $this->isAcknowledged();
         $arr['isInMonitoring'] = $this->isInMonitoring();
+        return $arr;
+    }
+
+    /**
+     * @return array
+     */
+    public function toArrayForBrowser(){
+        $arr = $this->toArray();
+        $arr['lastHardStateChange'] = $this->UserTime->secondsInHumanShort($this->getLastHardStateChange());
+        $arr['last_state_change'] = $this->UserTime->secondsInHumanShort($this->getLastStateChange());
+        $arr['lastCheck'] = CakeTime::timeAgoInWords($this->getLastCheck());
+        $arr['nextCheck'] = CakeTime::timeAgoInWords($this->getNextCheck());
         return $arr;
     }
 

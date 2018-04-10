@@ -60,7 +60,7 @@
             </div>
 
             <div class="modal-footer">
-                <button type="button" class="btn btn-danger" ng-click="delete()">
+                <button type="button" class="btn btn-danger" ng-click="doDeleteHostDowntime()">
                     <?php echo __('Delete'); ?>
                 </button>
 

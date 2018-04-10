@@ -159,6 +159,10 @@ class AppModel extends Model {
             $redirect['plugin'] = $params['named']['_plugin'];
         }
 
+        if (isset($params['named']['_id'])) {
+            $redirect[] = $params['named']['_id'];
+        }
+
 
         if (!empty($default)) {
             $redirect = Hash::merge($default, $redirect);

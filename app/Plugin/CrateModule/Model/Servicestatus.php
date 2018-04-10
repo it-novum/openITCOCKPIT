@@ -210,4 +210,51 @@ class Servicestatus extends CrateModuleAppModel {
         return $query;
     }
 
+    /**
+     * @param array $MY_RIGHTS
+     * @return array
+     */
+    public function getServicestatusCount($MY_RIGHTS){
+        $servicestatusCount = [
+            '1' => 0,
+            '2' => 0,
+            '3' => 0,
+        ];
+
+        $this->virtualFields = [
+            'count' => 'COUNT(DISTINCT Servicestatus.service_description)'
+        ];
+        $query = [
+            'fields' => [
+                'Servicestatus.current_state',
+            ],
+            'joins' => [
+                [
+                    'table' => 'openitcockpit_hosts',
+                    'type' => 'INNER',
+                    'alias' => 'Host',
+                    'conditions' => 'Host.uuid = Servicestatus.hostname',
+                ]
+            ],
+            'conditions' => [
+                'Service.disabled'                  => false,
+                'Servicestatus.current_state >'     => 0,
+            ],
+            'array_difference' => [
+                'Host.container_ids' =>
+                    $MY_RIGHTS
+            ],
+            'group'      => [
+                'Servicestatus.current_state',
+            ],
+        ];
+
+        $servicestatusCountResult = $this->find('all', $query);
+
+        foreach ($servicestatusCountResult as $servicestatus) {
+            $servicestatusCount[$servicestatus['Servicestatus']['current_state']] = (int)$servicestatus[0]['count'];
+        }
+        return $servicestatusCount;
+    }
+
 }

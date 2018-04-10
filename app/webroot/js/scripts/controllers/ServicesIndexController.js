@@ -372,7 +372,7 @@ angular.module('openITCOCKPIT')
                 legend: false,
                 grid: {
                     hoverable: true,
-                    markings: self.threshold_lines,
+                    markings: [],
                     borderWidth: {
                         top: 1,
                         right: 1,

@@ -5,6 +5,12 @@ angular.module('openITCOCKPIT').directive('rescheduleService', function($http, S
 
         controller: function($scope){
 
+            var callbackName = false;
+
+            $scope.setServiceRescheduleCallback = function(_callback){
+                callbackName = _callback;
+            };
+
             $scope.doReschedule = function(objects){
                 var count = Object.keys(objects).length;
                 var i = 0;
@@ -21,6 +27,10 @@ angular.module('openITCOCKPIT').directive('rescheduleService', function($http, S
                         object.Host.satelliteId
                     ]));
                 }
+                //Call callback function if given
+                if(callbackName){
+                    $scope[callbackName]();
+                }
                 $timeout(function(){
                     $scope.percentage = 0;
                     $('#angularRescheduleServiceModal').modal('hide');
@@ -33,6 +43,10 @@ angular.module('openITCOCKPIT').directive('rescheduleService', function($http, S
             $scope.reschedule = function(objects){
                 if(Object.keys(objects).length === 0){
                     return;
+                }
+
+                if(attr.hasOwnProperty('callback')){
+                    $scope.setServiceRescheduleCallback(attr.callback);
                 }
                 $('#angularRescheduleServiceModal').modal('show');
                 $scope.doReschedule(objects);

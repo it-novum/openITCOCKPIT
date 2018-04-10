@@ -121,7 +121,10 @@ class DowntimeHost extends CrateModuleAppModel {
                 'DowntimeHost.was_started',
                 'DowntimeHost.was_cancelled',
             ],
-            'order'      => $Conditions->getOrder()
+            'order'      => $Conditions->getOrder(),
+            'conditions' => [
+                'DowntimeHost.was_cancelled' => false
+            ]
         ];
 
         if ($Conditions->hasHostUuids()) {
@@ -165,6 +168,28 @@ class DowntimeHost extends CrateModuleAppModel {
             ]
         ];
 
+    }
+
+    /**
+     * @param string $uuid
+     * @return array|null
+     */
+    public function byHostUuid($uuid = null){
+        if ($uuid !== null) {
+            $downtime = $this->find('first', [
+                'conditions' => [
+                    'hostname' => $uuid,
+                ],
+                'order' => [
+                    'DowntimeHost.entry_time' => 'DESC',
+                ],
+            ]);
+
+            return $downtime;
+
+        }
+
+        return [];
     }
 
 }

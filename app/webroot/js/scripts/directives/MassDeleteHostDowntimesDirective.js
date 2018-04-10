@@ -7,26 +7,33 @@ angular.module('openITCOCKPIT').directive('massDeleteHostDowntimes', function($h
         controller: function($scope){
 
             $scope.includeServices = true;
-            $scope.objects = {};
             $scope.percentage = 0;
             $scope.isDeleting = false;
 
-            $scope.setObjectsForMassHostDowntimeDelete = function(objects){
-                $scope.objects = objects;
+            $scope.myDeleteUrl = $scope.deleteUrl;
+
+            var objects = {};
+            var callbackName = false;
+
+            $scope.setObjectsForMassHostDowntimeDelete = function(_objects){
+                objects = _objects;
             };
 
+            $scope.setCallbackForMassHostDowntimeDelete = function(_callback){
+                callbackName = _callback;
+            };
 
-            $scope.delete = function(){
+            $scope.doDeleteHostDowntime = function(){
                 $scope.isDeleting = true;
-                var count = Object.keys($scope.objects).length;
+                var count = Object.keys(objects).length;
                 var i = 0;
 
-                for(var id in $scope.objects){
+                for(var id in objects){
                     var data = {
                         includeServices: $scope.includeServices,
                         type: 'host'
                     };
-                    $http.post($scope.deleteUrl + id + ".json", data).then(
+                    $http.post($scope.myDeleteUrl + id + ".json", data).then(
                         function(result){
                             i++;
                             $scope.percentage = Math.round(i / count * 100);
@@ -34,8 +41,15 @@ angular.module('openITCOCKPIT').directive('massDeleteHostDowntimes', function($h
                             if(i === count){
                                 $scope.isDeleting = false;
                                 $scope.percentage = 0;
-                                $scope.load();
+
                                 $('#angularMassDeleteHostDowntimes').modal('hide');
+
+                                //Call callback function if given
+                                if(callbackName){
+                                    $scope[callbackName]();
+                                }else{
+                                    $scope.load();
+                                }
                             }
                         });
                 }
@@ -45,6 +59,15 @@ angular.module('openITCOCKPIT').directive('massDeleteHostDowntimes', function($h
 
         link: function($scope, element, attr){
             $scope.confirmHostDowntimeDelete = function(objects){
+
+                if(attr.hasOwnProperty('deleteUrl')){
+                    $scope.myDeleteUrl = attr.deleteUrl;
+                }
+
+                if(attr.hasOwnProperty('callback')){
+                    $scope.setCallbackForMassHostDowntimeDelete(attr.callback);
+                }
+
                 $scope.setObjectsForMassHostDowntimeDelete(objects);
                 $('#angularMassDeleteHostDowntimes').modal('show');
             };

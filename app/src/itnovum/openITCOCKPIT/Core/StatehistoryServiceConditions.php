@@ -50,6 +50,11 @@ class StatehistoryServiceConditions extends ListSettingsConditions {
     private $useLimit = true;
 
     /**
+     * @var bool
+     */
+    private $hardStateTypeAndUpState = false;
+
+    /**
      * @param $uuid
      */
     public function setServiceUuid($uuid){
@@ -89,5 +94,18 @@ class StatehistoryServiceConditions extends ListSettingsConditions {
         return $this->useLimit;
     }
 
+    /**
+     * @param $value
+     */
+    public function setHardStateTypeAndUpState($value){
+        $this->hardStateTypeAndUpState = (bool)$value;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hardStateTypeAndUpState(){
+        return $this->hardStateTypeAndUpState;
+    }
 }
 

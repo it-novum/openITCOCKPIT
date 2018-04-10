@@ -1676,4 +1676,76 @@ class Service extends AppModel {
         }
         return $servicesWithLimit + $selectedServices;
     }
+
+    /**
+     * @param int $serviceId
+     * @return array
+     */
+    public function getQueryForBrowser($serviceId) {
+        return [
+            'recursive'  => -1,
+            'conditions' => [
+                'Service.id' => $serviceId,
+            ],
+            'contain'    => [
+                'Contact'                          => [
+                    'fields' => [
+                        'id',
+                        'name',
+                    ],
+                    'Container'
+                ],
+                'Contactgroup'                     => [
+                    'fields'    => [
+                        'id'
+                    ],
+                    'Container' => [
+                        'fields' => [
+                            'name',
+                            'parent_id'
+                        ],
+                    ],
+                ],
+                'Customvariable'                   => [
+                    'fields' => [
+                        'id',
+                        'name',
+                        'value',
+                        'objecttype_id',
+                    ],
+                ],
+                'Servicecommandargumentvalue'      => [
+                    'fields'          => [
+                        'id',
+                        'commandargument_id',
+                        'value',
+                    ],
+                    'Commandargument' => [
+                        'fields' => [
+                            'id',
+                            'human_name',
+                            'name'
+                        ],
+                    ],
+                ],
+                'Serviceeventcommandargumentvalue' => [
+                    'fields'          => [
+                        'id',
+                        'commandargument_id',
+                        'value',
+                    ],
+                    'Commandargument' => [
+                        'fields' => [
+                            'id',
+                            'human_name',
+                            'name'
+                        ],
+                    ],
+                ],
+                'CheckCommand',
+                'CheckPeriod',
+                'NotifyPeriod',
+            ]
+        ];
+    }
 }

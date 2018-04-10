@@ -23,6 +23,7 @@ angular.module('openITCOCKPIT').directive('hoststatusicon', function($interval){
                 var currentstate = -1;
                 if(typeof $scope.state === "undefined"){
                     currentstate = parseInt($scope.host.Hoststatus.currentState, 10);
+                    console.log(currentstate);
                     if($scope.host.Hoststatus.currentState === null){
                         currentstate = -1; //Not found in monitoring
                     }

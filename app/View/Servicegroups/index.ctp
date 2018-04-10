@@ -65,6 +65,14 @@
                     </div>
                     <span class="widget-icon hidden-mobile"> <i class="fa fa-cogs"></i> </span>
                     <h2 class="hidden-mobile"><?php echo __('Service Groups'); ?></h2>
+                    <?php if ($this->Acl->hasPermission('extended')): ?>
+                        <ul class="nav nav-tabs pull-right" id="widget-tab-1">
+                            <li>
+                                <a href="/servicegroups/extended"><i class="fa fa-plus-square"></i>
+                                    <span class="hidden-mobile hidden-tablet"><?php echo __('Extended overview'); ?></span></a>
+                            </li>
+                        </ul>
+                    <?php endif; ?>
                 </header>
                 <div>
                     <div class="widget-body no-padding">
@@ -145,19 +153,19 @@
                                     </td>
                                     <td>
                                         <ul class="list-unstyled">
-                                            <li ng-repeat="service in servicegroup.Service">
-                                                <a href="hosts/edit/{{service.Host.id}}" ng-if="service.Host.allowEdit">
-                                                    {{ service.Host.name }}
+                                            <li ng-repeat="service in servicegroup.Services">
+                                                <a href="/hosts/edit/{{service.Host.id}}" ng-if="service.Host.allow_edit">
+                                                    {{ service.Host.hostname }}
                                                 </a>
-                                                <span ng-if="!service.Host.allowEdit">
-                                                    {{ service.Host.name }}
+                                                <span ng-if="!service.Host.allow_edit">
+                                                    {{ service.Host.hostname }}
                                                 </span>
                                                 /
-                                                <a href="services/edit/{{service.id}}" ng-if="service.allowEdit">
-                                                    {{ (service.name) ? service.name : service.Servicetemplate.name }}
+                                                <a href="/services/edit/{{service.Service.id}}" ng-if="service.Service.allow_edit">
+                                                    {{ service.Service.servicename }}
                                                 </a>
-                                                <span ng-if="!service.allowEdit">
-                                                    {{ (service.name) ? service.name : service.Servicetemplate.name }}
+                                                <span ng-if="!service.Service.allow_edit">
+                                                    {{ service.Service.servicename }}
                                                 </span>
                                             </li>
                                         </ul>
