@@ -601,87 +601,39 @@ class MapeditorsController extends MapModuleAppController {
             $this->Frontend->setJson('map_gadgets', Hash::Extract($mapElements['map_gadgets'], '{n}.Mapgadget'));
         }
 
+
         if (!empty($mapIds)) {
             $mapElementUuids = $this->Mapeditor->getMapElementUuids($mapIds);
-            debug($mapElementUuids);
-            $mapstatus = [];
-            foreach($mapElementUuids as $type => $uuids){
-                switch($type){
-                    case 'host':
-                        $hostFields = new HoststatusFields($this->DbBackend);
-                        $serviceFields = new ServicestatusFields($this->DbBackend);
+            $hostFields = new HoststatusFields($this->DbBackend);
+            $serviceFields = new ServicestatusFields($this->DbBackend);
 
-                        $hostFields
-                            ->output()
-                            ->longOutput()
-                            ->perfdata()
-                            ->lastCheck()
-                            ->nextCheck()
-                            ->lastStateChange()
-                            ->problemHasBeenAcknowledged()
-                            ->scheduledDowntimeDepth()
-                            ->isFlapping()
-                            ->currentCheckAttempt()
-                            ->maxCheckAttempts()
-                            ->currentState();
+            $hostFields
+                ->problemHasBeenAcknowledged()
+                ->scheduledDowntimeDepth()
+                ->isFlapping()
+                ->currentState();
 
-                        $serviceFields
-                            ->problemHasBeenAcknowledged()
-                            ->scheduledDowntimeDepth()
-                            ->isFlapping()
-                            ->perfdata()
-                            ->output()
-                            ->currentState();
+            $serviceFields
+                ->problemHasBeenAcknowledged()
+                ->currentState();
 
-                        $mapstatus['host'] = $this->Hoststatus->ByUuids($hostUuids, $hostFields, $hoststatusConditions);
+            $hostUuids = $mapElementUuids['forStatus']['host'];
+            $serviceUuids = $mapElementUuids['forStatus']['service'];
+            unset($mapElementUuids['forStatus']);
+            $hoststatus = $this->Hoststatus->ByUuids($hostUuids, $hostFields, $hoststatusConditions);
+            $hostServicestatus = $this->Servicestatus->ByUuids($serviceUuids, $serviceFields, $servicestatusConditions);
 
-                        debug($this->Mapeditor->getHoststatus($uuids, $hoststatusConditions, $servicestatusConditions, $hostFields, $serviceFields));
+           // debug($hoststatus);
+           // debug($hostServicestatus);
 
-                        break;
-                    case 'service':
-                        $serviceFields = new ServicestatusFields($this->DbBackend);
-                        $serviceFields
-                            ->currentState()
-                            ->problemHasBeenAcknowledged()
-                            ->scheduledDowntimeDepth()
-                            ->isFlapping()
-                            ->perfdata()
-                            ->output()
-                            ->longOutput()
-                            ->currentCheckAttempt()
-                            ->maxCheckAttempts()
-                            ->lastCheck()
-                            ->nextCheck()
-                            ->lastStateChange();
+            $mapElementUuids['status'] = [
+                'hoststatus' => $hoststatus,
+                'servicestatus' => $hostServicestatus
+            ];
 
-                        $this->Mapeditor->getServicestatus($uuids, $servicestatusConditions, $serviceFields);
+            $mapstatus = $mapElementUuids;
 
-                        break;
-                    case 'servicegroup':
-                        $serviceFields = new ServicestatusFields($this->DbBackend);
-                        $serviceFields->currentState();
-                        $this->Mapeditor->getServicegroupstatus($uuids, $servicestatusConditions, $serviceFields);
 
-                        break;
-                    case 'hostgroup':
-                        $hostFields = new HoststatusFields($this->DbBackend);
-                        $serviceFields = new ServicestatusFields($this->DbBackend);
-                        $hostFields
-                            ->currentState()
-                            ->problemHasBeenAcknowledged()
-                            ->scheduledDowntimeDepth()
-                            ->isFlapping();
-
-                        $serviceFields->currentState();
-                        $this->Mapeditor->getHostgroupstatus($uuids, $hoststatusConditions, $servicestatusConditions, $hostFields, $serviceFields);
-
-                        break;
-                    default:
-                        //no appropriate type found -> continue
-                        continue;
-                        break;
-                }
-            }
         }
 
         $this->set(compact([

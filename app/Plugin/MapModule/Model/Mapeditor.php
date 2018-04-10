@@ -848,16 +848,8 @@ class Mapeditor extends MapModuleAppModel {
 
         $mapElements = [];
         foreach ($mapIds as $mapId) {
-            //debug($this->getDeepMapElements($mapId));
             $mapElements[$mapId] = $this->getDeepMapElements($mapId);
         }
-
-        //get the element ids
-        $mapElementIds = [];
-        $mapElementIds['service'] = array_unique(Hash::extract($mapElements, '{n}.{n}.{s}.{n}.{s}[type=/service$/].object_id'));
-        $mapElementIds['host'] = array_unique(Hash::extract($mapElements, '{n}.{n}.{s}.{n}.{s}[type=/host$/].object_id'));
-        $mapElementIds['servicegroup'] = array_unique(Hash::extract($mapElements, '{n}.{n}.{s}.{n}.{s}[type=/servicegroup$/].object_id'));
-        $mapElementIds['hostgroup'] = array_unique(Hash::extract($mapElements, '{n}.{n}.{s}.{n}.{s}[type=/hostgroup$/].object_id'));
 
         $this->Host = ClassRegistry::init('Host');
         $this->Service = ClassRegistry::init('Service');
@@ -866,76 +858,110 @@ class Mapeditor extends MapModuleAppModel {
 
 
         $mapElementUuids = [];
-        foreach ($mapElementIds as $type => $ids){
-            if(empty($type)){
-                continue;
-            }
-            switch($type){
-                case 'service':
-                    $mapElementUuids['service'] = $this->Service->find('all',[
-                        'recursive' => -1,
-                        'conditions' => [
-                            'Service.id' => $ids
-                        ],
-                        'fields' => [
-                            'Service.uuid'
-                        ]
-                    ]);
-                    break;
-                case 'host':
-                    $mapElementUuids['host'] = $this->Host->find('all',[
-                        'recursive' => -1,
-                        'conditions' => [
-                            'Host.id' => $ids
-                        ],
-                        'fields' => [
-                            'Host.uuid'
-                        ]
-                    ]);
-                    break;
-                case 'servicegroup':
-                    $mapElementUuids['servicegroup'] = $this->Servicegroup->find('all',[
-                        'recursive' => -1,
-                        'conditions' => [
-                            'Servicegroup.id' => $ids
-                        ],
-                        'fields' => [
-                            'Servicegroup.uuid'
-                        ]
-                    ]);
-                    break;
-                case 'hostgroup':
-                    $mapElementUuids['hostgroup'] = $this->Hostgroup->find('all',[
-                        'recursive' => -1,
-                        'conditions' => [
-                            'Hostgroup.id' => $ids
-                        ],
-                        'fields' => [
-                            'Hostgroup.uuid'
-                        ]
-                    ]);
-                    break;
-            }
-        }
+        $mapElementUuidsForStatus = [
+            'host'    => [],
+            'service' => [],
+        ];
+        $services = [];
+        foreach ($mapElements as $rootMapId => $linkedMaps) {
+            $mapElementUuids[$rootMapId] = [];
+            foreach ($linkedMaps as $linkedMapId => $types) {
+                $mapElementUuids[$rootMapId][$linkedMapId] = [];
+                foreach ($types as $elementType => $elements) {
+                    if (empty($elementType)) {
+                        continue;
+                    }
+                    foreach ($elements as $type => $element) {
+                        switch ($element['type']) {
+                            case 'service':
+                                $serviceUuids = $this->Service->find('all', [
+                                    'recursive'  => -1,
+                                    'conditions' => [
+                                        'Service.id' => $element['object_id']
+                                    ],
+                                    'fields'     => [
+                                        'Service.uuid'
+                                    ]
+                                ]);
+                                $serviceUuids = Hash::extract($serviceUuids, '{n}.Service.uuid');
+                                $mapElementUuids[$rootMapId][$linkedMapId]['service'][]['service'] = $serviceUuids;
 
-        foreach ($mapElementUuids as $type => $elementUuids){
-            $mapElementUuids[$type] = Hash::extract($elementUuids, '{n}.{s}.uuid');
+                                $mapElementUuidsForStatus = array_merge_recursive($mapElementUuidsForStatus, ['service' => $serviceUuids]);
+
+                                break;
+                            case 'host':
+                                $hosts = $this->Host->find('all', [
+                                    'recursive'  => -1,
+                                    'conditions' => [
+                                        'Host.id' => $element['object_id']
+                                    ],
+                                    'fields'     => [
+                                        'Host.uuid'
+                                    ]
+                                ]);
+                                $hostUuid = Hash::extract($hosts, '{n}.Host.uuid');
+                                $mapElementUuids[$rootMapId][$linkedMapId]['host'][]['host'] = $hostUuid;
+                                $serviceUuids = $this->getServiceUuidsByHostUuids($hostUuid);
+                                $mapElementUuids[$rootMapId][$linkedMapId]['host'][]['service'] = $serviceUuids;
+
+                                $mapElementUuidsForStatus = array_merge_recursive($mapElementUuidsForStatus, ['service' => $serviceUuids], ['host' => $hostUuid]);
+                                break;
+                            case 'servicegroup':
+                                $servicegroupUuid = $this->Servicegroup->find('all', [
+                                    'recursive'  => -1,
+                                    'conditions' => [
+                                        'Servicegroup.id' => $element['object_id']
+                                    ],
+                                    'fields'     => [
+                                        'Servicegroup.uuid'
+                                    ]
+                                ]);
+                                $servicegroupUuid = Hash::extract($servicegroupUuid, '{n}.Servicegroup.uuid');
+                                $serviceUuids = $this->getServiceUuidsByServicegroupUuids($servicegroupUuid);
+                                $mapElementUuids[$rootMapId][$linkedMapId]['servicegroup'][]['service'] = $serviceUuids;
+                                $mapElementUuidsForStatus = array_merge_recursive($mapElementUuidsForStatus, ['service' => $serviceUuids]);
+                                break;
+                            case 'hostgroup':
+                                $hostgroupUuid = $this->Hostgroup->find('all', [
+                                    'recursive'  => -1,
+                                    'conditions' => [
+                                        'Hostgroup.id' => $element['object_id']
+                                    ],
+                                    'fields'     => [
+                                        'Hostgroup.uuid'
+                                    ]
+                                ]);
+                                $hostgroupUuid = Hash::extract($hostgroupUuid, '{n}.Hostgroup.uuid');
+                                $hostgroupElementUuids = $this->getHostAndServiceUuidsByHostgroupuuid($hostgroupUuid);
+                                $mapElementUuids[$rootMapId][$linkedMapId]['hostgroup'][] = $hostgroupElementUuids;
+                                $mapElementUuidsForStatus = array_merge_recursive($mapElementUuidsForStatus, $hostgroupElementUuids);
+                                break;
+                        }
+                    }
+                }
+            }
         }
-        return $mapElementUuids;
+        $mapElementUuidsForStatus['host'] = array_unique($mapElementUuidsForStatus['host']);
+        $mapElementUuidsForStatus['service'] = array_unique($mapElementUuidsForStatus['service']);
+        $mapElements = [
+            'structure' => $mapElementUuids,
+            'forStatus' => $mapElementUuidsForStatus
+        ];
+
+        return $mapElements;
     }
-
 
 
     public function getDeepMapElements($mapId, $iteratedMaps = []) {
         $this->mapElements[$mapId] = $this->getMapStatusElementsByMapId($mapId);
         $maxDepth = 2; // +1 = maximum number of map depth
         if (sizeof($iteratedMaps) < $maxDepth) {
-            if (isset($this->mapElements[$mapId]['items']) && !empty($this->mapElements[$mapId]['items'])) {
-                foreach ($this->mapElements[$mapId]['items'] as $element) {
-                    if ($element['Mapitem']['type'] != 'map') {
+            if (isset($this->mapElements[$mapId]['Mapitem']) && !empty($this->mapElements[$mapId]['Mapitem'])) {
+                foreach ($this->mapElements[$mapId]['Mapitem'] as $element) {
+                    if ($element['type'] != 'map') {
                         continue;
                     }
-                    $currentMapId = $element['Mapitem']['object_id'];
+                    $currentMapId = $element['object_id'];
                     if (!in_array($currentMapId, $iteratedMaps)) {
                         $iteratedMaps[] = $currentMapId;
                         //next iteration
@@ -960,8 +986,7 @@ class Mapeditor extends MapModuleAppModel {
         $Mapgadget = ClassRegistry::init('Mapgadget');
 
         $mapElements = [];
-        $statusObjects = [];
-        $mapElements['items'] = $Mapitem->find('all', [
+        $mapElements['Mapitem'] = $Mapitem->find('all', [
             'recursive'  => -1,
             'conditions' => [
                 'map_id' => $mapId,
@@ -971,7 +996,8 @@ class Mapeditor extends MapModuleAppModel {
                 'Mapitem.object_id',
             ],
         ]);
-        $mapElements['lines'] = $Mapline->find('all', [
+
+        $mapElements['Mapline'] = $Mapline->find('all', [
             'recursive'  => -1,
             'conditions' => [
                 'map_id' => $mapId,
@@ -982,7 +1008,7 @@ class Mapeditor extends MapModuleAppModel {
             ],
         ]);
 
-        $mapElements['gadgets'] = $Mapgadget->find('all', [
+        $mapElements['Mapgadget'] = $Mapgadget->find('all', [
             'recursive'  => -1,
             'conditions' => [
                 'map_id' => $mapId,
@@ -992,11 +1018,17 @@ class Mapeditor extends MapModuleAppModel {
                 'Mapgadget.object_id',
             ],
         ]);
+        $newMapElements = [];
+        foreach ($mapElements as $type => $data) {
+            foreach ($data as $key => $element) {
+                $newMapElements[$type][] = $data[$key][$type];
+            }
+        }
 
-        return $mapElements;
+        return $newMapElements;
     }
 
-    public function getHoststatus($uuids, $hoststatusConditions, $servicestatusConditions, $hostFields = [], $serviceFields = []){
+    public function getHoststatus($uuids, $hoststatusConditions, $servicestatusConditions, $hostFields = [], $serviceFields = []) {
         $this->Hoststatus = ClassRegistry::init('Hoststatus');
         $this->Servicestatus = ClassRegistry::init('Servicestatus');
         $hoststatus = $this->Hoststatus->ByUuids($uuids, $hostFields, $hoststatusConditions);
@@ -1033,7 +1065,7 @@ class Mapeditor extends MapModuleAppModel {
         return Hash::combine($hostdata, '{n}.Host.uuid', '{n}');
     }
 
-    public function getServicestatus($uuids, $servicestatusConditions, $serviceFields = []){
+    public function getServicestatus($uuids, $servicestatusConditions, $serviceFields = []) {
         $this->Servicestatus = ClassRegistry::init('Servicestatus');
         $servicestatus = $this->Servicestatus->ByUuids($uuids, $serviceFields, $servicestatusConditions);
         $servicedata = $this->getServiceInfoByUuids($uuids);
@@ -1049,7 +1081,7 @@ class Mapeditor extends MapModuleAppModel {
         return Hash::combine($servicedata, '{n}.Service.uuid', '{n}');
     }
 
-    public function getServicegroupstatus($uuids, $servicestatusConditions, $serviceFields = []){
+    public function getServicegroupstatus($uuids, $servicestatusConditions, $serviceFields = []) {
         $this->Servicestatus = ClassRegistry::init('Servicestatus');
         $servicegroups = $this->getServicegroupInfoByUuids($uuids);
         $serviceUuids = Hash::extract($servicegroups, '{n}.Service.{n}.uuid');
@@ -1059,7 +1091,7 @@ class Mapeditor extends MapModuleAppModel {
         }
     }
 
-    public function getHostgroupstatus($uuids, $hoststatusConditions, $servicestatusConditions, $hostFields = [], $serviceFields = []){
+    public function getHostgroupstatus($uuids, $hoststatusConditions, $servicestatusConditions, $hostFields = [], $serviceFields = []) {
         $this->Hoststatus = ClassRegistry::init('Hoststatus');
         $this->Servicestatus = ClassRegistry::init('Servicestatus');
 
@@ -1104,5 +1136,122 @@ class Mapeditor extends MapModuleAppModel {
         }
 
         return $hostgroups;
+    }
+
+    public function getServiceUuidsByHostUuids($hostUuids) {
+        $this->Service = ClassRegistry::init('Service');
+        $serviceUuids = $this->Service->find('all', [
+            'recursive'  => -1,
+            'conditions' => [
+                'Host.uuid' => $hostUuids
+            ],
+            'fields'     => [
+                'Service.uuid'
+            ],
+            'joins'      => [
+                [
+                    'table'      => 'hosts',
+                    'type'       => 'INNER',
+                    'alias'      => 'Host',
+                    'conditions' => [
+                        'Host.id = Service.host_id',
+                    ],
+                ],
+            ]
+        ]);
+        return Hash::extract($serviceUuids, '{n}.Service.uuid');
+    }
+
+    public function getServiceUuidsByServicegroupUuids($servicegroupUuids) {
+        $this->Servicegroup = ClassRegistry::init('Servicegroup');
+        $serviceids = $this->Servicegroup->find('all', [
+            'recursive'  => -1,
+            'conditions' => [
+                'Servicegroup.uuid' => $servicegroupUuids
+            ],
+            'fields'     => [
+                'ServicesToServicegroups.service_id',
+            ],
+            'joins'      => [
+                [
+                    'table'      => 'services_to_servicegroups',
+                    'type'       => 'INNER',
+                    'alias'      => 'ServicesToServicegroups',
+                    'conditions' => [
+                        'ServicesToServicegroups.servicegroup_id = Servicegroup.id',
+                    ],
+                ],
+            ]
+        ]);
+
+        $serviceids = Hash::extract($serviceids, '{n}.ServicesToServicegroups.service_id');
+        $serviceids = array_unique($serviceids);
+
+        $serviceuuids = [];
+        if (!empty($serviceids)) {
+            $serviceuuids = $this->Service->find('all', [
+                'recursive'  => -1,
+                'conditions' => [
+                    'Service.id' => $serviceids
+                ],
+                'fields'     => [
+                    'Service.uuid'
+                ]
+            ]);
+            $serviceuuids = Hash::extract($serviceuuids, '{n}.Service.uuid');
+        }
+        return $serviceuuids;
+    }
+
+    public function getHostAndServiceUuidsByHostgroupuuid($hostgroupUuids) {
+        $this->Hostgroup = ClassRegistry::init('Hostgroup');
+        $this->Host = ClassRegistry::init('Host');
+        $this->Service = ClassRegistry::init('Service');
+        $hostIds = $this->Hostgroup->find('all', [
+            'recursive'  => -1,
+            'conditions' => [
+                'Hostgroup.uuid' => $hostgroupUuids
+            ],
+            'fields'     => [
+                'HostsToHostgroups.host_id'
+            ],
+            'joins'      => [
+                [
+                    'table'      => 'hosts_to_hostgroups',
+                    'type'       => 'INNER',
+                    'alias'      => 'HostsToHostgroups',
+                    'conditions' => [
+                        'HostsToHostgroups.hostgroup_id = Hostgroup.id',
+                    ],
+                ],
+            ]
+        ]);
+
+        $hostIds = Hash::extract($hostIds, '{n}.HostsToHostgroups.host_id');
+        $uuids = [];
+        if (!empty($hostIds)) {
+            $hostUuids = $this->Host->find('all', [
+                'recursive'  => -1,
+                'conditions' => [
+                    'Host.id' => $hostIds
+                ],
+                'fields'     => [
+                    'Host.uuid'
+                ]
+            ]);
+            $uuids['host'] = Hash::extract($hostUuids, '{n}.Host.uuid');
+
+            $serviceUuids = $this->Service->find('all', [
+                'recursive'  => -1,
+                'conditions' => [
+                    'Service.host_id' => $hostIds
+                ],
+                'fields'     => [
+                    'Service.uuid'
+                ]
+            ]);
+            $uuids['service'] = Hash::extract($serviceUuids, '{n}.Service.uuid');
+        }
+        return $uuids;
     }
 }
