@@ -393,6 +393,9 @@ class Crate extends DboSource {
         }
 
         $hasWhere = false;
+        if($queryData['conditions'] === true){ //deleteAll(true)
+            $queryData['conditions'] = [];
+        }
         if (!empty($queryData['conditions'])) {
             $i = 1;
             foreach ($queryData['conditions'] as $column => $condition) {
@@ -751,6 +754,10 @@ class Crate extends DboSource {
         return $query;
     }
 
+    //Example calls via Model
+    //$this->CrateHost->delete(1);
+    //$this->CrateHost->deleteAll(['CrateHost.id' => [3,'72',81]]);
+    //$this->CrateHost->deleteAll(true);
     public function delete(Model $model, $conditions = null) {
         $this->modelName = $model->alias;
         $this->tableName = $model->table;
@@ -784,55 +791,59 @@ class Crate extends DboSource {
             $this->tablePrefix . $this->tableName
         );
         foreach ($conditions as $field => $value) {
-            $field = $this->removeModelAlias($field); //Remove alias, not supported by CrateDB in DELETE query
-            if (!is_array($value)) {
-                $queryTemplate .= sprintf('%s=?', $field);
-            } else {
-                $placeHolders = [];
-                foreach ($value as $item) {
-                    $placeHolders[] = '?';
+            if ($this->columnExists($field)) {
+                $field = $this->removeModelAlias($field); //Remove alias, not supported by CrateDB in DELETE query
+                if (!is_array($value)) {
+                    $queryTemplate .= sprintf('%s=?', $field);
+                } else {
+                    $placeHolders = [];
+                    foreach ($value as $item) {
+                        $placeHolders[] = '?';
+                    }
+                    $queryTemplate .= sprintf('%s IN (%s)', $field, implode(',', $placeHolders));
                 }
-                $queryTemplate .= sprintf('%s IN (%s)', $field, implode(',', $placeHolders));
             }
         }
 
         $query = $this->_connection->prepare($queryTemplate);
         $i = 1;
         foreach ($conditions as $field => $value) {
-            if (!is_array($value)) {
-                switch ($this->getColumnType($field)) {
-                    case 'integer':
-                        $query->bindValue($i, $value, PDO::PARAM_INT);
-                        break;
-
-                    case 'boolean':
-                        $query->bindValue($i, (bool)$value, PDO::PARAM_BOOL);
-                        break;
-
-                    case 'array':
-                        $query->bindValue($i, $value, PDO::PARAM_ARRAY);
-                        break;
-
-                    default:
-                        $query->bindValue($i, $value);
-                }
-            } else {
-                foreach ($value as $item) {
+            if ($this->columnExists($field)) {
+                if (!is_array($value)) {
                     switch ($this->getColumnType($field)) {
                         case 'integer':
-                            $query->bindValue($i++, $item, PDO::PARAM_INT);
+                            $query->bindValue($i, $value, PDO::PARAM_INT);
                             break;
 
                         case 'boolean':
-                            $query->bindValue($i++, (bool)$item, PDO::PARAM_BOOL);
+                            $query->bindValue($i, (bool)$value, PDO::PARAM_BOOL);
                             break;
 
                         case 'array':
-                            $query->bindValue($i++, $item, PDO::PARAM_ARRAY);
+                            $query->bindValue($i, $value, PDO::PARAM_ARRAY);
                             break;
 
                         default:
-                            $query->bindValue($i++, $item);
+                            $query->bindValue($i, $value);
+                    }
+                } else {
+                    foreach ($value as $item) {
+                        switch ($this->getColumnType($field)) {
+                            case 'integer':
+                                $query->bindValue($i++, $item, PDO::PARAM_INT);
+                                break;
+
+                            case 'boolean':
+                                $query->bindValue($i++, (bool)$item, PDO::PARAM_BOOL);
+                                break;
+
+                            case 'array':
+                                $query->bindValue($i++, $item, PDO::PARAM_ARRAY);
+                                break;
+
+                            default:
+                                $query->bindValue($i++, $item);
+                        }
                     }
                 }
             }
