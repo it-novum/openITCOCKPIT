@@ -471,8 +471,12 @@ class Instantreport extends AppModel {
             return $downtimes;
         }
 
-        $useTimetamp = is_numeric($downtimes[0][$key]['scheduled_start_time']);
+        //If downtimes are empty set $useTimetamp = true, systemfailures (start_time and end_time) are always in mysql datetime format
+        $useTimetamp = true;
+        if(!empty($downtimes)){
+            $useTimetamp = is_numeric($downtimes[0][$key]['scheduled_start_time']);
 
+        }
         foreach ($systemfailures as $systemfailure) {
             $start = strtotime($systemfailure['start_time']);
             $end = strtotime($systemfailure['end_time']);

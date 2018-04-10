@@ -127,12 +127,6 @@
                                         <i class="fa" ng-class="getSortClass('Hostgroup.description')"></i>
                                         <?php echo __('Description'); ?>
                                     </th>
-                                    <th class="no-sort">
-                                        <?php echo __('Assigned hosts'); ?>
-                                    </th>
-                                    <th class="no-sort">
-                                        <?php echo __('Assigned host templates'); ?>
-                                    </th>
                                     <th class="no-sort text-center">
                                         <i class="fa fa-cog fa-lg"></i>
                                     </th>
@@ -150,35 +144,6 @@
                                     </td>
                                     <td>
                                         {{ hostgroup.Hostgroup.description }}
-                                    </td>
-                                    <td>
-                                        <ul class="list-unstyled">
-                                            <li ng-repeat="host in hostgroup.Host">
-                                                <a href="hosts/edit/{{host.id}}" ng-if="host.allowEdit">
-                                                    {{ host.name }}
-                                                </a>
-
-                                                <span ng-if="!host.allowEdit">
-                                                    {{ host.name }}
-                                                </span>
-                                            </li>
-                                        </ul>
-                                    </td>
-                                    <td>
-                                        <ul class="list-unstyled">
-                                            <ul class="list-unstyled">
-                                                <li ng-repeat="hosttemplate in hostgroup.Hosttemplate">
-                                                    <a href="hosttemplates/edit/{{hosttemplate.id}}"
-                                                       ng-if="hosttemplate.allowEdit">
-                                                        {{ hosttemplate.name }}
-                                                    </a>
-
-                                                    <span ng-if="!hosttemplate.allowEdit">
-                                                        {{ hosttemplate.name }}
-                                                    </span>
-                                                </li>
-                                            </ul>
-                                        </ul>
                                     </td>
                                     <td class="text-center">
                                         <a href="/hostgroups/edit/{{hostgroup.Hostgroup.id}}"

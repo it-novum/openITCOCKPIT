@@ -166,7 +166,7 @@ Use [this Vagrantfile](https://raw.githubusercontent.com/it-novum/vagrantboxes/m
 
 # Need help or support?
 * Join [#openitcockpit](http://webchat.freenode.net/?channels=openitcockpit) on freenode.net
-* [it-novum GmbH](http://www.it-novum.com/en/support-openitcockpit-en.html) provides commercial support
+* [it-novum GmbH](https://it-novum.com/en/it-service-management/openitcockpit/openitcockpit-enterprise-subscription-license) provides commercial support
 
 # License
 Copyright (C) 2015-2017  it-novum GmbH

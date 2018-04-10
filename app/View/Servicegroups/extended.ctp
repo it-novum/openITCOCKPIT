@@ -222,7 +222,7 @@ use itnovum\openITCOCKPIT\Core\HumanTime;
                                     P
                                 </strong>
                             </td>
-                            <td class="table-color-{{(service.Hoststatus.currentState)?service.Hoststatus.currentState:'disabled'}}">
+                            <td class="table-color-{{(service.Hoststatus.currentState !== null)?service.Hoststatus.currentState:'disabled'}}">
                                 <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
                                     <a href="/hosts/browser/{{ service.Host.id }}">
                                         {{ service.Host.hostname }}
@@ -266,7 +266,7 @@ use itnovum\openITCOCKPIT\Core\HumanTime;
                             <td class="width-50">
                                 <div class="btn-group">
                                     <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
-                                        <a href="/services/edit/{{service.Service.id}}"
+                                        <a href="/services/edit/{{service.Service.id}}/_controller:servicegroups/_action:extended/_id:{{servicegroup.Servicegroup.id}}/"
                                            ng-if="service.Service.allow_edit"
                                            class="btn btn-default">
                                             &nbsp;<i class="fa fa-cog"></i>&nbsp;
@@ -282,7 +282,7 @@ use itnovum\openITCOCKPIT\Core\HumanTime;
                                         id="menuHack-{{servicegroup.Servicegroup.uuid}}-{{service.Service.uuid}}">
                                         <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
                                             <li ng-if="service.Service.allow_edit">
-                                                <a href="/services/edit/{{service.Service.id}}">
+                                                <a href="/services/edit/{{service.Service.id}}/_controller:servicegroups/_action:extended/_id:{{servicegroup.Servicegroup.id}}/">
                                                     <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
                                                 </a>
                                             </li>
