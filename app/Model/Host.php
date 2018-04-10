@@ -1724,4 +1724,13 @@ class Host extends AppModel {
 
         parent::afterSave($created, $options);
     }
+
+    public function afterDelete(){
+        if ($this->DbBackend->isCrateDb() && isset($this->data['Host']['id'])) {
+            $CrateHostModel = ClassRegistry::init('CrateModule.CrateHost');
+            $CrateHostModel->delete($this->data['Host']['id']);
+        }
+
+        parent::afterDelete();
+    }
 }

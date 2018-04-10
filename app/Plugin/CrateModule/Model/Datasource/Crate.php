@@ -4,6 +4,7 @@
 use Crate\PDO\PDO as PDO;
 use Crate\PDO\PDOStatement;
 
+App::uses('DboSource', 'Model/Datasource');
 
 class Crate extends DboSource {
 
@@ -324,6 +325,10 @@ class Crate extends DboSource {
     }
 
     public function buildSelectQuery($queryData) {
+        if (!is_array($queryData['fields'])) {
+            $queryData['fields'] = [$queryData['fields']];
+        }
+
         $queryTemplate = 'SELECT %s FROM %s AS %s ';
         if ($this->findType === 'count') {
             $queryTemplate = sprintf($queryTemplate, 'COUNT(*) as count', $this->tablePrefix . $this->tableName, $this->modelName);
@@ -469,6 +474,9 @@ class Crate extends DboSource {
         }
         if (!empty($queryData['group'])) {
             $groupBy = [];
+            if (!is_array($queryData['group'])) {
+                $queryData['group'] = [$queryData['group']];
+            }
             foreach ($queryData['group'] as $column) {
                 if ($this->columnExists($column)) {
                     $groupBy[] = $column;
@@ -661,7 +669,6 @@ class Crate extends DboSource {
             return false;
         }
 
-
         $this->modelName = $model->alias;
         $this->tableName = $model->table;
         $this->tablePrefix = $model->tablePrefix;
@@ -711,12 +718,12 @@ class Crate extends DboSource {
         }
         $queryTemplate .= implode(',', $placeHolders);
 
-        $queryTemplate .= ' WHERE '.$conditions;
+        $queryTemplate .= ' WHERE ' . $conditions;
 
         $query = $this->_connection->prepare($queryTemplate);
         $i = 1;
         foreach ($data as $field => $value) {
-            if($field === $Model->primaryKey){
+            if ($field === $Model->primaryKey) {
                 continue;
             }
 
@@ -741,6 +748,95 @@ class Crate extends DboSource {
         //Add primary key condition
         $query->bindValue($i++, $data[$Model->primaryKey], PDO::PARAM_INT);
 
+        return $query;
+    }
+
+    public function delete(Model $model, $conditions = null) {
+        $this->modelName = $model->alias;
+        $this->tableName = $model->table;
+        $this->tablePrefix = $model->tablePrefix;
+
+        $this->Model = $model;
+
+        $query = $this->buildDeleteQuery($model, $conditions);
+        try {
+            /** @var PDOStatement $query */
+            if (!$query->execute()) {
+                //debug($query->errorInfo());
+                $query->closeCursor();
+                return false;
+            }
+            return true;
+        } catch (Exception $e) {
+            if (isset($query->queryString)) {
+                $e->queryString = $query->queryString;
+            }
+            throw $e;
+        }
+    }
+
+    public function buildDeleteQuery(Model $Model, $conditions) {
+        //CrateDB does NOT support alias usage in DELETE statements
+        //DELETE CrateHost FROM openitcockpit_hosts AS CrateHost WHERE CrateHost.id IN (1337,1338); -- Not working
+        //DELETE FROM openitcockpit_hosts WHERE id IN (1337,1338); -- Working
+        $queryTemplate = sprintf(
+            'DELETE FROM %s  WHERE ',
+            $this->tablePrefix . $this->tableName
+        );
+        foreach ($conditions as $field => $value) {
+            $field = $this->removeModelAlias($field); //Remove alias, not supported by CrateDB in DELETE query
+            if (!is_array($value)) {
+                $queryTemplate .= sprintf('%s=?', $field);
+            } else {
+                $placeHolders = [];
+                foreach ($value as $item) {
+                    $placeHolders[] = '?';
+                }
+                $queryTemplate .= sprintf('%s IN (%s)', $field, implode(',', $placeHolders));
+            }
+        }
+
+        $query = $this->_connection->prepare($queryTemplate);
+        $i = 1;
+        foreach ($conditions as $field => $value) {
+            if (!is_array($value)) {
+                switch ($this->getColumnType($field)) {
+                    case 'integer':
+                        $query->bindValue($i, $value, PDO::PARAM_INT);
+                        break;
+
+                    case 'boolean':
+                        $query->bindValue($i, (bool)$value, PDO::PARAM_BOOL);
+                        break;
+
+                    case 'array':
+                        $query->bindValue($i, $value, PDO::PARAM_ARRAY);
+                        break;
+
+                    default:
+                        $query->bindValue($i, $value);
+                }
+            } else {
+                foreach ($value as $item) {
+                    switch ($this->getColumnType($field)) {
+                        case 'integer':
+                            $query->bindValue($i++, $item, PDO::PARAM_INT);
+                            break;
+
+                        case 'boolean':
+                            $query->bindValue($i++, (bool)$item, PDO::PARAM_BOOL);
+                            break;
+
+                        case 'array':
+                            $query->bindValue($i++, $item, PDO::PARAM_ARRAY);
+                            break;
+
+                        default:
+                            $query->bindValue($i++, $item);
+                    }
+                }
+            }
+        }
         return $query;
     }
 
