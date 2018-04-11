@@ -1776,7 +1776,7 @@ class Service extends AppModel {
 
     public function beforeDelete($cascade = true){
         $this->LastDeletedId = new LastDeletedId($this->id);
-        parent::beforeDelete($cascade);
+        return parent::beforeDelete($cascade);
     }
 
     public function afterDelete(){
