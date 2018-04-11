@@ -248,6 +248,7 @@ class Crate extends DboSource {
         try {
             //$query->setFetchMode(PDO::FETCH_ASSOC);
             if (!$query->execute()) {
+                print_r($query->errorInfo());
                 $this->_results = $query;
                 $query->closeCursor();
                 return false;
@@ -682,10 +683,6 @@ class Crate extends DboSource {
             $this->getTableMetaInformation($this->tablePrefix . $this->tableName);
         }
 
-        if ($conditions === null) {
-            $conditions = sprintf('%s=?', $model->primaryKey);
-        }
-
         $query = $this->buildUpdateQuery($model, $fields, $values, $conditions);
         try {
             if (!$query->execute()) {
@@ -710,6 +707,15 @@ class Crate extends DboSource {
      */
     public function buildUpdateQuery(Model $Model, $fields, $values, $conditions) {
         $data = array_combine($fields, $values);
+
+        if ($conditions === null) {
+            //Default condition, WHERE primaryKey = $value
+            if($this->columnExists($Model->primaryKey)) {
+                $conditions = sprintf('%s=?', $Model->primaryKey);
+            }else{
+                throw new NotFoundException(sprintf('column %s does not exists', $Model->primaryKey));
+            }
+        }
 
         $queryTemplate = sprintf('UPDATE %s SET ', $this->tablePrefix . $this->tableName);
         $placeHolders = [];

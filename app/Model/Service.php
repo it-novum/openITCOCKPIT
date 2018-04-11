@@ -24,6 +24,7 @@
 //	confirmation.
 
 use itnovum\openITCOCKPIT\Core\ServiceConditions;
+use itnovum\openITCOCKPIT\Core\ValueObjects\LastDeletedId;
 
 class Service extends AppModel {
 
@@ -321,6 +322,11 @@ class Service extends AppModel {
             ],
         ],
     ];
+
+    /**
+     * @var null|LastDeletedId
+     */
+    private $LastDeletedId = null;
 
     function __construct($id = false, $table = null, $ds = null, $useDynamicAssociations = true) {
         parent::__construct($id, $table, $ds, $useDynamicAssociations);
@@ -1766,5 +1772,22 @@ class Service extends AppModel {
         }
 
         parent::afterSave($created, $options);
+    }
+
+    public function beforeDelete($cascade = true){
+        $this->LastDeletedId = new LastDeletedId($this->id);
+        parent::beforeDelete($cascade);
+    }
+
+    public function afterDelete(){
+        if($this->LastDeletedId !== null) {
+            if ($this->DbBackend->isCrateDb() && $this->LastDeletedId->hasId()) {
+                $CrateServiceModel = ClassRegistry::init('CrateModule.CrateService');
+                $CrateServiceModel->delete($this->LastDeletedId->getId());
+                $this->LastDeletedId = null;
+            }
+        }
+
+        parent::afterDelete();
     }
 }

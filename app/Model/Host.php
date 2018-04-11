@@ -27,6 +27,7 @@ App::uses('ValidationCollection', 'Lib');
 
 use itnovum\openITCOCKPIT\Core\DbBackend;
 use itnovum\openITCOCKPIT\Core\HostConditions;
+use itnovum\openITCOCKPIT\Core\ValueObjects\LastDeletedId;
 use itnovum\openITCOCKPIT\Filter\HostFilter;
 
 /**
@@ -218,6 +219,11 @@ class Host extends AppModel {
 
         ],
     ];
+
+    /**
+     * @var LastDeletedId|null
+     */
+    private $LastDeletedId = null;
 
     /**
      * @param HostConditions $HostConditions
@@ -1725,10 +1731,18 @@ class Host extends AppModel {
         parent::afterSave($created, $options);
     }
 
+    public function beforeDelete($cascade = true){
+        $this->LastDeletedId = new LastDeletedId($this->id);
+        parent::beforeDelete($cascade);
+    }
+
     public function afterDelete(){
-        if ($this->DbBackend->isCrateDb() && isset($this->data['Host']['id'])) {
-            $CrateHostModel = ClassRegistry::init('CrateModule.CrateHost');
-            $CrateHostModel->delete($this->data['Host']['id']);
+        if($this->LastDeletedId !== null) {
+            if ($this->DbBackend->isCrateDb() && $this->LastDeletedId->hasId()) {
+                $CrateHostModel = ClassRegistry::init('CrateModule.CrateHost');
+                $CrateHostModel->delete($this->LastDeletedId->getId());
+                $this->LastDeletedId = null;
+            }
         }
 
         parent::afterDelete();
