@@ -243,6 +243,7 @@ class Crate extends DboSource {
      * @param PDOStatement $query
      * @param string $sql
      * @return bool|PDOStatement
+     * @throws Exception
      */
     protected function __execute(PDOStatement $query, $sql) {
         try {
@@ -394,7 +395,7 @@ class Crate extends DboSource {
         }
 
         $hasWhere = false;
-        if($queryData['conditions'] === true){ //deleteAll(true)
+        if ($queryData['conditions'] === true) { //deleteAll(true)
             $queryData['conditions'] = [];
         }
         if (!empty($queryData['conditions'])) {
@@ -629,7 +630,7 @@ class Crate extends DboSource {
         foreach ($fields as $field) {
             $placeHolders[] = '?';
             if (!$this->columnExists($field)) {
-                throw new Exception(sprintf('Field %s does not exists', $field));
+                throw new Exception(sprintf('Field "%s" does not exists', $field));
             }
         }
 
@@ -668,11 +669,16 @@ class Crate extends DboSource {
         return $this->executeQuery($query, $queryTemplate, [], $values);
     }
 
-    public function update(Model $model, $fields = [], $values = null, $conditions = null) {
-        if (!in_array($model->primaryKey, $fields, true)) {
-            return false;
-        }
 
+    /**
+     * @param Model $model
+     * @param array $fields
+     * @param null $values
+     * @param null|array $conditions
+     * @return bool
+     * @throws Exception
+     */
+    public function update(Model $model, $fields = [], $values = null, $conditions = null) {
         $this->modelName = $model->alias;
         $this->tableName = $model->table;
         $this->tablePrefix = $model->tablePrefix;
@@ -700,35 +706,59 @@ class Crate extends DboSource {
 
     /**
      * @param Model $Model
-     * @param array $fields
-     * @param array $values
-     * @param string $conditions
-     * @return mixed
+     * @param $fields
+     * @param $values
+     * @param $conditions
+     * @return false|PDOStatement
      */
     public function buildUpdateQuery(Model $Model, $fields, $values, $conditions) {
-        $data = array_combine($fields, $values);
+        if (!$values) {
+            $data = $fields;
+        } else {
+            $data = array_combine($fields, $values);
+        }
 
         if ($conditions === null) {
             //Default condition, WHERE primaryKey = $value
-            if($this->columnExists($Model->primaryKey)) {
-                $conditions = sprintf('%s=?', $Model->primaryKey);
-            }else{
-                throw new NotFoundException(sprintf('column %s does not exists', $Model->primaryKey));
+            if ($this->columnExists($Model->primaryKey)) {
+                $conditionsSql = sprintf('WHERE %s=?', $Model->primaryKey);
+            } else {
+                throw new NotFoundException(sprintf('column "%s" does not exists', $Model->primaryKey));
+            }
+        } else {
+            if (is_array($conditions)) {
+                $whereOrAnd = 'WHERE';
+                $conditionsSql = '';
+                foreach ($conditions as $field => $value) {
+                    if (!$this->columnExists($field)) {
+                        throw new NotFoundException(sprintf('column "%s" does not exists', $field));
+                    }
+                    if ($whereOrAnd === 'WHERE') {
+                        $conditionsSql .= sprintf(' WHERE %s=?', $field);
+                        $whereOrAnd = 'AND';
+                    } else {
+                        $conditionsSql .= sprintf(' AND %s=?', $field);
+                    }
+
+                }
             }
         }
 
+        //Add place holders to query template
         $queryTemplate = sprintf('UPDATE %s SET ', $this->tablePrefix . $this->tableName);
         $placeHolders = [];
         foreach ($data as $field => $value) {
-            if ($field === $Model->primaryKey) {
+            if ($field === $Model->primaryKey || !$this->columnExists($field)) {
                 continue;
             }
             $placeHolders[] = sprintf('%s=?', $field);
         }
         $queryTemplate .= implode(',', $placeHolders);
 
-        $queryTemplate .= ' WHERE ' . $conditions;
+        //Add conditions to query template
+        $queryTemplate .= $conditionsSql;
 
+        //Bind values for SET field=? (field=5)
         $query = $this->_connection->prepare($queryTemplate);
         $i = 1;
         foreach ($data as $field => $value) {
@@ -754,8 +784,34 @@ class Crate extends DboSource {
             }
         }
 
-        //Add primary key condition
-        $query->bindValue($i++, $data[$Model->primaryKey], PDO::PARAM_INT);
+        if($conditions === null) {
+            //Add primary key condition
+            $query->bindValue($i++, $data[$Model->primaryKey], PDO::PARAM_INT);
+        }
+        if(is_array($conditions)){
+            //Add  multiple conditions
+            foreach($conditions as $field => $value){
+                switch ($this->getColumnType($field)) {
+                    case 'integer':
+                        $query->bindValue($i++, $value, PDO::PARAM_INT);
+                        break;
+
+                    case 'boolean':
+                        $query->bindValue($i++, (bool)$value, PDO::PARAM_BOOL);
+                        break;
+
+                    case 'array':
+                        $query->bindValue($i++, $value, PDO::PARAM_ARRAY);
+                        break;
+
+                    default:
+                        $query->bindValue($i++, $value);
+                }
+            }
+        }
+        if(is_string($conditions)){
+            throw new NotImplementedException('String conditions for UPDATE are not implemented yet!');
+        }
 
         return $query;
     }
