@@ -25,12 +25,17 @@
 namespace itnovum\openITCOCKPIT\Crate;
 
 
-class CrateHosttemplateForHost {
+class CrateServicetemplateForService {
 
     /**
      * @var int
      */
-    private $hosttemplate_id;
+    private $servicetemplate_id;
+
+    /**
+     * @var string
+     */
+    private $name;
 
     /**
      * @var int
@@ -43,11 +48,18 @@ class CrateHosttemplateForHost {
     private $tags;
 
     /**
-     * CrateHosttemplateForHost constructor.
-     * @param int $id
+     * CrateServicetemplateForService constructor.
+     * @param $id
      */
     public function __construct($id) {
-        $this->hosttemplate_id = (int)$id;
+        $this->servicetemplate_id = (int)$id;
+    }
+
+    /**
+     * @param string $name
+     */
+    public function setName($name){
+        $this->name = $name;
     }
 
     /**
@@ -66,11 +78,12 @@ class CrateHosttemplateForHost {
 
 
     /**
-     * @param array $hosttemplate
+     * @param $servicetemplate
      */
-    public function setDataFromFindResult($hosttemplate) {
-        $this->setActiveChecksEnabled($hosttemplate['Hosttemplate']['active_checks_enabled']);
-        $this->setTags($hosttemplate['Hosttemplate']['tags']);
+    public function setDataFromFindResult($servicetemplate) {
+        $this->setName($servicetemplate['Servicetemplate']['name']);
+        $this->setActiveChecksEnabled($servicetemplate['Servicetemplate']['active_checks_enabled']);
+        $this->setTags($servicetemplate['Servicetemplate']['tags']);
     }
 
     /**
@@ -80,13 +93,27 @@ class CrateHosttemplateForHost {
         return [
             'recursive'  => -1,
             'fields'     => [
-                'Hosttemplate.id',
-                'Hosttemplate.active_checks_enabled',
-                'Hosttemplate.tags',
+                'Servicetemplate.id',
+                'Servicetemplate.name',
+                'Servicetemplate.active_checks_enabled',
+                'Servicetemplate.tags',
             ],
             'conditions' => [
-                'Hosttemplate.id'           => $this->hosttemplate_id
+                'Servicetemplate.id'           => $this->servicetemplate_id
             ]
+        ];
+    }
+
+    public function getDataToUpdateName() {
+        return [
+            'name' => $this->name
+        ];
+    }
+
+    public function getConditionToUpdateName() {
+        return [
+            'active_checks_enabled_from_template' => true,
+            'servicetemplate_id' => $this->servicetemplate_id
         ];
     }
 
@@ -99,7 +126,7 @@ class CrateHosttemplateForHost {
     public function getConditionToUpdateActiveChecksEnabled() {
         return [
             'active_checks_enabled_from_template' => true,
-            'hosttemplate_id' => $this->hosttemplate_id
+            'servicetemplate_id' => $this->servicetemplate_id
         ];
     }
 
@@ -112,7 +139,7 @@ class CrateHosttemplateForHost {
     public function getConditionToUpdateTags() {
         return [
             'tags_from_template' => true,
-            'hosttemplate_id' => $this->hosttemplate_id
+            'servicetemplate_id' => $this->servicetemplate_id
         ];
     }
 
