@@ -25,7 +25,8 @@
 
 class SyncTablesShell extends AppShell {
     /*
-     * This is a test and debuging shell for development purposes
+     * This shell synchronize hosts, contacts, commands and services from MySQL to CrateDB
+     * You can run this shell as often as you want.
      * Call: oitc CrateModule.sync_tables
      */
     public $uses = [
@@ -223,10 +224,7 @@ class SyncTablesShell extends AppShell {
 
     public function getOptionParser() {
         $parser = parent::getOptionParser();
-        $parser->addOptions([
-            'type'     => ['short' => 't', 'help' => __d('oitc_console', 'Type of the notification host or service')],
-            'hostname' => ['help' => __d('oitc_console', 'The uuid of the host')],
-        ]);
+
 
         return $parser;
     }

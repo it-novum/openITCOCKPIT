@@ -2389,7 +2389,7 @@ class HostsController extends AppController {
         $HoststatusFields = new HoststatusFields($this->DbBackend);
         $HoststatusFields->wildcard();
         $HoststatusConditions = new HoststatusConditions($this->DbBackend);
-        $HoststatusConditions->hostsDownAndUnreachable();
+        //$HoststatusConditions->hostsDownAndUnreachable();
 
         $hoststatus = $this->Hoststatus->byUuid($host['Host']['uuid'], $HoststatusFields);
         if (empty($hoststatus)) {
