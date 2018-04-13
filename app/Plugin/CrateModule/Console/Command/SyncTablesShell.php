@@ -224,8 +224,6 @@ class SyncTablesShell extends AppShell {
 
     public function getOptionParser() {
         $parser = parent::getOptionParser();
-
-
         return $parser;
     }
 
