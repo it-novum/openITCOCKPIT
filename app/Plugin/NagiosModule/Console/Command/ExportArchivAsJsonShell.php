@@ -38,7 +38,8 @@ class ExportArchivAsJsonShell extends AppShell {
     /*
      * This shell will export notifications, state history records and acknowledgements
      * as a json file on the disk.
-     * Call: oitc NagiosModule.export_archiv_as_json
+     * Call to export all data: oitc NagiosModule.export_archiv_as_json --path /tmp/foo
+     * Call to export notifications and acknowledgements only: oitc NagiosModule.export_archiv_as_json --path /tmp/foo notifications acknowledgements
      */
 
     //We use "hardcoded" status models, to make this available
@@ -83,7 +84,25 @@ class ExportArchivAsJsonShell extends AppShell {
             $this->fs->mkdir($this->basePath);
         }
 
+        if (!empty($this->args)) {
+            foreach ($this->args as $arg) {
+                if ($arg === 'notifications') {
+                    $this->exportHostNotifications();
+                    $this->exportServiceNotifications();
+                }
+                if ($arg === 'statehistory') {
+                    $this->exportHostStatehistory();
+                    $this->exportServiceStatehistory();
+                }
+                if ($arg === 'acknowledgements') {
+                    $this->exportHostAcknowledgements();
+                    $this->exportServiceAcknowledgements();
+                }
+            }
+            return;
+        }
 
+        //Default, export all
         $this->exportHostNotifications();
         $this->exportServiceNotifications();
         $this->exportHostStatehistory();
@@ -564,6 +583,11 @@ class ExportArchivAsJsonShell extends AppShell {
         $parser = parent::getOptionParser();
         $parser->addOptions([
             'path' => ['short' => 'p', 'help' => 'Path where the exporter will create the json files to. Make sure you have enough disk space!'],
+        ]);
+        $parser->addArguments([
+            'notifications'    => ['help' => 'Will export host and service notificatiosn as json'],
+            'statehistory'     => ['help' => 'Will export host and service statehistory records as json'],
+            'acknowledgements' => ['help' => 'Will export host and service acknowledgements as json'],
         ]);
         return $parser;
     }
