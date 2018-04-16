@@ -163,7 +163,11 @@ class AppAuthComponent extends AuthComponent {
                 break;
 
             default:
-                $result = parent::login($user['User']);
+                if (!isset($user['User']) && !empty($user)) {
+                    $result = parent::login($user);
+                } else {
+                    $result = parent::login($user['User']);
+                }
                 break;
         }
 
@@ -322,9 +326,9 @@ class AppAuthComponent extends AuthComponent {
      * @param CakeRequest $request
      * @return bool|mixed
      */
-    public function tryToGetUser(CakeRequest $request){
+    public function tryToGetUser(CakeRequest $request) {
         $this->constructAuthenticate();
-        foreach($this->_authenticateObjects as $auth){
+        foreach ($this->_authenticateObjects as $auth) {
             $user = $auth->getUser($request);
             if (!empty($user) && is_array($user)) {
                 return $user;

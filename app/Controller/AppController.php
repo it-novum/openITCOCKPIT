@@ -153,7 +153,7 @@ class AppController extends Controller {
         //Is this a request with API Key?
         $headerContent = $this->request->header('Authorization');
         if ($headerContent && strpos($headerContent, 'X-OITC-API') === 0) {
-            $this->Auth->sessionKey = false;
+            AppAuthComponent::$sessionKey = false;
             $user = $this->Auth->tryToGetUser($this->request);
             if($user) {
                 $this->Auth->login($user, 'session');
