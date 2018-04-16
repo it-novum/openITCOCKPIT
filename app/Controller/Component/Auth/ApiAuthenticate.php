@@ -78,7 +78,8 @@ class ApiAuthenticate extends BaseAuthenticate {
     public function _findUser($username, $password = null) {
         $result = ClassRegistry::init('Apikey')->find('first', [
             'conditions' => [
-                'Apikey.apikey' => $username
+                'Apikey.apikey' => $username,
+                'User.status'   => 1, //Active users only
             ],
             'contain'    => [
                 'User' => [
