@@ -1095,5 +1095,21 @@ class Crate extends DboSource {
         return $data;
     }
 
+    /**
+     * @param Model $Model
+     * @return mixed
+     */
+    public function getPartitions(Model $Model){
+        $sql = 'SELECT * FROM information_schema.table_partitions WHERE table_name=?';
+        $query = $this->_connection->prepare($sql);
+        $query->bindValue(1, $Model->tablePrefix . $Model->useTable);
+        $query = $this->executeQuery($query, $sql, [$Model->tablePrefix . $Model->useTable], []);
+
+
+        $this->_result->setFetchMode(PDO::FETCH_ASSOC);
+
+        return $this->_result->fetchAll();
+    }
+
 }
 

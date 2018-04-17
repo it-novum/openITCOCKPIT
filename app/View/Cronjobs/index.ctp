@@ -88,7 +88,7 @@
                                             endif;
                                             ?>
                                         </td>
-                                        <td>
+                                        <td class="text-align-center">
                                             <?php if ($cronjob['Cronjob']['enabled']): ?>
                                                 <i class="fa fa-check text-success"></i>
                                                 <?php else: ?>
