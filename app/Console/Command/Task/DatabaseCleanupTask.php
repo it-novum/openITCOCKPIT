@@ -180,25 +180,27 @@ class DatabaseCleanupTask extends AppShell implements CronjobInterface {
         return $r;
     }
 
-    /**
-     * @param array $models
-     */
+
     public function cleanupCrateDb() {
         $this->out('Checking age of partitions...');
 
-
+        $this->deletePartitionsFromCrateDb($this->StatehistoryHost, 'STATEHISTORIES');
         $this->deletePartitionsFromCrateDb($this->StatehistoryService, 'STATEHISTORIES');
-        die();
-
-
-        //$this->out('<red>Drop partition '.$partition.'</red>');
-
+        $this->deletePartitionsFromCrateDb($this->Hostcheck, 'HOSTCHECKS');
+        $this->deletePartitionsFromCrateDb($this->Servicecheck, 'SERVICECHECKS');
+        $this->deletePartitionsFromCrateDb($this->Logentry, 'LOGENTRIES');
+        $this->deletePartitionsFromCrateDb($this->NotificationHost, 'NOTIFICATIONS');
+        $this->deletePartitionsFromCrateDb($this->NotificationService, 'NOTIFICATIONS');
+        $this->deletePartitionsFromCrateDb($this->NotificationService, 'NOTIFICATIONS');
 
         $this->out('<green>Cleanup done</green>');
         $this->hr();
-
     }
 
+    /**
+     * @param Model $Model
+     * @param string $systemsettingsKey
+     */
     public function deletePartitionsFromCrateDb(Model $Model, $systemsettingsKey) {
         $maxAgeInWeeks = $this->_systemsettings['ARCHIVE']['ARCHIVE.AGE.' . $systemsettingsKey];
 
@@ -220,10 +222,9 @@ class DatabaseCleanupTask extends AppShell implements CronjobInterface {
                 $Model->tablePrefix,
                 $Model->useTable
             ));
-
-            $Model->deleteAll([
-                'day' => $partitionConditionTimestamp
-            ]);
+            if (!$Model->dropPartition($partitionConditionTimestamp)) {
+                $this->out('<error>Error while dropping partition</error>');
+            }
         }
     }
 }

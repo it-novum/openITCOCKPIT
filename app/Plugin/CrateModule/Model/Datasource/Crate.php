@@ -1369,5 +1369,37 @@ class Crate extends DboSource {
         return $this->_result->fetchAll();
     }
 
+    /**
+     * @param Model $Model
+     * @param int $condition
+     * @return bool
+     * @throws Exception
+     */
+    public function dropPartition(Model $Model, $condition){
+
+        $queryTemplate = sprintf(
+            'DELETE FROM %s WHERE DAY=?',
+            $Model->tablePrefix . $Model->useTable
+        );
+        $query = $this->_connection->prepare($queryTemplate);
+        $query->bindValue(1, $condition);
+
+        try {
+            /** @var PDOStatement $query */
+            if (!$query->execute()) {
+                //debug($query->errorInfo());
+                $query->closeCursor();
+                return false;
+            }
+            return true;
+        } catch (Exception $e) {
+            if (isset($query->queryString)) {
+                $e->queryString = $query->queryString;
+            }
+            throw $e;
+        }
+
+    }
+
 }
 
