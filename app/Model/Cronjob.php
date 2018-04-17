@@ -129,6 +129,7 @@ class Cronjob extends AppModel
                     'task'     => $task,
                     'plugin'   => $pluginName,
                     'interval' => $interval,
+                    'enabled'  => 1
                 ],
             ]
         );
