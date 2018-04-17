@@ -169,6 +169,7 @@ class AngularController extends AppController {
             $menu = $this->Menu->forAngular($menu);
             Cache::write($cacheKey, $menu, 'permissions');
         }
+        session_write_close();
 
         $menu = Cache::read($cacheKey, 'permissions');
 
@@ -185,6 +186,7 @@ class AngularController extends AppController {
         if (!Cache::read('systemsettings', 'permissions')) {
             Cache::write('systemsettings', $this->Systemsetting->findAsArray(), 'permissions');
         }
+        session_write_close();
 
         $systemsettings = Cache::read('systemsettings', 'permissions');
         $websocketConfig = $systemsettings['SUDO_SERVER'];
@@ -277,6 +279,7 @@ class AngularController extends AppController {
     }
 
     public function system_health() {
+        session_write_close();
         if (!$this->isAngularJsRequest()) {
             //Only ship HTML template
             return;
