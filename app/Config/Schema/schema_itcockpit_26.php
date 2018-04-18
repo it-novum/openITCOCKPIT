@@ -1648,6 +1648,18 @@ class AppSchema extends CakeSchema
         ],
         'tableParameters' => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB'],
     ];
+
+    public $apikeys = [
+        'id'              => ['type' => 'integer', 'null' => false, 'key' => 'primary'],
+        'user_id'         => ['type' => 'integer', 'null' => false],
+        'apikey'          => ['type' => 'string', 'null' => false, 'default' => null, 'length' => 255, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
+        'description'     => ['type' => 'string', 'null' => true, 'default' => null, 'length' => 255, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
+        'indexes'         => [
+            'PRIMARY'          => ['column' => 'id', 'unique' => 1],
+            'apikey'           => ['column' => ['apikey', 'user_id'], 'unique' => 0]
+        ],
+        'tableParameters' => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB'],
+    ];
     
     /*public $devicegroups = array(
         'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'),
