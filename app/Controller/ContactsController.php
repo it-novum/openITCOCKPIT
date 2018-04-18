@@ -763,6 +763,11 @@ class ContactsController extends AppController {
                     'joinTable' => 'contacts_to_serviceescalations',
                     'type' => 'INNER'
                 ],
+                'Contactgroup' => [
+                    'className' => 'Contactgroup',
+                    'joinTable' => 'contacts_to_contactgroups',
+                    'type' => 'INNER'
+                ]
             ]
         ]);
 
@@ -806,7 +811,10 @@ class ContactsController extends AppController {
                     ]
                 ],
                 'Hostescalation.id',
-                'Serviceescalation.id'
+                'Serviceescalation.id',
+                'Contactgroup' => [
+                    'Container'
+                ]
             ],
             'conditions' => [
                 'Contact.id' => $id
@@ -830,6 +838,10 @@ class ContactsController extends AppController {
                 $serviceName = $service['Servicetemplate']['name'];
             }
             $service['name'] = sprintf('%s|%s', $service['Host']['name'], $serviceName);
+        });
+
+        array_walk($contactWithRelations['Contactgroup'],function(&$contactgroup){
+            $contactgroup['name'] = sprintf('%s', $contactgroup['Container']['name']);
         });
 
         //Sort host template, host, service template and service by name

@@ -129,6 +129,23 @@
                                     <?php endif; ?>
                                 </td>
                             </tr>
+                            <tr ng-if="contactWithRelations.Contactgroup.length > 0">
+                                <th class="bg-color-lightGray">
+                                    <i class="fa fa-users"></i>
+                                    <?php echo __('Contactgroup'); ?> ({{contactWithRelations.Contactgroup.length}})
+                                </th>
+                            </tr>
+                            <tr ng-repeat="contactgroup in contactWithRelations.Contactgroup">
+                                <td>
+                                    <?php if ($this->Acl->hasPermission('edit', 'contactgroups')): ?>
+                                        <a href="/contactgroups/edit/{{ contactgroup.id }}" target="_blank">
+                                            {{ contactgroup.name }}
+                                        </a>
+                                    <?php else: ?>
+                                        {{ contactgroup.name }}
+                                    <?php endif; ?>
+                                </td>
+                            </tr>
                             <tr ng-if="contactWithRelations.Hostescalation.length > 0">
                                 <th class="bg-color-lightGray">
                                     <i class="fa fa-bomb"></i>
