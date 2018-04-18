@@ -24,6 +24,7 @@
 //	confirmation.
 
 use itnovum\openITCOCKPIT\Core\ServiceConditions;
+use itnovum\openITCOCKPIT\Core\ValueObjects\LastDeletedId;
 
 class Service extends AppModel {
 
@@ -321,6 +322,11 @@ class Service extends AppModel {
             ],
         ],
     ];
+
+    /**
+     * @var null|LastDeletedId
+     */
+    private $LastDeletedId = null;
 
     function __construct($id = false, $table = null, $ds = null, $useDynamicAssociations = true) {
         parent::__construct($id, $table, $ds, $useDynamicAssociations);
@@ -1757,5 +1763,41 @@ class Service extends AppModel {
                 'NotifyPeriod',
             ]
         ];
+    }
+
+    /**
+     * @param bool $created
+     * @param array $options
+     * @return bool|void
+     */
+    public function afterSave($created, $options = []) {
+        if ($this->DbBackend->isCrateDb() && isset($this->data['Service']['id'])) {
+            //Save data also to CrateDB
+            $CrateService = new \itnovum\openITCOCKPIT\Crate\CrateService($this->data['Service']['id']);
+            $service = $this->find('first', $CrateService->getFindQuery());
+            $CrateService->setDataFromFindResult($service);
+
+            $CrateServiceModel = ClassRegistry::init('CrateModule.CrateService');
+            $CrateServiceModel->save($CrateService->getDataForSave());
+        }
+
+        parent::afterSave($created, $options);
+    }
+
+    public function beforeDelete($cascade = true){
+        $this->LastDeletedId = new LastDeletedId($this->id);
+        return parent::beforeDelete($cascade);
+    }
+
+    public function afterDelete(){
+        if($this->LastDeletedId !== null) {
+            if ($this->DbBackend->isCrateDb() && $this->LastDeletedId->hasId()) {
+                $CrateServiceModel = ClassRegistry::init('CrateModule.CrateService');
+                $CrateServiceModel->delete($this->LastDeletedId->getId());
+                $this->LastDeletedId = null;
+            }
+        }
+
+        parent::afterDelete();
     }
 }

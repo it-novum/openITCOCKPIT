@@ -1258,7 +1258,7 @@ class AppSchema extends CakeSchema
         'task'            => ['type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
         'plugin'          => ['type' => 'string', 'null' => false, 'default' => 'Core', 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
         'interval'        => ['type' => 'integer', 'default' => null],
-        //'enabled' => array('type' => 'boolean', 'length' => 1, 'default' => 1, 'null' => false),
+        'enabled'         => ['type' => 'boolean', 'length' => 1, 'default' => 1, 'null' => false],
         'indexes'         => [
             'PRIMARY' => ['column' => 'id', 'unique' => 1],
         ],
