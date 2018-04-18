@@ -25,11 +25,14 @@
 
 
 use itnovum\openITCOCKPIT\Core\HoststatusFields;
+use itnovum\openITCOCKPIT\Core\ModuleManager;
+use itnovum\openITCOCKPIT\Filter\HostFilter;
 
 /**
  * Class StatusmapsController
- * @property HoststatusFields HoststatusFields
- * @property StatusMapsHelper StatusMaps
+ * @property HoststatusFields $HoststatusFields
+ * @property StatusMapsHelper $StatusMaps
+ * @property Hoststatus $Hoststatus
  */
 class StatusmapsController extends AppController {
 
@@ -38,37 +41,83 @@ class StatusmapsController extends AppController {
     public $uses = [
         'Host',
         'Container',
+        'Parenthost',
         MONITORING_HOSTSTATUS
     ];
 
     public $components = ['StatusMap'];
 
     public function index() {
-        $nodes = [];
-        $edges = [];
-        $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS, $this->hasRootPrivileges);
-        $allHosts = $this->Host->find('all', [
+        if (!$this->isApiRequest()) {
+            $SatelliteNames = [];
+            $masterInstanceName = $this->Systemsetting->getMasterInstanceName();
+            $ModuleManager = new ModuleManager('DistributeModule');
+            if ($ModuleManager->moduleExists()) {
+                $SatelliteModel = $ModuleManager->loadModel('Satellite');
+                $satellites = $SatelliteModel->find('list', [
+                    'recursive' => -1,
+                    'fields' => [
+                        'Satellite.id',
+                        'Satellite.name'
+                    ],
+                    'Satellite.container_id' => $this->MY_RIGHTS
+                ]);
+            }
+            $satellites[0] = $masterInstanceName;
+            $this->set('satellites', $satellites);
+        }
+
+        if (!$this->isAngularJsRequest()) {
+            return;
+        }
+        session_write_close();
+        $parentHostWithChildIds = $this->Parenthost->find('all', [
             'recursive' => -1,
-            'joins'      => [
+            'joins' => [
                 [
-                    'table'      => 'hosts_to_containers',
-                    'alias'      => 'HostsToContainers',
-                    'type'       => 'LEFT',
+                    'table' => 'hosts_to_parenthosts',
+                    'alias' => 'HostToParenthost',
+                    'type' => 'INNER',
                     'conditions' => [
-                        'HostsToContainers.host_id = Host.id',
+                        'HostToParenthost.parenthost_id = Parenthost.id',
                     ],
                 ],
+                [
+                    'table' => 'hosts',
+                    'alias' => 'Host',
+                    'type' => 'INNER',
+                    'conditions' => [
+                        'HostToParenthost.host_id = Host.id',
+                    ],
+                ]
             ],
-            'conditions' => [
-                'HostsToContainers.container_id' => $containerIds,
-            ],
+            'fields' => [
+                'DISTINCT Parenthost.id',
+                'Host.id'
+            ]
+        ]);
+
+        $allHostIds = [];
+        foreach ($parentHostWithChildIds as $parentHostWithChildId) {
+            if (!in_array($parentHostWithChildId['Parenthost']['id'], $allHostIds, true)) {
+                $allHostIds[] = $parentHostWithChildId['Parenthost']['id'];
+            }
+            if (!in_array($parentHostWithChildId['Host']['id'], $allHostIds, true)) {
+                $allHostIds[] = $parentHostWithChildId['Host']['id'];
+            }
+        }
+        $containerIds = [];
+        if ($this->hasRootPrivileges === false) {
+            //   $containerIds = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_HOST, [], $this->hasRootPrivileges, [CT_HOSTGROUP]);
+        }
+        $HostFilter = new HostFilter($this->request);
+        $nodes = [];
+        $edges = [];
+
+        $query = [
+            'recursive' => -1,
             'contain' => [
                 'Parenthost' => [
-                    'Container' => [
-                        'fields' => [
-                            'Container.id'
-                        ]
-                    ],
                     'fields' => [
                         'Parenthost.id'
                     ]
@@ -80,58 +129,95 @@ class StatusmapsController extends AppController {
                 'Host.name',
                 'Host.description',
                 'Host.address',
-                'Host.disabled'
-            ]
-        ]);
-        $allHosts = Hash::combine($allHosts, '{n}.Host.id', '{n}');
-        $nodes[0] = [
-            'id' => 0,
-            'label' => $this->systemname,
-            'uuid' => null,
-            'currentState' => 0,
-            'isHardState' => true,
-            'group' => 'root'
-        ];
-        foreach($allHosts as $host){
-            $HoststatusFields = new HoststatusFields($this->DbBackend);
-            $HoststatusFields
-                ->currentState()
-                ->isHardstate()
-                ->scheduledDowntimeDepth()
-                ->problemHasBeenAcknowledged()
-               ;
-            $hoststatus = $this->Hoststatus->byUuid($host['Host']['uuid'], $HoststatusFields);
-            if(empty($hoststatus)){
-                $hoststatus['Hoststatus'] = [];
-            }
-            $Hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus(($hoststatus['Hoststatus']));
+                'Host.disabled',
+                'Host.satellite_id'
+            ],
+            'conditions' => $HostFilter->indexFilter()
 
-            $nodes[] = [
-                'id'            => (int)$host['Host']['id'],
-                'label'         => $host['Host']['name'].' ('.$host['Host']['id'].') ' ,
-                'uuid'          => $host['Host']['uuid'],
-                'group'         => $this->StatusMap->getNodeGroupName($host['Host']['disabled'], $Hoststatus)
-            ];
-            $edges[] = [
-                'from'  => 0, // --> root instance , systemname
-                'to'    =>  (int)$host['Host']['id'],
-            ];
-            foreach($host['Parenthost'] as $parentHost){
-                $edges[] = [
-                    'from'  => (int)$host['Host']['id'],
-                    'to'    => (int)$parentHost['id'],
-                    'color' => [
-                        'inherit' => 'to',
+        ];
+
+        if (!empty($containerIds)) {
+            $query['joins'] = [
+                [
+                    'table' => 'hosts_to_containers',
+                    'alias' => 'HostsToContainers',
+                    'type' => 'LEFT',
+                    'conditions' => [
+                        'HostsToContainers.host_id = Host.id',
                     ],
-                    'arrows' => 'to'
+                ]
+            ];
+            $query['conditions']['HostsToContainers.container_id'] = $containerIds;
+        }
+        if(!empty($allHostIds)){
+            $query['conditions']['Host.id'] = $allHostIds;
+        }
+
+        $count = $this->Host->find('count', $query);
+
+        $limit = 100;
+        $numberOfSelects = ceil($count / $limit);
+        $HoststatusFields = new HoststatusFields($this->DbBackend);
+        $HoststatusFields
+            ->currentState()
+            ->isHardstate()
+            ->scheduledDowntimeDepth()
+            ->problemHasBeenAcknowledged();
+
+        for ($i = 0; $i < $numberOfSelects; $i++) {
+            $query['limit'] = $limit;
+            $query['offset'] = $limit * $i;
+
+
+            $tmpHostsResult = $this->Host->find('all', $query);
+
+            //$dbo = $this->Host->getDatasource();
+            //$logs = $dbo->getLog();
+            //$lastLog = end($logs['log']);
+            //  debug( $lastLog['query'] );
+
+
+            $hostUuids = Hash::extract($tmpHostsResult, '{n}.Host.uuid');
+            $hoststatus = $this->Hoststatus->byUuid($hostUuids, $HoststatusFields);
+            foreach ($tmpHostsResult as $hostChunk) {
+                if (!isset($hoststatus[$hostChunk['Host']['uuid']]['Hoststatus'])) {
+                    $hoststatus[$hostChunk['Host']['uuid']] = [
+                        'Hoststatus' => []
+                    ];
+                }
+                $Hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus(
+                    $hoststatus[$hostChunk['Host']['uuid']]['Hoststatus']
+                );
+
+                $nodes[] = [
+                    'id' => 'Host_' . $hostChunk['Host']['id'],
+                    'label' => $hostChunk['Host']['name'],
+                    'title' => $hostChunk['Host']['name'],
+                    'uuid' => $hostChunk['Host']['uuid'],
+                    'group' => $this->StatusMap->getNodeGroupName($hostChunk['Host']['disabled'], $Hoststatus)
                 ];
+
+                foreach ($hostChunk['Parenthost'] as $parentHost) {
+                    $edges[] = [
+                        'from' => 'Host_' . $hostChunk['Host']['id'],
+                        'to' => 'Host_' . $parentHost['id'],
+                        'color' => [
+                            'inherit' => 'to',
+                        ],
+                        'arrows' => 'to'
+                    ];
+                }
             }
         }
-        debug(json_encode($nodes));
-        debug(json_encode($edges));
 
-        debug($edges);
+        $statusMap = [
+            'nodes' => $nodes,
+            'edges' => $edges
+        ];
 
+
+        $this->set(compact(['statusMap']));
+        $this->set('_serialize', ['statusMap']);
     }
 }
 

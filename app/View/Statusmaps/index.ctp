@@ -22,6 +22,11 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+
+echo $this->Html->css('vendor/vis-4.21.0/dist/vis.min.css', ['inline' => false]);
+echo $this->Html->css('vendor/css3-percentage-loader/circle.css', ['inline' => false]);
+
+
 ?>
 <div class="row">
     <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
@@ -34,27 +39,46 @@
         </h1>
     </div>
 </div>
-<div id="error_msg"></div>
-
+<?php if (sizeof($satellites) > 1): ?>
+    <div class="row padding-bottom-10">
+        <div class="col col-xs-12 no-padding">
+            <select
+                    id="Instance"
+                    data-placeholder="<?php echo __('Filter by instance'); ?>"
+                    class="form-control"
+                    chosen="{}"
+                    ng-model="filter.Host.satellite_id"
+                    ng-model-options="{debounce: 500}">
+                <?php
+                foreach ($satellites as $satelliteId => $satelliteName):
+                    $selected = '';
+                    if ($satelliteId == '0') {
+                        $selected = ' selected="selected"';
+                    }
+                    printf('<option value="%s" %s>%s</option>', h($satelliteId), $selected, h($satelliteName));
+                endforeach;
+                ?>
+            </select>
+        </div>
+    </div>
+<?php endif; ?>
 <div class="jarviswidget" id="wid-id-0">
     <header>
-        <span class="widget-icon"> <i class="fa fa-sitemap"></i> </span>
         <h2>
-            <?php echo __('Host status: '); ?>
-            <span class="padding-left-20">
-                <i class="fa fa-check-circle no-padding text-success"></i>
+            <span class="no-padding">
+                <i class="fa fa-check-circle no-padding up"></i>
                 <em class="padding-right-10">
                     <?php
                     echo __('Up');
                     ?>
                 </em>
-                <i class="fa fa-exclamation-circle no-padding text-danger"></i>
+                <i class="fa fa-exclamation-circle no-padding down"></i>
                 <em class="padding-right-10">
                     <?php
                     echo __('Down');
                     ?>
                 </em>
-                <i class="fa fa-question-circle no-padding text-muted"></i>
+                <i class="fa fa-question-circle no-padding unreachable"></i>
                 <em class="padding-right-10">
                     <?php
                     echo __('Unreachable');
@@ -92,14 +116,39 @@
                     ?>
                 </em>
             </span>
+            <div class="col-xs-12 col-md-2 pull-right">
+                <div class="form-group smart-form no-padding">
+                    <label class="input"> <i class="icon-prepend fa fa-desktop"></i>
+                        <input type="text" class="input-sm"
+                               placeholder="<?php echo __('Filter by host name'); ?>"
+                               ng-model="filter.Host.name"
+                               ng-model-options="{debounce: 500}">
+                    </label>
+                </div>
+            </div>
         </h2>
         <div class="widget-toolbar" role="menu">
             <?php echo $this->Utils->backButton(); ?>
         </div>
     </header>
-    <div>
-        <div class="widget-body">
-            <div class="row">
-            </div>
+    <div class="widget-body" id="statusmap">
     </div>
-    </div></div>
+</div>
+<div id="statusmap-progress-icon">
+    <center>
+        <p class="statusmap-progress-dots">
+            <?php echo __('Loading data '); ?>
+        </p>
+    </center>
+
+    <div class="progress" data-progress="0">
+        <div class="progress_mask isFull">
+            <div class="progress_fill"></div>
+        </div>
+        <div class="progress_mask">
+            <div class="progress_fill"></div>
+        </div>
+    </div>
+
+
+</div>
