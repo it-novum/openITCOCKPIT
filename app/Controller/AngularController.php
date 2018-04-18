@@ -189,6 +189,7 @@ class AngularController extends AppController {
         $systemsettings = Cache::read('systemsettings', 'permissions');
         $websocketConfig = $systemsettings['SUDO_SERVER'];
         $websocketConfig['SUDO_SERVER.URL'] = 'wss://' . env('HTTP_HOST') . '/sudo_server';
+        $websocketConfig['QUERY_LOG.URL'] = 'wss://' . env('HTTP_HOST') . '/query_log';
 
         $this->set('websocket', $websocketConfig);
         $this->set('_serialize', ['websocket']);

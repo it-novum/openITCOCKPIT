@@ -294,7 +294,7 @@ $config = [
                 'delete'  => ['mass_delete'],
             ],
             'Administrators'        => [
-                'debug' => ['testMail'],
+                'debug' => ['testMail', 'querylog'],
             ],
             'Exports'               => [
                 'index' => ['broadcast', 'launchExport', 'verifyConfig', 'saveInstanceConfigSyncSelection'],
