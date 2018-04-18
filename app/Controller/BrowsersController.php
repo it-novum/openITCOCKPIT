@@ -25,160 +25,110 @@
 
 //App::import('Model', 'Host');
 //App::import('Model', 'Container');
+use itnovum\openITCOCKPIT\Core\ModuleManager;
+use itnovum\openITCOCKPIT\Monitoring\QueryHandler;
+
+/**
+ * Class BrowsersController
+ * @property Container Container
+ * @property Systemsetting Systemsetting
+ * @property Browser Browser
+ * @property Tenant Tenant
+ * @property AppAuthComponent Auth
+ */
 class BrowsersController extends AppController {
 
-    public $layout = 'Admin.default';
-    public $helpers = [
-        'PieChart',
-        'BrowserMisc',
-        'Status',
-        'Monitoring',
-    ];
+    public $layout = 'angularjs';
+
     public $uses = [
-        MONITORING_HOSTSTATUS,
-        MONITORING_SERVICESTATUS,
-        'Host',
-        'Service',
+        'Systemsetting',
         'Container',
-        'Tenant',
         'Browser',
+        'Tenant'
     ];
 
     public $components = [
         'paginator',
     ];
 
-    function index(){
-        $top_node = $this->Container->findById(ROOT_CONTAINER);
-        $parents = $this->Container->getPath($top_node['Container']['parent_id']);
+    function index($containerId = null) {
+        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
 
-        $tenants = $this->__getTenants();
-        natcasesort($tenants);
-
-        //$recursive = true;
-        $recursive = $this->Auth->user('recursive_browser');
-
-        $hostQuery = $this->Browser->hostsQuery(ROOT_CONTAINER);
-        $serviceQuery = $this->Browser->serviceQuery(ROOT_CONTAINER);
-        if ($recursive) {
-            $hostQuery = $this->Browser->hostsQuery($this->MY_RIGHTS);
-            $serviceQuery = $this->Browser->serviceQuery($this->MY_RIGHTS);
-        }
-
-        $hosts = $this->Host->find('all', $hostQuery);
-        $services = $this->Service->find('all', $serviceQuery);
-
-        $state_array_host = $this->Browser->countHoststate($hosts);
-        $state_array_service = $this->Browser->countServicestate($services);
-
-        $this->set(compact([
-            'recursive',
-            'parents',
-            'top_node',
-            'state_array_host',
-            'state_array_service',
-            'tenants',
-            'hosts',
-        ]));
-    }
-
-
-    function tenantBrowser($id){
-        if (!$this->Container->exists($id)) {
-            throw new NotFoundException(__('Invalid container'));
-        }
-        $MY_RIGHTS_WITH_TENANT = array_merge($this->MY_RIGHTS, array_keys($this->__getTenants()));
-
-        if (!$this->hasRootPrivileges) {
-            if (!in_array($id, $MY_RIGHTS_WITH_TENANT)) {
-                $this->render403();
-
-                return;
+        if (!$this->isApiRequest()) {
+            $masterInstanceName = $this->Systemsetting->getMasterInstanceName();
+            $SatelliteNames = [];
+            $ModuleManager = new ModuleManager('DistributeModule');
+            if ($ModuleManager->moduleExists()) {
+                $SatelliteModel = $ModuleManager->loadModel('Satellite');
+                $SatelliteNames = $SatelliteModel->find('list');
+                $SatelliteNames[0] = $masterInstanceName;
             }
+
+            $this->set('QueryHandler', new QueryHandler($this->Systemsetting->getQueryHandlerPath()));
+            $this->set('username', $User->getFullName());
+            $this->set('satellites', $SatelliteNames);
+            //Only ship HTML template
+            return;
         }
 
-        if ($this->hasRootPrivileges === true) {
-            $browser = Hash::extract($this->Container->children($id, true), '{n}.Container[containertype_id=/^(' . CT_GLOBAL . '|' . CT_TENANT . '|' . CT_LOCATION . '|' . CT_NODE . ')$/]');
+        if ((int)$containerId === ROOT_CONTAINER) {
+            //First request or ROOT_CONTAINER
+            $tenants = $this->getTenants();
+            natcasesort($tenants);
+            $this->set('containers', $this->Container->makeItJavaScriptAble($tenants));
+            $this->set('breadcrumbs', $this->Container->makeItJavaScriptAble([ROOT_CONTAINER => __('root')]));
         } else {
-            $containerNest = Hash::nest($this->Container->children($id));
-            $browser = $this->Browser->getFirstContainers($containerNest, $this->MY_RIGHTS, [CT_GLOBAL, CT_TENANT, CT_LOCATION, CT_NODE]);
-        }
+            //Child container (or so)
 
-        $browser = Hash::sort($browser, '{n}.name', 'asc', ['type' => 'regular', 'ignoreCase' => true]);
-
-        if ($this->hasRootPrivileges === false) {
-            foreach ($browser as $key => $containerRecord) {
-                if (!in_array($containerRecord['id'], $this->MY_RIGHTS)) {
-                    unset($browser[$key]);
-                }
+            if ($this->hasRootPrivileges === true) {
+                $browser = Hash::extract($this->Container->children($containerId, true), '{n}.Container[containertype_id=/^(' . CT_GLOBAL . '|' . CT_TENANT . '|' . CT_LOCATION . '|' . CT_NODE . ')$/]');
+            } else {
+                $containerNest = Hash::nest($this->Container->children($containerId));
+                $browser = $this->Browser->getFirstContainers($containerNest, $this->MY_RIGHTS, [CT_GLOBAL, CT_TENANT, CT_LOCATION, CT_NODE]);
             }
-        }
 
-        $recursive = $this->Auth->user('recursive_browser');
+            $browser = Hash::sort($browser, '{n}.name', 'asc', ['type' => 'regular', 'ignoreCase' => true]);
 
-        $hosts = $services = [];
-        if (in_array($id, $this->MY_RIGHTS)) {
-            $lookupIds = $id;
-            if ($recursive) {
-                if ($this->hasRootPrivileges === true) {
-                    //root user
-                    $lookupIds = Hash::extract($this->Container->children($id), '{n}.Container[containertype_id=/^(' . CT_GLOBAL . '|' . CT_TENANT . '|' . CT_LOCATION . '|' . CT_NODE . ')$/].id');
-                    $lookupIds = array_merge($lookupIds, [$id]);
-                } else {
-                    //non root user
-                    $lookupIds = Hash::extract($this->Container->children($id), '{n}.Container[containertype_id=/^(' . CT_GLOBAL . '|' . CT_TENANT . '|' . CT_LOCATION . '|' . CT_NODE . ')$/].id');
-                    $lookupIds = array_merge($lookupIds, [$id]);
-                    if (is_array($lookupIds) && !empty($lookupIds)) {
-                        foreach ($lookupIds as $key => $currentId) {
-                            if (!in_array($currentId, $this->MY_RIGHTS)) {
-                                unset($lookupIds[$key]);
-                            }
-                        }
+            if ($this->hasRootPrivileges === false) {
+                foreach ($browser as $key => $containerRecord) {
+                    if (!in_array($containerRecord['id'], $this->MY_RIGHTS)) {
+                        unset($browser[$key]);
                     }
                 }
             }
 
-            $query = $this->Browser->hostsQuery($lookupIds);
-            $this->Paginator->settings = array_merge($this->Paginator->settings, $query);
-            $hostsForCounter = $this->Host->find('all', $query);
-            $hosts = $this->Paginator->paginate('Host');
-            $query = $this->Browser->serviceQuery($lookupIds);
-            $services = $this->Service->find('all', $query);
-        }
-        $state_array_host = $this->Browser->countHoststate($hostsForCounter);
-        $state_array_service = $this->Browser->countServicestate($services);
-
-        $currentContainer = $this->Container->findById($id);
-        $parents = $this->Container->getPath($currentContainer['Container']['parent_id']);
-        $this->set(compact([
-            'currentContainer',
-            'browser',
-            'parents',
-            'state_array_host',
-            'state_array_service',
-            'hosts',
-            'MY_RIGHTS_WITH_TENANT',
-        ]));
-    }
-
-    public function refreshBrowser(){
-        if (!$this->request->is('post')) {
-            throw new MethodNotAllowedException();
-        }
-
-        $currentFlag = $this->Auth->user('recursive_browser');
-        if ($this->request->is('post') || $this->request->is('put')) {
-            $this->User->id = $this->Auth->user('id');
-            /*if($this->User->saveField('recursive_browser',$recursive)){
-                $this->setFlash(__('Recursive flag saved'));
-                return $this->redirect(['action' => 'index']);
+            $containers = [];
+            foreach ($browser as $node) {
+                $containers[$node['id']] = $node['name'];
             }
-            $this->setFlash(__('Recursive flag could not be saved'), false);
-            return $this->redirect(['action' => 'index']);*/
+
+            $currentContainer = $this->Container->find('first', [
+                'recursive'  => -1,
+                'conditions' => [
+                    'Container.id' => $containerId
+                ]
+            ]);
+            $breadcrumbs = [];
+            $parents = $this->Container->getPath($currentContainer['Container']['parent_id']);
+            foreach ($parents as $parentContainer) {
+                $breadcrumbs[$parentContainer['Container']['id']] = $parentContainer['Container']['name'];
+            }
+            $breadcrumbs[$currentContainer['Container']['id']] = $currentContainer['Container']['name'];
+            $this->set('containers', $this->Container->makeItJavaScriptAble($containers));
+            $this->set('breadcrumbs', $this->Container->makeItJavaScriptAble($breadcrumbs));
+
         }
+
+
+        $this->set('recursiveBrowser', $User->isRecursiveBrowserEnabled());
+        $this->set('_serialize', ['containers', 'recursiveBrowser', 'breadcrumbs']);
     }
 
-    protected function __getTenants(){
+
+    /**
+     * @return mixed
+     */
+    private function getTenants() {
         return $this->Tenant->tenantsByContainerId(
             array_merge(
                 $this->MY_RIGHTS, array_keys(

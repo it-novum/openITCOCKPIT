@@ -3288,7 +3288,7 @@ class ServicesController extends AppController {
 
         $ServiceCondition = new ServiceConditions($ServiceFilter->indexFilter());
         $ServiceCondition->setContainerIds($this->MY_RIGHTS);
-        $ServiceCondition->includeDisabled(true);
+        $ServiceCondition->includeDisabled();
 
         $services = $this->Service->makeItJavaScriptAble(
             $this->Service->getServicesForAngular($ServiceCondition, $selected)

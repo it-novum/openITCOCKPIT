@@ -771,7 +771,7 @@ class AppController extends Controller {
         }
 
         if ($this->isApiRequest()) {
-            throw new ForbiddenException('404 Forbidden');
+            throw new ForbiddenException('403 Forbidden');
         }
 
         return false;
@@ -828,6 +828,16 @@ class AppController extends Controller {
         $options = Hash::merge($_options, $options);
 
         $this->set('options', $options);
+        $this->response->statusCode(403);
+
+        if($this->isAngularJsRequest()){
+            //Angular wants json response
+            $this->set('status', 403);
+            $this->set('statusText', 'Forbidden');
+            $this->set('_serialize', ['status', 'statusText']);
+            return;
+        }
+
         $this->render('/Errors/error403');
     }
 

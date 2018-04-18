@@ -509,7 +509,7 @@ if (!$QueryHandler->exists()): ?>
                                                 <tr>
                                                     <th class="width-130"><?php echo __('Host state'); ?></th>
                                                     <th><?php echo __('Host name'); ?></th>
-                                                    <th><?php echo __('Laste state change'); ?></th>
+                                                    <th><?php echo __('Last state change'); ?></th>
                                                 </tr>
                                                 <tr>
                                                     <td class="text-center">

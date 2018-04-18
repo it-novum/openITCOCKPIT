@@ -104,7 +104,7 @@ class ContactgroupsController extends AppController {
 
 
         if (!$this->allowedByContainerId(Hash::extract($contactgroup, 'Container.parent_id'))) {
-            throw new ForbiddenException('404 Forbidden');
+            throw new ForbiddenException('403 Forbidden');
         }
 
         $this->set('contactgroup', $contactgroup);

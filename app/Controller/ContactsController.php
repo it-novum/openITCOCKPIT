@@ -145,11 +145,11 @@ class ContactsController extends AppController {
         }
         $contact = $this->Contact->findById($id);
         if (!$this->allowedByContainerId(Hash::extract($contact, 'Container.{n}.id'))) {
-            throw new ForbiddenException('404 Forbidden');
+            throw new ForbiddenException('403 Forbidden');
         }
 
         if (!empty(array_diff(Hash::extract($contact['Container'], '{n}.id'), $this->MY_RIGHTS))) {
-            throw new ForbiddenException('404 Forbidden');
+            throw new ForbiddenException('403 Forbidden');
         }
         $this->set('contact', $contact);
         $this->set('_serialize', ['contact']);

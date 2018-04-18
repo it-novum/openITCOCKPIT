@@ -37,10 +37,12 @@ $config = [
                 'user_timezone',
                 'version_check',
                 'menustats',
+                'statuscount',
                 'menu',
                 'websocket_configuration',
                 'export',
                 'not_found',
+                'forbidden',
                 'nested_list',
                 'executing',
                 'acknowledge_service',
@@ -63,7 +65,8 @@ $config = [
                 'enable_service_flap_detection',
                 'send_service_notification',
                 'enable_service_notifications',
-                'disable_service_notifications'
+                'disable_service_notifications',
+                'getPieChart'
             ],
             'Automaps'         => [
                 'icon'

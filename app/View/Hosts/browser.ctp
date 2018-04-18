@@ -431,7 +431,7 @@ if (!$QueryHandler->exists()): ?>
                                                 <tr>
                                                     <th class="width-130"><?php echo __('Parent host state'); ?></th>
                                                     <th><?php echo __('Parent host name'); ?></th>
-                                                    <th><?php echo __('Laste state change'); ?></th>
+                                                    <th><?php echo __('Last state change'); ?></th>
                                                 </tr>
                                                 <tr ng-repeat="parenthost in parenthosts">
                                                     <td class="text-center">
@@ -756,7 +756,7 @@ if (!$QueryHandler->exists()): ?>
 
                                                     <td>
                                                         <?php if ($this->Acl->hasPermission('index', 'browsers')): ?>
-                                                            <a href="/browsers/tenantBrowser/{{mergedHost.Host.container_id}}"
+                                                            <a href="/browsers/index?containerId={{mergedHost.Host.container_id}}"
                                                                ng-if="mergedHost.Host.container_id != 1">
                                                                 /{{mainContainer}}
                                                             </a>
@@ -779,7 +779,7 @@ if (!$QueryHandler->exists()): ?>
 
                                                         <?php if ($this->Acl->hasPermission('index', 'browsers')): ?>
                                                             <div ng-repeat="(key, value) in sharedContainers">
-                                                                <a href="/browsers/tenantBrowser/{{key}}"
+                                                                <a href="/browsers/index?containerId={{key}}"
                                                                    ng-if="key != 1">
                                                                     /{{value}}
                                                                 </a>
