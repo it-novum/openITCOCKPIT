@@ -3242,6 +3242,15 @@ class ServicesController extends AppController {
         return;
     }
 
+    public function details(){
+        $this->layout = 'blank';
+        //Only ship HTML Template
+
+        $User = new User($this->Auth);
+        $this->set('username', $User->getFullName());
+        return;
+    }
+
     public function loadServicesByContainerId() {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
