@@ -1622,6 +1622,11 @@ class Service extends AppModel {
         $servicesWithLimit = Hash::combine($servicesWithLimit, '{n}.Service.id', '{n}');
 
         $selectedServices = [];
+
+        if(is_array($selected)){
+            $selected = array_filter($selected);
+        }
+
         if (!empty($selected)) {
             $query = [
                 'recursive'  => -1,
