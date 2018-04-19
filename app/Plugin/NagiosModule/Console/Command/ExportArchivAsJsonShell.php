@@ -32,6 +32,8 @@ use Symfony\Component\Filesystem\Filesystem;
  * @property StatehistoryService $StatehistoryService
  * @property AcknowledgedHost $AcknowledgedHost
  * @property AcknowledgedService $AcknowledgedService
+ * @property DowntimeHost $DowntimeHost,
+ * @property DowntimeService $DowntimeService
  */
 class ExportArchivAsJsonShell extends AppShell {
 
@@ -50,7 +52,9 @@ class ExportArchivAsJsonShell extends AppShell {
         'NagiosModule.StatehistoryHost',
         'NagiosModule.StatehistoryService',
         'NagiosModule.AcknowledgedHost',
-        'NagiosModule.AcknowledgedService'
+        'NagiosModule.AcknowledgedService',
+        'NagiosModule.DowntimeHost',
+        'NagiosModule.DowntimeService'
     ];
 
     /**
@@ -67,6 +71,12 @@ class ExportArchivAsJsonShell extends AppShell {
      * @var Filesystem
      */
     private $fs;
+
+    /**
+     * @var string
+     * Just for CrateDB schema. Not used yet
+     */
+    private $nodeName = 'openITCOCKPIT';
 
     public function main() {
         if (!isset($this->params['path'])) {
@@ -98,6 +108,10 @@ class ExportArchivAsJsonShell extends AppShell {
                     $this->exportHostAcknowledgements();
                     $this->exportServiceAcknowledgements();
                 }
+                if ($arg === 'downtimes') {
+                    $this->exportHostDowntimes();
+                    $this->exportServiceDowntimes();
+                }
             }
             return;
         }
@@ -109,6 +123,8 @@ class ExportArchivAsJsonShell extends AppShell {
         $this->exportServiceStatehistory();
         $this->exportHostAcknowledgements();
         $this->exportServiceAcknowledgements();
+        $this->exportHostDowntimes();
+        $this->exportServiceDowntimes();
     }
 
     public function exportHostNotifications() {
@@ -579,6 +595,152 @@ class ExportArchivAsJsonShell extends AppShell {
         $this->printCrashMsg($fileName, 'statusengine_service_acknowledgements');
     }
 
+    public function exportHostDowntimes() {
+        $query = [
+            'recursive' => -1,
+            'fields'    => [
+                'DowntimeHost.*',
+
+                'Host.id',
+                'Host.uuid',
+            ],
+            'joins'     => [
+                [
+                    'table'      => 'nagios_objects',
+                    'type'       => 'INNER',
+                    'alias'      => 'Objects',
+                    'conditions' => 'Objects.object_id = DowntimeHost.object_id AND DowntimeHost.downtime_type = 2' //Downtime.downtime_type = 2 Host downtime
+                ], [
+                    'table'      => 'hosts',
+                    'type'       => 'INNER',
+                    'alias'      => 'Host',
+                    'conditions' => 'Host.uuid = Objects.name1',
+                ]
+            ],
+            'group'     => 'DowntimeHost.downtimehistory_id',
+            'limit'     => $this->limit
+        ];
+
+
+        $hostDowntimesCount = $this->DowntimeHost->find('count', $query);
+        $numberOfSelects = ceil($hostDowntimesCount / $this->limit);
+
+        if ($hostDowntimesCount == 0) {
+            return;
+        }
+
+        $this->out('Exporting host downtime records');
+        $ProgressBar = new Manager(0, $numberOfSelects);
+        $fileName = $this->basePath . DS . 'host_downtimes.json';
+        $file = fopen($fileName, 'w+');
+        for ($i = 0; $i < $numberOfSelects; $i++) {
+            $query['limit'] = $this->limit;
+            $query['offset'] = $this->limit * $i;
+
+            foreach ($this->DowntimeHost->find('all', $query) as $record) {
+                $data = [
+                    'actual_end_time'      => (int)strtotime($record['DowntimeHost']['actual_end_time']),
+                    'actual_start_time'    => (int)strtotime($record['DowntimeHost']['actual_start_time']),
+                    'author_name'          => $record['DowntimeHost']['author_name'],
+                    'comment_data'         => $record['DowntimeHost']['comment_data'],
+                    'duration'             => (int)$record['DowntimeHost']['duration'],
+                    'entry_time'           => (int)strtotime($record['DowntimeHost']['entry_time']),
+                    'hostname'             => $record['Host']['uuid'],
+                    'internal_downtime_id' => (int)$record['DowntimeHost']['internal_downtime_id'],
+                    'is_fixed'             => (int)$record['DowntimeHost']['is_fixed'],
+                    'node_name'            => $this->nodeName,
+                    'scheduled_end_time'   => (int)strtotime($record['DowntimeHost']['scheduled_end_time']),
+                    'scheduled_start_time' => (int)strtotime($record['DowntimeHost']['scheduled_start_time']),
+                    'triggered_by_id'      => (int)$record['DowntimeHost']['triggered_by_id'],
+                    'was_cancelled'        => (bool)$record['DowntimeHost']['was_cancelled'],
+                    'was_started'          => (bool)$record['DowntimeHost']['was_started'],
+                ];
+                fwrite($file, json_encode($data) . PHP_EOL);
+            }
+            $ProgressBar->update(($i + 1));
+        }
+        fclose($file);
+        $this->out('');
+        $this->printCrashMsg($fileName, 'statusengine_host_downtimehistory');
+    }
+
+    public function exportServiceDowntimes() {
+        $query = [
+            'recursive' => -1,
+            'fields'    => [
+                'DowntimeService.*',
+                'Host.id',
+                'Host.uuid',
+                'Service.id',
+                'Service.uuid'
+            ],
+            'joins'     => [
+                [
+                    'table'      => 'nagios_objects',
+                    'type'       => 'INNER',
+                    'alias'      => 'Objects',
+                    'conditions' => 'Objects.object_id = DowntimeService.object_id AND DowntimeService.downtime_type = 1' //Downtime.downtime_type = 1 Service downtime
+                ],
+                [
+                    'table'      => 'services',
+                    'type'       => 'INNER',
+                    'alias'      => 'Service',
+                    'conditions' => 'Service.uuid = Objects.name2',
+                ], [
+                    'table'      => 'hosts',
+                    'type'       => 'INNER',
+                    'alias'      => 'Host',
+                    'conditions' => 'Host.id = Service.host_id',
+                ],
+            ],
+            'group'     => 'DowntimeService.downtimehistory_id',
+            'limit'     => $this->limit
+        ];
+
+
+        $serviceDowntimesCount = $this->DowntimeService->find('count', $query);
+        $numberOfSelects = ceil($serviceDowntimesCount / $this->limit);
+
+        if ($serviceDowntimesCount == 0) {
+            return;
+        }
+
+        $this->out('Exporting service downtime records');
+        $ProgressBar = new Manager(0, $numberOfSelects);
+        $fileName = $this->basePath . DS . 'service_downtimes.json';
+        $file = fopen($fileName, 'w+');
+        for ($i = 0; $i < $numberOfSelects; $i++) {
+            $query['limit'] = $this->limit;
+            $query['offset'] = $this->limit * $i;
+
+            foreach ($this->DowntimeService->find('all', $query) as $record) {
+                $data = [
+                    'actual_end_time'      => (int)strtotime($record['DowntimeService']['actual_end_time']),
+                    'actual_start_time'    => (int)strtotime($record['DowntimeService']['actual_start_time']),
+                    'author_name'          => $record['DowntimeService']['author_name'],
+                    'comment_data'         => $record['DowntimeService']['comment_data'],
+                    'duration'             => (int)$record['DowntimeService']['duration'],
+                    'entry_time'           => (int)strtotime($record['DowntimeService']['entry_time']),
+                    'hostname'             => $record['Host']['uuid'],
+                    'internal_downtime_id' => (int)$record['DowntimeService']['internal_downtime_id'],
+                    'is_fixed'             => (int)$record['DowntimeService']['is_fixed'],
+                    'node_name'            => $this->nodeName,
+                    'scheduled_end_time'   => (int)strtotime($record['DowntimeService']['scheduled_end_time']),
+                    'scheduled_start_time' => (int)strtotime($record['DowntimeService']['scheduled_start_time']),
+                    'service_description'  => $record['Service']['uuid'],
+                    'triggered_by_id'      => (int)$record['DowntimeService']['triggered_by_id'],
+                    'was_cancelled'        => (bool)$record['DowntimeService']['was_cancelled'],
+                    'was_started'          => (bool)$record['DowntimeService']['was_started'],
+                ];
+                fwrite($file, json_encode($data) . PHP_EOL);
+            }
+            $ProgressBar->update(($i + 1));
+        }
+        fclose($file);
+        $this->out('');
+        $this->printCrashMsg($fileName, 'statusengine_service_downtimehistory');
+    }
+
     public function getOptionParser() {
         $parser = parent::getOptionParser();
         $parser->addOptions([
@@ -588,6 +750,7 @@ class ExportArchivAsJsonShell extends AppShell {
             'notifications'    => ['help' => 'Will export host and service notificatiosn as json'],
             'statehistory'     => ['help' => 'Will export host and service statehistory records as json'],
             'acknowledgements' => ['help' => 'Will export host and service acknowledgements as json'],
+            'downtimes'        => ['help' => 'Will export host and service downtimes as json'],
         ]);
         return $parser;
     }
