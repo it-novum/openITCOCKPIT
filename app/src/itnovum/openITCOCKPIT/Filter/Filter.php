@@ -229,7 +229,10 @@ abstract class Filter {
      */
     public function getDirection($default = '') {
         if (isset($this->Request->query['direction'])) {
-            return $this->Request->query['direction'];
+            if($this->Request->query['direction'] === 'desc'){
+                return 'desc';
+            }
+            return 'asc';
         }
         return $default;
     }
