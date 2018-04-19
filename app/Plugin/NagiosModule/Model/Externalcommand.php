@@ -33,7 +33,7 @@ class Externalcommand extends NagiosModuleAppModel {
     /**
      * @var null|DbBackend
      */
-    private $DbBackend = null;
+    protected $DbBackend = null;
 
     /**
      * Check if nagios.cmd exits and fopen() it
