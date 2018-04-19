@@ -2264,12 +2264,21 @@ class HostsController extends AppController {
                 'Host.host_url',
             ],
             'contain'    => [
-                'Container'
+                'Container',
+                'Hosttemplate' => [
+                    'fields' => [
+                        'Hosttemplate.host_url'
+                    ]
+                ]
             ],
             'conditions' => [
                 'Host.id' => $id
             ]
         ]);
+
+        if($rawHost['Host']['host_url'] === '' || $rawHost['Host']['host_url'] === null){
+            $rawHost['Host']['host_url'] = $rawHost['Hosttemplate']['host_url'];
+        }
 
         $containerIdsToCheck = Hash::extract($rawHost, 'Container.{n}.HostsToContainer.container_id');
         $containerIdsToCheck[] = $rawHost['Host']['container_id'];

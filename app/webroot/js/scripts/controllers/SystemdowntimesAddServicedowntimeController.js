@@ -71,7 +71,6 @@ angular.module('openITCOCKPIT')
                     }
                 },
                 function errorCallback(result){
-                    console.error(result.data);
                     if(result.data.hasOwnProperty('error')){
                         $scope.errors = result.data.error[0];
                     }
@@ -83,23 +82,24 @@ angular.module('openITCOCKPIT')
             $http.get("/services/loadServicesByString.json", {
                 params: {
                     'angular': true,
+                    'filter[Host.name]': searchString,
                     'filter[Service.servicename]': searchString,
                     'selected[]': $scope.serviceIds
                 }
-            }).then(function(result){
-
+            }).then(function (result) {
                 $scope.services = [];
                 result.data.services.forEach(function(obj, index){
+                    var serviceName = obj.value.Service.name;
+                    if(serviceName === null){
+                        serviceName = obj.value.Servicetemplate.name;
+                    }
                     $scope.services[index] = {
-                        "id": obj.value.Service.id,
-                        "group": obj.value.Host.name,
-                        "label": obj.value.Host.name + "/" + obj.value.Servicetemplate.name
+                        id: obj.value.Service.id,
+                        group: obj.value.Host.name,
+                        label: obj.value.Host.name + "/" + serviceName
                     };
                 });
-
-                $scope.errors = null;
             }, function errorCallback(result){
-                console.error(result);
                 if(result.data.hasOwnProperty('error')){
                     $scope.errors = result.data.error;
                 }

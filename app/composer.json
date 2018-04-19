@@ -14,7 +14,8 @@
         "psr-4": {
             "itnovum\\openITCOCKPIT\\": "src/itnovum/openITCOCKPIT/",
             "Adldap\\": "Vendor/adldap/adldap/src/"
-        }
+        },
+        "files": ["Vendor/imageSmoothArc.php"]
     },
     "config": {
         "vendor-dir": "Vendor"
@@ -32,6 +33,7 @@
         "cboden/ratchet": "^0.4.0",
         "matthiasmullie/minify": "^1.3",
         "guzzlehttp/guzzle": "^6.3",
-        "guiguiboy/php-cli-progress-bar": "^0.0.4"
+        "guiguiboy/php-cli-progress-bar": "^0.0.4",
+        "symfony/process": "^3.4"
     }
 }

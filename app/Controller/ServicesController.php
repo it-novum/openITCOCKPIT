@@ -1960,6 +1960,10 @@ class ServicesController extends AppController {
             ]
         ]);
 
+        if($rawService['Service']['service_url'] === '' || $rawService['Service']['service_url'] === null){
+            $rawService['Service']['service_url'] = $rawService['Servicetemplate']['service_url'];
+        }
+
         $rawHost = $this->Host->find('first', $this->Host->getQueryForServiceBrowser($rawService['Service']['host_id']));
 
         $PerfdataChecker = new PerfdataChecker(
@@ -3245,9 +3249,23 @@ class ServicesController extends AppController {
         return null;
     }
 
+    //Only for ACLs
+    public function externalcommands() {
+        return null;
+    }
+
     public function icon() {
         $this->layout = 'blank';
         //Only ship HTML Template
+        return;
+    }
+
+    public function details(){
+        $this->layout = 'blank';
+        //Only ship HTML Template
+
+        $User = new User($this->Auth);
+        $this->set('username', $User->getFullName());
         return;
     }
 
@@ -3288,7 +3306,7 @@ class ServicesController extends AppController {
 
         $ServiceCondition = new ServiceConditions($ServiceFilter->indexFilter());
         $ServiceCondition->setContainerIds($this->MY_RIGHTS);
-        $ServiceCondition->includeDisabled(true);
+        $ServiceCondition->includeDisabled();
 
         $services = $this->Service->makeItJavaScriptAble(
             $this->Service->getServicesForAngular($ServiceCondition, $selected)

@@ -399,11 +399,21 @@
                                     </td>
 
                                     <td class="text-center">
-                                        <i class="fa fa-lg fa-area-chart"
-                                           ng-mouseenter="mouseenter($event, host, service)"
-                                           ng-mouseleave="mouseleave()"
-                                           ng-if="service.Service.has_graph">
-                                        </i>
+                                        <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
+                                            <a href="/services/grapherSwitch/{{ service.Service.id }}" class="txt-color-blueDark">
+                                                <i class="fa fa-lg fa-area-chart"
+                                                   ng-mouseenter="mouseenter($event, host, service)"
+                                                   ng-mouseleave="mouseleave()"
+                                                   ng-if="service.Service.has_graph">
+                                                </i>
+                                            </a>
+                                        <?php else: ?>
+                                            <i class="fa fa-lg fa-area-chart"
+                                               ng-mouseenter="mouseenter($event, host, service)"
+                                               ng-mouseleave="mouseleave()"
+                                               ng-if="service.Service.has_graph">
+                                            </i>
+                                        <?php endif; ?>
                                     </td>
 
                                     <td class="text-center">

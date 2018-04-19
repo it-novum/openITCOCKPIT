@@ -25,6 +25,7 @@ angular.module('openITCOCKPIT')
             total +=$scope.contactWithRelations.Service.length;
             total +=$scope.contactWithRelations.Hostescalation.length;
             total +=$scope.contactWithRelations.Serviceescalation.length;
+            total +=$scope.contactWithRelations.Contactgroup.length;
 
             return total;
         };

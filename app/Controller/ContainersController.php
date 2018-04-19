@@ -81,7 +81,7 @@ class ContainersController extends AppController {
         }
         $container = $this->Container->findById($id);
         if (!$this->allowedByContainerId($container['Container']['id'])) {
-            throw new ForbiddenException('404 Forbidden');
+            throw new ForbiddenException('403 Forbidden');
         }
 
         $this->set('container', $container);

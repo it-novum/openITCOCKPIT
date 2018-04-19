@@ -1600,9 +1600,7 @@ class Service extends AppModel {
                     ],
                 ],
             ],
-            'conditions' => [
-                'OR' => $ServiceConditions->getConditions()
-            ],
+
             'order'      => [
                 'Host.name'                                                    => 'ASC',
                 'IF(Service.name IS NULL, Servicetemplate.name, Service.name)' => 'ASC'
@@ -1621,13 +1619,35 @@ class Service extends AppModel {
             'limit'      => self::ITN_AJAX_LIMIT
         ];
 
-        if ($ServiceConditions->hasNotConditions()) {
-            $query['conditions']['NOT'] = $ServiceConditions->getNotConditions();
+        if(!empty($ServiceConditions->getConditions())){
+            $query['conditions']['OR'] = $ServiceConditions->getConditions();
         }
+
+        if(is_array($selected)){
+            $selected = array_filter($selected);
+        }
+        if(!empty($selected)){
+            $query['conditions']['NOT'] = ['Service.id' => $selected];
+        }
+
+        if ($ServiceConditions->hasNotConditions()) {
+            if(!empty($query['conditions']['NOT'])){
+                $query['conditions']['NOT'] = array_merge($query['conditions']['NOT'], $ServiceConditions->getNotConditions());
+            } else{
+                $query['conditions']['NOT'] = $ServiceConditions->getNotConditions();
+            }
+
+        }
+
         $servicesWithLimit = $this->find('all', $query);
         $servicesWithLimit = Hash::combine($servicesWithLimit, '{n}.Service.id', '{n}');
 
         $selectedServices = [];
+
+        if(is_array($selected)){
+            $selected = array_filter($selected);
+        }
+
         if (!empty($selected)) {
             $query = [
                 'recursive'  => -1,

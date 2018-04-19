@@ -27,6 +27,10 @@ App::uses('AuthComponent', 'Controller/Component');
 App::uses('UserRights', 'Lib');
 App::import('Component', 'Ldap');
 
+/**
+ * Class AppAuthComponent
+ * @property AuthComponent Auth
+ */
 class AppAuthComponent extends AuthComponent {
 
     /**
@@ -63,41 +67,6 @@ class AppAuthComponent extends AuthComponent {
      * @return void
      */
     protected function _settings() {
-        Configure::load('auth_actions');
-
-        $modulePlugins = array_filter(CakePlugin::loaded(), function ($value) {
-            return strpos($value, 'Module') !== false;
-        });
-        foreach ($modulePlugins as $pluginName) {
-            Configure::load($pluginName . '.' . 'auth_actions');
-        }
-
-        $actionConfig = Configure::read('auth_actions');
-
-        $publicActionsConfig = Configure::read('public_actions');
-        $this->AuthActions = new AuthActions($actionConfig, $publicActionsConfig);
-        ClassRegistry::addObject('AuthActions', $this->AuthActions);
-        ClassRegistry::addObject('UserRights', $this->UserRights);
-        ClassRegistry::addObject('AuthComponent', $this);
-
-        // Public Actions
-        $plugin = $this->_controller->plugin;
-        $controller = Inflector::underscore($this->_controller->name);
-        $action = $this->_controller->action;
-
-        $key = $controller;
-        if (!empty($plugin)) {
-            $key = $plugin . '.' . $key;
-        }
-
-        if (isset($publicActionsConfig[$key])) {
-            if ($publicActionsConfig[$key] == '*'
-                || (is_array($publicActionsConfig[$key]) && in_array($action, $publicActionsConfig[$key]))
-            ) {
-                $this->allow($action);
-            }
-        }
-
         $this->authenticate = [
             AuthComponent::ALL => [
                 'userModel' => 'User',
@@ -111,9 +80,12 @@ class AppAuthComponent extends AuthComponent {
                 ],
             ],
             'Form',
+            'Api',
         ];
+
         $this->authError = __('action_not_allowed');
         $this->authorize = ['Controller'];
+
         $this->loginRedirect = [
             'controller' => 'dashboards',
             'action'     => 'index',
@@ -191,7 +163,11 @@ class AppAuthComponent extends AuthComponent {
                 break;
 
             default:
-                $result = parent::login($user['User']);
+                if (!isset($user['User']) && !empty($user)) {
+                    $result = parent::login($user);
+                } else {
+                    $result = parent::login($user['User']);
+                }
                 break;
         }
 
@@ -306,7 +282,7 @@ class AppAuthComponent extends AuthComponent {
     }
 
     /**
-     * @return void
+     * @return string
      */
     public function logout() {
         $this->Session->delete('Auth');
@@ -346,18 +322,20 @@ class AppAuthComponent extends AuthComponent {
     }
 
     /**
-     * Checks if the user has the given right/permission
-     *
-     * @param string $right
-     *
-     * @return bool
+     * Try to find the user for for stateless login
+     * @param CakeRequest $request
+     * @return bool|mixed
      */
-    public function hasRight($right) {
-        if (!$this->loggedIn()) {
-            return false;
+    public function tryToGetUser(CakeRequest $request) {
+        $this->constructAuthenticate();
+        foreach ($this->_authenticateObjects as $auth) {
+            $user = $auth->getUser($request);
+            if (!empty($user) && is_array($user)) {
+                return $user;
+            }
         }
-
-        return $this->UserRights->userHasRight($this->user(), $right);
+        return false;
     }
+
 }
 

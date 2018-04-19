@@ -25,6 +25,10 @@
 
 use Model\Adldap;
 
+/**
+ * Class LdapComponent
+ * @property \Adldap\Adldap $adldap
+ */
 class LdapComponent extends Component
 {
 

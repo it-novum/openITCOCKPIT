@@ -148,15 +148,6 @@ class CurrentstatereportsController extends AppController {
 
                 return;
 
-                /*
-                //Plain PHP workaround
-                $this->redirect([
-                    'action' => 'createPdfReport',
-                    'ext'    => 'pdf',
-                ]);
-                */
-
-
             } else {
                 $this->serializeErrorMessage();
             }
@@ -167,9 +158,10 @@ class CurrentstatereportsController extends AppController {
         $this->set('currentStateData', $this->Session->read('currentStateData'));
         if ($this->Session->check('currentStateData')) {
             $this->Session->delete('currentStateData');
+            $this->render('/Elements/load_current_state_report_data');
+        }else{
+            $this->redirect(['action' => 'index']);
         }
-        $this->render('/Elements/load_current_state_report_data');
-
     }
 
     public function createPdfReport() {
