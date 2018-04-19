@@ -112,7 +112,7 @@ class CrateServicetemplateForService {
 
     public function getConditionToUpdateName() {
         return [
-            'active_checks_enabled_from_template' => true,
+            'name_from_template' => true,
             'servicetemplate_id' => $this->servicetemplate_id
         ];
     }

@@ -201,7 +201,7 @@ class SyncTablesShell extends AppShell {
             }
 
             $this->out(sprintf(
-                'Synchronize command %s/%s. (%s/%s)            %s',
+                'Synchronize service %s/%s. (%s/%s)            %s',
                 ($i + 1),
                 $sizeof,
                 substr($service['Service']['host_id'], 0, 25),
