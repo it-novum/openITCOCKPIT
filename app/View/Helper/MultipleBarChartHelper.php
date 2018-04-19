@@ -24,24 +24,21 @@
 //	confirmation.
 
 
-class MultipleBarChartHelper extends AppHelper
-{
-    public function __construct(View $view, $settings = [])
-    {
+class MultipleBarChartHelper extends AppHelper {
+    public function __construct(View $view, $settings = []) {
         parent::__construct($view, $settings);
     }
 
-    public function createBarChart($chartData, $maxBars = 10)
-    {
-        $filepath = WWW_ROOT.'img'.DS.'charts';
-        $filename = uniqid().'.png';
+    public function createBarChart($chartData, $maxBars = 10) {
+        $filepath = WWW_ROOT . 'img' . DS . 'charts';
+        $filename = uniqid() . '.png';
         $tmp_dir = new Folder($filepath, true);
 
         $width = 870;
-        $height = 220;
+        $height = 300;
         $this->img = imagecreatetruecolor($width, $height);
         $this->width = $width * 0.7;
-        $this->height = $height * 0.4;
+        $this->height = $height * 0.3;
         $this->maxBars = $maxBars;
         $this->scale = $this->height * 0.25;
         $this->chartDepth3d = 5;
@@ -52,14 +49,13 @@ class MultipleBarChartHelper extends AppHelper
         $this->setImageLayout(); //set transparence, colors, fonts, ...
         $this->createChartGrid();
         $this->create($chartData);
-        imagepng($this->img, $filepath.DS.$filename, 0);
+        imagepng($this->img, $filepath . DS . $filename, 0);
         imagedestroy($this->img);
 
         return $filename;
     }
 
-    public function createChartGrid()
-    {
+    public function createChartGrid() {
         $colorGray = imagecolorallocate($this->img, 220, 220, 220);
         $colorLightGray = imagecolorallocate($this->img, 250, 250, 250);
         $colorDarkGray = imagecolorallocate($this->img, 180, 180, 180);
@@ -96,8 +92,7 @@ class MultipleBarChartHelper extends AppHelper
         }
     }
 
-    public function setImageLayout()
-    {
+    public function setImageLayout() {
         imagesavealpha($this->img, true);
         $transparent = imagecolorallocatealpha($this->img, 0, 0, 0, 127);
         imagefill($this->img, 0, 0, $transparent);
@@ -105,8 +100,7 @@ class MultipleBarChartHelper extends AppHelper
         $this->fontFile = 'DejaVuSans';
     }
 
-    public function create($chartData)
-    {
+    public function create($chartData) {
         $alpha = 5;
         $textColor = imagecolorallocate($this->img, 50, 50, 50);
         $colorsHost = [
@@ -118,8 +112,8 @@ class MultipleBarChartHelper extends AppHelper
         for ($i = 0; $i <= 2; $i++) {
             $colors[$i] = [
                 'default' => imagecolorallocatealpha($this->img, $colorsHost[$i][0], $colorsHost[$i][1], $colorsHost[$i][2], $colorsHost[$i][3]),
-                'top3d'   => imagecolorallocatealpha($this->img, $colorsHost[$i][0] * 0.75, $colorsHost[$i][1] * 0.75, $colorsHost[$i][2] * 0.75, $colorsHost[$i][3]),
-                'left3d'  => imagecolorallocatealpha($this->img, $colorsHost[$i][0] * 0.65, $colorsHost[$i][1] * 0.65, $colorsHost[$i][2] * 0.65, $colorsHost[$i][3]),
+                'top3d' => imagecolorallocatealpha($this->img, $colorsHost[$i][0] * 0.75, $colorsHost[$i][1] * 0.75, $colorsHost[$i][2] * 0.75, $colorsHost[$i][3]),
+                'left3d' => imagecolorallocatealpha($this->img, $colorsHost[$i][0] * 0.65, $colorsHost[$i][1] * 0.65, $colorsHost[$i][2] * 0.65, $colorsHost[$i][3]),
             ];
 
         }
@@ -150,8 +144,8 @@ class MultipleBarChartHelper extends AppHelper
                 }
                 $y1 = $tmpY2;
             }
-            $hostName = (strlen($hostName) < $this->maxLabelLength) ? $hostName : (substr($hostName, 0, $this->maxLabelLength)).'...';
-            imagettftext($this->img, 8, -45, $tmpX + $this->x / 2, $this->height + $this->y * 1.3, $textColor, $this->fontFile, $hostName);
+            $hostName = (strlen($hostName) < $this->maxLabelLength) ? $hostName : (substr($hostName, 0, $this->maxLabelLength)) . '...';
+            imagettftext($this->img, 8, -90, $tmpX + $this->x / 2, $this->height + $this->y * 1.3, $textColor, $this->fontFile, $hostName);
         }
     }
 }
