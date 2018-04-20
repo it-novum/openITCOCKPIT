@@ -27,6 +27,7 @@ use itnovum\openITCOCKPIT\Core\HoststatusConditions;
 use itnovum\openITCOCKPIT\Core\HoststatusFields;
 use itnovum\openITCOCKPIT\Core\ServicestatusConditions;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
+use itnovum\openITCOCKPIT\Core\Views\UserTime;
 
 
 /**
@@ -693,7 +694,11 @@ class MapeditorsController extends MapModuleAppController {
             ->currentState();
 
         $hoststatus = $this->Mapeditor->getHoststatus([$uuid], $hoststatusConditions, $servicestatusConditions, $hostFields, $serviceFields);
-        $this->set(compact(['uuid', 'hoststatus']));
+        $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
+        $Hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus($hoststatus[$uuid]['Hoststatus'], $UserTime);
+        $Hoststatus = $Hoststatus->toArray();
+
+        $this->set(compact(['uuid', 'hoststatus', 'Hoststatus']));
     }
 
     public function popoverServicegroupStatus($uuid = null) {
@@ -701,16 +706,6 @@ class MapeditorsController extends MapModuleAppController {
         $serviceFields = new ServicestatusFields($this->DbBackend);
         $serviceFields->currentState();
         $servicegroups = $this->Mapeditor->getServicegroupstatus([$uuid], $servicestatusConditions, $serviceFields);
-        /*$serviceUuids = Hash::extract($servicegroups, '{n}.Service.{n}.uuid');
-        $servicestatus = $this->Servicestatus->byUuids([$uuid], $serviceFields, $servicestatusConditions);
-        if (!empty($servicestatus)) {
-            $servicegroups['Servicestatus'] = $servicestatus;
-        }*/
-
-        /*
-        $fields = [];
-        $servicegroups = $this->Mapeditor->getServicegroupstatusByUuid($uuid, $fields);
-        */
         $this->set(compact(['uuid', 'servicegroups']));
     }
 
@@ -730,40 +725,42 @@ class MapeditorsController extends MapModuleAppController {
 
 
     public function popoverServiceStatus($uuid = null) {
-        $fields = [
-            'Host.name',
-            'Objects.name2',
-            'Service.name', // may obsolete .. just mapstatushelper is using that
-            'Servicetemplate.name', // may obsolete .. just mapstatushelper is using that
-            'Servicestatus.problem_has_been_acknowledged',
-            'Servicestatus.scheduled_downtime_depth',
-            'Servicestatus.is_flapping',
-            'Servicestatus.perfdata',
-            'Servicestatus.output',
-            'Servicestatus.long_output',
-            'Servicestatus.current_check_attempt',
-            'Servicestatus.max_check_attempts',
-            'Servicestatus.last_check',
-            'Servicestatus.next_check',
-            'Servicestatus.last_state_change',
-            'IF(Service.name IS NULL, Servicetemplate.name, Service.name) AS ServiceName',
-            'IF(Service.name IS NULL, Servicetemplate.description, Service.description) AS ServiceDescription',
-        ];
+        $servicestatusConditions = new ServicestatusConditions($this->DbBackend);
+        $serviceFields = new ServicestatusFields($this->DbBackend);
+        $serviceFields
+            ->currentState()
+            ->problemHasBeenAcknowledged()
+            ->scheduledDowntimeDepth()
+            ->isFlapping()
+            ->perfdata()
+            ->output()
+            ->longOutput()
+            ->currentCheckAttempt()
+            ->maxCheckAttempts()
+            ->lastCheck()
+            ->nextCheck()
+            ->lastStateChange();
+        $servicestatus = $this->Mapeditor->getServicestatus([$uuid], $servicestatusConditions, $serviceFields);
 
-        $servicestatus = $this->Mapeditor->getServicestatusByUuid($uuid, $fields);
-        $serviceinfo = $serviceinfo = $this->Service->find('all', [
+        $serviceinfo = $this->Service->find('first', [
+            //'recursive' => -1,
             'conditions' => [
                 'Service.uuid' => $uuid,
             ],
-            'fields'     => [
-                'Host.name',
-                'Service.name',
-                'Servicetemplate.name',
-                'IF(Service.name IS NULL, Servicetemplate.name, Service.name) AS ServiceName',
-                'IF(Service.name IS NULL, Servicetemplate.description, Service.description) AS ServiceDescription',
+            'contain'    => [
+                'Host'            => [
+                    'fields' => ['Host.name'],
+                ],
             ],
+            'fields' => [
+                'Service.id'
+            ]
         ]);
 
+        $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
+        $Servicestatus = new \itnovum\openITCOCKPIT\Core\Servicestatus($servicestatus[$uuid]['Servicestatus'], $UserTime);
+
+        $servicestatus[$uuid]['Servicestatus'] = $Servicestatus->toArray();
         $this->set(compact('uuid', 'servicestatus', 'serviceinfo'));
     }
 

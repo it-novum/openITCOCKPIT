@@ -88,15 +88,15 @@ if ($hostStatus['current_state'] == 0) {
         </tr>
         <tr>
             <td class="col-md-3 col-xs-3"><?php echo __('Last Check'); ?></td>
-            <td class="col-md-9 col-xs-9"><?php echo h($hostStatus['last_check']); ?></td>
+            <td class="col-md-9 col-xs-9"><?php echo h($Hoststatus['lastCheck']); ?></td>
         </tr>
         <tr>
             <td class="col-md-3 col-xs-3"><?php echo __('Next Check'); ?></td>
-            <td class="col-md-9 col-xs-9"><?php echo h($hostStatus['next_check']); ?></td>
+            <td class="col-md-9 col-xs-9"><?php echo h($Hoststatus['nextCheck']); ?></td>
         </tr>
         <tr>
             <td class="col-md-3 col-xs-3"><?php echo __('Last State Change'); ?></td>
-            <td class="col-md-9 col-xs-9"><?php echo h($hostStatus['last_state_change']); ?></td>
+            <td class="col-md-9 col-xs-9"><?php echo h($Hoststatus['last_state_change']); ?></td>
         </tr>
         <tr>
             <td class="col-md-3 col-xs-3"><?php echo __('Summary State'); ?></td>
