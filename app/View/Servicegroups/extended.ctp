@@ -192,8 +192,16 @@
                                 <th>
                                     <?php echo __('Status'); ?>
                                 </th>
-                                <th colspan="3"></th>
-                                <th class="width-20">
+                                <th class="width-20 text-center">
+                                    <i class="fa fa-user fa-lg" title="is acknowledged"></i>
+                                </th>
+                                <th class="width-20 text-center">
+                                    <i class="fa fa-power-off fa-lg" title="is in downtime"></i>
+                                </th>
+                                <th class="width-20 text-center">
+                                    <i class="fa fa fa-area-chart fa-lg" title="Grapher"></i>
+                                </th>
+                                <th class="width-20 text-center">
                                     <strong title="<?php echo __('Passively transferred service'); ?>">
                                         <?php echo __('P'); ?>
                                     </strong>
@@ -220,7 +228,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr ng-if="servicegroup.Services.length == 0">
+                            <tr ng-show="servicegroup.Services.length == 0">
                                 <td class="no-padding text-center" colspan="13">
                                     <div class="col-xs-12 text-center txt-color-red italic padding-10">
                                         <?php echo __('No entries match the selection'); ?>
@@ -248,13 +256,22 @@
                                        ng-show="service.Servicestatus.scheduledDowntimeDepth > 0"></i>
                                 </td>
                                 <td class="text-center">
-                                    <i class="fa fa-lg fa-area-chart"
-                                       ng-mouseenter="mouseenter($event, service.Host, service)"
-                                       ng-mouseleave="mouseleave()"
-                                       ng-if="service.Service.has_graph">
-                                    </i>
+                                    <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
+                                        <a href="/services/grapherSwitch/{{ service.Service.id }}" class="txt-color-blueDark">
+                                            <i class="fa fa-lg fa-area-chart"
+                                               ng-mouseenter="mouseenter($event, service.Host, service)"
+                                               ng-mouseleave="mouseleave()"
+                                               ng-if="service.Service.has_graph">
+                                            </i>
+                                        </a>
+                                    <?php else: ?>
+                                        <i class="fa fa-lg fa-area-chart"
+                                           ng-mouseenter="mouseenter($event, service.Host, service)"
+                                           ng-mouseleave="mouseleave()"
+                                           ng-if="service.Service.has_graph">
+                                        </i>
+                                    <?php endif; ?>
                                 </td>
-
                                 <td class="text-center">
                                     <strong title="<?php echo __('Passively transferred service'); ?>"
                                             ng-show="service.Service.active_checks_enabled === false || service.Host.is_satellite_host === true">
@@ -367,7 +384,7 @@
                             </tr>
                         </tbody>
                     </table>
-                    <div class="col-xs-12 text-center txt-color-red italic padding-10" ng-if!="servicegroup">
+                    <div class="col-xs-12 text-center txt-color-red italic padding-10" ng-hide="servicegroup">
                         <?php echo __('No entries match the selection'); ?>
                     </div>
                     <br />
