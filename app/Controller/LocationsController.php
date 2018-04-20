@@ -28,7 +28,7 @@ class LocationsController extends AppController
 {
     public $uses = ['Location', 'Container'];
     public $layout = 'Admin.default';
-    public $components = ['Paginator', 'ListFilter.ListFilter', 'RequestHandler'];
+    public $components = ['ListFilter.ListFilter', 'RequestHandler'];
     public $helpers = ['ListFilter.ListFilter'];
     public $listFilters = [
         'index' => [

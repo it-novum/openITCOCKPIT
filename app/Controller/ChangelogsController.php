@@ -34,7 +34,6 @@ class ChangelogsController extends AppController
         'Changelog',
     ];
     public $components = [
-        'Paginator',
         'ListFilter.ListFilter',
         'RequestHandler',
     ];

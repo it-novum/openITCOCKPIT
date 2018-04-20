@@ -109,7 +109,7 @@ class AppController extends Controller {
         'Acl',
         'Cookie',
         'RequestHandler',
-        'Paginator',
+        'Paginator' => ['className' => 'AppPaginator'],
         'Menu',
         'Constants',
         'Tree',

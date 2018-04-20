@@ -31,7 +31,7 @@
             <?php echo __('Administration') ?>
             <span>>
                 <?php echo __('Cronjobs'); ?>
-			</span>
+            </span>
         </h1>
     </div>
 </div>
@@ -44,7 +44,7 @@
                     <div class="widget-toolbar" role="menu">
                         <?php
                         if ($this->Acl->hasPermission('add')):
-                            echo $this->Html->link(__('New'), '/'.$this->params['controller'].'/add', ['class' => 'btn btn-xs btn-success', 'icon' => 'fa fa-plus']);
+                            echo $this->Html->link(__('New'), '/' . $this->params['controller'] . '/add', ['class' => 'btn btn-xs btn-success', 'icon' => 'fa fa-plus']);
                         endif;
                         ?>
                     </div>
@@ -57,7 +57,8 @@
                 <div>
                     <div class="widget-body no-padding">
                         <div class="mobile_table">
-                            <table id="systemfailure_list" class="table table-striped table-hover table-bordered smart-form"
+                            <table id="systemfailure_list"
+                                   class="table table-striped table-hover table-bordered smart-form"
                                    style="">
                                 <thead>
                                 <tr>
@@ -67,6 +68,7 @@
                                     <th class="no-sort"><?php echo __('Interval'); ?></th>
                                     <th class="no-sort"><?php echo __('Last scheduled'); ?></th>
                                     <th class="no-sort"><?php echo __('Is currently running'); ?></th>
+                                    <th class="no-sort"><?php echo __('Enabled'); ?></th>
                                     <th class="no-sort text-center"><i class="fa fa-gear fa-lg"></i></th>
                                 </tr>
                                 </thead>
@@ -85,6 +87,13 @@
                                                 echo __('Yes');
                                             endif;
                                             ?>
+                                        </td>
+                                        <td class="text-align-center">
+                                            <?php if ($cronjob['Cronjob']['enabled']): ?>
+                                                <i class="fa fa-check text-success"></i>
+                                                <?php else: ?>
+                                                <i class="fa fa-times text-danger"></i>
+                                            <?php endif; ?>
                                         </td>
                                         <td class="text-center">
                                             <?php if ($this->Acl->hasPermission('edit')): ?>
@@ -111,7 +120,7 @@
                             <div class="row">
                                 <div class="col-sm-6">
                                     <div class="dataTables_info" style="line-height: 32px;"
-                                         id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('Page').' {:page} '.__('of').' {:pages}, '.__('Total').' {:count} '.__('entries')); ?></div>
+                                         id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('Page') . ' {:page} ' . __('of') . ' {:pages}, ' . __('Total') . ' {:count} ' . __('entries')); ?></div>
                                 </div>
                                 <div class="col-sm-6 text-right">
                                     <div class="dataTables_paginate paging_bootstrap">

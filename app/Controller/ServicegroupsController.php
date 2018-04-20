@@ -61,7 +61,6 @@ class ServicegroupsController extends AppController {
     //public $layout = 'Admin.default';
     public $layout = 'angularjs';
     public $components = [
-        'Paginator',
         'RequestHandler',
     ];
     public $helpers = [

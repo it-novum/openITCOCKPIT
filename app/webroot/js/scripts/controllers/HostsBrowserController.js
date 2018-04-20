@@ -158,7 +158,8 @@ angular.module('openITCOCKPIT')
                 'filter[Host.id]': $scope.id,
                 'filter[Service.servicename]': $scope.activeServiceFilter.Service.name,
                 'filter[Servicestatus.output]': $scope.activeServiceFilter.Servicestatus.output,
-                'filter[Servicestatus.current_state][]': $rootScope.currentStateForApi($scope.activeServiceFilter.Servicestatus.current_state)
+                'filter[Servicestatus.current_state][]': $rootScope.currentStateForApi($scope.activeServiceFilter.Servicestatus.current_state),
+                'filter[Service.disabled]': false
             };
 
             $http.get("/services/index.json", {

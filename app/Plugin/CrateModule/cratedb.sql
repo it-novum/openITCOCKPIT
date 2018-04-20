@@ -5,8 +5,10 @@ CREATE TABLE IF NOT EXISTS openitcockpit_hosts (
   address string,
   container_id int,
   active_checks_enabled int,
+  active_checks_enabled_from_template boolean,
   hosttemplate_id int,
   tags string,
+  tags_from_template boolean,
   satellite_id int,
   container_ids ARRAY(INT),
   disabled boolean
@@ -21,7 +23,8 @@ CREATE TABLE IF NOT EXISTS openitcockpit_contacts (
 CREATE TABLE IF NOT EXISTS openitcockpit_commands (
   id int,
   uuid string,
-  name string
+  name string,
+  command_type int
   ) CLUSTERED INTO 4 shards with (number_of_replicas = '1-all');
 
 CREATE TABLE IF NOT EXISTS openitcockpit_services (

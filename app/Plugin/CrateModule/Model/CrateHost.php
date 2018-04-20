@@ -53,6 +53,7 @@ class CrateHost extends CrateModuleAppModel {
             ],
             'order' => $HostConditions->getOrder()
         ];
+        $query['conditions']['Host.disabled'] = (bool)$HostConditions->includeDisabled();
         $query['conditions'][] = 'Hoststatus.hostname IS NULL';
         return $query;
     }

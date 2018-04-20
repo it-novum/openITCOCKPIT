@@ -64,7 +64,6 @@ use itnovum\openITCOCKPIT\Core\HostSharingPermissions;
 class HostsController extends AppController {
     public $layout = 'Admin.default';
     public $components = [
-        'Paginator',
         'ListFilter.ListFilter',
         'RequestHandler',
         'CustomValidationErrors',
@@ -2398,7 +2397,7 @@ class HostsController extends AppController {
         $HoststatusFields = new HoststatusFields($this->DbBackend);
         $HoststatusFields->wildcard();
         $HoststatusConditions = new HoststatusConditions($this->DbBackend);
-        $HoststatusConditions->hostsDownAndUnreachable();
+        //$HoststatusConditions->hostsDownAndUnreachable();
 
         $hoststatus = $this->Hoststatus->byUuid($host['Host']['uuid'], $HoststatusFields);
         if (empty($hoststatus)) {

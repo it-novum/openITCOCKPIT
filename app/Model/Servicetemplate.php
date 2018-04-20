@@ -23,6 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use itnovum\openITCOCKPIT\Crate\CrateServicetemplateForService;
 use itnovum\openITCOCKPIT\Filter\ServicetemplateFilter;
 
 class Servicetemplate extends AppModel {
@@ -568,5 +569,35 @@ class Servicetemplate extends AppModel {
                 'Servicetemplate.id' => $servicetemplateId
             ]
         ];
+    }
+
+    /**
+     * @param bool $created
+     * @param array $options
+     * @return bool|void
+     */
+    public function afterSave($created, $options = []) {
+        if ($this->DbBackend->isCrateDb() && isset($this->data['Servicetemplate']['id'])) {
+            //Save data also to CrateDB
+            $UpdateHelper = new CrateServicetemplateForService($this->data['Servicetemplate']['id']);
+            $servicetemplate = $this->find('first', $UpdateHelper->getFindQuery());
+            $UpdateHelper->setDataFromFindResult($servicetemplate);
+
+            $CrateServiceModel = ClassRegistry::init('CrateModule.CrateService');
+            $CrateServiceModel->updateAll(
+                $UpdateHelper->getDataToUpdateName(),
+                $UpdateHelper->getConditionToUpdateName()
+            );
+            $CrateServiceModel->updateAll(
+                $UpdateHelper->getDataToUpdateActiveChecksEnabled(),
+                $UpdateHelper->getConditionToUpdateActiveChecksEnabled()
+            );
+            $CrateServiceModel->updateAll(
+                $UpdateHelper->getDataToUpdateTags(),
+                $UpdateHelper->getConditionToUpdateTags()
+            );
+        }
+
+        parent::afterSave($created, $options);
     }
 }

@@ -41,7 +41,6 @@ class ContactsController extends AppController {
     ];
     public $layout = 'Admin.default';
     public $components = [
-        'Paginator',
         'ListFilter.ListFilter',
         'RequestHandler',
         'Ldap',

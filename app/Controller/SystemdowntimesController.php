@@ -43,7 +43,6 @@ class SystemdowntimesController extends AppController {
         'Container',
     ];
     public $components = [
-        'Paginator',
         'ListFilter.ListFilter',
         'RequestHandler',
         'CustomValidationErrors',

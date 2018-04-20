@@ -25,11 +25,14 @@
 
 App::uses('ValidationCollection', 'Lib');
 
+use itnovum\openITCOCKPIT\Core\DbBackend;
 use itnovum\openITCOCKPIT\Core\HostConditions;
+use itnovum\openITCOCKPIT\Core\ValueObjects\LastDeletedId;
 use itnovum\openITCOCKPIT\Filter\HostFilter;
 
 /**
  * @property ParentHost $ParentHost
+ * @property DbBackend $DbBackend
  */
 class Host extends AppModel {
 
@@ -216,6 +219,11 @@ class Host extends AppModel {
 
         ],
     ];
+
+    /**
+     * @var LastDeletedId|null
+     */
+    private $LastDeletedId = null;
 
     /**
      * @param HostConditions $HostConditions
@@ -1604,7 +1612,7 @@ class Host extends AppModel {
         }
         return $servicestatusCount;
     }
-    
+
     /**
      * @param int $hostId
      * @return array
@@ -1670,7 +1678,7 @@ class Host extends AppModel {
      * @param int $hostId
      * @return array
      */
-    public function getQueryForServiceBrowser($hostId){
+    public function getQueryForServiceBrowser($hostId) {
         return [
             'recursive'  => -1,
             'fields'     => [
@@ -1724,5 +1732,41 @@ class Host extends AppModel {
                 'Host.id' => $hostId
             ]
         ];
+    }
+
+    /**
+     * @param bool $created
+     * @param array $options
+     * @return bool|void
+     */
+    public function afterSave($created, $options = []) {
+        if ($this->DbBackend->isCrateDb() && isset($this->data['Host']['id'])) {
+            //Save data also to CrateDB
+            $CrateHost = new \itnovum\openITCOCKPIT\Crate\CrateHost($this->data['Host']['id']);
+            $host = $this->find('first', $CrateHost->getFindQuery());
+            $CrateHost->setDataFromFindResult($host);
+
+            $CrateHostModel = ClassRegistry::init('CrateModule.CrateHost');
+            $CrateHostModel->save($CrateHost->getDataForSave());
+        }
+
+        parent::afterSave($created, $options);
+    }
+
+    public function beforeDelete($cascade = true){
+        $this->LastDeletedId = new LastDeletedId($this->id);
+        return parent::beforeDelete($cascade);
+    }
+
+    public function afterDelete(){
+        if($this->LastDeletedId !== null) {
+            if ($this->DbBackend->isCrateDb() && $this->LastDeletedId->hasId()) {
+                $CrateHostModel = ClassRegistry::init('CrateModule.CrateHost');
+                $CrateHostModel->delete($this->LastDeletedId->getId());
+                $this->LastDeletedId = null;
+            }
+        }
+
+        parent::afterDelete();
     }
 }

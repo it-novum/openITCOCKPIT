@@ -81,6 +81,7 @@ class AngularController extends AppController {
             //Only ship HTML template
             return;
         }
+        session_write_close();
 
         $userTimezone = $this->Auth->user('timezone');
         if (strlen($userTimezone) < 2) {
@@ -127,6 +128,7 @@ class AngularController extends AppController {
             //Only ship HTML template
             return;
         }
+        session_write_close();
 
 
         $showstatsinmenu = (bool)$this->Auth->user('showstatsinmenu');
@@ -160,6 +162,7 @@ class AngularController extends AppController {
         if (!$this->isApiRequest()) {
             throw new RuntimeException('Only for API requests');
         }
+        session_write_close();
 
         $recursive = false;
         if($this->request->query('recursive') === 'true'){
@@ -267,6 +270,7 @@ class AngularController extends AppController {
             $menu = $this->Menu->forAngular($menu);
             Cache::write($cacheKey, $menu, 'permissions');
         }
+        session_write_close();
 
         $menu = Cache::read($cacheKey, 'permissions');
 
@@ -283,6 +287,7 @@ class AngularController extends AppController {
         if (!Cache::read('systemsettings', 'permissions')) {
             Cache::write('systemsettings', $this->Systemsetting->findAsArray(), 'permissions');
         }
+        session_write_close();
 
         $systemsettings = Cache::read('systemsettings', 'permissions');
         $websocketConfig = $systemsettings['SUDO_SERVER'];
@@ -382,6 +387,7 @@ class AngularController extends AppController {
     }
 
     public function system_health() {
+        session_write_close();
         if (!$this->isAngularJsRequest()) {
             //Only ship HTML template
             return;
@@ -532,6 +538,7 @@ class AngularController extends AppController {
      * @throws Exception
      */
     public function getPieChart($up = 0, $down = 0, $unreachable = 1, $unknown = null) {
+        session_write_close();
         $PieChart = new PieChart();
 
         $chartData = [$up, $down, $unreachable];
