@@ -228,7 +228,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr ng-if="servicegroup.Services.length == 0">
+                            <tr ng-show="servicegroup.Services.length == 0">
                                 <td class="no-padding text-center" colspan="13">
                                     <div class="col-xs-12 text-center txt-color-red italic padding-10">
                                         <?php echo __('No entries match the selection'); ?>
@@ -384,7 +384,7 @@
                             </tr>
                         </tbody>
                     </table>
-                    <div class="col-xs-12 text-center txt-color-red italic padding-10" ng-if!="servicegroup">
+                    <div class="col-xs-12 text-center txt-color-red italic padding-10" ng-hide="servicegroup">
                         <?php echo __('No entries match the selection'); ?>
                     </div>
                     <br />
