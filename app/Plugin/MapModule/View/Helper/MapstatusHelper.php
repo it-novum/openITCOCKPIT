@@ -331,7 +331,8 @@ class MapstatusHelper extends AppHelper {
                 'human_state' => __('Not found in monitoring'),
                 'image'       => 'error.png',
                 'state'       => -1,
-                'class'       => 'btn-primary'
+                'class'       => 'btn-primary',
+                'type'        => 'host'
             ];
 
             return $err;
@@ -341,25 +342,29 @@ class MapstatusHelper extends AppHelper {
                 'human_state' => __('Up'),
                 'image'       => 'up.png',
                 'state'       => 0,
-                'class'       => 'btn-success'
+                'class'       => 'btn-success',
+                'type'        => 'host'
             ],
             1  => [
                 'human_state' => __('Down'),
                 'image'       => 'down.png',
                 'state'       => 1,
-                'class'       => 'btn-danger'
+                'class'       => 'btn-danger',
+                'type'        => 'host'
             ],
             2  => [
                 'human_state' => __('Unreachable'),
                 'image'       => 'unreachable.png',
                 'state'       => 2,
-                'class'       => 'btn-unknown'
+                'class'       => 'btn-unknown',
+                'type'        => 'host'
             ],
             -1 => [
                 'human_state' => __('Not found in monitoring'),
                 'image'       => 'error.png',
                 'state'       => -1,
-                'class'       => 'btn-primary'
+                'class'       => 'btn-primary',
+                'type'        => 'host'
             ],
         ];
 
@@ -372,7 +377,8 @@ class MapstatusHelper extends AppHelper {
                 'human_state' => __('Not found in monitoring'),
                 'image'       => 'error.png',
                 'state'       => -1,
-                'class'       => 'btn-primary'
+                'class'       => 'btn-primary',
+                'type'        => 'service'
             ];
 
             return $err;
@@ -382,31 +388,36 @@ class MapstatusHelper extends AppHelper {
                 'human_state' => __('Ok'),
                 'image'       => 'up.png',
                 'state'       => 0,
-                'class'       => 'btn-success'
+                'class'       => 'btn-success',
+                'type'        => 'service'
             ],
             1  => [
                 'human_state' => __('Warning'),
                 'image'       => 'warning.png',
                 'state'       => 1,
-                'class'       => 'btn-warning'
+                'class'       => 'btn-warning',
+                'type'        => 'service'
             ],
             2  => [
                 'human_state' => __('Critical'),
                 'image'       => 'critical.png',
                 'state'       => 2,
-                'class'       => 'btn-danger'
+                'class'       => 'btn-danger',
+                'type'        => 'service'
             ],
             3  => [
                 'human_state' => __('Unreachable'),
                 'image'       => 'unreachable.png',
                 'state'       => 3,
-                'class'       => 'btn-unknown'
+                'class'       => 'btn-unknown',
+                'type'        => 'service'
             ],
             -1 => [
                 'human_state' => __('Not found in monitoring'),
                 'image'       => 'error.png',
                 'state'       => -1,
-                'class'       => 'btn-primary'
+                'class'       => 'btn-primary',
+                'type'        => 'service'
             ],
         ];
 
