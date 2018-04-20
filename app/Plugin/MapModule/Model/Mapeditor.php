@@ -1134,6 +1134,16 @@ class Mapeditor extends MapModuleAppModel {
         $this->Hoststatus = ClassRegistry::init(MONITORING_HOSTSTATUS);
         $this->Servicestatus = ClassRegistry::init(MONITORING_SERVICESTATUS);
 
+        $hostFields
+            ->currentState()
+            ->problemHasBeenAcknowledged()
+            ->scheduledDowntimeDepth()
+            ->isFlapping();
+
+        $serviceFields->currentState();
+
+        $hostgroupuuids = Hash::extract($uuids, '{n}.uuid');
+
         $hostgroups = $this->getHostgroupInfoByUuids($uuids);
 
         $hostids = Hash::extract($hostgroups, '{n}.Host.{n}.id');
@@ -1173,7 +1183,6 @@ class Mapeditor extends MapModuleAppModel {
                 }
             }
         }
-
         return $hostgroups;
     }
 

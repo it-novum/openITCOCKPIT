@@ -309,7 +309,7 @@ class MapstatusHelper extends AppHelper {
         if (!empty($host['Servicestatus'])) {
             $servicestatus = [];
             foreach ($host['Servicestatus'] as $servicestates) {
-                $servicestatus[] = $servicestates['Servicestatus']['current_state'];
+                $servicestatus[] = $servicestates['current_state'];
             }
             if (!empty($servicestatus)) {
                 $cumulativeServiceState = max($servicestatus);
@@ -319,7 +319,7 @@ class MapstatusHelper extends AppHelper {
 
         } else {
             //host has no services -> return hoststatus
-            return $this->hostgroupstatusValuesHost($host['Hoststatus']['Hoststatus']['current_state']);
+            return $this->hostgroupstatusValuesHost($host['Hoststatus']['current_state']);
         }
 
     }

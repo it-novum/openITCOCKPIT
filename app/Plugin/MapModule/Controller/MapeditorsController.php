@@ -710,16 +710,11 @@ class MapeditorsController extends MapModuleAppController {
     }
 
     public function popoverHostgroupStatus($uuid = null) {
-        $hostFields = [
-            'Hoststatus.current_state',
-            'Hoststatus.problem_has_been_acknowledged',
-            'Hoststatus.scheduled_downtime_depth',
-            'Hoststatus.is_flapping',
-        ];
-        $serviceFields = [
-            'Servicestatus.current_state',
-        ];
-        $hostgroups = $this->Mapeditor->getHostgroupstatusByUuid($uuid, $hostFields, $serviceFields);
+        $hoststatusConditions = new HoststatusConditions($this->DbBackend);
+        $servicestatusConditions = new ServicestatusConditions($this->DbBackend);
+        $hostFields = new HoststatusFields($this->DbBackend);
+        $serviceFields = new ServicestatusFields($this->DbBackend);
+        $hostgroups = $this->Mapeditor->getHostgroupstatus([$uuid], $hoststatusConditions, $servicestatusConditions, $hostFields, $serviceFields);
         $this->set(compact(['hostgroups']));
     }
 
