@@ -69,7 +69,6 @@ use itnovum\openITCOCKPIT\Monitoring\QueryHandler;
 class ServicesController extends AppController {
     public $layout = 'Admin.default';
     public $components = [
-        'Paginator',
         'ListFilter.ListFilter',
         'RequestHandler',
         'CustomValidationErrors',

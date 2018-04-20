@@ -34,7 +34,7 @@ class LogentriesController extends AppController {
      */
     public $uses = [MONITORING_LOGENTRY, 'Host', 'Service'];
 
-    public $components = ['Paginator', 'ListFilter.ListFilter', 'RequestHandler', 'Uuid'];
+    public $components = ['ListFilter.ListFilter', 'RequestHandler', 'Uuid'];
     public $helpers = ['ListFilter.ListFilter', 'Status', 'Monitoring', 'CustomValidationErrors', 'Uuid'];
     public $layout = 'angularjs';
 

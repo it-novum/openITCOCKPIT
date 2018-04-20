@@ -39,7 +39,6 @@ class UsersController extends AppController
         'ContainerUserMembership',
     ];
     public $components = [
-        'Paginator',
         'ListFilter.ListFilter',
         'Ldap',
     ];

@@ -271,7 +271,4 @@ class AppModel extends Model {
 
         return $select;
     }
-
-
-
 }

@@ -45,7 +45,7 @@ class NotificationsController extends AppController {
         'Documentation'
     ];
 
-    public $components = ['Paginator', 'RequestHandler'];
+    public $components = ['RequestHandler'];
     public $helpers = ['Status', 'Monitoring', 'CustomValidationErrors', 'Uuid'];
     public $layout = 'Admin.default';
 

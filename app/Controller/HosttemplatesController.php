@@ -54,7 +54,6 @@ class HosttemplatesController extends AppController {
     public $layout = 'Admin.default';
 
     public $components = [
-        'Paginator',
         'ListFilter.ListFilter',
         'CustomValidationErrors',
     ];
