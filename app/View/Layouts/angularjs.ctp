@@ -55,7 +55,7 @@ $scripts = [
     'js/lib/jquery.nestable.js',
     'js/lib/parseuri.js',
     'js/scripts/ng.app.js',
-    'js/vendor/vis-4.21.0/dist/vis.js'
+    'js/vendor/vis/vis.js'
 ];
 
 App::uses('Folder', 'Utility');

@@ -1,4 +1,5 @@
 <?php
+
 // Copyright (C) <2015>  <it-novum GmbH>
 //
 // This file is dual licensed
@@ -25,8 +26,6 @@
 
 echo $this->Html->css('vendor/vis-4.21.0/dist/vis.min.css', ['inline' => false]);
 echo $this->Html->css('vendor/css3-percentage-loader/circle.css', ['inline' => false]);
-
-
 ?>
 <div class="row">
     <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
@@ -134,7 +133,7 @@ echo $this->Html->css('vendor/css3-percentage-loader/circle.css', ['inline' => f
     <div class="widget-body" id="statusmap">
     </div>
 </div>
-<div id="statusmap-progress-icon">
+<div id="statusmap-progress-icon" class="invisible">
     <center>
         <p class="statusmap-progress-dots">
             <?php echo __('Loading data '); ?>

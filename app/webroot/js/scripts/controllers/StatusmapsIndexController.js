@@ -1,5 +1,6 @@
 angular.module('openITCOCKPIT')
     .controller('StatusmapsIndexController', function($scope, $http, QueryStringService){
+
         /*** Filter Settings ***/
         $scope.filter = {
             Host: {
@@ -23,8 +24,6 @@ angular.module('openITCOCKPIT')
         $($($scope.container)).css({
             'height': height
         });
-
-
 
         $scope.load = function(){
             $scope.mutex = true;
@@ -67,6 +66,7 @@ angular.module('openITCOCKPIT')
             var colorUnreachable = '#92A2A8';
             var colorNotMonitored = '#428bca';
 
+/*
             var options = {
                 clickToUse: false,
                 groups: {
@@ -240,37 +240,6 @@ angular.module('openITCOCKPIT')
                     hideEdgesOnDrag: true
 
                 },
-/*
-                physics: {
-                    solver: 'forceAtlas2Based',
-                    adaptiveTimestep: true,
-                    forceAtlas2Based: {
-                        gravitationalConstant: -300,
-                        centralGravity: 0.015,
-                        springConstant: 0.04,
-                        springLength: 100
-                    },
-                    stabilization: {
-                        iterations: $scope.nodes.length,
-                        updateInterval: 10
-                    }
-                },
-
-                layout: {
-                    randomSeed: 1000,
-                    improvedLayout: false
-                },
-                */
-/*
-                tooltip: {
-                    delay: 200,
-                    fontSize: 12,
-                    color: {
-                        background: "#fff"
-                    }
-                },
-                */
-             //   stabilize: false,
                 physics: {
                     barnesHut: {
                         gravitationalConstant: -80000,
@@ -282,6 +251,177 @@ angular.module('openITCOCKPIT')
                     randomSeed: 1000,
                     improvedLayout: false
                 }
+            };
+*/
+
+            var options = {
+                groups: {
+                    satellite:{
+                        shape:'ellipse',
+                        margin: {
+                            top: 10,
+                            bottom: 20,
+                            left: 5,
+                            right: 5
+                        },
+                    },
+                    notMonitored: {
+                        shape: 'icon',
+                        color: colorNotMonitored, // color for edges
+                        icon: {
+                            face: 'FontAwesome',
+                            code: '\uf070',
+                            color: colorNotMonitored //color for icon
+                        }
+                    },
+                    disabled: {
+                        shape: 'icon',
+                        icon: {
+                            face: 'FontAwesome',
+                            code: '\uf1e6'
+                        }
+                    },
+                    hostUp: {
+                        shape: 'icon',
+                        color: colorUp, // color for edges
+                        icon: {
+                            face: 'FontAwesome',
+                            code: '\uf058',
+                            color: colorUp
+                        },
+                    },
+                    hostDown: {
+                        shape: 'icon',
+                        color: colorDown,
+                        icon: {
+                            face: 'FontAwesome',
+                            code: '\uf06a',
+                            color: colorDown
+                        }
+                    },
+                    hostUnreachable: {
+                        shape: 'icon',
+                        color: colorUnreachable,
+                        icon: {
+                            face: 'FontAwesome',
+                            code: '\uf059',
+                            color: colorUnreachable
+                        }
+                    },
+                    isInDowntimeUp: {
+                        shape: 'icon',
+                        icon: {
+                            face: 'FontAwesome',
+                            code: '\uf011',
+                            color: colorUp
+                        }
+                    },
+                    isInDowntimeDown: {
+                        shape: 'icon',
+                        color: colorDown,
+                        icon: {
+                            face: 'FontAwesome',
+                            code: '\uf011',
+                            color: colorDown
+                        }
+                    },
+                    isInDowntimeUnreachable: {
+                        shape: 'icon',
+                        color: colorUnreachable,
+                        icon: {
+                            face: 'FontAwesome',
+                            code: '\uf011',
+                            color: colorUnreachable
+                        }
+                    },
+                    isAcknowledgedUp: {
+                        shape: 'icon',
+                        color: colorUp, // color for edges
+                        icon: {
+                            face: 'FontAwesome',
+                            code: '\uf007',
+                            color: colorUp
+                        }
+                    },
+                    isAcknowledgedDown: {
+                        shape: 'icon',
+                        color: colorDown,
+                        icon: {
+                            face: 'FontAwesome',
+                            code: '\uf007',
+                            color: colorDown
+                        }
+                    },
+                    isAcknowledgedUnreachable: {
+                        shape: 'icon',
+                        color: colorUnreachable,
+                        icon: {
+                            face: 'FontAwesome',
+                            code: '\uf007',
+                            color: colorUnreachable
+                        }
+                    },
+                    isAcknowledgedAndIsInDowntimeUp: {
+                        shape: 'icon',
+                        color: colorUp, // color for edges
+                        icon: {
+                            face: 'FontAwesome',
+                            code: '\uf0f0',
+                            color: colorUp
+                        }
+                    },
+                    isAcknowledgedAndIsInDowntimeDown: {
+                        shape: 'icon',
+                        color: colorDown,
+                        icon: {
+                            face: 'FontAwesome',
+                            code: '\uf0f0',
+                            color: colorDown
+                        }
+                    },
+                    isAcknowledgedAndIsInDowntimeUnreachable: {
+                        shape: 'icon',
+                        color: colorUnreachable,
+                        icon: {
+                            face: 'FontAwesome',
+                            code: '\uf0f0',
+                            color: colorUnreachable
+                        }
+                    },
+                },
+                nodes: {
+                    radiusMin: 5,
+                    radiusMax: 50,
+                    fontSize: 12,
+                    fontFace: "Tahoma",
+                    borderWidth: 0.5,
+                },
+                edges: {
+                    width: 0.2,
+                    inheritColor: "from",
+                    style: "line",
+                    widthSelectionMultiplier: 8
+                },
+                tooltip: {
+                    delay: 200,
+                    fontSize: 12,
+                    color: {
+                        background: "#fff"
+                    }
+                },
+                smoothCurves: {
+                    dynamic:false,
+                    type: "continuous"
+                },
+                stabilize: false,
+                physics: {
+                    barnesHut: {
+                        gravitationalConstant: -80000,
+                        springConstant: 0.001,
+                        springLength: 200
+                    }
+                },
+                hideEdgesOnDrag: true
             };
 
             $scope.nodes.add(nodesData);
