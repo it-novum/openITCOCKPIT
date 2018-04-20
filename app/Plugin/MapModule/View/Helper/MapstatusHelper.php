@@ -331,6 +331,7 @@ class MapstatusHelper extends AppHelper {
                 'human_state' => __('Not found in monitoring'),
                 'image'       => 'error.png',
                 'state'       => -1,
+                'class'       => 'btn-primary'
             ];
 
             return $err;
@@ -340,21 +341,25 @@ class MapstatusHelper extends AppHelper {
                 'human_state' => __('Up'),
                 'image'       => 'up.png',
                 'state'       => 0,
+                'class'       => 'btn-success'
             ],
             1  => [
                 'human_state' => __('Down'),
                 'image'       => 'down.png',
                 'state'       => 1,
+                'class'       => 'btn-danger'
             ],
             2  => [
                 'human_state' => __('Unreachable'),
                 'image'       => 'unreachable.png',
                 'state'       => 2,
+                'class'       => 'btn-unknown'
             ],
             -1 => [
                 'human_state' => __('Not found in monitoring'),
                 'image'       => 'error.png',
                 'state'       => -1,
+                'class'       => 'btn-primary'
             ],
         ];
 
@@ -367,6 +372,7 @@ class MapstatusHelper extends AppHelper {
                 'human_state' => __('Not found in monitoring'),
                 'image'       => 'error.png',
                 'state'       => -1,
+                'class'       => 'btn-primary'
             ];
 
             return $err;
@@ -376,26 +382,31 @@ class MapstatusHelper extends AppHelper {
                 'human_state' => __('Ok'),
                 'image'       => 'up.png',
                 'state'       => 0,
+                'class'       => 'btn-success'
             ],
             1  => [
                 'human_state' => __('Warning'),
                 'image'       => 'warning.png',
                 'state'       => 1,
+                'class'       => 'btn-warning'
             ],
             2  => [
                 'human_state' => __('Critical'),
                 'image'       => 'critical.png',
                 'state'       => 2,
+                'class'       => 'btn-danger'
             ],
             3  => [
                 'human_state' => __('Unreachable'),
                 'image'       => 'unreachable.png',
                 'state'       => 3,
+                'class'       => 'btn-unknown'
             ],
             -1 => [
                 'human_state' => __('Not found in monitoring'),
                 'image'       => 'error.png',
                 'state'       => -1,
+                'class'       => 'btn-primary'
             ],
         ];
 
@@ -449,7 +460,7 @@ class MapstatusHelper extends AppHelper {
         $mapstatus = $this->mapstatus['status'];
 
         $state = -1;
-        if(!empty($mapstructure) && !empty($mapstatus)){
+        if (!empty($mapstructure) && !empty($mapstatus)) {
             $hostUuidsByMap = Hash::extract($mapstructure, '{n}.{s}.{n}.host.{n}');
             $serviceUuidsByMap = Hash::extract($mapstructure, '{n}.{s}.{n}.service.{n}');
 
@@ -482,9 +493,9 @@ class MapstatusHelper extends AppHelper {
             $cumulative_host_state = Hash::apply($allHoststates, '{n}', 'max');
             $cumulative_service_state = Hash::apply($allServicestates, '{n}', 'max');
 
-            if($cumulative_host_state > $cumulative_service_state){
+            if ($cumulative_host_state > $cumulative_service_state) {
                 $state = $this->hostgroupstatusValuesHost($cumulative_host_state);
-            }else{
+            } else {
                 $state = $this->hostgroupstatusValuesService($cumulative_service_state);
             }
         }

@@ -606,17 +606,12 @@ class MapeditorsController extends MapModuleAppController {
             $hoststatus = $this->Hoststatus->ByUuids($hostUuids, $hostFields, $hoststatusConditions);
             $hostServicestatus = $this->Servicestatus->ByUuids($serviceUuids, $serviceFields, $servicestatusConditions);
 
-           // debug($hoststatus);
-           // debug($hostServicestatus);
-
             $mapElementUuids['status'] = [
                 'hoststatus' => $hoststatus,
                 'servicestatus' => $hostServicestatus
             ];
 
             $mapstatus = $mapElementUuids;
-
-
         }
 
         $this->set(compact([
@@ -760,7 +755,34 @@ class MapeditorsController extends MapModuleAppController {
     }
 
     public function popoverMapStatus($id) {
-        $mapstatus = $this->Mapeditor->mapStatus($id);
+        $mapElementUuids = $this->Mapeditor->getMapElementUuids($id);
+        $hoststatusConditions = new HoststatusConditions($this->DbBackend);
+        $servicestatusConditions = new ServicestatusConditions($this->DbBackend);
+        $hostFields = new HoststatusFields($this->DbBackend);
+        $serviceFields = new ServicestatusFields($this->DbBackend);
+
+        $hostFields
+            ->problemHasBeenAcknowledged()
+            ->scheduledDowntimeDepth()
+            ->isFlapping()
+            ->currentState();
+
+        $serviceFields
+            ->problemHasBeenAcknowledged()
+            ->currentState();
+
+        $hostUuids = $mapElementUuids['forStatus']['host'];
+        $serviceUuids = $mapElementUuids['forStatus']['service'];
+        unset($mapElementUuids['forStatus']);
+        $hoststatus = $this->Hoststatus->ByUuids($hostUuids, $hostFields, $hoststatusConditions);
+        $hostServicestatus = $this->Servicestatus->ByUuids($serviceUuids, $serviceFields, $servicestatusConditions);
+
+        $mapElementUuids['status'] = [
+            'hoststatus' => $hoststatus,
+            'servicestatus' => $hostServicestatus
+        ];
+
+        $mapstatus = $mapElementUuids;
         $mapinfo = $this->Map->find('first', [
             'recursive'  => -1,
             'conditions' => [
@@ -772,8 +794,8 @@ class MapeditorsController extends MapModuleAppController {
                 'Map.title',
             ],
         ]);
-        $mapstatus[$id] = $mapstatus;
-        $this->set(compact('mapstatus', 'mapinfo'));
+
+        $this->set(compact('id','mapstatus', 'mapinfo'));
     }
 
 
