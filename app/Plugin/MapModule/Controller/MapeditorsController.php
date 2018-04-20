@@ -697,8 +697,20 @@ class MapeditorsController extends MapModuleAppController {
     }
 
     public function popoverServicegroupStatus($uuid = null) {
+        $servicestatusConditions = new ServicestatusConditions($this->DbBackend);
+        $serviceFields = new ServicestatusFields($this->DbBackend);
+        $serviceFields->currentState();
+        $servicegroups = $this->Mapeditor->getServicegroupstatus([$uuid], $servicestatusConditions, $serviceFields);
+        /*$serviceUuids = Hash::extract($servicegroups, '{n}.Service.{n}.uuid');
+        $servicestatus = $this->Servicestatus->byUuids([$uuid], $serviceFields, $servicestatusConditions);
+        if (!empty($servicestatus)) {
+            $servicegroups['Servicestatus'] = $servicestatus;
+        }*/
+
+        /*
         $fields = [];
         $servicegroups = $this->Mapeditor->getServicegroupstatusByUuid($uuid, $fields);
+        */
         $this->set(compact(['uuid', 'servicegroups']));
     }
 
