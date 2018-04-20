@@ -422,7 +422,8 @@ class MapeditorsController extends MapModuleAppController {
 
             $hostUuids = Hash::extract($uuidsByItemType['host'], '{n}.uuid');
 
-
+            $hoststatus = $this->Mapeditor->getHoststatus($hostUuids, $hoststatusConditions, $servicestatusConditions, $hostFields, $serviceFields);
+/*
             $hoststatus = $this->Hoststatus->ByUuids($hostUuids, $hostFields, $hoststatusConditions);
             $hostdata = $this->Mapeditor->getHostInfoByUuids($hostUuids);
             $hostIds = Hash::extract($hostdata, '{n}.Host.id');
@@ -455,6 +456,9 @@ class MapeditorsController extends MapModuleAppController {
                 }
             }
             $hoststatus = Hash::combine($hostdata, '{n}.Host.uuid', '{n}');
+
+            debug($hoststatus);
+*/
         }
 
         //get the Hostgroupstatus
@@ -661,38 +665,35 @@ class MapeditorsController extends MapModuleAppController {
     }
 
     public function popoverHostStatus($uuid = null) {
-        $hoststatusFields = [
-            'Host.name',
-            'Host.description',
-            'Host.address',
-            'Hoststatus.output',
-            'Hoststatus.long_output',
-            'Hoststatus.perfdata',
-            'Hoststatus.last_check',
-            'Hoststatus.next_check',
-            'Hoststatus.last_state_change',
-            'Hoststatus.problem_has_been_acknowledged',
-            'Hoststatus.scheduled_downtime_depth',
-            'Hoststatus.is_flapping',
-            'Hoststatus.current_check_attempt',
-            'Hoststatus.max_check_attempts',
-        ];
-        $hoststatus = $this->Mapeditor->getHoststatusByUuid([$uuid], $hoststatusFields);
+        $hoststatusConditions = new HoststatusConditions($this->DbBackend);
+        $servicestatusConditions = new ServicestatusConditions($this->DbBackend);
+        $hostFields = new HoststatusFields($this->DbBackend);
+        $serviceFields = new ServicestatusFields($this->DbBackend);
 
-        $servicestatusFields = [
-            'Objects.name2',
-            'Servicestatus.problem_has_been_acknowledged',
-            'Servicestatus.scheduled_downtime_depth',
-            'Servicestatus.is_flapping',
-            'Servicestatus.perfdata',
-            'Servicestatus.output',
-            'Service.name', // may obsolete .. just mapstatushelper is using that
-            'Servicetemplate.name', // may obsolete .. just mapstatushelper is using that
-            'IF(Service.name IS NULL, Servicetemplate.name, Service.name) AS ServiceName',
-            'IF(Service.name IS NULL, Servicetemplate.description, Service.description) AS ServiceDescription',
-        ];
-        $servicestatus = $this->Mapeditor->getServicestatusByHostUuid($uuid, $servicestatusFields);
-        $this->set(compact(['uuid', 'hoststatus', 'servicestatus']));
+        $hostFields
+            ->output()
+            ->longOutput()
+            ->perfdata()
+            ->lastCheck()
+            ->nextCheck()
+            ->lastStateChange()
+            ->problemHasBeenAcknowledged()
+            ->scheduledDowntimeDepth()
+            ->isFlapping()
+            ->currentCheckAttempt()
+            ->maxCheckAttempts()
+            ->currentState();
+
+        $serviceFields
+            ->problemHasBeenAcknowledged()
+            ->scheduledDowntimeDepth()
+            ->isFlapping()
+            ->perfdata()
+            ->output()
+            ->currentState();
+
+        $hoststatus = $this->Mapeditor->getHoststatus([$uuid], $hoststatusConditions, $servicestatusConditions, $hostFields, $serviceFields);
+        $this->set(compact(['uuid', 'hoststatus']));
     }
 
     public function popoverServicegroupStatus($uuid = null) {

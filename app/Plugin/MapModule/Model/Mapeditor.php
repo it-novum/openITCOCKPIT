@@ -841,6 +841,10 @@ class Mapeditor extends MapModuleAppModel {
         return $statusObjects;
     }
 
+    /**
+     * @param $mapIds
+     * @return array
+     */
     public function getMapElementUuids($mapIds) {
         if (!is_array($mapIds)) {
             $mapIds = [$mapIds];
@@ -951,7 +955,11 @@ class Mapeditor extends MapModuleAppModel {
         return $mapElements;
     }
 
-
+    /**
+     * @param $mapId
+     * @param array $iteratedMaps
+     * @return array
+     */
     public function getDeepMapElements($mapId, $iteratedMaps = []) {
         $this->mapElements[$mapId] = $this->getMapStatusElementsByMapId($mapId);
         $maxDepth = 2; // +1 = maximum number of map depth
@@ -979,7 +987,10 @@ class Mapeditor extends MapModuleAppModel {
         return $this->mapElements;
     }
 
-
+    /**
+     * @param $mapId
+     * @return array
+     */
     public function getMapStatusElementsByMapId($mapId) {
         $Mapitem = ClassRegistry::init('Mapitem');
         $Mapline = ClassRegistry::init('Mapline');
@@ -1028,9 +1039,17 @@ class Mapeditor extends MapModuleAppModel {
         return $newMapElements;
     }
 
+    /**
+     * @param $uuids
+     * @param $hoststatusConditions
+     * @param $servicestatusConditions
+     * @param array $hostFields
+     * @param array $serviceFields
+     * @return array
+     */
     public function getHoststatus($uuids, $hoststatusConditions, $servicestatusConditions, $hostFields = [], $serviceFields = []) {
-        $this->Hoststatus = ClassRegistry::init('Hoststatus');
-        $this->Servicestatus = ClassRegistry::init('Servicestatus');
+        $this->Hoststatus = ClassRegistry::init(MONITORING_HOSTSTATUS);
+        $this->Servicestatus = ClassRegistry::init(MONITORING_SERVICESTATUS);
         $hoststatus = $this->Hoststatus->ByUuids($uuids, $hostFields, $hoststatusConditions);
         $hostdata = $this->getHostInfoByUuids($uuids);
         $hostIds = Hash::extract($hostdata, '{n}.Host.id');
@@ -1065,6 +1084,12 @@ class Mapeditor extends MapModuleAppModel {
         return Hash::combine($hostdata, '{n}.Host.uuid', '{n}');
     }
 
+    /**
+     * @param $uuids
+     * @param $servicestatusConditions
+     * @param array $serviceFields
+     * @return array
+     */
     public function getServicestatus($uuids, $servicestatusConditions, $serviceFields = []) {
         $this->Servicestatus = ClassRegistry::init('Servicestatus');
         $servicestatus = $this->Servicestatus->ByUuids($uuids, $serviceFields, $servicestatusConditions);
@@ -1081,6 +1106,11 @@ class Mapeditor extends MapModuleAppModel {
         return Hash::combine($servicedata, '{n}.Service.uuid', '{n}');
     }
 
+    /**
+     * @param $uuids
+     * @param $servicestatusConditions
+     * @param array $serviceFields
+     */
     public function getServicegroupstatus($uuids, $servicestatusConditions, $serviceFields = []) {
         $this->Servicestatus = ClassRegistry::init('Servicestatus');
         $servicegroups = $this->getServicegroupInfoByUuids($uuids);
@@ -1091,6 +1121,14 @@ class Mapeditor extends MapModuleAppModel {
         }
     }
 
+    /**
+     * @param $uuids
+     * @param $hoststatusConditions
+     * @param $servicestatusConditions
+     * @param array $hostFields
+     * @param array $serviceFields
+     * @return mixed
+     */
     public function getHostgroupstatus($uuids, $hoststatusConditions, $servicestatusConditions, $hostFields = [], $serviceFields = []) {
         $this->Hoststatus = ClassRegistry::init('Hoststatus');
         $this->Servicestatus = ClassRegistry::init('Servicestatus');
@@ -1138,6 +1176,10 @@ class Mapeditor extends MapModuleAppModel {
         return $hostgroups;
     }
 
+    /**
+     * @param $hostUuids
+     * @return array
+     */
     public function getServiceUuidsByHostUuids($hostUuids) {
         $this->Service = ClassRegistry::init('Service');
         $serviceUuids = $this->Service->find('all', [
@@ -1162,6 +1204,10 @@ class Mapeditor extends MapModuleAppModel {
         return Hash::extract($serviceUuids, '{n}.Service.uuid');
     }
 
+    /**
+     * @param $servicegroupUuids
+     * @return array
+     */
     public function getServiceUuidsByServicegroupUuids($servicegroupUuids) {
         $this->Servicegroup = ClassRegistry::init('Servicegroup');
         $serviceids = $this->Servicegroup->find('all', [
@@ -1203,6 +1249,10 @@ class Mapeditor extends MapModuleAppModel {
         return $serviceuuids;
     }
 
+    /**
+     * @param $hostgroupUuids
+     * @return array
+     */
     public function getHostAndServiceUuidsByHostgroupuuid($hostgroupUuids) {
         $this->Hostgroup = ClassRegistry::init('Hostgroup');
         $this->Host = ClassRegistry::init('Host');
