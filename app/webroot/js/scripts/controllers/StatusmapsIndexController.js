@@ -10,12 +10,16 @@ angular.module('openITCOCKPIT')
             },
             showAll: false
         };
+        /*** Filter end ***/
+
 
         $scope.init = true;
         $scope.mutex = false;
 
         $scope.nodes = new vis.DataSet();
         $scope.edges = new vis.DataSet();
+
+        $scope.isEmpty = false;
 
         $scope.container = document.getElementById('statusmap');
 
@@ -28,6 +32,7 @@ angular.module('openITCOCKPIT')
 
         $scope.load = function () {
             $scope.mutex = true;
+            $scope.isEmpty = false;
             var params = {
                 'angular': true,
                 'filter[Host.name]': $scope.filter.Host.name,
@@ -45,7 +50,7 @@ angular.module('openITCOCKPIT')
                     $('#statusmap-progress-icon').show();
                     $scope.loadVisMap(nodesData, edgesData);
                 } else {
-                    $('#noMatch').show();
+                    $scope.isEmpty = true;
                 }
                 $scope.mutex = false;
             }, function errorCallback(result) {
@@ -215,11 +220,20 @@ angular.module('openITCOCKPIT')
                         enabled: false
                     }
                 },
+
                 physics: {
                     barnesHut: {
+                        gravitationalConstant: -10000,
+                        centralGravity: 0.3,
+                        springLength: 200,
+                        springConstant: 0.04,
+                        damping: 0.09,
+                        avoidOverlap: 1
+                        /*
                         gravitationalConstant: -80000,
                         springConstant: 0.001,
                         springLength: 200
+                        */
                     },
                     stabilization: {
                         enabled: true
@@ -303,6 +317,7 @@ angular.module('openITCOCKPIT')
             network.on('hoverNode', function (properties) {
             });
         };
+
         $scope.$watch('filter', function () {
             if ($scope.mutex) {
                 return;

@@ -151,7 +151,7 @@ echo $this->Html->css('vendor/css3-percentage-loader/circle.css', ['inline' => f
             <?php echo $this->Utils->backButton(); ?>
         </div>
     </header>
-    <div class="invisible" id="noMatch">
+    <div ng-if="isEmpty">
         <center>
             <span class="txt-color-red italic"><?php echo __('No entries match the selection'); ?></span>
         </center>
