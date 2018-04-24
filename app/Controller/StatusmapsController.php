@@ -27,6 +27,7 @@
 use itnovum\openITCOCKPIT\Core\HoststatusFields;
 use itnovum\openITCOCKPIT\Core\ModuleManager;
 use itnovum\openITCOCKPIT\Filter\HostFilter;
+use itnovum\openITCOCKPIT\Filter\StatusmapFilter;
 
 /**
  * Class StatusmapsController
@@ -60,7 +61,10 @@ class StatusmapsController extends AppController {
                         'Satellite.id',
                         'Satellite.name'
                     ],
-                    'Satellite.container_id' => $this->MY_RIGHTS
+                    'Satellite.container_id' => $this->MY_RIGHTS,
+                    'order' => [
+                        'Satellite.name' => 'asc'
+                    ]
                 ]);
             }
             $satellites[0] = $masterInstanceName;
@@ -71,46 +75,51 @@ class StatusmapsController extends AppController {
             return;
         }
         session_write_close();
-        $parentHostWithChildIds = $this->Parenthost->find('all', [
-            'recursive' => -1,
-            'joins' => [
-                [
-                    'table' => 'hosts_to_parenthosts',
-                    'alias' => 'HostToParenthost',
-                    'type' => 'INNER',
-                    'conditions' => [
-                        'HostToParenthost.parenthost_id = Parenthost.id',
-                    ],
-                ],
-                [
-                    'table' => 'hosts',
-                    'alias' => 'Host',
-                    'type' => 'INNER',
-                    'conditions' => [
-                        'HostToParenthost.host_id = Host.id',
-                    ],
-                ]
-            ],
-            'fields' => [
-                'DISTINCT Parenthost.id',
-                'Host.id'
-            ]
-        ]);
 
         $allHostIds = [];
-        foreach ($parentHostWithChildIds as $parentHostWithChildId) {
-            if (!in_array($parentHostWithChildId['Parenthost']['id'], $allHostIds, true)) {
-                $allHostIds[] = $parentHostWithChildId['Parenthost']['id'];
-            }
-            if (!in_array($parentHostWithChildId['Host']['id'], $allHostIds, true)) {
-                $allHostIds[] = $parentHostWithChildId['Host']['id'];
+        if($this->request->query('showAll') === 'false') {
+
+            $parentHostWithChildIds = $this->Parenthost->find('all', [
+                'recursive' => -1,
+                'joins' => [
+                    [
+                        'table' => 'hosts_to_parenthosts',
+                        'alias' => 'HostToParenthost',
+                        'type' => 'INNER',
+                        'conditions' => [
+                            'HostToParenthost.parenthost_id = Parenthost.id',
+                        ],
+                    ],
+                    [
+                        'table' => 'hosts',
+                        'alias' => 'Host',
+                        'type' => 'INNER',
+                        'conditions' => [
+                            'HostToParenthost.host_id = Host.id',
+                        ],
+                    ]
+                ],
+                'fields' => [
+                    'DISTINCT Parenthost.id',
+                    'Host.id'
+                ],
+            ]);
+
+
+            foreach ($parentHostWithChildIds as $parentHostWithChildId) {
+                if (!in_array($parentHostWithChildId['Parenthost']['id'], $allHostIds, true)) {
+                    $allHostIds[] = $parentHostWithChildId['Parenthost']['id'];
+                }
+                if (!in_array($parentHostWithChildId['Host']['id'], $allHostIds, true)) {
+                    $allHostIds[] = $parentHostWithChildId['Host']['id'];
+                }
             }
         }
         $containerIds = [];
         if ($this->hasRootPrivileges === false) {
-            //   $containerIds = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_HOST, [], $this->hasRootPrivileges, [CT_HOSTGROUP]);
+               $containerIds = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_HOST, [], $this->hasRootPrivileges, [CT_HOSTGROUP]);
         }
-        $HostFilter = new HostFilter($this->request);
+        $StatusmapFilter = new StatusmapFilter($this->request);
         $nodes = [];
         $edges = [];
 
@@ -132,7 +141,7 @@ class StatusmapsController extends AppController {
                 'Host.disabled',
                 'Host.satellite_id'
             ],
-            'conditions' => $HostFilter->indexFilter()
+            'conditions' => $StatusmapFilter->indexFilter()
 
         ];
 
@@ -171,12 +180,6 @@ class StatusmapsController extends AppController {
 
             $tmpHostsResult = $this->Host->find('all', $query);
 
-            //$dbo = $this->Host->getDatasource();
-            //$logs = $dbo->getLog();
-            //$lastLog = end($logs['log']);
-            //  debug( $lastLog['query'] );
-
-
             $hostUuids = Hash::extract($tmpHostsResult, '{n}.Host.uuid');
             $hoststatus = $this->Hoststatus->byUuid($hostUuids, $HoststatusFields);
             foreach ($tmpHostsResult as $hostChunk) {
@@ -192,7 +195,7 @@ class StatusmapsController extends AppController {
                 $nodes[] = [
                     'id' => 'Host_' . $hostChunk['Host']['id'],
                     'label' => $hostChunk['Host']['name'],
-                    'title' => $hostChunk['Host']['name'],
+                    'title' => $hostChunk['Host']['name'].' ('.$hostChunk['Host']['address'].')',
                     'uuid' => $hostChunk['Host']['uuid'],
                     'group' => $this->StatusMap->getNodeGroupName($hostChunk['Host']['disabled'], $Hoststatus)
                 ];

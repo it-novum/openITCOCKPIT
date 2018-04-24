@@ -26,6 +26,8 @@
 
 echo $this->Html->css('vendor/vis-4.21.0/dist/vis.min.css', ['inline' => false]);
 echo $this->Html->css('vendor/css3-percentage-loader/circle.css', ['inline' => false]);
+
+
 ?>
 <div class="row">
     <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
@@ -38,29 +40,23 @@ echo $this->Html->css('vendor/css3-percentage-loader/circle.css', ['inline' => f
         </h1>
     </div>
 </div>
-<?php if (sizeof($satellites) > 1): ?>
-    <div class="row padding-bottom-10">
-        <div class="col col-xs-12 no-padding">
-            <select
-                    id="Instance"
-                    data-placeholder="<?php echo __('Filter by instance'); ?>"
-                    class="form-control"
-                    chosen="{}"
-                    ng-model="filter.Host.satellite_id"
-                    ng-model-options="{debounce: 500}">
-                <?php
-                foreach ($satellites as $satelliteId => $satelliteName):
-                    $selected = '';
-                    if ($satelliteId == '0') {
-                        $selected = ' selected="selected"';
-                    }
-                    printf('<option value="%s" %s>%s</option>', h($satelliteId), $selected, h($satelliteName));
-                endforeach;
-                ?>
-            </select>
-        </div>
+<div class="row padding-bottom-10">
+    <div class="col col-xs-12 no-padding">
+        <select
+                id="Instance"
+                data-placeholder="<?php echo __('Filter by instance'); ?>"
+                class="form-control"
+                chosen="{}"
+                ng-model="filter.Host.satellite_id"
+                ng-model-options="{debounce: 500}">
+            <?php
+            foreach ($satellites as $satelliteId => $satelliteName):
+                printf('<option value="%s">%s</option>', h($satelliteId), h($satelliteName));
+            endforeach;
+            ?>
+        </select>
     </div>
-<?php endif; ?>
+</div>
 <div class="jarviswidget" id="wid-id-0">
     <header>
         <h2>
@@ -115,7 +111,32 @@ echo $this->Html->css('vendor/css3-percentage-loader/circle.css', ['inline' => f
                     ?>
                 </em>
             </span>
-            <div class="col-xs-12 col-md-2 pull-right">
+            <div class="pull-right padding-left-10">
+                <div class="form-group smart-form no-padding">
+                    <label class="checkbox small-checkbox-label">
+                        <input type="checkbox" name="checkbox" checked="checked"
+                               ng-model="filter.showAll"
+                               ng-model-options="{debounce: 500}"
+                               ng-true-value="false"
+                               ng-false-value="true">
+                        <i class="checkbox-primary"></i>
+                        <?php
+                        echo __('Only parents with childs');
+                        ?>
+                    </label>
+                </div>
+            </div>
+            <div class="pull-right padding-left-10">
+                <div class="form-group smart-form no-padding">
+                    <label class="input"> <i class="icon-prepend fa fa-filter"></i>
+                        <input type="text" class="input-sm"
+                               placeholder="<?php echo __('Filter by IP address'); ?>"
+                               ng-model="filter.Host.address"
+                               ng-model-options="{debounce: 500}">
+                    </label>
+                </div>
+            </div>
+            <div class="pull-right padding-left-10">
                 <div class="form-group smart-form no-padding">
                     <label class="input"> <i class="icon-prepend fa fa-desktop"></i>
                         <input type="text" class="input-sm"
@@ -130,16 +151,15 @@ echo $this->Html->css('vendor/css3-percentage-loader/circle.css', ['inline' => f
             <?php echo $this->Utils->backButton(); ?>
         </div>
     </header>
+    <div class="invisible" id="noMatch">
+        <center>
+            <span class="txt-color-red italic"><?php echo __('No entries match the selection'); ?></span>
+        </center>
+    </div>
     <div class="widget-body" id="statusmap">
     </div>
 </div>
-<div id="statusmap-progress-icon" class="invisible">
-    <center>
-        <p class="statusmap-progress-dots">
-            <?php echo __('Loading data '); ?>
-        </p>
-    </center>
-
+<div id="statusmap-progress-icon">
     <div class="progress" data-progress="0">
         <div class="progress_mask isFull">
             <div class="progress_fill"></div>
@@ -148,6 +168,4 @@ echo $this->Html->css('vendor/css3-percentage-loader/circle.css', ['inline' => f
             <div class="progress_fill"></div>
         </div>
     </div>
-
-
 </div>
