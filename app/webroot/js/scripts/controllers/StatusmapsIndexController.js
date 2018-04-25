@@ -220,7 +220,16 @@ angular.module('openITCOCKPIT')
                         enabled: false
                     }
                 },
-
+                physics: {
+                    forceAtlas2Based: {
+                        gravitationalConstant: -138,
+                        centralGravity: 0.02,
+                        springLength: 100
+                    },
+                    minVelocity: 0.75,
+                    solver: "forceAtlas2Based",
+                },
+/*
                 physics: {
                     barnesHut: {
                         gravitationalConstant: -10000,
@@ -234,11 +243,13 @@ angular.module('openITCOCKPIT')
                         springConstant: 0.001,
                         springLength: 200
                         */
+/*
                     },
                     stabilization: {
                         enabled: true
                     }
                 },
+*/
                 interaction: {
                     hover: true,
                     dragNodes: false,
@@ -306,7 +317,7 @@ angular.module('openITCOCKPIT')
                 }
                 network.focus(nodeId, {
                     scale: 1.5,
-                    locked: true,
+                    locked: false,
                     animation: {
                         duration: 1000,
                         easingFunction: 'linear'
@@ -315,6 +326,8 @@ angular.module('openITCOCKPIT')
             });
 
             network.on('hoverNode', function (properties) {
+//                console.log(data.nodes.get(properties.node));
+                return;
             });
         };
 
