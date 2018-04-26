@@ -169,7 +169,7 @@ class AdministratorsController extends AppController
         foreach ($data as $line) {
             $temp = explode(":", $line);
             if (isset($temp[1])) {
-                $meminfo[$temp[0]] = intval(trim(substr($temp[1],0, strpos($temp[1], "kB")))/1000);
+                $meminfo[$temp[0]] = intval(trim(intval(substr($temp[1],0, strpos($temp[1], "kB"))))/1000);
             }
         }
 
