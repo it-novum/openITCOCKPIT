@@ -20,7 +20,7 @@ App::uses('Shell', 'Console');
  * @package        acl_extras
  * @subpackage     acl_extras.Console.Command
  */
-class AclExtras extends Object
+class AclExtras extends CakeObject
 {
 
     /**
