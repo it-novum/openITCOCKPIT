@@ -173,12 +173,12 @@ class AppAuthComponent extends AuthComponent {
                     }
 
 
-                    $filter = \FreeDSx\Ldap\Search\Filters:: and (
+                    $filter = \FreeDSx\Ldap\Search\Filters::andPHP5(
                         \FreeDSx\Ldap\Search\Filters::raw($systemsettings['FRONTEND']['FRONTEND.LDAP.QUERY']),
                         \FreeDSx\Ldap\Search\Filters::equal('sAMAccountName', $samaccountname)
                     );
                     if ($systemsettings['FRONTEND']['FRONTEND.LDAP.TYPE'] === 'openldap') {
-                        $filter = \FreeDSx\Ldap\Search\Filters:: and (
+                        $filter = \FreeDSx\Ldap\Search\Filters::andPHP5(
                             \FreeDSx\Ldap\Search\Filters::raw($systemsettings['FRONTEND']['FRONTEND.LDAP.QUERY']),
                             \FreeDSx\Ldap\Search\Filters::equal('dn', $samaccountname)
                         );

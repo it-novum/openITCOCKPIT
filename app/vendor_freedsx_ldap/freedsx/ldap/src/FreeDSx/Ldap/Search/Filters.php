@@ -41,6 +41,18 @@ class Filters
     }
 
     /**
+     * Same like self::and but renamed to avoid php5 parser errors
+     * Create a logical 'and' filter, containing other filters.
+     *
+     * @param FilterInterface[] ...$filters
+     * @return AndFilter
+     */
+    public static function andPHP5(FilterInterface ...$filters) : AndFilter
+    {
+        return new AndFilter(...$filters);
+    }
+
+    /**
      * Create a logical 'or' filter, containing other filters.
      *
      * @param FilterInterface[] ...$filters
