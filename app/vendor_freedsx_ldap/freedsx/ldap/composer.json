@@ -1,0 +1,31 @@
+{
+  "name": "freedsx/ldap",
+  "description": "A Pure PHP LDAP library",
+  "homepage": "https://github.com/FreeDSx/LDAP",
+  "keywords": [
+    "LDAP"
+  ],
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Chad Sikorra",
+      "email": "Chad.Sikorra@gmail.com"
+    }
+  ],
+  "require": {
+    "php": ">=7.1",
+    "freedsx/asn1": "^0.1.0"
+  },
+  "require-dev": {
+    "phpspec/phpspec": "^4.0"
+  },
+  "suggest": {
+    "ext-openssl": "For SSL/TLS support."
+  },
+  "config": {
+    "bin-dir": "bin"
+  },
+  "autoload": {
+    "psr-4": {"FreeDSx\\Ldap\\": "src/FreeDSx/Ldap"}
+  }
+}
