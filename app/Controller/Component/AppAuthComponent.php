@@ -174,9 +174,15 @@ class AppAuthComponent extends AuthComponent {
 
 
                     $filter = \FreeDSx\Ldap\Search\Filters:: and (
-                        \FreeDSx\Ldap\Search\Filters::raw('(&(objectClass=user)(samaccounttype=805306368)(objectCategory=person)(cn=*))'),
+                        \FreeDSx\Ldap\Search\Filters::raw($systemsettings['FRONTEND']['FRONTEND.LDAP.QUERY']),
                         \FreeDSx\Ldap\Search\Filters::equal('sAMAccountName', $samaccountname)
                     );
+                    if ($systemsettings['FRONTEND']['FRONTEND.LDAP.TYPE'] === 'openldap') {
+                        $filter = \FreeDSx\Ldap\Search\Filters:: and (
+                            \FreeDSx\Ldap\Search\Filters::raw($systemsettings['FRONTEND']['FRONTEND.LDAP.QUERY']),
+                            \FreeDSx\Ldap\Search\Filters::equal('dn', $samaccountname)
+                        );
+                    }
 
 
                     $search = FreeDSx\Ldap\Operations::search($filter, 'cn', 'memberof', 'dn');
