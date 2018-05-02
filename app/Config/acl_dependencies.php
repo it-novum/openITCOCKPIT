@@ -201,8 +201,8 @@ $config = [
             ],
             'Contacts'              => [
                 'index' => ['view'],
-                'add'   => ['loadTimeperiods', 'addCustomMacro'],
-                'edit'  => ['loadTimeperiods', 'addCustomMacro'],
+                'add'   => ['loadTimeperiods', 'addCustomMacro', 'loadLdapUserByString'],
+                'edit'  => ['loadTimeperiods', 'addCustomMacro', 'loadLdapUserByString'],
             ],
             'Cronjobs'              => [
                 'add'  => ['loadTasksByPlugin'],
@@ -293,7 +293,7 @@ $config = [
             ],
             'Users'                 => [
                 'index' => ['view', 'loadUsersByContainerId'],
-                'add'   => ['addFromLdap'],
+                'add'   => ['addFromLdap', 'loadLdapUserByString'],
                 'edit'  => ['resetPassword'],
             ],
             'Tenants'               => [

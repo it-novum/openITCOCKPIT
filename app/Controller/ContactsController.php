@@ -22,6 +22,7 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+use itnovum\openITCOCKPIT\Core\PHPVersionChecker;
 
 
 /**
@@ -50,44 +51,44 @@ class ContactsController extends AppController {
     public $listFilters = [
         'index' => [
             'fields' => [
-                'Contact.name' => [
-                    'label' => 'Name',
+                'Contact.name'  => [
+                    'label'      => 'Name',
                     'searchType' => 'wildcard',
                 ],
                 'Contact.email' => [
-                    'label' => 'Email',
+                    'label'      => 'Email',
                     'searchType' => 'wildcard',
                 ],
                 'Contact.phone' => [
-                    'label' => 'Pager',
+                    'label'      => 'Pager',
                     'searchType' => 'wildcard',
                 ],
             ],
         ],
     ];
 
-    function index(){
+    function index() {
         $systemsettings = $this->Systemsetting->findAsArraySection('FRONTEND');
         $this->Contact->unbindModel([
                 'hasAndBelongsToMany' => ['HostCommands', 'ServiceCommands', 'Contactgroup'],
-                'belongsTo' => ['HostTimeperiod', 'ServiceTimeperiod'],
+                'belongsTo'           => ['HostTimeperiod', 'ServiceTimeperiod'],
             ]
         );
         $options = [
             //'recursive' => -1,
-            'joins' => [
+            'joins'      => [
                 [
-                    'table' => 'contacts_to_containers',
-                    'type' => 'INNER',
-                    'alias' => 'ContactsToContainer',
+                    'table'      => 'contacts_to_containers',
+                    'type'       => 'INNER',
+                    'alias'      => 'ContactsToContainer',
                     'conditions' => [
                         'ContactsToContainer.contact_id = Contact.id',
                     ],
                 ],
                 [
-                    'table' => 'containers',
-                    'type' => 'INNER',
-                    'alias' => 'Container',
+                    'table'      => 'containers',
+                    'type'       => 'INNER',
+                    'alias'      => 'Container',
                     'conditions' => [
                         'Container.id = ContactsToContainer.container_id',
                         'Container.containertype_id NOT' => CT_CONTACTGROUP,
@@ -97,8 +98,8 @@ class ContactsController extends AppController {
             'conditions' => [
                 'ContactsToContainer.container_id' => $this->MY_RIGHTS,
             ],
-            'order' => ['Contact.name' => 'asc'],
-            'group' => ['Contact.id'],
+            'order'      => ['Contact.name' => 'asc'],
+            'group'      => ['Contact.id'],
         ];
 
         $query = Hash::merge($this->Paginator->settings, $options);
@@ -134,7 +135,7 @@ class ContactsController extends AppController {
         $this->set('_serialize', ['all_contacts']);
     }
 
-    public function view($id = null){
+    public function view($id = null) {
         if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();
 
@@ -154,7 +155,7 @@ class ContactsController extends AppController {
         $this->set('_serialize', ['contact']);
     }
 
-    public function edit($id = null){
+    public function edit($id = null) {
         $userId = $this->Auth->user('id');
         if (!$this->Contact->exists($id)) {
             throw new NotFoundException(__('Invalid contact'));
@@ -182,12 +183,12 @@ class ContactsController extends AppController {
             }
 
             $ext_data_for_changelog = [
-                'HostTimeperiod' => [
-                    'id' => $this->request->data['Contact']['host_timeperiod_id'],
+                'HostTimeperiod'    => [
+                    'id'   => $this->request->data['Contact']['host_timeperiod_id'],
                     'name' => isset($timeperiods[$this->request->data['Contact']['host_timeperiod_id']]) ? $timeperiods[$this->request->data['Contact']['host_timeperiod_id']] : '',
                 ],
                 'ServiceTimeperiod' => [
-                    'id' => $this->request->data['Contact']['service_timeperiod_id'],
+                    'id'   => $this->request->data['Contact']['service_timeperiod_id'],
                     'name' => isset($timeperiods[$this->request->data['Contact']['service_timeperiod_id']]) ? $timeperiods[$this->request->data['Contact']['service_timeperiod_id']] : '',
                 ],
             ];
@@ -195,7 +196,7 @@ class ContactsController extends AppController {
             if (isset($this->request->data['Contact']['HostCommands']) && is_array($this->request->data['Contact']['HostCommands'])) {
                 foreach ($this->request->data['Contact']['HostCommands'] as $command_id) {
                     $ext_data_for_changelog['HostCommands'][] = [
-                        'id' => $command_id,
+                        'id'   => $command_id,
                         'name' => $notification_commands[$command_id],
                     ];
                 }
@@ -203,7 +204,7 @@ class ContactsController extends AppController {
             if (isset($this->request->data['Contact']['ServiceCommands']) && is_array($this->request->data['Contact']['ServiceCommands'])) {
                 foreach ($this->request->data['Contact']['ServiceCommands'] as $command_id) {
                     $ext_data_for_changelog['ServiceCommands'][] = [
-                        'id' => $command_id,
+                        'id'   => $command_id,
                         'name' => $notification_commands[$command_id],
                     ];
                 }
@@ -267,7 +268,7 @@ class ContactsController extends AppController {
         $this->set('_serialize', ['contact', 'notification_commands', 'timeperiods', '_timeperiods']);
     }
 
-    public function add(){
+    public function add() {
         $userId = $this->Auth->user('id');
         if ($this->hasRootPrivileges === true) {
             $containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_CONTACT, [], $this->hasRootPrivileges, [CT_CONTACTGROUP]);
@@ -300,12 +301,12 @@ class ContactsController extends AppController {
             $_timeperiods = $this->Timeperiod->timeperiodsByContainerId($containerIds, 'list');
 
             $ext_data_for_changelog = [
-                'HostTimeperiod' => [
-                    'id' => $this->request->data['Contact']['host_timeperiod_id'],
+                'HostTimeperiod'    => [
+                    'id'   => $this->request->data['Contact']['host_timeperiod_id'],
                     'name' => isset($timeperiods[$this->request->data['Contact']['host_timeperiod_id']]) ? $timeperiods[$this->request->data['Contact']['host_timeperiod_id']] : '',
                 ],
                 'ServiceTimeperiod' => [
-                    'id' => $this->request->data['Contact']['service_timeperiod_id'],
+                    'id'   => $this->request->data['Contact']['service_timeperiod_id'],
                     'name' => isset($timeperiods[$this->request->data['Contact']['service_timeperiod_id']]) ? $timeperiods[$this->request->data['Contact']['service_timeperiod_id']] : '',
                 ],
             ];
@@ -313,7 +314,7 @@ class ContactsController extends AppController {
             if (is_array($this->request->data['Contact']['HostCommands'])) {
                 foreach ($this->request->data['Contact']['HostCommands'] as $command_id) {
                     $ext_data_for_changelog['HostCommands'][] = [
-                        'id' => $command_id,
+                        'id'   => $command_id,
                         'name' => $notification_commands[$command_id],
                     ];
                 }
@@ -321,7 +322,7 @@ class ContactsController extends AppController {
             if (is_array($this->request->data['Contact']['ServiceCommands'])) {
                 foreach ($this->request->data['Contact']['ServiceCommands'] as $command_id) {
                     $ext_data_for_changelog['ServiceCommands'][] = [
-                        'id' => $command_id,
+                        'id'   => $command_id,
                         'name' => $notification_commands[$command_id],
                     ];
                 }
@@ -351,7 +352,7 @@ class ContactsController extends AppController {
                 }
                 $this->setFlash(__('<a href="/contacts/edit/%s">Contact</a> successfully saved', $this->Contact->id));
                 $this->redirect(['action' => 'index']);
-            }else{
+            } else {
                 foreach ($this->Customvariable->validationErrors as $customVariableValidationError) {
                     if (isset($customVariableValidationError['name'])) {
                         $this->set('customVariableValidationError', current($customVariableValidationError['name']));
@@ -385,30 +386,241 @@ class ContactsController extends AppController {
 
     }
 
-    public function addFromLdap(){
+    public function addFromLdap() {
+        $this->layout = 'angularjs';
+        $systemsettings = $this->Systemsetting->findAsArraySection('FRONTEND');
+
+        $PHPVersionChecker = new PHPVersionChecker();
         if ($this->request->is('post') || $this->request->is('put')) {
-            $ldapUser = $this->Ldap->userInfo($this->request->data('Ldap.samaccountname'));
-            if(!is_null($ldapUser)) {
+            $samaccountname = str_replace('string:', '', $this->request->data('Ldap.samaccountname'));
+            if($PHPVersionChecker->isVersionGreaterOrEquals7Dot1()){
+                require_once APP . 'vendor_freedsx_ldap' . DS . 'autoload.php';
+                $ldap = new \FreeDSx\Ldap\LdapClient([
+                    'servers'               => [$systemsettings['FRONTEND']['FRONTEND.LDAP.ADDRESS']],
+                    'port'                  => (int)$systemsettings['FRONTEND']['FRONTEND.LDAP.PORT'],
+                    'ssl_allow_self_signed' => true,
+                    'ssl_validate_cert'     => false,
+                    'use_tls'               => (bool)$systemsettings['FRONTEND']['FRONTEND.LDAP.USE_TLS'],
+                    'base_dn'               => $systemsettings['FRONTEND']['FRONTEND.LDAP.BASEDN'],
+                ]);
+                if ((bool)$systemsettings['FRONTEND']['FRONTEND.LDAP.USE_TLS']) {
+                    $ldap->startTls();
+                }
+                $ldap->bind(
+                    sprintf(
+                        '%s%s',
+                        $systemsettings['FRONTEND']['FRONTEND.LDAP.USERNAME'],
+                        $systemsettings['FRONTEND']['FRONTEND.LDAP.SUFFIX']
+                    ),
+                    $systemsettings['FRONTEND']['FRONTEND.LDAP.PASSWORD']
+                );
+
+                $filter = \FreeDSx\Ldap\Search\Filters::andPHP5(
+                    \FreeDSx\Ldap\Search\Filters::raw($systemsettings['FRONTEND']['FRONTEND.LDAP.QUERY']),
+                    \FreeDSx\Ldap\Search\Filters::equal('sAMAccountName', $samaccountname)
+                );
+                if ($systemsettings['FRONTEND']['FRONTEND.LDAP.TYPE'] === 'openldap') {
+                    $filter = \FreeDSx\Ldap\Search\Filters::andPHP5(
+                        \FreeDSx\Ldap\Search\Filters::raw($systemsettings['FRONTEND']['FRONTEND.LDAP.QUERY']),
+                        \FreeDSx\Ldap\Search\Filters::equal('dn', $samaccountname)
+                    );
+                }
+
+                $search = FreeDSx\Ldap\Operations::search($filter, 'cn', 'sAMAccountName', 'dn', 'mail');
+
+                /** @var \FreeDSx\Ldap\Entry\Entries $entries */
+                $entries = $ldap->search($search);
+
+                foreach ($entries as $entry) {
+                    /** @var \FreeDSx\Ldap\Entry\Entries $entry */
+
+                    $entry = $entry->toArray();
+                    $entry = array_combine(array_map('strtolower', array_keys($entry)), array_values($entry));
+                    if (isset($entry['uid'])) {
+                        $entry['samaccountname'] = $entry['uid'];
+                    }
+                    $ldapUser = [
+                        'mail' => $entry['mail']['0'],
+                        'samaccountname' => $entry['samaccountname'][0]
+                    ];
+                }
+
+            }else{
+                $ldapUser = $this->Ldap->userInfo($samaccountname);
+            }
+            if (!is_null($ldapUser)) {
                 $this->redirect([
-                    'controller' => 'contacts',
-                    'action' => 'add',
-                    'ldap' => 1,
-                    'email' => $ldapUser['mail'],
+                    'controller'     => 'contacts',
+                    'action'         => 'add',
+                    'ldap'           => 1,
+                    'email'          => $ldapUser['mail'],
                     'samaccountname' => $ldapUser['samaccountname'],
                     //Fixing usernames like jon.doe
-                    'fix' => 1 // we need an / behind the username parameter otherwise cakePHP will make strange stuff with a jon.doe username (username with dot ".")
+                    'fix'            => 1 // we need an / behind the username parameter otherwise cakePHP will make strange stuff with a jon.doe username (username with dot ".")
                 ]);
             }
             $this->setFlash(__('Contact does not exists in LDAP'), false);
         }
 
-        $usersForSelect = $this->Ldap->findAllUser();
-        $systemsettings = $this->Systemsetting->findAsArraySection('FRONTEND');
+        if ($PHPVersionChecker->isVersionGreaterOrEquals7Dot1()) {
+            $usersForSelect = [];
+            require_once APP . 'vendor_freedsx_ldap' . DS . 'autoload.php';
+            $ldap = new \FreeDSx\Ldap\LdapClient([
+                'servers'               => [$systemsettings['FRONTEND']['FRONTEND.LDAP.ADDRESS']],
+                'port'                  => (int)$systemsettings['FRONTEND']['FRONTEND.LDAP.PORT'],
+                'ssl_allow_self_signed' => true,
+                'ssl_validate_cert'     => false,
+                'use_tls'               => (bool)$systemsettings['FRONTEND']['FRONTEND.LDAP.USE_TLS'],
+                'base_dn'               => $systemsettings['FRONTEND']['FRONTEND.LDAP.BASEDN'],
+            ]);
+            if ((bool)$systemsettings['FRONTEND']['FRONTEND.LDAP.USE_TLS']) {
+                $ldap->startTls();
+            }
+            $ldap->bind(
+                sprintf(
+                    '%s%s',
+                    $systemsettings['FRONTEND']['FRONTEND.LDAP.USERNAME'],
+                    $systemsettings['FRONTEND']['FRONTEND.LDAP.SUFFIX']
+                ),
+                $systemsettings['FRONTEND']['FRONTEND.LDAP.PASSWORD']
+            );
 
-        $this->set(compact(['usersForSelect', 'systemsettings']));
+            $filter = \FreeDSx\Ldap\Search\Filters::raw($systemsettings['FRONTEND']['FRONTEND.LDAP.QUERY']);
+            if ($systemsettings['FRONTEND']['FRONTEND.LDAP.TYPE'] === 'openldap') {
+                $requiredFields = ['uid', 'mail', 'sn', 'givenname'];
+                $search = FreeDSx\Ldap\Operations::search($filter, 'uid', 'mail', 'sn', 'givenname', 'displayname', 'dn');
+            } else {
+                $requiredFields = ['samaccountname', 'mail', 'sn', 'givenname'];
+                $search = FreeDSx\Ldap\Operations::search($filter, 'samaccountname', 'mail', 'sn', 'givenname', 'displayname', 'dn');
+            }
+
+            $paging = $ldap->paging($search, 100);
+            while ($paging->hasEntries()) {
+                foreach ($paging->getEntries() as $entry) {
+                    $userDn = (string)$entry->getDn();
+                    if (empty($userDn)) {
+                        continue;
+                    }
+
+                    $entry = $entry->toArray();
+                    $entry = array_combine(array_map('strtolower', array_keys($entry)), array_values($entry));
+                    foreach ($requiredFields as $requiredField) {
+                        if (!isset($entry[$requiredField])) {
+                            continue 2;
+                        }
+                    }
+
+                    if (isset($entry['uid'])) {
+                        $entry['samaccountname'] = $entry['uid'];
+                    }
+
+                    $displayName = sprintf(
+                        '%s, %s (%s)',
+                        $entry['givenname'][0],
+                        $entry['sn'][0],
+                        $entry['samaccountname'][0]
+                    );
+                    $usersForSelect[$entry['samaccountname'][0]] = $displayName;
+                }
+                $paging->end();
+            }
+        } else {
+            $usersForSelect = $this->Ldap->findAllUser();
+        }
+
+        $usersForSelect = $this->Contact->makeItJavaScriptAble($usersForSelect);
+
+        $isPhp7Dot1 = $PHPVersionChecker->isVersionGreaterOrEquals7Dot1();
+        $this->set(compact(['usersForSelect', 'systemsettings', 'isPhp7Dot1']));
+        $this->set('_serialize', ['usersForSelect', 'isPhp7Dot1']);
     }
 
-    protected function __allowDelete($contact){
+    public function loadLdapUserByString() {
+        $this->layout = 'blank';
+
+        $usersForSelect = [];
+        $samaccountname = $this->request->query('samaccountname');
+        if (!empty($samaccountname) && strlen($samaccountname) > 2) {
+            $systemsettings = $this->Systemsetting->findAsArraySection('FRONTEND');
+            require_once APP . 'vendor_freedsx_ldap' . DS . 'autoload.php';
+
+            $ldap = new \FreeDSx\Ldap\LdapClient([
+                'servers'               => [$systemsettings['FRONTEND']['FRONTEND.LDAP.ADDRESS']],
+                'port'                  => (int)$systemsettings['FRONTEND']['FRONTEND.LDAP.PORT'],
+                'ssl_allow_self_signed' => true,
+                'ssl_validate_cert'     => false,
+                'use_tls'               => (bool)$systemsettings['FRONTEND']['FRONTEND.LDAP.USE_TLS'],
+                'base_dn'               => $systemsettings['FRONTEND']['FRONTEND.LDAP.BASEDN'],
+            ]);
+            if ((bool)$systemsettings['FRONTEND']['FRONTEND.LDAP.USE_TLS']) {
+                $ldap->startTls();
+            }
+            $ldap->bind(
+                sprintf(
+                    '%s%s',
+                    $systemsettings['FRONTEND']['FRONTEND.LDAP.USERNAME'],
+                    $systemsettings['FRONTEND']['FRONTEND.LDAP.SUFFIX']
+                ),
+                $systemsettings['FRONTEND']['FRONTEND.LDAP.PASSWORD']
+            );
+
+            $filter = \FreeDSx\Ldap\Search\Filters::andPHP5(
+                \FreeDSx\Ldap\Search\Filters::raw($systemsettings['FRONTEND']['FRONTEND.LDAP.QUERY']),
+                \FreeDSx\Ldap\Search\Filters::contains('sAMAccountName', $samaccountname)
+            );
+            if ($systemsettings['FRONTEND']['FRONTEND.LDAP.TYPE'] === 'openldap') {
+                $filter = \FreeDSx\Ldap\Search\Filters::andPHP5(
+                    \FreeDSx\Ldap\Search\Filters::raw($systemsettings['FRONTEND']['FRONTEND.LDAP.QUERY']),
+                    \FreeDSx\Ldap\Search\Filters::contains('uid', $samaccountname)
+                );
+            }
+            if ($systemsettings['FRONTEND']['FRONTEND.LDAP.TYPE'] === 'openldap') {
+                $requiredFields = ['uid', 'mail', 'sn', 'givenname'];
+                $search = FreeDSx\Ldap\Operations::search($filter, 'uid', 'mail', 'sn', 'givenname', 'displayname', 'dn');
+            } else {
+                $requiredFields = ['samaccountname', 'mail', 'sn', 'givenname'];
+                $search = FreeDSx\Ldap\Operations::search($filter, 'samaccountname', 'mail', 'sn', 'givenname', 'displayname', 'dn');
+            }
+
+            $paging = $ldap->paging($search, 100);
+            while ($paging->hasEntries()) {
+                foreach ($paging->getEntries() as $entry) {
+                    $userDn = (string)$entry->getDn();
+                    if (empty($userDn)) {
+                        continue;
+                    }
+
+                    $entry = $entry->toArray();
+                    $entry = array_combine(array_map('strtolower', array_keys($entry)), array_values($entry));
+                    foreach ($requiredFields as $requiredField) {
+                        if (!isset($entry[$requiredField])) {
+                            continue 2;
+                        }
+                    }
+
+                    if (isset($entry['uid'])) {
+                        $entry['samaccountname'] = $entry['uid'];
+                    }
+
+                    $displayName = sprintf(
+                        '%s, %s (%s)',
+                        $entry['givenname'][0],
+                        $entry['sn'][0],
+                        $entry['samaccountname'][0]
+                    );
+                    $usersForSelect[$entry['samaccountname'][0]] = $displayName;
+                }
+                $paging->end();
+            }
+        }
+
+        $usersForSelect = $this->User->makeItJavaScriptAble($usersForSelect);
+
+        $this->set('usersForSelect', $usersForSelect);
+        $this->set('_serialize', ['usersForSelect']);
+    }
+
+    protected function __allowDelete($contact) {
         if (is_numeric($contact)) {
             $contactId = $contact;
         } else {
@@ -439,18 +651,18 @@ class ContactsController extends AppController {
         return true;
     }
 
-    public function delete($id){
+    public function delete($id) {
         if (!$this->Contact->exists($id)) {
             throw new NotFoundException(__('Invalid contact'));
         }
         $userId = $this->Auth->user('id');
         $contact = $this->Contact->find('first', [
-            'recursive' => -1,
-            'contain' => [
+            'recursive'  => -1,
+            'contain'    => [
                 'Container.id',
                 'Container.name'
             ],
-            'fields' => [
+            'fields'     => [
                 'Contact.id',
                 'Contact.name'
             ],
@@ -496,17 +708,17 @@ class ContactsController extends AppController {
         }
     }
 
-    public function mass_delete($id = null){
+    public function mass_delete($id = null) {
         $userId = $this->Auth->user('id');
         if ($this->request->is('post') || $this->request->is('put')) {
             foreach ($this->request->data('Contact.delete') as $contactId) {
                 $contact = $this->Contact->find('first', [
-                    'recursive' => -1,
-                    'contain' => [
+                    'recursive'  => -1,
+                    'contain'    => [
                         'Container.id',
                         'Container.name'
                     ],
-                    'fields' => [
+                    'fields'     => [
                         'Contact.id',
                         'Contact.name'
                     ],
@@ -542,12 +754,12 @@ class ContactsController extends AppController {
         foreach (func_get_args() as $contactId) {
             if ($this->Contact->exists($contactId)) {
                 $contact = $this->Contact->find('first', [
-                    'recursive' => -1,
-                    'contain' => [
+                    'recursive'  => -1,
+                    'contain'    => [
                         'Container.id',
                         'Container.name'
                     ],
-                    'fields' => [
+                    'fields'     => [
                         'Contact.id',
                         'Contact.name'
                     ],
@@ -570,7 +782,7 @@ class ContactsController extends AppController {
         $this->set(compact(['contactsToDelete', 'contactsCanotDelete', 'count']));
     }
 
-    public function loadTimeperiods(){
+    public function loadTimeperiods() {
         $this->allowOnlyAjaxRequests();
 
         $timePeriods = [];
@@ -587,36 +799,35 @@ class ContactsController extends AppController {
         $this->set('_serialize', array_keys($data));
     }
 
-    public function copy($id = null)
-    {
+    public function copy($id = null) {
         $userId = $this->Auth->user('id');
         $contacts = $this->Contact->find('all', [
-            'recursive' => 0,
-            'contain' => [
+            'recursive'  => 0,
+            'contain'    => [
                 'Container' => [
                     'fields' => [
                         'Container.id'
                     ],
                 ],
 
-                'Customvariable' => [
+                'Customvariable'    => [
                     'fields' => [
                         'name', 'value',
                     ],
                 ],
-                'HostCommands' => [
+                'HostCommands'      => [
                     'fields' => [
                         'id',
                         'name'
                     ]
                 ],
-                'ServiceCommands' => [
+                'ServiceCommands'   => [
                     'fields' => [
                         'id',
                         'name'
                     ]
                 ],
-                'HostTimeperiod' => [
+                'HostTimeperiod'    => [
                     'fields' => [
                         'HostTimeperiod.id',
                         'HostTimeperiod.name',
@@ -645,24 +856,28 @@ class ContactsController extends AppController {
                     $newContact['uuid'] = UUID::v4();
                     unset($contacts[$sourceContactId]['Contact']['id']); // remove contact id for save
                     $newContactData = [
-                        'Contact' => Hash::merge(
+                        'Contact'        => Hash::merge(
                             $contacts[$sourceContactId]['Contact'],
                             $newContact,
-                            ['HostCommands' => [
-                                $contacts[$sourceContactId]['HostCommands'][0]['id']]
+                            [
+                                'HostCommands' => [
+                                    $contacts[$sourceContactId]['HostCommands'][0]['id']
+                                ]
                             ],
-                            ['ServiceCommands' => [
-                                $contacts[$sourceContactId]['ServiceCommands'][0]['id']]
+                            [
+                                'ServiceCommands' => [
+                                    $contacts[$sourceContactId]['ServiceCommands'][0]['id']
+                                ]
                             ]
                         ),
-                        'Customvariable'                           => Hash::insert(
+                        'Customvariable' => Hash::insert(
                             Hash::remove(
                                 $contacts[$newContact['source']]['Customvariable'], '{n}.object_id'
                             ),
                             '{n}.objecttype_id',
                             OBJECT_CONTACT
                         ),
-                        'Container' => [
+                        'Container'      => [
                             'Container' =>
                                 Hash::extract($contacts[$sourceContactId]['Container'], '{n}.id')
                         ]
@@ -673,10 +888,10 @@ class ContactsController extends AppController {
                         $errorMessage = 'Contacts could not be copied.';
                         $errorFields = $this->Contact->invalidFields();
 
-                        if(!empty($errorFields)){
-                            foreach ($errorFields as $errorFieldKey => $errorField){
-                                if(!isset($newContactData['Contact'][$errorFieldKey]) || !isset($errorField[0])) continue;
-                                $errorMessage .= '<br />'.$newContactData['Contact'][$errorFieldKey].': '.$errorField[0];
+                        if (!empty($errorFields)) {
+                            foreach ($errorFields as $errorFieldKey => $errorField) {
+                                if (!isset($newContactData['Contact'][$errorFieldKey]) || !isset($errorField[0])) continue;
+                                $errorMessage .= '<br />' . $newContactData['Contact'][$errorFieldKey] . ': ' . $errorField[0];
                             }
                         }
                         throw new Exception($errorMessage);
@@ -711,8 +926,7 @@ class ContactsController extends AppController {
         $this->set('back_url', $this->referer());
     }
 
-    public function addCustomMacro($counter)
-    {
+    public function addCustomMacro($counter) {
         $this->allowOnlyAjaxRequests();
 
         $this->set('objecttype_id', OBJECT_CONTACT);
@@ -732,55 +946,55 @@ class ContactsController extends AppController {
 
         $this->Contact->bindModel([
             'hasAndBelongsToMany' => [
-                'Hosttemplate' => [
+                'Hosttemplate'      => [
                     'className' => 'Hosttemplate',
                     'joinTable' => 'contacts_to_hosttemplates',
-                    'type' => 'INNER'
+                    'type'      => 'INNER'
                 ],
-                'Host' => [
+                'Host'              => [
                     'className' => 'Host',
                     'joinTable' => 'contacts_to_hosts',
-                    'type' => 'INNER'
+                    'type'      => 'INNER'
                 ],
-                'Servicetemplate' => [
+                'Servicetemplate'   => [
                     'className' => 'Servicetemplate',
                     'joinTable' => 'contacts_to_servicetemplates',
-                    'type' => 'INNER'
+                    'type'      => 'INNER'
                 ],
-                'Service' => [
+                'Service'           => [
                     'className' => 'Service',
                     'joinTable' => 'contacts_to_services',
-                    'type' => 'INNER'
+                    'type'      => 'INNER'
                 ],
-                'Hostescalation' => [
+                'Hostescalation'    => [
                     'className' => 'Hostescalation',
                     'joinTable' => 'contacts_to_hostescalations',
-                    'type' => 'INNER'
+                    'type'      => 'INNER'
                 ],
                 'Serviceescalation' => [
                     'className' => 'Serviceescalation',
                     'joinTable' => 'contacts_to_serviceescalations',
-                    'type' => 'INNER'
+                    'type'      => 'INNER'
                 ],
-                'Contactgroup' => [
+                'Contactgroup'      => [
                     'className' => 'Contactgroup',
                     'joinTable' => 'contacts_to_contactgroups',
-                    'type' => 'INNER'
+                    'type'      => 'INNER'
                 ]
             ]
         ]);
 
         $contactWithRelations = $this->Contact->find('first', [
-            'recursive' => -1,
-            'contain' => [
+            'recursive'  => -1,
+            'contain'    => [
                 'Container',
-                'Hosttemplate' => [
+                'Hosttemplate'    => [
                     'fields' => [
                         'Hosttemplate.id',
                         'Hosttemplate.name'
                     ]
                 ],
-                'Host' => [
+                'Host'            => [
                     'fields' => [
                         'Host.id',
                         'Host.name',
@@ -793,12 +1007,12 @@ class ContactsController extends AppController {
                         'Servicetemplate.name'
                     ]
                 ],
-                'Service' => [
-                    'fields' => [
+                'Service'         => [
+                    'fields'          => [
                         'Service.id',
                         'Service.name'
                     ],
-                    'Host' => [
+                    'Host'            => [
                         'fields' => [
                             'Host.name'
                         ]
@@ -811,7 +1025,7 @@ class ContactsController extends AppController {
                 ],
                 'Hostescalation.id',
                 'Serviceescalation.id',
-                'Contactgroup' => [
+                'Contactgroup'    => [
                     'Container'
                 ]
             ],
@@ -831,22 +1045,22 @@ class ContactsController extends AppController {
         }
 
         /* Format service name for api "hostname|Service oder Service template name" */
-        array_walk($contactWithRelations['Service'],function(&$service){
+        array_walk($contactWithRelations['Service'], function (&$service) {
             $serviceName = $service['name'];
-            if(empty($service['name'])) {
+            if (empty($service['name'])) {
                 $serviceName = $service['Servicetemplate']['name'];
             }
             $service['name'] = sprintf('%s|%s', $service['Host']['name'], $serviceName);
         });
 
-        array_walk($contactWithRelations['Contactgroup'],function(&$contactgroup){
+        array_walk($contactWithRelations['Contactgroup'], function (&$contactgroup) {
             $contactgroup['name'] = sprintf('%s', $contactgroup['Container']['name']);
         });
 
         //Sort host template, host, service template and service by name
-        foreach(['Hosttemplate', 'Host', 'Servicetemplate', 'Service'] as $modelName){
+        foreach (['Hosttemplate', 'Host', 'Servicetemplate', 'Service'] as $modelName) {
             $contactWithRelations[$modelName] = Hash::sort($contactWithRelations[$modelName], '{n}.name', 'asc', [
-                    'type' => 'natural',
+                    'type'       => 'natural',
                     'ignoreCase' => true
                 ]
             );

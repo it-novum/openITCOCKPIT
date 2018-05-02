@@ -22,15 +22,18 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+
+use itnovum\openITCOCKPIT\Core\PHPVersionChecker;
+
 ?>
 <div class="row">
     <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
         <h1 class="page-title txt-color-blueDark">
             <i class="fa fa-user fa-fw "></i>
-            <?php echo __('Administration'); ?>
+            <?php echo __('Users'); ?>
             <span>>
                 <?php echo __('Import user from LDAP'); ?>
-			</span>
+            </span>
         </h1>
     </div>
 </div>
@@ -46,33 +49,74 @@
     </header>
     <div>
         <div class="widget-body">
-            <?php
-            echo $this->Form->create('Ldap', [
-                'class' => 'form-horizontal clear',
-            ]);
-            echo $this->Form->input('samaccountname', [
-                'options' => $this->Html->chosenPlaceholder($usersForSelect),
-                'class'   => 'chosen',
-                'style'   => 'width: 100%;',
-                'label'   => __('User'),
-            ]);
-            ?>
-            <div class="padding-top-20"></div>
-            <div class="form-group">
-                <span class="col col-md-2 text-right"><i class="fa fa-info-circle text-info"></i></span>
-                <div class="col col-xs-10 text-info">
-                    <?php echo __('Contacted LDAP server'); ?>:
-                    <strong><?php echo h($systemsettings['FRONTEND']['FRONTEND.LDAP.ADDRESS']); ?></strong>
-                    <br/>
-                    <?php echo __('Searched filter query'); ?>:
-                    <strong><?php echo h($systemsettings['FRONTEND']['FRONTEND.LDAP.QUERY']); ?></strong>
-                    <br/>
-                    <?php echo __('Searched Base DN'); ?>:
-                    <strong><?php echo h($systemsettings['FRONTEND']['FRONTEND.LDAP.BASEDN']); ?></strong>
+
+            <?php $PHPVersionChecker = new PHPVersionChecker(); ?>
+            <form ng-submit="submit();" class="form-horizontal">
+
+                <div class="row">
+
+                    <div class="form-group required" ng-class="{'has-error': errors}">
+                        <label class="col col-md-2 control-label">
+                            <?php echo __('User'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+                            <?php if ($PHPVersionChecker->isVersionGreaterOrEquals7Dot1()): ?>
+                                <select
+                                        id="LdapUserSelect"
+                                        data-placeholder="<?php echo __('Please choose'); ?>"
+                                        class="form-control"
+                                        chosen="users"
+                                        ng-options="user.key as user.value for user in users"
+                                        callback="loadUsersByString"
+                                        ng-model="selectedSamAccountName">
+                                </select>
+                                <div>
+                                    <div class="help-block">
+                                        <?php echo __('You can search by the users login name'); ?>
+                                    </div>
+                                </div>
+                            <?php else: ?>
+                                <select
+                                        id="LdapUserSelect"
+                                        data-placeholder="<?php echo __('Please choose'); ?>"
+                                        class="form-control"
+                                        chosen="users"
+                                        ng-options="user.key as user.value for user in users"
+                                        ng-model="selectedSamAccountName">
+                                </select>
+                            <?php endif; ?>
+                            <div ng-repeat="error in errors">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <span class="col col-xs-2 text-right"><i class="fa fa-info-circle text-info"></i></span>
+                        <div class="col col-xs-10 text-info">
+                            <?php echo __('Contacted LDAP server'); ?>:
+                            <strong><?php echo h($systemsettings['FRONTEND']['FRONTEND.LDAP.ADDRESS']); ?></strong>
+                            <br/>
+                            <?php echo __('Searched filter query'); ?>:
+                            <strong><?php echo h($systemsettings['FRONTEND']['FRONTEND.LDAP.QUERY']); ?></strong>
+                            <br/>
+                            <?php echo __('Searched Base DN'); ?>:
+                            <strong><?php echo h($systemsettings['FRONTEND']['FRONTEND.LDAP.BASEDN']); ?></strong>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12 margin-top-10">
+                        <div class="well formactions ">
+                            <div class="pull-right">
+                                <input class="btn btn-primary" type="submit" value="<?php echo __('Continue'); ?>">&nbsp;
+                                <a href="/users/index" class="btn btn-default"><?php echo __('Cancel'); ?></a>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
-            </div>
-            <br/>
-            <?php echo $this->Form->formActions(__('Continue')); ?>
+            </form>
         </div>
     </div>
 </div>
+
