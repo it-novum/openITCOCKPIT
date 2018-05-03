@@ -25,6 +25,7 @@
 
 
 use itnovum\openITCOCKPIT\Core\Views\PieChart;
+use Symfony\Component\Filesystem\Filesystem;
 
 
 class PieChartHelper extends AppHelper {
@@ -38,6 +39,12 @@ class PieChartHelper extends AppHelper {
 
         $PieChart = new PieChart();
         $PieChart->createPieChart($chart_data);
+
+
+        if(!is_dir(WWW_ROOT . 'img' . DS . 'charts')){
+            $fs = new Filesystem();
+            $fs->mkdir(WWW_ROOT . 'img' . DS . 'charts');
+        }
 
         $filepath = WWW_ROOT . 'img' . DS . 'charts';
         $filename = uniqid() . '.png';
@@ -57,6 +64,12 @@ class PieChartHelper extends AppHelper {
     public function createHalfPieChart($chart_data) {
 
         $filepath = WWW_ROOT . 'img' . DS . 'charts';
+
+        if(!is_dir(WWW_ROOT . 'img' . DS . 'charts')){
+            $fs = new Filesystem();
+            $fs->mkdir(WWW_ROOT . 'img' . DS . 'charts');
+        }
+
         $filename = uniqid() . '.png';
 
         $PieChart = new PieChart();
