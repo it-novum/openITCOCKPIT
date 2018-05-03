@@ -132,6 +132,12 @@ if ($hostStatus['current_state'] == 0) {
         <?php
         $i = 0;
         foreach ($hostStatus['Servicestatus'] as $counter => $service) :
+            if(empty($service['Servicestatus'])){
+                $service['Servicestatus'] = [
+                        'current_state' => -1,
+                        'output' => ''
+                ];
+            }
             if ($i == 10): ?>
                 <tr>
                     <td colspan="3"><?php echo __('Showing ' . $i . ' of ' . $serviceAmount . ' Services. Click on the icon to see all') ?></td>

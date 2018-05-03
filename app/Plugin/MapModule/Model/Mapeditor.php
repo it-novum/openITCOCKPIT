@@ -1050,13 +1050,13 @@ class Mapeditor extends MapModuleAppModel {
     public function getHoststatus($uuids, $hoststatusConditions, $servicestatusConditions, $hostFields = [], $serviceFields = []) {
         $this->Hoststatus = ClassRegistry::init(MONITORING_HOSTSTATUS);
         $this->Servicestatus = ClassRegistry::init(MONITORING_SERVICESTATUS);
-        $hoststatus = $this->Hoststatus->ByUuids($uuids, $hostFields, $hoststatusConditions);
+        $hoststatus = $this->Hoststatus->byUuids($uuids, $hostFields, $hoststatusConditions);
         $hostdata = $this->getHostInfoByUuids($uuids);
         $hostIds = Hash::extract($hostdata, '{n}.Host.id');
 
         $servicedata = $this->getServiceInfoByHostIds($hostIds);
         $hostServiceUuids = Hash::extract($servicedata, '{n}.Service.uuid');
-        $servicestatus = $this->Servicestatus->ByUuids($hostServiceUuids, $serviceFields, $servicestatusConditions);
+        $servicestatus = $this->Servicestatus->byUuids($hostServiceUuids, $serviceFields, $servicestatusConditions);
 
         foreach ($servicedata as $key => $service) {
             $serviceuuid = $service['Service']['uuid'];
@@ -1092,7 +1092,7 @@ class Mapeditor extends MapModuleAppModel {
      */
     public function getServicestatus($uuids, $servicestatusConditions, $serviceFields = []) {
         $this->Servicestatus = ClassRegistry::init(MONITORING_SERVICESTATUS);
-        $servicestatus = $this->Servicestatus->ByUuids($uuids, $serviceFields, $servicestatusConditions);
+        $servicestatus = $this->Servicestatus->byUuids($uuids, $serviceFields, $servicestatusConditions);
         $servicedata = $this->getServiceInfoByUuids($uuids);
 
         foreach ($servicedata as $key => $service) {

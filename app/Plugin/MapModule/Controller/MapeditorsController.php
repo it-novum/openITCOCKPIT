@@ -478,7 +478,7 @@ class MapeditorsController extends MapModuleAppController {
                 ->lastStateChange();
 
             $serviceUuids = Hash::extract($uuidsByItemType['service'], '{n}.uuid');
-            $servicestatus = $this->Servicestatus->ByUuids($serviceUuids, $serviceFields, $servicestatusConditions);
+            $servicestatus = $this->Servicestatus->byUuids($serviceUuids, $serviceFields, $servicestatusConditions);
             $servicedata = $this->Mapeditor->getServiceInfoByUuids($serviceUuids);
 
             foreach ($servicedata as $key => $service) {
@@ -532,8 +532,8 @@ class MapeditorsController extends MapModuleAppController {
             $hostUuids = $mapElementUuids['forStatus']['host'];
             $serviceUuids = $mapElementUuids['forStatus']['service'];
             unset($mapElementUuids['forStatus']);
-            $hoststatus = $this->Hoststatus->ByUuids($hostUuids, $hostFields, $hoststatusConditions);
-            $hostServicestatus = $this->Servicestatus->ByUuids($serviceUuids, $serviceFields, $servicestatusConditions);
+            $hoststatus = $this->Hoststatus->byUuids($hostUuids, $hostFields, $hoststatusConditions);
+            $hostServicestatus = $this->Servicestatus->byUuids($serviceUuids, $serviceFields, $servicestatusConditions);
 
             $mapElementUuids['status'] = [
                 'hoststatus' => $hoststatus,
@@ -686,7 +686,6 @@ class MapeditorsController extends MapModuleAppController {
     public function popoverMapStatus($id) {
         $mapElementUuids = $this->Mapeditor->getMapElementUuids($id);
         $hoststatusConditions = new HoststatusConditions($this->DbBackend);
-        $servicestatusConditions = new ServicestatusConditions($this->DbBackend);
         $hostFields = new HoststatusFields($this->DbBackend);
         $serviceFields = new ServicestatusFields($this->DbBackend);
 
@@ -703,8 +702,8 @@ class MapeditorsController extends MapModuleAppController {
         $hostUuids = $mapElementUuids['forStatus']['host'];
         $serviceUuids = $mapElementUuids['forStatus']['service'];
         unset($mapElementUuids['forStatus']);
-        $hoststatus = $this->Hoststatus->ByUuids($hostUuids, $hostFields, $hoststatusConditions);
-        $hostServicestatus = $this->Servicestatus->ByUuids($serviceUuids, $serviceFields, $servicestatusConditions);
+        $hoststatus = $this->Hoststatus->byUuids($hostUuids, $hostFields, $hoststatusConditions);
+        $hostServicestatus = $this->Servicestatus->byUuids($serviceUuids, $serviceFields);
 
         $mapElementUuids['status'] = [
             'hoststatus' => $hoststatus,

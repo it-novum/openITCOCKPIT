@@ -47,7 +47,7 @@ class MapstatusHelper extends AppHelper {
             $servicestatus = $this->_View->viewVars['servicestatus'];
             if (!empty($servicestatus)) {
                 foreach ($servicestatus as $uuid => $ss) {
-                    if(!empty($ss['Servicestatus'])) {
+                    if (!empty($ss['Servicestatus'])) {
                         $this->servicestatus[$uuid] = $ss['Servicestatus'];
                         array_push($this->servicestatus[$uuid], $ss['Service']);
                     }
@@ -146,7 +146,7 @@ class MapstatusHelper extends AppHelper {
                 }
             }
 
-            if (sizeof($stateKey) > 0) {
+            if (!empty($stateKey)) {
                 $servicestate = $hostServiceStates[$stateKey];
             }
             $status = $servicestate;
@@ -471,7 +471,6 @@ class MapstatusHelper extends AppHelper {
         //returns the summary state for a Map
         $mapstructure = $this->mapstatus['structure'][$id];
         $mapstatus = $this->mapstatus['status'];
-
         $state = -1;
         if (!empty($mapstructure) && !empty($mapstatus)) {
             $hostUuidsByMap = Hash::extract($mapstructure, '{n}.{s}.{n}.host.{n}');
@@ -503,8 +502,16 @@ class MapstatusHelper extends AppHelper {
                 }
             }
 
-            $cumulative_host_state = Hash::apply($allHoststates, '{n}', 'max');
-            $cumulative_service_state = Hash::apply($allServicestates, '{n}', 'max');
+
+            $cumulative_host_state = -1;
+            if (!empty($allHoststates)) {
+                $cumulative_host_state = Hash::apply($allHoststates, '{n}', 'max');
+            }
+
+            $cumulative_service_state = -1;
+            if (!empty($allServicestates)) {
+                $cumulative_service_state = Hash::apply($allServicestates, '{n}', 'max');
+            }
 
             if ($cumulative_host_state > $cumulative_service_state) {
                 $state = $this->hostgroupstatusValuesHost($cumulative_host_state);
