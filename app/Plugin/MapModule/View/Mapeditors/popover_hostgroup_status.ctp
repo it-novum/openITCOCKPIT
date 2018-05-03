@@ -42,15 +42,17 @@ foreach ($hostgroups[0]['Host'] as $counter => $host) {
         foreach ($host['Servicestatus'] as $key => $value) {
             //fill the current state into the array
             //$serviceStateArr[$counter][$key] = $value['Servicestatus']['current_state'];
-            $serviceStateArr[$host['uuid']][$key] = $value['Servicestatus']['current_state'];
+            $serviceStateArr[$host['uuid']][$key] = $value['current_state'];
         }
     } else {
         //set a null value into the array
         $serviceStateArr[$host['uuid']] = null;
     }
-    $hostStateArr[] = $host['Hoststatus'][0]['Hoststatus']['current_state'];
+
+    $hostStateArr[$host['uuid']] = $host['Hoststatus']['current_state'];
 }
 $hoststate = max($hostStateArr);
+
 
 //count number of services
 $serviceAmountperHost = [];
@@ -122,8 +124,7 @@ $serviceAmount = array_sum($serviceAmountperHost);
                     <?php echo h($host['name']); ?>
                 </td>
                 <!-- State -->
-                <?php $currentHostState = $host['Hoststatus'][0]['Hoststatus']['current_state'];
-
+                <?php $currentHostState = $host['Hoststatus']['current_state'];
                  if (isset($serviceStateArr[$key]) && $currentHostState == 0): ?>
                     <td class="<?php echo $this->Status->ServiceStatusColorSimple(max($serviceStateArr[$key]))['class']; ?>"><?php echo $this->Status->ServiceStatusColorSimple(max($serviceStateArr[$key]))['human_state']; ?></td>
                 <?php else: ?>
