@@ -35,13 +35,16 @@ class MapstatusHelper extends AppHelper {
         if (isset($this->_View->viewVars['hoststatus'])) {
             $hoststatus = $this->_View->viewVars['hoststatus'];
             foreach ($hoststatus as $uuid => $hs) {
+                if(!isset($hs['Hoststatus'])){
+                    $hs['Hoststatus'] = [];
+                }
                 $this->hoststatus[$uuid] = $hs['Hoststatus'];
                 if (isset($hs['Host'])) {
                     array_push($this->hoststatus[$uuid], $hs['Host']);
                 }
             }
         }
-
+        
         //fill Services
         if (isset($this->_View->viewVars['servicestatus'])) {
             $servicestatus = $this->_View->viewVars['servicestatus'];
@@ -70,6 +73,9 @@ class MapstatusHelper extends AppHelper {
                 if (!empty($sgs['Servicegroup']['uuid'])) {
                     $this->servicegroupstatus[$sgs['Servicegroup']['uuid']] = $sgs;
                 }
+            }
+            if(!isset($servicegroupstatus['Servicestatus'])){
+                $servicegroupstatus['Servicestatus'] = [];
             }
             $this->servicegroupstatus['Servicestatus'] = $servicegroupstatus['Servicestatus'];
         }
@@ -271,6 +277,9 @@ class MapstatusHelper extends AppHelper {
         $serviceUuids = Hash::extract($this->servicegroupstatus[$uuid], 'Service.{n}.uuid');
         $servicestates = [];
         foreach ($serviceUuids as $serviceUuid) {
+            if(!isset($this->servicegroupstatus['Servicestatus'][$serviceUuid])){
+                $this->servicegroupstatus['Servicestatus'][$serviceUuid] = [];
+            }
             $servicestates[] = $this->servicegroupstatus['Servicestatus'][$serviceUuid];
         }
         $servicestate = Hash::extract($servicestates, '{n}.Servicestatus');

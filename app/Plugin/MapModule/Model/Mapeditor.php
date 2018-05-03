@@ -1172,6 +1172,17 @@ class Mapeditor extends MapModuleAppModel {
             foreach ($hostgroup['Host'] as $hKey => $host) {
                 if ($host['disabled'] == 0) {
                     $currentHostId = $host['id'];
+                    if (!isset($hostgroupHostStatus[$host['uuid']])) {
+                        $hostgroupHostStatus[$host['uuid']] = [
+                            'Hoststatus' => [
+                                'current_state'                 => -1,
+                                'problem_has_been_acknowledged' => null,
+                                'scheduled_downtime_depth'      => null,
+                                'is_flapping'                   => null
+                            ]
+                        ];
+                    }
+
                     $hostgroups[$key]['Host'][$hKey] = array_merge($hostgroups[$key]['Host'][$hKey], $hostgroupHostStatus[$host['uuid']]);
                     if (!empty($servicestatusByHostId)) {
                         foreach ($servicedata as $service) {

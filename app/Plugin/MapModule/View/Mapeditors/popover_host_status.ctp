@@ -37,7 +37,19 @@ $hostInfo = $hoststatus[$uuid]['Host'];
 $hostStatus = $hoststatus[$uuid]['Hoststatus'];
 $stateType = '';
 $cumulativeState = -1;
-$serviceAmount = count($hostStatus['Servicestatus']);
+
+$serviceAmount = 0;
+if (isset($hostStatus['Servicestatus'])) {
+    $serviceAmount = count($hostStatus['Servicestatus']);
+}
+
+if (!isset($hostStatus['current_state'])) {
+    $FakeHoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus(['current_state' => -1]);
+    $hostStatus = $FakeHoststatus->toArray();
+    $hostStatus['current_state'] = $FakeHoststatus->currentState();
+    $hostStatus['perfdata'] = null;
+}
+
 if ($hostStatus['current_state'] == 0) {
     $stateType = 'service';
     $servicestates = [];
@@ -106,12 +118,12 @@ if ($hostStatus['current_state'] == 0) {
             <?php else:
                 ?>
                 <?php if ($serviceAmount > 0):
-                    $stateColor = $this->Status->ServiceStatusColorSimple($cumulativeState);
-                    ?>
-                    <td class="col-md-9 col-xs-9 <?php echo $summaryState['class']; ?>"> <?php echo $summaryState['human_state']; ?></td>
-                <?php else: ?>
-                    <td class="col-md-9 col-xs-9"> <?php echo __('No Summary State possible') ?></td>
-                <?php endif; ?>
+                $stateColor = $this->Status->ServiceStatusColorSimple($cumulativeState);
+                ?>
+                <td class="col-md-9 col-xs-9 <?php echo $summaryState['class']; ?>"> <?php echo $summaryState['human_state']; ?></td>
+            <?php else: ?>
+                <td class="col-md-9 col-xs-9"> <?php echo __('No Summary State possible') ?></td>
+            <?php endif; ?>
             <?php endif; ?>
         </tr>
         <tr>
@@ -132,10 +144,10 @@ if ($hostStatus['current_state'] == 0) {
         <?php
         $i = 0;
         foreach ($hostStatus['Servicestatus'] as $counter => $service) :
-            if(empty($service['Servicestatus'])){
+            if (empty($service['Servicestatus'])) {
                 $service['Servicestatus'] = [
-                        'current_state' => -1,
-                        'output' => ''
+                    'current_state' => -1,
+                    'output'        => ''
                 ];
             }
             if ($i == 10): ?>

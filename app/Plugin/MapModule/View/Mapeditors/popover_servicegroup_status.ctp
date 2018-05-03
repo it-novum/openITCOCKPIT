@@ -31,7 +31,10 @@
  *  \__,_|/ |\__,_/_/\_\   \_/ |_|\___| \_/\_/
  *      |__/
 */
-$servicegroupCumulativeState = Hash::apply($servicegroups['Servicestatus'], '{s}.Servicestatus.current_state', 'max');
+$servicegroupCumulativeState = -1;
+if(!empty($servicegroups['Servicestatus'])){
+    $servicegroupCumulativeState = Hash::apply($servicegroups['Servicestatus'], '{s}.Servicestatus.current_state', 'max');
+}
 $servicegroupStatus = $this->Status->ServiceStatusColorSimple($servicegroupCumulativeState);
 ?>
 <table class="table table-bordered popoverTable" style="padding:1px;">

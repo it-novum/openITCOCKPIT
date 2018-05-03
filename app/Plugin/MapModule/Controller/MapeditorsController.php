@@ -424,6 +424,7 @@ class MapeditorsController extends MapModuleAppController {
             $hostUuids = Hash::extract($uuidsByItemType['host'], '{n}.uuid');
 
             $hoststatus = $this->Mapeditor->getHoststatus($hostUuids, $hoststatusConditions, $servicestatusConditions, $hostFields, $serviceFields);
+
         }
 
         //get the Hostgroupstatus
@@ -532,11 +533,11 @@ class MapeditorsController extends MapModuleAppController {
             $hostUuids = $mapElementUuids['forStatus']['host'];
             $serviceUuids = $mapElementUuids['forStatus']['service'];
             unset($mapElementUuids['forStatus']);
-            $hoststatus = $this->Hoststatus->byUuids($hostUuids, $hostFields, $hoststatusConditions);
+            $hoststatusMap = $this->Hoststatus->byUuids($hostUuids, $hostFields, $hoststatusConditions);
             $hostServicestatus = $this->Servicestatus->byUuids($serviceUuids, $serviceFields, $servicestatusConditions);
 
             $mapElementUuids['status'] = [
-                'hoststatus' => $hoststatus,
+                'hoststatus' => $hoststatusMap,
                 'servicestatus' => $hostServicestatus
             ];
 
@@ -619,6 +620,9 @@ class MapeditorsController extends MapModuleAppController {
 
         $hoststatus = $this->Mapeditor->getHoststatus([$uuid], $hoststatusConditions, $servicestatusConditions, $hostFields, $serviceFields);
         $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
+        if(!isset($hoststatus[$uuid]['Hoststatus'])){
+            $hoststatus[$uuid]['Hoststatus'] = [];
+        }
         $Hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus($hoststatus[$uuid]['Hoststatus'], $UserTime);
         $Hoststatus = $Hoststatus->toArray();
 
@@ -677,6 +681,9 @@ class MapeditorsController extends MapModuleAppController {
         ]);
 
         $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
+        if(empty($servicestatus[$uuid]['Servicestatus'])){
+            $servicestatus[$uuid]['Servicestatus'] = [];
+        }
         $Servicestatus = new \itnovum\openITCOCKPIT\Core\Servicestatus($servicestatus[$uuid]['Servicestatus'], $UserTime);
 
         $servicestatus[$uuid]['Servicestatus'] = $Servicestatus->toArray();
