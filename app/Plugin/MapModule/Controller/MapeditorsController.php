@@ -445,7 +445,17 @@ class MapeditorsController extends MapModuleAppController {
             $servicegroups = $this->Mapeditor->getServicegroupInfoByUuids($servicegroupUuids);
             $serviceUuids = Hash::extract($servicegroups, '{n}.Service.{n}.uuid');
             $servicestatus = $this->Servicestatus->byUuids($serviceUuids, $serviceFields, $servicestatusConditions);
+            $servicedata = $this->Mapeditor->getServiceInfoByUuids($serviceUuids);
             if (!empty($servicestatus)) {
+                foreach ($servicedata as $key => $service) {
+                    $serviceuuid = $service['Service']['uuid'];
+                    if (isset($servicestatus[$serviceuuid])) {
+                        if ($service['Service']['disabled'] == 0) {
+                            $servicedata[$key] = array_merge($servicedata[$key], $servicestatus[$serviceuuid]);
+                        }
+                    }
+                }
+                $servicestatus = Hash::combine($servicedata, '{n}.Service.uuid', '{n}');
                 $servicegroups['Servicestatus'] = $servicestatus;
             }
         }
@@ -480,6 +490,7 @@ class MapeditorsController extends MapModuleAppController {
                 }
             }
             $servicestatus = Hash::combine($servicedata, '{n}.Service.uuid', '{n}');
+            debug($servicestatus);
         }
 
         if (!empty($mapElements['map_gadgets'])) {
@@ -532,7 +543,7 @@ class MapeditorsController extends MapModuleAppController {
 
             $mapstatus = $mapElementUuids;
         }
-
+debug($servicestatus);
         $this->set(compact([
             'map',
             'mapElements',
