@@ -121,6 +121,9 @@ class MapstatusHelper extends AppHelper {
                 $servicestatusOriginal = $this->servicestatus;
             }
             foreach ($hostServiceStatus as $uuid => $hss) {
+                if(!isset($hss['Servicestatus'])){
+                    $hss['Servicestatus'] = [];
+                }
                 $this->servicestatus[$uuid] = $hss['Servicestatus'];
                 array_push($this->servicestatus[$uuid], $hss['Service']);
             }
@@ -132,6 +135,9 @@ class MapstatusHelper extends AppHelper {
 
             $numberOfAck = 0;
             foreach ($hostServiceStates as $key => $value) {
+                if(!isset($value['problem_has_been_acknowledged'])){
+                    $value['problem_has_been_acknowledged'] = 0;
+                }
                 if ($value['problem_has_been_acknowledged'] == 1) {
                     $numberOfAck++;
                 }
