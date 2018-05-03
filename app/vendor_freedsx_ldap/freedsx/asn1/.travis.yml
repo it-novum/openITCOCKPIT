@@ -1,0 +1,17 @@
+language: php
+
+php:
+  - 7.1
+  - 7.2
+
+cache:
+  directories:
+    - $HOME/.composer/cache/files
+
+before_install:
+  - composer self-update
+
+install: composer update $COMPOSER_FLAGS --prefer-dist
+
+script:
+  - bin/phpspec run --format=pretty --no-interaction
