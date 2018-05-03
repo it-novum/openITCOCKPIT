@@ -490,7 +490,6 @@ class MapeditorsController extends MapModuleAppController {
                 }
             }
             $servicestatus = Hash::combine($servicedata, '{n}.Service.uuid', '{n}');
-            debug($servicestatus);
         }
 
         if (!empty($mapElements['map_gadgets'])) {
@@ -543,7 +542,7 @@ class MapeditorsController extends MapModuleAppController {
 
             $mapstatus = $mapElementUuids;
         }
-debug($servicestatus);
+        
         $this->set(compact([
             'map',
             'mapElements',
