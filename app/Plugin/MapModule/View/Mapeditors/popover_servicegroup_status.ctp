@@ -24,15 +24,18 @@
 //	confirmation.
 
 /*
- *         _                    _               
+ *         _                    _
  *   __ _ (_) __ ___  __ __   _(_) _____      __
  *  / _` || |/ _` \ \/ / \ \ / / |/ _ \ \ /\ / /
- * | (_| || | (_| |>  <   \ V /| |  __/\ V  V / 
- *  \__,_|/ |\__,_/_/\_\   \_/ |_|\___| \_/\_/  
- *      |__/                                    
+ * | (_| || | (_| |>  <   \ V /| |  __/\ V  V /
+ *  \__,_|/ |\__,_/_/\_\   \_/ |_|\___| \_/\_/
+ *      |__/
 */
-$servicegroupStatus = $this->Mapstatus->servicegroupstatus($uuid);
-
+$servicegroupCumulativeState = -1;
+if(!empty($servicegroups['Servicestatus'])){
+    $servicegroupCumulativeState = Hash::apply($servicegroups['Servicestatus'], '{s}.Servicestatus.current_state', 'max');
+}
+$servicegroupStatus = $this->Status->ServiceStatusColorSimple($servicegroupCumulativeState);
 ?>
 <table class="table table-bordered popoverTable" style="padding:1px;">
     <tr>
@@ -48,6 +51,6 @@ $servicegroupStatus = $this->Mapstatus->servicegroupstatus($uuid);
     </tr>
     <tr>
         <td class="col-md-3 col-xs-3"><?php echo __('Summary State'); ?></td>
-        <td class="col-md-9 col-xs-9 <?php echo $this->Status->ServiceStatusColorSimple($servicegroupStatus['state'])['class']; ?> "><?php echo $servicegroupStatus['human_state']; ?></td>
+        <td class="col-md-9 col-xs-9 <?php echo $servicegroupStatus['class']; ?> "><?php echo $servicegroupStatus['human_state']; ?></td>
     </tr>
 </table>

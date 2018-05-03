@@ -22,6 +22,12 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+use itnovum\openITCOCKPIT\Core\HostConditions;
+use itnovum\openITCOCKPIT\Core\HoststatusConditions;
+use itnovum\openITCOCKPIT\Core\HoststatusFields;
+use itnovum\openITCOCKPIT\Core\ServicestatusConditions;
+use itnovum\openITCOCKPIT\Core\ServicestatusFields;
+use itnovum\openITCOCKPIT\Core\Views\UserTime;
 
 
 /**
@@ -55,6 +61,7 @@ class MapeditorsController extends MapModuleAppController {
         'MapModule.Map',
         MONITORING_OBJECTS,
         MONITORING_HOSTSTATUS,
+        MONITORING_SERVICESTATUS
     ];
     public $helpers = [
         'MapModule.Mapstatus',
@@ -384,86 +391,106 @@ class MapeditorsController extends MapModuleAppController {
             $mapIds = Hash::extract($mapElements['map_items'], '{n}.SubMap.id');
         }
 
+        $hoststatusConditions = new HoststatusConditions($this->DbBackend);
+        $servicestatusConditions = new ServicestatusConditions($this->DbBackend);
 
         //get the Hoststatus
         if (!empty($uuidsByItemType['host'])) {
-            $hoststatusFields = [
-                'Host.name',
-                'Host.description',
-                'Host.address',
-                'Hoststatus.output',
-                'Hoststatus.long_output',
-                'Hoststatus.perfdata',
-                'Hoststatus.last_check',
-                'Hoststatus.next_check',
-                'Hoststatus.last_state_change',
-                'Hoststatus.problem_has_been_acknowledged',
-                'Hoststatus.scheduled_downtime_depth',
-                'Hoststatus.is_flapping',
-                'Hoststatus.current_check_attempt',
-                'Hoststatus.max_check_attempts',
-            ];
+            $hostFields = new HoststatusFields($this->DbBackend);
+            $serviceFields = new ServicestatusFields($this->DbBackend);
 
-            $servicestatusFields = [
-                'Objects.name2',
-                'Servicestatus.problem_has_been_acknowledged',
-                'Servicestatus.scheduled_downtime_depth',
-                'Servicestatus.is_flapping',
-                'Servicestatus.perfdata',
-                'Servicestatus.output',
-                'Service.name', // may obsolete .. just mapstatushelper is using that
-                'Servicetemplate.name', // may obsolete .. just mapstatushelper is using that
-                'IF(Service.name IS NULL, Servicetemplate.name, Service.name) AS ServiceName',
-                'IF(Service.name IS NULL, Servicetemplate.description, Service.description) AS ServiceDescription',
-            ];
+            $hostFields
+                ->output()
+                ->longOutput()
+                ->perfdata()
+                ->lastCheck()
+                ->nextCheck()
+                ->lastStateChange()
+                ->problemHasBeenAcknowledged()
+                ->scheduledDowntimeDepth()
+                ->isFlapping()
+                ->currentCheckAttempt()
+                ->maxCheckAttempts()
+                ->currentState();
+
+            $serviceFields
+                ->problemHasBeenAcknowledged()
+                ->scheduledDowntimeDepth()
+                ->isFlapping()
+                ->perfdata()
+                ->output()
+                ->currentState();
+
             $hostUuids = Hash::extract($uuidsByItemType['host'], '{n}.uuid');
-            $hoststatus = $this->Mapeditor->getHoststatusByUuid($hostUuids, $hoststatusFields);
-            foreach ($hoststatus as $key => $value) {
-                $currentHostUuid = $hoststatus[$key]['Objects']['name1'];
-                $hoststatus[$key]['Hoststatus']['Servicestatus'] = $this->Mapeditor->getServicestatusByHostUuid($currentHostUuid, $servicestatusFields);
-            }
+
+            $hoststatus = $this->Mapeditor->getHoststatus($hostUuids, $hoststatusConditions, $servicestatusConditions, $hostFields, $serviceFields);
+
         }
 
         //get the Hostgroupstatus
         if (!empty($uuidsByItemType['hostgroup'])) {
-            $hostFields = [
-                'Hoststatus.current_state',
-                'Hoststatus.problem_has_been_acknowledged',
-                'Hoststatus.scheduled_downtime_depth',
-                'Hoststatus.is_flapping',
-            ];
-            $serviceFields = [
-                'Servicestatus.current_state',
-            ];
-            $hostgroups = $this->Mapeditor->getHostgroupstatusByUuid(Hash::extract($uuidsByItemType['hostgroup'], '{n}.uuid'), $hostFields, $serviceFields);
+
+            $hoststatusConditions = new HoststatusConditions($this->DbBackend);
+            $servicestatusConditions = new ServicestatusConditions($this->DbBackend);
+            $hostFields = new HoststatusFields($this->DbBackend);
+            $serviceFields = new ServicestatusFields($this->DbBackend);
+            $hostgroupuuids = Hash::extract($uuidsByItemType['hostgroup'], '{n}.uuid');
+            $hostgroups = $this->Mapeditor->getHostgroupstatus($hostgroupuuids, $hoststatusConditions, $servicestatusConditions, $hostFields, $serviceFields);
         }
 
         //get the Servicegroupstatus
         if (!empty($uuidsByItemType['servicegroup'])) {
+            $serviceFields = new ServicestatusFields($this->DbBackend);
+            $serviceFields->currentState();
             $servicegroupUuids = Hash::extract($uuidsByItemType['servicegroup'], '{n}.uuid');
-            $servicegroups = $this->Mapeditor->getServicegroupstatusByUuid($servicegroupUuids);
+            $servicegroups = $this->Mapeditor->getServicegroupInfoByUuids($servicegroupUuids);
+            $serviceUuids = Hash::extract($servicegroups, '{n}.Service.{n}.uuid');
+            $servicestatus = $this->Servicestatus->byUuids($serviceUuids, $serviceFields, $servicestatusConditions);
+            $servicedata = $this->Mapeditor->getServiceInfoByUuids($serviceUuids);
+            if (!empty($servicestatus)) {
+                foreach ($servicedata as $key => $service) {
+                    $serviceuuid = $service['Service']['uuid'];
+                    if (isset($servicestatus[$serviceuuid])) {
+                        if ($service['Service']['disabled'] == 0) {
+                            $servicedata[$key] = array_merge($servicedata[$key], $servicestatus[$serviceuuid]);
+                        }
+                    }
+                }
+                $servicestatus = Hash::combine($servicedata, '{n}.Service.uuid', '{n}');
+                $servicegroups['Servicestatus'] = $servicestatus;
+            }
         }
 
         //get the Servicestatus
         if (!empty($uuidsByItemType['service'])) {
-            $fields = [
-                'Objects.name2',
-                'Service.name', // may obsolete .. just mapstatushelper is using that
-                'Servicetemplate.name', // may obsolete .. just mapstatushelper is using that
-                'Servicestatus.problem_has_been_acknowledged',
-                'Servicestatus.scheduled_downtime_depth',
-                'Servicestatus.is_flapping',
-                'Servicestatus.perfdata',
-                'Servicestatus.output',
-                'Servicestatus.long_output',
-                'Servicestatus.current_check_attempt',
-                'Servicestatus.max_check_attempts',
-                'Servicestatus.last_check',
-                'Servicestatus.next_check',
-                'Servicestatus.last_state_change',
-            ];
+            $serviceFields = new ServicestatusFields($this->DbBackend);
+            $serviceFields
+                ->currentState()
+                ->problemHasBeenAcknowledged()
+                ->scheduledDowntimeDepth()
+                ->isFlapping()
+                ->perfdata()
+                ->output()
+                ->longOutput()
+                ->currentCheckAttempt()
+                ->maxCheckAttempts()
+                ->lastCheck()
+                ->nextCheck()
+                ->lastStateChange();
+
             $serviceUuids = Hash::extract($uuidsByItemType['service'], '{n}.uuid');
-            $servicestatus = $this->Mapeditor->getServicestatusByUuid($serviceUuids, $fields);
+            $servicestatus = $this->Servicestatus->byUuids($serviceUuids, $serviceFields, $servicestatusConditions);
+            $servicedata = $this->Mapeditor->getServiceInfoByUuids($serviceUuids);
+
+            foreach ($servicedata as $key => $service) {
+                $serviceuuid = $service['Service']['uuid'];
+                if (isset($servicestatus[$serviceuuid])) {
+                    if ($service['Service']['disabled'] == 0) {
+                        $servicedata[$key] = array_merge($servicedata[$key], $servicestatus[$serviceuuid]);
+                    }
+                }
+            }
+            $servicestatus = Hash::combine($servicedata, '{n}.Service.uuid', '{n}');
         }
 
         if (!empty($mapElements['map_gadgets'])) {
@@ -487,12 +514,36 @@ class MapeditorsController extends MapModuleAppController {
             $this->Frontend->setJson('map_gadgets', Hash::Extract($mapElements['map_gadgets'], '{n}.Mapgadget'));
         }
 
-        if (!empty($mapIds)) {
-            foreach ($mapIds as $id) {
-                $mapstatus[$id] = $this->Mapeditor->mapStatus($id);
-            }
-        }
 
+        if (!empty($mapIds)) {
+            $mapElementUuids = $this->Mapeditor->getMapElementUuids($mapIds);
+            $hostFields = new HoststatusFields($this->DbBackend);
+            $serviceFields = new ServicestatusFields($this->DbBackend);
+
+            $hostFields
+                ->problemHasBeenAcknowledged()
+                ->scheduledDowntimeDepth()
+                ->isFlapping()
+                ->currentState();
+
+            $serviceFields
+                ->problemHasBeenAcknowledged()
+                ->currentState();
+
+            $hostUuids = $mapElementUuids['forStatus']['host'];
+            $serviceUuids = $mapElementUuids['forStatus']['service'];
+            unset($mapElementUuids['forStatus']);
+            $hoststatusMap = $this->Hoststatus->byUuids($hostUuids, $hostFields, $hoststatusConditions);
+            $hostServicestatus = $this->Servicestatus->byUuids($serviceUuids, $serviceFields, $servicestatusConditions);
+
+            $mapElementUuids['status'] = [
+                'hoststatus' => $hoststatusMap,
+                'servicestatus' => $hostServicestatus
+            ];
+
+            $mapstatus = $mapElementUuids;
+        }
+        
         $this->set(compact([
             'map',
             'mapElements',
@@ -540,101 +591,133 @@ class MapeditorsController extends MapModuleAppController {
     }
 
     public function popoverHostStatus($uuid = null) {
-        $hoststatusFields = [
-            'Host.name',
-            'Host.description',
-            'Host.address',
-            'Hoststatus.output',
-            'Hoststatus.long_output',
-            'Hoststatus.perfdata',
-            'Hoststatus.last_check',
-            'Hoststatus.next_check',
-            'Hoststatus.last_state_change',
-            'Hoststatus.problem_has_been_acknowledged',
-            'Hoststatus.scheduled_downtime_depth',
-            'Hoststatus.is_flapping',
-            'Hoststatus.current_check_attempt',
-            'Hoststatus.max_check_attempts',
-        ];
-        $hoststatus = $this->Mapeditor->getHoststatusByUuid([$uuid], $hoststatusFields);
+        $hoststatusConditions = new HoststatusConditions($this->DbBackend);
+        $servicestatusConditions = new ServicestatusConditions($this->DbBackend);
+        $hostFields = new HoststatusFields($this->DbBackend);
+        $serviceFields = new ServicestatusFields($this->DbBackend);
 
-        $servicestatusFields = [
-            'Objects.name2',
-            'Servicestatus.problem_has_been_acknowledged',
-            'Servicestatus.scheduled_downtime_depth',
-            'Servicestatus.is_flapping',
-            'Servicestatus.perfdata',
-            'Servicestatus.output',
-            'Service.name', // may obsolete .. just mapstatushelper is using that
-            'Servicetemplate.name', // may obsolete .. just mapstatushelper is using that
-            'IF(Service.name IS NULL, Servicetemplate.name, Service.name) AS ServiceName',
-            'IF(Service.name IS NULL, Servicetemplate.description, Service.description) AS ServiceDescription',
-        ];
-        $servicestatus = $this->Mapeditor->getServicestatusByHostUuid($uuid, $servicestatusFields);
-        $this->set(compact(['uuid', 'hoststatus', 'servicestatus']));
+        $hostFields
+            ->output()
+            ->longOutput()
+            ->perfdata()
+            ->lastCheck()
+            ->nextCheck()
+            ->lastStateChange()
+            ->problemHasBeenAcknowledged()
+            ->scheduledDowntimeDepth()
+            ->isFlapping()
+            ->currentCheckAttempt()
+            ->maxCheckAttempts()
+            ->currentState();
+
+        $serviceFields
+            ->problemHasBeenAcknowledged()
+            ->scheduledDowntimeDepth()
+            ->isFlapping()
+            ->perfdata()
+            ->output()
+            ->currentState();
+
+        $hoststatus = $this->Mapeditor->getHoststatus([$uuid], $hoststatusConditions, $servicestatusConditions, $hostFields, $serviceFields);
+        $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
+        if(!isset($hoststatus[$uuid]['Hoststatus'])){
+            $hoststatus[$uuid]['Hoststatus'] = [];
+        }
+        $Hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus($hoststatus[$uuid]['Hoststatus'], $UserTime);
+        $Hoststatus = $Hoststatus->toArray();
+
+        $this->set(compact(['uuid', 'hoststatus', 'Hoststatus']));
     }
 
     public function popoverServicegroupStatus($uuid = null) {
-        $fields = [];
-        $servicegroups = $this->Mapeditor->getServicegroupstatusByUuid($uuid, $fields);
+        $servicestatusConditions = new ServicestatusConditions($this->DbBackend);
+        $serviceFields = new ServicestatusFields($this->DbBackend);
+        $serviceFields->currentState();
+        $servicegroups = $this->Mapeditor->getServicegroupstatus([$uuid], $servicestatusConditions, $serviceFields);
         $this->set(compact(['uuid', 'servicegroups']));
     }
 
     public function popoverHostgroupStatus($uuid = null) {
-        $hostFields = [
-            'Hoststatus.current_state',
-            'Hoststatus.problem_has_been_acknowledged',
-            'Hoststatus.scheduled_downtime_depth',
-            'Hoststatus.is_flapping',
-        ];
-        $serviceFields = [
-            'Servicestatus.current_state',
-        ];
-        $hostgroups = $this->Mapeditor->getHostgroupstatusByUuid($uuid, $hostFields, $serviceFields);
+        $hoststatusConditions = new HoststatusConditions($this->DbBackend);
+        $servicestatusConditions = new ServicestatusConditions($this->DbBackend);
+        $hostFields = new HoststatusFields($this->DbBackend);
+        $serviceFields = new ServicestatusFields($this->DbBackend);
+        $hostgroups = $this->Mapeditor->getHostgroupstatus([$uuid], $hoststatusConditions, $servicestatusConditions, $hostFields, $serviceFields);
         $this->set(compact(['hostgroups']));
     }
 
 
     public function popoverServiceStatus($uuid = null) {
-        $fields = [
-            'Host.name',
-            'Objects.name2',
-            'Service.name', // may obsolete .. just mapstatushelper is using that
-            'Servicetemplate.name', // may obsolete .. just mapstatushelper is using that
-            'Servicestatus.problem_has_been_acknowledged',
-            'Servicestatus.scheduled_downtime_depth',
-            'Servicestatus.is_flapping',
-            'Servicestatus.perfdata',
-            'Servicestatus.output',
-            'Servicestatus.long_output',
-            'Servicestatus.current_check_attempt',
-            'Servicestatus.max_check_attempts',
-            'Servicestatus.last_check',
-            'Servicestatus.next_check',
-            'Servicestatus.last_state_change',
-            'IF(Service.name IS NULL, Servicetemplate.name, Service.name) AS ServiceName',
-            'IF(Service.name IS NULL, Servicetemplate.description, Service.description) AS ServiceDescription',
-        ];
+        $servicestatusConditions = new ServicestatusConditions($this->DbBackend);
+        $serviceFields = new ServicestatusFields($this->DbBackend);
+        $serviceFields
+            ->currentState()
+            ->problemHasBeenAcknowledged()
+            ->scheduledDowntimeDepth()
+            ->isFlapping()
+            ->perfdata()
+            ->output()
+            ->longOutput()
+            ->currentCheckAttempt()
+            ->maxCheckAttempts()
+            ->lastCheck()
+            ->nextCheck()
+            ->lastStateChange();
+        $servicestatus = $this->Mapeditor->getServicestatus([$uuid], $servicestatusConditions, $serviceFields);
 
-        $servicestatus = $this->Mapeditor->getServicestatusByUuid($uuid, $fields);
-        $serviceinfo = $serviceinfo = $this->Service->find('all', [
+        $serviceinfo = $this->Service->find('first', [
+            //'recursive' => -1,
             'conditions' => [
                 'Service.uuid' => $uuid,
             ],
-            'fields'     => [
-                'Host.name',
-                'Service.name',
-                'Servicetemplate.name',
-                'IF(Service.name IS NULL, Servicetemplate.name, Service.name) AS ServiceName',
-                'IF(Service.name IS NULL, Servicetemplate.description, Service.description) AS ServiceDescription',
+            'contain'    => [
+                'Host'            => [
+                    'fields' => ['Host.name'],
+                ],
             ],
+            'fields' => [
+                'Service.id'
+            ]
         ]);
 
+        $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
+        if(empty($servicestatus[$uuid]['Servicestatus'])){
+            $servicestatus[$uuid]['Servicestatus'] = [];
+        }
+        $Servicestatus = new \itnovum\openITCOCKPIT\Core\Servicestatus($servicestatus[$uuid]['Servicestatus'], $UserTime);
+
+        $servicestatus[$uuid]['Servicestatus'] = $Servicestatus->toArray();
         $this->set(compact('uuid', 'servicestatus', 'serviceinfo'));
     }
 
     public function popoverMapStatus($id) {
-        $mapstatus = $this->Mapeditor->mapStatus($id);
+        $mapElementUuids = $this->Mapeditor->getMapElementUuids($id);
+        $hoststatusConditions = new HoststatusConditions($this->DbBackend);
+        $hostFields = new HoststatusFields($this->DbBackend);
+        $serviceFields = new ServicestatusFields($this->DbBackend);
+
+        $hostFields
+            ->problemHasBeenAcknowledged()
+            ->scheduledDowntimeDepth()
+            ->isFlapping()
+            ->currentState();
+
+        $serviceFields
+            ->problemHasBeenAcknowledged()
+            ->currentState();
+
+        $hostUuids = $mapElementUuids['forStatus']['host'];
+        $serviceUuids = $mapElementUuids['forStatus']['service'];
+        unset($mapElementUuids['forStatus']);
+        $hoststatus = $this->Hoststatus->byUuids($hostUuids, $hostFields, $hoststatusConditions);
+        $hostServicestatus = $this->Servicestatus->byUuids($serviceUuids, $serviceFields);
+
+        $mapElementUuids['status'] = [
+            'hoststatus' => $hoststatus,
+            'servicestatus' => $hostServicestatus
+        ];
+
+        $mapstatus = $mapElementUuids;
         $mapinfo = $this->Map->find('first', [
             'recursive'  => -1,
             'conditions' => [
@@ -646,8 +729,8 @@ class MapeditorsController extends MapModuleAppController {
                 'Map.title',
             ],
         ]);
-        $mapstatus[$id] = $mapstatus;
-        $this->set(compact('mapstatus', 'mapinfo'));
+
+        $this->set(compact('id','mapstatus', 'mapinfo'));
     }
 
 
