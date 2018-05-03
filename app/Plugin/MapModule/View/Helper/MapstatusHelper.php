@@ -47,8 +47,10 @@ class MapstatusHelper extends AppHelper {
             $servicestatus = $this->_View->viewVars['servicestatus'];
             if (!empty($servicestatus)) {
                 foreach ($servicestatus as $uuid => $ss) {
-                    $this->servicestatus[$uuid] = $ss['Servicestatus'];
-                    array_push($this->servicestatus[$uuid], $ss['Service']);
+                    if(!empty($ss['Servicestatus'])) {
+                        $this->servicestatus[$uuid] = $ss['Servicestatus'];
+                        array_push($this->servicestatus[$uuid], $ss['Service']);
+                    }
                 }
             }
         }
