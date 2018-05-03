@@ -64,7 +64,6 @@ use itnovum\openITCOCKPIT\Core\HostSharingPermissions;
 class HostsController extends AppController {
     public $layout = 'Admin.default';
     public $components = [
-        'Paginator',
         'ListFilter.ListFilter',
         'RequestHandler',
         'CustomValidationErrors',
@@ -2264,12 +2263,21 @@ class HostsController extends AppController {
                 'Host.host_url',
             ],
             'contain'    => [
-                'Container'
+                'Container',
+                'Hosttemplate' => [
+                    'fields' => [
+                        'Hosttemplate.host_url'
+                    ]
+                ]
             ],
             'conditions' => [
                 'Host.id' => $id
             ]
         ]);
+
+        if($rawHost['Host']['host_url'] === '' || $rawHost['Host']['host_url'] === null){
+            $rawHost['Host']['host_url'] = $rawHost['Hosttemplate']['host_url'];
+        }
 
         $containerIdsToCheck = Hash::extract($rawHost, 'Container.{n}.HostsToContainer.container_id');
         $containerIdsToCheck[] = $rawHost['Host']['container_id'];
@@ -2389,7 +2397,7 @@ class HostsController extends AppController {
         $HoststatusFields = new HoststatusFields($this->DbBackend);
         $HoststatusFields->wildcard();
         $HoststatusConditions = new HoststatusConditions($this->DbBackend);
-        $HoststatusConditions->hostsDownAndUnreachable();
+        //$HoststatusConditions->hostsDownAndUnreachable();
 
         $hoststatus = $this->Hoststatus->byUuid($host['Host']['uuid'], $HoststatusFields);
         if (empty($hoststatus)) {

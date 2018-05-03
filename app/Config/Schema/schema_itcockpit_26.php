@@ -1258,7 +1258,7 @@ class AppSchema extends CakeSchema
         'task'            => ['type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
         'plugin'          => ['type' => 'string', 'null' => false, 'default' => 'Core', 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
         'interval'        => ['type' => 'integer', 'default' => null],
-        //'enabled' => array('type' => 'boolean', 'length' => 1, 'default' => 1, 'null' => false),
+        'enabled'         => ['type' => 'boolean', 'length' => 1, 'default' => 1, 'null' => false],
         'indexes'         => [
             'PRIMARY' => ['column' => 'id', 'unique' => 1],
         ],
@@ -1504,7 +1504,7 @@ class AppSchema extends CakeSchema
         'show_label'        => ['type' => 'boolean', 'null' => false, 'default' => '0'],
         'group_by_host'     => ['type' => 'boolean', 'null' => false, 'default' => '0'],
         'font_size'         => ['type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
-        'recursive'         => ['type' => 'integer', 'null' => false, 'default' => '0'],
+        'recursive'         => ['type' => 'boolean', 'null' => false, 'default' => '0'],
         'created'           => ['type' => 'datetime', 'null' => false, 'default' => null],
         'modified'          => ['type' => 'datetime', 'null' => false, 'default' => null],
         'indexes'           => [
@@ -1645,6 +1645,18 @@ class AppSchema extends CakeSchema
             'PRIMARY'      => ['column' => 'id', 'unique' => 1],
             'instantreport_id' => ['column' => 'instantreport_id', 'unique' => 0],
             'user_id' => ['column' => 'user_id', 'unique' => 0],
+        ],
+        'tableParameters' => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB'],
+    ];
+
+    public $apikeys = [
+        'id'              => ['type' => 'integer', 'null' => false, 'key' => 'primary'],
+        'user_id'         => ['type' => 'integer', 'null' => false],
+        'apikey'          => ['type' => 'string', 'null' => false, 'default' => null, 'length' => 255, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
+        'description'     => ['type' => 'string', 'null' => true, 'default' => null, 'length' => 255, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
+        'indexes'         => [
+            'PRIMARY'          => ['column' => 'id', 'unique' => 1],
+            'apikey'           => ['column' => ['apikey', 'user_id'], 'unique' => 0]
         ],
         'tableParameters' => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB'],
     ];

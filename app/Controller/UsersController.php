@@ -39,7 +39,6 @@ class UsersController extends AppController
         'ContainerUserMembership',
     ];
     public $components = [
-        'Paginator',
         'ListFilter.ListFilter',
         'Ldap',
     ];
@@ -395,6 +394,7 @@ class UsersController extends AppController
         $systemsettings = $this->Systemsetting->findAsArraySection('FRONTEND');
 
         $this->set(compact(['usersForSelect', 'systemsettings']));
+        $this->set('_serialize', ['usersForSelect']);
     }
 
     public function resetPassword($id = null)

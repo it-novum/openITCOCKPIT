@@ -28,7 +28,7 @@ class CommandsController extends AppController
 {
     public $uses = ['Command', 'Commandargument', 'Macro', 'UUID'];
     public $layout = 'Admin.default';
-    public $components = ['Paginator', 'ListFilter.ListFilter', 'RequestHandler'];
+    public $components = ['ListFilter.ListFilter', 'RequestHandler'];
     public $helpers = ['ListFilter.ListFilter'];
 
     /**

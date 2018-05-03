@@ -37,10 +37,12 @@ $config = [
                 'user_timezone',
                 'version_check',
                 'menustats',
+                'statuscount',
                 'menu',
                 'websocket_configuration',
                 'export',
                 'not_found',
+                'forbidden',
                 'nested_list',
                 'executing',
                 'acknowledge_service',
@@ -63,7 +65,11 @@ $config = [
                 'enable_service_flap_detection',
                 'send_service_notification',
                 'enable_service_notifications',
-                'disable_service_notifications'
+                'disable_service_notifications',
+                'getPieChart'
+            ],
+            'Automaps'         => [
+                'icon'
             ],
             'Commands'         => [
                 'sortByCommandType',
@@ -88,6 +94,10 @@ $config = [
             'Profile'          => [
                 'edit',
                 'deleteImage',
+                'apikey',
+                'edit_apikey',
+                'delete_apikey',
+                'create_apikey'
             ],
             'Proxy'            => [
                 'getSettings',
@@ -108,7 +118,8 @@ $config = [
                 'grapherZoom',
                 'grapherZoomTemplate',
                 'createGrapherErrorPng',
-                'icon'
+                'icon',
+                'details'
             ],
             'Statusmaps'       => [
                 'getHostsAndConnections',
@@ -255,15 +266,16 @@ $config = [
                 'add'   => ['loadElementsByContainerId'],
                 'edit'  => ['loadElementsByContainerId'],
             ],
-            'Servicegroups'         => [
-                'index'  => ['listToPdf', 'view', 'loadServicegroupsByContainerId'],
-                'add'    => ['loadServices', 'mass_add', 'loadServicetemplates', 'loadContainers'],
-                'edit'   => ['loadServices', 'loadServicetemplates'],
-                'delete' => ['mass_delete'],
+            'Servicegroups' => [
+                'index'  =>     ['listToPdf', 'view', 'loadServicegroupsByContainerId'],
+                'add'    =>     ['loadServices', 'mass_add', 'loadServicetemplates', 'loadContainers'],
+                'edit'   =>     ['loadServices', 'loadServicetemplates'],
+                'delete' =>     ['mass_delete'],
+                'extended' =>   ['loadServicegroupWithServicesById']
             ],
             'Services'              => [
                 'deactivate'  => ['mass_deactivate'],
-                'index'       => ['serviceByHostId', 'listToPdf', 'loadServices', 'view', 'loadServicesByContainerId', 'loadServicesByString','getSelectedServices'],
+                'index'       => ['serviceByHostId', 'listToPdf', 'loadServices', 'view', 'loadServicesByContainerId', 'loadServicesByString', 'getSelectedServices'],
                 'browser'     => ['servicesByHostId', 'longOutputByUuid'],
                 'add'         => ['loadContactsAndContactgroups', 'loadParametersByCommandId', 'loadNagParametersByCommandId', 'loadArgumentsAdd', 'loadServicetemplatesArguments', 'loadTemplateData', 'addCustomMacro', 'loadTemplateMacros'],
                 'edit'        => ['loadContactsAndContactgroups', 'loadParametersByCommandId', 'loadNagParametersByCommandId', 'loadArgumentsAdd', 'loadServicetemplatesArguments', 'loadTemplateData', 'addCustomMacro', 'loadTemplateMacros'],
@@ -294,7 +306,7 @@ $config = [
                 'delete'  => ['mass_delete'],
             ],
             'Administrators'        => [
-                'debug' => ['testMail'],
+                'debug' => ['testMail', 'querylog'],
             ],
             'Exports'               => [
                 'index' => ['broadcast', 'launchExport', 'verifyConfig', 'saveInstanceConfigSyncSelection'],

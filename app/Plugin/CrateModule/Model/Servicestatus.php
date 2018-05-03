@@ -212,14 +212,18 @@ class Servicestatus extends CrateModuleAppModel {
 
     /**
      * @param array $MY_RIGHTS
+     * @param bool $includeOkState
      * @return array
      */
-    public function getServicestatusCount($MY_RIGHTS){
+    public function getServicestatusCount($MY_RIGHTS, $includeOkState = false){
         $servicestatusCount = [
             '1' => 0,
             '2' => 0,
             '3' => 0,
         ];
+        if($includeOkState === true){
+            $servicestatusCount['0'] = 0;
+        }
 
         $this->virtualFields = [
             'count' => 'COUNT(DISTINCT Servicestatus.service_description)'
@@ -237,8 +241,7 @@ class Servicestatus extends CrateModuleAppModel {
                 ]
             ],
             'conditions' => [
-                'Service.disabled'                  => false,
-                'Servicestatus.current_state >'     => 0,
+                'Service.disabled'                  => false
             ],
             'array_difference' => [
                 'Host.container_ids' =>
@@ -248,6 +251,10 @@ class Servicestatus extends CrateModuleAppModel {
                 'Servicestatus.current_state',
             ],
         ];
+
+        if($includeOkState === false){
+            $query['conditions']['Servicestatus.current_state >'] = 0;
+        }
 
         $servicestatusCountResult = $this->find('all', $query);
 

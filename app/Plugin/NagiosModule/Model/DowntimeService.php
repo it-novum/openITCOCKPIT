@@ -173,6 +173,8 @@ class DowntimeService extends NagiosModuleAppModel {
                 'DowntimeService.duration',
                 'DowntimeService.was_started',
                 'DowntimeService.was_cancelled',
+                'Host.uuid',
+                'Service.uuid'
             ],
             'joins'      => [
                 [
@@ -181,8 +183,19 @@ class DowntimeService extends NagiosModuleAppModel {
                     'alias'      => 'Objects',
                     'conditions' => 'Objects.object_id = DowntimeService.object_id AND DowntimeService.downtime_type = 1' //Downtime.downtime_type = 1 Service downtime
                 ],
+                [
+                    'table'      => 'services',
+                    'type'       => 'INNER',
+                    'alias'      => 'Service',
+                    'conditions' => 'Service.uuid = Objects.name2',
+                ],
+                [
+                    'table'      => 'hosts',
+                    'type'       => 'INNER',
+                    'alias'      => 'Host',
+                    'conditions' => 'Host.id = Service.host_id'
+                ],
             ],
-            'order'      => $Conditions->getOrder(),
             'conditions' => [
                 'OR' => [
                     '"' . date('Y-m-d H:i:s', $Conditions->getFrom()) . '"
@@ -193,13 +206,20 @@ class DowntimeService extends NagiosModuleAppModel {
                                         AND DowntimeService.scheduled_end_time',
                     'DowntimeService.scheduled_start_time BETWEEN "' . date('Y-m-d H:i:s', $Conditions->getFrom()) . '"
                                         AND "' . date('Y-m-d H:i:s', $Conditions->getTo()) . '"',
-                ]
-            ]
+                ],
+                'DowntimeService.was_cancelled' => 0
+            ],
+            'order'      => $Conditions->getOrder()
         ];
+
+        if ($Conditions->hasHostUuids()) {
+            $query['conditions']['Objects.name1'] = $Conditions->getHostUuids();
+        }
 
         if ($Conditions->hasServiceUuids()) {
             $query['conditions']['Objects.name2'] = $Conditions->getServiceUuids();
         }
+
 
         return $query;
     }

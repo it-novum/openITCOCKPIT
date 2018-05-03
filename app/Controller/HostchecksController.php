@@ -39,7 +39,7 @@ class HostchecksController extends AppController {
         'Documentation'
     ];
 
-    public $components = ['Paginator', 'RequestHandler'];
+    public $components = ['RequestHandler'];
     public $helpers = ['Status', 'Monitoring'];
     public $layout = 'Admin.default';
 

@@ -24,6 +24,7 @@
 //	confirmation.
 
 use itnovum\openITCOCKPIT\Core\ServiceConditions;
+use itnovum\openITCOCKPIT\Core\ValueObjects\LastDeletedId;
 
 class Service extends AppModel {
 
@@ -321,6 +322,11 @@ class Service extends AppModel {
             ],
         ],
     ];
+
+    /**
+     * @var null|LastDeletedId
+     */
+    private $LastDeletedId = null;
 
     function __construct($id = false, $table = null, $ds = null, $useDynamicAssociations = true) {
         parent::__construct($id, $table, $ds, $useDynamicAssociations);
@@ -1567,8 +1573,8 @@ class Service extends AppModel {
      */
     public function getServicesForAngular(ServiceConditions $ServiceConditions, $selected = []) {
         $query = [
-            'recursive'  => -1,
-            'joins'      => [
+            'recursive' => -1,
+            'joins'     => [
                 [
                     'table'      => 'servicetemplates',
                     'alias'      => 'Servicetemplate',
@@ -1594,14 +1600,12 @@ class Service extends AppModel {
                     ],
                 ],
             ],
-            'conditions' => [
-                'OR' => $ServiceConditions->getConditions()
-            ],
-            'order'      => [
+
+            'order'  => [
                 'Host.name'                                                    => 'ASC',
                 'IF(Service.name IS NULL, Servicetemplate.name, Service.name)' => 'ASC'
             ],
-            'fields'     => [
+            'fields' => [
                 'Service.id',
                 'Service.name',
                 'Host.id',
@@ -1609,19 +1613,41 @@ class Service extends AppModel {
                 'Servicetemplate.name'
 
             ],
-            'group'      => [
+            'group'  => [
                 'Service.id'
             ],
-            'limit'      => self::ITN_AJAX_LIMIT
+            'limit'  => self::ITN_AJAX_LIMIT
         ];
 
-        if ($ServiceConditions->hasNotConditions()) {
-            $query['conditions']['NOT'] = $ServiceConditions->getNotConditions();
+        if (!empty($ServiceConditions->getConditions())) {
+            $query['conditions']['OR'] = $ServiceConditions->getConditions();
         }
+
+        if (is_array($selected)) {
+            $selected = array_filter($selected);
+        }
+        if (!empty($selected)) {
+            $query['conditions']['NOT'] = ['Service.id' => $selected];
+        }
+
+        if ($ServiceConditions->hasNotConditions()) {
+            if (!empty($query['conditions']['NOT'])) {
+                $query['conditions']['NOT'] = array_merge($query['conditions']['NOT'], $ServiceConditions->getNotConditions());
+            } else {
+                $query['conditions']['NOT'] = $ServiceConditions->getNotConditions();
+            }
+
+        }
+
         $servicesWithLimit = $this->find('all', $query);
         $servicesWithLimit = Hash::combine($servicesWithLimit, '{n}.Service.id', '{n}');
 
         $selectedServices = [];
+
+        if (is_array($selected)) {
+            $selected = array_filter($selected);
+        }
+
         if (!empty($selected)) {
             $query = [
                 'recursive'  => -1,
@@ -1747,5 +1773,70 @@ class Service extends AppModel {
                 'NotifyPeriod',
             ]
         ];
+    }
+
+    /**
+     * Updates multiple model records based on a set of conditions.
+     *
+     * @param array $fields Set of fields and values, indexed by fields.
+     *    Fields are treated as SQL snippets, to insert literal values manually escape your data.
+     * @param mixed $conditions Conditions to match, true for all records
+     * @return bool True on success, false on failure
+     * @link https://book.cakephp.org/2.0/en/models/saving-your-data.html#model-updateall-array-fields-mixed-conditions
+     */
+    public function updateAll($fields, $conditions = true) {
+        $success = parent::updateAll($fields, $conditions);
+
+        //Also update disable field in CrateDB for Services
+        //CakePHP does not fire the afterSave callback, if updateAll got called.
+        if ($success && $this->DbBackend->isCrateDb()) {
+            if (is_array($fields) && sizeof($fields) === 1 && is_array($conditions) && sizeof($conditions) === 1) {
+                if(isset($fields['Service.disabled']) && isset($conditions['Service.host_id'])){
+                    $CrateServiceModel = ClassRegistry::init('CrateModule.CrateService');
+                    $CrateServiceModel->updateAll([
+                        'disabled' => (bool)$fields['Service.disabled']
+                    ], [
+                        'host_id' => $conditions['Service.host_id']
+                    ]);
+                }
+            }
+        }
+        return $success;
+    }
+
+    /**
+     * @param bool $created
+     * @param array $options
+     * @return bool|void
+     */
+    public function afterSave($created, $options = []) {
+        if ($this->DbBackend->isCrateDb() && isset($this->data['Service']['id'])) {
+            //Save data also to CrateDB
+            $CrateService = new \itnovum\openITCOCKPIT\Crate\CrateService($this->data['Service']['id']);
+            $service = $this->find('first', $CrateService->getFindQuery());
+            $CrateService->setDataFromFindResult($service);
+
+            $CrateServiceModel = ClassRegistry::init('CrateModule.CrateService');
+            $CrateServiceModel->save($CrateService->getDataForSave());
+        }
+
+        parent::afterSave($created, $options);
+    }
+
+    public function beforeDelete($cascade = true) {
+        $this->LastDeletedId = new LastDeletedId($this->id);
+        return parent::beforeDelete($cascade);
+    }
+
+    public function afterDelete() {
+        if ($this->LastDeletedId !== null) {
+            if ($this->DbBackend->isCrateDb() && $this->LastDeletedId->hasId()) {
+                $CrateServiceModel = ClassRegistry::init('CrateModule.CrateService');
+                $CrateServiceModel->delete($this->LastDeletedId->getId());
+                $this->LastDeletedId = null;
+            }
+        }
+
+        parent::afterDelete();
     }
 }

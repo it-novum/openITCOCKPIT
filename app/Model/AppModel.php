@@ -23,6 +23,8 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use itnovum\openITCOCKPIT\Core\DbBackend;
+
 App::uses('Model', 'Model');
 
 
@@ -33,8 +35,19 @@ class AppModel extends Model {
     protected $lastInsertedIds = [];
     protected $lastInsertedData = [];
 
+    /**
+     * @var DbBackend
+     */
+    protected $DbBackend;
+
     public function __construct($id = false, $table = null, $ds = null, $useDynamicAssociations = true) {
         parent::__construct($id, $table, $ds);
+
+        if(class_exists('\itnovum\openITCOCKPIT\Core\DbBackend')){
+            Configure::load('dbbackend');
+            $this->DbBackend = new DbBackend(Configure::read('dbbackend'));
+            $this->set('DbBackend', $this->DbBackend);
+        }
 
         if($useDynamicAssociations) {
             if (is_object($this->Behaviors->DynamicAssociations)) {
@@ -54,7 +67,6 @@ class AppModel extends Model {
             }
         }
     }
-
 
 
     /**
@@ -259,7 +271,4 @@ class AppModel extends Model {
 
         return $select;
     }
-
-
-
 }

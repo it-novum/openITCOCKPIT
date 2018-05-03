@@ -50,7 +50,6 @@ class HostescalationsController extends AppController
     ];
     public $layout = 'Admin.default';
     public $components = [
-        'Paginator',
         'ListFilter.ListFilter',
         'RequestHandler',
     ];

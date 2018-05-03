@@ -31,7 +31,7 @@ class NagiostatsController extends AppController
      */
     public $uses = [MONITORING_NAGIOSTAT];
 
-    public $components = ['Paginator', 'ListFilter.ListFilter', 'RequestHandler'];
+    public $components = ['ListFilter.ListFilter', 'RequestHandler'];
     public $helpers = ['ListFilter.ListFilter', 'Status', 'Monitoring', 'CustomValidationErrors', 'Uuid'];
     public $layout = 'Admin.default';
 

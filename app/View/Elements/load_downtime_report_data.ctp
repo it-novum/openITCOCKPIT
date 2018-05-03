@@ -84,10 +84,10 @@ $Logo = new Logo();
                             <div class="jarviswidget jarviswidget-sortable" role="widget">
                                 <header role="heading">
                                     <h2>
-									<span class="fa-stack">
-										<i class="fa fa-check fa-stack-1x ok"></i>
-										<i class="fa fa-ban fa-stack-2x text-danger opacity-50"></i>
-									</span>
+                                    <span class="fa-stack">
+                                        <i class="fa fa-check fa-stack-1x ok"></i>
+                                        <i class="fa fa-ban fa-stack-2x text-danger opacity-50"></i>
+                                    </span>
                                         <?php echo __('Involved in outages (Hosts):'); ?>
                                     </h2>
                                 </header>
@@ -240,10 +240,10 @@ $Logo = new Logo();
                             <div class="jarviswidget jarviswidget-sortable" role="widget">
                                 <header role="heading">
                                     <h2>
-									<span class="fa-stack">
-										<i class="fa fa-circle-o fa-stack-2x txt-color-blueLight"></i>
-										<i class="fa fa-check fa-stack-1x ok"></i>
-									</span>
+                                    <span class="fa-stack">
+                                        <i class="fa fa-circle-o fa-stack-2x txt-color-blueLight"></i>
+                                        <i class="fa fa-check fa-stack-1x ok"></i>
+                                    </span>
                                         <?php echo __('Hosts without outages:'); ?>
                                     </h2>
                                 </header>
@@ -292,8 +292,6 @@ $Logo = new Logo();
                                                     </div>
                                                     <?php
                                                 endfor;
-                                                ?>
-                                                <?php
                                                 $servicesWithOutages = [];
                                                 if (isset($hostWithoutOutages['Services'])):
                                                     $servicesWithOutages = Hash::sort(Hash::extract($hostWithoutOutages['Services'], '{s}[0<'.$downtimeReportDetails['totalTime'].']'), '{n}.Services.{s}.Service.name', 'ASC');
@@ -372,6 +370,139 @@ $Logo = new Logo();
                     </div>
                 </section>
                 <?php
+            endif;
+            $hostsNotMonitored = Hash::sort(
+                Hash::extract(
+                    $downtimeReportData['Hosts'], '{s}.HostsNotMonitored'),
+                '{n}.Host.name', 'asc'
+            );
+            if (!empty($hostsNotMonitored)): ?>
+                <section>
+                    <div class="row">
+                        <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                            <div class="jarviswidget" role="widget">
+                                <header role="heading">
+                                    <h2>
+                                        <span class="fa-stack">
+                                            <i class="fa fa-circle-o fa-stack-2x txt-color-blueLight"></i>
+                                            <i class="fa fa-check fa-stack-1x ok"></i>
+                                        </span>
+                                        <?php echo __('Hosts without state history records for selected time range:'); ?>
+                                    </h2>
+                                </header>
+                                <div class="well padding-bottom-10">
+                                    <?php
+                                    foreach ($hostsNotMonitored as $hostNotMonitored):?>
+                                        <div class="jarviswidget jarviswidget-color-blueLight">
+                                            <header role="heading">
+                                                <h2>
+                                                    <strong>
+                                                        <i class="fa fa-desktop"></i> <?php echo $this->Html->link(h($hostNotMonitored['Host']['name']), [
+                                                            'action'     => 'browser',
+                                                            'controller' => 'hosts',
+                                                            $hostNotMonitored['Host']['id'],
+                                                        ], ['class' => 'txt-color-blueDark']);
+                                                        ?>
+                                                    </strong>
+                                                </h2>
+                                            </header>
+                                            <div class="widget-body">
+                                                <div class="col-md-3 ">
+                                                    <?php echo __('Description'); ?>
+                                                </div>
+                                                <div class="col-md-9">
+                                                    <?php echo h(($hostNotMonitored['Host']['description']) ? $hostNotMonitored['Host']['description'] : ' - '); ?>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <?php echo __('IP address'); ?>
+                                                </div>
+                                                <div class="col-md-9">
+                                                    <?php echo h($hostNotMonitored['Host']['address']); ?>
+                                                </div>
+                                            <?php
+                                            $services = [];
+                                            if (isset($downtimeReportData['Hosts'][$hostNotMonitored['Host']['uuid']]['Services'])):
+                                                $servicesWithOutages = Hash::sort(
+                                                Hash::extract(
+                                                    $downtimeReportData['Hosts'][$hostNotMonitored['Host']['uuid']]['Services'],
+                                                    '{s}[0<'.$downtimeReportDetails['totalTime'].']'),
+                                                '{n}.Services.{s}.Service.name',
+                                                'ASC');
+                                                if (!empty($servicesWithOutages)):?>
+                                                    <div class="col-md-9 padding-top-10 padding-bottom-10">
+                                                        <strong>
+                                                            <?php echo __('Involved in outages (Services):'); ?>
+                                                        </strong>
+                                                    </div>
+                                                    <?php
+                                                    foreach ($servicesWithOutages as $serviceWithOutages):?>
+                                                        <div class="col-md-12">
+                                                            <strong>
+                                                                <i class="fa fa-cog"></i> <?php echo $this->Html->link(h($serviceWithOutages['Service']['name']), [
+                                                                    'action'     => 'browser',
+                                                                    'controller' => 'services',
+                                                                    $serviceWithOutages['Service']['id'],
+                                                                ], ['class' => 'txt-color-blueDark']);
+                                                                ?>
+                                                            </strong>
+                                                        </div>
+                                                        <div class="col-md-3 text-right padding-right-20 text-info">
+                                                            <?php echo __('Servicetemplate:'); ?>
+                                                        </div>
+                                                        <div class="col-md-9 txt-color-blue">
+                                                            <?php echo $this->Html->link(h($serviceWithOutages['Service']['Servicetemplate']['name']), [
+                                                                'action'     => 'edit',
+                                                                'controller' => 'servicetemplates',
+                                                                $serviceWithOutages['Service']['Servicetemplate']['id'],
+                                                            ], ['class' => 'text-info']
+                                                            );
+                                                            ?>
+                                                        </div>
+                                                        <div class="col-md-3 text-right padding-bottom-10">
+                                                            <?php
+                                                            $overview_chart = $this->PieChart->createPieChart([$serviceWithOutages[0], $serviceWithOutages[1], $serviceWithOutages[2], $serviceWithOutages[3]]);
+                                                            echo $this->Html->image(
+                                                                '/img/charts/'.$overview_chart, [
+                                                                    'width' => '100',
+                                                                ]
+                                                            ); ?>
+                                                        </div>
+                                                        <?php
+                                                        for ($i = 0; $i <= 3; $i++):?>
+                                                            <div class="col-md-3 text-right">
+                                                                <em>
+                                                                    <?php echo $this->Status->humanSimpleServiceStatus($i); ?>
+                                                                </em>
+                                                            </div>
+                                                            <div class="col-md-3 <?php echo $this->Status->ServiceStatusColorSimple($i)['class']; ?> downtime-report-state-overview font-sm">
+                                                                <strong>
+                                                                    <?php
+                                                                    $percent_value = $serviceWithOutages[$i] / $downtimeReportDetails['totalTime'] * 100;
+                                                                    echo (fmod($percent_value, 1) == 0) ? $percent_value : number_format($percent_value, 3); ?>
+                                                                    %
+                                                                </strong>
+                                                            </div>
+                                                            <div class="col-md-3 <?php echo $this->Status->ServiceStatusColorSimple($i)['class']; ?> downtime-report-state-overview font-sm">
+                                                                <strong>
+                                                                    <?php echo '('.$this->Utils->secondsInHumanShort($serviceWithOutages[$i]).')'; ?>
+                                                                </strong>
+                                                            </div>
+                                                        <?php
+                                                        endfor;
+                                                    endforeach;
+                                                endif;
+                                            endif;
+                                            ?>
+                                            </div>
+                                        </div>
+                                    <?php
+                                    endforeach; ?>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+                </section>
+            <?php
             endif;
             ?>
         </section>

@@ -27,7 +27,6 @@ use itnovum\openITCOCKPIT\Monitoring\QueryHandler;
 class CrateHostsController extends CrateModuleAppController {
     public $layout = 'Admin.default';
     public $components = [
-        'Paginator',
         'ListFilter.ListFilter',
         'AdditionalLinks',
         'Flash'

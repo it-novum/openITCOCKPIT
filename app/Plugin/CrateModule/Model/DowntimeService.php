@@ -121,16 +121,39 @@ class DowntimeService extends CrateModuleAppModel {
     public function getQueryForReporting(DowntimeServiceConditions $Conditions) {
         $query = [
             'fields'     => [
-                'DowntimeHost.author_name',
-                'DowntimeHost.comment_data',
-                'DowntimeHost.scheduled_start_time',
-                'DowntimeHost.scheduled_end_time',
-                'DowntimeHost.duration',
-                'DowntimeHost.was_started',
-                'DowntimeHost.was_cancelled',
+                'DowntimeService.author_name',
+                'DowntimeService.comment_data',
+                'DowntimeService.scheduled_start_time',
+                'DowntimeService.scheduled_end_time',
+                'DowntimeService.duration',
+                'DowntimeService.was_started',
+                'DowntimeService.was_cancelled',
+                'DowntimeService.hostname',
+                'Host.uuid',
+                'Service.uuid'
+            ],
+            'joins'     => [
+                [
+                    'table'      => 'openitcockpit_hosts',
+                    'type'       => 'INNER',
+                    'alias'      => 'Host',
+                    'conditions' =>
+                        'Host.uuid = DowntimeService.hostname',
+                ],
+                [
+                    'table'      => 'openitcockpit_services',
+                    'type'       => 'INNER',
+                    'alias'      => 'Service',
+                    'conditions' =>
+                        'Service.uuid = DowntimeService.service_description',
+                ]
             ],
             'order'      => $Conditions->getOrder()
         ];
+
+        if ($Conditions->hasHostUuids()) {
+            $query['conditions']['DowntimeService.hostname'] = $Conditions->getHostUuids();
+        }
 
         if ($Conditions->hasServiceUuids()) {
             $query['conditions']['DowntimeService.service_description'] = $Conditions->getServiceUuids();

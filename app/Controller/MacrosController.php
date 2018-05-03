@@ -26,7 +26,7 @@
 class MacrosController extends AppController
 {
     public $layout = 'Admin.default';
-    public $components = ['Paginator', 'RequestHandler'];
+    public $components = ['RequestHandler'];
 
 
     public function index()

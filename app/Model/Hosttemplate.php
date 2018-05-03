@@ -23,6 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use itnovum\openITCOCKPIT\Crate\CrateHosttemplateForHost;
 use itnovum\openITCOCKPIT\Filter\HosttemplateFilter;
 
 class Hosttemplate extends AppModel {
@@ -553,5 +554,31 @@ class Hosttemplate extends AppModel {
                 'Hosttemplate.id' => $hosttemplateId
             ]
         ];
+    }
+
+    /**
+     * @param bool $created
+     * @param array $options
+     * @return bool|void
+     */
+    public function afterSave($created, $options = []) {
+        if ($this->DbBackend->isCrateDb() && isset($this->data['Hosttemplate']['id'])) {
+            //Save data also to CrateDB
+            $UpdateHelper = new CrateHosttemplateForHost($this->data['Hosttemplate']['id']);
+            $hosttemplate = $this->find('first', $UpdateHelper->getFindQuery());
+            $UpdateHelper->setDataFromFindResult($hosttemplate);
+
+            $CrateHostModel = ClassRegistry::init('CrateModule.CrateHost');
+            $CrateHostModel->updateAll(
+                $UpdateHelper->getDataToUpdateActiveChecksEnabled(),
+                $UpdateHelper->getConditionToUpdateActiveChecksEnabled()
+            );
+            $CrateHostModel->updateAll(
+                $UpdateHelper->getDataToUpdateTags(),
+                $UpdateHelper->getConditionToUpdateTags()
+            );
+        }
+
+        parent::afterSave($created, $options);
     }
 }
