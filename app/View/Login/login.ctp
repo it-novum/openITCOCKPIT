@@ -13,7 +13,7 @@
 </div>
 <div class="container-fluid">
     <div class="row">
-        <div id="particles-js" class="col-xs-12 col-sm-5 col-md-4"></div>
+        <div id="particles-js" class="col-xs-12 col-sm-6 col-md-7 col-lg-9"></div>
     </div>
 </div>
 

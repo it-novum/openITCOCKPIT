@@ -1,0 +1,100 @@
+[
+    {
+        "name": "freedsx/asn1",
+        "version": "0.1.2",
+        "version_normalized": "0.1.2.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/FreeDSx/ASN1.git",
+            "reference": "0b48086cfe7fce318699496819522ff079cba21c"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/FreeDSx/ASN1/zipball/0b48086cfe7fce318699496819522ff079cba21c",
+            "reference": "0b48086cfe7fce318699496819522ff079cba21c",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=7.1"
+        },
+        "require-dev": {
+            "phpspec/phpspec": "^4.0"
+        },
+        "time": "2018-04-15T15:52:44+00:00",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "FreeDSx\\Asn1\\": "src/FreeDSx/Asn1"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Chad Sikorra",
+                "email": "Chad.Sikorra@gmail.com"
+            }
+        ],
+        "description": "An ASN.1 library for PHP.",
+        "homepage": "https://github.com/FreeDSx/ASN1",
+        "keywords": [
+            "DER",
+            "asn.1",
+            "asn1",
+            "ber",
+            "x.690"
+        ]
+    },
+    {
+        "name": "freedsx/ldap",
+        "version": "0.4.0",
+        "version_normalized": "0.4.0.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/FreeDSx/LDAP.git",
+            "reference": "e6a62b8e279a5fb6d9fd54ceb1e623fca02b5358"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/FreeDSx/LDAP/zipball/e6a62b8e279a5fb6d9fd54ceb1e623fca02b5358",
+            "reference": "e6a62b8e279a5fb6d9fd54ceb1e623fca02b5358",
+            "shasum": ""
+        },
+        "require": {
+            "freedsx/asn1": "^0.1.0",
+            "php": ">=7.1"
+        },
+        "require-dev": {
+            "phpspec/phpspec": "^4.0"
+        },
+        "suggest": {
+            "ext-openssl": "For SSL/TLS support."
+        },
+        "time": "2018-04-20T20:53:30+00:00",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "FreeDSx\\Ldap\\": "src/FreeDSx/Ldap"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Chad Sikorra",
+                "email": "Chad.Sikorra@gmail.com"
+            }
+        ],
+        "description": "A Pure PHP LDAP library",
+        "homepage": "https://github.com/FreeDSx/LDAP",
+        "keywords": [
+            "ldap"
+        ]
+    }
+]

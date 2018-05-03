@@ -1,0 +1,24 @@
+build: off
+shallow_clone: false
+platform: 'x64'
+clone_folder: c:\projects\freedsx-asn1
+
+environment:
+  matrix:
+    - PHP_VERSION: "7.1"
+    - PHP_VERSION: "7.2"
+
+install:
+  - ps: Invoke-WebRequest "https://raw.githubusercontent.com/ChadSikorra/ps-install-php/master/Install-PHP.ps1" -OutFile "Install-PHP.ps1"
+  - ps: .\Install-PHP.ps1 -Version $Env:PHP_VERSION -Highest -Arch x64 -Extensions openssl
+  - refreshenv
+  - cd C:\projects\freedsx-asn1
+  - php -r "readfile('https://getcomposer.org/installer');" | php
+
+before_test:
+  - cd C:\projects\freedsx-asn1
+  - php composer.phar install --no-interaction --no-progress --optimize-autoloader --prefer-source --no-ansi
+
+test_script:
+  - cd C:\projects\freedsx-asn1
+  - bin\phpspec.bat run --format=pretty --no-interaction

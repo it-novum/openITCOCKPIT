@@ -25,6 +25,8 @@
 namespace itnovum\openITCOCKPIT\Core\System\Health;
 
 
+use function strpos;
+
 class Disks {
 
 
@@ -35,7 +37,10 @@ class Disks {
             $ignore = ['none', 'udev', 'Filesystem'];
             foreach ($output as $line) {
                 $value = preg_split('/\s+/', $line);
-                if (!in_array($value[0], $ignore) && $value[5] != '/run') {
+                if (!in_array($value[0], $ignore)) {
+                    if ($value[5] != '/run' || strpos($value[5], 'snapshot')) {
+                        continue;
+                    }
 
                     $percentage = (int)str_replace('%', '', $value[4]);
                     $state = 'ok';

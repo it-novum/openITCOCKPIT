@@ -26,10 +26,10 @@
 //App::uses('AdminAppController', 'Admin.Controller');
 //require_once APP . 'Model/User.php';
 
+use itnovum\openITCOCKPIT\Core\PHPVersionChecker;
 use itnovum\openITCOCKPIT\Core\Views\Logo;
 
-class UsersController extends AppController
-{
+class UsersController extends AppController {
     public $layout = 'Admin.default';
     public $uses = [
         'User',
@@ -48,16 +48,19 @@ class UsersController extends AppController
     ];
 
 
-    public $listFilters = ['index' => ['fields' => [
-        'User.full_name' => ['label' => 'Name', 'searchType' => 'wildcard'],
-        'User.email'     => ['label' => 'Email', 'searchType' => 'wildcard'],
-        'User.company'   => ['label' => 'Company', 'searchType' => 'wildcard'],
-        'User.phone'     => ['label' => 'Phone', 'searchType' => 'wildcard'],
-    ]]];
+    public $listFilters = [
+        'index' => [
+            'fields' => [
+                'User.full_name' => ['label' => 'Name', 'searchType' => 'wildcard'],
+                'User.email'     => ['label' => 'Email', 'searchType' => 'wildcard'],
+                'User.company'   => ['label' => 'Company', 'searchType' => 'wildcard'],
+                'User.phone'     => ['label' => 'Phone', 'searchType' => 'wildcard'],
+            ]
+        ]
+    ];
 
 
-    public function index()
-    {
+    public function index() {
         $systemsettings = $this->Systemsetting->findAsArraySection('FRONTEND');
 
         $this->loadModel('Container');
@@ -125,8 +128,7 @@ class UsersController extends AppController
         $this->set('systemsettings', $systemsettings);
     }
 
-    public function view($id = null)
-    {
+    public function view($id = null) {
         if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();
 
@@ -190,14 +192,13 @@ class UsersController extends AppController
     /**
      * delete overwrite for soft delete
      *
-     * @param  int     $id
+     * @param  int $id
      * @param  boolean $cascade
      *
      * @return bool
      */
 
-    public function delete($id = null)
-    {
+    public function delete($id = null) {
         if (!$this->request->is('post')) {
             throw new MethodNotAllowedException();
         }
@@ -220,8 +221,7 @@ class UsersController extends AppController
         }
     }
 
-    public function add($type = 'local')
-    {
+    public function add($type = 'local') {
         $usergroups = $this->Usergroup->find('list');
         // Activate "Show Stats in Menu" by default for New Users
         $this->request->data['User']['showstatsinmenu'] = 0;
@@ -246,8 +246,68 @@ class UsersController extends AppController
             );
         }
         if ($type == 'ldap') {
-            $ldapUser = $this->Ldap->userInfo($samaccountname);
-            if(!is_null($ldapUser)) {
+
+            $PHPVersionChecker = new PHPVersionChecker();
+            if ($PHPVersionChecker->isVersionGreaterOrEquals7Dot1()) {
+                $systemsettings = $this->Systemsetting->findAsArraySection('FRONTEND');
+                require_once APP . 'vendor_freedsx_ldap' . DS . 'autoload.php';
+
+                $ldap = new \FreeDSx\Ldap\LdapClient([
+                    'servers'               => [$systemsettings['FRONTEND']['FRONTEND.LDAP.ADDRESS']],
+                    'port'                  => (int)$systemsettings['FRONTEND']['FRONTEND.LDAP.PORT'],
+                    'ssl_allow_self_signed' => true,
+                    'ssl_validate_cert'     => false,
+                    'use_tls'               => (bool)$systemsettings['FRONTEND']['FRONTEND.LDAP.USE_TLS'],
+                    'base_dn'               => $systemsettings['FRONTEND']['FRONTEND.LDAP.BASEDN'],
+                ]);
+                if ((bool)$systemsettings['FRONTEND']['FRONTEND.LDAP.USE_TLS']) {
+                    $ldap->startTls();
+                }
+                $ldap->bind(
+                    sprintf(
+                        '%s%s',
+                        $systemsettings['FRONTEND']['FRONTEND.LDAP.USERNAME'],
+                        $systemsettings['FRONTEND']['FRONTEND.LDAP.SUFFIX']
+                    ),
+                    $systemsettings['FRONTEND']['FRONTEND.LDAP.PASSWORD']
+                );
+
+                $filter = \FreeDSx\Ldap\Search\Filters::andPHP5(
+                    \FreeDSx\Ldap\Search\Filters::raw($systemsettings['FRONTEND']['FRONTEND.LDAP.QUERY']),
+                    \FreeDSx\Ldap\Search\Filters::equal('sAMAccountName', $samaccountname)
+                );
+                if ($systemsettings['FRONTEND']['FRONTEND.LDAP.TYPE'] === 'openldap') {
+                    $requiredFields = ['uid', 'mail', 'sn', 'givenname'];
+                    $search = FreeDSx\Ldap\Operations::search($filter, 'uid', 'mail', 'sn', 'givenname', 'displayname', 'dn');
+                } else {
+                    $requiredFields = ['samaccountname', 'mail', 'sn', 'givenname'];
+                    $search = FreeDSx\Ldap\Operations::search($filter, 'samaccountname', 'mail', 'sn', 'givenname', 'displayname', 'dn');
+                }
+
+                /** @var \FreeDSx\Ldap\Entry\Entries $entries */
+                $entries = $ldap->search($search);
+                foreach ($entries as $entry) {
+                    $userDn = (string)$entry->getDn();
+                    $entry = $entry->toArray();
+                    $entry = array_combine(array_map('strtolower', array_keys($entry)), array_values($entry));
+
+                    if (isset($entry['uid'])) {
+                        $entry['samaccountname'] = $entry['uid'];
+                    }
+
+                    $ldapUser = [
+                        'mail'           => $entry['mail'][0],
+                        'givenname'      => $entry['givenname'][0],
+                        'sn'             => $entry['sn'][0],
+                        'samaccountname' => $entry['samaccountname'][0],
+                        'dn'             => $userDn
+                    ];
+                }
+
+            } else {
+                $ldapUser = $this->Ldap->userInfo($samaccountname);
+            }
+            if (!is_null($ldapUser)) {
                 // Overwrite request with LDAP data, that the user can not manipulate it with firebug ;)
                 $this->request->data['User']['email'] = $ldapUser['mail'];
                 $this->request->data['User']['firstname'] = $ldapUser['givenname'];
@@ -283,8 +343,7 @@ class UsersController extends AppController
     }
 
 
-    public function edit($id = null)
-    {
+    public function edit($id = null) {
         if (!$this->User->exists($id)) {
             throw new NotFoundException(__('Invalide user'));
         }
@@ -363,7 +422,7 @@ class UsersController extends AppController
             }
         }
         $usergroups = $this->Usergroup->find('list');
-        $options = ['conditions' => ['User.'.$this->User->primaryKey => $id]];
+        $options = ['conditions' => ['User.' . $this->User->primaryKey => $id]];
         $this->request->data = $this->User->find('first', $options);
         $containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_USER, [], $this->hasRootPrivileges);
         $selectedContainers = ($this->request->data('Container')) ? Hash::extract($this->request->data['Container'], '{n}.id') : Hash::extract($permissionsUser['ContainerUserMembership'], '{n}.container_id');
@@ -377,8 +436,9 @@ class UsersController extends AppController
         $this->set(compact(['type', 'usergroups']));
     }
 
-    public function addFromLdap()
-    {
+    public function addFromLdap() {
+        $this->layout = 'angularjs';
+
         if ($this->request->is('post') || $this->request->is('put')) {
             $this->redirect([
                 'controller'     => 'users',
@@ -390,15 +450,177 @@ class UsersController extends AppController
             ]);
         }
 
-        $usersForSelect = $this->Ldap->findAllUser();
-        $systemsettings = $this->Systemsetting->findAsArraySection('FRONTEND');
+        $PHPVersionChecker = new PHPVersionChecker();
+        if ($PHPVersionChecker->isVersionGreaterOrEquals7Dot1()) {
+            $systemsettings = $this->Systemsetting->findAsArraySection('FRONTEND');
+            require_once APP . 'vendor_freedsx_ldap' . DS . 'autoload.php';
 
-        $this->set(compact(['usersForSelect', 'systemsettings']));
+            $ldap = new \FreeDSx\Ldap\LdapClient([
+                'servers'               => [$systemsettings['FRONTEND']['FRONTEND.LDAP.ADDRESS']],
+                'port'                  => (int)$systemsettings['FRONTEND']['FRONTEND.LDAP.PORT'],
+                'ssl_allow_self_signed' => true,
+                'ssl_validate_cert'     => false,
+                'use_tls'               => (bool)$systemsettings['FRONTEND']['FRONTEND.LDAP.USE_TLS'],
+                'base_dn'               => $systemsettings['FRONTEND']['FRONTEND.LDAP.BASEDN'],
+            ]);
+            if ((bool)$systemsettings['FRONTEND']['FRONTEND.LDAP.USE_TLS']) {
+                $ldap->startTls();
+            }
+            $ldap->bind(
+                sprintf(
+                    '%s%s',
+                    $systemsettings['FRONTEND']['FRONTEND.LDAP.USERNAME'],
+                    $systemsettings['FRONTEND']['FRONTEND.LDAP.SUFFIX']
+                ),
+                $systemsettings['FRONTEND']['FRONTEND.LDAP.PASSWORD']
+            );
+
+            $filter = \FreeDSx\Ldap\Search\Filters::raw($systemsettings['FRONTEND']['FRONTEND.LDAP.QUERY']);
+            if ($systemsettings['FRONTEND']['FRONTEND.LDAP.TYPE'] === 'openldap') {
+                $requiredFields = ['uid', 'mail', 'sn', 'givenname'];
+                $search = FreeDSx\Ldap\Operations::search($filter, 'uid', 'mail', 'sn', 'givenname', 'displayname', 'dn');
+            } else {
+                $requiredFields = ['samaccountname', 'mail', 'sn', 'givenname'];
+                $search = FreeDSx\Ldap\Operations::search($filter, 'samaccountname', 'mail', 'sn', 'givenname', 'displayname', 'dn');
+            }
+
+            $getAll = false;
+            if ($this->request->query('getAll') === 'true') {
+                $getAll = true;
+            }
+
+            $usersForSelect = [];
+            $paging = $ldap->paging($search, 100);
+            while ($paging->hasEntries()) {
+                foreach ($paging->getEntries() as $entry) {
+                    $userDn = (string)$entry->getDn();
+                    if (empty($userDn)) {
+                        continue;
+                    }
+
+                    $entry = $entry->toArray();
+                    $entry = array_combine(array_map('strtolower', array_keys($entry)), array_values($entry));
+                    foreach ($requiredFields as $requiredField) {
+                        if (!isset($entry[$requiredField])) {
+                            continue 2;
+                        }
+                    }
+
+                    if (isset($entry['uid'])) {
+                        $entry['samaccountname'] = $entry['uid'];
+                    }
+
+                    $displayName = sprintf(
+                        '%s, %s (%s)',
+                        $entry['givenname'][0],
+                        $entry['sn'][0],
+                        $entry['samaccountname'][0]
+                    );
+                    $usersForSelect[$entry['samaccountname'][0]] = $displayName;
+                }
+                if ($getAll === false) {
+                    //Only get the first few records
+                    $paging->end();
+                }
+            }
+        } else {
+            $usersForSelect = $this->Ldap->findAllUser();
+            $systemsettings = $this->Systemsetting->findAsArraySection('FRONTEND');
+        }
+
+        $usersForSelect = $this->User->makeItJavaScriptAble($usersForSelect);
+
+        $isPhp7Dot1 = $PHPVersionChecker->isVersionGreaterOrEquals7Dot1();
+        $this->set(compact(['usersForSelect', 'systemsettings', 'isPhp7Dot1']));
+        $this->set('_serialize', ['usersForSelect', 'isPhp7Dot1']);
+    }
+
+    public function loadLdapUserByString() {
+        $this->layout = 'blank';
+
+        $usersForSelect = [];
+        $samaccountname = $this->request->query('samaccountname');
+        if (!empty($samaccountname) && strlen($samaccountname) > 2) {
+            $systemsettings = $this->Systemsetting->findAsArraySection('FRONTEND');
+            require_once APP . 'vendor_freedsx_ldap' . DS . 'autoload.php';
+
+            $ldap = new \FreeDSx\Ldap\LdapClient([
+                'servers'               => [$systemsettings['FRONTEND']['FRONTEND.LDAP.ADDRESS']],
+                'port'                  => (int)$systemsettings['FRONTEND']['FRONTEND.LDAP.PORT'],
+                'ssl_allow_self_signed' => true,
+                'ssl_validate_cert'     => false,
+                'use_tls'               => (bool)$systemsettings['FRONTEND']['FRONTEND.LDAP.USE_TLS'],
+                'base_dn'               => $systemsettings['FRONTEND']['FRONTEND.LDAP.BASEDN'],
+            ]);
+            if ((bool)$systemsettings['FRONTEND']['FRONTEND.LDAP.USE_TLS']) {
+                $ldap->startTls();
+            }
+            $ldap->bind(
+                sprintf(
+                    '%s%s',
+                    $systemsettings['FRONTEND']['FRONTEND.LDAP.USERNAME'],
+                    $systemsettings['FRONTEND']['FRONTEND.LDAP.SUFFIX']
+                ),
+                $systemsettings['FRONTEND']['FRONTEND.LDAP.PASSWORD']
+            );
+
+            $filter = \FreeDSx\Ldap\Search\Filters::andPHP5(
+                \FreeDSx\Ldap\Search\Filters::raw($systemsettings['FRONTEND']['FRONTEND.LDAP.QUERY']),
+                \FreeDSx\Ldap\Search\Filters::contains('sAMAccountName', $samaccountname)
+            );
+            if ($systemsettings['FRONTEND']['FRONTEND.LDAP.TYPE'] === 'openldap') {
+                $filter = \FreeDSx\Ldap\Search\Filters::andPHP5(
+                    \FreeDSx\Ldap\Search\Filters::raw($systemsettings['FRONTEND']['FRONTEND.LDAP.QUERY']),
+                    \FreeDSx\Ldap\Search\Filters::contains('uid', $samaccountname)
+                );
+            }
+            if ($systemsettings['FRONTEND']['FRONTEND.LDAP.TYPE'] === 'openldap') {
+                $requiredFields = ['uid', 'mail', 'sn', 'givenname'];
+                $search = FreeDSx\Ldap\Operations::search($filter, 'uid', 'mail', 'sn', 'givenname', 'displayname', 'dn');
+            } else {
+                $requiredFields = ['samaccountname', 'mail', 'sn', 'givenname'];
+                $search = FreeDSx\Ldap\Operations::search($filter, 'samaccountname', 'mail', 'sn', 'givenname', 'displayname', 'dn');
+            }
+
+            $paging = $ldap->paging($search, 100);
+            while ($paging->hasEntries()) {
+                foreach ($paging->getEntries() as $entry) {
+                    $userDn = (string)$entry->getDn();
+                    if (empty($userDn)) {
+                        continue;
+                    }
+
+                    $entry = $entry->toArray();
+                    $entry = array_combine(array_map('strtolower', array_keys($entry)), array_values($entry));
+                    foreach ($requiredFields as $requiredField) {
+                        if (!isset($entry[$requiredField])) {
+                            continue 2;
+                        }
+                    }
+
+                    if (isset($entry['uid'])) {
+                        $entry['samaccountname'] = $entry['uid'];
+                    }
+
+                    $displayName = sprintf(
+                        '%s, %s (%s)',
+                        $entry['givenname'][0],
+                        $entry['sn'][0],
+                        $entry['samaccountname'][0]
+                    );
+                    $usersForSelect[$entry['samaccountname'][0]] = $displayName;
+                }
+                $paging->end();
+            }
+        }
+
+        $usersForSelect = $this->User->makeItJavaScriptAble($usersForSelect);
+
+        $this->set('usersForSelect', $usersForSelect);
         $this->set('_serialize', ['usersForSelect']);
     }
 
-    public function resetPassword($id = null)
-    {
+    public function resetPassword($id = null) {
         $this->autoRender = false;
         if (!$this->User->exists($id)) {
             $this->setFlash(__('Invalide user'), false);
@@ -415,7 +637,7 @@ class UsersController extends AppController
             for ($i = 0; $i < 7; $i++) {
                 $token .= $char[rand(0, $size)];
             }
-            $token = $token.rand(0, 9);
+            $token = $token . rand(0, 9);
 
             return $token;
         };
@@ -452,7 +674,7 @@ class UsersController extends AppController
         unset($user['ContainerUserMembership']);
         if ($this->User->saveAll($user)) {
             $Email->send();
-            $this->setFlash(__('Password reset successfully. A mail with the new password was set to <b>'.$user['User']['email'].'</b>'));
+            $this->setFlash(__('Password reset successfully. A mail with the new password was set to <b>' . $user['User']['email'] . '</b>'));
             $this->redirect(['action' => 'index']);
 
             return;
@@ -470,11 +692,11 @@ class UsersController extends AppController
         $containers = [ROOT_CONTAINER];
 
         $containerId = $this->request->query('containerId');
-        if(in_array($containerId, $containers, true)){
+        if (in_array($containerId, $containers, true)) {
             $containers[] = $containerId;
         }
         $users = $this->User->find('list', [
-            'recursive' => -1,
+            'recursive'  => -1,
             'joins'      => [
                 [
                     'table'      => 'users_to_containers',
