@@ -36,6 +36,9 @@ $_servicestatus = $this->Mapstatus->servicestatus($uuid);
 $servicestatusField = $this->Mapstatus->servicestatusField($uuid);
 
 $servicestate = $servicestatus[$uuid]['Servicestatus'];
+if($servicestate['currentState'] === null){
+    $servicestate['currentState'] = -1;
+}
 $hostName = $serviceinfo['Host']['name'];
 $serviceName = $servicestatus[$uuid][0]['ServiceName'];
 $serviceDescr = $servicestatus[$uuid][0]['ServiceDescription'];
