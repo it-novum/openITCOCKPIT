@@ -160,6 +160,15 @@ echo $this->Html->css('vendor/css3-percentage-loader/circle.css', ['inline' => f
     </div>
 </div>
 <div id="statusmap-progress-icon">
+    <center>
+        <div>
+            <?php echo __('Loading visualization for '); ?>
+        </div>
+        <div>
+            {{nodesCount}} <?php echo __(' nodes'); ?>
+            <span class="statusmap-progress-dots"></span>
+        </div>
+    </center>
     <div class="progress" data-progress="0">
         <div class="progress_mask isFull">
             <div class="progress_fill"></div>

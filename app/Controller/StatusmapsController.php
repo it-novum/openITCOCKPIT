@@ -77,7 +77,7 @@ class StatusmapsController extends AppController {
         session_write_close();
 
         $allHostIds = [];
-        if($this->request->query('showAll') === 'false') {
+        if ($this->request->query('showAll') === 'false') {
 
             $parentHostWithChildIds = $this->Parenthost->find('all', [
                 'recursive' => -1,
@@ -117,7 +117,7 @@ class StatusmapsController extends AppController {
         }
         $containerIds = [];
         if ($this->hasRootPrivileges === false) {
-               $containerIds = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_HOST, [], $this->hasRootPrivileges, [CT_HOSTGROUP]);
+            $containerIds = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_HOST, [], $this->hasRootPrivileges, [CT_HOSTGROUP]);
         }
         $StatusmapFilter = new StatusmapFilter($this->request);
         $nodes = [];
@@ -158,7 +158,7 @@ class StatusmapsController extends AppController {
             ];
             $query['conditions']['HostsToContainers.container_id'] = $containerIds;
         }
-        if(!empty($allHostIds)){
+        if (!empty($allHostIds)) {
             $query['conditions']['Host.id'] = $allHostIds;
         }
 
@@ -194,8 +194,9 @@ class StatusmapsController extends AppController {
 
                 $nodes[] = [
                     'id' => 'Host_' . $hostChunk['Host']['id'],
+                    'hostId' => $hostChunk['Host']['id'],
                     'label' => $hostChunk['Host']['name'],
-                    'title' => $hostChunk['Host']['name'].' ('.$hostChunk['Host']['address'].')',
+                    'title' => $hostChunk['Host']['name'] . ' (' . $hostChunk['Host']['address'] . ')',
                     'uuid' => $hostChunk['Host']['uuid'],
                     'group' => $this->StatusMap->getNodeGroupName($hostChunk['Host']['disabled'], $Hoststatus)
                 ];

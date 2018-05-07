@@ -44,6 +44,7 @@ $scripts = [
     'js/lib/php.js',
     'smartadmin/js/plugin/flot/jquery.flot.cust.js',
     'smartadmin/js/plugin/flot/jquery.flot.time.js',
+    'smartadmin/js/notification/SmartNotification.js',
     //'smartadmin/js/plugin/jquery-validate/jquery.validate.min.js', //
     //'smartadmin/js/plugin/flot/jquery.flot.orderBar.js', //
     'smartadmin/js/plugin/flot/jquery.flot.fillbetween.js', //

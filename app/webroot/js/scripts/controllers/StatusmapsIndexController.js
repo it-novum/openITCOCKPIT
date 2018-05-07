@@ -1,6 +1,5 @@
 angular.module('openITCOCKPIT')
     .controller('StatusmapsIndexController', function ($scope, $http, QueryStringService) {
-
         /*** Filter Settings ***/
         $scope.filter = {
             Host: {
@@ -18,6 +17,8 @@ angular.module('openITCOCKPIT')
 
         $scope.nodes = new vis.DataSet();
         $scope.edges = new vis.DataSet();
+
+        $scope.nodesCount = 0;
 
         $scope.isEmpty = false;
 
@@ -46,6 +47,7 @@ angular.module('openITCOCKPIT')
                 var nodesData = result.data.statusMap.nodes;
                 var edgesData = result.data.statusMap.edges;
                 $scope.init = false;
+                $scope.nodesCount = nodesData.length;
                 if (nodesData.length > 0) {
                     $('#statusmap-progress-icon').show();
                     $scope.loadVisMap(nodesData, edgesData);
@@ -229,27 +231,6 @@ angular.module('openITCOCKPIT')
                     minVelocity: 0.75,
                     solver: "forceAtlas2Based",
                 },
-/*
-                physics: {
-                    barnesHut: {
-                        gravitationalConstant: -10000,
-                        centralGravity: 0.3,
-                        springLength: 200,
-                        springConstant: 0.04,
-                        damping: 0.09,
-                        avoidOverlap: 1
-                        /*
-                        gravitationalConstant: -80000,
-                        springConstant: 0.001,
-                        springLength: 200
-                        */
-/*
-                    },
-                    stabilization: {
-                        enabled: true
-                    }
-                },
-*/
                 interaction: {
                     hover: true,
                     dragNodes: false,
@@ -273,15 +254,6 @@ angular.module('openITCOCKPIT')
                 edges: $scope.edges
             }
 
-            var scaleFactor = 0.5;
-            var defaultNodeSize = 250;
-            var scaleForNodes = Math.round($scope.nodes.length / defaultNodeSize * scaleFactor);
-
-            if (scaleForNodes > 1) {
-                $($scope.container).css({
-                    //    'height': Math.round($($scope.container).height() * scaleForNodes)
-                });
-            }
 
             network = new vis.Network($scope.container, data, options);
             network.fit({
@@ -293,7 +265,7 @@ angular.module('openITCOCKPIT')
             });
             network.on('stabilizationProgress', function (params) {
                 var currentPercentage = Math.round(params.iterations / params.total * 100);
-                $('#statusmap-progress-icon div:first').attr('data-progress', currentPercentage);
+                $('#statusmap-progress-icon .progress:first').attr('data-progress', currentPercentage);
             });
             network.once('stabilizationIterationsDone', function () {
                 $('#statusmap-progress-icon').hide();
@@ -326,7 +298,17 @@ angular.module('openITCOCKPIT')
             });
 
             network.on('hoverNode', function (properties) {
-//                console.log(data.nodes.get(properties.node));
+                //console.log(data.nodes.get(properties.node));
+                var node = data.nodes.get(properties.node);
+                $http.get("/hosts/hoststatus/"+node.uuid+".json", {
+                    params: {
+                        'angular': true
+                    }
+                }).then(function(result){
+                    console.log(result.data);
+                    $scope.showHostOverviewBox(node.title, result.data.hoststatus);
+
+                });
                 return;
             });
         };
@@ -338,4 +320,23 @@ angular.module('openITCOCKPIT')
             $scope.resetVis();
             $scope.load();
         }, true);
+
+        $scope.showHostOverviewBox = function (title, hoststatus) {
+            var hostColor = '#428bca';
+            var hostColors = [
+                '#449D44',  //Up
+                '#C9302C',  //Down
+                '#92A2A8'  //Unreachable
+            ];
+            if(typeof hoststatus.Hoststatus.current_state !== 'undefined'){
+                hostColor = hostColors[hoststatus.Hoststatus.current_state];
+            }
+            $.bigBox({
+                title: title,
+                content: "This message will dissapear in 6 seconds!",
+                color: hostColor,
+                icon: "fa fa-info shake animated",
+               // timeout: 6000
+            });
+        };
     });

@@ -1046,10 +1046,10 @@ rect.unknown {
     display: none;
 }
 
-
 .statusmap-progress-dots:after {
     content: ' .';
-    animation: dots 1s steps(5, end) infinite;}
+    animation: dots 1s steps(5, end) infinite;
+}
 
 @keyframes dots {
     0%, 20% {
