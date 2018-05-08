@@ -23,6 +23,8 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use itnovum\openITCOCKPIT\Core\ValueObjects\LastDeletedId;
+
 class Command extends AppModel
 {
     public $hasMany = [
@@ -56,6 +58,11 @@ class Command extends AppModel
             ],
         ],
     ];
+
+    /**
+     * @var LastDeletedId|null
+     */
+    private $LastDeletedId = null;
 
     public function __construct($id = false, $table = null, $ds = null)
     {
@@ -166,6 +173,11 @@ class Command extends AppModel
         return $this->find($type, Hash::merge($_options, $options));
     }
 
+    /**
+     * @param bool $created
+     * @param array $options
+     * @return bool|void
+     */
     public function afterSave($created, $options = [])
     {
         parent::afterSave($created, $options);
@@ -178,6 +190,21 @@ class Command extends AppModel
                 return $element;
             }, $this->lastInsertedData);
         }
+
+
+        if ($this->DbBackend->isCrateDb() && isset($this->data['Command']['id'])) {
+            if(isset($this->data['Command']['command_type']) && $this->data['Command']['command_type'] == NOTIFICATION_COMMAND) {
+                //Save data also to CrateDB
+                $CrateCommand = new \itnovum\openITCOCKPIT\Crate\CrateCommand($this->data['Command']['id']);
+                $command = $this->find('first', $CrateCommand->getFindQuery());
+                $CrateCommand->setDataFromFindResult($command);
+
+                $CrateCommandModel = ClassRegistry::init('CrateModule.CrateCommand');
+                $CrateCommandModel->save($CrateCommand->getDataForSave());
+            }
+        }
+
+
     }
 
     public function getConsoleWelcome($systemname)
@@ -185,5 +212,22 @@ class Command extends AppModel
         return "This is a terminal connected to your ".$systemname." ".
             "Server, this is very powerful to test and debug plugins.\n".
             "User: \033[31mnagios\033[0m\nPWD: \033[35m/opt/openitc/nagios/libexec/\033[0m\n\n";
+    }
+
+    public function beforeDelete($cascade = true){
+        $this->LastDeletedId = new LastDeletedId($this->id);
+        return parent::beforeDelete($cascade);
+    }
+
+    public function afterDelete(){
+        if($this->LastDeletedId !== null) {
+            if ($this->DbBackend->isCrateDb() && $this->LastDeletedId->hasId()) {
+                $CrateCommandModel = ClassRegistry::init('CrateModule.CrateCommand');
+                $CrateCommandModel->delete($this->LastDeletedId->getId());
+                $this->LastDeletedId = null;
+            }
+        }
+
+        parent::afterDelete();
     }
 }

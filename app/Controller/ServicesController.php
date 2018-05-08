@@ -25,6 +25,7 @@
 
 use itnovum\openITCOCKPIT\Core\CustomMacroReplacer;
 use itnovum\openITCOCKPIT\Core\CustomVariableDiffer;
+use itnovum\openITCOCKPIT\Core\DbBackend;
 use itnovum\openITCOCKPIT\Core\HostMacroReplacer;
 use itnovum\openITCOCKPIT\Core\HoststatusFields;
 use itnovum\openITCOCKPIT\Core\HosttemplateMerger;
@@ -63,11 +64,11 @@ use itnovum\openITCOCKPIT\Monitoring\QueryHandler;
  * @property AcknowledgedService $AcknowledgedService
  * @property DowntimeService $DowntimeService
  * @property BbcodeComponent $Bbcode
+ * @property DbBackend $DbBackend
  */
 class ServicesController extends AppController {
     public $layout = 'Admin.default';
     public $components = [
-        'Paginator',
         'ListFilter.ListFilter',
         'RequestHandler',
         'CustomValidationErrors',
@@ -305,19 +306,26 @@ class ServicesController extends AppController {
         }
 
         if ($this->DbBackend->isCrateDb()) {
-            throw new NotImplementedException('Not implemented yet');
-            /*
-            $this->Servicestatus->virtualFieldsForIndexAndServiceList();
-            $query = $this->Servicestatus->getServiceIndexQuery($ServiceConditions, $ServiceFilter->indexFilter());
-            $modelName = 'Servicestatus';
-            */
+            $this->loadModel('CrateModule.CrateService');
+            $this->CrateService->virtualFieldsForServicesNotMonitored();
+            $query = $this->CrateService->getServiceNotMonitoredQuery($ServiceConditions, $ServiceFilter->indexFilter());
+            $modelName = 'CrateService';
         }
 
         if ($this->isApiRequest() && !$this->isAngularJsRequest()) {
             if (isset($query['limit'])) {
                 unset($query['limit']);
             }
-            $all_services = $this->{$modelName}->find('all', $query);
+            if($this->DbBackend->isCrateDb()){
+                $all_services = $this->{$modelName}->find('all', $query);
+                foreach($all_services as $key => $record){
+                    //Rename key from CrateService to Service
+                    $all_services[$key]['Service'] = $record['CrateService'];
+                    unset($all_services[$key]['CrateService']);
+                }
+            }else{
+                $all_services = $this->{$modelName}->find('all', $query);
+            }
             $this->set('all_services', $all_services);
             $this->set('_serialize', ['all_services']);
             return;
@@ -714,7 +722,7 @@ class ServicesController extends AppController {
                     $this->serializeId();
                 } else {
                     $this->setFlash(__('<a href="/services/edit/%s">Service</a> created successfully', $this->Service->id));
-                    $redirect = $this->Service->redirect($this->request->params, ['action' => 'index']);
+                    $redirect = $this->Service->redirect($this->request->params, ['action' => 'notMonitored']);
                     $this->redirect($redirect);
                 }
             } else {
@@ -1950,6 +1958,10 @@ class ServicesController extends AppController {
                 'Service.id' => $id
             ]
         ]);
+
+        if($rawService['Service']['service_url'] === '' || $rawService['Service']['service_url'] === null){
+            $rawService['Service']['service_url'] = $rawService['Servicetemplate']['service_url'];
+        }
 
         $rawHost = $this->Host->find('first', $this->Host->getQueryForServiceBrowser($rawService['Service']['host_id']));
 
@@ -3236,9 +3248,23 @@ class ServicesController extends AppController {
         return null;
     }
 
+    //Only for ACLs
+    public function externalcommands() {
+        return null;
+    }
+
     public function icon() {
         $this->layout = 'blank';
         //Only ship HTML Template
+        return;
+    }
+
+    public function details(){
+        $this->layout = 'blank';
+        //Only ship HTML Template
+
+        $User = new User($this->Auth);
+        $this->set('username', $User->getFullName());
         return;
     }
 
@@ -3279,7 +3305,7 @@ class ServicesController extends AppController {
 
         $ServiceCondition = new ServiceConditions($ServiceFilter->indexFilter());
         $ServiceCondition->setContainerIds($this->MY_RIGHTS);
-        $ServiceCondition->includeDisabled(true);
+        $ServiceCondition->includeDisabled();
 
         $services = $this->Service->makeItJavaScriptAble(
             $this->Service->getServicesForAngular($ServiceCondition, $selected)

@@ -37,10 +37,12 @@ $config = [
                 'user_timezone',
                 'version_check',
                 'menustats',
+                'statuscount',
                 'menu',
                 'websocket_configuration',
                 'export',
                 'not_found',
+                'forbidden',
                 'nested_list',
                 'executing',
                 'acknowledge_service',
@@ -63,7 +65,11 @@ $config = [
                 'enable_service_flap_detection',
                 'send_service_notification',
                 'enable_service_notifications',
-                'disable_service_notifications'
+                'disable_service_notifications',
+                'getPieChart'
+            ],
+            'Automaps'         => [
+                'icon'
             ],
             'Commands'         => [
                 'sortByCommandType',
@@ -88,6 +94,10 @@ $config = [
             'Profile'          => [
                 'edit',
                 'deleteImage',
+                'apikey',
+                'edit_apikey',
+                'delete_apikey',
+                'create_apikey'
             ],
             'Proxy'            => [
                 'getSettings',
@@ -108,7 +118,8 @@ $config = [
                 'grapherZoom',
                 'grapherZoomTemplate',
                 'createGrapherErrorPng',
-                'icon'
+                'icon',
+                'details'
             ],
             'Statusmaps'       => [
                 'getHostsAndConnections',
@@ -190,8 +201,8 @@ $config = [
             ],
             'Contacts'              => [
                 'index' => ['view'],
-                'add'   => ['loadTimeperiods', 'addCustomMacro'],
-                'edit'  => ['loadTimeperiods', 'addCustomMacro'],
+                'add'   => ['loadTimeperiods', 'addCustomMacro', 'loadLdapUserByString'],
+                'edit'  => ['loadTimeperiods', 'addCustomMacro', 'loadLdapUserByString'],
             ],
             'Cronjobs'              => [
                 'add'  => ['loadTasksByPlugin'],
@@ -255,11 +266,12 @@ $config = [
                 'add'   => ['loadElementsByContainerId'],
                 'edit'  => ['loadElementsByContainerId'],
             ],
-            'Servicegroups'         => [
-                'index'  => ['listToPdf', 'view', 'loadServicegroupsByContainerId'],
-                'add'    => ['loadServices', 'mass_add', 'loadServicetemplates', 'loadContainers'],
-                'edit'   => ['loadServices', 'loadServicetemplates'],
-                'delete' => ['mass_delete'],
+            'Servicegroups' => [
+                'index'  =>     ['listToPdf', 'view', 'loadServicegroupsByContainerId'],
+                'add'    =>     ['loadServices', 'mass_add', 'loadServicetemplates', 'loadContainers'],
+                'edit'   =>     ['loadServices', 'loadServicetemplates'],
+                'delete' =>     ['mass_delete'],
+                'extended' =>   ['loadServicegroupWithServicesById']
             ],
             'Services'              => [
                 'deactivate'  => ['mass_deactivate'],
@@ -281,7 +293,7 @@ $config = [
             ],
             'Users'                 => [
                 'index' => ['view', 'loadUsersByContainerId'],
-                'add'   => ['addFromLdap'],
+                'add'   => ['addFromLdap', 'loadLdapUserByString'],
                 'edit'  => ['resetPassword'],
             ],
             'Tenants'               => [
@@ -294,7 +306,7 @@ $config = [
                 'delete'  => ['mass_delete'],
             ],
             'Administrators'        => [
-                'debug' => ['testMail'],
+                'debug' => ['testMail', 'querylog'],
             ],
             'Exports'               => [
                 'index' => ['broadcast', 'launchExport', 'verifyConfig', 'saveInstanceConfigSyncSelection'],

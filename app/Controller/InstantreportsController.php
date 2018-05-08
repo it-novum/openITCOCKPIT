@@ -47,7 +47,6 @@ class InstantreportsController extends AppController {
 
     public $layout = 'Admin.default';
     public $components = [
-        'Paginator',
         'RequestHandler',
     ];
     public $uses = [

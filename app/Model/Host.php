@@ -25,11 +25,14 @@
 
 App::uses('ValidationCollection', 'Lib');
 
+use itnovum\openITCOCKPIT\Core\DbBackend;
 use itnovum\openITCOCKPIT\Core\HostConditions;
+use itnovum\openITCOCKPIT\Core\ValueObjects\LastDeletedId;
 use itnovum\openITCOCKPIT\Filter\HostFilter;
 
 /**
  * @property ParentHost $ParentHost
+ * @property DbBackend $DbBackend
  */
 class Host extends AppModel {
 
@@ -216,6 +219,11 @@ class Host extends AppModel {
 
         ],
     ];
+
+    /**
+     * @var LastDeletedId|null
+     */
+    private $LastDeletedId = null;
 
     /**
      * @param HostConditions $HostConditions
@@ -1473,20 +1481,23 @@ class Host extends AppModel {
 
     /**
      * @param array $MY_RIGHTS
+     * @param bool $includeOkState
      * @return array
      */
-    public function getHoststatusCount($MY_RIGHTS){
+    public function getHoststatusCount($MY_RIGHTS, $includeOkState = false){
         $hoststatusCount = [
             '1' => 0,
             '2' => 0,
         ];
+        if($includeOkState === true){
+            $hoststatusCount['0'] = 0;
+        }
 
-        $hoststatusCountResult = $this->find('all', [
+        $query = [
             'conditions' => [
                 'Host.disabled'                  => 0,
                 'HostObject.is_active'           => 1,
-                'HostsToContainers.container_id' => $MY_RIGHTS,
-                'Hoststatus.current_state >'     => 0,
+                'HostsToContainers.container_id' => $MY_RIGHTS
             ],
             'contain'    => [],
             'fields'     => [
@@ -1520,24 +1531,37 @@ class Host extends AppModel {
                     ],
                 ],
             ],
-        ]);
+        ];
+
+        if($includeOkState === false){
+            $query['conditions']['Hoststatus.current_state >'] = 0;
+        }
+
+        $hoststatusCountResult = $this->find('all', $query);
         foreach ($hoststatusCountResult as $hoststatus) {
             $hoststatusCount[$hoststatus['Hoststatus']['current_state']] = (int)$hoststatus[0]['count'];
         }
         return $hoststatusCount;
     }
 
-    public function getServicestatusCount($MY_RIGHTS){
+    /**
+     * @param array $MY_RIGHTS
+     * @param bool $includeOkState
+     * @return array
+     */
+    public function getServicestatusCount($MY_RIGHTS, $includeOkState = false){
         $servicestatusCount = [
             '1' => 0,
             '2' => 0,
             '3' => 0,
         ];
+        if($includeOkState === true){
+            $servicestatusCount['0'] = 0;
+        }
 
-        $servicestatusCountResult = $this->find('all', [
+        $query = [
             'conditions' => [
                 'Service.disabled'               => 0,
-                'Servicestatus.current_state >'  => 0,
                 'ServiceObject.is_active'        => 1,
                 'HostsToContainers.container_id' => $MY_RIGHTS,
 
@@ -1576,13 +1600,19 @@ class Host extends AppModel {
                     'conditions' => 'Servicestatus.service_object_id = ServiceObject.object_id',
                 ],
             ],
-        ]);
+        ];
+
+        if($includeOkState === false){
+            $query['conditions']['Servicestatus.current_state >'] = 0;
+        }
+
+        $servicestatusCountResult = $this->find('all', $query);
         foreach ($servicestatusCountResult as $servicestatus) {
             $servicestatusCount[$servicestatus['Servicestatus']['current_state']] = (int)$servicestatus[0]['count'];
         }
         return $servicestatusCount;
     }
-    
+
     /**
      * @param int $hostId
      * @return array
@@ -1648,7 +1678,7 @@ class Host extends AppModel {
      * @param int $hostId
      * @return array
      */
-    public function getQueryForServiceBrowser($hostId){
+    public function getQueryForServiceBrowser($hostId) {
         return [
             'recursive'  => -1,
             'fields'     => [
@@ -1702,5 +1732,41 @@ class Host extends AppModel {
                 'Host.id' => $hostId
             ]
         ];
+    }
+
+    /**
+     * @param bool $created
+     * @param array $options
+     * @return bool|void
+     */
+    public function afterSave($created, $options = []) {
+        if ($this->DbBackend->isCrateDb() && isset($this->data['Host']['id'])) {
+            //Save data also to CrateDB
+            $CrateHost = new \itnovum\openITCOCKPIT\Crate\CrateHost($this->data['Host']['id']);
+            $host = $this->find('first', $CrateHost->getFindQuery());
+            $CrateHost->setDataFromFindResult($host);
+
+            $CrateHostModel = ClassRegistry::init('CrateModule.CrateHost');
+            $CrateHostModel->save($CrateHost->getDataForSave());
+        }
+
+        parent::afterSave($created, $options);
+    }
+
+    public function beforeDelete($cascade = true){
+        $this->LastDeletedId = new LastDeletedId($this->id);
+        return parent::beforeDelete($cascade);
+    }
+
+    public function afterDelete(){
+        if($this->LastDeletedId !== null) {
+            if ($this->DbBackend->isCrateDb() && $this->LastDeletedId->hasId()) {
+                $CrateHostModel = ClassRegistry::init('CrateModule.CrateHost');
+                $CrateHostModel->delete($this->LastDeletedId->getId());
+                $this->LastDeletedId = null;
+            }
+        }
+
+        parent::afterDelete();
     }
 }

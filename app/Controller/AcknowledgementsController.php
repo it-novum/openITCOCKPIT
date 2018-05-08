@@ -45,7 +45,7 @@ class AcknowledgementsController extends AppController {
         'Documentation'
     ];
 
-    public $components = ['Paginator', 'RequestHandler', 'Bbcode'];
+    public $components = ['RequestHandler', 'Bbcode'];
     public $helpers = ['Status', 'Monitoring', 'Bbcode'];
     public $layout = 'Admin.default';
 

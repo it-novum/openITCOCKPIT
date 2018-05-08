@@ -1,0 +1,3 @@
+Remove this folder if all systems are running on php7.1
+and instal via
+composer require freedsx/ldap

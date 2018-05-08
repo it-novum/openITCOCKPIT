@@ -24,6 +24,8 @@
 //	confirmation.
 
 
+use itnovum\openITCOCKPIT\Core\ValueObjects\LastDeletedId;
+
 class Contact extends AppModel
 {
     public $hasAndBelongsToMany = [
@@ -188,6 +190,11 @@ class Contact extends AppModel
         ],
     ];
 
+    /**
+     * @var LastDeletedId|null
+     */
+    private $LastDeletedId = null;
+
     public function __construct($id = false, $table = null, $ds = null)
     {
         parent::__construct($id, $table, $ds);
@@ -255,6 +262,41 @@ class Contact extends AppModel
         return true;
     }
 
+    /**
+     * @param bool $created
+     * @param array $options
+     * @return bool|void
+     */
+    public function afterSave($created, $options = [])
+    {
+        if ($this->DbBackend->isCrateDb() && isset($this->data['Contact']['id'])) {
+            //Save data also to CrateDB
+            $CrateContact = new \itnovum\openITCOCKPIT\Crate\CrateContact($this->data['Contact']['id']);
+            $contact = $this->find('first', $CrateContact->getFindQuery());
+            $CrateContact->setDataFromFindResult($contact);
+
+            $CrateContactModel = ClassRegistry::init('CrateModule.CrateContact');
+            $CrateContactModel->save($CrateContact->getDataForSave());
+        }
+        parent::afterSave($created, $options);
+    }
+
+    public function beforeDelete($cascade = true){
+        $this->LastDeletedId = new LastDeletedId($this->id);
+        return parent::beforeDelete($cascade);
+    }
+
+    public function afterDelete(){
+        if($this->LastDeletedId !== null) {
+            if ($this->DbBackend->isCrateDb() && $this->LastDeletedId->hasId()) {
+                $CrateContactModel = ClassRegistry::init('CrateModule.CrateContact');
+                $CrateContactModel->delete($this->LastDeletedId->getId());
+                $this->LastDeletedId = null;
+            }
+        }
+
+        parent::afterDelete();
+    }
 
     public function contactsByContainerId($container_ids = [], $type = 'all')
     {

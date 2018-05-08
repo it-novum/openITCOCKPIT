@@ -32,30 +32,40 @@
  *      |__/
 */
 
-$returnedHoststatusfield = $this->Mapstatus->hoststatusField($uuid);
-$hostStatus = $this->Mapstatus->hoststatus($uuid);
 
-$returnedServiceStatus = [];
-foreach ($servicestatus as $counter => $servicestate) {
-    $returnedServiceStatus[$counter] = $this->Mapstatus->servicestatus($servicestate['Objects']['name2']);
-}
-$serviceAmount = count($servicestatus);
+$hostInfo = $hoststatus[$uuid]['Host'];
+$hostStatus = $hoststatus[$uuid]['Hoststatus'];
 $stateType = '';
-if($hostStatus['state'] == 0) {
-    $stateType = 'service';
-    if (isset($returnedServiceStatus) && $serviceAmount > 0) {
-        $stateArr = [];
-        foreach ($returnedServiceStatus as $key => $state) {
-            $stateArr[$key] = $state['state'];
-        }
-        $cumulatedState = (int)max($stateArr);
-    } else {
-        $cumulatedState = (int)$hostStatus['state'];
-    }
-}else{
-    $stateType = 'host';
-    $cumulatedState = $hostStatus['state'];
+$cumulativeState = -1;
+
+$serviceAmount = 0;
+if (isset($hostStatus['Servicestatus'])) {
+    $serviceAmount = count($hostStatus['Servicestatus']);
 }
+
+if (!isset($hostStatus['current_state'])) {
+    $FakeHoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus(['current_state' => -1]);
+    $hostStatus = $FakeHoststatus->toArray();
+    $hostStatus['current_state'] = $FakeHoststatus->currentState();
+    $hostStatus['perfdata'] = null;
+}
+
+if ($hostStatus['current_state'] == 0) {
+    $stateType = 'service';
+    $servicestates = [];
+    foreach ($hostStatus['Servicestatus'] as $servicestatus) {
+        if (isset($servicestatus['Servicestatus']['current_state'])) {
+            $servicestates[] = $servicestatus['Servicestatus']['current_state'];
+        }
+    }
+    $cumulativeState = hash::apply($servicestates, '{n}', 'max');
+    $summaryState = $this->Status->ServiceStatusColorSimple($cumulativeState);
+} else {
+    $stateType = 'host';
+    $cumulativeState = $hostStatus['current_state'];
+    $summaryState = $this->Status->HostStatusColorSimple($cumulativeState);
+}
+
 ?>
     <table class="table table-bordered popoverTable" style="padding:1px;">
         <tr>
@@ -63,62 +73,69 @@ if($hostStatus['state'] == 0) {
         </tr>
         <tr>
             <td class="col-md-3 col-xs-3"><?php echo __('Hostname'); ?></td>
-            <td class="col-md-9 col-xs-9"><?php echo h($returnedHoststatusfield[0]['name']); ?></td>
+            <td class="col-md-9 col-xs-9"><?php echo h($hostInfo['name']); ?></td>
         </tr>
         <tr>
             <td class="col-md-3 col-xs-3"><?php echo __('description'); ?></td>
-            <td class="col-md-9 col-xs-9"><?php echo h($returnedHoststatusfield[0]['description']); ?></td>
+            <td class="col-md-9 col-xs-9"><?php echo h($hostInfo['description']); ?></td>
         </tr>
         <tr>
+            <?php
+            $state = $this->Status->HostStatusColorSimple($hostStatus['current_state']);
+            ?>
             <td class="col-md-3 col-xs-3"><?php echo __('State (State Type)'); ?></td>
-            <td class="col-md-9 col-xs-9 <?php echo $this->Status->HostStatusColorSimple($hostStatus['state'])['class']; ?> "><?php echo $hostStatus['human_state']; ?></td>
+            <td class="col-md-9 col-xs-9 <?php echo $state['class']; ?> "><?php echo $state['human_state']; ?></td>
         </tr>
         <tr>
             <td class="col-md-3 col-xs-3"><?php echo __('Output'); ?></td>
-            <td class="col-md-9 col-xs-9"><?php echo h($returnedHoststatusfield['output']); ?></td>
+            <td class="col-md-9 col-xs-9"><?php echo h($hostStatus['output']); ?></td>
         </tr>
         <tr>
             <td class="col-md-3 col-xs-3"><?php echo __('Perfdata'); ?></td>
-            <td class="col-md-9 col-xs-9"><?php echo h($returnedHoststatusfield['perfdata']); ?></td>
+            <td class="col-md-9 col-xs-9"><?php echo h($hostStatus['perfdata']); ?></td>
         </tr>
         <tr>
             <td class="col-md-3 col-xs-3"><?php echo __('Current attempt'); ?></td>
-            <td class="col-md-9 col-xs-9"><?php echo h($returnedHoststatusfield['current_check_attempt'].'/'.$returnedHoststatusfield['max_check_attempts']); ?></td>
+            <td class="col-md-9 col-xs-9"><?php echo h($hostStatus['current_check_attempt'] . '/' . $hostStatus['max_check_attempts']); ?></td>
         </tr>
         <tr>
             <td class="col-md-3 col-xs-3"><?php echo __('Last Check'); ?></td>
-            <td class="col-md-9 col-xs-9"><?php echo h($returnedHoststatusfield['last_check']); ?></td>
+            <td class="col-md-9 col-xs-9"><?php echo h($Hoststatus['lastCheck']); ?></td>
         </tr>
         <tr>
             <td class="col-md-3 col-xs-3"><?php echo __('Next Check'); ?></td>
-            <td class="col-md-9 col-xs-9"><?php echo h($returnedHoststatusfield['next_check']); ?></td>
+            <td class="col-md-9 col-xs-9"><?php echo h($Hoststatus['nextCheck']); ?></td>
         </tr>
         <tr>
             <td class="col-md-3 col-xs-3"><?php echo __('Last State Change'); ?></td>
-            <td class="col-md-9 col-xs-9"><?php echo h($returnedHoststatusfield['last_state_change']); ?></td>
+            <td class="col-md-9 col-xs-9"><?php echo h($Hoststatus['last_state_change']); ?></td>
         </tr>
         <tr>
             <td class="col-md-3 col-xs-3"><?php echo __('Summary State'); ?></td>
-            <?php if($stateType == 'host'): ?>
-                <td class="col-md-9 col-xs-9 <?php echo $this->Status->HostStatusColorSimple($cumulatedState)['class']; ?>"> <?php echo $this->Status->HostStatusColorSimple($cumulatedState)['human_state']; ?></td>
+            <?php if ($stateType == 'host'): ?>
+                <?php $stateColor = $this->Status->HostStatusColorSimple($cumulativeState); ?>
+                <td class="col-md-9 col-xs-9 <?php echo $summaryState['class']; ?>"> <?php echo $summaryState['human_state']; ?></td>
+            <?php else:
+                ?>
+                <?php if ($serviceAmount > 0):
+                $stateColor = $this->Status->ServiceStatusColorSimple($cumulativeState);
+                ?>
+                <td class="col-md-9 col-xs-9 <?php echo $summaryState['class']; ?>"> <?php echo $summaryState['human_state']; ?></td>
             <?php else: ?>
-                <?php if (isset($returnedServiceStatus) && $serviceAmount > 0): ?>
-                    <td class="col-md-9 col-xs-9 <?php echo $this->Status->ServiceStatusColorSimple($cumulatedState)['class']; ?>"> <?php echo $this->Status->ServiceStatusColorSimple($cumulatedState)['human_state']; ?></td>
-                <?php else: ?>
-                    <td class="col-md-9 col-xs-9"> <?php echo __('No Summary State possible') ?></td>
-                <?php endif; ?>
-            <?php endif;?>
+                <td class="col-md-9 col-xs-9"> <?php echo __('No Summary State possible') ?></td>
+            <?php endif; ?>
+            <?php endif; ?>
         </tr>
         <tr>
             <td class="col-md-3 col-xs-3"><?php echo __('Summary Output'); ?></td>
-            <td class="col-md-9 col-xs-9"><?php echo $hostStatus['human_state']; ?>. There
+            <td class="col-md-9 col-xs-9"><?php echo $summaryState['human_state']; ?>. There
                 are <?php echo $serviceAmount ?> Services
             </td>
         </tr>
     </table>
 
-<?php if (isset($returnedServiceStatus) && $serviceAmount > 0) : ?>
-    <table class="table table-bordered popoverListTable popoverBreakWord" >
+<?php if ($serviceAmount > 0) : ?>
+    <table class="table table-bordered popoverListTable popoverBreakWord">
         <tr>
             <th class="col-md-3 col-xs-3 h6"><?php echo __('Service Name'); ?></th>
             <th class="col-md-2 col-xs-2 h6"><?php echo __('State'); ?></th>
@@ -126,36 +143,34 @@ if($hostStatus['state'] == 0) {
         </tr>
         <?php
         $i = 0;
-        foreach ($servicestatus as $counter => $service) :
-            if($i == 10): ?>
+        foreach ($hostStatus['Servicestatus'] as $counter => $service) :
+            if (empty($service['Servicestatus'])) {
+                $service['Servicestatus'] = [
+                    'current_state' => -1,
+                    'output'        => ''
+                ];
+            }
+            if ($i == 10): ?>
                 <tr>
-                    <td colspan="3"><?php echo __('Showing '.$i. ' of '.$serviceAmount. ' Services. Click on the icon to see all') ?></td>
+                    <td colspan="3"><?php echo __('Showing ' . $i . ' of ' . $serviceAmount . ' Services. Click on the icon to see all') ?></td>
                 </tr>
-            <?php
+                <?php
                 break;
             endif;
             ?>
             <tr>
-                <td title="<?php
-                if (isset($service['Service']['name']) && $service['Service']['name'] != '') {
-                    echo $service['Service']['name'];
-                } else {
-                    echo h($service['Servicetemplate']['name']);
-                }
-                ?>">
+                <td title="<?php echo h($service[0]['ServiceName']); ?>">
                     <?php
-                    if (isset($service['Service']['name']) && $service['Service']['name'] != '') {
-                        echo $service['Service']['name'];
-                    } else {
-                        echo h($service['Servicetemplate']['name']);
-                    }
+                    echo h($service[0]['ServiceName']);
                     ?>
                 </td>
-                <td class="<?php echo $this->Status->ServiceStatusColorSimple($returnedServiceStatus[$counter]['state'])['class']; ?>"><?php echo $returnedServiceStatus[$counter]['human_state']; ?></td>
-                <td title="<?php echo $service['Servicestatus']['output']; ?>" class="cropText"><?php echo h($service['Servicestatus']['output']); ?></td>
+                <?php $servicestate = $this->Status->ServiceStatusColorSimple($service['Servicestatus']['current_state']) ?>
+                <td class="<?php echo $servicestate['class']; ?>"><?php echo $servicestate['human_state']; ?></td>
+                <td title="<?php echo $service['Servicestatus']['output']; ?>"
+                    class="cropText"><?php echo h($service['Servicestatus']['output']); ?></td>
             </tr>
-        <?php
-        $i++;
+            <?php
+            $i++;
         endforeach; ?>
     </table>
 <?php endif; ?>

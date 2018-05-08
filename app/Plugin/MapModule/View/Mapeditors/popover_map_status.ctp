@@ -24,27 +24,15 @@
 //	confirmation.
 
 /*
- *         _                    _               
+ *         _                    _
  *   __ _ (_) __ ___  __ __   _(_) _____      __
  *  / _` || |/ _` \ \/ / \ \ / / |/ _ \ \ /\ / /
- * | (_| || | (_| |>  <   \ V /| |  __/\ V  V / 
- *  \__,_|/ |\__,_/_/\_\   \_/ |_|\___| \_/\_/  
- *      |__/                                    
+ * | (_| || | (_| |>  <   \ V /| |  __/\ V  V /
+ *  \__,_|/ |\__,_/_/\_\   \_/ |_|\___| \_/\_/
+ *      |__/
 */
-$mapstatus = $this->Mapstatus->mapstatus($mapinfo['Map']['id']);
-$statusColor = null;
-if (!empty($mapstatus['cumulated_type_key'])) {
-    switch ($mapstatus['cumulated_type_key']) {
-        case 'Host':
-            $statusColor = $this->Status->HostStatusColorSimple($mapstatus['state']);
-            break;
-        case 'Service':
-            $statusColor = $this->Status->ServiceStatusColorSimple($mapstatus['state']);
-            break;
-    }
-} else {
-    $statusColor = $this->Status->HostStatusColorSimple(-1);
-}
+
+$mapstatus = $this->Mapstatus->mapstatus($id);
 ?>
 <table class="table table-bordered popoverTable" style="padding:1px;">
     <tr>
@@ -60,6 +48,6 @@ if (!empty($mapstatus['cumulated_type_key'])) {
     </tr>
     <tr>
         <td class="col-md-3 col-xs-3"><?php echo __('Summary State'); ?></td>
-        <td class="col-md-9 col-xs-9 <?php echo $statusColor['class']; ?> "><?php echo $statusColor['human_state']; ?></td>
+        <td class="col-md-9 col-xs-9 <?php echo $mapstatus['class']; ?> "><?php echo $mapstatus['human_state']; ?></td>
     </tr>
 </table>

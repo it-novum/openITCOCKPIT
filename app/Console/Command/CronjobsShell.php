@@ -41,7 +41,11 @@ class CronjobsShell extends AppShell {
         $this->force = false;
 
         try {
-            $this->cronjobs = $this->Cronjob->find('all');
+            $this->cronjobs = $this->Cronjob->find('all', [
+                'conditions' => [
+                    'Cronjob.enabled' => 1
+                ]
+            ]);
         } catch (Exception $e) {
             debug($e->getMessage());
             exit(0);

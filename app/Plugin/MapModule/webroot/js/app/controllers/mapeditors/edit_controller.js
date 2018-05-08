@@ -696,7 +696,6 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
                     $('#addLine_stateless').hide();
                     break;
                 case 'service':
-                    console.log(self.currentLine);
                     $('#addServiceLineStartX').val(self.currentLine['startX']);
                     $('#addServiceLineEndX').val(self.currentLine['endX']);
                     $('#addServiceLineStartY').val(self.currentLine['startY']);
@@ -1189,7 +1188,6 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
         });
 
         $('#addServiceHostObjectId, #addServiceLineHostObjectId, #addServiceGadgetHostObjectId').change(function () {
-            console.log('change for host dropdown');
             var triggeredType = this.id;
 
             var hostId = $(this).val();
@@ -1521,6 +1519,7 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
             success: function(response){
                 var $selector = $(selector);
                 var list = self.buildList(response.hosts);
+                $selector.empty();
                 $selector.append(list);
                 $selector.val(selectedHostIds);
                 $selector.trigger('chosen:updated');
@@ -2668,8 +2667,6 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
         self.currentText.text = self.currentText.text.replace(/<br\s*[\/]?>/gi, "\n");
         $('#docuText').val(self.currentText.text);
 
-        console.log($parent);
-        console.log(self.currentText);
         $parent.css({'z-index':self.currentText['z_index']});
         //$('#editTextFontSize').val(self.currentText.font_size);
         $('#editTextZIndex').val(self.currentText['z_index']);

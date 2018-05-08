@@ -126,6 +126,7 @@ class DowntimeHost extends NagiosModuleAppModel {
                 'DowntimeHost.duration',
                 'DowntimeHost.was_started',
                 'DowntimeHost.was_cancelled',
+                'Host.uuid'
             ],
             'joins'      => [
                 [
@@ -133,6 +134,12 @@ class DowntimeHost extends NagiosModuleAppModel {
                     'type'       => 'INNER',
                     'alias'      => 'Objects',
                     'conditions' => 'Objects.object_id = DowntimeHost.object_id AND DowntimeHost.downtime_type = 2' //Downtime.downtime_type = 2 Host downtime
+                ],
+                [
+                    'table'      => 'hosts',
+                    'type'       => 'INNER',
+                    'alias'      => 'Host',
+                    'conditions' => 'Host.uuid = Objects.name1 AND Objects.objecttype_id = 1' // Objects.objecttype_id = 1
                 ],
             ],
             'order'      => $Conditions->getOrder(),

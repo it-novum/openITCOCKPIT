@@ -24,9 +24,17 @@
 //	confirmation.
 
 use itnovum\openITCOCKPIT\Core\ContainerRepository;
+use itnovum\openITCOCKPIT\Core\DbBackend;
+use itnovum\openITCOCKPIT\Core\ServicestatusConditions;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
+use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 
+/**
+ * Class AutomapsController
+ * @property DbBackend $DbBackend
+ * @property Servicestatus $Servicestatus
+ */
 class AutomapsController extends AppController {
     public $layout = 'Admin.default';
 
@@ -128,20 +136,35 @@ class AutomapsController extends AppController {
     }
 
     public function view($id) {
+        $this->layout = 'angularjs';
         if (!$this->Automap->exists($id)) {
             throw new NotFoundException(__('Invalid automap'));
         }
 
+        $fontSizes = [
+            1 => 'xx-small',
+            2 => 'x-small',
+            3 => 'small',
+            4 => 'medium',
+            5 => 'large',
+            6 => 'x-large',
+            7 => 'xx-large',
+        ];
+
         $automap = $this->Automap->findById($id);
+        $automap['Automap']['font_size_html'] = $fontSizes[$automap['Automap']['font_size']];
 
         if (!$this->allowedByContainerId($automap['Automap']['container_id'], false)) {
             $this->render403();
+            return;
+        }
 
+        if (!$this->isAngularJsRequest()) {
             return;
         }
 
         $ContainerRepository = new ContainerRepository($automap['Automap']['container_id']);
-        if ((bool)$automap['Automap']['recursive'] == true) {
+        if ($automap['Automap']['recursive'] === true) {
             if ($automap['Automap']['container_id'] == ROOT_CONTAINER) {
                 $childContainers = $this->Tree->resolveChildrenOfContainerIds($ContainerRepository->getContainer(), true);
             } else {
@@ -156,46 +179,33 @@ class AutomapsController extends AppController {
         }
 
 
-        $fontSizes = [
-            1 => 'xx-small',
-            2 => 'x-small',
-            3 => 'small',
-            4 => 'medium',
-            5 => 'large',
-            6 => 'x-large',
-            7 => 'xx-large',
-        ];
-
-
-        $conditions = [];
-
         $current_stateConditions = [];
-
         $state_types = [
             'show_unknown'  => 3,
             'show_critical' => 2,
             'show_warning'  => 1,
             'show_ok'       => 0,
         ];
-
+        $ServicestatusConditions = new ServicestatusConditions($this->DbBackend);
         foreach ($state_types as $stateName => $stateNumber) {
             if ($automap['Automap'][$stateName]) {
                 $current_stateConditions[] = $stateNumber;
             }
         }
-        if (sizeof($current_stateConditions) !== 4) {
-            $conditions['Servicestatus.current_state'] = $current_stateConditions;
+        if (sizeof($current_stateConditions) < 4) {
+            $ServicestatusConditions->currentState($current_stateConditions);
         }
 
         if ($automap['Automap']['show_acknowledged'] == false) {
-            $conditions['Servicestatus.problem_has_been_acknowledged'] = 0;
+            $ServicestatusConditions->setProblemHasBeenAcknowledged(0);
         }
 
         if ($automap['Automap']['show_downtime'] == false) {
-            $conditions['Servicestatus.scheduled_downtime_depth'] = 0;
+            $ServicestatusConditions->setScheduledDowntimeDepth(0);
         }
 
         $hosts = $this->Host->find('list', [
+            'recursive'  => -1,
             'contain'    => [],
             'joins'      => [
                 [
@@ -217,75 +227,83 @@ class AutomapsController extends AppController {
             ]
         ]);
 
-        $services = $this->Service->find('all', [
+        $serviceRecords = $this->Service->find('all', [
             'recursive'  => -1,
-            'joins'      => [
-                [
-                    'table'      => 'hosts',
-                    'alias'      => 'Host',
-                    'type'       => 'INNER',
-                    'conditions' => [
-                        'Host.id = Service.host_id',
-                    ],
-                ],
-                [
-                    'table'      => 'servicetemplates',
-                    'alias'      => 'Servicetemplate',
-                    'type'       => 'INNER',
-                    'conditions' => [
-                        'Servicetemplate.id = Service.servicetemplate_id',
-                    ],
-                ],
-                [
-                    'table'      => 'nagios_objects',
-                    'alias'      => 'ServiceObject',
-                    'type'       => 'INNER',
-                    'conditions' => [
-                        'ServiceObject.name2 = Service.uuid',
-                        'ServiceObject.objecttype_id' => 2,
-                    ],
-                ],
-                [
-                    'table'      => 'nagios_servicestatus',
-                    'alias'      => 'Servicestatus',
-                    'type'       => 'INNER',
-                    'conditions' => [
-                        'Servicestatus.service_object_id = ServiceObject.object_id',
-                    ],
-                ],
+            'contain'    => [
+                'Servicetemplate' => [
+                    'fields' => [
+                        'Servicetemplate.name'
+                    ]
+                ]
             ],
             'fields'     => [
                 'Service.id',
                 'Service.uuid',
                 'Service.name',
-                'Service.host_id',
-                'Servicetemplate.name',
-
-                'ServiceObject.object_id',
-
-                'Servicestatus.current_state',
-                'Servicestatus.problem_has_been_acknowledged',
-                'Servicestatus.scheduled_downtime_depth',
-
-                'Host.id',
-                'Host.name',
+                'Service.host_id'
             ],
             'conditions' => [
                 'Service.host_id'                                                      => array_keys($hosts),
                 'Service.disabled'                                                     => 0,
-                'IF(Service.name IS NULL, Servicetemplate.name, Service.name) REGEXP ' => $automap['Automap']['service_regex'],
-                $conditions,
+                'IF(Service.name IS NULL, Servicetemplate.name, Service.name) REGEXP ' => $automap['Automap']['service_regex']
             ],
             'order'      => [
-                'Host.name ASC',
-                ' IF(Service.name IS NULL, Servicetemplate.name, Service.name) ASC'
+                'IF(Service.name IS NULL, Servicetemplate.name, Service.name) ASC'
             ]
         ]);
 
-        $username = $this->Auth->user('full_name');
 
-        $this->set(compact(['fontSizes', 'automap', 'hosts', 'services', 'username']));
-        $this->set('_serialize', ['automap', 'hosts', 'services']);
+        $serviceUuids = [];
+        foreach ($serviceRecords as $serviceRecord) {
+            $serviceUuids[] = $serviceRecord['Service']['uuid'];
+        }
+
+        $ServicestatusFields = new ServicestatusFields($this->DbBackend);
+        $ServicestatusFields
+            ->currentState()
+            ->problemHasBeenAcknowledged()
+            ->scheduledDowntimeDepth();
+        $servicestatusRecords = $this->Servicestatus->byUuid(
+            $serviceUuids,
+            $ServicestatusFields,
+            $ServicestatusConditions
+        );
+
+        $hostAndServices = [];
+        foreach ($serviceRecords as $serviceRecord) {
+            $serviceUuid = $serviceRecord['Service']['uuid'];
+            //Has Service a service status record?
+            if(!isset($servicestatusRecords[$serviceUuid])){
+                continue;
+            }
+
+            $hostId = $serviceRecord['Service']['host_id'];
+            if($serviceRecord['Service']['name'] === '' || $serviceRecord['Service']['name'] === null){
+                $serviceRecord['Service']['name'] = $serviceRecord['Servicetemplate']['name'];
+            }
+
+            if(!isset($hostAndServices[$hostId])){
+                $hostAndServices[$hostId] = [
+                    'Host' => [
+                        'id' => $hostId,
+                        'name' => $hosts[$hostId]
+                    ],
+                    'Services' => []
+                ];
+            }
+
+            $hostAndServices[$hostId]['Services'][] = [
+                'Service' => $serviceRecord['Service'],
+                'Servicestatus' => [
+                    'currentState' => (int)$servicestatusRecords[$serviceUuid]['Servicestatus']['current_state'],
+                    'problemHasBeenAcknowledged' => (bool)$servicestatusRecords[$serviceUuid]['Servicestatus']['problem_has_been_acknowledged'],
+                    'scheduledDowntimeDepth' => (int)$servicestatusRecords[$serviceUuid]['Servicestatus']['scheduled_downtime_depth']
+                ]
+            ];
+        }
+
+        $this->set(compact(['automap', 'hostAndServices']));
+        $this->set('_serialize', ['automap', 'hostAndServices']);
     }
 
     public function loadServiceDetails($serviceId = null) {
@@ -352,7 +370,7 @@ class AutomapsController extends AppController {
         $servicestatus = [
             'Servicestatus' => [
                 'current_state'                 => $exitCodes[$Servicestatus->currentState()],
-                'state_type'                    => ($Servicestatus->isHardState())?__('Hard'):__('Soft'),
+                'state_type'                    => ($Servicestatus->isHardState()) ? __('Hard') : __('Soft'),
                 'last_state_change'             => $Servicestatus->getLastStateChange(),
                 'perfdata'                      => h($Servicestatus->getPerfdata()),
                 'output'                        => h($Servicestatus->getOutput()),
@@ -402,6 +420,12 @@ class AutomapsController extends AppController {
         }
         $this->setFlash(__('Could not delete Automap'), false);
         $this->redirect(['action' => 'index']);
+    }
+
+    public function icon() {
+        $this->layout = 'blank';
+        //Only ship HTML Template
+        return;
     }
 
 }

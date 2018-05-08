@@ -53,7 +53,6 @@ class GraphgeneratorsController extends AppController
         'GraphCollectionItem',
         'Graphgenerator',
     ];
-    public $components = ['Paginator'];
     public $helpers = ['ListFilter.ListFilter'];
 
     /**

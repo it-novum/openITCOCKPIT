@@ -30,7 +30,7 @@
             <?php echo __('Administration'); ?>
             <span>>
                 <?php echo __(' Cronjobs'); ?>
-			</span>
+            </span>
             <div class="third_level"> <?php echo ucfirst($this->params['action']); ?></div>
         </h1>
     </div>
@@ -56,7 +56,6 @@
 
                     echo $this->Form->input('plugin', [
                         'label'     => ['text' => __('Plugin'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
-                        'wrapInput' => 'col col-xs-8',
                         'options'   => $plugins,
                         'selected'  => 'Core',
                         'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
@@ -64,18 +63,29 @@
 
                     echo $this->Form->input('task', [
                         'label'     => ['text' => __('Task'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
-                        'wrapInput' => 'col col-xs-8',
                         'options'   => $coreTasks,
                         'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
                     ]);
 
                     echo $this->Form->input('interval', [
                         'label'     => ['text' => __('Interval'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
-                        'wrapInput' => 'col col-xs-8',
                         'help'      => __('Cronjob schedule interval in minutes'),
                         'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
                     ]);
                     ?>
+
+                    <div class="form-group required">
+                        <label for="CronjobEnabled"
+                               class="col-xs-1 col-md-1 col-lg-1"><?php echo __('Enabled'); ?></label>
+                        <div class="col col-xs-10 col-md-10 col-lg-10 required">
+                            <input name="data[Cronjob][enabled]" id="CronjobEnabled_" value="0" autocomplete="off"
+                                   type="hidden">
+                            <input name="data[Cronjob][enabled]" value="1" id="CronjobEnabled" type="checkbox">
+                            <span class="help-block">
+                                <?php echo __('Determine if this cronjob should be executed.'); ?>
+                            </span>
+                        </div>
+                    </div>
                 </div>
             </div>
             <?php echo $this->Form->formActions(); ?>

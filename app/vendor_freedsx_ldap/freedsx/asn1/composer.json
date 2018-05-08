@@ -1,0 +1,31 @@
+{
+  "name": "freedsx/asn1",
+  "description": "An ASN.1 library for PHP.",
+  "homepage": "https://github.com/FreeDSx/ASN1",
+  "keywords": [
+    "ASN.1",
+    "ASN1",
+    "BER",
+    "DER",
+    "X.690"
+  ],
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Chad Sikorra",
+      "email": "Chad.Sikorra@gmail.com"
+    }
+  ],
+  "require": {
+    "php": ">=7.1"
+  },
+  "require-dev": {
+    "phpspec/phpspec": "^4.0"
+  },
+  "config": {
+    "bin-dir": "bin"
+  },
+  "autoload": {
+    "psr-4": {"FreeDSx\\Asn1\\": "src/FreeDSx/Asn1"}
+  }
+}

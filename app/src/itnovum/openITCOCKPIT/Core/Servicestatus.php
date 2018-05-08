@@ -32,6 +32,8 @@ class Servicestatus {
 
     private $currentState = null;
 
+    private $lastHardState = null;
+
     private $isFlapping;
 
     private $problemHasBeenAcknowledged;
@@ -106,6 +108,10 @@ class Servicestatus {
 
         if (isset($data['last_hard_state_change'])) {
             $this->lastHardStateChange = $data['last_hard_state_change'];
+        }
+
+        if (isset($data['last_hard_state'])) {
+            $this->lastHardState = (int)$data['last_hard_state'];
         }
 
         if (isset($data['last_state_change'])) {
@@ -308,6 +314,10 @@ class Servicestatus {
             return strtotime($this->lastHardStateChange);
         }
         return $this->lastHardStateChange;
+    }
+
+    public function getLastHardState() {
+        return $this->lastHardState;
     }
 
     public function getLastStateChange() {

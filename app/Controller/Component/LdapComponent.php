@@ -25,6 +25,10 @@
 
 use Model\Adldap;
 
+/**
+ * Class LdapComponent
+ * @property \Adldap\Adldap $adldap
+ */
 class LdapComponent extends Component
 {
 
@@ -130,7 +134,7 @@ class LdapComponent extends Component
             $requiredFields = ['samaccountname', 'mail', 'sn', 'givenname'];
             $selectFields = ['samaccountname', 'mail', 'sn', 'givenname', 'displayname', 'dn'];
         }
-        $perPage = 900;
+        $perPage = 500;
         $currentPage = 0;
         $makeRequest = true;
         while($makeRequest){

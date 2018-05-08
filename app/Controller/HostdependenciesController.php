@@ -46,7 +46,6 @@ class HostdependenciesController extends AppController
     ];
     public $layout = 'Admin.default';
     public $components = [
-        'Paginator',
         'ListFilter.ListFilter',
         'RequestHandler',
         'CustomValidationErrors',

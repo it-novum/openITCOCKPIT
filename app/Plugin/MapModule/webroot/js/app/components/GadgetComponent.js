@@ -531,8 +531,8 @@ App.Components.GadgetComponent = Frontend.Component.extend({
         var id = (opt.id == false || opt.id != null ? opt.id : '');
         var x = opt.x || 0;
         var y = opt.y || 0;
-        var sizeX = opt.sizeX || 60;
-        var sizeY = opt.sizeY || 150;
+        var sizeX = 60;
+        var sizeY = 150;
         var state = opt.state || '';
         var flapping = (opt.flapping == null ? false : opt.flapping);
         var containSVG = (opt.contain == null ? true : opt.contain);

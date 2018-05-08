@@ -44,7 +44,6 @@ class ServicetemplatesController extends AppController
 {
     public $layout = 'Admin.default';
     public $components = [
-        'Paginator',
         'ListFilter.ListFilter',
         'CustomValidationErrors',
         'AdditionalLinks',

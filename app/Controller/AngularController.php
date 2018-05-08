@@ -23,6 +23,7 @@
 //  confirmation.
 
 use \itnovum\openITCOCKPIT\Core\ValueObjects\User;
+use itnovum\openITCOCKPIT\Core\Views\PieChart;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
 
 /**
@@ -39,6 +40,7 @@ class AngularController extends AppController {
     public $uses = [
         'Host',
         'Service',
+        'Container',
         MONITORING_HOSTSTATUS,
         MONITORING_SERVICESTATUS
     ];
@@ -79,6 +81,7 @@ class AngularController extends AppController {
             //Only ship HTML template
             return;
         }
+        session_write_close();
 
         $userTimezone = $this->Auth->user('timezone');
         if (strlen($userTimezone) < 2) {
@@ -125,6 +128,7 @@ class AngularController extends AppController {
             //Only ship HTML template
             return;
         }
+        session_write_close();
 
 
         $showstatsinmenu = (bool)$this->Auth->user('showstatsinmenu');
@@ -139,19 +143,116 @@ class AngularController extends AppController {
         ];
 
         if ($showstatsinmenu) {
-            if($this->DbBackend->isNdoUtils()){
-                $hoststatusCount = $this->Host->getHoststatusCount($this->MY_RIGHTS);
-                $servicestatusCount = $this->Host->getServicestatusCount($this->MY_RIGHTS);
+            if ($this->DbBackend->isNdoUtils()) {
+                $hoststatusCount = $this->Host->getHoststatusCount($this->MY_RIGHTS, false);
+                $servicestatusCount = $this->Host->getServicestatusCount($this->MY_RIGHTS, false);
             }
 
-            if($this->DbBackend->isCrateDb()){
-                $hoststatusCount = $this->Hoststatus->getHoststatusCount($this->MY_RIGHTS);
-                $servicestatusCount = $this->Servicestatus->getServicestatusCount($this->MY_RIGHTS);
+            if ($this->DbBackend->isCrateDb()) {
+                $hoststatusCount = $this->Hoststatus->getHoststatusCount($this->MY_RIGHTS, false);
+                $servicestatusCount = $this->Servicestatus->getServicestatusCount($this->MY_RIGHTS, false);
             }
 
         }
         $this->set(compact(['showstatsinmenu', 'hoststatusCount', 'servicestatusCount']));
         $this->set('_serialize', ['showstatsinmenu', 'hoststatusCount', 'servicestatusCount']);
+    }
+
+    public function statuscount() {
+        if (!$this->isApiRequest()) {
+            throw new RuntimeException('Only for API requests');
+        }
+        session_write_close();
+
+        $recursive = false;
+        if($this->request->query('recursive') === 'true'){
+            $recursive = true;
+        }
+
+        $containerIds = $this->request->query('containerIds');
+        if(!is_numeric($containerIds) && !is_array($containerIds)){
+            $containerIds = ROOT_CONTAINER;
+        }
+
+        if(!is_array($containerIds)){
+            $containerIds = [$containerIds];
+        }
+
+        if ($recursive) {
+            //get recursive container ids
+            $containerIdToResolve = $containerIds;
+            $containerIdsResolved = Hash::extract($this->Container->children($containerIdToResolve[0], false, ['Container.id']), '{n}.Container.id');
+            $recursiveContainerIds = [];
+            foreach ($containerIdsResolved as $containerId) {
+                if (in_array($containerId, $this->MY_RIGHTS)) {
+                    $recursiveContainerIds[] = $containerId;
+                }
+            }
+            $containerIds = array_merge($containerIds, $recursiveContainerIds);
+        }
+
+        $hoststatusCount = [
+            '0' => 0,
+            '1' => 0,
+            '2' => 0,
+        ];
+
+        $servicestatusCount = [
+            '0' => 0,
+            '1' => 0,
+            '2' => 0,
+            '3' => 0,
+        ];
+
+
+        if ($this->DbBackend->isNdoUtils()) {
+            $hoststatusCount = $this->Host->getHoststatusCount($containerIds, true);
+            $servicestatusCount = $this->Host->getServicestatusCount($containerIds, true);
+        }
+
+        if ($this->DbBackend->isCrateDb()) {
+            $hoststatusCount = $this->Hoststatus->getHoststatusCount($containerIds, true);
+            $servicestatusCount = $this->Servicestatus->getServicestatusCount($containerIds, true);
+        }
+
+        $hoststatusSum = array_sum($hoststatusCount);
+        $servicestatusSum = array_sum($servicestatusCount);
+
+        $hoststatusCountPercentage = [];
+        $servicestatusCountPercentage = [];
+        foreach($hoststatusCount as $stateId => $count){
+            if($hoststatusSum > 0) {
+                $hoststatusCountPercentage[$stateId] = round($count / $hoststatusSum * 100, 2);
+            }else{
+                $hoststatusCountPercentage[$stateId] = 0;
+            }
+        }
+
+        foreach($servicestatusCount as $stateId => $count){
+            if($servicestatusSum > 0) {
+                $servicestatusCountPercentage[$stateId] = round($count / $servicestatusSum * 100, 2);
+            }else{
+                $servicestatusCountPercentage[$stateId] = 0;
+            }
+        }
+
+
+        $this->set(compact([
+            'hoststatusCount',
+            'servicestatusCount',
+            'hoststatusSum',
+            'servicestatusSum',
+            'hoststatusCountPercentage',
+            'servicestatusCountPercentage'
+        ]));
+        $this->set('_serialize', [
+            'hoststatusCount',
+            'servicestatusCount',
+            'hoststatusSum',
+            'servicestatusSum',
+            'hoststatusCountPercentage',
+            'servicestatusCountPercentage'
+        ]);
     }
 
     public function menu() {
@@ -169,6 +270,7 @@ class AngularController extends AppController {
             $menu = $this->Menu->forAngular($menu);
             Cache::write($cacheKey, $menu, 'permissions');
         }
+        session_write_close();
 
         $menu = Cache::read($cacheKey, 'permissions');
 
@@ -185,16 +287,24 @@ class AngularController extends AppController {
         if (!Cache::read('systemsettings', 'permissions')) {
             Cache::write('systemsettings', $this->Systemsetting->findAsArray(), 'permissions');
         }
+        session_write_close();
 
         $systemsettings = Cache::read('systemsettings', 'permissions');
         $websocketConfig = $systemsettings['SUDO_SERVER'];
         $websocketConfig['SUDO_SERVER.URL'] = 'wss://' . env('HTTP_HOST') . '/sudo_server';
+        $websocketConfig['QUERY_LOG.URL'] = 'wss://' . env('HTTP_HOST') . '/query_log';
 
         $this->set('websocket', $websocketConfig);
         $this->set('_serialize', ['websocket']);
     }
 
     public function not_found() {
+        $this->layout = 'Admin.default';
+        //Only ship HTML template
+        return;
+    }
+
+    public function forbidden() {
         $this->layout = 'Admin.default';
         //Only ship HTML template
         return;
@@ -277,6 +387,7 @@ class AngularController extends AppController {
     }
 
     public function system_health() {
+        session_write_close();
         if (!$this->isAngularJsRequest()) {
             //Only ship HTML template
             return;
@@ -368,44 +479,44 @@ class AngularController extends AppController {
         $this->state = $state;
     }
 
-    public function mass_delete_host_downtimes(){
+    public function mass_delete_host_downtimes() {
         return;
     }
 
 
-    public function mass_delete_service_downtimes(){
+    public function mass_delete_service_downtimes() {
         return;
     }
 
-    public function submit_host_result(){
+    public function submit_host_result() {
         return;
     }
 
-    public function disable_host_flap_detection(){
+    public function disable_host_flap_detection() {
         return;
     }
 
-    public function enable_host_flap_detection(){
+    public function enable_host_flap_detection() {
         return;
     }
 
-    public function send_host_notification(){
+    public function send_host_notification() {
         return;
     }
 
-    public function submit_service_result(){
+    public function submit_service_result() {
         return;
     }
 
-    public function disable_service_flap_detection(){
+    public function disable_service_flap_detection() {
         return;
     }
 
-    public function enable_service_flap_detection(){
+    public function enable_service_flap_detection() {
         return;
     }
 
-    public function send_service_notification(){
+    public function send_service_notification() {
         return;
     }
 
@@ -417,5 +528,32 @@ class AngularController extends AppController {
     public function disable_service_notifications() {
         //Only ship HTML template
         return;
+    }
+
+    /**
+     * @param int $up up|ok
+     * @param int $down down|warning
+     * @param int $unreachable unreachable|critical
+     * @param int $unknown unknown
+     * @throws Exception
+     */
+    public function getPieChart($up = 0, $down = 0, $unreachable = 1, $unknown = null) {
+        session_write_close();
+        $PieChart = new PieChart();
+
+        $chartData = [$up, $down, $unreachable];
+        if ($unknown !== null) {
+            $chartData = [$up, $down, $unreachable, $unknown];
+        }
+
+        $PieChart->createPieChart($chartData);
+
+        $image = $PieChart->getImage();
+
+        $this->layout = false;
+        $this->render = false;
+        header('Content-Type: image/png');
+        imagepng($image, null, 0);
+        imagedestroy($image);
     }
 }

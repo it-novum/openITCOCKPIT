@@ -29,7 +29,6 @@ class MapsController extends MapModuleAppController {
 
     public $layout = 'angularjs';
     public $components = [
-        'Paginator',
         'ListFilter.ListFilter',
         'RequestHandler',
         'CustomValidationErrors'

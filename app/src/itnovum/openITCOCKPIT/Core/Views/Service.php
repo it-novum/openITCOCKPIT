@@ -79,6 +79,9 @@ class Service {
      * @param bool $allowEdit
      */
     public function __construct($service, $servicename = null, $allowEdit = false){
+        if(isset($service['CrateService'])){
+            $service['Service'] = $service['CrateService'];
+        }
         $this->allow_edit = $allowEdit;
 
         if (isset($service['Service']['id'])) {

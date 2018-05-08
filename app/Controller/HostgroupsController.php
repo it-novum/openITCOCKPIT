@@ -55,7 +55,6 @@ class HostgroupsController extends AppController {
     ];
     public $layout = 'angularjs';
     public $components = [
-        'Paginator',
         'RequestHandler',
     ];
     public $helpers = [

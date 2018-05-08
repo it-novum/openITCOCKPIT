@@ -120,6 +120,16 @@ class DowntimeHost extends CrateModuleAppModel {
                 'DowntimeHost.duration',
                 'DowntimeHost.was_started',
                 'DowntimeHost.was_cancelled',
+                'Host.uuid'
+            ],
+            'joins' => [
+                [
+                    'table' => 'openitcockpit_hosts',
+                    'type' => 'INNER',
+                    'alias' => 'Host',
+                    'conditions' =>
+                        'Host.uuid = DowntimeHost.hostname',
+                ],
             ],
             'order'      => $Conditions->getOrder(),
             'conditions' => [

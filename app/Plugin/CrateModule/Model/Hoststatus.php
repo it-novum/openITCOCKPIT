@@ -152,13 +152,18 @@ class Hoststatus extends CrateModuleAppModel {
 
     /**
      * @param array $MY_RIGHTS
+     * @param bool $includeOkState
      * @return array
      */
-    public function getHoststatusCount($MY_RIGHTS){
+    public function getHoststatusCount($MY_RIGHTS, $includeOkState = false){
         $hoststatusCount = [
             '1' => 0,
             '2' => 0,
         ];
+        if($includeOkState === true){
+            $hoststatusCount['0'] = 0;
+        }
+
         $this->virtualFields = [
             'count' => 'COUNT(DISTINCT Hoststatus.hostname)'
         ];
@@ -175,8 +180,7 @@ class Hoststatus extends CrateModuleAppModel {
                 ]
             ],
             'conditions' => [
-                'Host.disabled'                  => false,
-                'Hoststatus.current_state >'     => 0,
+                'Host.disabled'                  => false
             ],
 
             'array_difference' => [
@@ -187,6 +191,11 @@ class Hoststatus extends CrateModuleAppModel {
                 'Hoststatus.current_state',
             ],
         ];
+
+        if($includeOkState === false){
+            $query['conditions']['Hoststatus.current_state >'] = 0;
+        }
+
         $hoststatusCountResult = $this->find('all', $query);
         foreach ($hoststatusCountResult as $hoststatus) {
             $hoststatusCount[$hoststatus['Hoststatus']['current_state']] = (int)$hoststatus[0]['count'];
