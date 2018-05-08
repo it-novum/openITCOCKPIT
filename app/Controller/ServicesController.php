@@ -3289,4 +3289,40 @@ class ServicesController extends AppController {
         $this->set(compact(['services']));
         $this->set('_serialize', ['services']);
     }
+
+    /**
+     * @param int | null $hostId
+     */
+    public function serviceStatusSummaryByHostId($hostId = null) {
+        if (!$this->isApiRequest()) {
+            throw new MethodNotAllowedException();
+        }
+        if (!$hostId) {
+            throw new NotFoundException(__('Invalid host'));
+        }
+        $serviceUuids = Hash::extract(
+            $this->Service->find('all', [
+                'recursive' => -1,
+                'fields' => [
+                    'Service.uuid'
+                ],
+                'conditions' => [
+                    'Service.host_id' => $hostId
+                ]
+            ]
+            ),
+            '{n}.Service.uuid'
+        );
+        $ServicestatusFields = new ServicestatusFields($this->DbBackend);
+        $ServicestatusFields->currentState()
+            ->problemHasBeenAcknowledged()
+            ->activeChecksEnabled()
+            ->scheduledDowntimeDepth();
+        $servicestatus = $this->Servicestatus->byUuids($serviceUuids, $ServicestatusFields);
+
+        $serviceStateSummary = $this->Service->getServiceStateSummary($servicestatus);
+
+        $this->set('serviceStateSummary', $serviceStateSummary);
+        $this->set('_serialize', ['serviceStateSummary']);
+    }
 }

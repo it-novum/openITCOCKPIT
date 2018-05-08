@@ -1,11 +1,11 @@
 angular.module('openITCOCKPIT')
-    .controller('StatusmapsIndexController', function ($scope, $http, QueryStringService) {
+    .controller('StatusmapsIndexController', function ($scope, $q, $http, QueryStringService) {
         /*** Filter Settings ***/
         $scope.filter = {
             Host: {
                 name: QueryStringService.getValue('filter[Host.name]', ''),
                 address: QueryStringService.getValue('filter[Host.address]', ''),
-                satellite_id: '0'
+                satellite_id: '4'
             },
             showAll: false
         };
@@ -298,17 +298,38 @@ angular.module('openITCOCKPIT')
             });
 
             network.on('hoverNode', function (properties) {
-                //console.log(data.nodes.get(properties.node));
                 var node = data.nodes.get(properties.node);
+                $q.all([
+                    $http.get("/hosts/hoststatus/" + node.uuid + ".json", {
+                        params: {
+                            'angular': true
+                        }
+                    }),
+                    $http.get("/services/serviceStatusSummaryByHostId/" + node.hostId + ".json", {
+                        params: {
+                            'angular': true
+                        }
+                    })
+                ]).then(function (results) {
+                    /* enter your logic here */
+                    console.log(results[0].data.hoststatus);
+                    console.log(results[1].data.serviceStateSummary);
+                    $scope.showHostOverviewBox(
+                        node.title,
+                        results[0].data.hoststatus,
+                        results[1].data.serviceStateSummary
+                    );
+                });
+                /*
                 $http.get("/hosts/hoststatus/"+node.uuid+".json", {
                     params: {
                         'angular': true
                     }
                 }).then(function(result){
-                    console.log(result.data);
                     $scope.showHostOverviewBox(node.title, result.data.hoststatus);
 
                 });
+                */
                 return;
             });
         };
@@ -321,22 +342,29 @@ angular.module('openITCOCKPIT')
             $scope.load();
         }, true);
 
-        $scope.showHostOverviewBox = function (title, hoststatus) {
+        $scope.showHostOverviewBox = function (title, hoststatus, serviceStateSummary) {
             var hostColor = '#428bca';
             var hostColors = [
                 '#449D44',  //Up
                 '#C9302C',  //Down
                 '#92A2A8'  //Unreachable
             ];
-            if(typeof hoststatus.Hoststatus.current_state !== 'undefined'){
+
+            var statusIcon = $scope.getIconForHoststatus(hoststatus.Hoststatus);
+
+            if (typeof hoststatus.Hoststatus.current_state !== 'undefined') {
                 hostColor = hostColors[hoststatus.Hoststatus.current_state];
             }
             $.bigBox({
                 title: title,
-                content: "This message will dissapear in 6 seconds!",
+                content: '<div class="bg-color-white">This message will dissapear in 6 seconds!</div>',
                 color: hostColor,
                 icon: "fa fa-info shake animated",
-               // timeout: 6000
+                // timeout: 6000
             });
         };
+
+        $scope.getIconForHoststatus = function (hoststatus) {
+
+        }
     });

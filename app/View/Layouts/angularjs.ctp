@@ -44,7 +44,6 @@ $scripts = [
     'js/lib/php.js',
     'smartadmin/js/plugin/flot/jquery.flot.cust.js',
     'smartadmin/js/plugin/flot/jquery.flot.time.js',
-    'smartadmin/js/notification/SmartNotification.js',
     //'smartadmin/js/plugin/jquery-validate/jquery.validate.min.js', //
     //'smartadmin/js/plugin/flot/jquery.flot.orderBar.js', //
     'smartadmin/js/plugin/flot/jquery.flot.fillbetween.js', //
@@ -54,10 +53,13 @@ $scripts = [
     'smartadmin/js/plugin/flot/jquery.flot.threshold.js', //
     //'smartadmin/js/plugin/flot/jquery.flot.selection.js', //
     'js/lib/jquery.nestable.js',
-    'js/lib/parseuri.js',
-    'js/scripts/ng.app.js',
-    'js/vendor/vis/vis.js'
+    'js/lib/parseuri.js'
 ];
+
+if ($this->request->params['controller'] === 'statusmaps') {
+    $scripts[] = 'smartadmin/js/notification/SmartNotification.js';
+    $scripts[] = 'js/vendor/vis/vis.js';
+}
 
 App::uses('Folder', 'Utility');
 $appScripts = [];
@@ -176,7 +178,7 @@ if (ENVIRONMENT === Environments::PRODUCTION) {
 
 <?php printf('<script src="%s/%s"></script>', Router::fullBaseUrl(), 'smartadmin/js/app.js'); ?>
 <script>
-    $(document).ready(function(){
+    $(document).ready(function () {
         //pageSetUp();
 
     });
