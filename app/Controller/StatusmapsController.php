@@ -26,6 +26,7 @@
 
 use itnovum\openITCOCKPIT\Core\HoststatusFields;
 use itnovum\openITCOCKPIT\Core\ModuleManager;
+use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Filter\HostFilter;
 use itnovum\openITCOCKPIT\Filter\StatusmapFilter;
 
@@ -41,9 +42,11 @@ class StatusmapsController extends AppController {
 
     public $uses = [
         'Host',
+        'Service',
         'Container',
         'Parenthost',
-        MONITORING_HOSTSTATUS
+        MONITORING_HOSTSTATUS,
+        MONITORING_SERVICESTATUS
     ];
 
     public $components = ['StatusMap'];
@@ -223,5 +226,62 @@ class StatusmapsController extends AppController {
         $this->set(compact(['statusMap']));
         $this->set('_serialize', ['statusMap']);
     }
-}
 
+    /**
+     * @param string | null $uuid
+     * @param int | null $hostId
+     * @property HoststatusFields $HoststatusFields
+     * @property ServicestatusFields $ServicestatusFields
+     *
+     */
+    public function hostAndServicesSummaryStatus($uuid = null, $hostId = null) {
+        $this->layout = 'blank';
+        if (!$this->isAngularJsRequest()) {
+            //Only ship template
+            //   return;
+        }
+        if (!$uuid || !$hostId) {
+            throw new NotFoundException(__('Invalid request parameters'));
+        }
+
+        $HoststatusFields = new HoststatusFields($this->DbBackend);
+        $HoststatusFields->currentState()
+            ->isHardstate()
+            ->scheduledDowntimeDepth()
+            ->problemHasBeenAcknowledged();
+        $hoststatus = $this->Hoststatus->byUuid($uuid, $HoststatusFields);
+        if (empty($hoststatus)) {
+            $hoststatus = [
+                'Hoststatus' => []
+            ];
+        }
+
+        $serviceUuids = Hash::extract(
+            $this->Service->find('all', [
+                    'recursive' => -1,
+                    'fields' => [
+                        'Service.uuid'
+                    ],
+                    'conditions' => [
+                        'Service.host_id' => $hostId
+                    ]
+                ]
+            ),
+            '{n}.Service.uuid'
+        );
+        $ServicestatusFields = new ServicestatusFields($this->DbBackend);
+        $ServicestatusFields->currentState()
+            ->problemHasBeenAcknowledged()
+            ->activeChecksEnabled()
+            ->scheduledDowntimeDepth();
+        $servicestatus = $this->Servicestatus->byUuids($serviceUuids, $ServicestatusFields);
+
+        $serviceStateSummary = $this->Service->getServiceStateSummary($servicestatus);
+
+    //    debug($hoststatus);
+    //    debug($serviceStateSummary);
+
+        $this->set(compact(['hoststatus', 'serviceStateSummary', 'hostId']));
+        $this->set('_serialize', ['hoststatus', 'serviceStateSummary']);
+    }
+}

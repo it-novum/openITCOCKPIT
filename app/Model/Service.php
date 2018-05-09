@@ -1885,7 +1885,7 @@ class Service extends AppModel {
             }
 
             $serviceStateSummary['state'][$service['Servicestatus']['current_state']]++;
-            if ($service['Servicestatus']['current_state'] < 0) {
+            if ($service['Servicestatus']['current_state'] > 0) {
                 if ($service['Servicestatus']['problem_has_been_acknowledged'] > 0) {
                     $serviceStateSummary['acknowledged'][$service['Servicestatus']['current_state']]++;
                 } else {

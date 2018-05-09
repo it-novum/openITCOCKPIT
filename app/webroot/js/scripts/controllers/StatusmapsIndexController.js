@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('StatusmapsIndexController', function ($scope, $q, $http, QueryStringService) {
+    .controller('StatusmapsIndexController', function ($scope, $http, QueryStringService) {
         /*** Filter Settings ***/
         $scope.filter = {
             Host: {
@@ -299,19 +299,22 @@ angular.module('openITCOCKPIT')
 
             network.on('hoverNode', function (properties) {
                 var node = data.nodes.get(properties.node);
-                $q.all([
-                    $http.get("/hosts/hoststatus/" + node.uuid + ".json", {
-                        params: {
-                            'angular': true
-                        }
-                    }),
-                    $http.get("/services/serviceStatusSummaryByHostId/" + node.hostId + ".json", {
-                        params: {
-                            'angular': true
-                        }
-                    })
-                ]).then(function (results) {
+                $http.get("/hosts/hoststatus/"+node.uuid+"/"+node.hostId, {
+                    params: {
+                        'angular': true
+                    }
+                }).then(function (results) {
                     /* enter your logic here */
+                    console.log(results);
+                    $.bigBox({
+                        title: 'test',
+                        content: results[0].data,
+                     //   color: hostColor,
+                        icon: 'fa  flash animated',
+                        // timeout: 6000
+                    });
+
+                    return;
                     console.log(results[0].data.hoststatus);
                     console.log(results[1].data.serviceStateSummary);
                     $scope.showHostOverviewBox(
@@ -359,12 +362,26 @@ angular.module('openITCOCKPIT')
                 title: title,
                 content: '<div class="bg-color-white">This message will dissapear in 6 seconds!</div>',
                 color: hostColor,
-                icon: "fa fa-info shake animated",
+                icon: 'fa ' + statusIcon + ' flash animated',
                 // timeout: 6000
             });
         };
 
         $scope.getIconForHoststatus = function (hoststatus) {
-
+            var statusIcon = 'fa-check-circle';
+            if (typeof hoststatus.current_state === 'undefined') {
+                return 'fa-eye-slash';
+            }
+            if (hoststatus.current_state > 0) {
+                statusIcon = 'fa-exclamation-circle';
+            }
+            if (hoststatus.scheduled_downtime_depth > 0) {
+                statusIcon = 'fa-power-off';
+            } else if (hoststatus.scheduled_downtime_depth > 0 && hoststatus.problem_has_been_acknowledged == 1) {
+                statusIcon = 'fa-user-md';
+            } else if (hoststatus.scheduled_downtime_depth > 0 && hoststatus.problem_has_been_acknowledged == 0) {
+                statusIcon = 'fa-user';
+            }
+            return statusIcon;
         }
     });
