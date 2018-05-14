@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('StatusmapsIndexController', function ($scope, $q, $http, QueryStringService) {
+    .controller('StatusmapsIndexController', function ($scope, $q, $http, $timeout, QueryStringService) {
         /*** Filter Settings ***/
         $scope.filter = {
             Host: {
@@ -299,7 +299,7 @@ angular.module('openITCOCKPIT')
             });
 
             network.on('hoverNode', function (properties) {
-                $scope.timer = setTimeout(function() {
+                $scope.timer = $timeout(function(){
                     var node = data.nodes.get(properties.node);
                     $q.all([
                         $http.get("/hosts/hoststatus/" + node.uuid + ".json", {
@@ -328,7 +328,7 @@ angular.module('openITCOCKPIT')
             });
 
             network.on('blurNode', function (properties) {
-                clearTimeout($scope.timer);
+                $timeout.cancel($scope.timer);
             });
         };
 
