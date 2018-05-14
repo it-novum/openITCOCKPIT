@@ -64,7 +64,7 @@ class CmdController extends AppController
 
         $systemsettings = $this->Systemsetting->findAsArray();
 
-        if ($this->request->params['named']['api_key'] != $systemsettings['SUDO_SERVER']['SUDO_SERVER.API_KEY']) {
+        if ($this->request->params['named']['api_key'] !== $systemsettings['SUDO_SERVER']['SUDO_SERVER.API_KEY']) {
             throw new ForbiddenException(__('API key mismatch!'));
         }
 
