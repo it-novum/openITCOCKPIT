@@ -83,6 +83,7 @@ class NotificationsController extends AppController {
             [key($this->Paginator->settings['order'])]
         );
 
+
         $all_notifications = [];
         $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
         foreach ($notifications as $notification) {

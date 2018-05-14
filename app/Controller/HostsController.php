@@ -176,6 +176,11 @@ class HostsController extends AppController {
             $modelName = 'Hoststatus';
         }
 
+        if ($this->DbBackend->isStatusengine3()) {
+            $query = $this->Host->getHostIndexQueryStatusengine3($HostCondition, $HostFilter->indexFilter());
+            $modelName = 'Host';
+        }
+
         if ($this->isApiRequest() && !$this->isAngularJsRequest()) {
             if (isset($query['limit'])) {
                 unset($query['limit']);
@@ -313,6 +318,12 @@ class HostsController extends AppController {
             $this->CrateHost->alias = 'Host';
             $modelName = 'CrateHost';
         }
+
+        if ($this->DbBackend->isStatusengine3()) {
+            $query = $this->Host->getHostNotMonitoredQuery($HostCondition, $HostFilter->notMonitoredFilter());
+            $modelName = 'Host';
+        }
+
 
         if ($this->isApiRequest() && !$this->isAngularJsRequest()) {
             if (isset($query['limit'])) {
@@ -2865,6 +2876,12 @@ class HostsController extends AppController {
         if ($this->DbBackend->isCrateDb()) {
             $query = $this->Hoststatus->getHostIndexQuery($HostCondition, $HostFilter->indexFilter());
             $modelName = 'Hoststatus';
+        }
+
+        if ($this->DbBackend->isStatusengine3()) {
+            $query = $this->Host->getHostIndexQueryStatusengine3($HostCondition, $HostFilter->indexFilter());
+            $this->Host->virtualFieldsForIndex();
+            $modelName = 'Host';
         }
 
         if (isset($query['limit'])) {

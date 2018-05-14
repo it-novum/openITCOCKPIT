@@ -1364,6 +1364,83 @@ class Host extends AppModel {
         return $query;
     }
 
+    /**
+     * @param HostConditions $HostConditions
+     * @param array $conditions
+     * @return array
+     */
+    public function getHostIndexQueryStatusengine3(HostConditions $HostConditions, $conditions = []) {
+        $query = [
+            'recursive'  => -1,
+            'contain'    => [
+                'Hosttemplate' => [
+                    'fields' => [
+                        'Hoststatus.is_flapping',
+                        'Hosttemplate.id',
+                        'Hosttemplate.uuid',
+                        'Hosttemplate.name',
+                        'Hosttemplate.description',
+                        'Hosttemplate.active_checks_enabled',
+                        'Hosttemplate.tags',
+                    ]
+                ],
+                'Container'
+            ],
+            'conditions' => $conditions,
+            'fields'     => [
+                //'DISTINCT (Host.id) as banane', //Fix pagination
+                'Host.id',
+                'Host.uuid',
+                'Host.name',
+                'Host.description',
+                'Host.active_checks_enabled',
+                'Host.address',
+                'Host.satellite_id',
+                'Host.container_id',
+                'Host.tags',
+
+                'Hoststatus.current_state',
+                'Hoststatus.last_check',
+                'Hoststatus.next_check',
+                'Hoststatus.last_hard_state_change',
+                'Hoststatus.last_state_change',
+                'Hoststatus.output',
+                'Hoststatus.scheduled_downtime_depth',
+                'Hoststatus.active_checks_enabled',
+                'Hoststatus.is_hardstate',
+                'Hoststatus.problem_has_been_acknowledged',
+                'Hoststatus.acknowledgement_type',
+
+
+                'Hoststatus.current_state',
+            ],
+            'order'      => $HostConditions->getOrder(),
+            'joins'      => [
+                [
+                    'table'      => 'statusengine_hoststatus',
+                    'type'       => 'LEFT OUTER',
+                    'alias'      => 'Hoststatus',
+                    'conditions' => 'Hoststatus.hostname = Host.uuid',
+                ], [
+                    'table'      => 'hosts_to_containers',
+                    'alias'      => 'HostsToContainers',
+                    'type'       => 'LEFT',
+                    'conditions' => [
+                        'HostsToContainers.host_id = Host.id',
+                    ],
+                ],
+            ],
+            'group'      => [
+                'Host.id',
+            ],
+        ];
+
+        $query['conditions']['Host.disabled'] = (int)$HostConditions->includeDisabled();
+        $query['conditions']['HostsToContainers.container_id'] = $HostConditions->getContainerIds();
+
+        return $query;
+    }
+
     public function virtualFieldsForIndex() {
         $this->virtualFields['keywords'] = 'IF((Host.tags IS NULL OR Host.tags=""), Hosttemplate.tags, Host.tags)';
     }
@@ -1425,6 +1502,67 @@ class Host extends AppModel {
         $query['conditions']['Host.disabled'] = (int)$HostConditions->includeDisabled();
         $query['conditions']['HostsToContainers.container_id'] = $HostConditions->getContainerIds();
         $query['conditions'][] = 'HostObject.name1 IS NULL';
+
+        return $query;
+    }
+
+    /**
+     * @param HostConditions $HostConditions
+     * @param array $conditions
+     * @return array
+     */
+    public function getHostNotMonitoredQueryStatusengine3(HostConditions $HostConditions, $conditions = []) {
+        $query = [
+            'recursive'  => -1,
+            'contain'    => [
+                'Hosttemplate' => [
+                    'fields' => [
+                        'Hosttemplate.id',
+                        'Hosttemplate.uuid',
+                        'Hosttemplate.name',
+                        'Hosttemplate.description',
+                        'Hosttemplate.active_checks_enabled',
+                    ]
+                ],
+                'Container'
+            ],
+            'conditions' => $conditions,
+            'fields'     => [
+                'Host.id',
+                'Host.uuid',
+                'Host.name',
+                'Host.description',
+                'Host.active_checks_enabled',
+                'Host.address',
+                'Host.satellite_id',
+                'Host.container_id',
+
+            ],
+            'order'      => $HostConditions->getOrder(),
+            'joins'      => [
+                [
+                    'table'      => 'statusengine_hoststatus',
+                    'type'       => 'LEFT OUTER',
+                    'alias'      => 'Hoststatus',
+                    'conditions' => 'Host.uuid = Hoststatus.hostname',
+                ],
+                [
+                    'table'      => 'hosts_to_containers',
+                    'alias'      => 'HostsToContainers',
+                    'type'       => 'LEFT',
+                    'conditions' => [
+                        'HostsToContainers.host_id = Host.id',
+                    ],
+                ],
+            ],
+            'group'      => [
+                'Host.id',
+            ],
+        ];
+
+        $query['conditions']['Host.disabled'] = (int)$HostConditions->includeDisabled();
+        $query['conditions']['HostsToContainers.container_id'] = $HostConditions->getContainerIds();
+        $query['conditions'][] = 'Hoststatus.hostname IS NULL';
 
         return $query;
     }

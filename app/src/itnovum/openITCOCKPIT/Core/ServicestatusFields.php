@@ -100,7 +100,7 @@ class ServicestatusFields {
     }
 
     public function isPassiveCheck() {
-        if ($this->DbBackend->isCrateDB()) {
+        if ($this->DbBackend->isCrateDB() || $this->DbBackend->isStatusengine3()) {
             $this->addField('Servicestatus.is_passive_check');
         }
 
@@ -126,7 +126,7 @@ class ServicestatusFields {
     }
 
     public function isHardstate() {
-        if ($this->DbBackend->isCrateDB()) {
+        if ($this->DbBackend->isCrateDB() || $this->DbBackend->isStatusengine3()) {
             $this->addField('Servicestatus.is_hardstate');
         }
 
@@ -222,7 +222,7 @@ class ServicestatusFields {
     }
 
     public function checkTimeperiod() {
-        if ($this->DbBackend->isCrateDB()) {
+        if ($this->DbBackend->isCrateDB() || $this->DbBackend->isStatusengine3()) {
             $this->addField('Servicestatus.check_timeperiod');
         }
 
@@ -233,7 +233,7 @@ class ServicestatusFields {
     }
 
     public function nodeName() {
-        if ($this->DbBackend->isCrateDB()) {
+        if ($this->DbBackend->isCrateDB() || $this->DbBackend->isStatusengine3()) {
             $this->addField('Servicestatus.node_name');
         }
 
