@@ -230,7 +230,7 @@ $config = [
                 'edit'     => ['loadHosts', 'loadHosttemplates', 'loadContainers'],
             ],
             'Hosts'                 => [
-                'index'      => ['getHostByAjax', 'listToPdf', 'ajaxList', 'loadHostsByContainerId', 'loadHostsByString', 'loadHostById', 'allocateServiceTemplateGroup', 'getServiceTemplatesfromGroup'],
+                'index'      => ['getHostByAjax', 'listToPdf', 'ajaxList', 'loadHostsByContainerId', 'loadHostsByString', 'loadHostById', 'allocateServiceTemplateGroup', 'getServiceTemplatesfromGroup', 'hoststatus'],
                 'delete'     => ['mass_delete'],
                 'deactivate' => ['mass_deactivate'],
                 'browser'    => ['longOutputByUuid'],

@@ -228,34 +228,16 @@ class StatusmapsController extends AppController {
     }
 
     /**
-     * @param string | null $uuid
      * @param int | null $hostId
      * @property HoststatusFields $HoststatusFields
      * @property ServicestatusFields $ServicestatusFields
      *
      */
-    public function hostAndServicesSummaryStatus($uuid = null, $hostId = null) {
+    public function hostAndServicesSummaryStatus($hostId = null) {
         $this->layout = 'blank';
-        if (!$this->isAngularJsRequest()) {
-            //Only ship template
-            //   return;
-        }
-        if (!$uuid || !$hostId) {
+        if (!$hostId) {
             throw new NotFoundException(__('Invalid request parameters'));
         }
-
-        $HoststatusFields = new HoststatusFields($this->DbBackend);
-        $HoststatusFields->currentState()
-            ->isHardstate()
-            ->scheduledDowntimeDepth()
-            ->problemHasBeenAcknowledged();
-        $hoststatus = $this->Hoststatus->byUuid($uuid, $HoststatusFields);
-        if (empty($hoststatus)) {
-            $hoststatus = [
-                'Hoststatus' => []
-            ];
-        }
-
         $serviceUuids = Hash::extract(
             $this->Service->find('all', [
                     'recursive' => -1,
@@ -278,10 +260,7 @@ class StatusmapsController extends AppController {
 
         $serviceStateSummary = $this->Service->getServiceStateSummary($servicestatus);
 
-    //    debug($hoststatus);
-    //    debug($serviceStateSummary);
-
-        $this->set(compact(['hoststatus', 'serviceStateSummary', 'hostId']));
-        $this->set('_serialize', ['hoststatus', 'serviceStateSummary']);
+        $this->set(compact(['serviceStateSummary', 'hostId']));
+        $this->set('_serialize', ['serviceStateSummary']);
     }
 }

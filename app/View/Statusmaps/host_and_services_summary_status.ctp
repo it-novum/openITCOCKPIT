@@ -33,38 +33,72 @@
 */
 
 ?>
+<style>
 
-<link rel="stylesheet" type="text/css" href="/css/lib/jquery-jvectormap-1.2.2.css?1487598921"/>
-<link rel="stylesheet" type="text/css"
-      href="/css/lib/jquery.imgareaselect-0.9.10/imgareaselect-animated.css?1487598921"/>
-<link rel="stylesheet" type="text/css" href="/css/lib/jquery.svg.css?1487598921"/>
-<link rel="stylesheet" type="text/css" href="/css/vendor/bootstrap/css/bootstrap.min.css?1487598921"/>
-<link rel="stylesheet" type="text/css" href="/css/vendor/chosen/chosen.css?1487598921"/>
-<link rel="stylesheet" type="text/css" href="/css/vendor/chosen/chosen-bootstrap.css?1487598921"/>
-<link rel="stylesheet" type="text/css" href="/css/list_filter.css?1487598921"/>
-<link rel="stylesheet" type="text/css" href="/css/vendor/fineuploader/fineuploader-3.2.css?1487598921"/>
-<link rel="stylesheet" type="text/css" href="/css/vendor/select2/select2.css?1508151423"/>
-<link rel="stylesheet" type="text/css" href="/css/vendor/select2/select2-bootstrap.css?1508151411"/>
-<link rel="stylesheet" type="text/css" href="/css/vendor/bootstrap-datepicker.css?1487598921"/>
-<link rel="stylesheet" type="text/css" href="/css/vendor/bootstrap-datetimepicker.min.css?1487598921"/>
-<link rel="stylesheet" type="text/css" href="/css/vendor/gauge/css/gauge.css?1503481963"/>
-<link rel="stylesheet" type="text/css" href="/smartadmin/css/font-awesome.min.css?1503481963"/>
-<link rel="stylesheet" type="text/css" href="/smartadmin/css/smartadmin-production.min.css?1487598921"/>
-<link rel="stylesheet" type="text/css" href="/smartadmin/css/smartadmin-production-plugins.min.css?1487598921"/>
-<link rel="stylesheet" type="text/css" href="/smartadmin/css/smartadmin-skins.css?1487598921"/>
-<link rel="stylesheet" type="text/css" href="/smartadmin/css/demo.css?1487598921"/>
-<link rel="stylesheet" type="text/css" href="/smartadmin/css/your_style.css?1525674812"/>
-<link rel="stylesheet" type="text/css" href="/smartadmin/css/animate.css?1487598921"/>
-<link rel="stylesheet" type="text/css" href="/css/lockscreen.css?1487598921"/>
-<link rel="stylesheet" type="text/css" href="/css/base.css?1487598921"/>
-<link rel="stylesheet" type="text/css" href="/css/app.css?1516373159"/>
-<link rel="stylesheet" type="text/css" href="/css/status.css?1520583595"/>
-<link rel="stylesheet" type="text/css" href="/css/lists.css?1487598921"/>
-<link rel="stylesheet" type="text/css" href="/css/ansi.css?1487598921"/>
-<link rel="stylesheet" type="text/css" href="/css/console.css?1487598921"/>
-<link rel="stylesheet" type="text/css" href="/css/animate_new.css?1503481963"/>
-<h1><?php echo __('Services in Monitoring'); ?></h1>
-<table class="table table-striped">
+    .table-no-bordered {
+        width:100%;
+    }
+
+    .table-no-bordered > tbody > tr > th {
+        border:none;
+    }
+
+    .table-no-bordered > tbody > tr > td > a {
+        font-size:10px;
+        color: #ffffff;
+    }
+
+    th.th-border-top {
+        border-top:1px solid #ffffff!important;
+    }
+    /* bigBoxes */
+
+    .bigBox {
+        position: fixed;
+        right: 10px;
+        bottom: 10px;
+        background-color: #004d60;
+        padding-left: 10px;
+        padding-top: 10px;
+        padding-right: 10px;
+        padding-bottom: 5px;
+        width: 390px;
+        height: 170px;
+        color: white;
+        z-index: 99999;
+        box-sizing: content-box;
+        -webkit-box-sizing: content-box;
+        -moz-box-sizing: content-box;
+        border-left: 5px solid rgba(0, 0, 0, 0.15);
+        overflow: hidden;
+    }
+    .bigBox span {
+        font-size: 17px;
+        font-weight: 300;
+        letter-spacing: -1px;
+        padding: 5px 0 !important;
+        display: block;
+    }
+    .bigBox p {
+        font-size: 13px;
+        margin-top: 10px;
+    }
+
+    #divMiniIcons {
+        position: fixed;
+        width: 415px;
+        right: 10px;
+        bottom: 200px;
+        z-index: 9999;
+        float: right;
+    }
+
+    .bigBox .bigboxicon {
+        display:none;
+    }
+
+</style>
+<table class="table-no-bordered">
     <tr>
         <td></td>
         <?php
@@ -81,7 +115,7 @@
             'passive' => ['passive' => 1]
         ];
         foreach ([0, 1, 2, 3] as $serviceState):?>
-            <th class="text-center">
+            <th class="text-center font-xs">
                 <?php
                 printf(
                     '<div class="label label-table %s">%s</div>',
@@ -98,7 +132,7 @@
     foreach ($serviceStateSummary as $key => $valueArray):
         $additionalFilter = (in_array($key, array_keys($additionalFilters), true))?$additionalFilters[$key]:'';
         ?>
-        <tr>
+        <tr class="font-xs">
             <?php
             if ($key !== 'total'):
                 ?>
@@ -120,7 +154,7 @@
                                 $additionalFilter,
                                 'sort' => 'Servicestatus.last_state_change',
                                 'direction' => 'desc'
-                            ]); ?>">
+                            ]); ?>" target="_blank">
                                 <?php
                                 printf(
                                     '%s (%.0f%%)',
@@ -137,11 +171,11 @@
                 <?php
                 endforeach;
             else:?>
-                <th colspan="5">
+                <th colspan="5" class="text-right th-border-top">
                     <?php
-                    printf('%s: %d',
+                    printf('%s: %s',
                         strtoupper($key),
-                        $count
+                        $serviceStateSummary['total']
                     ); ?>
                 </th>
             <?php

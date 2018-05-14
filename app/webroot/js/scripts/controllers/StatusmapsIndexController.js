@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('StatusmapsIndexController', function ($scope, $http, QueryStringService) {
+    .controller('StatusmapsIndexController', function ($scope, $q, $http, QueryStringService) {
         /*** Filter Settings ***/
         $scope.filter = {
             Host: {
@@ -22,11 +22,12 @@ angular.module('openITCOCKPIT')
 
         $scope.isEmpty = false;
 
+        $scope.timer = null;
+
         $scope.container = document.getElementById('statusmap');
 
         var offset = $($scope.container).offset();
         var height = (window.innerHeight - offset.top);
-
         $($($scope.container)).css({
             'height': height
         });
@@ -298,42 +299,36 @@ angular.module('openITCOCKPIT')
             });
 
             network.on('hoverNode', function (properties) {
-                var node = data.nodes.get(properties.node);
-                $http.get("/hosts/hoststatus/"+node.uuid+"/"+node.hostId, {
-                    params: {
-                        'angular': true
-                    }
-                }).then(function (results) {
-                    /* enter your logic here */
-                    console.log(results);
-                    $.bigBox({
-                        title: 'test',
-                        content: results[0].data,
-                     //   color: hostColor,
-                        icon: 'fa  flash animated',
-                        // timeout: 6000
+                $scope.timer = setTimeout(function() {
+                    var node = data.nodes.get(properties.node);
+                    $q.all([
+                        $http.get("/hosts/hoststatus/" + node.uuid + ".json", {
+                            params: {
+                                'angular': true
+                            }
+                        }),
+                        $http.get("/statusmaps/hostAndServicesSummaryStatus/" + node.hostId, {
+                            params: {
+                                'angular': true
+                            }
+                        })
+                    ]).then(function (results) {
+                        var bigBoxIcon = $scope.getIconForHoststatus(results[0].data.hoststatus.Hoststatus);
+                        $.bigBox({
+                            title: '<a href="/hosts/browser/' + node.hostId
+                            + '" target="_blank" class="txt-color-white">' + node.title + '</a>',
+                            content: results[1].data,
+                            icon: 'fa ' + bigBoxIcon + ' flash animated',
+                            timeout: 10000
+                        });
+
+                        return;
                     });
+                }, 1000);
+            });
 
-                    return;
-                    console.log(results[0].data.hoststatus);
-                    console.log(results[1].data.serviceStateSummary);
-                    $scope.showHostOverviewBox(
-                        node.title,
-                        results[0].data.hoststatus,
-                        results[1].data.serviceStateSummary
-                    );
-                });
-                /*
-                $http.get("/hosts/hoststatus/"+node.uuid+".json", {
-                    params: {
-                        'angular': true
-                    }
-                }).then(function(result){
-                    $scope.showHostOverviewBox(node.title, result.data.hoststatus);
-
-                });
-                */
-                return;
+            network.on('blurNode', function (properties) {
+                clearTimeout($scope.timer);
             });
         };
 
@@ -344,28 +339,6 @@ angular.module('openITCOCKPIT')
             $scope.resetVis();
             $scope.load();
         }, true);
-
-        $scope.showHostOverviewBox = function (title, hoststatus, serviceStateSummary) {
-            var hostColor = '#428bca';
-            var hostColors = [
-                '#449D44',  //Up
-                '#C9302C',  //Down
-                '#92A2A8'  //Unreachable
-            ];
-
-            var statusIcon = $scope.getIconForHoststatus(hoststatus.Hoststatus);
-
-            if (typeof hoststatus.Hoststatus.current_state !== 'undefined') {
-                hostColor = hostColors[hoststatus.Hoststatus.current_state];
-            }
-            $.bigBox({
-                title: title,
-                content: '<div class="bg-color-white">This message will dissapear in 6 seconds!</div>',
-                color: hostColor,
-                icon: 'fa ' + statusIcon + ' flash animated',
-                // timeout: 6000
-            });
-        };
 
         $scope.getIconForHoststatus = function (hoststatus) {
             var statusIcon = 'fa-check-circle';

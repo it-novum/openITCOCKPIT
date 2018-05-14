@@ -53,7 +53,8 @@ $scripts = [
     'smartadmin/js/plugin/flot/jquery.flot.threshold.js',
     //'smartadmin/js/plugin/flot/jquery.flot.selection.js', //
     'js/lib/jquery.nestable.js',
-    'js/lib/parseuri.js'
+    'js/lib/parseuri.js',
+    'js/scripts/ng.app.js'
 ];
 
 if ($this->request->params['controller'] === 'statusmaps') {
