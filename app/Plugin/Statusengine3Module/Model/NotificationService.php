@@ -54,8 +54,6 @@ class NotificationService extends Statusengine3ModuleAppModel {
             'Command.*'
         ];
 
-        //todo CrateDB bug, check if LEFT join can be refactored with INNER join
-        //https://github.com/crate/crate/issues/5747
         $query = [
             'recursive' => -1,
             'fields'    => $fields,
@@ -96,11 +94,6 @@ class NotificationService extends Statusengine3ModuleAppModel {
                 ],
             ],
 
-            'conditions' => [
-                'NotificationService.start_time >' => $ServiceNotificationConditions->getFrom(),
-                'NotificationService.start_time <' => $ServiceNotificationConditions->getTo()
-            ],
-
             'order' => $ServiceNotificationConditions->getOrder(),
             'limit' => $ServiceNotificationConditions->getLimit(),
         ];
@@ -134,8 +127,11 @@ class NotificationService extends Statusengine3ModuleAppModel {
             ], $this);
             $subQuery = 'NotificationService.hostname IN (' . $subQuery . ') ';
             $subQueryExpression = $db->expression($subQuery);
-            $query['conditions'] = $subQueryExpression->value;
+            $query['conditions'][] = $subQueryExpression->value;
         }
+
+        $query['conditions']['NotificationService.start_time >'] = $ServiceNotificationConditions->getFrom();
+        $query['conditions']['NotificationService.start_time <'] = $ServiceNotificationConditions->getTo();
 
         if ($ServiceNotificationConditions->getServiceUuid()) {
             //Get list for one service
@@ -149,6 +145,8 @@ class NotificationService extends Statusengine3ModuleAppModel {
 
         //Merge ListFilter conditions
         $query['conditions'] = Hash::merge($paginatorConditions, $query['conditions']);
+
+        $this->virtualFields['servicename'] = 'IF((Service.name IS NULL OR Service.name=""), Servicetemplate.name, Service.name)';
 
         return $query;
     }

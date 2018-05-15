@@ -40,6 +40,7 @@ angular.module('openITCOCKPIT')
             $http.get("/notifications/index.json", {
                 params: {
                     'angular': true,
+                    'scroll': true,
                     'sort': SortService.getSort(),
                     'page': $scope.currentPage,
                     'direction': SortService.getDirection(),
@@ -54,6 +55,7 @@ angular.module('openITCOCKPIT')
             }).then(function(result){
                 $scope.notifications = result.data.all_notifications;
                 $scope.paging = result.data.paging;
+                $scope.scroll = result.data.scroll;
                 $scope.init = false;
             });
         };

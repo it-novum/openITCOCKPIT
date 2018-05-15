@@ -76,11 +76,6 @@ class NotificationHost extends Statusengine3ModuleAppModel {
                 ],
             ],
 
-            'conditions' => [
-                'NotificationHost.start_time >' => $HostNotificationConditions->getFrom(),
-                'NotificationHost.start_time <' => $HostNotificationConditions->getTo(),
-            ],
-
             'order' => $HostNotificationConditions->getOrder(),
             'limit' => $HostNotificationConditions->getLimit(),
         ];
@@ -114,9 +109,12 @@ class NotificationHost extends Statusengine3ModuleAppModel {
             ], $this);
             $subQuery = 'NotificationHost.hostname IN (' . $subQuery . ') ';
             $subQueryExpression = $db->expression($subQuery);
-            $query['conditions'] = $subQueryExpression->value;
+            $query['conditions'][] = $subQueryExpression->value;
         }
 
+
+        $query['conditions']['NotificationHost.start_time >'] = $HostNotificationConditions->getFrom();
+        $query['conditions']['NotificationHost.start_time <'] = $HostNotificationConditions->getTo();
 
         if ($HostNotificationConditions->getHostUuid()) {
             //Get the list just for one host

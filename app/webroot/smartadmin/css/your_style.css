@@ -1837,3 +1837,21 @@ label[class^='aco-host']:after, label[class^='aco-service']:after {
 .browser-border {
     border: 1px solid #ddd;
 }
+
+#global-loading {
+    background: rgba(71, 69, 68, 0.8);
+    color: #FFF;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    border-radius: 16px;
+    width: 250px;
+    height: 250px;
+    z-index: 9999;
+    font-size: 100px;
+    text-align: center;
+    padding-top: 50px;
+    margin-top: -125px;
+    margin-left: -125px;
+    display: none;
+}

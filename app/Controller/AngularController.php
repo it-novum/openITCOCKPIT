@@ -50,6 +50,11 @@ class AngularController extends AppController {
         return;
     }
 
+    public function scroll() {
+        //Return HTML Template for PaginatorDirective
+        return;
+    }
+
     public function mass_delete() {
         return;
     }

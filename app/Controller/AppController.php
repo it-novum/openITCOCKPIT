@@ -341,6 +341,10 @@ class AppController extends Controller {
             $this->set('paging', $data);
         }
 
+        if (!empty($this->request->param('scroll')) && $this->isApiRequest()) {
+            $this->set('scroll', $this->request->param('scroll'));
+        }
+
 
         $this->set('exportRunningHeaderInfo', $this->exportRunningHeaderInfo);
 
@@ -859,6 +863,16 @@ class AppController extends Controller {
     protected function isApiRequest() {
         if ($this->isJsonRequest() || $this->isXmlRequest()) {
             return true;
+        }
+
+        return false;
+    }
+
+    protected function isScrollRequest() {
+        if($this->isApiRequest()){
+            if(isset($this->request->query['scroll']) && $this->request->query['scroll'] !== 'false'){
+                return true;
+            }
         }
 
         return false;

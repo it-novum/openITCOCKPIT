@@ -29,6 +29,7 @@ $config = [
         'always_allowed' => [
             'Angular'          => [
                 'paginator',
+                'scroll',
                 'mass_delete',
                 'mass_deactivate',
                 'confirm_delete',
