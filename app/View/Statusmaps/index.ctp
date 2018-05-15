@@ -121,7 +121,7 @@ echo $this->Html->css('vendor/css3-percentage-loader/circle.css', ['inline' => f
                                ng-false-value="true">
                         <i class="checkbox-primary"></i>
                         <?php
-                        echo __('Only parents with childs');
+                        echo __('Consider parent child relations');
                         ?>
                     </label>
                 </div>

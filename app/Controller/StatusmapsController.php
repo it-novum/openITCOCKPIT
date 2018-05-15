@@ -53,7 +53,6 @@ class StatusmapsController extends AppController {
 
     public function index() {
         if (!$this->isApiRequest()) {
-            $SatelliteNames = [];
             $masterInstanceName = $this->Systemsetting->getMasterInstanceName();
             $ModuleManager = new ModuleManager('DistributeModule');
             if ($ModuleManager->moduleExists()) {
@@ -80,6 +79,7 @@ class StatusmapsController extends AppController {
         session_write_close();
 
         $allHostIds = [];
+        $hasBrowserRight = $this->hasPermission('browser', 'hosts');
         if ($this->request->query('showAll') === 'false') {
 
             $parentHostWithChildIds = $this->Parenthost->find('all', [
@@ -223,8 +223,8 @@ class StatusmapsController extends AppController {
         ];
 
 
-        $this->set(compact(['statusMap']));
-        $this->set('_serialize', ['statusMap']);
+        $this->set(compact(['statusMap', 'hasBrowserRight']));
+        $this->set('_serialize', ['statusMap', 'hasBrowserRight']);
     }
 
     /**

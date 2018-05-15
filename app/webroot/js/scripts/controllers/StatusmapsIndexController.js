@@ -5,7 +5,7 @@ angular.module('openITCOCKPIT')
             Host: {
                 name: QueryStringService.getValue('filter[Host.name]', ''),
                 address: QueryStringService.getValue('filter[Host.address]', ''),
-                satellite_id: '4'
+                satellite_id: '0'
             },
             showAll: false
         };
@@ -19,10 +19,9 @@ angular.module('openITCOCKPIT')
         $scope.edges = new vis.DataSet();
 
         $scope.nodesCount = 0;
-
         $scope.isEmpty = false;
-
         $scope.timer = null;
+        $scope.hasBrowserRight = false;
 
         $scope.container = document.getElementById('statusmap');
 
@@ -47,6 +46,7 @@ angular.module('openITCOCKPIT')
             }).then(function (result) {
                 var nodesData = result.data.statusMap.nodes;
                 var edgesData = result.data.statusMap.edges;
+                $scope.hasBrowserRight = result.data.hasBrowserRight;
                 $scope.init = false;
                 $scope.nodesCount = nodesData.length;
                 if (nodesData.length > 0) {
@@ -63,7 +63,7 @@ angular.module('openITCOCKPIT')
 
         $scope.resetVis = function () {
             if (!$scope.init) {
-                $('#statusmap-progress-icon div:first').attr('data-progress', 0);
+                $('#statusmap-progress-icon .progress:first').attr('data-progress', 0);
                 $($scope.container).html('');
             }
         };
@@ -299,7 +299,7 @@ angular.module('openITCOCKPIT')
             });
 
             network.on('hoverNode', function (properties) {
-                $scope.timer = $timeout(function(){
+                $scope.timer = $timeout(function () {
                     var node = data.nodes.get(properties.node);
                     $q.all([
                         $http.get("/hosts/hoststatus/" + node.uuid + ".json", {
@@ -314,9 +314,13 @@ angular.module('openITCOCKPIT')
                         })
                     ]).then(function (results) {
                         var bigBoxIcon = $scope.getIconForHoststatus(results[0].data.hoststatus.Hoststatus);
+                        var title = node.title;
+                        if ($scope.hasBrowserRight) {
+                            title = '<a href="/hosts/browser/' + node.hostId
+                                + '" target="_blank" class="txt-color-white">' + node.title + '</a>';
+                        }
                         $.bigBox({
-                            title: '<a href="/hosts/browser/' + node.hostId
-                            + '" target="_blank" class="txt-color-white">' + node.title + '</a>',
+                            title: title,
                             content: results[1].data,
                             icon: 'fa ' + bigBoxIcon + ' flash animated',
                             timeout: 10000

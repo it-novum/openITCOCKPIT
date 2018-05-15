@@ -36,21 +36,22 @@
 <style>
 
     .table-no-bordered {
-        width:100%;
+        width: 100%;
     }
 
     .table-no-bordered > tbody > tr > th {
-        border:none;
+        border: none;
     }
 
     .table-no-bordered > tbody > tr > td > a {
-        font-size:10px;
+        font-size: 10px;
         color: #ffffff;
     }
 
     th.th-border-top {
-        border-top:1px solid #ffffff!important;
+        border-top: 1px solid #ffffff !important;
     }
+
     /* bigBoxes */
 
     .bigBox {
@@ -72,6 +73,7 @@
         border-left: 5px solid rgba(0, 0, 0, 0.15);
         overflow: hidden;
     }
+
     .bigBox span {
         font-size: 17px;
         font-weight: 300;
@@ -79,6 +81,7 @@
         padding: 5px 0 !important;
         display: block;
     }
+
     .bigBox p {
         font-size: 13px;
         margin-top: 10px;
@@ -94,7 +97,7 @@
     }
 
     .bigBox .bigboxicon {
-        display:none;
+        display: none;
     }
 
 </style>
@@ -129,8 +132,10 @@
         ?>
     </tr>
     <?php
-    foreach ($serviceStateSummary as $key => $valueArray):
-        $additionalFilter = (in_array($key, array_keys($additionalFilters), true))?$additionalFilters[$key]:'';
+    foreach ($serviceStateSummary
+
+             as $key => $valueArray):
+        $additionalFilter = (in_array($key, array_keys($additionalFilters), true)) ? $additionalFilters[$key] : '';
         ?>
         <tr class="font-xs">
             <?php
@@ -138,7 +143,9 @@
                 ?>
                 <th><?php echo str_replace('_', ' ', $key); ?></th>
                 <?php
-                foreach ($valueArray as $state => $count):?>
+                foreach ($valueArray
+
+                         as $state => $count): ?>
                     <td class="text-center"><?php
                         //debug($additionalFilter);
                         if ($count > 0) :
@@ -146,24 +153,31 @@
                             $filterArray['Servicestatus.current_stat'] = [
                                 $state => 1
                             ];
-                            ?>
-                            <a href="/services/index<?php echo Router::queryString([
-                                'filter' =>
-                                    $filterArray
-                                ,
-                                $additionalFilter,
-                                'sort' => 'Servicestatus.last_state_change',
-                                'direction' => 'desc'
-                            ]); ?>" target="_blank">
-                                <?php
+                            if ($this->Acl->hasPermission('index', 'services')): ?>
+                                <a href="/services/index<?php echo Router::queryString([
+                                    'filter' =>
+                                        $filterArray
+                                    ,
+                                    $additionalFilter,
+                                    'sort' => 'Servicestatus.last_state_change',
+                                    'direction' => 'desc'
+                                ]); ?>" target="_blank">
+                                    <?php
+                                    printf(
+                                        '%s (%.0f%%)',
+                                        $count,
+                                        ($count / $serviceStateSummary['total'] * 100)
+                                    );
+                                    ?>
+                                </a>
+                            <?php
+                            else:
                                 printf(
                                     '%s (%.0f%%)',
                                     $count,
                                     ($count / $serviceStateSummary['total'] * 100)
                                 );
-                                ?>
-                            </a>
-                        <?php
+                            endif;
                         else:
                             echo '---';
                         endif;
