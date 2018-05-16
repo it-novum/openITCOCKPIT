@@ -39,6 +39,7 @@ use itnovum\openITCOCKPIT\Core\Views\AcknowledgementHost;
 use itnovum\openITCOCKPIT\Core\Views\ContainerPermissions;
 use itnovum\openITCOCKPIT\Core\Views\HostPerfdataChecker;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
+use itnovum\openITCOCKPIT\Database\ScrollIndex;
 use itnovum\openITCOCKPIT\Filter\HostFilter;
 use \itnovum\openITCOCKPIT\Monitoring\QueryHandler;
 use itnovum\openITCOCKPIT\Core\HostSharingPermissions;
@@ -190,9 +191,17 @@ class HostsController extends AppController {
             $this->set('_serialize', ['all_hosts']);
             return;
         } else {
-            $this->Paginator->settings['page'] = $HostFilter->getPage();
-            $this->Paginator->settings = array_merge($this->Paginator->settings, $query);
-            $hosts = $this->Paginator->paginate($modelName, [], [key($this->Paginator->settings['order'])]);
+            if($this->isScrollRequest()){
+                $this->Paginator->settings['page'] = $HostFilter->getPage();
+                $ScrollIndex = new ScrollIndex($this->Paginator, $this);
+                $hosts = $this->{$modelName}->find('all', array_merge($this->Paginator->settings, $query));
+                $ScrollIndex->determineHasNextPage($hosts);
+                $ScrollIndex->scroll();
+            }else{
+                $this->Paginator->settings['page'] = $HostFilter->getPage();
+                $this->Paginator->settings = array_merge($this->Paginator->settings, $query);
+                $hosts = $this->Paginator->paginate($modelName, [], [key($this->Paginator->settings['order'])]);
+            }
             //debug($this->Host->getDataSource()->getLog(false, false));
         }
 
@@ -236,7 +245,12 @@ class HostsController extends AppController {
         }
 
         $this->set('all_hosts', $all_hosts);
-        $this->set('_serialize', ['all_hosts', 'paging']);
+
+        $toJson = ['all_hosts', 'paging'];
+        if($this->isScrollRequest()){
+            $toJson = ['all_hosts', 'scroll'];
+        }
+        $this->set('_serialize', $toJson);
     }
 
     public function icon() {
