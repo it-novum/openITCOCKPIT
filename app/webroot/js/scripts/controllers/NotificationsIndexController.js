@@ -7,6 +7,8 @@ angular.module('openITCOCKPIT')
 
         var now = new Date();
 
+        $scope.useScroll = true;
+
         /*** Filter Settings ***/
         var defaultFilter = function(){
             $scope.filter = {
@@ -40,7 +42,7 @@ angular.module('openITCOCKPIT')
             $http.get("/notifications/index.json", {
                 params: {
                     'angular': true,
-                    'scroll': true,
+                    'scroll': $scope.useScroll,
                     'sort': SortService.getSort(),
                     'page': $scope.currentPage,
                     'direction': SortService.getDirection(),
@@ -74,6 +76,11 @@ angular.module('openITCOCKPIT')
                 $scope.currentPage = page;
                 $scope.load();
             }
+        };
+
+        $scope.changeMode = function(val){
+            $scope.useScroll = val;
+            $scope.load();
         };
 
         //Fire on page load

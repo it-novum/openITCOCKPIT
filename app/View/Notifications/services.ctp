@@ -308,21 +308,8 @@ echo $this->Html->script('lib/FlappingWorkaround.js');
 
                         <scroll scroll="scroll" click-action="changepage" ng-if="scroll"></scroll>
                         <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>
+                        <?php echo $this->element('paginator_or_scroll'); ?>
 
-
-                        <div style="padding: 5px 10px;">
-                            <div class="row">
-                                <div class="col-sm-6">
-                                    <button class="btn btn-default btn-sm" ng-click="changeMode(false)" ng-show="useScroll">
-                                        <?php echo __('Switch to Paginator Mode'); ?>
-                                    </button>
-
-                                    <button class="btn btn-default btn-sm" ng-click="changeMode(true)" ng-hide="useScroll">
-                                        <?php echo __('Switch to Scroll Mode'); ?>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>

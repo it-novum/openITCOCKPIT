@@ -24,6 +24,7 @@
 //	confirmation.
 
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
+use itnovum\openITCOCKPIT\Database\ScrollIndex;
 use itnovum\openITCOCKPIT\Filter\LogentryFilter;
 
 class LogentriesController extends AppController {
@@ -38,13 +39,6 @@ class LogentriesController extends AppController {
     public $helpers = ['ListFilter.ListFilter', 'Status', 'Monitoring', 'CustomValidationErrors', 'Uuid'];
     public $layout = 'angularjs';
 
-    public $listFilters = [
-        'index' => [
-            'fields' => [
-                'Logentry.logentry_data' => ['label' => 'Logentry', 'searchType' => 'wildcard'],
-            ],
-        ],
-    ];
 
     public function index() {
 
@@ -57,7 +51,7 @@ class LogentriesController extends AppController {
         $LogentryFilter = new LogentryFilter($this->request);
 
 
-        $this->Paginator->settings['order'] = $LogentryFilter->getOrderForPaginator('Logentry.logentry_time', 'desc');
+        $this->Paginator->settings['order'] = $LogentryFilter->getOrderForPaginator('Logentry.entry_time', 'desc');
         $this->Paginator->settings['page'] = $LogentryFilter->getPage();
         $this->Paginator->settings['conditions'] = $LogentryFilter->indexFilter();
 
@@ -81,7 +75,14 @@ class LogentriesController extends AppController {
             }
         }
 
-        $logentries = $this->Paginator->paginate();
+        $ScrollIndex = new ScrollIndex($this->Paginator, $this);
+        if($this->isScrollRequest()){
+            $logentries = $this->Logentry->find('all', $this->Paginator->settings);
+            $ScrollIndex->determineHasNextPage($logentries);
+            $ScrollIndex->scroll();
+        }else{
+            $logentries = $this->Paginator->paginate();
+        }
 
 
         $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
@@ -119,7 +120,12 @@ class LogentriesController extends AppController {
 
 
         $this->set('all_logentries', $all_logentries);
-        $this->set('_serialize', ['all_logentries', 'paging']);
+
+        $toJson = ['all_logentries', 'paging'];
+        if($this->isScrollRequest()){
+            $toJson = ['all_logentries', 'scroll'];
+        }
+        $this->set('_serialize', $toJson);
     }
 
 }

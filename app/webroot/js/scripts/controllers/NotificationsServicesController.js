@@ -79,6 +79,11 @@ angular.module('openITCOCKPIT')
             }
         };
 
+        $scope.changeMode = function(val){
+            $scope.useScroll = val;
+            $scope.load();
+        };
+
         //Fire on page load
         defaultFilter();
         SortService.setCallback($scope.load);
@@ -87,10 +92,5 @@ angular.module('openITCOCKPIT')
             $scope.currentPage = 1;
             $scope.load();
         }, true);
-
-        $scope.changeMode = function(val){
-            $scope.useScroll = val;
-            $scope.load();
-        };
 
     });

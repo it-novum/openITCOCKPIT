@@ -21,11 +21,6 @@ and `NotificationHost`.`notification_type` = 0
 
 
 
-
--- hostname, contact_name, command_name, command_args, state, start_time, end_time, reason_type, output, ack_author, ack_data
-
-
-
 -- Service Notifications
 insert into statusengine_service_notifications (hostname, service_description, contact_name, command_name, command_args, state, start_time, end_time, reason_type, output) SELECT
 Objects.name1,
@@ -51,6 +46,12 @@ WHERE NotificationService.contacts_notified > 0
 and `NotificationService`.`notification_type` = 1
 
 
--- hostname, service_description, contact_name, command_name, command_args, state, start_time, end_time, reason_type, output, ack_author, ack_data
+-- Logentries
 
-
+insert into statusengine_logentries (entry_time, logentry_type, logentry_data, node_name)
+select
+UNIX_TIMESTAMP(Logentry.entry_time),
+Logentry.logentry_type,
+Logentry.logentry_data,
+'openITCOCKPIT'
+FROM  `openitcockpit`.`nagios_logentries` AS `Logentry`;

@@ -141,8 +141,8 @@
                                    class="table table-striped table-hover table-bordered smart-form">
                                 <thead>
                                 <tr>
-                                    <th class="no-sort" ng-click="orderBy('Logentry.logentry_time')">
-                                        <i class="fa" ng-class="getSortClass('Logentry.logentry_time')"></i>
+                                    <th class="no-sort" ng-click="orderBy('Logentry.entry_time')">
+                                        <i class="fa" ng-class="getSortClass('Logentry.entry_time')"></i>
                                         <?php echo __('Date'); ?>
                                     </th>
 
@@ -160,7 +160,7 @@
                                 <tbody>
                                 <tr ng-repeat="logentry in logentries">
                                     <td>
-                                        {{ logentry.Logentry.logentry_time }}
+                                        {{ logentry.Logentry.entry_time }}
                                     </td>
                                     <td>
                                         {{ logentry.Logentry.logentry_type_string }}
@@ -181,7 +181,9 @@
                             </div>
                         </div>
 
+                        <scroll scroll="scroll" click-action="changepage" ng-if="scroll"></scroll>
                         <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>
+                        <?php echo $this->element('paginator_or_scroll'); ?>
                     </div>
                 </div>
         </article>
