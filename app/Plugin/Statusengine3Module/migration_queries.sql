@@ -55,3 +55,40 @@ Logentry.logentry_type,
 Logentry.logentry_data,
 'openITCOCKPIT'
 FROM  `openitcockpit`.`nagios_logentries` AS `Logentry`;
+
+-- Host State History
+insert into statusengine_host_statehistory (hostname, state_time, state_change, state, is_hardstate, current_check_attempt, max_check_attempts, last_state, last_hard_state, output, long_output)
+SELECT
+  Objects.name1,
+  UNIX_TIMESTAMP(Statehistory.state_time),
+  Statehistory.state_change,
+  Statehistory.state,
+  Statehistory.state_type,
+  Statehistory.current_check_attempt,
+  Statehistory.max_check_attempts,
+  Statehistory.last_state,
+  Statehistory.last_hard_state,
+  Statehistory.output,
+  Statehistory.long_output
+FROM
+  `openitcockpit`.`nagios_statehistory` AS `Statehistory`
+INNER JOIN `openitcockpit`.`nagios_objects` AS `Objects` ON (`Objects`.`object_id` = `Statehistory`.`object_id` AND Objects.objecttype_id = 1);
+
+-- Service State History
+insert into statusengine_service_statehistory (hostname, service_description, state_time, state_change, state, is_hardstate, current_check_attempt, max_check_attempts, last_state, last_hard_state, output, long_output)
+SELECT
+  Objects.name1,
+  Objects.name2,
+  UNIX_TIMESTAMP(Statehistory.state_time),
+  Statehistory.state_change,
+  Statehistory.state,
+  Statehistory.state_type,
+  Statehistory.current_check_attempt,
+  Statehistory.max_check_attempts,
+  Statehistory.last_state,
+  Statehistory.last_hard_state,
+  Statehistory.output,
+  Statehistory.long_output
+FROM
+  `openitcockpit`.`nagios_statehistory` AS `Statehistory`
+INNER JOIN `openitcockpit`.`nagios_objects` AS `Objects` ON (`Objects`.`object_id` = `Statehistory`.`object_id` AND Objects.objecttype_id = 2);

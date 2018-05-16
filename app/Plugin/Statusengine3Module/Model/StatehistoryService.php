@@ -59,13 +59,14 @@ class StatehistoryService extends Statusengine3ModuleAppModel {
         }
 
         foreach($StatehistoryServiceConditions->getStateTypes() as $stateType){
-            if($stateType === 0){
-                $query['conditions']['is_hardstate'] = false;
-            }
+            $query['conditions']['is_hardstate'] = $stateType;
+        }
 
-            if($stateType === 1){
-                $query['conditions']['is_hardstate'] = true;
-            }
+        if($StatehistoryServiceConditions->hardStateTypeAndUpState()){
+            $query['conditions']['OR'] = [
+                'StatehistoryService.is_hardstate' => 1,
+                'StatehistoryService.state' => 0
+            ];
         }
 
         $query['conditions'] = Hash::merge($paginatorConditions, $query['conditions']);

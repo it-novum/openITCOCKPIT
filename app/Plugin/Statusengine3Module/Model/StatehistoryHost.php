@@ -59,19 +59,13 @@ class StatehistoryHost extends Statusengine3ModuleAppModel {
         }
 
         foreach($StatehistoryHostConditions->getStateTypes() as $stateType){
-            if($stateType === 0){
-                $query['conditions']['is_hardstate'] = false;
-            }
-
-            if($stateType === 1){
-                $query['conditions']['is_hardstate'] = true;
-            }
+            $query['conditions']['is_hardstate'] = $stateType;
         }
 
         if($StatehistoryHostConditions->hardStateTypeAndUpState()){
-            $query['or'] =  [
-                ['StatehistoryHost.is_hardstate = ?' => [1]],
-                ['StatehistoryHost.state = ?' => [0]],
+            $query['conditions']['OR'] = [
+                'StatehistoryHost.is_hardstate' => 1,
+                'StatehistoryHost.state' => 0
             ];
         }
 

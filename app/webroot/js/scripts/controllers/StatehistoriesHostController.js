@@ -7,6 +7,8 @@ angular.module('openITCOCKPIT')
 
         $scope.id = QueryStringService.getCakeId();
 
+        $scope.useScroll = true;
+
         var now = new Date();
 
         /*** Filter Settings ***/
@@ -47,6 +49,7 @@ angular.module('openITCOCKPIT')
             $http.get("/statehistories/host/"+$scope.id+".json", {
                 params: {
                     'angular': true,
+                    'scroll': $scope.useScroll,
                     'sort': SortService.getSort(),
                     'page': $scope.currentPage,
                     'direction': SortService.getDirection(),
@@ -60,6 +63,7 @@ angular.module('openITCOCKPIT')
                 //console.log(result.data.all_statehistories[0]["StatehistoryHost"]);
                 $scope.statehistories = result.data.all_statehistories;
                 $scope.paging = result.data.paging;
+                $scope.scroll = result.data.scroll;
                 $scope.init = false;
             });
         };
@@ -79,6 +83,11 @@ angular.module('openITCOCKPIT')
                 $scope.currentPage = page;
                 $scope.load();
             }
+        };
+
+        $scope.changeMode = function(val){
+            $scope.useScroll = val;
+            $scope.load();
         };
 
         //Fire on page load

@@ -30,6 +30,7 @@ use itnovum\openITCOCKPIT\Core\StatehistoryServiceConditions;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
 use itnovum\openITCOCKPIT\Core\Views\StatehistoryService;
 use itnovum\openITCOCKPIT\Core\Views\StatehistoryHost;
+use itnovum\openITCOCKPIT\Database\ScrollIndex;
 
 
 class StatehistoriesController extends AppController {
@@ -146,11 +147,18 @@ class StatehistoriesController extends AppController {
         $this->Paginator->settings = $query;
         $this->Paginator->settings['page'] = $AngularStatehistoryControllerRequest->getPage();
 
-        $statehistories = $this->Paginator->paginate(
-            $this->StatehistoryService->alias,
-            [],
-            [key($this->Paginator->settings['order'])]
-        );
+        if ($this->isScrollRequest()) {
+            $ScrollIndex = new ScrollIndex($this->Paginator, $this);
+            $statehistories = $this->StatehistoryService->find('all', $this->Paginator->settings);
+            $ScrollIndex->determineHasNextPage($statehistories);
+            $ScrollIndex->scroll();
+        } else {
+            $statehistories = $this->Paginator->paginate(
+                $this->StatehistoryService->alias,
+                [],
+                [key($this->Paginator->settings['order'])]
+            );
+        }
 
         $all_statehistories = [];
         $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
@@ -163,7 +171,11 @@ class StatehistoriesController extends AppController {
 
 
         $this->set(compact(['all_statehistories']));
-        $this->set('_serialize', ['all_statehistories', 'paging']);
+        $toJson = ['all_statehistories', 'paging'];
+        if ($this->isScrollRequest()) {
+            $toJson = ['all_statehistories', 'scroll'];
+        }
+        $this->set('_serialize', $toJson);
     }
 
     public function host($id = null) {
@@ -238,12 +250,21 @@ class StatehistoriesController extends AppController {
 
         //Query state history records
         $query = $this->StatehistoryHost->getQuery($Conditions, $AngularStatehistoryControllerRequest->getHostFilters());
+
+
         $this->Paginator->settings = $query;
         $this->Paginator->settings['page'] = $AngularStatehistoryControllerRequest->getPage();
-        $statehistories = $this->Paginator->paginate(null, [], [key($this->Paginator->settings['order'])]);
+        if ($this->isScrollRequest()) {
+            $ScrollIndex = new ScrollIndex($this->Paginator, $this);
+            $statehistories = $this->StatehistoryHost->find('all', $this->Paginator->settings);
+            $ScrollIndex->determineHasNextPage($statehistories);
+            $ScrollIndex->scroll();
+        } else {
+            $statehistories = $this->Paginator->paginate(null, [], [key($this->Paginator->settings['order'])]);
+        }
 
         $all_statehistories = [];
-        foreach($statehistories as $statehistory){
+        foreach ($statehistories as $statehistory) {
             $StatehistoryHost = new StatehistoryHost($statehistory['StatehistoryHost'], $UserTime);
             $all_statehistories[] = [
                 'StatehistoryHost' => $StatehistoryHost->toArray()
@@ -251,6 +272,11 @@ class StatehistoriesController extends AppController {
         }
 
         $this->set(compact(['all_statehistories']));
-        $this->set('_serialize', ['all_statehistories', 'paging']);
+
+        $toJson = ['all_statehistories', 'paging'];
+        if ($this->isScrollRequest()) {
+            $toJson = ['all_statehistories', 'scroll'];
+        }
+        $this->set('_serialize', $toJson);
     }
 }
