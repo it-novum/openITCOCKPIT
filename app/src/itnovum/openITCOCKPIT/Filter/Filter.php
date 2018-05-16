@@ -214,10 +214,10 @@ abstract class Filter {
 
     /**
      * @param string $default
-     * @return string
+     * @return string|array
      */
     public function getSort($default = '') {
-        if (isset($this->Request->query['sort'])) {
+        if (isset($this->Request->query['sort']) && $this->Request->query['sort'] !== '') {
             return $this->Request->query['sort'];
         }
         return $default;
@@ -238,13 +238,17 @@ abstract class Filter {
     }
 
     /**
-     * @param string $sort
-     * @param string $direction
+     * @param string $defaultSort
+     * @param string $defaultDirection
      * @return array
      */
-    public function getOrderForPaginator($sort = '', $direction = '') {
+    public function getOrderForPaginator($defaultSort = '', $defaultDirection = '') {
+        if(is_array($this->getSort($defaultSort))){
+            return $this->getSort($defaultSort);
+        }
+
         return [
-            $this->getSort($sort) => $this->getDirection($direction)
+            $this->getSort($defaultSort) => $this->getDirection($defaultDirection)
         ];
     }
 
