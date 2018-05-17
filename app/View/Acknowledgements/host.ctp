@@ -83,7 +83,7 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
 
                     <div class="jarviswidget-ctrls" role="menu"></div>
                     <span class="widget-icon"> <i class="fa fa-history"></i> </span>
-                    <h2><?php echo __('Acknowledgement history'); ?> </h2>
+                    <h2><?php echo __('Host acknowledgement history'); ?> </h2>
 
                 </header>
 
