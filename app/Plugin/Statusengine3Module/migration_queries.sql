@@ -139,3 +139,36 @@ FROM
   `openitcockpit`.`nagios_servicechecks` AS `Servicecheck`
 INNER JOIN `openitcockpit`.`nagios_objects` AS `Objects` ON (`Objects`.`object_id` = `Servicecheck`.`service_object_id` AND Objects.objecttype_id = 2)
 INNER JOIN `openitcockpit`.`nagios_objects` AS `CommandObjects` ON (`CommandObjects`.`object_id` = `Servicecheck`.`command_object_id` AND CommandObjects.objecttype_id = 12);
+
+-- Host Acks
+insert into statusengine_host_acknowledgements (hostname, state, author_name, comment_data, entry_time, acknowledgement_type, is_sticky, persistent_comment, notify_contacts)
+SELECT
+  Objects.name1,
+  Acknowledgement.state,
+  Acknowledgement.author_name,
+  Acknowledgement.comment_data,
+  UNIX_TIMESTAMP(Acknowledgement.entry_time),
+  Acknowledgement.acknowledgement_type,
+  Acknowledgement.is_sticky,
+  Acknowledgement.persistent_comment,
+  Acknowledgement.notify_contacts
+FROM
+  `openitcockpit`.`nagios_acknowledgements` AS `Acknowledgement`
+INNER JOIN `openitcockpit`.`nagios_objects` AS `Objects` ON (`Objects`.`object_id` = `Acknowledgement`.`object_id` AND Objects.objecttype_id = 1);
+
+-- Service Acks
+insert into statusengine_service_acknowledgements (hostname, service_description, state, author_name, comment_data, entry_time, acknowledgement_type, is_sticky, persistent_comment, notify_contacts)
+SELECT
+  Objects.name1,
+  Objects.name2,
+  Acknowledgement.state,
+  Acknowledgement.author_name,
+  Acknowledgement.comment_data,
+  UNIX_TIMESTAMP(Acknowledgement.entry_time),
+  Acknowledgement.acknowledgement_type,
+  Acknowledgement.is_sticky,
+  Acknowledgement.persistent_comment,
+  Acknowledgement.notify_contacts
+FROM
+  `openitcockpit`.`nagios_acknowledgements` AS `Acknowledgement`
+INNER JOIN `openitcockpit`.`nagios_objects` AS `Objects` ON (`Objects`.`object_id` = `Acknowledgement`.`object_id` AND Objects.objecttype_id = 2);

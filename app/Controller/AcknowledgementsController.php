@@ -28,6 +28,7 @@ use itnovum\openITCOCKPIT\Core\AcknowledgedHostConditions;
 use itnovum\openITCOCKPIT\Core\HoststatusFields;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
+use itnovum\openITCOCKPIT\Database\ScrollIndex;
 
 class AcknowledgementsController extends AppController {
     /*
@@ -237,11 +238,18 @@ class AcknowledgementsController extends AppController {
         $this->Paginator->settings = $query;
         $this->Paginator->settings['page'] = $AngularAcknowledgementsControllerRequest->getPage();
 
-        $acknowledgements = $this->Paginator->paginate(
-            $this->AcknowledgedHost->alias,
-            [],
-            [key($this->Paginator->settings['order'])]
-        );
+        if($this->isScrollRequest()){
+            $ScrollIndex = new ScrollIndex($this->Paginator, $this);
+            $acknowledgements = $this->AcknowledgedHost->find('all', $this->Paginator->settings);
+            $ScrollIndex->determineHasNextPage($acknowledgements);
+            $ScrollIndex->scroll();
+        }else {
+            $acknowledgements = $this->Paginator->paginate(
+                $this->AcknowledgedHost->alias,
+                [],
+                [key($this->Paginator->settings['order'])]
+            );
+        }
 
         $all_acknowledgements = [];
         $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
@@ -253,6 +261,10 @@ class AcknowledgementsController extends AppController {
         }
 
         $this->set(compact(['all_acknowledgements']));
-        $this->set('_serialize', ['all_acknowledgements', 'paging']);
+        $toJson = ['all_acknowledgements', 'paging'];
+        if($this->isScrollRequest()){
+            $toJson = ['all_acknowledgements', 'scroll'];
+        }
+        $this->set('_serialize', $toJson);
     }
 }
