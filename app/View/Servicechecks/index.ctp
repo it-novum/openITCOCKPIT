@@ -95,7 +95,7 @@ $Servicestatus = new Servicestatus($servicestatus['Servicestatus']);
 
                     <div class="jarviswidget-ctrls" role="menu"></div>
                     <span class="widget-icon"> <i class="fa fa-history"></i> </span>
-                    <h2><?php echo __('Check history'); ?> </h2>
+                    <h2><?php echo __('Service check history'); ?> </h2>
 
                 </header>
 
