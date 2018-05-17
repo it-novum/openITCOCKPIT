@@ -26,6 +26,7 @@
 use itnovum\openITCOCKPIT\Core\ServicechecksConditions;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
+use itnovum\openITCOCKPIT\Database\ScrollIndex;
 
 class ServicechecksController extends AppController {
     /*
@@ -119,6 +120,13 @@ class ServicechecksController extends AppController {
                 'Service.service_type',
                 'Service.service_url'
             ],
+            'contain' => [
+                'Host' => [
+                    'fields' => [
+                        'Host.uuid'
+                    ]
+                ]
+            ],
             'conditions' => [
                 'Service.id' => $id,
             ],
@@ -128,6 +136,7 @@ class ServicechecksController extends AppController {
 
         //Process conditions
         $Conditions = new ServicechecksConditions();
+        $Conditions->setHostUuid($service['Host']['uuid']);
         $Conditions->setLimit($this->Paginator->settings['limit']);
         $Conditions->setFrom($AngularServicechecksControllerRequest->getFrom());
         $Conditions->setTo($AngularServicechecksControllerRequest->getTo());
@@ -142,11 +151,18 @@ class ServicechecksController extends AppController {
         $this->Paginator->settings = $query;
         $this->Paginator->settings['page'] = $AngularServicechecksControllerRequest->getPage();
 
-        $servicechecks = $this->Paginator->paginate(
-            $this->Servicecheck->alias,
-            [],
-            [key($this->Paginator->settings['order'])]
-        );
+        $ScrollIndex = new ScrollIndex($this->Paginator, $this);
+        if($this->isScrollRequest()) {
+            $servicechecks = $this->Servicecheck->find('all', $this->Paginator->settings);
+            $ScrollIndex->determineHasNextPage($servicechecks);
+            $ScrollIndex->scroll();
+        }else {
+            $servicechecks = $this->Paginator->paginate(
+                $this->Servicecheck->alias,
+                [],
+                [key($this->Paginator->settings['order'])]
+            );
+        }
 
         $all_servicechecks = [];
         $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
@@ -158,6 +174,10 @@ class ServicechecksController extends AppController {
         }
 
         $this->set(compact(['all_servicechecks']));
-        $this->set('_serialize', ['all_servicechecks', 'paging']);
+        $toJson = ['all_servicechecks', 'paging'];
+        if($this->isScrollRequest()){
+            $toJson = ['all_servicechecks', 'scroll'];
+        }
+        $this->set('_serialize', $toJson);
     }
 }

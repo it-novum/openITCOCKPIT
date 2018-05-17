@@ -92,3 +92,50 @@ SELECT
 FROM
   `openitcockpit`.`nagios_statehistory` AS `Statehistory`
 INNER JOIN `openitcockpit`.`nagios_objects` AS `Objects` ON (`Objects`.`object_id` = `Statehistory`.`object_id` AND Objects.objecttype_id = 2);
+
+-- Host checks
+insert into statusengine_hostchecks (hostname, state, is_hardstate, start_time, end_time, output, timeout, early_timeout, latency, execution_time, perfdata, command, current_check_attempt, max_check_attempts, long_output)
+SELECT
+  Objects.name1,
+  Hostcheck.state,
+  Hostcheck.state_type,
+  UNIX_TIMESTAMP(Hostcheck.start_time),
+  UNIX_TIMESTAMP(Hostcheck.end_time),
+  Hostcheck.output,
+  Hostcheck.timeout,
+  Hostcheck.early_timeout,
+  Hostcheck.latency,
+  Hostcheck.execution_time,
+  Hostcheck.perfdata,
+  CommandObjects.name1,
+  Hostcheck.current_check_attempt,
+  Hostcheck.max_check_attempts,
+  Hostcheck.long_output
+FROM
+  `openitcockpit`.`nagios_hostchecks` AS `Hostcheck`
+INNER JOIN `openitcockpit`.`nagios_objects` AS `Objects` ON (`Objects`.`object_id` = `Hostcheck`.`host_object_id` AND Objects.objecttype_id = 1)
+INNER JOIN `openitcockpit`.`nagios_objects` AS `CommandObjects` ON (`CommandObjects`.`object_id` = `Hostcheck`.`command_object_id` AND CommandObjects.objecttype_id = 12);
+
+-- Service checks
+insert into statusengine_servicechecks (hostname, service_description, state, is_hardstate, start_time, end_time, output, timeout, early_timeout, latency, execution_time, perfdata, command, current_check_attempt, max_check_attempts, long_output)
+SELECT
+  Objects.name1,
+  Objects.name2,
+  Servicecheck.state,
+  Servicecheck.state_type,
+  UNIX_TIMESTAMP(Servicecheck.start_time),
+  UNIX_TIMESTAMP(Servicecheck.end_time),
+  Servicecheck.output,
+  Servicecheck.timeout,
+  Servicecheck.early_timeout,
+  Servicecheck.latency,
+  Servicecheck.execution_time,
+  Servicecheck.perfdata,
+  CommandObjects.name1,
+  Servicecheck.current_check_attempt,
+  Servicecheck.max_check_attempts,
+  Servicecheck.long_output
+FROM
+  `openitcockpit`.`nagios_servicechecks` AS `Servicecheck`
+INNER JOIN `openitcockpit`.`nagios_objects` AS `Objects` ON (`Objects`.`object_id` = `Servicecheck`.`service_object_id` AND Objects.objecttype_id = 2)
+INNER JOIN `openitcockpit`.`nagios_objects` AS `CommandObjects` ON (`CommandObjects`.`object_id` = `Servicecheck`.`command_object_id` AND CommandObjects.objecttype_id = 12);
