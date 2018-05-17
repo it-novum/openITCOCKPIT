@@ -1418,7 +1418,7 @@ class Host extends AppModel {
             'joins'      => [
                 [
                     'table'      => 'statusengine_hoststatus',
-                    'type'       => 'LEFT OUTER',
+                    'type'       => 'INNER',
                     'alias'      => 'Hoststatus',
                     'conditions' => 'Hoststatus.hostname = Host.uuid',
                 ], [

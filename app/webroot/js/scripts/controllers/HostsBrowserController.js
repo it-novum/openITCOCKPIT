@@ -4,8 +4,8 @@ angular.module('openITCOCKPIT')
         $scope.id = QueryStringService.getCakeId();
 
         $scope.activeTab = 'active';
-        SortService.setSort('Service.servicename');
-        SortService.setDirection('asc');
+        SortService.setSort('Servicestatus.current_state');
+        SortService.setDirection('desc');
         $scope.currentPage = 1;
 
         $scope.deleteUrl = '/services/delete/';

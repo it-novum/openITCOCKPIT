@@ -1489,7 +1489,7 @@ class Service extends AppModel {
                     'conditions' => 'Hoststatus.hostname = Host.uuid',
                 ], [
                     'table'      => 'statusengine_servicestatus',
-                    'type'       => 'LEFT OUTER',
+                    'type'       => 'INNER',
                     'alias'      => 'Servicestatus',
                     'conditions' => [
                         'Servicestatus.hostname = Host.uuid',

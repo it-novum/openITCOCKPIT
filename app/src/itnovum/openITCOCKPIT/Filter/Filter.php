@@ -238,13 +238,25 @@ abstract class Filter {
     }
 
     /**
+     * @param array $sortAsArray
+     * return array
+     */
+    public function validateArrayDirection($sortAsArray = []){
+        $validatedSort = [];
+        foreach($sortAsArray as $sortField => $sortDirection){
+            $validatedSort[$sortField] = ($sortDirection === 'desc')?'desc':'asc';
+        }
+        return $validatedSort;
+    }
+
+    /**
      * @param string $defaultSort
      * @param string $defaultDirection
      * @return array
      */
     public function getOrderForPaginator($defaultSort = '', $defaultDirection = '') {
         if(is_array($this->getSort($defaultSort))){
-            return $this->getSort($defaultSort);
+            return $this->validateArrayDirection($this->getSort($defaultSort));
         }
 
         return [
