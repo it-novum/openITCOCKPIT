@@ -260,11 +260,18 @@ class NotificationsController extends AppController {
         $this->Paginator->settings['page'] = $AngularNotificationsControllerRequest->getPage();
 
 
-        $notifications = $this->Paginator->paginate(
-            $this->NotificationHost->alias,
-            [],
-            [key($this->Paginator->settings['order'])]
-        );
+        $ScrollIndex = new ScrollIndex($this->Paginator, $this);
+        if($this->isScrollRequest()) {
+            $notifications = $this->NotificationHost->find('all', $this->Paginator->settings);
+            $ScrollIndex->determineHasNextPage($notifications);
+            $ScrollIndex->scroll();
+        }else {
+            $notifications = $this->Paginator->paginate(
+                $this->NotificationHost->alias,
+                [],
+                [key($this->Paginator->settings['order'])]
+            );
+        }
 
         $all_notifications = [];
         $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
@@ -283,7 +290,11 @@ class NotificationsController extends AppController {
         }
 
         $this->set(compact(['all_notifications']));
-        $this->set('_serialize', ['all_notifications', 'paging']);
+        $toJson = ['all_notifications', 'paging'];
+        if($this->isScrollRequest()){
+            $toJson = ['all_notifications', 'scroll'];
+        }
+        $this->set('_serialize', $toJson);
     }
 
     public function serviceNotification($service_id){
@@ -377,11 +388,18 @@ class NotificationsController extends AppController {
         $this->Paginator->settings = $query;
         $this->Paginator->settings['page'] = $AngularNotificationsControllerRequest->getPage();
 
-        $notifications = $this->Paginator->paginate(
-            $this->NotificationService->alias,
-            [],
-            [key($this->Paginator->settings['order'])]
-        );
+        $ScrollIndex = new ScrollIndex($this->Paginator, $this);
+        if($this->isScrollRequest()) {
+            $notifications = $this->NotificationService->find('all', $this->Paginator->settings);
+            $ScrollIndex->determineHasNextPage($notifications);
+            $ScrollIndex->scroll();
+        }else {
+            $notifications = $this->Paginator->paginate(
+                $this->NotificationService->alias,
+                [],
+                [key($this->Paginator->settings['order'])]
+            );
+        }
 
         $all_notifications = [];
         $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
@@ -401,7 +419,11 @@ class NotificationsController extends AppController {
         }
 
         $this->set(compact(['all_notifications']));
-        $this->set('_serialize', ['all_notifications', 'paging']);
+        $toJson = ['all_notifications', 'paging'];
+        if($this->isScrollRequest()){
+            $toJson = ['all_notifications', 'scroll'];
+        }
+        $this->set('_serialize', $toJson);
     }
 
 }
