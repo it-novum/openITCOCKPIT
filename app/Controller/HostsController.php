@@ -3408,4 +3408,30 @@ class HostsController extends AppController {
         $this->set('host', $host);
         $this->set('_serialize', ['host']);
     }
+
+    /**
+     * @param string | null $uuid
+     */
+    public function hoststatus($uuid = null) {
+        if (!$this->isApiRequest()) {
+            throw new MethodNotAllowedException();
+        }
+        if (!$uuid) {
+            throw new NotFoundException(__('Invalid request parameter'));
+        }
+
+        $HoststatusFields = new HoststatusFields($this->DbBackend);
+        $HoststatusFields->currentState()
+            ->isHardstate()
+            ->scheduledDowntimeDepth()
+            ->problemHasBeenAcknowledged();
+        $hoststatus = $this->Hoststatus->byUuid($uuid, $HoststatusFields);
+        if (empty($hoststatus)) {
+            $hoststatus = [
+                'Hoststatus' => []
+            ];
+        }
+        $this->set('hoststatus', $hoststatus);
+        $this->set('_serialize', ['hoststatus']);
+    }
 }

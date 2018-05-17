@@ -122,10 +122,6 @@ $config = [
                 'icon',
                 'details'
             ],
-            'Statusmaps'       => [
-                'getHostsAndConnections',
-                'clickHostStatus',
-            ],
             'Graphgenerators'  => [
                 'fetchGraphData',
                 'loadServicesByHostId',
@@ -235,7 +231,7 @@ $config = [
                 'edit'     => ['loadHosts', 'loadHosttemplates', 'loadContainers'],
             ],
             'Hosts'                 => [
-                'index'      => ['getHostByAjax', 'listToPdf', 'ajaxList', 'loadHostsByContainerId', 'loadHostsByString', 'loadHostById', 'allocateServiceTemplateGroup', 'getServiceTemplatesfromGroup'],
+                'index'      => ['getHostByAjax', 'listToPdf', 'ajaxList', 'loadHostsByContainerId', 'loadHostsByString', 'loadHostById', 'allocateServiceTemplateGroup', 'getServiceTemplatesfromGroup', 'hoststatus'],
                 'delete'     => ['mass_delete'],
                 'deactivate' => ['mass_deactivate'],
                 'browser'    => ['longOutputByUuid'],
@@ -276,7 +272,7 @@ $config = [
             ],
             'Services'              => [
                 'deactivate'  => ['mass_deactivate'],
-                'index'       => ['serviceByHostId', 'listToPdf', 'loadServices', 'view', 'loadServicesByContainerId', 'loadServicesByString', 'getSelectedServices'],
+                'index'       => ['serviceByHostId', 'listToPdf', 'loadServices', 'view', 'loadServicesByContainerId', 'loadServicesByString','getSelectedServices'],
                 'browser'     => ['servicesByHostId', 'longOutputByUuid'],
                 'add'         => ['loadContactsAndContactgroups', 'loadParametersByCommandId', 'loadNagParametersByCommandId', 'loadArgumentsAdd', 'loadServicetemplatesArguments', 'loadTemplateData', 'addCustomMacro', 'loadTemplateMacros'],
                 'edit'        => ['loadContactsAndContactgroups', 'loadParametersByCommandId', 'loadNagParametersByCommandId', 'loadArgumentsAdd', 'loadServicetemplatesArguments', 'loadTemplateData', 'addCustomMacro', 'loadTemplateMacros'],
@@ -377,7 +373,7 @@ $config = [
                 'Servicetemplategroups' => ['index'],
                 'Servicetemplates'      => ['index'],
                 'Statehistories'        => ['service', 'host'],
-                'Statusmaps'            => ['index', 'view'],
+                'Statusmaps'            => ['index', 'hostAndServicesSummaryStatus'],
                 'Systemdowntimes'       => ['index'],
                 'Systemfailures'        => ['index'],
                 'Systemsettings'        => ['index', 'host', 'service', 'hostgroup', 'node'],
