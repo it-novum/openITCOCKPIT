@@ -49,8 +49,7 @@ class DowntimeHost extends Statusengine3ModuleAppModel {
 
             'Host.id',
             'Host.uuid',
-            'Host.name',
-            'Host.container_ids'
+            'Host.name'
         ];
 
         $query = [
@@ -58,7 +57,7 @@ class DowntimeHost extends Statusengine3ModuleAppModel {
             'fields'    => $fields,
             'joins'     => [
                 [
-                    'table'      => 'openitcockpit_hosts',
+                    'table'      => 'hosts',
                     'type'       => 'INNER',
                     'alias'      => 'Host',
                     'conditions' =>
@@ -79,26 +78,50 @@ class DowntimeHost extends Statusengine3ModuleAppModel {
             $query['conditions']['DowntimeHost.scheduled_end_time >'] = time();
         }
 
+
+
         if ($Conditions->hasContainerIds()) {
-            $query['array_difference'] = [
-                'Host.container_ids' =>
-                    $Conditions->getContainerIds(),
-            ];
+            $db = $this->getDataSource();
+            $subQuery = $db->buildStatement([
+                'fields'     => ['Host.uuid'],
+                'table'      => 'hosts',
+                'alias'      => 'Host',
+                'limit'      => null,
+                'offset'     => null,
+                'joins'      => [
+                    [
+                        'table'      => 'hosts_to_containers',
+                        'alias'      => 'HostsToContainers',
+                        'type'       => 'INNER',
+                        'conditions' => [
+                            'HostsToContainers.host_id = Host.id',
+                        ],
+                    ]
+                ],
+                'conditions' => [
+                    'HostsToContainers.container_id' => $Conditions->getContainerIds()
+                ],
+                'order'      => null,
+                'group'      => null
+            ], $this);
+            $subQuery = 'DowntimeHost.hostname IN (' . $subQuery . ') ';
+            $subQueryExpression = $db->expression($subQuery);
+            $query['conditions'][] = $subQueryExpression->value;
         }
 
         $query['conditions'] = Hash::merge($query['conditions'], $filterConditions);
         if (isset($query['conditions']['DowntimeHost.was_started'])) {
-            $query['conditions']['DowntimeHost.was_started'] = (bool)$query['conditions']['DowntimeHost.was_started'];
+            $query['conditions']['DowntimeHost.was_started'] = (int)$query['conditions']['DowntimeHost.was_started'];
         }
 
         if (isset($query['conditions']['DowntimeHost.was_cancelled'])) {
-            $query['conditions']['DowntimeHost.was_cancelled'] = (bool)$query['conditions']['DowntimeHost.was_cancelled'];
+            $query['conditions']['DowntimeHost.was_cancelled'] = (int)$query['conditions']['DowntimeHost.was_cancelled'];
         }
 
         if ($Conditions->isRunning()) {
             $query['conditions']['DowntimeHost.scheduled_end_time >'] = time();
-            $query['conditions']['DowntimeHost.was_started'] = true;
-            $query['conditions']['DowntimeHost.was_cancelled'] = false;
+            $query['conditions']['DowntimeHost.was_started'] = 1;
+            $query['conditions']['DowntimeHost.was_cancelled'] = 0;
         }
 
 

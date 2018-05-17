@@ -172,3 +172,49 @@ SELECT
 FROM
   `openitcockpit`.`nagios_acknowledgements` AS `Acknowledgement`
 INNER JOIN `openitcockpit`.`nagios_objects` AS `Objects` ON (`Objects`.`object_id` = `Acknowledgement`.`object_id` AND Objects.objecttype_id = 2);
+
+-- Host downtimes
+insert into statusengine_host_downtimehistory (hostname, entry_time, author_name, comment_data, internal_downtime_id, triggered_by_id, is_fixed, duration, scheduled_start_time, scheduled_end_time, was_started, actual_start_time, actual_end_time, was_cancelled, node_name)
+SELECT
+  Objects.name1,
+  UNIX_TIMESTAMP(DowntimeHost.entry_time),
+  DowntimeHost.author_name,
+  DowntimeHost.comment_data,
+  DowntimeHost.internal_downtime_id,
+  DowntimeHost.triggered_by_id,
+  DowntimeHost.is_fixed,
+  DowntimeHost.duration,
+  UNIX_TIMESTAMP(DowntimeHost.scheduled_start_time),
+  UNIX_TIMESTAMP(DowntimeHost.scheduled_end_time),
+  DowntimeHost.was_started,
+  UNIX_TIMESTAMP(DowntimeHost.actual_start_time),
+  UNIX_TIMESTAMP(DowntimeHost.actual_end_time),
+  DowntimeHost.was_cancelled,
+  'openITCOCKPIT'
+FROM
+  `openitcockpit`.`nagios_downtimehistory` AS `DowntimeHost`
+INNER JOIN `openitcockpit`.`nagios_objects` AS `Objects` ON (`Objects`.`object_id` = `DowntimeHost`.`object_id` AND Objects.objecttype_id = 1)
+WHERE DowntimeHost.downtime_type = 2;
+
+insert into statusengine_service_downtimehistory (hostname, service_description, entry_time, author_name, comment_data, internal_downtime_id, triggered_by_id, is_fixed, duration, scheduled_start_time, scheduled_end_time, was_started, actual_start_time, actual_end_time, was_cancelled, node_name)
+SELECT
+  Objects.name1,
+  Objects.name2,
+  UNIX_TIMESTAMP(DowntimeService.entry_time),
+  DowntimeService.author_name,
+  DowntimeService.comment_data,
+  DowntimeService.internal_downtime_id,
+  DowntimeService.triggered_by_id,
+  DowntimeService.is_fixed,
+  DowntimeService.duration,
+  UNIX_TIMESTAMP(DowntimeService.scheduled_start_time),
+  UNIX_TIMESTAMP(DowntimeService.scheduled_end_time),
+  DowntimeService.was_started,
+  UNIX_TIMESTAMP(DowntimeService.actual_start_time),
+  UNIX_TIMESTAMP(DowntimeService.actual_end_time),
+  DowntimeService.was_cancelled,
+  'openITCOCKPIT'
+FROM
+  `openitcockpit`.`nagios_downtimehistory` AS `DowntimeService`
+INNER JOIN `openitcockpit`.`nagios_objects` AS `Objects` ON (`Objects`.`object_id` = `DowntimeService`.`object_id` AND Objects.objecttype_id = 2)
+WHERE DowntimeService.downtime_type = 1;
