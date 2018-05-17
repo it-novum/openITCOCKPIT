@@ -926,7 +926,7 @@ class Service extends AppModel {
         $containerIds = array_unique($containerIds);
 
         $_conditions = [
-            'Host.container_id' => $containerIds,
+            'HostToContainer.container_id' => $containerIds,
             'Host.disabled'     => 0,
             'Service.disabled'  => 0,
         ];
@@ -940,22 +940,34 @@ class Service extends AppModel {
                         'Servicetemplate.name'
                     ],
                 ],
-                'Host'            => [
-                    'fields'    => [
-                        'Host.name',
-                        'Host.uuid',
-                        'Host.address',
-                        'Host.description'
-                    ],
-                    'Container' => [
-                        'conditions' => [
-                            'Container.id' => $containerIds,
-                        ]
-
-                    ]
-                ],
             ],
+            'joins' => [
+                [
+                    'table' => 'hosts',
+                    'alias' => 'Host',
+                    'type' => 'INNER',
+                    'conditions' => [
+                        'Host.id = Service.host_id'
+                    ]
+
+                ],
+                [
+                    'table' => 'hosts_to_containers',
+                    'alias' => 'HostToContainer',
+                    'type' => 'INNER',
+                    'conditions' => [
+                        'HostToContainer.host_id = Host.id'
+                    ]
+
+                ]
+            ],
+
             'fields'     => [
+                'Host.id',
+                'Host.name',
+                'Host.uuid',
+                'Host.address',
+                'Host.description',
                 'Service.id',
                 'IF((Service.name IS NULL OR Service.name = ""), Servicetemplate.name, Service.name) AS ServiceDescription',
                 'IF((Service.description IS NULL OR Service.description = ""), Servicetemplate.description, Service.description) AS ServiceDescr',
@@ -963,10 +975,10 @@ class Service extends AppModel {
                 'Service.service_type',
                 'Service.disabled'
             ],
-            'order'      => [
-                'Host.name ASC', 'Service.name ASC', 'Servicetemplate.name ASC',
-            ],
             'conditions' => $conditions,
+            'group' => [
+                'Service.id'
+            ]
         ];
         if ($limit) {
             $query['limit'] = $limit;
