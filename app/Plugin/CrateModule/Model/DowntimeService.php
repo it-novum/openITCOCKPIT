@@ -159,6 +159,8 @@ class DowntimeService extends CrateModuleAppModel {
             $query['conditions']['DowntimeService.service_description'] = $Conditions->getServiceUuids();
         }
 
+        $query['conditions']['DowntimeHost.was_cancelled'] = false;
+
 
         $query['or'] = [
             ['? BETWEEN DowntimeService.scheduled_start_time AND DowntimeService.scheduled_end_time' => [$Conditions->getFrom()]],

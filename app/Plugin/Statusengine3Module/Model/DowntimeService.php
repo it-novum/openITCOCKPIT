@@ -133,14 +133,14 @@ class DowntimeService extends Statusengine3ModuleAppModel {
             ],
             'joins'     => [
                 [
-                    'table'      => 'openitcockpit_hosts',
+                    'table'      => 'hosts',
                     'type'       => 'INNER',
                     'alias'      => 'Host',
                     'conditions' =>
                         'Host.uuid = DowntimeService.hostname',
                 ],
                 [
-                    'table'      => 'openitcockpit_services',
+                    'table'      => 'services',
                     'type'       => 'INNER',
                     'alias'      => 'Service',
                     'conditions' =>
@@ -158,11 +158,18 @@ class DowntimeService extends Statusengine3ModuleAppModel {
             $query['conditions']['DowntimeService.service_description'] = $Conditions->getServiceUuids();
         }
 
+        $query['conditions']['DowntimeService.was_cancelled'] = 0;
 
-        $query['or'] = [
-            ['? BETWEEN DowntimeService.scheduled_start_time AND DowntimeService.scheduled_end_time' => [$Conditions->getFrom()]],
-            ['? BETWEEN DowntimeService.scheduled_start_time AND DowntimeService.scheduled_end_time' => [$Conditions->getTo()]],
-            ['DowntimeService.scheduled_start_time BETWEEN ? AND ?' => [$Conditions->getFrom(), $Conditions->getTo()]]
+        $query['conditions']['OR'] = [
+            '"' . $Conditions->getFrom() . '"
+            BETWEEN DowntimeService.scheduled_start_time
+            AND DowntimeService.scheduled_end_time',
+            '"' . $Conditions->getTo() . '"
+            BETWEEN DowntimeService.scheduled_start_time
+            AND DowntimeService.scheduled_end_time',
+            'DowntimeService.scheduled_start_time BETWEEN "' . $Conditions->getFrom() . '"
+            AND "' . $Conditions->getTo() . '"',
+
         ];
 
         return $query;

@@ -55,12 +55,12 @@ class DowntimeHost extends Statusengine3ModuleAppModel {
 
         $query = [
             'recursive' => -1,
-            'fields' => $fields,
-            'joins' => [
+            'fields'    => $fields,
+            'joins'     => [
                 [
-                    'table' => 'openitcockpit_hosts',
-                    'type' => 'INNER',
-                    'alias' => 'Host',
+                    'table'      => 'openitcockpit_hosts',
+                    'type'       => 'INNER',
+                    'alias'      => 'Host',
                     'conditions' =>
                         'Host.uuid = DowntimeHost.hostname',
                 ],
@@ -87,15 +87,15 @@ class DowntimeHost extends Statusengine3ModuleAppModel {
         }
 
         $query['conditions'] = Hash::merge($query['conditions'], $filterConditions);
-        if(isset($query['conditions']['DowntimeHost.was_started'])){
+        if (isset($query['conditions']['DowntimeHost.was_started'])) {
             $query['conditions']['DowntimeHost.was_started'] = (bool)$query['conditions']['DowntimeHost.was_started'];
         }
 
-        if(isset($query['conditions']['DowntimeHost.was_cancelled'])){
+        if (isset($query['conditions']['DowntimeHost.was_cancelled'])) {
             $query['conditions']['DowntimeHost.was_cancelled'] = (bool)$query['conditions']['DowntimeHost.was_cancelled'];
         }
 
-        if($Conditions->isRunning()){
+        if ($Conditions->isRunning()) {
             $query['conditions']['DowntimeHost.scheduled_end_time >'] = time();
             $query['conditions']['DowntimeHost.was_started'] = true;
             $query['conditions']['DowntimeHost.was_cancelled'] = false;
@@ -121,18 +121,18 @@ class DowntimeHost extends Statusengine3ModuleAppModel {
                 'DowntimeHost.was_cancelled',
                 'Host.uuid'
             ],
-            'joins' => [
+            'joins'      => [
                 [
-                    'table' => 'openitcockpit_hosts',
-                    'type' => 'INNER',
-                    'alias' => 'Host',
+                    'table'      => 'hosts',
+                    'type'       => 'INNER',
+                    'alias'      => 'Host',
                     'conditions' =>
                         'Host.uuid = DowntimeHost.hostname',
                 ],
             ],
             'order'      => $Conditions->getOrder(),
             'conditions' => [
-                'DowntimeHost.was_cancelled' => false
+                'DowntimeHost.was_cancelled' => 0
             ]
         ];
 
@@ -140,11 +140,15 @@ class DowntimeHost extends Statusengine3ModuleAppModel {
             $query['conditions']['DowntimeHost.hostname'] = $Conditions->getHostUuids();
         }
 
-
-        $query['or'] = [
-            ['? BETWEEN DowntimeHost.scheduled_start_time AND DowntimeHost.scheduled_end_time' => [$Conditions->getFrom()]],
-            ['? BETWEEN DowntimeHost.scheduled_start_time AND DowntimeHost.scheduled_end_time' => [$Conditions->getTo()]],
-            ['DowntimeHost.scheduled_start_time BETWEEN ? AND ?' => [$Conditions->getFrom(), $Conditions->getTo()]]
+        $query['conditions']['OR'] = [
+            '"' . $Conditions->getFrom() . '"
+            BETWEEN DowntimeHost.scheduled_start_time
+            AND DowntimeHost.scheduled_end_time',
+            '"' . $Conditions->getTo() . '"
+            BETWEEN DowntimeHost.scheduled_start_time
+            AND DowntimeHost.scheduled_end_time',
+            'DowntimeHost.scheduled_start_time BETWEEN "' . $Conditions->getFrom() . '"
+            AND "' . $Conditions->getTo() . '"',
         ];
 
         return $query;
@@ -166,13 +170,13 @@ class DowntimeHost extends Statusengine3ModuleAppModel {
         ];
 
         $result = $this->find('first', $query);
-        if(empty($result)){
+        if (empty($result)) {
             return [];
         }
 
         return [
             'DowntimeHost' => $result['DowntimeHost'],
-            'Host' => [
+            'Host'         => [
                 'uuid' => $result['DowntimeHost']['hostname']
             ]
         ];
@@ -183,13 +187,13 @@ class DowntimeHost extends Statusengine3ModuleAppModel {
      * @param string $uuid
      * @return array|null
      */
-    public function byHostUuid($uuid = null){
+    public function byHostUuid($uuid = null) {
         if ($uuid !== null) {
             $downtime = $this->find('first', [
                 'conditions' => [
                     'hostname' => $uuid,
                 ],
-                'order' => [
+                'order'      => [
                     'DowntimeHost.entry_time' => 'DESC',
                 ],
             ]);
