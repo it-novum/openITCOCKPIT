@@ -179,6 +179,7 @@ class HostsController extends AppController {
 
         if ($this->DbBackend->isStatusengine3()) {
             $query = $this->Host->getHostIndexQueryStatusengine3($HostCondition, $HostFilter->indexFilter());
+            $this->Host->virtualFieldsForIndex();
             $modelName = 'Host';
         }
 
