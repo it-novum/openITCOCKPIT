@@ -1698,7 +1698,7 @@ class Host extends AppModel {
 
         $query = [
             'conditions' => [
-                'Host.disabled'                  => 0
+                'Host.disabled' => 0
             ],
             'contain'    => [],
             'fields'     => [
@@ -1770,13 +1770,11 @@ class Host extends AppModel {
         if ($includeOkState === true) {
             $servicestatusCount['0'] = 0;
         }
-
         $query = [
             'conditions' => [
                 'Service.disabled'               => 0,
                 'ServiceObject.is_active'        => 1,
                 'HostsToContainers.container_id' => $MY_RIGHTS,
-
             ],
             'contain'    => [],
             'fields'     => [
@@ -1813,6 +1811,59 @@ class Host extends AppModel {
                 ],
             ],
         ];
+        if ($includeOkState === false) {
+            $query['conditions']['Servicestatus.current_state >'] = 0;
+        }
+        $servicestatusCountResult = $this->find('all', $query);
+        foreach ($servicestatusCountResult as $servicestatus) {
+            $servicestatusCount[$servicestatus['Servicestatus']['current_state']] = (int)$servicestatus[0]['count'];
+        }
+        return $servicestatusCount;
+    }
+
+    /**
+     * @param array $MY_RIGHTS
+     * @param bool $includeOkState
+     * @return array
+     */
+    public function getServicestatusCountStatusengine3($MY_RIGHTS, $includeOkState = false) {
+        $servicestatusCount = [
+            '1' => 0,
+            '2' => 0,
+            '3' => 0,
+        ];
+        if ($includeOkState === true) {
+            $servicestatusCount['0'] = 0;
+        }
+
+        $query = [
+            'conditions' => [
+                'Service.disabled' => 0,
+
+            ],
+            'contain'    => [],
+            'fields'     => [
+                'Servicestatus.current_state',
+                'COUNT(Servicestatus.service_description) AS count',
+            ],
+            'group'      => [
+                'Servicestatus.current_state',
+            ],
+            'joins'      => [
+                [
+                    'table'      => 'services',
+                    'type'       => 'INNER',
+                    'alias'      => 'Service',
+                    'conditions' => 'Service.host_id = Host.id',
+                ],
+                [
+                    'table'      => 'statusengine_servicestatus',
+                    'type'       => 'INNER',
+                    'alias'      => 'Servicestatus',
+                    'conditions' => 'Servicestatus.service_description = Service.uuid',
+                ],
+            ],
+        ];
 
         $db = $this->getDataSource();
         $subQuery = $db->buildStatement([
@@ -1840,61 +1891,6 @@ class Host extends AppModel {
         $subQuery = 'Servicestatus.hostname IN (' . $subQuery . ') ';
         $subQueryExpression = $db->expression($subQuery);
         $query['conditions'][] = $subQueryExpression->value;
-
-        if ($includeOkState === false) {
-            $query['conditions']['Servicestatus.current_state >'] = 0;
-        }
-
-        $servicestatusCountResult = $this->find('all', $query);
-        foreach ($servicestatusCountResult as $servicestatus) {
-            $servicestatusCount[$servicestatus['Servicestatus']['current_state']] = (int)$servicestatus[0]['count'];
-        }
-        return $servicestatusCount;
-    }
-
-    /**
-     * @param array $MY_RIGHTS
-     * @param bool $includeOkState
-     * @return array
-     */
-    public function getServicestatusCountStatusengine3($MY_RIGHTS, $includeOkState = false) {
-        $servicestatusCount = [
-            '1' => 0,
-            '2' => 0,
-            '3' => 0,
-        ];
-        if ($includeOkState === true) {
-            $servicestatusCount['0'] = 0;
-        }
-
-        $query = [
-            'conditions' => [
-                'Service.disabled'               => 0,
-
-            ],
-            'contain'    => [],
-            'fields'     => [
-                'Servicestatus.current_state',
-                'COUNT(Servicestatus.service_description) AS count',
-            ],
-            'group'      => [
-                'Servicestatus.current_state',
-            ],
-            'joins'      => [
-                [
-                    'table'      => 'services',
-                    'type'       => 'INNER',
-                    'alias'      => 'Service',
-                    'conditions' => 'Service.host_id = Host.id',
-                ],
-                [
-                    'table'      => 'statusengine_servicestatus',
-                    'type'       => 'INNER',
-                    'alias'      => 'Servicestatus',
-                    'conditions' => 'Servicestatus.service_description = Service.uuid',
-                ],
-            ],
-        ];
 
         if ($includeOkState === false) {
             $query['conditions']['Servicestatus.current_state >'] = 0;
