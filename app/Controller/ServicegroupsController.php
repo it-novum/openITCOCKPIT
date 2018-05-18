@@ -397,7 +397,6 @@ class ServicegroupsController extends AppController {
             throw new NotFoundException(__('Invalid service group'));
         }
 
-        $selectedServiceGroup = [];
         $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
         $hostContainers = [];
         $hosts = [];
@@ -452,91 +451,92 @@ class ServicegroupsController extends AppController {
         }
 
         $HoststatusFields = new HoststatusFields($this->DbBackend);
-            $HoststatusFields->currentState();
-            $ServicestatusFields = new ServicestatusFields($this->DbBackend);
-            $ServicestatusFields
-                ->currentState()
-                ->lastStateChange()
-                ->lastCheck()
-                ->nextCheck()
-                ->output()
-                ->problemHasBeenAcknowledged()
-                ->acknowledgementType()
-                ->scheduledDowntimeDepth()
-                ->notificationsEnabled();
-            $hoststatus = $this->Hoststatus->byUuid($hosts, $HoststatusFields);
-            $servicestatus = $this->Servicestatus->byUuid($services, $ServicestatusFields);
+        $HoststatusFields->currentState();
+        $ServicestatusFields = new ServicestatusFields($this->DbBackend);
+        $ServicestatusFields
+            ->currentState()
+            ->lastStateChange()
+            ->lastCheck()
+            ->nextCheck()
+            ->output()
+            ->problemHasBeenAcknowledged()
+            ->acknowledgementType()
+            ->scheduledDowntimeDepth()
+            ->notificationsEnabled();
+        $hoststatus = $this->Hoststatus->byUuid($hosts, $HoststatusFields);
+        $servicestatus = $this->Servicestatus->byUuid($services, $ServicestatusFields);
 
-            if (!empty($services) && $this->hasRootPrivileges === false && $this->hasPermission('edit', 'hosts') && $this->hasPermission('edit', 'services')) {
-                $hostContainers[$service['Host']['id']] = Hash::extract($service['Host']['Container'], '{n}.id');
-            }
-            $all_services = [];
-            foreach ($servicegroup['Service'] as $key => $service) {
-                if ($this->hasRootPrivileges) {
-                    $allowEdit = true;
-                } else {
-                    $containerIds = [];
-                    if (isset($hostContainers[$service['Host']['id']])) {
-                        $containerIds = $hostContainers[$service['Host']['id']];
-                    }
-                    $ContainerPermissions = new ContainerPermissions($this->MY_RIGHTS_LEVEL, $containerIds);
-                    $allowEdit = $ContainerPermissions->hasPermission();
+        if (!empty($services) && $this->hasRootPrivileges === false && $this->hasPermission('edit', 'hosts') && $this->hasPermission('edit', 'services')) {
+            $hostContainers[$service['Host']['id']] = Hash::extract($service['Host']['Container'], '{n}.id');
+        }
+        $all_services = [];
+        foreach ($servicegroup['Service'] as $key => $service) {
+            if ($this->hasRootPrivileges) {
+                $allowEdit = true;
+            } else {
+                $containerIds = [];
+                if (isset($hostContainers[$service['Host']['id']])) {
+                    $containerIds = $hostContainers[$service['Host']['id']];
                 }
-
-                $service['Hoststatus'] = (!empty($hoststatus[$service['Host']['uuid']])) ? $hoststatus[$service['Host']['uuid']]['Hoststatus'] : [];
-                $service['Servicestatus'] = (!empty($servicestatus[$service['uuid']])) ? $servicestatus[$service['uuid']]['Servicestatus'] : [];
-
-                $Service = new \itnovum\openITCOCKPIT\Core\Views\Service([
-                    'Service' => $service,
-                    'Servicetemplate' => $service['Servicetemplate'],
-                    'Host' => $service['Host']
-                ],
-                    null,
-                    $allowEdit
-                );
-                $Host = new \itnovum\openITCOCKPIT\Core\Views\Host($service, $allowEdit);
-                $Hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus($service['Hoststatus'], $UserTime);
-                $Servicestatus = new \itnovum\openITCOCKPIT\Core\Servicestatus($service['Servicestatus'], $UserTime);
-                $PerfdataChecker = new PerfdataChecker($Host, $Service);
-
-                $tmpRecord = [
-                    'Service' => $Service->toArray(),
-                    'Host' => $Host->toArray(),
-                    'Servicestatus' => $Servicestatus->toArray(),
-                    'Hoststatus' => $Hoststatus->toArray()
-                ];
-                $tmpRecord['Service']['has_graph'] = $PerfdataChecker->hasRrdFile();
-                $all_services[] = $tmpRecord;
+                $ContainerPermissions = new ContainerPermissions($this->MY_RIGHTS_LEVEL, $containerIds);
+                $allowEdit = $ContainerPermissions->hasPermission();
             }
 
-            $serviceStatusForServicegroup = Hash::apply(
-                $all_services,
-                '{n}.Servicestatus[isInMonitoring=true].currentState',
-                'array_count_values'
-            );
-            //refill missing service states
-            $statusOverview = array_replace(
-                [0 => 0, 1 => 0, 2 => 0, 3 => 0],
-                $serviceStatusForServicegroup
-            );
-            $statusOverview = array_combine([
-                __('ok'),
-                __('warning'),
-                __('critical'),
-                __('unknown')], $statusOverview
+            $service['Hoststatus'] = (!empty($hoststatus[$service['Host']['uuid']])) ? $hoststatus[$service['Host']['uuid']]['Hoststatus'] : [];
+            $service['Servicestatus'] = (!empty($servicestatus[$service['uuid']])) ? $servicestatus[$service['uuid']]['Servicestatus'] : [];
+
+            $Service = new \itnovum\openITCOCKPIT\Core\Views\Service([
+                'Service' => $service,
+                'Servicetemplate' => $service['Servicetemplate'],
+                'Host' => $service['Host']
+            ],
+                null,
+                $allowEdit
             );
 
-            # get a list of sort columns and their data to pass to array_multisort
-            $sortAllServices = [];
-            foreach ($all_services as $k => $v) {
-                $sortAllServices['Host']['hostname'][$k] = $v['Host']['hostname'];
-                $sortAllServices['Service']['servicename'][$k] = $v['Service']['servicename'];
-            }
+            $Host = new \itnovum\openITCOCKPIT\Core\Views\Host($service, $allowEdit);
+            $Hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus($service['Hoststatus'], $UserTime);
+            $Servicestatus = new \itnovum\openITCOCKPIT\Core\Servicestatus($service['Servicestatus'], $UserTime);
+            $PerfdataChecker = new PerfdataChecker($Host, $Service);
 
-            # sort by host name asc and service name asc
-            if (!empty($all_services)) {
-                array_multisort($sortAllServices['Host']['hostname'], SORT_ASC, $sortAllServices['Service']['servicename'], SORT_ASC, $all_services);
-            }
+            $tmpRecord = [
+                'Service' => $Service->toArray(),
+                'Host' => $Host->toArray(),
+                'Servicestatus' => $Servicestatus->toArray(),
+                'Hoststatus' => $Hoststatus->toArray()
+            ];
+            $tmpRecord['Service']['has_graph'] = $PerfdataChecker->hasRrdFile();
+            $all_services[] = $tmpRecord;
+        }
+
+        $serviceStatusForServicegroup = Hash::apply(
+            $all_services,
+            '{n}.Servicestatus[isInMonitoring=true].currentState',
+            'array_count_values'
+        );
+        //refill missing service states
+        $statusOverview = array_replace(
+            [0 => 0, 1 => 0, 2 => 0, 3 => 0],
+            $serviceStatusForServicegroup
+        );
+        $statusOverview = array_combine([
+            __('ok'),
+            __('warning'),
+            __('critical'),
+            __('unknown')], $statusOverview
+        );
+
+        # get a list of sort columns and their data to pass to array_multisort
+        $sortAllServices = [];
+        foreach ($all_services as $k => $v) {
+            $sortAllServices['Host']['hostname'][$k] = $v['Host']['hostname'];
+            $sortAllServices['Service']['servicename'][$k] = $v['Service']['servicename'];
+        }
+
+        # sort by host name asc and service name asc
+        if (!empty($all_services)) {
+            array_multisort($sortAllServices['Host']['hostname'], SORT_ASC, $sortAllServices['Service']['servicename'], SORT_ASC, $all_services);
+        }
 
         $selectedServiceGroup = [
             'Servicegroup' => $servicegroup['Servicegroup'],

@@ -26,12 +26,12 @@
 use itnovum\openITCOCKPIT\Core\HostConditions;
 use itnovum\openITCOCKPIT\Core\HostgroupConditions;
 use itnovum\openITCOCKPIT\Core\HoststatusFields;
+use itnovum\openITCOCKPIT\Core\ServicestatusFields;
+use itnovum\openITCOCKPIT\Core\ValueObjects\CumulatedValue;
+use itnovum\openITCOCKPIT\Core\Views\UserTime;
 use itnovum\openITCOCKPIT\Filter\HostFilter;
 use itnovum\openITCOCKPIT\Filter\HostgroupFilter;
 use itnovum\openITCOCKPIT\Filter\HosttemplateFilter;
-use itnovum\openITCOCKPIT\HostgroupsController\HostsExtendedLoader;
-use itnovum\openITCOCKPIT\HostgroupsController\ServicesExtendedLoader;
-use itnovum\openITCOCKPIT\HostgroupsController\CumulatedServicestatusCollection;
 
 /**
  * @property Hostgroup $Hostgroup
@@ -99,8 +99,8 @@ class HostgroupsController extends AppController {
             }
 
             $all_hostgroups[] = [
-                'Hostgroup'    => $hostgroup['Hostgroup'],
-                'Container'    => $hostgroup['Container'],
+                'Hostgroup' => $hostgroup['Hostgroup'],
+                'Container' => $hostgroup['Container'],
             ];
 
         }
@@ -133,59 +133,7 @@ class HostgroupsController extends AppController {
     public function extended($hostgroupId = null) {
 
     }
-    
 
-    public function loadServicesByHostId($hostId = null, $hostgroupId) {
-        if (!is_numeric($hostId) || $hostId < 1) {
-            throw new NotFoundException('Invalide host id');
-        }
-
-        if (!$this->Host->exists($hostId)) {
-            throw new NotFoundException('Host not found!');
-        }
-
-        $host = $this->Host->find('first', [
-            'conditions' => [
-                'Host.id' => $hostId,
-            ],
-            'contain'    => [
-                'Container',
-            ],
-            'fields'     => [
-                'Host.id',
-                'Host.uuid',
-                'Host.name',
-                'Host.container_id',
-                'Container.*',
-            ],
-        ]);
-
-        $containerIdsToCheck = Hash::extract($host, 'Container.{n}.HostsToContainer.container_id');
-        $containerIdsToCheck[] = $host['Host']['container_id'];
-        if (!$this->allowedByContainerId($containerIdsToCheck)) {
-            $this->render403();
-
-            return;
-        }
-
-        $ServicesExtendedLoader = new ServicesExtendedLoader($this->Hostgroup, [], null);
-        $ServicesExtendedLoader->setServiceModel($this->Service);
-        $services = $ServicesExtendedLoader->loadServicesWithStatusByHostId($hostId);
-
-        $hostgroup = $this->Hostgroup->find('first', [
-            'conditions' => [
-                'Hostgroup.id' => $hostgroupId,
-            ],
-            'contain'    => [],
-            'fields'     => [
-                'Hostgroup.id',
-                'Hostgroup.uuid',
-            ],
-        ]);
-        $this->set(compact(['host', ['hostgroup', 'services']]));
-
-
-    }
 
     public function edit($id = null) {
         if (!$this->isApiRequest()) {
@@ -430,6 +378,154 @@ class HostgroupsController extends AppController {
         $this->set(compact(['hosts']));
         $this->set('_serialize', ['hosts']);
     }
+
+    public function loadHostgroupWithHostsById($id = null) {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        if (!$this->Hostgroup->exists($id)) {
+            throw new NotFoundException(__('Invalid host group'));
+        }
+
+        $HostFilter = new HostFilter($this->request);
+        $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
+        $hostContainers = [];
+        $hosts = [];
+
+        $query = [
+            'recursive'  => -1,
+            'contain'    => [
+                'Container',
+                'Host' => [
+                    'Container',
+                    'fields' => [
+                        'Host.id',
+                        'Host.uuid',
+                        'Host.name',
+                        'Host.active_checks_enabled',
+                        'Host.disabled',
+                        'Host.satellite_id'
+                    ],
+                    'Service' => [
+                        'fields' => [
+                            'Service.uuid'
+                        ]
+                    ]
+
+                ]
+            ],
+            'conditions' => [
+                'Hostgroup.id' => $id
+            ]
+        ];
+
+        $hostFilterConditions = $HostFilter->indexFilter();
+        if (!empty($hostFilterConditions)) {
+            foreach ($hostFilterConditions as $field => $condition) {
+                $query['contain']['Host']['conditions'][$field] = $condition;
+            }
+        }
+
+        $hostgroup = $this->Hostgroup->find('first', $query);
+        $hostgroup['Hostgroup']['allowEdit'] = $this->hasPermission('edit', 'hostgroups');;
+        if ($this->hasRootPrivileges === false && $hostgroup['Hostgroup']['allowEdit'] === true) {
+            $hostgroup['Hostgroup']['allowEdit'] = $this->allowedByContainerId($hostgroup['Container']['parent_id']);
+        }
+        foreach ($hostgroup['Host'] as $host) {
+            $hosts[$host['id']] = $host['uuid'];
+            if (!empty($hosts) && $this->hasRootPrivileges === false && $this->hasPermission('edit', 'hosts')) {
+                $hostContainers[$host['id']] = Hash::extract($host['Container'], '{n}.id');
+            }
+        }
+
+        $HoststatusFields = new HoststatusFields($this->DbBackend);
+        $HoststatusFields->currentState()
+            ->lastStateChange()
+            ->lastCheck()
+            ->nextCheck()
+            ->problemHasBeenAcknowledged()
+            ->acknowledgementType()
+            ->scheduledDowntimeDepth()
+            ->notificationsEnabled();
+
+        $hoststatus = $this->Hoststatus->byUuid($hosts, $HoststatusFields);
+        $ServicestatusFields = new ServicestatusFields($this->DbBackend);
+        $ServicestatusFields->currentState();
+
+
+        $all_hosts = [];
+        foreach ($hostgroup['Host'] as $key => $host) {
+            if ($this->hasRootPrivileges) {
+                $allowEdit = true;
+            } else {
+                $containerIds = [];
+                if (isset($hostContainers[$host['id']])) {
+                    $containerIds = $hostContainers[$host['id']];
+                }
+                $ContainerPermissions = new ContainerPermissions($this->MY_RIGHTS_LEVEL, $containerIds);
+                $allowEdit = $ContainerPermissions->hasPermission();
+            }
+            $serviceUuids = Hash::extract($host, 'Service.{n}.uuid');
+            $servicestatus = $this->Servicestatus->byUuid($serviceUuids, $ServicestatusFields);
+            $serviceStateSummary = $this->Service->getServiceStateSummary($servicestatus, false);
+
+            $CumulatedValue = new CumulatedValue($serviceStateSummary['state']);
+            $serviceStateSummary['cumulatedState'] = $CumulatedValue->getKeyFromCumulatedValue();
+
+            $Host = new \itnovum\openITCOCKPIT\Core\Views\Host(['Host' => $host], $allowEdit);
+            $host['Hoststatus'] = (!empty($hoststatus[$host['uuid']])) ? $hoststatus[$host['uuid']]['Hoststatus'] : [];
+            $Hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus($host['Hoststatus'], $UserTime);
+
+            $tmpRecord = [
+                'Host'       => $Host->toArray(),
+                'Hoststatus' => $Hoststatus->toArray(),
+                'ServicestatusSummary' => $serviceStateSummary
+            ];
+            $all_hosts[] = $tmpRecord;
+        }
+
+        $hostStatusForHostgroup = Hash::apply(
+            $all_hosts,
+            '{n}.Hoststatus[isInMonitoring=true].currentState',
+            'array_count_values'
+        );
+        //refill missing service states
+        $statusOverview = array_replace(
+            [0 => 0, 1 => 0, 2 => 0],
+            $hostStatusForHostgroup
+        );
+        $statusOverview = array_combine([
+            __('up'),
+            __('down'),
+            __('unreachable')
+        ], $statusOverview
+        );
+
+        # get a list of sort columns and their data to pass to array_multisort
+        $sortAllServices = [];
+        foreach ($all_hosts as $k => $v) {
+            $sortAllServices['Host']['hostname'][$k] = $v['Host']['hostname'];
+        }
+
+        # sort by host name asc and service name asc
+        if (!empty($all_services)) {
+            array_multisort($sortAllServices['Host']['hostname'], SORT_ASC, $all_hosts);
+        }
+
+        $selectedHostGroup = [
+            'Hostgroup'     => $hostgroup['Hostgroup'],
+            'Container'     => $hostgroup['Container'],
+            'Hosts'         => $all_hosts,
+            'StatusSummary' => $statusOverview
+        ];
+
+        $hostgroup = $selectedHostGroup;
+
+        $this->set(compact(['hostgroup']));
+        $this->set('_serialize', ['hostgroup']);
+    }
+
 
     public function loadHosttemplates($containerId = null) {
         if (!$this->isAngularJsRequest()) {

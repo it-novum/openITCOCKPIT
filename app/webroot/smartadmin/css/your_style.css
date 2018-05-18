@@ -1885,3 +1885,7 @@ label[class^='aco-host']:after, label[class^='aco-service']:after {
     margin-left: -125px;
     display: none;
 }
+
+.state-button {
+    padding:0 5px;
+}

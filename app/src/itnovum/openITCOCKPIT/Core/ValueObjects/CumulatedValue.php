@@ -22,10 +22,38 @@
 //  License agreement and license key will be shipped with the order
 //  confirmation.
 
-namespace itnovum\openITCOCKPIT\HostgroupsController\Exceptions;
+namespace itnovum\openITCOCKPIT\Core\ValueObjects;
 
 
-class RecordExistsException extends \Exception
-{
+class CumulatedValue {
 
+    /**
+     * @var array|null
+     */
+    private $valueArray = null;
+
+
+    /**
+     * LastDeletedId constructor.
+     * @param int|string $id
+     */
+    public function __construct($valueArray) {
+        $this->valueArray = $valueArray;
+    }
+
+    /**
+     * @return null|int|string
+     */
+    public function getKeyFromCumulatedValue() {
+        if(empty($this->valueArray)){
+            return null;
+        }
+        krsort($this->valueArray);
+        foreach ($this->valueArray as $key => $value) {
+            if($value > 0){
+                return $key;
+            }
+        }
+        return null;
+    }
 }
