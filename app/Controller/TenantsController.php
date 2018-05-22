@@ -28,18 +28,17 @@ App::import('Model', 'Container');
 
 
 /**
- * @property Tenant    $Tenant
+ * @property Tenant $Tenant
  * @property Container $Container
  */
-class TenantsController extends AppController
-{
+class TenantsController extends AppController {
     public $uses = [
         'Tenant',
         'Container',
         'CakeTime',
         'Utility',
     ];
-    public $layout = 'Admin.default';
+    public $layout = 'angularjs';
     public $components = [
         'ListFilter.ListFilter',
         'RequestHandler',
@@ -54,8 +53,12 @@ class TenantsController extends AppController
         ],
     ];
 
-    public function index()
-    {
+    public function index() {
+        if (!$this->isApiRequest()) {
+            //Only ship template for AngularJs
+            return;
+        }
+
         $this->Tenant->virtualFields['name'] = 'Container.name';
 
         $options = [
@@ -71,29 +74,26 @@ class TenantsController extends AppController
 
         if ($this->isApiRequest()) {
             unset($query['limit']);
-            $all_tenants = $this->Tenant->find('all', $query);
+            ;$all_tenants = $this->Tenant->find('all', $query);
         } else {
             $this->Paginator->settings = Hash::merge($this->Paginator->settings, $options);
             $all_tenants = $this->Paginator->paginate();
         }
 
-        foreach($all_tenants as $key => $tenant){
-            $all_tenants[$key]['Tenant']['allow_edit'] = false;
+        foreach ($all_tenants as $key => $tenant) {
+            $all_tenants[$key]['Tenant']['allowEdit'] = false;
             $tenantContainerId = $tenant['Tenant']['container_id'];
-            if(isset($this->MY_RIGHTS_LEVEL[$tenantContainerId])){
-                if((int)$this->MY_RIGHTS_LEVEL[$tenantContainerId] === WRITE_RIGHT){
-                    $all_tenants[$key]['Tenant']['allow_edit'] = true;
+            if (isset($this->MY_RIGHTS_LEVEL[$tenantContainerId])) {
+                if ((int)$this->MY_RIGHTS_LEVEL[$tenantContainerId] === WRITE_RIGHT) {
+                    $all_tenants[$key]['Tenant']['allowEdit'] = true;
                 }
             }
         }
-
-
         $this->set(compact(['all_tenants']));
         $this->set('_serialize', ['all_tenants']);
     }
 
-    public function view($id = null)
-    {
+    public function view($id = null) {
         if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();
 
@@ -112,8 +112,13 @@ class TenantsController extends AppController
         $this->set('_serialize', ['tenant']);
     }
 
-    public function add()
-    {
+    public function add() {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
+            return;
+        }
+
+
         if ($this->request->is('post') || $this->request->is('put')) {
             $this->request->data['Container']['containertype_id'] = CT_TENANT;
             $this->request->data['Container']['parent_id'] = CT_GLOBAL;
@@ -130,24 +135,38 @@ class TenantsController extends AppController
                     return;
                 } else {
                     if ($this->request->ext != 'json') {
-                        $this->setFlash(__('Tenant successfully saved'));
-                        $this->redirect(['action' => 'index']);
+                        if ($this->isAngularJsRequest()) {
+                            $this->setFlash(__('<a href="/tenants/edit/%s">Tenant</a> successfully saved', $this->Tenant->id));
+                        }
+                        $this->serializeId();
+                        return;
                     }
                 }
             } else {
-                if ($isJsonRequest) {
+                if ($this->request->ext == 'json') {
                     $this->serializeErrorMessage();
-
                     return;
-                } else {
-                    $this->setFlash(__('Tenant could not be saved'), false);
                 }
+                $this->setFlash(__('Could not save data'), false);
             }
         }
     }
 
-    public function delete($id = null)
-    {
+    public function loadinitialdata() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+        $future_expire = date(PHP_DATEFORMAT, time() + (60 * 60 * 24 * 365 * 2));
+        $initialdata = [
+            'expires' => $future_expire
+        ];
+
+        $this->set('initialdata', $initialdata);
+        $this->set('_serialize', ['initialdata']);
+    }
+
+
+    public function delete($id = null) {
         if (!$this->request->is('post')) {
             throw new MethodNotAllowedException();
         }
@@ -176,8 +195,7 @@ class TenantsController extends AppController
         $this->redirect(['action' => 'index']);
     }
 
-    public function mass_delete($id = null)
-    {
+    public function mass_delete($id = null) {
         $deleteAllowedValues = [];
         foreach (func_get_args() as $tenantId) {
             if ($this->Tenant->exists($tenantId)) {
@@ -218,8 +236,7 @@ class TenantsController extends AppController
         $this->redirect(['action' => 'index']);
     }
 
-    public function edit($id = null)
-    {
+    public function edit($id = null) {
         if (!$this->Tenant->exists($id)) {
             throw new NotFoundException(__('Invalid tenant'));
         }
