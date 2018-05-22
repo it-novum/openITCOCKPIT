@@ -3174,6 +3174,12 @@ class ServicesController extends AppController {
         return;
     }
 
+    public function servicecumulatedstatusicon() {
+        $this->layout = 'blank';
+        //Only ship HTML Template
+        return;
+    }
+
     public function details() {
         $this->layout = 'blank';
         //Only ship HTML Template

@@ -4,6 +4,8 @@ angular.module('openITCOCKPIT')
         $scope.init = true;
         $scope.servicegroupsStateFilter = {};
 
+        $scope.showServiceList = false;
+
         $scope.deleteUrl = '/services/delete/';
         $scope.deactivateUrl = '/services/deactivate/';
         $scope.activateUrl = '/services/enable/';

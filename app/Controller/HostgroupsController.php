@@ -472,7 +472,7 @@ class HostgroupsController extends AppController {
 
             $CumulatedValue = new CumulatedValue($serviceStateSummary['state']);
             $serviceStateSummary['cumulatedState'] = $CumulatedValue->getKeyFromCumulatedValue();
-
+//debug($serviceStateSummary);
             $Host = new \itnovum\openITCOCKPIT\Core\Views\Host(['Host' => $host], $allowEdit);
             $host['Hoststatus'] = (!empty($hoststatus[$host['uuid']])) ? $hoststatus[$host['uuid']]['Hoststatus'] : [];
             $Hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus($host['Hoststatus'], $UserTime);
@@ -490,7 +490,7 @@ class HostgroupsController extends AppController {
             '{n}.Hoststatus[isInMonitoring=true].currentState',
             'array_count_values'
         );
-        //refill missing service states
+        //refill missing hosts states
         $statusOverview = array_replace(
             [0 => 0, 1 => 0, 2 => 0],
             $hostStatusForHostgroup

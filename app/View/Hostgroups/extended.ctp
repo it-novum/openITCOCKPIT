@@ -143,7 +143,7 @@
                             <?php echo $this->Html->link(
                                 __('New'), '/' . $this->params['controller'] . '/add', [
                                     'class' => 'btn btn-xs btn-success',
-                                    'icon'  => 'fa fa-plus'
+                                    'icon' => 'fa fa-plus'
                                 ]
                             ); ?>
                         <?php endif; ?>
@@ -246,7 +246,10 @@
                             <td class="text-center">
                                 <hoststatusicon host="host"></hoststatusicon>
                             </td>
-                            <td class="text-center">CUM</td>
+                            <td class="text-center">
+                                <servicecumulatedstatusicon state="host.ServicestatusSummary.cumulatedState">
+                                </servicecumulatedstatusicon>
+                            </td>
                             <td class="text-center">
                                 <i class="fa fa-lg fa-user"
                                    ng-show="host.Hoststatus.problemHasBeenAcknowledged"
@@ -293,42 +296,44 @@
                                         <?php echo __('n/a'); ?>
                                     </span>
                             </td>
-                            <td>
-                                <?php if ($this->Acl->hasPermission('index', 'services')): ?>
-                                    <a class="btn btn-success state-button"
-                                       ng-href="/services/index/?filter[Host.id]={{host.Host.id}}&filter[Servicestatus.current_state][0]=1">
+                            <td class="width-160">
+                                <div class="btn-group btn-group-justified" role="group">
+                                    <?php if ($this->Acl->hasPermission('index', 'services')): ?>
+                                        <a class="btn btn-success state-button"
+                                           ng-href="/services/index/?filter[Host.id]={{host.Host.id}}&filter[Servicestatus.current_state][0]=1">
+                                            {{host.ServicestatusSummary.state[0]}}
+                                        </a>
+                                    <?php else: ?>
                                         {{host.ServicestatusSummary.state[0]}}
-                                    </a>
-                                <?php else: ?>
-                                    {{host.ServicestatusSummary.state[0]}}
-                                <?php endif; ?>
+                                    <?php endif; ?>
 
-                                <?php if ($this->Acl->hasPermission('index', 'services')): ?>
-                                    <a class="btn btn-warning state-button"
-                                       ng-href="/services/index/?filter[Host.id]={{host.Host.id}}&filter[Servicestatus.current_state][1]=1">
+                                    <?php if ($this->Acl->hasPermission('index', 'services')): ?>
+                                        <a class="btn btn-warning state-button"
+                                           ng-href="/services/index/?filter[Host.id]={{host.Host.id}}&filter[Servicestatus.current_state][1]=1">
+                                            {{host.ServicestatusSummary.state[1]}}
+                                        </a>
+                                    <?php else: ?>
                                         {{host.ServicestatusSummary.state[1]}}
-                                    </a>
-                                <?php else: ?>
-                                    {{host.ServicestatusSummary.state[1]}}
-                                <?php endif; ?>
+                                    <?php endif; ?>
 
-                                <?php if ($this->Acl->hasPermission('index', 'services')): ?>
-                                    <a class="btn btn-danger state-button"
-                                       ng-href="/services/index/?filter[Host.id]={{host.Host.id}}&filter[Servicestatus.current_state][2]=1">
+                                    <?php if ($this->Acl->hasPermission('index', 'services')): ?>
+                                        <a class="btn btn-danger state-button"
+                                           ng-href="/services/index/?filter[Host.id]={{host.Host.id}}&filter[Servicestatus.current_state][2]=1">
+                                            {{host.ServicestatusSummary.state[2]}}
+                                        </a>
+                                    <?php else: ?>
                                         {{host.ServicestatusSummary.state[2]}}
-                                    </a>
-                                <?php else: ?>
-                                    {{host.ServicestatusSummary.state[2]}}
-                                <?php endif; ?>
+                                    <?php endif; ?>
 
-                                <?php if ($this->Acl->hasPermission('index', 'services')): ?>
-                                    <a class="btn btn-default state-button"
-                                       ng-href="/services/index/?filter[Host.id]={{host.Host.id}}&filter[Servicestatus.current_state][3]=1">
+                                    <?php if ($this->Acl->hasPermission('index', 'services')): ?>
+                                        <a class="btn btn-default state-button"
+                                           ng-href="/services/index/?filter[Host.id]={{host.Host.id}}&filter[Servicestatus.current_state][3]=1">
+                                            {{host.ServicestatusSummary.state[3]}}
+                                        </a>
+                                    <?php else: ?>
                                         {{host.ServicestatusSummary.state[3]}}
-                                    </a>
-                                <?php else: ?>
-                                    {{host.ServicestatusSummary.state[3]}}
-                                <?php endif; ?>
+                                    <?php endif; ?>
+                                </div>
                             </td>
                             <td class="width-50">
                                 <div class="btn-group">

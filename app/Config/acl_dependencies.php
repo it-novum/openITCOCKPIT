@@ -120,6 +120,7 @@ $config = [
                 'grapherZoomTemplate',
                 'createGrapherErrorPng',
                 'icon',
+                'servicecumulatedstatusicon',
                 'details'
             ],
             'Graphgenerators'  => [

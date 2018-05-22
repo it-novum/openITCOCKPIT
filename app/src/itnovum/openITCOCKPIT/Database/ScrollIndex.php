@@ -27,7 +27,6 @@ namespace itnovum\openITCOCKPIT\Database;
 use AppPaginatorComponent;
 use CakeRequest;
 use Controller;
-use function is_array;
 use Request;
 
 class ScrollIndex {
