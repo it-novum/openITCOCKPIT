@@ -169,7 +169,7 @@
                     <table class="table table-striped table-hover table-bordered smart-form" ng-if="hostgroup">
                         <thead>
                         <tr>
-                            <td colspan="5">
+                            <td colspan="6">
                                 <div class="form-group smart-form">
                                     <label class="input"> <i class="icon-prepend fa fa-desktop"></i>
                                         <input type="text" class="input-sm"
@@ -199,6 +199,7 @@
                             </td>
                         </tr>
                         <tr>
+                            <th></th>
                             <th class="width-20 text-center">
                                 <?php echo __('Status'); ?>
                             </th>
@@ -232,17 +233,20 @@
                             <th></th>
                         </tr>
                         </thead>
-                        <tbody>
                         <tr ng-show="hostgroup.Hosts.length == 0">
-                            <td class="no-padding text-center" colspan="13">
+                            <td class="no-padding text-center" colspan="14">
                                 <div class="col-xs-12 text-center txt-color-red italic padding-10">
                                     <?php echo __('No entries match the selection'); ?>
                                 </div>
                             </td>
                         </tr>
-                        <tr ng-repeat-end
-                            ng-show="hostgroupsStateFilter[host.Hoststatus.currentState]"
-                            ng-repeat="host in hostgroup.Hosts">
+                        <tbody ng-repeat="host in hostgroup.Hosts">
+                        <tr ng-show="hostgroupsStateFilter[host.Hoststatus.currentState]">
+                            <td class="width-20 text-center pointer fa-lg">{{host.Host.id}}
+                                <i ng-class="(!showServiceList) ? 'fa fa-plus-square-o' : 'fa fa-minus-square-o'"
+                                   ng-click="loadServicesWithStatus(host, host.Host.id)"
+                                ></i>
+                            </td>
                             <td class="text-center">
                                 <hoststatusicon host="host"></hoststatusicon>
                             </td>
@@ -286,52 +290,58 @@
                             <td>
                                 <span ng-if="host.Host.active_checks_enabled && host.Host.is_satellite_host === false">{{ host.Hoststatus.lastCheck }}</span>
                                 <span ng-if="host.Host.active_checks_enabled === false || host.Host.is_satellite_host === true">
-                                    <?php echo __('n/a'); ?>
-                                </span>
+                                        <?php echo __('n/a'); ?>
+                                    </span>
                             </td>
 
                             <td>
                                 <span ng-if="host.Host.active_checks_enabled && host.Host.is_satellite_host === false">{{ host.Hoststatus.nextCheck }}</span>
                                 <span ng-if="host.Host.active_checks_enabled === false || host.Host.is_satellite_host === true">
-                                        <?php echo __('n/a'); ?>
-                                    </span>
+                                            <?php echo __('n/a'); ?>
+                                        </span>
                             </td>
                             <td class="width-160">
                                 <div class="btn-group btn-group-justified" role="group">
                                     <?php if ($this->Acl->hasPermission('index', 'services')): ?>
                                         <a class="btn btn-success state-button"
                                            ng-href="/services/index/?filter[Host.id]={{host.Host.id}}&filter[Servicestatus.current_state][0]=1">
-                                            {{host.ServicestatusSummary.state[0]}}
+                                            {{host.ServicestatusSummary.state['ok']}}
                                         </a>
                                     <?php else: ?>
-                                        {{host.ServicestatusSummary.state[0]}}
+                                        <a class="btn btn-success state-button">
+                                            {{host.ServicestatusSummary.state['ok']}}
+                                        </a>
                                     <?php endif; ?>
-
                                     <?php if ($this->Acl->hasPermission('index', 'services')): ?>
                                         <a class="btn btn-warning state-button"
                                            ng-href="/services/index/?filter[Host.id]={{host.Host.id}}&filter[Servicestatus.current_state][1]=1">
-                                            {{host.ServicestatusSummary.state[1]}}
+                                            {{host.ServicestatusSummary.state['warning']}}
                                         </a>
                                     <?php else: ?>
-                                        {{host.ServicestatusSummary.state[1]}}
+                                        <a class="btn btn-warning state-button">
+                                            {{host.ServicestatusSummary.state['warning']}}
+                                        </a>
                                     <?php endif; ?>
-
                                     <?php if ($this->Acl->hasPermission('index', 'services')): ?>
                                         <a class="btn btn-danger state-button"
                                            ng-href="/services/index/?filter[Host.id]={{host.Host.id}}&filter[Servicestatus.current_state][2]=1">
-                                            {{host.ServicestatusSummary.state[2]}}
+                                            {{host.ServicestatusSummary.state['critical']}}
                                         </a>
                                     <?php else: ?>
-                                        {{host.ServicestatusSummary.state[2]}}
+                                        <a class="btn btn-danger state-button">
+                                            {{host.ServicestatusSummary.state['critical']}}
+                                        </a>
                                     <?php endif; ?>
 
                                     <?php if ($this->Acl->hasPermission('index', 'services')): ?>
                                         <a class="btn btn-default state-button"
                                            ng-href="/services/index/?filter[Host.id]={{host.Host.id}}&filter[Servicestatus.current_state][3]=1">
-                                            {{host.ServicestatusSummary.state[3]}}
+                                            {{host.ServicestatusSummary.state['unknown']}}
                                         </a>
                                     <?php else: ?>
-                                        {{host.ServicestatusSummary.state[3]}}
+                                        <a class="btn btn-default state-button">
+                                            {{host.ServicestatusSummary.state['unknown']}}
+                                        </a>
                                     <?php endif; ?>
                                 </div>
                             </td>
@@ -390,6 +400,213 @@
                                             <li ng-if="host.Host.allow_edit">
                                                 <a href="javascript:void(0);" class="txt-color-red"
                                                    ng-click="confirmDelete(getObjectForDelete(host.Host, host))">
+                                                    <i class="fa fa-trash-o"></i> <?php echo __('Delete'); ?>
+                                                </a>
+                                            </li>
+                                        <?php endif; ?>
+                                    </ul>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr ng-if="host.Services">
+                            <td colspan="6">
+                                <div class="form-group smart-form">
+                                    <label class="input"> <i class="icon-prepend fa fa-desktop"></i>
+                                        <input type="text" class="input-sm"
+                                            placeholder="<?php echo __('Filter by service name'); ?>"
+                                            ng-model="host.ServicenameFilter"
+                                            ng-model-options="{debounce: 500}">
+                                    </label>
+                                </div>
+                            </td>
+                            <td colspan="6">
+                                <div ng-repeat="(servicestate, servicecount) in host.ServicestatusSummary.state track by $index"
+                                     class="col-md-3 bg-{{servicestate}}">
+                                    <div class="padding-5 pull-right">
+                                        <label class="checkbox small-checkbox-label txt-color-white">
+                                            <input type="checkbox" name="checkbox" checked="checked"
+                                                   ng-model-options="{debounce: 500}"
+                                                   ng-model="host.servicesStateFilter[$index]"
+                                                   ng-value="$index"
+                                                   class="ng-pristine ng-untouched ng-valid ng-empty">
+                                            <i class="checkbox-{{servicestate}}"></i>
+                                            <strong>
+                                                {{servicecount}} {{servicestate}}
+                                            </strong>
+                                        </label>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr ng-if="host.Services">
+                            <th>{{host.ServicenameFilter}}</th>
+                            <th>
+                                <?php echo __('Status'); ?>
+                            </th>
+                            <th class="no-sort text-center">
+                                <i class="fa fa fa-area-chart fa-lg" title="<?php echo __('Grapher'); ?>"></i>
+                            </th>
+                            <th class="no-sort text-center">
+                                <i class="fa fa-user fa-lg" title="<?php echo __('is acknowledged'); ?>"></i>
+                            </th>
+
+                            <th class="no-sort text-center">
+                                <i class="fa fa-power-off fa-lg"
+                                   title="<?php echo __('is in downtime'); ?>"></i>
+                            </th>
+                            <th class="no-sort text-center">
+                                <strong title="<?php echo __('Passively transferred service'); ?>">P</strong>
+                            </th>
+
+                            <th class="no-sort">
+                                <?php echo __('Service name'); ?>
+                            </th>
+
+
+                            <th class="no-sort tableStatewidth">
+                                <?php echo __('State since'); ?>
+                            </th>
+
+                            <th class="no-sort tableStatewidth">
+                                <?php echo __('Last check'); ?>
+                            </th>
+
+                            <th class="no-sort tableStatewidth">
+                                <?php echo __('Next check'); ?>
+                            </th>
+
+                            <th class="no-sort">
+                                <?php echo __('Service output'); ?>
+                            </th>
+
+                            <th class="no-sort text-center editItemWidth">
+                                <i class="fa fa-gear fa-lg"></i>
+                            </th>
+                        </tr>
+                        <tr ng-repeat="service in host.Services"
+                            ng-show="host.servicesStateFilter[service.Servicestatus.currentState]">
+                            <td></td>
+                            <td class="text-center">
+                                <servicestatusicon service="service"></servicestatusicon>
+                            </td>
+                            <td class="text-center">
+                                <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
+                                    <a href="/services/grapherSwitch/{{ service.Service.id }}" class="txt-color-blueDark">
+                                        <i class="fa fa-lg fa-area-chart"
+                                           ng-mouseenter="mouseenter($event, service.Host, service)"
+                                           ng-mouseleave="mouseleave()"
+                                           ng-if="service.Service.has_graph">
+                                        </i>
+                                    </a>
+                                <?php else: ?>
+                                    <i class="fa fa-lg fa-area-chart"
+                                       ng-mouseenter="mouseenter($event, service.Host, service)"
+                                       ng-mouseleave="mouseleave()"
+                                       ng-if="service.Service.has_graph">
+                                    </i>
+                                <?php endif; ?>
+                            </td>
+                            <td class="text-center">
+                                <i class="fa fa-lg fa-user"
+                                   ng-show="service.Servicestatus.problemHasBeenAcknowledged"
+                                   ng-if="service.Servicestatus.acknowledgement_type == 1"></i>
+
+                                <i class="fa fa-lg fa-user-o"
+                                   ng-show="service.Servicestatus.problemHasBeenAcknowledged"
+                                   ng-if="service.Servicestatus.acknowledgement_type == 2"
+                                   title="<?php echo __('Sticky Acknowledgedment'); ?>"></i>
+                            </td>
+
+                            <td class="text-center">
+                                <i class="fa fa-lg fa-power-off"
+                                   ng-show="service.Servicestatus.scheduledDowntimeDepth > 0"></i>
+                            </td>
+
+                            <td class="text-center">
+                                <strong title="<?php echo __('Passively transferred service'); ?>"
+                                        ng-show="service.Service.active_checks_enabled === false || host.Host.is_satellite_host === true">
+                                    P
+                                </strong>
+                            </td>
+
+                            <td>
+                                <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
+                                    <a href="/services/browser/{{ service.Service.id }}">
+                                        {{ service.Service.servicename }}
+                                    </a>
+                                <?php else: ?>
+                                    {{ service.Service.servicename }}
+                                <?php endif; ?>
+                            </td>
+
+                            <td>
+                                {{ service.Servicestatus.last_state_change }}
+                            </td>
+
+                            <td>
+                                <span ng-if="service.Service.active_checks_enabled && host.Host.is_satellite_host === false">{{ service.Servicestatus.lastCheck }}</span>
+                                <span ng-if="service.Service.active_checks_enabled === false || host.Host.is_satellite_host === true">
+                                            <?php echo __('n/a'); ?>
+                                        </span>
+                            </td>
+
+                            <td>
+                                <span ng-if="service.Service.active_checks_enabled && host.Host.is_satellite_host === false">{{ service.Servicestatus.nextCheck }}</span>
+                                <span ng-if="service.Service.active_checks_enabled === false || host.Host.is_satellite_host === true">
+                                            <?php echo __('n/a'); ?>
+                                        </span>
+                            </td>
+
+                            <td>
+                                {{ service.Servicestatus.output }}
+                            </td>
+
+                            <td class="width-50">
+                                <div class="btn-group">
+                                    <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
+                                        <a href="/services/edit/{{service.Service.id}}"
+                                           ng-if="service.Service.allow_edit"
+                                           class="btn btn-default">
+                                            &nbsp;<i class="fa fa-cog"></i>&nbsp;
+                                        </a>
+                                    <?php else: ?>
+                                        <a href="javascript:void(0);" class="btn btn-default">
+                                            &nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
+                                    <?php endif; ?>
+                                    <a href="javascript:void(0);" data-toggle="dropdown"
+                                       class="btn btn-default dropdown-toggle"><span
+                                                class="caret"></span></a>
+                                    <ul class="dropdown-menu pull-right" id="menuHack-{{service.Service.uuid}}">
+                                        <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
+                                            <li ng-if="service.Service.allow_edit">
+                                                <a href="/services/edit/{{service.Service.id}}">
+                                                    <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
+                                                </a>
+                                            </li>
+                                        <?php endif; ?>
+                                        <?php if ($this->Acl->hasPermission('deactivate', 'services')): ?>
+                                            <li ng-if="service.Service.allow_edit">
+                                                <a href="javascript:void(0);"
+                                                   ng-click="confirmDeactivate(getObjectForDelete(host, service))">
+                                                    <i class="fa fa-plug"></i> <?php echo __('Disable'); ?>
+                                                </a>
+                                            </li>
+                                        <?php endif; ?>
+                                        <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
+                                            <li ng-if="service.Service.allow_edit">
+                                                <?php echo $this->AdditionalLinks->renderAsListItems(
+                                                    $additionalLinksList,
+                                                    '{{service.Service.id}}',
+                                                    [],
+                                                    true
+                                                ); ?>
+                                            </li>
+                                        <?php endif; ?>
+                                        <?php if ($this->Acl->hasPermission('delete', 'services')): ?>
+                                            <li class="divider"></li>
+                                            <li ng-if="service.Service.allow_edit">
+                                                <a href="javascript:void(0);" class="txt-color-red"
+                                                   ng-click="confirmDelete(getObjectForDelete(host, service))">
                                                     <i class="fa fa-trash-o"></i> <?php echo __('Delete'); ?>
                                                 </a>
                                             </li>

@@ -25,7 +25,6 @@ angular.module('openITCOCKPIT')
             };
         };
 
-
         $scope.load = function(){
             $http.get("/hostgroups/loadHostgroupsByString.json", {
                 params: {
@@ -56,15 +55,18 @@ angular.module('openITCOCKPIT')
             }
         };
 
-        $scope.loadServicesWithStatus = function(){
-            if($scope.post.Servicegroup.id) {
-                $http.get("/servicegroups/loadServicegroupWithServicesById/" + $scope.post.Servicegroup.id +".json", {
+        $scope.loadServicesWithStatus = function($host, hostId){
+            if($scope.post.Hostgroup.id && hostId) {
+                $http.get("/services/index.json", {
                     params: {
-                        'angular': true
+                        'angular': true,
+                        'filter[Host.id]': hostId
                     }
                 }).then(function (result) {
-                    $scope.servicegroup = result.data.servicegroup;
-                    $scope.servicegroupsStateFilter = {
+                    $host.Services = result.data.all_services;
+                    $host.ServicenameFilter = '';
+                    console.log($host.Services);
+                    $host.servicesStateFilter = {
                         0 : true,
                         1 : true,
                         2 : true,
@@ -273,6 +275,11 @@ angular.module('openITCOCKPIT')
                     $scope.showFlashSuccess = false;
                 }
             }, 1000);
+        };
+
+        $scope.filterFunction = function(element) {
+            console.log('test');
+            return element.name.match(/^CPU/) ? true : false;
         };
 
         //Fire on page load

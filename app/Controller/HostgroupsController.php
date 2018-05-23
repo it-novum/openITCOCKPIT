@@ -70,13 +70,13 @@ class HostgroupsController extends AppController {
         $HostgroupFilter = new HostgroupFilter($this->request);
 
         $query = [
-            'recursive'  => -1,
-            'contain'    => [
+            'recursive' => -1,
+            'contain' => [
                 'Container',
             ],
-            'order'      => $HostgroupFilter->getOrderForPaginator('Container.name', 'asc'),
+            'order' => $HostgroupFilter->getOrderForPaginator('Container.name', 'asc'),
             'conditions' => $HostgroupFilter->indexFilter(),
-            'limit'      => $this->Paginator->settings['limit']
+            'limit' => $this->Paginator->settings['limit']
         ];
         if (!$this->hasRootPrivileges) {
             $query['conditions']['Container.parent_id'] = $this->MY_RIGHTS;
@@ -146,9 +146,9 @@ class HostgroupsController extends AppController {
         }
 
         $hostgroup = $this->Hostgroup->find('first', [
-            'recursive'  => -1,
-            'contain'    => [
-                'Host'         => [
+            'recursive' => -1,
+            'contain' => [
+                'Host' => [
                     'fields' => [
                         'Host.id',
                         'Host.name'
@@ -178,8 +178,8 @@ class HostgroupsController extends AppController {
             if ($this->request->data('Hostgroup.Host')) {
                 foreach ($this->request->data['Hostgroup']['Host'] as $host_id) {
                     $host = $this->Host->find('first', [
-                        'contain'    => [],
-                        'fields'     => [
+                        'contain' => [],
+                        'fields' => [
                             'Host.id',
                             'Host.name',
                         ],
@@ -188,7 +188,7 @@ class HostgroupsController extends AppController {
                         ],
                     ]);
                     $ext_data_for_changelog['Host'][] = [
-                        'id'   => $host_id,
+                        'id' => $host_id,
                         'name' => $host['Host']['name'],
                     ];
                 }
@@ -196,8 +196,8 @@ class HostgroupsController extends AppController {
             if ($this->request->data('Hostgroup.Hosttemplate')) {
                 foreach ($this->request->data['Hostgroup']['Hosttemplate'] as $hosttemplate_id) {
                     $hosttemplate = $this->Hosttemplate->find('first', [
-                        'contain'    => [],
-                        'fields'     => [
+                        'contain' => [],
+                        'fields' => [
                             'Hosttemplate.id',
                             'Hosttemplate.name',
                         ],
@@ -206,7 +206,7 @@ class HostgroupsController extends AppController {
                         ],
                     ]);
                     $ext_data_for_changelog['Hosttemplate'][] = [
-                        'id'   => $hosttemplate_id,
+                        'id' => $hosttemplate_id,
                         'name' => $hosttemplate['Hosttemplate']['name'],
                     ];
                 }
@@ -261,8 +261,8 @@ class HostgroupsController extends AppController {
             if ($this->request->data('Hostgroup.Host')) {
                 foreach ($this->request->data['Hostgroup']['Host'] as $host_id) {
                     $host = $this->Host->find('first', [
-                        'contain'    => [],
-                        'fields'     => [
+                        'contain' => [],
+                        'fields' => [
                             'Host.id',
                             'Host.name',
                         ],
@@ -271,7 +271,7 @@ class HostgroupsController extends AppController {
                         ],
                     ]);
                     $ext_data_for_changelog['Host'][] = [
-                        'id'   => $host_id,
+                        'id' => $host_id,
                         'name' => $host['Host']['name'],
                     ];
                 }
@@ -279,8 +279,8 @@ class HostgroupsController extends AppController {
             if ($this->request->data('Hostgroup.Hosttemplate')) {
                 foreach ($this->request->data['Hostgroup']['Hosttemplate'] as $hosttemplate_id) {
                     $hosttemplate = $this->Hosttemplate->find('first', [
-                        'contain'    => [],
-                        'fields'     => [
+                        'contain' => [],
+                        'fields' => [
                             'Hosttemplate.id',
                             'Hosttemplate.name',
                         ],
@@ -289,7 +289,7 @@ class HostgroupsController extends AppController {
                         ],
                     ]);
                     $ext_data_for_changelog['Hosttemplate'][] = [
-                        'id'   => $hosttemplate_id,
+                        'id' => $hosttemplate_id,
                         'name' => $hosttemplate['Hosttemplate']['name'],
                     ];
                 }
@@ -394,8 +394,8 @@ class HostgroupsController extends AppController {
         $hosts = [];
 
         $query = [
-            'recursive'  => -1,
-            'contain'    => [
+            'recursive' => -1,
+            'contain' => [
                 'Container',
                 'Host' => [
                     'Container',
@@ -472,13 +472,19 @@ class HostgroupsController extends AppController {
 
             $CumulatedValue = new CumulatedValue($serviceStateSummary['state']);
             $serviceStateSummary['cumulatedState'] = $CumulatedValue->getKeyFromCumulatedValue();
-//debug($serviceStateSummary);
+            $serviceStateSummary['state'] = array_combine([
+                __('ok'),
+                __('warning'),
+                __('critical'),
+                __('unknown')
+            ], $serviceStateSummary['state']
+            );
             $Host = new \itnovum\openITCOCKPIT\Core\Views\Host(['Host' => $host], $allowEdit);
             $host['Hoststatus'] = (!empty($hoststatus[$host['uuid']])) ? $hoststatus[$host['uuid']]['Hoststatus'] : [];
             $Hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus($host['Hoststatus'], $UserTime);
 
             $tmpRecord = [
-                'Host'       => $Host->toArray(),
+                'Host' => $Host->toArray(),
                 'Hoststatus' => $Hoststatus->toArray(),
                 'ServicestatusSummary' => $serviceStateSummary
             ];
@@ -514,9 +520,9 @@ class HostgroupsController extends AppController {
         }
 
         $selectedHostGroup = [
-            'Hostgroup'     => $hostgroup['Hostgroup'],
-            'Container'     => $hostgroup['Container'],
-            'Hosts'         => $all_hosts,
+            'Hostgroup' => $hostgroup['Hostgroup'],
+            'Container' => $hostgroup['Container'],
+            'Hosts' => $all_hosts,
             'StatusSummary' => $statusOverview
         ];
 
@@ -585,13 +591,13 @@ class HostgroupsController extends AppController {
         }
 
         $query = [
-            'recursive'  => -1,
-            'contain'    => [
+            'recursive' => -1,
+            'contain' => [
                 'Container'
             ],
-            'order'      => $HostgroupFilter->getOrderForPaginator('Container.name', 'asc'),
+            'order' => $HostgroupFilter->getOrderForPaginator('Container.name', 'asc'),
             'conditions' => $HostgroupFilter->indexFilter(),
-            'limit'      => $this->Paginator->settings['limit']
+            'limit' => $this->Paginator->settings['limit']
         ];
 
         if ($this->isApiRequest() && !$this->isAngularJsRequest()) {
@@ -685,17 +691,17 @@ class HostgroupsController extends AppController {
                 $ext_data_for_changelog = [];
                 foreach ($hostgroupMembers as $hostId) {
                     $host = $this->Host->find('first', [
-                        'recursive'  => -1,
+                        'recursive' => -1,
                         'conditions' => [
                             'Host.id' => $hostId,
                         ],
-                        'fields'     => [
+                        'fields' => [
                             'Host.id',
                             'Host.name',
                         ],
                     ]);
                     $ext_data_for_changelog['Host'][] = [
-                        'id'   => $hostId,
+                        'id' => $hostId,
                         'name' => $host['Host']['name'],
                     ];
                 }
@@ -766,9 +772,9 @@ class HostgroupsController extends AppController {
         $userContainerId = (isset($this->request->data['Container']['parent_id'])) ? $this->request->data['Container']['parent_id'] : $this->Auth->user('container_id');
 
         $this->set([
-            'hostsToAppend'     => $hostsToAppend,
-            'hostgroups'        => $hostgroups,
-            'containers'        => $containers,
+            'hostsToAppend' => $hostsToAppend,
+            'hostgroups' => $hostgroups,
+            'containers' => $containers,
             'user_container_id' => $userContainerId,
         ]);
         $this->set('back_url', $this->referer());
@@ -779,8 +785,8 @@ class HostgroupsController extends AppController {
 
         $HostgroupFilter = new HostgroupFilter($this->request);
         $query = [
-            'recursive'  => -1,
-            'contain'    => [
+            'recursive' => -1,
+            'contain' => [
                 'Container',
                 'Host' => [
                     'fields' => [
@@ -790,7 +796,7 @@ class HostgroupsController extends AppController {
                     ],
                 ]
             ],
-            'order'      => $HostgroupFilter->getOrderForPaginator('Container.name', 'asc'),
+            'order' => $HostgroupFilter->getOrderForPaginator('Container.name', 'asc'),
             'conditions' => $HostgroupFilter->indexFilter(),
         ];
         if (!$this->hasRootPrivileges) {
@@ -819,22 +825,22 @@ class HostgroupsController extends AppController {
             $binary_path = '/usr/local/bin/wkhtmltopdf';
         }
         $this->pdfConfig = [
-            'engine'             => 'CakePdf.WkHtmlToPdf',
-            'margin'             => [
+            'engine' => 'CakePdf.WkHtmlToPdf',
+            'margin' => [
                 'bottom' => 15,
-                'left'   => 0,
-                'right'  => 0,
-                'top'    => 15,
+                'left' => 0,
+                'right' => 0,
+                'top' => 15,
             ],
-            'encoding'           => 'UTF-8',
-            'download'           => true,
-            'binary'             => $binary_path,
-            'orientation'        => 'portrait',
-            'filename'           => $filename,
+            'encoding' => 'UTF-8',
+            'download' => true,
+            'binary' => $binary_path,
+            'orientation' => 'portrait',
+            'filename' => $filename,
             'no-pdf-compression' => '*',
-            'image-dpi'          => '900',
-            'background'         => true,
-            'no-background'      => false,
+            'image-dpi' => '900',
+            'background' => true,
+            'no-background' => false,
         ];
     }
 }

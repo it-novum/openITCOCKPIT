@@ -1676,27 +1676,27 @@ label[class^='aco-host']:after, label[class^='aco-service']:after {
     color: #A90329 !important;
 }
 
-.checkbox-ok {
+.checkbox-ok, .checkbox-up {
     border-color: #409240 !important;
 }
 
-.checkbox-ok:after {
+.checkbox-ok:after, .checkbox-up:after {
     color: #5cb85c !important;
 }
 
-.checkbox-critical {
+.checkbox-critical, .checkbox-down {
     border-color: #A90329 !important;
 }
 
-.checkbox-critical:after {
+.checkbox-critical:after, .checkbox-down:after {
     color: #A90329 !important;
 }
 
-.checkbox-unknown {
+.checkbox-unknown, .checkbox-unreachable {
     border-color: #4c4f53 !important;
 }
 
-.checkbox-unknown:after {
+.checkbox-unknown:after, .checkbox-unreachable:after {
     color: #92a2a8 !important;
 }
 
