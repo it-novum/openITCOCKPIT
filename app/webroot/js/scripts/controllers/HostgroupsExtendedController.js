@@ -16,6 +16,8 @@ angular.module('openITCOCKPIT')
             }
         };
 
+        $scope.showServices = {};
+
         /*** Filter Settings ***/
         var defaultFilter = function(){
             $scope.filter = {
@@ -53,28 +55,6 @@ angular.module('openITCOCKPIT')
                     };
                 });
             }
-        };
-
-        $scope.loadServicesWithStatus = function($host, hostId){
-            if($scope.post.Hostgroup.id && hostId) {
-                $http.get("/services/index.json", {
-                    params: {
-                        'angular': true,
-                        'filter[Host.id]': hostId
-                    }
-                }).then(function (result) {
-                    $host.Services = result.data.all_services;
-                    $host.ServicenameFilter = '';
-                    console.log($host.Services);
-                    $host.servicesStateFilter = {
-                        0 : true,
-                        1 : true,
-                        2 : true,
-                        3 : true
-                    };
-                });
-            }
-
         };
 
         $scope.getObjectForDelete = function(host, service){
@@ -270,7 +250,7 @@ angular.module('openITCOCKPIT')
             var interval = $interval(function(){
                 $scope.autoRefreshCounter--;
                 if($scope.autoRefreshCounter === 0){
-                    $scope.loadServicesWithStatus('');
+                    //$scope.loadServicesWithStatus('');
                     $interval.cancel(interval);
                     $scope.showFlashSuccess = false;
                 }

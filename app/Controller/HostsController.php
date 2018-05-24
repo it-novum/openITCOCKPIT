@@ -260,6 +260,12 @@ class HostsController extends AppController {
         return;
     }
 
+    public function hostservicelist() {
+        $this->layout = 'blank';
+        //Only ship HTML Template
+        return;
+    }
+
     public function view($id = null) {
         if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();

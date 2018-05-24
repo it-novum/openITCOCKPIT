@@ -162,6 +162,7 @@ $config = [
             'Hosts'            => [
                 'view',
                 'icon',
+                'hostservicelist',
                 'loadParentHostsByString',
                 'loadParentHostsById'
             ]
