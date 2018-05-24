@@ -117,14 +117,7 @@
     </div>
 </div>
 
-<massdelete></massdelete>
-<massdeactivate></massdeactivate>
-<massactivate></massactivate>
-<reschedule-service callback="showFlashMsg"></reschedule-service>
-<disable-notifications callback="showFlashMsg"></disable-notifications>
-<enable-notifications callback="showFlashMsg"></enable-notifications>
-<acknowledge-service author="<?php echo h($username); ?>" callback="showFlashMsg"></acknowledge-service>
-<service-downtime author="<?php echo h($username); ?>"></service-downtime>
+
 
 <section id="widget-grid">
     <div class="row">

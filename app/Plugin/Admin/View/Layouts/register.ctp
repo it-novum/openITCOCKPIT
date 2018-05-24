@@ -65,7 +65,7 @@ if (ENVIRONMENT === Environments::PRODUCTION) {
     printf('<script src="%s"></script>', '/js/scripts/ng.app.js');
 
     foreach ($appScripts as $appScript):
-        printf('<script src="%s/%s"></script>', Router::fullBaseUrl(), str_replace(WWW_ROOT, '', $appScript));
+        printf('<script src="/%s"></script>', str_replace(WWW_ROOT, '', $appScript));
     endforeach;
     ?>
 </head>
