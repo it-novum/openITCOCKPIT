@@ -29,7 +29,7 @@
                 <label class="input"> <i class="icon-prepend fa fa-desktop"></i>
                     <input type="text" class="input-sm"
                            placeholder="<?php echo __('Filter by service name'); ?>"
-                           ng-model="host.ServicenameFilter"
+                           ng-model="filter.Service.name"
                            ng-model-options="{debounce: 500}">
                 </label>
             </div>
@@ -41,9 +41,8 @@
                     <label class="checkbox small-checkbox-label txt-color-white">
                         <input type="checkbox" name="checkbox" checked="checked"
                                ng-model-options="{debounce: 500}"
-                               ng-model="filter.Service.name"
-                               ng-value="$index"
-                               class="ng-pristine ng-untouched ng-valid ng-empty">
+                               ng-model="servicesStateFilter[$index]"
+                               ng-value="$index">
                         <i class="checkbox-{{servicestate}}"></i>
                         <strong>
                             {{servicecount}} {{servicestate}}
@@ -98,7 +97,7 @@
             <i class="fa fa-gear fa-lg"></i>
         </th>
     </tr>
-    <tr ng-repeat="service in services">
+    <tr ng-repeat="service in services" ng-show="servicesStateFilter[service.Servicestatus.currentState]">
         <td></td>
         <td class="text-center">
             <servicestatusicon service="service"></servicestatusicon>

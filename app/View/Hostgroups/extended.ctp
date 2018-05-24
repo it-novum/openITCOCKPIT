@@ -143,7 +143,7 @@
                             <?php echo $this->Html->link(
                                 __('New'), '/' . $this->params['controller'] . '/add', [
                                     'class' => 'btn btn-xs btn-success',
-                                    'icon' => 'fa fa-plus'
+                                    'icon'  => 'fa fa-plus'
                                 ]
                             ); ?>
                         <?php endif; ?>
@@ -240,11 +240,11 @@
                                 </div>
                             </td>
                         </tr>
-                        <tbody ng-repeat="host in hostgroup.Hosts">
-                        <tr ng-show="hostgroupsStateFilter[host.Hoststatus.currentState]">
-                            <td class="width-20 text-center pointer fa-lg">{{host.Host.id}}
-                                <i ng-class="(!showServiceList) ? 'fa fa-plus-square-o' : 'fa fa-minus-square-o'"
-                                   ng-click="loadServicesWithStatus(host, host.Host.id)"
+                        <tr ng-show="hostgroupsStateFilter[host.Hoststatus.currentState]"
+                            ng-repeat-start="host in hostgroup.Hosts">
+                            <td class="width-20 text-center pointer fa-lg">
+                                <i ng-class="(!showServices[host.Host.id]) ? 'fa fa-plus-square-o' : 'fa fa-minus-square-o'"
+                                   ng-click="showServicesCallback(host.Host.id)"
                                 ></i>
                             </td>
                             <td class="text-center">
@@ -409,12 +409,17 @@
                                 </div>
                             </td>
                         </tr>
-                        <tr>
+                        <tr ng-show="showServices[host.Host.id]" ng-repeat-end="">
                             <td colspan="12">
-                                <host-service-list host-id="host.Host.id"></host-service-list>
+                                <host-service-list
+                                        host-id="host.Host.id"
+                                        show-services="showServices"
+                                        timezone="timezone"
+                                        host="host"
+                                        ng-if="timezone">
+                                </host-service-list>
                             </td>
                         </tr>
-                        </tbody>
                     </table>
                     <div class="col-xs-12 text-center txt-color-red italic padding-10" ng-hide="hostgroup">
                         <?php echo __('No entries match the selection'); ?>
