@@ -67,6 +67,7 @@ class CustomVariableDiffer extends CustomVariableHelper
 
                 //Check if the values are the same or not
                 if ($hostCustomVariable->getValue() != $hostTemplateCustomVariable->getValue()) {
+                    $hostCustomVariable->resetId();
                     $variablesToSaveAsRepository->addCustomVariable($hostCustomVariable);
                 }
             }
@@ -79,5 +80,4 @@ class CustomVariableDiffer extends CustomVariableHelper
 
         return $variablesToSaveAsRepository;
     }
-
 }
