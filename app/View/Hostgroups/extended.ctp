@@ -114,14 +114,14 @@
                     <li>
                         <a href="javascript:void(0);" data-toggle="modal"
                            data-target="#nag_command_disable_notifications"
-                           ng-click="disableNotifications(getObjectsForExternalCommand())">
+                           ng-click="disableHostNotifications(getObjectsForExternalCommand())">
                             <i class="fa fa-envelope-o"></i> <?php echo __('Disable notification'); ?>
                         </a>
                     </li>
                     <li>
                         <a href="javascript:void(0);" data-toggle="modal"
                            data-target="#nag_command_enable_notifications"
-                           ng-click="enableNotifications(getObjectsForExternalCommand())">
+                           ng-click="enableHostNotifications(getObjectsForExternalCommand())">
                             <i class="fa fa-envelope"></i> <?php echo __('Enable notifications'); ?>
                         </a>
                     </li>
@@ -445,3 +445,4 @@
         </article>
     </div>
 </section>
+
