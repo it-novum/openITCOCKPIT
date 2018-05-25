@@ -89,25 +89,6 @@
                         ?>
                     </div>
 
-                    <?php
-                    //add two years to now for a template expire date
-                    $future_expire = date(PHP_DATEFORMAT, time() + (60 * 60 * 24 * 365 * 2));
-                    ?>
-                    <div class="form-group required" ng-class="{'has-error': errors.Tenant.expires}">
-                        <label class="col col-md-2 control-label">
-                            <?php echo __('Expiration date'); ?>
-                        </label>
-                        <div class="col col-xs-10 col-md-3">
-                            <input
-                                    class="form-control"
-                                    type="text"
-                                    value="<?php echo $future_expire; ?>"
-                                    ng-model="post.Tenant.expires">
-                            <div ng-repeat="error in errors.Tenant.expires">
-                                <div class="help-block text-danger">{{ error }}</div>
-                            </div>
-                        </div>
-                    </div>
                     <div class="form-group" ng-class="{'has-error': errors.Tenant.firstname}">
                         <label class="col col-md-2 control-label">
                             <?php echo __('Firstname'); ?>
@@ -192,35 +173,6 @@
                             </div>
                         </div>
                     </div>
-                    <div class="form-group required hintmark_before" ng-class="{'has-error': errors.Tenant.max_hosts}">
-                        <label class="col col-md-2 control-label hintmark_before">
-                            <?php echo __('Max Hosts'); ?>
-                        </label>
-                        <div class="col col-xs-10">
-                            <input
-                                    class="form-control"
-                                    type="text"
-                                    ng-model="post.Tenant.max_hosts">
-                            <div ng-repeat="error in errors.Tenant.max_hosts">
-                                <div class="help-block text-danger">{{ error }}</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group required" ng-class="{'has-error': errors.Tenant.max_services}">
-                        <label class="col col-md-2 control-label hintmark_before">
-                            <?php echo __('Max Services'); ?>
-                        </label>
-                        <div class="col col-xs-10">
-                            <input
-                                    class="form-control"
-                                    type="text"
-                                    ng-model="post.Tenant.max_services">
-                            <div ng-repeat="error in errors.Tenant.max_services">
-                                <div class="help-block text-danger">{{ error }}</div>
-                            </div>
-                        </div>
-                    </div>
-
                     <span class="note hintmark_before"><?php echo __('enter 0 for infinity'); ?></span>
                     <br/ ><br/>
                     <div class="col-xs-12 margin-top-10">

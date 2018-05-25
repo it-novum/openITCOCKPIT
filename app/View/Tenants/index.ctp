@@ -104,7 +104,7 @@
 
 
                         <div class="mobile_table">
-                            <table id="servicegroup_list" class="table table-striped table-hover table-bordered smart-form"
+                            <table id="tenant_list" class="table table-striped table-hover table-bordered smart-form"
                                    style="">
                                 <thead>
                                 <tr>
@@ -146,7 +146,7 @@
                                         <i ng-if="tenant.Tenant.is_active == 0" class="fa fa-power-off fa-lg txt-color-red"></i>
                                     </td>
                                     <td class="text-center">
-                                        <a href="/servicegroups/edit/{{tenant.Tenant.id}}"
+                                        <a href="/tenants/edit/{{tenant.Tenant.id}}"
                                            ng-if="tenant.Tenant.allowEdit">
                                             <i class="fa fa-cog fa-lg txt-color-teal"></i>
                                         </a>

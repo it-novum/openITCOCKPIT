@@ -122,9 +122,6 @@ class TenantsController extends AppController {
         if ($this->request->is('post') || $this->request->is('put')) {
             $this->request->data['Container']['containertype_id'] = CT_TENANT;
             $this->request->data['Container']['parent_id'] = CT_GLOBAL;
-            if ($this->request->data('Tenant.expires')) {
-                $this->request->data['Tenant']['expires'] = CakeTime::format($this->request->data['Tenant']['expires'], '%Y-%m-%d');
-            }
 
             $isJsonRequest = $this->request->ext === 'json';
             if ($this->Tenant->saveAll($this->request->data)) {
@@ -150,19 +147,6 @@ class TenantsController extends AppController {
                 $this->setFlash(__('Could not save data'), false);
             }
         }
-    }
-
-    public function loadinitialdata() {
-        if (!$this->isAngularJsRequest()) {
-            throw new MethodNotAllowedException();
-        }
-        $future_expire = date(PHP_DATEFORMAT, time() + (60 * 60 * 24 * 365 * 2));
-        $initialdata = [
-            'expires' => $future_expire
-        ];
-
-        $this->set('initialdata', $initialdata);
-        $this->set('_serialize', ['initialdata']);
     }
 
 
@@ -237,6 +221,11 @@ class TenantsController extends AppController {
     }
 
     public function edit($id = null) {
+      /*  if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
+            return;
+        }
+*/
         if (!$this->Tenant->exists($id)) {
             throw new NotFoundException(__('Invalid tenant'));
         }
@@ -247,6 +236,7 @@ class TenantsController extends AppController {
 
             return;
         }
+
         $this->set(compact(['tenant']));
         $this->set('_serialize', ['tenant']);
         if ($this->request->is('post') || $this->request->is('put')) {
@@ -254,9 +244,6 @@ class TenantsController extends AppController {
             $this->request->data['Container']['parent_id'] = CT_GLOBAL;
             $this->request->data['Container']['id'] = $tenant['Container']['id'];
             $this->request->data['Tenant']['id'] = $tenant['Tenant']['id'];
-            if ($this->request->data('Tenant.expires')) {
-                $this->request->data['Tenant']['expires'] = CakeTime::format($this->request->data['Tenant']['expires'], '%Y-%m-%d');
-            }
             if ($this->Tenant->saveAll($this->request->data)) {
                 Cache::clear(false, 'permissions');
                 $this->setFlash(__('Tenant successfully saved'));
