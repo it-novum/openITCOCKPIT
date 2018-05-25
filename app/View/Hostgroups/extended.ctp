@@ -437,11 +437,11 @@
                 </div>
             </div>
 
-            <reschedule-host></reschedule-host>
-            <disable-host-notifications></disable-host-notifications>
-            <enable-host-notifications></enable-host-notifications>
-            <acknowledge-host author="<?php echo h($username); ?>"></acknowledge-host>
-            <host-downtime author="<?php echo h($username); ?>"></host-downtime>
+            <reschedule-host callback="showFlashMsg"></reschedule-host>
+            <disable-host-notifications callback="showFlashMsg"></disable-host-notifications>
+            <enable-host-notifications callback="showFlashMsg"></enable-host-notifications>
+            <acknowledge-host author="<?php echo h($username); ?>" callback="showFlashMsg"></acknowledge-host>
+            <host-downtime author="<?php echo h($username); ?>" callback="showFlashMsg"></host-downtime>
         </article>
     </div>
 </section>

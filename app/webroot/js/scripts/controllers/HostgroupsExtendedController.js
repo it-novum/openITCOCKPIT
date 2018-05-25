@@ -92,7 +92,6 @@ angular.module('openITCOCKPIT')
             for(var host in $scope.hostgroup.Hosts){
                 object[$scope.hostgroup.Hosts[host].Host.id] = $scope.hostgroup.Hosts[host];
             }
-            console.log(object);
             return object;
         };
 
