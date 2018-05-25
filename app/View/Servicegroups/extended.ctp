@@ -45,7 +45,6 @@
     <div class="col col-xs-11">
         <select
                 ng-if="servicegroups.length > 0"
-                ng-init="post.Servicegroup.id = servicegroups[0].Servicegroup.id"
                 class="form-control"
                 chosen="servicegroups"
                 ng-options="servicegroup.Servicegroup.id as servicegroup.Container.name for servicegroup in servicegroups"
