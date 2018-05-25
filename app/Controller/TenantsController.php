@@ -73,8 +73,8 @@ class TenantsController extends AppController {
         $query = Hash::merge($this->Paginator->settings, $options);
 
         if ($this->isApiRequest()) {
-            unset($query['limit']);
-            ;$all_tenants = $this->Tenant->find('all', $query);
+            unset($query['limit']);;
+            $all_tenants = $this->Tenant->find('all', $query);
         } else {
             $this->Paginator->settings = Hash::merge($this->Paginator->settings, $options);
             $all_tenants = $this->Paginator->paginate();
@@ -221,11 +221,11 @@ class TenantsController extends AppController {
     }
 
     public function edit($id = null) {
-      /*  if (!$this->isApiRequest()) {
+        if (!$this->isApiRequest()) {
             //Only ship HTML template for angular
             return;
         }
-*/
+
         if (!$this->Tenant->exists($id)) {
             throw new NotFoundException(__('Invalid tenant'));
         }
@@ -246,10 +246,13 @@ class TenantsController extends AppController {
             $this->request->data['Tenant']['id'] = $tenant['Tenant']['id'];
             if ($this->Tenant->saveAll($this->request->data)) {
                 Cache::clear(false, 'permissions');
-                $this->setFlash(__('Tenant successfully saved'));
-                $this->redirect(['action' => 'index']);
+                $this->setFlash(__('<a href="/tenants/edit/%s">Tenant</a> successfully saved', $this->Tenant->id));
+            } else {
+                if ($this->request->ext == 'json') {
+                    $this->serializeErrorMessage();
+                    return;
+                }
             }
-            $this->setFlash(__('Tenant could not be saved'), false);
         }
     }
 }
