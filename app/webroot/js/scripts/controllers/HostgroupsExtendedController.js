@@ -4,9 +4,8 @@ angular.module('openITCOCKPIT')
         $scope.init = true;
         $scope.servicegroupsStateFilter = {};
 
-        $scope.deleteUrl = '/services/delete/';
-        $scope.deactivateUrl = '/services/deactivate/';
-        $scope.activateUrl = '/services/enable/';
+        $scope.deleteUrl = '/hosts/delete/';
+        $scope.deactivateUrl = '/hosts/deactivate/';
 
         $scope.post = {
             Hostgroup: {
@@ -14,13 +13,15 @@ angular.module('openITCOCKPIT')
             }
         };
 
+        $scope.post.Hostgroup.id = QueryStringService.getCakeId();
+
         $scope.showServices = {};
 
         /*** Filter Settings ***/
         var defaultFilter = function(){
             $scope.filter = {
                 Host: {
-                    name: QueryStringService.getValue('filter[Host.name]', '')
+                    name: ''
                 }
             };
         };
@@ -32,6 +33,16 @@ angular.module('openITCOCKPIT')
                 }
             }).then(function(result){
                 $scope.hostgroups = result.data.hostgroups;
+
+                if(isNaN($scope.post.Hostgroup.id)){
+                    if($scope.hostgroups.length > 0){
+                        $scope.post.Hostgroup.id = $scope.hostgroups[0].key;
+                    }
+                }else{
+                    //ServicegroupId was passed in URL
+                    $scope.loadHostsWithStatus();
+                }
+
                 $scope.init = false;
             });
         };
@@ -70,51 +81,21 @@ angular.module('openITCOCKPIT')
             });
         };
 
-        $scope.getObjectForDelete = function(host, service){
+        $scope.getObjectForDelete = function(host){
             var object = {};
-            object[service.Service.id] = host.hostname + '/' + service.Service.servicename;
+            object[host.Host.id] = host.Host.hostname;
             return object;
         };
 
-
         $scope.getObjectsForExternalCommand = function(){
-            var objects = {};
-            if($scope.post.Servicegroup.id) {
-                for(var key in $scope.servicegroup.Services){
-                    if($scope.servicegroup.Services[key].Service.allow_edit){
-                        objects[$scope.servicegroup.Services[key].Service.id] = $scope.servicegroup.Services[key];
-                    }
-                }
+            var object = {};
+            for(var host in $scope.hostgroup.Hosts){
+                object[$scope.hostgroup.Hosts[host].Host.id] = $scope.hostgroup.Hosts[host];
             }
-            return objects;
+            console.log(object);
+            return object;
         };
 
-        $scope.getNotOkObjectsForExternalCommand = function(){
-            var objects = {};
-            if($scope.post.Servicegroup.id) {
-                for(var key in $scope.servicegroup.Services){
-                    if($scope.servicegroup.Services[key].Service.allow_edit &&
-                        $scope.servicegroup.Services[key].Servicestatus.currentState > 0){
-                        objects[$scope.servicegroup.Services[key].Service.id] = $scope.servicegroup.Services[key];
-                    }
-                }
-            }
-            return objects;
-        };
-
-        $scope.getObjectsForNotificationsExternalCommand = function(notificationsEnabled){
-            var objects = {};
-            if($scope.post.Servicegroup.id) {
-                for(var key in $scope.servicegroup.Services){
-                    if($scope.servicegroup.Services[key].Service.allow_edit &&
-                        $scope.servicegroup.Services[key].Servicestatus.notifications_enabled === notificationsEnabled){
-
-                        objects[$scope.servicegroup.Services[key].Service.id] = $scope.servicegroup.Services[key];
-                    }
-                }
-            }
-            return objects;
-        };
 
         $scope.showFlashMsg = function(){
             $scope.showFlashSuccess = true;
@@ -151,6 +132,9 @@ angular.module('openITCOCKPIT')
         }, true);
 
         $scope.$watch('filter', function(){
+            if($scope.init){
+                return;
+            }
             $scope.loadHostsWithStatus();
         }, true);
     });

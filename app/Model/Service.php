@@ -2082,6 +2082,9 @@ class Service extends AppModel {
                 'total'        => 0
             ];
         }
+        if (empty($servicestatus)) {
+            return $serviceStateSummary;
+        }
         foreach ($servicestatus as $service) {
             //Check for randome exit codes like 255...
             if ($service['Servicestatus']['current_state'] > 3) {

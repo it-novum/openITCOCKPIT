@@ -23,8 +23,23 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+/**
+ * @property \itnovum\openITCOCKPIT\Monitoring\QueryHandler $QueryHandler
+ */
+
+
 ?>
 <div id="error_msg"></div>
+
+<?php if (!$QueryHandler->exists()): ?>
+    <div class="alert alert-danger alert-block">
+        <a href="#" data-dismiss="alert" class="close">×</a>
+        <h4 class="alert-heading"><i class="fa fa-warning"></i> <?php echo __('Monitoring Engine is not running!'); ?>
+        </h4>
+        <?php echo __('File %s does not exists', $QueryHandler->getPath()); ?>
+    </div>
+<?php endif; ?>
+
 <div class="alert alert-success alert-block" ng-show="showFlashSuccess">
     <a href="#" data-dismiss="alert" class="close">×</a>
     <h4 class="alert-heading"><i class="fa fa-check-circle-o"></i> <?php echo __('Command sent successfully'); ?></h4>
@@ -45,7 +60,6 @@
     <div class="col col-xs-11">
         <select
                 ng-if="hostgroups.length > 0"
-                ng-init="post.Hostgroup.id = hostgroups[0].key"
                 class="form-control"
                 chosen="hostgroups"
                 ng-options="hostgroup.key as hostgroup.value for hostgroup in hostgroups"
@@ -74,27 +88,27 @@
                         </a>
                     </li>
                 <?php endif; ?>
-                <?php if ($this->Acl->hasPermission('externalcommands', 'services')): ?>
+                <?php if ($this->Acl->hasPermission('externalcommands', 'hosts')): ?>
                     <li class="divider"></li>
                     <li>
                         <a href="javascript:void(0);" data-toggle="modal"
                            data-target="#nag_command_reschedule"
-                           ng-click="reschedule(getObjectsForExternalCommand())">
+                           ng-click="rescheduleHost(getObjectsForExternalCommand())">
                             <i class="fa fa-refresh"></i> <?php echo __('Reset check time'); ?>
                         </a>
                     </li>
                     <li>
                         <a href="javascript:void(0);" data-toggle="modal"
                            data-target="#nag_command_schedule_downtime"
-                           ng-click="serviceDowntime(getObjectsForExternalCommand())">
+                           ng-click="hostDowntime(getObjectsForExternalCommand())">
                             <i class="fa fa-clock-o"></i> <?php echo __('Set planned maintenance times'); ?>
                         </a>
                     </li>
                     <li>
                         <a href="javascript:void(0);" data-toggle="modal"
                            data-target="#nag_command_ack_state"
-                           ng-click="acknowledgeService(getNotOkObjectsForExternalCommand())">
-                            <i class="fa fa-user"></i> <?php echo __('Acknowledge service status'); ?>
+                           ng-click="acknowledgeHost(getObjectsForExternalCommand())">
+                            <i class="fa fa-user"></i> <?php echo __('Acknowledge host status'); ?>
                         </a>
                     </li>
                     <li>
@@ -117,6 +131,8 @@
     </div>
 </div>
 
+<massdelete></massdelete>
+<massdeactivate></massdeactivate>
 
 
 <section id="widget-grid">
@@ -366,7 +382,7 @@
                                         <?php if ($this->Acl->hasPermission('deactivate', 'hosts')): ?>
                                             <li ng-if="host.Host.allow_edit && !host.Host.disabled">
                                                 <a href="javascript:void(0);"
-                                                   ng-click="confirmDeactivate(getObjectForDelete(host.Host, host))">
+                                                   ng-click="confirmDeactivate(getObjectForDelete(host))">
                                                     <i class="fa fa-plug"></i> <?php echo __('Disable'); ?>
                                                 </a>
                                             </li>
@@ -374,7 +390,7 @@
                                         <?php if ($this->Acl->hasPermission('enable', 'hosts')): ?>
                                             <li ng-if="host.Host.allow_edit && host.Host.disabled">
                                                 <a href="javascript:void(0);"
-                                                   ng-click="confirmActivate(getObjectForDelete(host.Host, host))">
+                                                   ng-click="confirmActivate(getObjectForDelete(host))">
                                                     <i class="fa fa-plug"></i> <?php echo __('Enable'); ?>
                                                 </a>
                                             </li>
@@ -393,7 +409,7 @@
                                             <li class="divider"></li>
                                             <li ng-if="host.Host.allow_edit">
                                                 <a href="javascript:void(0);" class="txt-color-red"
-                                                   ng-click="confirmDelete(getObjectForDelete(host.Host, host))">
+                                                   ng-click="confirmDelete(getObjectForDelete(host))">
                                                     <i class="fa fa-trash-o"></i> <?php echo __('Delete'); ?>
                                                 </a>
                                             </li>
@@ -420,6 +436,12 @@
                     <br/>
                 </div>
             </div>
+
+            <reschedule-host></reschedule-host>
+            <disable-host-notifications></disable-host-notifications>
+            <enable-host-notifications></enable-host-notifications>
+            <acknowledge-host author="<?php echo h($username); ?>"></acknowledge-host>
+            <host-downtime author="<?php echo h($username); ?>"></host-downtime>
         </article>
     </div>
 </section>

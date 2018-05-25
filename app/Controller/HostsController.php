@@ -2351,6 +2351,7 @@ class HostsController extends AppController {
             $this->set('allowEdit', $allowEdit);
             $this->set('docuExists', $this->Documentation->existsForUuid($rawHost['Host']['uuid']));
             $this->set('QueryHandler', new QueryHandler($this->Systemsetting->getQueryHandlerPath()));
+            $this->set('masterInstanceName', $this->Systemsetting->getMasterInstanceName());
             //Only ship template
             return;
         }

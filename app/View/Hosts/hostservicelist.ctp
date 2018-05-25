@@ -22,6 +22,7 @@
 //  License agreement and license key will be shipped with the order
 //  confirmation.
 ?>
+
 <table class="table table-striped table-hover table-bordered smart-form">
     <tr ng-if="services.length > 0">
         <td colspan="6">
@@ -197,14 +198,6 @@
                             </a>
                         </li>
                     <?php endif; ?>
-                    <?php if ($this->Acl->hasPermission('deactivate', 'services')): ?>
-                        <li ng-if="service.Service.allow_edit">
-                            <a href="javascript:void(0);"
-                               ng-click="confirmDeactivate(getObjectForDelete(host, service))">
-                                <i class="fa fa-plug"></i> <?php echo __('Disable'); ?>
-                            </a>
-                        </li>
-                    <?php endif; ?>
                     <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
                         <li ng-if="service.Service.allow_edit">
                             <?php echo $this->AdditionalLinks->renderAsListItems(
@@ -213,15 +206,6 @@
                                 [],
                                 true
                             ); ?>
-                        </li>
-                    <?php endif; ?>
-                    <?php if ($this->Acl->hasPermission('delete', 'services')): ?>
-                        <li class="divider"></li>
-                        <li ng-if="service.Service.allow_edit">
-                            <a href="javascript:void(0);" class="txt-color-red"
-                               ng-click="confirmDelete(getObjectForDelete(host, service))">
-                                <i class="fa fa-trash-o"></i> <?php echo __('Delete'); ?>
-                            </a>
                         </li>
                     <?php endif; ?>
                 </ul>

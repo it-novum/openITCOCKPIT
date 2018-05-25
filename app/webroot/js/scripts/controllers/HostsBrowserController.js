@@ -71,6 +71,7 @@ angular.module('openITCOCKPIT')
                 }
             }).then(function(result){
                 $scope.mergedHost = result.data.mergedHost;
+                $scope.mergedHost.Host.disabled = parseInt($scope.mergedHost.Host.disabled, 10);
                 $scope.tags = $scope.mergedHost.Host.tags.split(',');
                 $scope.hoststatus = result.data.hoststatus;
                 $scope.hoststateForIcon = {

@@ -10,6 +10,9 @@ angular.module('openITCOCKPIT').directive('hostServiceList', function($http){
         },
         controller: function($scope){
 
+            $scope.deleteUrl = '/services/delete/';
+            $scope.deactivateUrl = '/services/deactivate/';
+
             $scope.init = true;
             /*** Filter Settings ***/
             var defaultFilter = function(){

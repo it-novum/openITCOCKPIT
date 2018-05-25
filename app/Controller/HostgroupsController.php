@@ -32,6 +32,7 @@ use itnovum\openITCOCKPIT\Core\Views\UserTime;
 use itnovum\openITCOCKPIT\Filter\HostFilter;
 use itnovum\openITCOCKPIT\Filter\HostgroupFilter;
 use itnovum\openITCOCKPIT\Filter\HosttemplateFilter;
+use itnovum\openITCOCKPIT\Monitoring\QueryHandler;
 
 /**
  * @property Hostgroup $Hostgroup
@@ -130,8 +131,12 @@ class HostgroupsController extends AppController {
         $this->set('_serialize', ['hostgroup']);
     }
 
-    public function extended($hostgroupId = null) {
-
+    public function extended() {
+        if (!$this->isApiRequest()) {
+            $this->set('QueryHandler', new QueryHandler($this->Systemsetting->getQueryHandlerPath()));
+            $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+            $this->set('username', $User->getFullName());
+        }
     }
 
 
@@ -406,6 +411,9 @@ class HostgroupsController extends AppController {
                         'Host.active_checks_enabled',
                         'Host.disabled',
                         'Host.satellite_id'
+                    ],
+                    'conditions'=> [
+                        'Host.disabled' => 0
                     ],
                     'Service' => [
                         'fields' => [
