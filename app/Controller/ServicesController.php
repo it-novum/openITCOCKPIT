@@ -2198,7 +2198,7 @@ class ServicesController extends AppController {
 
         $downtime = [];
         if ($Servicestatus->isInDowntime()) {
-            $downtime = $this->DowntimeService->byServiceUuid($service['Service']['uuid']);
+            $downtime = $this->DowntimeService->byServiceUuid($service['Service']['uuid'], true);
             if (!empty($downtime)) {
                 $Downtime = new \itnovum\openITCOCKPIT\Core\Views\Downtime($downtime['DowntimeService'], $allowEdit, $UserTime);
                 $downtime = $Downtime->toArray();
@@ -2208,7 +2208,7 @@ class ServicesController extends AppController {
         //Get Host Ack and Donwtime
         $hostDowntime = [];
         if ($Hoststatus->isInDowntime()) {
-            $hostDowntime = $this->DowntimeHost->byHostUuid($rawHost['Host']['uuid']);
+            $hostDowntime = $this->DowntimeHost->byHostUuid($rawHost['Host']['uuid'], true);
             if (!empty($hostDowntime)) {
                 $DowntimeHost = new \itnovum\openITCOCKPIT\Core\Views\Downtime($hostDowntime['DowntimeHost'], $allowEdit, $UserTime);
                 $hostDowntime = $DowntimeHost->toArray();

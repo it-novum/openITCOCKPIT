@@ -116,15 +116,15 @@ class DowntimeService extends Statusengine3ModuleAppModel {
 
         //Merge ListFilter conditions
         $query['conditions'] = Hash::merge($paginatorConditions, $query['conditions']);
-        if(isset($query['conditions']['DowntimeService.was_started'])){
+        if (isset($query['conditions']['DowntimeService.was_started'])) {
             $query['conditions']['DowntimeService.was_started'] = (int)$query['conditions']['DowntimeService.was_started'];
         }
 
-        if(isset($query['conditions']['DowntimeService.was_cancelled'])){
+        if (isset($query['conditions']['DowntimeService.was_cancelled'])) {
             $query['conditions']['DowntimeService.was_cancelled'] = (int)$query['conditions']['DowntimeService.was_cancelled'];
         }
 
-        if($Conditions->isRunning()){
+        if ($Conditions->isRunning()) {
             $query['conditions']['DowntimeService.scheduled_end_time >'] = time();
             $query['conditions']['DowntimeService.was_started'] = 1;
             $query['conditions']['DowntimeService.was_cancelled'] = 0;
@@ -140,7 +140,7 @@ class DowntimeService extends Statusengine3ModuleAppModel {
      */
     public function getQueryForReporting(DowntimeServiceConditions $Conditions) {
         $query = [
-            'fields'     => [
+            'fields' => [
                 'DowntimeService.author_name',
                 'DowntimeService.comment_data',
                 'DowntimeService.scheduled_start_time',
@@ -152,7 +152,7 @@ class DowntimeService extends Statusengine3ModuleAppModel {
                 'Host.uuid',
                 'Service.uuid'
             ],
-            'joins'     => [
+            'joins'  => [
                 [
                     'table'      => 'hosts',
                     'type'       => 'INNER',
@@ -168,7 +168,7 @@ class DowntimeService extends Statusengine3ModuleAppModel {
                         'Service.uuid = DowntimeService.service_description',
                 ]
             ],
-            'order'      => $Conditions->getOrder()
+            'order'  => $Conditions->getOrder()
         ];
 
         if ($Conditions->hasHostUuids()) {
@@ -213,7 +213,7 @@ class DowntimeService extends Statusengine3ModuleAppModel {
             ]
         ];
         $result = $this->find('all', $query);
-        if(empty($result)){
+        if (empty($result)) {
             return [];
         }
 
@@ -221,19 +221,29 @@ class DowntimeService extends Statusengine3ModuleAppModel {
     }
 
     /**
-     * @param string $uuid
+     * @param null $uuid
+     * @param bool $isRunning
      * @return array|null
      */
-    public function byServiceUuid($uuid = null){
+    public function byServiceUuid($uuid = null, $isRunning = false) {
         if ($uuid !== null) {
-            $downtime = $this->find('first', [
+
+            $query = [
                 'conditions' => [
                     'service_description' => $uuid,
                 ],
-                'order' => [
+                'order'      => [
                     'DowntimeService.entry_time' => 'DESC',
                 ],
-            ]);
+            ];
+
+            if ($isRunning) {
+                $query['conditions']['DowntimeService.scheduled_end_time >'] = time();
+                $query['conditions']['DowntimeService.was_started'] = 1;
+                $query['conditions']['DowntimeService.was_cancelled'] = 0;
+            }
+
+            $downtime = $this->find('first', $query);
 
             return $downtime;
 

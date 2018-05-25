@@ -79,7 +79,6 @@ class DowntimeHost extends Statusengine3ModuleAppModel {
         }
 
 
-
         if ($Conditions->hasContainerIds()) {
             $db = $this->getDataSource();
             $subQuery = $db->buildStatement([
@@ -207,19 +206,29 @@ class DowntimeHost extends Statusengine3ModuleAppModel {
     }
 
     /**
-     * @param string $uuid
+     * @param null $uuid
+     * @param bool $isRunning
      * @return array|null
      */
-    public function byHostUuid($uuid = null) {
+    public function byHostUuid($uuid = null, $isRunning = false) {
         if ($uuid !== null) {
-            $downtime = $this->find('first', [
+
+            $query = [
                 'conditions' => [
                     'hostname' => $uuid,
                 ],
                 'order'      => [
                     'DowntimeHost.entry_time' => 'DESC',
                 ],
-            ]);
+            ];
+
+            if ($isRunning) {
+                $query['conditions']['DowntimeHost.scheduled_end_time >'] = time();
+                $query['conditions']['DowntimeHost.was_started'] = 1;
+                $query['conditions']['DowntimeHost.was_cancelled'] = 0;
+            }
+
+            $downtime = $this->find('first', $query);
 
             return $downtime;
 

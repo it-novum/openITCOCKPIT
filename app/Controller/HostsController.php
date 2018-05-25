@@ -2502,7 +2502,7 @@ class HostsController extends AppController {
 
         $downtime = [];
         if ($Hoststatus->isInDowntime()) {
-            $downtime = $this->DowntimeHost->byHostUuid($host['Host']['uuid']);
+            $downtime = $this->DowntimeHost->byHostUuid($host['Host']['uuid'], true);
             if(!empty($downtime)) {
                 $Downtime = new \itnovum\openITCOCKPIT\Core\Views\Downtime($downtime['DowntimeHost'], $allowEdit, $UserTime);
                 $downtime = $Downtime->toArray();

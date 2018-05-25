@@ -206,13 +206,15 @@ class DowntimeHost extends NagiosModuleAppModel {
     }
 
     /**
-     * @param string $uuid
+     * @param null $uuid
+     * @param bool $isRunning
      * @return array|null
      */
-    public function byHostUuid($uuid = null)
+    public function byHostUuid($uuid = null, $isRunning = false)
     {
         if ($uuid !== null) {
-            $downtime = $this->find('first', [
+
+            $query = [
                 'recursive'  => -1,
                 'conditions' => [
                     'Objects.name1'         => $uuid,
@@ -229,7 +231,15 @@ class DowntimeHost extends NagiosModuleAppModel {
                         'conditions' => 'Objects.object_id = DowntimeHost.object_id AND DowntimeHost.downtime_type = 2' //Downtime.downtime_type = 2 Host downtime
                     ]
                 ]
-            ]);
+            ];
+
+            if($isRunning){
+                $query['conditions']['DowntimeHost.scheduled_end_time >'] = date('Y-m-d H:i:s', time());
+                $query['conditions']['DowntimeHost.was_started'] = 1;
+                $query['conditions']['DowntimeHost.was_cancelled'] = 0;
+            }
+
+            $downtime = $this->find('first', $query);
 
             return $downtime;
 
