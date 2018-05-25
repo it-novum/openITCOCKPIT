@@ -50,6 +50,21 @@ a:hover, a:focus {
     min-height: 380px;
 }
 
+.login-screen-vnc {
+    background-image: url(/img/login_bg/spacex-71870.jpg);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
+    -moz-background-size: cover;
+    -webkit-background-size: cover;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+}
+
 .login-screen {
     /* background-image: url(/img/login_bg/spacex-71870.jpg);*/
     background-position: center;
