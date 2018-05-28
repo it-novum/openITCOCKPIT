@@ -681,13 +681,10 @@ class AppSchema extends CakeSchema
         'container_id'    => ['type' => 'integer', 'null' => false, 'default' => null],
         'description'     => ['type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
         'is_active'       => ['type' => 'integer', 'null' => false, 'default' => null, 'length' => 1],
-        'date'            => ['type' => 'date', 'null' => true, 'default' => null],
         'number_users'    => ['type' => 'integer', 'null' => false, 'default' => null, 'length' => 6],
         'max_users'       => ['type' => 'integer', 'null' => false, 'default' => null, 'length' => 6],
         'number_hosts'    => ['type' => 'integer', 'null' => false, 'default' => null, 'length' => 6],
-        'max_hosts'       => ['type' => 'integer', 'null' => false, 'default' => null, 'length' => 6],
         'number_services' => ['type' => 'integer', 'null' => false, 'default' => null, 'length' => 6],
-        'max_services'    => ['type' => 'integer', 'null' => false, 'default' => null, 'length' => 6],
         'firstname'       => ['type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
         'lastname'        => ['type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
         'street'          => ['type' => 'string', 'null' => true, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
@@ -1567,7 +1564,7 @@ class AppSchema extends CakeSchema
         ],
         'tableParameters' => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB'],
     ];
-    
+
     public $instantreports = [
         'id'              => ['type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'],
         'name'            => ['type' => 'string', 'null' => false, 'length' => 255, 'charset' => 'utf8'],
@@ -1660,7 +1657,7 @@ class AppSchema extends CakeSchema
         ],
         'tableParameters' => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB'],
     ];
-    
+
     /*public $devicegroups = array(
         'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'),
         'container_id' => array('type' => 'integer', 'null' => false, 'default' => null),

@@ -24,22 +24,23 @@
 //	confirmation.
 
 
+use itnovum\openITCOCKPIT\Filter\TenantFilter;
+
 App::import('Model', 'Container');
 
 
 /**
- * @property Tenant    $Tenant
+ * @property Tenant $Tenant
  * @property Container $Container
  */
-class TenantsController extends AppController
-{
+class TenantsController extends AppController {
     public $uses = [
         'Tenant',
         'Container',
         'CakeTime',
         'Utility',
     ];
-    public $layout = 'Admin.default';
+    public $layout = 'angularjs';
     public $components = [
         'ListFilter.ListFilter',
         'RequestHandler',
@@ -54,46 +55,55 @@ class TenantsController extends AppController
         ],
     ];
 
-    public function index()
-    {
+    public function index() {
+        if (!$this->isApiRequest()) {
+            //Only ship template for AngularJs
+            return;
+        }
+
+        $TenantFilter = new TenantFilter($this->request);
+
         $this->Tenant->virtualFields['name'] = 'Container.name';
 
-        $options = [
+        $query = [
+            'recursive' => -1,
+            'contain' => [
+                'Container'
+            ],
             'order'      => [
-                'Container.name' => 'asc',
+                $TenantFilter->getOrderForPaginator('Container.name', 'asc'),
             ],
-            'conditions' => [
-                'Container.id' => $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS),
-            ],
+            'conditions' => $TenantFilter->indexFilter(),
+            'limit' => $this->Paginator->settings['limit']
         ];
 
-        $query = Hash::merge($this->Paginator->settings, $options);
+        if (!$this->hasRootPrivileges) {
+            $query['conditions']['Container.id'] = $this->MY_RIGHTS;
+        }
+
 
         if ($this->isApiRequest()) {
             unset($query['limit']);
             $all_tenants = $this->Tenant->find('all', $query);
         } else {
-            $this->Paginator->settings = Hash::merge($this->Paginator->settings, $options);
+            $this->Paginator->settings = $query;
             $all_tenants = $this->Paginator->paginate();
         }
 
-        foreach($all_tenants as $key => $tenant){
-            $all_tenants[$key]['Tenant']['allow_edit'] = false;
+        foreach ($all_tenants as $key => $tenant) {
+            $all_tenants[$key]['Tenant']['allowEdit'] = false;
             $tenantContainerId = $tenant['Tenant']['container_id'];
-            if(isset($this->MY_RIGHTS_LEVEL[$tenantContainerId])){
-                if((int)$this->MY_RIGHTS_LEVEL[$tenantContainerId] === WRITE_RIGHT){
-                    $all_tenants[$key]['Tenant']['allow_edit'] = true;
+            if (isset($this->MY_RIGHTS_LEVEL[$tenantContainerId])) {
+                if ((int)$this->MY_RIGHTS_LEVEL[$tenantContainerId] === WRITE_RIGHT) {
+                    $all_tenants[$key]['Tenant']['allowEdit'] = true;
                 }
             }
         }
-
-
         $this->set(compact(['all_tenants']));
         $this->set('_serialize', ['all_tenants']);
     }
 
-    public function view($id = null)
-    {
+    public function view($id = null) {
         if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();
 
@@ -112,14 +122,16 @@ class TenantsController extends AppController
         $this->set('_serialize', ['tenant']);
     }
 
-    public function add()
-    {
+    public function add() {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
+            return;
+        }
+
+
         if ($this->request->is('post') || $this->request->is('put')) {
             $this->request->data['Container']['containertype_id'] = CT_TENANT;
             $this->request->data['Container']['parent_id'] = CT_GLOBAL;
-            if ($this->request->data('Tenant.expires')) {
-                $this->request->data['Tenant']['expires'] = CakeTime::format($this->request->data['Tenant']['expires'], '%Y-%m-%d');
-            }
 
             $isJsonRequest = $this->request->ext === 'json';
             if ($this->Tenant->saveAll($this->request->data)) {
@@ -130,24 +142,25 @@ class TenantsController extends AppController
                     return;
                 } else {
                     if ($this->request->ext != 'json') {
-                        $this->setFlash(__('Tenant successfully saved'));
-                        $this->redirect(['action' => 'index']);
+                        if ($this->isAngularJsRequest()) {
+                            $this->setFlash(__('<a href="/tenants/edit/%s">Tenant</a> successfully saved', $this->Tenant->id));
+                        }
+                        $this->serializeId();
+                        return;
                     }
                 }
             } else {
-                if ($isJsonRequest) {
+                if ($this->request->ext == 'json') {
                     $this->serializeErrorMessage();
-
                     return;
-                } else {
-                    $this->setFlash(__('Tenant could not be saved'), false);
                 }
+                $this->setFlash(__('Could not save data'), false);
             }
         }
     }
 
-    public function delete($id = null)
-    {
+
+    public function delete($id = null) {
         if (!$this->request->is('post')) {
             throw new MethodNotAllowedException();
         }
@@ -166,60 +179,25 @@ class TenantsController extends AppController
         if ($this->Tenant->__allowDelete($container['Tenant']['container_id'])) {
             if ($this->Container->delete($container['Tenant']['container_id'])) {
                 Cache::clear(false, 'permissions');
-                $this->setFlash(__('Tenant deleted'));
-                $this->redirect(['action' => 'index']);
+                $this->set('message', __('Tenant deleted successfully'));
+                $this->set('_serialize', ['message']);
+                return;
             }
-            $this->setFlash(__('Could not delete tenant'), false);
-            $this->redirect(['action' => 'index']);
+            $this->response->statusCode(400);
+            $this->set('message', __('Could not delete tenant'));
+            $this->set('_serialize', ['message']);
         }
-        $this->setFlash(__('Could not delete tenant'), false);
-        $this->redirect(['action' => 'index']);
+        $this->response->statusCode(400);
+        $this->set('message', __('Could not delete tenant'));
+        $this->set('_serialize', ['message']);
     }
 
-    public function mass_delete($id = null)
-    {
-        $deleteAllowedValues = [];
-        foreach (func_get_args() as $tenantId) {
-            if ($this->Tenant->exists($tenantId)) {
-                $container = $this->Tenant->find('first', [
-                    'contain'    => [
-                        'Container',
-                    ],
-                    'conditions' => [
-                        'Tenant.id' => $tenantId,
-                    ],
-                ]);
-                if ($this->allowedByContainerId(Hash::extract($container, 'Container.id'))) {
-                    $deleteAllowed = $this->Tenant->__allowDelete($container['Tenant']['container_id']);
-                    $deleteAllowedValues[] = $deleteAllowed;
-
-
-                    if ($deleteAllowed) {
-                        $this->Container->delete($container['Tenant']['container_id']);
-                    }
-                }
-            }
+    public function edit($id = null) {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
+            return;
         }
-        Cache::clear(false, 'permissions');
 
-        //array contains at least one false
-        if (in_array(false, $deleteAllowedValues)) {
-            if (count(array_unique($deleteAllowedValues)) === 1 && end($deleteAllowedValues) == false) {
-                //no tenant could be deleted
-                $this->setFlash(__('Tenants could not be deleted'), false);
-                $this->redirect(['action' => 'index']);
-            } else {
-                //at least one tenant couldnt be deleted
-                $this->setFlash(__('Some of the Tenants could not be deleted'), false);
-                $this->redirect(['action' => 'index']);
-            }
-        }
-        $this->setFlash(__('Tenants deleted'));
-        $this->redirect(['action' => 'index']);
-    }
-
-    public function edit($id = null)
-    {
         if (!$this->Tenant->exists($id)) {
             throw new NotFoundException(__('Invalid tenant'));
         }
@@ -230,6 +208,7 @@ class TenantsController extends AppController
 
             return;
         }
+
         $this->set(compact(['tenant']));
         $this->set('_serialize', ['tenant']);
         if ($this->request->is('post') || $this->request->is('put')) {
@@ -237,15 +216,15 @@ class TenantsController extends AppController
             $this->request->data['Container']['parent_id'] = CT_GLOBAL;
             $this->request->data['Container']['id'] = $tenant['Container']['id'];
             $this->request->data['Tenant']['id'] = $tenant['Tenant']['id'];
-            if ($this->request->data('Tenant.expires')) {
-                $this->request->data['Tenant']['expires'] = CakeTime::format($this->request->data['Tenant']['expires'], '%Y-%m-%d');
-            }
             if ($this->Tenant->saveAll($this->request->data)) {
                 Cache::clear(false, 'permissions');
-                $this->setFlash(__('Tenant successfully saved'));
-                $this->redirect(['action' => 'index']);
+                $this->setFlash(__('<a href="/tenants/edit/%s">Tenant</a> successfully saved', $this->Tenant->id));
+            } else {
+                if ($this->request->ext == 'json') {
+                    $this->serializeErrorMessage();
+                    return;
+                }
             }
-            $this->setFlash(__('Tenant could not be saved'), false);
         }
     }
 }
