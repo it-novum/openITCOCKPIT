@@ -7,6 +7,10 @@ if ($this->request->query('remote')):
     $isRemoteOrVnc = true;
 endif;
 
+if ($disableLoginAnimation === true):
+    $isRemoteOrVnc = true;
+endif;
+
 ?>
 
 <?php if ($isRemoteOrVnc === false): ?>

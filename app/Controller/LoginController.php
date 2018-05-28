@@ -50,6 +50,12 @@ class LoginController extends AppController
     {
         $systemsettings = $this->Systemsetting->findAsArraySection('FRONTEND');
 
+        $disableLoginAnimation = false;
+        if(isset($systemsettings['FRONTEND']['FRONTEND.DISABLE_LOGIN_ANIMATION'])){
+            $disableLoginAnimation = (bool)$systemsettings['FRONTEND']['FRONTEND.DISABLE_LOGIN_ANIMATION'];
+        }
+        $this->set('disableLoginAnimation', $disableLoginAnimation);
+
         if($systemsettings['FRONTEND']['FRONTEND.AUTH_METHOD'] === 'sso' && !$this->isApiRequest()){
             $result = $this->Oauth2client->connectToSSO();
             $errorPostMess = $this->Oauth2client->getPostErrorMessage($systemsettings['FRONTEND']['FRONTEND.SSO.LOG_OFF_LINK']);

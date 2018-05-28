@@ -59,7 +59,8 @@
                         ]);
                         ?>
                         <div class="mobile_table">
-                            <table id="host_list" class="table table-striped table-hover table-bordered smart-form" style="">
+                            <table id="host_list" class="table table-striped table-hover table-bordered smart-form"
+                                   style="">
                                 <thead>
                                 <tr>
                                     <th><?php echo __('Key'); ?></th>
@@ -108,24 +109,24 @@
                                                             case 'FRONTEND.SHOW_EXPORT_RUNNING':
                                                                 $options = [
                                                                     'yes' => 'True',
-                                                                    'no' => 'False'
+                                                                    'no'  => 'False'
                                                                 ];
                                                                 echo $this->Html->createSelect($options, 'data[' . $i . '][Systemsetting][value]', $value['value']);
                                                                 break;
 
                                                             case 'FRONTEND.AUTH_METHOD':
                                                                 $options = [
-                                                                    'session' => 'PHP session',
+                                                                    'session'   => 'PHP session',
                                                                     'twofactor' => 'Two factor authentication (PHP session based)',
-                                                                    'ldap' => 'PHP LDAP',
-                                                                    'sso' => 'SSO'
+                                                                    'ldap'      => 'PHP LDAP',
+                                                                    'sso'       => 'SSO'
                                                                 ];
                                                                 echo $this->Html->createSelect($options, 'data[' . $i . '][Systemsetting][value]', $value['value']);
                                                                 break;
 
                                                             case 'FRONTEND.LDAP.TYPE':
                                                                 $options = [
-                                                                    'adldap' => 'Active Directory LDAP',
+                                                                    'adldap'   => 'Active Directory LDAP',
                                                                     'openldap' => 'OpenLDAP'
                                                                 ];
                                                                 echo $this->Html->createSelect($options, 'data[' . $i . '][Systemsetting][value]', $value['value']);
@@ -145,6 +146,7 @@
                                                             case 'MONITORING.HOST_CHECK_ACTIVE_DEFAULT':
                                                             case 'MONITORING.SERVICE_CHECK_ACTIVE_DEFAULT':
                                                             case 'FRONTEND.HIDDEN_USER_IN_CHANGELOG':
+                                                            case 'FRONTEND.DISABLE_LOGIN_ANIMATION':
                                                                 $options = [
                                                                     0 => 'False',
                                                                     1 => 'True',
