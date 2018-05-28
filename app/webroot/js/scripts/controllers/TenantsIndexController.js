@@ -78,7 +78,6 @@ angular.module('openITCOCKPIT')
                     if(id == $scope.tenants[key].Tenant.id){
                         objects[id] = $scope.tenants[key].Container.name;
                     }
-
                 }
             }
             return objects;

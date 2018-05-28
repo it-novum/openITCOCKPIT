@@ -24,6 +24,8 @@
 //	confirmation.
 
 
+use itnovum\openITCOCKPIT\Filter\TenantFilter;
+
 App::import('Model', 'Container');
 
 
@@ -59,24 +61,31 @@ class TenantsController extends AppController {
             return;
         }
 
+        $TenantFilter = new TenantFilter($this->request);
+
         $this->Tenant->virtualFields['name'] = 'Container.name';
 
-        $options = [
+        $query = [
+            'recursive' => -1,
+            'contain' => [
+                'Container'
+            ],
             'order'      => [
-                'Container.name' => 'asc',
+                $TenantFilter->getOrderForPaginator('Container.name', 'asc'),
             ],
             'conditions' => [
-                'Container.id' => $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS),
+                $TenantFilter->indexFilter(),
+                //'Container.id' => $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS),
             ],
+            'limit' => $this->Paginator->settings['limit']
         ];
 
-        $query = Hash::merge($this->Paginator->settings, $options);
 
         if ($this->isApiRequest()) {
-            unset($query['limit']);;
+            unset($query['limit']);
             $all_tenants = $this->Tenant->find('all', $query);
         } else {
-            $this->Paginator->settings = Hash::merge($this->Paginator->settings, $options);
+            $this->Paginator->settings = $query;
             $all_tenants = $this->Paginator->paginate();
         }
 
