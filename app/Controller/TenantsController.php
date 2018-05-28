@@ -73,12 +73,13 @@ class TenantsController extends AppController {
             'order'      => [
                 $TenantFilter->getOrderForPaginator('Container.name', 'asc'),
             ],
-            'conditions' => [
-                $TenantFilter->indexFilter(),
-                //'Container.id' => $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS),
-            ],
+            'conditions' => $TenantFilter->indexFilter(),
             'limit' => $this->Paginator->settings['limit']
         ];
+
+        if (!$this->hasRootPrivileges) {
+            $query['conditions']['Container.id'] = $this->MY_RIGHTS;
+        }
 
 
         if ($this->isApiRequest()) {
