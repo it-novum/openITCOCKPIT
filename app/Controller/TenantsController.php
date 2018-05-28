@@ -169,55 +169,17 @@ class TenantsController extends AppController {
         if ($this->Tenant->__allowDelete($container['Tenant']['container_id'])) {
             if ($this->Container->delete($container['Tenant']['container_id'])) {
                 Cache::clear(false, 'permissions');
-                $this->setFlash(__('Tenant deleted'));
-                $this->redirect(['action' => 'index']);
+                $this->set('message', __('Tenant deleted successfully'));
+                $this->set('_serialize', ['message']);
+                return;
             }
-            $this->setFlash(__('Could not delete tenant'), false);
-            $this->redirect(['action' => 'index']);
+            $this->response->statusCode(400);
+            $this->set('message', __('Could not delete tenant'));
+            $this->set('_serialize', ['message']);
         }
-        $this->setFlash(__('Could not delete tenant'), false);
-        $this->redirect(['action' => 'index']);
-    }
-
-    public function mass_delete($id = null) {
-        $deleteAllowedValues = [];
-        foreach (func_get_args() as $tenantId) {
-            if ($this->Tenant->exists($tenantId)) {
-                $container = $this->Tenant->find('first', [
-                    'contain'    => [
-                        'Container',
-                    ],
-                    'conditions' => [
-                        'Tenant.id' => $tenantId,
-                    ],
-                ]);
-                if ($this->allowedByContainerId(Hash::extract($container, 'Container.id'))) {
-                    $deleteAllowed = $this->Tenant->__allowDelete($container['Tenant']['container_id']);
-                    $deleteAllowedValues[] = $deleteAllowed;
-
-
-                    if ($deleteAllowed) {
-                        $this->Container->delete($container['Tenant']['container_id']);
-                    }
-                }
-            }
-        }
-        Cache::clear(false, 'permissions');
-
-        //array contains at least one false
-        if (in_array(false, $deleteAllowedValues)) {
-            if (count(array_unique($deleteAllowedValues)) === 1 && end($deleteAllowedValues) == false) {
-                //no tenant could be deleted
-                $this->setFlash(__('Tenants could not be deleted'), false);
-                $this->redirect(['action' => 'index']);
-            } else {
-                //at least one tenant couldnt be deleted
-                $this->setFlash(__('Some of the Tenants could not be deleted'), false);
-                $this->redirect(['action' => 'index']);
-            }
-        }
-        $this->setFlash(__('Tenants deleted'));
-        $this->redirect(['action' => 'index']);
+        $this->response->statusCode(400);
+        $this->set('message', __('Could not delete tenant'));
+        $this->set('_serialize', ['message']);
     }
 
     public function edit($id = null) {

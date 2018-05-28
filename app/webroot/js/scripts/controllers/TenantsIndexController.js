@@ -54,9 +54,9 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.selectAll = function(){
-            if($scope.servicegroups){
+            if($scope.tenants){
                 for(var key in $scope.tenants){
-                    if($scope.servicegroups[key].Tenant.allowEdit){
+                    if($scope.tenants[key].Tenant.allowEdit){
                         var id = $scope.tenants[key].Tenant.id;
                         $scope.massChange[id] = true;
                     }

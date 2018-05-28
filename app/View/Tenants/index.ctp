@@ -142,8 +142,10 @@
                                         {{ tenant.Tenant.description }}
                                     </td>
                                     <td class="text-center">
-                                        <i ng-if="tenant.Tenant.is_active == 1" class="fa fa-check fa-lg txt-color-green"></i>
-                                        <i ng-if="tenant.Tenant.is_active == 0" class="fa fa-power-off fa-lg txt-color-red"></i>
+                                        <i ng-if="tenant.Tenant.is_active == 1"
+                                           class="fa fa-check fa-lg txt-color-green"></i>
+                                        <i ng-if="tenant.Tenant.is_active == 0"
+                                           class="fa fa-power-off fa-lg txt-color-red"></i>
                                     </td>
                                     <td class="text-center">
                                         <a href="/tenants/edit/{{tenant.Tenant.id}}"
@@ -154,6 +156,37 @@
                                 </tr>
                                 </tbody>
                             </table>
+                            <div class="row margin-top-10 margin-bottom-10">
+                                <div class="row margin-top-10 margin-bottom-10" ng-show="maps.length == 0">
+                                    <div class="col-xs-12 text-center txt-color-red italic">
+                                        <?php echo __('No entries match the selection'); ?>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row margin-top-10 margin-bottom-10">
+                                <div class="col-xs-12 col-md-2 text-muted text-center">
+                                    <span ng-show="selectedElements > 0">({{selectedElements}})</span>
+                                </div>
+                                <div class="col-xs-12 col-md-2">
+                                <span ng-click="selectAll()" class="pointer">
+                                    <i class="fa fa-lg fa-check-square-o"></i>
+                                    <?php echo __('Select all'); ?>
+                                </span>
+                                </div>
+                                <div class="col-xs-12 col-md-2">
+                                <span ng-click="undoSelection()" class="pointer">
+                                    <i class="fa fa-lg fa-square-o"></i>
+                                    <?php echo __('Undo selection'); ?>
+                                </span>
+                                </div>
+                                <div class="col-xs-12 col-md-2 txt-color-red">
+                                <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">
+                                    <i class="fa fa-lg fa-trash-o"></i>
+                                    <?php echo __('Delete all'); ?>
+                                </span>
+                                </div>
+                            </div>
+                            <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>
                         </div>
                     </div>
                 </div>

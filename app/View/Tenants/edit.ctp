@@ -36,6 +36,7 @@
     </div>
 </div>
 <div id="error_msg"></div>
+<confirm-delete></confirm-delete>
 
 <div class="jarviswidget" id="wid-id-0">
     <header>
@@ -43,9 +44,10 @@
         <h2><?php echo $this->action == 'edit' ? 'Edit ' : 'Add ' ?><?php echo __('tenant'); ?></h2>
         <div class="widget-toolbar" role="menu">
             <?php if ($this->Acl->hasPermission('delete')): ?>
-                <a href="javascript:void(0);" id="deleteAll" class="btn btn-danger btn-xs"
-                   style="text-decoration: none;"> <i class="fa fa-trash-o"></i> <?php echo __('Delete'); ?></a>
-                <?php //echo $this->Utils->deleteButton(null, $tenant['Tenant']['id']);?>
+                <button type="button" class="btn btn-danger btn-xs" ng-click="confirmDelete(tenant)">
+                    <i class="fa fa-trash-o"></i>
+                    <?php echo __('Delete'); ?>
+                </button>
             <?php endif; ?>
             <?php echo $this->Utils->backButton() ?>
         </div>
