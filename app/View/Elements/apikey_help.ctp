@@ -23,16 +23,6 @@
 //  confirmation.
 ?>
 
-<div class="row">
-    <div class="col-xs-12">
-        <?php echo __('You need to create a user defined API key.'); ?>
-
-        <a href="javascript:void(0);" data-toggle="modal" data-target="#ApiKeyOverviewModal">
-            <?php echo __('Click here for help'); ?>
-        </a>
-    </div>
-</div>
-
 <div class="modal fade" id="ApiKeyOverviewModal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">

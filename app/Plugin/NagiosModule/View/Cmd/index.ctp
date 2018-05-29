@@ -136,6 +136,17 @@
                         </div>
                     <?php endforeach; ?>
 
+                    <br />
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <i class="fa fa-info-circle text-info"></i>
+                            <?php echo __('You need to create a user defined API key.'); ?>
+
+                            <a href="javascript:void(0);" data-toggle="modal" data-target="#ApiKeyOverviewModal">
+                                <?php echo __('Click here for help'); ?>
+                            </a>
+                        </div>
+                    </div>
                     <?php echo $this->element('apikey_help'); ?>
 
                 </div>
