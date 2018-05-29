@@ -25,8 +25,7 @@
 namespace itnovum\openITCOCKPIT\Core\ValueObjects;
 
 
-class CustomVariable
-{
+class CustomVariable {
 
     /**
      * @var string
@@ -54,8 +53,7 @@ class CustomVariable
      * @param string $key
      * @param string $value
      */
-    public function __construct($name, $value, $id = 0, $objecttype_id = 0)
-    {
+    public function __construct($name, $value, $id = 0, $objecttype_id = 0) {
         $this->name = $name;
         $this->value = $value;
         $this->id = $id;
@@ -65,42 +63,47 @@ class CustomVariable
     /**
      * @return string
      */
-    public function getName()
-    {
+    public function getName() {
         return $this->name;
     }
 
     /**
      * @return string
      */
-    public function getValue()
-    {
+    public function getValue() {
         return $this->value;
     }
 
     /**
      * @return int
      */
-    public function getId()
-    {
+    public function getId() {
         return $this->id;
     }
 
     /**
      * @return int
      */
-    public function getObjecttypeId()
-    {
+    public function getObjecttypeId() {
         return $this->objecttype_id;
     }
 
     /**
+     * reset Id -> to avoid overwriting from custom variables (host templates)
+     */
+    public function resetId() {
+        if (isset($this->id)) {
+            $this->id = 0;
+        }
+    }
+
+
+    /**
      * @return array
      */
-    public function asArray()
-    {
+    public function asArray() {
         $customVariable = [
-            'name'  => $this->name,
+            'name' => $this->name,
             'value' => $this->value,
         ];
 

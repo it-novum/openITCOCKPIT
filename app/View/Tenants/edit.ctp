@@ -36,6 +36,7 @@
     </div>
 </div>
 <div id="error_msg"></div>
+<confirm-delete></confirm-delete>
 
 <div class="jarviswidget" id="wid-id-0">
     <header>
@@ -43,65 +44,155 @@
         <h2><?php echo $this->action == 'edit' ? 'Edit ' : 'Add ' ?><?php echo __('tenant'); ?></h2>
         <div class="widget-toolbar" role="menu">
             <?php if ($this->Acl->hasPermission('delete')): ?>
-                <a href="javascript:void(0);" id="deleteAll" class="btn btn-danger btn-xs"
-                   style="text-decoration: none;"> <i class="fa fa-trash-o"></i> <?php echo __('Delete'); ?></a>
-                <?php //echo $this->Utils->deleteButton(null, $tenant['Tenant']['id']);?>
+                <button type="button" class="btn btn-danger btn-xs" ng-click="confirmDelete(tenant)">
+                    <i class="fa fa-trash-o"></i>
+                    <?php echo __('Delete'); ?>
+                </button>
             <?php endif; ?>
             <?php echo $this->Utils->backButton() ?>
         </div>
     </header>
-    <input class="massChange" checked style="display: none;" type="checkbox"
-           name="tenant[<?php echo $tenant['Tenant']['id']; ?>]"
-           tenantname="<?php echo h($tenant['Container']['name']); ?>" value="<?php echo $tenant['Tenant']['id']; ?>"/>
-    <input type="hidden" id="delete_message_h1" value="<?php echo __('Attention!'); ?>"/>
-    <input type="hidden" id="delete_message_h2"
-           value="<?php echo __('Do you really want delete the selected tenant? All nodes, contacts, contactgroups, locations, calendars, timeperiods, hosttemplates, hostgroups, hosts, servicetemplates, servicetemplategroups, servicegroups and services from this tenant will be deleted too.'); ?>"/>
-    <input type="hidden" id="message_yes" value="<?php echo __('Yes'); ?>"/>
-    <input type="hidden" id="message_no" value="<?php echo __('No'); ?>"/>
     <div>
         <div class="widget-body">
-            <?php
-            echo $this->Form->create('Tenant', [
-                'class' => 'form-horizontal clear',
-            ]);
-            echo $this->Form->input('Tenant.id', ['type' => 'hidden']);
-            echo $this->Form->input('Container.name', ['value' => $tenant['Container']['name']]);
-            echo $this->Form->input('description', ['value' => $tenant['Tenant']['description']]);
-            echo $this->Form->fancyCheckbox('is_active', [
-                'captionGridClass' => 'col col-md-2',
-                'captionClass'     => 'control-label',
-                'wrapGridClass'    => 'col col-md-10',
-                'caption'          => __('is active'),
-                'value'            => $tenant['Tenant']['is_active'],
-                'on'               => __('Yes'),
-                'off'              => __('No'),
-            ]);
-            ?>
-            <br/><br/>
-            <?php echo $this->Form->input('Tenant.expires', [
-                    'value'     => (isset($tenant['Tenant']['expires'])) ? date(PHP_DATEFORMAT, strtotime($tenant['Tenant']['expires'])) : '',
-                    'wrapInput' => 'col col-xs-10 col-md-3',
-                    'label'     => __('Expiration date'),
-                    'type'      => 'text',
-                ]
-            ); ?>
-            <br/>
-            <?php
-            echo $this->Form->input('firstname', ['value' => $tenant['Tenant']['firstname']]);
-            echo $this->Form->input('lastname', ['value' => $tenant['Tenant']['lastname']]);
-            echo $this->Form->input('street', ['value' => $tenant['Tenant']['street']]);
-            echo $this->Form->input('zipcode', ['value' => $tenant['Tenant']['zipcode']]);
-            echo $this->Form->input('city', ['value' => $tenant['Tenant']['city']]);
-            ?>
-            <br/>
-            <?php
-            echo $this->Form->input('max_users', ['value' => $tenant['Tenant']['max_users'], 'label' => ['class' => 'col col-md-2 control-label hintmark_before']]);
-            echo $this->Form->input('max_hosts', ['value' => $tenant['Tenant']['max_hosts'], 'label' => ['class' => 'col col-md-2 control-label hintmark_before']]);
-            echo $this->Form->input('max_services', ['value' => $tenant['Tenant']['max_services'], 'label' => ['class' => 'col col-md-2 control-label hintmark_before']]);
-            ?>
-            <span class="note hintmark_before"><?php echo __('enter 0 for infinity'); ?></span>
-            <br/ ><br/>
-            <?php echo $this->Form->formActions(); ?>
+            <form ng-submit="submit();" class="form-horizontal">
+                <div class="row">
+                    <div class="form-group required" ng-class="{'has-error': errors.Container.name}">
+                        <label class="col col-md-2 control-label">
+                            <?php echo __('Name'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+                            <input
+                                    class="form-control"
+                                    type="text"
+                                    ng-model="post.Container.name">
+                            <div ng-repeat="error in errors.Container.name">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group" ng-class="{'has-error': errors.Tenant.description}">
+                        <label class="col col-md-2 control-label">
+                            <?php echo __('Description'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+                            <input
+                                    class="form-control"
+                                    type="text"
+                                    ng-model="post.Tenant.description">
+                            <div ng-repeat="error in errors.Tenant.description">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <?php
+                        echo $this->Form->fancyCheckbox('Tenant.is_active', [
+                            'caption'          => __('Is active'),
+                            'wrapGridClass'    => 'col col-md-1',
+                            'captionGridClass' => 'col col-md-2',
+                            'captionClass'     => 'control-label',
+                            'ng-model'         => 'post.Tenant.is_active'
+                        ]);
+                        ?>
+                    </div>
+
+                    <div class="form-group" ng-class="{'has-error': errors.Tenant.firstname}">
+                        <label class="col col-md-2 control-label">
+                            <?php echo __('Firstname'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+                            <input
+                                    class="form-control"
+                                    type="text"
+                                    ng-model="post.Tenant.firstname">
+                            <div ng-repeat="error in errors.Tenant.firstname">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group" ng-class="{'has-error': errors.Tenant.lastname}">
+                        <label class="col col-md-2 control-label">
+                            <?php echo __('Lastname'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+                            <input
+                                    class="form-control"
+                                    type="text"
+                                    ng-model="post.Tenant.lastname">
+                            <div ng-repeat="error in errors.Tenant.lastname">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group" ng-class="{'has-error': errors.Tenant.street}">
+                        <label class="col col-md-2 control-label">
+                            <?php echo __('Street'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+                            <input
+                                    class="form-control"
+                                    type="text"
+                                    ng-model="post.Tenant.street">
+                            <div ng-repeat="error in errors.Tenant.street">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group" ng-class="{'has-error': errors.Tenant.zipcode}">
+                        <label class="col col-md-2 control-label">
+                            <?php echo __('Zipcode'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+                            <input
+                                    class="form-control"
+                                    type="text"
+                                    ng-model="post.Tenant.zipcode">
+                            <div ng-repeat="error in errors.Tenant.zipcode">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group" ng-class="{'has-error': errors.Tenant.city}">
+                        <label class="col col-md-2 control-label">
+                            <?php echo __('City'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+                            <input
+                                    class="form-control"
+                                    type="text"
+                                    ng-model="post.Tenant.city">
+                            <div ng-repeat="error in errors.Tenant.city">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group required hintmark_before" ng-class="{'has-error': errors.Tenant.max_users}">
+                        <label class="col col-md-2 control-label hintmark_before">
+                            <?php echo __('Max Users'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+                            <input
+                                    class="form-control"
+                                    type="text"
+                                    ng-model="post.Tenant.max_users">
+                            <div ng-repeat="error in errors.Tenant.max_users">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <span class="note hintmark_before"><?php echo __('enter 0 for infinity'); ?></span>
+                    <br/ ><br/>
+                    <div class="col-xs-12 margin-top-10">
+                        <div class="well formactions ">
+                            <div class="pull-right">
+                                <input class="btn btn-primary" type="submit" value="Save">&nbsp;
+                                <a href="/tenants/index" class="btn btn-default">Cancel</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </form>
         </div>
     </div>
 </div>

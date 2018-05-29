@@ -56,7 +56,6 @@ class CmdController extends AppController {
             throw new NotFoundException(__('Given command is not supported yet!'));
         }
 
-
         //Mergeing given parameters with default parameters
         $externalCommand = $this->request->params['named']['command'];
         unset($this->request->params['named']['command']);

@@ -45,37 +45,10 @@ class Tenant extends AppModel
                 'required' => true,
             ],
         ],
-        'max_hosts'    => [
-            'numeric'    => [
-                'rule'    => 'numeric',
-                'message' => 'This field needs to be numeric.',
-            ],
-            'ZeroOrMore' => [
-                'rule'     => ['comparison', '>=', 0],
-                'message'  => 'Invalid value',
-                'required' => true,
-            ],
-        ],
-        'max_services' => [
-            'numeric'    => [
-                'rule'    => 'numeric',
-                'message' => 'This field needs to be numeric.',
-            ],
-            'ZeroOrMore' => [
-                'rule'     => ['comparison', '>=', 0],
-                'message'  => 'Invalid value.',
-                'required' => true,
-            ],
-        ],
         'is_active'    => [
             'rule'       => 'boolean',
             'message'    => 'Incorrect value for is_active',
             'required'   => false,
-            'allowEmpty' => true,
-        ],
-        'expires'      => [
-            'rule'       => ['date', 'ymd'],
-            'message'    => 'Enter a valid date',
             'allowEmpty' => true,
         ],
     ];
