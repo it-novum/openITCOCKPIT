@@ -111,6 +111,7 @@
             'label-danger',
             'label-default',
         ];
+
         $additionalFilters = [
             'acknowledged' => ['has_been_acknowledged' => 1],
             'in_downtime' => ['in_downtime' => 1],
@@ -132,36 +133,33 @@
         ?>
     </tr>
     <?php
-    foreach ($serviceStateSummary
-
-             as $key => $valueArray):
-        $additionalFilter = (in_array($key, array_keys($additionalFilters), true)) ? $additionalFilters[$key] : '';
-        ?>
+    foreach ($serviceStateSummary as $key => $valueArray):?>
         <tr class="font-xs">
             <?php
             if ($key !== 'total'):
+                $additionalFilter = (in_array($key, array_keys($additionalFilters), true)) ? $additionalFilters[$key] : null;
                 ?>
                 <th><?php echo str_replace('_', ' ', $key); ?></th>
                 <?php
-                foreach ($valueArray
-
-                         as $state => $count): ?>
+                foreach ($valueArray as $state => $count):
+                    $routerParam = [];
+                    ?>
                     <td class="text-center"><?php
-                        //debug($additionalFilter);
                         if ($count > 0) :
                             $filterArray['Host.id'] = $hostId;
                             $filterArray['Servicestatus.current_state'] = [
                                 $state => 1
                             ];
+                            $routerParam['filter'] = $filterArray;
+                            $routerParam['sort'] = 'Servicestatus.last_state_change';
+                            $routerParam['direction']  = 'desc';
+                            if($additionalFilter !== null):
+                                foreach($additionalFilter as $filterKey => $filterValue):
+                                    $routerParam[$filterKey] = $filterValue;
+                                endforeach;
+                            endif;
                             if ($this->Acl->hasPermission('index', 'services')): ?>
-                                <a href="/services/index<?php echo Router::queryString([
-                                    'filter' =>
-                                        $filterArray
-                                    ,
-                                    $additionalFilter,
-                                    'sort' => 'Servicestatus.last_state_change',
-                                    'direction' => 'desc'
-                                ]); ?>" target="_blank">
+                                <a href="/services/index<?php echo Router::queryString($routerParam); ?>" target="_blank">
                                     <?php
                                     printf(
                                         '%s (%.0f%%)',
