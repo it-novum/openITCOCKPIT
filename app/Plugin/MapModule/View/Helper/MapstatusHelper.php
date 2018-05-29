@@ -160,8 +160,8 @@ class MapstatusHelper extends AppHelper {
 
             if (!empty($stateKey)) {
                 $servicestate = $hostServiceStates[$stateKey];
+                $status = $servicestate;
             }
-            $status = $servicestate;
         }
         return $status;
     }
