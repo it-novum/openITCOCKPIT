@@ -24,9 +24,6 @@
 
 namespace itnovum\openITCOCKPIT\Core\System\Health;
 
-
-use function strpos;
-
 class Disks {
 
 
