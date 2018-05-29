@@ -73,8 +73,8 @@ class StatehistoryService extends CrateModuleAppModel {
 
         if($StatehistoryServiceConditions->hardStateTypeAndUpState()){
             $query['or'] =  [
-                ['StatehistoryHost.is_hardstate = ?' => [1]],
-                ['StatehistoryHost.state = ?' => [0]],
+                ['StatehistoryService.is_hardstate = ?' => [1]],
+                ['StatehistoryService.state = ?' => [0]],
             ];
         }
 
