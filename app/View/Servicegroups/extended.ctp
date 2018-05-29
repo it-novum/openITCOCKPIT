@@ -23,8 +23,22 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+/**
+ * @property \itnovum\openITCOCKPIT\Monitoring\QueryHandler $QueryHandler
+ */
+
 ?>
 <div id="error_msg"></div>
+
+<?php if (!$QueryHandler->exists()): ?>
+    <div class="alert alert-danger alert-block">
+        <a href="#" data-dismiss="alert" class="close">×</a>
+        <h4 class="alert-heading"><i class="fa fa-warning"></i> <?php echo __('Monitoring Engine is not running!'); ?>
+        </h4>
+        <?php echo __('File %s does not exists', $QueryHandler->getPath()); ?>
+    </div>
+<?php endif; ?>
+
 <div class="alert alert-success alert-block" ng-show="showFlashSuccess">
     <a href="#" data-dismiss="alert" class="close">×</a>
     <h4 class="alert-heading"><i class="fa fa-check-circle-o"></i> <?php echo __('Command sent successfully'); ?></h4>
@@ -45,7 +59,6 @@
     <div class="col col-xs-11">
         <select
                 ng-if="servicegroups.length > 0"
-                ng-init="post.Servicegroup.id = servicegroups[0].Servicegroup.id"
                 class="form-control"
                 chosen="servicegroups"
                 ng-options="servicegroup.Servicegroup.id as servicegroup.Container.name for servicegroup in servicegroups"
@@ -124,7 +137,7 @@
 <disable-notifications callback="showFlashMsg"></disable-notifications>
 <enable-notifications callback="showFlashMsg"></enable-notifications>
 <acknowledge-service author="<?php echo h($username); ?>" callback="showFlashMsg"></acknowledge-service>
-<service-downtime author="<?php echo h($username); ?>"></service-downtime>
+<service-downtime author="<?php echo h($username); ?>" callback="showFlashMsg"></service-downtime>
 
 <section id="widget-grid">
     <div class="row">

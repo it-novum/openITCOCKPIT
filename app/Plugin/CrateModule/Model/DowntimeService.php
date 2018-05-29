@@ -96,15 +96,15 @@ class DowntimeService extends CrateModuleAppModel {
 
         //Merge ListFilter conditions
         $query['conditions'] = Hash::merge($paginatorConditions, $query['conditions']);
-        if(isset($query['conditions']['DowntimeService.was_started'])){
+        if (isset($query['conditions']['DowntimeService.was_started'])) {
             $query['conditions']['DowntimeService.was_started'] = (bool)$query['conditions']['DowntimeService.was_started'];
         }
 
-        if(isset($query['conditions']['DowntimeService.was_cancelled'])){
+        if (isset($query['conditions']['DowntimeService.was_cancelled'])) {
             $query['conditions']['DowntimeService.was_cancelled'] = (bool)$query['conditions']['DowntimeService.was_cancelled'];
         }
 
-        if($Conditions->isRunning()){
+        if ($Conditions->isRunning()) {
             $query['conditions']['DowntimeService.scheduled_end_time >'] = time();
             $query['conditions']['DowntimeService.was_started'] = true;
             $query['conditions']['DowntimeService.was_cancelled'] = false;
@@ -120,7 +120,7 @@ class DowntimeService extends CrateModuleAppModel {
      */
     public function getQueryForReporting(DowntimeServiceConditions $Conditions) {
         $query = [
-            'fields'     => [
+            'fields' => [
                 'DowntimeService.author_name',
                 'DowntimeService.comment_data',
                 'DowntimeService.scheduled_start_time',
@@ -132,7 +132,7 @@ class DowntimeService extends CrateModuleAppModel {
                 'Host.uuid',
                 'Service.uuid'
             ],
-            'joins'     => [
+            'joins'  => [
                 [
                     'table'      => 'openitcockpit_hosts',
                     'type'       => 'INNER',
@@ -148,7 +148,7 @@ class DowntimeService extends CrateModuleAppModel {
                         'Service.uuid = DowntimeService.service_description',
                 ]
             ],
-            'order'      => $Conditions->getOrder()
+            'order'  => $Conditions->getOrder()
         ];
 
         if ($Conditions->hasHostUuids()) {
@@ -158,6 +158,8 @@ class DowntimeService extends CrateModuleAppModel {
         if ($Conditions->hasServiceUuids()) {
             $query['conditions']['DowntimeService.service_description'] = $Conditions->getServiceUuids();
         }
+
+        $query['conditions']['DowntimeHost.was_cancelled'] = false;
 
 
         $query['or'] = [
@@ -186,7 +188,7 @@ class DowntimeService extends CrateModuleAppModel {
             ]
         ];
         $result = $this->find('all', $query);
-        if(empty($result)){
+        if (empty($result)) {
             return [];
         }
 
@@ -194,19 +196,29 @@ class DowntimeService extends CrateModuleAppModel {
     }
 
     /**
-     * @param string $uuid
+     * @param null $uuid
+     * @param bool $isRunning
      * @return array|null
      */
-    public function byServiceUuid($uuid = null){
+    public function byServiceUuid($uuid = null, $isRunning = false) {
         if ($uuid !== null) {
-            $downtime = $this->find('first', [
+
+            $query = [
                 'conditions' => [
                     'service_description' => $uuid,
                 ],
-                'order' => [
+                'order'      => [
                     'DowntimeService.entry_time' => 'DESC',
                 ],
-            ]);
+            ];
+
+            if ($isRunning) {
+                $query['conditions']['DowntimeService.scheduled_end_time >'] = time();
+                $query['conditions']['DowntimeService.was_started'] = true;
+                $query['conditions']['DowntimeService.was_cancelled'] = false;
+            }
+
+            $downtime = $this->find('first', $query);
 
             return $downtime;
 

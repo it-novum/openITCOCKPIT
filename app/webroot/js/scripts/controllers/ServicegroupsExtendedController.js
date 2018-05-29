@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('ServicegroupsExtendedController', function($scope, $http, $interval){
+    .controller('ServicegroupsExtendedController', function($scope, $http, $interval, QueryStringService){
 
         $scope.init = true;
         $scope.servicegroupsStateFilter = {};
@@ -14,6 +14,8 @@ angular.module('openITCOCKPIT')
             }
         };
 
+        $scope.post.Servicegroup.id = QueryStringService.getCakeId().toString();
+
 
         $scope.load = function(){
             $http.get("/servicegroups/extended.json", {
@@ -22,6 +24,16 @@ angular.module('openITCOCKPIT')
                 }
             }).then(function(result){
                 $scope.servicegroups = result.data.servicegroups;
+
+                if(isNaN($scope.post.Servicegroup.id)){
+                    if($scope.servicegroups.length > 0){
+                        $scope.post.Servicegroup.id = $scope.servicegroups[0].Servicegroup.id;
+                    }
+                }else{
+                    //ServicegroupId was passed in URL
+                    $scope.loadServicesWithStatus();
+                }
+
                 $scope.init = false;
             });
         };

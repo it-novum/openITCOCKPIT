@@ -4,15 +4,18 @@ angular.module('openITCOCKPIT', [])
         return {
             response: function(result){
                 $('#global_ajax_loader').fadeOut('slow');
+                $('#global-loading').fadeOut('slow');
                 return result || $.then(result)
             },
             request: function(response){
                 $('#global_ajax_loader').show();
+                $('#global-loading').show();
                 return response || $q.when(response);
             },
             responseError: function(rejection){
                 console.log(rejection);
                 $('#global_ajax_loader').fadeOut('slow');
+                $('#global-loading').fadeOut('slow');
 
                 return $q.reject(rejection);
             }

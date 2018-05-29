@@ -40,6 +40,7 @@ use itnovum\openITCOCKPIT\Core\Views\AcknowledgementService;
 use itnovum\openITCOCKPIT\Core\Views\ContainerPermissions;
 use itnovum\openITCOCKPIT\Core\Views\PerfdataChecker;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
+use itnovum\openITCOCKPIT\Database\ScrollIndex;
 use itnovum\openITCOCKPIT\Filter\ServiceFilter;
 use itnovum\openITCOCKPIT\Monitoring\QueryHandler;
 
@@ -160,12 +161,13 @@ class ServicesController extends AppController {
             }
         }
         //Default order
+
+
         $ServiceConditions->setOrder($ServiceControllerRequest->getOrder([
             'Host.name'           => 'asc',
             'Service.servicename' => 'asc'
         ]));
-
-//        $ServiceConditions->setOrder($ServiceControllerRequest->getOrder('Servicestatus.current_state', 'desc'));
+        //$ServiceConditions->setOrder($ServiceControllerRequest->getOrder('Servicestatus.current_state', 'desc'));
 
         if ($this->DbBackend->isNdoUtils()) {
             $query = $this->Service->getServiceIndexQuery($ServiceConditions, $ServiceFilter->indexFilter());
@@ -179,6 +181,12 @@ class ServicesController extends AppController {
             $modelName = 'Servicestatus';
         }
 
+        if ($this->DbBackend->isStatusengine3()) {
+            $query = $this->Service->getServiceIndexQueryStatusengine3($ServiceConditions, $ServiceFilter->indexFilter());
+            $this->Service->virtualFieldsForIndexAndServiceList();
+            $modelName = 'Service';
+        }
+
         if ($this->isApiRequest() && !$this->isAngularJsRequest()) {
             if (isset($query['limit'])) {
                 unset($query['limit']);
@@ -188,9 +196,18 @@ class ServicesController extends AppController {
             $this->set('_serialize', ['all_services']);
             return;
         } else {
-            $this->Paginator->settings['page'] = $ServiceFilter->getPage();
-            $this->Paginator->settings = array_merge($this->Paginator->settings, $query);
-            $services = $this->Paginator->paginate($modelName, [], [key($this->Paginator->settings['order'])]);
+            if($this->isScrollRequest()){
+                $this->Paginator->settings['page'] = $ServiceFilter->getPage();
+                $this->Paginator->settings = array_merge($this->Paginator->settings, $query);
+                $ScrollIndex = new ScrollIndex($this->Paginator, $this);
+                $services = $this->{$modelName}->find('all', array_merge($this->Paginator->settings, $query));
+                $ScrollIndex->determineHasNextPage($services);
+                $ScrollIndex->scroll();
+            }else{
+                $this->Paginator->settings['page'] = $ServiceFilter->getPage();
+                $this->Paginator->settings = array_merge($this->Paginator->settings, $query);
+                $services = $this->Paginator->paginate($modelName, [], [key($this->Paginator->settings['order'])]);
+            }
             //debug($this->Service->getDataSource()->getLog(false, false));
         }
 
@@ -245,7 +262,11 @@ class ServicesController extends AppController {
         }
 
         $this->set('all_services', $all_services);
-        $this->set('_serialize', ['all_services', 'paging']);
+        $toJson = ['all_services', 'paging'];
+        if($this->isScrollRequest()){
+            $toJson = ['all_services', 'scroll'];
+        }
+        $this->set('_serialize', $toJson);
     }
 
     public function view($id = null) {
@@ -310,18 +331,24 @@ class ServicesController extends AppController {
             $modelName = 'CrateService';
         }
 
+        if ($this->DbBackend->isStatusengine3()) {
+            $query = $this->Service->getServiceNotMonitoredQueryStatusengine3($ServiceConditions, $ServiceFilter->notMonitoredFilter());
+            $this->Service->virtualFieldsForNotMonitored();
+            $modelName = 'Service';
+        }
+
         if ($this->isApiRequest() && !$this->isAngularJsRequest()) {
             if (isset($query['limit'])) {
                 unset($query['limit']);
             }
-            if($this->DbBackend->isCrateDb()){
+            if ($this->DbBackend->isCrateDb()) {
                 $all_services = $this->{$modelName}->find('all', $query);
-                foreach($all_services as $key => $record){
+                foreach ($all_services as $key => $record) {
                     //Rename key from CrateService to Service
                     $all_services[$key]['Service'] = $record['CrateService'];
                     unset($all_services[$key]['CrateService']);
                 }
-            }else{
+            } else {
                 $all_services = $this->{$modelName}->find('all', $query);
             }
             $this->set('all_services', $all_services);
@@ -1957,7 +1984,7 @@ class ServicesController extends AppController {
             ]
         ]);
 
-        if($rawService['Service']['service_url'] === '' || $rawService['Service']['service_url'] === null){
+        if ($rawService['Service']['service_url'] === '' || $rawService['Service']['service_url'] === null) {
             $rawService['Service']['service_url'] = $rawService['Servicetemplate']['service_url'];
         }
 
@@ -2141,7 +2168,7 @@ class ServicesController extends AppController {
         $acknowledgement = [];
         if ($Servicestatus->isAcknowledged()) {
             $acknowledgement = $this->AcknowledgedService->byServiceUuid($service['Service']['uuid']);
-            if(!empty($acknowledgement)) {
+            if (!empty($acknowledgement)) {
                 $Acknowledgement = new AcknowledgementService($acknowledgement['AcknowledgedService'], $UserTime);
                 $acknowledgement = $Acknowledgement->toArray();
 
@@ -2171,8 +2198,8 @@ class ServicesController extends AppController {
 
         $downtime = [];
         if ($Servicestatus->isInDowntime()) {
-            $downtime = $this->DowntimeService->byServiceUuid($service['Service']['uuid']);
-            if(!empty($downtime)) {
+            $downtime = $this->DowntimeService->byServiceUuid($service['Service']['uuid'], true);
+            if (!empty($downtime)) {
                 $Downtime = new \itnovum\openITCOCKPIT\Core\Views\Downtime($downtime['DowntimeService'], $allowEdit, $UserTime);
                 $downtime = $Downtime->toArray();
             }
@@ -2181,8 +2208,8 @@ class ServicesController extends AppController {
         //Get Host Ack and Donwtime
         $hostDowntime = [];
         if ($Hoststatus->isInDowntime()) {
-            $hostDowntime = $this->DowntimeHost->byHostUuid($rawHost['Host']['uuid']);
-            if(!empty($hostDowntime)) {
+            $hostDowntime = $this->DowntimeHost->byHostUuid($rawHost['Host']['uuid'], true);
+            if (!empty($hostDowntime)) {
                 $DowntimeHost = new \itnovum\openITCOCKPIT\Core\Views\Downtime($hostDowntime['DowntimeHost'], $allowEdit, $UserTime);
                 $hostDowntime = $DowntimeHost->toArray();
             }
@@ -2191,7 +2218,7 @@ class ServicesController extends AppController {
         $hostAcknowledgement = [];
         if ($Hoststatus->isAcknowledged()) {
             $hostAcknowledgement = $this->AcknowledgedHost->byHostUuid($rawHost['Host']['uuid']);
-            if(!empty($hostAcknowledgement)) {
+            if (!empty($hostAcknowledgement)) {
                 $AcknowledgementHost = new AcknowledgementHost($hostAcknowledgement['AcknowledgedHost'], $UserTime);
                 $hostAcknowledgement = $AcknowledgementHost->toArray();
 
@@ -2364,122 +2391,6 @@ class ServicesController extends AppController {
             //Only ship HTML template
             return;
         }
-
-
-        /*
-        $ServiceFilter = new ServiceFilter($this->request);
-        $ServiceControllerRequest = new ServiceControllerRequest($this->request, $ServiceFilter);
-        $ServiceConditions = new ServiceConditions();
-        $ServiceConditions->setIncludeDisabled(false);
-        $ServiceConditions->setContainerIds($this->MY_RIGHTS);
-
-
-        $host = $this->Host->find('first', [
-            'fields'     => [
-                'Host.id',
-                'Host.uuid',
-                'Host.name',
-                'Host.address',
-                'Host.host_url',
-                'Host.container_id',
-            ],
-            'conditions' => [
-                'Host.id' => $host_id,
-            ],
-            'contain'    => [
-                'Container',
-            ],
-        ]);
-
-        //Check if user is permitted to see this object
-        $containerIdsToCheck = Hash::extract($host, 'Container.{n}.HostsToContainer.container_id');
-        $containerIdsToCheck[] = $host['Host']['container_id'];
-        if (!$this->allowedByContainerId($containerIdsToCheck, false)) {
-            $this->render403();
-            return;
-        }
-
-        $disabledServices = $this->Service->find('all', [
-            'recursive'  => -1,
-            'conditions' => [
-                'Service.host_id'  => $host_id,
-                'Service.disabled' => 1
-            ],
-            'contain'    => [
-                'Host'            => [
-                    'fields' => [
-                        'Host.id',
-                        'Host.uuid',
-                        'Host.name'
-                    ]
-                ],
-                'Servicetemplate' => [
-                    'fields' => [
-                        'Servicetemplate.id',
-                        'Servicetemplate.name'
-                    ]
-                ]
-            ],
-            'fields'     => [
-                'Service.id',
-                'Service.uuid',
-                'Service.name'
-            ]
-        ]);
-        $deletedServices = $this->DeletedService->findAllByHostId($host_id);
-
-
-        $allowEdit = false;
-        if ($this->allowedByContainerId($containerIdsToCheck)) {
-            $allowEdit = true;
-        }
-
-        $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
-        $hosts = $this->Host->hostsByContainerId($containerIds, 'list');
-
-        $ServiceControllerRequest = new ServiceControllerRequest($this->request);
-        $ServiceConditions = new ServiceConditions();
-        $User = new User($this->Auth);
-        $ServiceConditions->setIncludeDisabled(false);
-        $ServiceConditions->setContainerIds($this->MY_RIGHTS);
-        $ServiceConditions->setHostId($host_id);
-
-        //Default order
-        $ServiceConditions->setOrder($ServiceControllerRequest->getOrder([
-            'Service.servicename' => 'asc'
-        ]));
-
-        if ($this->DbBackend->isNdoUtils()) {
-            $query = $this->Service->getServiceIndexQuery($ServiceConditions, $this->ListFilter->buildConditions());
-            $this->Service->virtualFieldsForIndexAndServiceList();
-            $modelName = 'Service';
-        }
-
-        if ($this->DbBackend->isCrateDb()) {
-            $this->Servicestatus->virtualFieldsForIndexAndServiceList();
-            $query = $this->Servicestatus->getServiceIndexQuery($ServiceConditions, $this->ListFilter->buildConditions());
-            $modelName = 'Servicestatus';
-        }
-
-        if ($this->isApiRequest()) {
-            if (isset($query['limit'])) {
-                unset($query['limit']);
-            }
-            $all_services = $this->{$modelName}->find('all', $query);
-        } else {
-            $this->Paginator->settings = array_merge($this->Paginator->settings, $query);
-            $all_services = $this->Paginator->paginate($modelName, [], [key($this->Paginator->settings['order'])]);
-        }
-
-
-        $this->Frontend->setJson('hostUuid', $host['Host']['uuid']);
-
-        $username = $this->Auth->user('full_name');
-
-
-        $this->set(compact(['all_services', 'host', 'hosts', 'host_id', 'disabledServices', 'deletedServices', 'username', 'allowEdit']));
-        $this->set('_serialize', ['all_services']);
-        */
     }
 
     public function grapherSwitch($id) {
@@ -2993,6 +2904,12 @@ class ServicesController extends AppController {
             $modelName = 'Servicestatus';
         }
 
+        if ($this->DbBackend->isStatusengine3()) {
+            $query = $this->Service->getServiceIndexQueryStatusengine3($ServiceConditions, $ServiceFilter->indexFilter());
+            $this->Service->virtualFieldsForIndexAndServiceList();
+            $modelName = 'Service';
+        }
+
 
         $query = array_merge($this->Paginator->settings, $query);
         if (isset($query['limit'])) {
@@ -3257,7 +3174,13 @@ class ServicesController extends AppController {
         return;
     }
 
-    public function details(){
+    public function servicecumulatedstatusicon() {
+        $this->layout = 'blank';
+        //Only ship HTML Template
+        return;
+    }
+
+    public function details() {
         $this->layout = 'blank';
         //Only ship HTML Template
 

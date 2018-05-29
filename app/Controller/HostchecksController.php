@@ -26,6 +26,7 @@
 use itnovum\openITCOCKPIT\Core\HostcheckConditions;
 use itnovum\openITCOCKPIT\Core\HoststatusFields;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
+use itnovum\openITCOCKPIT\Database\ScrollIndex;
 
 class HostchecksController extends AppController {
     /*
@@ -123,11 +124,18 @@ class HostchecksController extends AppController {
         $this->Paginator->settings = $query;
         $this->Paginator->settings['page'] = $AngularHostchecksControllerRequest->getPage();
 
-        $hostchecks = $this->Paginator->paginate(
-            $this->Hostcheck->alias,
-            [],
-            [key($this->Paginator->settings['order'])]
-        );
+        $ScrollIndex = new ScrollIndex($this->Paginator, $this);
+        if($this->isScrollRequest()) {
+            $hostchecks = $this->Hostcheck->find('all', $this->Paginator->settings);
+            $ScrollIndex->determineHasNextPage($hostchecks);
+            $ScrollIndex->scroll();
+        }else {
+            $hostchecks = $this->Paginator->paginate(
+                $this->Hostcheck->alias,
+                [],
+                [key($this->Paginator->settings['order'])]
+            );
+        }
 
         $all_hostchecks = [];
         $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
@@ -139,6 +147,10 @@ class HostchecksController extends AppController {
         }
 
         $this->set(compact(['all_hostchecks']));
-        $this->set('_serialize', ['all_hostchecks', 'paging']);
+        $toJson = ['all_hostchecks', 'paging'];
+        if($this->isScrollRequest()){
+            $toJson = ['all_hostchecks', 'scroll'];
+        }
+        $this->set('_serialize', $toJson);
     }
 }

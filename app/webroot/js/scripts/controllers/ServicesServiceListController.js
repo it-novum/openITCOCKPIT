@@ -1,8 +1,8 @@
 angular.module('openITCOCKPIT')
     .controller('ServicesServiceListController', function($scope, $http, SortService, MassChangeService, QueryStringService){
 
-        SortService.setSort('Service.servicename');
-        SortService.setDirection('asc');
+        SortService.setSort('Servicestatus.current_state');
+        SortService.setDirection('desc');
         $scope.currentPage = 1;
 
         $scope.hostId = QueryStringService.getCakeId();

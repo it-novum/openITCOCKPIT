@@ -1364,6 +1364,83 @@ class Host extends AppModel {
         return $query;
     }
 
+    /**
+     * @param HostConditions $HostConditions
+     * @param array $conditions
+     * @return array
+     */
+    public function getHostIndexQueryStatusengine3(HostConditions $HostConditions, $conditions = []) {
+        $query = [
+            'recursive'  => -1,
+            'contain'    => [
+                'Hosttemplate' => [
+                    'fields' => [
+                        'Hoststatus.is_flapping',
+                        'Hosttemplate.id',
+                        'Hosttemplate.uuid',
+                        'Hosttemplate.name',
+                        'Hosttemplate.description',
+                        'Hosttemplate.active_checks_enabled',
+                        'Hosttemplate.tags',
+                    ]
+                ],
+                'Container'
+            ],
+            'conditions' => $conditions,
+            'fields'     => [
+                //'DISTINCT (Host.id) as banane', //Fix pagination
+                'Host.id',
+                'Host.uuid',
+                'Host.name',
+                'Host.description',
+                'Host.active_checks_enabled',
+                'Host.address',
+                'Host.satellite_id',
+                'Host.container_id',
+                'Host.tags',
+
+                'Hoststatus.current_state',
+                'Hoststatus.last_check',
+                'Hoststatus.next_check',
+                'Hoststatus.last_hard_state_change',
+                'Hoststatus.last_state_change',
+                'Hoststatus.output',
+                'Hoststatus.scheduled_downtime_depth',
+                'Hoststatus.active_checks_enabled',
+                'Hoststatus.is_hardstate',
+                'Hoststatus.problem_has_been_acknowledged',
+                'Hoststatus.acknowledgement_type',
+
+
+                'Hoststatus.current_state',
+            ],
+            'order'      => $HostConditions->getOrder(),
+            'joins'      => [
+                [
+                    'table'      => 'statusengine_hoststatus',
+                    'type'       => 'INNER',
+                    'alias'      => 'Hoststatus',
+                    'conditions' => 'Hoststatus.hostname = Host.uuid',
+                ], [
+                    'table'      => 'hosts_to_containers',
+                    'alias'      => 'HostsToContainers',
+                    'type'       => 'LEFT',
+                    'conditions' => [
+                        'HostsToContainers.host_id = Host.id',
+                    ],
+                ],
+            ],
+            'group'      => [
+                'Host.id',
+            ],
+        ];
+
+        $query['conditions']['Host.disabled'] = (int)$HostConditions->includeDisabled();
+        $query['conditions']['HostsToContainers.container_id'] = $HostConditions->getContainerIds();
+
+        return $query;
+    }
+
     public function virtualFieldsForIndex() {
         $this->virtualFields['keywords'] = 'IF((Host.tags IS NULL OR Host.tags=""), Hosttemplate.tags, Host.tags)';
     }
@@ -1434,6 +1511,67 @@ class Host extends AppModel {
      * @param array $conditions
      * @return array
      */
+    public function getHostNotMonitoredQueryStatusengine3(HostConditions $HostConditions, $conditions = []) {
+        $query = [
+            'recursive'  => -1,
+            'contain'    => [
+                'Hosttemplate' => [
+                    'fields' => [
+                        'Hosttemplate.id',
+                        'Hosttemplate.uuid',
+                        'Hosttemplate.name',
+                        'Hosttemplate.description',
+                        'Hosttemplate.active_checks_enabled',
+                    ]
+                ],
+                'Container'
+            ],
+            'conditions' => $conditions,
+            'fields'     => [
+                'Host.id',
+                'Host.uuid',
+                'Host.name',
+                'Host.description',
+                'Host.active_checks_enabled',
+                'Host.address',
+                'Host.satellite_id',
+                'Host.container_id',
+
+            ],
+            'order'      => $HostConditions->getOrder(),
+            'joins'      => [
+                [
+                    'table'      => 'statusengine_hoststatus',
+                    'type'       => 'LEFT OUTER',
+                    'alias'      => 'Hoststatus',
+                    'conditions' => 'Host.uuid = Hoststatus.hostname',
+                ],
+                [
+                    'table'      => 'hosts_to_containers',
+                    'alias'      => 'HostsToContainers',
+                    'type'       => 'LEFT',
+                    'conditions' => [
+                        'HostsToContainers.host_id = Host.id',
+                    ],
+                ],
+            ],
+            'group'      => [
+                'Host.id',
+            ],
+        ];
+
+        $query['conditions']['Host.disabled'] = (int)$HostConditions->includeDisabled();
+        $query['conditions']['HostsToContainers.container_id'] = $HostConditions->getContainerIds();
+        $query['conditions'][] = 'Hoststatus.hostname IS NULL';
+
+        return $query;
+    }
+
+    /**
+     * @param HostConditions $HostConditions
+     * @param array $conditions
+     * @return array
+     */
     public function getHostDisabledQuery(HostConditions $HostConditions, $conditions = []) {
         $query = [
             'recursive'  => -1,
@@ -1484,12 +1622,12 @@ class Host extends AppModel {
      * @param bool $includeOkState
      * @return array
      */
-    public function getHoststatusCount($MY_RIGHTS, $includeOkState = false){
+    public function getHoststatusCount($MY_RIGHTS, $includeOkState = false) {
         $hoststatusCount = [
             '1' => 0,
             '2' => 0,
         ];
-        if($includeOkState === true){
+        if ($includeOkState === true) {
             $hoststatusCount['0'] = 0;
         }
 
@@ -1533,7 +1671,7 @@ class Host extends AppModel {
             ],
         ];
 
-        if($includeOkState === false){
+        if ($includeOkState === false) {
             $query['conditions']['Hoststatus.current_state >'] = 0;
         }
 
@@ -1549,22 +1687,94 @@ class Host extends AppModel {
      * @param bool $includeOkState
      * @return array
      */
-    public function getServicestatusCount($MY_RIGHTS, $includeOkState = false){
+    public function getHoststatusCountStatusengine3($MY_RIGHTS, $includeOkState = false) {
+        $hoststatusCount = [
+            '1' => 0,
+            '2' => 0,
+        ];
+        if ($includeOkState === true) {
+            $hoststatusCount['0'] = 0;
+        }
+
+        $query = [
+            'conditions' => [
+                'Host.disabled' => 0
+            ],
+            'contain'    => [],
+            'fields'     => [
+                'Hoststatus.current_state',
+                'COUNT(Hoststatus.hostname) AS count',
+            ],
+            'group'      => [
+                'Hoststatus.current_state',
+            ],
+            'joins'      => [
+                [
+                    'table'      => 'statusengine_hoststatus',
+                    'type'       => 'INNER',
+                    'alias'      => 'Hoststatus',
+                    'conditions' => 'Hoststatus.hostname = Host.uuid',
+                ],
+            ],
+        ];
+
+        $db = $this->getDataSource();
+        $subQuery = $db->buildStatement([
+            'fields'     => ['Host.uuid'],
+            'table'      => 'hosts',
+            'alias'      => 'Host',
+            'limit'      => null,
+            'offset'     => null,
+            'joins'      => [
+                [
+                    'table'      => 'hosts_to_containers',
+                    'alias'      => 'HostsToContainers',
+                    'type'       => 'INNER',
+                    'conditions' => [
+                        'HostsToContainers.host_id = Host.id',
+                    ],
+                ]
+            ],
+            'conditions' => [
+                'HostsToContainers.container_id' => $MY_RIGHTS
+            ],
+            'order'      => null,
+            'group'      => null
+        ], $this);
+        $subQuery = 'Hoststatus.hostname IN (' . $subQuery . ') ';
+        $subQueryExpression = $db->expression($subQuery);
+        $query['conditions'][] = $subQueryExpression->value;
+
+        if ($includeOkState === false) {
+            $query['conditions']['Hoststatus.current_state >'] = 0;
+        }
+
+        $hoststatusCountResult = $this->find('all', $query);
+        foreach ($hoststatusCountResult as $hoststatus) {
+            $hoststatusCount[$hoststatus['Hoststatus']['current_state']] = (int)$hoststatus[0]['count'];
+        }
+        return $hoststatusCount;
+    }
+
+    /**
+     * @param array $MY_RIGHTS
+     * @param bool $includeOkState
+     * @return array
+     */
+    public function getServicestatusCount($MY_RIGHTS, $includeOkState = false) {
         $servicestatusCount = [
             '1' => 0,
             '2' => 0,
             '3' => 0,
         ];
-        if($includeOkState === true){
+        if ($includeOkState === true) {
             $servicestatusCount['0'] = 0;
         }
-
         $query = [
             'conditions' => [
                 'Service.disabled'               => 0,
                 'ServiceObject.is_active'        => 1,
                 'HostsToContainers.container_id' => $MY_RIGHTS,
-
             ],
             'contain'    => [],
             'fields'     => [
@@ -1601,8 +1811,88 @@ class Host extends AppModel {
                 ],
             ],
         ];
+        if ($includeOkState === false) {
+            $query['conditions']['Servicestatus.current_state >'] = 0;
+        }
+        $servicestatusCountResult = $this->find('all', $query);
+        foreach ($servicestatusCountResult as $servicestatus) {
+            $servicestatusCount[$servicestatus['Servicestatus']['current_state']] = (int)$servicestatus[0]['count'];
+        }
+        return $servicestatusCount;
+    }
 
-        if($includeOkState === false){
+    /**
+     * @param array $MY_RIGHTS
+     * @param bool $includeOkState
+     * @return array
+     */
+    public function getServicestatusCountStatusengine3($MY_RIGHTS, $includeOkState = false) {
+        $servicestatusCount = [
+            '1' => 0,
+            '2' => 0,
+            '3' => 0,
+        ];
+        if ($includeOkState === true) {
+            $servicestatusCount['0'] = 0;
+        }
+
+        $query = [
+            'conditions' => [
+                'Service.disabled' => 0,
+
+            ],
+            'contain'    => [],
+            'fields'     => [
+                'Servicestatus.current_state',
+                'COUNT(Servicestatus.service_description) AS count',
+            ],
+            'group'      => [
+                'Servicestatus.current_state',
+            ],
+            'joins'      => [
+                [
+                    'table'      => 'services',
+                    'type'       => 'INNER',
+                    'alias'      => 'Service',
+                    'conditions' => 'Service.host_id = Host.id',
+                ],
+                [
+                    'table'      => 'statusengine_servicestatus',
+                    'type'       => 'INNER',
+                    'alias'      => 'Servicestatus',
+                    'conditions' => 'Servicestatus.service_description = Service.uuid',
+                ],
+            ],
+        ];
+
+        $db = $this->getDataSource();
+        $subQuery = $db->buildStatement([
+            'fields'     => ['Host.uuid'],
+            'table'      => 'hosts',
+            'alias'      => 'Host',
+            'limit'      => null,
+            'offset'     => null,
+            'joins'      => [
+                [
+                    'table'      => 'hosts_to_containers',
+                    'alias'      => 'HostsToContainers',
+                    'type'       => 'INNER',
+                    'conditions' => [
+                        'HostsToContainers.host_id = Host.id',
+                    ],
+                ]
+            ],
+            'conditions' => [
+                'HostsToContainers.container_id' => $MY_RIGHTS
+            ],
+            'order'      => null,
+            'group'      => null
+        ], $this);
+        $subQuery = 'Servicestatus.hostname IN (' . $subQuery . ') ';
+        $subQueryExpression = $db->expression($subQuery);
+        $query['conditions'][] = $subQueryExpression->value;
+
+        if ($includeOkState === false) {
             $query['conditions']['Servicestatus.current_state >'] = 0;
         }
 
@@ -1753,13 +2043,13 @@ class Host extends AppModel {
         parent::afterSave($created, $options);
     }
 
-    public function beforeDelete($cascade = true){
+    public function beforeDelete($cascade = true) {
         $this->LastDeletedId = new LastDeletedId($this->id);
         return parent::beforeDelete($cascade);
     }
 
-    public function afterDelete(){
-        if($this->LastDeletedId !== null) {
+    public function afterDelete() {
+        if ($this->LastDeletedId !== null) {
             if ($this->DbBackend->isCrateDb() && $this->LastDeletedId->hasId()) {
                 $CrateHostModel = ClassRegistry::init('CrateModule.CrateHost');
                 $CrateHostModel->delete($this->LastDeletedId->getId());

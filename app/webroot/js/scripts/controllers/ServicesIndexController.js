@@ -8,6 +8,7 @@ angular.module('openITCOCKPIT')
 
         $scope.id = QueryStringService.getCakeId();
 
+        $scope.useScroll = true;
 
         /*** Filter Settings ***/
         var defaultFilter = function(){
@@ -150,6 +151,7 @@ angular.module('openITCOCKPIT')
 
             var params = {
                 'angular': true,
+                'scroll': $scope.useScroll,
                 'sort': SortService.getSort(),
                 'page': $scope.currentPage,
                 'direction': SortService.getDirection(),
@@ -174,6 +176,7 @@ angular.module('openITCOCKPIT')
                 $scope.serverResult = result.data.all_services;
                 $scope.services = forTemplate(result.data.all_services);
                 $scope.paging = result.data.paging;
+                $scope.scroll = result.data.scroll;
                 $scope.init = false;
             });
         };
@@ -445,6 +448,10 @@ angular.module('openITCOCKPIT')
             $scope.load();
         }, true);
 
+        $scope.changeMode = function(val){
+            $scope.useScroll = val;
+            $scope.load();
+        };
 
         $scope.$watch('massChange', function(){
             MassChangeService.setSelected($scope.massChange);

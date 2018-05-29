@@ -4,8 +4,8 @@ angular.module('openITCOCKPIT')
         $scope.id = QueryStringService.getCakeId();
 
         $scope.activeTab = 'active';
-        SortService.setSort('Service.servicename');
-        SortService.setDirection('asc');
+        SortService.setSort('Servicestatus.current_state');
+        SortService.setDirection('desc');
         $scope.currentPage = 1;
 
         $scope.deleteUrl = '/services/delete/';
@@ -71,6 +71,7 @@ angular.module('openITCOCKPIT')
                 }
             }).then(function(result){
                 $scope.mergedHost = result.data.mergedHost;
+                $scope.mergedHost.Host.disabled = parseInt($scope.mergedHost.Host.disabled, 10);
                 $scope.tags = $scope.mergedHost.Host.tags.split(',');
                 $scope.hoststatus = result.data.hoststatus;
                 $scope.hoststateForIcon = {

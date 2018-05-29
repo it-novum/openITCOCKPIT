@@ -150,7 +150,7 @@
                         //debug($additionalFilter);
                         if ($count > 0) :
                             $filterArray['Host.id'] = $hostId;
-                            $filterArray['Servicestatus.current_stat'] = [
+                            $filterArray['Servicestatus.current_state'] = [
                                 $state => 1
                             ];
                             if ($this->Acl->hasPermission('index', 'services')): ?>

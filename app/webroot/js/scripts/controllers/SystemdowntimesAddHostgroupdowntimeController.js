@@ -87,7 +87,7 @@ angular.module('openITCOCKPIT')
             $http.get("/hostgroups/loadHostgroupsByString.json", {
                 params: {
                     'angular': true,
-                    'filter[Containers.name]': searchString,
+                    'filter[Container.name]': searchString,
                     'selected[]': $scope.hostgroupIds
                 }
             }).then(function(result){

@@ -8,6 +8,8 @@ angular.module('openITCOCKPIT')
 
         var now = new Date();
 
+        $scope.useScroll = true;
+
         /*** Filter Settings ***/
         var defaultFilter = function(){
             $scope.filter = {
@@ -44,6 +46,7 @@ angular.module('openITCOCKPIT')
             $http.get("/downtimes/host.json", {
                 params: {
                     'angular': true,
+                    'scroll': $scope.useScroll,
                     'sort': SortService.getSort(),
                     'page': $scope.currentPage,
                     'direction': SortService.getDirection(),
@@ -59,6 +62,7 @@ angular.module('openITCOCKPIT')
             }).then(function(result){
                 $scope.downtimes = result.data.all_host_downtimes;
                 $scope.paging = result.data.paging;
+                $scope.scroll = result.data.scroll;
                 $scope.init = false;
             });
         };
@@ -114,6 +118,11 @@ angular.module('openITCOCKPIT')
                 }
             }
             return objects;
+        };
+
+        $scope.changeMode = function(val){
+            $scope.useScroll = val;
+            $scope.load();
         };
 
 

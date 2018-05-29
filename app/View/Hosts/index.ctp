@@ -652,7 +652,9 @@ $this->Paginator->options(['url' => $this->params['named']]);
                             </div>
                         </div>
 
+                        <scroll scroll="scroll" click-action="changepage" ng-if="scroll"></scroll>
                         <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>
+                        <?php echo $this->element('paginator_or_scroll'); ?>
                     </div>
                 </div>
             </div>

@@ -58,12 +58,30 @@ echo $this->Html->script('lib/FlappingWorkaround.js');
                             <i class="fa fa-filter"></i>
                             <?php echo __('Filter'); ?>
                         </button>
+
                     </div>
 
                     <div class="jarviswidget-ctrls" role="menu"></div>
                     <span class="widget-icon"> <i class="fa fa-history"></i> </span>
                     <h2><?php echo __('Notifications'); ?> </h2>
-
+                    <ul class="nav nav-tabs pull-right" id="widget-tab-1">
+                        <?php if ($this->Acl->hasPermission('index', 'notifications')): ?>
+                            <li class="<?php echo ($this->action === 'index')?'active':''; ?>">
+                                <a href="<?php echo Router::url(['controller' => 'notifications', 'action' => 'index']); ?>">
+                                    <i class="fa fa-desktop"></i>
+                                    <span class="hidden-mobile hidden-tablet"> <?php echo __('Host notifications'); ?></span>
+                                </a>
+                            </li>
+                        <?php endif; ?>
+                        <?php if ($this->Acl->hasPermission('services', 'notifications')): ?>
+                            <li class="<?php echo ($this->action === 'services')?'active':''; ?>">
+                                <a href="<?php echo Router::url(['controller' => 'notifications', 'action' => 'services']); ?>">
+                                    <i class="fa fa-cog"></i>
+                                    <span class="hidden-mobile hidden-tablet"> <?php echo __('Service notifications'); ?></span>
+                                </a>
+                            </li>
+                        <?php endif; ?>
+                    </ul>
                 </header>
 
                 <div>
@@ -239,19 +257,36 @@ echo $this->Html->script('lib/FlappingWorkaround.js');
                                         <servicestatusicon state="Notification.NotificationService.state"></servicestatusicon>
                                     </td>
                                     <td>
-                                        <a href="/hosts/browser/{{ Notification.Host.id }}">{{ Notification.Host.hostname }}</a>
+                                        <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
+                                            <a href="/hosts/browser/{{ Notification.Host.id }}">{{ Notification.Host.hostname }}</a>
+                                        <?php else: ?>
+                                            {{ Notification.Host.hostname }}
+                                        <?php endif; ?>
                                     </td>
                                     <td>
-                                        <a href="/services/browser/{{ Notification.Service.id }}">{{ Notification.Service.servicename }}</a>
+                                        <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
+                                            <a href="/services/browser/{{ Notification.Service.id }}">{{ Notification.Service.servicename }}</a>
+                                        <?php else: ?>
+                                            {{ Notification.Service.servicename }}
+                                        <?php endif; ?>
                                     </td>
                                     <td>
                                         {{ Notification.NotificationService.start_time }}
                                     </td>
                                     <td>
-                                        <a href="/contacts/edit/{{ Notification.Contact.id }}">{{ Notification.Contact.name }}</a>
+                                        <?php if ($this->Acl->hasPermission('edit', 'contacts')): ?>
+                                            <a href="/contacts/edit/{{ Notification.Contact.id }}">{{ Notification.Contact.name }}</a>
+                                        <?php else: ?>
+                                            {{ Notification.Contact.name }}
+                                        <?php endif; ?>
+
                                     </td>
                                     <td>
-                                        <a href="/commands/edit/{{ Notification.Command.id }}">{{ Notification.Command.name }}</a>
+                                        <?php if ($this->Acl->hasPermission('edit', 'commands')): ?>
+                                            <a href="/commands/edit/{{ Notification.Command.id }}">{{ Notification.Command.name }}</a>
+                                        <?php else: ?>
+                                            {{ Notification.Command.name }}
+                                        <?php endif; ?>
                                     </td>
                                     <td>
                                         {{ Notification.NotificationService.output }}
@@ -271,7 +306,9 @@ echo $this->Html->script('lib/FlappingWorkaround.js');
                             </div>
                         </div>
 
+                        <scroll scroll="scroll" click-action="changepage" ng-if="scroll"></scroll>
                         <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>
+                        <?php echo $this->element('paginator_or_scroll'); ?>
 
                     </div>
                 </div>

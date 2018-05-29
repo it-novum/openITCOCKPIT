@@ -60,9 +60,13 @@ class ApiAuthenticate extends BaseAuthenticate {
     public function getUser(CakeRequest $request) {
         $headerContent = $request->header('Authorization');
         if ($headerContent && strpos($headerContent, 'X-OITC-API') === 0) {
-
             $apiKey = trim(str_replace('X-OITC-API', '', $headerContent));
             return $this->_findUser($apiKey, null);
+        }
+
+        $queryContent = $request->query('apikey');
+        if ($queryContent && strlen($queryContent) > 10) {
+            return $this->_findUser($queryContent, null);
         }
 
         return false;

@@ -152,7 +152,8 @@ class AppController extends Controller {
 
         //Is this a request with API Key?
         $headerContent = $this->request->header('Authorization');
-        if ($headerContent && strpos($headerContent, 'X-OITC-API') === 0) {
+        $queryContent = $this->request->query('apikey');
+        if (($headerContent && strpos($headerContent, 'X-OITC-API') === 0) || strlen($queryContent) > 10) {
             AppAuthComponent::$sessionKey = false;
             $user = $this->Auth->tryToGetUser($this->request);
             if($user) {
@@ -339,6 +340,10 @@ class AppController extends Controller {
             $data = $this->request['paging'];
             $data = current($data);
             $this->set('paging', $data);
+        }
+
+        if (!empty($this->request->param('scroll')) && $this->isApiRequest()) {
+            $this->set('scroll', $this->request->param('scroll'));
         }
 
 
@@ -859,6 +864,16 @@ class AppController extends Controller {
     protected function isApiRequest() {
         if ($this->isJsonRequest() || $this->isXmlRequest()) {
             return true;
+        }
+
+        return false;
+    }
+
+    protected function isScrollRequest() {
+        if($this->isApiRequest()){
+            if(isset($this->request->query['scroll']) && $this->request->query['scroll'] !== 'false'){
+                return true;
+            }
         }
 
         return false;

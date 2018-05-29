@@ -29,6 +29,7 @@ $config = [
         'always_allowed' => [
             'Angular'          => [
                 'paginator',
+                'scroll',
                 'mass_delete',
                 'mass_deactivate',
                 'confirm_delete',
@@ -119,6 +120,7 @@ $config = [
                 'grapherZoomTemplate',
                 'createGrapherErrorPng',
                 'icon',
+                'servicecumulatedstatusicon',
                 'details'
             ],
             'Graphgenerators'  => [
@@ -160,6 +162,7 @@ $config = [
             'Hosts'            => [
                 'view',
                 'icon',
+                'hostservicelist',
                 'loadParentHostsByString',
                 'loadParentHostsById'
             ]
@@ -225,9 +228,10 @@ $config = [
             ],
             'Hostgroups'            => [
                 'index'    => ['listToPdf', 'view', 'loadHostgroupsByString', 'loadHosgroupsByContainerId'],
-                'extended' => ['listToPdf', 'loadServicesByHostId'],
+                'extended' => ['listToPdf'],
                 'add'      => ['loadHosts', 'mass_add', 'loadHosttemplates', 'loadContainers'],
                 'edit'     => ['loadHosts', 'loadHosttemplates', 'loadContainers'],
+                'extended' => ['loadHostgroupWithHostsById']
             ],
             'Hosts'                 => [
                 'index'      => ['getHostByAjax', 'listToPdf', 'ajaxList', 'loadHostsByContainerId', 'loadHostsByString', 'loadHostById', 'allocateServiceTemplateGroup', 'getServiceTemplatesfromGroup', 'hoststatus'],

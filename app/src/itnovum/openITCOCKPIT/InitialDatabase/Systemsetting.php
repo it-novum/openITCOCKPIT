@@ -473,6 +473,14 @@ class Systemsetting extends Importer {
             ],
             [
                 'Systemsetting' => [
+                    'key'     => 'FRONTEND.DISABLE_LOGIN_ANIMATION',
+                    'value'   => '0',
+                    'info'    => 'Determine if you want to disable the animation in login screen.',
+                    'section' => 'FRONTEND'
+                ],
+            ],
+            [
+                'Systemsetting' => [
                     'key'     => 'CHECK_MK.BIN',
                     'value'   => '/opt/openitc/nagios/3rd/check_mk/bin/check_mk',
                     'info'    => 'Path to check_mk binary',

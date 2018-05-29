@@ -28,6 +28,7 @@ use itnovum\openITCOCKPIT\Core\AcknowledgedHostConditions;
 use itnovum\openITCOCKPIT\Core\HoststatusFields;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
+use itnovum\openITCOCKPIT\Database\ScrollIndex;
 
 class AcknowledgementsController extends AppController {
     /*
@@ -49,8 +50,8 @@ class AcknowledgementsController extends AppController {
     public $helpers = ['Status', 'Monitoring', 'Bbcode'];
     public $layout = 'Admin.default';
 
-    public function service($id = null){
-        $this->layout="angularjs";
+    public function service($id = null) {
+        $this->layout = "angularjs";
 
         if (!$this->Service->exists($id)) {
             throw new NotFoundException(__('Invalid service'));
@@ -59,16 +60,16 @@ class AcknowledgementsController extends AppController {
         if (!$this->isAngularJsRequest()) {
             //Service for .html requests
             $service = $this->Service->find('first', [
-                'recursive' => -1,
-                'fields' => [
+                'recursive'  => -1,
+                'fields'     => [
                     'Service.id',
                     'Service.uuid',
                     'Service.name',
                     'Service.service_type',
                     'Service.service_url'
                 ],
-                'contain' => [
-                    'Host' => [
+                'contain'    => [
+                    'Host'            => [
                         'fields' => [
                             'Host.id',
                             'Host.name',
@@ -111,8 +112,8 @@ class AcknowledgementsController extends AppController {
 
         //Service for .json requests
         $service = $this->Service->find('first', [
-            'recursive' => -1,
-            'fields' => [
+            'recursive'  => -1,
+            'fields'     => [
                 'Service.id',
                 'Service.uuid',
                 'Service.name',
@@ -141,11 +142,18 @@ class AcknowledgementsController extends AppController {
         $this->Paginator->settings = $query;
         $this->Paginator->settings['page'] = $AngularAcknowledgementsControllerRequest->getPage();
 
-        $acknowledgements = $this->Paginator->paginate(
-            $this->AcknowledgedService->alias,
-            [],
-            [key($this->Paginator->settings['order'])]
-        );
+        if ($this->isScrollRequest()) {
+            $ScrollIndex = new ScrollIndex($this->Paginator, $this);
+            $acknowledgements = $this->AcknowledgedService->find('all', $this->Paginator->settings);
+            $ScrollIndex->determineHasNextPage($acknowledgements);
+            $ScrollIndex->scroll();
+        } else {
+            $acknowledgements = $this->Paginator->paginate(
+                $this->AcknowledgedService->alias,
+                [],
+                [key($this->Paginator->settings['order'])]
+            );
+        }
 
         $all_acknowledgements = [];
         $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
@@ -157,11 +165,15 @@ class AcknowledgementsController extends AppController {
         }
 
         $this->set(compact(['all_acknowledgements']));
-        $this->set('_serialize', ['all_acknowledgements', 'paging']);
+        $toJson = ['all_acknowledgements', 'paging'];
+        if ($this->isScrollRequest()) {
+            $toJson = ['all_acknowledgements', 'scroll'];
+        }
+        $this->set('_serialize', $toJson);
     }
 
-    public function host($id = null){
-        $this->layout="angularjs";
+    public function host($id = null) {
+        $this->layout = "angularjs";
 
         if (!$this->Host->exists($id)) {
             throw new NotFoundException(__('Invalid host'));
@@ -170,7 +182,7 @@ class AcknowledgementsController extends AppController {
         if (!$this->isAngularJsRequest()) {
             //Host for .html requests
             $host = $this->Host->find('first', [
-                'fields' => [
+                'fields'     => [
                     'Host.id',
                     'Host.uuid',
                     'Host.name',
@@ -182,7 +194,7 @@ class AcknowledgementsController extends AppController {
                 'conditions' => [
                     'Host.id' => $id,
                 ],
-                'contain' => [
+                'contain'    => [
                     'Container',
                 ],
             ]);
@@ -206,7 +218,7 @@ class AcknowledgementsController extends AppController {
 
         //Host for .json requests
         $host = $this->Host->find('first', [
-            'fields' => [
+            'fields'     => [
                 'Host.id',
                 'Host.uuid',
                 'Host.name',
@@ -237,11 +249,18 @@ class AcknowledgementsController extends AppController {
         $this->Paginator->settings = $query;
         $this->Paginator->settings['page'] = $AngularAcknowledgementsControllerRequest->getPage();
 
-        $acknowledgements = $this->Paginator->paginate(
-            $this->AcknowledgedHost->alias,
-            [],
-            [key($this->Paginator->settings['order'])]
-        );
+        if ($this->isScrollRequest()) {
+            $ScrollIndex = new ScrollIndex($this->Paginator, $this);
+            $acknowledgements = $this->AcknowledgedHost->find('all', $this->Paginator->settings);
+            $ScrollIndex->determineHasNextPage($acknowledgements);
+            $ScrollIndex->scroll();
+        } else {
+            $acknowledgements = $this->Paginator->paginate(
+                $this->AcknowledgedHost->alias,
+                [],
+                [key($this->Paginator->settings['order'])]
+            );
+        }
 
         $all_acknowledgements = [];
         $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
@@ -253,6 +272,10 @@ class AcknowledgementsController extends AppController {
         }
 
         $this->set(compact(['all_acknowledgements']));
-        $this->set('_serialize', ['all_acknowledgements', 'paging']);
+        $toJson = ['all_acknowledgements', 'paging'];
+        if ($this->isScrollRequest()) {
+            $toJson = ['all_acknowledgements', 'scroll'];
+        }
+        $this->set('_serialize', $toJson);
     }
 }

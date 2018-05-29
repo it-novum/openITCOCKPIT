@@ -59,10 +59,27 @@ echo $this->Html->script('lib/FlappingWorkaround.js');
                             <?php echo __('Filter'); ?>
                         </button>
                     </div>
-
                     <div class="jarviswidget-ctrls" role="menu"></div>
                     <span class="widget-icon"> <i class="fa fa-history"></i> </span>
                     <h2><?php echo __('Notifications'); ?> </h2>
+                    <ul class="nav nav-tabs pull-right" id="widget-tab-1">
+                        <?php if ($this->Acl->hasPermission('index', 'notifications')): ?>
+                            <li class="<?php echo ($this->action === 'index')?'active':''; ?>">
+                                <a href="<?php echo Router::url(['controller' => 'notifications', 'action' => 'index']); ?>">
+                                    <i class="fa fa-desktop"></i>
+                                    <span class="hidden-mobile hidden-tablet"> <?php echo __('Host notifications'); ?></span>
+                                </a>
+                            </li>
+                        <?php endif; ?>
+                        <?php if ($this->Acl->hasPermission('services', 'notifications')): ?>
+                            <li class="<?php echo ($this->action === 'services')?'active':''; ?>">
+                                <a href="<?php echo Router::url(['controller' => 'notifications', 'action' => 'services']); ?>">
+                                    <i class="fa fa-cog"></i>
+                                    <span class="hidden-mobile hidden-tablet"> <?php echo __('Service notifications'); ?></span>
+                                </a>
+                            </li>
+                        <?php endif; ?>
+                    </ul>
 
                 </header>
 
@@ -257,7 +274,9 @@ echo $this->Html->script('lib/FlappingWorkaround.js');
                             </div>
                         </div>
 
+                        <scroll scroll="scroll" click-action="changepage" ng-if="scroll"></scroll>
                         <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>
+                        <?php echo $this->element('paginator_or_scroll'); ?>
 
                     </div>
                 </div>

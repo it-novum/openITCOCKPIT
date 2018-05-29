@@ -49,4 +49,11 @@ class DbBackend {
         return $this->backend === 'Crate';
     }
 
+    /**
+     * @return bool
+     */
+    public function isStatusengine3(){
+        return $this->backend === 'Statusengine3';
+    }
+
 }
