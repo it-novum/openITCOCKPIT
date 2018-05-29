@@ -57,6 +57,11 @@ $scripts = [
     'js/scripts/ng.app.js'
 ];
 
+if ($this->request->params['controller'] === 'statusmaps') {
+    $scripts[] = 'smartadmin/js/notification/SmartNotification.js';
+    $scripts[] = 'js/vendor/vis/vis.js';
+}
+
 App::uses('Folder', 'Utility');
 $appScripts = [];
 if (ENVIRONMENT === Environments::PRODUCTION) {
@@ -174,7 +179,7 @@ if (ENVIRONMENT === Environments::PRODUCTION) {
 
 <?php printf('<script src="%s/%s"></script>', Router::fullBaseUrl(), 'smartadmin/js/app.js'); ?>
 <script>
-    $(document).ready(function(){
+    $(document).ready(function () {
         //pageSetUp();
 
     });

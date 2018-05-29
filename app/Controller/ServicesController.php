@@ -127,7 +127,6 @@ class ServicesController extends AppController {
         }
 
         $ServiceFilter = new ServiceFilter($this->request);
-
         $ServiceControllerRequest = new ServiceControllerRequest($this->request, $ServiceFilter);
         $ServiceConditions = new ServiceConditions();
         if ($ServiceControllerRequest->isRequestFromBrowser() === false) {
@@ -160,7 +159,6 @@ class ServicesController extends AppController {
                 $ServiceConditions->setContainerIds(array_merge($ServiceConditions->getContainerIds(), $recursiveContainerIds));
             }
         }
-
         //Default order
         $ServiceConditions->setOrder($ServiceControllerRequest->getOrder([
             'Host.name'           => 'asc',
