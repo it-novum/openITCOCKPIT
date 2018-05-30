@@ -5,6 +5,12 @@ angular.module('openITCOCKPIT').directive('enableNotifications', function($http,
 
         controller: function($scope){
 
+            var callbackName = false;
+
+            $scope.setEnableNotificationsCallback = function(_callback){
+                callbackName = _callback;
+            };
+
             $scope.doEnableNotifications = function(objects){
                 var count = Object.keys(objects).length;
                 var i = 0;
@@ -20,6 +26,12 @@ angular.module('openITCOCKPIT').directive('enableNotifications', function($http,
                         object.Service.uuid
                     ]));
                 }
+
+                //Call callback function if given
+                if(callbackName){
+                    $scope[callbackName]();
+                }
+
                 $timeout(function(){
                     $scope.percentage = 0;
                     $('#angularEnableNotificationsModal').modal('hide');
@@ -33,6 +45,11 @@ angular.module('openITCOCKPIT').directive('enableNotifications', function($http,
                 if(Object.keys(objects).length === 0){
                     return;
                 }
+
+                if(attr.hasOwnProperty('callback')){
+                    $scope.setEnableNotificationsCallback(attr.callback);
+                }
+
                 $('#angularEnableNotificationsModal').modal('show');
                 $scope.doEnableNotifications(objects);
             };

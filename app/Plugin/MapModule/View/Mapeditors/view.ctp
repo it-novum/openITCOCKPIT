@@ -55,16 +55,17 @@
                     <a target="_parent"
                        href="<?php echo Router::url(array_merge([
                            'controller' => 'mapeditors',
-                           'action' => 'view',
-                           'plugin' => 'map_module',
+                           'action'     => 'view',
+                           'plugin'     => 'map_module',
                            'fullscreen' => 1,
-                           $map['Map']['id']],
+                           $map['Map']['id']
+                       ],
                            $this->params['named'])); ?>"
                        class="btn btn-default btn-xs"><i
                                 class="glyphicon glyphicon-resize-full"></i> <?php echo __('Open fullscreen'); ?></a>
                 <?php else:
                     $newParams = [
-                        'rotate' => $this->params['named']['rotate'],
+                        'rotate'   => $this->params['named']['rotate'],
                         'interval' => $this->params['named']['interval']
                     ];
 
@@ -72,9 +73,10 @@
                     <a target="_parent"
                        href="<?php echo Router::url(array_merge([
                            'controller' => 'mapeditors',
-                           'action' => 'view',
-                           'plugin' => 'map_module',
-                           $map['Map']['id']],
+                           'action'     => 'view',
+                           'plugin'     => 'map_module',
+                           $map['Map']['id']
+                       ],
                            $newParams
                        )); ?>"
                        class="btn btn-default btn-xs"><i
@@ -148,6 +150,7 @@
                             echo '<a target="_parent" href="/map_module/mapeditors/view/' . $item['Mapitem']['object_id'] . '">';
                         }
                         ?>
+
                         <?php else: ?>
                         <div id="<?php echo $uuid; ?>"
                              class="elementHover iconContainer"
@@ -203,7 +206,12 @@
                                         break;
                                     case 'hostgroup':
                                         $state = $this->Mapstatus->hostgroupstatus($line['Hostgroup']['uuid']);
-                                        $lineColor = $this->Status->ServiceStatusColorSimple($state['state']);
+                                        if($state['type'] == 'host'){
+                                            $lineColor = $this->Status->HostStatusColorSimple($state['state']);
+                                        }else{
+                                            $lineColor = $this->Status->ServiceStatusColorSimple($state['state']);
+                                        }
+
                                         break;
                                 }
                                 ?>
@@ -219,7 +227,14 @@
                                            data-color="#00FF00"
                                            data-zIndex="<?php echo $line['Mapline']['z_index']; ?>">
                                 </div>
-                            <?php else: ?>
+                            <?php else:
+                                if($line['Mapline']['type'] == 'hostgroup'){
+                                    $link = Inflector::pluralize($line['Mapline']['type']).'/extended/'.$line[ucfirst($line['Mapline']['type'])]['id'];
+                                }else{
+                                    $link = Inflector::pluralize($line['Mapline']['type']).'/browser/'.$line[ucfirst($line['Mapline']['type'])]['id'];
+                                }
+
+                                ?>
                                 <div id="<?php echo $uuid; ?>" data-lineId="<?php echo $line['Mapline']['id'] ?>"
                                      class="lineContainer">
                                     <input type="hidden"
@@ -231,7 +246,7 @@
                                            data-type="<?php echo $line['Mapline']['type']; ?>"
                                            data-uuid="<?php echo $line[ucfirst($line['Mapline']['type'])]['uuid']; ?>"
                                            data-color="<?php echo $lineColor['hexColor']; ?>"
-                                           data-link="/<?php echo Inflector::pluralize($line['Mapline']['type']); ?>/browser/<?php echo $line[ucfirst($line['Mapline']['type'])]['id']; ?>"
+                                           data-link="/<?php echo $link; ?>"
                                            data-zIndex="<?php echo $line['Mapline']['z_index']; ?>">
                                 </div>
                             <?php endif; ?>
@@ -277,11 +292,11 @@
                                         }
 
                                         $legend = '';
-                                        if(!empty($gadget['Mapgadget']['size_x']) && !empty($gadget['Mapgadget']['size_y'])){
-                                            if($gadget['Mapgadget']['size_y'] <= 32 && $gadget['Mapgadget']['size_x'] <= 200){
+                                        if (!empty($gadget['Mapgadget']['size_x']) && !empty($gadget['Mapgadget']['size_y'])) {
+                                            if ($gadget['Mapgadget']['size_y'] <= 32 && $gadget['Mapgadget']['size_x'] <= 200) {
                                                 $legend = '--no-legend';
                                             }
-                                        }else{
+                                        } else {
                                             $gadget['Mapgadget']['size_x'] = 300;
                                         }
 

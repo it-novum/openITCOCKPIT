@@ -39,7 +39,7 @@
 
 
         <h1>Special Thanks</h1>
-        <p>Oliver Müller, Laziz Karimov, Robert Braun, René Kleffel, Michael Ziegler, Jonas Rottmann, Johannes Drummer, Jens Michelsons, Jeremy Eder and more...</p>
+        <p>Stephan Kraus, Oliver Müller, Laziz Karimov, Robert Braun, René Kleffel, Michael Ziegler, Jonas Rottmann, Johannes Drummer, Jens Michelsons, Jeremy Eder and more...</p>
         <div class="clearfix"></div>
 
         <h1>Special Thanks</h1>

@@ -1,9 +1,10 @@
 angular.module('openITCOCKPIT')
     .controller('LogentriesIndexController', function($scope, $http, $httpParamSerializer, SortService, QueryStringService){
-        SortService.setSort(QueryStringService.getValue('sort', 'Logentry.logentry_time'));
+        SortService.setSort(QueryStringService.getValue('sort', 'Logentry.entry_time'));
         SortService.setDirection(QueryStringService.getValue('direction', 'desc'));
         $scope.currentPage = 1;
 
+        $scope.useScroll = true;
 
         /*** Filter Settings ***/
         var defaultFilter = function(){
@@ -28,6 +29,7 @@ angular.module('openITCOCKPIT')
         $scope.load = function(){
             var params = {
                 'angular': true,
+                'scroll': $scope.useScroll,
                 'sort': SortService.getSort(),
                 'page': $scope.currentPage,
                 'direction': SortService.getDirection(),
@@ -44,6 +46,7 @@ angular.module('openITCOCKPIT')
             }).then(function(result){
                 $scope.logentries = result.data.all_logentries;
                 $scope.paging = result.data.paging;
+                $scope.scroll = result.data.scroll;
                 $scope.init = false;
             });
         };
@@ -73,6 +76,11 @@ angular.module('openITCOCKPIT')
                 $scope.currentPage = page;
                 $scope.load();
             }
+        };
+
+        $scope.changeMode = function(val){
+            $scope.useScroll = val;
+            $scope.load();
         };
 
         //Fire on page load

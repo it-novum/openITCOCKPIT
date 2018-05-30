@@ -23,356 +23,244 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class StatusmapsController extends AppController
-{
-    public $layout = 'Admin.default';
 
-    public $uses = ['Parenthost', MONITORING_OBJECTS, MONITORING_HOSTSTATUS, MONITORING_SERVICESTATUS];
+use itnovum\openITCOCKPIT\Core\HoststatusFields;
+use itnovum\openITCOCKPIT\Core\ModuleManager;
+use itnovum\openITCOCKPIT\Core\ServicestatusFields;
+use itnovum\openITCOCKPIT\Filter\HostFilter;
+use itnovum\openITCOCKPIT\Filter\StatusmapFilter;
 
-    public $helpers = ['StatusMaps'];
+/**
+ * Class StatusmapsController
+ * @property HoststatusFields $HoststatusFields
+ * @property StatusMapsHelper $StatusMaps
+ * @property Hoststatus $Hoststatus
+ */
+class StatusmapsController extends AppController {
 
-    public function index()
-    {
+    public $layout = 'angularjs';
 
-    }
+    public $uses = [
+        'Host',
+        'Service',
+        'Container',
+        'Parenthost',
+        MONITORING_HOSTSTATUS,
+        MONITORING_SERVICESTATUS
+    ];
 
-    private function getAllHosts()
-    {
-        $allParenthosts = $this->Parenthost->find('all', [
-            'fields'     => [
-                'Parenthost.id',
-                'Parenthost.uuid',
-                'Parenthost.name',
-                'Parenthost.address',
-            ],
-            'contain'    => [
-                'Host' => [
-                    'fields'     => [
-                        'Host.id',
-                        'Host.uuid',
-                        'Host.name',
-                        'Host.address',
+    public $components = ['StatusMap'];
+
+    public function index() {
+        if (!$this->isApiRequest()) {
+            $masterInstanceName = $this->Systemsetting->getMasterInstanceName();
+            $ModuleManager = new ModuleManager('DistributeModule');
+            if ($ModuleManager->moduleExists()) {
+                $SatelliteModel = $ModuleManager->loadModel('Satellite');
+                $satellites = $SatelliteModel->find('list', [
+                    'recursive' => -1,
+                    'fields' => [
+                        'Satellite.id',
+                        'Satellite.name'
                     ],
-                    'conditions' => [
-                        'Host.disabled' => 0,
+                    'Satellite.container_id' => $this->MY_RIGHTS,
+                    'order' => [
+                        'Satellite.name' => 'asc'
+                    ]
+                ]);
+            }
+            $satellites[0] = $masterInstanceName;
+            $this->set('satellites', $satellites);
+        }
+
+        if (!$this->isAngularJsRequest()) {
+            return;
+        }
+        session_write_close();
+
+        $allHostIds = [];
+        $hasBrowserRight = $this->hasPermission('browser', 'hosts');
+        if ($this->request->query('showAll') === 'false') {
+
+            $parentHostWithChildIds = $this->Parenthost->find('all', [
+                'recursive' => -1,
+                'joins' => [
+                    [
+                        'table' => 'hosts_to_parenthosts',
+                        'alias' => 'HostToParenthost',
+                        'type' => 'INNER',
+                        'conditions' => [
+                            'HostToParenthost.parenthost_id = Parenthost.id',
+                        ],
                     ],
+                    [
+                        'table' => 'hosts',
+                        'alias' => 'Host',
+                        'type' => 'INNER',
+                        'conditions' => [
+                            'HostToParenthost.host_id = Host.id',
+                        ],
+                    ]
                 ],
-            ],
-            'conditions' => [
-                'Parenthost.disabled' => 0,
-            ],
-        ]);
+                'fields' => [
+                    'DISTINCT Parenthost.id',
+                    'Host.id'
+                ],
+            ]);
 
-        return ($allParenthosts);
-    }
 
-    public function getHostsAndConnections()
-    {
-        if ($this->request->ext != 'json') {
-            throw new MethodNotAllowedException('Only .json allowed');
-        }
-        $masterparent = [
-            'Parenthost' => [
-                'id'      => 0,
-                'uuid'    => '123456',
-                'name'    => $this->systemname,
-                'address' => '127.0.0.1',
-            ],
-            'Host'       => [],
-        ];
-
-        $allParenthosts = $this->getAllHosts();
-
-        $allParenthosts = array_reverse($allParenthosts);
-        $allParenthosts[] = $masterparent;
-        $allParenthosts = array_reverse($allParenthosts);
-        $allChildHostIds = Hash::extract($allParenthosts, "{n}.Host.{n}.id");
-
-        $mystatusmap = [
-            'nodes' => [],
-            'links' => [],
-        ];
-
-        foreach ($allParenthosts as $key => $parenthost) {
-            $status = 2;
-            if ($currentState = $this->clickHostStatus($parenthost['Parenthost']['uuid'], 1)) {
-                $status = $currentState[0]['Hoststatus']['current_state'];
-            }
-            //$status = $this->clickHostStatus($parenthost['Parenthost']['uuid'], 1);
-            $mystatusmap['nodes'][$key] = [
-                'id'            => $parenthost['Parenthost']['id'],
-                'label'         => h($parenthost['Parenthost']['name']),
-                'ip'            => h($parenthost['Parenthost']['address']),
-                'uuid'          => $parenthost['Parenthost']['uuid'],
-                'size'          => ($key < 3) ? 5 : 3,
-                'current_state' => ($key == 0) ? 0 : $status,
-            ];
-            if ($key > 0 && !in_array($parenthost['Parenthost']['id'], $allChildHostIds)) {
-                $mystatusmap['links'][] = [
-                    'id'     => uniqid(),
-                    'source' => 0,
-                    'target' => $parenthost['Parenthost']['id'],
-                    'value'  => 1,
-                ];
-            }
-
-            foreach ($parenthost['Host'] as $childHost) {
-                $mystatusmap['links'][] = [
-                    'id'     => uniqid(),
-                    'source' => $childHost['HostsToParenthost']['parenthost_id'],
-                    'target' => $childHost['HostsToParenthost']['host_id'],
-                    'value'  => 1,
-                ];
+            foreach ($parentHostWithChildIds as $parentHostWithChildId) {
+                if (!in_array($parentHostWithChildId['Parenthost']['id'], $allHostIds, true)) {
+                    $allHostIds[] = $parentHostWithChildId['Parenthost']['id'];
+                }
+                if (!in_array($parentHostWithChildId['Host']['id'], $allHostIds, true)) {
+                    $allHostIds[] = $parentHostWithChildId['Host']['id'];
+                }
             }
         }
-        $this->set('json', $mystatusmap);
-        $this->autoRender = false;
+        $containerIds = [];
+        if ($this->hasRootPrivileges === false) {
+            $containerIds = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_HOST, [], $this->hasRootPrivileges, [CT_HOSTGROUP]);
+        }
+        $StatusmapFilter = new StatusmapFilter($this->request);
+        $nodes = [];
+        $edges = [];
 
-        header('Content-Type: application/json');
-        $this->render('getHostsAndConnections');
-    }
-
-    public function clickHostStatus($uuid = null, $return = null)
-    {
-        $hoststatus = $this->Objects->find('all', [
-            'recursive'  => -1,
-            'conditions' => [
-                'name1'         => $uuid,
-                'objecttype_id' => 1,
+        $query = [
+            'recursive' => -1,
+            'contain' => [
+                'Parenthost' => [
+                    'fields' => [
+                        'Parenthost.id'
+                    ]
+                ]
             ],
-            'fields'     => [
-                'Objects.*',
-                'Hoststatus.*',
+            'fields' => [
+                'Host.id',
+                'Host.uuid',
                 'Host.name',
                 'Host.description',
                 'Host.address',
+                'Host.disabled',
+                'Host.satellite_id'
             ],
-            'joins'      => [
-                [
-                    'table'      => 'hosts',
-                    'alias'      => 'Host',
-                    'conditions' => [
-                        'Objects.name1 = Host.uuid',
-                    ],
-                ],
-                [
-                    'table'      => 'nagios_hoststatus',
-                    'type'       => 'LEFT OUTER',
-                    'alias'      => 'Hoststatus',
-                    'conditions' => 'Objects.object_id = Hoststatus.host_object_id',
-                ],
-            ],
-        ]);
+            'conditions' => $StatusmapFilter->indexFilter()
 
-        if(isset($hoststatus[0]['Host']['name'])){
-            $hoststatus[0]['Host']['name'] = h($hoststatus[0]['Host']['name']);
+        ];
+
+        if (!empty($containerIds)) {
+            $query['joins'] = [
+                [
+                    'table' => 'hosts_to_containers',
+                    'alias' => 'HostsToContainers',
+                    'type' => 'LEFT',
+                    'conditions' => [
+                        'HostsToContainers.host_id = Host.id',
+                    ],
+                ]
+            ];
+            $query['conditions']['HostsToContainers.container_id'] = $containerIds;
+        }
+        if (!empty($allHostIds)) {
+            $query['conditions']['Host.id'] = $allHostIds;
         }
 
-        if ($return) {
-            return ($hoststatus);
-        }
-        //$this->set('hoststatus', $hoststatus);
-        $this->set('_serialize', ['hoststatus']);
-        //debug($hoststatus);
-        $servicestatus = $this->Objects->find('all', [
-            'recursive'  => -1,
-            'conditions' => [
-                'name1'         => $uuid,
-                'objecttype_id' => 2,
-            ],
-            'fields'     => [
-                'Objects.*',
-                'Servicestatus.*',
-                'Service.name',
-                'Service.description',
-                'Servicetemplate.name',
-                'Servicetemplate.description',
-            ],
-            'joins'      => [
-                [
-                    'table'      => 'services',
-                    'alias'      => 'Service',
-                    'conditions' => [
-                        'Objects.name2 = Service.uuid',
-                    ],
-                ],
-                [
-                    'table'      => 'servicetemplates',
-                    'type'       => 'INNER',
-                    'alias'      => 'Servicetemplate',
-                    'conditions' => [
-                        'Servicetemplate.id = Service.servicetemplate_id',
-                    ],
-                ],
-                [
-                    'table'      => 'nagios_servicestatus',
-                    'type'       => 'LEFT OUTER',
-                    'alias'      => 'Servicestatus',
-                    'conditions' => 'Objects.object_id = Servicestatus.service_object_id',
-                ],
-            ],
-            'order'      => [
-                'Servicestatus.current_state DESC',
-            ],
-        ]);
-        //debug($servicestatus);
-        $this->set(compact(['uuid', 'hoststatus', 'servicestatus']));
-    }
+        $count = $this->Host->find('count', $query);
 
-    public function view($id = null)
-    {
-        $allParenthosts = $this->getAllHosts();
+        $limit = 100;
+        $numberOfSelects = ceil($count / $limit);
+        $HoststatusFields = new HoststatusFields($this->DbBackend);
+        $HoststatusFields
+            ->currentState()
+            ->isHardstate()
+            ->scheduledDowntimeDepth()
+            ->problemHasBeenAcknowledged();
 
-        $hostUuids = Hash::extract($allParenthosts, '{n}.Parenthost.uuid');
-        //debug(count($hostUuids));
-        $serviceUuids = Hash::extract($allParenthosts, '{n}.Service.uuid');
-        $hostgroupUuids = Hash::extract($allParenthosts, '{n}.Hostgroup.uuid');
-        $servicegroupUuids = Hash::extract($allParenthosts, '{n}.Servicegroup.uuid');
+        for ($i = 0; $i < $numberOfSelects; $i++) {
+            $query['limit'] = $limit;
+            $query['offset'] = $limit * $i;
 
 
-        $this->__unbindAssociations('Objects');
+            $tmpHostsResult = $this->Host->find('all', $query);
 
-        //just the Hosts
-        if (count($hostUuids) > 0) {
-            $hoststatus = $this->Objects->find('all', [
-                'conditions' => [
-                    'name1'         => $hostUuids,
-                    'objecttype_id' => 1,
-                ],
-                'fields'     => [
-                    'Objects.*',
-                    'Hoststatus.*',
-                ],
-                'joins'      => [
-                    [
-                        'table'      => 'nagios_hoststatus',
-                        'type'       => 'LEFT OUTER',
-                        'alias'      => 'Hoststatus',
-                        'conditions' => 'Objects.object_id = Hoststatus.host_object_id',
-                    ],
-                ],
-            ]);
+            $hostUuids = Hash::extract($tmpHostsResult, '{n}.Host.uuid');
+            $hoststatus = $this->Hoststatus->byUuid($hostUuids, $HoststatusFields);
+            foreach ($tmpHostsResult as $hostChunk) {
+                if (!isset($hoststatus[$hostChunk['Host']['uuid']]['Hoststatus'])) {
+                    $hoststatus[$hostChunk['Host']['uuid']] = [
+                        'Hoststatus' => []
+                    ];
+                }
+                $Hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus(
+                    $hoststatus[$hostChunk['Host']['uuid']]['Hoststatus']
+                );
 
-            $currentHostUuids = Hash::extract($hoststatus, '{n}.Objects.name1');
+                $nodes[] = [
+                    'id' => 'Host_' . $hostChunk['Host']['id'],
+                    'hostId' => $hostChunk['Host']['id'],
+                    'label' => $hostChunk['Host']['name'],
+                    'title' => $hostChunk['Host']['name'] . ' (' . $hostChunk['Host']['address'] . ')',
+                    'uuid' => $hostChunk['Host']['uuid'],
+                    'group' => $this->StatusMap->getNodeGroupName($hostChunk['Host']['disabled'], $Hoststatus)
+                ];
 
-            foreach ($currentHostUuids as $key => $currentHostUuid) {
-                $hostServiceStatus = $this->Objects->find('all', [
-                    'recursive'  => -1,
-                    'conditions' => [
-                        'name1'         => $currentHostUuid,
-                        'objecttype_id' => 2,
-                    ],
-                    'fields'     => [
-                        'Objects.*',
-                        'Servicetemplate.name',
-                        'Servicetemplate.description',
-                        'Servicestatus.*',
-                        'Service.name',
-                        'Service.description',
-                    ],
-                    'joins'      => [
-                        [
-                            'table'      => 'services',
-                            'alias'      => 'Service',
-                            'conditions' => [
-                                'Objects.name2 = Service.uuid',
-                            ],
+                foreach ($hostChunk['Parenthost'] as $parentHost) {
+                    $edges[] = [
+                        'from' => 'Host_' . $hostChunk['Host']['id'],
+                        'to' => 'Host_' . $parentHost['id'],
+                        'color' => [
+                            'inherit' => 'to',
                         ],
-                        [
-                            'table'      => 'servicetemplates',
-                            'type'       => 'INNER',
-                            'alias'      => 'Servicetemplate',
-                            'conditions' => [
-                                'Servicetemplate.id = Service.servicetemplate_id',
-                            ],
-                        ],
-                        [
-                            'table'      => 'nagios_servicestatus',
-                            'type'       => 'LEFT OUTER',
-                            'alias'      => 'Servicestatus',
-                            'conditions' => 'Objects.object_id = Servicestatus.service_object_id',
-                        ],
-                    ],
-                ]);
-                $hoststatus[$key]['Hoststatus']['Servicestatus'] = $hostServiceStatus;
+                        'arrows' => 'to'
+                    ];
+                }
             }
-            //debug($hoststatus);
         }
 
-        //just the Services
-        if (count($serviceUuids) > 0) {
-            $this->loadModel('Service');
-            $servicestatus = $this->Objects->find('all', [
-                'recursive'  => -1,
-                'conditions' => [
-                    'name2'         => $serviceUuids,
-                    'objecttype_id' => 2,
-                ],
-                'fields'     => [
-                    'Objects.*',
-                    'Servicetemplate.name',
-                    'Servicetemplate.description',
-                    'Servicestatus.*',
-                    'Service.name',
-                    'Service.description',
-                ],
-                'joins'      => [
-                    [
-                        'table'      => 'services',
-                        'alias'      => 'Service',
-                        'conditions' => [
-                            'Objects.name2 = Service.uuid',
-                        ],
-                    ],
-                    [
-                        'table'      => 'servicetemplates',
-                        'type'       => 'INNER',
-                        'alias'      => 'Servicetemplate',
-                        'conditions' => [
-                            'Servicetemplate.id = Service.servicetemplate_id',
-                        ],
-                    ],
-                    [
-                        'table'      => 'nagios_servicestatus',
-                        'type'       => 'LEFT OUTER',
-                        'alias'      => 'Servicestatus',
-                        'conditions' => 'Objects.object_id = Servicestatus.service_object_id',
-                    ],
-                ],
-            ]);
-        }
+        $statusMap = [
+            'nodes' => $nodes,
+            'edges' => $edges
+        ];
 
-        //insert the Host UUID into the servicegadgets (eg. for RRDs)
-        /*foreach ($serviceGadgetUuids as $key => $serviceGadgetUuid) {
-            $map_gadgets[$key]['Service']['host_uuid'] = $this->hostUuidFromServiceUuid($serviceGadgetUuid)[0];
-        }*/
 
-        //$backgroundThumbs = $this->Background->findBackgrounds();
-        //$iconSets = $this->Background->findIconsets();
-        //$icons = $this->Background->findIcons();
-        if (!empty($map_lines)) {
-            $this->Frontend->setJson('map_lines', Hash::Extract($map_lines, '{n}.Mapline'));
-        }
-
-        if (!empty($map_gadgets)) {
-            $this->Frontend->setJson('map_gadgets', Hash::Extract($map_gadgets, '{n}.Mapgadget'));
-        }
-        $this->set(compact([
-            'map',
-            'map_items',
-            'mapstatus',
-            'map_lines',
-            'map_gadgets',
-            'map_texts',
-            'backgroundThumbs',
-            'iconSets',
-            'hoststatus',
-            'servicestatus',
-            'hostgroup',
-            'servicegroup',
-            'isFullscreen',
-            'icons',
-        ]));
+        $this->set(compact(['statusMap', 'hasBrowserRight']));
+        $this->set('_serialize', ['statusMap', 'hasBrowserRight']);
     }
 
+    /**
+     * @param int | null $hostId
+     * @property HoststatusFields $HoststatusFields
+     * @property ServicestatusFields $ServicestatusFields
+     *
+     */
+    public function hostAndServicesSummaryStatus($hostId = null) {
+        $this->layout = 'blank';
+        if (!$hostId) {
+            throw new NotFoundException(__('Invalid request parameters'));
+        }
+        $serviceUuids = Hash::extract(
+            $this->Service->find('all', [
+                    'recursive' => -1,
+                    'fields' => [
+                        'Service.uuid'
+                    ],
+                    'conditions' => [
+                        'Service.host_id' => $hostId
+                    ]
+                ]
+            ),
+            '{n}.Service.uuid'
+        );
+        $ServicestatusFields = new ServicestatusFields($this->DbBackend);
+        $ServicestatusFields->currentState()
+            ->problemHasBeenAcknowledged()
+            ->activeChecksEnabled()
+            ->scheduledDowntimeDepth();
+        $servicestatus = $this->Servicestatus->byUuids($serviceUuids, $ServicestatusFields);
+
+        $serviceStateSummary = $this->Service->getServiceStateSummary($servicestatus);
+
+        $this->set(compact(['serviceStateSummary', 'hostId']));
+        $this->set('_serialize', ['serviceStateSummary']);
+    }
 }

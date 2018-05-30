@@ -86,7 +86,7 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
 
                     <div class="jarviswidget-ctrls" role="menu"></div>
                     <span class="widget-icon"> <i class="fa fa-history"></i> </span>
-                    <h2><?php echo __('State history'); ?> </h2>
+                    <h2><?php echo __('Host state history'); ?> </h2>
                 </header>
 
 
@@ -266,7 +266,9 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
                             </div>
                         </div>
 
+                        <scroll scroll="scroll" click-action="changepage" ng-if="scroll"></scroll>
                         <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>
+                        <?php echo $this->element('paginator_or_scroll'); ?>
                     </div>
                 </div>
             </div>

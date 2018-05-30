@@ -23,10 +23,22 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+/**
+ * Class ProfileController
+ * @property User User
+ * @property SessionComponent Session
+ * @property AppAuthComponent Auth
+ * @property Systemsetting Systemsetting
+ * @property Apikey Apikey
+ */
 class ProfileController extends AppController
 {
-    public $layout = 'Admin.default';
-    public $uses = ['User', 'Systemsetting'];
+    public $layout = 'angularjs';
+    public $uses = [
+        'User',
+        'Systemsetting',
+        'Apikey'
+    ];
 
     public $components = ['Upload'];
 
@@ -46,7 +58,9 @@ class ProfileController extends AppController
             'conditions' => [
                 'User.id' => $this->Auth->user('id'),
             ],
-            'contain'    => false,
+            'contain'    => [
+                'Apikey'
+            ],
         ]);
 
         //Format: https://secure.php.net/manual/en/function.strftime.php
@@ -173,6 +187,139 @@ class ProfileController extends AppController
         $this->set(compact('user', 'systemsettings', 'dateformats', 'selectedUserTime', 'paginatorLength'));
     }
 
+    public function apikey(){
+        if(!$this->isApiRequest()){
+            throw new MethodNotAllowedException('Only API requests.');
+        }
+
+        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+
+        if($this->request->is('get')){
+            $id = $this->request->query('id');
+            if(is_numeric($id)){
+                //Get an api key by id and user_id
+                if(!$this->Apikey->exists($id)){
+                    throw new NotFoundException(__('Invalid API key'));
+                }
+                $apikey = $this->Apikey->find('first', [
+                    'recursive' => -1,
+                    'conditions' => [
+                        'Apikey.user_id' => $User->getId(),
+                        'Apikey.id' => $id
+                    ]
+                ]);
+                $Apikey = new \itnovum\openITCOCKPIT\Core\Views\Apikey($apikey);
+                $this->set('apikey', $Apikey->toArray());
+                $this->set('_serialize', ['apikey']);
+                return;
+            }
+
+            //Return all api keys of the user
+            $apikeysResult = $this->Apikey->find('all', [
+                'recursive' => -1,
+                'conditions' => [
+                    'Apikey.user_id' => $User->getId()
+                ]
+            ]);
+
+            $apikeys = [];
+            foreach($apikeysResult as $apikey){
+                $Apikey = new \itnovum\openITCOCKPIT\Core\Views\Apikey($apikey);
+                $apikeys[] = $Apikey->toArray();
+            }
+
+            $this->set('apikeys', $apikeys);
+            $this->set('_serialize', ['apikeys']);
+            return;
+        }
+
+        if($this->request->is('post')){
+            //Update an api key by id
+            if(isset($this->request->data['Apikey']['id'])){
+                $id = $this->request->data['Apikey']['id'];
+                $apiKey = $this->Apikey->find('first', [
+                    'recursive' => -1,
+                    'conditions' => [
+                        'Apikey.id' => $id,
+                        'Apikey.user_id' => $User->getId()
+                    ]
+                ]);
+
+                if(empty($apiKey)){
+                    throw new NotFoundException('Invalide API key');
+                }
+
+                if(!$this->Apikey->save($this->request->data)){
+                    $this->serializeErrorMessageFromModel('Apikey');
+                    return;
+                }
+                $this->set('message', __('API key updated successfully'));
+                $this->set('_serialize', ['message']);
+                return;
+            }
+
+        }
+    }
+
+    public function create_apikey(){
+        $this->layout = 'blank';
+        if(!$this->isAngularJsRequest()){
+            //Only ship template
+            return;
+        }
+
+        if($this->request->is('get')){
+            //Generate new API key
+            $bytes = openssl_random_pseudo_bytes(80, $cstrong);
+            $apikey   = bin2hex($bytes);
+            $this->set('apikey', $apikey);
+            $this->set('_serialize', ['apikey']);
+            return;
+        }
+
+        if($this->request->is('post')){
+            $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+            //Save new API key
+            $apikey = $this->request->data;
+            $apikey['Apikey']['user_id'] = $User->getId();
+
+            $this->Apikey->create();
+            if(!$this->Apikey->save($apikey)){
+                $this->serializeErrorMessageFromModel('Apikey');
+                return;
+            }
+            $this->set('message', __('API key created successfully'));
+            $this->set('_serialize', ['message']);
+            return;
+        }
+    }
+
+    public function delete_apikey($id = null){
+        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+        $apiKey = $this->Apikey->find('first', [
+            'recursive' => -1,
+            'conditions' => [
+                'Apikey.id' => $id,
+                'Apikey.user_id' => $User->getId()
+            ]
+        ]);
+
+        if(empty($apiKey)){
+            throw new NotFoundException('Invalide API key');
+        }
+
+        if($this->Apikey->delete($id)){
+            $this->set('message', __('Api key deleted successfully'));
+            $this->set('_serialize', ['message']);
+            return;
+        }
+
+        $this->response->statusCode(400);
+        $this->set('message', __('Could not delete api key'));
+        $this->set('_serialize', ['message']);
+
+    }
+
     public function deleteImage()
     {
         $user = $this->User->findById($this->Auth->user('id'));
@@ -183,5 +330,11 @@ class ProfileController extends AppController
             }
         }
         $this->redirect(['action' => 'edit']);
+    }
+
+    public function edit_apikey(){
+        $this->layout = 'blank';
+        //Only ship HTML template
+        return;
     }
 }

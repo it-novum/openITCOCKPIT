@@ -23,10 +23,17 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+
+use itnovum\openITCOCKPIT\Core\PHPVersionChecker;
+
 App::uses('AuthComponent', 'Controller/Component');
 App::uses('UserRights', 'Lib');
 App::import('Component', 'Ldap');
 
+/**
+ * Class AppAuthComponent
+ * @property AuthComponent Auth
+ */
 class AppAuthComponent extends AuthComponent {
 
     /**
@@ -63,41 +70,6 @@ class AppAuthComponent extends AuthComponent {
      * @return void
      */
     protected function _settings() {
-        Configure::load('auth_actions');
-
-        $modulePlugins = array_filter(CakePlugin::loaded(), function ($value) {
-            return strpos($value, 'Module') !== false;
-        });
-        foreach ($modulePlugins as $pluginName) {
-            Configure::load($pluginName . '.' . 'auth_actions');
-        }
-
-        $actionConfig = Configure::read('auth_actions');
-
-        $publicActionsConfig = Configure::read('public_actions');
-        $this->AuthActions = new AuthActions($actionConfig, $publicActionsConfig);
-        ClassRegistry::addObject('AuthActions', $this->AuthActions);
-        ClassRegistry::addObject('UserRights', $this->UserRights);
-        ClassRegistry::addObject('AuthComponent', $this);
-
-        // Public Actions
-        $plugin = $this->_controller->plugin;
-        $controller = Inflector::underscore($this->_controller->name);
-        $action = $this->_controller->action;
-
-        $key = $controller;
-        if (!empty($plugin)) {
-            $key = $plugin . '.' . $key;
-        }
-
-        if (isset($publicActionsConfig[$key])) {
-            if ($publicActionsConfig[$key] == '*'
-                || (is_array($publicActionsConfig[$key]) && in_array($action, $publicActionsConfig[$key]))
-            ) {
-                $this->allow($action);
-            }
-        }
-
         $this->authenticate = [
             AuthComponent::ALL => [
                 'userModel' => 'User',
@@ -111,9 +83,12 @@ class AppAuthComponent extends AuthComponent {
                 ],
             ],
             'Form',
+            'Api',
         ];
+
         $this->authError = __('action_not_allowed');
         $this->authorize = ['Controller'];
+
         $this->loginRedirect = [
             'controller' => 'dashboards',
             'action'     => 'index',
@@ -143,6 +118,137 @@ class AppAuthComponent extends AuthComponent {
 
         switch ($method) {
             case 'ldap':
+
+                if (empty($user)) {
+                    return false;
+                }
+
+                if (isset($user['User']['status']) && $user['User']['status'] != Status::ACTIVE) {
+                    return false;
+                }
+
+                $PHPVersionChecker = new PHPVersionChecker();
+                if ($PHPVersionChecker->isVersionGreaterOrEquals7Dot1()) {
+
+                    $samaccountname = $this->request->data('User.samaccountname');
+                    $password = $this->request->data('User.password');
+                    if (empty($samaccountname) || empty($password)) {
+                        return false;
+                    }
+
+                    require_once APP . 'vendor_freedsx_ldap' . DS . 'autoload.php';
+
+                    $ldap = new \FreeDSx\Ldap\LdapClient([
+                        'servers'               => [$systemsettings['FRONTEND']['FRONTEND.LDAP.ADDRESS']],
+                        'port'                  => (int)$systemsettings['FRONTEND']['FRONTEND.LDAP.PORT'],
+                        'ssl_allow_self_signed' => true,
+                        'ssl_validate_cert'     => false,
+                        'use_tls'               => (bool)$systemsettings['FRONTEND']['FRONTEND.LDAP.USE_TLS'],
+                        'base_dn'               => $systemsettings['FRONTEND']['FRONTEND.LDAP.BASEDN'],
+                    ]);
+                    if ((bool)$systemsettings['FRONTEND']['FRONTEND.LDAP.USE_TLS']) {
+                        $ldap->startTls();
+                    }
+
+
+                    try {
+                        $ldap->bind(
+                            sprintf(
+                                '%s%s',
+                                $systemsettings['FRONTEND']['FRONTEND.LDAP.USERNAME'],
+                                $systemsettings['FRONTEND']['FRONTEND.LDAP.SUFFIX']
+                            ),
+                            $systemsettings['FRONTEND']['FRONTEND.LDAP.PASSWORD']
+                        );
+                    } catch (\Exception $e) {
+                        $this->Flash->set(
+                            $e->getMessage(), [
+                                'element' => 'default',
+                                'params'  => [
+                                    'class' => 'alert alert-danger'
+                                ]
+                            ]
+                        );
+                        return false;
+                    }
+
+
+                    $filter = \FreeDSx\Ldap\Search\Filters::andPHP5(
+                        \FreeDSx\Ldap\Search\Filters::raw($systemsettings['FRONTEND']['FRONTEND.LDAP.QUERY']),
+                        \FreeDSx\Ldap\Search\Filters::equal('sAMAccountName', $samaccountname)
+                    );
+                    if ($systemsettings['FRONTEND']['FRONTEND.LDAP.TYPE'] === 'openldap') {
+                        $filter = \FreeDSx\Ldap\Search\Filters::andPHP5(
+                            \FreeDSx\Ldap\Search\Filters::raw($systemsettings['FRONTEND']['FRONTEND.LDAP.QUERY']),
+                            \FreeDSx\Ldap\Search\Filters::equal('dn', $samaccountname)
+                        );
+                    }
+
+
+                    $search = FreeDSx\Ldap\Operations::search($filter, 'cn', 'memberof', 'dn');
+
+                    /** @var \FreeDSx\Ldap\Entry\Entries $entries */
+                    $entries = $ldap->search($search);
+
+                    $userDn = null;
+                    foreach ($entries as $entry) {
+                        /** @var \FreeDSx\Ldap\Entry\Entries $entry */
+
+                        $userDn = (string)$entry->getDn();
+                        $ldap->unbind(); //Remove ldap search account
+
+                        $ldap = new \FreeDSx\Ldap\LdapClient([
+                            # Servers are tried in order until one connects
+                            'servers'               => [$systemsettings['FRONTEND']['FRONTEND.LDAP.ADDRESS']],
+                            'port'                  => (int)$systemsettings['FRONTEND']['FRONTEND.LDAP.PORT'],
+                            'ssl_allow_self_signed' => true,
+                            'ssl_validate_cert'     => false,
+                            'use_tls'               => (bool)$systemsettings['FRONTEND']['FRONTEND.LDAP.USE_TLS'],
+                            'base_dn'               => (bool)$systemsettings['FRONTEND']['FRONTEND.LDAP.BASEDN'],
+                        ]);
+                        if ((bool)$systemsettings['FRONTEND']['FRONTEND.LDAP.USE_TLS']) {
+                            $ldap->startTls();
+                        }
+
+                        if (!empty($userDn)) {
+                            try {
+                                $ldap->bind($userDn, $password);
+
+
+                                if (!isset($user['User']) && !empty($user)) {
+                                    return parent::login($user);
+                                }
+                                return parent::login($user['User']);
+                            } catch (\FreeDSx\Ldap\Exception\BindException $e) {
+                                if ($e->getCode() === \FreeDSx\Ldap\Operation\ResultCode::INVALID_CREDENTIALS) {
+                                    //Bad password
+                                    return false;
+                                }
+                                $this->Flash->set(
+                                    $e->getMessage(), [
+                                        'element' => 'default',
+                                        'params'  => [
+                                            'class' => 'alert alert-danger'
+                                        ]
+                                    ]
+                                );
+                                return false;
+                            } catch (\Exception $e) {
+                                $this->Flash->set(
+                                    $e->getMessage(), [
+                                        'element' => 'default',
+                                        'params'  => [
+                                            'class' => 'alert alert-danger'
+                                        ]
+                                    ]
+                                );
+                                return false;
+                            }
+                        }
+                    }
+                    return false;
+                }
+
                 /* do the LDAP stuff
                  * If the login request comes from login.ctp, we use the credentials out of $_REQUEST
                  * If the request is from $this->autoLogin(), we use the credentials out of CT_USER cookie
@@ -191,7 +297,11 @@ class AppAuthComponent extends AuthComponent {
                 break;
 
             default:
-                $result = parent::login($user['User']);
+                if (!isset($user['User']) && !empty($user)) {
+                    $result = parent::login($user);
+                } else {
+                    $result = parent::login($user['User']);
+                }
                 break;
         }
 
@@ -306,7 +416,7 @@ class AppAuthComponent extends AuthComponent {
     }
 
     /**
-     * @return void
+     * @return string
      */
     public function logout() {
         $this->Session->delete('Auth');
@@ -346,18 +456,20 @@ class AppAuthComponent extends AuthComponent {
     }
 
     /**
-     * Checks if the user has the given right/permission
-     *
-     * @param string $right
-     *
-     * @return bool
+     * Try to find the user for for stateless login
+     * @param CakeRequest $request
+     * @return bool|mixed
      */
-    public function hasRight($right) {
-        if (!$this->loggedIn()) {
-            return false;
+    public function tryToGetUser(CakeRequest $request) {
+        $this->constructAuthenticate();
+        foreach ($this->_authenticateObjects as $auth) {
+            $user = $auth->getUser($request);
+            if (!empty($user) && is_array($user)) {
+                return $user;
+            }
         }
-
-        return $this->UserRights->userHasRight($this->user(), $right);
+        return false;
     }
+
 }
 

@@ -1,7 +1,6 @@
 angular.module('openITCOCKPIT')
     .controller('MapsIndexController', ['$scope', '$http', 'SortService', 'MassChangeService', function($scope, $http, SortService, MassChangeService){
 
-
         SortService.setSort('Map.name');
         SortService.setDirection('asc');
         $scope.currentPage = 1;

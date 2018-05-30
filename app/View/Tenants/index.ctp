@@ -35,7 +35,7 @@
         </h1>
     </div>
 </div>
-
+<massdelete></massdelete>
 
 <section id="widget-grid" class="">
     <div class="row">
@@ -43,112 +43,154 @@
             <div class="jarviswidget jarviswidget-color-blueDark" id="wid-id-1" data-widget-editbutton="false">
                 <header>
                     <div class="widget-toolbar" role="menu">
-                        <?php
-                        //You need root privileges to create a new tenant
-                        if ($this->Acl->hasPermission('add') && $hasRootPrivileges === true):
-                            echo $this->Html->link(__('New'), '/'.$this->params['controller'].'/add', ['class' => 'btn btn-xs btn-success', 'icon' => 'fa fa-plus']);
-                            echo " "; //Fix HTML
-                        endif;
-                        echo $this->Html->link(__('Filter'), 'javascript:', ['class' => 'oitc-list-filter btn btn-xs btn-primary toggle', 'hide-on-render' => 'true', 'icon' => 'fa fa-filter']);
-                        if ($isFilter):
-                            echo " "; //Fix HTML
-                            echo $this->ListFilter->resetLink(null, ['class' => 'btn-danger btn-xs', 'icon' => 'fa fa-times']);
-                        endif;
-                        ?>
-                    </div>
-                    <span class="widget-icon hidden-mobile"> <i class="fa fa-home"></i> </span>
-                    <h2 class="hidden-mobile"><?php echo __('Tenants'); ?></h2>
+                        <button type="button" class="btn btn-xs btn-default" ng-click="load()">
+                            <i class="fa fa-refresh"></i>
+                            <?php echo __('Refresh'); ?>
+                        </button>
 
+                        <?php if ($this->Acl->hasPermission('add')): ?>
+                            <a href="/tenants/add" class="btn btn-xs btn-success">
+                                <i class="fa fa-plus"></i>
+                                <?php echo __('New'); ?>
+                            </a>
+                        <?php endif; ?>
+                        <button type="button" class="btn btn-xs btn-primary" ng-click="triggerFilter()">
+                            <i class="fa fa-filter"></i>
+                            <?php echo __('Filter'); ?>
+                        </button>
+                    </div>
+
+                    <div class="jarviswidget-ctrls" role="menu">
+                    </div>
+                    <span class="widget-icon hidden-mobile"> <i class="fa fa-cogs"></i> </span>
+                    <h2 class="hidden-mobile"><?php echo __('Tenants'); ?></h2>
                 </header>
                 <div>
                     <div class="widget-body no-padding">
-                        <?php echo $this->ListFilter->renderFilterbox($filters, [], '<i class="fa fa-filter"></i> '.__('Filter'), false, false); ?>
-                        <div class="tab-content">
-                            <div class="mobile_table">
-                                <table id="datatable_fixed_column"
-                                       class="table table-striped table-hover table-bordered smart-form">
-                                    <thead>
-                                    <tr>
-                                        <?php $order = $this->Paginator->param('order'); ?>
-                                        <th class="no-sort" style="width: 15px;"><i
-                                                    class="fa fa-check-square-o fa-lg"></i></th>
-                                        <th><?php echo $this->Utils->getDirection($order, 'Tenant.name');
-                                            echo $this->Paginator->sort('Tenant.name', __('Tenant_name')); ?></th>
-                                        <th><?php echo $this->Utils->getDirection($order, 'Tenant.description');
-                                            echo $this->Paginator->sort('Tenant.description', __('Description')); ?></th>
-                                        <th><?php echo $this->Utils->getDirection($order, 'Tenant.is_active');
-                                            echo $this->Paginator->sort('Tenant.is_active', __('Is active')); ?></th>
-                                        <th>&nbsp;</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    <?php foreach ($all_tenants as $tenant):
-                                        $allowEdit = $this->Acl->isWritableContainer($tenant['Container']['id']);
-                                        ?>
-                                        <tr>
-                                            <td>
-                                                <?php if ($this->Acl->hasPermission('edit') && $allowEdit): ?>
-                                                    <input class="massChange" type="checkbox"
-                                                           name="tenant[<?php echo $tenant['Tenant']['id']; ?>]"
-                                                           tenantname="<?php echo h($tenant['Container']['name']); ?>"
-                                                           value="<?php echo $tenant['Tenant']['id']; ?>"/>
-                                                <?php endif; ?>
-                                            </td>
-                                            <td><?php echo $tenant['Container']['name'] ?></td>
-                                            <td><?php echo $tenant['Tenant']['description'] ?></td>
-                                            <td>
-                                                <center>
-                                                    <?php if ($tenant['Tenant']['is_active'] == 1): ?>
-                                                        <i class="fa fa-check fa-lg txt-color-green"></i>
-                                                    <?php else: ?>
-                                                        <i class="fa fa-power-off fa-lg txt-color-red"></i>
-                                                    <?php endif; ?>
-                                                </center>
-                                            </td>
-                                            <td class="text-center">
-                                                <?php if ($this->Acl->hasPermission('edit') && $allowEdit): ?>
-                                                    <a href="/<?php echo $this->params['controller']; ?>/edit/<?php echo $tenant['Tenant']['id']; ?>"
-                                                       data-original-title="<?php echo __('edit'); ?>"
-                                                       data-placement="left" rel="tooltip" data-container="body"><i
-                                                                id="list_edit"
-                                                                class="fa fa-gear fa-lg txt-color-teal"></i></a>
-                                                <?php endif; ?>
-                                            </td>
-                                        </tr>
-                                    <?php endforeach; ?>
-                                    </tbody>
-                                </table>
-                            </div>
-                            <?php if (empty($all_tenants)): ?>
-                                <div class="noMatch">
-                                    <center>
-                                        <span class="txt-color-red italic"><?php echo __('No entries match the selection'); ?></span>
-                                    </center>
+
+                        <div class="list-filter well" ng-show="showFilter">
+                            <h3><i class="fa fa-filter"></i> <?php echo __('Filter'); ?></h3>
+                            <div class="row">
+                                <div class="col-xs-12 col-md-6">
+                                    <div class="form-group smart-form">
+                                        <label class="input"> <i class="icon-prepend fa fa-cogs"></i>
+                                            <input type="text" class="input-sm"
+                                                   placeholder="<?php echo __('Filter by name'); ?>"
+                                                   ng-model="filter.container.name"
+                                                   ng-model-options="{debounce: 500}">
+                                        </label>
+                                    </div>
                                 </div>
-                            <?php endif; ?>
-                        </div>
-                    </div>
-
-                    <?php echo $this->element('tenant_mass_changes'); ?>
-
-                    <div style="padding: 5px 10px;">
-                        <div class="row">
-                            <div class="col-sm-6">
-                                <div class="dataTables_info" style="line-height: 32px;"
-                                     id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('Page').' {:page} '.__('of').' {:pages}, '.__('Total').' {:count} '.__('entries')); ?></div>
-                            </div>
-                            <div class="col-sm-6 text-right">
-                                <div class="dataTables_paginate paging_bootstrap">
-                                    <?php echo $this->Paginator->pagination([
-                                        'ul' => 'pagination',
-                                    ]); ?>
+                                <div class="col-xs-12 col-md-6">
+                                    <div class="form-group smart-form">
+                                        <label class="input"> <i class="icon-prepend fa fa-filter"></i>
+                                            <input type="text" class="input-sm"
+                                                   placeholder="<?php echo __('Filter by description'); ?>"
+                                                   ng-model="filter.tenant.description"
+                                                   ng-model-options="{debounce: 500}">
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-xs-12">
+                                    <div class="pull-right margin-top-10">
+                                        <button type="button" ng-click="resetFilter()"
+                                                class="btn btn-xs btn-danger">
+                                            <?php echo __('Reset Filter'); ?>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
 
+
+                        <div class="mobile_table">
+                            <table id="tenant_list" class="table table-striped table-hover table-bordered smart-form"
+                                   style="">
+                                <thead>
+                                <tr>
+                                    <th class="no-sort sorting_disabled width-15">
+                                        <i class="fa fa-check-square-o fa-lg"></i>
+                                    </th>
+                                    <th class="no-sort" ng-click="orderBy('Container.name')">
+                                        <i class="fa" ng-class="getSortClass('Container.name')"></i>
+                                        <?php echo __('Tenant name'); ?>
+                                    </th>
+                                    <th class="no-sort" ng-click="orderBy('Tenant.description')">
+                                        <i class="fa" ng-class="getSortClass('Tenant.description')"></i>
+                                        <?php echo __('Description'); ?>
+                                    </th>
+                                    <th class="no-sort" ng-click="orderBy('Tenant.is_active')">
+                                        <i class="fa" ng-class="getSortClass('Tenant.is_active')"></i>
+                                        <?php echo __('Is active'); ?>
+                                    </th>
+                                    <th class="no-sort text-center">
+                                        <i class="fa fa-cog fa-lg"></i>
+                                    </th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr ng-repeat="tenant in tenants">
+                                    <td class="text-center" class="width-15">
+                                        <input type="checkbox"
+                                               ng-model="massChange[tenant.Tenant.id]"
+                                               ng-show="tenant.Tenant.allowEdit">
+                                    </td>
+                                    <td>
+                                        {{ tenant.Container.name }}
+                                    </td>
+                                    <td>
+                                        {{ tenant.Tenant.description }}
+                                    </td>
+                                    <td class="text-center">
+                                        <i ng-if="tenant.Tenant.is_active == 1"
+                                           class="fa fa-check fa-lg txt-color-green"></i>
+                                        <i ng-if="tenant.Tenant.is_active == 0"
+                                           class="fa fa-power-off fa-lg txt-color-red"></i>
+                                    </td>
+                                    <td class="text-center">
+                                        <a href="/tenants/edit/{{tenant.Tenant.id}}"
+                                           ng-if="tenant.Tenant.allowEdit">
+                                            <i class="fa fa-cog fa-lg txt-color-teal"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                            <div class="row margin-top-10 margin-bottom-10">
+                                <div class="row margin-top-10 margin-bottom-10" ng-show="maps.length == 0">
+                                    <div class="col-xs-12 text-center txt-color-red italic">
+                                        <?php echo __('No entries match the selection'); ?>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row margin-top-10 margin-bottom-10">
+                                <div class="col-xs-12 col-md-2 text-muted text-center">
+                                    <span ng-show="selectedElements > 0">({{selectedElements}})</span>
+                                </div>
+                                <div class="col-xs-12 col-md-2">
+                                <span ng-click="selectAll()" class="pointer">
+                                    <i class="fa fa-lg fa-check-square-o"></i>
+                                    <?php echo __('Select all'); ?>
+                                </span>
+                                </div>
+                                <div class="col-xs-12 col-md-2">
+                                <span ng-click="undoSelection()" class="pointer">
+                                    <i class="fa fa-lg fa-square-o"></i>
+                                    <?php echo __('Undo selection'); ?>
+                                </span>
+                                </div>
+                                <div class="col-xs-12 col-md-2 txt-color-red">
+                                <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">
+                                    <i class="fa fa-lg fa-trash-o"></i>
+                                    <?php echo __('Delete all'); ?>
+                                </span>
+                                </div>
+                            </div>
+                            <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>
+                        </div>
+                    </div>
                 </div>
             </div>
-    </div>
+        </article>
     </div>
 </section>

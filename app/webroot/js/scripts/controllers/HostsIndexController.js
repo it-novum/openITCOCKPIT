@@ -8,6 +8,8 @@ angular.module('openITCOCKPIT')
 
         $scope.id = QueryStringService.getCakeId();
 
+        $scope.useScroll = true;
+
 
         /*** Filter Settings ***/
         var defaultFilter = function(){
@@ -53,6 +55,7 @@ angular.module('openITCOCKPIT')
 
             var params = {
                 'angular': true,
+                'scroll': $scope.useScroll,
                 'sort': SortService.getSort(),
                 'page': $scope.currentPage,
                 'direction': SortService.getDirection(),
@@ -74,6 +77,7 @@ angular.module('openITCOCKPIT')
             }).then(function(result){
                 $scope.hosts = result.data.all_hosts;
                 $scope.paging = result.data.paging;
+                $scope.scroll = result.data.scroll;
                 $scope.init = false;
             });
         };
@@ -134,6 +138,7 @@ angular.module('openITCOCKPIT')
 
                 }
             }
+            console.log(objects);
             return objects;
         };
 
@@ -197,6 +202,10 @@ angular.module('openITCOCKPIT')
             }
         };
 
+        $scope.changeMode = function(val){
+            $scope.useScroll = val;
+            $scope.load();
+        };
 
         //Fire on page load
         defaultFilter();

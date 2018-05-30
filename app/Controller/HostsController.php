@@ -39,6 +39,7 @@ use itnovum\openITCOCKPIT\Core\Views\AcknowledgementHost;
 use itnovum\openITCOCKPIT\Core\Views\ContainerPermissions;
 use itnovum\openITCOCKPIT\Core\Views\HostPerfdataChecker;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
+use itnovum\openITCOCKPIT\Database\ScrollIndex;
 use itnovum\openITCOCKPIT\Filter\HostFilter;
 use \itnovum\openITCOCKPIT\Monitoring\QueryHandler;
 use itnovum\openITCOCKPIT\Core\HostSharingPermissions;
@@ -64,7 +65,6 @@ use itnovum\openITCOCKPIT\Core\HostSharingPermissions;
 class HostsController extends AppController {
     public $layout = 'Admin.default';
     public $components = [
-        'Paginator',
         'ListFilter.ListFilter',
         'RequestHandler',
         'CustomValidationErrors',
@@ -177,6 +177,12 @@ class HostsController extends AppController {
             $modelName = 'Hoststatus';
         }
 
+        if ($this->DbBackend->isStatusengine3()) {
+            $query = $this->Host->getHostIndexQueryStatusengine3($HostCondition, $HostFilter->indexFilter());
+            $this->Host->virtualFieldsForIndex();
+            $modelName = 'Host';
+        }
+
         if ($this->isApiRequest() && !$this->isAngularJsRequest()) {
             if (isset($query['limit'])) {
                 unset($query['limit']);
@@ -186,9 +192,17 @@ class HostsController extends AppController {
             $this->set('_serialize', ['all_hosts']);
             return;
         } else {
-            $this->Paginator->settings['page'] = $HostFilter->getPage();
-            $this->Paginator->settings = array_merge($this->Paginator->settings, $query);
-            $hosts = $this->Paginator->paginate($modelName, [], [key($this->Paginator->settings['order'])]);
+            if($this->isScrollRequest()){
+                $this->Paginator->settings['page'] = $HostFilter->getPage();
+                $ScrollIndex = new ScrollIndex($this->Paginator, $this);
+                $hosts = $this->{$modelName}->find('all', array_merge($this->Paginator->settings, $query));
+                $ScrollIndex->determineHasNextPage($hosts);
+                $ScrollIndex->scroll();
+            }else{
+                $this->Paginator->settings['page'] = $HostFilter->getPage();
+                $this->Paginator->settings = array_merge($this->Paginator->settings, $query);
+                $hosts = $this->Paginator->paginate($modelName, [], [key($this->Paginator->settings['order'])]);
+            }
             //debug($this->Host->getDataSource()->getLog(false, false));
         }
 
@@ -232,10 +246,21 @@ class HostsController extends AppController {
         }
 
         $this->set('all_hosts', $all_hosts);
-        $this->set('_serialize', ['all_hosts', 'paging']);
+
+        $toJson = ['all_hosts', 'paging'];
+        if($this->isScrollRequest()){
+            $toJson = ['all_hosts', 'scroll'];
+        }
+        $this->set('_serialize', $toJson);
     }
 
     public function icon() {
+        $this->layout = 'blank';
+        //Only ship HTML Template
+        return;
+    }
+
+    public function hostservicelist() {
         $this->layout = 'blank';
         //Only ship HTML Template
         return;
@@ -314,6 +339,12 @@ class HostsController extends AppController {
             $this->CrateHost->alias = 'Host';
             $modelName = 'CrateHost';
         }
+
+        if ($this->DbBackend->isStatusengine3()) {
+            $query = $this->Host->getHostNotMonitoredQuery($HostCondition, $HostFilter->notMonitoredFilter());
+            $modelName = 'Host';
+        }
+
 
         if ($this->isApiRequest() && !$this->isAngularJsRequest()) {
             if (isset($query['limit'])) {
@@ -2264,12 +2295,21 @@ class HostsController extends AppController {
                 'Host.host_url',
             ],
             'contain'    => [
-                'Container'
+                'Container',
+                'Hosttemplate' => [
+                    'fields' => [
+                        'Hosttemplate.host_url'
+                    ]
+                ]
             ],
             'conditions' => [
                 'Host.id' => $id
             ]
         ]);
+
+        if($rawHost['Host']['host_url'] === '' || $rawHost['Host']['host_url'] === null){
+            $rawHost['Host']['host_url'] = $rawHost['Hosttemplate']['host_url'];
+        }
 
         $containerIdsToCheck = Hash::extract($rawHost, 'Container.{n}.HostsToContainer.container_id');
         $containerIdsToCheck[] = $rawHost['Host']['container_id'];
@@ -2311,6 +2351,7 @@ class HostsController extends AppController {
             $this->set('allowEdit', $allowEdit);
             $this->set('docuExists', $this->Documentation->existsForUuid($rawHost['Host']['uuid']));
             $this->set('QueryHandler', new QueryHandler($this->Systemsetting->getQueryHandlerPath()));
+            $this->set('masterInstanceName', $this->Systemsetting->getMasterInstanceName());
             //Only ship template
             return;
         }
@@ -2389,7 +2430,7 @@ class HostsController extends AppController {
         $HoststatusFields = new HoststatusFields($this->DbBackend);
         $HoststatusFields->wildcard();
         $HoststatusConditions = new HoststatusConditions($this->DbBackend);
-        $HoststatusConditions->hostsDownAndUnreachable();
+        //$HoststatusConditions->hostsDownAndUnreachable();
 
         $hoststatus = $this->Hoststatus->byUuid($host['Host']['uuid'], $HoststatusFields);
         if (empty($hoststatus)) {
@@ -2461,7 +2502,7 @@ class HostsController extends AppController {
 
         $downtime = [];
         if ($Hoststatus->isInDowntime()) {
-            $downtime = $this->DowntimeHost->byHostUuid($host['Host']['uuid']);
+            $downtime = $this->DowntimeHost->byHostUuid($host['Host']['uuid'], true);
             if(!empty($downtime)) {
                 $Downtime = new \itnovum\openITCOCKPIT\Core\Views\Downtime($downtime['DowntimeHost'], $allowEdit, $UserTime);
                 $downtime = $Downtime->toArray();
@@ -2857,6 +2898,12 @@ class HostsController extends AppController {
         if ($this->DbBackend->isCrateDb()) {
             $query = $this->Hoststatus->getHostIndexQuery($HostCondition, $HostFilter->indexFilter());
             $modelName = 'Hoststatus';
+        }
+
+        if ($this->DbBackend->isStatusengine3()) {
+            $query = $this->Host->getHostIndexQueryStatusengine3($HostCondition, $HostFilter->indexFilter());
+            $this->Host->virtualFieldsForIndex();
+            $modelName = 'Host';
         }
 
         if (isset($query['limit'])) {
@@ -3367,5 +3414,31 @@ class HostsController extends AppController {
         unset($host['Hosttemplate']);
         $this->set('host', $host);
         $this->set('_serialize', ['host']);
+    }
+
+    /**
+     * @param string | null $uuid
+     */
+    public function hoststatus($uuid = null) {
+        if (!$this->isApiRequest()) {
+            throw new MethodNotAllowedException();
+        }
+        if (!$uuid) {
+            throw new NotFoundException(__('Invalid request parameter'));
+        }
+
+        $HoststatusFields = new HoststatusFields($this->DbBackend);
+        $HoststatusFields->currentState()
+            ->isHardstate()
+            ->scheduledDowntimeDepth()
+            ->problemHasBeenAcknowledged();
+        $hoststatus = $this->Hoststatus->byUuid($uuid, $HoststatusFields);
+        if (empty($hoststatus)) {
+            $hoststatus = [
+                'Hoststatus' => []
+            ];
+        }
+        $this->set('hoststatus', $hoststatus);
+        $this->set('_serialize', ['hoststatus']);
     }
 }

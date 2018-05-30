@@ -29,41 +29,26 @@ class Logentry extends NagiosModuleAppModel
     public $useTable = 'logentries';
     public $primaryKey = 'logentry_id';
     public $tablePrefix = 'nagios_';
-    public $maxBit = 2096895;
 
-    public function listSettings($requestData)
-    {
-        $return = [
-            'conditions'   => [],
-            'paginator'    => [],
-            'Listsettings' => [],
-        ];
-
-        if (isset($requestData['Listsettings']['limit']) && is_numeric($requestData['Listsettings']['limit'])) {
-            $return['paginator']['limit'] = $requestData['Listsettings']['limit'];
-            $return['Listsettings']['limit'] = $return['paginator']['limit'];
-        }
-
-        if (isset($requestData['Listsettings']['logentry_type'])) {
-            if (!is_array($requestData['Listsettings']['logentry_type'])) {
-                $requestData['Listsettings']['logentry_type'] = [$requestData['Listsettings']['logentry_type']];
-            }
-            $bitSelector = array_sum($requestData['Listsettings']['logentry_type']);
-            if ($bitSelector < $this->maxBit) {
-                //2096895 is the value, if the user ticket all checkboxes.
-                $return['conditions'] = ['Logentry.logentry_type & '.$bitSelector];
-                $return['Listsettings']['logentry_type'] = $bitSelector;
-            }
-        }
-
-        return $return;
-
-    }
 
     public function types()
     {
         $LogentryTypes = new \itnovum\openITCOCKPIT\Core\ValueObjects\LogentryTypes();
         return $LogentryTypes->getTypes();
+    }
+
+    /**
+     * @param int $bitValue
+     * @return array
+     */
+    public function getTypesByBitValue($bitValue){
+        $types = [];
+        foreach($this->types() as $type => $typeName){
+            if($type & $bitValue){
+                $types[] = $type;
+            }
+        }
+        return $types;
     }
 
 }

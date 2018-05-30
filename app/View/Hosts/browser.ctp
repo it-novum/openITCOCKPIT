@@ -229,6 +229,23 @@ if (!$QueryHandler->exists()): ?>
                             <div class="row" style="display: flex;">
                                 <div class="col-xs-12 col-sm-6 col-md-7 col-lg-9  padding-10">
 
+                                    <div class="row" ng-show="mergedHost.Host.disabled">
+                                        <div class="col-xs-12 margin-bottom-10">
+                                            <div class="browser-border padding-10 bg-warning" style="width: 100%;">
+                                                <div class="row">
+                                                    <div class="col-xs-12 col-sm-11 no-padding">
+                                                        <div>
+                                                            <h4 class="no-padding">
+                                                                <i class="fa fa-plug"></i>
+                                                                <?php echo __('This host is currently disabled!'); ?>
+                                                            </h4>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                     <div class="row">
                                         <div class="col-xs-12">
                                             <h3 class="margin-top-5"><?php echo __('Status overview'); ?></h3>
@@ -431,7 +448,7 @@ if (!$QueryHandler->exists()): ?>
                                                 <tr>
                                                     <th class="width-130"><?php echo __('Parent host state'); ?></th>
                                                     <th><?php echo __('Parent host name'); ?></th>
-                                                    <th><?php echo __('Laste state change'); ?></th>
+                                                    <th><?php echo __('Last state change'); ?></th>
                                                 </tr>
                                                 <tr ng-repeat="parenthost in parenthosts">
                                                     <td class="text-center">
@@ -756,7 +773,7 @@ if (!$QueryHandler->exists()): ?>
 
                                                     <td>
                                                         <?php if ($this->Acl->hasPermission('index', 'browsers')): ?>
-                                                            <a href="/browsers/tenantBrowser/{{mergedHost.Host.container_id}}"
+                                                            <a href="/browsers/index?containerId={{mergedHost.Host.container_id}}"
                                                                ng-if="mergedHost.Host.container_id != 1">
                                                                 /{{mainContainer}}
                                                             </a>
@@ -779,7 +796,7 @@ if (!$QueryHandler->exists()): ?>
 
                                                         <?php if ($this->Acl->hasPermission('index', 'browsers')): ?>
                                                             <div ng-repeat="(key, value) in sharedContainers">
-                                                                <a href="/browsers/tenantBrowser/{{key}}"
+                                                                <a href="/browsers/index?containerId={{key}}"
                                                                    ng-if="key != 1">
                                                                     /{{value}}
                                                                 </a>
@@ -812,6 +829,13 @@ if (!$QueryHandler->exists()): ?>
                                                                 satellite-id="mergedHost.Host.satelliteId"
                                                                 ng-if="mergedHost.Host.is_satellite_host"
                                                         ></satellite-name>
+                                                    </td>
+                                                </tr>
+
+                                                <tr ng-show="mergedHost.Host.is_satellite_host === false">
+                                                    <td><?php echo __('Instance'); ?></td>
+                                                    <td>
+                                                        <?php echo h($masterInstanceName); ?>
                                                     </td>
                                                 </tr>
 
@@ -1058,11 +1082,22 @@ if (!$QueryHandler->exists()): ?>
                                         </td>
 
                                         <td class="text-center">
-                                            <i class="fa fa-lg fa-area-chart"
-                                               ng-mouseenter="mouseenter($event, mergedHost.Host.uuid, service)"
-                                               ng-mouseleave="mouseleave()"
-                                               ng-if="service.Service.has_graph">
-                                            </i>
+                                            <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
+                                                <a href="/services/grapherSwitch/{{ service.Service.id }}"
+                                                   class="txt-color-blueDark">
+                                                    <i class="fa fa-lg fa-area-chart"
+                                                       ng-mouseenter="mouseenter($event, mergedHost.Host.uuid, service)"
+                                                       ng-mouseleave="mouseleave()"
+                                                       ng-if="service.Service.has_graph">
+                                                    </i>
+                                                </a>
+                                            <?php else: ?>
+                                                <i class="fa fa-lg fa-area-chart"
+                                                   ng-mouseenter="mouseenter($event, mergedHost.Host.uuid, service)"
+                                                   ng-mouseleave="mouseleave()"
+                                                   ng-if="service.Service.has_graph">
+                                                </i>
+                                            <?php endif; ?>
                                         </td>
 
                                         <td class="text-center">

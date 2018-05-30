@@ -119,10 +119,10 @@
                                     endif;
                                     $html2 .= '<span class="text-primary">'.$paramName.'</span>:<span class="txt-color-magenta">'.(is_null($paramValue) ? '$required' : $paramValue).'</span>/';
                                 endforeach;
-                                $prehtml = 'https://'.h($_SERVER['SERVER_ADDR']).'/nagios_module/cmd/'.$internalMethod.'/<span class="text-primary">api_key</span>:<span class="txt-color-orange">API_KEY</span>/<span class="text-primary">'.$commandKey.'</span>:<span class="txt-color-magenta">'.$commandValue.'</span>/';
+                                $prehtml = 'https://'.h($_SERVER['SERVER_ADDR']).'/nagios_module/cmd/'.$internalMethod.'/<span class="text-primary">'.$commandKey.'</span>:<span class="txt-color-magenta">'.$commandValue.'</span>/';
                                 ?>
                                 <code>
-	 									<span class="txt-color-blueDark"><?= $prehtml.$html ?>
+                                    <span class="txt-color-blueDark"><?php echo $prehtml.$html ?></span>.json?<span class="text-primary">apikey=</span><span class="txt-color-orange">USER_API_KEY</span>
                                 </code>
                             </div>
                             <br/>
@@ -130,15 +130,25 @@
                             <div class="well">
                                 <!-- Stupid HTML added strang withspaces :/ So we do the php -force way -->
                                 <code>
-                                    <span class="txt-color-blueDark"><?= $prehtml.$html2 ?></span>
+                                    <span class="txt-color-blueDark"><?php echo $prehtml.$html2 ?></span>.json?<span class="text-primary">apikey=</span><span class="txt-color-orange">USER_API_KEY</span>
                                 </code>
                             </div>
-                            <br/>
-                            <strong><?php echo __('Notice'); ?>
-                                :</strong> <?php echo __('You need to replace the value for '); ?><span
-                                    class="txt-color-orange"><?php echo __('API_KEY'); ?></span> <?php echo __('manually!'); ?>
                         </div>
                     <?php endforeach; ?>
+
+                    <br />
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <i class="fa fa-info-circle text-info"></i>
+                            <?php echo __('You need to create a user defined API key.'); ?>
+
+                            <a href="javascript:void(0);" data-toggle="modal" data-target="#ApiKeyOverviewModal">
+                                <?php echo __('Click here for help'); ?>
+                            </a>
+                        </div>
+                    </div>
+                    <?php echo $this->element('apikey_help'); ?>
+
                 </div>
             </div>
         </div>

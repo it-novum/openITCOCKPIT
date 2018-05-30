@@ -112,13 +112,16 @@ class Downtimereport extends AppModel
     public function generateDowntimereportData($timeSlices, $stateHistoryWithObject, $checkHardState, $objectHost = false)
     {
         $stateArray = array_fill(0, ($objectHost) ? 3 : 4, 0); // host states => 0,1,2; service statea => 0,1,2,3
-        $stateOk = 0;
         $stateUnknown = ($objectHost) ? 2 : 3;//if the end of date in the future
         $evaluationData = $stateArray;
 
-        $stateHistoryArray = Hash::extract($stateHistoryWithObject, '{n}.Statehistory.{n}');
+        if($objectHost === true){
+            $stateHistoryArray = Hash::extract($stateHistoryWithObject, '{n}.StatehistoryHost');
+        }else{
+            $stateHistoryArray = Hash::extract($stateHistoryWithObject, '{n}.StatehistoryService');
+        }
+
         unset($stateHistoryWithObject);
-        $outageState = ($objectHost) ? 1 : 2; // 1 for host down and 2 for service critical
         $setInitialState = false;
         $currentState = 0;
         foreach ($timeSlices as $timeSliceKey => $timeSlice) {

@@ -302,7 +302,7 @@ $this->Paginator->options(['url' => $this->params['named']]);
                                    style="">
                                 <thead>
                                 <tr>
-                                    <th colspan="2" class="no-sort" ng-click="orderBy('Hoststatus.current_state')">
+                                    <th colspan="2" class="no-sort width-90" ng-click="orderBy('Hoststatus.current_state')">
                                         <i class="fa" ng-class="getSortClass('Hoststatus.current_state')"></i>
                                         <?php echo __('Hoststatus'); ?>
                                     </th>
@@ -652,7 +652,9 @@ $this->Paginator->options(['url' => $this->params['named']]);
                             </div>
                         </div>
 
+                        <scroll scroll="scroll" click-action="changepage" ng-if="scroll"></scroll>
                         <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>
+                        <?php echo $this->element('paginator_or_scroll'); ?>
                     </div>
                 </div>
             </div>

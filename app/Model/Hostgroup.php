@@ -191,24 +191,25 @@ class Hostgroup extends AppModel
     public function getHostgroupsForAngular(HostgroupConditions $HostgroupConditions, $selected = []) {
         $query = [
             'recursive'  => -1,
-            'fields' => 'Containers.name',
+            'fields' => 'Container.name',
             'joins'      => [
                 [
                     'table'      => 'containers',
-                    'alias'      => 'Containers',
+                    'alias'      => 'Container',
                     'type'       => 'INNER',
                     'conditions' => [
-                        'Hostgroup.container_id = Containers.id',
+                        'Hostgroup.container_id = Container.id',
                     ],
                 ],
             ],
             'conditions' => $HostgroupConditions->getConditionsForFind(),
             'order'      => [
-                'Containers.name' => 'ASC',
+                'Container.name' => 'ASC',
             ],
             'group' => [
-                'Containers.id'
-            ]
+                'Container.id'
+            ],
+            'limit' => self::ITN_AJAX_LIMIT
         ];
         $hostgroupsWithLimit = $this->find('list', $query);
 
@@ -216,22 +217,22 @@ class Hostgroup extends AppModel
         if (!empty($selected)) {
             $query = [
                 'recursive'  => -1,
-                'fields' => 'Containers.name',
+                'fields' => 'Container.name',
                 'joins'      => [
                     [
                         'table'      => 'containers',
-                        'alias'      => 'Containers',
+                        'alias'      => 'Container',
                         'type'       => 'INNER',
                         'conditions' => [
-                            'Hostgroup.container_id = Containers.id',
+                            'Hostgroup.container_id = Container.id',
                         ],
                     ],
                 ],
                 'conditions' => [
-                    'Containers.id' => $selected
+                    'Container.id' => $selected
                 ],
                 'order'      => [
-                    'Containers.name' => 'ASC',
+                    'Container.name' => 'ASC',
                 ],
             ];
             $selectedHostgroups = $this->find('list', $query);

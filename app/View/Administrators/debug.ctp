@@ -24,12 +24,23 @@
 //	confirmation.
 ?>
 <div class="row">
-    <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
+    <div class="col-xs-12 col-lg-10">
         <h1 class="page-title txt-color-blueDark">
             <i class="fa fa-bug fa-fw "></i>
             <?php echo __('Debugging information'); ?>
         </h1>
     </div>
+
+    <?php if($isDebuggingMode): ?>
+    <div class="col-xs-12 col-lg-2">
+        <div class="pull-right">
+            <a href="/Administrators/querylog" class="btn btn-default btn-xl btn-block">
+                <i class="fa fa-database"></i>
+                <?php echo __('Show SQL query log'); ?>
+            </a>
+        </div>
+    </div>
+    <?php endif; ?>
 </div>
 
 <?php if (!$gearmanReachable): ?>

@@ -82,16 +82,7 @@ class Servicegroup extends AppModel {
     }
 
     public function servicegroupsByContainerId($container_ids = [], $type = 'all', $index = 'id') {
-        //Lookup for the tenant container of $container_id
-        $this->Container = ClassRegistry::init('Container');
-        $tenant = [];
-        foreach ($container_ids as $container_id) {
-            $tenant_arr = $this->Container->getTenantByContainer($container_id);
-            if (is_array($tenant_arr)) {
-                $tenant[] = key($tenant_arr);
-            }
-        }
-        if (is_array($tenant)) {
+        if (!empty($container_ids)) {
             switch ($type) {
                 case 'all':
                     return $this->find('all', [
@@ -99,7 +90,7 @@ class Servicegroup extends AppModel {
                         'contain'   => [
                             'Container' => [
                                 'conditions' => [
-                                    'Container.parent_id'        => array_unique(array_values($tenant)),
+                                    'Container.parent_id'        => $container_ids,
                                     'Container.containertype_id' => CT_SERVICEGROUP,
                                 ],
 
@@ -117,7 +108,7 @@ class Servicegroup extends AppModel {
                         'contain'   => [
                             'Container' => [
                                 'conditions' => [
-                                    'Container.parent_id'        => array_unique(array_values($tenant)),
+                                    'Container.parent_id'        => $container_ids,
                                     'Container.containertype_id' => CT_SERVICEGROUP,
                                 ],
 
@@ -130,11 +121,9 @@ class Servicegroup extends AppModel {
                     foreach ($results as $result) {
                         $return[$result['Servicegroup'][$index]] = $result['Container']['name'];
                     }
-
                     return $return;
             }
         }
-
         return [];
     }
 }

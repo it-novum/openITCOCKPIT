@@ -50,16 +50,15 @@ class CurrentstatereportsController extends AppController {
         $serviceStatusExists = false;
         //ContainerID => 1 for ROOT Container
 
-        $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS, $this->hasRootPrivileges);
-        $services = Hash::combine($this->Service->servicesByHostContainerIds($containerIds),
-            '{n}.Service.id', '{n}'
-        );
-        $this->set(compact(['services', 'userContainerId']));
+        $this->set(compact(['userContainerId']));
 
 
         if ($this->request->is('post') || $this->request->is('put')) {
             $this->Currentstatereport->set($this->request->data);
             if ($this->Currentstatereport->validates()) {
+                $services = Hash::combine($this->Service->servicesByHostContainerIds($this->MY_RIGHTS),
+                    '{n}.Service.id', '{n}'
+                );
                 foreach ($this->request->data('Currentstatereport.Service') as $serviceId) {
                     if (empty($services[$serviceId]['Service']['uuid'])) continue;
                     $ServicestatusFields = new ServicestatusFields($this->DbBackend);
@@ -148,15 +147,6 @@ class CurrentstatereportsController extends AppController {
 
                 return;
 
-                /*
-                //Plain PHP workaround
-                $this->redirect([
-                    'action' => 'createPdfReport',
-                    'ext'    => 'pdf',
-                ]);
-                */
-
-
             } else {
                 $this->serializeErrorMessage();
             }
@@ -167,9 +157,10 @@ class CurrentstatereportsController extends AppController {
         $this->set('currentStateData', $this->Session->read('currentStateData'));
         if ($this->Session->check('currentStateData')) {
             $this->Session->delete('currentStateData');
+            $this->render('/Elements/load_current_state_report_data');
+        }else{
+            $this->redirect(['action' => 'index']);
         }
-        $this->render('/Elements/load_current_state_report_data');
-
     }
 
     public function createPdfReport() {

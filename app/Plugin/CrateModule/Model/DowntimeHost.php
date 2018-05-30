@@ -56,12 +56,12 @@ class DowntimeHost extends CrateModuleAppModel {
 
         $query = [
             'recursive' => -1,
-            'fields' => $fields,
-            'joins' => [
+            'fields'    => $fields,
+            'joins'     => [
                 [
-                    'table' => 'openitcockpit_hosts',
-                    'type' => 'INNER',
-                    'alias' => 'Host',
+                    'table'      => 'openitcockpit_hosts',
+                    'type'       => 'INNER',
+                    'alias'      => 'Host',
                     'conditions' =>
                         'Host.uuid = DowntimeHost.hostname',
                 ],
@@ -88,15 +88,15 @@ class DowntimeHost extends CrateModuleAppModel {
         }
 
         $query['conditions'] = Hash::merge($query['conditions'], $filterConditions);
-        if(isset($query['conditions']['DowntimeHost.was_started'])){
+        if (isset($query['conditions']['DowntimeHost.was_started'])) {
             $query['conditions']['DowntimeHost.was_started'] = (bool)$query['conditions']['DowntimeHost.was_started'];
         }
 
-        if(isset($query['conditions']['DowntimeHost.was_cancelled'])){
+        if (isset($query['conditions']['DowntimeHost.was_cancelled'])) {
             $query['conditions']['DowntimeHost.was_cancelled'] = (bool)$query['conditions']['DowntimeHost.was_cancelled'];
         }
 
-        if($Conditions->isRunning()){
+        if ($Conditions->isRunning()) {
             $query['conditions']['DowntimeHost.scheduled_end_time >'] = time();
             $query['conditions']['DowntimeHost.was_started'] = true;
             $query['conditions']['DowntimeHost.was_cancelled'] = false;
@@ -120,6 +120,16 @@ class DowntimeHost extends CrateModuleAppModel {
                 'DowntimeHost.duration',
                 'DowntimeHost.was_started',
                 'DowntimeHost.was_cancelled',
+                'Host.uuid'
+            ],
+            'joins'      => [
+                [
+                    'table'      => 'openitcockpit_hosts',
+                    'type'       => 'INNER',
+                    'alias'      => 'Host',
+                    'conditions' =>
+                        'Host.uuid = DowntimeHost.hostname',
+                ],
             ],
             'order'      => $Conditions->getOrder(),
             'conditions' => [
@@ -157,13 +167,13 @@ class DowntimeHost extends CrateModuleAppModel {
         ];
 
         $result = $this->find('first', $query);
-        if(empty($result)){
+        if (empty($result)) {
             return [];
         }
 
         return [
             'DowntimeHost' => $result['DowntimeHost'],
-            'Host' => [
+            'Host'         => [
                 'uuid' => $result['DowntimeHost']['hostname']
             ]
         ];
@@ -171,19 +181,28 @@ class DowntimeHost extends CrateModuleAppModel {
     }
 
     /**
-     * @param string $uuid
+     * @param null $uuid
+     * @param bool $isRunning
      * @return array|null
      */
-    public function byHostUuid($uuid = null){
+    public function byHostUuid($uuid = null, $isRunning = false) {
         if ($uuid !== null) {
-            $downtime = $this->find('first', [
+
+            $query = [
                 'conditions' => [
                     'hostname' => $uuid,
                 ],
-                'order' => [
+                'order'      => [
                     'DowntimeHost.entry_time' => 'DESC',
                 ],
-            ]);
+            ];
+            if ($isRunning) {
+                $query['conditions']['DowntimeHost.scheduled_end_time >'] = time();
+                $query['conditions']['DowntimeHost.was_started'] = true;
+                $query['conditions']['DowntimeHost.was_cancelled'] = false;
+            }
+
+            $downtime = $this->find('first', $query);
 
             return $downtime;
 

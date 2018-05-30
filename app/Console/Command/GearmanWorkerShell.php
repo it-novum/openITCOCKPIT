@@ -252,7 +252,7 @@ class GearmanWorkerShell extends AppShell {
                         'host_address'   => $payload['host_address'],
                         'snmp_version'   => $payload['snmp_version'],
                         'snmp_community' => $payload['snmp_community'],
-                    ]);
+                    ], false);
                 } else {
                     //SNMP V3
                     $MkNagiosExportTask->createConfigFiles($payload['hostuuid'], [
@@ -267,7 +267,7 @@ class GearmanWorkerShell extends AppShell {
                             'encryption_algorithm' => $payload['v3']['encryption_algorithm'],
                             'encryption_password'  => $payload['v3']['encryption_password'],
                         ],
-                    ]);
+                    ], false);
                 }
 
                 if ($payload['satellite_id'] !== '0' && is_dir(APP . 'Plugin' . DS . 'DistributeModule')) {
@@ -289,7 +289,7 @@ class GearmanWorkerShell extends AppShell {
                             'stream_context'  => [
                                 'ssl' => [
                                     'allow_self_signed' => true,
-                                    'verify' => false
+                                    'verify'            => false
                                 ]
                             ]
                         ];
@@ -335,7 +335,7 @@ class GearmanWorkerShell extends AppShell {
                             'stream_context'  => [
                                 'ssl' => [
                                     'allow_self_signed' => true,
-                                    'verify' => false
+                                    'verify'            => false
                                 ]
                             ]
                         ];
@@ -366,7 +366,7 @@ class GearmanWorkerShell extends AppShell {
                 $MkNagiosExportTask->createConfigFiles($payload['hostUuid'], [
                     'for_snmp_scan' => true, //Hacky but works -.-
                     'host_address'  => $payload['hostaddress'],
-                ]);
+                ], false);
 
                 if ($payload['satellite_id'] !== '0' && is_dir(APP . 'Plugin' . DS . 'DistributeModule')) {
                     $this->Satellite = ClassRegistry::init('DistributeModule.Satellite');
@@ -387,15 +387,15 @@ class GearmanWorkerShell extends AppShell {
                             'stream_context'  => [
                                 'ssl' => [
                                     'allow_self_signed' => true,
-                                    'verify' => false
+                                    'verify'            => false
                                 ]
                             ]
                         ];
                         $Client = new Client($options);
                         $response = $Client->request('GET', sprintf(
-                            'https://%s/nagios/discover/dump-host/%s',
-                            $satellite['Satellite']['address'],
-                            $payload['hostUuid'])
+                                'https://%s/nagios/discover/dump-host/%s',
+                                $satellite['Satellite']['address'],
+                                $payload['hostUuid'])
                         );
 
                         $output = json_decode($response->getBody()->getContents(), true);
@@ -435,15 +435,15 @@ class GearmanWorkerShell extends AppShell {
                             'stream_context'  => [
                                 'ssl' => [
                                     'allow_self_signed' => true,
-                                    'verify' => false
+                                    'verify'            => false
                                 ]
                             ]
                         ];
                         $Client = new Client($options);
                         $response = $Client->request('GET', sprintf(
-                            'https://%s/nagios/discover/raw-info/%s',
-                            $satellite['Satellite']['address'],
-                            $payload['hostUuid'])
+                                'https://%s/nagios/discover/raw-info/%s',
+                                $satellite['Satellite']['address'],
+                                $payload['hostUuid'])
                         );
 
                         $output = json_decode($response->getBody()->getContents(), true);

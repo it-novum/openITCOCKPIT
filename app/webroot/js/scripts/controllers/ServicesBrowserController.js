@@ -43,6 +43,7 @@ angular.module('openITCOCKPIT')
                 }
             }).then(function(result){
                 $scope.mergedService = result.data.mergedService;
+                $scope.mergedService.Service.disabled = parseInt($scope.mergedService.Service.disabled, 10);
                 $scope.contacts = result.data.contacts;
                 $scope.contactgroups = result.data.contactgroups;
                 $scope.host = result.data.host;

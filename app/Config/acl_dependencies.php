@@ -29,6 +29,7 @@ $config = [
         'always_allowed' => [
             'Angular'          => [
                 'paginator',
+                'scroll',
                 'mass_delete',
                 'mass_deactivate',
                 'confirm_delete',
@@ -37,10 +38,12 @@ $config = [
                 'user_timezone',
                 'version_check',
                 'menustats',
+                'statuscount',
                 'menu',
                 'websocket_configuration',
                 'export',
                 'not_found',
+                'forbidden',
                 'nested_list',
                 'executing',
                 'acknowledge_service',
@@ -63,7 +66,11 @@ $config = [
                 'enable_service_flap_detection',
                 'send_service_notification',
                 'enable_service_notifications',
-                'disable_service_notifications'
+                'disable_service_notifications',
+                'getPieChart'
+            ],
+            'Automaps'         => [
+                'icon'
             ],
             'Commands'         => [
                 'sortByCommandType',
@@ -88,6 +95,10 @@ $config = [
             'Profile'          => [
                 'edit',
                 'deleteImage',
+                'apikey',
+                'edit_apikey',
+                'delete_apikey',
+                'create_apikey'
             ],
             'Proxy'            => [
                 'getSettings',
@@ -108,11 +119,9 @@ $config = [
                 'grapherZoom',
                 'grapherZoomTemplate',
                 'createGrapherErrorPng',
-                'icon'
-            ],
-            'Statusmaps'       => [
-                'getHostsAndConnections',
-                'clickHostStatus',
+                'icon',
+                'servicecumulatedstatusicon',
+                'details'
             ],
             'Graphgenerators'  => [
                 'fetchGraphData',
@@ -153,6 +162,7 @@ $config = [
             'Hosts'            => [
                 'view',
                 'icon',
+                'hostservicelist',
                 'loadParentHostsByString',
                 'loadParentHostsById'
             ]
@@ -190,8 +200,8 @@ $config = [
             ],
             'Contacts'              => [
                 'index' => ['view'],
-                'add'   => ['loadTimeperiods', 'addCustomMacro'],
-                'edit'  => ['loadTimeperiods', 'addCustomMacro'],
+                'add'   => ['loadTimeperiods', 'addCustomMacro', 'loadLdapUserByString'],
+                'edit'  => ['loadTimeperiods', 'addCustomMacro', 'loadLdapUserByString'],
             ],
             'Cronjobs'              => [
                 'add'  => ['loadTasksByPlugin'],
@@ -218,12 +228,13 @@ $config = [
             ],
             'Hostgroups'            => [
                 'index'    => ['listToPdf', 'view', 'loadHostgroupsByString', 'loadHosgroupsByContainerId'],
-                'extended' => ['listToPdf', 'loadServicesByHostId'],
+                'extended' => ['listToPdf'],
                 'add'      => ['loadHosts', 'mass_add', 'loadHosttemplates', 'loadContainers'],
                 'edit'     => ['loadHosts', 'loadHosttemplates', 'loadContainers'],
+                'extended' => ['loadHostgroupWithHostsById']
             ],
             'Hosts'                 => [
-                'index'      => ['getHostByAjax', 'listToPdf', 'ajaxList', 'loadHostsByContainerId', 'loadHostsByString', 'loadHostById', 'allocateServiceTemplateGroup', 'getServiceTemplatesfromGroup'],
+                'index'      => ['getHostByAjax', 'listToPdf', 'ajaxList', 'loadHostsByContainerId', 'loadHostsByString', 'loadHostById', 'allocateServiceTemplateGroup', 'getServiceTemplatesfromGroup', 'hoststatus'],
                 'delete'     => ['mass_delete'],
                 'deactivate' => ['mass_deactivate'],
                 'browser'    => ['longOutputByUuid'],
@@ -255,11 +266,12 @@ $config = [
                 'add'   => ['loadElementsByContainerId'],
                 'edit'  => ['loadElementsByContainerId'],
             ],
-            'Servicegroups'         => [
-                'index'  => ['listToPdf', 'view', 'loadServicegroupsByContainerId'],
-                'add'    => ['loadServices', 'mass_add', 'loadServicetemplates', 'loadContainers'],
-                'edit'   => ['loadServices', 'loadServicetemplates'],
-                'delete' => ['mass_delete'],
+            'Servicegroups' => [
+                'index'  =>     ['listToPdf', 'view', 'loadServicegroupsByContainerId'],
+                'add'    =>     ['loadServices', 'mass_add', 'loadServicetemplates', 'loadContainers'],
+                'edit'   =>     ['loadServices', 'loadServicetemplates'],
+                'delete' =>     ['mass_delete'],
+                'extended' =>   ['loadServicegroupWithServicesById']
             ],
             'Services'              => [
                 'deactivate'  => ['mass_deactivate'],
@@ -281,7 +293,7 @@ $config = [
             ],
             'Users'                 => [
                 'index' => ['view', 'loadUsersByContainerId'],
-                'add'   => ['addFromLdap'],
+                'add'   => ['addFromLdap', 'loadLdapUserByString'],
                 'edit'  => ['resetPassword'],
             ],
             'Tenants'               => [
@@ -294,7 +306,7 @@ $config = [
                 'delete'  => ['mass_delete'],
             ],
             'Administrators'        => [
-                'debug' => ['testMail'],
+                'debug' => ['testMail', 'querylog'],
             ],
             'Exports'               => [
                 'index' => ['broadcast', 'launchExport', 'verifyConfig', 'saveInstanceConfigSyncSelection'],
@@ -364,7 +376,7 @@ $config = [
                 'Servicetemplategroups' => ['index'],
                 'Servicetemplates'      => ['index'],
                 'Statehistories'        => ['service', 'host'],
-                'Statusmaps'            => ['index', 'view'],
+                'Statusmaps'            => ['index', 'hostAndServicesSummaryStatus'],
                 'Systemdowntimes'       => ['index'],
                 'Systemfailures'        => ['index'],
                 'Systemsettings'        => ['index', 'host', 'service', 'hostgroup', 'node'],

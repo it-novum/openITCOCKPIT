@@ -7,6 +7,8 @@ angular.module('openITCOCKPIT')
 
         $scope.id = QueryStringService.getCakeId();
 
+        $scope.useScroll = true;
+
         var now = new Date();
 
         /*** Filter Settings ***/
@@ -47,6 +49,7 @@ angular.module('openITCOCKPIT')
             $http.get("/hostchecks/index/"+$scope.id+".json", {
                 params: {
                     'angular': true,
+                    'scroll': $scope.useScroll,
                     'sort': SortService.getSort(),
                     'page': $scope.currentPage,
                     'direction': SortService.getDirection(),
@@ -59,6 +62,7 @@ angular.module('openITCOCKPIT')
             }).then(function(result){
                 $scope.hostchecks = result.data.all_hostchecks;
                 $scope.paging = result.data.paging;
+                $scope.scroll = result.data.scroll;
                 $scope.init = false;
             });
         };
@@ -77,6 +81,11 @@ angular.module('openITCOCKPIT')
                 $scope.currentPage = page;
                 $scope.load();
             }
+        };
+
+        $scope.changeMode = function(val){
+            $scope.useScroll = val;
+            $scope.load();
         };
 
         //Fire on page load

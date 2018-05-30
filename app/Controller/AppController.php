@@ -44,7 +44,7 @@ use itnovum\openITCOCKPIT\Core\ValueObjects\User;
  * @property Systemsetting $Systemsetting
  * @property SessionComponent $Session
  * @property FrontendComponent $Frontend
- * @property AppAuthComponent $AppAuth
+ * @property AppAuthComponent $Auth
  * @property CookieComponent $Cookie
  * @property RequestHandlerComponent $RequestHandler
  * @property PaginatorComponent $Paginator
@@ -52,6 +52,8 @@ use itnovum\openITCOCKPIT\Core\ValueObjects\User;
  * @property ConstantsComponent $Constants
  * @property TreeComponent $Tree
  * @property AdditionalLinksComponent $AdditionalLinks
+ * @property CakeRequest $request
+ * @property CakeResponse $response
  */
 class AppController extends Controller {
 
@@ -107,7 +109,7 @@ class AppController extends Controller {
         'Acl',
         'Cookie',
         'RequestHandler',
-        'Paginator',
+        'Paginator' => ['className' => 'AppPaginator'],
         'Menu',
         'Constants',
         'Tree',
@@ -142,12 +144,22 @@ class AppController extends Controller {
      */
     protected $DbBackend;
 
-
     /**
      * Called before every controller actions. Should not be overridden.
      * @return void
      */
     public function beforeFilter() {
+
+        //Is this a request with API Key?
+        $headerContent = $this->request->header('Authorization');
+        $queryContent = $this->request->query('apikey');
+        if (($headerContent && strpos($headerContent, 'X-OITC-API') === 0) || strlen($queryContent) > 10) {
+            AppAuthComponent::$sessionKey = false;
+            $user = $this->Auth->tryToGetUser($this->request);
+            if($user) {
+                $this->Auth->login($user, 'session');
+            }
+        }
 
         //DANGER ZONE - ALLOW ALL ACTIONS
         //$this->Auth->allow();
@@ -158,6 +170,7 @@ class AppController extends Controller {
 
         $this->Auth->authorize = 'Actions';
         //$this->Auth->authorize = 'Controller';
+
         $this->_beforeAction();
         if (!$this->Auth->loggedIn() && $this->action != 'logout') {
             if ($this->Auth->autoLogin()) {
@@ -329,6 +342,10 @@ class AppController extends Controller {
             $this->set('paging', $data);
         }
 
+        if (!empty($this->request->param('scroll')) && $this->isApiRequest()) {
+            $this->set('scroll', $this->request->param('scroll'));
+        }
+
 
         $this->set('exportRunningHeaderInfo', $this->exportRunningHeaderInfo);
 
@@ -403,37 +420,20 @@ class AppController extends Controller {
             $logfile = fopen($queryLog, 'a+');
 
             foreach ($sqlLogs as $datasource => $log) {
-                fwrite($logfile, sprintf(
-                    '******** DS "%s" %s queries took %s ms ********%s',
-                    $datasource,
-                    $log['count'],
-                    $log['time'],
-                    PHP_EOL
-                ));
+
+                $queriesAsJson = [
+                    'datasource' => $datasource,
+                    'count' => $log['count'],
+                    'time' => $log['time'],
+                    'queries' => []
+                ];
+
                 foreach ($log['log'] as $query) {
-                    fwrite($logfile, sprintf(
-                        '-- [%s] Affected %s, num. Rows %s, %s ms%s',
-                        date('H:i:s'),
-                        $query['affected'],
-                        $query['numRows'],
-                        $query['took'],
-                        PHP_EOL
-                    ));
-                    fwrite($logfile, sprintf(
-                        '%s%s-- Params:%s%s',
-                        $query['query'],
-                        PHP_EOL,
-                        implode(',', $query['params']),
-                        PHP_EOL
-                    ));
+                    $queriesAsJson['queries'][] = $query;
                 }
             }
-            fwrite($logfile, sprintf(
-                '--------------------------------%s%s',
-                PHP_EOL,
-                PHP_EOL
-            ));
 
+            fwrite($logfile, json_encode($queriesAsJson).PHP_EOL);
             fclose($logfile);
         }
 
@@ -705,6 +705,19 @@ class AppController extends Controller {
         $this->set('_serialize', ['error']);
     }
 
+    /**
+     * @param string $modelName
+     */
+    protected function serializeErrorMessageFromModel($modelName) {
+        if ($this->isAngularJsRequest()) {
+            $this->response->statusCode(400);
+        }
+        $name = Inflector::singularize($modelName);
+        $error = $this->{$name}->validationErrors;
+        $this->set(compact('error'));
+        $this->set('_serialize', ['error']);
+    }
+
     ///**
     // * REST API functionality
     // * @param int $id
@@ -763,7 +776,7 @@ class AppController extends Controller {
         }
 
         if ($this->isApiRequest()) {
-            throw new ForbiddenException('404 Forbidden');
+            throw new ForbiddenException('403 Forbidden');
         }
 
         return false;
@@ -820,6 +833,16 @@ class AppController extends Controller {
         $options = Hash::merge($_options, $options);
 
         $this->set('options', $options);
+        $this->response->statusCode(403);
+
+        if($this->isAngularJsRequest()){
+            //Angular wants json response
+            $this->set('status', 403);
+            $this->set('statusText', 'Forbidden');
+            $this->set('_serialize', ['status', 'statusText']);
+            return;
+        }
+
         $this->render('/Errors/error403');
     }
 
@@ -841,6 +864,16 @@ class AppController extends Controller {
     protected function isApiRequest() {
         if ($this->isJsonRequest() || $this->isXmlRequest()) {
             return true;
+        }
+
+        return false;
+    }
+
+    protected function isScrollRequest() {
+        if($this->isApiRequest()){
+            if(isset($this->request->query['scroll']) && $this->request->query['scroll'] !== 'false'){
+                return true;
+            }
         }
 
         return false;

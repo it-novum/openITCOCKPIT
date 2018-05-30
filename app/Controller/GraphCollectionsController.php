@@ -40,7 +40,6 @@ class GraphCollectionsController extends AppController
 
     public $layout = 'Admin.default';
     public $uses = ['GraphgenTmpl', 'GraphCollection', 'GraphgenTmplConf', 'Rrd'];
-    public $components = ['Paginator'];
     public $helpers = ['ListFilter.ListFilter'];
 
     public function index()

@@ -121,7 +121,7 @@ class DowntimeService extends NagiosModuleAppModel {
         //Merge ListFilter conditions
         $query['conditions'] = Hash::merge($paginatorConditions, $query['conditions']);
 
-        if($Conditions->isRunning()){
+        if ($Conditions->isRunning()) {
             $query['conditions']['DowntimeService.scheduled_end_time >'] = date('Y-m-d H:i:s', time());
             $query['conditions']['DowntimeService.was_started'] = 1;
             $query['conditions']['DowntimeService.was_cancelled'] = 0;
@@ -151,7 +151,7 @@ class DowntimeService extends NagiosModuleAppModel {
             ]
         ];
         $result = $this->find('all', $query);
-        if(empty($result)){
+        if (empty($result)) {
             return [];
         }
 
@@ -173,6 +173,8 @@ class DowntimeService extends NagiosModuleAppModel {
                 'DowntimeService.duration',
                 'DowntimeService.was_started',
                 'DowntimeService.was_cancelled',
+                'Host.uuid',
+                'Service.uuid'
             ],
             'joins'      => [
                 [
@@ -181,10 +183,21 @@ class DowntimeService extends NagiosModuleAppModel {
                     'alias'      => 'Objects',
                     'conditions' => 'Objects.object_id = DowntimeService.object_id AND DowntimeService.downtime_type = 1' //Downtime.downtime_type = 1 Service downtime
                 ],
+                [
+                    'table'      => 'services',
+                    'type'       => 'INNER',
+                    'alias'      => 'Service',
+                    'conditions' => 'Service.uuid = Objects.name2',
+                ],
+                [
+                    'table'      => 'hosts',
+                    'type'       => 'INNER',
+                    'alias'      => 'Host',
+                    'conditions' => 'Host.id = Service.host_id'
+                ],
             ],
-            'order'      => $Conditions->getOrder(),
             'conditions' => [
-                'OR' => [
+                'OR'                            => [
                     '"' . date('Y-m-d H:i:s', $Conditions->getFrom()) . '"
                                         BETWEEN DowntimeService.scheduled_start_time
                                         AND DowntimeService.scheduled_end_time',
@@ -193,25 +206,33 @@ class DowntimeService extends NagiosModuleAppModel {
                                         AND DowntimeService.scheduled_end_time',
                     'DowntimeService.scheduled_start_time BETWEEN "' . date('Y-m-d H:i:s', $Conditions->getFrom()) . '"
                                         AND "' . date('Y-m-d H:i:s', $Conditions->getTo()) . '"',
-                ]
-            ]
+                ],
+                'DowntimeService.was_cancelled' => 0
+            ],
+            'order'      => $Conditions->getOrder()
         ];
+
+        if ($Conditions->hasHostUuids()) {
+            $query['conditions']['Objects.name1'] = $Conditions->getHostUuids();
+        }
 
         if ($Conditions->hasServiceUuids()) {
             $query['conditions']['Objects.name2'] = $Conditions->getServiceUuids();
         }
 
+
         return $query;
     }
 
     /**
-     * @param string $uuid
+     * @param null $uuid
+     * @param bool $isRunning
      * @return array|null
      */
-    public function byServiceUuid($uuid = null)
-    {
+    public function byServiceUuid($uuid = null, $isRunning = false) {
         if ($uuid !== null) {
-            $downtime = $this->find('first', [
+
+            $query = [
                 'recursive'  => -1,
                 'conditions' => [
                     'Objects.name2'         => $uuid,
@@ -228,7 +249,15 @@ class DowntimeService extends NagiosModuleAppModel {
                         'conditions' => 'Objects.object_id = DowntimeService.object_id AND DowntimeService.downtime_type = 1' //Downtime.downtime_type = 1 Service downtime
                     ]
                 ]
-            ]);
+            ];
+
+            if ($isRunning) {
+                $query['conditions']['DowntimeService.scheduled_end_time >'] = date('Y-m-d H:i:s', time());
+                $query['conditions']['DowntimeService.was_started'] = 1;
+                $query['conditions']['DowntimeService.was_cancelled'] = 0;
+            }
+
+            $downtime = $this->find('first', $query);
 
             return $downtime;
 

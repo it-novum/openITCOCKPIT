@@ -44,7 +44,6 @@ class CalendarsController extends AppController
     public $layout = 'Admin.default';
     public $components = [
         'RequestHandler',
-        'Paginator',
     ];
 
     /**

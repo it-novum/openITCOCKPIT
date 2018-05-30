@@ -29,7 +29,6 @@ use itnovum\openITCOCKPIT\Filter\RotationFilter;
 class RotationsController extends MapModuleAppController {
     public $layout = 'angularjs';
     public $components = [
-        'Paginator',
         'ListFilter.ListFilter',
     ];
     public $helpers = [

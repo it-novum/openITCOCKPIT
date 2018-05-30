@@ -24,6 +24,7 @@
 //	confirmation.
 
 use itnovum\openITCOCKPIT\Core\ServiceConditions;
+use itnovum\openITCOCKPIT\Core\ValueObjects\LastDeletedId;
 
 class Service extends AppModel {
 
@@ -321,6 +322,11 @@ class Service extends AppModel {
             ],
         ],
     ];
+
+    /**
+     * @var null|LastDeletedId
+     */
+    private $LastDeletedId = null;
 
     function __construct($id = false, $table = null, $ds = null, $useDynamicAssociations = true) {
         parent::__construct($id, $table, $ds, $useDynamicAssociations);
@@ -920,36 +926,48 @@ class Service extends AppModel {
         $containerIds = array_unique($containerIds);
 
         $_conditions = [
-            'Host.container_id' => $containerIds,
-            'Host.disabled'     => 0,
-            'Service.disabled'  => 0,
+            'HostToContainer.container_id' => $containerIds,
+            'Host.disabled'                => 0,
+            'Service.disabled'             => 0,
         ];
         $conditions = Hash::merge($_conditions, $conditions);
 
         $query = [
-            'recursive'  => -1,
-            'contain'    => [
+            'recursive' => -1,
+            'contain'   => [
                 'Servicetemplate' => [
                     'fields' => [
                         'Servicetemplate.name'
                     ],
                 ],
-                'Host'            => [
-                    'fields'    => [
-                        'Host.name',
-                        'Host.uuid',
-                        'Host.address',
-                        'Host.description'
-                    ],
-                    'Container' => [
-                        'conditions' => [
-                            'Container.id' => $containerIds,
-                        ]
-
-                    ]
-                ],
             ],
+            'joins'     => [
+                [
+                    'table'      => 'hosts',
+                    'alias'      => 'Host',
+                    'type'       => 'INNER',
+                    'conditions' => [
+                        'Host.id = Service.host_id'
+                    ]
+
+                ],
+                [
+                    'table'      => 'hosts_to_containers',
+                    'alias'      => 'HostToContainer',
+                    'type'       => 'INNER',
+                    'conditions' => [
+                        'HostToContainer.host_id = Host.id'
+                    ]
+
+                ]
+            ],
+
             'fields'     => [
+                'Host.id',
+                'Host.name',
+                'Host.uuid',
+                'Host.address',
+                'Host.description',
                 'Service.id',
                 'IF((Service.name IS NULL OR Service.name = ""), Servicetemplate.name, Service.name) AS ServiceDescription',
                 'IF((Service.description IS NULL OR Service.description = ""), Servicetemplate.description, Service.description) AS ServiceDescr',
@@ -957,10 +975,10 @@ class Service extends AppModel {
                 'Service.service_type',
                 'Service.disabled'
             ],
-            'order'      => [
-                'Host.name ASC', 'Service.name ASC', 'Servicetemplate.name ASC',
-            ],
             'conditions' => $conditions,
+            'group'      => [
+                'Service.id'
+            ]
         ];
         if ($limit) {
             $query['limit'] = $limit;
@@ -1424,6 +1442,118 @@ class Service extends AppModel {
      * @param array $conditions
      * @return array
      */
+    public function getServiceIndexQueryStatusengine3(ServiceConditions $ServiceConditions, $conditions = []) {
+        $query = [
+            'recursive'  => -1,
+            'conditions' => $conditions,
+            'contain'    => ['Servicetemplate'],
+            'fields'     => [
+                //'DISTINCT (Service.id) as banane', //Fix pagination
+                'Service.id',
+                'Service.uuid',
+                'Service.name',
+                'Service.description',
+                'Service.active_checks_enabled',
+                'Service.tags',
+
+                'Servicestatus.current_state',
+                'Servicestatus.last_check',
+                'Servicestatus.next_check',
+                'Servicestatus.last_hard_state_change',
+                'Servicestatus.last_state_change',
+                'Servicestatus.output',
+                'Servicestatus.scheduled_downtime_depth',
+                'Servicestatus.active_checks_enabled',
+                'Servicestatus.is_hardstate',
+                'Servicestatus.problem_has_been_acknowledged',
+                'Servicestatus.acknowledgement_type',
+                'Servicestatus.is_flapping',
+
+                'Servicetemplate.id',
+                'Servicetemplate.uuid',
+                'Servicetemplate.name',
+                'Servicetemplate.description',
+                'Servicetemplate.active_checks_enabled',
+                'Servicetemplate.tags',
+
+                'Host.name',
+                'Host.id',
+                'Host.uuid',
+                'Host.description',
+                'Host.address',
+                'Host.satellite_id',
+
+                'Hoststatus.current_state',
+                'Hoststatus.is_flapping',
+                'Hoststatus.last_hard_state_change'
+            ],
+            'order'      => $ServiceConditions->getOrder(),
+            'joins'      => [
+                [
+                    'table'      => 'hosts',
+                    'type'       => 'INNER',
+                    'alias'      => 'Host',
+                    'conditions' => 'Service.host_id = Host.id',
+                ], [
+                    'table'      => 'statusengine_hoststatus',
+                    'type'       => 'INNER',
+                    'alias'      => 'Hoststatus',
+                    'conditions' => 'Hoststatus.hostname = Host.uuid',
+                ], [
+                    'table'      => 'statusengine_servicestatus',
+                    'type'       => 'INNER',
+                    'alias'      => 'Servicestatus',
+                    'conditions' => [
+                        'Servicestatus.hostname = Host.uuid',
+                        'Servicestatus.service_description = Service.uuid'
+                    ],
+                ]
+            ]
+        ];
+
+        $db = $this->getDataSource();
+        $conditionsSubQuery = [
+            'HostsToContainers.container_id' => $ServiceConditions->getContainerIds()
+        ];
+        $subQuery = $db->buildStatement([
+            'fields'     => ['Host.uuid'],
+            'table'      => 'hosts',
+            'alias'      => 'Host',
+            'limit'      => null,
+            'offset'     => null,
+            'joins'      => [
+                [
+                    'table'      => 'hosts_to_containers',
+                    'alias'      => 'HostsToContainers',
+                    'type'       => 'INNER',
+                    'conditions' => [
+                        'HostsToContainers.host_id = Host.id',
+                    ],
+                ]
+            ],
+            'conditions' => $conditionsSubQuery,
+            'order'      => null,
+            'group'      => null
+        ], $this);
+        $subQuery = 'Host.uuid IN (' . $subQuery . ') ';
+        $subQueryExpression = $db->expression($subQuery);
+        $query['conditions'][] = $subQueryExpression->value;
+
+        $query['conditions']['Service.disabled'] = (int)$ServiceConditions->includeDisabled();
+
+        if ($ServiceConditions->getHostId()) {
+            $query['conditions']['Service.host_id'] = $ServiceConditions->getHostId();
+        }
+
+        return $query;
+
+    }
+
+    /**
+     * @param ServiceConditions $ServiceConditions
+     * @param array $conditions
+     * @return array
+     */
     public function getServiceNotMonitoredQuery(ServiceConditions $ServiceConditions, $conditions = []) {
         $query = [
             'recursive'  => -1,
@@ -1480,6 +1610,73 @@ class Service extends AppModel {
         }
 
         $query['conditions'][] = 'ServiceObject.name2 IS NULL';
+
+        return $query;
+
+    }
+
+    /**
+     * @param ServiceConditions $ServiceConditions
+     * @param array $conditions
+     * @return array
+     */
+    public function getServiceNotMonitoredQueryStatusengine3(ServiceConditions $ServiceConditions, $conditions = []) {
+        $query = [
+            'recursive'  => -1,
+            'conditions' => $conditions,
+            'contain'    => ['Servicetemplate'],
+            'fields'     => [
+                'Service.id',
+                'Service.uuid',
+                'Service.name',
+                'Service.description',
+                'Service.active_checks_enabled',
+
+                'Servicetemplate.id',
+                'Servicetemplate.uuid',
+                'Servicetemplate.name',
+                'Servicetemplate.description',
+                'Servicetemplate.active_checks_enabled',
+
+                'Host.name',
+                'Host.id',
+                'Host.uuid',
+                'Host.description',
+                'Host.address',
+            ],
+            'order'      => $ServiceConditions->getOrder(),
+            'joins'      => [
+                [
+                    'table'      => 'hosts',
+                    'type'       => 'INNER',
+                    'alias'      => 'Host',
+                    'conditions' => 'Service.host_id = Host.id',
+                ], [
+                    'table'      => 'statusengine_servicestatus',
+                    'type'       => 'LEFT OUTER',
+                    'alias'      => 'Servicestatus',
+                    'conditions' => [
+                        'Servicestatus.hostname = Host.uuid',
+                        'Servicestatus.service_description = Service.uuid'
+                    ],
+                ]
+            ]
+        ];
+
+        //$query['order'] = Hash::merge(['Service.id' => 'asc'], $ServiceConditions->getOrder());
+        $query['conditions'][] = [
+            "EXISTS (SELECT * FROM hosts_to_containers AS HostsToContainers WHERE HostsToContainers.container_id )" =>
+                $ServiceConditions->getContainerIds()
+        ];
+
+        $query['conditions']['Service.disabled'] = (int)$ServiceConditions->includeDisabled();
+        //$query['conditions']['HostsToContainers.container_id'] = $ServiceConditions->getContainerIds();
+
+        if ($ServiceConditions->getHostId()) {
+            $query['conditions']['Service.host_id'] = $ServiceConditions->getHostId();
+        }
+
+        $query['conditions'][] = 'Servicestatus.service_description IS NULL';
 
         return $query;
 
@@ -1567,8 +1764,8 @@ class Service extends AppModel {
      */
     public function getServicesForAngular(ServiceConditions $ServiceConditions, $selected = []) {
         $query = [
-            'recursive'  => -1,
-            'joins'      => [
+            'recursive' => -1,
+            'joins'     => [
                 [
                     'table'      => 'servicetemplates',
                     'alias'      => 'Servicetemplate',
@@ -1594,14 +1791,12 @@ class Service extends AppModel {
                     ],
                 ],
             ],
-            'conditions' => [
-                'OR' => $ServiceConditions->getConditions()
-            ],
-            'order'      => [
+
+            'order'  => [
                 'Host.name'                                                    => 'ASC',
                 'IF(Service.name IS NULL, Servicetemplate.name, Service.name)' => 'ASC'
             ],
-            'fields'     => [
+            'fields' => [
                 'Service.id',
                 'Service.name',
                 'Host.id',
@@ -1609,19 +1804,41 @@ class Service extends AppModel {
                 'Servicetemplate.name'
 
             ],
-            'group'      => [
+            'group'  => [
                 'Service.id'
             ],
-            'limit'      => self::ITN_AJAX_LIMIT
+            'limit'  => self::ITN_AJAX_LIMIT
         ];
 
-        if ($ServiceConditions->hasNotConditions()) {
-            $query['conditions']['NOT'] = $ServiceConditions->getNotConditions();
+        if (!empty($ServiceConditions->getConditions())) {
+            $query['conditions']['OR'] = $ServiceConditions->getConditions();
         }
+
+        if (is_array($selected)) {
+            $selected = array_filter($selected);
+        }
+        if (!empty($selected)) {
+            $query['conditions']['NOT'] = ['Service.id' => $selected];
+        }
+
+        if ($ServiceConditions->hasNotConditions()) {
+            if (!empty($query['conditions']['NOT'])) {
+                $query['conditions']['NOT'] = array_merge($query['conditions']['NOT'], $ServiceConditions->getNotConditions());
+            } else {
+                $query['conditions']['NOT'] = $ServiceConditions->getNotConditions();
+            }
+
+        }
+
         $servicesWithLimit = $this->find('all', $query);
         $servicesWithLimit = Hash::combine($servicesWithLimit, '{n}.Service.id', '{n}');
 
         $selectedServices = [];
+
+        if (is_array($selected)) {
+            $selected = array_filter($selected);
+        }
+
         if (!empty($selected)) {
             $query = [
                 'recursive'  => -1,
@@ -1747,5 +1964,152 @@ class Service extends AppModel {
                 'NotifyPeriod',
             ]
         ];
+    }
+
+    /**
+     * Updates multiple model records based on a set of conditions.
+     *
+     * @param array $fields Set of fields and values, indexed by fields.
+     *    Fields are treated as SQL snippets, to insert literal values manually escape your data.
+     * @param mixed $conditions Conditions to match, true for all records
+     * @return bool True on success, false on failure
+     * @link https://book.cakephp.org/2.0/en/models/saving-your-data.html#model-updateall-array-fields-mixed-conditions
+     */
+    public function updateAll($fields, $conditions = true) {
+        $success = parent::updateAll($fields, $conditions);
+
+        //Also update disable field in CrateDB for Services
+        //CakePHP does not fire the afterSave callback, if updateAll got called.
+        if ($success && $this->DbBackend->isCrateDb()) {
+            if (is_array($fields) && sizeof($fields) === 1 && is_array($conditions) && sizeof($conditions) === 1) {
+                if (isset($fields['Service.disabled']) && isset($conditions['Service.host_id'])) {
+                    $CrateServiceModel = ClassRegistry::init('CrateModule.CrateService');
+                    $CrateServiceModel->updateAll([
+                        'disabled' => (bool)$fields['Service.disabled']
+                    ], [
+                        'host_id' => $conditions['Service.host_id']
+                    ]);
+                }
+            }
+        }
+        return $success;
+    }
+
+    /**
+     * @param bool $created
+     * @param array $options
+     * @return bool|void
+     */
+    public function afterSave($created, $options = []) {
+        if ($this->DbBackend->isCrateDb() && isset($this->data['Service']['id'])) {
+            //Save data also to CrateDB
+            $CrateService = new \itnovum\openITCOCKPIT\Crate\CrateService($this->data['Service']['id']);
+            $service = $this->find('first', $CrateService->getFindQuery());
+            $CrateService->setDataFromFindResult($service);
+
+            $CrateServiceModel = ClassRegistry::init('CrateModule.CrateService');
+            $CrateServiceModel->save($CrateService->getDataForSave());
+        }
+
+        parent::afterSave($created, $options);
+    }
+
+    public function beforeDelete($cascade = true) {
+        $this->LastDeletedId = new LastDeletedId($this->id);
+        return parent::beforeDelete($cascade);
+    }
+
+    public function afterDelete() {
+        if ($this->LastDeletedId !== null) {
+            if ($this->DbBackend->isCrateDb() && $this->LastDeletedId->hasId()) {
+                $CrateServiceModel = ClassRegistry::init('CrateModule.CrateService');
+                $CrateServiceModel->delete($this->LastDeletedId->getId());
+                $this->LastDeletedId = null;
+            }
+        }
+
+        parent::afterDelete();
+    }
+
+
+    /**
+     * @param $servicestatus
+     * @param bool $extended show details ('acknowledged', 'in downtime', ...)
+     * @return array
+     */
+    public function getServiceStateSummary($servicestatus, $extended = true) {
+        $serviceStateSummary = [
+            'state' => [
+                0 => 0,
+                1 => 0,
+                2 => 0,
+                3 => 0,
+            ],
+            'total' => 0
+        ];
+        if ($extended === true) {
+            $serviceStateSummary = [
+                'state'        => [
+                    0 => 0,
+                    1 => 0,
+                    2 => 0,
+                    3 => 0,
+                ],
+                'acknowledged' => [
+                    0 => 0,
+                    1 => 0,
+                    2 => 0,
+                    3 => 0,
+                ],
+                'in_downtime'  => [
+                    0 => 0,
+                    1 => 0,
+                    2 => 0,
+                    3 => 0,
+                ],
+                'not_handled'  => [
+                    0 => 0,
+                    1 => 0,
+                    2 => 0,
+                    3 => 0,
+                ],
+                'passive'      => [
+                    0 => 0,
+                    1 => 0,
+                    2 => 0,
+                    3 => 0,
+                ],
+                'total'        => 0
+            ];
+        }
+        if (empty($servicestatus)) {
+            return $serviceStateSummary;
+        }
+        foreach ($servicestatus as $service) {
+            //Check for randome exit codes like 255...
+            if ($service['Servicestatus']['current_state'] > 3) {
+                $service['Servicestatus']['current_state'] = 3;
+            }
+
+            $serviceStateSummary['state'][$service['Servicestatus']['current_state']]++;
+            if ($extended === true) {
+                if ($service['Servicestatus']['current_state'] > 0) {
+                    if ($service['Servicestatus']['problem_has_been_acknowledged'] > 0) {
+                        $serviceStateSummary['acknowledged'][$service['Servicestatus']['current_state']]++;
+                    } else {
+                        $serviceStateSummary['not_handled'][$service['Servicestatus']['current_state']]++;
+                    }
+                }
+
+                if ($service['Servicestatus']['scheduled_downtime_depth'] > 0) {
+                    $serviceStateSummary['in_downtime'][$service['Servicestatus']['current_state']]++;
+                }
+                if ($service['Servicestatus']['active_checks_enabled'] == 0) {
+                    $serviceStateSummary['passive'][$service['Servicestatus']['current_state']]++;
+                }
+            }
+            $serviceStateSummary['total']++;
+        }
+        return $serviceStateSummary;
     }
 }

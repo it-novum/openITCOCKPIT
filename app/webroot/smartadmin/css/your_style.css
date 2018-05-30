@@ -1039,13 +1039,43 @@ rect.unknown {
 }
 
 /** Statusmaps **/
-#my_statusmap {
-    width: 100%;
+#statusmap-progress-icon {
+    position:absolute;
+    top:300px;
+    left:45%;
+    display: none;
 }
 
-#my_statusmap canvas {
-    padding: 0 0;
+.statusmap-progress-dots:after {
+    content: ' .';
+    animation: dots 1s steps(5, end) infinite;
 }
+
+@keyframes dots {
+    0%, 20% {
+        color: rgba(0,0,0,0);
+        text-shadow:
+            .25em 0 0 rgba(0,0,0,0),
+            .5em 0 0 rgba(0,0,0,0);}
+    40% {
+        color: #449D44;
+        text-shadow:
+            .25em 0 0 rgba(0,0,0,0),
+            .5em 0 0 rgba(0,0,0,0);}
+    60% {
+        text-shadow:
+            .25em 0 0 #449D44,
+            .5em 0 0 rgba(0,0,0,0);}
+    80%, 100% {
+        text-shadow:
+            .25em 0 0 #449D44,
+            .5em 0 0 #449D44;}}
+
+
+#statusmap-progress-icon span{
+    text-align: center;
+}
+
 
 #node_search {
     background-color: #4c4f53;
@@ -1646,27 +1676,27 @@ label[class^='aco-host']:after, label[class^='aco-service']:after {
     color: #A90329 !important;
 }
 
-.checkbox-ok {
+.checkbox-ok, .checkbox-up {
     border-color: #409240 !important;
 }
 
-.checkbox-ok:after {
+.checkbox-ok:after, .checkbox-up:after {
     color: #5cb85c !important;
 }
 
-.checkbox-critical {
+.checkbox-critical, .checkbox-down {
     border-color: #A90329 !important;
 }
 
-.checkbox-critical:after {
+.checkbox-critical:after, .checkbox-down:after {
     color: #A90329 !important;
 }
 
-.checkbox-unknown {
+.checkbox-unknown, .checkbox-unreachable {
     border-color: #4c4f53 !important;
 }
 
-.checkbox-unknown:after {
+.checkbox-unknown:after, .checkbox-unreachable:after {
     color: #92a2a8 !important;
 }
 
@@ -1836,4 +1866,26 @@ label[class^='aco-host']:after, label[class^='aco-service']:after {
 
 .browser-border {
     border: 1px solid #ddd;
+}
+
+#global-loading {
+    background: rgba(71, 69, 68, 0.8);
+    color: #FFF;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    border-radius: 16px;
+    width: 250px;
+    height: 250px;
+    z-index: 9999;
+    font-size: 100px;
+    text-align: center;
+    padding-top: 50px;
+    margin-top: -125px;
+    margin-left: -125px;
+    display: none;
+}
+
+.state-button {
+    padding:0 5px;
 }

@@ -9,6 +9,8 @@ angular.module('openITCOCKPIT')
 
         var now = new Date();
 
+        $scope.useScroll = true;
+
         /*** Filter Settings ***/
         var defaultFilter = function(){
             $scope.filter = {
@@ -48,6 +50,7 @@ angular.module('openITCOCKPIT')
             $http.get("/statehistories/service/"+$scope.id+".json", {
                 params: {
                     'angular': true,
+                    'scroll': $scope.useScroll,
                     'sort': SortService.getSort(),
                     'page': $scope.currentPage,
                     'direction': SortService.getDirection(),
@@ -61,6 +64,7 @@ angular.module('openITCOCKPIT')
                 //console.log(result.data.all_statehistories[0]["StatehistoryService"]);
                 $scope.statehistories = result.data.all_statehistories;
                 $scope.paging = result.data.paging;
+                $scope.scroll = result.data.scroll;
                 $scope.init = false;
             });
         };
@@ -79,6 +83,11 @@ angular.module('openITCOCKPIT')
                 $scope.currentPage = page;
                 $scope.load();
             }
+        };
+
+        $scope.changeMode = function(val){
+            $scope.useScroll = val;
+            $scope.load();
         };
 
         //Fire on page load

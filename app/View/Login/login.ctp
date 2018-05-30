@@ -1,19 +1,35 @@
 <?php
 // MIT license
 // Based on https://bootsnipp.com/snippets/zD9xl
+
+$isRemoteOrVnc = false;
+if ($this->request->query('remote')):
+    $isRemoteOrVnc = true;
+endif;
+
+if ($disableLoginAnimation === true):
+    $isRemoteOrVnc = true;
+endif;
+
 ?>
 
-<div class="login-screen">
-    <figure>
-        <figcaption>Photo by SpaceX on Unsplash</figcaption>
-    </figure>
-    <figure>
-        <figcaption>Photo by NASA on Unsplash</figcaption>
-    </figure>
-</div>
+<?php if ($isRemoteOrVnc === false): ?>
+    <div class="login-screen">
+        <figure>
+            <figcaption>Photo by SpaceX on Unsplash</figcaption>
+        </figure>
+        <figure>
+            <figcaption>Photo by NASA on Unsplash</figcaption>
+        </figure>
+    </div>
+<?php else: ?>
+    <div class="login-screen-vnc"></div>
+<?php endif; ?>
 <div class="container-fluid">
     <div class="row">
-        <div id="particles-js" class="col-xs-12 col-sm-5 col-md-4"></div>
+        <?php if ($isRemoteOrVnc === false): ?>
+            <div id="particles-js" class="col-xs-12 col-sm-6 col-md-7 col-lg-9"></div>
+        <?php endif; ?>
     </div>
 </div>
 

@@ -42,7 +42,26 @@ class ServicechecksConditions extends ListSettingsConditions {
     /**
      * @var string
      */
+    protected $hostUuid;
+
+    /**
+     * @var string
+     */
     protected $serviceUuid;
+
+    /**
+     * @param $uuid string
+     */
+    public function setHostUuid($uuid){
+        $this->hostUuid = $uuid;
+    }
+
+    /**
+     * @return string
+     */
+    public function getHostUuid(){
+        return $this->hostUuid;
+    }
 
     /**
      * @param $uuid
@@ -57,6 +76,7 @@ class ServicechecksConditions extends ListSettingsConditions {
     public function getServiceUuid(){
         return $this->serviceUuid;
     }
+
 
     /**
      * @param ServiceStates $ServiceStates

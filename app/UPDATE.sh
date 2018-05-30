@@ -130,6 +130,12 @@ for i in "$@"; do
     esac
 done
 
+
+echo "Flush redis cache"
+redis-cli FLUSHALL
+echo ""
+
+
 CODENAME=$(lsb_release -sc)
 if [ "$1" = "install" ]; then
     if [ $CODENAME = "jessie" ] || [ $CODENAME = "xenial" ] || [ $CODENAME = "stretch" ]; then

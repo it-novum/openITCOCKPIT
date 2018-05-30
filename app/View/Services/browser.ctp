@@ -223,6 +223,23 @@ if (!$QueryHandler->exists()): ?>
                             <div class="row" style="display: flex;">
                                 <div class="col-xs-12 col-sm-6 col-md-7 col-lg-9  padding-10">
 
+                                    <div class="row" ng-show="mergedService.Service.disabled">
+                                        <div class="col-xs-12 margin-bottom-10">
+                                            <div class="browser-border padding-10 bg-warning" style="width: 100%;">
+                                                <div class="row">
+                                                    <div class="col-xs-12 col-sm-11 no-padding">
+                                                        <div>
+                                                            <h4 class="no-padding">
+                                                                <i class="fa fa-plug"></i>
+                                                                <?php echo __('This service is currently disabled!'); ?>
+                                                            </h4>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                     <div class="row">
                                         <div class="col-xs-12">
                                             <h3 class="margin-top-5"><?php echo __('Status overview'); ?></h3>
@@ -509,7 +526,7 @@ if (!$QueryHandler->exists()): ?>
                                                 <tr>
                                                     <th class="width-130"><?php echo __('Host state'); ?></th>
                                                     <th><?php echo __('Host name'); ?></th>
-                                                    <th><?php echo __('Laste state change'); ?></th>
+                                                    <th><?php echo __('Last state change'); ?></th>
                                                 </tr>
                                                 <tr>
                                                     <td class="text-center">

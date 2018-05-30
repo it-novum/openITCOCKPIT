@@ -21,7 +21,7 @@ App::uses('ConnectionManager', 'Model');
  * @package       DebugKit.Model
  * @since         DebugKit 1.3
  */
-class ToolbarAccess extends Object
+class ToolbarAccess extends CakeObject
 {
 
     /**
