@@ -54,12 +54,13 @@ $scripts = [
     //'smartadmin/js/plugin/flot/jquery.flot.selection.js', //
     'js/lib/jquery.nestable.js',
     'js/lib/parseuri.js',
+    'js/vendor/vis/vis.js',
+    'vendor/angular-visjs/angular-vis.js',
     'js/scripts/ng.app.js'
 ];
 
 if ($this->request->params['controller'] === 'statusmaps') {
     $scripts[] = 'smartadmin/js/notification/SmartNotification.js';
-    $scripts[] = 'js/vendor/vis/vis.js';
 }
 
 App::uses('Folder', 'Utility');

@@ -26,6 +26,7 @@
 
 use itnovum\openITCOCKPIT\Core\CustomMacroReplacer;
 use itnovum\openITCOCKPIT\Core\CustomVariableDiffer;
+use itnovum\openITCOCKPIT\Core\DowntimeHostConditions;
 use \itnovum\openITCOCKPIT\Core\HostControllerRequest;
 use \itnovum\openITCOCKPIT\Core\HostConditions;
 use itnovum\openITCOCKPIT\Core\HostMacroReplacer;
@@ -33,6 +34,7 @@ use itnovum\openITCOCKPIT\Core\HoststatusConditions;
 use itnovum\openITCOCKPIT\Core\HoststatusFields;
 use itnovum\openITCOCKPIT\Core\HosttemplateMerger;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
+use itnovum\openITCOCKPIT\Core\StatehistoryHostConditions;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Core\ModuleManager;
 use itnovum\openITCOCKPIT\Core\Views\AcknowledgementHost;
@@ -61,6 +63,8 @@ use itnovum\openITCOCKPIT\Core\HostSharingPermissions;
  * @property Timeperiod $Timeperiod
  * @property DowntimeHost $DowntimeHost
  * @property BbcodeComponent $Bbcode
+ * @property StatehistoryHost $StatehistoryHost
+ * @property DateRange $DateRange
  */
 class HostsController extends AppController {
     public $layout = 'Admin.default';
@@ -102,7 +106,9 @@ class HostsController extends AppController {
         'Timeperiod',
         'Servicetemplategroup',
         'Service',
-        MONITORING_DOWNTIME_HOST
+        MONITORING_DOWNTIME_HOST,
+        MONITORING_STATEHISTORY_HOST,
+        'DateRange'
     ];
 
     public function index() {
@@ -192,13 +198,13 @@ class HostsController extends AppController {
             $this->set('_serialize', ['all_hosts']);
             return;
         } else {
-            if($this->isScrollRequest()){
+            if ($this->isScrollRequest()) {
                 $this->Paginator->settings['page'] = $HostFilter->getPage();
                 $ScrollIndex = new ScrollIndex($this->Paginator, $this);
                 $hosts = $this->{$modelName}->find('all', array_merge($this->Paginator->settings, $query));
                 $ScrollIndex->determineHasNextPage($hosts);
                 $ScrollIndex->scroll();
-            }else{
+            } else {
                 $this->Paginator->settings['page'] = $HostFilter->getPage();
                 $this->Paginator->settings = array_merge($this->Paginator->settings, $query);
                 $hosts = $this->Paginator->paginate($modelName, [], [key($this->Paginator->settings['order'])]);
@@ -233,7 +239,7 @@ class HostsController extends AppController {
             }
 
             $tmpRecord = [
-                'Host'       => $Host->toArray(),
+                'Host' => $Host->toArray(),
                 'Hoststatus' => $Hoststatus->toArray()
             ];
             $tmpRecord['Host']['has_graphs'] = $PerfdataChecker->hasRrdFolder();
@@ -248,7 +254,7 @@ class HostsController extends AppController {
         $this->set('all_hosts', $all_hosts);
 
         $toJson = ['all_hosts', 'paging'];
-        if($this->isScrollRequest()){
+        if ($this->isScrollRequest()) {
             $toJson = ['all_hosts', 'scroll'];
         }
         $this->set('_serialize', $toJson);
@@ -384,10 +390,10 @@ class HostsController extends AppController {
             }
 
             $tmpRecord = [
-                'Host'       => $Host->toArray(),
+                'Host' => $Host->toArray(),
                 'Hoststatus' => [
                     'isInMonitoring' => false,
-                    'currentState'   => -1
+                    'currentState' => -1
                 ]
             ];
             $tmpRecord['Host']['allow_sharing'] = $allowSharing;
@@ -416,10 +422,10 @@ class HostsController extends AppController {
             'conditions' => [
                 'Host.id' => $id,
             ],
-            'contain'    => [
+            'contain' => [
                 'Container',
             ],
-            'fields'     => [
+            'fields' => [
                 'Host.container_id',
                 'Container.*',
             ],
@@ -447,7 +453,7 @@ class HostsController extends AppController {
         // Checking if the user hit submit and a validation error happens, to refill input fields
         $Customvariable = [];
         $customFieldsToRefill = [
-            'Host'    => [
+            'Host' => [
                 'notification_interval',
                 'notify_on_recovery',
                 'notify_on_down',
@@ -508,7 +514,7 @@ class HostsController extends AppController {
         $hosttemplates = $this->Hosttemplate->find('list');
         $hostgroups = $this->Hostgroup->findList([
             'recursive' => -1,
-            'contain'   => [
+            'contain' => [
                 'Container',
             ],
         ], 'id');
@@ -541,7 +547,7 @@ class HostsController extends AppController {
 
         //Fehlende bzw. neu angelegte CommandArgummente ermitteln und anzeigen
         $commandarguments = $this->Commandargument->find('all', [
-            'recursive'  => -1,
+            'recursive' => -1,
             'conditions' => [
                 'Commandargument.command_id' => $host['Host']['command_id'],
             ],
@@ -550,7 +556,7 @@ class HostsController extends AppController {
         $contacts_for_changelog = [];
         foreach ($host['Contact'] as $contact_id) {
             $contacts_for_changelog[] = [
-                'id'   => $contact_id,
+                'id' => $contact_id,
                 'name' => $contacts[$contact_id],
             ];
         }
@@ -558,7 +564,7 @@ class HostsController extends AppController {
         foreach ($host['Contactgroup'] as $contactgroup_id) {
             if (isset($contactgroups[$contactgroup_id])) {
                 $contactgroups_for_changelog[] = [
-                    'id'   => $contactgroup_id,
+                    'id' => $contactgroup_id,
                     'name' => $contactgroups[$contactgroup_id],
                 ];
             }
@@ -567,7 +573,7 @@ class HostsController extends AppController {
         foreach ($host['Hostgroup'] as $hostgroup_id) {
             if (isset($hostgroups[$hostgroup_id])) {
                 $hostgroups_for_changelog[] = [
-                    'id'   => $hostgroup_id,
+                    'id' => $hostgroup_id,
                     'name' => $hostgroups[$hostgroup_id],
                 ];
             }
@@ -575,7 +581,7 @@ class HostsController extends AppController {
         $parenthosts_for_changelog = [];
         foreach ($host['Parenthost'] as $parenthost_id) {
             $parenthosts_for_changelog[] = [
-                'id'   => $parenthost_id,
+                'id' => $parenthost_id,
                 'name' => $hosts[$parenthost_id],
             ];
         }
@@ -621,14 +627,14 @@ class HostsController extends AppController {
         ]));
         if ($this->request->is('post') || $this->request->is('put')) {
             $ext_data_for_changelog = [
-                'Contact'      => [
+                'Contact' => [
                     'Contact' => [],
                 ],
                 'Contactgroup' => [
                     'Contactgroup' => [],
                 ],
-                'Hostgroup'    => [],
-                'Parenthost'   => [],
+                'Hostgroup' => [],
+                'Parenthost' => [],
             ];
             if ($this->request->data('Host.Contact')) {
                 if ($contactsForChangelog = $this->Contact->find('list', [
@@ -639,7 +645,7 @@ class HostsController extends AppController {
                 ) {
                     foreach ($contactsForChangelog as $contactId => $contactName) {
                         $ext_data_for_changelog['Contact'][] = [
-                            'id'   => $contactId,
+                            'id' => $contactId,
                             'name' => $contactName,
                         ];
                     }
@@ -648,15 +654,15 @@ class HostsController extends AppController {
             }
             if ($this->request->data('Host.Contactgroup')) {
                 if ($contactgroupsForChangelog = $this->Contactgroup->find('all', [
-                    'recursive'  => -1,
-                    'contain'    => [
+                    'recursive' => -1,
+                    'contain' => [
                         'Container' => [
                             'fields' => [
                                 'Container.name',
                             ],
                         ],
                     ],
-                    'fields'     => [
+                    'fields' => [
                         'Contactgroup.id',
                     ],
                     'conditions' => [
@@ -666,7 +672,7 @@ class HostsController extends AppController {
                 ) {
                     foreach ($contactgroupsForChangelog as $contactgroupData) {
                         $ext_data_for_changelog['Contactgroup'][] = [
-                            'id'   => $contactgroupData['Contactgroup']['id'],
+                            'id' => $contactgroupData['Contactgroup']['id'],
                             'name' => $contactgroupData['Container']['name'],
                         ];
                     }
@@ -675,15 +681,15 @@ class HostsController extends AppController {
             }
             if ($this->request->data('Host.Hostgroup')) {
                 if ($hostgroupsForChangelog = $this->Hostgroup->find('all', [
-                    'recursive'  => -1,
-                    'contain'    => [
+                    'recursive' => -1,
+                    'contain' => [
                         'Container' => [
                             'fields' => [
                                 'Container.name',
                             ],
                         ],
                     ],
-                    'fields'     => [
+                    'fields' => [
                         'Hostgroup.id',
                     ],
                     'conditions' => [
@@ -693,7 +699,7 @@ class HostsController extends AppController {
                 ) {
                     foreach ($hostgroupsForChangelog as $hostgroupData) {
                         $ext_data_for_changelog['Hostgroup'][] = [
-                            'id'   => $hostgroupData['Hostgroup']['id'],
+                            'id' => $hostgroupData['Hostgroup']['id'],
                             'name' => $hostgroupData['Container']['name'],
                         ];
                     }
@@ -709,7 +715,7 @@ class HostsController extends AppController {
                 ) {
                     foreach ($timeperiodsForChangelog as $timeperiodId => $timeperiodName) {
                         $ext_data_for_changelog['NotifyPeriod'] = [
-                            'id'   => $timeperiodId,
+                            'id' => $timeperiodId,
                             'name' => $timeperiodName,
                         ];
                     }
@@ -725,7 +731,7 @@ class HostsController extends AppController {
                 ) {
                     foreach ($timeperiodsForChangelog as $timeperiodId => $timeperiodName) {
                         $ext_data_for_changelog['CheckPeriod'] = [
-                            'id'   => $timeperiodId,
+                            'id' => $timeperiodId,
                             'name' => $timeperiodName,
                         ];
                     }
@@ -741,7 +747,7 @@ class HostsController extends AppController {
                 ) {
                     foreach ($hosttemplatesForChangelog as $hosttemplateId => $hosttemplateName) {
                         $ext_data_for_changelog['Hosttemplate'] = [
-                            'id'   => $hosttemplateId,
+                            'id' => $hosttemplateId,
                             'name' => $hosttemplateName,
                         ];
                     }
@@ -757,7 +763,7 @@ class HostsController extends AppController {
                 ) {
                     foreach ($commandsForChangelog as $commandId => $commandName) {
                         $ext_data_for_changelog['CheckCommand'] = [
-                            'id'   => $commandId,
+                            'id' => $commandId,
                             'name' => $commandName,
                         ];
                     }
@@ -773,7 +779,7 @@ class HostsController extends AppController {
                 ) {
                     foreach ($hostsForChangelog as $hostId => $hostName) {
                         $ext_data_for_changelog['Parenthost'][] = [
-                            'id'   => $hostId,
+                            'id' => $hostId,
                             'name' => $hostName,
                         ];
                     }
@@ -811,7 +817,7 @@ class HostsController extends AppController {
                 ]);
 
                 $this->Customvariable->deleteAll([
-                    'object_id'     => $host['Host']['id'],
+                    'object_id' => $host['Host']['id'],
                     'objecttype_id' => OBJECT_HOST,
                 ], false);
 
@@ -862,7 +868,7 @@ class HostsController extends AppController {
             'conditions' => [
                 'Host.id' => $id,
             ],
-            'contain'    => [
+            'contain' => [
                 'Container',
             ],
         ]);
@@ -910,9 +916,9 @@ class HostsController extends AppController {
         if ($this->request->is('post') || $this->request->is('put')) {
             foreach (func_get_args() as $host_id) {
                 $this->Host->unbindModel([
-                        'hasMany'             => ['Hostcommandargumentvalue', 'HostescalationHostMembership', 'HostdependencyHostMembership', 'Service', 'Customvariable'],
+                        'hasMany' => ['Hostcommandargumentvalue', 'HostescalationHostMembership', 'HostdependencyHostMembership', 'Service', 'Customvariable'],
                         'hasAndBelongsToMany' => ['Parenthost', 'Hostgroup'],
-                        'belongsTo'           => ['CheckPeriod', 'NotifyPeriod', 'CheckCommand'],
+                        'belongsTo' => ['CheckPeriod', 'NotifyPeriod', 'CheckCommand'],
                     ]
                 );
                 $data = ['Host' => []];
@@ -1073,7 +1079,7 @@ class HostsController extends AppController {
         // Checking if the user hit submit and a validation error happens, to refill input fields
         $Customvariable = [];
         $customFieldsToRefill = [
-            'Host'    => [
+            'Host' => [
                 'notification_interval',
                 'notify_on_recovery',
                 'notify_on_down',
@@ -1145,7 +1151,7 @@ class HostsController extends AppController {
                 ) {
                     foreach ($contactsForChangelog as $contactId => $contactName) {
                         $ext_data_for_changelog['Contact'][] = [
-                            'id'   => $contactId,
+                            'id' => $contactId,
                             'name' => $contactName,
                         ];
                     }
@@ -1154,15 +1160,15 @@ class HostsController extends AppController {
             }
             if ($this->request->data('Host.Contactgroup')) {
                 if ($contactgroupsForChangelog = $this->Contactgroup->find('all', [
-                    'recursive'  => -1,
-                    'contain'    => [
+                    'recursive' => -1,
+                    'contain' => [
                         'Container' => [
                             'fields' => [
                                 'Container.name',
                             ],
                         ],
                     ],
-                    'fields'     => [
+                    'fields' => [
                         'Contactgroup.id',
                     ],
                     'conditions' => [
@@ -1172,7 +1178,7 @@ class HostsController extends AppController {
                 ) {
                     foreach ($contactgroupsForChangelog as $contactgroupData) {
                         $ext_data_for_changelog['Contactgroup'][] = [
-                            'id'   => $contactgroupData['Contactgroup']['id'],
+                            'id' => $contactgroupData['Contactgroup']['id'],
                             'name' => $contactgroupData['Container']['name'],
                         ];
                     }
@@ -1181,15 +1187,15 @@ class HostsController extends AppController {
             }
             if ($this->request->data('Host.Hostgroup')) {
                 if ($hostgroupsForChangelog = $this->Hostgroup->find('all', [
-                    'recursive'  => -1,
-                    'contain'    => [
+                    'recursive' => -1,
+                    'contain' => [
                         'Container' => [
                             'fields' => [
                                 'Container.name',
                             ],
                         ],
                     ],
-                    'fields'     => [
+                    'fields' => [
                         'Hostgroup.id',
                     ],
                     'conditions' => [
@@ -1199,7 +1205,7 @@ class HostsController extends AppController {
                 ) {
                     foreach ($hostgroupsForChangelog as $hostgroupData) {
                         $ext_data_for_changelog['Hostgroup'][] = [
-                            'id'   => $hostgroupData['Hostgroup']['id'],
+                            'id' => $hostgroupData['Hostgroup']['id'],
                             'name' => $hostgroupData['Container']['name'],
                         ];
                     }
@@ -1215,7 +1221,7 @@ class HostsController extends AppController {
                 ) {
                     foreach ($timeperiodsForChangelog as $timeperiodId => $timeperiodName) {
                         $ext_data_for_changelog['NotifyPeriod'] = [
-                            'id'   => $timeperiodId,
+                            'id' => $timeperiodId,
                             'name' => $timeperiodName,
                         ];
                     }
@@ -1231,7 +1237,7 @@ class HostsController extends AppController {
                 ) {
                     foreach ($timeperiodsForChangelog as $timeperiodId => $timeperiodName) {
                         $ext_data_for_changelog['CheckPeriod'] = [
-                            'id'   => $timeperiodId,
+                            'id' => $timeperiodId,
                             'name' => $timeperiodName,
                         ];
                     }
@@ -1247,7 +1253,7 @@ class HostsController extends AppController {
                 ) {
                     foreach ($hosttemplatesForChangelog as $hosttemplateId => $hosttemplateName) {
                         $ext_data_for_changelog['Hosttemplate'] = [
-                            'id'   => $hosttemplateId,
+                            'id' => $hosttemplateId,
                             'name' => $hosttemplateName,
                         ];
                     }
@@ -1263,7 +1269,7 @@ class HostsController extends AppController {
                 ) {
                     foreach ($commandsForChangelog as $commandId => $commandName) {
                         $ext_data_for_changelog['CheckCommand'] = [
-                            'id'   => $commandId,
+                            'id' => $commandId,
                             'name' => $commandName,
                         ];
                     }
@@ -1279,7 +1285,7 @@ class HostsController extends AppController {
                 ) {
                     foreach ($hostsForChangelog as $hostId => $hostName) {
                         $ext_data_for_changelog['Parenthost'][] = [
-                            'id'   => $hostId,
+                            'id' => $hostId,
                             'name' => $hostName,
                         ];
                     }
@@ -1474,11 +1480,11 @@ class HostsController extends AppController {
             }
 
             $tmpRecord = [
-                'Host'         => $Host->toArray(),
+                'Host' => $Host->toArray(),
                 'Hosttemplate' => $Hosttemplate->toArray(),
-                'Hoststatus'   => [
+                'Hoststatus' => [
                     'isInMonitoring' => false,
-                    'currentState'   => -1
+                    'currentState' => -1
                 ]
             ];
             $tmpRecord['Host']['allow_sharing'] = $allowSharing;
@@ -1602,8 +1608,8 @@ class HostsController extends AppController {
                     continue;
                 }
                 $sourceHost = $this->Host->find('first', [
-                    'recursive'  => -1,
-                    'fields'     => [
+                    'recursive' => -1,
+                    'fields' => [
                         'Host.name',
                         'Host.hosttemplate_id',
                         'Host.container_id',
@@ -1639,45 +1645,45 @@ class HostsController extends AppController {
                         'Host.satellite_id',
                         'Host.disabled'
                     ],
-                    'contain'    => [
-                        'Parenthost'               => [
+                    'contain' => [
+                        'Parenthost' => [
                             'fields' => [
                                 'id',
                                 'name',
                             ],
                         ],
-                        'Container'                => [
+                        'Container' => [
                             'fields' => [
                                 'id',
                                 'name',
                             ],
                         ],
-                        'CheckPeriod'              => [
+                        'CheckPeriod' => [
                             'fields' => [
                                 'CheckPeriod.id',
                                 'CheckPeriod.name'
                             ]
                         ],
-                        'NotifyPeriod'             => [
+                        'NotifyPeriod' => [
                             'fields' => [
                                 'NotifyPeriod.id',
                                 'NotifyPeriod.name'
                             ]
                         ],
-                        'CheckCommand'             => [
+                        'CheckCommand' => [
                             'fields' => [
                                 'CheckCommand.id',
                                 'CheckCommand.name',
                             ]
                         ],
-                        'Contact'                  => [
+                        'Contact' => [
                             'fields' => [
                                 'Contact.id',
                                 'Contact.name'
                             ],
                         ],
-                        'Contactgroup'             => [
-                            'fields'    => [
+                        'Contactgroup' => [
+                            'fields' => [
                                 'Contactgroup.id',
                             ],
                             'Container' => [
@@ -1692,15 +1698,15 @@ class HostsController extends AppController {
                                 'value',
                             ],
                         ],
-                        'Customvariable'           => [
+                        'Customvariable' => [
                             'fields' => [
                                 'name',
                                 'value',
                                 'objecttype_id'
                             ],
                         ],
-                        'Hostgroup'                => [
-                            'fields'    => [
+                        'Hostgroup' => [
+                            'fields' => [
                                 'Hostgroup.id',
                             ],
                             'Container' => [
@@ -1716,48 +1722,48 @@ class HostsController extends AppController {
                 ]);
 
                 $hosttemplate = $this->Hosttemplate->find('first', [
-                    'recursive'  => -1,
-                    'contain'    => [
-                        'Customvariable'                   => [
+                    'recursive' => -1,
+                    'contain' => [
+                        'Customvariable' => [
                             'fields' => [
                                 'name',
                                 'value',
                             ],
                         ],
-                        'CheckPeriod'                      => [
+                        'CheckPeriod' => [
                             'fields' => [
                                 'CheckPeriod.id',
                                 'CheckPeriod.name'
                             ]
                         ],
-                        'NotifyPeriod'                     => [
+                        'NotifyPeriod' => [
                             'fields' => [
                                 'NotifyPeriod.id',
                                 'NotifyPeriod.name'
                             ]
                         ],
-                        'CheckCommand'                     => [
+                        'CheckCommand' => [
                             'fields' => [
                                 'CheckCommand.id',
                                 'CheckCommand.name',
                             ]
                         ],
-                        'Contact'                          => [
+                        'Contact' => [
                             'fields' => [
                                 'id',
                                 'name',
                             ],
                         ],
-                        'Contactgroup'                     => [
-                            'fields'    => ['id'],
+                        'Contactgroup' => [
+                            'fields' => ['id'],
                             'Container' => [
                                 'fields' => [
                                     'name',
                                 ],
                             ],
                         ],
-                        'Hostgroup'                        => [
-                            'fields'    => ['id'],
+                        'Hostgroup' => [
+                            'fields' => ['id'],
                             'Container' => [
                                 'fields' => [
                                     'name',
@@ -1787,24 +1793,24 @@ class HostsController extends AppController {
                 $parentHostIds = (!empty($sourceHost['Parenthost'])) ? Hash::extract($sourceHost['Parenthost'], '{n}.id') : [];
                 $containerIds = (!empty($sourceHost['Container'])) ? Hash::extract($sourceHost['Container'], '{n}.id') : [];
                 $newHostData = [
-                    'Host'                     => Hash::merge(
+                    'Host' => Hash::merge(
                         $sourceHost['Host'], [
-                        'uuid'         => UUID::v4(),
-                        'name'         => $host2copy['name'],
-                        'description'  => $host2copy['description'],
-                        'host_url'     => $host2copy['host_url'],
-                        'address'      => $host2copy['address'],
-                        'Contact'      => $contactIds,
+                        'uuid' => UUID::v4(),
+                        'name' => $host2copy['name'],
+                        'description' => $host2copy['description'],
+                        'host_url' => $host2copy['host_url'],
+                        'address' => $host2copy['address'],
+                        'Contact' => $contactIds,
                         'Contactgroup' => $contactgroupIds,
-                        'Hostgroup'    => $hostgroupIds,
+                        'Hostgroup' => $hostgroupIds,
                     ]),
-                    'Contact'                  => ['Contact' => $contactIds],
-                    'Contactgroup'             => ['Contactgroup' => $contactgroupIds],
-                    'Hostgroup'                => ['Hostgroup' => $hostgroupIds],
-                    'Container'                => ['Container' => $containerIds],
-                    'Customvariable'           => $customVariables,
+                    'Contact' => ['Contact' => $contactIds],
+                    'Contactgroup' => ['Contactgroup' => $contactgroupIds],
+                    'Hostgroup' => ['Hostgroup' => $hostgroupIds],
+                    'Container' => ['Container' => $containerIds],
+                    'Customvariable' => $customVariables,
                     'Hostcommandargumentvalue' => (!empty($sourceHost['Hostcommandargumentvalue'])) ? Hash::remove($sourceHost['Hostcommandargumentvalue'], '{n}.host_id') : [],
-                    'Parenthost'               => ['Parenthost' => $parentHostIds]
+                    'Parenthost' => ['Parenthost' => $parentHostIds]
                 ];
                 /* Data for Changelog Start*/
                 $sourceHost['Customvariable'] = $customVariables;
@@ -1815,7 +1821,7 @@ class HostsController extends AppController {
                     $parenthosts = [];
                     foreach ($sourceHost['Parenthost'] as $parenthost) {
                         $parenthosts[] = [
-                            'id'   => $parenthost['id'],
+                            'id' => $parenthost['id'],
                             'name' => $parenthost['name']
                         ];
                     }
@@ -1825,7 +1831,7 @@ class HostsController extends AppController {
                     $contactgroups = [];
                     foreach ($sourceHost['Contactgroup'] as $contactgroup) {
                         $contactgroups[] = [
-                            'id'   => $contactgroup['id'],
+                            'id' => $contactgroup['id'],
                             'name' => $contactgroup['Container']['name']
                         ];
                     }
@@ -1834,7 +1840,7 @@ class HostsController extends AppController {
                     $contactgroups = [];
                     foreach ($hosttemplate['Contactgroup'] as $contactgroup) {
                         $contactgroups[] = [
-                            'id'   => $contactgroup['id'],
+                            'id' => $contactgroup['id'],
                             'name' => $contactgroup['Container']['name']
                         ];
                     }
@@ -1845,7 +1851,7 @@ class HostsController extends AppController {
                     $hostgroups = [];
                     foreach ($sourceHost['Hostgroup'] as $hostgroup) {
                         $hostgroups[] = [
-                            'id'   => $hostgroup['id'],
+                            'id' => $hostgroup['id'],
                             'name' => $hostgroup['Container']['name']
                         ];
                     }
@@ -1854,7 +1860,7 @@ class HostsController extends AppController {
                     $hostgroups = [];
                     foreach ($hosttemplate['Hostgroup'] as $hostgroup) {
                         $hostgroups[] = [
-                            'id'   => $hostgroup['id'],
+                            'id' => $hostgroup['id'],
                             'name' => $hostgroup['Container']['name']
                         ];
                     }
@@ -1866,7 +1872,7 @@ class HostsController extends AppController {
                 if ($this->Host->validates()) {
                     $dataToSaveArray[$host2copy['source']] = $newHostData;
                     $dataForChangeLog[$host2copy['source']] = [
-                        'Host'         => $sourceHost,
+                        'Host' => $sourceHost,
                         'Hosttemplate' => $hosttemplate
                     ];
                 } else {
@@ -1899,8 +1905,8 @@ class HostsController extends AppController {
                         }
                         $hostId = $this->Host->id;
                         $services = $this->Service->find('all', [
-                            'recursive'  => -1,
-                            'fields'     => [
+                            'recursive' => -1,
+                            'fields' => [
                                 'Service.name',
                                 'Service.servicetemplate_id',
                                 'Service.check_period_id',
@@ -1938,33 +1944,33 @@ class HostsController extends AppController {
                                 'Service.own_customvariables',
                                 'Service.disabled'
                             ],
-                            'contain'    => [
-                                'CheckPeriod'                      => [
+                            'contain' => [
+                                'CheckPeriod' => [
                                     'fields' => [
                                         'CheckPeriod.id',
                                         'CheckPeriod.name'
                                     ]
                                 ],
-                                'NotifyPeriod'                     => [
+                                'NotifyPeriod' => [
                                     'fields' => [
                                         'NotifyPeriod.id',
                                         'NotifyPeriod.name'
                                     ]
                                 ],
-                                'CheckCommand'                     => [
+                                'CheckCommand' => [
                                     'fields' => [
                                         'CheckCommand.id',
                                         'CheckCommand.name',
                                     ]
                                 ],
-                                'Contact'                          => [
+                                'Contact' => [
                                     'fields' => [
                                         'Contact.id',
                                         'Contact.name'
                                     ],
                                 ],
-                                'Contactgroup'                     => [
-                                    'fields'    => [
+                                'Contactgroup' => [
+                                    'fields' => [
                                         'Contactgroup.id',
                                     ],
                                     'Container' => [
@@ -1973,7 +1979,7 @@ class HostsController extends AppController {
                                         ]
                                     ]
                                 ],
-                                'Servicecommandargumentvalue'      => [
+                                'Servicecommandargumentvalue' => [
                                     'fields' => [
                                         'commandargument_id', 'value',
                                     ],
@@ -1983,15 +1989,15 @@ class HostsController extends AppController {
                                         'commandargument_id', 'value',
                                     ],
                                 ],
-                                'Customvariable'                   => [
+                                'Customvariable' => [
                                     'fields' => [
                                         'name',
                                         'value',
                                         'objecttype_id'
                                     ],
                                 ],
-                                'Servicegroup'                     => [
-                                    'fields'    => [
+                                'Servicegroup' => [
+                                    'fields' => [
                                         'Servicegroup.id',
                                     ],
                                     'Container' => [
@@ -2002,7 +2008,7 @@ class HostsController extends AppController {
                                 ],
                             ],
                             'conditions' => [
-                                'Service.host_id'      => $sourceHostId,
+                                'Service.host_id' => $sourceHostId,
                                 'Service.service_type' => $this->Service->serviceTypes('copy'),
                             ],
                         ]);
@@ -2014,8 +2020,8 @@ class HostsController extends AppController {
                                 $servicetemplate = $servicetemplates[$service['Service']['servicetemplate_id']];
                             } else {
                                 $servicetemplates[$service['Service']['servicetemplate_id']] = $this->Servicetemplate->find('first', [
-                                        'recursive'  => -1,
-                                        'fields'     => [
+                                        'recursive' => -1,
+                                        'fields' => [
                                             'Servicetemplate.template_name',
                                             'Servicetemplate.name',
                                             'Servicetemplate.check_period_id',
@@ -2049,33 +2055,33 @@ class HostsController extends AppController {
                                             'Servicetemplate.is_volatile',
                                             'Servicetemplate.check_freshness',
                                         ],
-                                        'contain'    => [
-                                            'CheckPeriod'                              => [
+                                        'contain' => [
+                                            'CheckPeriod' => [
                                                 'fields' => [
                                                     'CheckPeriod.id',
                                                     'CheckPeriod.name'
                                                 ]
                                             ],
-                                            'NotifyPeriod'                             => [
+                                            'NotifyPeriod' => [
                                                 'fields' => [
                                                     'NotifyPeriod.id',
                                                     'NotifyPeriod.name'
                                                 ]
                                             ],
-                                            'CheckCommand'                             => [
+                                            'CheckCommand' => [
                                                 'fields' => [
                                                     'CheckCommand.id',
                                                     'CheckCommand.name',
                                                 ]
                                             ],
-                                            'Contact'                                  => [
+                                            'Contact' => [
                                                 'fields' => [
                                                     'Contact.id',
                                                     'Contact.name'
                                                 ],
                                             ],
-                                            'Contactgroup'                             => [
-                                                'fields'    => [
+                                            'Contactgroup' => [
+                                                'fields' => [
                                                     'Contactgroup.id',
                                                 ],
                                                 'Container' => [
@@ -2084,8 +2090,8 @@ class HostsController extends AppController {
                                                     ]
                                                 ]
                                             ],
-                                            'Servicegroup'                             => [
-                                                'fields'    => [
+                                            'Servicegroup' => [
+                                                'fields' => [
                                                     'Servicegroup.id',
                                                 ],
                                                 'Container' => [
@@ -2094,7 +2100,7 @@ class HostsController extends AppController {
                                                     ]
                                                 ]
                                             ],
-                                            'Servicetemplatecommandargumentvalue'      => [
+                                            'Servicetemplatecommandargumentvalue' => [
                                                 'fields' => [
                                                     'id',
                                                     'commandargument_id',
@@ -2108,7 +2114,7 @@ class HostsController extends AppController {
                                                     'value',
                                                 ],
                                             ],
-                                            'Customvariable'                           => [
+                                            'Customvariable' => [
                                                 'fields' => [
                                                     'name', 'value',
                                                 ],
@@ -2128,19 +2134,19 @@ class HostsController extends AppController {
                             $servicegroupIds = (!empty($service['Servicegroup'])) ? Hash::extract($service['Servicegroup'], '{n}.id') : [];
                             $customVariables = (!empty($service['Customvariable'])) ? Hash::remove($service['Customvariable'], '{n}.object_id') : [];
                             $newServiceData = [
-                                'Service'                          => Hash::merge(
+                                'Service' => Hash::merge(
                                     $service['Service'], [
-                                    'uuid'         => UUID::v4(),
-                                    'host_id'      => $hostId,
-                                    'Contact'      => $contactIds,
+                                    'uuid' => UUID::v4(),
+                                    'host_id' => $hostId,
+                                    'Contact' => $contactIds,
                                     'Contactgroup' => $contactgroupIds,
                                     'Servicegroup' => $servicegroupIds
                                 ]),
-                                'Contact'                          => ['Contact' => $contactIds],
-                                'Contactgroup'                     => ['Contactgroup' => $contactgroupIds],
-                                'Servicegroup'                     => ['Servicegroup' => $servicegroupIds],
-                                'Customvariable'                   => $customVariables,
-                                'Servicecommandargumentvalue'      => (!empty($service['Servicecommandargumentvalue'])) ? Hash::remove($service['Servicecommandargumentvalue'], '{n}.service_id') : [],
+                                'Contact' => ['Contact' => $contactIds],
+                                'Contactgroup' => ['Contactgroup' => $contactgroupIds],
+                                'Servicegroup' => ['Servicegroup' => $servicegroupIds],
+                                'Customvariable' => $customVariables,
+                                'Servicecommandargumentvalue' => (!empty($service['Servicecommandargumentvalue'])) ? Hash::remove($service['Servicecommandargumentvalue'], '{n}.service_id') : [],
                                 'Serviceeventcommandargumentvalue' => (!empty($service['Serviceeventcommandargumentvalue'])) ? Hash::remove($service['Serviceeventcommandargumentvalue'], '{n}.service_id') : [],
                             ];
 
@@ -2153,7 +2159,7 @@ class HostsController extends AppController {
                                 $contactgroups = [];
                                 foreach ($service['Contactgroup'] as $contactgroup) {
                                     $contactgroups[] = [
-                                        'id'   => $contactgroup['id'],
+                                        'id' => $contactgroup['id'],
                                         'name' => $contactgroup['Container']['name']
                                     ];
                                 }
@@ -2162,7 +2168,7 @@ class HostsController extends AppController {
                                 $contactgroups = [];
                                 foreach ($servicetemplate['Contactgroup'] as $contactgroup) {
                                     $contactgroups[] = [
-                                        'id'   => $contactgroup['id'],
+                                        'id' => $contactgroup['id'],
                                         'name' => $contactgroup['Container']['name']
                                     ];
                                 }
@@ -2173,7 +2179,7 @@ class HostsController extends AppController {
                                 $servicegroups = [];
                                 foreach ($service['Servicegroup'] as $servicegroup) {
                                     $servicegroups[] = [
-                                        'id'   => $servicegroup['id'],
+                                        'id' => $servicegroup['id'],
                                         'name' => $servicegroup['Container']['name']
                                     ];
                                 }
@@ -2182,7 +2188,7 @@ class HostsController extends AppController {
                                 $servicegroups = [];
                                 foreach ($servicetemplate['Servicegroup'] as $servicegroup) {
                                     $servicegroups[] = [
-                                        'id'   => $servicegroup['id'],
+                                        'id' => $servicegroup['id'],
                                         'name' => $servicegroup['Container']['name']
                                     ];
                                 }
@@ -2258,8 +2264,8 @@ class HostsController extends AppController {
         if (!is_numeric($idOrUuid)) {
             if (preg_match(UUID::regex(), $idOrUuid)) {
                 $lookupHost = $this->Host->find('first', [
-                    'recursive'  => -1,
-                    'fields'     => [
+                    'recursive' => -1,
+                    'fields' => [
                         'Host.id'
                     ],
                     'conditions' => [
@@ -2271,7 +2277,7 @@ class HostsController extends AppController {
                 }
                 $this->redirect([
                     'controller' => 'hosts',
-                    'action'     => 'browser',
+                    'action' => 'browser',
                     $lookupHost['Host']['id']
                 ]);
                 return;
@@ -2284,8 +2290,8 @@ class HostsController extends AppController {
         }
 
         $rawHost = $this->Host->find('first', [
-            'recursive'  => -1,
-            'fields'     => [
+            'recursive' => -1,
+            'fields' => [
                 'Host.id',
                 'Host.uuid',
                 'Host.name',
@@ -2294,7 +2300,7 @@ class HostsController extends AppController {
                 'Host.host_type',
                 'Host.host_url',
             ],
-            'contain'    => [
+            'contain' => [
                 'Container',
                 'Hosttemplate' => [
                     'fields' => [
@@ -2307,7 +2313,7 @@ class HostsController extends AppController {
             ]
         ]);
 
-        if($rawHost['Host']['host_url'] === '' || $rawHost['Host']['host_url'] === null){
+        if ($rawHost['Host']['host_url'] === '' || $rawHost['Host']['host_url'] === null) {
             $rawHost['Host']['host_url'] = $rawHost['Hosttemplate']['host_url'];
         }
 
@@ -2367,15 +2373,15 @@ class HostsController extends AppController {
         $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
         $HosttemplateMerger = new HosttemplateMerger($host, $hosttemplate);
         $mergedHost = [
-            'Host'                        => $HosttemplateMerger->mergeHostWithTemplate(),
-            'CheckPeriod'                 => $HosttemplateMerger->mergeCheckPeriod(),
-            'NotifyPeriod'                => $HosttemplateMerger->mergeNotifyPeriod(),
-            'CheckCommand'                => $HosttemplateMerger->mergeCheckCommand(),
-            'Customvariable'              => $HosttemplateMerger->mergeCustomvariables(),
-            'Hostcommandargumentvalue'    => $HosttemplateMerger->mergeCommandargumentsForReplace(),
-            'Contactgroup'                => $HosttemplateMerger->mergeContactgroups(),
-            'Contact'                     => $HosttemplateMerger->mergeContacts(),
-            'areContactsFromHost'         => $HosttemplateMerger->areContactsFromHost(),
+            'Host' => $HosttemplateMerger->mergeHostWithTemplate(),
+            'CheckPeriod' => $HosttemplateMerger->mergeCheckPeriod(),
+            'NotifyPeriod' => $HosttemplateMerger->mergeNotifyPeriod(),
+            'CheckCommand' => $HosttemplateMerger->mergeCheckCommand(),
+            'Customvariable' => $HosttemplateMerger->mergeCustomvariables(),
+            'Hostcommandargumentvalue' => $HosttemplateMerger->mergeCommandargumentsForReplace(),
+            'Contactgroup' => $HosttemplateMerger->mergeContactgroups(),
+            'Contact' => $HosttemplateMerger->mergeContacts(),
+            'areContactsFromHost' => $HosttemplateMerger->areContactsFromHost(),
             'areContactsFromHosttemplate' => $HosttemplateMerger->areContactsFromHosttemplate(),
         ];
 
@@ -2472,7 +2478,7 @@ class HostsController extends AppController {
         $acknowledgement = [];
         if ($Hoststatus->isAcknowledged()) {
             $acknowledgement = $this->AcknowledgedHost->byHostUuid($host['Host']['uuid']);
-            if(!empty($acknowledgement)) {
+            if (!empty($acknowledgement)) {
                 $Acknowledgement = new AcknowledgementHost($acknowledgement['AcknowledgedHost'], $UserTime);
                 $acknowledgement = $Acknowledgement->toArray();
 
@@ -2503,7 +2509,7 @@ class HostsController extends AppController {
         $downtime = [];
         if ($Hoststatus->isInDowntime()) {
             $downtime = $this->DowntimeHost->byHostUuid($host['Host']['uuid'], true);
-            if(!empty($downtime)) {
+            if (!empty($downtime)) {
                 $Downtime = new \itnovum\openITCOCKPIT\Core\Views\Downtime($downtime['DowntimeHost'], $allowEdit, $UserTime);
                 $downtime = $Downtime->toArray();
             }
@@ -2545,8 +2551,8 @@ class HostsController extends AppController {
     public function longOutputByUuid($uuid = null, $parseBbcode = true, $nl2br = true) {
         $this->autoRender = false;
         $result = $this->Host->find('first', [
-            'recursive'  => -1,
-            'fields'     => [
+            'recursive' => -1,
+            'fields' => [
                 'Host.id',
                 'Host.uuid'
             ],
@@ -2614,7 +2620,7 @@ class HostsController extends AppController {
                 'conditions' => [
                     'Hosttemplate.id' => $hosttemplate_id,
                 ],
-                'contain'    => [
+                'contain' => [
                     'Contactgroup' => 'Container',
                     'CheckCommand',
                     'Container',
@@ -2623,7 +2629,7 @@ class HostsController extends AppController {
                     'Contact',
                     'Hosttemplatecommandargumentvalue',
                     'CheckPeriod',
-                    'Hostgroup'    => 'Container'
+                    'Hostgroup' => 'Container'
                 ],
             ]
         );
@@ -2654,8 +2660,8 @@ class HostsController extends AppController {
                 'conditions' => [
                     'Hosttemplate.id' => $hosttemplate_id,
                 ],
-                'recursive'  => -1,
-                'contain'    => [
+                'recursive' => -1,
+                'contain' => [
                     'Customvariable' => [
                         'fields' => [
                             'Customvariable.name',
@@ -2664,7 +2670,7 @@ class HostsController extends AppController {
                         ],
                     ],
                 ],
-                'fields'     => [
+                'fields' => [
                     'Hosttemplate.id',
                 ],
             ]);
@@ -2680,7 +2686,7 @@ class HostsController extends AppController {
         $commandarguments = [];
         if ($command_id) {
             $commandarguments = $this->Commandargument->find('all', [
-                'recursive'  => -1,
+                'recursive' => -1,
                 'conditions' => [
                     'Commandargument.command_id' => $command_id,
                 ],
@@ -2690,10 +2696,10 @@ class HostsController extends AppController {
                 if ($hosttemplate_id) {
                     $hosttemplate_command_argument_value = $this->Hosttemplatecommandargumentvalue->find('first', [
                         'conditions' => [
-                            'Hosttemplatecommandargumentvalue.hosttemplate_id'    => $hosttemplate_id,
+                            'Hosttemplatecommandargumentvalue.hosttemplate_id' => $hosttemplate_id,
                             'Hosttemplatecommandargumentvalue.commandargument_id' => $commandargument['Commandargument']['id'],
                         ],
-                        'fields'     => 'Hosttemplatecommandargumentvalue.value',
+                        'fields' => 'Hosttemplatecommandargumentvalue.value',
                     ]);
                     if (isset($hosttemplate_command_argument_value['Hosttemplatecommandargumentvalue']['value'])) {
                         $commandarguments[$key]['Hosttemplatecommandargumentvalue']['value'] = $hosttemplate_command_argument_value['Hosttemplatecommandargumentvalue']['value'];
@@ -2718,7 +2724,7 @@ class HostsController extends AppController {
 
         $commandarguments = $this->Hosttemplatecommandargumentvalue->find('all', [
             'conditions' => [
-                'Commandargument.command_id'                       => $command_id,
+                'Commandargument.command_id' => $command_id,
                 'Hosttemplatecommandargumentvalue.hosttemplate_id' => $hosttemplate_id,
             ],
         ]);
@@ -2727,7 +2733,7 @@ class HostsController extends AppController {
         if (empty($commandarguments)) {
 
             $commandarguments = $this->Commandargument->find('all', [
-                'recursive'  => -1,
+                'recursive' => -1,
                 'conditions' => [
                     'Commandargument.command_id' => $command_id,
                 ],
@@ -2744,7 +2750,7 @@ class HostsController extends AppController {
 
         $commandarguments = [];
         $commandarguments = $this->Commandargument->find('all', [
-            'recursive'  => -1,
+            'recursive' => -1,
             'conditions' => [
                 'Commandargument.command_id' => $command_id,
             ],
@@ -2816,7 +2822,7 @@ class HostsController extends AppController {
             'host_url'
         ];
         $compare_array = [
-            'Host'         => [
+            'Host' => [
                 ['Host.{(' . implode('|', array_values(Hash::merge($fields, ['uuid', 'name', 'description', 'address', 'satellite_id', 'host_type']))) . ')}', false],
                 ['{^Contact$}.{^Contact$}.{n}', false],
                 ['{^Contactgroup$}.{^Contactgroup$}.{n}', false],
@@ -2919,22 +2925,22 @@ class HostsController extends AppController {
             $binary_path = '/usr/local/bin/wkhtmltopdf';
         }
         $this->pdfConfig = [
-            'engine'             => 'CakePdf.WkHtmlToPdf',
-            'margin'             => [
+            'engine' => 'CakePdf.WkHtmlToPdf',
+            'margin' => [
                 'bottom' => 15,
-                'left'   => 0,
-                'right'  => 0,
-                'top'    => 15,
+                'left' => 0,
+                'right' => 0,
+                'top' => 15,
             ],
-            'encoding'           => 'UTF-8',
-            'download'           => true,
-            'binary'             => $binary_path,
-            'orientation'        => 'portrait',
-            'filename'           => $filename,
+            'encoding' => 'UTF-8',
+            'download' => true,
+            'binary' => $binary_path,
+            'orientation' => 'portrait',
+            'filename' => $filename,
             'no-pdf-compression' => '*',
-            'image-dpi'          => '900',
-            'background'         => true,
-            'no-background'      => false,
+            'image-dpi' => '900',
+            'background' => true,
+            'no-background' => false,
         ];
     }
 
@@ -2969,27 +2975,27 @@ class HostsController extends AppController {
             }
             if ($diffExists > 0) {
                 return [
-                    'inherit'      => false,
-                    'source'       => 'Host',
-                    'Contact'      => $this->request->data('Host.Contact'),
+                    'inherit' => false,
+                    'source' => 'Host',
+                    'Contact' => $this->request->data('Host.Contact'),
                     'Contactgroup' => $this->request->data('Host.Contactgroup'),
                 ];
 
             }
 
             return [
-                'inherit'      => true,
-                'source'       => 'Hosttemplate',
-                'Contact'      => Hash::combine($host['Hosttemplate']['Contact'], '{n}.id', '{n}.name'),
+                'inherit' => true,
+                'source' => 'Hosttemplate',
+                'Contact' => Hash::combine($host['Hosttemplate']['Contact'], '{n}.id', '{n}.name'),
                 'Contactgroup' => Hash::combine($host['Hosttemplate']['Contactgroup'], '{n}.id', '{n}.Container.name'),
             ];
         }
 
         if (!empty($_host)) {
             return [
-                'inherit'      => false,
-                'source'       => 'Host',
-                'Contact'      => Hash::combine($_host['Contact'], '{n}.id', '{n}.name'),
+                'inherit' => false,
+                'source' => 'Host',
+                'Contact' => Hash::combine($_host['Contact'], '{n}.id', '{n}.name'),
                 'Contactgroup' => Hash::combine($_host['Contactgroup'], '{n}.id', '{n}.Container.name'),
             ];
         }
@@ -3017,18 +3023,18 @@ class HostsController extends AppController {
         }
         if ($diffExists > 0) {
             return [
-                'inherit'      => false,
-                'source'       => 'Host',
-                'Contact'      => $this->request->data['Host']['Contact'],
+                'inherit' => false,
+                'source' => 'Host',
+                'Contact' => $this->request->data['Host']['Contact'],
                 'Contactgroup' => $this->request->data['Host']['Contactgroup'],
             ];
 
         }
 
         return [
-            'inherit'      => false,
-            'source'       => 'Host',
-            'Contact'      => Hash::combine($host['Contact'], '{n}.id', '{n}.name'),
+            'inherit' => false,
+            'source' => 'Host',
+            'Contact' => Hash::combine($host['Contact'], '{n}.id', '{n}.name'),
             'Contactgroup' => Hash::combine($host['Contactgroup'], '{n}.id', '{n}.Container.name'),
         ];
     }
@@ -3086,7 +3092,7 @@ class HostsController extends AppController {
 
         if ($host_id != 0) {
             $host = $this->Host->find('first', [
-                'recursive'  => -1,
+                'recursive' => -1,
                 'conditions' => [
                     'Host.id' => $host_id
                 ]
@@ -3354,7 +3360,7 @@ class HostsController extends AppController {
             'conditions' => [
                 'Host.id' => $id
             ],
-            'contain'    => [
+            'contain' => [
                 'Parenthost'
             ]
         ]);
@@ -3378,7 +3384,7 @@ class HostsController extends AppController {
             'conditions' => [
                 'Host.id' => $id,
             ],
-            'contain'    => [
+            'contain' => [
                 'Container',
                 'Hosttemplate'
             ],
@@ -3440,5 +3446,144 @@ class HostsController extends AppController {
         }
         $this->set('hoststatus', $hoststatus);
         $this->set('_serialize', ['hoststatus']);
+    }
+
+    public function timeline($id = null) {
+        if (!$this->isApiRequest()) {
+            throw new MethodNotAllowedException();
+        }
+        if (!$this->Host->exists($id)) {
+            throw new NotFoundException(__('Invalid host'));
+        }
+
+        $host = $this->Host->find('first', [
+            'conditions' => [
+                'Host.id' => $id,
+            ],
+            'contain' => [
+                'Container'
+            ],
+            'fields' => [
+                'Host.uuid',
+                'Host.container_id',
+                'Container.*'
+            ]
+        ]);
+
+        $containerIdsToCheck = Hash::extract($host, 'Container.{n}.HostsToContainer.container_id');
+        $containerIdsToCheck[] = $host['Host']['container_id'];
+        if (!$this->allowedByContainerId($containerIdsToCheck, false)) {
+            $this->render403();
+            return;
+        }
+
+        //Process conditions
+        $Conditions = new StatehistoryHostConditions();
+        $Conditions->setOrder(['StatehistoryHost.state_time' => 'asc']);
+
+        $start = $this->request->query('start');
+        $end = $this->request->query('end');
+
+        if (!is_numeric($start)) {
+            $start = time() - 2 * 24 * 3600;
+        }
+
+
+        if (!is_numeric($end)) {
+            $end = time();
+        }
+        debug($start);
+
+        $hostUuid = $host['Host']['uuid'];
+
+        $Conditions->setFrom($start);
+        $Conditions->setTo($end);
+        $Conditions->setHostUuid($hostUuid);
+        $Conditions->setUseLimit(false);
+
+        //Query state history records for hosts
+        $query = $this->StatehistoryHost->getQuery($Conditions);
+        $statehistories = $this->StatehistoryHost->find('all', $query);
+        $all_statehistories[$hostUuid] = [];
+        foreach ($statehistories as $statehistory) {
+            $StatehistoryHost = new \itnovum\openITCOCKPIT\Core\Views\StatehistoryHost($statehistory['StatehistoryHost']);
+            $all_statehistories[$hostUuid]['Statehistory'][] = $StatehistoryHost->toArray();
+        }
+
+        if (empty($all_statehistories[$hostUuid]['Statehistory'])) {
+            //Host has no state history record for selected time range
+            //Get last available state history record for this host
+            $query = $this->StatehistoryHost->getLastRecord($Conditions);
+            $record = $this->StatehistoryHost->find('first', $query);
+            if (!empty($record)) {
+                $record['StatehistoryHost']['state_time'] = $start;
+                $StatehistoryHost = new \itnovum\openITCOCKPIT\Core\Views\StatehistoryHost($record['StatehistoryHost']);
+                $all_statehistories[$hostUuid]['Statehistory'][] = $StatehistoryHost->toArray();
+            }
+        }
+
+        print_r($all_statehistories);
+
+        //Query downtime records for hosts
+        $DowntimeHostConditions = new DowntimeHostConditions();
+        $DowntimeHostConditions->setOrder(['DowntimeHost.scheduled_start_time' => 'asc']);
+        $DowntimeHostConditions->setFrom($start);
+        $DowntimeHostConditions->setTo($end);
+        $DowntimeHostConditions->setHostUuid($hostUuid);
+
+
+        $query = $this->DowntimeHost->getQueryForReporting($DowntimeHostConditions);
+        $downtimes = $this->DowntimeHost->find('all', $query);
+
+
+
+
+
+        foreach ($downtimes as $downtime) {
+            $DowntimeHost = new \itnovum\openITCOCKPIT\Core\Views\Downtime($downtime['DowntimeHost']);
+            $all_downtimes[] = [
+                'DowntimeHost' => $DowntimeHost->toArray()
+            ];
+        }
+
+        $all_downtimes_merged = [];
+
+        if(!empty($all_downtimes)){
+            $all_downtimes_merged = $this->DateRange->mergeTimeOverlapping(
+                array_map(
+                    function ($downtime) {
+                        return [
+                            'start_time' => $downtime['DowntimeHost']['scheduledStartTime'],
+                            'end_time'   => $downtime['DowntimeHost']['scheduledEndTime'],
+                        ];
+                    },
+                    $all_downtimes
+                )
+            );
+        }
+
+        print_r($all_downtimes_merged);
+
+/*
+        $timeSlices = $timeSlicesGlobal; //Default time slice if no downtime will be found
+        if (!empty($downtimesAndSystemfailures)) {
+            $downtimesFiltered = $this->Instantreport->mergeTimeOverlapping(
+                array_map(
+                    function ($downtime) {
+                        return [
+                            'start_time' => $downtime['DowntimeHost']['scheduledStartTime'],
+                            'end_time'   => $downtime['DowntimeHost']['scheduledEndTime'],
+                        ];
+                    },
+                    $downtimesAndSystemfailures
+                )
+            );
+            $timeSlices = $this->Instantreport->setDowntimesInTimeslices(
+                $timeSlicesGlobal,
+                $downtimesFiltered
+            );
+            unset($downtimesFiltered);
+        }
+*/
     }
 }

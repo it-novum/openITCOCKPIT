@@ -1,4 +1,4 @@
-angular.module('openITCOCKPIT', [])
+angular.module('openITCOCKPIT', ['ngVis'])
 
     .factory("httpInterceptor", function($q, $rootScope, $timeout){
         return {
