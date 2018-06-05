@@ -3523,13 +3523,12 @@ class HostsController extends AppController {
         $end = $this->request->query('end');
 
 
-        if (!is_numeric($start)) {
-            //$start = time() - 2 * 24 * 3600;
-            $start = time() - 300 * 24 * 3600;
+        if (!is_numeric($start) || $start < 0) {
+            $start = time() - 2 * 24 * 3600;
         }
 
 
-        if (!is_numeric($end)) {
+        if (!is_numeric($end) || $end < 0) {
             $end = time();
         }
 
@@ -3634,9 +3633,17 @@ class HostsController extends AppController {
         $AcknowledgementSerializer = new AcknowledgementSerializer($acknowledgementRecords, $UserTime);
         $this->set('acknowledgements', $AcknowledgementSerializer->serialize());
 
-
-        $this->set('_serialize', ['groups', 'statehistory', 'downtimes', 'notifications', 'acknowledgements', 'timeranges']);
-
-
+        $this->set('start', $start);
+        $this->set('end', $end);
+        $this->set('_serialize', [
+            'start',
+            'end',
+            'groups',
+            'statehistory',
+            'downtimes',
+            'notifications',
+            'acknowledgements',
+            'timeranges'
+        ]);
     }
 }

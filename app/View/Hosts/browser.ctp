@@ -86,12 +86,14 @@ if (!$QueryHandler->exists()): ?>
                         </a>
                     </li>
 
-                    <li class="">
-                        <a href="#tab3" data-toggle="tab" ng-click="showTimeline()">
-                            <i class="fa fa-lg fa-clock-o"></i>
-                            <span class="hidden-mobile hidden-tablet"> <?php echo __('Timeline'); ?> </span>
-                        </a>
-                    </li>
+                    <?php if ($this->Acl->hasPermission('timeline', 'hosts')): ?>
+                        <li class="">
+                            <a href="#tab3" data-toggle="tab" ng-click="showTimeline()">
+                                <i class="fa fa-lg fa-clock-o"></i>
+                                <span class="hidden-mobile hidden-tablet"> <?php echo __('Timeline'); ?> </span>
+                            </a>
+                        </li>
+                    <?php endif; ?>
 
                     <?php echo $this->AdditionalLinks->renderAsTabs($additionalLinksTab, null, 'host', 'tabLink'); ?>
 

@@ -50,6 +50,10 @@ angular.module('openITCOCKPIT')
         $scope.hostStatusTextClass = 'txt-primary';
 
         $scope.visTimeline = null;
+        $scope.visTimelineInit = true;
+        $scope.visTimelineStart = -1;
+        $scope.visTimelineEnd = -1;
+        $scope.visTimeout;
 
         var flappingInterval;
 
@@ -450,10 +454,23 @@ angular.module('openITCOCKPIT')
             }
         };
 
-        $scope.loadTimelineData = function(){
+        $scope.loadTimelineData = function(_properties){
+            var properties = _properties || {};
+            var start = properties.start || -1;
+            var end = properties.end || -1;
+
+            $scope.visTimelineInit = true;
+
+            if(start > $scope.visTimelineStart && end < $scope.visTimelineEnd){
+                //Zoom in data we already have
+                return;
+            }
+
             $http.get("/hosts/timeline/" + $scope.id + ".json", {
                 params: {
-                    'angular': true
+                    'angular': true,
+                    start: start,
+                    end: end
                 }
             }).then(function(result){
                 var timelinedata = {
@@ -465,33 +482,23 @@ angular.module('openITCOCKPIT')
                 timelinedata.items.add(result.data.acknowledgements);
                 timelinedata.items.add(result.data.timeranges);
 
-                $scope.renderTimeline(timelinedata);
-            });
-        };
+                $scope.visTimelineStart = result.data.start;
+                $scope.visTimelineEnd = result.data.end;
 
-        $scope.renderTimeline = function(timelinedata){
-            var container = document.getElementById('visualization');
-
-            var options = {
-                orientation: "bottom",
-                showCurrentTime: true,
-//        start: "2018-05-29T04:00:00.000Z",
-//        end: "2018-05-29T04:00:00.000Z",
-                // min: new Date(2018, 4, 27),    // lower limit of visible range
-                // max: new Date(2018, 4, 30),    // upper limit of visible range
-                zoomMin: 1000 * 10 * 60 * 5,   // every 5 minutes
-                //     zoomMax: 1000 * 60 * 60 * 24 * 31 * 3     // about three months in milliseconds
-                // timeAxis: {scale: 'minute', step: 15}
-
-                // specify a template for the items
-                //template: template
-                format:
-                    {
+                var options = {
+                    orientation: "bottom",
+                    showCurrentTime: true,
+                    start: new Date(result.data.start * 1000),
+                    end: new Date(result.data.end * 1000),
+                    min: new Date(new Date(result.data.start * 1000).setFullYear(new Date(result.data.start * 1000).getFullYear() - 1)), //May 1 year of zoom
+                    max: new Date(result.data.end * 1000),    // upper limit of visible range
+                    zoomMin: 1000 * 10 * 60 * 5,   // every 5 minutes
+                    format: {
                         minorLabels: {
                             millisecond: 'SSS',
                             second: 's',
-                            minute: 'HH:mm',
-                            hour: 'HH:mm',
+                            minute: 'H:mm',
+                            hour: 'H:mm',
                             weekday: 'ddd D',
                             day: 'D',
                             week: 'w',
@@ -499,8 +506,8 @@ angular.module('openITCOCKPIT')
                             year: 'YYYY'
                         },
                         majorLabels: {
-                            millisecond: 'HH:mm:ss',
-                            second: 'D MMMM HH:mm',
+                            millisecond: 'H:mm:ss',
+                            second: 'D MMMM H:mm',
                             // minute:     'ddd D MMMM',
                             // hour:       'ddd D MMMM',
                             minute: 'DD.MM.YYYY',
@@ -512,66 +519,40 @@ angular.module('openITCOCKPIT')
                             year: ''
                         }
                     }
+                };
 
-            };
-
-            $scope.visTimeline = new vis.Timeline(container, timelinedata.items, timelinedata.groups, options);
-            $scope.visTimeline.on('rangechanged', function(properties){
-                console.log(properties);
+                renderTimeline(timelinedata, options);
             });
+        };
+
+        var renderTimeline = function(timelinedata, options){
+            var container = document.getElementById('visualization');
+            if($scope.visTimeline === null){
+                $scope.visTimeline = new vis.Timeline(container, timelinedata.items, timelinedata.groups, options);
+                $scope.visTimeline.on('rangechanged', function(properties){
+                    if($scope.visTimelineInit){
+                        $scope.visTimelineInit = false;
+                        return;
+                    }
+
+                    if($scope.visTimeout){
+                        clearTimeout($scope.visTimeout);
+                    }
+                    $scope.visTimeout = setTimeout(function(){
+                        $scope.loadTimelineData({
+                            start: parseInt(properties.start.getTime() / 1000, 10),
+                            end: parseInt(properties.end.getTime() / 1000, 10)
+                        });
+                    }, 500);
+                });
+            }else{
+                //Update existing timeline
+                $scope.visTimeline.setItems(timelinedata.items);
+            }
         };
 
         $scope.showTimeline = function(){
-
-
-            $scope.timelineoptions = {
-                orientation: "bottom",
-                showCurrentTime: true,
-                start: "2017-05-29T04:00:00.000Z",
-                end: "2018-05-29T04:00:00.000Z",
-                //min: new Date(2018, 4, 27),    // lower limit of visible range
-                //max: new Date(2018, 4, 30),    // upper limit of visible range
-                zoomMin: 1000 * 10 * 60 * 5,   // every 5 minutes
-                //     zoomMax: 1000 * 60 * 60 * 24 * 31 * 3     // about three months in milliseconds
-                // timeAxis: {scale: 'minute', step: 15}
-
-                // specify a template for the items
-                //template: template
-                format:
-                    {
-                        minorLabels: {
-                            millisecond: 'SSS',
-                            second: 's',
-                            minute: 'HH:mm',
-                            hour: 'HH:mm',
-                            weekday: 'ddd D',
-                            day: 'D',
-                            week: 'w',
-                            month: 'MMM',
-                            year: 'YYYY'
-                        },
-                        majorLabels: {
-                            millisecond: 'HH:mm:ss',
-                            second: 'D MMMM HH:mm',
-                            // minute:     'ddd D MMMM',
-                            // hour:       'ddd D MMMM',
-                            minute: 'DD.MM.YYYY',
-                            hour: 'DD.MM.YYYY',
-                            weekday: 'MMMM YYYY',
-                            day: 'MMMM YYYY',
-                            week: 'MMMM YYYY',
-                            month: 'YYYY',
-                            year: ''
-                        }
-                    }
-
-            };
-
-            $scope.events = {};
-
             $scope.loadTimelineData();
-
-
         };
 
 
