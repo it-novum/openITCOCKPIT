@@ -35,6 +35,9 @@ use itnovum\openITCOCKPIT\Core\HoststatusFields;
 use itnovum\openITCOCKPIT\Core\HosttemplateMerger;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\StatehistoryHostConditions;
+use itnovum\openITCOCKPIT\Core\Timeline\DowntimeSerializer;
+use itnovum\openITCOCKPIT\Core\Timeline\Groups;
+use itnovum\openITCOCKPIT\Core\Timeline\StatehistorySerializer;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Core\ModuleManager;
 use itnovum\openITCOCKPIT\Core\Views\AcknowledgementHost;
@@ -3477,6 +3480,12 @@ class HostsController extends AppController {
             return;
         }
 
+        $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
+
+        $Groups = new Groups();
+        $this->set('groups', $Groups->serialize(true));
+
+
         //Process conditions
         $Conditions = new StatehistoryHostConditions();
         $Conditions->setOrder(['StatehistoryHost.state_time' => 'asc']);
@@ -3485,14 +3494,14 @@ class HostsController extends AppController {
         $end = $this->request->query('end');
 
         if (!is_numeric($start)) {
-            $start = time() - 2 * 24 * 3600;
+            //$start = time() - 2 * 24 * 3600;
+            $start = time() - 300 * 24 * 3600;
         }
 
 
         if (!is_numeric($end)) {
             $end = time();
         }
-        debug($start);
 
         $hostUuid = $host['Host']['uuid'];
 
@@ -3504,13 +3513,13 @@ class HostsController extends AppController {
         //Query state history records for hosts
         $query = $this->StatehistoryHost->getQuery($Conditions);
         $statehistories = $this->StatehistoryHost->find('all', $query);
-        $all_statehistories[$hostUuid] = [];
+        $statehistoryRecords[$hostUuid] = [];
         foreach ($statehistories as $statehistory) {
             $StatehistoryHost = new \itnovum\openITCOCKPIT\Core\Views\StatehistoryHost($statehistory['StatehistoryHost']);
-            $all_statehistories[$hostUuid]['Statehistory'][] = $StatehistoryHost->toArray();
+            $statehistoryRecords[$hostUuid]['Statehistory'][] = $StatehistoryHost;
         }
 
-        if (empty($all_statehistories[$hostUuid]['Statehistory'])) {
+        if (empty($statehistoryRecords[$hostUuid]['Statehistory'])) {
             //Host has no state history record for selected time range
             //Get last available state history record for this host
             $query = $this->StatehistoryHost->getLastRecord($Conditions);
@@ -3518,11 +3527,14 @@ class HostsController extends AppController {
             if (!empty($record)) {
                 $record['StatehistoryHost']['state_time'] = $start;
                 $StatehistoryHost = new \itnovum\openITCOCKPIT\Core\Views\StatehistoryHost($record['StatehistoryHost']);
-                $all_statehistories[$hostUuid]['Statehistory'][] = $StatehistoryHost->toArray();
+                $statehistoryRecords[$hostUuid]['Statehistory'][] = $StatehistoryHost;
             }
         }
 
-        print_r($all_statehistories);
+        $StatehistorySerializer = new StatehistorySerializer($statehistoryRecords[$hostUuid]['Statehistory'], $UserTime, $end, 'host');
+        $this->set('statehistory', $StatehistorySerializer->serialize());
+
+
 
         //Query downtime records for hosts
         $DowntimeHostConditions = new DowntimeHostConditions();
@@ -3540,14 +3552,15 @@ class HostsController extends AppController {
 
 
         foreach ($downtimes as $downtime) {
-            $DowntimeHost = new \itnovum\openITCOCKPIT\Core\Views\Downtime($downtime['DowntimeHost']);
-            $all_downtimes[] = [
-                'DowntimeHost' => $DowntimeHost->toArray()
-            ];
+            $downtimeRecords[] = new \itnovum\openITCOCKPIT\Core\Views\Downtime($downtime['DowntimeHost']);
         }
 
-        $all_downtimes_merged = [];
+        $DowntimeSerializer = new DowntimeSerializer($downtimeRecords, $UserTime);
+        $this->set('downtimes', $DowntimeSerializer->serialize());
 
+
+        $all_downtimes_merged = [];
+/*
         if(!empty($all_downtimes)){
             $all_downtimes_merged = $this->DateRange->mergeTimeOverlapping(
                 array_map(
@@ -3561,8 +3574,7 @@ class HostsController extends AppController {
                 )
             );
         }
-
-        print_r($all_downtimes_merged);
+*/
 
 /*
         $timeSlices = $timeSlicesGlobal; //Default time slice if no downtime will be found
@@ -3585,5 +3597,9 @@ class HostsController extends AppController {
             unset($downtimesFiltered);
         }
 */
+
+        $this->set('_serialize', ['groups', 'statehistory', 'downtimes']);
+
+
     }
 }

@@ -448,73 +448,37 @@ angular.module('openITCOCKPIT')
             }
         };
 
+        $scope.loadTimelineData = function(){
+            $http.get("/hosts/timeline/"+$scope.id+".json", {
+                params: {
+                    'angular': true
+                }
+            }).then(function(result){
+                var timelinedata = {
+                    items: new VisDataSet(result.data.statehistory),
+                    groups: new VisDataSet(result.data.groups)
+                };
+                timelinedata.items.add(result.data.downtimes);
+
+                console.log(timelinedata.items);
+
+                $scope.timelinedata = timelinedata;
+            });
+        };
+
         $scope.showTimeline = function(){
 
-            $scope.timelinedata = {
-                items: {},
-                groups: {}
-            };
-
-            $scope.timelinedata.groups = new VisDataSet();
-
-            $scope.timelinedata.groups.add([
-                {
-                    id: 11,
-                    content: "<i class='fa fa-envelope'></i> notifications",
-                },
-                {
-                    id: 12,
-                    content: "<i class='fa fa-commenting'></i> acknowlegements",
-                },
-                {
-                    id: 13,
-                    content: '<i class="fa fa-power-off"></i> downtimes',
-                },
-                {
-                    id: 14,
-                    content: '<i class="fa fa-cog"></i> state history (service)',
-                },
-                {
-                    id: 15,
-                    content: '<i class="fa fa-desktop"></i> state history (host)',
-                }
-            ]);
-
-            $scope.timelinedata.items = new VisDataSet([
-
-                {start: '2018-05-27 08:00:00', end: '2018-05-27 13:00:00', type: 'background'},
-                {start: '2018-05-27 14:00:00', end: '2018-05-27 20:00:00', type: 'background'},
-
-                {start: '2018-05-28 00:00:00', end: '2018-05-28 23:59:59', type: 'background'},
-
-                {content: 'Downtime', start: '2018-05-28 10:00:00', end: '2018-05-28 11:59:59', type: 'range', className: 'downtime', group: 13},
-                {content: 'Downtime', start: '2018-05-28 09:00:00', end: '2018-05-28 10:00:00', type: 'range', className: 'downtime', group: 13},
-
-                {start: '2018-05-28 00:00:00', end: '2018-05-28 09:00:00', type: 'background', className: 'blue', group: 14},
-
-                {start: '2018-05-28 09:00:00', end: '2018-05-28 10:00:00', type: 'background', className: 'statedowntime', group: 14},
-                {start: '2018-05-28 10:00:00', end: '2018-05-28 11:59:59', type: 'background', className: 'statedowntime', group: 14},
 
 
-                //{start: '2018-05-28 00:00:00', end: '2018-05-28 13:59:59', type: 'background', className: 'statedowntime', group: 14},
-                {start: '2018-05-28 13:59:59', end: '2018-05-28 23:59:59', type: 'background', className: 'down', group: 14},
 
-
-                {content: 'Period C', start: '2018-05-29 00:00:00', end: '2018-05-29 23:59:59', type: 'background', className: 'orange', group: 14, type: 'background'},
-                {content: '<i class="fa fa-envelope"></i>', start: '2018-05-27 12:00:00', className: 'orange', group: 11, type: 'box', 'title': 'testsjteklwjt'},
-                {content: '<i class="fa fa-envelope"></i>', start: '2018-05-28 11:50:00', className: 'orange', group: 11, type: 'box'},
-                {content: '<i class="fa fa-envelope"></i>', start: '2018-05-28 11:50:00', className: 'orange', group: 11, type: 'box'},
-                {content: '<i class="fa fa-commenting"></i>', start: '2018-05-28 12:00:00', className: 'blue', group: 12, type: 'box'},
-
-            ]);
 
             $scope.timelineoptions = {
                 orientation: "bottom",
                 showCurrentTime: true,
-//        start: "2018-05-29T04:00:00.000Z",
-//        end: "2018-05-29T04:00:00.000Z",
-                min: new Date(2018, 4, 27),    // lower limit of visible range
-                max: new Date(2018, 4, 30),    // upper limit of visible range
+        start: "2017-05-29T04:00:00.000Z",
+        end: "2018-05-29T04:00:00.000Z",
+                //min: new Date(2018, 4, 27),    // lower limit of visible range
+                //max: new Date(2018, 4, 30),    // upper limit of visible range
                 zoomMin: 1000 * 10 * 60 * 5,   // every 5 minutes
                 //     zoomMax: 1000 * 60 * 60 * 24 * 31 * 3     // about three months in milliseconds
                 // timeAxis: {scale: 'minute', step: 15}
@@ -553,8 +517,10 @@ angular.module('openITCOCKPIT')
 
             $scope.events = {};
 
+            $scope.loadTimelineData();
 
-        }
+
+        };
 
 
 

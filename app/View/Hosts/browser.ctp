@@ -33,99 +33,6 @@ if (!$QueryHandler->exists()): ?>
         <?php echo __('File %s does not exists', $QueryHandler->getPath()); ?>
     </div>
 <?php endif; ?>
-<style type="text/css">
-    body, html {
-        font-family: sans-serif;
-        font-size: 10pt;
-    }
-
-    .vis.timeline .item {
-        border-color: #acacac;
-        background-color: #efefef;
-        box-shadow: 5px 5px 10px rgba(128,128,128, 0.3);
-    }
-
-    table .description {
-        font-style: italic;
-    }
-
-    #visualization {
-        position: relative;
-        overflow: hidden;
-    }
-
-    .logo {
-        position: absolute;
-        right: 10px;
-        top: 10px;
-    }
-    .logo img {
-        width: 120px;
-    }
-    .vis-item{
-        color:#ffffff;
-        font-weight:bold;
-
-    }
-    .vis-item.vis-background.negative {
-        background-color: rgba(255, 0, 0, 0.2);
-    }
-    .vis-item.orange {
-        background-color: gold;
-        border-color: orange;
-        z-index:2;
-    }
-    .vis-item.statedowntime {
-        color:#3a3a3a;
-        background: repeating-linear-gradient(
-                -45deg,
-                rgba(255, 255, 255, 0.6),
-                rgba(255, 255, 255, 0.9) 10px,
-                transparent 10px,
-                transparent 20px
-        ),
-            /* on "bottom" */
-        linear-gradient(
-                to bottom,
-                #5cb85c,
-                green
-        );
-        border-color: orange;
-    }
-
-    .vis-item.downtime {
-        background: #5cb85c;
-    }
-
-    .vis-item.down {
-        background: #d9534f;
-    }
-    .vis-item.blue {
-        background-color:#6495ED;
-        border-color: blue;
-        color:white;
-        z-index:2;
-
-    }
-    .vis-item.day {
-        background-color: gold;
-        border-left:1px solid green;
-    }
-
-    .vis-item.working-hours {
-        background-color:rgba(0, 192, 239,.4);
-        border-color: blue;
-        color:white;
-        z-index:2;
-
-    }
-    .vis-labelset .vis-label .vis-inner {
-        width: 100%;
-        text-align: center;
-        box-sizing: border-box;
-    }
-
-</style>
 
 <div class="alert alert-success alert-block" ng-show="showFlashSuccess">
     <a href="#" data-dismiss="alert" class="close">×</a>
@@ -967,7 +874,7 @@ if (!$QueryHandler->exists()): ?>
                                             <h3 class="margin-top-0"><?php echo __('Host overview'); ?></h3>
                                         </div>
                                         <div class="col-xs-12 col-sm-12 col-md-12">
-                                            <vis-timeline data="timelinedata" options="timelineoptions"></vis-timeline>
+                                            <vis-timeline data="timelinedata" options="timelineoptions" ng-show="timelinedata.items"></vis-timeline>
                                         </div>
                                     </div>
                                 </div>

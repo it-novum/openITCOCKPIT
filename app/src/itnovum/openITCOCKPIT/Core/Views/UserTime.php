@@ -59,6 +59,15 @@ class UserTime {
     }
 
     /**
+     * @param $format
+     * @param $t_time
+     * @return string
+     */
+    public function customFormat($format, $t_time){
+        return CakeTime::format($t_time, $format, false, $this->timezone);
+    }
+
+    /**
      * Formats a given value in seconds to a human short readable string with time units
      * Example 58536006 will return:
      * 1Y 10M 8D 12h 0m 6s
