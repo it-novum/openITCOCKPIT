@@ -27,7 +27,7 @@ namespace itnovum\openITCOCKPIT\Core\Timeline;
 
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
 
-class DowntimeSerializer {
+class NotificationSerializer {
 
     /**
      * @var array
@@ -47,35 +47,36 @@ class DowntimeSerializer {
 
 
     /**
-     * DowntimeSerializer constructor.
-     * @param array $downtimeRecords
+     * NotificationSerializer constructor.
+     * @param array $notificationRecords
      * @param UserTime $UserTime
      */
-    public function __construct($downtimeRecords = [], UserTime $UserTime) {
-        $this->records = $downtimeRecords;
+    public function __construct($notificationRecords = [], UserTime $UserTime) {
+        $this->records = $notificationRecords;
         $this->UserTime = $UserTime;
 
         $TimelineGroups = new Groups();
-        $this->groupId = $TimelineGroups->getDowntimesId();
+        $this->groupId = $TimelineGroups->getNotificationsId();
 
     }
 
-    /**
-     * @return array
-     */
     public function serialize() {
         $records = [];
         $size = sizeof($this->records);
 
         for ($i = 0; $i < $size; $i++) {
-            $title = sprintf('%s: %s', $this->records[$i]->getAuthorName(), $this->records[$i]->getCommentData());
+            $title = sprintf(
+                '<b>%s</b> via <b>%s</b> at %s',
+                h($this->records[$i]['Contact']->getName()),
+                h($this->records[$i]['Command']->getName()),
+                $this->UserTime->format($this->records[$i]['NotificationHost']->getStartTime())
+            );
 
             $records[] = [
-                'start'     => $this->UserTime->customFormat('%Y-%m-%d %H:%M:%S', $this->records[$i]->getScheduledStartTime()),
-                'end'       => $this->UserTime->customFormat('%Y-%m-%d %H:%M:%S', $this->records[$i]->getScheduledEndTime()),
-                'type'      => 'range',
-                'className' => 'bg-downtime',
-                'content'   => $title,
+                'start'     => $this->UserTime->customFormat('%Y-%m-%d %H:%M:%S', $this->records[$i]['NotificationHost']->getStartTime()),
+                'type'      => 'box',
+                'className' => 'orange',
+                'content'   => '<i class="fa fa-envelope"></i>',
                 'title'     => $title,
                 'group'     => $this->groupId
             ];
@@ -84,4 +85,3 @@ class DowntimeSerializer {
         return $records;
     }
 }
-

@@ -46,6 +46,11 @@ class AcknowledgedHostConditions extends ListSettingsConditions {
     protected $hostUuid;
 
     /**
+     * @var bool
+     */
+    private $useLimit = true;
+
+    /**
      * @param string $hostUuid
      */
     public function setHostUuid($hostUuid){
@@ -57,6 +62,20 @@ class AcknowledgedHostConditions extends ListSettingsConditions {
      */
     public function getHostUuid(){
         return $this->hostUuid;
+    }
+
+    /**
+     * @param $value
+     */
+    public function setUseLimit($value){
+        $this->useLimit = (bool)$value;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getUseLimit(){
+        return $this->useLimit;
     }
 
     /**

@@ -27,7 +27,7 @@ namespace itnovum\openITCOCKPIT\Core\Timeline;
 
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
 
-class DowntimeSerializer {
+class AcknowledgementSerializer {
 
     /**
      * @var array
@@ -47,35 +47,36 @@ class DowntimeSerializer {
 
 
     /**
-     * DowntimeSerializer constructor.
-     * @param array $downtimeRecords
+     * AcknowledgementSerializer constructor.
+     * @param array $acknowledgementRecords
      * @param UserTime $UserTime
      */
-    public function __construct($downtimeRecords = [], UserTime $UserTime) {
-        $this->records = $downtimeRecords;
+    public function __construct($acknowledgementRecords = [], UserTime $UserTime) {
+        $this->records = $acknowledgementRecords;
         $this->UserTime = $UserTime;
 
         $TimelineGroups = new Groups();
-        $this->groupId = $TimelineGroups->getDowntimesId();
+        $this->groupId = $TimelineGroups->getAcknowlegementsId();
 
     }
 
-    /**
-     * @return array
-     */
     public function serialize() {
         $records = [];
         $size = sizeof($this->records);
 
         for ($i = 0; $i < $size; $i++) {
-            $title = sprintf('%s: %s', $this->records[$i]->getAuthorName(), $this->records[$i]->getCommentData());
+            $title = sprintf(
+                '<b>%s</b> with comment <b>%s</b> at %s',
+                h($this->records[$i]->getAuthorName()),
+                h($this->records[$i]->getCommentData()),
+                $this->UserTime->format($this->records[$i]->getEntryTime())
+            );
 
             $records[] = [
-                'start'     => $this->UserTime->customFormat('%Y-%m-%d %H:%M:%S', $this->records[$i]->getScheduledStartTime()),
-                'end'       => $this->UserTime->customFormat('%Y-%m-%d %H:%M:%S', $this->records[$i]->getScheduledEndTime()),
-                'type'      => 'range',
-                'className' => 'bg-downtime',
-                'content'   => $title,
+                'start'     => $this->UserTime->customFormat('%Y-%m-%d %H:%M:%S', $this->records[$i]->getEntryTime()),
+                'type'      => 'box',
+                'className' => 'bg-ack',
+                'content'   => '<i class="fa fa-commenting"></i>',
                 'title'     => $title,
                 'group'     => $this->groupId
             ];
@@ -84,4 +85,3 @@ class DowntimeSerializer {
         return $records;
     }
 }
-

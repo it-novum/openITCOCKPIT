@@ -25,8 +25,7 @@ table .description {
 
 .vis-item {
     color: #ffffff;
-    font-weight: bold;
-
+    z-index: 1;
 }
 
 .vis-item.vis-background.negative {

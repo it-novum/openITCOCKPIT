@@ -25,5 +25,5 @@
 class DateRange extends AppModel {
     public $useTable = false;
 
-    public $actAs = ['DateRange'];
+    public $actsAs = ['DateRange'];
 }

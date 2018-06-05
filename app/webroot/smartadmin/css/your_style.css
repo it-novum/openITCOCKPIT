@@ -889,11 +889,35 @@ body {
     color: #92A2A8 !important;
 }
 
+.ok-soft, .up-soft {
+    color: #8BC08B !important;
+}
+
+.warning-soft {
+    color: #DF8F1D !important;
+}
+
+.critical-soft, .down-soft {
+    color: #C5706D !important;
+}
+
+.unknown-soft, .unreachable-soft {
+    color: #CFCFCF !important;
+}
+
 .bg-ok, .bg-up {
     background-color: #449D44 !important;
 }
 
+.bg-ok-soft, .bg-up-soft {
+    background-color: #8BC08B !important;
+}
+
 .bg-warning {
+    background-color: #E7BE83 !important;
+}
+
+.bg-warning-soft {
     background-color: #DF8F1D !important;
 }
 
@@ -901,8 +925,37 @@ body {
     background-color: #C9302C !important;
 }
 
+.bg-critical-soft, .bg-down-soft {
+    background-color: #C5706D !important;
+}
+
 .bg-unknown, .bg-unreachable {
     background-color: #92A2A8 !important;
+}
+
+.bg-unknown-soft, .bg-unreachable-soft {
+    background-color: #CFCFCF !important;
+}
+
+.bg-downtime {
+    background-color: #337ab7 !important;
+}
+
+.bg-ack {
+    background-color: #774DFF !important;
+    border-color: #3c00ff !important;
+}
+
+.txt-ack {
+    color: #774DFF !important;
+}
+
+.txt-notification {
+    color: gold !important;
+}
+
+.txt-timerange {
+    color: rgba(213,221,246,.4) !important;
 }
 
 .table-color-0 {

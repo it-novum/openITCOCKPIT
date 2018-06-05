@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('HostsBrowserController', function($scope, $rootScope, $http, QueryStringService, SortService, $interval, VisDataSet){
+    .controller('HostsBrowserController', function($scope, $rootScope, $http, QueryStringService, SortService, $interval){
 
         $scope.id = QueryStringService.getCakeId();
 
@@ -49,6 +49,8 @@ angular.module('openITCOCKPIT')
 
         $scope.hostStatusTextClass = 'txt-primary';
 
+        $scope.visTimeline = null;
+
         var flappingInterval;
 
         $scope.showFlashMsg = function(){
@@ -65,7 +67,7 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.loadHost = function(){
-            $http.get("/hosts/browser/"+$scope.id+".json", {
+            $http.get("/hosts/browser/" + $scope.id + ".json", {
                 params: {
                     'angular': true
                 }
@@ -449,34 +451,84 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.loadTimelineData = function(){
-            $http.get("/hosts/timeline/"+$scope.id+".json", {
+            $http.get("/hosts/timeline/" + $scope.id + ".json", {
                 params: {
                     'angular': true
                 }
             }).then(function(result){
                 var timelinedata = {
-                    items: new VisDataSet(result.data.statehistory),
-                    groups: new VisDataSet(result.data.groups)
+                    items: new vis.DataSet(result.data.statehistory),
+                    groups: new vis.DataSet(result.data.groups)
                 };
                 timelinedata.items.add(result.data.downtimes);
+                timelinedata.items.add(result.data.notifications);
+                timelinedata.items.add(result.data.acknowledgements);
+                timelinedata.items.add(result.data.timeranges);
 
-                console.log(timelinedata.items);
+                $scope.renderTimeline(timelinedata);
+            });
+        };
 
-                $scope.timelinedata = timelinedata;
+        $scope.renderTimeline = function(timelinedata){
+            var container = document.getElementById('visualization');
+
+            var options = {
+                orientation: "bottom",
+                showCurrentTime: true,
+//        start: "2018-05-29T04:00:00.000Z",
+//        end: "2018-05-29T04:00:00.000Z",
+                // min: new Date(2018, 4, 27),    // lower limit of visible range
+                // max: new Date(2018, 4, 30),    // upper limit of visible range
+                zoomMin: 1000 * 10 * 60 * 5,   // every 5 minutes
+                //     zoomMax: 1000 * 60 * 60 * 24 * 31 * 3     // about three months in milliseconds
+                // timeAxis: {scale: 'minute', step: 15}
+
+                // specify a template for the items
+                //template: template
+                format:
+                    {
+                        minorLabels: {
+                            millisecond: 'SSS',
+                            second: 's',
+                            minute: 'HH:mm',
+                            hour: 'HH:mm',
+                            weekday: 'ddd D',
+                            day: 'D',
+                            week: 'w',
+                            month: 'MMM',
+                            year: 'YYYY'
+                        },
+                        majorLabels: {
+                            millisecond: 'HH:mm:ss',
+                            second: 'D MMMM HH:mm',
+                            // minute:     'ddd D MMMM',
+                            // hour:       'ddd D MMMM',
+                            minute: 'DD.MM.YYYY',
+                            hour: 'DD.MM.YYYY',
+                            weekday: 'MMMM YYYY',
+                            day: 'MMMM YYYY',
+                            week: 'MMMM YYYY',
+                            month: 'YYYY',
+                            year: ''
+                        }
+                    }
+
+            };
+
+            $scope.visTimeline = new vis.Timeline(container, timelinedata.items, timelinedata.groups, options);
+            $scope.visTimeline.on('rangechanged', function(properties){
+                console.log(properties);
             });
         };
 
         $scope.showTimeline = function(){
 
 
-
-
-
             $scope.timelineoptions = {
                 orientation: "bottom",
                 showCurrentTime: true,
-        start: "2017-05-29T04:00:00.000Z",
-        end: "2018-05-29T04:00:00.000Z",
+                start: "2017-05-29T04:00:00.000Z",
+                end: "2018-05-29T04:00:00.000Z",
                 //min: new Date(2018, 4, 27),    // lower limit of visible range
                 //max: new Date(2018, 4, 30),    // upper limit of visible range
                 zoomMin: 1000 * 10 * 60 * 5,   // every 5 minutes
@@ -488,28 +540,28 @@ angular.module('openITCOCKPIT')
                 format:
                     {
                         minorLabels: {
-                            millisecond:'SSS',
-                            second:     's',
-                            minute:     'HH:mm',
-                            hour:       'HH:mm',
-                            weekday:    'ddd D',
-                            day:        'D',
-                            week:       'w',
-                            month:      'MMM',
-                            year:       'YYYY'
+                            millisecond: 'SSS',
+                            second: 's',
+                            minute: 'HH:mm',
+                            hour: 'HH:mm',
+                            weekday: 'ddd D',
+                            day: 'D',
+                            week: 'w',
+                            month: 'MMM',
+                            year: 'YYYY'
                         },
                         majorLabels: {
-                            millisecond:'HH:mm:ss',
-                            second:     'D MMMM HH:mm',
+                            millisecond: 'HH:mm:ss',
+                            second: 'D MMMM HH:mm',
                             // minute:     'ddd D MMMM',
                             // hour:       'ddd D MMMM',
                             minute: 'DD.MM.YYYY',
-                            hour:       'DD.MM.YYYY',
-                            weekday:    'MMMM YYYY',
-                            day:        'MMMM YYYY',
-                            week:       'MMMM YYYY',
-                            month:      'YYYY',
-                            year:       ''
+                            hour: 'DD.MM.YYYY',
+                            weekday: 'MMMM YYYY',
+                            day: 'MMMM YYYY',
+                            week: 'MMMM YYYY',
+                            month: 'YYYY',
+                            year: ''
                         }
                     }
 
@@ -521,7 +573,6 @@ angular.module('openITCOCKPIT')
 
 
         };
-
 
 
         $scope.loadHost();

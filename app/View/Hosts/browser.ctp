@@ -874,8 +874,69 @@ if (!$QueryHandler->exists()): ?>
                                             <h3 class="margin-top-0"><?php echo __('Host overview'); ?></h3>
                                         </div>
                                         <div class="col-xs-12 col-sm-12 col-md-12">
-                                            <vis-timeline data="timelinedata" options="timelineoptions" ng-show="timelinedata.items"></vis-timeline>
+                                            <div id="visualization"></div>
                                         </div>
+
+                                        <div class="col-xs-12">
+                                            <div class="row">
+                                                <div class="col-xs-12 bold"><?php echo __('Legend'); ?></div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-xs-12">
+                                                    <?php echo __('State types'); ?>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-xs-12 col-md-3">
+                                                        <i class="fa fa-square up-soft"></i>
+                                                        <?php echo __('Up soft'); ?>
+                                                    </div>
+                                                    <div class="col-xs-12 col-md-3 ">
+                                                        <i class="fa fa-square down-soft"></i>
+                                                        <?php echo __('Down soft'); ?>
+                                                    </div>
+                                                    <div class="col-xs-12 col-md-3 ">
+                                                        <i class="fa fa-square unreachable-soft"></i>
+                                                        <?php echo __('Unreachable soft'); ?>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-xs-12 col-md-3">
+                                                        <i class="fa fa-square up"></i>
+                                                        <?php echo __('Up hard'); ?>
+                                                    </div>
+                                                    <div class="col-xs-12 col-md-3 ">
+                                                        <i class="fa fa-square down"></i>
+                                                        <?php echo __('Down hard'); ?>
+                                                    </div>
+                                                    <div class="col-xs-12 col-md-3 ">
+                                                        <i class="fa fa-square unreachable"></i>
+                                                        <?php echo __('Unreachable hard'); ?>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-xs-12 col-md-3">
+                                                    <i class="fa fa-square text-primary"></i>
+                                                    <?php echo __('Downtime'); ?>
+                                                </div>
+                                                <div class="col-xs-12 col-md-3 ">
+                                                    <i class="fa fa-square txt-ack"></i>
+                                                    <?php echo __('Acknowledged'); ?>
+                                                </div>
+                                                <div class="col-xs-12 col-md-3 ">
+                                                    <i class="fa fa-square txt-notification"></i>
+                                                    <?php echo __('Notification'); ?>
+                                                </div>
+                                                <div class="col-xs-12 col-md-3 ">
+                                                    <i class="fa fa-square txt-timerange"></i>
+                                                    <?php echo __('Check period'); ?>
+                                                </div>
+                                            </div>
+
+
+                                        </div>
+
                                     </div>
                                 </div>
                             </div>

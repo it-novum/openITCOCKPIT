@@ -27,7 +27,7 @@ namespace itnovum\openITCOCKPIT\Core\Timeline;
 
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
 
-class DowntimeSerializer {
+class TimeRangeSerializer {
 
     /**
      * @var array
@@ -41,47 +41,27 @@ class DowntimeSerializer {
 
 
     /**
-     * @var int
-     */
-    private $groupId;
-
-
-    /**
-     * DowntimeSerializer constructor.
-     * @param array $downtimeRecords
+     * AcknowledgementSerializer constructor.
+     * @param array $acknowledgementRecords
      * @param UserTime $UserTime
      */
-    public function __construct($downtimeRecords = [], UserTime $UserTime) {
-        $this->records = $downtimeRecords;
+    public function __construct($timeRangeRecords = [], UserTime $UserTime) {
+        $this->records = $timeRangeRecords;
         $this->UserTime = $UserTime;
-
-        $TimelineGroups = new Groups();
-        $this->groupId = $TimelineGroups->getDowntimesId();
-
     }
 
-    /**
-     * @return array
-     */
     public function serialize() {
         $records = [];
         $size = sizeof($this->records);
 
         for ($i = 0; $i < $size; $i++) {
-            $title = sprintf('%s: %s', $this->records[$i]->getAuthorName(), $this->records[$i]->getCommentData());
-
             $records[] = [
-                'start'     => $this->UserTime->customFormat('%Y-%m-%d %H:%M:%S', $this->records[$i]->getScheduledStartTime()),
-                'end'       => $this->UserTime->customFormat('%Y-%m-%d %H:%M:%S', $this->records[$i]->getScheduledEndTime()),
-                'type'      => 'range',
-                'className' => 'bg-downtime',
-                'content'   => $title,
-                'title'     => $title,
-                'group'     => $this->groupId
+                'start'     => $this->UserTime->customFormat('%Y-%m-%d %H:%M:%S', $this->records[$i]['start']),
+                'end'       => $this->UserTime->customFormat('%Y-%m-%d %H:%M:%S', $this->records[$i]['end']),
+                'type'      => 'background'
             ];
         }
 
         return $records;
     }
 }
-

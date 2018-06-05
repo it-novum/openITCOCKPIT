@@ -55,7 +55,6 @@ $scripts = [
     'js/lib/jquery.nestable.js',
     'js/lib/parseuri.js',
     'js/vendor/vis/vis.js',
-    'vendor/angular-visjs/angular-vis.js',
     'js/scripts/ng.app.js'
 ];
 

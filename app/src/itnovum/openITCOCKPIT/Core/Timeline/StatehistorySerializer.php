@@ -66,13 +66,13 @@ class StatehistorySerializer {
         $this->records = $statehistoryRecords;
         $this->UserTime = $UserTime;
         $this->end = $end;
-        if($this->end === 0){
+        if ($this->end === 0) {
             $this->end = time();
         }
 
         $TimelineGroups = new Groups();
         $this->groupId = $TimelineGroups->getStatehistoryHostId();
-        if($type === 'service'){
+        if ($type === 'service') {
             $this->groupId = $TimelineGroups->getStatehistoryServiceId();
         }
 
@@ -91,57 +91,57 @@ class StatehistorySerializer {
             }
 
             $records[] = [
-                'start' => $this->UserTime->customFormat('%Y-%m-%d %H:%M:%S', $this->records[$i]->getStateTime()),
-                'end'   => $this->UserTime->customFormat('%Y-%m-%d %H:%M:%S', $end),
-                'type' => 'background',
+                'start'     => $this->UserTime->customFormat('%Y-%m-%d %H:%M:%S', $this->records[$i]->getStateTime()),
+                'end'       => $this->UserTime->customFormat('%Y-%m-%d %H:%M:%S', $end),
+                'type'      => 'background',
                 'className' => $this->getStateClass($this->records[$i]),
-                'group' => $this->groupId
+                'group'     => $this->groupId
             ];
         }
 
         return $records;
     }
 
-    public function getStateClass(Statehistory $Statehistory){
+    public function getStateClass(Statehistory $Statehistory) {
 
-        if($this->type === 'host'){
+        if ($this->type === 'host') {
 
-            if($Statehistory->isHardstate()){
-                switch($Statehistory->getState()){
+            if ($Statehistory->isHardstate()) {
+                switch ($Statehistory->getState()) {
                     case 0:
-                        return 'bg-color-greenDark';
+                        return 'bg-up';
                         break;
 
                     case 1:
-                        return 'bg-color-red';
+                        return 'bg-down';
                         break;
 
                     case 2:
-                        return 'bg-color-blueDark';
+                        return 'bg-unreachable';
                         break;
                 }
             }
 
-            switch($Statehistory->getState()){
+            switch ($Statehistory->getState()) {
                 case 0:
-                    return 'bg-color-greenLight';
+                    return 'bg-up-soft';
                     break;
 
                 case 1:
-                    return 'bg-color-redLight';
+                    return 'bg-down-soft';
                     break;
 
                 case 2:
-                    return 'bg-color-blueLight';
+                    return 'bg-unreachable-soft';
                     break;
             }
 
         }
 
-        if($this->type === 'service'){
+        if ($this->type === 'service') {
 
-            if($Statehistory->isHardstate()){
-                switch($Statehistory->getState()){
+            if ($Statehistory->isHardstate()) {
+                switch ($Statehistory->getState()) {
                     case 0:
                         return 'bg-color-greenDark';
                         break;
@@ -160,7 +160,7 @@ class StatehistorySerializer {
                 }
             }
 
-            switch($Statehistory->getState()){
+            switch ($Statehistory->getState()) {
                 case 0:
                     return 'bg-color-greenLight';
                     break;
