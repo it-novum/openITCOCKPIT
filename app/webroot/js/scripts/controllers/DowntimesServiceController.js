@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('DowntimesServiceController', function($scope, $http, $rootScope, $httpParamSerializer, SortService, QueryStringService, MassChangeService){
+    .controller('DowntimesServiceController', function($scope, $http, $rootScope, $httpParamSerializer, SortService, QueryStringService, MassChangeService, $interval){
 
         SortService.setSort(QueryStringService.getValue('sort', 'DowntimeService.scheduled_start_time'));
         SortService.setDirection(QueryStringService.getValue('direction', 'desc'));
