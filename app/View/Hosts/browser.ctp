@@ -73,14 +73,14 @@ if (!$QueryHandler->exists()): ?>
                     mergedHost.Host.name }}</h2>
                 <ul class="nav nav-tabs pull-right" id="widget-tab-1">
                     <li class="active">
-                        <a href="#tab1" data-toggle="tab">
+                        <a href="#tab1" data-toggle="tab" ng-click="hideTimeline()">
                             <i class="fa fa-lg fa-info"></i>
                             <span class="hidden-mobile hidden-tablet"> <?php echo __('Status information'); ?></span>
                         </a>
                     </li>
 
                     <li class="">
-                        <a href="#tab2" data-toggle="tab">
+                        <a href="#tab2" data-toggle="tab" ng-click="hideTimeline()">
                             <i class="fa fa-lg fa-hdd-o"></i>
                             <span class="hidden-mobile hidden-tablet"> <?php echo __('Device information'); ?> </span>
                         </a>
@@ -95,11 +95,11 @@ if (!$QueryHandler->exists()): ?>
                         </li>
                     <?php endif; ?>
 
-                    <?php echo $this->AdditionalLinks->renderAsTabs($additionalLinksTab, null, 'host', 'tabLink'); ?>
+                    <?php echo $this->AdditionalLinks->renderAsTabs($additionalLinksTab, null, 'host', 'tabLink', 'hideTimeline()'); ?>
 
                     <?php if ($GrafanaDashboardExists): ?>
                         <li class="">
-                            <a href="#tab5" data-toggle="tab">
+                            <a href="#tab5" data-toggle="tab" ng-click="hideTimeline()">
                                 <i class="fa fa-lg fa-area-chart"></i>
                                 <span class="hidden-mobile hidden-tablet"> <?php echo __('Grafana'); ?> </span>
                             </a>
@@ -867,7 +867,7 @@ if (!$QueryHandler->exists()): ?>
                             </div>
                         </div>
 
-                        <div id="tab3" class="tab-pane fade in">
+                        <div id="tab3" class="fade in" ng-show="showTimelineTab">
                             <div class="row">
                                 <div class="col-xs-12 padding-10">
                                     <div class="row">
@@ -946,7 +946,7 @@ if (!$QueryHandler->exists()): ?>
 
 
                         <!-- render additional Tabs if necessary -->
-                        <?php echo $this->AdditionalLinks->renderAsTabs($additionalLinksTab, null, 'host'); ?>
+                        <?php echo $this->AdditionalLinks->renderAsTabs($additionalLinksTab, null, 'host', 'tab'); ?>
 
                         <?php if ($GrafanaDashboardExists): ?>
                             <div id="tab5" class="tab-pane fade">

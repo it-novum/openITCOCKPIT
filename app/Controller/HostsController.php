@@ -3459,7 +3459,7 @@ class HostsController extends AppController {
     }
 
     public function timeline($id = null) {
-        session_write_close();
+        //session_write_close();
         if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();
         }

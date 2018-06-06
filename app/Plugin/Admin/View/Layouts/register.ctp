@@ -62,7 +62,7 @@ if (ENVIRONMENT === Environments::PRODUCTION) {
     echo $this->element('assets');
 
     printf('<script src="%s"></script>', '/vendor/angular/angular.min.js');
-    printf('<script src="%s"></script>', '/js/vendor/vis/vis.js');
+    printf('<script src="%s"></script>', '/js/vendor/vis-4.21.0/dist/vis.js');
     printf('<script src="%s"></script>', '/js/scripts/ng.app.js');
 
     foreach ($appScripts as $appScript):
