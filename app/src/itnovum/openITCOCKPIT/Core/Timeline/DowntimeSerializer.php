@@ -69,16 +69,34 @@ class DowntimeSerializer {
 
         for ($i = 0; $i < $size; $i++) {
             $title = sprintf('%s: %s', $this->records[$i]->getAuthorName(), $this->records[$i]->getCommentData());
+            if ($this->records[$i]->wasCancelled()) {
+                $title = sprintf(
+                    '%s (%s at %s)',
+                    $title,
+                    __(' Cancelled'),
+                    $this->UserTime->format($this->records[$i]->getActualEndTime())
+                );
+                $records[] = [
+                    'start' => $this->UserTime->customFormat('%Y-%m-%d %H:%M:%S', $this->records[$i]->getScheduledStartTime()),
+                    'end' => $this->UserTime->customFormat('%Y-%m-%d %H:%M:%S', $this->records[$i]->getActualEndTime()),
+                    'type' => 'range',
+                    'className' => 'bg-downtime-cancelled',
+                    'content' => $title,
+                    'title' => $title,
+                    'group' => $this->groupId
+                ];
+            } else {
+                $records[] = [
+                    'start' => $this->UserTime->customFormat('%Y-%m-%d %H:%M:%S', $this->records[$i]->getScheduledStartTime()),
+                    'end' => $this->UserTime->customFormat('%Y-%m-%d %H:%M:%S', $this->records[$i]->getScheduledEndTime()),
+                    'type' => 'range',
+                    'className' => 'bg-downtime',
+                    'content' => $title,
+                    'title' => $title,
+                    'group' => $this->groupId
+                ];
+            }
 
-            $records[] = [
-                'start'     => $this->UserTime->customFormat('%Y-%m-%d %H:%M:%S', $this->records[$i]->getScheduledStartTime()),
-                'end'       => $this->UserTime->customFormat('%Y-%m-%d %H:%M:%S', $this->records[$i]->getScheduledEndTime()),
-                'type'      => 'range',
-                'className' => 'bg-downtime',
-                'content'   => $title,
-                'title'     => $title,
-                'group'     => $this->groupId
-            ];
         }
 
         return $records;

@@ -3459,7 +3459,7 @@ class HostsController extends AppController {
     }
 
     public function timeline($id = null) {
-        //session_write_close();
+        session_write_close();
         if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();
         }
@@ -3581,11 +3581,11 @@ class HostsController extends AppController {
         $DowntimeHostConditions->setFrom($start);
         $DowntimeHostConditions->setTo($end);
         $DowntimeHostConditions->setHostUuid($hostUuid);
+        $DowntimeHostConditions->setIncludeCancelledDowntimes(true);
 
 
         $query = $this->DowntimeHost->getQueryForReporting($DowntimeHostConditions);
         $downtimes = $this->DowntimeHost->find('all', $query);
-
         $downtimeRecords = [];
         foreach ($downtimes as $downtime) {
             $downtimeRecords[] = new \itnovum\openITCOCKPIT\Core\Views\Downtime($downtime['DowntimeHost']);

@@ -936,9 +936,13 @@ if (!$QueryHandler->exists()): ?>
                                                 </div>
                                             </div>
 
-
+                                            <div class="row">
+                                                <div class="col-xs-12 col-md-3">
+                                                    <i class="fa fa-square txt-downtime-cancelled"></i>
+                                                    <?php echo __('Downtime cancelled'); ?>
+                                                </div>
+                                            </div>
                                         </div>
-
                                     </div>
                                 </div>
                             </div>

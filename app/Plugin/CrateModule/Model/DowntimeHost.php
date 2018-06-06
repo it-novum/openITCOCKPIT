@@ -117,6 +117,7 @@ class DowntimeHost extends CrateModuleAppModel {
                 'DowntimeHost.comment_data',
                 'DowntimeHost.scheduled_start_time',
                 'DowntimeHost.scheduled_end_time',
+                'DowntimeHost.actual_end_time',
                 'DowntimeHost.duration',
                 'DowntimeHost.was_started',
                 'DowntimeHost.was_cancelled',
@@ -132,10 +133,11 @@ class DowntimeHost extends CrateModuleAppModel {
                 ],
             ],
             'order'      => $Conditions->getOrder(),
-            'conditions' => [
-                'DowntimeHost.was_cancelled' => false
-            ]
         ];
+
+        if ($Conditions->includeCancelledDowntimes() === false) {
+            $query['conditions']['DowntimeHost.was_cancelled'] = false;
+        }
 
         if ($Conditions->hasHostUuids()) {
             $query['conditions']['DowntimeHost.hostname'] = $Conditions->getHostUuids();

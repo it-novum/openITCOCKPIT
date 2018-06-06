@@ -53,6 +53,11 @@ class Downtime {
     private $scheduledEndTime;
 
     /**
+     * @var int|string
+     */
+    private $actualEndTime;
+
+    /**
      * @var int
      */
     private $duration;
@@ -112,6 +117,10 @@ class Downtime {
 
         if (isset($downtime['scheduled_end_time'])) {
             $this->scheduledEndTime = $downtime['scheduled_end_time'];
+        }
+
+        if (isset($downtime['actual_end_time'])) {
+            $this->actualEndTime = $downtime['actual_end_time'];
         }
 
         if (isset($downtime['duration'])) {
@@ -180,6 +189,16 @@ class Downtime {
             return strtotime($this->scheduledEndTime);
         }
         return $this->scheduledEndTime;
+    }
+
+    /**
+     * @return int
+     */
+    public function getActualEndTime() {
+        if (!is_numeric($this->actualEndTime)) {
+            return strtotime($this->actualEndTime);
+        }
+        return $this->actualdEndTime;
     }
 
     /**
@@ -263,11 +282,13 @@ class Downtime {
         if($this->UserTime !== null) {
             $arr['scheduledStartTime'] = $this->UserTime->format($this->getScheduledStartTime());
             $arr['scheduledEndTime'] = $this->UserTime->format($this->getScheduledEndTime());
+            $arr['actualEndTime'] = $this->UserTime->format($this->getActualEndTime());
             $arr['entryTime'] = $this->UserTime->format($this->getEntryTime());
             $arr['durationHuman'] = $this->UserTime->secondsInHumanShort($this->getDuration());
         }else{
             $arr['scheduledStartTime'] = $this->getScheduledStartTime();
             $arr['scheduledEndTime'] = $this->getScheduledEndTime();
+            $arr['actualEndTime'] = $this->getActualEndTime();
             $arr['entryTime'] = $this->getEntryTime();
             $arr['durationHuman'] = $this->getDuration();
         }

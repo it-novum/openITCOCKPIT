@@ -941,6 +941,10 @@ body {
     background-color: #337ab7 !important;
 }
 
+.bg-downtime-cancelled {
+    background-color: #00c4d8 !important;
+}
+
 .bg-ack {
     background-color: #774DFF !important;
     border-color: #3c00ff !important;
@@ -958,6 +962,9 @@ body {
     color: rgba(213,221,246,.4) !important;
 }
 
+.txt-downtime-cancelled {
+    color: #00c4d8 !important;
+}
 .table-color-0 {
     background-color: #dff0d8!important;
 }

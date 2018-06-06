@@ -44,6 +44,11 @@ class DowntimeHostConditions extends ListSettingsConditions {
     protected $isRunning = false;
 
     /**
+     * @var bool
+     */
+    private $includeCancelledDowntimes = false;
+
+    /**
      * @var array
      */
     private $hostUuids = [];
@@ -98,6 +103,20 @@ class DowntimeHostConditions extends ListSettingsConditions {
      */
     public function hasHostUuids() {
         return !empty($this->hostUuids);
+    }
+
+    /**
+     * @return bool
+     */
+    public function includeCancelledDowntimes() {
+        return $this->includeCancelledDowntimes;
+    }
+
+    /**
+     * @param bool $includeCancelledDowntimes
+     */
+    public function setIncludeCancelledDowntimes($includeCancelledDowntimes) {
+        $this->includeCancelledDowntimes = (bool)$includeCancelledDowntimes;
     }
 }
 
