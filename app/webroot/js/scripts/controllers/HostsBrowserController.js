@@ -53,8 +53,9 @@ angular.module('openITCOCKPIT')
         $scope.visTimelineInit = true;
         $scope.visTimelineStart = -1;
         $scope.visTimelineEnd = -1;
-        $scope.visTimeout;
+        $scope.visTimeout = null;
         $scope.showTimelineTab = false;
+        $scope.timelineIsLoading = false;
 
         var flappingInterval;
 
@@ -460,7 +461,7 @@ angular.module('openITCOCKPIT')
             var start = properties.start || -1;
             var end = properties.end || -1;
 
-            $scope.visTimelineInit = true;
+            $scope.timelineIsLoading = true;
 
             if (start > $scope.visTimelineStart && end < $scope.visTimelineEnd) {
                 //Zoom in data we already have
@@ -523,6 +524,7 @@ angular.module('openITCOCKPIT')
                     }
                 };
                 renderTimeline(timelinedata, options);
+                $scope.timelineIsLoading = false;
             });
         };
 
@@ -536,10 +538,16 @@ angular.module('openITCOCKPIT')
                         return;
                     }
 
+                    if($scope.timelineIsLoading){
+                        console.warn('Timeline already loading date. Waiting for server result before sending next request.');
+                        return;
+                    }
+
                     if ($scope.visTimeout) {
                         clearTimeout($scope.visTimeout);
                     }
                     $scope.visTimeout = setTimeout(function () {
+                        $scope.visTimeout = null;
                         $scope.loadTimelineData({
                             start: parseInt(properties.start.getTime() / 1000, 10),
                             end: parseInt(properties.end.getTime() / 1000, 10)
