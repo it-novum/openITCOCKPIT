@@ -32,6 +32,13 @@ class ContainerPermissions {
      */
     private $MY_RIGHTS_LEVEL = [];
 
+
+
+    /**
+     * @var array
+     */
+    private $MY_VIEW_RIGHTS_LEVEL = [];
+
     /**
      * @var array
      */
@@ -43,6 +50,7 @@ class ContainerPermissions {
      * @param array $ContainersToCheck
      */
     public function __construct($MY_RIGHTS_LEVEL, $ContainersToCheck = []) {
+        $this->MY_VIEW_RIGHTS_LEVEL = $MY_RIGHTS_LEVEL;
         foreach($MY_RIGHTS_LEVEL as $containerId => $rightLevel){
             $rightLevel = (int)$rightLevel;
             if($rightLevel === WRITE_RIGHT){
@@ -59,4 +67,10 @@ class ContainerPermissions {
         return !empty(array_intersect($this->Containers, array_keys($this->MY_RIGHTS_LEVEL)));
     }
 
+    /**
+     * @return bool
+     */
+    public function hasViewPermission() {
+        return !empty(array_intersect($this->Containers, array_keys($this->MY_VIEW_RIGHTS_LEVEL)));
+    }
 }
