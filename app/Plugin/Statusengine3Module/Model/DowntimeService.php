@@ -203,6 +203,15 @@ class DowntimeService extends Statusengine3ModuleAppModel {
      */
     public function getServiceDowntimesByHostAndDowntime($hostId, Downtime $Downtime) {
         $query = [
+            'joins'  => [
+                [
+                    'table'      => 'services',
+                    'type'       => 'INNER',
+                    'alias'      => 'Service',
+                    'conditions' =>
+                        'Service.uuid = DowntimeService.service_description',
+                ]
+            ],
             'conditions' => [
                 'Service.host_id'                      => $hostId,
                 'DowntimeService.scheduled_start_time' => $Downtime->getScheduledStartTime(),
