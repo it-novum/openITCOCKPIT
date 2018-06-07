@@ -878,7 +878,7 @@ body {
 }
 
 .warning {
-    color: #DF8F1D !important;
+    color: #f2c68a !important;
 }
 
 .critical, .down {
@@ -918,7 +918,7 @@ body {
 }
 
 .bg-warning-soft {
-    background-color: #DF8F1D !important;
+    background-color: #f2c68a !important;
 }
 
 .bg-critical, .bg-down {

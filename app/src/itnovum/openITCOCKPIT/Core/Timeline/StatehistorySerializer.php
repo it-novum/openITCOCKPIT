@@ -143,38 +143,38 @@ class StatehistorySerializer {
             if ($Statehistory->isHardstate()) {
                 switch ($Statehistory->getState()) {
                     case 0:
-                        return 'bg-color-greenDark';
+                        return 'bg-up';
                         break;
 
                     case 1:
-                        return 'bg-color-orangeDark';
+                        return 'bg-warning';
                         break;
 
                     case 2:
-                        return 'bg-color-red';
+                        return 'bg-critical';
                         break;
 
                     case 3:
-                        return 'bg-color-blueDark';
+                        return 'bg-unknown';
                         break;
                 }
             }
 
             switch ($Statehistory->getState()) {
                 case 0:
-                    return 'bg-color-greenLight';
+                    return 'bg-up-soft';
                     break;
 
                 case 1:
-                    return 'bg-color-orange';
+                    return 'bg-warning-soft';
                     break;
 
                 case 2:
-                    return 'bg-color-redLight';
+                    return 'bg-critical-soft';
                     break;
 
                 case 3:
-                    return 'bg-color-blueLight';
+                    return 'bg-unknown-soft';
                     break;
             }
 

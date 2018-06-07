@@ -3553,21 +3553,20 @@ class HostsController extends AppController {
         $query = $this->StatehistoryHost->getQuery($Conditions);
         $statehistories = $this->StatehistoryHost->find('all', $query);
         $statehistoryRecords = [];
-        foreach ($statehistories as $statehistory) {
-            $StatehistoryHost = new \itnovum\openITCOCKPIT\Core\Views\StatehistoryHost($statehistory['StatehistoryHost']);
+
+        //Host has no state history record for selected time range
+        //Get last available state history record for this host
+        $query = $this->StatehistoryHost->getLastRecord($Conditions);
+        $record = $this->StatehistoryHost->find('first', $query);
+        if (!empty($record)) {
+            $record['StatehistoryHost']['state_time'] = $start;
+            $StatehistoryHost = new \itnovum\openITCOCKPIT\Core\Views\StatehistoryHost($record['StatehistoryHost']);
             $statehistoryRecords[] = $StatehistoryHost;
         }
 
-        if (empty($statehistoryRecords['Statehistory'])) {
-            //Host has no state history record for selected time range
-            //Get last available state history record for this host
-            $query = $this->StatehistoryHost->getLastRecord($Conditions);
-            $record = $this->StatehistoryHost->find('first', $query);
-            if (!empty($record)) {
-                $record['StatehistoryHost']['state_time'] = $start;
-                $StatehistoryHost = new \itnovum\openITCOCKPIT\Core\Views\StatehistoryHost($record['StatehistoryHost']);
-                $statehistoryRecords[] = $StatehistoryHost;
-            }
+        foreach ($statehistories as $statehistory) {
+            $StatehistoryHost = new \itnovum\openITCOCKPIT\Core\Views\StatehistoryHost($statehistory['StatehistoryHost']);
+            $statehistoryRecords[] = $StatehistoryHost;
         }
 
         $StatehistorySerializer = new StatehistorySerializer($statehistoryRecords, $UserTime, $end, 'host');

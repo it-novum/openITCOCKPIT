@@ -89,7 +89,16 @@ if (!$QueryHandler->exists()): ?>
                         </a>
                     </li>
 
-                    <?php echo $this->AdditionalLinks->renderAsTabs($additionalLinksTab, null, 'host'); ?>
+                    <?php if ($this->Acl->hasPermission('timeline', 'services')): ?>
+                        <li class="">
+                            <a href="#tab3" data-toggle="tab" ng-click="showTimeline()">
+                                <i class="fa fa-lg fa-clock-o"></i>
+                                <span class="hidden-mobile hidden-tablet"> <?php echo __('Timeline'); ?> </span>
+                            </a>
+                        </li>
+                    <?php endif; ?>
+
+                    <?php echo $this->AdditionalLinks->renderAsTabs($additionalLinksTab, null, 'host',  'tabLink', 'hideTimeline()'); ?>
                 </ul>
 
                 <div class="widget-toolbar" role="menu">
@@ -898,6 +907,95 @@ if (!$QueryHandler->exists()): ?>
                                                     </td>
                                                 </tr>
                                             </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="tab3" class="fade in" ng-show="showTimelineTab">
+                            <div class="row">
+                                <div class="col-xs-12 padding-10">
+                                    <div class="row">
+
+                                        <div class="col-xs-12">
+                                            <h3 class="margin-top-0"><?php echo __('Service overview'); ?></h3>
+                                        </div>
+                                        <div class="col-xs-12 col-sm-12 col-md-12">
+                                            <div id="visualization"></div>
+                                        </div>
+
+                                        <div class="col-xs-12">
+                                            <div class="row">
+                                                <div class="col-xs-12 bold"><?php echo __('Legend'); ?></div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-xs-12">
+                                                    <?php echo __('State types'); ?>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-xs-12 col-md-3">
+                                                        <i class="fa fa-square ok-soft"></i>
+                                                        <?php echo __('Ok soft'); ?>
+                                                    </div>
+                                                    <div class="col-xs-12 col-md-3 ">
+                                                        <i class="fa fa-square warning-soft"></i>
+                                                        <?php echo __('Warning soft'); ?>
+                                                    </div>
+                                                    <div class="col-xs-12 col-md-3 ">
+                                                        <i class="fa fa-square critical-soft"></i>
+                                                        <?php echo __('Critical soft'); ?>
+                                                    </div>
+                                                    <div class="col-xs-12 col-md-3 ">
+                                                        <i class="fa fa-square unknown-soft"></i>
+                                                        <?php echo __('Unknown soft'); ?>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-xs-12 col-md-3">
+                                                        <i class="fa fa-square ok"></i>
+                                                        <?php echo __('Ok'); ?>
+                                                    </div>
+                                                    <div class="col-xs-12 col-md-3 ">
+                                                        <i class="fa fa-square warning"></i>
+                                                        <?php echo __('Warning'); ?>
+                                                    </div>
+                                                    <div class="col-xs-12 col-md-3 ">
+                                                        <i class="fa fa-square critical"></i>
+                                                        <?php echo __('Critical'); ?>
+                                                    </div>
+                                                    <div class="col-xs-12 col-md-3 ">
+                                                        <i class="fa fa-square unknown"></i>
+                                                        <?php echo __('Unknown'); ?>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-xs-12 col-md-3">
+                                                    <i class="fa fa-square text-primary"></i>
+                                                    <?php echo __('Downtime'); ?>
+                                                </div>
+                                                <div class="col-xs-12 col-md-3 ">
+                                                    <i class="fa fa-square txt-ack"></i>
+                                                    <?php echo __('Acknowledged'); ?>
+                                                </div>
+                                                <div class="col-xs-12 col-md-3 ">
+                                                    <i class="fa fa-square txt-notification"></i>
+                                                    <?php echo __('Notification'); ?>
+                                                </div>
+                                                <div class="col-xs-12 col-md-3 ">
+                                                    <i class="fa fa-square txt-timerange"></i>
+                                                    <?php echo __('Check period'); ?>
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-xs-12 col-md-3">
+                                                    <i class="fa fa-square txt-downtime-cancelled"></i>
+                                                    <?php echo __('Downtime cancelled'); ?>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

@@ -464,6 +464,7 @@ angular.module('openITCOCKPIT')
             $scope.timelineIsLoading = true;
 
             if (start > $scope.visTimelineStart && end < $scope.visTimelineEnd) {
+                $scope.timelineIsLoading = false;
                 //Zoom in data we already have
                 return;
             }
@@ -475,6 +476,7 @@ angular.module('openITCOCKPIT')
                     end: end
                 }
             }).then(function (result) {
+
                 var timelinedata = {
                     items: new vis.DataSet(result.data.statehistory),
                     groups: new vis.DataSet(result.data.groups)
@@ -538,7 +540,7 @@ angular.module('openITCOCKPIT')
                         return;
                     }
 
-                    if($scope.timelineIsLoading){
+                    if ($scope.timelineIsLoading) {
                         console.warn('Timeline already loading date. Waiting for server result before sending next request.');
                         return;
                     }
@@ -568,7 +570,6 @@ angular.module('openITCOCKPIT')
         $scope.hideTimeline = function () {
             $scope.showTimelineTab = false;
         };
-
 
         $scope.loadHost();
         $scope.loadTimezone();

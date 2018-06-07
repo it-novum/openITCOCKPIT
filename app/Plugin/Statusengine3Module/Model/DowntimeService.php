@@ -179,7 +179,9 @@ class DowntimeService extends Statusengine3ModuleAppModel {
             $query['conditions']['DowntimeService.service_description'] = $Conditions->getServiceUuids();
         }
 
-        $query['conditions']['DowntimeService.was_cancelled'] = 0;
+        if ($Conditions->includeCancelledDowntimes() === false) {
+            $query['conditions']['DowntimeService.was_cancelled'] = 0;
+        }
 
         $query['conditions']['OR'] = [
             '"' . $Conditions->getFrom() . '"

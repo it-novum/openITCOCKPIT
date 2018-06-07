@@ -19,6 +19,14 @@ angular.module('openITCOCKPIT')
 
         $scope.dataSources = [];
 
+        $scope.visTimeline = null;
+        $scope.visTimelineInit = true;
+        $scope.visTimelineStart = -1;
+        $scope.visTimelineEnd = -1;
+        $scope.visTimeout = null;
+        $scope.showTimelineTab = false;
+        $scope.timelineIsLoading = false;
+
         var graphTimeSpan = 4;
 
         var flappingInterval;
@@ -423,6 +431,122 @@ angular.module('openITCOCKPIT')
 
 
             self.plot = $.plot('#graphCanvas', [graph_data], options);
+        };
+
+        $scope.loadTimelineData = function (_properties) {
+            var properties = _properties || {};
+            var start = properties.start || -1;
+            var end = properties.end || -1;
+
+            $scope.timelineIsLoading = true;
+
+            if (start > $scope.visTimelineStart && end < $scope.visTimelineEnd) {
+          //      $scope.timelineIsLoading = false;
+                //Zoom in data we already have
+       //         return;
+            }
+
+            $http.get("/services/timeline/" + $scope.id + ".json", {
+                params: {
+                    'angular': true,
+                    start: start,
+                    end: end
+                }
+            }).then(function (result) {
+
+                var timelinedata = {
+                    items: new vis.DataSet(result.data.servicestatehistory),
+                    groups: new vis.DataSet(result.data.groups)
+                };
+                timelinedata.items.add(result.data.statehistory);
+                timelinedata.items.add(result.data.downtimes);
+                timelinedata.items.add(result.data.notifications);
+                timelinedata.items.add(result.data.acknowledgements);
+                timelinedata.items.add(result.data.timeranges);
+
+                $scope.visTimelineStart = result.data.start;
+                $scope.visTimelineEnd = result.data.end;
+
+                var options = {
+                    //orientation: "bottom",
+                    orientation: "both",
+                    //showCurrentTime: true,
+                    start: new Date(result.data.start * 1000),
+                    end: new Date(result.data.end * 1000),
+                    min: new Date(new Date(result.data.start * 1000).setFullYear(new Date(result.data.start * 1000).getFullYear() - 1)), //May 1 year of zoom
+                    max: new Date(result.data.end * 1000),    // upper limit of visible range
+                    zoomMin: 1000 * 10 * 60 * 5,   // every 5 minutes
+                    format: {
+                        minorLabels: {
+                            millisecond: 'SSS',
+                            second: 's',
+                            minute: 'H:mm',
+                            hour: 'H:mm',
+                            weekday: 'ddd D',
+                            day: 'D',
+                            week: 'w',
+                            month: 'MMM',
+                            year: 'YYYY'
+                        },
+                        majorLabels: {
+                            millisecond: 'H:mm:ss',
+                            second: 'D MMMM H:mm',
+                            // minute:     'ddd D MMMM',
+                            // hour:       'ddd D MMMM',
+                            minute: 'DD.MM.YYYY',
+                            hour: 'DD.MM.YYYY',
+                            weekday: 'MMMM YYYY',
+                            day: 'MMMM YYYY',
+                            week: 'MMMM YYYY',
+                            month: 'YYYY',
+                            year: ''
+                        }
+                    }
+                };
+                renderTimeline(timelinedata, options);
+                $scope.timelineIsLoading = false;
+            });
+        };
+
+        var renderTimeline = function (timelinedata, options) {
+            var container = document.getElementById('visualization');
+            if ($scope.visTimeline === null) {
+                $scope.visTimeline = new vis.Timeline(container, timelinedata.items, timelinedata.groups, options);
+                $scope.visTimeline.on('rangechanged', function (properties) {
+                    if ($scope.visTimelineInit) {
+                        $scope.visTimelineInit = false;
+                        return;
+                    }
+
+                    if ($scope.timelineIsLoading) {
+                        console.warn('Timeline already loading date. Waiting for server result before sending next request.');
+                        return;
+                    }
+
+                    if ($scope.visTimeout) {
+                        clearTimeout($scope.visTimeout);
+                    }
+                    $scope.visTimeout = setTimeout(function () {
+                        $scope.visTimeout = null;
+                        $scope.loadTimelineData({
+                            start: parseInt(properties.start.getTime() / 1000, 10),
+                            end: parseInt(properties.end.getTime() / 1000, 10)
+                        });
+                    }, 500);
+                });
+            } else {
+                //Update existing timeline
+                $scope.visTimeline.setItems(timelinedata.items);
+            }
+        };
+
+        $scope.showTimeline = function () {
+            $scope.showTimelineTab = true;
+            $scope.loadTimelineData();
+        };
+
+        $scope.hideTimeline = function () {
+            $scope.showTimelineTab = false;
         };
 
 
