@@ -441,9 +441,9 @@ angular.module('openITCOCKPIT')
             $scope.timelineIsLoading = true;
 
             if (start > $scope.visTimelineStart && end < $scope.visTimelineEnd) {
-          //      $scope.timelineIsLoading = false;
+                $scope.timelineIsLoading = false;
                 //Zoom in data we already have
-       //         return;
+                return;
             }
 
             $http.get("/services/timeline/" + $scope.id + ".json", {
