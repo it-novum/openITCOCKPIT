@@ -878,7 +878,7 @@ body {
 }
 
 .warning {
-    color: #f2c68a !important;
+    color: #DF8F1D !important;
 }
 
 .critical, .down {
@@ -894,7 +894,7 @@ body {
 }
 
 .warning-soft {
-    color: #DF8F1D !important;
+    color: #f2c68a !important;
 }
 
 .critical-soft, .down-soft {
@@ -914,7 +914,7 @@ body {
 }
 
 .bg-warning {
-    background-color: #E7BE83 !important;
+    background-color: #DF8F1D !important;
 }
 
 .bg-warning-soft {
