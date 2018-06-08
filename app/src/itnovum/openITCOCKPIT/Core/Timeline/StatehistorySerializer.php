@@ -143,7 +143,7 @@ class StatehistorySerializer {
             if ($Statehistory->isHardstate()) {
                 switch ($Statehistory->getState()) {
                     case 0:
-                        return 'bg-up';
+                        return 'bg-ok';
                         break;
 
                     case 1:
@@ -162,7 +162,7 @@ class StatehistorySerializer {
 
             switch ($Statehistory->getState()) {
                 case 0:
-                    return 'bg-up-soft';
+                    return 'bg-ok-soft';
                     break;
 
                 case 1:

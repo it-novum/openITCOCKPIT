@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('ServicesBrowserController', function($scope, $http, QueryStringService, $interval){
+    .controller('ServicesBrowserController', function ($scope, $http, QueryStringService, $interval) {
 
         $scope.id = QueryStringService.getCakeId();
 
@@ -31,12 +31,12 @@ angular.module('openITCOCKPIT')
 
         var flappingInterval;
 
-        $scope.showFlashMsg = function(){
+        $scope.showFlashMsg = function () {
             $scope.showFlashSuccess = true;
             $scope.autoRefreshCounter = 5;
-            var interval = $interval(function(){
+            var interval = $interval(function () {
                 $scope.autoRefreshCounter--;
-                if($scope.autoRefreshCounter === 0){
+                if ($scope.autoRefreshCounter === 0) {
                     $scope.load();
                     $interval.cancel(interval);
                     $scope.showFlashSuccess = false;
@@ -44,12 +44,12 @@ angular.module('openITCOCKPIT')
             }, 1000);
         };
 
-        $scope.load = function(){
+        $scope.load = function () {
             $http.get("/services/browser/" + $scope.id + ".json", {
                 params: {
                     'angular': true
                 }
-            }).then(function(result){
+            }).then(function (result) {
                 $scope.mergedService = result.data.mergedService;
                 $scope.mergedService.Service.disabled = parseInt($scope.mergedService.Service.disabled, 10);
                 $scope.contacts = result.data.contacts;
@@ -80,11 +80,11 @@ angular.module('openITCOCKPIT')
                     5: false
                 };
                 var priority = parseInt($scope.mergedService.Service.priority, 10);
-                for(var i = 1; i <= priority; i++){
+                for (var i = 1; i <= priority; i++) {
                     $scope.priorities[i] = true;
                 }
 
-                if($scope.mergedService.Service.has_graph){
+                if ($scope.mergedService.Service.has_graph) {
                     loadGraph($scope.host.Host.uuid, $scope.mergedService.Service.uuid);
                 }
 
@@ -92,30 +92,30 @@ angular.module('openITCOCKPIT')
             });
         };
 
-        $scope.loadTimezone = function(){
+        $scope.loadTimezone = function () {
             $http.get("/angular/user_timezone.json", {
                 params: {
                     'angular': true
                 }
-            }).then(function(result){
+            }).then(function (result) {
                 $scope.timezone = result.data.timezone;
             });
         };
 
 
-        $scope.getObjectForDowntimeDelete = function(){
+        $scope.getObjectForDowntimeDelete = function () {
             var object = {};
             object[$scope.downtime.internalDowntimeId] = $scope.host.Host.name + ' / ' + $scope.mergedService.Service.name;
             return object;
         };
 
-        $scope.getObjectForHostDowntimeDelete = function(){
+        $scope.getObjectForHostDowntimeDelete = function () {
             var object = {};
             object[$scope.hostDowntime.internalDowntimeId] = $scope.host.Host.name;
             return object;
         };
 
-        $scope.getObjectsForExternalCommand = function(){
+        $scope.getObjectsForExternalCommand = function () {
             return [{
                 Service: {
                     id: $scope.mergedService.Service.id,
@@ -132,56 +132,56 @@ angular.module('openITCOCKPIT')
         };
 
 
-        $scope.stateIsOk = function(){
+        $scope.stateIsOk = function () {
             return parseInt($scope.servicestatus.currentState, 10) === 0;
         };
 
-        $scope.stateIsWarning = function(){
+        $scope.stateIsWarning = function () {
             return parseInt($scope.servicestatus.currentState, 10) === 1;
         };
 
-        $scope.stateIsCritical = function(){
+        $scope.stateIsCritical = function () {
             return parseInt($scope.servicestatus.currentState, 10) === 2;
         };
 
-        $scope.stateIsUnknown = function(){
+        $scope.stateIsUnknown = function () {
             return parseInt($scope.servicestatus.currentState, 10) === 3;
         };
 
-        $scope.stateIsNotInMonitoring = function(){
+        $scope.stateIsNotInMonitoring = function () {
             return !$scope.servicestatus.isInMonitoring;
         };
 
-        $scope.startFlapping = function(){
+        $scope.startFlapping = function () {
             $scope.stopFlapping();
-            flappingInterval = $interval(function(){
-                if($scope.flappingState === 0){
+            flappingInterval = $interval(function () {
+                if ($scope.flappingState === 0) {
                     $scope.flappingState = 1;
-                }else{
+                } else {
                     $scope.flappingState = 0;
                 }
             }, 750);
         };
 
-        $scope.stopFlapping = function(){
-            if(flappingInterval){
+        $scope.stopFlapping = function () {
+            if (flappingInterval) {
                 $interval.cancel(flappingInterval);
             }
             flappingInterval = null;
         };
 
-        $scope.changeGraphTimespan = function(timespan){
+        $scope.changeGraphTimespan = function (timespan) {
             graphTimeSpan = timespan;
             loadGraph($scope.host.Host.uuid, $scope.mergedService.Service.uuid);
         };
 
-        $scope.changeDataSource = function(dsId){
+        $scope.changeDataSource = function (dsId) {
             $scope.selectedGraphdataSource = dsId;
             renderGraph($scope.perfdata)
         };
 
-        var getServicestatusTextColor = function(){
-            switch($scope.servicestatus.currentState){
+        var getServicestatusTextColor = function () {
+            switch ($scope.servicestatus.currentState) {
                 case 0:
                 case '0':
                     return 'txt-color-green';
@@ -202,7 +202,7 @@ angular.module('openITCOCKPIT')
         };
 
 
-        var loadGraph = function(hostUuid, serviceuuid){
+        var loadGraph = function (hostUuid, serviceuuid) {
             $scope.isLoadingGraph = true;
             $http.get('/Graphgenerators/getPerfdataByUuid.json', {
                 params: {
@@ -212,18 +212,18 @@ angular.module('openITCOCKPIT')
                     hours: graphTimeSpan,
                     jsTimestamp: 1
                 }
-            }).then(function(result){
+            }).then(function (result) {
                 $scope.isLoadingGraph = false;
                 $scope.dataSources = [];
                 $scope.perfdata = result.data.performance_data;
-                for(var dsKey in  $scope.perfdata){
+                for (var dsKey in  $scope.perfdata) {
                     $scope.dataSources.push($scope.perfdata[dsKey].datasource.label);
                 }
                 renderGraph($scope.perfdata);
             });
         };
 
-        var initTooltip = function(){
+        var initTooltip = function () {
             var previousPoint = null;
             var $graph_data_tooltip = $('#graph_data_tooltip');
 
@@ -243,41 +243,41 @@ angular.module('openITCOCKPIT')
                 transition: 'all 1s'
             });
 
-            $('#graphCanvas').bind('plothover', function(event, pos, item){
+            $('#graphCanvas').bind('plothover', function (event, pos, item) {
                 $('#x').text(pos.pageX.toFixed(2));
                 $('#y').text(pos.pageY.toFixed(2));
 
-                if(item){
-                    if(previousPoint != item.dataIndex){
+                if (item) {
+                    if (previousPoint != item.dataIndex) {
                         previousPoint = item.dataIndex;
 
                         $('#graph_data_tooltip').hide();
 
                         var value = item.datapoint[1];
-                        if(!isNaN(value) && isFinite(value)){
+                        if (!isNaN(value) && isFinite(value)) {
                             value = value.toFixed(4);
                         }
                         var tooltip_text = value;
-                        if(item.series['unit']){
+                        if (item.series['unit']) {
                             tooltip_text += ' ' + item.series.unit;
                         }
 
                         showTooltip(item.pageX, item.pageY, tooltip_text, item.datapoint[0]);
                     }
-                }else{
+                } else {
                     $("#graph_data_tooltip").hide();
                     previousPoint = null;
                 }
             });
         };
 
-        var showTooltip = function(x, y, contents, timestamp){
+        var showTooltip = function (x, y, contents, timestamp) {
             var self = this;
             var $graph_data_tooltip = $('#graph_data_tooltip');
 
             var fooJS = new Date(timestamp + ($scope.timezone.server_timezone_offset * 1000));
-            var fixTime = function(value){
-                if(value < 10){
+            var fixTime = function (value) {
+                if (value < 10) {
                     return '0' + value;
                 }
                 return value;
@@ -295,18 +295,18 @@ angular.module('openITCOCKPIT')
                 .fadeIn(200);
         };
 
-        var renderGraph = function(performance_data){
+        var renderGraph = function (performance_data) {
             initTooltip();
 
             var thresholdLines = [];
             var thresholdAreas = [];
-            if($scope.selectedGraphdataSource === null){
+            if ($scope.selectedGraphdataSource === null) {
                 $scope.selectedGraphdataSource = 0;
             }
 
             var defaultColor = 'green';
 
-            if(performance_data[$scope.selectedGraphdataSource].datasource.warn !== "" && performance_data[$scope.selectedGraphdataSource].datasource.crit !== ""){
+            if (performance_data[$scope.selectedGraphdataSource].datasource.warn !== "" && performance_data[$scope.selectedGraphdataSource].datasource.crit !== "") {
                 var warn = parseFloat(performance_data[$scope.selectedGraphdataSource].datasource.warn);
                 var crit = parseFloat(performance_data[$scope.selectedGraphdataSource].datasource.crit);
 
@@ -328,7 +328,7 @@ angular.module('openITCOCKPIT')
                 });
 
                 //Change color of the area chart for warning and critical
-                if(warn > crit){
+                if (warn > crit) {
                     thresholdAreas.push({
                         below: warn,
                         color: '#FFFF00'
@@ -337,7 +337,7 @@ angular.module('openITCOCKPIT')
                         below: crit,
                         color: '#FF0000'
                     });
-                }else{
+                } else {
 
                     defaultColor = '#FF0000';
                     thresholdAreas.push({
@@ -352,7 +352,7 @@ angular.module('openITCOCKPIT')
             }
 
             var graph_data = [];
-            for(var timestamp in performance_data[$scope.selectedGraphdataSource].data){
+            for (var timestamp in performance_data[$scope.selectedGraphdataSource].data) {
                 graph_data.push([timestamp, performance_data[$scope.selectedGraphdataSource].data[timestamp]]);
             }
 
@@ -383,10 +383,10 @@ angular.module('openITCOCKPIT')
                 xaxis: {
                     mode: 'time',
                     timeformat: '%d.%m.%y %H:%M:%S', // This is handled by a plugin, if it is used -> jquery.flot.time.js
-                    tickFormatter: function(val, axis){
+                    tickFormatter: function (val, axis) {
                         var fooJS = new Date(val + ($scope.timezone.server_timezone_offset * 1000));
-                        var fixTime = function(value){
-                            if(value < 10){
+                        var fixTime = function (value) {
+                            if (value < 10) {
                                 return '0' + value;
                             }
                             return value;
@@ -417,7 +417,7 @@ angular.module('openITCOCKPIT')
                 },
                 series: {
                     show: true,
-                    labelFormatter: function(label, series){
+                    labelFormatter: function (label, series) {
                         // series is the series object for the label
                         return '<a href="#' + label + '">' + label + '</a>';
                     },
@@ -510,9 +510,34 @@ angular.module('openITCOCKPIT')
 
         var renderTimeline = function (timelinedata, options) {
             var container = document.getElementById('visualization');
+            var criticalItems = [];
             if ($scope.visTimeline === null) {
                 $scope.visTimeline = new vis.Timeline(container, timelinedata.items, timelinedata.groups, options);
+
                 $scope.visTimeline.on('rangechanged', function (properties) {
+                    console.log(properties.start);
+                    console.log(properties.end);
+
+                    criticalItems = $scope.visTimeline.itemsData.get({
+                        fields: ['start', 'end', 'className', 'group'],    // output the specified fields only
+                        type: {
+                            start: 'Date',
+                            end: 'Date'
+                        },
+                        filter: function (item) {
+                            //console.log(item);
+                            //console.log($scope.CheckIteminRange(properties.start.getTime(), properties.end.getTime(), item.start.getTime(), item.end.getTime()));
+                            return (item.group == 4 &&
+                                (item.className === 'bg-critical' || item.className === 'bg-critical-soft') &&
+                                $scope.CheckIfItemInRange(properties.start.getTime(), properties.end.getTime(), item)
+                            );
+
+                        }
+                    });
+
+                    $scope.calculateFailureDuration(criticalItems);
+
+                    console.log('Dinge tun');
                     if ($scope.visTimelineInit) {
                         $scope.visTimelineInit = false;
                         return;
@@ -549,19 +574,54 @@ angular.module('openITCOCKPIT')
             $scope.showTimelineTab = false;
         };
 
+        $scope.CheckIfItemInRange = function (start, end, item) {
+            var itemStart = item.start.getTime();
+            var itemEnd = item.end.getTime();
+            if (itemEnd < start) {
+                return false;
+            }
+            else if (itemStart > end) {
+                return false;
+            }
+            else if (itemStart >= start && itemEnd <= end) {
+                return true;
+            }
+            else if (itemStart >= start && itemEnd > end) {
+                console.log(' START ' + item.start + ' END ' + item.end);
+                console.log('ITEM STARTED BEHIND !!! AND ENDED behind');
+                return true;
+            }
+            else if (itemStart < start && itemEnd > start && itemEnd < end) {
+                console.log(' START ' + item.start + ' END ' + item.end);
+                console.log('ITEM STARTED BEFORE !!! AND ENDED behind');
+                return true;
+            }
+            else if (itemStart < start && itemEnd >= end) {
+                console.log('ITEM STARTED BEFORE !!! AND ENDED before');
+                return true;
+            }
+            return false;
+        }
+
+        $scope.calculateFailureDuration = function (criticalItems) {
+            criticalItems.forEach(function(criticalItem){
+            console.log(criticalItem.end.getTime() - criticalItem.start.getTime()+' in seconds');
+            });
+        };
+
 
         $scope.load();
         $scope.loadTimezone();
 
 
-        $scope.$watch('servicestatus.isFlapping', function(){
-            if($scope.servicestatus){
-                if($scope.servicestatus.hasOwnProperty('isFlapping')){
-                    if($scope.servicestatus.isFlapping === true){
+        $scope.$watch('servicestatus.isFlapping', function () {
+            if ($scope.servicestatus) {
+                if ($scope.servicestatus.hasOwnProperty('isFlapping')) {
+                    if ($scope.servicestatus.isFlapping === true) {
                         $scope.startFlapping();
                     }
 
-                    if($scope.servicestatus.isFlapping === false){
+                    if ($scope.servicestatus.isFlapping === false) {
                         $scope.stopFlapping();
                     }
 
