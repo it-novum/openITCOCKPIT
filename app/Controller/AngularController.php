@@ -175,16 +175,16 @@ class AngularController extends AppController {
         session_write_close();
 
         $recursive = false;
-        if($this->request->query('recursive') === 'true'){
+        if ($this->request->query('recursive') === 'true') {
             $recursive = true;
         }
 
         $containerIds = $this->request->query('containerIds');
-        if(!is_numeric($containerIds) && !is_array($containerIds)){
+        if (!is_numeric($containerIds) && !is_array($containerIds)) {
             $containerIds = ROOT_CONTAINER;
         }
 
-        if(!is_array($containerIds)){
+        if (!is_array($containerIds)) {
             $containerIds = [$containerIds];
         }
 
@@ -235,18 +235,18 @@ class AngularController extends AppController {
 
         $hoststatusCountPercentage = [];
         $servicestatusCountPercentage = [];
-        foreach($hoststatusCount as $stateId => $count){
-            if($hoststatusSum > 0) {
+        foreach ($hoststatusCount as $stateId => $count) {
+            if ($hoststatusSum > 0) {
                 $hoststatusCountPercentage[$stateId] = round($count / $hoststatusSum * 100, 2);
-            }else{
+            } else {
                 $hoststatusCountPercentage[$stateId] = 0;
             }
         }
 
-        foreach($servicestatusCount as $stateId => $count){
-            if($servicestatusSum > 0) {
+        foreach ($servicestatusCount as $stateId => $count) {
+            if ($servicestatusSum > 0) {
                 $servicestatusCountPercentage[$stateId] = round($count / $servicestatusSum * 100, 2);
-            }else{
+            } else {
                 $servicestatusCountPercentage[$stateId] = 0;
             }
         }
@@ -308,9 +308,21 @@ class AngularController extends AppController {
         $websocketConfig = $systemsettings['SUDO_SERVER'];
         $websocketConfig['SUDO_SERVER.URL'] = 'wss://' . env('HTTP_HOST') . '/sudo_server';
         $websocketConfig['QUERY_LOG.URL'] = 'wss://' . env('HTTP_HOST') . '/query_log';
+        $websocketConfig['PUSH_NOTIFICATIONS.URL'] = 'wss://' . env('HTTP_HOST') . '/push_notifications';
+
+
+
+        $toJson = ['websocket'];
+        if ($this->request->query('includeUser')) {
+            $User = new User($this->Auth);
+            $this->set('user', [
+                'id' => $User->getId()
+            ]);
+            $toJson[] = 'user';
+        }
 
         $this->set('websocket', $websocketConfig);
-        $this->set('_serialize', ['websocket']);
+        $this->set('_serialize', $toJson);
     }
 
     public function not_found() {

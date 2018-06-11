@@ -55,7 +55,8 @@ $scripts = [
     'js/lib/jquery.nestable.js',
     'js/lib/parseuri.js',
     'js/vendor/vis-4.21.0/dist/vis.js',
-    'js/scripts/ng.app.js'
+    'js/scripts/ng.app.js',
+    'js/vendor/UUID.js-4.0.3/dist/uuid.core.js',
 ];
 
 if ($this->request->params['controller'] === 'statusmaps') {
