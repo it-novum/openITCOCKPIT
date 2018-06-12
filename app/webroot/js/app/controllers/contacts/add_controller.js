@@ -23,69 +23,107 @@
 //	confirmation.
 
 App.Controllers.ContactsAddController = Frontend.AppController.extend({
-	components: ['Ajaxloader', 'CustomVariables'],
+    components: ['Ajaxloader', 'CustomVariables'],
 
-	_initialize: function() {
-		var self = this;
+    _initialize: function(){
+        var self = this;
 
-		this.Ajaxloader.setup();
-		self.CustomVariables.setup({
-			controller: 'Contacts',
-			ajaxUrl: 'Contacts/addCustomMacro',
-			macrotype: 'CONTACT'
-		});
+        this.Ajaxloader.setup();
+        self.CustomVariables.setup({
+            controller: 'Contacts',
+            ajaxUrl: 'Contacts/addCustomMacro',
+            macrotype: 'CONTACT'
+        });
 
-		var timeperiodSelectors = [
-			'#ContactHostTimeperiodId',
-			'#ContactServiceTimeperiodId'
-		];
+        var timeperiodSelectors = [
+            '#ContactHostTimeperiodId',
+            '#ContactServiceTimeperiodId'
+        ];
 
-		// Bind change event for Container Selectbox
-		$('#ContainerContainer').change(function(){
-			var containerIds = $(this).val();
+        // Bind change event for Container Selectbox
+        $('#ContainerContainer').change(function(){
+            var containerIds = $(this).val();
 
-			if(containerIds === null){
-				$.each(timeperiodSelectors, function(index, elem){
-					$(elem).val('');
-					$(elem).trigger('chosen:updated');
-				});
-				return;
-			}
+            console.log(containerIds);
 
-			if(containerIds.length > 0){
-				self.Ajaxloader.show();
-				$.ajax({
-					url: '/Contacts/loadTimeperiods/.json',
-					type: 'post',
-					cache: false,
-					data: {
-						container_ids: containerIds
-					},
-					dataType: 'json',
-					error: function(){},
-					success: function(){},
-					complete: function(response){
-						for(var selectId in timeperiodSelectors){
-							var $timeperiodSelectbox = $(timeperiodSelectors[selectId]);
-							$timeperiodSelectbox.html('');
-							$timeperiodSelectbox.attr('data-placeholder', self.getVar('data_placeholder_empty'));
-							var $timePeriods = response.responseJSON.timeperiods;
+            if(containerIds === null){
+                for(var selectId in timeperiodSelectors){
+                    var $timeperiodSelectbox = $(timeperiodSelectors[selectId]);
+                    $timeperiodSelectbox.html('');
+                    $timeperiodSelectbox.attr('data-placeholder', self.getVar('data_placeholder_empty'));
+                    $timeperiodSelectbox.trigger("chosen:updated");
+                }
+                return;
+            }
 
-							if(Object.keys($timePeriods).length > 0){
-								$timeperiodSelectbox.attr('data-placeholder', self.getVar('data_placeholder'));
-								for(var key in $timePeriods){
-									$timeperiodSelectbox.append($('<option>', {
-										value: $timePeriods[key].key,
-										text: $timePeriods[key].value
-									}));
-								}
-							}
-							$timeperiodSelectbox.trigger("chosen:updated");
-						}
-						self.Ajaxloader.hide()
-					}
-				});
-			}
-		});
-	}
+            if(containerIds.length > 0){
+                self.Ajaxloader.show();
+                $.ajax({
+                    url: '/Contacts/loadTimeperiods/.json',
+                    type: 'post',
+                    cache: false,
+                    data: {
+                        container_ids: containerIds
+                    },
+                    dataType: 'json',
+                    error: function(){
+                    },
+                    success: function(){
+                    },
+                    complete: function(response){
+                        for(var selectId in timeperiodSelectors){
+                            var $timeperiodSelectbox = $(timeperiodSelectors[selectId]);
+                            $timeperiodSelectbox.html('');
+                            $timeperiodSelectbox.attr('data-placeholder', self.getVar('data_placeholder_empty'));
+                            var $timePeriods = response.responseJSON.timeperiods;
+
+                            if(Object.keys($timePeriods).length > 0){
+                                $timeperiodSelectbox.attr('data-placeholder', self.getVar('data_placeholder'));
+                                for(var key in $timePeriods){
+                                    $timeperiodSelectbox.append($('<option>', {
+                                        value: $timePeriods[key].key,
+                                        text: $timePeriods[key].value
+                                    }));
+                                }
+                            }
+                            $timeperiodSelectbox.trigger("chosen:updated");
+                        }
+                        self.Ajaxloader.hide()
+                    }
+                });
+
+                $.ajax({
+                    url: '/Contacts/loadUsersByContainerId/.json',
+                    type: 'post',
+                    cache: false,
+                    data: {
+                        container_ids: containerIds
+                    },
+                    dataType: 'json',
+                    error: function(){
+                    },
+                    success: function(){
+                    },
+                    complete: function(response){
+                        var $userSelectbox = $('#ContactUserId');
+                        $userSelectbox.html('');
+                        $userSelectbox.attr('data-placeholder', self.getVar('data_placeholder_empty'));
+                        var $users = response.responseJSON.users;
+
+                        if(Object.keys($users).length > 0){
+                            $userSelectbox.attr('data-placeholder', self.getVar('data_placeholder'));
+                            for(var key in $users){
+                                $userSelectbox.append($('<option>', {
+                                    value: $users[key].key,
+                                    text: $users[key].value
+                                }));
+                            }
+                        }
+                        $userSelectbox.trigger("chosen:updated");
+                        self.Ajaxloader.hide()
+                    }
+                });
+            }
+        });
+    }
 });

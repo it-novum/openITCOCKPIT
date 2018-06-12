@@ -40,7 +40,10 @@
 <div class="jarviswidget" id="wid-id-0">
     <header>
         <span class="widget-icon"> <i class="fa fa-user"></i> </span>
-        <h2><?php echo $this->action == 'edit' ? 'Edit' : 'Add' ?><?php echo __('contact'); ?></h2>
+        <h2>
+            <?php echo $this->action == 'edit' ? 'Edit' : 'Add' ?>
+            <?php echo __('contact'); ?>
+        </h2>
         <div class="widget-toolbar" role="menu">
             <?php echo $this->Utils->backButton() ?>
         </div>
@@ -202,6 +205,18 @@
                                 <i class="fa fa-gear"></i>
                             </span>
                             <h2><?php echo __('Browser push notifications'); ?></h2>
+
+                            <div class="widget-toolbar" role="menu">
+                                <span class="onoffswitch-title"><?php echo __('Enable push notifications'); ?></span>
+                                <span class="onoffswitch">
+                                    <input type="checkbox" id="pushNotiEnabled" class="onoffswitch-checkbox" name="onoffswitch">
+                                    <label for="pushNotiEnabled" class="onoffswitch-label">
+                                        <span data-swchoff-text="<?php echo __('Off'); ?>" data-swchon-text="<?php echo __('On'); ?>" class="onoffswitch-inner"></span>
+                                        <span class="onoffswitch-switch"></span>
+                                    </label>
+                                </span>
+                            </div>
+
                         </header>
                         <div role="content" style="min-height:400px;">
                             <div class="widget-body">
@@ -234,7 +249,7 @@
                                             'text'  => __('User')
                                         ],
                                         'style'     => 'width: 100%',
-                                        'help' => __('For browser notifications, a user needs to be assigned to the contact.')
+                                        'help'      => __('For browser notifications, a user needs to be assigned to the contact.')
                                     ]); ?>
                                 </div>
 

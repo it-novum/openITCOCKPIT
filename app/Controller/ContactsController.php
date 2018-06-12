@@ -39,6 +39,7 @@ class ContactsController extends AppController {
         'Command',
         'Timeperiod',
         'Customvariable',
+        'User'
     ];
     public $layout = 'Admin.default';
     public $components = [
@@ -794,6 +795,23 @@ class ContactsController extends AppController {
 
         $data = [
             'timeperiods' => $timePeriods,
+        ];
+        $this->set($data);
+        $this->set('_serialize', array_keys($data));
+    }
+
+    public function loadUsersByContainerId() {
+        //$this->allowOnlyAjaxRequests();
+
+        $users = [];
+        if (isset($this->request->data['container_ids'])) {
+            $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->request->data['container_ids']);
+            $users = $this->User->usersByContainerId($containerIds, 'list');
+            $users = $this->User->makeItJavaScriptAble($users);
+        }
+
+        $data = [
+            'users' => $users,
         ];
         $this->set($data);
         $this->set('_serialize', array_keys($data));
