@@ -69,7 +69,6 @@ angular.module('openITCOCKPIT')
 
             var keepAliveInterval = $interval(function(){
                 if(_success){
-                    console.log('keep?');
                     keepAlive();
                 }
             }, 30000);
