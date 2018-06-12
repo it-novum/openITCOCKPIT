@@ -3459,7 +3459,7 @@ class ServicesController extends AppController {
         $acknowledgementRecords = [];
         $query = $this->AcknowledgedService->getQuery($Conditions, []);
         foreach ($this->AcknowledgedService->find('all', $query) as $acknowledgement) {
-            $acknowledgementRecords[] = new AcknowledgementService($acknowledgement['AcknowledgedHost']);
+            $acknowledgementRecords[] = new AcknowledgementService($acknowledgement['AcknowledgedService']);
         }
 
         $AcknowledgementSerializer = new AcknowledgementSerializer($acknowledgementRecords, $UserTime);

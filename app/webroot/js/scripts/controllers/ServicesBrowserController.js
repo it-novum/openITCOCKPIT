@@ -24,8 +24,11 @@ angular.module('openITCOCKPIT')
         $scope.visTimelineStart = -1;
         $scope.visTimelineEnd = -1;
         $scope.visTimeout = null;
+        $scope.visChangeTimeout = null;
         $scope.showTimelineTab = false;
         $scope.timelineIsLoading = false;
+        $scope.failureDurationInPercent = null;
+
 
         var graphTimeSpan = 4;
 
@@ -453,7 +456,6 @@ angular.module('openITCOCKPIT')
                     end: end
                 }
             }).then(function (result) {
-
                 var timelinedata = {
                     items: new vis.DataSet(result.data.servicestatehistory),
                     groups: new vis.DataSet(result.data.groups)
@@ -466,11 +468,8 @@ angular.module('openITCOCKPIT')
 
                 $scope.visTimelineStart = result.data.start;
                 $scope.visTimelineEnd = result.data.end;
-
                 var options = {
-                    //orientation: "bottom",
                     orientation: "both",
-                    //showCurrentTime: true,
                     start: new Date(result.data.start * 1000),
                     end: new Date(result.data.end * 1000),
                     min: new Date(new Date(result.data.start * 1000).setFullYear(new Date(result.data.start * 1000).getFullYear() - 1)), //May 1 year of zoom
@@ -510,41 +509,15 @@ angular.module('openITCOCKPIT')
 
         var renderTimeline = function (timelinedata, options) {
             var container = document.getElementById('visualization');
-            var criticalItems = [];
             if ($scope.visTimeline === null) {
                 $scope.visTimeline = new vis.Timeline(container, timelinedata.items, timelinedata.groups, options);
-
                 $scope.visTimeline.on('rangechanged', function (properties) {
-                    console.log(properties.start);
-                    console.log(properties.end);
-
-                    criticalItems = $scope.visTimeline.itemsData.get({
-                        fields: ['start', 'end', 'className', 'group'],    // output the specified fields only
-                        type: {
-                            start: 'Date',
-                            end: 'Date'
-                        },
-                        filter: function (item) {
-                            //console.log(item);
-                            //console.log($scope.CheckIteminRange(properties.start.getTime(), properties.end.getTime(), item.start.getTime(), item.end.getTime()));
-                            return (item.group == 4 &&
-                                (item.className === 'bg-critical' || item.className === 'bg-critical-soft') &&
-                                $scope.CheckIfItemInRange(properties.start.getTime(), properties.end.getTime(), item)
-                            );
-
-                        }
-                    });
-
-                    $scope.calculateFailureDuration(criticalItems);
-
-                    console.log('Dinge tun');
                     if ($scope.visTimelineInit) {
                         $scope.visTimelineInit = false;
                         return;
                     }
 
                     if ($scope.timelineIsLoading) {
-                        console.warn('Timeline already loading date. Waiting for server result before sending next request.');
                         return;
                     }
 
@@ -560,9 +533,49 @@ angular.module('openITCOCKPIT')
                     }, 500);
                 });
             } else {
-                //Update existing timeline
                 $scope.visTimeline.setItems(timelinedata.items);
             }
+
+            $scope.visTimeline.on('changed', function () {
+                if ($scope.visTimelineInit) {
+                    return;
+                }
+                if ($scope.visChangeTimeout) {
+                    clearTimeout($scope.visChangeTimeout);
+                }
+                $scope.visChangeTimeout = setTimeout(function () {
+                    $scope.visChangeTimeout = null;
+                    var timeRange = $scope.visTimeline.getWindow();
+                    var visTimelineStartAsTimestamp = new Date(timeRange.start).getTime();
+                    var visTimelineEndAsTimestamp = new Date(timeRange.end).getTime();
+                    var criticalItems = $scope.visTimeline.itemsData.get({
+                        fields: ['start', 'end', 'className', 'group'],    // output the specified fields only
+                        type: {
+                            start: 'Date',
+                            end: 'Date'
+                        },
+                        filter: function (item) {
+                            return (item.group == 4 &&
+                                (item.className === 'bg-critical' || item.className === 'bg-critical-soft') &&
+                                $scope.CheckIfItemInRange(
+                                    visTimelineStartAsTimestamp,
+                                    visTimelineEndAsTimestamp,
+                                    item
+                                )
+                            );
+
+                        }
+                    });
+                    $scope.failureDurationInPercent = $scope.calculateFailures(
+                        (visTimelineEndAsTimestamp - visTimelineStartAsTimestamp), //visible time range
+                        criticalItems,
+                        visTimelineStartAsTimestamp,
+                        visTimelineEndAsTimestamp
+                    );
+                    $scope.$apply();
+                }, 500);
+
+            });
         };
 
         $scope.showTimeline = function () {
@@ -586,33 +599,31 @@ angular.module('openITCOCKPIT')
             else if (itemStart >= start && itemEnd <= end) {
                 return true;
             }
-            else if (itemStart >= start && itemEnd > end) {
-                console.log(' START ' + item.start + ' END ' + item.end);
-                console.log('ITEM STARTED BEHIND !!! AND ENDED behind');
+            else if (itemStart >= start && itemEnd > end) { //item started behind the start and ended behind the end
                 return true;
             }
-            else if (itemStart < start && itemEnd > start && itemEnd < end) {
-                console.log(' START ' + item.start + ' END ' + item.end);
-                console.log('ITEM STARTED BEFORE !!! AND ENDED behind');
+            else if (itemStart < start && itemEnd > start && itemEnd < end) { //item started before the start and ended behind the end
                 return true;
             }
-            else if (itemStart < start && itemEnd >= end) {
-                console.log('ITEM STARTED BEFORE !!! AND ENDED before');
+            else if (itemStart < start && itemEnd >= end) { // item startet before the start and enden before the end
                 return true;
             }
             return false;
         }
 
-        $scope.calculateFailureDuration = function (criticalItems) {
-            criticalItems.forEach(function(criticalItem){
-            console.log(criticalItem.end.getTime() - criticalItem.start.getTime()+' in seconds');
-            });
-        };
+        $scope.calculateFailures = function (totalTime, criticalItems, start, end) {
+            var failuresDuration = 0;
 
+            criticalItems.forEach(function (criticalItem) {
+                var itemStart = criticalItem.start.getTime();
+                var itemEnd = criticalItem.end.getTime();
+                failuresDuration += ((itemEnd > end) ? end : itemEnd) - ((itemStart < start) ? start : itemStart);
+            });
+            return (failuresDuration / totalTime * 100).toFixed(3);
+        };
 
         $scope.load();
         $scope.loadTimezone();
-
 
         $scope.$watch('servicestatus.isFlapping', function () {
             if ($scope.servicestatus) {
@@ -629,5 +640,4 @@ angular.module('openITCOCKPIT')
             }
         });
 
-    })
-;
+    });

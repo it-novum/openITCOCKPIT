@@ -98,7 +98,7 @@ if (!$QueryHandler->exists()): ?>
                         </li>
                     <?php endif; ?>
 
-                    <?php echo $this->AdditionalLinks->renderAsTabs($additionalLinksTab, null, 'host',  'tabLink', 'hideTimeline()'); ?>
+                    <?php echo $this->AdditionalLinks->renderAsTabs($additionalLinksTab, null, 'host', 'tabLink', 'hideTimeline()'); ?>
                 </ul>
 
                 <div class="widget-toolbar" role="menu">
@@ -355,9 +355,9 @@ if (!$QueryHandler->exists()): ?>
                                                 </div>
                                                 <div>
                                                     <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
-                                                    <a href="/hosts/browser/{{host.Host.id}}">
-                                                        {{host.Host.name}}
-                                                    </a>
+                                                        <a href="/hosts/browser/{{host.Host.id}}">
+                                                            {{host.Host.name}}
+                                                        </a>
                                                     <?php else: ?>
                                                         {{host.Host.name}}
                                                     <?php endif; ?>
@@ -418,8 +418,10 @@ if (!$QueryHandler->exists()): ?>
                                             <div class="browser-border padding-10" style="width: 100%;">
                                                 <div>
                                                     <h4 class="no-padding">
-                                                        <i class="fa fa-user" ng-show="!hostAcknowledgement.is_sticky"></i>
-                                                        <i class="fa fa-user-o" ng-show="hostAcknowledgement.is_sticky"></i>
+                                                        <i class="fa fa-user"
+                                                           ng-show="!hostAcknowledgement.is_sticky"></i>
+                                                        <i class="fa fa-user-o"
+                                                           ng-show="hostAcknowledgement.is_sticky"></i>
                                                         <?php echo __('State of host is acknowledged'); ?>
                                                         <span ng-show="hostAcknowledgement.is_sticky">
                                                             (<?php echo __('Sticky'); ?>)
@@ -546,9 +548,9 @@ if (!$QueryHandler->exists()): ?>
                                                     </td>
                                                     <td>
                                                         <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
-                                                        <a href="/hosts/browser/{{host.Host.id}}">
-                                                            {{ host.Host.name }}
-                                                        </a>
+                                                            <a href="/hosts/browser/{{host.Host.id}}">
+                                                                {{ host.Host.name }}
+                                                            </a>
                                                         <?php else: ?>
                                                             {{ host.Host.name }}
                                                         <?php endif; ?>
@@ -919,7 +921,16 @@ if (!$QueryHandler->exists()): ?>
                                     <div class="row">
 
                                         <div class="col-xs-12">
-                                            <h3 class="margin-top-0"><?php echo __('Service overview'); ?></h3>
+
+                                            <h3 class="margin-top-0">
+                                                <?php echo __('Outages: '); ?>
+                                                <span ng-hide="failureDurationInPercent">
+                                                    <i class="fa fa-refresh fa-spin txt-primary"></i>
+                                                </span>
+                                                <span ng-show="failureDurationInPercent">{{ (failureDurationInPercent) ? failureDurationInPercent+' %' :
+                                                    '<?php echo __('No data available !'); ?>'}}
+                                                </span>
+                                            </h3>
                                         </div>
                                         <div class="col-xs-12 col-sm-12 col-md-12">
                                             <div id="visualization"></div>
@@ -1014,7 +1025,6 @@ if (!$QueryHandler->exists()): ?>
     </article>
 
 
-
     <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12" ng-show="mergedService.Service.has_graph">
         <div class="jarviswidget" role="widget">
             <header>
@@ -1027,7 +1037,7 @@ if (!$QueryHandler->exists()): ?>
 
                 <div class="widget-toolbar" role="menu">
                     <div class="btn-group">
-                        <button class="btn btn-xs btn-default" data-toggle="dropdown" >
+                        <button class="btn btn-xs btn-default" data-toggle="dropdown">
                             <?php echo __('Select time range'); ?>
                             <span class="caret"></span>
                         </button>
@@ -1073,7 +1083,7 @@ if (!$QueryHandler->exists()): ?>
 
                 <div class="widget-toolbar" role="menu">
                     <div class="btn-group">
-                        <button class="btn btn-xs btn-default" data-toggle="dropdown" >
+                        <button class="btn btn-xs btn-default" data-toggle="dropdown">
                             <?php echo __('Select data source'); ?>
                             <span class="caret"></span>
                         </button>
@@ -1095,8 +1105,8 @@ if (!$QueryHandler->exists()): ?>
                 <div class="jarviswidget-editbox"></div>
                 <div class="widget-body">
 
-                        <div id="graph_data_tooltip"></div>
-                        <div id="graphCanvas" style="height: 500px;"></div>
+                    <div id="graph_data_tooltip"></div>
+                    <div id="graphCanvas" style="height: 500px;"></div>
 
                 </div>
             </div>
@@ -1105,12 +1115,12 @@ if (!$QueryHandler->exists()): ?>
 </article>
 
 
-
 <reschedule-service callback="showFlashMsg"></reschedule-service>
 <service-downtime author="<?php echo h($username); ?>" callback="showFlashMsg"></service-downtime>
 <mass-delete-service-downtimes delete-url="/downtimes/delete/" callback="showFlashMsg"></mass-delete-service-downtimes>
 <acknowledge-service author="<?php echo h($username); ?>" callback="showFlashMsg"></acknowledge-service>
-<submit-service-result max-check-attempts="{{mergedService.Service.max_check_attempts}}" callback="showFlashMsg"></submit-service-result>
+<submit-service-result max-check-attempts="{{mergedService.Service.max_check_attempts}}"
+                       callback="showFlashMsg"></submit-service-result>
 <enable-service-flap-detection callback="showFlashMsg"></enable-service-flap-detection>
 <disable-service-flap-detection callback="showFlashMsg"></disable-service-flap-detection>
 <enable-service-flap-detection callback="showFlashMsg"></enable-service-flap-detection>

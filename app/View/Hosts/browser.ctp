@@ -871,10 +871,16 @@ if (!$QueryHandler->exists()): ?>
                             <div class="row">
                                 <div class="col-xs-12 padding-10">
                                     <div class="row">
-
                                         <div class="col-xs-12">
-                                            <h3 class="margin-top-0"><?php echo __('Host overview'); ?></h3>
-                                        </div>
+                                            <h3 class="margin-top-0">
+                                                <?php echo __('Outages: '); ?>
+                                                <span ng-hide="failureDurationInPercent">
+                                                    <i class="fa fa-refresh fa-spin txt-primary"></i>
+                                                </span>
+                                                <span ng-show="failureDurationInPercent">{{ (failureDurationInPercent) ? failureDurationInPercent+' %' :
+                                                    '<?php echo __('No data available !'); ?>'}}
+                                                </span>
+                                            </h3>                                        </div>
                                         <div class="col-xs-12 col-sm-12 col-md-12">
                                             <div id="visualization"></div>
                                         </div>
