@@ -42,6 +42,11 @@ class ServiceNotificationConditions extends ListSettingsConditions {
     protected $serviceUuid;
 
     /**
+     * @var bool
+     */
+    private $useLimit = true;
+
+    /**
      * @param $uuid
      */
     public function setServiceUuid($uuid){
@@ -53,6 +58,20 @@ class ServiceNotificationConditions extends ListSettingsConditions {
      */
     public function getServiceUuid(){
         return $this->serviceUuid;
+    }
+
+    /**
+     * @param bool $value
+     */
+    public function setUseLimit($value){
+        $this->useLimit = (bool)$value;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getUseLimit(){
+        return $this->useLimit;
     }
 
     /**
