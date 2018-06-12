@@ -821,6 +821,34 @@ of processes.  Search filters can be applied to limit the processes to check.',
                     'Commandargument' =>
                         [],
                 ],
+            26 =>
+                [
+                    'Command'         =>
+                        [
+                            'name'         => 'host-notify-by-browser-notification',
+                            'command_line' => '/usr/share/openitcockpit/app/Console/cake send_push_notification --type Host --notificationtype $NOTIFICATIONTYPE$ --hostuuid "$HOSTNAME$" --state "$HOSTSTATEID$" --output "$HOSTOUTPUT$"  --ackauthor "$HOSTACKAUTHOR$" --ackcomment "$HOSTACKCOMMENT$" --user-id $_CONTACTUSERID$',
+                            'command_type' => '3',
+                            'human_args'   => null,
+                            'uuid'         => 'cd13d22e-acd4-4a67-997b-6e120e0d3153',
+                            'description'  => 'Send a host notification to the browser window',
+                        ],
+                    'Commandargument' =>
+                        [],
+                ],
+            27 =>
+                [
+                    'Command'         =>
+                        [
+                            'name'         => 'service-notify-by-browser-notification',
+                            'command_line' => '/usr/share/openitcockpit/app/Console/cake send_push_notification --type Service --notificationtype $NOTIFICATIONTYPE$ --hostuuid "$HOSTNAME$" --serviceuuid "$SERVICEDESC$" --state "$SERVICESTATEID$" --output "$SERVICEOUTPUT$" --ackauthor "$SERVICEACKAUTHOR$" --ackcomment "$SERVICEACKCOMMENT$" --user-id $_CONTACTUSERID$',
+                            'command_type' => '3',
+                            'human_args'   => null,
+                            'uuid'         => 'c23255b7-5b1a-40b4-b614-17837dc376af',
+                            'description'  => 'Send a service notification to the browser window',
+                        ],
+                    'Commandargument' =>
+                        [],
+                ],
         ];
 
         return $data;
