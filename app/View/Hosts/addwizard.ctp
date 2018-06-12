@@ -74,184 +74,133 @@ $notification_settings = [
     </header>
     <div>
         <div class="widget-body">
-            <?php
-            echo $this->Form->create('Host', [
-                'class' => 'form-horizontal clear',
-            ]); ?>
-            <div class="row">
-                <div class="col-xs-12 col-md-12 col-lg-12">
-                    <div class="tab-content">
-                        <!-- basic settings -->
-                        <span class="note"><?php echo __('Basic configuration'); ?>:</span>
+            <form ng-submit="submit();" class="form-horizontal">
+                <div class="row">
+                    <div class="col-xs-12 col-md-12 col-lg-12">
+                        <div class="tab-content">
+                            <!-- basic settings -->
+                            <span class="note"><?php echo __('Basic configuration'); ?>:</span>
 
-                        <div class="form-group required" ng-class="{'has-error': errors.container_id}">
-                            <label class="col-xs-1 col-md-1 col-lg-1 control-label">
-                                <?php echo __('Container'); ?>
-                            </label>
-                            <div class="col col-xs-10 col-md-10 col-lg-10">
-                                <select
-                                        id="HostContainer"
-                                        data-placeholder="<?php echo __('Please choose'); ?>"
-                                        class="form-control"
-                                        chosen="containers"
-                                        ng-options="container.key as container.value for container in containers"
-                                        ng-model="post.Container.container_id"
-                                        ng-change="containerSelected()"
-                                >
-                                </select>
-                                <div ng-repeat="error in errors.container_id">
-                                    <div class="help-block text-danger">{{ error }}</div>
+                            <div class="form-group required" ng-class="{'has-error': errors.container_id}">
+                                <label class="col-xs-1 col-md-1 col-lg-1 control-label">
+                                    <?php echo __('Container'); ?>
+                                </label>
+                                <div class="col col-xs-10 col-md-10 col-lg-10">
+                                    <select
+                                            id="HostContainer"
+                                            data-placeholder="<?php echo __('Please choose'); ?>"
+                                            class="form-control"
+                                            chosen="containers"
+                                            ng-options="container.key as container.value for container in containers"
+                                            ng-model="post.Container.container_id"
+                                            ng-change="containerSelected()"
+                                    >
+                                    </select>
+                                    <div ng-repeat="error in errors.container_id">
+                                        <div class="help-block text-danger">{{ error }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group required" ng-class="{'has-error': errors.hosttemplate_id}">
+                                <label class="col-xs-1 col-md-1 col-lg-1 control-label">
+                                    <?php echo __('Hosttemplate'); ?>
+                                </label>
+                                <div class="col col-xs-10 col-md-10 col-lg-10">
+                                    <select
+                                            id="Hosttemplate"
+                                            data-placeholder="<?php echo __('Please choose'); ?>"
+                                            class="form-control"
+                                            chosen="hosttemplates"
+                                            ng-options="hosttemplate.key as hosttemplate.value for hosttemplate in hosttemplates"
+                                            ng-model="post.Host.hosttemplate_id">
+                                    </select>
+                                    <div ng-repeat="error in errors.hosttemplate_id">
+                                        <div class="help-block text-danger">{{ error }}</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group required" ng-class="{'has-error': errors.name}">
+                                <label class="col-xs-1 col-md-1 col-lg-1 control-label">
+                                    <?php echo __('Host Name'); ?>
+                                </label>
+                                <div class="col col-xs-10 col-md-10 col-lg-10">
+                                    <input
+                                            class="form-control"
+                                            type="text"
+                                            ng-model="post.Host.name"
+                                            ng-model-options="{debounce: 500}">
+                                    <div ng-repeat="error in errors.name">
+                                        <div class="help-block text-danger">{{ error }}</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group required" ng-class="{'has-error': errors.address}">
+                                <label class="col-xs-1 col-md-1 col-lg-1 control-label">
+                                    <?php echo __('Address'); ?>
+                                </label>
+                                <div class="col col-xs-10 col-md-10 col-lg-10">
+                                    <input
+                                            class="form-control"
+                                            type="text"
+                                            ng-model="post.Host.address"
+                                            ng-model-options="{debounce: 500}">
+                                    <div ng-repeat="error in errors.address">
+                                        <div class="help-block text-danger">{{ error }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group required" ng-class="{'has-error': errors.Contact}">
+                                <label class="col-xs-1 col-md-1 col-lg-1 control-label">
+                                    <?php echo __('Contacts'); ?>
+                                </label>
+                                <div class="col col-xs-10 col-md-10 col-lg-10">
+                                    <select
+                                            id="Hosttemplate"
+                                            data-placeholder="<?php echo __('Please choose'); ?>"
+                                            class="form-control"
+                                            chosen="contacts"
+                                            ng-options="contact.key as contact.value for contact in contacts"
+                                            ng-model="post.Host.Contact"
+                                            multiple>
+                                    </select>
+                                    <div ng-repeat="error in errors.Contact">
+                                        <div class="help-block text-danger">{{ error }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group required" ng-class="{'has-error': errors.Contactgroup}">
+                                <label class="col-xs-1 col-md-1 col-lg-1 control-label">
+                                    <?php echo __('Contactgroups'); ?>
+                                </label>
+                                <div class="col col-xs-10 col-md-10 col-lg-10">
+                                    <select
+                                            id="Hosttemplate"
+                                            data-placeholder="<?php echo __('Please choose'); ?>"
+                                            class="form-control"
+                                            chosen="contactgroups"
+                                            ng-options="contactgroup.key as contactgroup.value for contactgroup in contactgroups"
+                                            ng-model="post.Host.Contactgroup"
+                                            multiple>
+                                    </select>
+                                    <div ng-repeat="error in errors.Contactgroup">
+                                        <div class="help-block text-danger">{{ error }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xs-12 margin-top-10">
+                                <div class="well formactions ">
+                                    <div class="pull-right">
+                                        <input class="btn btn-primary" type="submit" value="Next">&nbsp;
+                                        <a href="/hosts/index" class="btn btn-default">Cancel</a>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="form-group required" ng-class="{'has-error': errors.hosttemplate_id}">
-                            <label class="col-xs-1 col-md-1 col-lg-1 control-label">
-                                <?php echo __('Hosttemplate'); ?>
-                            </label>
-                            <div class="col col-xs-10 col-md-10 col-lg-10">
-                                <select
-                                        id="Hosttemplate"
-                                        data-placeholder="<?php echo __('Please choose'); ?>"
-                                        class="form-control"
-                                        chosen="hosttemplates"
-                                        ng-options="hosttemplate.key as hosttemplate.value for hosttemplate in hosttemplates"
-                                        ng-model="post.Host.hosttemplate_id">
-                                </select>
-                                <div ng-repeat="error in errors.hosttemplate_id">
-                                    <div class="help-block text-danger">{{ error }}</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="form-group required" ng-class="{'has-error': errors.name}">
-                            <label class="col-xs-1 col-md-1 col-lg-1 control-label">
-                                <?php echo __('Host Name'); ?>
-                            </label>
-                            <div class="col col-xs-10 col-md-10 col-lg-10">
-                                <input
-                                        class="form-control"
-                                        type="text"
-                                        ng-model="post.Host.name"
-                                        ng-model-options="{debounce: 500}">
-                                <div ng-repeat="error in errors.name">
-                                    <div class="help-block text-danger">{{ error }}</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="form-group required" ng-class="{'has-error': errors.address}">
-                            <label class="col-xs-1 col-md-1 col-lg-1 control-label">
-                                <?php echo __('Address'); ?>
-                            </label>
-                            <div class="col col-xs-10 col-md-10 col-lg-10">
-                                <input
-                                        class="form-control"
-                                        type="text"
-                                        ng-model="post.Host.address"
-                                        ng-model-options="{debounce: 500}">
-                                <div ng-repeat="error in errors.address">
-                                    <div class="help-block text-danger">{{ error }}</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group required" ng-class="{'has-error': errors.Contact}">
-                            <label class="col-xs-1 col-md-1 col-lg-1 control-label">
-                                <?php echo __('Contacts'); ?>
-                            </label>
-                            <div class="col col-xs-10 col-md-10 col-lg-10">
-                                <select
-                                        id="Hosttemplate"
-                                        data-placeholder="<?php echo __('Please choose'); ?>"
-                                        class="form-control"
-                                        chosen="contacts"
-                                        ng-options="contact.key as contact.value for contact in contacts"
-                                        ng-model="post.Host.Contact"
-                                        multiple>
-                                </select>
-                                <div ng-repeat="error in errors.Contact">
-                                    <div class="help-block text-danger">{{ error }}</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group required" ng-class="{'has-error': errors.Contactgroup}">
-                            <label class="col-xs-1 col-md-1 col-lg-1 control-label">
-                                <?php echo __('Contactgroups'); ?>
-                            </label>
-                            <div class="col col-xs-10 col-md-10 col-lg-10">
-                                <select
-                                        id="Hosttemplate"
-                                        data-placeholder="<?php echo __('Please choose'); ?>"
-                                        class="form-control"
-                                        chosen="contactgroups"
-                                        ng-options="contactgroup.key as contactgroup.value for contactgroup in contactgroups"
-                                        ng-model="post.Host.Contactgroup"
-                                        multiple>
-                                </select>
-                                <div ng-repeat="error in errors.Contactgroup">
-                                    <div class="help-block text-danger">{{ error }}</div>
-                                </div>
-                            </div>
-                        </div>
-
-
-                        <?php
-
-                        /*       $containers = [];
-                               $_hosttemplates = [];
-                               $_contacts = [];
-                               $_contactgroups = [];
-
-                               echo $this->Form->input('container_id', [
-                                       'options'          => $this->Html->chosenPlaceholder($containers),
-                                       'data-placeholder' => __('Please select...'),
-                                       'multiple'         => false,
-                                       'class'            => 'chosen',
-                                       'style'            => 'width: 100%',
-                                       'label'            => ['text' => __('Container'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
-                                       'wrapInput'        => 'col col-xs-10 col-md-10 col-lg-10',
-                                   ]
-                               );
-
-                               echo $this->Form->input('hosttemplate_id', [
-                                   'label'            => ['text' => __('Hosttemplate'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
-                                   'options'          => $this->Html->chosenPlaceholder($_hosttemplates),
-                                   'data-placeholder' => __('Please select...'),
-                                   'class'            => 'chosen',
-                                   'style'            => 'width:100%;',
-                                   'wrapInput'        => 'col col-xs-10 col-md-10 col-lg-10',
-                               ]);
-                               echo $this->Form->input('name', [
-                                   'label'     => ['text' => __('Host Name'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
-                                   'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
-                               ]);
-
-                               echo $this->Form->input('address', [
-                                   'label'     => ['text' => __('Address'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
-                                   'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
-                               ]);
-
-                               echo $this->Form->input('Host.Contact', [
-                                   'options'   => $_contacts,
-                                   'multiple'  => true,
-                                   'class'     => 'chosen',
-                                   'style'     => 'width:100%;',
-                                   'label'     => ['text' => __('Contact'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
-                                   'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
-                               ]);
-                               echo $this->Form->input('Host.Contactgroup', [
-                                   'options'   => $_contactgroups,
-                                   'multiple'  => true,
-                                   'class'     => 'chosen',
-                                   'style'     => 'width:100%;',
-                                   'label'     => ['text' => __('Contactgroups'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
-                                   'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
-                               ]);;
-                        */ ?>
-                    </div>
-                </div> <!-- close col -->
-            </div> <!-- close row-->
-            <br/>
-            <?php echo $this->Form->formActions(); ?>
+                    </div> <!-- close col -->
+                </div> <!-- close row-->
+            </form>
         </div> <!-- close widget body -->
     </div>
 </div> <!-- end jarviswidget -->
