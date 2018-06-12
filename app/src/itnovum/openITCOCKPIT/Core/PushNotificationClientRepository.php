@@ -53,7 +53,7 @@ class PushNotificationClientRepository {
         $tmpClients = [];
         foreach ($this->clients as $userId => $clients) {
             foreach ($clients as $client) {
-                if ($client['uuid'] == $uuid) {
+                if ($client['uuid'] !== $uuid) {
                     $tmpClients[$userId][] = $client;
                 }
             }
