@@ -72,6 +72,10 @@ if (ENVIRONMENT === Environments::PRODUCTION) {
 </head>
 <body class="<?= $bodyClass ?>">
 
+<div id="global-loading">
+    <i class="fa fa-refresh fa-spin"></i>
+</div>
+
 <?php echo $this->element('Admin.layout/header') ?>
 <?php echo $this->element('Admin.layout/sidebar') ?>
 <div id="uglyDropdownMenuHack"></div>

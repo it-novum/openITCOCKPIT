@@ -23,17 +23,27 @@
 //	confirmation.
 
 App.Components.AjaxloaderComponent = Frontend.Component.extend({
-	$ajaxloader:null,
+    $ajaxloader: null,
+    $bigAjaxLoader: null,
 
-	setup: function(){
-		this.$ajaxloader = $('#global_ajax_loader');
-	},
+    runningAjaxCalls: 0,
 
-	show: function(){
-		this.$ajaxloader.show();
-	},
+    setup: function(){
+        this.$ajaxloader = $('#global_ajax_loader');
+        this.$bigAjaxLoader = $('#global-loading');
+    },
 
-	hide: function(){
-		this.$ajaxloader.fadeOut('slow')
-	}
+    show: function(){
+        this.$ajaxloader.show();
+        this.$bigAjaxLoader.show();
+        this.runningAjaxCalls++;
+    },
+
+    hide: function(){
+        this.runningAjaxCalls--;
+        if(this.runningAjaxCalls === 0){
+            this.$ajaxloader.fadeOut('slow');
+            this.$bigAjaxLoader.fadeOut('slow');
+        }
+    }
 });
