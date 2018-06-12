@@ -40,7 +40,7 @@
 <div class="jarviswidget" id="wid-id-0">
     <header>
         <span class="widget-icon"> <i class="fa fa-user"></i> </span>
-        <h2><?php echo $this->action == 'edit' ? 'Edit' : 'Add' ?> <?php echo __('contact'); ?></h2>
+        <h2><?php echo $this->action == 'edit' ? 'Edit' : 'Add' ?><?php echo __('contact'); ?></h2>
         <div class="widget-toolbar" role="menu">
             <?php echo $this->Utils->backButton() ?>
         </div>
@@ -97,7 +97,7 @@
                     ],
                 ];
                 ?>
-                <article class="col-sm-12 col-md-12 col-lg-6 sortable-grid ui-sortable">
+                <article class="col-sm-12 col-md-12 col-lg-6">
                     <div id="wid-id-1" class="jarviswidget jarviswidget-sortable" data-widget-custombutton="false"
                          data-widget-editbutton="false" data-widget-colorbutton="false" role="widget">
                         <header role="heading">
@@ -145,7 +145,7 @@
                         </div>
                     </div>
                 </article>
-                <article class="col-sm-12 col-md-12 col-lg-6 sortable-grid ui-sortable">
+                <article class="col-sm-12 col-md-12 col-lg-6">
                     <div id="wid-id-2" class="jarviswidget jarviswidget-sortable" data-widget-custombutton="false"
                          data-widget-editbutton="false" data-widget-colorbutton="false" role="widget">
                         <header role="heading">
@@ -193,6 +193,64 @@
                         </div>
                     </div>
                 </article>
+
+                <article class="col-xs-12">
+                    <div id="wid-id-2" class="jarviswidget jarviswidget-sortable" data-widget-custombutton="false"
+                         data-widget-editbutton="false" data-widget-colorbutton="false" role="widget">
+                        <header role="heading">
+                            <span class="widget-icon">
+                                <i class="fa fa-gear"></i>
+                            </span>
+                            <h2><?php echo __('Browser push notifications'); ?></h2>
+                        </header>
+                        <div role="content" style="min-height:400px;">
+                            <div class="widget-body">
+
+                                <div class="row">
+                                    <?php echo $this->Form->fancyCheckbox('host_push_notifications', [
+                                        'caption'          => __('Enable host browser notifications'),
+                                        'captionGridClass' => 'col col-xs-2 no-padding',
+                                        'wrapGridClass'    => 'col col-xs-10',
+                                        'captionClass'     => 'control-label text-left no-padding',
+                                    ]); ?>
+                                </div>
+
+                                <div class="row">
+                                    <?php echo $this->Form->fancyCheckbox('service_push_notifications', [
+                                        'caption'          => __('Enable service browser notifications'),
+                                        'captionGridClass' => 'col col-xs-2 no-padding',
+                                        'wrapGridClass'    => 'col col-xs-10',
+                                        'captionClass'     => 'control-label text-left no-padding',
+                                    ]); ?>
+                                </div>
+
+                                <div class="row">
+                                    <?php echo $this->Form->input('user_id', [
+                                        'options'   => $this->Html->chosenPlaceholder($_timeperiods),
+                                        'class'     => 'select2 col-xs-10 chosen',
+                                        'wrapInput' => 'col col-xs-10',
+                                        'label'     => [
+                                            'class' => 'col col-xs-2 control-label text-left',
+                                            'text'  => __('User')
+                                        ],
+                                        'style'     => 'width: 100%',
+                                        'help' => __('For browser notifications, a user needs to be assigned to the contact.')
+                                    ]); ?>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-xs-12">
+                                        <p><?php echo __('Example of a browser notification:'); ?></p>
+                                        <img src="/img/browser_notification.png" class="img-responsive"
+                                             alt="<?php echo __('Example of a browser push notification'); ?>">
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </article>
+
             </div>
 
 
