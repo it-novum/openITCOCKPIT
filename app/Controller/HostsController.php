@@ -1343,6 +1343,8 @@ class HostsController extends AppController {
                 }
 
             }
+            debug($data_to_save);
+            die();
             if ($this->Host->saveAll($data_to_save)) {
                 $changelog_data = $this->Changelog->parseDataForChangelog(
                     $this->params['action'],
@@ -3076,7 +3078,7 @@ class HostsController extends AppController {
 
     public function loadElementsByContainerId($container_id = null, $host_id = 0) {
         $hosttemplate_type = GENERIC_HOST;
-        if (!$this->request->is('ajax')) {
+        if (!$this->request->is('ajax') && !$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
 
@@ -3440,5 +3442,81 @@ class HostsController extends AppController {
         }
         $this->set('hoststatus', $hoststatus);
         $this->set('_serialize', ['hoststatus']);
+    }
+
+    public function addwizard(){
+        $this->layout = 'angularjs';
+      /*  if (!$this->isApiRequest()) {
+            throw new MethodNotAllowedException();
+        }*/
+
+        $this->Frontend->setJson('lang_minutes', __('minutes'));
+        $this->Frontend->setJson('lang_seconds', __('seconds'));
+        $this->Frontend->setJson('lang_and', __('and'));
+        $this->Frontend->setJson('dns_hostname_lookup_failed', __('Could not resolve hostname'));
+        $this->Frontend->setJson('dns_ipaddress_lookup_failed', __('Could not reverse lookup your ip address'));
+        $this->Frontend->setJson('hostname_placeholder', __('Will be auto detected if you enter a ip address'));
+        $this->Frontend->setJson('address_placeholder', __('Will be auto detected if you enter a FQDN'));
+
+    }
+
+    public function loadContainers(){
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        if ($this->hasRootPrivileges === true) {
+            $containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_HOST, [], $this->hasRootPrivileges, [CT_HOSTGROUP]);
+        } else {
+            $containers = $this->Tree->easyPath($this->getWriteContainers(), OBJECT_HOST, [], $this->hasRootPrivileges, [CT_HOSTGROUP]);
+        }
+        $containers = $this->Host->makeItJavaScriptAble($containers);
+
+
+        $this->set('containers', $containers);
+        $this->set('_serialize', ['containers']);
+    }
+
+    public function gethostipbyname($hostname) {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+        $ip = '';
+        if (isset($hostname) && $hostname != '') {
+            $currentIp = gethostbyname($hostname);
+            if (filter_var($currentIp, FILTER_VALIDATE_IP)) {
+                $ip = $currentIp;
+            }
+        }
+        $this->set('ip', $ip);
+        $this->set('_serialize', ['ip']);
+    }
+
+    public function gethostnamebyaddr($hostaddress) {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+        $fqdn = '';
+        if (isset($hostaddress) && filter_var($hostaddress, FILTER_VALIDATE_IP)) {
+            $currentFqdn = gethostbyaddr($hostaddress);
+            if (strlen($currentFqdn) > 0 && $currentFqdn != $hostaddress) {
+                $fqdn = $currentFqdn;
+            }else{
+                $msg = 'failed -> '.$hostaddress. ' - '.$currentFqdn. ' - '.strlen($currentFqdn);
+                $this->set('msg', $msg);
+                $this->set('_serialize', ['msg']);
+                return;
+            }
+        }else{
+            $msg = 'failed -> '.$hostaddress. ' - '.filter_var($hostaddress, FILTER_VALIDATE_IP);
+            $this->set('msg', $msg);
+            $this->set('_serialize', ['msg']);
+            return;
+        }
+
+        $this->set('fqdn', $fqdn);
+        $this->set('hostaddress', $hostaddress);
+      //  $this->set('currentfqdn', $currentFqdn);
+        $this->set('_serialize', ['fqdn', 'hostaddress']);
     }
 }
