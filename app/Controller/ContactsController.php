@@ -46,8 +46,13 @@ class ContactsController extends AppController {
         'ListFilter.ListFilter',
         'RequestHandler',
         'Ldap',
+        'CustomValidationErrors'
     ];
-    public $helpers = ['ListFilter.ListFilter', 'CustomVariables'];
+    public $helpers = [
+        'ListFilter.ListFilter',
+        'CustomVariables',
+        'CustomValidationErrors'
+    ];
 
     public $listFilters = [
         'index' => [
@@ -170,11 +175,35 @@ class ContactsController extends AppController {
 
             }
         }
+
+        $customFieldsToRefill = [
+            'Contact' => [
+                'host_notifications_enabled',
+                'host_push_notifications_enabled',
+                'notify_host_recovery',
+                'notify_host_down',
+                'notify_host_unreachable',
+                'notify_host_flapping',
+                'notify_host_downtime',
+
+                'service_notifications_enabled',
+                'service_push_notifications_enabled',
+                'notify_service_recovery',
+                'notify_service_warning',
+                'notify_service_critical',
+                'notify_service_unknown',
+                'notify_service_flapping',
+                'notify_service_downtime'
+            ]
+        ];
+
+        $this->CustomValidationErrors->checkForRefill($customFieldsToRefill);
+
+
         $this->set('MY_WRITABLE_CONTAINERS', $this->getWriteContainers());
 
         $containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_CONTACT, [], $this->hasRootPrivileges, [CT_CONTACTGROUP]);
         $notification_commands = $this->Command->notificationCommands('list');
-        $timeperiods = $this->Timeperiod->find('list');
 
         $containerIds = Hash::extract($contact, 'Container.{n}.id');
 
@@ -262,15 +291,43 @@ class ContactsController extends AppController {
 
         $this->request->data = Hash::merge($contact, $this->request->data);
 
-        $containerIds = $this->Tree->resolveChildrenOfContainerIds($containerIds);
-        $_timeperiods = $this->Timeperiod->timeperiodsByContainerId($containerIds, 'list');
+        if ($containerIds !== '') {
+            $containerIds = $this->Tree->resolveChildrenOfContainerIds($containerIds);
+            $_timeperiods = $this->Timeperiod->timeperiodsByContainerId($containerIds, 'list');
+            $_users = $this->User->usersByContainerId($containerIds, 'list');
+        }
 
-        $this->set(compact(['contact', 'containers', 'notification_commands', 'timeperiods', '_timeperiods']));
+        $this->set(compact(['contact', 'containers', 'notification_commands', 'timeperiods', '_timeperiods', '_users']));
         $this->set('_serialize', ['contact', 'notification_commands', 'timeperiods', '_timeperiods']);
     }
 
     public function add() {
         $userId = $this->Auth->user('id');
+
+
+        $customFieldsToRefill = [
+            'Contact' => [
+                'host_notifications_enabled',
+                'host_push_notifications_enabled',
+                'notify_host_recovery',
+                'notify_host_down',
+                'notify_host_unreachable',
+                'notify_host_flapping',
+                'notify_host_downtime',
+
+                'service_notifications_enabled',
+                'service_push_notifications_enabled',
+                'notify_service_recovery',
+                'notify_service_warning',
+                'notify_service_critical',
+                'notify_service_unknown',
+                'notify_service_flapping',
+                'notify_service_downtime'
+            ]
+        ];
+
+        $this->CustomValidationErrors->checkForRefill($customFieldsToRefill);
+
         if ($this->hasRootPrivileges === true) {
             $containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_CONTACT, [], $this->hasRootPrivileges, [CT_CONTACTGROUP]);
         } else {
@@ -280,6 +337,7 @@ class ContactsController extends AppController {
         $timeperiods = $this->Timeperiod->find('list');
 
         $_timeperiods = [];
+        $_users = [];
 
         $isLdap = false;
         if ($this->getNamedParameter('ldap', 0) == 1) {
@@ -297,9 +355,13 @@ class ContactsController extends AppController {
             $containerIds = [];
             if (isset($this->request->data['Container']['Container'])) {
                 $containerIds = $this->request->data['Container']['Container'];
+                if ($containerIds !== '') {
+                    $containerIds = $this->Tree->resolveChildrenOfContainerIds($containerIds);
+                    $_timeperiods = $this->Timeperiod->timeperiodsByContainerId($containerIds, 'list');
+
+                    $_users = $this->User->usersByContainerId($containerIds, 'list');
+                }
             }
-            $containerIds = $this->Tree->resolveChildrenOfContainerIds($containerIds);
-            $_timeperiods = $this->Timeperiod->timeperiodsByContainerId($containerIds, 'list');
 
             $ext_data_for_changelog = [
                 'HostTimeperiod'    => [
@@ -382,7 +444,7 @@ class ContactsController extends AppController {
 
             $this->setFlash(__('Contact could not be saved'), false);
         }
-        $this->set(compact(['containers', '_timeperiods', 'timeperiods', 'notification_commands', 'isLdap', 'Customvariable']));
+        $this->set(compact(['containers', '_timeperiods', 'timeperiods', 'notification_commands', 'isLdap', 'Customvariable', '_users']));
         $this->set('_serialize', ['containers', '_timeperiods', 'timeperiods', 'notification_commands']);
 
     }
@@ -394,7 +456,7 @@ class ContactsController extends AppController {
         $PHPVersionChecker = new PHPVersionChecker();
         if ($this->request->is('post') || $this->request->is('put')) {
             $samaccountname = str_replace('string:', '', $this->request->data('Ldap.samaccountname'));
-            if($PHPVersionChecker->isVersionGreaterOrEquals7Dot1()){
+            if ($PHPVersionChecker->isVersionGreaterOrEquals7Dot1()) {
                 require_once APP . 'vendor_freedsx_ldap' . DS . 'autoload.php';
                 $ldap = new \FreeDSx\Ldap\LdapClient([
                     'servers'               => [$systemsettings['FRONTEND']['FRONTEND.LDAP.ADDRESS']],
@@ -441,12 +503,12 @@ class ContactsController extends AppController {
                         $entry['samaccountname'] = $entry['uid'];
                     }
                     $ldapUser = [
-                        'mail' => $entry['mail']['0'],
+                        'mail'           => $entry['mail']['0'],
                         'samaccountname' => $entry['samaccountname'][0]
                     ];
                 }
 
-            }else{
+            } else {
                 $ldapUser = $this->Ldap->userInfo($samaccountname);
             }
             if (!is_null($ldapUser)) {

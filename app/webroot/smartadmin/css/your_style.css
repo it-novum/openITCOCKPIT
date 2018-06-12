@@ -1949,3 +1949,29 @@ label[class^='aco-host']:after, label[class^='aco-service']:after {
 .state-button {
     padding:0 5px;
 }
+
+.tooltip-arrow-image {
+    border-right-color: transparent!important;
+}
+
+.tooltip-inner-image {
+    padding: 5px 10px;
+    font-size: 11px;
+    font-family: Arial,Helvetica,sans-serif;
+    font-weight: 700;
+    border-radius: 0;
+    color: #fff;
+    text-align: center;
+    text-decoration: none;
+    /*background-color: rgba(255, 255, 255, 0.6);*/
+    background-color: transparent;
+    max-width: 1000px;
+
+}
+
+.notify-label {
+    display:inline-block;
+    line-height: 1.4;
+    min-width: 150px;
+}
+

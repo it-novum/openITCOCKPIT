@@ -40,11 +40,54 @@ App.Controllers.ContactsAddController = Frontend.AppController.extend({
             '#ContactServiceTimeperiodId'
         ];
 
+        $('#ContactHostPushNotificationsEnabled').change(function(){
+            console.log('gfdgfddg');
+            var selectedValues = $('#ContactHostCommands').val();
+            if(selectedValues === null){
+                selectedValues = [];
+            }
+            var newValues = [];
+            var pushHostNotificationCommandId = '376';
+            if($(this).prop('checked')){
+                selectedValues.push(pushHostNotificationCommandId);
+                $('#ContactHostCommands').val(selectedValues);
+            }else{
+                selectedValues.forEach(function(id){
+                    if(id !== pushHostNotificationCommandId){
+                        newValues.push(id);
+                    }
+                });
+                $('#ContactHostCommands').val(newValues);
+                //remove command from select box
+            }
+            $('#ContactHostCommands').trigger("chosen:updated");
+        });
+
+        $('#ContactServicePushNotificationsEnabled').change(function(){
+            var selectedValues = $('#ContactServiceCommands').val();
+            if(selectedValues === null){
+                selectedValues = [];
+            }
+            var newValues = [];
+            var pushServiceNotificationCommandId = '377';
+            if($(this).prop('checked')){
+                selectedValues.push(pushServiceNotificationCommandId);
+                $('#ContactServiceCommands').val(selectedValues);
+            }else{
+                selectedValues.forEach(function(id){
+                    if(id !== pushServiceNotificationCommandId){
+                        newValues.push(id);
+                    }
+                });
+                $('#ContactServiceCommands').val(newValues);
+                //remove command from select box
+            }
+            $('#ContactServiceCommands').trigger("chosen:updated");
+        });
+
         // Bind change event for Container Selectbox
         $('#ContainerContainer').change(function(){
             var containerIds = $(this).val();
-
-            console.log(containerIds);
 
             if(containerIds === null){
                 for(var selectId in timeperiodSelectors){
