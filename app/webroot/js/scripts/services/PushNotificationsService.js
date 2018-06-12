@@ -7,7 +7,10 @@ angular.module('openITCOCKPIT')
         var _userId = 0;
         var _uuid = null;
 
+        var _success = false;
+
         var _onSuccess = function(event){
+            _success = true;
             var data = JSON.parse(event.data);
 
             console.info('Connection to push notification service established successfully');
@@ -35,6 +38,7 @@ angular.module('openITCOCKPIT')
         };
 
         var _onError = function(event){
+            _success = false;
             console.error(event);
         };
 
@@ -62,9 +66,13 @@ angular.module('openITCOCKPIT')
             _connection.onmessage = _parseResponse;
             _connection.onerror = _onError;
 
+
             var keepAliveInterval = $interval(function(){
-                keepAlive();
+                if(_success){
+                    keepAlive();
+                }
             }, 30000);
+
         };
 
         var _send = function(json){
