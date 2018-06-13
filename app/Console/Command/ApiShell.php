@@ -27,7 +27,17 @@ class ApiShell extends AppShell
 
         $api = $apiExtensionLoader->getApi();
         $api->setOptionsFromOptionParser($optionParser);
-        $api->dispatchRequest($optionParser);
+
+        if($optionParser->getIgnoreErrors() === true){
+            try{
+                $api->dispatchRequest($optionParser);
+            }catch (\Exception $e){
+                echo $e->getMessage();
+                echo PHP_EOL;
+            }
+        }else {
+            $api->dispatchRequest($optionParser);
+        }
 
     }
 
@@ -35,10 +45,11 @@ class ApiShell extends AppShell
     {
         $parser = parent::getOptionParser();
         $parser->addOptions([
-            'plugin' => ['short' => 'p', 'help' => 'Name of the plugin to modify. If empty the request gets routet to the core'],
-            'model'  => ['short' => 'm', 'help' => 'Name of the model', 'requried' => true],
-            'action' => ['short' => 'a', 'help' => "add|update|delete"],
-            'data'   => ['short' => 'd', 'help' => "String of data"],
+            'plugin'        => ['short' => 'p', 'help' => 'Name of the plugin to modify. If empty the request gets routet to the core'],
+            'model'         => ['short' => 'm', 'help' => 'Name of the model', 'requried' => true],
+            'action'        => ['short' => 'a', 'help' => "add|update|delete"],
+            'ignore-errors' => ['help' => 'Try to ignore errors'],
+            'data'          => ['short' => 'd', 'help' => "String of data"],
 
         ]);
 
