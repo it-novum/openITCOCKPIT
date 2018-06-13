@@ -89,7 +89,16 @@ if (!$QueryHandler->exists()): ?>
                         </a>
                     </li>
 
-                    <?php echo $this->AdditionalLinks->renderAsTabs($additionalLinksTab, null, 'host'); ?>
+                    <?php if ($this->Acl->hasPermission('timeline', 'services')): ?>
+                        <li class="">
+                            <a href="#tab3" data-toggle="tab" ng-click="showTimeline()">
+                                <i class="fa fa-lg fa-clock-o"></i>
+                                <span class="hidden-mobile hidden-tablet"> <?php echo __('Timeline'); ?> </span>
+                            </a>
+                        </li>
+                    <?php endif; ?>
+
+                    <?php echo $this->AdditionalLinks->renderAsTabs($additionalLinksTab, null, 'host', 'tabLink', 'hideTimeline()'); ?>
                 </ul>
 
                 <div class="widget-toolbar" role="menu">
@@ -346,9 +355,9 @@ if (!$QueryHandler->exists()): ?>
                                                 </div>
                                                 <div>
                                                     <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
-                                                    <a href="/hosts/browser/{{host.Host.id}}">
-                                                        {{host.Host.name}}
-                                                    </a>
+                                                        <a href="/hosts/browser/{{host.Host.id}}">
+                                                            {{host.Host.name}}
+                                                        </a>
                                                     <?php else: ?>
                                                         {{host.Host.name}}
                                                     <?php endif; ?>
@@ -409,8 +418,10 @@ if (!$QueryHandler->exists()): ?>
                                             <div class="browser-border padding-10" style="width: 100%;">
                                                 <div>
                                                     <h4 class="no-padding">
-                                                        <i class="fa fa-user" ng-show="!hostAcknowledgement.is_sticky"></i>
-                                                        <i class="fa fa-user-o" ng-show="hostAcknowledgement.is_sticky"></i>
+                                                        <i class="fa fa-user"
+                                                           ng-show="!hostAcknowledgement.is_sticky"></i>
+                                                        <i class="fa fa-user-o"
+                                                           ng-show="hostAcknowledgement.is_sticky"></i>
                                                         <?php echo __('State of host is acknowledged'); ?>
                                                         <span ng-show="hostAcknowledgement.is_sticky">
                                                             (<?php echo __('Sticky'); ?>)
@@ -537,9 +548,9 @@ if (!$QueryHandler->exists()): ?>
                                                     </td>
                                                     <td>
                                                         <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
-                                                        <a href="/hosts/browser/{{host.Host.id}}">
-                                                            {{ host.Host.name }}
-                                                        </a>
+                                                            <a href="/hosts/browser/{{host.Host.id}}">
+                                                                {{ host.Host.name }}
+                                                            </a>
                                                         <?php else: ?>
                                                             {{ host.Host.name }}
                                                         <?php endif; ?>
@@ -904,6 +915,104 @@ if (!$QueryHandler->exists()): ?>
                             </div>
                         </div>
 
+                        <div id="tab3" class="fade in" ng-show="showTimelineTab">
+                            <div class="row">
+                                <div class="col-xs-12 padding-10">
+                                    <div class="row">
+
+                                        <div class="col-xs-12">
+
+                                            <h3 class="margin-top-0">
+                                                <?php echo __('Outages: '); ?>
+                                                <span ng-hide="failureDurationInPercent">
+                                                    <i class="fa fa-refresh fa-spin txt-primary"></i>
+                                                </span>
+                                                <span ng-show="failureDurationInPercent">{{ (failureDurationInPercent) ? failureDurationInPercent+' %' :
+                                                    '<?php echo __('No data available !'); ?>'}}
+                                                </span>
+                                            </h3>
+                                        </div>
+                                        <div class="col-xs-12 col-sm-12 col-md-12">
+                                            <div id="visualization"></div>
+                                        </div>
+
+                                        <div class="col-xs-12">
+                                            <div class="row">
+                                                <div class="col-xs-12 bold"><?php echo __('Legend'); ?></div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-xs-12">
+                                                    <?php echo __('State types'); ?>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-xs-12 col-md-3">
+                                                        <i class="fa fa-square ok-soft"></i>
+                                                        <?php echo __('Ok soft'); ?>
+                                                    </div>
+                                                    <div class="col-xs-12 col-md-3 ">
+                                                        <i class="fa fa-square warning-soft"></i>
+                                                        <?php echo __('Warning soft'); ?>
+                                                    </div>
+                                                    <div class="col-xs-12 col-md-3 ">
+                                                        <i class="fa fa-square critical-soft"></i>
+                                                        <?php echo __('Critical soft'); ?>
+                                                    </div>
+                                                    <div class="col-xs-12 col-md-3 ">
+                                                        <i class="fa fa-square unknown-soft"></i>
+                                                        <?php echo __('Unknown soft'); ?>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-xs-12 col-md-3">
+                                                        <i class="fa fa-square ok"></i>
+                                                        <?php echo __('Ok'); ?>
+                                                    </div>
+                                                    <div class="col-xs-12 col-md-3 ">
+                                                        <i class="fa fa-square warning"></i>
+                                                        <?php echo __('Warning'); ?>
+                                                    </div>
+                                                    <div class="col-xs-12 col-md-3 ">
+                                                        <i class="fa fa-square critical"></i>
+                                                        <?php echo __('Critical'); ?>
+                                                    </div>
+                                                    <div class="col-xs-12 col-md-3 ">
+                                                        <i class="fa fa-square unknown"></i>
+                                                        <?php echo __('Unknown'); ?>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-xs-12 col-md-3">
+                                                    <i class="fa fa-square text-primary"></i>
+                                                    <?php echo __('Downtime'); ?>
+                                                </div>
+                                                <div class="col-xs-12 col-md-3 ">
+                                                    <i class="fa fa-square txt-ack"></i>
+                                                    <?php echo __('Acknowledged'); ?>
+                                                </div>
+                                                <div class="col-xs-12 col-md-3 ">
+                                                    <i class="fa fa-square txt-notification"></i>
+                                                    <?php echo __('Notification'); ?>
+                                                </div>
+                                                <div class="col-xs-12 col-md-3 ">
+                                                    <i class="fa fa-square txt-timerange"></i>
+                                                    <?php echo __('Check period'); ?>
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-xs-12 col-md-3">
+                                                    <i class="fa fa-square txt-downtime-cancelled"></i>
+                                                    <?php echo __('Downtime cancelled'); ?>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
 
                         <!-- render additional Tabs if necessary -->
                         <?php echo $this->AdditionalLinks->renderAsTabs($additionalLinksTab, null, 'host'); ?>
@@ -914,7 +1023,6 @@ if (!$QueryHandler->exists()): ?>
             </div>
         </div>
     </article>
-
 
 
     <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12" ng-show="mergedService.Service.has_graph">
@@ -929,7 +1037,7 @@ if (!$QueryHandler->exists()): ?>
 
                 <div class="widget-toolbar" role="menu">
                     <div class="btn-group">
-                        <button class="btn btn-xs btn-default" data-toggle="dropdown" >
+                        <button class="btn btn-xs btn-default" data-toggle="dropdown">
                             <?php echo __('Select time range'); ?>
                             <span class="caret"></span>
                         </button>
@@ -975,7 +1083,7 @@ if (!$QueryHandler->exists()): ?>
 
                 <div class="widget-toolbar" role="menu">
                     <div class="btn-group">
-                        <button class="btn btn-xs btn-default" data-toggle="dropdown" >
+                        <button class="btn btn-xs btn-default" data-toggle="dropdown">
                             <?php echo __('Select data source'); ?>
                             <span class="caret"></span>
                         </button>
@@ -997,8 +1105,8 @@ if (!$QueryHandler->exists()): ?>
                 <div class="jarviswidget-editbox"></div>
                 <div class="widget-body">
 
-                        <div id="graph_data_tooltip"></div>
-                        <div id="graphCanvas" style="height: 500px;"></div>
+                    <div id="graph_data_tooltip"></div>
+                    <div id="graphCanvas" style="height: 500px;"></div>
 
                 </div>
             </div>
@@ -1007,12 +1115,12 @@ if (!$QueryHandler->exists()): ?>
 </article>
 
 
-
 <reschedule-service callback="showFlashMsg"></reschedule-service>
 <service-downtime author="<?php echo h($username); ?>" callback="showFlashMsg"></service-downtime>
 <mass-delete-service-downtimes delete-url="/downtimes/delete/" callback="showFlashMsg"></mass-delete-service-downtimes>
 <acknowledge-service author="<?php echo h($username); ?>" callback="showFlashMsg"></acknowledge-service>
-<submit-service-result max-check-attempts="{{mergedService.Service.max_check_attempts}}" callback="showFlashMsg"></submit-service-result>
+<submit-service-result max-check-attempts="{{mergedService.Service.max_check_attempts}}"
+                       callback="showFlashMsg"></submit-service-result>
 <enable-service-flap-detection callback="showFlashMsg"></enable-service-flap-detection>
 <disable-service-flap-detection callback="showFlashMsg"></disable-service-flap-detection>
 <enable-service-flap-detection callback="showFlashMsg"></enable-service-flap-detection>

@@ -48,18 +48,16 @@ class Groups {
                 'icon' => '<i class=\'fa fa-envelope\'></i>',
                 'text' => __('Notifications')
             ],
-
-            'hoststatehistory'    => [
-                'id'   => 5,
-                'icon' => '<i class=\'fa fa-desktop\'></i>',
-                'text' => __('State history host')
-            ],
             'servicestatehistory' => [
                 'id'   => 4,
                 'icon' => '<i class=\'fa fa-cog\'></i>',
                 'text' => __('State history service')
             ],
-
+            'hoststatehistory'    => [
+                'id'   => 5,
+                'icon' => '<i class=\'fa fa-desktop\'></i>',
+                'text' => __('State history host')
+            ]
         ];
     }
 

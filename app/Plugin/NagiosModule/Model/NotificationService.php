@@ -170,9 +170,12 @@ class NotificationService extends NagiosModuleAppModel {
                 'Contactnotification.contactnotification_id'
             ],
 
-            'order' => $ServiceNotificationConditions->getOrder(),
-            'limit' => $ServiceNotificationConditions->getLimit(),
+            'order' => $ServiceNotificationConditions->getOrder()
         ];
+
+        if($ServiceNotificationConditions->getUseLimit()){
+            $query['limit'] = $ServiceNotificationConditions->getLimit();
+        }
 
         if ($ServiceNotificationConditions->getServiceUuid()) {
             $query['conditions']['Objects.name2'] = $ServiceNotificationConditions->getServiceUuid();

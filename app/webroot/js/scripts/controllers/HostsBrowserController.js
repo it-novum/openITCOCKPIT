@@ -54,8 +54,10 @@ angular.module('openITCOCKPIT')
         $scope.visTimelineStart = -1;
         $scope.visTimelineEnd = -1;
         $scope.visTimeout = null;
+        $scope.visChangeTimeout = null;
         $scope.showTimelineTab = false;
         $scope.timelineIsLoading = false;
+        $scope.failureDurationInPercent = null;
 
         var flappingInterval;
 
@@ -464,6 +466,7 @@ angular.module('openITCOCKPIT')
             $scope.timelineIsLoading = true;
 
             if (start > $scope.visTimelineStart && end < $scope.visTimelineEnd) {
+                $scope.timelineIsLoading = false;
                 //Zoom in data we already have
                 return;
             }
@@ -475,6 +478,7 @@ angular.module('openITCOCKPIT')
                     end: end
                 }
             }).then(function (result) {
+
                 var timelinedata = {
                     items: new vis.DataSet(result.data.statehistory),
                     groups: new vis.DataSet(result.data.groups)
@@ -538,7 +542,7 @@ angular.module('openITCOCKPIT')
                         return;
                     }
 
-                    if($scope.timelineIsLoading){
+                    if ($scope.timelineIsLoading) {
                         console.warn('Timeline already loading date. Waiting for server result before sending next request.');
                         return;
                     }
@@ -558,6 +562,47 @@ angular.module('openITCOCKPIT')
                 //Update existing timeline
                 $scope.visTimeline.setItems(timelinedata.items);
             }
+
+            $scope.visTimeline.on('changed', function () {
+                if ($scope.visTimelineInit) {
+                    return;
+                }
+                if ($scope.visChangeTimeout) {
+                    clearTimeout($scope.visChangeTimeout);
+                }
+                $scope.visChangeTimeout = setTimeout(function () {
+                    $scope.visChangeTimeout = null;
+                    var timeRange = $scope.visTimeline.getWindow();
+                    var visTimelineStartAsTimestamp = new Date(timeRange.start).getTime();
+                    var visTimelineEndAsTimestamp = new Date(timeRange.end).getTime();
+                    var criticalItems = $scope.visTimeline.itemsData.get({
+                        fields: ['start', 'end', 'className', 'group'],    // output the specified fields only
+                        type: {
+                            start: 'Date',
+                            end: 'Date'
+                        },
+                        filter: function (item) {
+                            return (item.group == 5 &&
+                                (item.className === 'bg-down' || item.className === 'bg-down-soft') &&
+                                $scope.CheckIfItemInRange(
+                                    visTimelineStartAsTimestamp,
+                                    visTimelineEndAsTimestamp,
+                                    item
+                                )
+                            );
+
+                        }
+                    });
+                    $scope.failureDurationInPercent = $scope.calculateFailures(
+                        (visTimelineEndAsTimestamp - visTimelineStartAsTimestamp), //visible time range
+                        criticalItems,
+                        visTimelineStartAsTimestamp,
+                        visTimelineEndAsTimestamp
+                    );
+                    $scope.$apply();
+                }, 500);
+
+            });
         };
 
         $scope.showTimeline = function () {
@@ -569,6 +614,40 @@ angular.module('openITCOCKPIT')
             $scope.showTimelineTab = false;
         };
 
+        $scope.CheckIfItemInRange = function (start, end, item) {
+            var itemStart = item.start.getTime();
+            var itemEnd = item.end.getTime();
+            if (itemEnd < start) {
+                return false;
+            }
+            else if (itemStart > end) {
+                return false;
+            }
+            else if (itemStart >= start && itemEnd <= end) {
+                return true;
+            }
+            else if (itemStart >= start && itemEnd > end) { //item started behind the start and ended behind the end
+                return true;
+            }
+            else if (itemStart < start && itemEnd > start && itemEnd < end) { //item started before the start and ended behind the end
+                return true;
+            }
+            else if (itemStart < start && itemEnd >= end) { // item startet before the start and enden before the end
+                return true;
+            }
+            return false;
+        }
+
+        $scope.calculateFailures = function (totalTime, criticalItems, start, end) {
+            var failuresDuration = 0;
+
+            criticalItems.forEach(function (criticalItem) {
+                var itemStart = criticalItem.start.getTime();
+                var itemEnd = criticalItem.end.getTime();
+                failuresDuration += ((itemEnd > end) ? end : itemEnd) - ((itemStart < start) ? start : itemStart);
+            });
+            return (failuresDuration / totalTime * 100).toFixed(3);
+        };
 
         $scope.loadHost();
         $scope.loadTimezone();
