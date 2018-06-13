@@ -65,6 +65,8 @@ class Api extends CoreApi implements ApiInterface
             case 'delete':
                 $this->delete();
                 break;
+            case 'addbyuuid':
+                $this->addByUuid();
         }
     }
 
@@ -128,12 +130,46 @@ class Api extends CoreApi implements ApiInterface
     }
 
     /**
+     * @throws RecordExistsExceptions
+     * @throws \Exception
+     */
+    public function addByUuid()
+    {
+        if (!$this->existsByUuid()) {
+            $data = [
+                'name'            => $this->getNameOfData(),
+                'command_line'    => $this->data[1],
+                'command_type'    => $this->data[2],
+                'uuid'            => $this->data[3],
+                'description'     => $this->data[4],
+            ];
+            if ($this->Database->save($data)) {
+                return true;
+            }
+            throw new \Exception('Could not save data');
+        }
+        throw new RecordExistsExceptions('Record already exists');
+    }
+
+    /**
      * Checks if a record for given key exists
      * @return bool
      */
     public function exists()
     {
         $result = $this->getRecordByName();
+
+        return !empty($result);
+    }
+
+
+    /**
+     * Checks if a record for given uuid exists
+     * @return bool
+     */
+    public function existsByUuid()
+    {
+        $result = $this->getRecordByUuid();
 
         return !empty($result);
     }
@@ -156,6 +192,17 @@ class Api extends CoreApi implements ApiInterface
         return $this->Database->find('first', [
             'conditions' => [
                 'name' => $name,
+            ],
+        ]);
+    }
+
+    public function getRecordByUuid()
+    {
+        $uuid = $this->data[3];
+
+        return $this->Database->find('first', [
+            'conditions' => [
+                'uuid' => $uuid,
             ],
         ]);
     }
