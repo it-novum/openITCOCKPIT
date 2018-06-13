@@ -47,17 +47,23 @@ class NotificationSerializer {
 
 
     /**
+     * @var string
+     */
+    private $type;
+
+    /**
      * NotificationSerializer constructor.
      * @param array $notificationRecords
      * @param UserTime $UserTime
+     * @param string $type
      */
-    public function __construct($notificationRecords = [], UserTime $UserTime) {
+    public function __construct($notificationRecords = [], UserTime $UserTime, $type = 'host') {
         $this->records = $notificationRecords;
         $this->UserTime = $UserTime;
 
         $TimelineGroups = new Groups();
         $this->groupId = $TimelineGroups->getNotificationsId();
-
+        $this->type = $type;
     }
 
     public function serialize() {
@@ -65,15 +71,20 @@ class NotificationSerializer {
         $size = sizeof($this->records);
 
         for ($i = 0; $i < $size; $i++) {
+            if($this->type === 'host'){
+                $notificationTime = $this->records[$i]['NotificationHost']->getStartTime();
+            }else{
+                $notificationTime = $this->records[$i]['NotificationService']->getStartTime();
+            }
             $title = sprintf(
                 '<b>%s</b> via <b>%s</b> at %s',
                 h($this->records[$i]['Contact']->getName()),
                 h($this->records[$i]['Command']->getName()),
-                $this->UserTime->format($this->records[$i]['NotificationHost']->getStartTime())
+                $this->UserTime->format($notificationTime)
             );
 
             $records[] = [
-                'start'     => $this->UserTime->customFormat('%Y-%m-%d %H:%M:%S', $this->records[$i]['NotificationHost']->getStartTime()),
+                'start'     => $this->UserTime->customFormat('%Y-%m-%d %H:%M:%S', $notificationTime),
                 'type'      => 'box',
                 'className' => 'orange',
                 'content'   => '<i class="fa fa-envelope"></i>',
