@@ -69,6 +69,10 @@ class Contact extends AppModel
             'foreignKey' => 'service_timeperiod_id',
             'className'  => 'Timeperiod',
         ],
+        'User' => [
+            'className'  => 'User',
+            'dependent'  => false
+        ]
     ];
 
     public $hasMany = [
