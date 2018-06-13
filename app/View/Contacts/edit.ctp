@@ -359,6 +359,17 @@
                         </div>
                     </div>
                 </article>
+
+                <?php if ($this->Acl->hasPermission('wiki', 'documentations')): ?>
+                    <article class="col-sm-12 col-md-12 col-lg-6 text-info">
+                        <i class="fa fa-info-circle"></i>
+                        <?php echo __('Read more about browser push notification in the'); ?>
+                        <a href="/documentations/wiki/additional_help/browser_push_notifications/en">
+                            <?php echo __('documentation'); ?>
+                        </a>
+                    </article>
+                <?php endif; ?>
+
             </div>
 
             <div class="row margin-bottom-10">

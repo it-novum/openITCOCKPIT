@@ -238,7 +238,7 @@
                                             <?php echo $this->Form->fancyCheckbox($notification_setting, [
                                                 'caption' => '',
                                                 'icon'    => $icon,
-                                                'checked'          => $this->CustomValidationErrors->refill($notification_setting, false)
+                                                'checked' => $this->CustomValidationErrors->refill($notification_setting, false)
                                             ]); ?>
                                             <div class="clearfix"></div>
                                         </div>
@@ -248,6 +248,16 @@
                         </div>
                     </div>
                 </article>
+
+                <?php if ($this->Acl->hasPermission('wiki', 'documentations')): ?>
+                    <article class="col-sm-12 col-md-12 col-lg-6 text-info">
+                        <i class="fa fa-info-circle"></i>
+                        <?php echo __('Read more about browser push notification in the'); ?>
+                        <a href="/documentations/wiki/additional_help/browser_push_notifications/en">
+                            <?php echo __('documentation'); ?>
+                        </a>
+                    </article>
+                <?php endif; ?>
 
             </div>
 

@@ -3611,7 +3611,7 @@ class HostsController extends AppController {
             ];
         }
 
-        $NotificationSerializer = new NotificationSerializer($notificationRecords, $UserTime);
+        $NotificationSerializer = new NotificationSerializer($notificationRecords, $UserTime, 'host');
         $this->set('notifications', $NotificationSerializer->serialize());
         unset($NotificationSerializer, $notificationRecords);
 
