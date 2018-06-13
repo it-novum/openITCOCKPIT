@@ -40,7 +40,10 @@
 <div class="jarviswidget" id="wid-id-0">
     <header>
         <span class="widget-icon"> <i class="fa fa-user"></i> </span>
-        <h2><?php echo $this->action == 'edit' ? 'Edit' : 'Add' ?><?php echo __('contact'); ?></h2>
+        <h2>
+            <?php echo $this->action == 'edit' ? 'Edit' : 'Add' ?>
+            <?php echo __('contact'); ?>
+        </h2>
         <div class="widget-toolbar" role="menu">
             <?php echo $this->Utils->backButton() ?>
         </div>
@@ -77,23 +80,32 @@
                 'placeholder' => '0049123456789'
             ]);
             ?>
+            <div class="row">
+                <?php echo $this->Form->input('user_id', [
+                    'options' => $this->Html->chosenPlaceholder($_users),
+                    'class'   => 'chosen',
+
+                    'style' => 'width: 100%',
+                    'help'  => __('For browser notifications, a user needs to be assigned to the contact. User Id will be automatically available as $_CONTACTOITCUSERID$ contact macro.')
+                ]); ?>
+            </div>
             <br/>
             <div class="row">
                 <?php $notification_settings = [
                     'host'    => [
-                        'notify_host_recovery'    => 'fa-square txt-color-greenLight',
-                        'notify_host_down'        => 'fa-square txt-color-redLight',
-                        'notify_host_unreachable' => 'fa-square txt-color-blueDark',
-                        'notify_host_flapping'    => 'fa-random',
-                        'notify_host_downtime'    => 'fa-clock-o',
+                        'notify_host_recovery'    => '<span class="label label-success notify-label">' . __('Recovery') . '</span>',
+                        'notify_host_down'        => '<span class="label label-danger notify-label">' . __('Down') . '</span>',
+                        'notify_host_unreachable' => '<span class="label label-default notify-label">' . __('Unreachable') . '</span>',
+                        'notify_host_flapping'    => '<span class="label label-primary notify-label">' . __('Flapping') . '</span>',
+                        'notify_host_downtime'    => '<span class="label label-primary notify-label">' . __('Downtime') . '</span>',
                     ],
                     'service' => [
-                        'notify_service_recovery' => 'fa-square txt-color-greenLight',
-                        'notify_service_warning'  => 'fa-square txt-color-orange',
-                        'notify_service_unknown'  => 'fa-square txt-color-blueDark',
-                        'notify_service_critical' => 'fa-square txt-color-redLight',
-                        'notify_service_flapping' => 'fa-random',
-                        'notify_service_downtime' => 'fa-clock-o',
+                        'notify_service_recovery' => '<span class="label label-success notify-label">' . __('Recovery') . '</span>',
+                        'notify_service_warning'  => '<span class="label label-warning notify-label">' . __('Warning') . '</span>',
+                        'notify_service_critical' => '<span class="label label-danger notify-label">' . __('Critical') . '</span>',
+                        'notify_service_unknown'  => '<span class="label label-default notify-label">' . __('Unknown') . '</span>',
+                        'notify_service_flapping' => '<span class="label label-primary notify-label">' . __('Flapping') . '</span>',
+                        'notify_service_downtime' => '<span class="label label-primary notify-label">' . __('Downtime') . '</span>',
                     ],
                 ];
                 ?>
@@ -106,7 +118,7 @@
                             </span>
                             <h2><?php echo __('Notification (Host)'); ?></h2>
                         </header>
-                        <div role="content" style="min-height:400px;">
+                        <div role="content" style="min-height:430px;">
                             <div class="widget-body">
                                 <div>
                                     <?php echo $this->Form->input('host_timeperiod_id', ['options' => $this->Html->chosenPlaceholder($_timeperiods), 'class' => 'select2 col-xs-8 chosen', 'wrapInput' => 'col col-xs-8', 'label' => ['class' => 'col col-md-4 control-label text-left'], 'style' => 'width: 100%']); ?>
@@ -118,8 +130,31 @@
                                         'caption'          => __('Notifications enabled'),
                                         'captionGridClass' => 'col col-md-4 no-padding',
                                         'captionClass'     => 'control-label text-left no-padding',
+                                        'checked'          => $this->CustomValidationErrors->refill('host_notifications_enabled', false)
                                     ]); ?>
 
+                                </div>
+
+                                <?php
+                                $s = sprintf(
+                                    '%s <i class="fa fa-info-circle text-info"
+                                            data-template="<div class=\'tooltip\' role=\'tooltip\'><div class=\'tooltip-arrow tooltip-arrow-image\'></div><div class=\'tooltip-inner tooltip-inner-image\'></div></div>"
+                                            rel="tooltip"
+                                            data-placement="right"
+                                            data-original-title="<img src=\'/img/browser_notification_bg.png\'/>"
+                                            data-html="true"></i>',
+                                    __('Push notifications to browser')
+                                );
+                                ?>
+
+
+                                <div class="row">
+                                    <?php echo $this->Form->fancyCheckbox('host_push_notifications_enabled', [
+                                        'caption'          => $s,
+                                        'captionGridClass' => 'col col-md-4 no-padding',
+                                        'captionClass'     => 'control-label text-left no-padding',
+                                        'checked'          => $this->CustomValidationErrors->refill('host_push_notifications_enabled', false)
+                                    ]); ?>
                                 </div>
                                 <br class="clearfix"/>
                                 <fieldset>
@@ -134,8 +169,9 @@
                                     <?php foreach ($notification_settings['host'] as $notification_setting => $icon): ?>
                                         <div style="border-bottom:1px solid lightGray;">
                                             <?php echo $this->Form->fancyCheckbox($notification_setting, [
-                                                'caption' => ucfirst(preg_replace('/notify_host_/', '', $notification_setting)),
-                                                'icon'    => '<i class="fa ' . $icon . '"></i> ',
+                                                'caption' => '',
+                                                'icon'    => $icon,
+                                                'checked' => $this->CustomValidationErrors->refill($notification_setting, false)
                                             ]); ?>
                                             <div class="clearfix"></div>
                                         </div>
@@ -154,7 +190,7 @@
                             </span>
                             <h2><?php echo __('Notification (Service)'); ?></h2>
                         </header>
-                        <div role="content" style="min-height:400px;">
+                        <div role="content" style="min-height:430px;">
                             <div class="widget-body">
                                 <div>
                                     <?php echo $this->Form->input('service_timeperiod_id', ['options' => $this->Html->chosenPlaceholder($_timeperiods), 'class' => 'select2 col-xs-8 chosen', 'wrapInput' => 'col col-xs-8', 'label' => ['class' => 'col col-md-4 control-label text-left'], 'style' => 'width: 100%']); ?>
@@ -166,8 +202,26 @@
                                         'caption'          => __('Notifications enabled'),
                                         'captionGridClass' => 'col col-md-4 no-padding',
                                         'captionClass'     => 'control-label text-left no-padding',
+                                        'checked'          => $this->CustomValidationErrors->refill('service_notifications_enabled', false)
                                     ]); ?>
-
+                                </div>
+                                <div class="row">
+                                    <?php
+                                    $s = sprintf(
+                                        '%s <i class="fa fa-info-circle text-info"
+                                            data-template="<div class=\'tooltip\' role=\'tooltip\'><div class=\'tooltip-arrow tooltip-arrow-image\'></div><div class=\'tooltip-inner tooltip-inner-image\'></div></div>"
+                                            rel="tooltip"
+                                            data-placement="right"
+                                            data-original-title="<img src=\'/img/browser_service_notification_bg.png\'/>"
+                                            data-html="true"></i>',
+                                        __('Push notifications to browser')
+                                    );
+                                    echo $this->Form->fancyCheckbox('service_push_notifications_enabled', [
+                                        'caption'          => $s,
+                                        'captionGridClass' => 'col col-md-4 no-padding',
+                                        'captionClass'     => 'control-label text-left no-padding',
+                                        'checked'          => $this->CustomValidationErrors->refill('service_push_notifications_enabled', false)
+                                    ]); ?>
                                 </div>
                                 <br class="clearfix"/>
                                 <fieldset>
@@ -182,70 +236,14 @@
                                     <?php foreach ($notification_settings['service'] as $notification_setting => $icon): ?>
                                         <div style="border-bottom:1px solid lightGray;">
                                             <?php echo $this->Form->fancyCheckbox($notification_setting, [
-                                                'caption' => ucfirst(preg_replace('/notify_service_/', '', $notification_setting)),
-                                                'icon'    => '<i class="fa ' . $icon . '"></i> ',
+                                                'caption' => '',
+                                                'icon'    => $icon,
+                                                'checked'          => $this->CustomValidationErrors->refill($notification_setting, false)
                                             ]); ?>
                                             <div class="clearfix"></div>
                                         </div>
                                     <?php endforeach; ?>
                                 </fieldset>
-                            </div>
-                        </div>
-                    </div>
-                </article>
-
-                <article class="col-xs-12">
-                    <div id="wid-id-2" class="jarviswidget jarviswidget-sortable" data-widget-custombutton="false"
-                         data-widget-editbutton="false" data-widget-colorbutton="false" role="widget">
-                        <header role="heading">
-                            <span class="widget-icon">
-                                <i class="fa fa-gear"></i>
-                            </span>
-                            <h2><?php echo __('Browser push notifications'); ?></h2>
-                        </header>
-                        <div role="content" style="min-height:400px;">
-                            <div class="widget-body">
-
-                                <div class="row">
-                                    <?php echo $this->Form->fancyCheckbox('host_push_notifications', [
-                                        'caption'          => __('Enable host browser notifications'),
-                                        'captionGridClass' => 'col col-xs-2 no-padding',
-                                        'wrapGridClass'    => 'col col-xs-10',
-                                        'captionClass'     => 'control-label text-left no-padding',
-                                    ]); ?>
-                                </div>
-
-                                <div class="row">
-                                    <?php echo $this->Form->fancyCheckbox('service_push_notifications', [
-                                        'caption'          => __('Enable service browser notifications'),
-                                        'captionGridClass' => 'col col-xs-2 no-padding',
-                                        'wrapGridClass'    => 'col col-xs-10',
-                                        'captionClass'     => 'control-label text-left no-padding',
-                                    ]); ?>
-                                </div>
-
-                                <div class="row">
-                                    <?php echo $this->Form->input('user_id', [
-                                        'options'   => $this->Html->chosenPlaceholder($_timeperiods),
-                                        'class'     => 'select2 col-xs-10 chosen',
-                                        'wrapInput' => 'col col-xs-10',
-                                        'label'     => [
-                                            'class' => 'col col-xs-2 control-label text-left',
-                                            'text'  => __('User')
-                                        ],
-                                        'style'     => 'width: 100%',
-                                        'help' => __('For browser notifications, a user needs to be assigned to the contact.')
-                                    ]); ?>
-                                </div>
-
-                                <div class="row">
-                                    <div class="col-xs-12">
-                                        <p><?php echo __('Example of a browser notification:'); ?></p>
-                                        <img src="/img/browser_notification.png" class="img-responsive"
-                                             alt="<?php echo __('Example of a browser push notification'); ?>">
-                                    </div>
-                                </div>
-
                             </div>
                         </div>
                     </div>

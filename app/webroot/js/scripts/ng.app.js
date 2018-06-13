@@ -3,6 +3,11 @@ angular.module('openITCOCKPIT', [])
     .factory("httpInterceptor", function($q, $rootScope, $timeout){
         return {
             response: function(result){
+                var url = result.config.url;
+                if(url === '/angular/system_health.json' || url === '/angular/menustats.json'){
+                    return result || $.then(result);
+                }
+
                 $rootScope.runningAjaxCalls--;
 
                 if($rootScope.runningAjaxCalls === 0){
@@ -10,9 +15,14 @@ angular.module('openITCOCKPIT', [])
                     $('#global_ajax_loader').fadeOut('slow');
                     $('#global-loading').fadeOut('slow');
                 }
-                return result || $.then(result)
+                return result || $.then(result);
             },
             request: function(response){
+                var url = response.url;
+                if(url === '/angular/system_health.json' || url === '/angular/menustats.json'){
+                    return response || $q.when(response);
+                }
+
                 //Reference Counting Basics Garbage Collection
                 $rootScope.runningAjaxCalls++;
 
@@ -22,7 +32,10 @@ angular.module('openITCOCKPIT', [])
                 return response || $q.when(response);
             },
             responseError: function(rejection){
-                console.log(rejection);
+                var url = rejection.config.url;
+                if(url === '/angular/system_health.json' || url === '/angular/menustats.json'){
+                    return $q.reject(rejection);
+                }
 
                 $rootScope.runningAjaxCalls--;
                 if($rootScope.runningAjaxCalls === 0){
