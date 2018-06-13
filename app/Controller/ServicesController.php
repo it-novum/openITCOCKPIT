@@ -3444,7 +3444,7 @@ class ServicesController extends AppController {
             ];
         }
 
-        $NotificationSerializer = new NotificationSerializer($notificationRecords, $UserTime);
+        $NotificationSerializer = new NotificationSerializer($notificationRecords, $UserTime, 'service');
         $this->set('notifications', $NotificationSerializer->serialize());
         unset($NotificationSerializer, $notificationRecords);
 
