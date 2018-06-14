@@ -41,6 +41,7 @@ $config = [
                 'statuscount',
                 'menu',
                 'websocket_configuration',
+                'push_configuration',
                 'export',
                 'not_found',
                 'forbidden',

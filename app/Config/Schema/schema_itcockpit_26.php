@@ -751,6 +751,7 @@ class AppSchema extends CakeSchema {
         'indexes'                            => [
             'PRIMARY' => ['column' => 'id', 'unique' => 1],
             'uuid'    => ['column' => 'uuid', 'unique' => 1],
+            'push'    => ['column' => ['user_id', 'host_push_notifications_enabled', 'service_push_notifications_enabled'], 'unique' => 0],
         ],
         'tableParameters'                    => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB'],
     ];

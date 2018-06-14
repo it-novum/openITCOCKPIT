@@ -32,6 +32,7 @@ use itnovum\openITCOCKPIT\Core\Views\UserTime;
  * @property Service Service
  * @property AppAuthComponent Auth
  * @property MenuComponent Menu
+ * @property Contact Contact
  */
 class AngularController extends AppController {
 
@@ -42,7 +43,8 @@ class AngularController extends AppController {
         'Service',
         'Container',
         MONITORING_HOSTSTATUS,
-        MONITORING_SERVICESTATUS
+        MONITORING_SERVICESTATUS,
+        'Contact'
     ];
 
     public function paginator() {
@@ -310,19 +312,51 @@ class AngularController extends AppController {
         $websocketConfig['QUERY_LOG.URL'] = 'wss://' . env('HTTP_HOST') . '/query_log';
         $websocketConfig['PUSH_NOTIFICATIONS.URL'] = 'wss://' . env('HTTP_HOST') . '/push_notifications';
 
+        $this->set('websocket', $websocketConfig);
+        $this->set('_serialize', ['websocket']);
+    }
 
-
-        $toJson = ['websocket'];
-        if ($this->request->query('includeUser')) {
-            $User = new User($this->Auth);
-            $this->set('user', [
-                'id' => $User->getId()
-            ]);
-            $toJson[] = 'user';
+    public function push_configuration() {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template
+            return;
         }
 
+        if (!Cache::read('systemsettings', 'permissions')) {
+            Cache::write('systemsettings', $this->Systemsetting->findAsArray(), 'permissions');
+        }
+        session_write_close();
+
+        $systemsettings = Cache::read('systemsettings', 'permissions');
+        $websocketConfig = $systemsettings['SUDO_SERVER'];
+        $websocketConfig['PUSH_NOTIFICATIONS.URL'] = 'wss://' . env('HTTP_HOST') . '/push_notifications';
+
+
+        $User = new User($this->Auth);
+
+        $contact = $this->Contact->find('first', [
+            'fields'     => [
+                'Contact.id'
+            ],
+            'recursive'  => -1,
+            'conditions' => [
+                'AND' => [
+                    'Contact.user_id' => $User->getId(),
+                    'OR'              => [
+                        'host_push_notifications_enabled'    => 1,
+                        'service_push_notifications_enabled' => 1
+                    ]
+                ]
+            ]
+        ]);
+
+        $this->set('user', [
+            'id'             => $User->getId(),
+            'hasPushContact' => !empty($contact)
+        ]);
+
         $this->set('websocket', $websocketConfig);
-        $this->set('_serialize', $toJson);
+        $this->set('_serialize', ['websocket', 'user']);
     }
 
     public function not_found() {

@@ -37,7 +37,7 @@ angular.module('openITCOCKPIT').directive('pushNotifications', function($http, P
 
 
             $scope.connectToNotificationPushServer = function(){
-                $http.get("/angular/websocket_configuration.json", {
+                $http.get("/angular/push_configuration.json", {
                     params: {
                         'angular': true,
                         'includeUser': true
@@ -46,13 +46,17 @@ angular.module('openITCOCKPIT').directive('pushNotifications', function($http, P
                     $scope.userId = result.data.user.id;
 
                     $scope.websocketConfig = result.data.websocket;
-                    PushNotificationsService.setUrl($scope.websocketConfig['PUSH_NOTIFICATIONS.URL']);
-                    PushNotificationsService.setApiKey($scope.websocketConfig['SUDO_SERVER.API_KEY']);
 
-                    PushNotificationsService.setUserId($scope.userId);
-                    PushNotificationsService.onResponse($scope.gotMessage);
+                    //Only connect, if the user has >= 1 contacts using browser push notifications
+                    if(result.data.user.hasPushContact){
+                        PushNotificationsService.setUrl($scope.websocketConfig['PUSH_NOTIFICATIONS.URL']);
+                        PushNotificationsService.setApiKey($scope.websocketConfig['SUDO_SERVER.API_KEY']);
 
-                    PushNotificationsService.connect();
+                        PushNotificationsService.setUserId($scope.userId);
+                        PushNotificationsService.onResponse($scope.gotMessage);
+
+                        PushNotificationsService.connect();
+                    }
                 });
 
             };
