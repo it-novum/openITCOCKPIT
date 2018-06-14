@@ -155,6 +155,7 @@ App.Controllers.ContactsAddController = Frontend.AppController.extend({
 
                         if(Object.keys($users).length > 0){
                             $userSelectbox.attr('data-placeholder', self.getVar('data_placeholder'));
+                            $userSelectbox.append($('<option>', {}));
                             for(var key in $users){
                                 $userSelectbox.append($('<option>', {
                                     value: $users[key].key,
