@@ -144,7 +144,7 @@ class SearchController extends AppController
 
             //Search for host address
             if (isset($this->request->data['SearchAddress']['Hostaddress'])) {
-                $url = Router::queryString([
+                $url = RFCRouter::queryString([
                     'filter' => [
                         'Host.address' => $this->request->data['SearchAddress']['Hostaddress'],
                     ],
