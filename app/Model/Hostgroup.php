@@ -211,6 +211,14 @@ class Hostgroup extends AppModel
             ],
             'limit' => self::ITN_AJAX_LIMIT
         ];
+
+        if (is_array($selected)) {
+            $selected = array_filter($selected);
+        }
+        if (!empty($selected)) {
+            $query['conditions']['NOT'] = ['Hostgroup.id' => $selected];
+        }
+
         $hostgroupsWithLimit = $this->find('list', $query);
 
         $selectedHostgroups = [];
