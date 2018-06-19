@@ -849,9 +849,9 @@ class Mapeditor extends MapModuleAppModel {
         if (!is_array($mapIds)) {
             $mapIds = [$mapIds];
         }
-
         $mapElements = [];
         foreach ($mapIds as $mapId) {
+            $this->mapElements = null;
             $mapElements[$mapId] = $this->getDeepMapElements($mapId);
         }
 
@@ -962,6 +962,7 @@ class Mapeditor extends MapModuleAppModel {
      */
     public function getDeepMapElements($mapId, $iteratedMaps = []) {
         $this->mapElements[$mapId] = $this->getMapStatusElementsByMapId($mapId);
+
         $maxDepth = 2; // +1 = maximum number of map depth
         if (sizeof($iteratedMaps) < $maxDepth) {
             if (isset($this->mapElements[$mapId]['Mapitem']) && !empty($this->mapElements[$mapId]['Mapitem'])) {
@@ -1029,6 +1030,7 @@ class Mapeditor extends MapModuleAppModel {
                 'Mapgadget.object_id',
             ],
         ]);
+
         $newMapElements = [];
         foreach ($mapElements as $type => $data) {
             foreach ($data as $key => $element) {
