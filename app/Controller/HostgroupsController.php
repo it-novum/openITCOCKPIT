@@ -736,9 +736,21 @@ class HostgroupsController extends AppController {
                     $this->setFlash(__('Could not save data'), false);
                 }
             } else {
-                $targetHostgroup = $this->request->data('Hostgroup.id');
-                if ($this->Hostgroup->exists($targetHostgroup)) {
-                    $hostgroup = $this->Hostgroup->findById($targetHostgroup);
+                $hostgroupId = $this->request->data('Hostgroup.id');
+                if ($this->Hostgroup->exists($hostgroupId)) {
+                    $hostgroup = $this->Hostgroup->find('first', [
+                        'recursive' => -1,
+                        'contain' => [
+                            'Host' => [
+                                'fields' => [
+                                    'Host.id'
+                                ]
+                            ]
+                        ],
+                        'conditions' => [
+                            'Hostgroup.id' => $hostgroupId
+                        ]
+                    ]);
                     //Save old hosts from this hostgroup
                     $hostgroupMembers = [];
                     foreach ($hostgroup['Host'] as $host) {
