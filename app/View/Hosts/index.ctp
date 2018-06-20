@@ -80,7 +80,7 @@ $this->Paginator->options(['url' => $this->params['named']]);
                             <?php echo __('Refresh'); ?>
                         </button>
 
-                        <?php if ($this->Acl->hasPermission('add')): ?>
+                        <?php if ($this->Acl->hasPermission('add', 'hosts')): ?>
                             <a href="/hosts/add" class="btn btn-xs btn-success">
                                 <i class="fa fa-plus"></i>
                                 <?php echo __('New'); ?>
@@ -101,14 +101,14 @@ $this->Paginator->options(['url' => $this->params['named']]);
                                         class="fa fa-stethoscope"></i> <span
                                         class="hidden-mobile hidden-tablet"> <?php echo __('Monitored'); ?> </span> </a>
                         </li>
-                        <?php if ($this->Acl->hasPermission('notMonitored')): ?>
+                        <?php if ($this->Acl->hasPermission('notMonitored', 'hosts')): ?>
                             <li class="">
                                 <a href="<?php echo Router::url(array_merge(['controller' => 'hosts', 'action' => 'notMonitored'], $this->params['named'])); ?>"><i
                                             class="fa fa-user-md"></i> <span
                                             class="hidden-mobile hidden-tablet"> <?php echo __('Not monitored'); ?> </span></a>
                             </li>
                         <?php endif; ?>
-                        <?php if ($this->Acl->hasPermission('disabled')): ?>
+                        <?php if ($this->Acl->hasPermission('disabled', 'hosts')): ?>
                             <li>
                                 <a href="<?php echo Router::url(array_merge(['controller' => 'hosts', 'action' => 'disabled'], $this->params['named'])); ?>"><i
                                             class="fa fa-power-off"></i> <span
@@ -424,7 +424,7 @@ $this->Paginator->options(['url' => $this->params['named']]);
                                     </td>
 
                                     <td>
-                                        <?php if ($this->Acl->hasPermission('browser')): ?>
+                                        <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
                                             <a href="/hosts/browser/{{ host.Host.id }}">
                                                 {{ host.Host.hostname }}
                                             </a>
@@ -455,12 +455,18 @@ $this->Paginator->options(['url' => $this->params['named']]);
 
                                     <td class="width-50">
                                         <div class="btn-group">
-                                            <?php if ($this->Acl->hasPermission('edit')): ?>
+                                            <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
                                                 <a href="/hosts/edit/{{host.Host.id}}"
-                                                   ng-if="host.Host.allow_edit"
+                                                       ng-if="host.Host.allow_edit"
+                                                       class="btn btn-default">
+                                                    &nbsp;<i class="fa fa-cog"></i>&nbsp;
+                                                </a>
+                                                <a href="javascript:void(0);"
+                                                   ng-if="!host.Host.allow_edit"
                                                    class="btn btn-default">
                                                     &nbsp;<i class="fa fa-cog"></i>&nbsp;
                                                 </a>
+
                                             <?php else: ?>
                                                 <a href="javascript:void(0);" class="btn btn-default">
                                                     &nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
@@ -469,14 +475,14 @@ $this->Paginator->options(['url' => $this->params['named']]);
                                                class="btn btn-default dropdown-toggle"><span
                                                         class="caret"></span></a>
                                             <ul class="dropdown-menu pull-right" id="menuHack-{{host.Host.uuid}}">
-                                                <?php if ($this->Acl->hasPermission('edit')): ?>
+                                                <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
                                                     <li ng-if="host.Host.allow_edit">
                                                         <a href="/hosts/edit/{{host.Host.id}}">
                                                             <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
                                                         </a>
                                                     </li>
                                                 <?php endif; ?>
-                                                <?php if ($this->Acl->hasPermission('sharing')): ?>
+                                                <?php if ($this->Acl->hasPermission('sharing', 'hosts')): ?>
                                                     <li ng-if="host.Host.allow_sharing">
                                                         <a href="/hosts/sharing/{{host.Host.id}}">
                                                             <i class="fa fa-sitemap fa-rotate-270"></i>
@@ -484,7 +490,7 @@ $this->Paginator->options(['url' => $this->params['named']]);
                                                         </a>
                                                     </li>
                                                 <?php endif; ?>
-                                                <?php if ($this->Acl->hasPermission('deactivate')): ?>
+                                                <?php if ($this->Acl->hasPermission('deactivate', 'hosts')): ?>
                                                     <li ng-if="host.Host.allow_edit">
                                                         <a href="javascript:void(0);"
                                                            ng-click="confirmDeactivate(getObjectForDelete(host))">
@@ -508,7 +514,7 @@ $this->Paginator->options(['url' => $this->params['named']]);
                                                     </li>
                                                 <?php endif; ?>
 
-                                                <?php if ($this->Acl->hasPermission('edit')): ?>
+                                                <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
                                                     <li ng-if="host.Host.allow_edit">
                                                         <?php echo $this->AdditionalLinks->renderAsListItems(
                                                             $additionalLinksList,
@@ -518,7 +524,7 @@ $this->Paginator->options(['url' => $this->params['named']]);
                                                         ); ?>
                                                     </li>
                                                 <?php endif; ?>
-                                                <?php if ($this->Acl->hasPermission('delete')): ?>
+                                                <?php if ($this->Acl->hasPermission('delete', 'hosts')): ?>
                                                     <li class="divider" ng-if="host.Host.allow_edit"></li>
                                                     <li ng-if="host.Host.allow_edit">
                                                         <a href="javascript:void(0);" class="txt-color-red"
