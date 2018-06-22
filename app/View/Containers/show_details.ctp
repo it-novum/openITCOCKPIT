@@ -41,7 +41,7 @@
         <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
             <div class="jarviswidget jarviswidget-color-blueDark" id="wid-id-1" data-widget-editbutton="false">
                 <header>
-                    <span class="widget-icon"> <i class="fa fa-sitemap"></i> </span>
+                    <span class="widget-icon"> <i class="fa fa-sitemap fa-rotate-270"></i> </span>
                     <h2><?php echo __('Objects overview'); ?> "{{containerDetails.Container.name}}"</h2>
                     <div class="widget-toolbar" role="menu">
                         <?php echo $this->Utils->backButton() ?>
@@ -178,7 +178,51 @@
                                         <ul class="dropdown-menu pull-right" id="menuHack-hostgroup-{{hostgroupContainer.id}}">
                                             <?php if ($this->Acl->hasPermission('edit', 'hostgroups')): ?>
                                                 <li>
-                                                    <a href="/locations/edit/{{hostgroupContainer.Hostgroup[0].id}}">
+                                                    <a href="/hostgroups/edit/{{hostgroupContainer.Hostgroup[0].id}}">
+                                                        <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
+                                                    </a>
+                                                </li>
+                                            <?php endif; ?>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="no-sort" colspan="2">
+                                    <i class="fa fa-desktop fa-lg"></i>
+                                    <?php echo __('Hosts'); ?> ({{containerDetails.Host.length}})
+                                </th>
+                            </tr>
+                            <tr ng-repeat="host in containerDetails.Host">
+                                <td>
+                                    <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
+                                        <a href="/hosts/edit/{{ host.id }}"
+                                           target="_blank">
+                                            {{ host.name }}
+                                        </a>
+                                    <?php else: ?>
+                                        <span>{{ host.name }}</span>
+                                    <?php endif; ?>
+                                    <i class="text-info">{{ host.description }}</i>
+                                </td>
+                                <td>
+                                    <div class="btn-group" ng-if="host.id">
+                                        <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
+                                            <a href="/hosts/edit/{{host.id}}"
+                                               class="btn btn-default">&nbsp;<i class="fa fa-cog"></i>&nbsp;
+                                            </a>
+                                        <?php else: ?>
+                                            <a href="javascript:void(0);" class="btn btn-default">&nbsp;
+                                                <i class="fa fa-cog"></i> </a>
+                                        <?php endif; ?>
+                                        <a href="javascript:void(0);" data-toggle="dropdown"
+                                           class="btn btn-default dropdown-toggle">
+                                            <span class="caret"></span>
+                                        </a>
+                                        <ul class="dropdown-menu pull-right" id="menuHack-host-{{host.id}}">
+                                            <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
+                                                <li>
+                                                    <a href="/hosts/edit/{{host.id}}">
                                                         <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
                                                     </a>
                                                 </li>

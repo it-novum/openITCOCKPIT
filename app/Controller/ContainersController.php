@@ -548,18 +548,28 @@ class ContainersController extends AppController {
                             'Location.id',
                             'Location.description'
                         ]
+                    ],
+                    'order' => [
+                        'ContainerLocation.name' => 'asc'
                     ]
                 ],
                 'ContainerNode' => [
                     'fields' => [
                         'ContainerNode.id',
                         'ContainerNode.name'
+                    ],
+                    'order' => [
+                        'ContainerNode.name' => 'asc'
                     ]
                 ],
                 'Host' => [
                     'fields' => [
                         'Host.id',
-                        'Host.name'
+                        'Host.name',
+                        'Host.description'
+                    ],
+                    'order' => [
+                        'Host.name' => 'asc'
                     ]
                 ],
                 'Hosttemplate' => [
@@ -567,18 +577,27 @@ class ContainersController extends AppController {
                         'Hosttemplate.id',
                         'Hosttemplate.name',
                         'Hosttemplate.description'
+                    ],
+                    'order' => [
+                        'Hosttemplate.name' => 'asc'
                     ]
                 ],
                 'Servicetemplate' => [
                     'fields' => [
                         'Servicetemplate.id',
                         'Servicetemplate.name'
+                    ],
+                    'order' => [
+                        'Servicetemplate.name' => 'asc'
                     ]
                 ],
                 'Timeperiod' => [
                     'fields' => [
                         'Timeperiod.id',
                         'Timeperiod.name'
+                    ],
+                    'order' => [
+                        'Timeperiod.name' => 'asc'
                     ]
                 ],
                 'Hostdependency' => [
@@ -605,6 +624,9 @@ class ContainersController extends AppController {
                     'fields' => [
                         'Contact.id',
                         'Contact.name'
+                    ],
+                    'order' => [
+                        'Contact.name' => 'asc'
                     ]
                 ],
                 'ContainerContactgroup' => [
@@ -616,6 +638,9 @@ class ContainersController extends AppController {
                         'fields' => [
                             'Contactgroup.id'
                         ]
+                    ],
+                    'order' => [
+                        'ContainerContactgroup.name' => 'asc'
                     ]
                 ],
                 'ContainerHostgroup' => [
@@ -628,6 +653,9 @@ class ContainersController extends AppController {
                             'Hostgroup.id',
                             'Hostgroup.description'
                         ]
+                    ],
+                    'order' => [
+                        'ContainerHostgroup.name' => 'asc'
                     ]
                 ],
                 'ContainerServicegroup' => [
@@ -639,6 +667,9 @@ class ContainersController extends AppController {
                         'fields' => [
                             'Servicegroup.id'
                         ]
+                    ],
+                    'order' => [
+                        'ContainerServicegroup.name' => 'asc'
                     ]
                 ],
                 'ContainerServicetemplategroup' => [
@@ -650,6 +681,9 @@ class ContainersController extends AppController {
                         'fields' => [
                             'Servicetemplategroup.id'
                         ]
+                    ],
+                    'order' => [
+                        'ContainerServicetemplategroup.name' => 'asc'
                     ]
                 ]
             ],
