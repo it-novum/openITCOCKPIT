@@ -24,8 +24,8 @@
 //	confirmation.
 
 use itnovum\openITCOCKPIT\Core\ContainerConditions;
+use itnovum\openITCOCKPIT\Core\ModuleManager;
 use itnovum\openITCOCKPIT\Filter\ContainerFilter;
-
 
 
 /**
@@ -108,19 +108,19 @@ class ContainersController extends AppController {
         }
     }
 
-    public function edit(){
+    public function edit() {
         $this->layout = 'blank';
-        if(!$this->isAngularJsRequest()){
+        if (!$this->isAngularJsRequest()) {
             return;
         }
-        if($this->request->is('post')){
+        if ($this->request->is('post')) {
             $containerId = $this->request->data['Container']['id'];
             $containerTypeId = $this->request->data['Container']['containertype_id'];
-            if (!$this->Container->exists($containerId) || $containerTypeId!=5) {
+            if (!$this->Container->exists($containerId) || $containerTypeId != 5) {
                 throw new NotFoundException(__('Invalid container'));
             }
 
-            if(!$this->Container->save($this->request->data)){
+            if (!$this->Container->save($this->request->data)) {
                 Cache::clear(false, 'permissions');
                 $this->serializeErrorMessage();
             } else {
@@ -152,7 +152,7 @@ class ContainersController extends AppController {
      * @since  3.0
      */
     public function byTenant($id = null) {
-        if(!$this->isApiRequest()){
+        if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();
         }
         if (!$this->Container->hasAny()) {
@@ -166,28 +166,28 @@ class ContainersController extends AppController {
         ]);
 
         $parent[0]['Container']['allow_edit'] = false;
-        if(isset($this->MY_RIGHTS_LEVEL[$parent[0]['Container']['id']])){
-            if((int)$this->MY_RIGHTS_LEVEL[$parent[0]['Container']['id']] === WRITE_RIGHT){
+        if (isset($this->MY_RIGHTS_LEVEL[$parent[0]['Container']['id']])) {
+            if ((int)$this->MY_RIGHTS_LEVEL[$parent[0]['Container']['id']] === WRITE_RIGHT) {
                 $parent[0]['Container']['allow_edit'] = true;
             }
         }
         $containers = $this->Container->children($id, false, null, 'name');
-        foreach($containers as $key => $container){
+        foreach ($containers as $key => $container) {
             $containers[$key]['Container']['allow_edit'] = false;
             $containerId = $container['Container']['id'];
-            if(isset($this->MY_RIGHTS_LEVEL[$containerId])){
-                if((int)$this->MY_RIGHTS_LEVEL[$containerId] === WRITE_RIGHT){
+            if (isset($this->MY_RIGHTS_LEVEL[$containerId])) {
+                if ((int)$this->MY_RIGHTS_LEVEL[$containerId] === WRITE_RIGHT) {
                     $containers[$key]['Container']['allow_edit'] = true;
                 }
             }
         }
         $hasChilds = true;
-        if(empty($containers) && !empty($parent[0])){
+        if (empty($containers) && !empty($parent[0])) {
             $containers = $parent[0];
             $hasChilds = false;
         }
         $nest = Hash::nest($containers);
-        $parent[0]['children'] = ($hasChilds)?$nest:[];
+        $parent[0]['children'] = ($hasChilds) ? $nest : [];
         $this->set('nest', $parent);
         $this->set('_serialize', ['nest']);
     }
@@ -204,7 +204,7 @@ class ContainersController extends AppController {
      * @since  3.0
      */
     public function byTenantForSelect($id = null, $options = []) {
-        if(!$this->isApiRequest()){
+        if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();
         }
         $this->set('paths', $this->Tree->easyPath($this->Tree->resolveChildrenOfContainerIds($id), OBJECT_NODE));
@@ -461,11 +461,228 @@ class ContainersController extends AppController {
             );
         } else {
             $containers = $this->Container->makeItJavaScriptAble(
-                $containers = $this->Tree->easyPath($this->getWriteContainers(),OBJECT_HOST,[],$this->hasRootPrivileges,[CT_HOSTGROUP])
+                $containers = $this->Tree->easyPath($this->getWriteContainers(), OBJECT_HOST, [], $this->hasRootPrivileges, [CT_HOSTGROUP])
             );
         }
 
         $this->set(compact(['containers']));
         $this->set('_serialize', ['containers']);
+    }
+
+    public function showDetails($id = null) {
+        $this->layout = 'angularjs';
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
+            return;
+        }
+        if (!$this->allowedByContainerId($id)) {
+            $this->render403();
+            return;
+        }
+        if (!$this->Container->exists($id)) {
+            throw new NotFoundException(__('Invalid container'));
+        }
+
+        $this->Container->bindModel([
+                'hasMany' => [
+                    'Hostdependency',
+                    'Servicedependency',
+                    'Hostescalation',
+                    'Serviceescalation',
+                    'ContainerNode' => [
+                        'className' => 'Container',
+                        'foreignKey' => 'parent_id',
+                        'conditions' => [
+                            'ContainerNode.containertype_id' => CT_NODE
+                        ]
+                    ],
+                    'ContainerLocation' => [
+                        'className' => 'Container',
+                        'foreignKey' => 'parent_id',
+                        'dependent' => true,
+                        'conditions' => [
+                            'ContainerLocation.containertype_id' => CT_LOCATION
+                        ]
+                    ],
+                    'ContainerHostgroup' => [
+                        'className' => 'Container',
+                        'foreignKey' => 'parent_id',
+                        'dependent' => true,
+                        'conditions' => [
+                            'ContainerHostgroup.containertype_id' => CT_HOSTGROUP
+                        ]
+                    ],
+                    'ContainerServicegroup' => [
+                        'className' => 'Container',
+                        'foreignKey' => 'parent_id',
+                        'dependent' => true,
+                        'conditions' => [
+                            'ContainerServicegroup.containertype_id' => CT_SERVICEGROUP
+                        ]
+                    ],
+                    'ContainerServicetemplategroup' => [
+                        'className' => 'Container',
+                        'foreignKey' => 'parent_id',
+                        'dependent' => true,
+                        'conditions' => [
+                            'ContainerServicetemplategroup.containertype_id' => CT_SERVICETEMPLATEGROUP
+                        ]
+                    ],
+                    'ContainerContactgroup' => [
+                        'className' => 'Container',
+                        'foreignKey' => 'parent_id',
+                        'dependent' => true,
+                        'conditions' => [
+                            'ContainerContactgroup.containertype_id' => CT_CONTACTGROUP
+                        ]
+                    ]
+                ],
+            ]
+        );
+
+        $containerDetails = $this->Container->find('first', [
+            'recursive' => -1,
+            'contain' => [
+                'ContainerLocation' => [
+                    'fields' => [
+                        'ContainerLocation.id',
+                        'ContainerLocation.name'
+                    ],
+                    'Location' => [
+                        'fields' => [
+                            'Location.id',
+                            'Location.description'
+                        ]
+                    ]
+                ],
+                'ContainerNode' => [
+                    'fields' => [
+                        'ContainerNode.id',
+                        'ContainerNode.name'
+                    ]
+                ],
+                'Host' => [
+                    'fields' => [
+                        'Host.id',
+                        'Host.name'
+                    ]
+                ],
+                'Hosttemplate' => [
+                    'fields' => [
+                        'Hosttemplate.id',
+                        'Hosttemplate.name',
+                        'Hosttemplate.description'
+                    ]
+                ],
+                'Servicetemplate' => [
+                    'fields' => [
+                        'Servicetemplate.id',
+                        'Servicetemplate.name'
+                    ]
+                ],
+                'Timeperiod' => [
+                    'fields' => [
+                        'Timeperiod.id',
+                        'Timeperiod.name'
+                    ]
+                ],
+                'Hostdependency' => [
+                    'fields' => [
+                        'Hostdependency.id'
+                    ]
+                ],
+                'Servicedependency' => [
+                    'fields' => [
+                        'Servicedependency.id'
+                    ]
+                ],
+                'Hostescalation' => [
+                    'fields' => [
+                        'Hostescalation.id'
+                    ]
+                ],
+                'Serviceescalation' => [
+                    'fields' => [
+                        'Serviceescalation.id'
+                    ]
+                ],
+                'Contact' => [
+                    'fields' => [
+                        'Contact.id',
+                        'Contact.name'
+                    ]
+                ],
+                'ContainerContactgroup' => [
+                    'fields' => [
+                        'ContainerContactgroup.id',
+                        'ContainerContactgroup.name'
+                    ],
+                    'Contactgroup' => [
+                        'fields' => [
+                            'Contactgroup.id'
+                        ]
+                    ]
+                ],
+                'ContainerHostgroup' => [
+                    'fields' => [
+                        'ContainerHostgroup.id',
+                        'ContainerHostgroup.name'
+                    ],
+                    'Hostgroup' => [
+                        'fields' => [
+                            'Hostgroup.id'
+                        ]
+                    ]
+                ],
+                'ContainerServicegroup' => [
+                    'fields' => [
+                        'ContainerServicegroup.id',
+                        'ContainerServicegroup.name'
+                    ],
+                    'Servicegroup' => [
+                        'fields' => [
+                            'Servicegroup.id'
+                        ]
+                    ]
+                ],
+                'ContainerServicetemplategroup' => [
+                    'fields' => [
+                        'ContainerServicetemplategroup.id',
+                        'ContainerServicetemplategroup.name'
+                    ],
+                    'Servicetemplategroup' => [
+                        'fields' => [
+                            'Servicetemplategroup.id'
+                        ]
+                    ]
+                ]
+            ],
+            'conditions' => [
+                'Container.id' => $id
+            ]
+        ]);
+        $ModuleManager = new ModuleManager('DistributeModule');
+        if ($ModuleManager->moduleExists()) {
+            $SatelliteModel = $ModuleManager->loadModel('Satellite');
+            $satellites = $SatelliteModel->find('all', [
+                'recursive' => -1,
+                'fields' => [
+                    'Satellite.id',
+                    'Satellite.name'
+                ],
+                'conditions' => [
+                    'Satellite.container_id' => 1//$id
+                ],
+                'order' => [
+                    'Satellite.name' => 'asc'
+                ]
+            ]);
+            if (!empty($satellites)) {
+                $containerDetails['Satellites'] = $satellites;
+            }
+        }
+        $this->set(compact(['containerDetails']));
+        $this->set('_serialize', ['containerDetails']);
+
     }
 }

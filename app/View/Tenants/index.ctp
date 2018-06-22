@@ -31,7 +31,7 @@
             <?php echo __('System'); ?>
             <span>>
                 <?php echo __('Tenants'); ?>
-			</span>
+            </span>
         </h1>
     </div>
 </div>
@@ -147,11 +147,38 @@
                                         <i ng-if="tenant.Tenant.is_active == 0"
                                            class="fa fa-power-off fa-lg txt-color-red"></i>
                                     </td>
-                                    <td class="text-center">
-                                        <a href="/tenants/edit/{{tenant.Tenant.id}}"
-                                           ng-if="tenant.Tenant.allowEdit">
-                                            <i class="fa fa-cog fa-lg txt-color-teal"></i>
-                                        </a>
+                                    <td class="width-50">
+                                        <div class="btn-group">
+                                            <?php if ($this->Acl->hasPermission('edit')): ?>
+                                                <a href="/tenants/edit/{{ tenant.Tenant.id}}"
+                                                   class="btn btn-default" ng-if="tenant.Tenant.allowEdit">
+                                                    &nbsp;<i class="fa fa-cog"></i>&nbsp;
+                                                </a>
+                                            <?php else: ?>
+                                                <a href="javascript:void(0);" class="btn btn-default" ng-hide="tenant.Tenant.allowEdit">
+                                                    &nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
+                                            <?php endif; ?>
+                                            <a href="javascript:void(0);" data-toggle="dropdown"
+                                               class="btn btn-default dropdown-toggle"><span
+                                                        class="caret"></span></a>
+                                            <ul class="dropdown-menu pull-right"
+                                                id="menuHack-{{tenant.Tenant.id}}">
+                                                <?php if ($this->Acl->hasPermission('edit')): ?>
+                                                    <li>
+                                                        <a href="/tenants/edit/{{tenant.Tenant.id}}" ng-if="tenant.Tenant.allowEdit">
+                                                            <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
+                                                        </a>
+                                                    </li>
+                                                <?php endif; ?>
+                                                <?php if ($this->Acl->hasPermission('showDetails', 'containers')): ?>
+                                                    <li>
+                                                        <a href="/containers/showDetails/{{ tenant.Tenant.container_id}}">
+                                                            <i class="fa fa-info-circle"></i> <?php echo __('Show details'); ?>
+                                                        </a>
+                                                    </li>
+                                                <?php endif; ?>
+                                            </ul>
+                                        </div>
                                     </td>
                                 </tr>
                                 </tbody>
