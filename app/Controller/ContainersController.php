@@ -499,7 +499,6 @@ class ContainersController extends AppController {
                     'ContainerLocation' => [
                         'className' => 'Container',
                         'foreignKey' => 'parent_id',
-                        'dependent' => true,
                         'conditions' => [
                             'ContainerLocation.containertype_id' => CT_LOCATION
                         ]
@@ -507,7 +506,6 @@ class ContainersController extends AppController {
                     'ContainerHostgroup' => [
                         'className' => 'Container',
                         'foreignKey' => 'parent_id',
-                        'dependent' => true,
                         'conditions' => [
                             'ContainerHostgroup.containertype_id' => CT_HOSTGROUP
                         ]
@@ -515,7 +513,6 @@ class ContainersController extends AppController {
                     'ContainerServicegroup' => [
                         'className' => 'Container',
                         'foreignKey' => 'parent_id',
-                        'dependent' => true,
                         'conditions' => [
                             'ContainerServicegroup.containertype_id' => CT_SERVICEGROUP
                         ]
@@ -523,7 +520,6 @@ class ContainersController extends AppController {
                     'ContainerServicetemplategroup' => [
                         'className' => 'Container',
                         'foreignKey' => 'parent_id',
-                        'dependent' => true,
                         'conditions' => [
                             'ContainerServicetemplategroup.containertype_id' => CT_SERVICETEMPLATEGROUP
                         ]
@@ -531,7 +527,6 @@ class ContainersController extends AppController {
                     'ContainerContactgroup' => [
                         'className' => 'Container',
                         'foreignKey' => 'parent_id',
-                        'dependent' => true,
                         'conditions' => [
                             'ContainerContactgroup.containertype_id' => CT_CONTACTGROUP
                         ]
@@ -630,7 +625,8 @@ class ContainersController extends AppController {
                     ],
                     'Hostgroup' => [
                         'fields' => [
-                            'Hostgroup.id'
+                            'Hostgroup.id',
+                            'Hostgroup.description'
                         ]
                     ]
                 ],
