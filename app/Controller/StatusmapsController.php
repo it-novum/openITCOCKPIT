@@ -120,7 +120,14 @@ class StatusmapsController extends AppController {
         }
         $containerIds = [];
         if ($this->hasRootPrivileges === false) {
-            $containerIds = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_HOST, [], $this->hasRootPrivileges, [CT_HOSTGROUP]);
+            $containerIds = $this->Tree->resolveChildrenOfContainerIds(
+                $this->MY_RIGHTS,
+                false, [
+                CT_GLOBAL,
+                CT_TENANT,
+                CT_LOCATION,
+                CT_NODE
+            ]);
         }
         $StatusmapFilter = new StatusmapFilter($this->request);
         $nodes = [];
