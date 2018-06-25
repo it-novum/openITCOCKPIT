@@ -1,4 +1,4 @@
-<?php
+´<?php
 // Copyright (C) <2015>  <it-novum GmbH>
 //
 // This file is dual licensed
@@ -36,7 +36,7 @@ if(!empty($widgetData['Widget']['Widget']['id'])){
 ?>
 <div class="widget-body grafana-body">
     <div class="padding-0 <?php //if (!is_null($grafanaHostId)) {
-       // echo 'display-none';
+    // echo 'display-none';
     //} ?>">
         <div class="panel-group smart-accordion-default" id="accordion-<?php echo $widget['Widget']['id']; ?>">
             <div class="panel panel-default">
@@ -125,9 +125,9 @@ if(!empty($widgetData['Widget']['Widget']['id'])){
     </div>
     <div class="grafanaWrapper">
         <?php
-        if ($GrafanaDashboardExists): ?>
+        if (isset($widgetData['GrafanaDashboardExists']) && $widgetData['GrafanaDashboardExists'] === true): ?>
             <div class="grafanaContainer" data-id-map="<?php echo $grafanaHostId; ?>">
-                <iframe src="<?php echo $GrafanaConfiguration->getIframeUrl(); ?>" width="100%" frameBorder="0" onload="this.height=(screen.height+15);"></iframe>
+                <iframe src="<?php echo $widgetData['GrafanaConfiguration']->getIframeUrl(); ?>" width="100%" frameBorder="0" onload="this.height=(screen.height+15);"></iframe>
             </div>
         <?php else: ?>
             <div class="mapContainer" data-id-map="0">
