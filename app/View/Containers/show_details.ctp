@@ -233,6 +233,92 @@
                             </tr>
                             <tr>
                                 <th class="no-sort" colspan="2">
+                                    <i class="fa fa-sitemap fa-lg"></i>
+                                    <?php echo __('Host dependencies'); ?> ({{containerDetails.Hostdependency.length}})
+                                </th>
+                            </tr>
+                            <tr ng-repeat="hostdependency in containerDetails.Hostdependency">
+                                <td>
+                                    <?php if ($this->Acl->hasPermission('edit', 'hostdependencies')): ?>
+                                        <a href="/hostdependencies/edit/{{ hostdependency.id }}"
+                                           target="_blank">
+                                            <?php echo __('Host dependency'); ?>
+                                        </a>
+                                    <?php else: ?>
+                                        <span><?php echo __('Host dependency'); ?></span>
+                                    <?php endif; ?>
+                                </td>
+                                <td>
+                                    <div class="btn-group" ng-if="hostdependency.id">
+                                        <?php if ($this->Acl->hasPermission('edit', 'hostdependencies')): ?>
+                                            <a href="/hostdependencies/edit/{{hostdependency.id}}"
+                                               class="btn btn-default">&nbsp;<i class="fa fa-cog"></i>&nbsp;
+                                            </a>
+                                        <?php else: ?>
+                                            <a href="javascript:void(0);" class="btn btn-default">&nbsp;
+                                                <i class="fa fa-cog"></i> </a>
+                                        <?php endif; ?>
+                                        <a href="javascript:void(0);" data-toggle="dropdown"
+                                           class="btn btn-default dropdown-toggle">
+                                            <span class="caret"></span>
+                                        </a>
+                                        <ul class="dropdown-menu pull-right" id="menuHack-hostdependency-{{hostdependency.id}}">
+                                            <?php if ($this->Acl->hasPermission('edit', 'hostdependencies')): ?>
+                                                <li>
+                                                    <a href="/hostdependencies/edit/{{hostdependency.id}}">
+                                                        <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
+                                                    </a>
+                                                </li>
+                                            <?php endif; ?>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="no-sort" colspan="2">
+                                    <i class="fa fa-bomb fa-lg"></i>
+                                    <?php echo __('Host escalations'); ?> ({{containerDetails.Hostescalation.length}})
+                                </th>
+                            </tr>
+                            <tr ng-repeat="hostescalation in containerDetails.Hostescalation">
+                                <td>
+                                    <?php if ($this->Acl->hasPermission('edit', 'hostescalations')): ?>
+                                        <a href="/hostescalations/edit/{{ hostescalation.id }}"
+                                           target="_blank">
+                                            <?php echo __('Host escalation'); ?>
+                                        </a>
+                                    <?php else: ?>
+                                        <span><?php echo __('Host escalation'); ?></span>
+                                    <?php endif; ?>
+                                </td>
+                                <td>
+                                    <div class="btn-group" ng-if="hostescalation.id">
+                                        <?php if ($this->Acl->hasPermission('edit', 'hostescalations')): ?>
+                                            <a href="/hostescalations/edit/{{hostescalation.id}}"
+                                               class="btn btn-default">&nbsp;<i class="fa fa-cog"></i>&nbsp;
+                                            </a>
+                                        <?php else: ?>
+                                            <a href="javascript:void(0);" class="btn btn-default">&nbsp;
+                                                <i class="fa fa-cog"></i> </a>
+                                        <?php endif; ?>
+                                        <a href="javascript:void(0);" data-toggle="dropdown"
+                                           class="btn btn-default dropdown-toggle">
+                                            <span class="caret"></span>
+                                        </a>
+                                        <ul class="dropdown-menu pull-right" id="menuHack-hostescalation-{{hostescalation.id}}">
+                                            <?php if ($this->Acl->hasPermission('edit', 'hostescalations')): ?>
+                                                <li>
+                                                    <a href="/hostescalations/edit/{{hostescalation.id}}">
+                                                        <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
+                                                    </a>
+                                                </li>
+                                            <?php endif; ?>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="no-sort" colspan="2">
                                     <i class="fa fa-pencil-square-o fa-lg"></i>
                                     <?php echo __('Service template groups'); ?> ({{containerDetails.ContainerServicetemplategroup.length}})
                                 </th>
@@ -377,6 +463,92 @@
                             </tr>
                             <tr>
                                 <th class="no-sort" colspan="2">
+                                    <i class="fa fa-sitemap fa-lg"></i>
+                                    <?php echo __('Service dependencies'); ?> ({{containerDetails.Servicedependency.length}})
+                                </th>
+                            </tr>
+                            <tr ng-repeat="servicedependency in containerDetails.Servicedependency">
+                                <td>
+                                    <?php if ($this->Acl->hasPermission('edit', 'servicedependencies')): ?>
+                                        <a href="/servicedependencies/edit/{{ servicedependency.id }}"
+                                           target="_blank">
+                                            <?php echo __('Service dependency'); ?>
+                                        </a>
+                                    <?php else: ?>
+                                        <span><?php echo __('Service dependency'); ?></span>
+                                    <?php endif; ?>
+                                </td>
+                                <td>
+                                    <div class="btn-group" ng-if="servicedependency.id">
+                                        <?php if ($this->Acl->hasPermission('edit', 'servicedependencies')): ?>
+                                            <a href="/servicedependencies/edit/{{servicedependency.id}}"
+                                               class="btn btn-default">&nbsp;<i class="fa fa-cog"></i>&nbsp;
+                                            </a>
+                                        <?php else: ?>
+                                            <a href="javascript:void(0);" class="btn btn-default">&nbsp;
+                                                <i class="fa fa-cog"></i> </a>
+                                        <?php endif; ?>
+                                        <a href="javascript:void(0);" data-toggle="dropdown"
+                                           class="btn btn-default dropdown-toggle">
+                                            <span class="caret"></span>
+                                        </a>
+                                        <ul class="dropdown-menu pull-right" id="menuHack-servicedependency-{{servicedependency.id}}">
+                                            <?php if ($this->Acl->hasPermission('edit', 'servicedependencies')): ?>
+                                                <li>
+                                                    <a href="/servicedependencies/edit/{{servicedependency.id}}">
+                                                        <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
+                                                    </a>
+                                                </li>
+                                            <?php endif; ?>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="no-sort" colspan="2">
+                                    <i class="fa fa-bomb fa-lg"></i>
+                                    <?php echo __('Service escalations'); ?> ({{containerDetails.Serviceescalation.length}})
+                                </th>
+                            </tr>
+                            <tr ng-repeat="serviceescalation in containerDetails.Serviceescalation">
+                                <td>
+                                    <?php if ($this->Acl->hasPermission('edit', 'serviceescalations')): ?>
+                                        <a href="/serviceescalations/edit/{{ serviceescalation.id }}"
+                                           target="_blank">
+                                            <?php echo __('Service escalation'); ?>
+                                        </a>
+                                    <?php else: ?>
+                                        <span><?php echo __('Service escalation'); ?></span>
+                                    <?php endif; ?>
+                                </td>
+                                <td>
+                                    <div class="btn-group" ng-if="serviceescalation.id">
+                                        <?php if ($this->Acl->hasPermission('edit', 'serviceescalations')): ?>
+                                            <a href="/serviceescalations/edit/{{serviceescalation.id}}"
+                                               class="btn btn-default">&nbsp;<i class="fa fa-cog"></i>&nbsp;
+                                            </a>
+                                        <?php else: ?>
+                                            <a href="javascript:void(0);" class="btn btn-default">&nbsp;
+                                                <i class="fa fa-cog"></i> </a>
+                                        <?php endif; ?>
+                                        <a href="javascript:void(0);" data-toggle="dropdown"
+                                           class="btn btn-default dropdown-toggle">
+                                            <span class="caret"></span>
+                                        </a>
+                                        <ul class="dropdown-menu pull-right" id="menuHack-serviceescalation-{{serviceescalation.id}}">
+                                            <?php if ($this->Acl->hasPermission('edit', 'serviceescalations')): ?>
+                                                <li>
+                                                    <a href="/serviceescalations/edit/{{serviceescalation.id}}">
+                                                        <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
+                                                    </a>
+                                                </li>
+                                            <?php endif; ?>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="no-sort" colspan="2">
                                     <i class="fa fa-users fa-lg"></i>
                                     <?php echo __('Contact groups'); ?> ({{containerDetails.ContainerContactgroup.length}})
                                 </th>
@@ -471,6 +643,49 @@
                             </tr>
                             <tr>
                                 <th class="no-sort" colspan="2">
+                                    <i class="fa fa-clock-o fa-lg"></i>
+                                    <?php echo __('Time periods'); ?> ({{containerDetails.Timeperiod.length}})
+                                </th>
+                            </tr>
+                            <tr ng-repeat="timeperiod in containerDetails.Timeperiod">
+                                <td>
+                                    <?php if ($this->Acl->hasPermission('edit', 'timeperiods')): ?>
+                                        <a href="/timeperiods/edit/{{ timeperiod.id }}"
+                                           target="_blank">
+                                            {{ timeperiod.name }}
+                                        </a>
+                                    <?php else: ?>
+                                        <span>{{ timeperiod.name }}</span>
+                                    <?php endif; ?>
+                                </td>
+                                <td>
+                                    <div class="btn-group" ng-if="timeperiod.id">
+                                        <?php if ($this->Acl->hasPermission('edit', 'timeperiods')): ?>
+                                            <a href="/timeperiods/edit/{{timeperiod.id}}"
+                                               class="btn btn-default">&nbsp;<i class="fa fa-cog"></i>&nbsp;
+                                            </a>
+                                        <?php else: ?>
+                                            <a href="javascript:void(0);" class="btn btn-default">&nbsp;
+                                                <i class="fa fa-cog"></i> </a>
+                                        <?php endif; ?>
+                                        <a href="javascript:void(0);" data-toggle="dropdown"
+                                           class="btn btn-default dropdown-toggle">
+                                            <span class="caret"></span>
+                                        </a>
+                                        <ul class="dropdown-menu pull-right" id="menuHack-timeperiod-{{timeperiod.id}}">
+                                            <?php if ($this->Acl->hasPermission('edit', 'timeperiods')): ?>
+                                                <li>
+                                                    <a href="/timeperiods/edit/{{timeperiod.id}}">
+                                                        <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
+                                                    </a>
+                                                </li>
+                                            <?php endif; ?>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="no-sort" colspan="2">
                                     <i class="fa fa-cloud fa-lg"></i>
                                     <?php echo __('Satellites'); ?> ({{containerDetails.Satellite.length}})
                                 </th>
@@ -478,7 +693,7 @@
                             <tr ng-repeat="satellite in containerDetails.Satellite">
                                 <td>
                                     <?php if ($this->Acl->hasPermission('edit', 'satellites', 'DistributeModule')): ?>
-                                        <a href="/distribute_module/satellites/edit/{{ satellite.id }}"
+                                        <a href="/distribute_module/satellites/edit/{{ satellite.Satellite.id }}"
                                            target="_blank">
                                             {{ satellite.Satellite.name }}
                                         </a>
@@ -487,7 +702,7 @@
                                     <?php endif; ?>
                                 </td>
                                 <td>
-                                    <div class="btn-group" ng-if="satellite.id">
+                                    <div class="btn-group" ng-if="satellite.Satellite.id">
                                         <?php if ($this->Acl->hasPermission('edit', 'satellites', 'DistributeModule')): ?>
                                             <a href="/distribute_module/satellites/edit/{{satellite.Satellite.id}}"
                                                class="btn btn-default">&nbsp;<i class="fa fa-cog"></i>&nbsp;

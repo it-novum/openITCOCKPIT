@@ -705,7 +705,7 @@ class ContainersController extends AppController {
                     'Satellite.name'
                 ],
                 'conditions' => [
-                    'Satellite.container_id' => 1//$id
+                    'Satellite.container_id' => $id
                 ],
                 'order' => [
                     'Satellite.name' => 'asc'
