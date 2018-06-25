@@ -469,6 +469,49 @@
                                     </div>
                                 </td>
                             </tr>
+                            <tr>
+                                <th class="no-sort" colspan="2">
+                                    <i class="fa fa-cloud fa-lg"></i>
+                                    <?php echo __('Satellites'); ?> ({{containerDetails.Satellite.length}})
+                                </th>
+                            </tr>
+                            <tr ng-repeat="satellite in containerDetails.Satellite">
+                                <td>
+                                    <?php if ($this->Acl->hasPermission('edit', 'satellites', 'DistributeModule')): ?>
+                                        <a href="/distribute_module/satellites/edit/{{ satellite.id }}"
+                                           target="_blank">
+                                            {{ satellite.Satellite.name }}
+                                        </a>
+                                    <?php else: ?>
+                                        <span>{{ satellite.Satellite.name }}</span>
+                                    <?php endif; ?>
+                                </td>
+                                <td>
+                                    <div class="btn-group" ng-if="satellite.id">
+                                        <?php if ($this->Acl->hasPermission('edit', 'satellites', 'DistributeModule')): ?>
+                                            <a href="/distribute_module/satellites/edit/{{satellite.Satellite.id}}"
+                                               class="btn btn-default">&nbsp;<i class="fa fa-cog"></i>&nbsp;
+                                            </a>
+                                        <?php else: ?>
+                                            <a href="javascript:void(0);" class="btn btn-default">&nbsp;
+                                                <i class="fa fa-cog"></i> </a>
+                                        <?php endif; ?>
+                                        <a href="javascript:void(0);" data-toggle="dropdown"
+                                           class="btn btn-default dropdown-toggle">
+                                            <span class="caret"></span>
+                                        </a>
+                                        <ul class="dropdown-menu pull-right" id="menuHack-satellite-{{satellite.Satellite.id}}">
+                                            <?php if ($this->Acl->hasPermission('edit', 'satellites', 'DistributeModule')): ?>
+                                                <li>
+                                                    <a href="/distribute_module/satellites/edit/{{satellite.Satellite.id}}">
+                                                        <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
+                                                    </a>
+                                                </li>
+                                            <?php endif; ?>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>

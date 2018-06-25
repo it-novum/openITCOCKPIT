@@ -712,7 +712,7 @@ class ContainersController extends AppController {
                 ]
             ]);
             if (!empty($satellites)) {
-                $containerDetails['Satellites'] = $satellites;
+                $containerDetails['Satellite'] = $satellites;
             }
         }
         $this->set(compact(['containerDetails']));
