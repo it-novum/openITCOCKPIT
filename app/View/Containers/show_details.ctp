@@ -302,7 +302,7 @@
                                 <td>
                                     <div class="btn-group" ng-if="servicetemplate.id">
                                         <?php if ($this->Acl->hasPermission('edit', 'servicetemplates')): ?>
-                                            <a href="/hosts/edit/{{servicetemplate.id}}"
+                                            <a href="/servicetemplates/edit/{{servicetemplate.id}}"
                                                class="btn btn-default">&nbsp;<i class="fa fa-cog"></i>&nbsp;
                                             </a>
                                         <?php else: ?>
@@ -316,7 +316,7 @@
                                         <ul class="dropdown-menu pull-right" id="menuHack-servicetemplate-{{servicetemplate.id}}">
                                             <?php if ($this->Acl->hasPermission('edit', 'servicetemplates')): ?>
                                                 <li>
-                                                    <a href="/hosts/edit/{{servicetemplate.id}}">
+                                                    <a href="/servicetemplates/edit/{{servicetemplate.id}}">
                                                         <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
                                                     </a>
                                                 </li>
@@ -377,7 +377,7 @@
                             </tr>
                             <tr>
                                 <th class="no-sort" colspan="2">
-                                    <i class="fa fa-user fa-lg"></i>
+                                    <i class="fa fa-users fa-lg"></i>
                                     <?php echo __('Contact groups'); ?> ({{containerDetails.ContainerContactgroup.length}})
                                 </th>
                             </tr>
@@ -417,6 +417,50 @@
                                             <?php if ($this->Acl->hasPermission('edit', 'contactgroups')): ?>
                                                 <li>
                                                     <a href="/contactgroups/edit/{{contactgroupContainer.Contactgroup[0].id}}">
+                                                        <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
+                                                    </a>
+                                                </li>
+                                            <?php endif; ?>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="no-sort" colspan="2">
+                                    <i class="fa fa-user fa-lg"></i>
+                                    <?php echo __('Contacts'); ?> ({{containerDetails.Contact.length}})
+                                </th>
+                            </tr>
+                            <tr ng-repeat="contact in containerDetails.Contact">
+                                <td>
+                                    <?php if ($this->Acl->hasPermission('edit', 'contacts')): ?>
+                                        <a href="/contacts/edit/{{ contact.id }}"
+                                           target="_blank">
+                                            {{ contact.name }}
+                                        </a>
+                                    <?php else: ?>
+                                        <span>{{ contact.name }}</span>
+                                    <?php endif; ?>
+                                    <i class="text-info">{{ contact.description }}</i>
+                                </td>
+                                <td>
+                                    <div class="btn-group" ng-if="contact.id">
+                                        <?php if ($this->Acl->hasPermission('edit', 'contacts')): ?>
+                                            <a href="/contacts/edit/{{contact.id}}"
+                                               class="btn btn-default">&nbsp;<i class="fa fa-cog"></i>&nbsp;
+                                            </a>
+                                        <?php else: ?>
+                                            <a href="javascript:void(0);" class="btn btn-default">&nbsp;
+                                                <i class="fa fa-cog"></i> </a>
+                                        <?php endif; ?>
+                                        <a href="javascript:void(0);" data-toggle="dropdown"
+                                           class="btn btn-default dropdown-toggle">
+                                            <span class="caret"></span>
+                                        </a>
+                                        <ul class="dropdown-menu pull-right" id="menuHack-contact-{{contact.id}}">
+                                            <?php if ($this->Acl->hasPermission('edit', 'contacts')): ?>
+                                                <li>
+                                                    <a href="/contacts/edit/{{contact.id}}">
                                                         <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
                                                     </a>
                                                 </li>

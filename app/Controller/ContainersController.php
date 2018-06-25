@@ -624,7 +624,8 @@ class ContainersController extends AppController {
                 'Contact' => [
                     'fields' => [
                         'Contact.id',
-                        'Contact.name'
+                        'Contact.name',
+                        'Contact.description'
                     ],
                     'order' => [
                         'Contact.name' => 'asc'
