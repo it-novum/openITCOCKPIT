@@ -281,6 +281,50 @@
                                     </div>
                                 </td>
                             </tr>
+                            <tr>
+                                <th class="no-sort" colspan="2">
+                                    <i class="fa fa-pencil-square-o fa-lg"></i>
+                                    <?php echo __('Service templates'); ?> ({{containerDetails.Servicetemplate.length}})
+                                </th>
+                            </tr>
+                            <tr ng-repeat="servicetemplate in containerDetails.Servicetemplate">
+                                <td>
+                                    <?php if ($this->Acl->hasPermission('edit', 'servicetemplates')): ?>
+                                        <a href="/servicetemplates/edit/{{ servicetemplate.id }}"
+                                           target="_blank">
+                                            {{ servicetemplate.template_name }}
+                                        </a>
+                                    <?php else: ?>
+                                        <span>{{ servicetemplate.template_name }}</span>
+                                    <?php endif; ?>
+                                    <i class="text-info">{{ servicetemplate.name }}</i>
+                                </td>
+                                <td>
+                                    <div class="btn-group" ng-if="servicetemplate.id">
+                                        <?php if ($this->Acl->hasPermission('edit', 'servicetemplates')): ?>
+                                            <a href="/hosts/edit/{{servicetemplate.id}}"
+                                               class="btn btn-default">&nbsp;<i class="fa fa-cog"></i>&nbsp;
+                                            </a>
+                                        <?php else: ?>
+                                            <a href="javascript:void(0);" class="btn btn-default">&nbsp;
+                                                <i class="fa fa-cog"></i> </a>
+                                        <?php endif; ?>
+                                        <a href="javascript:void(0);" data-toggle="dropdown"
+                                           class="btn btn-default dropdown-toggle">
+                                            <span class="caret"></span>
+                                        </a>
+                                        <ul class="dropdown-menu pull-right" id="menuHack-host-{{servicetemplate.id}}">
+                                            <?php if ($this->Acl->hasPermission('edit', 'servicetemplates')): ?>
+                                                <li>
+                                                    <a href="/hosts/edit/{{servicetemplate.id}}">
+                                                        <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
+                                                    </a>
+                                                </li>
+                                            <?php endif; ?>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>

@@ -585,6 +585,7 @@ class ContainersController extends AppController {
                 'Servicetemplate' => [
                     'fields' => [
                         'Servicetemplate.id',
+                        'Servicetemplate.template_name',
                         'Servicetemplate.name'
                     ],
                     'order' => [
