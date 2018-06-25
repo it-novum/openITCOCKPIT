@@ -44,7 +44,7 @@
                     <span class="widget-icon"> <i class="fa fa-sitemap fa-rotate-270"></i> </span>
                     <h2><?php echo __('Objects overview'); ?> "{{containerDetails.Container.name}}"</h2>
                     <div class="widget-toolbar" role="menu">
-                        <?php echo $this->Utils->backButton() ?>
+                        <?php echo $this->Utils->backButton(__('Back'), $back_url); ?>
                     </div>
                 </header>
                 <div class="widget-body">
@@ -684,13 +684,13 @@
                                     </div>
                                 </td>
                             </tr>
-                            <tr>
+                            <tr ng-if="containerDetails.Satellite">
                                 <th class="no-sort" colspan="2">
                                     <i class="fa fa-cloud fa-lg"></i>
                                     <?php echo __('Satellites'); ?> ({{containerDetails.Satellite.length}})
                                 </th>
                             </tr>
-                            <tr ng-repeat="satellite in containerDetails.Satellite">
+                            <tr ng-repeat="satellite in containerDetails.Satellite" ng-if="containerDetails.Satellite">
                                 <td>
                                     <?php if ($this->Acl->hasPermission('edit', 'satellites', 'DistributeModule')): ?>
                                         <a href="/distribute_module/satellites/edit/{{ satellite.Satellite.id }}"

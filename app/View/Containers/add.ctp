@@ -10,6 +10,18 @@
     </a>
 <?php endif; ?>
 
+<?php if ($this->Acl->hasPermission('showDetails','containers')): ?>
+    <a ng-if="container.Container.containertype_id == <?php echo CT_NODE; ?> ||
+        container.Container.containertype_id == <?php echo CT_TENANT; ?> ||
+        container.Container.containertype_id == <?php echo CT_LOCATION; ?>"
+        class="text-info padding-left-10 font-xs pointer"
+        href="/containers/showDetails/{{ container.Container.id }}"
+        target="_blank"
+    >
+        <i class="fa fa-info"></i>
+        <?php echo __('Show details'); ?>
+    </a>
+<?php endif; ?>
 
 <div id="angularAddNode-{{container.Container.id}}" class="modal" role="dialog">
     <div class="modal-dialog modal-lg">

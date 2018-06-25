@@ -471,6 +471,10 @@ class ContainersController extends AppController {
 
     public function showDetails($id = null) {
         $this->layout = 'angularjs';
+
+        if (!$this->isAngularJsRequest()) {
+            $this->set('back_url', $this->referer());
+        }
         if (!$this->isApiRequest()) {
             //Only ship HTML template for angular
             return;
