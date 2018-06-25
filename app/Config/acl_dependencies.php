@@ -328,7 +328,11 @@ $config = [
             ],
             'Notifications'         => [
                 'index' => ['services'],
-            ]
+            ],
+            'Statusmaps' => [
+                'index' => ['hostAndServicesSummaryStatus'
+                ]
+            ],
         ],
         'roles_rights'   => [
             'Administrator' => ['*'],
