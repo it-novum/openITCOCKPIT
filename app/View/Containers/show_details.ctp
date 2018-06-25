@@ -272,7 +272,7 @@
                                         <ul class="dropdown-menu pull-right" id="menuHack-servicetemplategroup-{{servicetemplategroupContainer.id}}">
                                             <?php if ($this->Acl->hasPermission('edit', 'servicetemplategroups')): ?>
                                                 <li>
-                                                    <a href="/hostgroups/edit/{{servicetemplategroupContainer.Servicetemplategroup[0].id}}">
+                                                    <a href="/servicetemplategroups/edit/{{servicetemplategroupContainer.Servicetemplategroup[0].id}}">
                                                         <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
                                                     </a>
                                                 </li>
@@ -313,10 +313,110 @@
                                            class="btn btn-default dropdown-toggle">
                                             <span class="caret"></span>
                                         </a>
-                                        <ul class="dropdown-menu pull-right" id="menuHack-host-{{servicetemplate.id}}">
+                                        <ul class="dropdown-menu pull-right" id="menuHack-servicetemplate-{{servicetemplate.id}}">
                                             <?php if ($this->Acl->hasPermission('edit', 'servicetemplates')): ?>
                                                 <li>
                                                     <a href="/hosts/edit/{{servicetemplate.id}}">
+                                                        <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
+                                                    </a>
+                                                </li>
+                                            <?php endif; ?>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="no-sort" colspan="2">
+                                    <i class="fa fa-cogs fa-lg"></i>
+                                    <?php echo __('Service groups'); ?> ({{containerDetails.ContainerServicegroup.length}})
+                                </th>
+                            </tr>
+                            <tr ng-repeat="servicegroupContainer in containerDetails.ContainerServicegroup">
+                                <td>
+                                    <?php if ($this->Acl->hasPermission('edit', 'servicegroups')): ?>
+
+                                        <a href="/servicegroups/edit/{{ servicegroupContainer.Servicegroup[0].id }}"
+                                           ng-if="servicegroupContainer.Servicegroup[0].id"
+                                           target="_blank">
+                                            {{ servicegroupContainer.name }}
+                                        </a>
+                                        <span ng-hide="servicegroupContainer.Servicegroup[0].id">
+                                            <span class="changelog_delete">{{ servicegroupContainer.name }}</span>
+                                            <i><?php echo __(' ... invalid service group'); ?></i>
+                                        </span>
+                                    <?php else: ?>
+                                        <span>{{ servicegroupContainer.name }}</span>
+                                    <?php endif; ?>
+                                    <i class="text-info">{{ servicegroupContainer.Servicegroup[0].description }}</i>
+                                </td>
+                                <td>
+                                    <div class="btn-group" ng-if="servicegroupContainer.Servicegroup[0].id">
+                                        <?php if ($this->Acl->hasPermission('edit', 'servicegroups')): ?>
+                                            <a href="/servicegroups/edit/{{servicegroupContainer.Servicegroup[0].id}}"
+                                               class="btn btn-default">&nbsp;<i class="fa fa-cog"></i>&nbsp;
+                                            </a>
+                                        <?php else: ?>
+                                            <a href="javascript:void(0);" class="btn btn-default">&nbsp;
+                                                <i class="fa fa-cog"></i> </a>
+                                        <?php endif; ?>
+                                        <a href="javascript:void(0);" data-toggle="dropdown"
+                                           class="btn btn-default dropdown-toggle">
+                                            <span class="caret"></span>
+                                        </a>
+                                        <ul class="dropdown-menu pull-right" id="menuHack-servicegroup-{{servicegroupContainer.id}}">
+                                            <?php if ($this->Acl->hasPermission('edit', 'servicegroups')): ?>
+                                                <li>
+                                                    <a href="/servicegroups/edit/{{servicegroupContainer.Servicegroup[0].id}}">
+                                                        <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
+                                                    </a>
+                                                </li>
+                                            <?php endif; ?>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="no-sort" colspan="2">
+                                    <i class="fa fa-user fa-lg"></i>
+                                    <?php echo __('Contact groups'); ?> ({{containerDetails.ContainerContactgroup.length}})
+                                </th>
+                            </tr>
+                            <tr ng-repeat="contactgroupContainer in containerDetails.ContainerContactgroup">
+                                <td>
+                                    <?php if ($this->Acl->hasPermission('edit', 'contactgroups')): ?>
+
+                                        <a href="/contactgroups/edit/{{ contactgroupContainer.Contactgroup[0].id }}"
+                                           ng-if="contactgroupContainer.Contactgroup[0].id"
+                                           target="_blank">
+                                            {{ contactgroupContainer.name }}
+                                        </a>
+                                        <span ng-hide="contactgroupContainer.Contactgroup[0].id">
+                                            <span class="changelog_delete">{{ contactgroupContainer.name }}</span>
+                                            <i><?php echo __(' ... invalid contact group'); ?></i>
+                                        </span>
+                                    <?php else: ?>
+                                        <span>{{ contactgroupContainer.name }}</span>
+                                    <?php endif; ?>
+                                    <i class="text-info">{{ contactgroupContainer.Contactgroup[0].description }}</i>
+                                </td>
+                                <td>
+                                    <div class="btn-group" ng-if="contactgroupContainer.Contactgroup[0].id">
+                                        <?php if ($this->Acl->hasPermission('edit', 'contactgroups')): ?>
+                                            <a href="/contactgroups/edit/{{contactgroupContainer.Contactgroup[0].id}}"
+                                               class="btn btn-default">&nbsp;<i class="fa fa-cog"></i>&nbsp;
+                                            </a>
+                                        <?php else: ?>
+                                            <a href="javascript:void(0);" class="btn btn-default">&nbsp;
+                                                <i class="fa fa-cog"></i> </a>
+                                        <?php endif; ?>
+                                        <a href="javascript:void(0);" data-toggle="dropdown"
+                                           class="btn btn-default dropdown-toggle">
+                                            <span class="caret"></span>
+                                        </a>
+                                        <ul class="dropdown-menu pull-right" id="menuHack-contactgroup-{{contactgroupContainer.id}}">
+                                            <?php if ($this->Acl->hasPermission('edit', 'contactgroups')): ?>
+                                                <li>
+                                                    <a href="/contactgroups/edit/{{contactgroupContainer.Contactgroup[0].id}}">
                                                         <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
                                                     </a>
                                                 </li>

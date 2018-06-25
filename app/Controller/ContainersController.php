@@ -637,7 +637,8 @@ class ContainersController extends AppController {
                     ],
                     'Contactgroup' => [
                         'fields' => [
-                            'Contactgroup.id'
+                            'Contactgroup.id',
+                            'Contactgroup.description'
                         ]
                     ],
                     'order' => [
@@ -666,7 +667,8 @@ class ContainersController extends AppController {
                     ],
                     'Servicegroup' => [
                         'fields' => [
-                            'Servicegroup.id'
+                            'Servicegroup.id',
+                            'Servicegroup.description'
                         ]
                     ],
                     'order' => [
