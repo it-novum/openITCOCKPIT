@@ -164,7 +164,8 @@ $config = [
                 'icon',
                 'hostservicelist',
                 'loadParentHostsByString',
-                'loadParentHostsById'
+                'loadParentHostsById',
+                'hoststatus'
             ]
         ],
         'dependencies'   => [
@@ -234,7 +235,7 @@ $config = [
                 'extended' => ['loadHostgroupWithHostsById']
             ],
             'Hosts'                 => [
-                'index'      => ['getHostByAjax', 'listToPdf', 'ajaxList', 'loadHostsByContainerId', 'loadHostsByString', 'loadHostById', 'allocateServiceTemplateGroup', 'getServiceTemplatesfromGroup', 'hoststatus'],
+                'index'      => ['getHostByAjax', 'listToPdf', 'ajaxList', 'loadHostsByContainerId', 'loadHostsByString', 'loadHostById', 'allocateServiceTemplateGroup', 'getServiceTemplatesfromGroup'],
                 'delete'     => ['mass_delete'],
                 'deactivate' => ['mass_deactivate'],
                 'browser'    => ['longOutputByUuid'],
@@ -328,7 +329,11 @@ $config = [
             ],
             'Notifications'         => [
                 'index' => ['services'],
-            ]
+            ],
+            'Statusmaps' => [
+                'index' => ['hostAndServicesSummaryStatus'
+                ]
+            ],
         ],
         'roles_rights'   => [
             'Administrator' => ['*'],
