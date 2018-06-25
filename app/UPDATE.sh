@@ -144,19 +144,24 @@ echo ""
 
 CODENAME=$(lsb_release -sc)
 if [ "$1" = "install" ]; then
-    if [ $CODENAME = "jessie" ] || [ $CODENAME = "xenial" ] || [ $CODENAME = "stretch" ]; then
+    if [ $CODENAME = "jessie" ] || [ $CODENAME = "xenial" ] || [ $CODENAME = "bionic" ] || [ $CODENAME = "stretch" ]; then
         systemctl restart gearman_worker
     fi
     echo "Update successfully finished"
 else
 
-    if [ $CODENAME = "jessie" ] || [ $CODENAME = "xenial" ] || [ $CODENAME = "stretch" ]; then
+    if [ $CODENAME = "jessie" ] || [ $CODENAME = "xenial" ] || [ $CODENAME = "bionic" ] || [ $CODENAME = "stretch" ]; then
         systemctl restart oitc_cmd
         systemctl restart gearman_worker
+        systemctl restart push_notification
     fi
 
     if [ $CODENAME = "xenial" ] || [ $CODENAME = "stretch" ]; then
         systemctl restart php7.0-fpm
+    fi
+
+    if [ $CODENAME = "bionic" ]; then
+        systemctl restart php7.2-fpm.service
     fi
 
     if [ $CODENAME = "jessie" ]; then
@@ -170,6 +175,9 @@ else
 
         service gearman_worker stop
         service gearman_worker start
+
+        service push_notification stop
+        service push_notification start
 
         service php5-fpm stop
         service php5-fpm start
