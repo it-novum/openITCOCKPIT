@@ -231,6 +231,56 @@
                                     </div>
                                 </td>
                             </tr>
+                            <tr>
+                                <th class="no-sort" colspan="2">
+                                    <i class="fa fa-pencil-square-o fa-lg"></i>
+                                    <?php echo __('Service template groups'); ?> ({{containerDetails.ContainerServicetemplategroup.length}})
+                                </th>
+                            </tr>
+                            <tr ng-repeat="servicetemplategroupContainer in containerDetails.ContainerServicetemplategroup">
+                                <td>
+                                    <?php if ($this->Acl->hasPermission('edit', 'servicetemplategroups')): ?>
+
+                                        <a href="/servicetemplategroups/edit/{{ servicetemplategroupContainer.Servicetemplategroup[0].id }}"
+                                           ng-if="servicetemplategroupContainer.Servicetemplategroup[0].id"
+                                           target="_blank">
+                                            {{ servicetemplategroupContainer.name }}
+                                        </a>
+                                        <span ng-hide="servicetemplategroupContainer.Servicetemplategroup[0].id">
+                                            <span class="changelog_delete">{{ servicetemplategroupContainer.name }}</span>
+                                            <i><?php echo __(' ... invalid service template group'); ?></i>
+                                        </span>
+                                    <?php else: ?>
+                                        <span>{{ servicetemplategroupContainer.name }}</span>
+                                    <?php endif; ?>
+                                    <i class="text-info">{{ servicetemplategroupContainer.Servicetemplategroup[0].description }}</i>
+                                </td>
+                                <td>
+                                    <div class="btn-group" ng-if="servicetemplategroupContainer.Servicetemplategroup[0].id">
+                                        <?php if ($this->Acl->hasPermission('edit', 'servicetemplategroups')): ?>
+                                            <a href="/servicetemplategroups/edit/{{servicetemplategroupContainer.Servicetemplategroup[0].id}}"
+                                               class="btn btn-default">&nbsp;<i class="fa fa-cog"></i>&nbsp;
+                                            </a>
+                                        <?php else: ?>
+                                            <a href="javascript:void(0);" class="btn btn-default">&nbsp;
+                                                <i class="fa fa-cog"></i> </a>
+                                        <?php endif; ?>
+                                        <a href="javascript:void(0);" data-toggle="dropdown"
+                                           class="btn btn-default dropdown-toggle">
+                                            <span class="caret"></span>
+                                        </a>
+                                        <ul class="dropdown-menu pull-right" id="menuHack-servicetemplategroup-{{servicetemplategroupContainer.id}}">
+                                            <?php if ($this->Acl->hasPermission('edit', 'servicetemplategroups')): ?>
+                                                <li>
+                                                    <a href="/hostgroups/edit/{{servicetemplategroupContainer.Servicetemplategroup[0].id}}">
+                                                        <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
+                                                    </a>
+                                                </li>
+                                            <?php endif; ?>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
