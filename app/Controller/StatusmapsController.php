@@ -167,6 +167,7 @@ class StatusmapsController extends AppController {
                 ]
             ];
             $query['conditions']['HostsToContainers.container_id'] = $containerIds;
+            $query['group']=['Host.id'];
         }
         if (!empty($allHostIds)) {
             $query['conditions']['Host.id'] = $allHostIds;
