@@ -1889,3 +1889,8 @@ label[class^='aco-host']:after, label[class^='aco-service']:after {
 .state-button {
     padding:0 5px;
 }
+
+.state-button-small {
+    padding:0 2px;
+    font-size: 12px;
+}
