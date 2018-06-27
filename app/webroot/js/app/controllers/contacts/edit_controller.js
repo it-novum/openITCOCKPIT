@@ -46,7 +46,7 @@ App.Controllers.ContactsEditController = Frontend.AppController.extend({
                 selectedValues = [];
             }
             var newValues = [];
-            var pushHostNotificationCommandId = '376';
+            var pushHostNotificationCommandId = self.getVar('hostPushComamndId');
             if($(this).prop('checked')){
                 selectedValues.push(pushHostNotificationCommandId);
                 $('#ContactHostCommands').val(selectedValues);
@@ -68,7 +68,7 @@ App.Controllers.ContactsEditController = Frontend.AppController.extend({
                 selectedValues = [];
             }
             var newValues = [];
-            var pushServiceNotificationCommandId = '377';
+            var pushServiceNotificationCommandId = self.getVar('servicePushComamndId');
             if($(this).prop('checked')){
                 selectedValues.push(pushServiceNotificationCommandId);
                 $('#ContactServiceCommands').val(selectedValues);
