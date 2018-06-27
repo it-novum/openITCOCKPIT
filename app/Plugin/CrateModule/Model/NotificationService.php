@@ -97,8 +97,11 @@ class NotificationService extends CrateModuleAppModel {
             ],
 
             'order' => $ServiceNotificationConditions->getOrder(),
-            'limit' => $ServiceNotificationConditions->getLimit(),
         ];
+
+        if($ServiceNotificationConditions->getUseLimit()){
+            $query['limit'] = $ServiceNotificationConditions->getLimit();
+        }
 
         if($ServiceNotificationConditions->getServiceUuid()){
             $query['conditions']['NotificationService.service_description'] = $ServiceNotificationConditions->getServiceUuid();

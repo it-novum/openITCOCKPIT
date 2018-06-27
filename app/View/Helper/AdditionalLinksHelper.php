@@ -85,7 +85,7 @@ class AdditionalLinksHelper extends AppHelper {
             $title = $link['title'];
             $url = $link['url'];
 
-            if($angularJs === false) {
+            if ($angularJs === false) {
                 if ($currentIndex !== -1) { // replace 'autoIndex' within a string
                     if (is_string($url)) {
                         $url = str_replace('autoIndex', $currentIndex, $url);
@@ -102,10 +102,10 @@ class AdditionalLinksHelper extends AppHelper {
             $confirmMessage = $link['confirmMessage'];
 
             $url = Router::url($url);
-            if($angularJs === true){
+            if ($angularJs === true) {
                 $url = str_replace('autoIndex', $currentIndex, $url);
             }
-            $renderedLink = $this->Html->link($title,$url , $options, $confirmMessage);
+            $renderedLink = $this->Html->link($title, $url, $options, $confirmMessage);
             $result[] = $renderedLink;
         }
 
@@ -139,10 +139,13 @@ class AdditionalLinksHelper extends AppHelper {
         return implode($htmlContent);
     }
 
-    public function renderTabLinks($additionalElements) {
+    public function renderTabLinks($additionalElements, $ngClick = null) {
         $htmlLink = [];
         foreach ($additionalElements as $element) {
-            $html = '<li class=""><a href="#tab' . $element['uuid'] . '" data-toggle="tab">';
+            if (!is_null($ngClick)) {
+                $ngClick = ' ng-click="'.$ngClick.'"';
+            }
+            $html = '<li class=""><a href="#tab' . $element['uuid'] . '" data-toggle="tab" '.$ngClick.'>';
             $html .= '<span class="hidden-mobile hidden-tablet">' . __($element['title']) . '</span></a>';
             $html .= '</li>';
             $htmlLink[] = $html;
@@ -150,13 +153,13 @@ class AdditionalLinksHelper extends AppHelper {
         return implode($htmlLink);
     }
 
-    public function renderAsTabs($additionalLinks, $elementId, $type, $renderType = 'tab') {
+    public function renderAsTabs($additionalLinks, $elementId, $type, $renderType = 'tab', $ngClick = null) {
         $type = lcfirst($type);
         //if elementId is null its a new Host/Service
 
         $result = '';
         if ($renderType == 'tabLink') {
-            $result = $this->renderTabLinks($additionalLinks);
+            $result = $this->renderTabLinks($additionalLinks, $ngClick);
         } else {
             $result = $this->renderTabs($additionalLinks);
         }

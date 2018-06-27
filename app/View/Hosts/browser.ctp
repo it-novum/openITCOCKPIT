@@ -73,24 +73,33 @@ if (!$QueryHandler->exists()): ?>
                     mergedHost.Host.name }}</h2>
                 <ul class="nav nav-tabs pull-right" id="widget-tab-1">
                     <li class="active">
-                        <a href="#tab1" data-toggle="tab">
+                        <a href="#tab1" data-toggle="tab" ng-click="hideTimeline()">
                             <i class="fa fa-lg fa-info"></i>
                             <span class="hidden-mobile hidden-tablet"> <?php echo __('Status information'); ?></span>
                         </a>
                     </li>
 
                     <li class="">
-                        <a href="#tab2" data-toggle="tab">
+                        <a href="#tab2" data-toggle="tab" ng-click="hideTimeline()">
                             <i class="fa fa-lg fa-hdd-o"></i>
                             <span class="hidden-mobile hidden-tablet"> <?php echo __('Device information'); ?> </span>
                         </a>
                     </li>
 
-                    <?php echo $this->AdditionalLinks->renderAsTabs($additionalLinksTab, null, 'host', 'tabLink'); ?>
+                    <?php if ($this->Acl->hasPermission('timeline', 'hosts')): ?>
+                        <li class="">
+                            <a href="#tab3" data-toggle="tab" ng-click="showTimeline()">
+                                <i class="fa fa-lg fa-clock-o"></i>
+                                <span class="hidden-mobile hidden-tablet"> <?php echo __('Timeline'); ?> </span>
+                            </a>
+                        </li>
+                    <?php endif; ?>
+
+                    <?php echo $this->AdditionalLinks->renderAsTabs($additionalLinksTab, null, 'host', 'tabLink', 'hideTimeline()'); ?>
 
                     <?php if ($GrafanaDashboardExists): ?>
                         <li class="">
-                            <a href="#tab5" data-toggle="tab">
+                            <a href="#tab5" data-toggle="tab" ng-click="hideTimeline()">
                                 <i class="fa fa-lg fa-area-chart"></i>
                                 <span class="hidden-mobile hidden-tablet"> <?php echo __('Grafana'); ?> </span>
                             </a>
@@ -858,9 +867,96 @@ if (!$QueryHandler->exists()): ?>
                             </div>
                         </div>
 
+                        <div id="tab3" class="fade in" ng-show="showTimelineTab">
+                            <div class="row">
+                                <div class="col-xs-12 padding-10">
+                                    <div class="row">
+                                        <div class="col-xs-12">
+                                            <h3 class="margin-top-0">
+                                                <?php echo __('Outages: '); ?>
+                                                <span ng-hide="failureDurationInPercent">
+                                                    <i class="fa fa-refresh fa-spin txt-primary"></i>
+                                                </span>
+                                                <span ng-show="failureDurationInPercent">{{ (failureDurationInPercent) ? failureDurationInPercent+' %' :
+                                                    '<?php echo __('No data available !'); ?>'}}
+                                                </span>
+                                            </h3>                                        </div>
+                                        <div class="col-xs-12 col-sm-12 col-md-12">
+                                            <div id="visualization"></div>
+                                        </div>
+
+                                        <div class="col-xs-12">
+                                            <div class="row">
+                                                <div class="col-xs-12 bold"><?php echo __('Legend'); ?></div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-xs-12">
+                                                    <?php echo __('State types'); ?>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-xs-12 col-md-3">
+                                                        <i class="fa fa-square up-soft"></i>
+                                                        <?php echo __('Up soft'); ?>
+                                                    </div>
+                                                    <div class="col-xs-12 col-md-3 ">
+                                                        <i class="fa fa-square down-soft"></i>
+                                                        <?php echo __('Down soft'); ?>
+                                                    </div>
+                                                    <div class="col-xs-12 col-md-3 ">
+                                                        <i class="fa fa-square unreachable-soft"></i>
+                                                        <?php echo __('Unreachable soft'); ?>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-xs-12 col-md-3">
+                                                        <i class="fa fa-square up"></i>
+                                                        <?php echo __('Up hard'); ?>
+                                                    </div>
+                                                    <div class="col-xs-12 col-md-3 ">
+                                                        <i class="fa fa-square down"></i>
+                                                        <?php echo __('Down hard'); ?>
+                                                    </div>
+                                                    <div class="col-xs-12 col-md-3 ">
+                                                        <i class="fa fa-square unreachable"></i>
+                                                        <?php echo __('Unreachable hard'); ?>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-xs-12 col-md-3">
+                                                    <i class="fa fa-square text-primary"></i>
+                                                    <?php echo __('Downtime'); ?>
+                                                </div>
+                                                <div class="col-xs-12 col-md-3 ">
+                                                    <i class="fa fa-square txt-ack"></i>
+                                                    <?php echo __('Acknowledged'); ?>
+                                                </div>
+                                                <div class="col-xs-12 col-md-3 ">
+                                                    <i class="fa fa-square txt-notification"></i>
+                                                    <?php echo __('Notification'); ?>
+                                                </div>
+                                                <div class="col-xs-12 col-md-3 ">
+                                                    <i class="fa fa-square txt-timerange"></i>
+                                                    <?php echo __('Check period'); ?>
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-xs-12 col-md-3">
+                                                    <i class="fa fa-square txt-downtime-cancelled"></i>
+                                                    <?php echo __('Downtime cancelled'); ?>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
 
                         <!-- render additional Tabs if necessary -->
-                        <?php echo $this->AdditionalLinks->renderAsTabs($additionalLinksTab, null, 'host'); ?>
+                        <?php echo $this->AdditionalLinks->renderAsTabs($additionalLinksTab, null, 'host', 'tab'); ?>
 
                         <?php if ($GrafanaDashboardExists): ?>
                             <div id="tab5" class="tab-pane fade">

@@ -138,6 +138,7 @@ class DowntimeHost extends Statusengine3ModuleAppModel {
                 'DowntimeHost.comment_data',
                 'DowntimeHost.scheduled_start_time',
                 'DowntimeHost.scheduled_end_time',
+                'DowntimeHost.actual_end_time',
                 'DowntimeHost.duration',
                 'DowntimeHost.was_started',
                 'DowntimeHost.was_cancelled',
@@ -153,13 +154,14 @@ class DowntimeHost extends Statusengine3ModuleAppModel {
                 ],
             ],
             'order'      => $Conditions->getOrder(),
-            'conditions' => [
-                'DowntimeHost.was_cancelled' => 0
-            ]
         ];
 
         if ($Conditions->hasHostUuids()) {
             $query['conditions']['DowntimeHost.hostname'] = $Conditions->getHostUuids();
+        }
+
+        if ($Conditions->includeCancelledDowntimes() === false) {
+            $query['conditions']['DowntimeHost.was_cancelled'] = 0;
         }
 
         $query['conditions']['OR'] = [
