@@ -358,7 +358,11 @@ $this->Paginator->options(['url' => $this->params['named']]);
                                         <i class="fa" ng-class="getSortClass('Host.satellite_id')"></i>
                                         <?php echo __('Instance'); ?>
                                     </th>
-
+                                    <?php if ($this->Acl->hasPermission('serviceList', 'services')): ?>
+                                    <th class="text-center">
+                                        <?php echo __('Service Summary '); ?>
+                                    </th>
+                                    <?php endif; ?>
                                     <th class="no-sort text-center editItemWidth"><i class="fa fa-gear fa-lg"></i></th>
                                 </tr>
                                 </thead>
@@ -452,7 +456,53 @@ $this->Paginator->options(['url' => $this->params['named']]);
                                     <td>
                                         {{ host.Host.satelliteName }}
                                     </td>
+                                    <?php if ($this->Acl->hasPermission('serviceList', 'services')): ?>
+                                    <td class="width-160">
+                                        <div class="btn-group btn-group-justified" role="group">
+                                            <?php if ($this->Acl->hasPermission('index', 'services')): ?>
+                                                <a class="btn btn-success state-button-small"
+                                                   ng-href="/services/index/?filter[Host.id]={{host.Host.id}}&filter[Servicestatus.current_state][0]=1">
+                                                    {{host.ServicestatusSummary.state['ok']}}
+                                                </a>
+                                            <?php else: ?>
+                                                <a class="btn btn-success state-button-small">
+                                                    {{host.ServicestatusSummary.state['ok']}}
+                                                </a>
+                                            <?php endif; ?>
+                                            <?php if ($this->Acl->hasPermission('index', 'services')): ?>
+                                                <a class="btn btn-warning state-button-small"
+                                                   ng-href="/services/index/?filter[Host.id]={{host.Host.id}}&filter[Servicestatus.current_state][1]=1">
+                                                    {{host.ServicestatusSummary.state['warning']}}
+                                                </a>
+                                            <?php else: ?>
+                                                <a class="btn btn-warning state-button">
+                                                    {{host.ServicestatusSummary.state['warning']}}
+                                                </a>
+                                            <?php endif; ?>
+                                            <?php if ($this->Acl->hasPermission('index', 'services')): ?>
+                                                <a class="btn btn-danger state-button-small"
+                                                   ng-href="/services/index/?filter[Host.id]={{host.Host.id}}&filter[Servicestatus.current_state][2]=1">
+                                                    {{host.ServicestatusSummary.state['critical']}}
+                                                </a>
+                                            <?php else: ?>
+                                                <a class="btn btn-danger state-button-small">
+                                                    {{host.ServicestatusSummary.state['critical']}}
+                                                </a>
+                                            <?php endif; ?>
 
+                                            <?php if ($this->Acl->hasPermission('index', 'services')): ?>
+                                                <a class="btn btn-default state-button-small"
+                                                   ng-href="/services/index/?filter[Host.id]={{host.Host.id}}&filter[Servicestatus.current_state][3]=1">
+                                                    {{host.ServicestatusSummary.state['unknown']}}
+                                                </a>
+                                            <?php else: ?>
+                                                <a class="btn btn-default state-button-small">
+                                                    {{host.ServicestatusSummary.state['unknown']}}
+                                                </a>
+                                            <?php endif; ?>
+                                        </div>
+                                    </td>
+                                    <?php endif; ?>
                                     <td class="width-50">
                                         <div class="btn-group">
                                             <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>

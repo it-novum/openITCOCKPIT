@@ -1951,6 +1951,12 @@ label[class^='aco-host']:after, label[class^='aco-service']:after {
     padding: 0 5px;
 }
 
+
+.state-button-small {
+    padding:0 2px;
+    font-size: 12px;
+}
+
 .tooltip-arrow-image {
     border-right-color: transparent!important;
 }
@@ -1975,4 +1981,3 @@ label[class^='aco-host']:after, label[class^='aco-service']:after {
     line-height: 1.4;
     min-width: 150px;
 }
-

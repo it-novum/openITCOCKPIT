@@ -224,7 +224,28 @@ class HostsController extends AppController {
 
         $all_hosts = [];
         $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
+        $ServicestatusFields = new ServicestatusFields($this->DbBackend);
+        $ServicestatusFields->currentState();
+
         foreach ($hosts as $host) {
+            $serviceUuids = $this->Service->find('list',[
+               'fields' => [
+                   'Service.uuid'
+               ],
+               'conditions' => [
+                   'Service.host_id' => $host['Host']['id']
+               ]
+            ]);
+            $servicestatus = $this->Servicestatus->byUuid($serviceUuids, $ServicestatusFields);
+            $serviceStateSummary = $this->Service->getServiceStateSummary($servicestatus, false);
+
+            $serviceStateSummary['state'] = array_combine([
+                __('ok'),
+                __('warning'),
+                __('critical'),
+                __('unknown')
+            ], $serviceStateSummary['state']
+            );
             $Host = new \itnovum\openITCOCKPIT\Core\Views\Host($host);
             $Hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus($host['Hoststatus'], $UserTime);
             $PerfdataChecker = new HostPerfdataChecker($Host);
@@ -250,7 +271,8 @@ class HostsController extends AppController {
 
             $tmpRecord = [
                 'Host'       => $Host->toArray(),
-                'Hoststatus' => $Hoststatus->toArray()
+                'Hoststatus' => $Hoststatus->toArray(),
+                'ServicestatusSummary' => $serviceStateSummary
             ];
             $tmpRecord['Host']['has_graphs'] = $PerfdataChecker->hasRrdFolder();
             $tmpRecord['Host']['allow_sharing'] = $allowSharing;
