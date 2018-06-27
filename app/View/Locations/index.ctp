@@ -112,6 +112,16 @@
                                                                 </a>
                                                             </li>
                                                         <?php endif; ?>
+                                                        <?php if ($this->Acl->hasPermission('showDetails', 'containers')): ?>
+                                                            <li>
+                                                                <a href="<?php echo Router::url([
+                                                                    'action' => 'showDetails',
+                                                                    'controller' => 'containers',
+                                                                    $location['Location']['container_id']]); ?>">
+                                                                    <i class="fa fa-info-circle"></i> <?php echo __('Show details'); ?>
+                                                                </a>
+                                                            </li>
+                                                        <?php endif; ?>
                                                         <?php if ($this->Acl->hasPermission('delete') && $allowEdit): ?>
                                                             <li class="divider"></li>
                                                             <li>
