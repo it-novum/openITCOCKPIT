@@ -71,10 +71,19 @@ class BrowsersController extends AppController {
             return;
         }
 
-        if ((int)$containerId === ROOT_CONTAINER) {
-            //First request or ROOT_CONTAINER
-            $tenants = $this->getTenants();
-            natcasesort($tenants);
+        $tenants = $this->getTenants();
+        $tenantsFiltered = [];
+        foreach ($tenants as $tenantId => $tenantName) {
+            if (in_array($tenantId, $this->MY_RIGHTS, true)) {
+                $tenantsFiltered[$tenantId] = $tenantName;
+            }
+        }
+        $tenants = $tenantsFiltered;
+        natcasesort($tenants);
+
+        if ((int)$containerId === ROOT_CONTAINER && !empty($tenants)) {
+            //First request if tenants are not empty or ROOT_CONTAINER
+
             $this->set('containers', $this->Container->makeItJavaScriptAble($tenants));
             $this->set('breadcrumbs', $this->Container->makeItJavaScriptAble([ROOT_CONTAINER => __('root')]));
         } else {
@@ -103,15 +112,18 @@ class BrowsersController extends AppController {
             }
 
             $currentContainer = $this->Container->find('first', [
-                'recursive'  => -1,
+                'recursive' => -1,
                 'conditions' => [
                     'Container.id' => $containerId
                 ]
             ]);
             $breadcrumbs = [];
             $parents = $this->Container->getPath($currentContainer['Container']['parent_id']);
+
             foreach ($parents as $parentContainer) {
-                $breadcrumbs[$parentContainer['Container']['id']] = $parentContainer['Container']['name'];
+                if (in_array((int)$parentContainer['Container']['id'], $this->MY_RIGHTS, true)) {
+                    $breadcrumbs[$parentContainer['Container']['id']] = $parentContainer['Container']['name'];
+                }
             }
             $breadcrumbs[$currentContainer['Container']['id']] = $currentContainer['Container']['name'];
             $this->set('containers', $this->Container->makeItJavaScriptAble($containers));

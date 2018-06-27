@@ -22,6 +22,9 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+
+use itnovum\openITCOCKPIT\Core\RFCRouter;
+
 ?>
 <div class="row no-padding">
     <div class="col-xs-12">
@@ -52,7 +55,7 @@
                     <?php foreach ([1, 2, 3] as $state): ?>
                         <div class="col-xs-4">
                             <div class="col-xs-12 <?php echo $bgColors[$state]; ?>">
-                                <a href="/services/index<?php echo Router::queryString([
+                                <a href="/services/index<?php echo RFCRouter::queryString([
                                     'filter'    => [
                                         'Servicestatus.current_state' => [$state => 1]
                                     ],
@@ -64,7 +67,7 @@
                             </div>
                             <div class="col-xs-12">
                                 <?php if ($widgetServiceStateArray180['not_handled'][$state] > 0): ?>
-                                    <a href="/services/index<?php echo Router::queryString([
+                                    <a href="/services/index<?php echo RFCRouter::queryString([
                                         'filter'                    => [
                                             'Servicestatus.current_state' => [$state => 1]
                                         ],
@@ -80,7 +83,7 @@
                             </div>
                             <div class="col-xs-12">
                                 <?php if ($widgetServiceStateArray180['acknowledged'][$state] > 0): ?>
-                                    <a href="/services/index<?php echo Router::queryString([
+                                    <a href="/services/index<?php echo RFCRouter::queryString([
                                         'filter'                => [
                                             'Servicestatus.current_state' => [$state => 1]
                                         ],
@@ -96,7 +99,7 @@
                             </div>
                             <div class="col-xs-12">
                                 <?php if ($widgetServiceStateArray180['in_downtime'][$state] > 0): ?>
-                                    <a href="/services/index<?php echo Router::queryString([
+                                    <a href="/services/index<?php echo RFCRouter::queryString([
                                         'filter'      => [
                                             'Servicestatus.current_state' => [$state => 1]
                                         ],
@@ -112,7 +115,7 @@
                             </div>
                             <div class="col-xs-12">
                                 <?php if ($widgetServiceStateArray180['passive'][$state] > 0): ?>
-                                    <a href="/services/index<?php echo Router::queryString([
+                                    <a href="/services/index<?php echo RFCRouter::queryString([
                                         'filter'      => [
                                             'Servicestatus.current_state' => [$state => 1]
                                         ],
@@ -136,7 +139,7 @@
                 </div>
                 <?php foreach ($widgetServiceStateArray180['state'] as $state => $stateCount): ?>
                     <div class="col-md-3 no-padding">
-                        <a href="/services/index<?php echo Router::queryString([
+                        <a href="/services/index<?php echo RFCRouter::queryString([
                             'filter'    => [
                                 'Servicestatus.current_state' => [$state => 1]
                             ],

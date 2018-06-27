@@ -10,6 +10,8 @@ angular.module('openITCOCKPIT').directive('massDeleteServiceDowntimes', function
             $scope.percentage = 0;
             $scope.isDeleting = false;
 
+            var callbackName = false;
+
             var objects = {};
             $scope.myDeleteUrl = $scope.deleteUrl;
 

@@ -593,10 +593,13 @@ class HostgroupsController extends AppController {
         $selected = $this->request->query('selected');
         $HostgroupFilter = new HostgroupFilter($this->request);
 
-        $containerIds = [ROOT_CONTAINER, $containerId];
         if ($containerId == ROOT_CONTAINER) {
-            $containerIds = $this->Tree->resolveChildrenOfContainerIds(ROOT_CONTAINER, true);
+            $containerIds = $this->Tree->resolveChildrenOfContainerIds(ROOT_CONTAINER, true, [CT_HOSTGROUP]);
+        } else{
+            $containerIds = $this->Tree->resolveChildrenOfContainerIds($containerId, false, [CT_HOSTGROUP]);
         }
+        $HostgroupCondition = new HostgroupConditions($HostgroupFilter->indexFilter());
+        $HostgroupCondition->setContainerIds($containerIds);
 
         $query = [
             'recursive' => -1,
@@ -604,10 +607,9 @@ class HostgroupsController extends AppController {
                 'Container'
             ],
             'order' => $HostgroupFilter->getOrderForPaginator('Container.name', 'asc'),
-            'conditions' => $HostgroupFilter->indexFilter(),
+            'conditions' => $HostgroupCondition->getConditionsForFind(),
             'limit' => $this->Paginator->settings['limit']
         ];
-
         if ($this->isApiRequest() && !$this->isAngularJsRequest()) {
             unset($query['limit']);
             $hostgroups = $this->Hostgroup->find('all', $query);
@@ -736,9 +738,21 @@ class HostgroupsController extends AppController {
                     $this->setFlash(__('Could not save data'), false);
                 }
             } else {
-                $targetHostgroup = $this->request->data('Hostgroup.id');
-                if ($this->Hostgroup->exists($targetHostgroup)) {
-                    $hostgroup = $this->Hostgroup->findById($targetHostgroup);
+                $hostgroupId = $this->request->data('Hostgroup.id');
+                if ($this->Hostgroup->exists($hostgroupId)) {
+                    $hostgroup = $this->Hostgroup->find('first', [
+                        'recursive' => -1,
+                        'contain' => [
+                            'Host' => [
+                                'fields' => [
+                                    'Host.id'
+                                ]
+                            ]
+                        ],
+                        'conditions' => [
+                            'Hostgroup.id' => $hostgroupId
+                        ]
+                    ]);
                     //Save old hosts from this hostgroup
                     $hostgroupMembers = [];
                     foreach ($hostgroup['Host'] as $host) {

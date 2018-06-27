@@ -29,6 +29,7 @@
 
 use itnovum\openITCOCKPIT\Core\Views\Host;
 use itnovum\openITCOCKPIT\Core\Hoststatus;
+use itnovum\openITCOCKPIT\Core\RFCRouter;
 
 
 ?>
@@ -109,7 +110,7 @@ use itnovum\openITCOCKPIT\Core\Hoststatus;
 
                         <div class="col-xs-12 text-center padding-bottom-10 font-xs">
                             <div class="col-xs-12 col-md-4 no-padding">
-                                <a ng-href="/hosts/index<?php echo Router::queryString([
+                                <a ng-href="/hosts/index<?php echo RFCRouter::queryString([
                                     'filter'    => [
                                         'Hoststatus.current_state' => ['0' => 1]
                                     ],
@@ -122,7 +123,7 @@ use itnovum\openITCOCKPIT\Core\Hoststatus;
                             </div>
 
                             <div class="col-xs-12 col-md-4 no-padding">
-                                <a ng-href="/hosts/index<?php echo Router::queryString([
+                                <a ng-href="/hosts/index<?php echo RFCRouter::queryString([
                                     'filter'    => [
                                         'Hoststatus.current_state' => ['1' => 1]
                                     ],
@@ -135,7 +136,7 @@ use itnovum\openITCOCKPIT\Core\Hoststatus;
                             </div>
 
                             <div class="col-xs-12 col-md-4 no-padding">
-                                <a ng-href="/hosts/index<?php echo Router::queryString([
+                                <a ng-href="/hosts/index<?php echo RFCRouter::queryString([
                                     'filter'    => [
                                         'Hoststatus.current_state' => ['2' => 1]
                                     ],
@@ -170,7 +171,7 @@ use itnovum\openITCOCKPIT\Core\Hoststatus;
 
                         <div class="col-xs-12 text-center padding-bottom-10 font-xs">
                             <div class="col-xs-12 col-md-3 no-padding">
-                                <a ng-href="/services/index<?php echo Router::queryString([
+                                <a ng-href="/services/index<?php echo RFCRouter::queryString([
                                     'filter'    => [
                                         'Servicestatus.current_state' => ['0' => 1]
                                     ],
@@ -183,7 +184,7 @@ use itnovum\openITCOCKPIT\Core\Hoststatus;
                             </div>
 
                             <div class="col-xs-12 col-md-3 no-padding">
-                                <a ng-href="/services/index<?php echo Router::queryString([
+                                <a ng-href="/services/index<?php echo RFCRouter::queryString([
                                     'filter'    => [
                                         'Servicestatus.current_state' => ['1' => 1]
                                     ],
@@ -196,7 +197,7 @@ use itnovum\openITCOCKPIT\Core\Hoststatus;
                             </div>
 
                             <div class="col-xs-12 col-md-3 no-padding">
-                                <a ng-href="/services/index<?php echo Router::queryString([
+                                <a ng-href="/services/index<?php echo RFCRouter::queryString([
                                     'filter'    => [
                                         'Servicestatus.current_state' => ['2' => 1]
                                     ],
@@ -209,7 +210,7 @@ use itnovum\openITCOCKPIT\Core\Hoststatus;
                             </div>
 
                             <div class="col-xs-12 col-md-3 no-padding">
-                                <a ng-href="/services/index<?php echo Router::queryString([
+                                <a ng-href="/services/index<?php echo RFCRouter::queryString([
                                     'filter'    => [
                                         'Servicestatus.current_state' => ['3' => 1]
                                     ],

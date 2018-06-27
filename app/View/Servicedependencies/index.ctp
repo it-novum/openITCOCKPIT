@@ -31,7 +31,7 @@
                 <?php echo __('Monitoring'); ?>
                 <span>>
                     <?php echo __('Servicedependencies'); ?>
-			</span>
+                </span>
             </h1>
         </div>
     </div>
@@ -56,45 +56,7 @@
                             endif;
                             ?>
                         </div>
-                        <div class="widget-toolbar" role="menu">
-                            <a href="javascript:void(0);" class="dropdown-toggle selector" data-toggle="dropdown"><i
-                                        class="fa fa-lg fa-table"></i></a>
-                            <ul class="dropdown-menu arrow-box-up-right pull-right stayOpenOnClick">
-                                <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left"
-                                                            class="select_datatable text-left" my-column="0"><input
-                                                type="checkbox" class="pull-left"/> &nbsp; <?php echo __('Services'); ?>
-                                    </a></li>
-                                <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left"
-                                                            class="select_datatable text-left" my-column="1"><input
-                                                type="checkbox" class="pull-left"/>
-                                        &nbsp; <?php echo __('Dependent services'); ?></a></li>
-                                <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left"
-                                                            class="select_datatable text-left" my-column="2"><input
-                                                type="checkbox" class="pull-left"/>
-                                        &nbsp; <?php echo __('Servicegroups'); ?></a></li>
-                                <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left"
-                                                            class="select_datatable text-left" my-column="3"><input
-                                                type="checkbox" class="pull-left"/>
-                                        &nbsp; <?php echo __('Dependent servicegroups'); ?></a></li>
-                                <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left"
-                                                            class="select_datatable text-left" my-column="4"><input
-                                                type="checkbox" class="pull-left"/>
-                                        &nbsp; <?php echo __('Dependency period'); ?></a></li>
-                                <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left"
-                                                            class="select_datatable text-left" my-column="5"><input
-                                                type="checkbox" class="pull-left"/>
-                                        &nbsp; <?php echo __('Inherits parent'); ?></a></li>
-                                <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left"
-                                                            class="select_datatable text-left" my-column="6"><input
-                                                type="checkbox" class="pull-left"/>
-                                        &nbsp; <?php echo __('Execution failure criteria'); ?></a></li>
-                                <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left"
-                                                            class="select_datatable text-left" my-column="7"><input
-                                                type="checkbox" class="pull-left"/>
-                                        &nbsp; <?php echo __('Notification failure criteria'); ?></a></li>
-                            </ul>
-                            <div class="clearfix"></div>
-                        </div>
+
                         <div class="jarviswidget-ctrls" role="menu">
                         </div>
                         <span class="widget-icon hidden-mobile"> <i class="fa fa-sitemap"></i> </span>

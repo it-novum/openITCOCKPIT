@@ -71,9 +71,12 @@ class AcknowledgedService extends Statusengine3ModuleAppModel {
                 'entry_time >' => $AcknowledgedServiceConditions->getFrom(),
                 'entry_time <' => $AcknowledgedServiceConditions->getTo()
             ],
-            'order' => $AcknowledgedServiceConditions->getOrder(),
-            'limit' => $AcknowledgedServiceConditions->getLimit(),
+            'order' => $AcknowledgedServiceConditions->getOrder()
         ];
+
+        if ($AcknowledgedServiceConditions->getUseLimit()) {
+            $query['limit'] = $AcknowledgedServiceConditions->getLimit();
+        }
 
         if (!empty($AcknowledgedServiceConditions->getStates())) {
             $query['conditions']['state'] = $AcknowledgedServiceConditions->getStates();

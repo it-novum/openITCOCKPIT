@@ -145,9 +145,12 @@ class NotificationHost extends NagiosModuleAppModel {
                 'Contactnotification.contactnotification_id'
             ],
 
-            'order' => $HostNotificationConditions->getOrder(),
-            'limit' => $HostNotificationConditions->getLimit(),
+            'order' => $HostNotificationConditions->getOrder()
         ];
+
+        if($HostNotificationConditions->getUseLimit()){
+            $query['limit'] = $HostNotificationConditions->getLimit();
+        }
 
         if ($HostNotificationConditions->getHostUuid()) {
             $query['conditions']['Objects.name1'] = $HostNotificationConditions->getHostUuid();

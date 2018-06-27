@@ -77,6 +77,7 @@
             </div>
             <server-time></server-time>
             <version-check></version-check>
+            <push-notifications></push-notifications>
         </div>
     <?php endif; ?>
 </header>
