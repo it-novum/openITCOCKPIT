@@ -32,7 +32,7 @@
             <?php echo __('Monitoring'); ?>
             <span>>
                 <?php echo __('Contact Groups'); ?>
-			</span>
+            </span>
         </h1>
     </div>
 </div>
@@ -54,25 +54,6 @@
                             echo $this->ListFilter->resetLink(null, ['class' => 'btn-danger btn-xs', 'icon' => 'fa fa-times']);
                         endif;
                         ?>
-                    </div>
-                    <div class="widget-toolbar" role="menu">
-                        <a href="javascript:void(0);" class="dropdown-toggle selector" data-toggle="dropdown"><i
-                                    class="fa fa-lg fa-table"></i></a>
-                        <ul class="dropdown-menu arrow-box-up-right pull-right stayOpenOnClick">
-                            <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left"
-                                                        class="select_datatable text-left" my-column="1"><input
-                                            type="checkbox" class="pull-left"/>
-                                    &nbsp; <?php echo __('Contact group name'); ?></a></li>
-                            <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left"
-                                                        class="select_datatable text-left" my-column="2"><input
-                                            type="checkbox" class="pull-left"/> &nbsp; <?php echo __('Description'); ?>
-                                </a></li>
-                            <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left"
-                                                        class="select_datatable text-left" my-column="3"><input
-                                            type="checkbox" class="pull-left"/> &nbsp; <?php echo __('Contacts'); ?></a>
-                            </li>
-                        </ul>
-                        <div class="clearfix"></div>
                     </div>
                     <div class="jarviswidget-ctrls" role="menu">
                     </div>

@@ -110,6 +110,7 @@ $config = [
             'vendor/lodash/lodash.min.js',
             'vendor/gridstack/dist/gridstack.min.js',
             'lib/ChosenAjax.js',
+            'vendor/UUID.js-4.0.3/dist/uuid.core.js',
         ],
         'jsFrontendPluginDependent' => [],
     ],
