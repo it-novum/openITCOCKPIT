@@ -4,24 +4,24 @@
 // This file is dual licensed
 //
 // 1.
-//	This program is free software: you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation, version 3 of the License.
+//  This program is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU General Public License as published by
+//  the Free Software Foundation, version 3 of the License.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//  You should have received a copy of the GNU General Public License
+//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
 // 2.
-//	If you purchased an openITCOCKPIT Enterprise Edition you can use this file
-//	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
-//	License agreement and license key will be shipped with the order
-//	confirmation.
+//  If you purchased an openITCOCKPIT Enterprise Edition you can use this file
+//  under the terms of the openITCOCKPIT Enterprise Edition license agreement.
+//  License agreement and license key will be shipped with the order
+//  confirmation.
 ?>
 <?php $this->Paginator->options(['url' => $this->params['named']]); ?>
 <div class="row">
@@ -31,7 +31,7 @@
             <?php echo __('Service macro'); ?>
             <span>>
                 <?php echo __('search result'); ?>
-			</span>
+            </span>
         </h1>
     </div>
 </div>
@@ -57,7 +57,7 @@
                                 <thead>
                                 <tr>
                                     <th class="no-sort"><?php __('Servicename'); ?></th>
-                                    <th class="no-sort text-center"><i class="fa fa-gear fa-lg"></i></th>
+                                    <th class="no-sort text-center width-50"><i class="fa fa-gear fa-lg"></i></th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -67,49 +67,66 @@
                                         $tmp_host_name = $service['Host']['name'];
                                         ?>
                                         <tr>
-                                            <td class="bg-color-lightGray" colspan="2"><a
-                                                        class="padding-left-5 txt-color-blueDark"
-                                                        href="/hosts/browser/<?php echo $service['Host']['id']; ?>"><?php echo h($service['Host']['name']); ?>
-                                                    (<?php echo h($service['Host']['address']); ?>)</a> <a
-                                                        class="pull-right txt-color-blueDark"
-                                                        href="/services/serviceList/<?php echo $service['Host']['id']; ?>"><i
-                                                            class="fa fa-list"
-                                                            title="<?php echo __('Go to Service list'); ?>"></i></a>
+                                            <td class="bg-color-lightGray" colspan="2">
+                                                <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
+                                                    <a class="padding-left-5 txt-color-blueDark"
+                                                       href="/hosts/browser/<?php echo $service['Host']['id']; ?>">
+                                                        <?php echo h($service['Host']['name']); ?>
+                                                        (<?php echo h($service['Host']['address']); ?>)
+                                                    </a>
+                                                <?php else: ?>
+                                                    <?php echo h($service['Host']['name']); ?>
+                                                    (<?php echo h($service['Host']['address']); ?>)
+                                                <?php endif; ?>
+                                                <?php if ($this->Acl->hasPermission('serviceList', 'services')): ?>
+                                                    <a class="pull-right txt-color-blueDark"
+                                                       href="/services/serviceList/<?php echo $service['Host']['id']; ?>">
+                                                        <i class="fa fa-list" title="<?php echo __('Go to Service list'); ?>"></i>
+                                                    </a>
+                                                <?php endif; ?>
                                             </td>
                                         </tr>
 
                                     <?php endif; ?>
                                     <tr>
-                                        <td><a href="/services/browser/<?php echo $service['Service']['id']; ?>">
-                                                <?php
+                                        <td>
+                                            <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
+                                                <a href="/services/browser/<?php echo $service['Service']['id']; ?>">
+                                                    <?php
+                                                    if ($service['Service']['name'] !== null && $service['Service']['name'] !== ''):
+                                                        echo h($service['Service']['name']);
+                                                    else:
+                                                        echo h($service['Servicetemplate']['name']);
+                                                    endif;
+                                                    ?>
+                                                </a>
+                                            <?php else:
                                                 if ($service['Service']['name'] !== null && $service['Service']['name'] !== ''):
                                                     echo h($service['Service']['name']);
                                                 else:
                                                     echo h($service['Servicetemplate']['name']);
                                                 endif;
-                                                ?>
-                                            </a></td>
+                                            endif; ?>
+                                        </td>
                                         <td class="width-160">
                                             <div class="btn-group">
-                                                <a href="/<?php echo $this->params['controller']; ?>/edit/<?php echo $service['Service']['id']; ?>"
+                                                <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
+                                                <a href="/services/edit/<?php echo $service['Service']['id']; ?>"
                                                    class="btn btn-default">&nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
+                                                <?php else: ?>
+                                                <a href="javascript:void(0);"
+                                                   class="btn btn-default">&nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
+                                                <?php endif; ?>
                                                 <a href="javascript:void(0);" data-toggle="dropdown"
                                                    class="btn btn-default dropdown-toggle"><span
                                                             class="caret"></span></a>
                                                 <ul class="dropdown-menu">
+                                                    <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
                                                     <li>
-                                                        <a href="/<?php echo $this->params['controller']; ?>/edit/<?php echo $service['Service']['id']; ?>"><i
+                                                        <a href="/services/edit/<?php echo $service['Service']['id']; ?>"><i
                                                                     class="fa fa-cog"></i> <?php echo __('Edit'); ?></a>
                                                     </li>
-                                                    <li>
-                                                        <a href="/<?php echo $this->params['controller']; ?>/deactivate/<?php echo $service['Service']['id']; ?>"><i
-                                                                    class="fa fa-plug"></i> <?php echo __('Disable'); ?>
-                                                        </a>
-                                                    </li>
-                                                    <li class="divider"></li>
-                                                    <li>
-                                                        <?php echo $this->Form->postLink('<i class="fa fa-trash-o"></i> '.__('Delete'), ['controller' => 'services', 'action' => 'delete', $service['Service']['id']], ['class' => 'txt-color-red', 'escape' => false]); ?>
-                                                    </li>
+                                                    <?php endif; ?>
                                                 </ul>
                                             </div>
                                         </td>
