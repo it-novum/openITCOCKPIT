@@ -90,13 +90,12 @@ class Grafana extends Widget {
                 $GrafanaDashboardExists = true;
                 $GrafanaConfiguration = \itnovum\openITCOCKPIT\Grafana\GrafanaApiConfiguration::fromArray($grafanaConfiguration);
                 $GrafanaConfiguration->setHostUuid($host['Host']['uuid']);
-                $this->Controller->set('GrafanaConfiguration', $GrafanaConfiguration);
             }
         }
-        $this->Controller->set('GrafanaDashboardExists', $GrafanaDashboardExists);
-
         $this->Controller->viewVars['widgetGafana'][$widgetData['Widget']['id']] = [
             'Widget' => $widgetData,
+            'GrafanaConfiguration' => isset($GrafanaConfiguration)?$GrafanaConfiguration:[],
+            'GrafanaDashboardExists' => isset($GrafanaDashboardExists)?$GrafanaDashboardExists:false
         ];
         $this->Controller->set('grafanaHostListForWidget', $grafanaHostListForWidget);
     }
