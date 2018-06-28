@@ -168,7 +168,7 @@ class MapstatusHelper extends AppHelper {
                 'downtimeServices' => $downtimeServices,
                 'downtimeAckServices' => $downtimeAckServices,
             ];
-
+debug($nonOkServices);
             $worstService = [];
             foreach ($nonOkServices as $type => $services){
                 if(!empty($services)){
@@ -190,9 +190,12 @@ class MapstatusHelper extends AppHelper {
                             ];
                         }
                     }
+                    if(!empty($worstService)){
+                        break;
+                    }
                 }
             }
-
+debug($worstService);
             $key = $worstService['key'];
             $typeKey = $worstService['typeKey'];
             $currentState = $nonOkServices[$typeKey][$key]['Servicestatus']['current_state'];
@@ -367,7 +370,6 @@ class MapstatusHelper extends AppHelper {
                 'problem_has_been_acknowledged' => $this->servicestatus[$uuid]['problem_has_been_acknowledged']
             ];
         }
-
         return ['state' => -1, 'human_state' => __('Not found in monitoring'), 'image' => 'error.png'];
     }
 
