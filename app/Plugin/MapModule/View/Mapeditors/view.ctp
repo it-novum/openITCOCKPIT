@@ -51,6 +51,11 @@
                     $backLink = '/map_module/rotations';
                 }
                 echo $this->Utils->backButton(null, $backLink, ['target' => "_parent"]); ?>
+                <?php
+                if ($this->Acl->hasPermission('edit')):
+                    echo $this->Html->link(__('Edit'), '/map_module/mapeditors/edit/'.$map['Map']['id'], ['class' => 'btn btn-xs btn-default', 'icon' => 'fa fa-edit']);
+                endif;
+                ?>
                 <?php if (!$isFullscreen): ?>
                     <a target="_parent"
                        href="<?php echo Router::url(array_merge([
