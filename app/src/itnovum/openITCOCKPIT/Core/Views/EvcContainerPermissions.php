@@ -112,7 +112,7 @@ class EvcContainerPermissions {
                 if (empty($this->usedEvcContainerIdsGroupByHost[$hostId])) {
                     //This host had only the ROOT_CONTAINER (allowed for everyone)
                     //Fallback to EVCs primary container id
-                    $canView = isset($this->MY_VIEW_RIGHTS_LEVEL[$evcPrimaryContainerId])
+                    $canView = isset($this->MY_VIEW_RIGHTS_LEVEL[$evcPrimaryContainerId]);
                     if ($canView === false) {
                         return false;
                     }
