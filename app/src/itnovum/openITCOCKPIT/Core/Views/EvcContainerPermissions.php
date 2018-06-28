@@ -74,11 +74,15 @@ class EvcContainerPermissions {
                 if (empty($this->usedEvcContainerIdsGroupByHost[$hostId])) {
                     //This host had only the ROOT_CONTAINER (allowed for everyone)
                     //Fallback to EVCs primary container id
-                    $canEdit = $this->MY_RIGHTS_LEVEL[$evcPrimaryContainerId] === WRITE_RIGHT;
-                    if ($canEdit === false) {
+                    if(isset($this->MY_RIGHTS_LEVEL[$evcPrimaryContainerId])) {
+                        $canEdit = $this->MY_RIGHTS_LEVEL[$evcPrimaryContainerId] === WRITE_RIGHT;
+                        if ($canEdit === false) {
+                            return false;
+                        }
+                        continue;
+                    }else{
                         return false;
                     }
-                    continue;
                 }
 
             }
