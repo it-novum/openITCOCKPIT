@@ -168,7 +168,6 @@ class MapstatusHelper extends AppHelper {
                 'downtimeServices' => $downtimeServices,
                 'downtimeAckServices' => $downtimeAckServices,
             ];
-debug($nonOkServices);
             $worstService = [];
             foreach ($nonOkServices as $type => $services){
                 if(!empty($services)){
@@ -195,7 +194,6 @@ debug($nonOkServices);
                     }
                 }
             }
-debug($worstService);
             $key = $worstService['key'];
             $typeKey = $worstService['typeKey'];
             $currentState = $nonOkServices[$typeKey][$key]['Servicestatus']['current_state'];
