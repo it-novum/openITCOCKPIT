@@ -1159,6 +1159,7 @@ class Mapeditor extends MapModuleAppModel {
             $service = $service['Service'];
             $currentServiceUuid = $service['uuid'];
             $currentHostId = $service['host_id'];
+            $servicestatusByHostId[$currentHostId] = [];
             foreach ($hostgroupServicestatus as $serviceuuid => $servicestate) {
                 if ($currentServiceUuid == $serviceuuid) {
                     $servicestatusByHostId[$currentHostId][] = $servicestate['Servicestatus'];
