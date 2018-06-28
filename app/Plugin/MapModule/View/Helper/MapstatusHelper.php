@@ -631,7 +631,6 @@ class MapstatusHelper extends AppHelper {
                 }
             }
 
-
             $cumulative_host_state = -1;
             if (!empty($allHoststates)) {
                 $cumulative_host_state = Hash::apply($allHoststates, '{n}', 'max');
@@ -642,13 +641,12 @@ class MapstatusHelper extends AppHelper {
                 $cumulative_service_state = Hash::apply($allServicestates, '{n}', 'max');
             }
 
-            if ($cumulative_host_state > $cumulative_service_state) {
+            if($cumulative_host_state > 0){
                 $state = $this->hostgroupstatusValuesHost($cumulative_host_state);
-            } else {
+            }else{
                 $state = $this->hostgroupstatusValuesService($cumulative_service_state);
             }
         }
-
         return $state;
     }
 
