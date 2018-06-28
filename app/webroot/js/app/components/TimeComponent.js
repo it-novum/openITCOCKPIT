@@ -36,6 +36,7 @@ App.Components.TimeComponent = Frontend.Component.extend({
 	initialized: false,
 	serverUTC: 0,
 	timezoneOffset: 0,
+    server_time_utc: 0,
 
 	setup: function(){
 		$.ajax({
@@ -47,6 +48,7 @@ App.Components.TimeComponent = Frontend.Component.extend({
 			success: function(response){
                 this.timezoneOffset = response.timezone.user_offset;
                 this.serverOffset = response.timezone.server_timezone_offset;
+                this.server_time_utc = response.timezone.server_time_utc;
             }.bind(this),
 			complete: function(response){}
 		});
@@ -121,7 +123,7 @@ App.Components.TimeComponent = Frontend.Component.extend({
 	 * @returns {Date}
 	 */
 	getServerUTC: function(){
-		return parseInt($('#globalServertime').attr('data-render-utc'));
+		return this.server_time_utc;
 
 	},
 
