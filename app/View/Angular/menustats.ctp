@@ -1,3 +1,5 @@
+<?php use itnovum\openITCOCKPIT\Core\RFCRouter; ?>
+
 <div class="pull-right" style="padding-right: 25px;">
     <ol class="menustats">
         <li>
