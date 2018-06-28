@@ -60,12 +60,32 @@ class EvcContainerPermissions {
     }
 
     /**
+     * @param int $evcPrimaryContainerId
      * @return bool
      */
-    public function hasEditPermission() {
+    public function hasEditPermission($evcPrimaryContainerId) {
+        $evcPrimaryContainerId = (int)$evcPrimaryContainerId;
+
         $canEdit = false;
+        debug($this->usedEvcContainerIdsGroupByHost);
         foreach ($this->usedEvcContainerIdsGroupByHost as $hostId => $containers) {
-            $canEdit = !empty(array_intersect($containers, array_keys($this->MY_RIGHTS_LEVEL)));
+            if (isset($this->usedEvcContainerIdsGroupByHost[$hostId][ROOT_CONTAINER])) {
+                unset($this->usedEvcContainerIdsGroupByHost[$hostId][ROOT_CONTAINER]);
+
+                if (empty($this->usedEvcContainerIdsGroupByHost[$hostId])) {
+                    //This host had only the ROOT_CONTAINER (allowed for everyone)
+                    //Fallback to EVCs primary container id
+                    $canEdit = $this->MY_RIGHTS_LEVEL[$evcPrimaryContainerId] === WRITE_RIGHT;
+                    if ($canEdit === false) {
+                        return false;
+                    }
+                    continue;
+                }
+
+            }
+            $containersToCheck = $this->usedEvcContainerIdsGroupByHost[$hostId];
+
+            $canEdit = !empty(array_intersect($containersToCheck, array_keys($this->MY_RIGHTS_LEVEL)));
             if ($canEdit === false) {
                 //User is not allowd to edit this host.
                 //So whole EVC is not editable for this user.
