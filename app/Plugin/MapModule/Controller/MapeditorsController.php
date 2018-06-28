@@ -625,7 +625,6 @@ class MapeditorsController extends MapModuleAppController {
         }
         $Hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus($hoststatus[$uuid]['Hoststatus'], $UserTime);
         $Hoststatus = $Hoststatus->toArray();
-
         $this->set(compact(['uuid', 'hoststatus', 'Hoststatus']));
     }
 

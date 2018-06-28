@@ -96,10 +96,10 @@ if ($servicestate['disabled'] === '0'): ?>
         <div class="row">
             <div class="col-xs-12 col-sm-11 no-padding">
                 <div>
-                    <h4 class="no-padding">
+                    <strong class="no-padding">
                         <i class="fa fa-plug"></i>
                         <?php echo __('This service is currently disabled!'); ?>
-                    </h4>
+                    </strong>
                 </div>
             </div>
         </div>
