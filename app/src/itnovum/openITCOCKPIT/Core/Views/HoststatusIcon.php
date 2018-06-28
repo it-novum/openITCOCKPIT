@@ -61,6 +61,13 @@ class HoststatusIcon {
         3 => 'fa fa-question-circle' //Not found in monitoring
     ];
 
+    private $pushIcon = [
+        0 => 'HostPushIconUP',
+        1 => 'HostPushIconDOWN',
+        2 => 'HostPushIconUNREACHABLE',
+        3 => null //Not found in monitoring
+    ];
+
     /**
      * HoststatusIcon constructor.
      * @param null $state
@@ -140,6 +147,21 @@ class HoststatusIcon {
         }
 
         return $this->stateIcons[$state];
+    }
+
+    /**
+     * @return string
+     */
+    public function getNotificationIcon() {
+        $icon = $this->pushIcon[$this->state];
+        if ($icon === null) {
+            return null;
+        }
+
+        return sprintf(
+            '/img/push_notifications/wh/%s.png',
+            $icon
+        );
     }
 
     public function asArray(){

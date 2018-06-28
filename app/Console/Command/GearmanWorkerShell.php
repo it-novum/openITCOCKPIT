@@ -470,6 +470,9 @@ class GearmanWorkerShell extends AppShell {
                     case 'xenial':
                         $repo = 'packages.openitcockpit.com/repositories/xenial xenial';
                         break;
+                    case 'bionic':
+                        $repo = 'packages.openitcockpit.com/repositories/bionic bionic';
+                        break;
                     case 'jessie':
                         $repo = 'packages.openitcockpit.com/repositories/jessie jessie';
                         break;

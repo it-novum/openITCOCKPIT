@@ -38,13 +38,20 @@
 </div>
 
 <div id="error_msg"></div>
-<div class="alert alert-success alert-block" id="flashSuccess" style="display:none;">
-    <a href="#" data-dismiss="alert" class="close">×</a>
-    <h4 class="alert-heading"><i class="fa fa-check-circle-o"></i> <?php echo __('Command sent successfully'); ?></h4>
-    <?php echo __('Page refresh in'); ?> <span id="autoRefreshCounter"></span> <?php echo __('seconds...'); ?>
+<div class="row">
+    <div class="col-xs-12">
+        <div class="alert alert-success alert-block" ng-show="showFlashSuccess">
+            <a href="#" data-dismiss="alert" class="close">×</a>
+            <h4 class="alert-heading"><i
+                        class="fa fa-check-circle-o"></i> <?php echo __('Command sent successfully'); ?>
+            </h4>
+            <?php echo __('Data refresh in'); ?> {{ autoRefreshCounter
+            }} <?php echo __('seconds...'); ?>
+        </div>
+    </div>
 </div>
 
-<mass-delete-host-downtimes></mass-delete-host-downtimes>
+<mass-delete-host-downtimes callback="showHostDowntimeFlashMsg"></mass-delete-host-downtimes>
 
 <section id="widget-grid" class="">
 

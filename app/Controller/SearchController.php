@@ -23,6 +23,9 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+
+use itnovum\openITCOCKPIT\Core\RFCRouter;
+
 class SearchController extends AppController
 {
     public $layout = 'Admin.default';
@@ -43,7 +46,7 @@ class SearchController extends AppController
                         }
                     }
 
-                    $url = Router::queryString([
+                    $url = RFCRouter::queryString([
                         'filter' => [
                             'Hoststatus.current_state' => $hoststatus,
                             'Host.name' => $this->request->data['SearchDefault']['Hostname'],
@@ -65,7 +68,7 @@ class SearchController extends AppController
                         }
                     }
 
-                    $url = Router::queryString([
+                    $url = RFCRouter::queryString([
                         'filter' => [
                             'Servicestatus.current_state' => $servicestatus,
                             'Service.servicename' => $this->request->data['SearchDefault']['Servicename']
@@ -84,7 +87,7 @@ class SearchController extends AppController
                         }
                     }
 
-                    $url = Router::queryString([
+                    $url = RFCRouter::queryString([
                         'filter' => [
                             'Servicestatus.current_state' => $servicestatus,
                             'Service.servicename' => $this->request->data['SearchDefault']['Servicename'],
@@ -141,7 +144,7 @@ class SearchController extends AppController
 
             //Search for host address
             if (isset($this->request->data['SearchAddress']['Hostaddress'])) {
-                $url = Router::queryString([
+                $url = RFCRouter::queryString([
                     'filter' => [
                         'Host.address' => $this->request->data['SearchAddress']['Hostaddress'],
                     ],

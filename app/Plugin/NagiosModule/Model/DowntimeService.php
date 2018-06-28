@@ -206,8 +206,7 @@ class DowntimeService extends NagiosModuleAppModel {
                                         AND DowntimeService.scheduled_end_time',
                     'DowntimeService.scheduled_start_time BETWEEN "' . date('Y-m-d H:i:s', $Conditions->getFrom()) . '"
                                         AND "' . date('Y-m-d H:i:s', $Conditions->getTo()) . '"',
-                ],
-                'DowntimeService.was_cancelled' => 0
+                ]
             ],
             'order'      => $Conditions->getOrder()
         ];
@@ -218,6 +217,10 @@ class DowntimeService extends NagiosModuleAppModel {
 
         if ($Conditions->hasServiceUuids()) {
             $query['conditions']['Objects.name2'] = $Conditions->getServiceUuids();
+        }
+
+        if ($Conditions->includeCancelledDowntimes() === false) {
+            $query['conditions']['DowntimeService.was_cancelled'] = 0;
         }
 
 

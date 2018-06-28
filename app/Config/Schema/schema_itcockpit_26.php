@@ -2,26 +2,23 @@
 
 use itnovum\openITCOCKPIT\InitialDatabase;
 
-class AppSchema extends CakeSchema
-{
+class AppSchema extends CakeSchema {
 
-    public function __construct($options = []){
+    public function __construct($options = []) {
         parent::__construct($options);
 
-        require_once APP.'Model'.DS.'Host.php';
-        require_once APP.'Model'.DS.'Service.php';
-        require_once APP.'Model'.DS.'Container.php';
+        require_once APP . 'Model' . DS . 'Host.php';
+        require_once APP . 'Model' . DS . 'Service.php';
+        require_once APP . 'Model' . DS . 'Container.php';
     }
 
-    public function before($event = [])
-    {
+    public function before($event = []) {
         $db = ConnectionManager::getDataSource($this->connection);
         $db->cacheSources = false;
         return true;
     }
 
-    public function after($event = [])
-    {
+    public function after($event = []) {
         if (isset($event['update'])) {
             switch ($event['update']) {
                 case 'commands':
@@ -149,7 +146,7 @@ class AppSchema extends CakeSchema
         'description'     => ['type' => 'text', 'null' => true, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
         'indexes'         => [
             'PRIMARY' => ['column' => 'id', 'unique' => 1],
-            'uuid'    => ['column' => 'uuid', 'unique' => 1 ]
+            'uuid'    => ['column' => 'uuid', 'unique' => 1]
         ],
         'tableParameters' => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB'],
     ];
@@ -408,7 +405,7 @@ class AppSchema extends CakeSchema
         'modified'        => ['type' => 'datetime', 'null' => false, 'default' => null],
         'indexes'         => [
             'PRIMARY' => ['column' => 'id', 'unique' => 1],
-            'task' => ['column' => ['task', 'text', 'finished', 'successfully'], 'unique' => 0]
+            'task'    => ['column' => ['task', 'text', 'finished', 'successfully'], 'unique' => 0]
         ],
         'tableParameters' => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB'],
     ];
@@ -727,32 +724,36 @@ class AppSchema extends CakeSchema
     ];
 
     public $contacts = [
-        'id'                            => ['type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'],
-        'uuid'                          => ['type' => 'string', 'null' => false, 'default' => null, 'length' => 37, 'key' => 'unique', 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
-        'name'                          => ['type' => 'string', 'null' => false, 'default' => null, 'length' => 64, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
-        'description'                   => ['type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
-        'email'                         => ['type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
-        'phone'                         => ['type' => 'string', 'null' => false, 'default' => null, 'length' => 64, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
-        'host_timeperiod_id'            => ['type' => 'integer', 'null' => false, 'default' => '0'],
-        'service_timeperiod_id'         => ['type' => 'integer', 'null' => false, 'default' => '0'],
-        'host_notifications_enabled'    => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1],
-        'service_notifications_enabled' => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1],
-        'notify_service_recovery'       => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1],
-        'notify_service_warning'        => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1],
-        'notify_service_unknown'        => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1],
-        'notify_service_critical'       => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1],
-        'notify_service_flapping'       => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1],
-        'notify_service_downtime'       => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1],
-        'notify_host_recovery'          => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1],
-        'notify_host_down'              => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1],
-        'notify_host_unreachable'       => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1],
-        'notify_host_flapping'          => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1],
-        'notify_host_downtime'          => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1],
-        'indexes'                       => [
+        'id'                                 => ['type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'],
+        'uuid'                               => ['type' => 'string', 'null' => false, 'default' => null, 'length' => 37, 'key' => 'unique', 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
+        'name'                               => ['type' => 'string', 'null' => false, 'default' => null, 'length' => 64, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
+        'description'                        => ['type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
+        'email'                              => ['type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
+        'phone'                              => ['type' => 'string', 'null' => false, 'default' => null, 'length' => 64, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
+        'user_id'                            => ['type' => 'integer', 'null' => true, 'default' => null],
+        'host_timeperiod_id'                 => ['type' => 'integer', 'null' => false, 'default' => '0'],
+        'service_timeperiod_id'              => ['type' => 'integer', 'null' => false, 'default' => '0'],
+        'host_notifications_enabled'         => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1],
+        'service_notifications_enabled'      => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1],
+        'notify_service_recovery'            => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1],
+        'notify_service_warning'             => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1],
+        'notify_service_unknown'             => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1],
+        'notify_service_critical'            => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1],
+        'notify_service_flapping'            => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1],
+        'notify_service_downtime'            => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1],
+        'notify_host_recovery'               => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1],
+        'notify_host_down'                   => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1],
+        'notify_host_unreachable'            => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1],
+        'notify_host_flapping'               => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1],
+        'notify_host_downtime'               => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1],
+        'host_push_notifications_enabled'    => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1],
+        'service_push_notifications_enabled' => ['type' => 'integer', 'null' => false, 'default' => '0', 'length' => 1],
+        'indexes'                            => [
             'PRIMARY' => ['column' => 'id', 'unique' => 1],
             'uuid'    => ['column' => 'uuid', 'unique' => 1],
+            'push'    => ['column' => ['user_id', 'host_push_notifications_enabled', 'service_push_notifications_enabled'], 'unique' => 0],
         ],
-        'tableParameters'               => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB'],
+        'tableParameters'                    => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB'],
     ];
 
     public $hosttemplatecommandargumentvalues = [
@@ -820,14 +821,14 @@ class AppSchema extends CakeSchema
     ];
 
     public $hosttemplates_to_hostgroups = [
-        'id'                => ['type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'],
-        'hosttemplate_id'   => ['type' => 'integer', 'null' => false, 'default' => null],
-        'hostgroup_id'      => ['type' => 'integer', 'null' => false, 'default' => null],
-        'indexes'           => [
-                'PRIMARY'           => ['column' => 'id', 'unique' => 1],
-                'hosttemplate_id'   => ['column' => 'hosttemplate_id', 'unique' => 0],
-                'hostgroup_id'      => ['column' => 'hostgroup_id', 'unique' => 0],
-            ],
+        'id'              => ['type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'],
+        'hosttemplate_id' => ['type' => 'integer', 'null' => false, 'default' => null],
+        'hostgroup_id'    => ['type' => 'integer', 'null' => false, 'default' => null],
+        'indexes'         => [
+            'PRIMARY'         => ['column' => 'id', 'unique' => 1],
+            'hosttemplate_id' => ['column' => 'hosttemplate_id', 'unique' => 0],
+            'hostgroup_id'    => ['column' => 'hostgroup_id', 'unique' => 0],
+        ],
         'tableParameters' => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB'],
     ];
 
@@ -930,15 +931,15 @@ class AppSchema extends CakeSchema
     ];
 
     public $servicetemplates_to_servicegroups = [
-        'id'                => ['type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'],
-        'servicetemplate_id'=> ['type' => 'integer', 'null' => false, 'default' => null],
-        'servicegroup_id'   => ['type' => 'integer', 'null' => false, 'default' => null],
-        'indexes'           => [
-            'PRIMARY'       => ['column' => 'id', 'unique' => 1],
-            'servicetemplate_id'    => ['column' => 'servicetemplate_id', 'unique' => 0],
-            'servicegroup_id'       => ['column' => 'servicegroup_id', 'unique' => 0],
+        'id'                 => ['type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'],
+        'servicetemplate_id' => ['type' => 'integer', 'null' => false, 'default' => null],
+        'servicegroup_id'    => ['type' => 'integer', 'null' => false, 'default' => null],
+        'indexes'            => [
+            'PRIMARY'            => ['column' => 'id', 'unique' => 1],
+            'servicetemplate_id' => ['column' => 'servicetemplate_id', 'unique' => 0],
+            'servicegroup_id'    => ['column' => 'servicegroup_id', 'unique' => 0],
         ],
-        'tableParameters' => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB'],
+        'tableParameters'    => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB'],
     ];
 
     public $servicetemplates_to_servicetemplategroups = [
@@ -1577,7 +1578,7 @@ class AppSchema extends CakeSchema
         'summary'         => ['type' => 'integer', 'null' => false, 'default' => null],
         'send_email'      => ['type' => 'integer', 'null' => false, 'default' => null],
         'send_interval'   => ['type' => 'integer', 'null' => false, 'default' => null],
-        'last_send_date'   => ['type' => 'datetime', 'null' => false, 'default' => null],
+        'last_send_date'  => ['type' => 'datetime', 'null' => false, 'default' => null],
         'created'         => ['type' => 'datetime', 'null' => false, 'default' => null],
         'modified'        => ['type' => 'datetime', 'null' => false, 'default' => null],
         'indexes'         => [
@@ -1587,63 +1588,63 @@ class AppSchema extends CakeSchema
     ];
 
     public $instantreports_to_hostgroups = [
-        'id'              => ['type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'],
-        'instantreport_id'=> ['type' => 'integer', 'null' => false, 'default' => null],
-        'hostgroup_id'    => ['type' => 'integer', 'null' => false, 'default' => null],
-        'indexes'         => [
-            'PRIMARY'      => ['column' => 'id', 'unique' => 1],
+        'id'               => ['type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'],
+        'instantreport_id' => ['type' => 'integer', 'null' => false, 'default' => null],
+        'hostgroup_id'     => ['type' => 'integer', 'null' => false, 'default' => null],
+        'indexes'          => [
+            'PRIMARY'          => ['column' => 'id', 'unique' => 1],
             'instantreport_id' => ['column' => 'instantreport_id', 'unique' => 0],
-            'hostgroup_id' => ['column' => 'hostgroup_id', 'unique' => 0],
+            'hostgroup_id'     => ['column' => 'hostgroup_id', 'unique' => 0],
         ],
-        'tableParameters' => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB'],
+        'tableParameters'  => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB'],
     ];
 
     public $instantreports_to_hosts = [
-        'id'              => ['type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'],
-        'instantreport_id'=> ['type' => 'integer', 'null' => false, 'default' => null],
-        'host_id'         => ['type' => 'integer', 'null' => false, 'default' => null],
-        'indexes'         => [
-            'PRIMARY'      => ['column' => 'id', 'unique' => 1],
+        'id'               => ['type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'],
+        'instantreport_id' => ['type' => 'integer', 'null' => false, 'default' => null],
+        'host_id'          => ['type' => 'integer', 'null' => false, 'default' => null],
+        'indexes'          => [
+            'PRIMARY'          => ['column' => 'id', 'unique' => 1],
             'instantreport_id' => ['column' => 'instantreport_id', 'unique' => 0],
-            'host_id' => ['column' => 'host_id', 'unique' => 0],
+            'host_id'          => ['column' => 'host_id', 'unique' => 0],
         ],
-        'tableParameters' => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB'],
+        'tableParameters'  => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB'],
     ];
 
     public $instantreports_to_servicegroups = [
-        'id'              => ['type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'],
-        'instantreport_id'=> ['type' => 'integer', 'null' => false, 'default' => null],
-        'servicegroup_id' => ['type' => 'integer', 'null' => false, 'default' => null],
-        'indexes'         => [
-            'PRIMARY'      => ['column' => 'id', 'unique' => 1],
+        'id'               => ['type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'],
+        'instantreport_id' => ['type' => 'integer', 'null' => false, 'default' => null],
+        'servicegroup_id'  => ['type' => 'integer', 'null' => false, 'default' => null],
+        'indexes'          => [
+            'PRIMARY'          => ['column' => 'id', 'unique' => 1],
             'instantreport_id' => ['column' => 'instantreport_id', 'unique' => 0],
-            'servicegroup_id' => ['column' => 'servicegroup_id', 'unique' => 0],
+            'servicegroup_id'  => ['column' => 'servicegroup_id', 'unique' => 0],
         ],
-        'tableParameters' => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB'],
+        'tableParameters'  => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB'],
     ];
 
     public $instantreports_to_services = [
-        'id'              => ['type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'],
-        'instantreport_id'=> ['type' => 'integer', 'null' => false, 'default' => null],
-        'service_id'      => ['type' => 'integer', 'null' => false, 'default' => null],
-        'indexes'         => [
-            'PRIMARY'      => ['column' => 'id', 'unique' => 1],
+        'id'               => ['type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'],
+        'instantreport_id' => ['type' => 'integer', 'null' => false, 'default' => null],
+        'service_id'       => ['type' => 'integer', 'null' => false, 'default' => null],
+        'indexes'          => [
+            'PRIMARY'          => ['column' => 'id', 'unique' => 1],
             'instantreport_id' => ['column' => 'instantreport_id', 'unique' => 0],
-            'service_id' => ['column' => 'service_id', 'unique' => 0],
+            'service_id'       => ['column' => 'service_id', 'unique' => 0],
         ],
-        'tableParameters' => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB'],
+        'tableParameters'  => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB'],
     ];
 
     public $instantreports_to_users = [
-        'id'              => ['type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'],
-        'instantreport_id'=> ['type' => 'integer', 'null' => false, 'default' => null],
-        'user_id'         => ['type' => 'integer', 'null' => false, 'default' => null],
-        'indexes'         => [
-            'PRIMARY'      => ['column' => 'id', 'unique' => 1],
+        'id'               => ['type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'],
+        'instantreport_id' => ['type' => 'integer', 'null' => false, 'default' => null],
+        'user_id'          => ['type' => 'integer', 'null' => false, 'default' => null],
+        'indexes'          => [
+            'PRIMARY'          => ['column' => 'id', 'unique' => 1],
             'instantreport_id' => ['column' => 'instantreport_id', 'unique' => 0],
-            'user_id' => ['column' => 'user_id', 'unique' => 0],
+            'user_id'          => ['column' => 'user_id', 'unique' => 0],
         ],
-        'tableParameters' => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB'],
+        'tableParameters'  => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB'],
     ];
 
     public $apikeys = [
@@ -1652,8 +1653,8 @@ class AppSchema extends CakeSchema
         'apikey'          => ['type' => 'string', 'null' => false, 'default' => null, 'length' => 255, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
         'description'     => ['type' => 'string', 'null' => true, 'default' => null, 'length' => 255, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
         'indexes'         => [
-            'PRIMARY'          => ['column' => 'id', 'unique' => 1],
-            'apikey'           => ['column' => ['apikey', 'user_id'], 'unique' => 0]
+            'PRIMARY' => ['column' => 'id', 'unique' => 1],
+            'apikey'  => ['column' => ['apikey', 'user_id'], 'unique' => 0]
         ],
         'tableParameters' => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB'],
     ];

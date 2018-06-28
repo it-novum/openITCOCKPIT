@@ -82,9 +82,12 @@ class NotificationHost extends CrateModuleAppModel {
                 'NotificationHost.start_time <' => $HostNotificationConditions->getTo()
             ],
 
-            'order' => $HostNotificationConditions->getOrder(),
-            'limit' => $HostNotificationConditions->getLimit(),
+            'order' => $HostNotificationConditions->getOrder()
         ];
+
+        if($HostNotificationConditions->getUseLimit()){
+            $query['limit'] = $HostNotificationConditions->getLimit();
+        }
 
         if($HostNotificationConditions->getHostUuid()){
             $query['conditions']['NotificationHost.hostname'] = $HostNotificationConditions->getHostUuid();

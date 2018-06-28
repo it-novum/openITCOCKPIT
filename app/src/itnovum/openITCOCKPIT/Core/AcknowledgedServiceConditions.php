@@ -46,6 +46,11 @@ class AcknowledgedServiceConditions extends ListSettingsConditions {
     protected $serviceUuid;
 
     /**
+     * @var bool
+     */
+    private $useLimit = true;
+
+    /**
      * @param $serviceUuid
      */
     public function setServiceUuid($serviceUuid){
@@ -57,6 +62,20 @@ class AcknowledgedServiceConditions extends ListSettingsConditions {
      */
     public function getServiceUuid(){
         return $this->serviceUuid;
+    }
+
+    /**
+     * @param $value
+     */
+    public function setUseLimit($value){
+        $this->useLimit = (bool)$value;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getUseLimit(){
+        return $this->useLimit;
     }
 
     /**

@@ -145,6 +145,7 @@ if ($hostInfo['disabled'] === '0'):
         <?php
         $i = 0;
         foreach ($hostStatus['Servicestatus'] as $counter => $service) :
+            $Servicestatus = new \itnovum\openITCOCKPIT\Core\Servicestatus($service['Servicestatus']);
             if (empty($service['Servicestatus'])) {
                 $service['Servicestatus'] = [
                     'current_state' => -1,
@@ -166,7 +167,17 @@ if ($hostInfo['disabled'] === '0'):
                     ?>
                 </td>
                 <?php $servicestate = $this->Status->ServiceStatusColorSimple($service['Servicestatus']['current_state']) ?>
-                <td class="<?php echo $servicestate['class']; ?>"><?php echo $servicestate['human_state']; ?></td>
+                <td class="<?php echo $servicestate['class']; ?>">
+                    <?php echo $servicestate['human_state']; ?>
+                    <?php if ($Servicestatus->isAcknowledged()): ?>
+                        <i class="fa fa-user"></i>
+                    <?php endif; ?>
+
+                    <?php if ($Servicestatus->isInDowntime()): ?>
+                        <i class="fa fa fa-power-off"></i>
+                    <?php endif; ?>
+
+                </td>
                 <td title="<?php echo $service['Servicestatus']['output']; ?>"
                     class="cropText"><?php echo h($service['Servicestatus']['output']); ?></td>
             </tr>

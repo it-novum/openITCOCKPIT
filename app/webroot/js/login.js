@@ -24,6 +24,8 @@
 
 $(document).ready(function(){
 
+    localStorage.removeItem('browserUuid');
+
     handleLoginMethodChange($('#LoginUserAuthMethod').val());
 
     $('#LoginUserAuthMethod').change(function(){

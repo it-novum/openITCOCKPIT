@@ -23,17 +23,28 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use itnovum\openITCOCKPIT\Core\AcknowledgedServiceConditions;
 use itnovum\openITCOCKPIT\Core\CustomMacroReplacer;
 use itnovum\openITCOCKPIT\Core\CustomVariableDiffer;
 use itnovum\openITCOCKPIT\Core\DbBackend;
+use itnovum\openITCOCKPIT\Core\DowntimeServiceConditions;
 use itnovum\openITCOCKPIT\Core\HostMacroReplacer;
 use itnovum\openITCOCKPIT\Core\HoststatusFields;
 use itnovum\openITCOCKPIT\Core\HosttemplateMerger;
 use itnovum\openITCOCKPIT\Core\ServiceConditions;
 use itnovum\openITCOCKPIT\Core\ServiceControllerRequest;
 use itnovum\openITCOCKPIT\Core\ServiceMacroReplacer;
+use itnovum\openITCOCKPIT\Core\ServiceNotificationConditions;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\ServicetemplateMerger;
+use itnovum\openITCOCKPIT\Core\StatehistoryHostConditions;
+use itnovum\openITCOCKPIT\Core\StatehistoryServiceConditions;
+use itnovum\openITCOCKPIT\Core\Timeline\AcknowledgementSerializer;
+use itnovum\openITCOCKPIT\Core\Timeline\DowntimeSerializer;
+use itnovum\openITCOCKPIT\Core\Timeline\Groups;
+use itnovum\openITCOCKPIT\Core\Timeline\NotificationSerializer;
+use itnovum\openITCOCKPIT\Core\Timeline\StatehistorySerializer;
+use itnovum\openITCOCKPIT\Core\Timeline\TimeRangeSerializer;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Core\Views\AcknowledgementHost;
 use itnovum\openITCOCKPIT\Core\Views\AcknowledgementService;
@@ -113,7 +124,11 @@ class ServicesController extends AppController {
         'Documentation',
         'Systemsetting',
         MONITORING_DOWNTIME_HOST,
-        MONITORING_DOWNTIME_SERVICE
+        MONITORING_DOWNTIME_SERVICE,
+        MONITORING_STATEHISTORY_HOST,
+        MONITORING_STATEHISTORY_SERVICE,
+        'DateRange',
+        MONITORING_NOTIFICATION_SERVICE
     ];
 
     public function index() {
@@ -3235,5 +3250,233 @@ class ServicesController extends AppController {
 
         $this->set(compact(['services']));
         $this->set('_serialize', ['services']);
+    }
+
+    public function timeline($id = null) {
+        session_write_close();
+        if (!$this->isApiRequest()) {
+            throw new MethodNotAllowedException();
+        }
+        if (!$this->Service->exists($id)) {
+            throw new NotFoundException(__('Invalid service'));
+        }
+
+        $service = $this->Service->find('first', [
+            'conditions' => [
+                'Service.id' => $id,
+            ],
+            'contain'    => [
+                'Host' => [
+                    'Container'
+                ],
+                'Servicetemplate' => [
+                    'fields' => [
+                        'Servicetemplate.check_period_id',
+                        'Servicetemplate.notify_period_id'
+                    ]
+                ]
+            ],
+            'fields'     => [
+                'Service.id',
+                'Service.uuid',
+                'Host.uuid',
+                'Service.check_period_id',
+                'Service.notify_period_id'
+            ]
+        ]);
+
+        $containerIdsToCheck = Hash::extract($service['Host'], 'Container.{n}.HostsToContainer.container_id');
+        if (!$this->allowedByContainerId($containerIdsToCheck, false)) {
+            $this->render403();
+            return;
+        }
+
+        $timeperiodId = ($service['Service']['check_period_id']) ? $service['Service']['check_period_id'] : $service['Servicetemplate']['check_period_id'];
+        //$notifyPeriodId = ($service['Service']['notify_period_id']) ? $service['Service']['notify_period_id'] : $service['Servicetemplate']['notify_period_id'];
+
+        $checkTimePeriod = $this->Timeperiod->find('first', [
+            'recursive'  => -1,
+            'contain'    => [
+                'Timerange'
+            ],
+            'conditions' => [
+                'Timeperiod.id' => $timeperiodId
+            ]
+        ]);
+
+        $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
+
+        $Groups = new Groups();
+        $this->set('groups', $Groups->serialize(false));
+
+        $start = $this->request->query('start');
+        $end = $this->request->query('end');
+
+
+        if (!is_numeric($start) || $start < 0) {
+            $start = time() - 2 * 24 * 3600;
+        }
+
+
+        if (!is_numeric($end) || $end < 0) {
+            $end = time();
+        }
+
+        /*************  TIME RANGES *************/
+        $timeRanges = $this->DateRange->createDateRanges(
+            date('d-m-Y H:i:s', $start),
+            date('d-m-Y H:i:s', $end),
+            $checkTimePeriod['Timerange']
+        );
+
+        $TimeRangeSerializer = new TimeRangeSerializer($timeRanges, $UserTime);
+        $this->set('timeranges', $TimeRangeSerializer->serialize());
+        unset($TimeRangeSerializer, $timeRanges);
+
+        $hostUuid = $service['Host']['uuid'];
+        $serviceUuid = $service['Service']['uuid'];
+
+        /*************  HOST STATEHISTORY *************/
+        //Process conditions
+        $Conditions = new StatehistoryHostConditions();
+        $Conditions->setOrder(['StatehistoryHost.state_time' => 'asc']);
+
+        $Conditions->setFrom($start);
+        $Conditions->setTo($end);
+        $Conditions->setHostUuid($hostUuid);
+        $Conditions->setUseLimit(false);
+
+        //Query state history records for hosts
+        $query = $this->StatehistoryHost->getQuery($Conditions);
+        $statehistories = $this->StatehistoryHost->find('all', $query);
+        $statehistoryRecords = [];
+
+        //Host has no state history record for selected time range
+        //Get last available state history record for this host
+        $query = $this->StatehistoryHost->getLastRecord($Conditions);
+        $record = $this->StatehistoryHost->find('first', $query);
+        if (!empty($record)) {
+            $record['StatehistoryHost']['state_time'] = $start;
+            $StatehistoryHost = new \itnovum\openITCOCKPIT\Core\Views\StatehistoryHost($record['StatehistoryHost']);
+            $statehistoryRecords[] = $StatehistoryHost;
+        }
+
+
+        foreach ($statehistories as $statehistory) {
+            $StatehistoryHost = new \itnovum\openITCOCKPIT\Core\Views\StatehistoryHost($statehistory['StatehistoryHost']);
+            $statehistoryRecords[] = $StatehistoryHost;
+        }
+
+
+        $StatehistorySerializer = new StatehistorySerializer($statehistoryRecords, $UserTime, $end, 'host');
+        $this->set('statehistory', $StatehistorySerializer->serialize());
+        unset($StatehistorySerializer, $statehistoryRecords);
+
+        /*************  SERVICE STATEHISTORY *************/
+        //Process conditions
+        $StatehistoryServiceConditions = new StatehistoryServiceConditions();
+        $StatehistoryServiceConditions->setOrder(['StatehistoryService.state_time' => 'asc']);
+        $StatehistoryServiceConditions->setFrom($start);
+        $StatehistoryServiceConditions->setTo($end);
+        $StatehistoryServiceConditions->setServiceUuid($serviceUuid);
+        $StatehistoryServiceConditions->setUseLimit(false);
+        //Query state history records for service
+        $query = $this->StatehistoryService->getQuery($StatehistoryServiceConditions);
+        $statehistoriesService = $this->StatehistoryService->find('all', $query);
+        $statehistoryServiceRecords = [];
+
+        //Service has no state history record for selected time range
+        //Get last available state history record for this host
+        $query = $this->StatehistoryService->getLastRecord($StatehistoryServiceConditions);
+        $record = $this->StatehistoryService->find('first', $query);
+        if (!empty($record)) {
+            $record['StatehistoryService']['state_time'] = $start;
+            $StatehistoryService = new \itnovum\openITCOCKPIT\Core\Views\StatehistoryService($record['StatehistoryService']);
+            $statehistoryServiceRecords[] = $StatehistoryService;
+        }
+
+        foreach ($statehistoriesService as $statehistoryService) {
+            $StatehistoryService = new \itnovum\openITCOCKPIT\Core\Views\StatehistoryService($statehistoryService['StatehistoryService']);
+            $statehistoryServiceRecords[] = $StatehistoryService;
+        }
+
+
+
+        $StatehistorySerializer = new StatehistorySerializer($statehistoryServiceRecords, $UserTime, $end, 'service');
+        $this->set('servicestatehistory', $StatehistorySerializer->serialize());
+        unset($StatehistorySerializer, $statehistoryServiceRecords);
+
+        /*************  SERVICE DOWNTIMES *************/
+        //Query downtime records for hosts
+        $DowntimeServiceConditions = new DowntimeServiceConditions();
+        $DowntimeServiceConditions->setOrder(['DowntimeService.scheduled_start_time' => 'asc']);
+        $DowntimeServiceConditions->setFrom($start);
+        $DowntimeServiceConditions->setTo($end);
+        $DowntimeServiceConditions->setServiceUuid($serviceUuid);
+        $DowntimeServiceConditions->setIncludeCancelledDowntimes(true);
+
+
+        $query = $this->DowntimeService->getQueryForReporting($DowntimeServiceConditions);
+        $downtimes = $this->DowntimeService->find('all', $query);
+        $downtimeRecords = [];
+        foreach ($downtimes as $downtime) {
+            $downtimeRecords[] = new \itnovum\openITCOCKPIT\Core\Views\Downtime($downtime['DowntimeService']);
+        }
+
+        $DowntimeSerializer = new DowntimeSerializer($downtimeRecords, $UserTime);
+        $this->set('downtimes', $DowntimeSerializer->serialize());
+        unset($DowntimeSerializer, $downtimeRecords);
+
+        /*************  SERVICE NOTIFICATIONS *************/
+        $Conditions = new ServiceNotificationConditions();
+        $Conditions->setUseLimit(false);
+        $Conditions->setFrom($start);
+        $Conditions->setTo($end);
+        $Conditions->setServiceUuid($serviceUuid);
+        $query = $this->NotificationService->getQuery($Conditions, []);
+
+        $notificationRecords = [];
+        foreach ($this->NotificationService->find('all', $query) as $notification) {
+            $notificationRecords[] = [
+                'NotificationService' => new \itnovum\openITCOCKPIT\Core\Views\NotificationService($notification),
+                'Command'          => new \itnovum\openITCOCKPIT\Core\Views\Command($notification['Command']),
+                'Contact'          => new \itnovum\openITCOCKPIT\Core\Views\Contact($notification['Contact'])
+            ];
+        }
+
+        $NotificationSerializer = new NotificationSerializer($notificationRecords, $UserTime, 'service');
+        $this->set('notifications', $NotificationSerializer->serialize());
+        unset($NotificationSerializer, $notificationRecords);
+
+        /*************  SERVICE ACKNOWLEDGEMENTS *************/
+        //Process conditions
+        $Conditions = new AcknowledgedServiceConditions();
+        $Conditions->setUseLimit(false);
+        $Conditions->setFrom($start);
+        $Conditions->setTo($end);
+        $Conditions->setServiceUuid($serviceUuid);
+
+        $acknowledgementRecords = [];
+        $query = $this->AcknowledgedService->getQuery($Conditions, []);
+        foreach ($this->AcknowledgedService->find('all', $query) as $acknowledgement) {
+            $acknowledgementRecords[] = new AcknowledgementService($acknowledgement['AcknowledgedService']);
+        }
+
+        $AcknowledgementSerializer = new AcknowledgementSerializer($acknowledgementRecords, $UserTime);
+        $this->set('acknowledgements', $AcknowledgementSerializer->serialize());
+
+        $this->set('start', $start);
+        $this->set('end', $end);
+        $this->set('_serialize', [
+            'start',
+            'end',
+            'groups',
+            'statehistory',
+            'servicestatehistory',
+            'downtimes',
+            'notifications',
+            'acknowledgements',
+            'timeranges'
+        ]);
     }
 }

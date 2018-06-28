@@ -47,6 +47,13 @@ class User extends AppModel
 
     public $belongsTo = ['Usergroup'];
 
+    public $hasOne = [
+        'Contact' => [
+            'className'  => 'Contact',
+            'dependent'  => false
+        ]
+    ];
+
     /**
      * Password validation regex.
      */

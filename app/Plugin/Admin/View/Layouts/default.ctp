@@ -62,6 +62,7 @@ if (ENVIRONMENT === Environments::PRODUCTION) {
     echo $this->element('assets');
 
     printf('<script src="%s"></script>', '/vendor/angular/angular.min.js');
+    printf('<script src="%s"></script>', '/js/vendor/vis-4.21.0/dist/vis.js');
     printf('<script src="%s"></script>', '/js/scripts/ng.app.js');
 
     foreach ($appScripts as $appScript):
@@ -70,6 +71,10 @@ if (ENVIRONMENT === Environments::PRODUCTION) {
     ?>
 </head>
 <body class="<?= $bodyClass ?>">
+
+<div id="global-loading">
+    <i class="fa fa-refresh fa-spin"></i>
+</div>
 
 <?php echo $this->element('Admin.layout/header') ?>
 <?php echo $this->element('Admin.layout/sidebar') ?>
