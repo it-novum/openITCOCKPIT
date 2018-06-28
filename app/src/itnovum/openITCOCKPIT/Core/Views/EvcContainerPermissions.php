@@ -67,7 +67,6 @@ class EvcContainerPermissions {
         $evcPrimaryContainerId = (int)$evcPrimaryContainerId;
 
         $canEdit = false;
-        debug($this->usedEvcContainerIdsGroupByHost);
         foreach ($this->usedEvcContainerIdsGroupByHost as $hostId => $containers) {
             if (isset($this->usedEvcContainerIdsGroupByHost[$hostId][ROOT_CONTAINER])) {
                 unset($this->usedEvcContainerIdsGroupByHost[$hostId][ROOT_CONTAINER]);
