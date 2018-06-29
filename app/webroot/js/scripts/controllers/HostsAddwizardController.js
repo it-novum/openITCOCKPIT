@@ -9,6 +9,7 @@ angular.module('openITCOCKPIT')
                 name: '',
                 address: '',
                 satellite_id: 0,
+                container_id: 0,
                 own_contacts: 0,
                 own_contactgroups: 0,
                 own_customvariables: 0,
@@ -19,19 +20,11 @@ angular.module('openITCOCKPIT')
                 Contactgroup: [],
                 Hostgroup: [],
                 Parenthost: [],
+                notify_period_id: 0,
+                check_period_id: 0,
+                command_id: 0,
                 uuid: ''
-            },
-            Contact: {
-                Contact: []
-            },
-            Contactgroup: {
-                Contactgroup: []
-            },
-            Parenthost: {
-                Parenthost: []
-            },
-            Hostcommandargumentvalue: [],
-            Customvariable: []
+            }
         };
 
         $scope.selectedContainer = 0;
@@ -60,7 +53,25 @@ angular.module('openITCOCKPIT')
             }
             $http.get("/hosts/loadElementsByContainerId/" + $scope.selectedContainer + ".json", {
                 params: {
-                    'angular': true,
+                    'angular': true
+                    //'containerId': $scope.selectedContainer,
+                    //'filter[Hosttemplate.name]': searchString,
+                    //'selected[]': $scope.post.Hostgroup.Hosttemplate
+                }
+            }).then(function(result){
+                $scope.hosttemplates = result.data.hosttemplates;
+                $scope.contacts = result.data.contacts;
+                $scope.contactgroups = result.data.contactgroups;
+            });
+        };
+
+        $scope.loadHosttemplateData = function(){
+            if($scope.init){
+                return;
+            }
+            $http.get("/hosts/loadHosttemplateData/" + $scope.selectedContainer + ".json", {
+                params: {
+                    'angular': true
                     //'containerId': $scope.selectedContainer,
                     //'filter[Hosttemplate.name]': searchString,
                     //'selected[]': $scope.post.Hostgroup.Hosttemplate
@@ -80,7 +91,7 @@ angular.module('openITCOCKPIT')
             }
             $http.get('/hosts/gethostnamebyaddr/' + $scope.address + '.json', {
                 params: {
-                    'angular': true,
+                    'angular': true
                 }
             }).then(function(result){
                 console.log(result.data);
@@ -96,7 +107,7 @@ angular.module('openITCOCKPIT')
             }
             $http.get('/hosts/gethostipbyname/' + $scope.hostname + '.json', {
                 params: {
-                    'angular': true,
+                    'angular': true
                 }
             }).then(function(result){
                 console.log(result.data);
@@ -105,20 +116,25 @@ angular.module('openITCOCKPIT')
         };
 
 
-        /*        $scope.submit = function(){
-                    $http.post("/hosts/addwizard.json?angular=true",
-                        $scope.post
-                    ).then(function(result){
-                        console.log('Data saved successfully');
-                        window.location.href = '/hostgroups/index';
-                    }, function errorCallback(result){
-                        if(result.data.hasOwnProperty('error')){
-                            $scope.errors = result.data.error;
-                        }
-                    });
+        $scope.submit = function(){
+            $http.post("/hosts/addwizard.json?angular=true",
+                $scope.post
+            ).then(function(result){
+                console.log('Data saved successfully');
+                console.log(result);
+                debugger;
+                window.location.href = '/hosts/addwizardoptional/';
+            }, function errorCallback(result){
+                console.info('save failed');
+                console.log(result);
+                debugger;
+                /*if(result.data.hasOwnProperty('error')){
+                    $scope.errors = result.data.error;
+                }*/
+            });
 
-                };
-        */
+        };
+
 
         $scope.$watch('selectedContainer', function(){
             if($scope.init){

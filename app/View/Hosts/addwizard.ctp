@@ -157,7 +157,7 @@ $notification_settings = [
                                 </label>
                                 <div class="col col-xs-10 col-md-10 col-lg-10">
                                     <select
-                                            id="Hosttemplate"
+                                            id="Contact"
                                             data-placeholder="<?php echo __('Please choose'); ?>"
                                             class="form-control"
                                             chosen="contacts"
@@ -176,7 +176,7 @@ $notification_settings = [
                                 </label>
                                 <div class="col col-xs-10 col-md-10 col-lg-10">
                                     <select
-                                            id="Hosttemplate"
+                                            id="Contactgroup"
                                             data-placeholder="<?php echo __('Please choose'); ?>"
                                             class="form-control"
                                             chosen="contactgroups"
@@ -189,16 +189,25 @@ $notification_settings = [
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-xs-12 margin-top-10">
-                                <div class="well formactions ">
-                                    <div class="pull-right">
-                                        <input class="btn btn-primary" type="submit" value="Next">&nbsp;
-                                        <a href="/hosts/index" class="btn btn-default">Cancel</a>
-                                    </div>
-                                </div>
-                            </div>
+                            <input type="hidden"
+                                   id="CommandId"
+                                   ng-model="post.Host.command_id">
+                            <input type="hidden"
+                                   id="NotifyPeriodId"
+                                   ng-model="post.Host.notify_period_id">
+                            <input type="hidden"
+                                   id="CheckPeriodId"
+                                   ng-model="post.Host.check_period_id">
                         </div>
                     </div> <!-- close col -->
+                    <div class="col-xs-12 margin-top-10">
+                        <div class="well formactions ">
+                            <div class="pull-right">
+                                <input class="btn btn-primary" type="submit" value="Next">&nbsp;
+                                <a href="/hosts/index" class="btn btn-default">Cancel</a>
+                            </div>
+                        </div>
+                    </div>
                 </div> <!-- close row-->
             </form>
         </div> <!-- close widget body -->
