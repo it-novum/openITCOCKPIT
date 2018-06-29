@@ -63,13 +63,21 @@ class ServicestatusIcon {
         4 => 'fa fa-question-circle' //Not found in monitoring
     ];
 
+    private $pushIcon = [
+        0 => 'ServicePushIconOK',
+        1 => 'ServicePushIconWARNING',
+        2 => 'ServicePushIconCRITICAL',
+        3 => 'ServicePushIconUNKNOWN',
+        4 => null //Not found in monitoring
+    ];
+
     /**
-     * HoststatusIcon constructor.
+     * ServicestatusIcon constructor.
      * @param null $state
      * @param string $href
      * @param string $style
      */
-    public function __construct($state = null, $href = 'javascript:void(0)', $style = ''){
+    public function __construct($state = null, $href = 'javascript:void(0)', $style = '') {
         $this->state = $state;
         $this->href = $href;
         $this->style = $style;
@@ -87,7 +95,7 @@ class ServicestatusIcon {
     /**
      * @return string
      */
-    public function getTextColor(){
+    public function getTextColor() {
         if ($this->state === null) {
             return 'txt-primary';
         }
@@ -110,7 +118,7 @@ class ServicestatusIcon {
     /**
      * @return string
      */
-    public function getHumanState(){
+    public function getHumanState() {
         if ($this->state === null) {
             return __('Not found in monitoring');
         }
@@ -121,7 +129,7 @@ class ServicestatusIcon {
     /**
      * @return string
      */
-    public function getHtmlIcon(){
+    public function getHtmlIcon() {
         $template = '<a href="%s" class="btn btn-%s status-circle" style="padding:0;%s"></a>';
 
         $state = $this->state;
@@ -134,7 +142,7 @@ class ServicestatusIcon {
     /**
      * @return string
      */
-    public function getPdfIcon(){
+    public function getPdfIcon() {
         $template = '<i class="fa fa-square %s"></i>';
         return sprintf($template, $this->getTextColor());
     }
@@ -142,7 +150,7 @@ class ServicestatusIcon {
     /**
      * @return string
      */
-    public function getIcon(){
+    public function getIcon() {
         $state = $this->state;
         if ($state === null) {
             $state = 4;
@@ -151,12 +159,27 @@ class ServicestatusIcon {
         return $this->stateIcons[$state];
     }
 
-    public function asArray(){
+    /**
+     * @return string
+     */
+    public function getNotificationIcon() {
+        $icon = $this->pushIcon[$this->state];
+        if ($icon === null) {
+            return null;
+        }
+
+        return sprintf(
+            '/img/push_notifications/wh/%s.png',
+            $icon
+        );
+    }
+
+    public function asArray() {
         return [
-            'state' => $this->state,
+            'state'       => $this->state,
             'human_state' => $this->getHumanState(),
-            'html_icon' => $this->getHtmlIcon(),
-            'icon' => $this->getIcon()
+            'html_icon'   => $this->getHtmlIcon(),
+            'icon'        => $this->getIcon()
         ];
     }
 

@@ -151,6 +151,11 @@ class DowntimeService extends CrateModuleAppModel {
             'order'  => $Conditions->getOrder()
         ];
 
+
+        if ($Conditions->includeCancelledDowntimes() === false) {
+            $query['conditions']['DowntimeService.was_cancelled'] = false;
+        }
+
         if ($Conditions->hasHostUuids()) {
             $query['conditions']['DowntimeService.hostname'] = $Conditions->getHostUuids();
         }
@@ -158,8 +163,6 @@ class DowntimeService extends CrateModuleAppModel {
         if ($Conditions->hasServiceUuids()) {
             $query['conditions']['DowntimeService.service_description'] = $Conditions->getServiceUuids();
         }
-
-        $query['conditions']['DowntimeHost.was_cancelled'] = false;
 
 
         $query['or'] = [
@@ -178,6 +181,15 @@ class DowntimeService extends CrateModuleAppModel {
      */
     public function getServiceDowntimesByHostAndDowntime($hostId, Downtime $Downtime) {
         $query = [
+            'joins'     => [
+                [
+                    'table'      => 'openitcockpit_services',
+                    'type'       => 'INNER',
+                    'alias'      => 'Service',
+                    'conditions' =>
+                        'Service.uuid = DowntimeService.service_description',
+                ],
+            ],
             'conditions' => [
                 'Service.host_id'                      => $hostId,
                 'DowntimeService.scheduled_start_time' => $Downtime->getScheduledStartTime(),

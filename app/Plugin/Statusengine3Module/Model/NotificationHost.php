@@ -76,9 +76,12 @@ class NotificationHost extends Statusengine3ModuleAppModel {
                 ],
             ],
 
-            'order' => $HostNotificationConditions->getOrder(),
-            'limit' => $HostNotificationConditions->getLimit(),
+            'order' => $HostNotificationConditions->getOrder()
         ];
+
+        if($HostNotificationConditions->getUseLimit()){
+            $query['limit'] = $HostNotificationConditions->getLimit();
+        }
 
         if(empty($HostNotificationConditions->getHostUuid())){
             //Get all hosts

@@ -34,6 +34,10 @@ $config = [
             'vendor/prism.css',
             'vendor/gridstack/gridstack.min.css',
             '/smartadmin/js/plugin/fullcalendar-2.3.1/fullcalendar.min.css',
+            //'vendor/vis-4.21.0/dist/vis-timeline-graph2d.min.css',
+            'vendor/vis-4.21.0/dist/vis.css',
+            'my_vis.css'
+
         ],
 
         'js'                        => [
@@ -106,6 +110,7 @@ $config = [
             'vendor/lodash/lodash.min.js',
             'vendor/gridstack/dist/gridstack.min.js',
             'lib/ChosenAjax.js',
+            'vendor/UUID.js-4.0.3/dist/uuid.core.js',
         ],
         'jsFrontendPluginDependent' => [],
     ],

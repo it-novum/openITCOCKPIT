@@ -537,13 +537,13 @@ class MapeditorsController extends MapModuleAppController {
             $hostServicestatus = $this->Servicestatus->byUuids($serviceUuids, $serviceFields, $servicestatusConditions);
 
             $mapElementUuids['status'] = [
-                'hoststatus' => $hoststatusMap,
+                'hoststatus'    => $hoststatusMap,
                 'servicestatus' => $hostServicestatus
             ];
 
             $mapstatus = $mapElementUuids;
         }
-        
+
         $this->set(compact([
             'map',
             'mapElements',
@@ -620,12 +620,11 @@ class MapeditorsController extends MapModuleAppController {
 
         $hoststatus = $this->Mapeditor->getHoststatus([$uuid], $hoststatusConditions, $servicestatusConditions, $hostFields, $serviceFields);
         $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
-        if(!isset($hoststatus[$uuid]['Hoststatus'])){
+        if (!isset($hoststatus[$uuid]['Hoststatus'])) {
             $hoststatus[$uuid]['Hoststatus'] = [];
         }
         $Hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus($hoststatus[$uuid]['Hoststatus'], $UserTime);
         $Hoststatus = $Hoststatus->toArray();
-
         $this->set(compact(['uuid', 'hoststatus', 'Hoststatus']));
     }
 
@@ -671,22 +670,24 @@ class MapeditorsController extends MapModuleAppController {
                 'Service.uuid' => $uuid,
             ],
             'contain'    => [
-                'Host'            => [
+                'Host' => [
                     'fields' => ['Host.name'],
                 ],
             ],
-            'fields' => [
-                'Service.id'
+            'fields'     => [
+                'Service.id',
+                'Service.disabled'
             ]
         ]);
 
         $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
-        if(empty($servicestatus[$uuid]['Servicestatus'])){
+        if (empty($servicestatus[$uuid]['Servicestatus'])) {
             $servicestatus[$uuid]['Servicestatus'] = [];
         }
         $Servicestatus = new \itnovum\openITCOCKPIT\Core\Servicestatus($servicestatus[$uuid]['Servicestatus'], $UserTime);
 
         $servicestatus[$uuid]['Servicestatus'] = $Servicestatus->toArray();
+        $servicestatus[$uuid]['Servicestatus']['disabled'] = $serviceinfo['Service']['disabled'];
         $this->set(compact('uuid', 'servicestatus', 'serviceinfo'));
     }
 
@@ -713,7 +714,7 @@ class MapeditorsController extends MapModuleAppController {
         $hostServicestatus = $this->Servicestatus->byUuids($serviceUuids, $serviceFields);
 
         $mapElementUuids['status'] = [
-            'hoststatus' => $hoststatus,
+            'hoststatus'    => $hoststatus,
             'servicestatus' => $hostServicestatus
         ];
 
@@ -730,7 +731,7 @@ class MapeditorsController extends MapModuleAppController {
             ],
         ]);
 
-        $this->set(compact('id','mapstatus', 'mapinfo'));
+        $this->set(compact('id', 'mapstatus', 'mapinfo'));
     }
 
 
@@ -760,7 +761,7 @@ class MapeditorsController extends MapModuleAppController {
             ],
             'conditions' => [
                 'Service.disabled' => 0,
-                'Host.id' => $hostId,
+                'Host.id'          => $hostId,
             ],
         ]);
         $this->set(compact(['services']));

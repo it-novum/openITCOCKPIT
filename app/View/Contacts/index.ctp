@@ -58,37 +58,7 @@
                         endif;
                         ?>
                     </div>
-                    <div class="widget-toolbar" role="menu">
-                        <a href="javascript:void(0);" class="dropdown-toggle selector" data-toggle="dropdown"><i
-                                    class="fa fa-lg fa-table"></i></a>
-                        <ul class="dropdown-menu arrow-box-up-right pull-right stayOpenOnClick">
-                            <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left"
-                                                        class="select_datatable text-left" my-column="1"><input
-                                            type="checkbox" class="pull-left"/> &nbsp; <?php echo __('Contact name'); ?>
-                                </a></li>
-                            <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left"
-                                                        class="select_datatable text-left" my-column="2"><input
-                                            type="checkbox" class="pull-left"/> &nbsp; <?php echo __('Description'); ?>
-                                </a></li>
-                            <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left"
-                                                        class="select_datatable text-left" my-column="3"><input
-                                            type="checkbox" class="pull-left"/> &nbsp; <?php echo __('Email'); ?></a>
-                            </li>
-                            <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left"
-                                                        class="select_datatable text-left" my-column="4"><input
-                                            type="checkbox" class="pull-left"/> &nbsp; <?php echo __('Pager'); ?></a>
-                            </li>
-                            <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left"
-                                                        class="select_datatable text-left" my-column="5"><input
-                                            type="checkbox" class="pull-left"/>
-                                    &nbsp; <?php echo __('Notifications (Host)'); ?></a></li>
-                            <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left"
-                                                        class="select_datatable text-left" my-column="6"><input
-                                            type="checkbox" class="pull-left"/>
-                                    &nbsp; <?php echo __('Notifications (Service)'); ?></a></li>
-                        </ul>
-                        <div class="clearfix"></div>
-                    </div>
+
                     <div class="jarviswidget-ctrls" role="menu">
                     </div>
                     <span class="widget-icon hidden-mobile"> <i class="fa fa-user"></i> </span>

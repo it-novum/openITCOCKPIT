@@ -123,6 +123,7 @@ class DowntimeHost extends NagiosModuleAppModel {
                 'DowntimeHost.comment_data',
                 'DowntimeHost.scheduled_start_time',
                 'DowntimeHost.scheduled_end_time',
+                'DowntimeHost.actual_end_time',
                 'DowntimeHost.duration',
                 'DowntimeHost.was_started',
                 'DowntimeHost.was_cancelled',
@@ -153,14 +154,17 @@ class DowntimeHost extends NagiosModuleAppModel {
                                         AND DowntimeHost.scheduled_end_time',
                     'DowntimeHost.scheduled_start_time BETWEEN "' . date('Y-m-d H:i:s', $Conditions->getFrom()) . '"
                                         AND "' . date('Y-m-d H:i:s', $Conditions->getTo()) . '"',
-                ],
-                'DowntimeHost.was_cancelled' => 0
+                ]
 
             ]
         ];
 
         if ($Conditions->hasHostUuids()) {
             $query['conditions']['Objects.name1'] = $Conditions->getHostUuids();
+        }
+
+        if ($Conditions->includeCancelledDowntimes() === false) {
+            $query['conditions']['DowntimeHost.was_cancelled'] = 0;
         }
 
         return $query;

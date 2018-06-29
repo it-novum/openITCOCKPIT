@@ -3,19 +3,46 @@ angular.module('openITCOCKPIT', [])
     .factory("httpInterceptor", function($q, $rootScope, $timeout){
         return {
             response: function(result){
-                $('#global_ajax_loader').fadeOut('slow');
-                $('#global-loading').fadeOut('slow');
-                return result || $.then(result)
+                var url = result.config.url;
+                if(url === '/angular/system_health.json' || url === '/angular/menustats.json'){
+                    return result || $.then(result);
+                }
+
+                $rootScope.runningAjaxCalls--;
+
+                if($rootScope.runningAjaxCalls === 0){
+                    //No other ajax call is running, hide loader
+                    $('#global_ajax_loader').fadeOut('slow');
+                    $('#global-loading').fadeOut('slow');
+                }
+                return result || $.then(result);
             },
             request: function(response){
+                var url = response.url;
+                if(url === '/angular/system_health.json' || url === '/angular/menustats.json'){
+                    return response || $q.when(response);
+                }
+
+                //Reference Counting Basics Garbage Collection
+                $rootScope.runningAjaxCalls++;
+
+
                 $('#global_ajax_loader').show();
                 $('#global-loading').show();
                 return response || $q.when(response);
             },
             responseError: function(rejection){
-                console.log(rejection);
-                $('#global_ajax_loader').fadeOut('slow');
-                $('#global-loading').fadeOut('slow');
+                var url = rejection.config.url;
+                if(url === '/angular/system_health.json' || url === '/angular/menustats.json'){
+                    return $q.reject(rejection);
+                }
+
+                $rootScope.runningAjaxCalls--;
+                if($rootScope.runningAjaxCalls === 0){
+                    //No other ajax call is running, hide loader
+                    $('#global_ajax_loader').fadeOut('slow');
+                    $('#global-loading').fadeOut('slow');
+                }
 
                 return $q.reject(rejection);
             }
@@ -132,6 +159,8 @@ angular.module('openITCOCKPIT', [])
     })
 
     .run(function($rootScope, SortService){
+
+        $rootScope.runningAjaxCalls = 0;
 
         $rootScope.currentStateForApi = function(current_state){
             var states = [];

@@ -286,6 +286,10 @@ class NagiosExportTask extends AppShell
                 }
             }
 
+            if(!empty($contact['Contact']['user_id'])){
+                $content .= $this->addContent('_OITCUSERID', 1, $contact['Contact']['user_id']);
+            }
+
             $content .= $this->addContent('}', 0);
             if (!$this->conf['minified']) {
                 $file->write($content);

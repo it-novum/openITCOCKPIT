@@ -105,6 +105,12 @@ oitc AclExtras.AclExtras aco_sync
 #for always sllowed allowd and dependend ALC action
 oitc set_permissions
 
+#Check for browser push notification commands
+echo "Check for browser push notification commands"
+oitc api --model Commands --action addByUuid --ignore-errors 1 --data 'host-notify-by-browser-notification' '/usr/share/openitcockpit/app/Console/cake send_push_notification --type Host --notificationtype $NOTIFICATIONTYPE$ --hostuuid "$HOSTNAME$" --state "$HOSTSTATEID$" --output "$HOSTOUTPUT$"  --ackauthor "$HOSTACKAUTHOR$" --ackcomment "$HOSTACKCOMMENT$" --user-id $_CONTACTOITCUSERID$' '3' 'cd13d22e-acd4-4a67-997b-6e120e0d3153' 'Send a host notification to the browser window'
+oitc api --model Commands --action addByUuid --ignore-errors 1 --data 'service-notify-by-browser-notification' '/usr/share/openitcockpit/app/Console/cake send_push_notification --type Service --notificationtype $NOTIFICATIONTYPE$ --hostuuid "$HOSTNAME$" --serviceuuid "$SERVICEDESC$" --state "$SERVICESTATEID$" --output "$SERVICEOUTPUT$" --ackauthor "$SERVICEACKAUTHOR$" --ackcomment "$SERVICEACKCOMMENT$" --user-id $_CONTACTOITCUSERID$' '3' 'c23255b7-5b1a-40b4-b614-17837dc376af ' 'Send a service notification to the browser window'
+
+
 #Generate documentation
 oitc docu_generator
 oitc copy_servicename
@@ -138,19 +144,24 @@ echo ""
 
 CODENAME=$(lsb_release -sc)
 if [ "$1" = "install" ]; then
-    if [ $CODENAME = "jessie" ] || [ $CODENAME = "xenial" ] || [ $CODENAME = "stretch" ]; then
+    if [ $CODENAME = "jessie" ] || [ $CODENAME = "xenial" ] || [ $CODENAME = "bionic" ] || [ $CODENAME = "stretch" ]; then
         systemctl restart gearman_worker
     fi
     echo "Update successfully finished"
 else
 
-    if [ $CODENAME = "jessie" ] || [ $CODENAME = "xenial" ] || [ $CODENAME = "stretch" ]; then
+    if [ $CODENAME = "jessie" ] || [ $CODENAME = "xenial" ] || [ $CODENAME = "bionic" ] || [ $CODENAME = "stretch" ]; then
         systemctl restart oitc_cmd
         systemctl restart gearman_worker
+        systemctl restart push_notification
     fi
 
     if [ $CODENAME = "xenial" ] || [ $CODENAME = "stretch" ]; then
         systemctl restart php7.0-fpm
+    fi
+
+    if [ $CODENAME = "bionic" ]; then
+        systemctl restart php7.2-fpm.service
     fi
 
     if [ $CODENAME = "jessie" ]; then
@@ -164,6 +175,9 @@ else
 
         service gearman_worker stop
         service gearman_worker start
+
+        service push_notification stop
+        service push_notification start
 
         service php5-fpm stop
         service php5-fpm start

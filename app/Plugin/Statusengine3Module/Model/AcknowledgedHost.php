@@ -33,14 +33,14 @@ class AcknowledgedHost extends Statusengine3ModuleAppModel {
      * @param string $uuid
      * @return array|null
      */
-    public function byHostUuid($uuid = null){
+    public function byHostUuid($uuid = null) {
         $return = [];
         if ($uuid !== null) {
             $acknowledged = $this->find('first', [
                 'conditions' => [
                     'hostname' => $uuid,
                 ],
-                'order' => [
+                'order'      => [
                     'AcknowledgedHost.entry_time' => 'DESC',
                 ],
             ]);
@@ -57,16 +57,19 @@ class AcknowledgedHost extends Statusengine3ModuleAppModel {
      * @param array $paginatorConditions
      * @return array
      */
-    public function getQuery(AcknowledgedHostConditions $AcknowledgedHostConditions, $paginatorConditions = []){
+    public function getQuery(AcknowledgedHostConditions $AcknowledgedHostConditions, $paginatorConditions = []) {
         $query = [
             'conditions' => [
-                'hostname' => $AcknowledgedHostConditions->getHostUuid(),
+                'hostname'     => $AcknowledgedHostConditions->getHostUuid(),
                 'entry_time >' => $AcknowledgedHostConditions->getFrom(),
                 'entry_time <' => $AcknowledgedHostConditions->getTo()
             ],
-            'order' => $AcknowledgedHostConditions->getOrder(),
-            'limit' => $AcknowledgedHostConditions->getLimit(),
+            'order'      => $AcknowledgedHostConditions->getOrder()
         ];
+
+        if ($AcknowledgedHostConditions->getUseLimit()) {
+            $query['limit'] = $AcknowledgedHostConditions->getLimit();
+        }
 
         if (!empty($AcknowledgedHostConditions->getStates())) {
             $query['conditions']['state'] = $AcknowledgedHostConditions->getStates();
