@@ -41,6 +41,7 @@ $config = [
                 'statuscount',
                 'menu',
                 'websocket_configuration',
+                'push_configuration',
                 'export',
                 'not_found',
                 'forbidden',
@@ -164,7 +165,8 @@ $config = [
                 'icon',
                 'hostservicelist',
                 'loadParentHostsByString',
-                'loadParentHostsById'
+                'loadParentHostsById',
+                'hoststatus'
             ]
         ],
         'dependencies'   => [
@@ -200,8 +202,8 @@ $config = [
             ],
             'Contacts'              => [
                 'index' => ['view'],
-                'add'   => ['loadTimeperiods', 'addCustomMacro', 'loadLdapUserByString'],
-                'edit'  => ['loadTimeperiods', 'addCustomMacro', 'loadLdapUserByString'],
+                'add'   => ['loadTimeperiods', 'addCustomMacro', 'loadLdapUserByString', 'loadUsersByContainerId'],
+                'edit'  => ['loadTimeperiods', 'addCustomMacro', 'loadLdapUserByString', 'loadUsersByContainerId'],
             ],
             'Cronjobs'              => [
                 'add'  => ['loadTasksByPlugin'],
@@ -234,7 +236,7 @@ $config = [
                 'extended' => ['loadHostgroupWithHostsById']
             ],
             'Hosts'                 => [
-                'index'      => ['getHostByAjax', 'listToPdf', 'ajaxList', 'loadHostsByContainerId', 'loadHostsByString', 'loadHostById', 'allocateServiceTemplateGroup', 'getServiceTemplatesfromGroup', 'hoststatus'],
+                'index'      => ['getHostByAjax', 'listToPdf', 'ajaxList', 'loadHostsByContainerId', 'loadHostsByString', 'loadHostById', 'allocateServiceTemplateGroup', 'getServiceTemplatesfromGroup'],
                 'delete'     => ['mass_delete'],
                 'deactivate' => ['mass_deactivate'],
                 'browser'    => ['longOutputByUuid'],
@@ -328,7 +330,11 @@ $config = [
             ],
             'Notifications'         => [
                 'index' => ['services'],
-            ]
+            ],
+            'Statusmaps' => [
+                'index' => ['hostAndServicesSummaryStatus'
+                ]
+            ],
         ],
         'roles_rights'   => [
             'Administrator' => ['*'],

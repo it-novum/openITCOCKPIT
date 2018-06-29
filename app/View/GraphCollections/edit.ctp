@@ -25,14 +25,20 @@
 ?>
 
 <div class="row">
-    <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
+    <div class="col-xs-12 col-md-6">
         <h1 class="page-title txt-color-blueDark">
             <i class="fa fa-area-chart fa-fw"></i>
             <?php echo __('Monitoring'); ?>
             <span>>
                 <?php echo __('Graph Collections'); ?>
-			</span>
+            </span>
         </h1>
+    </div>
+    <div class="col-xs-12 col-md-6">
+        <div class="alert alert-info">
+            <i class="fa-fw fa fa-info"></i>
+            <?php echo __('This feature is marked as deprecated and will be removed in a future version.'); ?>
+        </div>
     </div>
 </div>
 

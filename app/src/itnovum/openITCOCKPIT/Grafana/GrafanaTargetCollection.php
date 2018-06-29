@@ -68,7 +68,7 @@ class GrafanaTargetCollection {
                 $target['target'] = sprintf(
                     'alias(%s, \'%s\')',
                     $grafanaTarget->getTarget(),
-                    $grafanaTarget->getAlias()
+                    str_replace("'", '', $grafanaTarget->getAlias())
                 );
             } else {
                 $target['target'] = $grafanaTarget->getTarget();

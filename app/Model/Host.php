@@ -252,6 +252,14 @@ class Host extends AppModel {
             ],
             'limit'      => self::ITN_AJAX_LIMIT
         ];
+
+        if (is_array($selected)) {
+            $selected = array_filter($selected);
+        }
+        if (!empty($selected)) {
+            $query['conditions']['NOT'] = ['Host.id' => $selected];
+        }
+
         $hostsWithLimit = $this->find('list', $query);
 
         $selectedHosts = [];
@@ -274,6 +282,9 @@ class Host extends AppModel {
                 'order'      => [
                     'Host.name' => 'ASC',
                 ],
+                'group'      => [
+                    'Host.id'
+                ]
             ];
             if ($HostConditions->hasContainer()) {
                 $query['conditions']['HostsToContainers.container_id'] = $HostConditions->getContainerIds();

@@ -65,8 +65,9 @@ if ($hostStatus['current_state'] == 0) {
     $cumulativeState = $hostStatus['current_state'];
     $summaryState = $this->Status->HostStatusColorSimple($cumulativeState);
 }
-
+if ($hostInfo['disabled'] === '0'):
 ?>
+
     <table class="table table-bordered popoverTable" style="padding:1px;">
         <tr>
             <th colspan="2" class="h6"><?php echo __('Host'); ?></th>
@@ -144,6 +145,7 @@ if ($hostStatus['current_state'] == 0) {
         <?php
         $i = 0;
         foreach ($hostStatus['Servicestatus'] as $counter => $service) :
+            $Servicestatus = new \itnovum\openITCOCKPIT\Core\Servicestatus($service['Servicestatus']);
             if (empty($service['Servicestatus'])) {
                 $service['Servicestatus'] = [
                     'current_state' => -1,
@@ -165,7 +167,17 @@ if ($hostStatus['current_state'] == 0) {
                     ?>
                 </td>
                 <?php $servicestate = $this->Status->ServiceStatusColorSimple($service['Servicestatus']['current_state']) ?>
-                <td class="<?php echo $servicestate['class']; ?>"><?php echo $servicestate['human_state']; ?></td>
+                <td class="<?php echo $servicestate['class']; ?>">
+                    <?php echo $servicestate['human_state']; ?>
+                    <?php if ($Servicestatus->isAcknowledged()): ?>
+                        <i class="fa fa-user"></i>
+                    <?php endif; ?>
+
+                    <?php if ($Servicestatus->isInDowntime()): ?>
+                        <i class="fa fa fa-power-off"></i>
+                    <?php endif; ?>
+
+                </td>
                 <td title="<?php echo $service['Servicestatus']['output']; ?>"
                     class="cropText"><?php echo h($service['Servicestatus']['output']); ?></td>
             </tr>
@@ -173,4 +185,22 @@ if ($hostStatus['current_state'] == 0) {
             $i++;
         endforeach; ?>
     </table>
-<?php endif; ?>
+<?php endif;
+
+else: ?>
+
+<div class="browser-border padding-10 bg-warning" style="width: 100%;">
+    <div class="row">
+        <div class="col-xs-12 col-sm-11 no-padding">
+            <div>
+                <strong class="no-padding">
+                    <i class="fa fa-plug"></i>
+                    <?php echo __('This host is currently disabled!'); ?>
+                </strong>
+            </div>
+        </div>
+    </div>
+</div>
+<?php
+endif;
+?>

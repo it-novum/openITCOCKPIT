@@ -24,15 +24,25 @@
 //	confirmation.
 
 
+use itnovum\openITCOCKPIT\Core\AcknowledgedHostConditions;
 use itnovum\openITCOCKPIT\Core\CustomMacroReplacer;
 use itnovum\openITCOCKPIT\Core\CustomVariableDiffer;
+use itnovum\openITCOCKPIT\Core\DowntimeHostConditions;
 use \itnovum\openITCOCKPIT\Core\HostControllerRequest;
 use \itnovum\openITCOCKPIT\Core\HostConditions;
 use itnovum\openITCOCKPIT\Core\HostMacroReplacer;
+use itnovum\openITCOCKPIT\Core\HostNotificationConditions;
 use itnovum\openITCOCKPIT\Core\HoststatusConditions;
 use itnovum\openITCOCKPIT\Core\HoststatusFields;
 use itnovum\openITCOCKPIT\Core\HosttemplateMerger;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
+use itnovum\openITCOCKPIT\Core\StatehistoryHostConditions;
+use itnovum\openITCOCKPIT\Core\Timeline\AcknowledgementSerializer;
+use itnovum\openITCOCKPIT\Core\Timeline\DowntimeSerializer;
+use itnovum\openITCOCKPIT\Core\Timeline\Groups;
+use itnovum\openITCOCKPIT\Core\Timeline\NotificationSerializer;
+use itnovum\openITCOCKPIT\Core\Timeline\StatehistorySerializer;
+use itnovum\openITCOCKPIT\Core\Timeline\TimeRangeSerializer;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Core\ModuleManager;
 use itnovum\openITCOCKPIT\Core\Views\AcknowledgementHost;
@@ -61,6 +71,9 @@ use itnovum\openITCOCKPIT\Core\HostSharingPermissions;
  * @property Timeperiod $Timeperiod
  * @property DowntimeHost $DowntimeHost
  * @property BbcodeComponent $Bbcode
+ * @property StatehistoryHost $StatehistoryHost
+ * @property DateRange $DateRange
+ * @property NotificationHost $NotificationHost
  */
 class HostsController extends AppController {
     public $layout = 'Admin.default';
@@ -102,7 +115,10 @@ class HostsController extends AppController {
         'Timeperiod',
         'Servicetemplategroup',
         'Service',
-        MONITORING_DOWNTIME_HOST
+        MONITORING_DOWNTIME_HOST,
+        MONITORING_STATEHISTORY_HOST,
+        'DateRange',
+        MONITORING_NOTIFICATION_HOST
     ];
 
     public function index() {
@@ -192,13 +208,13 @@ class HostsController extends AppController {
             $this->set('_serialize', ['all_hosts']);
             return;
         } else {
-            if($this->isScrollRequest()){
+            if ($this->isScrollRequest()) {
                 $this->Paginator->settings['page'] = $HostFilter->getPage();
                 $ScrollIndex = new ScrollIndex($this->Paginator, $this);
                 $hosts = $this->{$modelName}->find('all', array_merge($this->Paginator->settings, $query));
                 $ScrollIndex->determineHasNextPage($hosts);
                 $ScrollIndex->scroll();
-            }else{
+            } else {
                 $this->Paginator->settings['page'] = $HostFilter->getPage();
                 $this->Paginator->settings = array_merge($this->Paginator->settings, $query);
                 $hosts = $this->Paginator->paginate($modelName, [], [key($this->Paginator->settings['order'])]);
@@ -208,7 +224,28 @@ class HostsController extends AppController {
 
         $all_hosts = [];
         $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
+        $ServicestatusFields = new ServicestatusFields($this->DbBackend);
+        $ServicestatusFields->currentState();
+
         foreach ($hosts as $host) {
+            $serviceUuids = $this->Service->find('list', [
+                'fields'     => [
+                    'Service.uuid'
+                ],
+                'conditions' => [
+                    'Service.host_id' => $host['Host']['id']
+                ]
+            ]);
+            $servicestatus = $this->Servicestatus->byUuid($serviceUuids, $ServicestatusFields);
+            $serviceStateSummary = $this->Service->getServiceStateSummary($servicestatus, false);
+
+            $serviceStateSummary['state'] = array_combine([
+                __('ok'),
+                __('warning'),
+                __('critical'),
+                __('unknown')
+            ], $serviceStateSummary['state']
+            );
             $Host = new \itnovum\openITCOCKPIT\Core\Views\Host($host);
             $Hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus($host['Hoststatus'], $UserTime);
             $PerfdataChecker = new HostPerfdataChecker($Host);
@@ -233,8 +270,9 @@ class HostsController extends AppController {
             }
 
             $tmpRecord = [
-                'Host'       => $Host->toArray(),
-                'Hoststatus' => $Hoststatus->toArray()
+                'Host'                 => $Host->toArray(),
+                'Hoststatus'           => $Hoststatus->toArray(),
+                'ServicestatusSummary' => $serviceStateSummary
             ];
             $tmpRecord['Host']['has_graphs'] = $PerfdataChecker->hasRrdFolder();
             $tmpRecord['Host']['allow_sharing'] = $allowSharing;
@@ -248,7 +286,7 @@ class HostsController extends AppController {
         $this->set('all_hosts', $all_hosts);
 
         $toJson = ['all_hosts', 'paging'];
-        if($this->isScrollRequest()){
+        if ($this->isScrollRequest()) {
             $toJson = ['all_hosts', 'scroll'];
         }
         $this->set('_serialize', $toJson);
@@ -2309,7 +2347,7 @@ class HostsController extends AppController {
             ]
         ]);
 
-        if($rawHost['Host']['host_url'] === '' || $rawHost['Host']['host_url'] === null){
+        if ($rawHost['Host']['host_url'] === '' || $rawHost['Host']['host_url'] === null) {
             $rawHost['Host']['host_url'] = $rawHost['Hosttemplate']['host_url'];
         }
 
@@ -2474,7 +2512,7 @@ class HostsController extends AppController {
         $acknowledgement = [];
         if ($Hoststatus->isAcknowledged()) {
             $acknowledgement = $this->AcknowledgedHost->byHostUuid($host['Host']['uuid']);
-            if(!empty($acknowledgement)) {
+            if (!empty($acknowledgement)) {
                 $Acknowledgement = new AcknowledgementHost($acknowledgement['AcknowledgedHost'], $UserTime);
                 $acknowledgement = $Acknowledgement->toArray();
 
@@ -2505,7 +2543,7 @@ class HostsController extends AppController {
         $downtime = [];
         if ($Hoststatus->isInDowntime()) {
             $downtime = $this->DowntimeHost->byHostUuid($host['Host']['uuid'], true);
-            if(!empty($downtime)) {
+            if (!empty($downtime)) {
                 $Downtime = new \itnovum\openITCOCKPIT\Core\Views\Downtime($downtime['DowntimeHost'], $allowEdit, $UserTime);
                 $downtime = $Downtime->toArray();
             }
@@ -3444,11 +3482,12 @@ class HostsController extends AppController {
         $this->set('_serialize', ['hoststatus']);
     }
 
-    public function addwizard(){
+
+    public function addwizard() {
         $this->layout = 'angularjs';
-      /*  if (!$this->isApiRequest()) {
-            throw new MethodNotAllowedException();
-        }*/
+        /*  if (!$this->isApiRequest()) {
+              throw new MethodNotAllowedException();
+          }*/
 
         $this->Frontend->setJson('lang_minutes', __('minutes'));
         $this->Frontend->setJson('lang_seconds', __('seconds'));
@@ -3457,9 +3496,9 @@ class HostsController extends AppController {
         $this->Frontend->setJson('dns_ipaddress_lookup_failed', __('Could not reverse lookup your ip address'));
         $this->Frontend->setJson('hostname_placeholder', __('Will be auto detected if you enter a ip address'));
         $this->Frontend->setJson('address_placeholder', __('Will be auto detected if you enter a FQDN'));
+        $userId = $this->Auth->user('id');
 
-
-        if($this->request->is('post') || $this->request->is('put')) {
+        if ($this->request->is('post') || $this->request->is('put')) {
             $data_to_save = $this->request->data;
             $ext_data_for_changelog = $this->Host->getChangelogData($this->request->data);
 
@@ -3553,11 +3592,11 @@ class HostsController extends AppController {
         }
     }
 
-    public function addwizardoptional($id = null){
+    public function addwizardoptional($id = null) {
         $this->layout = 'angularjs';
     }
 
-    public function loadContainers(){
+    public function loadContainers() {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
@@ -3598,14 +3637,14 @@ class HostsController extends AppController {
             $currentFqdn = gethostbyaddr($hostaddress);
             if (strlen($currentFqdn) > 0 && $currentFqdn != $hostaddress) {
                 $fqdn = $currentFqdn;
-            }else{
-                $msg = 'failed -> '.$hostaddress. ' - '.$currentFqdn. ' - '.strlen($currentFqdn);
+            } else {
+                $msg = 'failed -> ' . $hostaddress . ' - ' . $currentFqdn . ' - ' . strlen($currentFqdn);
                 $this->set('msg', $msg);
                 $this->set('_serialize', ['msg']);
                 return;
             }
-        }else{
-            $msg = 'failed -> '.$hostaddress. ' - '.filter_var($hostaddress, FILTER_VALIDATE_IP);
+        } else {
+            $msg = 'failed -> ' . $hostaddress . ' - ' . filter_var($hostaddress, FILTER_VALIDATE_IP);
             $this->set('msg', $msg);
             $this->set('_serialize', ['msg']);
             return;
@@ -3613,24 +3652,212 @@ class HostsController extends AppController {
 
         $this->set('fqdn', $fqdn);
         $this->set('hostaddress', $hostaddress);
-      //  $this->set('currentfqdn', $currentFqdn);
+        //  $this->set('currentfqdn', $currentFqdn);
         $this->set('_serialize', ['fqdn', 'hostaddress']);
     }
 
-    public function loadHosttemplateData($hosttemplateId){
+    public function loadHosttemplateData($hosttemplateId) {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
 
-        if(!$this->Hosttemplate->exists($hosttemplateId)){
+        if (!$this->Hosttemplate->exists($hosttemplateId)) {
             throw new NotFoundException(__('Invalid hosttemplate'));
         }
 
         $this->Hosttemplate->find('first', [
-            'recursive' => -1,
+            'recursive'  => -1,
             'conditions' => [
                 'Hosttemplate.id' => $hosttemplateId
             ],
+        ]);
+    }
+
+    public function timeline($id = null) {
+        session_write_close();
+        if (!$this->isApiRequest()) {
+            throw new MethodNotAllowedException();
+        }
+        if (!$this->Host->exists($id)) {
+            throw new NotFoundException(__('Invalid host'));
+        }
+
+        $host = $this->Host->find('first', [
+            'conditions' => [
+                'Host.id' => $id,
+            ],
+            'contain'    => [
+                'Container',
+                'Hosttemplate' => [
+                    'fields' => [
+                        'Hosttemplate.check_period_id',
+                        'Hosttemplate.notify_period_id'
+                    ]
+                ]
+            ],
+            'fields'     => [
+                'Host.uuid',
+                'Host.container_id',
+                'Container.*',
+                'Host.check_period_id',
+                'Host.notify_period_id'
+            ]
+        ]);
+
+        $containerIdsToCheck = Hash::extract($host, 'Container.{n}.HostsToContainer.container_id');
+        $containerIdsToCheck[] = $host['Host']['container_id'];
+        if (!$this->allowedByContainerId($containerIdsToCheck, false)) {
+            $this->render403();
+            return;
+        }
+
+        $timeperiodId = ($host['Host']['check_period_id']) ? $host['Host']['check_period_id'] : $host['Hosttemplate']['check_period_id'];
+        //$notifyPeriodId = ($host['Host']['notify_period_id']) ? $host['Host']['notify_period_id'] : $host['Hosttemplate']['notify_period_id'];
+
+        $checkTimePeriod = $this->Timeperiod->find('first', [
+            'recursive'  => -1,
+            'contain'    => [
+                'Timerange'
+            ],
+            'conditions' => [
+                'Timeperiod.id' => $timeperiodId
+            ]
+        ]);
+
+        $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
+
+        $Groups = new Groups();
+        $this->set('groups', $Groups->serialize(true));
+
+
+        //Process conditions
+        $Conditions = new StatehistoryHostConditions();
+        $Conditions->setOrder(['StatehistoryHost.state_time' => 'asc']);
+
+        $start = $this->request->query('start');
+        $end = $this->request->query('end');
+
+
+        if (!is_numeric($start) || $start < 0) {
+            $start = time() - 2 * 24 * 3600;
+        }
+
+
+        if (!is_numeric($end) || $end < 0) {
+            $end = time();
+        }
+
+        $timeRanges = $this->DateRange->createDateRanges(
+            date('d-m-Y H:i:s', $start),
+            date('d-m-Y H:i:s', $end),
+            $checkTimePeriod['Timerange']
+        );
+
+        $TimeRangeSerializer = new TimeRangeSerializer($timeRanges, $UserTime);
+        $this->set('timeranges', $TimeRangeSerializer->serialize());
+        unset($TimeRangeSerializer, $timeRanges);
+
+        $hostUuid = $host['Host']['uuid'];
+
+        $Conditions->setFrom($start);
+        $Conditions->setTo($end);
+        $Conditions->setHostUuid($hostUuid);
+        $Conditions->setUseLimit(false);
+
+        //Query state history records for hosts
+        $query = $this->StatehistoryHost->getQuery($Conditions);
+        $statehistories = $this->StatehistoryHost->find('all', $query);
+        $statehistoryRecords = [];
+
+        //Host has no state history record for selected time range
+        //Get last available state history record for this host
+        $query = $this->StatehistoryHost->getLastRecord($Conditions);
+        $record = $this->StatehistoryHost->find('first', $query);
+        if (!empty($record)) {
+            $record['StatehistoryHost']['state_time'] = $start;
+            $StatehistoryHost = new \itnovum\openITCOCKPIT\Core\Views\StatehistoryHost($record['StatehistoryHost']);
+            $statehistoryRecords[] = $StatehistoryHost;
+        }
+
+        foreach ($statehistories as $statehistory) {
+            $StatehistoryHost = new \itnovum\openITCOCKPIT\Core\Views\StatehistoryHost($statehistory['StatehistoryHost']);
+            $statehistoryRecords[] = $StatehistoryHost;
+        }
+
+        $StatehistorySerializer = new StatehistorySerializer($statehistoryRecords, $UserTime, $end, 'host');
+        $this->set('statehistory', $StatehistorySerializer->serialize());
+        unset($StatehistorySerializer, $statehistoryRecords);
+
+
+        //Query downtime records for hosts
+        $DowntimeHostConditions = new DowntimeHostConditions();
+        $DowntimeHostConditions->setOrder(['DowntimeHost.scheduled_start_time' => 'asc']);
+        $DowntimeHostConditions->setFrom($start);
+        $DowntimeHostConditions->setTo($end);
+        $DowntimeHostConditions->setHostUuid($hostUuid);
+        $DowntimeHostConditions->setIncludeCancelledDowntimes(true);
+
+
+        $query = $this->DowntimeHost->getQueryForReporting($DowntimeHostConditions);
+        $downtimes = $this->DowntimeHost->find('all', $query);
+        $downtimeRecords = [];
+        foreach ($downtimes as $downtime) {
+            $downtimeRecords[] = new \itnovum\openITCOCKPIT\Core\Views\Downtime($downtime['DowntimeHost']);
+        }
+
+        $DowntimeSerializer = new DowntimeSerializer($downtimeRecords, $UserTime);
+        $this->set('downtimes', $DowntimeSerializer->serialize());
+        unset($DowntimeSerializer, $downtimeRecords);
+
+
+        $Conditions = new HostNotificationConditions();
+        $Conditions->setUseLimit(false);
+        $Conditions->setFrom($start);
+        $Conditions->setTo($end);
+        $Conditions->setHostUuid($hostUuid);
+        $query = $this->NotificationHost->getQuery($Conditions, []);
+
+        $notificationRecords = [];
+        foreach ($this->NotificationHost->find('all', $query) as $notification) {
+            $notificationRecords[] = [
+                'NotificationHost' => new itnovum\openITCOCKPIT\Core\Views\NotificationHost($notification),
+                'Command'          => new itnovum\openITCOCKPIT\Core\Views\Command($notification['Command']),
+                'Contact'          => new itnovum\openITCOCKPIT\Core\Views\Contact($notification['Contact'])
+            ];
+        }
+
+        $NotificationSerializer = new NotificationSerializer($notificationRecords, $UserTime, 'host');
+        $this->set('notifications', $NotificationSerializer->serialize());
+        unset($NotificationSerializer, $notificationRecords);
+
+
+        //Process conditions
+        $Conditions = new AcknowledgedHostConditions();
+        $Conditions->setUseLimit(false);
+        $Conditions->setFrom($start);
+        $Conditions->setTo($end);
+        $Conditions->setHostUuid($hostUuid);
+
+        $acknowledgementRecords = [];
+        $query = $this->AcknowledgedHost->getQuery($Conditions, []);
+        foreach ($this->AcknowledgedHost->find('all', $query) as $acknowledgement) {
+            $acknowledgementRecords[] = new itnovum\openITCOCKPIT\Core\Views\AcknowledgementHost($acknowledgement['AcknowledgedHost']);
+        }
+
+        $AcknowledgementSerializer = new AcknowledgementSerializer($acknowledgementRecords, $UserTime);
+        $this->set('acknowledgements', $AcknowledgementSerializer->serialize());
+
+        $this->set('start', $start);
+        $this->set('end', $end);
+        $this->set('_serialize', [
+            'start',
+            'end',
+            'groups',
+            'statehistory',
+            'downtimes',
+            'notifications',
+            'acknowledgements',
+            'timeranges'
         ]);
     }
 }

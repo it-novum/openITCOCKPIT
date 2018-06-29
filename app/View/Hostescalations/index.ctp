@@ -57,57 +57,7 @@
                             endif;
                             ?>
                         </div>
-                        <div class="widget-toolbar" role="menu">
-                            <a href="javascript:void(0);" class="dropdown-toggle selector" data-toggle="dropdown"><i
-                                        class="fa fa-lg fa-table"></i></a>
-                            <ul class="dropdown-menu arrow-box-up-right pull-right stayOpenOnClick">
-                                <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left"
-                                                            class="select_datatable text-left" my-column="0"><input
-                                                type="checkbox" class="pull-left"/> &nbsp; <?php echo __('Hosts'); ?>
-                                    </a></li>
-                                <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left"
-                                                            class="select_datatable text-left" my-column="1"><input
-                                                type="checkbox" class="pull-left"/>
-                                        &nbsp; <?php echo __('Ext. hosts'); ?></a></li>
-                                <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left"
-                                                            class="select_datatable text-left" my-column="2"><input
-                                                type="checkbox" class="pull-left"/>
-                                        &nbsp; <?php echo __('Host groups'); ?></a></li>
-                                <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left"
-                                                            class="select_datatable text-left" my-column="3"><input
-                                                type="checkbox" class="pull-left"/>
-                                        &nbsp; <?php echo __('Ext. hosts groups'); ?></a></li>
-                                <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left"
-                                                            class="select_datatable text-left" my-column="4"><input
-                                                type="checkbox" class="pull-left"/> &nbsp; <?php echo __('First'); ?>
-                                    </a></li>
-                                <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left"
-                                                            class="select_datatable text-left" my-column="5"><input
-                                                type="checkbox" class="pull-left"/> &nbsp; <?php echo __('Last'); ?></a>
-                                </li>
-                                <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left"
-                                                            class="select_datatable text-left" my-column="6"><input
-                                                type="checkbox" class="pull-left"/> &nbsp; <?php echo __('Interval'); ?>
-                                    </a></li>
-                                <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left"
-                                                            class="select_datatable text-left" my-column="7"><input
-                                                type="checkbox" class="pull-left"/>
-                                        &nbsp; <?php echo __('Timeperiod'); ?></a></li>
-                                <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left"
-                                                            class="select_datatable text-left" my-column="8"><input
-                                                type="checkbox" class="pull-left"/> &nbsp; <?php echo __('Contacts'); ?>
-                                    </a></li>
-                                <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left"
-                                                            class="select_datatable text-left" my-column="9"><input
-                                                type="checkbox" class="pull-left"/>
-                                        &nbsp; <?php echo __('Contact groups'); ?></a></li>
-                                <li style="width: 100%;"><a href="javascript:void(0)" class="select_datatable text-left"
-                                                            class="select_datatable text-left" my-column="10"><input
-                                                type="checkbox" class="pull-left"/> &nbsp; <?php echo __('Options'); ?>
-                                    </a></li>
-                            </ul>
-                            <div class="clearfix"></div>
-                        </div>
+
                         <div class="jarviswidget-ctrls" role="menu">
                         </div>
                         <span class="widget-icon hidden-mobile"> <i class="fa fa-bomb"></i> </span>

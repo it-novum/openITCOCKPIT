@@ -23,6 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+
 class DashboardsController extends AppController
 {
     public $layout = 'Admin.default';

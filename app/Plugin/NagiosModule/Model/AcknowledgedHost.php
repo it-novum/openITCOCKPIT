@@ -26,8 +26,7 @@
 use \itnovum\openITCOCKPIT\Core\AcknowledgedHostConditions;
 
 
-class AcknowledgedHost extends NagiosModuleAppModel
-{
+class AcknowledgedHost extends NagiosModuleAppModel {
 
     public $useTable = 'acknowledgements';
     public $primaryKey = 'acknowledgement_id';
@@ -36,7 +35,7 @@ class AcknowledgedHost extends NagiosModuleAppModel
         'Objects' => [
             'className'  => 'NagiosModule.Objects',
             'foreignKey' => 'object_id',
-            'type' => 'INNER'
+            'type'       => 'INNER'
         ],
     ];
 
@@ -44,8 +43,7 @@ class AcknowledgedHost extends NagiosModuleAppModel
      * @param string $uuid
      * @return array|null
      */
-    public function byHostUuid($uuid = null)
-    {
+    public function byHostUuid($uuid = null) {
         $return = [];
         if ($uuid !== null) {
             $acknowledged = $this->find('first', [
@@ -71,19 +69,22 @@ class AcknowledgedHost extends NagiosModuleAppModel
      * @param array $paginatorConditions
      * @return array
      */
-    public function getQuery(AcknowledgedHostConditions $AcknowledgedHostConditions, $paginatorConditions = []){
+    public function getQuery(AcknowledgedHostConditions $AcknowledgedHostConditions, $paginatorConditions = []) {
         $query = [
             'conditions' => [
-                'Objects.name1' => $AcknowledgedHostConditions->getHostUuid(),
+                'Objects.name1'         => $AcknowledgedHostConditions->getHostUuid(),
                 'Objects.objecttype_id' => 1,
-                'entry_time >' => date('Y-m-d H:i:s', $AcknowledgedHostConditions->getFrom()),
-                'entry_time <' => date('Y-m-d H:i:s', $AcknowledgedHostConditions->getTo())
+                'entry_time >'          => date('Y-m-d H:i:s', $AcknowledgedHostConditions->getFrom()),
+                'entry_time <'          => date('Y-m-d H:i:s', $AcknowledgedHostConditions->getTo())
             ],
-            'order' => $AcknowledgedHostConditions->getOrder(),
-            'limit' => $AcknowledgedHostConditions->getLimit(),
+            'order'      => $AcknowledgedHostConditions->getOrder(),
         ];
 
-        if(!empty($AcknowledgedHostConditions->getStates())){
+        if ($AcknowledgedHostConditions->getUseLimit()) {
+            $query['limit'] = $AcknowledgedHostConditions->getLimit();
+        }
+
+        if (!empty($AcknowledgedHostConditions->getStates())) {
             $query['conditions']['state'] = $AcknowledgedHostConditions->getStates();
         }
 

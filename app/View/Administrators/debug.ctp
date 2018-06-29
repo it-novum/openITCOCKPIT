@@ -162,6 +162,13 @@
                            data-placement="right" rel="tooltip" class="text-info" href="javascript:void(0);"><i
                                     class="fa fa-info-circle"></i></a>
                     </dd>
+                    <dt><?php echo __('Push notification service'); ?>:</dt>
+                    <dd>
+                        <?php echo ($backgroundProcessStatus['isPushNotificationRunning']) ? '<span class="text-success"><i class="fa fa-check"></i> '.__('Running').'</span>' : '<span class="text-danger"><i class="fa fa-close"></i> '.__('Not running!').'</span>'; ?>
+                        <a data-original-title="<?php echo __('Service required to send push notifications to your browser window.'); ?>"
+                           data-placement="right" rel="tooltip" class="text-info" href="javascript:void(0);"><i
+                                    class="fa fa-info-circle"></i></a>
+                    </dd>
                 </dl>
             <?php endif; ?>
             <?php if ($gearmanReachable === false): ?>

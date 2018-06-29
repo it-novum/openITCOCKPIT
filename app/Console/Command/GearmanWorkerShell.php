@@ -470,6 +470,9 @@ class GearmanWorkerShell extends AppShell {
                     case 'xenial':
                         $repo = 'packages.openitcockpit.com/repositories/xenial xenial';
                         break;
+                    case 'bionic':
+                        $repo = 'packages.openitcockpit.com/repositories/bionic bionic';
+                        break;
                     case 'jessie':
                         $repo = 'packages.openitcockpit.com/repositories/jessie jessie';
                         break;
@@ -670,6 +673,7 @@ class GearmanWorkerShell extends AppShell {
                     'isSudoServerRunning'    => false,
                     'isPhpNstaRunning'       => false,
                     'isGearmanWorkerRunning' => true,
+                    'isPushNotificationRunning' => false,
                 ];
 
                 exec($systemsetting['MONITORING']['MONITORING.STATUS'] . $errorRedirect, $output, $returncode);
@@ -705,6 +709,11 @@ class GearmanWorkerShell extends AppShell {
                 exec($systemsetting['INIT']['INIT.PHPNSTA_STATUS'] . $errorRedirect, $output, $returncode);
                 if ($returncode == 0) {
                     $state['isPhpNstaRunning'] = true;
+                }
+
+                exec($systemsetting['INIT']['INIT.PUSH_NOTIFICATION'] . $errorRedirect, $output, $returncode);
+                if ($returncode == 0) {
+                    $state['isPushNotificationRunning'] = true;
                 }
 
                 $return = $state;
