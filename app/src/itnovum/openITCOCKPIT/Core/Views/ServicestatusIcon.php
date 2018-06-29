@@ -66,7 +66,7 @@ class ServicestatusIcon {
     private $pushIcon = [
         0 => 'ServicePushIconOK',
         1 => 'ServicePushIconWARNING',
-        2 => 'ServicePushIconDOWN',
+        2 => 'ServicePushIconCRITICAL',
         3 => 'ServicePushIconUNKNOWN',
         4 => null //Not found in monitoring
     ];
