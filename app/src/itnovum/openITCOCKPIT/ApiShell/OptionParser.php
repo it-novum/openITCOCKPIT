@@ -51,6 +51,11 @@ class OptionParser
     private $plugin;
 
     /**
+     * @var bool
+     */
+    private $ignoreErrors = false;
+
+    /**
      * @param array $parameters
      * @param array $args
      *
@@ -76,6 +81,10 @@ class OptionParser
         if (array_key_exists('plugin', $parameters)) {
             $this->plugin = ucfirst(strtolower($parameters['plugin']));
         }
+
+        if (array_key_exists('ignore-errors', $parameters)) {
+            $this->ignoreErrors = (bool)$parameters['ignore-errors'];
+        }
     }
 
     /**
@@ -88,6 +97,7 @@ class OptionParser
 
     /**
      * @return string
+     * action is always strtolower!
      */
     public function getAction()
     {
@@ -108,6 +118,14 @@ class OptionParser
     public function getPlugin()
     {
         return $this->plugin;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getIgnoreErrors()
+    {
+        return $this->ignoreErrors;
     }
 
 }

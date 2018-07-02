@@ -85,9 +85,12 @@ class AcknowledgedService extends NagiosModuleAppModel
                 'AcknowledgedService.entry_time >' => date('Y-m-d H:i:s', $AcknowledgedServiceConditions->getFrom()),
                 'AcknowledgedService.entry_time <' => date('Y-m-d H:i:s', $AcknowledgedServiceConditions->getTo())
             ],
-            'order' => $AcknowledgedServiceConditions->getOrder(),
-            'limit' => $AcknowledgedServiceConditions->getLimit(),
+            'order' => $AcknowledgedServiceConditions->getOrder()
         ];
+
+        if ($AcknowledgedServiceConditions->getUseLimit()) {
+            $query['limit'] = $AcknowledgedServiceConditions->getLimit();
+        }
 
         if(!empty($AcknowledgedServiceConditions->getStates())){
             $query['conditions']['AcknowledgedService.state'] = $AcknowledgedServiceConditions->getStates();

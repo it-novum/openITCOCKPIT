@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('DowntimesHostController', function($scope, $http, $rootScope, $httpParamSerializer, SortService, QueryStringService, MassChangeService){
+    .controller('DowntimesHostController', function($scope, $http, $rootScope, $httpParamSerializer, SortService, QueryStringService, MassChangeService, $interval){
 
         SortService.setSort(QueryStringService.getValue('sort', 'DowntimeHost.scheduled_start_time'));
         SortService.setDirection(QueryStringService.getValue('direction', 'desc'));
@@ -118,6 +118,19 @@ angular.module('openITCOCKPIT')
                 }
             }
             return objects;
+        };
+
+        $scope.showHostDowntimeFlashMsg = function(){
+            $scope.showFlashSuccess = true;
+            $scope.autoRefreshCounter = 5;
+            var interval = $interval(function(){
+                $scope.autoRefreshCounter--;
+                if($scope.autoRefreshCounter === 0){
+                    $scope.load();
+                    $interval.cancel(interval);
+                    $scope.showFlashSuccess = false;
+                }
+            }, 1000);
         };
 
         $scope.changeMode = function(val){

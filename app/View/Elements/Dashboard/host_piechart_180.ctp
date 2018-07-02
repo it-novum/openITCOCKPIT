@@ -22,6 +22,9 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+
+use itnovum\openITCOCKPIT\Core\RFCRouter;
+
 ?>
 <div class="row no-padding">
     <div class="col-xs-12">
@@ -51,7 +54,7 @@
                     <?php foreach ([1, 2] as $state): ?>
                         <div class="col-xs-6">
                             <div class="col-xs-12 <?php echo $bgColors[$state]; ?>">
-                                <a href="/hosts/index<?php echo Router::queryString([
+                                <a href="/hosts/index<?php echo RFCRouter::queryString([
                                     'filter'    => [
                                         'Hoststatus.current_state' => [$state => 1]
                                     ],
@@ -63,7 +66,7 @@
                             </div>
                             <div class="col-xs-12">
                                 <?php if ($widgetHostStateArray180['not_handled'][$state] > 0): ?>
-                                    <a href="/hosts/index<?php echo Router::queryString([
+                                    <a href="/hosts/index<?php echo RFCRouter::queryString([
                                         'filter'                    => [
                                             'Hoststatus.current_state' => [$state => 1],
                                         ],
@@ -79,7 +82,7 @@
                             </div>
                             <div class="col-xs-12">
                                 <?php if ($widgetHostStateArray180['acknowledged'][$state] > 0): ?>
-                                    <a href="/hosts/index<?php echo Router::queryString([
+                                    <a href="/hosts/index<?php echo RFCRouter::queryString([
                                         'filter'                => [
                                             'Hoststatus.current_state' => [$state => 1],
                                         ],
@@ -95,7 +98,7 @@
                             </div>
                             <div class="col-xs-12">
                                 <?php if ($widgetHostStateArray180['in_downtime'][$state] > 0): ?>
-                                    <a href="/hosts/index<?php echo Router::queryString([
+                                    <a href="/hosts/index<?php echo RFCRouter::queryString([
                                         'filter'      => [
                                             'Hoststatus.current_state' => [$state => 1],
                                         ],
@@ -120,7 +123,7 @@
                 </div>
                 <?php foreach ($widgetHostStateArray180['state'] as $state => $stateCount): ?>
                     <div class="col-md-4 no-padding">
-                        <a href="/hosts/index<?php echo Router::queryString([
+                        <a href="/hosts/index<?php echo RFCRouter::queryString([
                             'filter'    => [
                                 'Hoststatus.current_state' => [$state => 1]
                             ],

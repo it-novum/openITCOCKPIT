@@ -23,8 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class DocumentationsController extends AppController
-{
+class DocumentationsController extends AppController {
     public $layout = 'Admin.default';
     public $components = ['Bbcode'];
     public $helpers = ['Bbcode'];
@@ -35,8 +34,7 @@ class DocumentationsController extends AppController
         'Service'
     ];
 
-    public function view($uuid = null, $type = 'host')
-    {
+    public function view($uuid = null, $type = 'host') {
         if ($this->request->is('post') || $this->request->is('put')) {
             if ($this->Documentation->save($this->request->data)) {
                 $this->setFlash(__('Page successfully saved'));
@@ -49,9 +47,9 @@ class DocumentationsController extends AppController
         $this->set('back_url', $this->referer());
         $post = $this->Documentation->findByUuid($uuid);
 
-        if($type === 'host') {
+        if ($type === 'host') {
             $host = $this->Host->find('first', [
-                'fields' => [
+                'fields'     => [
                     'Host.id',
                     'Host.uuid',
                     'Host.name',
@@ -63,7 +61,7 @@ class DocumentationsController extends AppController
                 'conditions' => [
                     'Host.uuid' => $uuid,
                 ],
-                'contain' => [
+                'contain'    => [
                     'Container',
                 ],
             ]);
@@ -88,7 +86,7 @@ class DocumentationsController extends AppController
             $this->set('allowEdit', $allowEdit);
         }
 
-        if($type === 'service'){
+        if ($type === 'service') {
             $service = $this->Service->find('first', [
                 'recursive'  => -1,
                 'contain'    => [
@@ -132,13 +130,11 @@ class DocumentationsController extends AppController
         $this->set(compact(['post', 'uuid', 'docuExists', 'type']));
     }
 
-    public function index()
-    {
+    public function index() {
         $this->redirect(['action' => 'wiki']);
     }
 
-    public function wiki($categoryUrl = null, $pageUrl = null, $language = 'en')
-    {
+    public function wiki($categoryUrl = null, $pageUrl = null, $language = 'en') {
         $wiki = [
             'dashboard' => [ // Category URL
                 'name'      => __('Dashboard'), // Display name
@@ -184,7 +180,7 @@ class DocumentationsController extends AppController
                 'children'  => [
                     'statusmap' => [
                         'name'        => __('Statusmap'),
-                        'description' => 'The statusmap visualizes your hosts, '.
+                        'description' => 'The statusmap visualizes your hosts, ' .
                             'with their connection with each other and their states.',
                         'file'        => 'statusmap',
                         'icon'        => 'fa fa-globe',
@@ -228,8 +224,8 @@ class DocumentationsController extends AppController
                     ],
                     'browser'               => [
                         'name'        => __('Browser'),
-                        'description' => 'Here you can browse your nodes.'.
-                            'The browser will give you an overview over the current host '.
+                        'description' => 'Here you can browse your nodes.' .
+                            'The browser will give you an overview over the current host ' .
                             'and service status of all host and services in your current node.',
                         'file'        => 'browser',
                         'icon'        => 'fa fa-list',
@@ -248,56 +244,56 @@ class DocumentationsController extends AppController
                     ],
                     'servicetemplategroups' => [
                         'name'        => __('Servicetemplategroups'),
-                        'description' => 'Use service template groups to append not present services '.
+                        'description' => 'Use service template groups to append not present services ' .
                             'to a host or a host group in an easy way.',
                         'file'        => 'servicetemplategroups',
                         'icon'        => 'fa fa-pencil-square-o',
                     ],
                     'hostgroups'            => [
                         'name'        => __('Hostgroups'),
-                        'description' => 'Host groups contain a group of hosts. '.
+                        'description' => 'Host groups contain a group of hosts. ' .
                             'You can assign all hosts to an action by only choosing the group.',
                         'file'        => 'hostgroups',
                         'icon'        => 'fa fa-sitemap',
                     ],
                     'servicegroups'         => [
                         'name'        => __('Servicegroups'),
-                        'description' => 'service groups contain a group of services. '.
+                        'description' => 'service groups contain a group of services. ' .
                             'You can assign all services to an action by only choosing the group.',
                         'file'        => 'servicegroups',
                         'icon'        => 'fa fa-cogs',
                     ],
                     'contacts'              => [
                         'name'        => __('Contacts'),
-                        'description' => 'Contacts contain information whom to notify '.
+                        'description' => 'Contacts contain information whom to notify ' .
                             'in case of a particular state of a host or service.',
                         'file'        => 'contacts',
                         'icon'        => 'fa fa-user',
                     ],
                     'contactgroups'         => [
                         'name'        => __('Contactgroups'),
-                        'description' => 'Contact groups contain a group of contacts. '.
+                        'description' => 'Contact groups contain a group of contacts. ' .
                             'You can assign all contacts to a notification by only choosing the group.',
                         'file'        => 'contactgroups',
                         'icon'        => 'fa fa-users',
                     ],
                     'calendar'              => [
                         'name'        => __('Calendar'),
-                        'description' => 'You can use the calendar to configure your holidays '.
+                        'description' => 'You can use the calendar to configure your holidays ' .
                             'where the monitoring software will not send any notifications.',
                         'file'        => 'calendar',
                         'icon'        => 'fa fa-calendar',
                     ],
                     'timeperiods'           => [
                         'name'        => __('Timeperiods'),
-                        'description' => 'Timeperiods contain a timespan for a regular week '.
+                        'description' => 'Timeperiods contain a timespan for a regular week ' .
                             'in which the monitoring of a service or host takes place.',
                         'file'        => 'timeperiods',
                         'icon'        => 'fa fa-clock-o',
                     ],
                     'commands'              => [
                         'name'        => __('Commands'),
-                        'description' => 'A command executes as a nagios terminal command '.
+                        'description' => 'A command executes as a nagios terminal command ' .
                             'from the user nagios on your server.',
                         'file'        => 'commands',
                         'icon'        => 'fa fa-terminal',
@@ -328,23 +324,23 @@ class DocumentationsController extends AppController
                     ],
                     'graph_collections'     => [
                         'name'        => __('Graph Collections'),
-                        'description' => 'A graph collection will display you all graphs at once '.
+                        'description' => 'A graph collection will display you all graphs at once ' .
                             'by overlaying them in a smart way.',
                         'file'        => 'graph_collections',
                         'icon'        => 'fa fa-list-alt',
                     ],
                     'downtimes'             => [
                         'name'        => __('Downtimes'),
-                        'description' => 'You can configure a downtime for hosts '.
-                            'and services such as for a planned maintenance. '.
-                            'In the time of the maintenance the hosts or services '.
+                        'description' => 'You can configure a downtime for hosts ' .
+                            'and services such as for a planned maintenance. ' .
+                            'In the time of the maintenance the hosts or services ' .
                             'are not tracked by your monitoring system.',
                         'file'        => 'downtimes',
                         'icon'        => 'fa fa-power-off',
                     ],
                     'logentries'            => [
                         'name'        => __('Logentries'),
-                        'description' => 'Logentries contain logs, wich you can look through '.
+                        'description' => 'Logentries contain logs, wich you can look through ' .
                             'and filter or search wich logs you want to see.',
                         'file'        => 'logentries',
                         'icon'        => 'fa fa-file-text-o',
@@ -370,21 +366,21 @@ class DocumentationsController extends AppController
                 'children'  => [
                     'user-defined-macros'  => [
                         'name'        => __('User Defined Macros'),
-                        'description' => 'Intended for system paths or specific system command line options, '.
+                        'description' => 'Intended for system paths or specific system command line options, ' .
                             'to make your Nagios configuration more reusable in other system environments.',
                         'file'        => 'user_defined_macros',
                         'icon'        => 'fa fa-usd',
                     ],
                     'host-escalations'     => [
                         'name'        => __('Host Escalations'),
-                        'description' => 'Host escalations are optional follow-up notifications, '.
+                        'description' => 'Host escalations are optional follow-up notifications, ' .
                             'that generates if a state change is not revoked in time.',
                         'file'        => 'host_escalations',
                         'icon'        => 'fa fa-bomb',
                     ],
                     'service-escalations'  => [
                         'name'        => __('Service Escalations'),
-                        'description' => 'Service escalations are optional follow-up notifications, '.
+                        'description' => 'Service escalations are optional follow-up notifications, ' .
                             'that generates if a state change is not revoked in time.',
                         'file'        => 'service_escalations',
                         'icon'        => 'fa fa-bomb',
@@ -403,7 +399,7 @@ class DocumentationsController extends AppController
                     ],
                     'external-commands'    => [
                         'name'        => __('External Commands'),
-                        'description' => 'The interface will help you create your own external commands '.
+                        'description' => 'The interface will help you create your own external commands ' .
                             'by generating an example to explain of the supported command you want to use.',
                         'file'        => 'external_commands',
                         'icon'        => 'fa fa-terminal',
@@ -430,15 +426,15 @@ class DocumentationsController extends AppController
                 'children'  => [
                     'instant_report'       => [
                         'name'        => __('Instant Report'),
-                        'description' => 'Instant reports generate reports in different formats of '.
-                            'hosts or hosts and their services in a defined time span '.
+                        'description' => 'Instant reports generate reports in different formats of ' .
+                            'hosts or hosts and their services in a defined time span ' .
                             'with hard or hard and soft sates.',
                         'file'        => 'instant_report',
                         'icon'        => 'fa fa-file-image-o',
                     ],
                     'downtime_report'      => [
                         'name'        => __('Downtime Report'),
-                        'description' => 'Downtime reports generate reports in different formats of '.
+                        'description' => 'Downtime reports generate reports in different formats of ' .
                             'hosts or hosts and their services in a defined time span in which downtimes occurred.',
                         'file'        => 'downtime_report',
                         'icon'        => 'fa fa-file-image-o',
@@ -451,7 +447,7 @@ class DocumentationsController extends AppController
                     ],
                     'autoreport'           => [
                         'name'        => __('Autoreport'),
-                        'description' => 'An autoreport automatically reports a report in a user defined way '.
+                        'description' => 'An autoreport automatically reports a report in a user defined way ' .
                             'in a defined time to the defined user.',
                         'file'        => 'autoreport',
                         'icon'        => 'fa fa-file-image-o',
@@ -526,7 +522,7 @@ class DocumentationsController extends AppController
                 'children'  => [
                     'communication' => [
                         'name'        => __('Communication'),
-                        'description' => 'Only users from your openITCOCKPIT implementation, '.
+                        'description' => 'Only users from your openITCOCKPIT implementation, ' .
                             'can connect to the chat and chat with you.',
                         'file'        => 'communication',
                         'icon'        => 'fa fa-users',
@@ -540,7 +536,7 @@ class DocumentationsController extends AppController
                 'children'  => [
                     'changelog'          => [
                         'name'        => __('Changelog'),
-                        'description' => 'Changelog contains changes that made to your system, '.
+                        'description' => 'Changelog contains changes that made to your system, ' .
                             'like editing, creating or deleting a nagios object.',
                         'file'        => 'changelog',
                         'icon'        => 'fa fa-code-fork',
@@ -553,7 +549,7 @@ class DocumentationsController extends AppController
                     ],
                     'package_manager'    => [
                         'name'        => __('Package Manager'),
-                        'description' => 'In this section you can see the available packages for openITCOCKPIT v3 '.
+                        'description' => 'In this section you can see the available packages for openITCOCKPIT v3 ' .
                             'and the changes that came with the new version of openITCOCKPIT v3.',
                         'file'        => 'package_manager',
                         'icon'        => 'fa fa-cloud-download',
@@ -578,14 +574,14 @@ class DocumentationsController extends AppController
                     ],
                     'systemfailures'     => [
                         'name'        => __('Systemfailures'),
-                        'description' => 'If your nagios did not work or is not working for some time, '.
+                        'description' => 'If your nagios did not work or is not working for some time, ' .
                             'you can create a system failure to ignore nagios states for the defined time.',
                         'file'        => 'systemfailures',
                         'icon'        => 'fa fa-medkit',
                     ],
                     'systemsettings'     => [
                         'name'        => __('Systemsettings'),
-                        'description' => 'Here you configure settings for your web server, '.
+                        'description' => 'Here you configure settings for your web server, ' .
                             'sudo server, monitoring, system, front end, check_mk and archive.',
                         'file'        => 'systemsettings',
                         'icon'        => 'fa fa-wrench',
@@ -598,7 +594,7 @@ class DocumentationsController extends AppController
                     ],
                     'registration'       => [
                         'name'        => __('Registration'),
-                        'description' => 'In the registration section you can view details of '.
+                        'description' => 'In the registration section you can view details of ' .
                             'your current license key and get a feedback if your key is valid or not.',
                         'file'        => 'registration',
                         'icon'        => 'fa fa-check-square-o',
@@ -635,38 +631,38 @@ class DocumentationsController extends AppController
                     ],
                 ],
             ],
-	   'other_modules' => [
-       'name' => ('other modules'),
-       'directory' => 'other_modules',
-       'children' => [
-         'LinuxBasicMonitoringModule' => [
-           'name' => __('LinuxBasicMonitoringModule'),
-           'description' => 'Linux basic monitoring module with nrpe',
-           'file' => 'LinuxBasicMonitoringModule',
-         ],
-         'NWCModule' => [
-           'name' => __('NWCModul'),
-           'description' => 'Network monitoring with nwc_health',
-           'file' => 'NWCModul',
-         ],
-         'WMIModule' => [
-           'name' => __('WMIModule'),
-           'description' => 'Windows monitoring with WMI',
-           'file' => 'WMIModule',
-         ],
-         'PostgresModule' => [
-           'name' => __('PostgresModule'),
-           'description' => 'Postgres monitoring with nrpe',
-           'file' => 'PostgresModule',
-         ],
-         'AlfrescoModule' => [
-           'name' => __('AlfrescoModule'),
-           'description' => 'Alfresco frontend and jmx monitoring',
-           'file' => 'AlfrescoModule',
-         ],
+            'other_modules'  => [
+                'name'      => ('Other modules'),
+                'directory' => 'other_modules',
+                'children'  => [
+                    'LinuxBasicMonitoringModule' => [
+                        'name'        => __('LinuxBasicMonitoringModule'),
+                        'description' => 'Linux basic monitoring module with nrpe',
+                        'file'        => 'LinuxBasicMonitoringModule',
+                    ],
+                    'NWCModule'                  => [
+                        'name'        => __('NWCModul'),
+                        'description' => 'Network monitoring with nwc_health',
+                        'file'        => 'NWCModul',
+                    ],
+                    'WMIModule'                  => [
+                        'name'        => __('WMIModule'),
+                        'description' => 'Windows monitoring with WMI',
+                        'file'        => 'WMIModule',
+                    ],
+                    'PostgresModule'             => [
+                        'name'        => __('PostgresModule'),
+                        'description' => 'Postgres monitoring with nrpe',
+                        'file'        => 'PostgresModule',
+                    ],
+                    'AlfrescoModule'             => [
+                        'name'        => __('AlfrescoModule'),
+                        'description' => 'Alfresco frontend and jmx monitoring',
+                        'file'        => 'AlfrescoModule',
+                    ],
 
-       ],
-	   ],
+                ],
+            ],
             'contribute_dev' => [
                 'name'      => ('Contribute and develop'),
                 'directory' => 'contribute',
@@ -707,6 +703,12 @@ class DocumentationsController extends AppController
                         'description' => 'Describes how to install openITCOCKPIT on a different distribution',
                         'file'        => 'manual_installation',
                         'icon'        => 'fa fa-download',
+                    ],
+                    'browser_push_notifications' => [
+                        'name'        => __('Browser Push Notifications'),
+                        'description' => 'How to setup openITCOCKPIT browser push notifications',
+                        'file'        => 'browser_push_notifications',
+                        'icon'        => 'fa fa-bell-o',
                     ],
                 ],
             ],
@@ -914,14 +916,14 @@ class DocumentationsController extends AppController
             //require_once APP.'Vendor'.DS.'parsedown'.DS.'Parsedown.php';
             //require_once APP.'Vendor'.DS.'parsedown'.DS.'ParsedownExtra.php';
 
-            $basePath = APP.'docs'.DS.$language;
+            $basePath = APP . 'docs' . DS . $language;
             $categoryDirectory = $wiki[$categoryUrl]['directory'];
-            $filename = $wiki[$categoryUrl]['children'][$pageUrl]['file'].'.md';
-            $filePath = $basePath.DS.$categoryDirectory.DS.$filename;
+            $filename = $wiki[$categoryUrl]['children'][$pageUrl]['file'] . '.md';
+            $filePath = $basePath . DS . $categoryDirectory . DS . $filename;
 
             $file = new File($filePath);
             if (!$file->exists()) {
-                throw new NotFoundException('File does not exists: '.$filePath);
+                throw new NotFoundException('File does not exists: ' . $filePath);
             }
 
             $subjectTitle = $wiki[$categoryUrl]['children'][$pageUrl]['name'];

@@ -1,7 +1,9 @@
+<?php use itnovum\openITCOCKPIT\Core\RFCRouter; ?>
+
 <div class="pull-right" style="padding-right: 25px;">
     <ol class="menustats">
         <li>
-            <a href="/hosts/index<?php echo Router::queryString([
+            <a href="/hosts/index<?php echo RFCRouter::queryString([
                 'sort' => 'Hoststatus.last_state_change',
                 'direction' => 'desc'
             ]); ?>" style="color:#bbb;">
@@ -9,7 +11,7 @@
             </a>
         </li>
         <li>
-            <a href="/hosts/index<?php echo Router::queryString([
+            <a href="/hosts/index<?php echo RFCRouter::queryString([
                 'filter' => [
                     'Hoststatus.current_state' => [1 => 'down']
                 ],
@@ -20,7 +22,7 @@
             </a>
         </li>
         <li>
-            <a href="/hosts/index<?php echo Router::queryString([
+            <a href="/hosts/index<?php echo RFCRouter::queryString([
                 'filter' => [
                     'Hoststatus.current_state' => [2 => 'unreachable']
                 ],
@@ -33,7 +35,7 @@
     </ol>
     <ol class="menustats">
         <li>
-            <a href="/services/index<?php echo Router::queryString([
+            <a href="/services/index<?php echo RFCRouter::queryString([
                 'sort' => 'Servicestatus.last_state_change',
                 'direction' => 'desc'
             ]); ?>" style="color:#bbb;">
@@ -41,7 +43,7 @@
             </a>
         </li>
         <li>
-            <a href="/services/index<?php echo Router::queryString([
+            <a href="/services/index<?php echo RFCRouter::queryString([
                 'filter' => [
                     'Servicestatus.current_state' => [1 => 'warning']
                 ],
@@ -52,7 +54,7 @@
             </a>
         </li>
         <li>
-            <a href="/services/index<?php echo Router::queryString([
+            <a href="/services/index<?php echo RFCRouter::queryString([
                 'filter' => [
                     'Servicestatus.current_state' => [2 => 'critical']
                 ],
@@ -63,7 +65,7 @@
             </a>
         </li>
         <li>
-            <a href="/services/index<?php echo Router::queryString([
+            <a href="/services/index<?php echo RFCRouter::queryString([
                 'filter' => [
                     'Servicestatus.current_state' => [3 => 'unknown']
                 ],

@@ -32,6 +32,8 @@
  *      |__/
 */
 
+use itnovum\openITCOCKPIT\Core\RFCRouter;
+
 ?>
 <style>
 
@@ -159,7 +161,7 @@
                                 endforeach;
                             endif;
                             if ($this->Acl->hasPermission('index', 'services')): ?>
-                                <a href="/services/index<?php echo Router::queryString($routerParam); ?>" target="_blank">
+                                <a href="/services/index<?php echo RFCRouter::queryString($routerParam); ?>" target="_blank">
                                     <?php
                                     printf(
                                         '%s (%.0f%%)',

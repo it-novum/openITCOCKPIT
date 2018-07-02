@@ -23,6 +23,8 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use itnovum\openITCOCKPIT\Core\RFCRouter;
+
 ?>
 <div class="row no-padding">
     <div class="col-xs-12 text-center">
@@ -41,7 +43,7 @@
             <div class="text-center font-xs">
                 <?php foreach ($widgetServiceStateArray['state'] as $state => $stateCount): ?>
                     <div class="col-md-3 no-padding">
-                        <a href="/services/index<?php echo Router::queryString([
+                        <a href="/services/index<?php echo RFCRouter::queryString([
                             'filter' => [
                                 'Servicestatus.current_state' => [$state => 1]
                             ],

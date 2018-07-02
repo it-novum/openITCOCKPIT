@@ -1,0 +1,26 @@
+{
+  "name": "angular-visjs",
+  "version": "4.16.0",
+  "homepage": "https://github.com/visjs/angular-visjs",
+  "authors": [
+    "Chris Jackson <chris@cd-jackson.com>"
+  ],
+  "description": "AngularJS directives for the VisJS visualisation library",
+  "keywords": [
+    "AngularJS",
+    "VisJS",
+    "JavaScript"
+  ],
+  "main": "angular-vis.js",
+  "license": "MIT",
+  "ignore": [
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular": "~1.5.0",
+    "vis": "~4.16.0"
+  }
+}
