@@ -79,6 +79,10 @@ class SendPushNotificationShell extends AppShell {
         Configure::load('gearman');
         $this->Config = Configure::read('gearman');
 
+        if ($this->userId === 0) {
+            exit (0);
+        }
+
         if (!$this->User->exists($this->userId)) {
             throw new RuntimeException(sprintf('User with id "%s" could not be found!', $this->userId));
         }
