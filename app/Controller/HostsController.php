@@ -208,6 +208,11 @@ class HostsController extends AppController {
             $this->set('_serialize', ['all_hosts']);
             return;
         } else {
+            if($HostControllerRequest->hasLimit()){
+                echo $query['limit'];
+                $this->Paginator->settings['limit'] = $this->request->query['limit'];
+            }
+
             if ($this->isScrollRequest()) {
                 $this->Paginator->settings['page'] = $HostFilter->getPage();
                 $ScrollIndex = new ScrollIndex($this->Paginator, $this);

@@ -211,6 +211,11 @@ class ServicesController extends AppController {
             $this->set('_serialize', ['all_services']);
             return;
         } else {
+            if($ServiceControllerRequest->hasLimit()){
+                echo $query['limit'];
+                $this->Paginator->settings['limit'] = $this->request->query['limit'];
+            }
+
             if($this->isScrollRequest()){
                 $this->Paginator->settings['page'] = $ServiceFilter->getPage();
                 $this->Paginator->settings = array_merge($this->Paginator->settings, $query);
