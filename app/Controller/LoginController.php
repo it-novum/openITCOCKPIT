@@ -137,7 +137,7 @@ class LoginController extends AppController
                     ['firstname' => $firstName, 'lastname' => $lastName, 'status' => 1],
                 ];
                 if ($OU !== '') {
-                    $conditions[0]['email LIKE'] = '%@'.$OU.'.%';
+                    $conditions[0]['User.email LIKE'] = '%@'.$OU.'.%';
                 }
             }
 
