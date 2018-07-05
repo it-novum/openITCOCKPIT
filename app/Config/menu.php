@@ -126,6 +126,12 @@ $config = [
                     'icon'              => 'database ',
                     'parent_controller' => 'Administrators',
                 ],
+                'itc_statistics'        => [
+                    'url'               => ['controller' => 'statistics', 'action' => 'index'],
+                    'title'             => 'Anonymous statistics',
+                    'icon'              => 'line-chart ',
+                    'parent_controller' => 'Administrators',
+                ],
             ],
         ],
         'itc'           => [

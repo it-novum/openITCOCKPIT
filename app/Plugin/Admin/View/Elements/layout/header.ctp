@@ -78,6 +78,15 @@
             <server-time></server-time>
             <version-check></version-check>
             <push-notifications></push-notifications>
+
+            <?php if($this->Acl->hasPermission('index', 'statistics')): ?>
+                <?php if($this->request->controller === 'dashboards'): ?>
+                    <?php if($askForHelp === true): ?>
+                        <ask-anonymous-statistics></ask-anonymous-statistics>
+                    <?php endif; ?>
+                <?php endif; ?>
+            <?php endif; ?>
+
         </div>
     <?php endif; ?>
 </header>

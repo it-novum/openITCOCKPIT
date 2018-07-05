@@ -35,17 +35,38 @@ use itnovum\openITCOCKPIT\Core\System\Health\StatisticsCollector;
  * @property Host $Host
  * @property Service $Service
  * @property Proxy $Proxy
+ * @property Systemsetting Systemsetting
  */
 class SystemMetricsTask extends AppShell implements CronjobInterface {
 
     public $uses = [
         'Host',
         'Service',
-        'Proxy'
+        'Proxy',
+        'Systemsetting'
     ];
 
     function execute($quiet = false) {
         $this->params['quiet'] = $quiet;
+
+        $record = $this->Systemsetting->find('first', [
+            'recursive'  => -1,
+            'conditions' => [
+                'Systemsetting.key' => 'SYSTEM.ANONYMOUS_STATISTICS'
+            ]
+        ]);
+
+        if (empty($record)) {
+            return;
+        }
+
+        if ((int)$record['Systemsetting']['value'] !== 1) {
+            $this->out('Anonymous statistic are disabled.', false);
+            $this->out('<green>   Ok</green>');
+            $this->hr();
+            return;
+        }
+
         $this->out('Sending anonymous statistic information...', false);
 
         $StatisticsCollector = new StatisticsCollector($this->Host, $this->Service);

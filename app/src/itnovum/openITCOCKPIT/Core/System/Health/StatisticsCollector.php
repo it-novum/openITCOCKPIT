@@ -64,39 +64,11 @@ class StatisticsCollector {
 
         $memory = $Memory->getMemoryUsage();
 
+        $modulePlugins = array_filter(\CakePlugin::loaded(), function ($value) {
+            return strpos($value, 'Module') !== false;
+        });
+
         $MysqlHealth = new MySQLHealth($this->Host);
-
-        debug([
-            'system_id'         => $SystemId->getSystemId(),
-            'cpu'               => [
-                'load'            => $CpuLoad->getLoad(),
-                'number_of_cores' => $CpuLoad->getNumberOfCores(),
-                'model_name'      => $CpuLoad->getModel()
-            ],
-            'memory'            => [
-                'memory' => $memory['memory'],
-                'swap'   => $memory['swap'],
-                'unit'   => 'mb'
-
-            ],
-            'monitoring_engine' => [
-                'version_string' => $MonitoringEngine->getMonitoringEngine()
-            ],
-            'php'               => [
-                'version_string' => phpversion()
-            ],
-            'oitc'              => [
-                'version'            => $openITCOCKPITVersion,
-                'number_of_hosts'    => $numberOfHosts,
-                'number_of_services' => $numberOfServices
-            ],
-            'operating_system'  => [
-                'vendor'   => $LsbRelease->getVendor(),
-                'version'  => $LsbRelease->getVersion(),
-                'codename' => $LsbRelease->getCodename()
-            ],
-            'mysql'             => $MysqlHealth->getAllMetrics()
-        ]);
 
         return [
             'system_id'         => $SystemId->getSystemId(),
@@ -120,7 +92,8 @@ class StatisticsCollector {
             'oitc'              => [
                 'version'            => $openITCOCKPITVersion,
                 'number_of_hosts'    => $numberOfHosts,
-                'number_of_services' => $numberOfServices
+                'number_of_services' => $numberOfServices,
+                'plugins'            => array_values($modulePlugins),
             ],
             'operating_system'  => [
                 'vendor'   => $LsbRelease->getVendor(),
