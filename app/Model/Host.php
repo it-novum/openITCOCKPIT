@@ -267,7 +267,6 @@ class Host extends AppModel {
                 $query['conditions']['NOT'] = $HostConditions->getNotConditions();
             }
         }
-print_r($query);
         $hostsWithLimit = $this->find('list', $query);
 
         $selectedHosts = [];
