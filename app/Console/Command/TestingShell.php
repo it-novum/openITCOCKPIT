@@ -23,8 +23,9 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class TestingShell extends AppShell
-{
+use itnovum\openITCOCKPIT\Loadbalancer\ParenthostBalancer;
+
+class TestingShell extends AppShell {
     /*
      * This is a test and debuging shell for development purposes
      */
@@ -51,20 +52,28 @@ class TestingShell extends AppShell
         'Servicecommandargumentvalue',
         'Aro',
         'Aco',
-        'Calendar'
+        'Calendar',
+        'Parenthost'
     ];
 
-    public function main()
-    {
+    public function main() {
         //debug($this->Aro->find('all'));
         //debug($this->Aco->find('all', ['recursive' => -1]));
         /*
          * Lof of space for your experimental code :)
          */
+
+        $Parenthost = new ParenthostBalancer($this->Parenthost);
+        $parentsWithChilds = $Parenthost->getParentWithChilds();
+        //debug($parentsWithChilds);
+
+        debug($Parenthost->getRelationGroups());
+
+
+
     }
 
-    public function getOptionParser()
-    {
+    public function getOptionParser() {
         $parser = parent::getOptionParser();
         $parser->addOptions([
             'type'     => ['short' => 't', 'help' => __d('oitc_console', 'Type of the notification host or service')],
