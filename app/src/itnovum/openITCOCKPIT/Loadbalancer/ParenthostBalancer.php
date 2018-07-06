@@ -80,7 +80,6 @@ class ParenthostBalancer {
     }
 
 
-
     public function getRelationGroups() {
         $childsWithParent = $this->getParentWithChilds();
         $parentsWithAllChildsGroupd = [];
@@ -105,22 +104,31 @@ class ParenthostBalancer {
     private function mergeIntersectingParentWithChildGroups($parentsWithAllChildsGroupd) {
 
         $groupsToIntersect = array_values($parentsWithAllChildsGroupd);
-        for($i = 0; $i < sizeof($groupsToIntersect); $i++){
-            for($k = $i + 1; $k < sizeof($groupsToIntersect); $k++){
-                if(isset($groupsToIntersect[$i]) && isset($groupsToIntersect[$k])) {
+
+        for ($i = 0; $i < sizeof($groupsToIntersect); $i++) {
+            $doMinusMinus = false;
+            for ($k = $i + 1; $k < sizeof($groupsToIntersect); $k++) {
+                if (isset($groupsToIntersect[$i]) && isset($groupsToIntersect[$k])) {
                     if (array_intersect($groupsToIntersect[$i], $groupsToIntersect[$k])) {
                         $groupsToIntersect[$i] = array_merge($groupsToIntersect[$i], $groupsToIntersect[$k]);
                         unset($groupsToIntersect[$k]);
-                        $i--;
+                        if (!$doMinusMinus) {
+                            $i--;
+                            $doMinusMinus = true;
+                        }
+
                     }
                 }
             }
-            $groupsToIntersect = array_values($groupsToIntersect);
+
+            if ($doMinusMinus) {
+                //Reset array structure
+                $groupsToIntersect = array_values($groupsToIntersect);
+            }
         }
 
 
-        return array_map('array_unique',$groupsToIntersect);
-
+        return array_map('array_unique', $groupsToIntersect);
     }
-
+    
 }
