@@ -260,6 +260,14 @@ class Host extends AppModel {
             $query['conditions']['NOT'] = ['Host.id' => $selected];
         }
 
+        if ($HostConditions->hasNotConditions()) {
+            if (!empty($query['conditions']['NOT'])) {
+                $query['conditions']['NOT'] = array_merge($query['conditions']['NOT'], $HostConditions->getNotConditions());
+            } else {
+                $query['conditions']['NOT'] = $HostConditions->getNotConditions();
+            }
+        }
+print_r($query);
         $hostsWithLimit = $this->find('list', $query);
 
         $selectedHosts = [];
@@ -291,6 +299,13 @@ class Host extends AppModel {
             }
             if ($HostConditions->includeDisabled() === false) {
                 $query['conditions']['Host.disabled'] = 0;
+            }
+            if ($HostConditions->hasNotConditions()) {
+                if (!empty($query['conditions']['NOT'])) {
+                    $query['conditions']['NOT'] = array_merge($query['conditions']['NOT'], $HostConditions->getNotConditions());
+                } else {
+                    $query['conditions']['NOT'] = $HostConditions->getNotConditions();
+                }
             }
             $selectedHosts = $this->find('list', $query);
         }

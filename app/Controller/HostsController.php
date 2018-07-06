@@ -3353,26 +3353,31 @@ class HostsController extends AppController {
     }
 
 
-    public function loadParentHostsByString($containerId = 0, $host_id = 0) {
+    public function loadParentHostsByString() {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
-
         $selected = $this->request->query('selected');
-
+        $hostId =  $this->request->query('hostId');
+        $containerId =  $this->request->query('containerId');
+        $containerIds = [ROOT_CONTAINER, $containerId];
+        if ($containerId == ROOT_CONTAINER) {
+            //Don't panic! Only root users can edit /root objects ;)
+            //So no loss of selected hosts/host templates
+            $containerIds = $this->Tree->resolveChildrenOfContainerIds(ROOT_CONTAINER, true);
+        }
         $HostFilter = new HostFilter($this->request);
-
         $HostCondition = new HostConditions($HostFilter->ajaxFilter());
-        $HostCondition->setContainerIds($containerId);
 
+        $HostCondition->setContainerIds($containerIds);
+        if($hostId){
+            $HostCondition->setNotConditions([
+                'Host.id' => $hostId
+            ]);
+        }
         $hosts = $this->Host->makeItJavaScriptAble(
             $this->Host->getHostsForAngular($HostCondition, $selected)
-
         );
-
-        if ($host_id != 0 && isset($hosts[$host_id])) {
-            unset($hosts[$host_id]);
-        }
 
         $this->set(compact(['hosts']));
         $this->set('_serialize', ['hosts']);
