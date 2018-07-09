@@ -23,6 +23,8 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use Statusengine\PerfdataParser;
+
 class Rrd extends AppModel {
     var $useTable = false;
     public $rrd_path = null;
@@ -363,40 +365,7 @@ class Rrd extends AppModel {
     }
 
     public function parsePerfData($perfdata_string) {
-        $perfdata = [];
-        $perfdataFiltered = [];
-        $perf_data_structure = [ 'current', 'unit', 'warn', 'crit', 'min', 'max'];
-        $i = 0;
-        foreach (explode(" ", $perfdata_string) as $data_set) {
-            foreach (explode(';', $data_set) as $value) {
-                if (preg_match('/=/', $value)) {
-                    $s = preg_split('/=/', $value);
-                    if (isset($s[0])) {
-                        //$perfdata[$i][] = $s[0];
-                        $number = '';
-                        $unit = '';
-                        foreach (str_split($s[1]) as $char) {
-                            if ($char == '.' || $char == ',' || ($char >= '0' && $char <= '9')) {
-                                $number .= $char;
-                            } else {
-                                $unit .= $char;
-                            }
-                        }
-                        $perfdata[$i][] = str_replace(',', '.', $number);
-                        $perfdata[$i][] = $unit;
-                        continue;
-                    }
-                }
-                if (isset($s[0])) {
-                    $perfdata[$i][] = $value;
-                }
-            }
-            if (isset($s[0])) {
-                $perfdataFiltered[$s[0]] = array_combine($perf_data_structure, array_merge($perfdata[$i], ((sizeof($perf_data_structure) - sizeof($perfdata[$i])) > 0) ? array_fill(sizeof($perfdata[$i]), (sizeof($perf_data_structure) - sizeof($perfdata[$i])), '') : []));
-                unset($s);
-            }
-            $i++;
-        }
-        return ($perfdataFiltered);
+        $StatusenginePerformanceDataParser = new PerfdataParser($perfdata_string);
+        return $StatusenginePerformanceDataParser->parse();
     }
 }
