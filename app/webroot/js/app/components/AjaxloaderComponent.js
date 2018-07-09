@@ -36,11 +36,19 @@ App.Components.AjaxloaderComponent = Frontend.Component.extend({
     show: function(){
         this.$ajaxloader.show();
         this.$bigAjaxLoader.show();
+
+        if(this.runningAjaxCalls < 0){
+            this.runningAjaxCalls = 0;
+        }
         this.runningAjaxCalls++;
     },
 
     hide: function(){
         this.runningAjaxCalls--;
+        if(this.runningAjaxCalls < 0){
+            this.runningAjaxCalls = 0;
+        }
+
         if(this.runningAjaxCalls === 0){
             this.$ajaxloader.fadeOut('slow');
             this.$bigAjaxLoader.fadeOut('slow');
