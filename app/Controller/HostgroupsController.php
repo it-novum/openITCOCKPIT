@@ -28,6 +28,7 @@ use itnovum\openITCOCKPIT\Core\HostgroupConditions;
 use itnovum\openITCOCKPIT\Core\HoststatusFields;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\ValueObjects\CumulatedValue;
+use itnovum\openITCOCKPIT\Core\Views\ContainerPermissions;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
 use itnovum\openITCOCKPIT\Filter\HostFilter;
 use itnovum\openITCOCKPIT\Filter\HostgroupFilter;
@@ -366,20 +367,26 @@ class HostgroupsController extends AppController {
 
         $HostFilter = new HostFilter($this->request);
 
-        $containerIds = [ROOT_CONTAINER, $containerId];
         if ($containerId == ROOT_CONTAINER) {
             //Don't panic! Only root users can edit /root objects ;)
             //So no loss of selected hosts/host templates
-            $containerIds = $this->Tree->resolveChildrenOfContainerIds(ROOT_CONTAINER, true);
+            $containerIds = $this->Tree->resolveChildrenOfContainerIds(ROOT_CONTAINER, true, [
+                CT_GLOBAL,
+                CT_TENANT,
+                CT_NODE
+            ]);
+        } else{
+            $containerIds = $this->Tree->resolveChildrenOfContainerIds($containerId, false, [
+                CT_GLOBAL,
+                CT_TENANT,
+                CT_NODE
+            ]);
         }
-
         $HostCondition = new HostConditions($HostFilter->ajaxFilter());
         $HostCondition->setContainerIds($containerIds);
-
         $hosts = $this->Host->makeItJavaScriptAble(
             $this->Host->getHostsForAngular($HostCondition, $selected)
         );
-
         $this->set(compact(['hosts']));
         $this->set('_serialize', ['hosts']);
     }
@@ -419,6 +426,9 @@ class HostgroupsController extends AppController {
                         'fields' => [
                             'Service.uuid'
                         ]
+                    ],
+                    'order' => [
+                        'Host.name'
                     ]
 
                 ]
