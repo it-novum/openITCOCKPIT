@@ -110,7 +110,8 @@ class ParenthostBalancer {
             for ($k = $i + 1; $k < sizeof($groupsToIntersect); $k++) {
                 if (isset($groupsToIntersect[$i]) && isset($groupsToIntersect[$k])) {
                     if (array_intersect($groupsToIntersect[$i], $groupsToIntersect[$k])) {
-                        $groupsToIntersect[$i] = array_merge($groupsToIntersect[$i], $groupsToIntersect[$k]);
+                        $groupsToIntersect[$i] = array_unique(array_merge($groupsToIntersect[$i], $groupsToIntersect[$k]));
+
                         unset($groupsToIntersect[$k]);
                         if (!$doMinusMinus) {
                             $i--;
@@ -128,7 +129,7 @@ class ParenthostBalancer {
         }
 
 
-        return array_map('array_unique', $groupsToIntersect);
+        return $groupsToIntersect;
     }
-    
+
 }
