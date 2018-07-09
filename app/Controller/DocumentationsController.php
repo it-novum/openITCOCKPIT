@@ -473,10 +473,10 @@ class DocumentationsController extends AppController {
                         'name' => __('check_by_ssh [Linux]'),
                         'file' => 'check_by_ssh',
                     ],
-                    'check_wmi'          => [
+                    /*'check_wmi'          => [
                         'name' => __('Windows Management Instrumentation - WMI [Windows]'),
                         'file' => 'check_wmi',
-                    ],
+                    ],*/
                     'check_mysql_health' => [
                         'name' => __('check_mysql_health'),
                         'file' => 'check_mysql_health',
