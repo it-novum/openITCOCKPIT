@@ -23,12 +23,88 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+/**
+ * Class DashboardsController
+ * @property DashboardTab $DashboardTab
+ * @property Widget $Widget
+ */
 class DashboardsController extends AppController {
 
-    public $layout = 'angularjs';
+    //Most calls are API calls or modal html requests
+    //Blank is the best default for Dashboards...
+    public $layout = 'blank';
+
+    public $uses = [
+        'Widget',
+        'DashboardTab'
+    ];
 
     public function index() {
+        $this->layout = 'angularjs';
+        if (!$this->isAngularJsRequest()) {
+            //Only ship template
+            return;
+        }
 
+        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+
+        //Check if a tab exists for the given user
+        if ($this->DashboardTab->hasUserATab($User->getId()) === false) {
+            $this->DashboardTab->createNewTab($User->getId());
+        }
+        $tabs = $this->DashboardTab->getAllTabsByUserId($User->getId());
+
+        $widgets = $this->Widget->getAvailableWidgets();
+
+        $this->set('tabs', $tabs);
+        $this->set('widgets', $widgets);
+        $this->set('_serialize', ['tabs', 'widgets']);
     }
+
+    public function getWidgetsForTab($tabId) {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        if (!$this->DashboardTab->exists($tabId)) {
+            throw new NotFoundException(sprintf('Tab width id %s not found', $tabId));
+        }
+
+        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+        $widgets = $this->DashboardTab->getWidgetsForTabByUserIdAndTabId($User->getId(), $tabId);
+        $this->set('widgets', $widgets);
+        $this->set('_serialize', ['widgets']);
+    }
+
+    public function dynamicDirective() {
+        $directiveName = $this->request->query('directive');
+        if (strlen($directiveName) < 2) {
+            throw new RuntimeException('Wrong AngularJS directive name?');
+        }
+        $this->set('directiveName', $directiveName);
+    }
+
+    public function saveGrid() {
+        if (!$this->isAngularJsRequest() || !$this->request->is('post')) {
+            throw new MethodNotAllowedException();
+        }
+
+        if ($this->Widget->saveAll($this->request->data)) {
+            $this->set('message', __('Successfully saved'));
+            $this->set('_serialize', ['message']);
+            return;
+        }
+        $this->serializeErrorMessageFromModel('Widget');
+    }
+
+
+    /***** Basic Widgets *****/
+    public function welcomeWidget() {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template
+            return;
+        }
+    }
+
 
 }

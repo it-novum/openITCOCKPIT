@@ -1563,6 +1563,44 @@ class AppSchema extends CakeSchema {
         'tableParameters' => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB'],
     ];
 
+    public $dashboard_tabs = [
+        'id'                   => ['type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'],
+        'user_id'              => ['type' => 'integer', 'null' => false], // ID from the user.
+        'position'             => ['type' => 'integer', 'null' => false], //Position
+        'name'                 => ['type' => 'string', 'null' => false], // The name of the tab.
+        'shared'               => ['type' => 'boolean', 'null' => false, 'default' => '0'], // The name of the tab.
+        'source_tab_id'        => ['type' => 'integer', 'null' => true], // The name of the tab.
+        'check_for_updates'    => ['type' => 'integer', 'null' => true, 'default' => null],
+        'source_last_modified' => ['type' => 'datetime', 'null' => true, 'default' => null],
+        'created'              => ['type' => 'datetime', 'null' => false, 'default' => null],
+        'modified'             => ['type' => 'datetime', 'null' => false, 'default' => null],
+        'indexes'              => [
+            'PRIMARY' => ['column' => 'id', 'unique' => 1],
+        ],
+        'tableParameters'      => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB'],
+    ];
+
+    public $widgets = [
+        'id'               => ['type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'],
+        'dashboard_tab_id' => ['type' => 'integer', 'null' => false],
+        'type_id'          => ['type' => 'integer', 'null' => false],
+        'host_id'          => ['type' => 'integer', 'null' => true],
+        'service_id'       => ['type' => 'integer', 'null' => true],
+        'row'              => ['type' => 'integer', 'null' => false],
+        'col'              => ['type' => 'integer', 'null' => false],
+        'width'            => ['type' => 'integer', 'null' => false],
+        'height'           => ['type' => 'integer', 'null' => false],
+        'title'            => ['type' => 'string', 'null' => false], // The title of the widget.
+        'color'            => ['type' => 'string', 'null' => false], // Color of the widgetbar.
+        'directive'        => ['type' => 'string', 'null' => false], // Angular directive of the widget.
+        'created'          => ['type' => 'datetime', 'null' => false, 'default' => null],
+        'modified'         => ['type' => 'datetime', 'null' => false, 'default' => null],
+        'indexes'          => [
+            'PRIMARY' => ['column' => 'id', 'unique' => 1],
+        ],
+        'tableParameters'  => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB'],
+    ];
+
     /*public $devicegroups = array(
         'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'),
         'container_id' => array('type' => 'integer', 'null' => false, 'default' => null),
