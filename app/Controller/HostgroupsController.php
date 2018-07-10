@@ -455,6 +455,7 @@ class HostgroupsController extends AppController {
             ->problemHasBeenAcknowledged()
             ->acknowledgementType()
             ->scheduledDowntimeDepth()
+            ->activeChecksEnabled()
             ->notificationsEnabled();
 
         $hoststatus = $this->Hoststatus->byUuid($hosts, $HoststatusFields);
