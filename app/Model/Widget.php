@@ -26,36 +26,6 @@
 
 class Widget extends AppModel {
 
-    /*
-    public $belongsTo = ['DashboardTab', 'Service'];
-    public $hasOne = [
-        'WidgetTacho'               => [
-            'dependent' => true,
-        ],
-        'WidgetServiceStatusList'   => [
-            'dependent' => true,
-        ],
-        'WidgetHostStatusList'      => [
-            'dependent' => true,
-        ],
-        'WidgetHostDowntimeList'    => [
-            'dependent' => true,
-        ],
-        'WidgetServiceDowntimeList' => [
-            'dependent' => true,
-        ],
-        'WidgetNotice'              => [
-            'dependent' => true,
-        ],
-        'WidgetPiechart'            => [
-            'dependent' => true,
-        ],
-        //'WidgetGraphgenerator' => [
-        //	'dependent' => true
-        //],
-    ];
-    */
-
     public $validate = [
         'dashboard_tab_id' => [
             'notBlank' => [
@@ -112,134 +82,146 @@ class Widget extends AppModel {
                 'type_id'   => 1,
                 'title'     => __('Welcome'),
                 'icon'      => 'fa-comment',
-                'directive' => 'welcome-widget' //AngularJS directive
+                'directive' => 'welcome-widget', //AngularJS directive,
+                'width'     => 6,
+                'height'    => 7
             ],
             [
                 'type_id'   => 2,
                 'title'     => __('Parent outages'),
                 'icon'      => 'fa-exchange',
-                'directive' => 'parent-outages-widget'
+                'directive' => 'parent-outages-widget',
+                'width'     => 6,
+                'height'    => 7
             ],
 
             [
                 'type_id'   => 3,
                 'title'     => __('Hosts pie chart'),
                 'icon'      => 'fa-pie-chart',
-                'directive' => 'hosts-piechart-widget'
+                'directive' => 'hosts-piechart-widget',
+                'width'     => 6,
+                'height'    => 9
             ],
             [
                 'type_id'   => 7,
                 'title'     => __('Hosts pie chart 180'),
                 'icon'      => 'fa-pie-chart',
-                'directive' => 'hosts-piechart-180-widget'
+                'directive' => 'hosts-piechart-180-widget',
+                'width'     => 6,
+                'height'    => 8
             ],
             [
                 'type_id'   => 4,
                 'title'     => __('Services pie chart'),
                 'icon'      => 'fa-pie-chart',
-                'directive' => 'services-piechart-widget'
+                'directive' => 'services-piechart-widget',
+                'width'     => 6,
+                'height'    => 9
+            ],
+            [
+                'type_id'   => 8,
+                'title'     => __('Services pie chart 180'),
+                'icon'      => 'fa-pie-chart',
+                'directive' => 'services-piechart180-widget',
+                'width'     => 6,
+                'height'    => 8
             ],
             [
                 'type_id'   => 5,
                 'title'     => __('Hosts in downtime'),
                 'icon'      => 'fa-power-off',
-                'directive' => 'hosts-downtime-widget'
+                'directive' => 'hosts-downtime-widget',
+                'width'     => 6,
+                'height'    => 7
             ],
             [
                 'type_id'   => 6,
                 'title'     => __('Services in downtime'),
                 'icon'      => 'fa-power-off',
-                'directive' => 'services-downtime-widget'
+                'directive' => 'services-downtime-widget',
+                'width'     => 6,
+                'height'    => 7
             ],
             [
                 'type_id'   => 9,
                 'title'     => __('Host status list'),
                 'icon'      => 'fa-list-alt',
-                'directive' => 'host-status-widget'
+                'directive' => 'host-status-widget',
+                'width'     => 6,
+                'height'    => 7
             ],
             [
                 'type_id'   => 10,
                 'title'     => __('Service status list'),
                 'icon'      => 'fa-list-alt',
-                'directive' => 'service-status-widget'
+                'directive' => 'service-status-widget',
+                'width'     => 6,
+                'height'    => 7
             ],
             [
                 'type_id'   => 11,
                 'title'     => __('Traffic light'),
                 'icon'      => 'fa-road',
-                'directive' => 'trafficlight-widget'
+                'directive' => 'trafficlight-widget',
+                'width'     => 6,
+                'height'    => 7
             ],
             [
                 'type_id'   => 12,
                 'title'     => __('Tachometer'),
                 'icon'      => 'fa-dashboard',
-                'directive' => 'tachometer-widget'
+                'directive' => 'tachometer-widget',
+                'width'     => 6,
+                'height'    => 7
             ],
             [
                 'type_id'   => 13,
                 'title'     => __('Notice'),
                 'icon'      => 'fa-pencil-square-o',
-                'directive' => 'notice-widget'
+                'directive' => 'notice-widget',
+                'width'     => 6,
+                'height'    => 7
             ],
             [
                 'type_id'   => 15,
                 'title'     => __('Graphgenerator'),
                 'icon'      => 'fa-area-chart',
-                'directive' => 'graphgenerator-widget'
+                'directive' => 'graphgenerator-widget',
+                'width'     => 6,
+                'height'    => 7
             ]
         ];
 
         return $widgets;
     }
 
-    public function copySharedWidgets($sourceTab, $targetTab, $userId) {
-        $sourceWidgets = $this->find('all', [
-            'conditions' => [
-                'Widget.dashboard_tab_id' => $sourceTab['DashboardTab']['id'],
-            ],
-        ]);
-        $error = false;
-        foreach ($sourceWidgets as $sourceWidget) {
-            if (isset($sourceWidget['Service'])) {
-                unset($sourceWidget['Service']);
-            }
-            if (isset($sourceWidget['Host'])) {
-                unset($sourceWidget['Host']);
-            }
-
-            $sourceWidget = Hash::remove($sourceWidget, '{s}.id');
-            $sourceWidget = Hash::remove($sourceWidget, '{s}.widget_id');
-
-            $sourceWidget['DashboardTab'] = [
-                'id'      => $targetTab['DashboardTab']['id'],
-                'name'    => $sourceTab['DashboardTab']['name'],
-                'user_id' => $userId,
-            ];
-            $sourceWidget['Widget']['dashboard_tab_id'] = $targetTab['DashboardTab']['id'];
-            //Remove all mnull keys and unused Models
-            $sourceWidget = array_filter($sourceWidget, function ($valuesAsArray) {
-                if (is_array($valuesAsArray)) {
-                    foreach ($valuesAsArray as $value) {
-                        if ($value !== null && $value !== '') {
-                            return true;
-                        }
-                    }
-                } else {
-                    if ($valuesAsArray !== null && $valuesAsArray !== '') {
-                        return true;
-                    }
-                }
-
-                return false;
-            });
-            if (!$this->saveAll($sourceWidget)) {
-                debug($this->validationErrors);
-                $error = true;
-            } else {
-                $error = false;
+    /**
+     * @param $typeId
+     * @return bool
+     */
+    public function isWidgetAvailable($typeId) {
+        $typeId = (int)$typeId;
+        foreach ($this->getAvailableWidgets() as $widget) {
+            if ($widget['type_id'] === $typeId) {
+                return true;
             }
         }
-
-        return $error;
+        return false;
     }
+
+    /**
+     * @param $typeId
+     * @return array
+     */
+    public function getWidgetByTypeId($typeId) {
+        $typeId = (int)$typeId;
+        foreach ($this->getAvailableWidgets() as $widget) {
+            if ($widget['type_id'] === $typeId) {
+                return $widget;
+            }
+        }
+        return [];
+    }
+
 }

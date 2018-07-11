@@ -220,7 +220,7 @@ class PieChart {
                 $endAngle = (180 - $endAngle) * (-1);
             }
             if ($startAngle === $endAngle)
-                $endAngle -= 0.00000001;
+                //$endAngle -= 0.00000001;
             if ($startAngle < 0 && $set_start) {
                 $startAngle = 0.0;
             }

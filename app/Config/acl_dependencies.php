@@ -68,7 +68,8 @@ $config = [
                 'send_service_notification',
                 'enable_service_notifications',
                 'disable_service_notifications',
-                'getPieChart'
+                'getPieChart',
+                'getHalfPieChart'
             ],
             'Automaps'         => [
                 'icon'
@@ -136,7 +137,13 @@ $config = [
                 'getWidgetsForTab',
                 'dynamicDirective',
                 'welcomeWidget',
-                'saveGrid'
+                'saveGrid',
+                'addWidgetToTab',
+                'removeWidgetFromTab',
+                'hostsPiechartWidget',
+                'hostsPiechart180Widget',
+                'servicesPiechartWidget',
+                'servicesPiechart180Widget'
             ],
             'Hosts'            => [
                 'view',
