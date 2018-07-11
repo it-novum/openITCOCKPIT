@@ -24,73 +24,181 @@
 //	confirmation.
 
 
-class Widget extends AppModel
-{
+class Widget extends AppModel {
+
+    /*
     public $belongsTo = ['DashboardTab', 'Service'];
     public $hasOne = [
-        'WidgetTacho'             => [
+        'WidgetTacho'               => [
             'dependent' => true,
         ],
-        'WidgetServiceStatusList' => [
+        'WidgetServiceStatusList'   => [
             'dependent' => true,
         ],
-        'WidgetHostStatusList'    => [
+        'WidgetHostStatusList'      => [
             'dependent' => true,
         ],
-        'WidgetNotice'            => [
+        'WidgetHostDowntimeList'    => [
+            'dependent' => true,
+        ],
+        'WidgetServiceDowntimeList' => [
+            'dependent' => true,
+        ],
+        'WidgetNotice'              => [
+            'dependent' => true,
+        ],
+        'WidgetPiechart'            => [
             'dependent' => true,
         ],
         //'WidgetGraphgenerator' => [
         //	'dependent' => true
         //],
     ];
+    */
+
     public $validate = [
         'dashboard_tab_id' => [
-            'notBlank'   => [
-                'rule'    => 'notBlank',
-                'message' => 'This field cannot be left blank.',
-            ], 'numeric' => [
-                'rule'    => 'numeric',
-                'message' => 'This field needs a numeric value.',
-            ], 'notZero' => [
-                'rule'    => ['comparison', '>', 0],
-                'message' => 'The value should be greate than zero.',
+            'notBlank' => [
+                'rule'     => 'notBlank',
+                'message'  => 'This field cannot be left blank.',
+                'required' => true,
+            ],
+            'numeric'  => [
+                'rule'     => 'numeric',
+                'message'  => 'This field needs a numeric value.',
+                'required' => true,
+            ],
+            'notZero'  => [
+                'rule'     => ['comparison', '>', 0],
+                'message'  => 'The value should be greate than zero.',
+                'required' => true,
             ],
         ],
         'row'              => [
             'numeric' => [
-                'rule'    => 'numeric',
-                'message' => 'This field needs a numeric value.',
+                'rule'     => 'numeric',
+                'message'  => 'This field needs a numeric value.',
+                'required' => true,
             ],
         ],
         'col'              => [
             'numeric' => [
-                'rule'    => 'numeric',
-                'message' => 'This field needs a numeric value.',
+                'rule'     => 'numeric',
+                'message'  => 'This field needs a numeric value.',
+                'required' => true,
             ],
         ],
-        'size_x'           => [
+        'height'           => [
             'numeric' => [
-                'rule'    => 'numeric',
-                'message' => 'This field needs a numeric value.',
+                'rule'     => 'numeric',
+                'message'  => 'This field needs a numeric value.',
+                'required' => true,
             ],
         ],
-        'size_y'           => [
+        'width'            => [
             'numeric' => [
-                'rule'    => 'numeric',
-                'message' => 'This field needs a numeric value.',
+                'rule'     => 'numeric',
+                'message'  => 'This field needs a numeric value.',
+                'required' => true,
             ],
         ],
     ];
 
-    public function copySharedWidgets($sourceTab, $targetTab, $userId)
-    {
+    public function getAvailableWidgets() {
+
+        //Default Widgets
+        $widgets = [
+            [
+                'type_id'   => 1,
+                'title'     => __('Welcome'),
+                'icon'      => 'fa-comment',
+                'directive' => 'welcome-widget' //AngularJS directive
+            ],
+            [
+                'type_id'   => 2,
+                'title'     => __('Parent outages'),
+                'icon'      => 'fa-exchange',
+                'directive' => 'parent-outages-widget'
+            ],
+
+            [
+                'type_id'   => 3,
+                'title'     => __('Hosts pie chart'),
+                'icon'      => 'fa-pie-chart',
+                'directive' => 'hosts-piechart-widget'
+            ],
+            [
+                'type_id'   => 7,
+                'title'     => __('Hosts pie chart 180'),
+                'icon'      => 'fa-pie-chart',
+                'directive' => 'hosts-piechart-180-widget'
+            ],
+            [
+                'type_id'   => 4,
+                'title'     => __('Services pie chart'),
+                'icon'      => 'fa-pie-chart',
+                'directive' => 'services-piechart-widget'
+            ],
+            [
+                'type_id'   => 5,
+                'title'     => __('Hosts in downtime'),
+                'icon'      => 'fa-power-off',
+                'directive' => 'hosts-downtime-widget'
+            ],
+            [
+                'type_id'   => 6,
+                'title'     => __('Services in downtime'),
+                'icon'      => 'fa-power-off',
+                'directive' => 'services-downtime-widget'
+            ],
+            [
+                'type_id'   => 9,
+                'title'     => __('Host status list'),
+                'icon'      => 'fa-list-alt',
+                'directive' => 'host-status-widget'
+            ],
+            [
+                'type_id'   => 10,
+                'title'     => __('Service status list'),
+                'icon'      => 'fa-list-alt',
+                'directive' => 'service-status-widget'
+            ],
+            [
+                'type_id'   => 11,
+                'title'     => __('Traffic light'),
+                'icon'      => 'fa-road',
+                'directive' => 'trafficlight-widget'
+            ],
+            [
+                'type_id'   => 12,
+                'title'     => __('Tachometer'),
+                'icon'      => 'fa-dashboard',
+                'directive' => 'tachometer-widget'
+            ],
+            [
+                'type_id'   => 13,
+                'title'     => __('Notice'),
+                'icon'      => 'fa-pencil-square-o',
+                'directive' => 'notice-widget'
+            ],
+            [
+                'type_id'   => 15,
+                'title'     => __('Graphgenerator'),
+                'icon'      => 'fa-area-chart',
+                'directive' => 'graphgenerator-widget'
+            ]
+        ];
+
+        return $widgets;
+    }
+
+    public function copySharedWidgets($sourceTab, $targetTab, $userId) {
         $sourceWidgets = $this->find('all', [
             'conditions' => [
                 'Widget.dashboard_tab_id' => $sourceTab['DashboardTab']['id'],
             ],
         ]);
-
+        $error = false;
         foreach ($sourceWidgets as $sourceWidget) {
             if (isset($sourceWidget['Service'])) {
                 unset($sourceWidget['Service']);
