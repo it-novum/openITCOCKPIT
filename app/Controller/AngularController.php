@@ -617,4 +617,31 @@ class AngularController extends AppController {
         imagepng($image, null, 0);
         imagedestroy($image);
     }
+
+    /**
+     * @param int $up up|ok
+     * @param int $down down|warning
+     * @param int $unreachable unreachable|critical
+     * @param int $unknown unknown
+     * @throws Exception
+     */
+    public function getHalfPieChart($up = 0, $down = 0, $unreachable = 1, $unknown = null) {
+        session_write_close();
+        $PieChart = new PieChart();
+
+        $chartData = [$up, $down, $unreachable];
+        if ($unknown !== null) {
+            $chartData = [$up, $down, $unreachable, $unknown];
+        }
+
+        $PieChart->createHalfPieChart($chartData);
+
+        $image = $PieChart->getImage();
+
+        $this->layout = false;
+        $this->render = false;
+        header('Content-Type: image/png');
+        imagepng($image, null, 0);
+        imagedestroy($image);
+    }
 }

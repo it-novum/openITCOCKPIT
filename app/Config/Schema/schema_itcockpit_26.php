@@ -1593,6 +1593,7 @@ class AppSchema extends CakeSchema {
         'title'            => ['type' => 'string', 'null' => false], // The title of the widget.
         'color'            => ['type' => 'string', 'null' => false], // Color of the widgetbar.
         'directive'        => ['type' => 'string', 'null' => false], // Angular directive of the widget.
+        'icon'             => ['type' => 'string', 'null' => false],
         'created'          => ['type' => 'datetime', 'null' => false, 'default' => null],
         'modified'         => ['type' => 'datetime', 'null' => false, 'default' => null],
         'indexes'          => [

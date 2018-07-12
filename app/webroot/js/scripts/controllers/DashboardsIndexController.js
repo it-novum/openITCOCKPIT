@@ -7,6 +7,9 @@ angular.module('openITCOCKPIT')
         $scope.gridstack = null;
         $scope.fullscreen = false;
 
+
+        var $gridstack = null;
+
         var genericError = function(){
             new Noty({
                 theme: 'metroui',
@@ -47,16 +50,23 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.renderGrid = function(){
-            //This method gets called from the index.ctp template!
-            var $gridstack = $('.grid-stack');
-            $gridstack.gridstack({
-                float: true,
-                cellHeight: 10
-            });
+            // This method gets called from the index.ctp template!
+            if($gridstack === null){
 
-            $gridstack.on('change', function(event, items){
-                $scope.saveGrid(items);
-            });
+                //First page load
+                $gridstack = $('.grid-stack');
+
+                $gridstack.gridstack({
+                    float: true,
+                    cellHeight: 10
+                });
+
+                $gridstack.on('change', function(event, items){
+                    if(typeof items !== 'undefined'){
+                        $scope.saveGrid(items);
+                    }
+                });
+            }
         };
 
         $scope.saveGrid = function(items){
@@ -82,7 +92,73 @@ angular.module('openITCOCKPIT')
                 }, function errorCallback(result){
                     genericError();
                 });
+        };
 
+        $scope.addWidgetToTab = function(typeId){
+            postData = {
+                Widget: {
+                    dashboard_tab_id: $scope.activeTab,
+                    typeId: typeId
+                }
+            };
+            $http.post("/dashboards/addWidgetToTab/.json?angular=true", postData).then(
+                function(result){
+                    $scope.activeWidgets.Widget.push(result.data.widget.Widget);
+                    //Wait a bit, that angular can render the template
+                    setTimeout(function(){
+                        var el = document.getElementById('widget-' + result.data.widget.Widget.id);
+                        var grid = $gridstack.data('gridstack');
+                        grid.addWidget(
+                            $(el),
+                            result.data.widget.Widget.row,
+                            result.data.widget.Widget.col,
+                            result.data.widget.Widget.width,
+                            result.data.widget.Widget.height,
+                            undefined,
+                            undefined,
+                            undefined,
+                            undefined,
+                            undefined,
+                            result.data.widget.Widget.id
+                        );
+
+                    }, 250);
+                    return true;
+                }, function errorCallback(result){
+                    genericError();
+                });
+        };
+
+        $scope.removeWidgetFromTab = function(id){
+            postData = {
+                Widget: {
+                    id: id,
+                    dashboard_tab_id: $scope.activeTab
+                }
+            };
+
+
+            $http.post("/dashboards/removeWidgetFromTab/.json?angular=true", postData).then(
+                function(result){
+                    var currentWidgets = [];
+                    for(var i in $scope.activeWidgets.Widget){
+                        if($scope.activeWidgets.Widget[i].id != id){
+                            currentWidgets.push($scope.activeWidgets.Widget[i]);
+                        }
+                    }
+
+                    var el = document.getElementById('widget-' + id);
+                    var grid = $gridstack.data('gridstack');
+                    grid.removeWidget(el);
+
+                    $scope.activeWidgets.Widget = currentWidgets;
+                }, function errorCallback(result){
+                    genericError();
+                });
+        };
+
+        $scope.refresh = function(){
+            console.log('Not implemented yet');
         };
 
         $scope.toggleFullscreenMode = function(){
