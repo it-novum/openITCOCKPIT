@@ -56,7 +56,7 @@ class DashboardsController extends AppController {
         }
         $tabs = $this->DashboardTab->getAllTabsByUserId($User->getId());
 
-        $widgets = $this->Widget->getAvailableWidgets();
+        $widgets = $this->Widget->getAvailableWidgets($this->PERMISSIONS);
 
         $this->set('tabs', $tabs);
         $this->set('widgets', $widgets);

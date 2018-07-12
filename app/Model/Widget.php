@@ -74,9 +74,12 @@ class Widget extends AppModel {
         ],
     ];
 
-    public function getAvailableWidgets() {
-
-        //Default Widgets
+    /**
+     * @param array $ACL_PERMISSIONS
+     * @return array
+     */
+    public function getAvailableWidgets($ACL_PERMISSIONS = []) {
+        //Default Widgets static dashboards - no permissions required
         $widgets = [
             [
                 'type_id'   => 1,
@@ -128,38 +131,6 @@ class Widget extends AppModel {
                 'height'    => 8
             ],
             [
-                'type_id'   => 5,
-                'title'     => __('Hosts in downtime'),
-                'icon'      => 'fa-power-off',
-                'directive' => 'hosts-downtime-widget',
-                'width'     => 6,
-                'height'    => 7
-            ],
-            [
-                'type_id'   => 6,
-                'title'     => __('Services in downtime'),
-                'icon'      => 'fa-power-off',
-                'directive' => 'services-downtime-widget',
-                'width'     => 6,
-                'height'    => 7
-            ],
-            [
-                'type_id'   => 9,
-                'title'     => __('Host status list'),
-                'icon'      => 'fa-list-alt',
-                'directive' => 'host-status-widget',
-                'width'     => 6,
-                'height'    => 7
-            ],
-            [
-                'type_id'   => 10,
-                'title'     => __('Service status list'),
-                'icon'      => 'fa-list-alt',
-                'directive' => 'service-status-widget',
-                'width'     => 6,
-                'height'    => 7
-            ],
-            [
                 'type_id'   => 11,
                 'title'     => __('Traffic light'),
                 'icon'      => 'fa-road',
@@ -192,6 +163,51 @@ class Widget extends AppModel {
                 'height'    => 7
             ]
         ];
+
+        //Depands on user rights
+        if (isset($ACL_PERMISSIONS['downtimes']['host'])) {
+            $widgets[] = [
+                'type_id'   => 5,
+                'title'     => __('Hosts in downtime'),
+                'icon'      => 'fa-power-off',
+                'directive' => 'hosts-downtime-widget',
+                'width'     => 6,
+                'height'    => 7
+            ];
+        }
+
+        if (isset($ACL_PERMISSIONS['downtimes']['service'])) {
+            $widgets[] = [
+                'type_id'   => 6,
+                'title'     => __('Services in downtime'),
+                'icon'      => 'fa-power-off',
+                'directive' => 'services-downtime-widget',
+                'width'     => 6,
+                'height'    => 7
+            ];
+        }
+
+        if (isset($ACL_PERMISSIONS['hosts']['index'])) {
+            $widgets[] = [
+                'type_id'   => 9,
+                'title'     => __('Host status list'),
+                'icon'      => 'fa-list-alt',
+                'directive' => 'host-status-widget',
+                'width'     => 6,
+                'height'    => 7
+            ];
+        }
+
+        if (isset($ACL_PERMISSIONS['services']['index'])) {
+            $widgets[] = [
+                'type_id'   => 10,
+                'title'     => __('Service status list'),
+                'icon'      => 'fa-list-alt',
+                'directive' => 'service-status-widget',
+                'width'     => 6,
+                'height'    => 7
+            ];
+        }
 
         return $widgets;
     }
