@@ -2,7 +2,9 @@ angular.module('openITCOCKPIT').directive('servicesPiechartWidget', function($ht
     return {
         restrict: 'E',
         templateUrl: '/dashboards/servicesPiechartWidget.html',
-        scope: {},
+        scope: {
+            'widget': '='
+        },
 
         controller: function($scope){
 

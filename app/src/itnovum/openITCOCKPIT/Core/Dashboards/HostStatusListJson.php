@@ -22,4 +22,36 @@
 //  License agreement and license key will be shipped with the order
 //  confirmation.
 
-printf('<%s widget="activeWidget"></%s>', $directiveName, $directiveName);
+namespace itnovum\openITCOCKPIT\Core\Dashboards;
+
+
+class HostStatusListJson extends DashboardJsonStandardizer {
+
+    /**
+     * @var array
+     * Add new fields to this list
+     * oITC will take care of the rest of the work
+     */
+    protected $fields = [
+        'Hoststatus'      => [
+            'current_state'    => [
+                'up'          => false,
+                'down'        => false,
+                'unreachable' => false
+            ],
+            'acknowledged'     => false,
+            'not_acknowledged' => false,
+            'in_downtime'      => false,
+            'not_in_downtime'  => false,
+            'output'           => '',
+        ],
+        'Host'            => [
+            'name' => ''
+        ],
+        'sort'            => 'Hoststatus.current_state',
+        'direction'       => 'desc',
+        'useScroll'       => true,
+        'scroll_interval' => 30
+    ];
+
+}

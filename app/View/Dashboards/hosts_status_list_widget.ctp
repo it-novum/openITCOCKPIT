@@ -1,20 +1,20 @@
 <div class="padding-10" style="border: 1px solid #c3c3c3;">
 
     <div class="row">
-        <div class="col-xs-2">
-            <a href="javascript:void(0);" ng-show="paging_autostart" ng-click="pausePaging()"
+        <div class="col-xs-1">
+            <a href="javascript:void(0);" ng-show="useScroll" ng-click="pauseScroll()"
                title="<?php echo __('Pause scrolling'); ?>"
                class="btn btn-default btn-xs btn-primary">
                 <i class="fa fa-pause"></i>
             </a>
-            <a href="javascript:void(0);" ng-show="!paging_autostart"
-               ng-click="startPaging()" data-widget-id="21" title="<?php echo __('Start scrolling'); ?>"
+            <a href="javascript:void(0);" ng-show="!useScroll"
+               ng-click="startScroll()" title="<?php echo __('Start scrolling'); ?>"
                class="btn btn-default btn-xs btn-primary">
                 <i class="fa fa-play"></i>
             </a>
         </div>
 
-        <div class="col-xs-4 height-45px">
+        <div class="col-xs-3 height-45px">
             <div class="form-group form-group-slider">
                 <label class="display-inline">
                     <?php echo __('Scroll interval:'); ?>
@@ -30,47 +30,91 @@
             </div>
         </div>
 
-        <div class="col-xs-6 ">
-            <div class="form-group smart-form">
-                <label class="checkbox small-checkbox-label display-inline margin-right-5">
-                    <input type="checkbox" name="checkbox" checked="checked"
-                           ng-model="filter.Hoststatus.current_state.up"
-                           ng-model-options="{debounce: 500}">
-                    <i class="checkbox-success"></i>
-                    <?php echo __('Up'); ?>
-                </label>
+        <div class="col-xs-8">
+            <div class="row">
+                <div class="form-group smart-form">
+                    <div class="col-xs-12 col-md-6 col-lg-2">
+                        <label class="checkbox small-checkbox-label display-inline margin-right-5">
+                            <input type="checkbox" name="checkbox" checked="checked"
+                                   ng-model="filter.Hoststatus.current_state.up"
+                                   ng-model-options="{debounce: 500}">
+                            <i class="checkbox-success"></i>
+                            <?php echo __('Up'); ?>
+                        </label>
+                    </div>
 
-                <label class="checkbox small-checkbox-label display-inline margin-right-5">
-                    <input type="checkbox" name="checkbox" checked="checked"
-                           ng-model="filter.Hoststatus.current_state.down"
-                           ng-model-options="{debounce: 500}">
-                    <i class="checkbox-danger"></i>
-                    <?php echo __('Down'); ?>
-                </label>
+                    <div class="col-xs-12 col-md-6 col-lg-3">
+                        <label class="checkbox small-checkbox-label display-inline margin-right-5">
+                            <input type="checkbox" name="checkbox" checked="checked"
+                                   ng-model="filter.Hoststatus.current_state.unreachable"
+                                   ng-model-options="{debounce: 500}">
+                            <i class="checkbox-default"></i>
+                            <?php echo __('Unreachable'); ?>
+                        </label>
+                    </div>
 
-                <label class="checkbox small-checkbox-label display-inline margin-right-5">
-                    <input type="checkbox" name="checkbox" checked="checked"
-                           ng-model="filter.Hoststatus.current_state.unreachable"
-                           ng-model-options="{debounce: 500}">
-                    <i class="checkbox-default"></i>
-                    <?php echo __('Unreachable'); ?>
-                </label>
+                    <div class="col-xs-12 col-md-6 col-lg-3">
+                        <label class="checkbox small-checkbox-label display-inline margin-right-5">
+                            <input type="checkbox" name="checkbox" checked="checked"
+                                   ng-model="filter.Hoststatus.acknowledged"
+                                   ng-model-options="{debounce: 500}">
+                            <i class="checkbox-primary"></i>
+                            <?php echo __('Acknowledged'); ?>
+                        </label>
+                    </div>
 
-                <label class="checkbox small-checkbox-label display-inline margin-right-5">
-                    <input type="checkbox" name="checkbox" checked="checked"
-                           ng-model="filter.Hoststatus.acknowledged"
-                           ng-model-options="{debounce: 500}">
-                    <i class="checkbox-primary"></i>
-                    <?php echo __('Acknowledged'); ?>
-                </label>
+                    <div class="col-xs-12 col-md-6 col-lg-3">
+                        <label class="checkbox small-checkbox-label display-inline margin-right-5">
+                            <input type="checkbox" name="checkbox" checked="checked"
+                                   ng-model="filter.Hoststatus.in_downtime"
+                                   ng-model-options="{debounce: 500}">
+                            <i class="checkbox-primary"></i>
+                            <?php echo __('In Downtime'); ?>
+                        </label>
+                    </div>
 
-                <label class="checkbox small-checkbox-label display-inline margin-right-5">
-                    <input type="checkbox" name="checkbox" checked="checked"
-                           ng-model="filter.Hoststatus.downtime"
-                           ng-model-options="{debounce: 500}">
-                    <i class="checkbox-primary"></i>
-                    <?php echo __('In Downtime'); ?>
-                </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xs-8">
+            <div class="row">
+                <div class="form-group smart-form">
+                    <div class="col-xs-12 col-md-6 col-lg-2">
+                        <label class="checkbox small-checkbox-label display-inline margin-right-5">
+                            <input type="checkbox" name="checkbox" checked="checked"
+                                   ng-model="filter.Hoststatus.current_state.down"
+                                   ng-model-options="{debounce: 500}">
+                            <i class="checkbox-danger"></i>
+                            <?php echo __('Down'); ?>
+                        </label>
+                    </div>
+
+                    <div class="hidden-xs hidden-md hidden-sm col-lg-3">
+                        <!-- Spacer -->
+                    </div>
+
+                    <div class="col-xs-12 col-md-6 col-lg-3">
+                        <label class="checkbox small-checkbox-label display-inline margin-right-5">
+                            <input type="checkbox" name="checkbox" checked="checked"
+                                   ng-model="filter.Hoststatus.not_acknowledged"
+                                   ng-model-options="{debounce: 500}">
+                            <i class="checkbox-primary"></i>
+                            <?php echo __('Not Acknowledged'); ?>
+                        </label>
+                    </div>
+
+
+                    <div class="col-xs-12 col-md-6 col-lg-3">
+                        <label class="checkbox small-checkbox-label display-inline margin-right-5">
+                            <input type="checkbox" name="checkbox" checked="checked"
+                                   ng-model="filter.Hoststatus.not_in_downtime"
+                                   ng-model-options="{debounce: 500}">
+                            <i class="checkbox-primary"></i>
+                            <?php echo __('Not in Downtime'); ?>
+                        </label>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -90,7 +134,7 @@
                 <label class="input"> <i class="icon-prepend fa fa-filter"></i>
                     <input type="text" class="input-sm"
                            placeholder="<?php echo __('Filter by host output'); ?>"
-                           ng-model="filter.Host.output"
+                           ng-model="filter.Hoststatus.output"
                            ng-model-options="{debounce: 500}">
                 </label>
             </div>
@@ -168,7 +212,7 @@
         </tbody>
     </table>
 
-    <scroll scroll="scroll" click-action="changepage" ng-if="scroll"></scroll>
+    <scroll scroll="scroll" click-action="changepage" only-buttons="true" ng-if="scroll"></scroll>
 
 </div>
 

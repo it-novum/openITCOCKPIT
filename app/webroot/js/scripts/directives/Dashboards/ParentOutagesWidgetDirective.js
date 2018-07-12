@@ -2,7 +2,9 @@ angular.module('openITCOCKPIT').directive('parentOutagesWidget', function($http)
     return {
         restrict: 'E',
         templateUrl: '/dashboards/parentOutagesWidget.html',
-        scope: {},
+        scope: {
+            'widget': '='
+        },
 
         controller: function($scope){
 

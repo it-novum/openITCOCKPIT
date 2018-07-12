@@ -87,7 +87,11 @@ class Widget extends AppModel {
                 'icon'      => 'fa-comment',
                 'directive' => 'welcome-widget', //AngularJS directive,
                 'width'     => 6,
-                'height'    => 7
+                'height'    => 7,
+                'json' => [
+                    1,2,3,4
+
+                ]
             ],
             [
                 'type_id'   => 2,

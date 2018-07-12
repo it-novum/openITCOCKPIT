@@ -26,7 +26,7 @@
 <div style="padding: 5px 10px;">
     <div class="row">
         <div class="col-sm-6">
-            <div class="dataTables_info" style="line-height: 32px;">
+            <div class="dataTables_info" style="line-height: 32px;" ng-hide="onlyButtons">
                 <?php echo __('Paginator disabled for better performance. Running in scroll mode.'); ?>
             </div>
         </div>

@@ -160,12 +160,31 @@ class DashboardTab extends AppModel {
         $result = $this->find('first', [
             'recursive'  => -1,
             'contain'    => [
-                'Widget'
+                'Widget' => [
+                    'fields' => [
+                        'Widget.id',
+                        'Widget.dashboard_tab_id',
+                        'Widget.type_id',
+                        'Widget.host_id',
+                        'Widget.service_id',
+                        'Widget.row',
+                        'Widget.col',
+                        'Widget.width',
+                        'Widget.height',
+                        'Widget.title',
+                        'Widget.color',
+                        'Widget.directive',
+                        'Widget.icon',
+                        //'Widget.json_data', //Do not add json data here!
+                        'Widget.created',
+                        'Widget.modified'
+                    ]
+                ]
             ],
             'conditions' => [
                 'DashboardTab.id'      => $tabId,
                 'DashboardTab.user_id' => $userId
-            ],
+            ]
         ]);
         return $result;
     }

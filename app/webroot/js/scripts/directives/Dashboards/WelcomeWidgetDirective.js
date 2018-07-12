@@ -2,7 +2,9 @@ angular.module('openITCOCKPIT').directive('welcomeWidget', function($http){
     return {
         restrict: 'E',
         templateUrl: '/dashboards/welcomeWidget.html',
-        scope: {},
+        scope: {
+            'widget': '='
+        },
 
         controller: function($scope){
 

@@ -22,6 +22,7 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+use itnovum\openITCOCKPIT\Core\Dashboards\HostStatusListJson;
 
 /**
  * Class DashboardsController
@@ -74,6 +75,7 @@ class DashboardsController extends AppController {
 
         $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
         $widgets = $this->DashboardTab->getWidgetsForTabByUserIdAndTabId($User->getId(), $tabId);
+
         $this->set('widgets', $widgets);
         $this->set('_serialize', ['widgets']);
     }
@@ -247,24 +249,64 @@ class DashboardsController extends AppController {
         $this->set('_serialize', ['parent_outages']);
     }
 
-    public function hostsPiechartWidget(){
+    public function hostsPiechartWidget() {
         return;
     }
 
-    public function hostsPiechart180Widget(){
+    public function hostsPiechart180Widget() {
         return;
     }
 
 
-    public function servicesPiechartWidget(){
+    public function servicesPiechartWidget() {
         return;
     }
 
-    public function servicesPiechart180Widget(){
+    public function servicesPiechart180Widget() {
         return;
     }
 
-    public function hostsStatusListWidget(){
-        return;
+    public function hostsStatusListWidget() {
+        if (!$this->isAngularJsRequest()) {
+            //Only ship template
+            return;
+        }
+
+        $widgetId = (int)$this->request->query('widgetId');
+        $HostStatusListJson = new HostStatusListJson();
+        if (!$this->Widget->exists($widgetId)) {
+            throw new NotFoundException('Widget not found');
+        }
+
+        if ($this->request->is('get')) {
+            $widget = $this->Widget->find('first', [
+                'recursive'  => -1,
+                'conditions' => [
+                    'Widget.id' => $widgetId
+                ]
+            ]);
+
+            $data = [];
+            if($widget['Widget']['json_data'] !== null && $widget['Widget']['json_data'] !== ''){
+                $data = json_decode($widget['Widget']['json_data'], true);
+            }
+            $config = $HostStatusListJson->standardizedData($data);
+            $this->set('config', $config);
+            $this->set('_serialize', ['config']);
+            return;
+        }
+
+        if ($this->request->is('post')) {
+            $config = $HostStatusListJson->standardizedData($this->request->data);
+
+            $this->Widget->id = $widgetId;
+            $this->Widget->saveField('json_data', json_encode($config));
+
+            $this->set('config', $config);
+            $this->set('_serialize', ['config']);
+            return;
+        }
+
+        throw new MethodNotAllowedException();
     }
 }

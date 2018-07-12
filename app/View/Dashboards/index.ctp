@@ -141,7 +141,7 @@
                                         <h2>{{activeWidget.title}}</h2>
                                     </header>
                                     <!-- Loading used AngularJs directives dynamically -->
-                                    <div role="content">
+                                    <div role="content" id="widget-content-{{activeWidget.id}}">
                                         <ng-include
                                                 src="'/dashboards/dynamicDirective?directive='+activeWidget.directive"></ng-include>
                                     </div>
