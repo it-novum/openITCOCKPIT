@@ -143,7 +143,8 @@ $config = [
                 'hostsPiechartWidget',
                 'hostsPiechart180Widget',
                 'servicesPiechartWidget',
-                'servicesPiechart180Widget'
+                'servicesPiechart180Widget',
+                'hostsStatusListWidget'
             ],
             'Hosts'            => [
                 'view',

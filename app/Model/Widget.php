@@ -192,7 +192,7 @@ class Widget extends AppModel {
                 'type_id'   => 9,
                 'title'     => __('Host status list'),
                 'icon'      => 'fa-list-alt',
-                'directive' => 'host-status-widget',
+                'directive' => 'hosts-status-widget',
                 'width'     => 6,
                 'height'    => 7
             ];
@@ -203,7 +203,7 @@ class Widget extends AppModel {
                 'type_id'   => 10,
                 'title'     => __('Service status list'),
                 'icon'      => 'fa-list-alt',
-                'directive' => 'service-status-widget',
+                'directive' => 'services-status-widget',
                 'width'     => 6,
                 'height'    => 7
             ];
@@ -213,12 +213,13 @@ class Widget extends AppModel {
     }
 
     /**
-     * @param $typeId
+     * @param int $typeId
+     * @param array $ACL_PERMISSIONS
      * @return bool
      */
-    public function isWidgetAvailable($typeId) {
+    public function isWidgetAvailable($typeId, $ACL_PERMISSIONS = []) {
         $typeId = (int)$typeId;
-        foreach ($this->getAvailableWidgets() as $widget) {
+        foreach ($this->getAvailableWidgets($ACL_PERMISSIONS) as $widget) {
             if ($widget['type_id'] === $typeId) {
                 return true;
             }
@@ -227,12 +228,13 @@ class Widget extends AppModel {
     }
 
     /**
-     * @param $typeId
+     * @param int $typeId
+     * @param array $ACL_PERMISSIONS
      * @return array
      */
-    public function getWidgetByTypeId($typeId) {
+    public function getWidgetByTypeId($typeId, $ACL_PERMISSIONS = []) {
         $typeId = (int)$typeId;
-        foreach ($this->getAvailableWidgets() as $widget) {
+        foreach ($this->getAvailableWidgets($ACL_PERMISSIONS) as $widget) {
             if ($widget['type_id'] === $typeId) {
                 return $widget;
             }

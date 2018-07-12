@@ -114,11 +114,11 @@ class DashboardsController extends AppController {
             throw new NotFoundException('DashboardTab does not exists!');
         }
 
-        if (!$this->Widget->isWidgetAvailable($this->request->data['Widget']['typeId'])) {
+        if (!$this->Widget->isWidgetAvailable($this->request->data['Widget']['typeId'], $this->PERMISSIONS)) {
             throw new NotFoundException('Widget not found!');
         }
 
-        $widget = $this->Widget->getWidgetByTypeId($this->request->data['Widget']['typeId']);
+        $widget = $this->Widget->getWidgetByTypeId($this->request->data['Widget']['typeId'], $this->PERMISSIONS);
         $data = [
             'dashboard_tab_id' => $this->request->data['Widget']['dashboard_tab_id'],
             'type_id'          => $this->request->data['Widget']['typeId'],
@@ -261,6 +261,10 @@ class DashboardsController extends AppController {
     }
 
     public function servicesPiechart180Widget(){
+        return;
+    }
+
+    public function hostsStatusListWidget(){
         return;
     }
 }

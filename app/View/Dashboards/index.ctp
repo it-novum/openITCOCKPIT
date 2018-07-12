@@ -109,7 +109,7 @@
                              data-gs-y="{{activeWidget.row}}">
                             <div class="grid-stack-item-content">
                                 <div class="jarviswidget jarviswidget-color-blueDark jarviswidget-sortable">
-                                    <header role="heading" class="ui-sortable-handle">
+                                    <header role="heading" class="ui-sortable-handle" style="cursor: move;">
                                         <div class="jarviswidget-ctrls" role="menu">
                                             <a href="javascript:void(0);" class="button-icon jarviswidget-edit-btn"
                                                title="<?php echo __('Edit widget'); ?>">

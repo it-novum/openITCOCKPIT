@@ -58,7 +58,10 @@ angular.module('openITCOCKPIT')
 
                 $gridstack.gridstack({
                     float: true,
-                    cellHeight: 10
+                    cellHeight: 10,
+                    draggable: {
+                        handle: '.jarviswidget header[role="heading"]'
+                    }
                 });
 
                 $gridstack.on('change', function(event, items){
