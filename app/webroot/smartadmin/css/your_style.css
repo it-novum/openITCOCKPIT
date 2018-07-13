@@ -1981,3 +1981,9 @@ label[class^='aco-host']:after, label[class^='aco-service']:after {
     line-height: 1.4;
     min-width: 150px;
 }
+
+.map-summary-state-popover{
+    position: absolute;
+    top: 0;
+    right: 0;
+}
