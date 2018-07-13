@@ -88,10 +88,6 @@ class Widget extends AppModel {
                 'directive' => 'welcome-widget', //AngularJS directive,
                 'width'     => 6,
                 'height'    => 7,
-                'json' => [
-                    1,2,3,4
-
-                ]
             ],
             [
                 'type_id'   => 2,
@@ -197,8 +193,8 @@ class Widget extends AppModel {
                 'title'     => __('Host status list'),
                 'icon'      => 'fa-list-alt',
                 'directive' => 'hosts-status-widget',
-                'width'     => 6,
-                'height'    => 7
+                'width'     => 12,
+                'height'    => 16
             ];
         }
 
@@ -208,8 +204,8 @@ class Widget extends AppModel {
                 'title'     => __('Service status list'),
                 'icon'      => 'fa-list-alt',
                 'directive' => 'services-status-widget',
-                'width'     => 6,
-                'height'    => 7
+                'width'     => 12,
+                'height'    => 16
             ];
         }
 

@@ -51,7 +51,7 @@ class HostStatusListJson extends DashboardJsonStandardizer {
         'sort'            => 'Hoststatus.current_state',
         'direction'       => 'desc',
         'useScroll'       => true,
-        'scroll_interval' => 30
+        'scroll_interval' => 30000
     ];
 
 }
