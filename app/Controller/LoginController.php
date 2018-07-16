@@ -137,7 +137,7 @@ class LoginController extends AppController
                     ['firstname' => $firstName, 'lastname' => $lastName, 'status' => 1],
                 ];
                 if ($OU !== '') {
-                    $conditions[0]['email LIKE'] = '%@'.$OU.'.%';
+                    $conditions[0]['User.email LIKE'] = '%@'.$OU.'.%';
                 }
             }
 
@@ -146,7 +146,7 @@ class LoginController extends AppController
                 if (empty($user)) {
                     $viewerEmail = isset($systemsettings['FRONTEND']['FRONTEND.CERT.DEFAULT_USER_EMAIL']) ? $systemsettings['FRONTEND']['FRONTEND.CERT.DEFAULT_USER_EMAIL'] : '';
                     if (!empty($viewerEmail)) {
-                        $user = $this->User->find('first', ['conditions' => ['email' => $viewerEmail, 'status' => 1]]);
+                        $user = $this->User->find('first', ['conditions' => ['User.email' => $viewerEmail, 'status' => 1]]);
                     }
                 }
                 if (!empty($user) && $this->Auth->login($user)) {
