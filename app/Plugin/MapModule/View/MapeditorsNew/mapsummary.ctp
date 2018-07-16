@@ -22,7 +22,7 @@
 //  License agreement and license key will be shipped with the order
 //  confirmation.
 ?>
-<div class="map-summary-state-popover col-xs-12">
+<div class="map-summary-state-popover col-xs-12 no-padding animated slideInRight" ng-if="summaryState.Hoststatus">
     <section>
         <div class="row">
             <article>
