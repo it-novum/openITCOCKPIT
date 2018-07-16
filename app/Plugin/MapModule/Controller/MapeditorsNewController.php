@@ -22,6 +22,7 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+use itnovum\openITCOCKPIT\Core\Views\UserTime;
 
 
 /**
@@ -218,6 +219,8 @@ class MapeditorsNewController extends MapModuleAppController {
             throw new RuntimeException('Invalid object id');
         }
 
+        $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
+
         switch ($this->request->query('type')) {
             case 'host':
                 $host = $this->Host->find('first', [
@@ -248,7 +251,8 @@ class MapeditorsNewController extends MapModuleAppController {
                         $this->Service,
                         $this->Hoststatus,
                         $this->Servicestatus,
-                        $host
+                        $host,
+                        $UserTime
                     );
                     $this->set('type', 'host');
                     $this->set('summary', $summary);

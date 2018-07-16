@@ -275,6 +275,23 @@ class Hoststatus {
         return $background_color[$state];
     }
 
+    /**
+     * Return the host state as string
+     * @return state as string (up, down, unreachable)
+     */
+    function HostStatusAsString() {
+        if($this->currentState === null){
+            return 'not in monitoring';
+        }
+        $human_state = [
+            0 => 'up',
+            1 => 'down',
+            2 => 'unreachable',
+        ];
+
+        return $human_state[$this->currentState];
+    }
+
     public function currentState(){
         return $this->currentState;
     }
@@ -455,6 +472,7 @@ class Hoststatus {
         $arr['isHardstate'] = $this->isHardState();
         $arr['problemHasBeenAcknowledged'] = $this->isAcknowledged();
         $arr['isInMonitoring'] = $this->isInMonitoring();
+        $arr['humanState'] = $this->HostStatusAsString();
         return $arr;
     }
 
