@@ -106,7 +106,10 @@ class MapeditorsNewController extends MapModuleAppController {
             throw new RuntimeException('Invalid object id');
         }
 
-        $icon = 'error.png';
+        $properties = [
+            'icon'  => 'error.png',
+            'color' => 'bg-color-blueLight'
+        ];
         $allowView = false;
         switch ($this->request->query('type')) {
             case 'host':
@@ -132,7 +135,7 @@ class MapeditorsNewController extends MapModuleAppController {
                         }
                     }
                     $allowView = true;
-                    $icon = $this->MapNew->getHostItemImage(
+                    $properties = $this->MapNew->getHostItemImage(
                         $this->Service,
                         $this->Hoststatus,
                         $this->Servicestatus,
@@ -171,7 +174,7 @@ class MapeditorsNewController extends MapModuleAppController {
                         }
                     }
                     $allowView = true;
-                    $icon = $this->MapNew->getServiceItemImage($this->Servicestatus, $service);
+                    $properties = $this->MapNew->getServiceItemImage($this->Servicestatus, $service);
                     break;
                 }
                 $allowView = false;
@@ -187,9 +190,10 @@ class MapeditorsNewController extends MapModuleAppController {
                 break;
         }
 
-        $this->set('icon', $icon);
+        $this->set('icon', $properties['icon']);
+        $this->set('background', $properties['color']);
         $this->set('allowView', $allowView);
-        $this->set('_serialize', ['icon', 'allowView']);
+        $this->set('_serialize', ['icon', 'background', 'allowView']);
     }
 
     public function mapline() {
