@@ -22,15 +22,56 @@
 //  License agreement and license key will be shipped with the order
 //  confirmation.
 ?>
+<div class="map-summary-state-popover col-xs-12">
 
-<div class="map-summary-state-popover col-xs-12" >
-
-    <div class="row">
-        <div class="col-xs-12">
-            {{summaryState}}
+    <div class="row" style="background:white;">
+        <div class="col-md-12">
+            <div class="col-md-4">
+                <?php echo __('Hostname'); ?>
+            </div>
+            <div class="col-md-8">
+                {{summaryState.Host.hostname}}
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="col-md-4">
+                <?php echo __('Description'); ?>
+            </div>
+            <div class="col-md-8">
+                {{summaryState.Host.description}}
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="col-md-4">
+                <?php echo __('State (State Type)'); ?>
+            </div>
+            <div class="col-md-8 bg-up">
+                {{summaryState.Hoststatus.currentState}}
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="col-md-4">
+                <?php echo __('Output'); ?>
+            </div>
+            <div class="col-md-8">
+                {{summaryState.Hoststatus.output}}
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="col-md-4">
+                <?php echo __('Perfdata'); ?>
+            </div>
+            <div class="col-md-8">
+                {{summaryState.Hoststatus.perfdata}}
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="col-md-4">
+                <?php echo __('Current attempt'); ?>
+            </div>
+            <div class="col-md-8">
+                {{summaryState.Hoststatus.current_check_attempt}}/{{summaryState.Hoststatus.max_check_attempts}}
+            </div>
         </div>
     </div>
-
-
-</div>
 

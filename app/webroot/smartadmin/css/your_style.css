@@ -1986,4 +1986,5 @@ label[class^='aco-host']:after, label[class^='aco-service']:after {
     position: absolute;
     top: 0;
     right: 0;
+    width: 30%;
 }

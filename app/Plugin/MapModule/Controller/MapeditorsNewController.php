@@ -66,7 +66,6 @@ class MapeditorsNewController extends MapModuleAppController {
         if (!$this->Map->exists($id)) {
             throw new NotFoundException();
         }
-
         $map = $this->Map->find('first', [
             'recursive'  => -1,
             'contain'    => [
@@ -228,7 +227,9 @@ class MapeditorsNewController extends MapModuleAppController {
                     ],
                     'fields'     => [
                         'Host.id',
-                        'Host.uuid'
+                        'Host.uuid',
+                        'Host.name',
+                        'Host.description'
                     ],
                     'conditions' => [
                         'Host.id'       => $objectId,
