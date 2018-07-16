@@ -81,6 +81,7 @@ class MapeditorsNewController extends MapModuleAppController {
             ]
         ]);
 
+
         foreach ($map['Maptext'] as $i => $maptext) {
             $map['Maptext'][$i]['text'] = $this->Bbcode->asHtml($maptext['text']);
         }
@@ -107,8 +108,10 @@ class MapeditorsNewController extends MapModuleAppController {
         }
 
         $properties = [
-            'icon'  => 'error.png',
-            'color' => 'bg-color-blueLight'
+            'icon'       => 'error.png',
+            'color'      => 'text-primary',
+            'background' => 'bg-color-blueLight',
+            'perfdata'   => null
         ];
         $allowView = false;
         switch ($this->request->query('type')) {
@@ -190,10 +193,16 @@ class MapeditorsNewController extends MapModuleAppController {
                 break;
         }
 
+        if(!isset($properties['perfdata'])){
+            $properties['perfdata'] = null;
+        }
+
         $this->set('icon', $properties['icon']);
-        $this->set('background', $properties['color']);
+        $this->set('background', $properties['background']);
+        $this->set('color', $properties['color']);
+        $this->set('perfdata', $properties['perfdata']);
         $this->set('allowView', $allowView);
-        $this->set('_serialize', ['icon', 'background', 'allowView']);
+        $this->set('_serialize', ['icon', 'background', 'color', 'perfdata', 'allowView']);
     }
 
     public function mapline() {
@@ -210,6 +219,10 @@ class MapeditorsNewController extends MapModuleAppController {
 
     public function maptext() {
         return;
+    }
+
+    public function perfdatatext() {
+
     }
 
     public function graph() {
@@ -261,6 +274,10 @@ class MapeditorsNewController extends MapModuleAppController {
         $this->set('service', $Service->toArray());
         $this->set('allowView', true);
         $this->set('_serialize', ['allowView', 'host', 'service']);
+    }
+
+    public function tacho() {
+        $this->graph();
     }
 
     public function mapsummary() {

@@ -25,6 +25,7 @@
 use itnovum\openITCOCKPIT\Core\HoststatusFields;
 use itnovum\openITCOCKPIT\Core\ServicestatusConditions;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
+use Statusengine\PerfdataParser;
 
 class MapNew extends MapModuleAppModel {
 
@@ -53,14 +54,16 @@ class MapNew extends MapModuleAppModel {
         $hoststatus = $Hoststatus->byUuid($host['Host']['uuid'], $HoststatusFields);
         if (empty($hoststatus)) {
             return [
-                'icon'  => $this->errorIcon,
-                'color' => 'bg-color-blueLight'
+                'icon'       => $this->errorIcon,
+                'color'      => 'text-primary',
+                'background' => 'bg-color-blueLight'
             ];
         }
 
         $hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus($hoststatus['Hoststatus']);
         $icon = $this->hostIcons[$hoststatus->currentState()];
-        $color = $hoststatus->HostStatusBackgroundColor();
+        $color = $hoststatus->HostStatusColor();
+        $background = $hoststatus->HostStatusBackgroundColor();
 
         if ($hoststatus->isAcknowledged()) {
             $icon = $this->ackIcon;
@@ -76,8 +79,9 @@ class MapNew extends MapModuleAppModel {
 
         if ($hoststatus->currentState() > 0) {
             return [
-                'icon'  => $icon,
-                'color' => $color
+                'icon'       => $icon,
+                'color'      => $color,
+                'background' => $background
             ];
         }
 
@@ -119,26 +123,30 @@ class MapNew extends MapModuleAppModel {
                 $serviceIcon = $this->ackAndDowntimeIcon;
             }
             return [
-                'icon'  => $serviceIcon,
-                'color' => $servicestatus->ServiceStatusBackgroundColor()
+                'icon'       => $serviceIcon,
+                'color'      => $servicestatus->ServiceStatusColor(),
+                'background' => $servicestatus->ServiceStatusBackgroundColor()
             ];
         }
 
 
         return [
-            'icon'  => $icon,
-            'color' => $color
+            'icon'       => $icon,
+            'color'      => $color,
+            'background' => $background
         ];
     }
 
     public function getServiceItemImage(Model $Servicestatus, $service) {
         $ServicestatusFields = new ServicestatusFields($this->DbBackend);
-        $ServicestatusFields->currentState()->scheduledDowntimeDepth()->problemHasBeenAcknowledged();
+        $ServicestatusFields->currentState()->scheduledDowntimeDepth()->problemHasBeenAcknowledged()->perfdata();
         $servicestatus = $Servicestatus->byUuid($service['Service']['uuid'], $ServicestatusFields);
         if (empty($servicestatus)) {
             return [
-                'icon'  => $this->errorIcon,
-                'color' => 'bg-color-blueLight'
+                'icon'       => $this->errorIcon,
+                'color'      => 'text-primary',
+                'background' => 'bg-color-blueLight',
+                'perfdata'   => null
             ];
         }
 
@@ -158,9 +166,14 @@ class MapNew extends MapModuleAppModel {
             $icon = $this->ackAndDowntimeIcon;
         }
 
+        $perfdata = new PerfdataParser($servicestatus->getPerfdata());
+
+
         return [
-            'icon'  => $icon,
-            'color' => $servicestatus->ServiceStatusBackgroundColor()
+            'icon'       => $icon,
+            'color'      => $servicestatus->ServiceStatusColor(),
+            'background' => $servicestatus->ServiceStatusBackgroundColor(),
+            'perfdata'   => $perfdata->parse()
         ];
     }
 
