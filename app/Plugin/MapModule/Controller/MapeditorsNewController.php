@@ -212,6 +212,57 @@ class MapeditorsNewController extends MapModuleAppController {
         return;
     }
 
+    public function graph() {
+        if (!$this->isApiRequest()) {
+            return;
+        }
+
+        $serviceId = (int)$this->request->query('serviceId');
+        $service = $this->Service->find('first', [
+            'recursive'  => -1,
+            'fields'     => [
+                'Service.id',
+                'Service.uuid'
+            ],
+            'contain'    => [
+                'Host'            => [
+                    'fields' => [
+                        'Host.id',
+                        'Host.uuid',
+                        'Host.name'
+                    ],
+                    'Container',
+                ],
+                'Servicetemplate' => [
+                    'fields' => [
+                        'Servicetemplate.name'
+                    ]
+                ]
+            ],
+            'conditions' => [
+                'Service.id'       => $serviceId,
+                'Service.disabled' => 0
+            ],
+        ]);
+        if (empty($service)) {
+            throw new NotFoundException('Service not found!');
+        }
+
+        if ($this->hasRootPrivileges === false) {
+            if (!$this->allowedByContainerId(Hash::extract($service, 'Host.Container.{n}.HostsToContainer.container_id'))) {
+                $this->set('allowView', false);
+                $this->set('_serialize', ['allowView']);
+            }
+        }
+
+        $Service = new \itnovum\openITCOCKPIT\Core\Views\Service($service);
+        $Host = new \itnovum\openITCOCKPIT\Core\Views\Host($service);
+        $this->set('host', $Host->toArray());
+        $this->set('service', $Service->toArray());
+        $this->set('allowView', true);
+        $this->set('_serialize', ['allowView', 'host', 'service']);
+    }
+
     public function mapsummary() {
         if (!$this->isApiRequest()) {
             return;

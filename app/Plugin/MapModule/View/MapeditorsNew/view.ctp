@@ -77,7 +77,16 @@
                 <map-icon item="iconItem"></map-icon>
             </div>
 
+            <div ng-repeat="gadgetItem in map.Mapgadget"
+                 style="position:absolute; top: {{gadgetItem.y}}px; left: {{gadgetItem.x}}px;  z-index: {{gadgetItem.z_index}};">
+                <graph-item item="gadgetItem" ng-if="gadgetItem.gadget === 'RRDGraph'"></graph-item>
+            </div>
+
+
+
             <map-summary></map-summary>
+
+            <div id="graph_data_tooltip"></div>
 
         </div>
     </div>

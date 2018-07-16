@@ -245,3 +245,4 @@ class MapNew extends MapModuleAppModel {
     }
 
 }
+
