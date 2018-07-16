@@ -82,6 +82,7 @@ class MapeditorsNewController extends MapModuleAppController {
             ]
         ]);
 
+
         foreach ($map['Maptext'] as $i => $maptext) {
             $map['Maptext'][$i]['text'] = $this->Bbcode->asHtml($maptext['text']);
         }
@@ -107,7 +108,12 @@ class MapeditorsNewController extends MapModuleAppController {
             throw new RuntimeException('Invalid object id');
         }
 
-        $icon = 'error.png';
+        $properties = [
+            'icon'       => 'error.png',
+            'color'      => 'text-primary',
+            'background' => 'bg-color-blueLight',
+            'perfdata'   => null
+        ];
         $allowView = false;
         switch ($this->request->query('type')) {
             case 'host':
@@ -133,7 +139,7 @@ class MapeditorsNewController extends MapModuleAppController {
                         }
                     }
                     $allowView = true;
-                    $icon = $this->MapNew->getHostItemImage(
+                    $properties = $this->MapNew->getHostItemImage(
                         $this->Service,
                         $this->Hoststatus,
                         $this->Servicestatus,
@@ -172,7 +178,7 @@ class MapeditorsNewController extends MapModuleAppController {
                         }
                     }
                     $allowView = true;
-                    $icon = $this->MapNew->getServiceItemImage($this->Servicestatus, $service);
+                    $properties = $this->MapNew->getServiceItemImage($this->Servicestatus, $service);
                     break;
                 }
                 $allowView = false;
@@ -188,9 +194,16 @@ class MapeditorsNewController extends MapModuleAppController {
                 break;
         }
 
-        $this->set('icon', $icon);
+        if(!isset($properties['perfdata'])){
+            $properties['perfdata'] = null;
+        }
+
+        $this->set('icon', $properties['icon']);
+        $this->set('background', $properties['background']);
+        $this->set('color', $properties['color']);
+        $this->set('perfdata', $properties['perfdata']);
         $this->set('allowView', $allowView);
-        $this->set('_serialize', ['icon', 'allowView']);
+        $this->set('_serialize', ['icon', 'background', 'color', 'perfdata', 'allowView']);
     }
 
     public function mapline() {
@@ -207,6 +220,65 @@ class MapeditorsNewController extends MapModuleAppController {
 
     public function maptext() {
         return;
+    }
+
+    public function perfdatatext() {
+
+    }
+
+    public function graph() {
+        if (!$this->isApiRequest()) {
+            return;
+        }
+
+        $serviceId = (int)$this->request->query('serviceId');
+        $service = $this->Service->find('first', [
+            'recursive'  => -1,
+            'fields'     => [
+                'Service.id',
+                'Service.uuid'
+            ],
+            'contain'    => [
+                'Host'            => [
+                    'fields' => [
+                        'Host.id',
+                        'Host.uuid',
+                        'Host.name'
+                    ],
+                    'Container',
+                ],
+                'Servicetemplate' => [
+                    'fields' => [
+                        'Servicetemplate.name'
+                    ]
+                ]
+            ],
+            'conditions' => [
+                'Service.id'       => $serviceId,
+                'Service.disabled' => 0
+            ],
+        ]);
+        if (empty($service)) {
+            throw new NotFoundException('Service not found!');
+        }
+
+        if ($this->hasRootPrivileges === false) {
+            if (!$this->allowedByContainerId(Hash::extract($service, 'Host.Container.{n}.HostsToContainer.container_id'))) {
+                $this->set('allowView', false);
+                $this->set('_serialize', ['allowView']);
+            }
+        }
+
+        $Service = new \itnovum\openITCOCKPIT\Core\Views\Service($service);
+        $Host = new \itnovum\openITCOCKPIT\Core\Views\Host($service);
+        $this->set('host', $Host->toArray());
+        $this->set('service', $Service->toArray());
+        $this->set('allowView', true);
+        $this->set('_serialize', ['allowView', 'host', 'service']);
+    }
+
+    public function tacho() {
+        $this->graph();
     }
 
     public function mapsummary() {

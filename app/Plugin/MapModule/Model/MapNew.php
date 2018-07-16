@@ -26,6 +26,7 @@ use itnovum\openITCOCKPIT\Core\HoststatusFields;
 use itnovum\openITCOCKPIT\Core\ServicestatusConditions;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
+use Statusengine\PerfdataParser;
 
 class MapNew extends MapModuleAppModel {
 
@@ -33,8 +34,8 @@ class MapNew extends MapModuleAppModel {
 
     private $hostIcons = [
         0 => 'up.png',
-        2 => 'down.png',
-        3 => 'unreachable.png'
+        1 => 'down.png',
+        2 => 'unreachable.png'
     ];
     private $serviceIcons = [
         0 => 'up.png',
@@ -53,11 +54,17 @@ class MapNew extends MapModuleAppModel {
         $HoststatusFields->currentState()->scheduledDowntimeDepth()->problemHasBeenAcknowledged();
         $hoststatus = $Hoststatus->byUuid($host['Host']['uuid'], $HoststatusFields);
         if (empty($hoststatus)) {
-            return $this->errorIcon;
+            return [
+                'icon'       => $this->errorIcon,
+                'color'      => 'text-primary',
+                'background' => 'bg-color-blueLight'
+            ];
         }
 
         $hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus($hoststatus['Hoststatus']);
         $icon = $this->hostIcons[$hoststatus->currentState()];
+        $color = $hoststatus->HostStatusColor();
+        $background = $hoststatus->HostStatusBackgroundColor();
 
         if ($hoststatus->isAcknowledged()) {
             $icon = $this->ackIcon;
@@ -72,7 +79,11 @@ class MapNew extends MapModuleAppModel {
         }
 
         if ($hoststatus->currentState() > 0) {
-            return $icon;
+            return [
+                'icon'       => $icon,
+                'color'      => $color,
+                'background' => $background
+            ];
         }
 
         //Check services for cumulated state (only if host is up)
@@ -112,19 +123,32 @@ class MapNew extends MapModuleAppModel {
             if ($servicestatus->isAcknowledged() && $servicestatus->isInDowntime()) {
                 $serviceIcon = $this->ackAndDowntimeIcon;
             }
-            return $serviceIcon;
+            return [
+                'icon'       => $serviceIcon,
+                'color'      => $servicestatus->ServiceStatusColor(),
+                'background' => $servicestatus->ServiceStatusBackgroundColor()
+            ];
         }
 
 
-        return $icon;
+        return [
+            'icon'       => $icon,
+            'color'      => $color,
+            'background' => $background
+        ];
     }
 
     public function getServiceItemImage(Model $Servicestatus, $service) {
         $ServicestatusFields = new ServicestatusFields($this->DbBackend);
-        $ServicestatusFields->currentState()->scheduledDowntimeDepth()->problemHasBeenAcknowledged();
+        $ServicestatusFields->currentState()->scheduledDowntimeDepth()->problemHasBeenAcknowledged()->perfdata();
         $servicestatus = $Servicestatus->byUuid($service['Service']['uuid'], $ServicestatusFields);
         if (empty($servicestatus)) {
-            return $this->errorIcon;
+            return [
+                'icon'       => $this->errorIcon,
+                'color'      => 'text-primary',
+                'background' => 'bg-color-blueLight',
+                'perfdata'   => null
+            ];
         }
 
         $servicestatus = new \itnovum\openITCOCKPIT\Core\Servicestatus($servicestatus['Servicestatus']);
@@ -143,7 +167,15 @@ class MapNew extends MapModuleAppModel {
             $icon = $this->ackAndDowntimeIcon;
         }
 
-        return $icon;
+        $perfdata = new PerfdataParser($servicestatus->getPerfdata());
+
+
+        return [
+            'icon'       => $icon,
+            'color'      => $servicestatus->ServiceStatusColor(),
+            'background' => $servicestatus->ServiceStatusBackgroundColor(),
+            'perfdata'   => $perfdata->parse()
+        ];
     }
 
     public function getHostSummary(Model $Service, Model $Hoststatus, Model $Servicestatus, $host, UserTime $UserTime) {
@@ -227,3 +259,4 @@ class MapNew extends MapModuleAppModel {
     }
 
 }
+

@@ -68,12 +68,25 @@
                 <map-text item="textItem"></map-text>
             </div>
 
+            <div ng-repeat="lineItem in map.Mapline">
+                <map-line item="lineItem"></map-line>
+            </div>
+
             <div ng-repeat="iconItem in map.Mapicon"
                  style="position:absolute; top: {{iconItem.y}}px; left: {{iconItem.x}}px;  z-index: {{iconItem.z_index}};">
                 <map-icon item="iconItem"></map-icon>
             </div>
 
+            <div ng-repeat="gadgetItem in map.Mapgadget"
+                 style="position:absolute; top: {{gadgetItem.y}}px; left: {{gadgetItem.x}}px;  z-index: {{gadgetItem.z_index}};">
+                <graph-item item="gadgetItem" ng-if="gadgetItem.gadget === 'RRDGraph'"></graph-item>
+                <perfdata-text-item item="gadgetItem" ng-if="gadgetItem.gadget === 'Text'"></perfdata-text-item>
+
+            </div>
+
             <map-summary></map-summary>
+
+            <div id="graph_data_tooltip"></div>
 
         </div>
     </div>
