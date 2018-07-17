@@ -23,16 +23,4 @@
 //  confirmation.
 ?>
 
-<div class="well padding-5" ng-if="allowView" style="width: {{width}}px;">
-    <div class="text-center" style="width: 100%">
-        {{host.hostname}}/{{service.servicename}}
-    </div>
-
-    <div id="graph_legend-{{item.id}}"></div>
-
-    <div id="mapgraph-{{item.id}}" style="height: {{height}}px;">
-
-    </div>
-
-</div>
-
+<canvas id="map-tacho-{{item.id}}"></canvas>

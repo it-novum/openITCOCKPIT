@@ -81,7 +81,7 @@
                  style="position:absolute; top: {{gadgetItem.y}}px; left: {{gadgetItem.x}}px;  z-index: {{gadgetItem.z_index}};">
                 <graph-item item="gadgetItem" ng-if="gadgetItem.gadget === 'RRDGraph'"></graph-item>
                 <perfdata-text-item item="gadgetItem" ng-if="gadgetItem.gadget === 'Text'"></perfdata-text-item>
-
+                <tacho-item item="gadgetItem" ng-if="gadgetItem.gadget === 'Tacho'"></tacho-item>
             </div>
 
             <map-summary></map-summary>
