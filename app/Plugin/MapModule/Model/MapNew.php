@@ -144,10 +144,11 @@ class MapNew extends MapModuleAppModel {
         $servicestatus = $Servicestatus->byUuid($service['Service']['uuid'], $ServicestatusFields);
         if (empty($servicestatus)) {
             return [
-                'icon'       => $this->errorIcon,
-                'color'      => 'text-primary',
-                'background' => 'bg-color-blueLight',
-                'perfdata'   => null
+                'icon'          => $this->errorIcon,
+                'color'         => 'text-primary',
+                'background'    => 'bg-color-blueLight',
+                'perfdata'      => null,
+                'current_state' => -1,
             ];
         }
 
@@ -171,10 +172,11 @@ class MapNew extends MapModuleAppModel {
 
 
         return [
-            'icon'       => $icon,
-            'color'      => $servicestatus->ServiceStatusColor(),
-            'background' => $servicestatus->ServiceStatusBackgroundColor(),
-            'perfdata'   => $perfdata->parse()
+            'icon'          => $icon,
+            'color'         => $servicestatus->ServiceStatusColor(),
+            'background'    => $servicestatus->ServiceStatusBackgroundColor(),
+            'perfdata'      => $perfdata->parse(),
+            'current_state' => $servicestatus->currentState()
         ];
     }
 

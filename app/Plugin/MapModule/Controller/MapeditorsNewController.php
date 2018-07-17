@@ -194,7 +194,7 @@ class MapeditorsNewController extends MapModuleAppController {
                 break;
         }
 
-        if(!isset($properties['perfdata'])){
+        if (!isset($properties['perfdata'])) {
             $properties['perfdata'] = null;
         }
 
@@ -202,8 +202,15 @@ class MapeditorsNewController extends MapModuleAppController {
         $this->set('background', $properties['background']);
         $this->set('color', $properties['color']);
         $this->set('perfdata', $properties['perfdata']);
+
+        $toJson = ['icon', 'background', 'color', 'perfdata', 'allowView'];
+        if(isset($properties['current_state'])){
+            $this->set('current_state', $properties['current_state']);
+            $toJson[] = 'current_state';
+        }
+
         $this->set('allowView', $allowView);
-        $this->set('_serialize', ['icon', 'background', 'color', 'perfdata', 'allowView']);
+        $this->set('_serialize', $toJson);
     }
 
     public function mapline() {
@@ -278,7 +285,13 @@ class MapeditorsNewController extends MapModuleAppController {
     }
 
     public function tacho() {
-        $this->graph();
+        //Only ship template
+        return;
+    }
+
+    public function cylinder() {
+        //Only ship template
+        return;
     }
 
     public function mapsummary() {

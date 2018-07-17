@@ -82,6 +82,7 @@
                 <graph-item item="gadgetItem" ng-if="gadgetItem.gadget === 'RRDGraph'"></graph-item>
                 <perfdata-text-item item="gadgetItem" ng-if="gadgetItem.gadget === 'Text'"></perfdata-text-item>
                 <tacho-item item="gadgetItem" ng-if="gadgetItem.gadget === 'Tacho'"></tacho-item>
+                <cylinder-item item="gadgetItem" ng-if="gadgetItem.gadget === 'Cylinder'"></cylinder-item>
             </div>
 
             <map-summary></map-summary>
