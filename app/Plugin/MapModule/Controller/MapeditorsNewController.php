@@ -34,7 +34,6 @@ use itnovum\openITCOCKPIT\Core\Views\UserTime;
  * @property Hoststatus $Hoststatus
  * @property Servicestatus $Servicestatus
  *
- * @property BbcodeComponent $Bbcode
  */
 class MapeditorsNewController extends MapModuleAppController {
     public $layout = 'blank';
@@ -48,9 +47,6 @@ class MapeditorsNewController extends MapModuleAppController {
         MONITORING_SERVICESTATUS
     ];
 
-    public $components = [
-        'Bbcode'
-    ];
 
     /**
      * @param int $id
@@ -82,10 +78,6 @@ class MapeditorsNewController extends MapModuleAppController {
             ]
         ]);
 
-
-        foreach ($map['Maptext'] as $i => $maptext) {
-            $map['Maptext'][$i]['text'] = $this->Bbcode->asHtml($maptext['text']);
-        }
 
         $containerIdsToCheck = Hash::extract($map, 'Container.{n}.MapsToContainer.container_id');
         if (!$this->allowedByContainerId($containerIdsToCheck, false)) {

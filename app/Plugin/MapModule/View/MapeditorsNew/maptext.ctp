@@ -23,5 +23,5 @@
 //  confirmation.
 ?>
 
-<span class="textElement" style="font-size:{{item.font_size}}px;" ng-bind-html="item.text | trustAsHtml"></span>
+<span class="textElement" style="font-size:{{item.font_size}}px;" ng-bind-html="bbhtml | trustAsHtml"></span>
 
