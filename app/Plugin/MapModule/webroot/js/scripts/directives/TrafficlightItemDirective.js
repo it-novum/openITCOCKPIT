@@ -108,7 +108,12 @@ angular.module('openITCOCKPIT').directive('trafficlightItem', function($http){
                 $('#map-trafficlight-' + $scope.item.id).svg();
                 var svg = $('#map-trafficlight-' + $scope.item.id).svg('get');
 
-                var lightRadius = 17;
+                // 17px was the old radius of the static traffic light.
+                // We calucate this calue on the fly to be able to resize the traffic light
+                var lightRadius = parseInt(($scope.width * (17/60)));
+                var lightDiameter = (lightRadius*2) + 2; //2 is the stroke width
+                var lightPadding = Math.ceil(($scope.height - lightDiameter*3)/4);
+                var x = parseInt(($scope.width / 2), 10);
 
                 //main group
                 var trafficLight = svg.group('trafficLight_' + $scope.item.id);
@@ -177,7 +182,7 @@ angular.module('openITCOCKPIT').directive('trafficlightItem', function($http){
                 var redLightGroup = svg.group(lights, 'redLightGroup_' + $scope.item.id);
                 if($scope.showRed){
                     //red background
-                    var redLight = svg.circle(redLightGroup, 30, 30, lightRadius, {
+                    var redLight = svg.circle(redLightGroup, x, lightPadding+lightRadius, lightRadius, {
                         fill: '#f00'
                     });
                     if($scope.blink){
@@ -185,14 +190,13 @@ angular.module('openITCOCKPIT').directive('trafficlightItem', function($http){
                     }
                 }
                 //red
-                svg.circle(redLightGroup, 30, 30, lightRadius, {
+                svg.circle(redLightGroup, x, lightPadding+lightRadius, lightRadius, {
                     fill: 'url(#redLightPattern_' + $scope.item.id + ')', stroke: '#444', strokeWidth: 2
                 });
-
                 var yellowLightGroup = svg.group(lights, 'yellowLightGroup_' + $scope.item.id);
                 if($scope.showYellow){
                     //yellow background
-                    var yellowLight = svg.circle(yellowLightGroup, 30, 71, lightRadius, {
+                    var yellowLight = svg.circle(yellowLightGroup, x, lightDiameter+lightPadding*2, lightRadius, {
                         fill: '#FFF000'
                     });
                     if($scope.blink){
@@ -200,26 +204,26 @@ angular.module('openITCOCKPIT').directive('trafficlightItem', function($http){
                     }
                 }
                 //yellow
-                svg.circle(yellowLightGroup, 30, 71, lightRadius, {
+                svg.circle(yellowLightGroup, x, lightDiameter+lightPadding*2+lightRadius, lightRadius, {
                     fill: 'url(#yellowLightPattern_' + $scope.item.id + ')', stroke: '#444', strokeWidth: 2
                 });
 
                 var blueLightGroup = svg.group(lights, 'blueLightGroup_' + $scope.item.id);
                 if($scope.showBlue){
                     //yellow background
-                    var blueLight = svg.circle(blueLightGroup, 30, 71, lightRadius, {
+                    var blueLight = svg.circle(blueLightGroup, x, lightDiameter+lightPadding*2+lightRadius, lightRadius, {
                         fill: '#6e99ff'
                     });
                 }
                 //yellow
-                svg.circle(yellowLightGroup, 30, 71, lightRadius, {
+                svg.circle(yellowLightGroup, x, lightDiameter+lightPadding*2+lightRadius, lightRadius, {
                     fill: 'url(#yellowLightPattern_' + $scope.item.id + ')', stroke: '#444', strokeWidth: 2
                 });
 
                 var greenLightGroup = svg.group(lights, 'greenLightGroup_' + $scope.item.id);
                 if($scope.showGreen){
                     //green background
-                    var greenLight = svg.circle(greenLightGroup, 30, 112, lightRadius, {
+                    var greenLight = svg.circle(greenLightGroup, x, lightDiameter*2+lightPadding*3+lightRadius, lightRadius, {
                         fill: '#0F0'
                     });
                     if($scope.blink){
@@ -227,7 +231,7 @@ angular.module('openITCOCKPIT').directive('trafficlightItem', function($http){
                     }
                 }
                 //green
-                svg.circle(greenLightGroup, 30, 112, lightRadius, {
+                svg.circle(greenLightGroup, x, lightDiameter*2+lightPadding*3+lightRadius, lightRadius, {
                     fill: 'url(#greenLightPattern_' + $scope.item.id + ')', stroke: '#444', strokeWidth: 2
                 });
             };

@@ -9,6 +9,10 @@ angular.module('openITCOCKPIT').directive('perfdataTextItem', function($http){
 
             $scope.showLabel = parseInt($scope.item.show_label, 10) === 1;
 
+            $scope.fontSize = 13;
+            if($scope.item.size_y > 0){
+                $scope.fontSize = $scope.item.size_y;
+            }
 
             $scope.load = function(){
                 $http.get("/map_module/mapeditors_new/mapitem/.json", {
