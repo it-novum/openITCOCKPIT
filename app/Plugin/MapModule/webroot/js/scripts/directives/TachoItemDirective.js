@@ -74,9 +74,6 @@ angular.module('openITCOCKPIT').directive('tachoItem', function($http){
                     perfdata.max = 100;
                 }
 
-                console.log(perfdata);
-
-
                 var thresholds = [];
 
                 if(perfdata.warning !== null && perfdata.critical !== null){
