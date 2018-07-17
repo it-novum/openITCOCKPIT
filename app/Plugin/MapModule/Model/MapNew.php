@@ -25,6 +25,7 @@
 use itnovum\openITCOCKPIT\Core\HoststatusFields;
 use itnovum\openITCOCKPIT\Core\ServicestatusConditions;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
+use itnovum\openITCOCKPIT\Core\Views\UserTime;
 use Statusengine\PerfdataParser;
 
 class MapNew extends MapModuleAppModel {
@@ -177,7 +178,7 @@ class MapNew extends MapModuleAppModel {
         ];
     }
 
-    public function getHostSummary(Model $Service, Model $Hoststatus, Model $Servicestatus, $host) {
+    public function getHostSummary(Model $Service, Model $Hoststatus, Model $Servicestatus, $host, UserTime $UserTime) {
         $HoststatusFields = new HoststatusFields($this->DbBackend);
         $HoststatusFields
             ->currentState()
@@ -196,7 +197,7 @@ class MapNew extends MapModuleAppModel {
             $hoststatus['Hoststatus'] = [];
         }
 
-        $hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus($hoststatus['Hoststatus']);
+        $hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus($hoststatus['Hoststatus'], $UserTime);
 
         $services = $Service->find('all', [
             'recursive'  => -1,
