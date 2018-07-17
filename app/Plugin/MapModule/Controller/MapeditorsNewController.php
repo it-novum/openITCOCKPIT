@@ -196,9 +196,13 @@ class MapeditorsNewController extends MapModuleAppController {
         $this->set('perfdata', $properties['perfdata']);
 
         $toJson = ['icon', 'background', 'color', 'perfdata', 'allowView'];
-        if(isset($properties['current_state'])){
+        if (isset($properties['current_state'])) {
             $this->set('current_state', $properties['current_state']);
             $toJson[] = 'current_state';
+        }
+        if (isset($properties['is_flapping'])) {
+            $this->set('is_flapping', $properties['is_flapping']);
+            $toJson[] = 'is_flapping';
         }
 
         $this->set('allowView', $allowView);
@@ -206,23 +210,23 @@ class MapeditorsNewController extends MapModuleAppController {
     }
 
     public function mapline() {
-
-    }
-
-    public function mapgadget() {
-
+        //Only ship template
+        return;
     }
 
     public function mapicon() {
+        //Only ship template
         return;
     }
 
     public function maptext() {
+        //Only ship template
         return;
     }
 
     public function perfdatatext() {
-
+        //Only ship template
+        return;
     }
 
     public function graph() {
@@ -285,6 +289,12 @@ class MapeditorsNewController extends MapModuleAppController {
         //Only ship template
         return;
     }
+
+    public function trafficlight() {
+        //Only ship template
+        return;
+    }
+
 
     public function mapsummary() {
         if (!$this->isApiRequest()) {
