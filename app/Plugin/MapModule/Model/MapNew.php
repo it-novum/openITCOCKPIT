@@ -98,8 +98,13 @@ class MapNew extends MapModuleAppModel {
         if ($hoststatus->currentState() > 0) {
             return [
                 'icon' => $icon,
-                'color' => $color,
-                'background' => $background
+                'icon_property'  => $this->errorIcon,
+                'isAcknowledged' => $hoststatus->isAcknowledged(),
+                'isInDowntime'   => $hoststatus->isInDowntime(),
+                'color'          => $color,
+                'background'     => $background,
+                'Host'           => $HostView->toArray(),
+                'Hoststatus'     => $hoststatus->toArray(),
             ];
         }
 
