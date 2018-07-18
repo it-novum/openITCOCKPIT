@@ -37,8 +37,8 @@ angular.module('openITCOCKPIT').directive('trafficlightItem', function($http){
                         'type': $scope.item.type
                     }
                 }).then(function(result){
-                    $scope.current_state = result.data.current_state;
-                    $scope.is_flapping = result.data.is_flapping;
+                    $scope.current_state = result.data.data.Servicestatus.currentState;
+                    $scope.is_flapping = result.data.data.Servicestatus.isFlapping;
 
                     $scope.showGreen = false;
                     $scope.showYellow = false;

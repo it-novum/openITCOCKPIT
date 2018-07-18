@@ -14,7 +14,7 @@ angular.module('openITCOCKPIT').directive('mapItem', function($http){
                         'type': $scope.item.type
                     }
                 }).then(function(result){
-                    $scope.icon = result.data.icon;
+                    $scope.icon = result.data.data.icon;
                     $scope.allowView = result.data.allowView;
                     $scope.init = false;
                 });

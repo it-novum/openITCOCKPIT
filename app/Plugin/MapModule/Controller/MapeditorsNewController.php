@@ -65,8 +65,8 @@ class MapeditorsNewController extends MapModuleAppController {
             throw new NotFoundException();
         }
         $map = $this->Map->find('first', [
-            'recursive' => -1,
-            'contain' => [
+            'recursive'  => -1,
+            'contain'    => [
                 'Container',
                 'Mapitem',
                 'Mapline',
@@ -101,26 +101,21 @@ class MapeditorsNewController extends MapModuleAppController {
             throw new RuntimeException('Invalid object id');
         }
 
-        $properties = [
-            'icon' => 'error.png',
-            'color' => 'text-primary',
-            'background' => 'bg-color-blueLight',
-            'perfdata' => null
-        ];
-        $allowView = false;
+
         switch ($this->request->query('type')) {
             case 'host':
                 $host = $this->Host->find('first', [
-                    'recursive' => -1,
-                    'contain' => [
+                    'recursive'  => -1,
+                    'contain'    => [
                         'Container'
                     ],
-                    'fields' => [
+                    'fields'     => [
                         'Host.id',
-                        'Host.uuid'
+                        'Host.uuid',
+                        'Host.name'
                     ],
                     'conditions' => [
-                        'Host.id' => $objectId,
+                        'Host.id'       => $objectId,
                         'Host.disabled' => 0
                     ]
                 ]);
@@ -132,7 +127,7 @@ class MapeditorsNewController extends MapModuleAppController {
                         }
                     }
                     $allowView = true;
-                    $properties = $this->MapNew->getHostItemImage(
+                    $properties = $this->MapNew->getHostInformation(
                         $this->Service,
                         $this->Hoststatus,
                         $this->Servicestatus,
@@ -145,20 +140,29 @@ class MapeditorsNewController extends MapModuleAppController {
 
             case 'service':
                 $service = $this->Service->find('first', [
-                    'recursive' => -1,
-                    'fields' => [
+                    'recursive'  => -1,
+                    'fields'     => [
+                        'Service.id',
+                        'Service.name',
                         'Service.uuid'
                     ],
-                    'contain' => [
-                        'Host' => [
+                    'contain'    => [
+                        'Host'            => [
                             'fields' => [
                                 'Host.id',
+                                'Host.uuid',
+                                'Host.name'
                             ],
                             'Container',
+                        ],
+                        'Servicetemplate' => [
+                            'fields' => [
+                                'Servicetemplate.name'
+                            ]
                         ]
                     ],
                     'conditions' => [
-                        'Service.id' => $objectId,
+                        'Service.id'       => $objectId,
                         'Service.disabled' => 0
                     ],
                 ]);
@@ -171,7 +175,7 @@ class MapeditorsNewController extends MapModuleAppController {
                         }
                     }
                     $allowView = true;
-                    $properties = $this->MapNew->getServiceItemImage($this->Servicestatus, $service);
+                    $properties = $this->MapNew->getServiceInformation($this->Servicestatus, $service);
                     break;
                 }
                 $allowView = false;
@@ -179,16 +183,16 @@ class MapeditorsNewController extends MapModuleAppController {
 
             case 'hostgroup':
                 $hostgroup = $this->Hostgroup->find('first', [
-                    'recursive' => -1,
-                    'contain' => [
+                    'recursive'  => -1,
+                    'contain'    => [
                         'Container' => [
                             'fields' => [
                                 'Container.name'
                             ]
                         ],
-                        'Host' => [
+                        'Host'      => [
                             'Container',
-                            'fields' => [
+                            'fields'     => [
                                 'Host.id',
                                 'Host.uuid'
                             ],
@@ -197,7 +201,7 @@ class MapeditorsNewController extends MapModuleAppController {
                             ]
                         ]
                     ],
-                    'fields' => [
+                    'fields'     => [
                         'Hostgroup.id',
                         'Hostgroup.description'
                     ],
@@ -213,7 +217,7 @@ class MapeditorsNewController extends MapModuleAppController {
                         }
                     }
                     $allowView = true;
-                    $properties = $this->MapNew->getHostgroupItemImage(
+                    $properties = $this->MapNew->getHostgroupInformation(
                         $this->Service,
                         $this->Hoststatus,
                         $this->Servicestatus,
@@ -225,35 +229,32 @@ class MapeditorsNewController extends MapModuleAppController {
                 break;
 
             case 'servicegroup':
+                $allowView = true;
+                $properties = [
+                    'icon'       => 'error.png',
+                    'color'      => 'text-primary',
+                    'background' => 'bg-color-blueLight',
+                    'data'       => []
+                ];
                 break;
             case 'map':
+                $allowView = true;
+                $properties = [
+                    'icon'       => 'error.png',
+                    'color'      => 'text-primary',
+                    'background' => 'bg-color-blueLight',
+                    'data'       => []
+                ];
                 break;
             default:
                 throw new RuntimeException('Unknown map item type');
                 break;
         }
 
-        if (!isset($properties['perfdata'])) {
-            $properties['perfdata'] = null;
-        }
-
-        $this->set('icon', $properties['icon']);
-        $this->set('background', $properties['background']);
-        $this->set('color', $properties['color']);
-        $this->set('perfdata', $properties['perfdata']);
-
-        $toJson = ['icon', 'background', 'color', 'perfdata', 'allowView'];
-        if (isset($properties['current_state'])) {
-            $this->set('current_state', $properties['current_state']);
-            $toJson[] = 'current_state';
-        }
-        if (isset($properties['is_flapping'])) {
-            $this->set('is_flapping', $properties['is_flapping']);
-            $toJson[] = 'is_flapping';
-        }
-
+        $this->set('type', $this->request->query('type'));
+        $this->set('data', $properties);
         $this->set('allowView', $allowView);
-        $this->set('_serialize', $toJson);
+        $this->set('_serialize', ['type', 'allowView', 'data']);
     }
 
     public function mapline() {
@@ -283,13 +284,13 @@ class MapeditorsNewController extends MapModuleAppController {
 
         $serviceId = (int)$this->request->query('serviceId');
         $service = $this->Service->find('first', [
-            'recursive' => -1,
-            'fields' => [
+            'recursive'  => -1,
+            'fields'     => [
                 'Service.id',
                 'Service.uuid'
             ],
-            'contain' => [
-                'Host' => [
+            'contain'    => [
+                'Host'            => [
                     'fields' => [
                         'Host.id',
                         'Host.uuid',
@@ -304,7 +305,7 @@ class MapeditorsNewController extends MapModuleAppController {
                 ]
             ],
             'conditions' => [
-                'Service.id' => $serviceId,
+                'Service.id'       => $serviceId,
                 'Service.disabled' => 0
             ],
         ]);
@@ -358,18 +359,18 @@ class MapeditorsNewController extends MapModuleAppController {
         switch ($this->request->query('type')) {
             case 'host':
                 $host = $this->Host->find('first', [
-                    'recursive' => -1,
-                    'contain' => [
+                    'recursive'  => -1,
+                    'contain'    => [
                         'Container'
                     ],
-                    'fields' => [
+                    'fields'     => [
                         'Host.id',
                         'Host.uuid',
                         'Host.name',
                         'Host.description'
                     ],
                     'conditions' => [
-                        'Host.id' => $objectId,
+                        'Host.id'       => $objectId,
                         'Host.disabled' => 0
                     ]
                 ]);
@@ -398,12 +399,12 @@ class MapeditorsNewController extends MapModuleAppController {
 
             case 'service':
                 $service = $this->Service->find('first', [
-                    'recursive' => -1,
-                    'fields' => [
+                    'recursive'  => -1,
+                    'fields'     => [
                         'Service.uuid'
                     ],
-                    'contain' => [
-                        'Host' => [
+                    'contain'    => [
+                        'Host'            => [
                             'fields' => [
                                 'Host.id',
                                 'Host.uuid',
@@ -418,7 +419,7 @@ class MapeditorsNewController extends MapModuleAppController {
                         ]
                     ],
                     'conditions' => [
-                        'Service.id' => $objectId,
+                        'Service.id'       => $objectId,
                         'Service.disabled' => 0
                     ],
                 ]);
@@ -449,16 +450,16 @@ class MapeditorsNewController extends MapModuleAppController {
                 break;
             case 'hostgroup':
                 $query = [
-                    'recursive' => -1,
-                    'contain' => [
+                    'recursive'  => -1,
+                    'contain'    => [
                         'Container' => [
                             'fields' => [
                                 'Container.name'
                             ]
                         ],
-                        'Host' => [
+                        'Host'      => [
                             'Container',
-                            'fields' => [
+                            'fields'     => [
                                 'Host.id',
                                 'Host.uuid',
                                 'Host.name',
@@ -469,7 +470,7 @@ class MapeditorsNewController extends MapModuleAppController {
                             ]
                         ]
                     ],
-                    'fields' => [
+                    'fields'     => [
                         'Hostgroup.description'
                     ],
                     'conditions' => [

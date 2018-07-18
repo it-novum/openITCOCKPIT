@@ -22,8 +22,8 @@ angular.module('openITCOCKPIT').directive('perfdataTextItem', function($http){
                         'type': $scope.item.type
                     }
                 }).then(function(result){
-                    $scope.color = result.data.color;
-                    var perfdata = result.data.perfdata;
+                    $scope.color = result.data.data.color;
+                    var perfdata = result.data.data.Perfdata;
 
 
                     if(perfdata !== null){

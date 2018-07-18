@@ -30,8 +30,8 @@ angular.module('openITCOCKPIT').directive('cylinderItem', function($http){
                         'type': $scope.item.type
                     }
                 }).then(function(result){
-                    $scope.current_state = result.data.current_state;
-                    var perfdata = result.data.perfdata;
+                    $scope.current_state = result.data.data.Servicestatus.currentState;
+                    var perfdata = result.data.data.Perfdata;
 
 
                     if(perfdata !== null){

@@ -45,7 +45,7 @@ angular.module('openITCOCKPIT').directive('mapLine', function($http){
                         'type': $scope.item.type
                     }
                 }).then(function(result){
-                    $scope.background = result.data.background;
+                    $scope.background = result.data.data.background;
                     $scope.allowView = result.data.allowView;
                     $scope.init = false;
                 });
