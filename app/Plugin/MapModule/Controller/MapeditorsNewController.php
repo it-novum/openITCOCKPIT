@@ -34,7 +34,6 @@ use itnovum\openITCOCKPIT\Core\Views\UserTime;
  * @property Hoststatus $Hoststatus
  * @property Servicestatus $Servicestatus
  *
- * @property BbcodeComponent $Bbcode
  */
 class MapeditorsNewController extends MapModuleAppController {
     public $layout = 'blank';
@@ -49,9 +48,6 @@ class MapeditorsNewController extends MapModuleAppController {
         MONITORING_SERVICESTATUS
     ];
 
-    public $components = [
-        'Bbcode'
-    ];
 
     /**
      * @param int $id
@@ -83,10 +79,6 @@ class MapeditorsNewController extends MapModuleAppController {
             ]
         ]);
 
-
-        foreach ($map['Maptext'] as $i => $maptext) {
-            $map['Maptext'][$i]['text'] = $this->Bbcode->asHtml($maptext['text']);
-        }
 
         $containerIdsToCheck = Hash::extract($map, 'Container.{n}.MapsToContainer.container_id');
         if (!$this->allowedByContainerId($containerIdsToCheck, false)) {
@@ -249,28 +241,39 @@ class MapeditorsNewController extends MapModuleAppController {
         $this->set('background', $properties['background']);
         $this->set('color', $properties['color']);
         $this->set('perfdata', $properties['perfdata']);
+
+        $toJson = ['icon', 'background', 'color', 'perfdata', 'allowView'];
+        if (isset($properties['current_state'])) {
+            $this->set('current_state', $properties['current_state']);
+            $toJson[] = 'current_state';
+        }
+        if (isset($properties['is_flapping'])) {
+            $this->set('is_flapping', $properties['is_flapping']);
+            $toJson[] = 'is_flapping';
+        }
+
         $this->set('allowView', $allowView);
-        $this->set('_serialize', ['icon', 'background', 'color', 'perfdata', 'allowView']);
+        $this->set('_serialize', $toJson);
     }
 
     public function mapline() {
-
-    }
-
-    public function mapgadget() {
-
+        //Only ship template
+        return;
     }
 
     public function mapicon() {
+        //Only ship template
         return;
     }
 
     public function maptext() {
+        //Only ship template
         return;
     }
 
     public function perfdatatext() {
-
+        //Only ship template
+        return;
     }
 
     public function graph() {
@@ -325,8 +328,20 @@ class MapeditorsNewController extends MapModuleAppController {
     }
 
     public function tacho() {
-        $this->graph();
+        //Only ship template
+        return;
     }
+
+    public function cylinder() {
+        //Only ship template
+        return;
+    }
+
+    public function trafficlight() {
+        //Only ship template
+        return;
+    }
+
 
     public function mapsummary() {
         if (!$this->isApiRequest()) {

@@ -152,14 +152,16 @@ class MapNew extends MapModuleAppModel {
      */
     public function getServiceItemImage(Model $Servicestatus, $service) {
         $ServicestatusFields = new ServicestatusFields($this->DbBackend);
-        $ServicestatusFields->currentState()->scheduledDowntimeDepth()->problemHasBeenAcknowledged()->perfdata();
+        $ServicestatusFields->currentState()->scheduledDowntimeDepth()->problemHasBeenAcknowledged()->perfdata()->isFlapping();
         $servicestatus = $Servicestatus->byUuid($service['Service']['uuid'], $ServicestatusFields);
         if (empty($servicestatus)) {
             return [
-                'icon' => $this->errorIcon,
-                'color' => 'text-primary',
-                'background' => 'bg-color-blueLight',
-                'perfdata' => null
+                'icon'          => $this->errorIcon,
+                'color'         => 'text-primary',
+                'background'    => 'bg-color-blueLight',
+                'perfdata'      => null,
+                'current_state' => -1,
+                'is_flapping'   => false
             ];
         }
 
@@ -183,10 +185,12 @@ class MapNew extends MapModuleAppModel {
 
 
         return [
-            'icon' => $icon,
-            'color' => $servicestatus->ServiceStatusColor(),
-            'background' => $servicestatus->ServiceStatusBackgroundColor(),
-            'perfdata' => $perfdata->parse()
+            'icon'          => $icon,
+            'color'         => $servicestatus->ServiceStatusColor(),
+            'background'    => $servicestatus->ServiceStatusBackgroundColor(),
+            'perfdata'      => $perfdata->parse(),
+            'current_state' => $servicestatus->currentState(),
+            'is_flapping'   => $servicestatus->isFlapping()
         ];
     }
 

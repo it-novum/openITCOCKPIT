@@ -23,7 +23,7 @@
 //  confirmation.
 ?>
 
-<div class="{{color}}">
+<div class="{{color}}" style="font-size: {{fontSize}}px;">
     <span ng-show="showLabel">{{perfdataName}}</span>
     {{perfdata.current}}
     {{perfdata.unit}}

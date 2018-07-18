@@ -57,6 +57,9 @@ $scripts = [
     'js/vendor/vis-4.21.0/dist/vis.js',
     'js/scripts/ng.app.js',
     'js/vendor/UUID.js-4.0.3/dist/uuid.core.js',
+    'js/vendor/gauge.min.js',
+    'js/lib/jquery.svg.min.js',
+    'js/lib/jquery.svgfilter.min.js'
 ];
 
 if ($this->request->params['controller'] === 'statusmaps') {

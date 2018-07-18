@@ -23,4 +23,4 @@
 //  confirmation.
 ?>
 
-<canvas id="map-tacho-{{item.id}}"></canvas>
+<div id="map-cylinder-{{item.id}}" style="width: {{width + 10}}px; height: {{height + 10}}px;"></div>
