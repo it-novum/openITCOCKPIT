@@ -13,6 +13,7 @@ angular.module('openITCOCKPIT').directive('mapSummary', function($http){
                     }
                 }).then(function(result){
                     $scope.summaryState = result.data.summary;
+                    $scope.iconType = item.type;
                 });
 
             };
