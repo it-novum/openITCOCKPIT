@@ -401,7 +401,8 @@ class MapeditorsNewController extends MapModuleAppController {
                 $service = $this->Service->find('first', [
                     'recursive'  => -1,
                     'fields'     => [
-                        'Service.uuid'
+                        'Service.uuid',
+                        'Service.description'
                     ],
                     'contain'    => [
                         'Host'            => [

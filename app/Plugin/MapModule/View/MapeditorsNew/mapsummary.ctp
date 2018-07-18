@@ -55,14 +55,14 @@
                                 <?php echo __('State'); ?>
                             </div>
                             <div ng-show="summaryState.Hoststatus.isInMonitoring"
-                                 class="col-md-4 text-center txt-color-white text-capitalize bg-{{(summaryState.Hoststatus.isHardstate)?summaryState.Hoststatus.humanState:summaryState.Hoststatus.humanState+'-soft'}}">
+                                 class="col-md-8 text-center txt-color-white text-capitalize bg-{{(summaryState.Hoststatus.isHardstate)?summaryState.Hoststatus.humanState:summaryState.Hoststatus.humanState+'-soft'}}">
                                 <span class="padding-5">{{summaryState.Hoststatus.humanState}}</span>
                                 <i ng-show="summaryState.Hoststatus.problemHasBeenAcknowledged" class="fa fa-user"></i>
                                 <i ng-show="summaryState.Hoststatus.scheduledDowntimeDepth > 0"
                                    class="fa fa-power-off"></i>
                             </div>
                             <div ng-hide="summaryState.Hoststatus.isInMonitoring"
-                                 class="col-md-4 text-center txt-color-white bg-primary">
+                                 class="col-md-8 text-center txt-color-white bg-primary">
                                 <?php echo __('Not in monitoring'); ?>
                                 <i class="fa fa-eye-slash"></i>
                             </div>
@@ -112,7 +112,7 @@
                                 <?php echo __('Summary State'); ?>
                             </div>
                             <div ng-if="summaryState.Services.length > 0"
-                                 class="col-md-4 text-center txt-color-white text-capitalize bg-{{summaryState.Services[0].Servicestatus.humanState}}">
+                                 class="col-md-8 text-center txt-color-white text-capitalize bg-{{summaryState.Services[0].Servicestatus.humanState}}">
                                 {{summaryState.Services[0].Servicestatus.humanState}}
 
                             </div>
@@ -121,15 +121,23 @@
                             <div class="col-md-4">
                                 <?php echo __('Summary Output'); ?>
                             </div>
-                            <div class="col-md-8 no-padding" ng-show="summaryState.Services.length > 0">
-                                 <span ng-if="summaryState.Services.length > 0" class="text-capitalize">
-                                    {{summaryState.Services[0].Servicestatus.humanState}}.
-                                </span>
-                                <?php echo __('There are '); ?> {{ summaryState.Services.length }}
-                                <?php echo __(' services'); ?>
-                            </div>
-                            <div class="col-md-8 no-padding" ng-show="summaryState.Services.length == 0">
-                                <?php echo __('No services found'); ?>
+                            <div class="col-md-8 no-padding">
+                                <?php echo __('Services: '); ?> {{summaryState.ServiceSummary.total}}
+                                <div class="btn-group btn-group-justified" role="group"
+                                     ng-show="summaryState.ServiceSummary.total > 0">
+                                    <a class="btn btn-success state-button-small ng-binding">
+                                        {{summaryState.ServiceSummary.state[0]}}
+                                    </a>
+                                    <a class="btn btn-warning state-button-small ng-binding">
+                                        {{summaryState.ServiceSummary.state[1]}}
+                                    </a>
+                                    <a class="btn btn-danger state-button-small ng-binding">
+                                        {{summaryState.ServiceSummary.state[2]}}
+                                    </a>
+                                    <a class="btn btn-default state-button-small ng-binding">
+                                        {{summaryState.ServiceSummary.state[3]}}
+                                    </a>
+                                </div>
                             </div>
                         </div>
                         <div class="col-md-12 padding-top-20" ng-show="summaryState.Services.length > 0">
@@ -144,7 +152,7 @@
                             </div>
                         </div>
                         <div class="col-md-12 padding-top-5" ng-repeat="service in summaryState.Services">
-                            <div class="col-md-4 cropText" title="{{service.Service.servicename}}">
+                            <div class="col-md-4 cropText">
                                 {{service.Service.servicename}}
                             </div>
                             <div ng-show="service.Servicestatus.isInMonitoring"
@@ -160,7 +168,7 @@
                                 <?php echo __('Not in monitoring'); ?>
                                 <i class="fa fa-eye-slash"></i>
                             </div>
-                            <div class="col-md-4 cropText" title="{{service.Servicestatus.output}}">
+                            <div class="col-md-4 cropText">
                                 {{service.Servicestatus.output}}
                             </div>
                         </div>
@@ -189,14 +197,14 @@
                                 <?php echo __('Host state'); ?>
                             </div>
                             <div ng-show="summaryState.Hoststatus.isInMonitoring"
-                                 class="col-md-4 text-center txt-color-white text-capitalize bg-{{(summaryState.Hoststatus.isHardstate)?summaryState.Hoststatus.humanState:summaryState.Hoststatus.humanState+'-soft'}}">
+                                 class="col-md-8 text-center txt-color-white text-capitalize bg-{{(summaryState.Hoststatus.isHardstate)?summaryState.Hoststatus.humanState:summaryState.Hoststatus.humanState+'-soft'}}">
                                 <span class="padding-5">{{summaryState.Hoststatus.humanState}}</span>
                                 <i ng-show="summaryState.Hoststatus.problemHasBeenAcknowledged" class="fa fa-user"></i>
                                 <i ng-show="summaryState.Hoststatus.scheduledDowntimeDepth > 0"
                                    class="fa fa-power-off"></i>
                             </div>
                             <div ng-hide="summaryState.Hoststatus.isInMonitoring"
-                                 class="col-md-4 text-center txt-color-white bg-primary">
+                                 class="col-md-8 text-center txt-color-white bg-primary">
                                 <?php echo __('Not in monitoring'); ?>
                                 <i class="fa fa-eye-slash"></i>
                             </div>
@@ -211,17 +219,26 @@
                         </div>
                         <div class="col-md-12">
                             <div class="col-md-4">
+                                <?php echo __('Description'); ?>
+                            </div>
+                            <div class="col-md-8 no-padding">
+                                {{summaryState.Service.description}}
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="col-md-4">
                                 <?php echo __('State'); ?>
                             </div>
                             <div ng-show="summaryState.Servicestatus.isInMonitoring"
-                                 class="col-md-4 text-center txt-color-white text-capitalize bg-{{(summaryState.Servicestatus.isHardstate)?summaryState.Servicestatus.humanState:summaryState.Servicestatus.humanState+'-soft'}}">
+                                 class="col-md-8 text-center txt-color-white text-capitalize bg-{{(summaryState.Servicestatus.isHardstate)?summaryState.Servicestatus.humanState:summaryState.Servicestatus.humanState+'-soft'}}">
                                 <span class="padding-5">{{summaryState.Servicestatus.humanState}}</span>
-                                <i ng-show="summaryState.Servicestatus.problemHasBeenAcknowledged" class="fa fa-user"></i>
+                                <i ng-show="summaryState.Servicestatus.problemHasBeenAcknowledged"
+                                   class="fa fa-user"></i>
                                 <i ng-show="summaryState.Servicestatus.scheduledDowntimeDepth > 0"
                                    class="fa fa-power-off"></i>
                             </div>
                             <div ng-hide="summaryState.Servicestatus.isInMonitoring"
-                                 class="col-md-4 text-center txt-color-white bg-primary">
+                                 class="col-md-8 text-center txt-color-white bg-primary">
                                 <?php echo __('Not in monitoring'); ?>
                                 <i class="fa fa-eye-slash"></i>
                             </div>
@@ -307,7 +324,9 @@
                                 <?php echo __('Summary state'); ?>
                             </div>
                             <div class="col-md-8 no-padding">
-                                BLUB
+                                <div class="col-md-8 text-center txt-color-white bg-{{ summaryState.CumulatedHumanState}}">
+                                    {{summaryState.CumulatedHumanState}}
+                                </div>
                             </div>
                         </div>
                         <div class="col-md-12">
