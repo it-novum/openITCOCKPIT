@@ -66,11 +66,14 @@ class MapNew extends MapModuleAppModel {
         if (empty($hoststatus)) {
             $HoststatusView = new \itnovum\openITCOCKPIT\Core\Hoststatus([]);
             return [
-                'icon'       => $this->errorIcon,
-                'color'      => 'text-primary',
-                'background' => 'bg-color-blueLight',
-                'Host'       => $HostView->toArray(),
-                'Hoststatus' => $HoststatusView->toArray(),
+                'icon'           => $this->errorIcon,
+                'icon_property'  => $this->errorIcon,
+                'isAcknowledged' => false,
+                'isInDowntime'   => false,
+                'color'          => 'text-primary',
+                'background'     => 'bg-color-blueLight',
+                'Host'           => $HostView->toArray(),
+                'Hoststatus'     => $HoststatusView->toArray(),
             ];
         }
 
@@ -79,16 +82,17 @@ class MapNew extends MapModuleAppModel {
         $color = $hoststatus->HostStatusColor();
         $background = $hoststatus->HostStatusBackgroundColor();
 
+        $iconProperty = $icon;
         if ($hoststatus->isAcknowledged()) {
-            $icon = $this->ackIcon;
+            $iconProperty = $this->ackIcon;
         }
 
         if ($hoststatus->isInDowntime()) {
-            $icon = $this->downtimeIcon;
+            $iconProperty = $this->downtimeIcon;
         }
 
         if ($hoststatus->isAcknowledged() && $hoststatus->isInDowntime()) {
-            $icon = $this->ackAndDowntimeIcon;
+            $iconProperty = $this->ackAndDowntimeIcon;
         }
 
         if ($hoststatus->currentState() > 0) {
@@ -125,33 +129,40 @@ class MapNew extends MapModuleAppModel {
             $servicestatus = new \itnovum\openITCOCKPIT\Core\Servicestatus($worstServiceState[0]['Servicestatus']);
             $serviceIcon = $this->serviceIcons[$servicestatus->currentState()];
 
+            $serviceIconProperty = $serviceIcon;
             if ($servicestatus->isAcknowledged()) {
-                $serviceIcon = $this->ackIcon;
+                $serviceIconProperty = $this->ackIcon;
             }
 
             if ($servicestatus->isInDowntime()) {
-                $serviceIcon = $this->downtimeIcon;
+                $serviceIconProperty = $this->downtimeIcon;
             }
 
             if ($servicestatus->isAcknowledged() && $servicestatus->isInDowntime()) {
-                $serviceIcon = $this->ackAndDowntimeIcon;
+                $serviceIconProperty = $this->ackAndDowntimeIcon;
             }
 
             return [
-                'icon'       => $serviceIcon,
-                'color'      => $servicestatus->ServiceStatusColor(),
-                'background' => $servicestatus->ServiceStatusBackgroundColor(),
-                'Host'       => $HostView->toArray(),
-                'Hoststatus' => $hoststatus->toArray(),
+                'icon'           => $serviceIcon,
+                'icon_property'  => $serviceIconProperty,
+                'isAcknowledged' => $servicestatus->isAcknowledged(),
+                'isInDowntime'   => $servicestatus->isInDowntime(),
+                'color'          => $servicestatus->ServiceStatusColor(),
+                'background'     => $servicestatus->ServiceStatusBackgroundColor(),
+                'Host'           => $HostView->toArray(),
+                'Hoststatus'     => $hoststatus->toArray(),
             ];
         }
 
         return [
-            'icon'       => $icon,
-            'color'      => $color,
-            'background' => $background,
-            'Host'       => $HostView->toArray(),
-            'Hoststatus' => $hoststatus->toArray(),
+            'icon'           => $icon,
+            'icon_property'  => $iconProperty,
+            'isAcknowledged' => $hoststatus->isAcknowledged(),
+            'isInDowntime'   => $hoststatus->isInDowntime(),
+            'color'          => $color,
+            'background'     => $background,
+            'Host'           => $HostView->toArray(),
+            'Hoststatus'     => $hoststatus->toArray(),
         ];
     }
 
@@ -169,13 +180,16 @@ class MapNew extends MapModuleAppModel {
         if (empty($servicestatus)) {
             $ServicestatusView = new \itnovum\openITCOCKPIT\Core\Servicestatus([]);
             return [
-                'icon'          => $this->errorIcon,
-                'color'         => 'text-primary',
-                'background'    => 'bg-color-blueLight',
-                'Host'          => $HostView->toArray(),
-                'Service'       => $ServiceView->toArray(),
-                'Servicestatus' => $ServicestatusView->toArray(),
-                'Perfdata'      => []
+                'icon'           => $this->errorIcon,
+                'icon_property'  => $this->errorIcon,
+                'isAcknowledged' => false,
+                'isInDowntime'   => false,
+                'color'          => 'text-primary',
+                'background'     => 'bg-color-blueLight',
+                'Host'           => $HostView->toArray(),
+                'Service'        => $ServiceView->toArray(),
+                'Servicestatus'  => $ServicestatusView->toArray(),
+                'Perfdata'       => []
             ];
         }
 
@@ -183,29 +197,33 @@ class MapNew extends MapModuleAppModel {
 
         $icon = $this->serviceIcons[$servicestatus->currentState()];
 
+        $iconProperty = $icon;
         if ($servicestatus->isAcknowledged()) {
-            $icon = $this->ackIcon;
+            $iconProperty = $this->ackIcon;
         }
 
         if ($servicestatus->isInDowntime()) {
-            $icon = $this->downtimeIcon;
+            $iconProperty = $this->downtimeIcon;
         }
 
         if ($servicestatus->isAcknowledged() && $servicestatus->isInDowntime()) {
-            $icon = $this->ackAndDowntimeIcon;
+            $iconProperty = $this->ackAndDowntimeIcon;
         }
 
         $perfdata = new PerfdataParser($servicestatus->getPerfdata());
 
 
         return [
-            'icon'          => $icon,
-            'color'         => $servicestatus->ServiceStatusColor(),
-            'background'    => $servicestatus->ServiceStatusBackgroundColor(),
-            'Host'          => $HostView->toArray(),
-            'Service'       => $ServiceView->toArray(),
-            'Perfdata'      => $perfdata->parse(),
-            'Servicestatus' => $servicestatus->toArray()
+            'icon'           => $icon,
+            'icon_property'  => $iconProperty,
+            'isAcknowledged' => $servicestatus->isAcknowledged(),
+            'isInDowntime'   => $servicestatus->isInDowntime(),
+            'color'          => $servicestatus->ServiceStatusColor(),
+            'background'     => $servicestatus->ServiceStatusBackgroundColor(),
+            'Host'           => $HostView->toArray(),
+            'Service'        => $ServiceView->toArray(),
+            'Perfdata'       => $perfdata->parse(),
+            'Servicestatus'  => $servicestatus->toArray()
         ];
     }
 
