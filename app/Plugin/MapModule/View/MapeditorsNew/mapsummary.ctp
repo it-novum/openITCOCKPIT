@@ -22,7 +22,7 @@
 //  License agreement and license key will be shipped with the order
 //  confirmation.
 ?>
-<div class="map-summary-state-popover col-xs-12 no-padding animated slideInRight" ng-if="summaryState.Hoststatus">
+<div class="map-summary-state-popover col-xs-12 no-padding animated slideInRight">
     <section>
         <div class="row">
             <article ng-if="iconType == 'host'">
@@ -320,7 +320,7 @@
                         </div>
                         <div class="col-md-12 padding-top-5" ng-repeat="host in summaryState.Hosts">
                             <div class="col-md-4 cropText">
-                                {{host.Host.name}}
+                                {{host.Host.hostname}}
                             </div>
                             <div ng-show="host.Hoststatus.isInMonitoring"
                                  class="col-md-4 text-center txt-color-white text-capitalize bg-{{(host.Hoststatus.isHardstate)?host.Hoststatus.humanState:host.Hoststatus.humanState+'-soft'}}">
@@ -335,8 +335,21 @@
                                 <?php echo __('Not in monitoring'); ?>
                                 <i class="fa fa-eye-slash"></i>
                             </div>
-                            <div class="col-md-4 cropText" title="{{host.Hoststatus.output}}">
-                                {{host.Hoststatus.output}}
+                            <div class="col-md-4">
+                                <div class="btn-group btn-group-justified" role="group">
+                                    <a class="btn btn-success state-button-small ng-binding">
+                                        {{host.ServiceSummary.state[0]}}
+                                    </a>
+                                    <a class="btn btn-warning state-button-small ng-binding">
+                                        {{host.ServiceSummary.state[1]}}
+                                    </a>
+                                    <a class="btn btn-danger state-button-small ng-binding">
+                                        {{host.ServiceSummary.state[2]}}
+                                    </a>
+                                    <a class="btn btn-default state-button-small ng-binding">
+                                        {{host.ServiceSummary.state[3]}}
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     </div>
