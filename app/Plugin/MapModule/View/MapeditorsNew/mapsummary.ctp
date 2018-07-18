@@ -322,21 +322,21 @@
                             <div class="col-md-4 cropText">
                                 {{host.Host.name}}
                             </div>
-                            <div ng-show="service.Servicestatus.isInMonitoring"
-                                 class="col-md-4 text-center txt-color-white text-capitalize bg-{{(service.Servicestatus.isHardstate)?service.Servicestatus.humanState:service.Servicestatus.humanState+'-soft'}}">
-                                {{service.Servicestatus.humanState}}
-                                <i ng-show="service.Servicestatus.problemHasBeenAcknowledged"
+                            <div ng-show="host.Hoststatus.isInMonitoring"
+                                 class="col-md-4 text-center txt-color-white text-capitalize bg-{{(host.Hoststatus.isHardstate)?host.Hoststatus.humanState:host.Hoststatus.humanState+'-soft'}}">
+                                {{host.Hoststatus.humanState}}
+                                <i ng-show="host.Hoststatus.problemHasBeenAcknowledged"
                                    class="fa fa-user"></i>
-                                <i ng-show="service.Servicestatus.scheduledDowntimeDepth > 0"
+                                <i ng-show="host.Hoststatus.scheduledDowntimeDepth > 0"
                                    class="fa fa-power-off"></i>
                             </div>
-                            <div ng-hide="service.Servicestatus.isInMonitoring"
+                            <div ng-hide="host.Hoststatus.isInMonitoring"
                                  class="col-md-4 text-center txt-color-white bg-primary">
                                 <?php echo __('Not in monitoring'); ?>
                                 <i class="fa fa-eye-slash"></i>
                             </div>
-                            <div class="col-md-4 cropText" title="{{service.Servicestatus.output}}">
-                                {{service.Servicestatus.output}}
+                            <div class="col-md-4 cropText" title="{{host.Hoststatus.output}}">
+                                {{host.Hoststatus.output}}
                             </div>
                         </div>
                     </div>

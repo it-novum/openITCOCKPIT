@@ -440,6 +440,8 @@ class MapeditorsNewController extends MapModuleAppController {
                     $this->set('type', 'service');
                     $this->set('summary', $summary);
                     $this->set('_serialize', ['service', 'summary']);
+                    return;
+
                 }
                 throw new NotFoundException('Service not found!');
                 return;
