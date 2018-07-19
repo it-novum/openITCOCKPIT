@@ -53,14 +53,16 @@
         </div>
     </header>
     <div id="map-editor">
-        <div class="widget-body" style="overflow: auto;">
-            <img ng-src="/map_module/img/backgrounds/{{map.Map.background}}"/>
+        <div class="widget-body" style="overflow: auto; min-height:600px; ">
+            <img ng-src="/map_module/img/backgrounds/{{map.Map.background}}" ng-if="map.Map.background"/>
 
 
             <div ng-repeat="item in map.Mapitem"
                  style="position:absolute; top: {{item.y}}px; left: {{item.x}}px;  z-index: {{item.z_index}};"
                  ng-mouseenter="showSummaryStateDelayed(item)">
-                <map-item item="item"></map-item>
+                <a ng-href="{{ getHref(item) }}">
+                    <map-item item="item"></map-item>
+                </a>
             </div>
 
             <div ng-repeat="textItem in map.Maptext"
@@ -69,7 +71,9 @@
             </div>
 
             <div ng-repeat="lineItem in map.Mapline">
-                <map-line item="lineItem"></map-line>
+                <a ng-href="{{ getHref(lineItem) }}">
+                    <map-line item="lineItem"></map-line>
+                </a>
             </div>
 
             <div ng-repeat="iconItem in map.Mapicon"
@@ -79,11 +83,14 @@
 
             <div ng-repeat="gadgetItem in map.Mapgadget"
                  style="position:absolute; top: {{gadgetItem.y}}px; left: {{gadgetItem.x}}px;  z-index: {{gadgetItem.z_index}};">
-                <graph-item item="gadgetItem" ng-if="gadgetItem.gadget === 'RRDGraph'"></graph-item>
-                <perfdata-text-item item="gadgetItem" ng-if="gadgetItem.gadget === 'Text'"></perfdata-text-item>
-                <tacho-item item="gadgetItem" ng-if="gadgetItem.gadget === 'Tacho'"></tacho-item>
-                <cylinder-item item="gadgetItem" ng-if="gadgetItem.gadget === 'Cylinder'"></cylinder-item>
-                <trafficlight-item item="gadgetItem" ng-if="gadgetItem.gadget === 'TrafficLight'"></trafficlight-item>
+                <a ng-href="{{ getHref(gadgetItem) }}">
+                    <graph-item item="gadgetItem" ng-if="gadgetItem.gadget === 'RRDGraph'"></graph-item>
+                    <perfdata-text-item item="gadgetItem" ng-if="gadgetItem.gadget === 'Text'"></perfdata-text-item>
+                    <tacho-item item="gadgetItem" ng-if="gadgetItem.gadget === 'Tacho'"></tacho-item>
+                    <cylinder-item item="gadgetItem" ng-if="gadgetItem.gadget === 'Cylinder'"></cylinder-item>
+                    <trafficlight-item item="gadgetItem"
+                                       ng-if="gadgetItem.gadget === 'TrafficLight'"></trafficlight-item>
+                </a>
             </div>
 
             <map-summary></map-summary>
