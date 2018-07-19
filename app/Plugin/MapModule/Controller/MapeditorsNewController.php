@@ -86,8 +86,25 @@ class MapeditorsNewController extends MapModuleAppController {
             return;
         }
 
+        $acl = [
+            'hosts' => [
+                'browser' => isset($this->PERMISSIONS['hosts']['browser'])
+            ],
+            'services' => [
+                'browser' => isset($this->PERMISSIONS['services']['browser'])
+            ],
+            'hostgroups' => [
+                'extended' => isset($this->PERMISSIONS['hostgroups']['extended'])
+            ],
+            'servicegroups' => [
+                'extended' => isset($this->PERMISSIONS['servicegroups']['extended'])
+            ]
+        ];
+
         $this->set('map', $map);
-        $this->set('_serialize', ['map']);
+        $this->set('ACL', $acl);
+
+        $this->set('_serialize', ['map', 'ACL']);
 
     }
 
