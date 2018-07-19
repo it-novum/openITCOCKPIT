@@ -492,6 +492,7 @@ class MapeditorsNewController extends MapModuleAppController {
                     }
 
                     $summary = $this->MapNew->getHostgroupSummary(
+                        $this->Host,
                         $this->Service,
                         $this->Hoststatus,
                         $this->Servicestatus,

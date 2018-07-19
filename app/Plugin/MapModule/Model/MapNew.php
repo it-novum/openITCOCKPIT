@@ -66,14 +66,14 @@ class MapNew extends MapModuleAppModel {
         if (empty($hoststatus)) {
             $HoststatusView = new \itnovum\openITCOCKPIT\Core\Hoststatus([]);
             return [
-                'icon'           => $this->errorIcon,
-                'icon_property'  => $this->errorIcon,
+                'icon' => $this->errorIcon,
+                'icon_property' => $this->errorIcon,
                 'isAcknowledged' => false,
-                'isInDowntime'   => false,
-                'color'          => 'text-primary',
-                'background'     => 'bg-color-blueLight',
-                'Host'           => $HostView->toArray(),
-                'Hoststatus'     => $HoststatusView->toArray(),
+                'isInDowntime' => false,
+                'color' => 'text-primary',
+                'background' => 'bg-color-blueLight',
+                'Host' => $HostView->toArray(),
+                'Hoststatus' => $HoststatusView->toArray(),
             ];
         }
 
@@ -98,13 +98,13 @@ class MapNew extends MapModuleAppModel {
         if ($hoststatus->currentState() > 0) {
             return [
                 'icon' => $icon,
-                'icon_property'  => $this->errorIcon,
+                'icon_property' => $this->errorIcon,
                 'isAcknowledged' => $hoststatus->isAcknowledged(),
-                'isInDowntime'   => $hoststatus->isInDowntime(),
-                'color'          => $color,
-                'background'     => $background,
-                'Host'           => $HostView->toArray(),
-                'Hoststatus'     => $hoststatus->toArray(),
+                'isInDowntime' => $hoststatus->isInDowntime(),
+                'color' => $color,
+                'background' => $background,
+                'Host' => $HostView->toArray(),
+                'Hoststatus' => $hoststatus->toArray(),
             ];
         }
 
@@ -148,26 +148,26 @@ class MapNew extends MapModuleAppModel {
             }
 
             return [
-                'icon'           => $serviceIcon,
-                'icon_property'  => $serviceIconProperty,
+                'icon' => $serviceIcon,
+                'icon_property' => $serviceIconProperty,
                 'isAcknowledged' => $servicestatus->isAcknowledged(),
-                'isInDowntime'   => $servicestatus->isInDowntime(),
-                'color'          => $servicestatus->ServiceStatusColor(),
-                'background'     => $servicestatus->ServiceStatusBackgroundColor(),
-                'Host'           => $HostView->toArray(),
-                'Hoststatus'     => $hoststatus->toArray(),
+                'isInDowntime' => $servicestatus->isInDowntime(),
+                'color' => $servicestatus->ServiceStatusColor(),
+                'background' => $servicestatus->ServiceStatusBackgroundColor(),
+                'Host' => $HostView->toArray(),
+                'Hoststatus' => $hoststatus->toArray(),
             ];
         }
 
         return [
-            'icon'           => $icon,
-            'icon_property'  => $iconProperty,
+            'icon' => $icon,
+            'icon_property' => $iconProperty,
             'isAcknowledged' => $hoststatus->isAcknowledged(),
-            'isInDowntime'   => $hoststatus->isInDowntime(),
-            'color'          => $color,
-            'background'     => $background,
-            'Host'           => $HostView->toArray(),
-            'Hoststatus'     => $hoststatus->toArray()
+            'isInDowntime' => $hoststatus->isInDowntime(),
+            'color' => $color,
+            'background' => $background,
+            'Host' => $HostView->toArray(),
+            'Hoststatus' => $hoststatus->toArray()
         ];
     }
 
@@ -185,16 +185,16 @@ class MapNew extends MapModuleAppModel {
         if (empty($servicestatus)) {
             $ServicestatusView = new \itnovum\openITCOCKPIT\Core\Servicestatus([]);
             return [
-                'icon'           => $this->errorIcon,
-                'icon_property'  => $this->errorIcon,
+                'icon' => $this->errorIcon,
+                'icon_property' => $this->errorIcon,
                 'isAcknowledged' => false,
-                'isInDowntime'   => false,
-                'color'          => 'text-primary',
-                'background'     => 'bg-color-blueLight',
-                'Host'           => $HostView->toArray(),
-                'Service'        => $ServiceView->toArray(),
-                'Servicestatus'  => $ServicestatusView->toArray(),
-                'Perfdata'       => []
+                'isInDowntime' => false,
+                'color' => 'text-primary',
+                'background' => 'bg-color-blueLight',
+                'Host' => $HostView->toArray(),
+                'Service' => $ServiceView->toArray(),
+                'Servicestatus' => $ServicestatusView->toArray(),
+                'Perfdata' => []
             ];
         }
 
@@ -219,16 +219,16 @@ class MapNew extends MapModuleAppModel {
 
 
         return [
-            'icon'           => $icon,
-            'icon_property'  => $iconProperty,
+            'icon' => $icon,
+            'icon_property' => $iconProperty,
             'isAcknowledged' => $servicestatus->isAcknowledged(),
-            'isInDowntime'   => $servicestatus->isInDowntime(),
-            'color'          => $servicestatus->ServiceStatusColor(),
-            'background'     => $servicestatus->ServiceStatusBackgroundColor(),
-            'Host'           => $HostView->toArray(),
-            'Service'        => $ServiceView->toArray(),
-            'Perfdata'       => $perfdata->parse(),
-            'Servicestatus'  => $servicestatus->toArray()
+            'isInDowntime' => $servicestatus->isInDowntime(),
+            'color' => $servicestatus->ServiceStatusColor(),
+            'background' => $servicestatus->ServiceStatusBackgroundColor(),
+            'Host' => $HostView->toArray(),
+            'Service' => $ServiceView->toArray(),
+            'Perfdata' => $perfdata->parse(),
+            'Servicestatus' => $servicestatus->toArray()
         ];
     }
 
@@ -510,7 +510,7 @@ class MapNew extends MapModuleAppModel {
      * @param UserTime $UserTime
      * @return array
      */
-    public function getHostgroupSummary(Model $Service, Model $Hoststatus, Model $Servicestatus, $hostgroup) {
+    public function getHostgroupSummary(Model $Host, Model $Service, Model $Hoststatus, Model $Servicestatus, $hostgroup) {
         $HoststatusFields = new HoststatusFields($this->DbBackend);
         $HoststatusFields
             ->currentState()
@@ -528,6 +528,7 @@ class MapNew extends MapModuleAppModel {
         $hostUuids = Hash::extract($hostgroup['Host'], '{n}.uuid');
 
         $hoststatusByUuids = $Hoststatus->byUuid($hostUuids, $HoststatusFields);
+        $hostStateSummary = $Host->getHostStateSummary($hoststatusByUuids, false);
 
         $ServicestatusFieds = new ServicestatusFields($this->DbBackend);
         $ServicestatusFieds
@@ -546,6 +547,15 @@ class MapNew extends MapModuleAppModel {
         $cumulatedHostState = -1;
         $cumulatedServiceState = -1;
         $allServiceStatus = [];
+        $totalServiceStateSummary = [
+            'state' => [
+                0 => 0,
+                1 => 0,
+                2 => 0,
+                3 => 0,
+            ],
+            'total' => 0
+        ];
         foreach ($hostgroup['Host'] as $host) {
             $Host = new \itnovum\openITCOCKPIT\Core\Views\Host(['Host' => $host]);
             if (isset($hoststatusByUuids[$Host->getUuid()])) {
@@ -585,19 +595,26 @@ class MapNew extends MapModuleAppModel {
                 $allServiceStatus[] = $servicestatusResult['Servicestatus']['current_state'];
             }
 
-
+            $serviceStateSummary = $Service->getServiceStateSummary($servicestatusResults, false);
             $hoststatusResult[] = [
                 'Host' => $Host->toArray(),
                 'Hoststatus' => $Hoststatus->toArray(),
-                'ServiceSummary' => $Service->getServiceStateSummary($servicestatusResults, false)
+                'ServiceSummary' => $serviceStateSummary
             ];
-        }
 
+            foreach ($serviceStateSummary['state'] as $state => $stateValue) {
+                $totalServiceStateSummary['state'][$state] += $stateValue;
+            }
+            $totalServiceStateSummary['total'] += $serviceStateSummary['total'];
+
+        }
         $hoststatusResult = Hash::sort($hoststatusResult, '{s}.Hoststatus.currentState', 'desc');
 
         $hostgroup = [
             'name' => $hostgroup['Container']['name'],
-            'description' => $hostgroup['Hostgroup']['description']
+            'description' => $hostgroup['Hostgroup']['description'],
+            'HostSummary' => $hostStateSummary,
+            'TotalServiceSummary' => $totalServiceStateSummary
         ];
 
         if ($cumulatedHostState > 0) {
