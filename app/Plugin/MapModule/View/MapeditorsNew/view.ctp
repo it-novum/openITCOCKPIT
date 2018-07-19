@@ -24,19 +24,21 @@
 //	confirmation.
 
 ?>
-<div class="row">
-    <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
-        <h1 class="page-title txt-color-blueDark">
-            <i class="fa fa-map-marker fa-fw "></i>
-            <?php echo __('Map'); ?>
-            <span>>
-                <?php echo __('View'); ?>
+<?php if ($isFullscreen === false): ?>
+    <div class="row">
+        <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
+            <h1 class="page-title txt-color-blueDark">
+                <i class="fa fa-map-marker fa-fw "></i>
+                <?php echo __('Map'); ?>
+                <span>>
+                    <?php echo __('View'); ?>
             </span>
-        </h1>
+            </h1>
+        </div>
     </div>
-</div>
+<?php endif; ?>
 
-<div class="jarviswidget" id="wid-id-0">
+<div class="jarviswidget bg-color-white" id="wid-id-0">
     <header>
         <span class="widget-icon"> <i class="fa fa-map-marker"></i> </span>
         <h2>
@@ -44,12 +46,27 @@
             {{map.Map.name}}
         </h2>
         <div class="widget-toolbar" role="menu">
-            <?php echo $this->Utils->backButton(); ?>
-            <?php
-            if ($this->Acl->hasPermission('edit', 'mapeditors', 'map_module')):
-                echo $this->Html->link(__('Edit'), '/map_module/mapeditors/edit/{{map.Map.id}}', ['class' => 'btn btn-xs btn-default', 'icon' => 'fa fa-edit']);
-            endif;
-            ?>
+            <a class="btn btn-xs btn-default" href="https://dev-dziegler.oitc.itn/map_module/maps">
+                <i class="glyphicon glyphicon-white glyphicon-arrow-left"></i>
+                <?php echo __('Back to list'); ?>
+            </a>
+            <?php if ($this->Acl->hasPermission('edit', 'mapeditors', 'mapmodule')): ?>
+                <a class="btn btn-xs btn-default" ng-href="/map_module/mapeditors/edit/{{map.Map.id}}">
+                    <i class="fa fa-edit"></i>
+                    <?php echo __('Edit'); ?>
+                </a>
+            <?php endif; ?>
+            <a class="btn btn-xs btn-default" ng-href="/map_module/mapeditors_new/view/{{map.Map.id}}?fullscreen=true"
+               ng-show="!fullscreen">
+                <i class="fa fa-expand"></i>
+                <?php echo __('Fullscreen'); ?>
+            </a>
+
+            <a class="btn btn-xs btn-default" ng-href="/map_module/mapeditors_new/view/{{map.Map.id}}?fullscreen=false"
+               ng-show="fullscreen">
+                <i class="fa fa-compress "></i>
+                <?php echo __('Leave fullscreen'); ?>
+            </a>
         </div>
     </header>
     <div id="map-editor">

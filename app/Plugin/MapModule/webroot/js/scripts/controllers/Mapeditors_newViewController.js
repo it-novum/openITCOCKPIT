@@ -4,6 +4,8 @@ angular.module('openITCOCKPIT')
         $scope.init = true;
         $scope.id = QueryStringService.getCakeId();
 
+        $scope.fullscreen = QueryStringService.getValue('fullscreen', false) === 'true';
+
         $scope.load = function(){
             $http.get("/map_module/mapeditors_new/view/" + $scope.id + ".json", {
                 params: {
@@ -64,6 +66,7 @@ angular.module('openITCOCKPIT')
 
             return url;
         };
+
 
         $scope.load();
 
