@@ -117,7 +117,7 @@
 
                             </div>
                         </div>
-                        <div class="col-md-12">
+                        <div class="col-md-12 padding-top-10">
                             <div class="col-md-4">
                                 <?php echo __('Summary Output'); ?>
                             </div>
@@ -125,16 +125,16 @@
                                 <?php echo __('Services: '); ?> {{summaryState.ServiceSummary.total}}
                                 <div class="btn-group btn-group-justified" role="group"
                                      ng-show="summaryState.ServiceSummary.total > 0">
-                                    <a class="btn btn-success state-button-small ng-binding">
+                                    <a class="btn btn-success state-button-small font-sm">
                                         {{summaryState.ServiceSummary.state[0]}}
                                     </a>
-                                    <a class="btn btn-warning state-button-small ng-binding">
+                                    <a class="btn btn-warning state-button-small font-sm">
                                         {{summaryState.ServiceSummary.state[1]}}
                                     </a>
-                                    <a class="btn btn-danger state-button-small ng-binding">
+                                    <a class="btn btn-danger state-button-small font-sm">
                                         {{summaryState.ServiceSummary.state[2]}}
                                     </a>
-                                    <a class="btn btn-default state-button-small ng-binding">
+                                    <a class="btn btn-default state-button-small font-sm">
                                         {{summaryState.ServiceSummary.state[3]}}
                                     </a>
                                 </div>
@@ -324,20 +324,63 @@
                                 <?php echo __('Summary state'); ?>
                             </div>
                             <div class="col-md-8 no-padding">
-                                <div class="col-md-8 text-center txt-color-white bg-{{ summaryState.CumulatedHumanState}}">
+                                <div class="text-center txt-color-white text-capitalize bg-{{ summaryState.CumulatedHumanState}}">
                                     {{summaryState.CumulatedHumanState}}
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-12">
+                        <div class="col-md-12 padding-top-10">
                             <div class="col-md-4">
                                 <?php echo __('Summary output'); ?>
                             </div>
-                            <div class="col-md-8 no-padding">
-                                MORE BLUB
+                            <div class="col-md-4 no-padding">
+                                <?php echo __('Hosts: '); ?>{{summaryState.Hostgroup.HostSummary.total}}
+                            </div>
+                            <div class="col-md-4 no-padding">
+                                <?php echo __('Services: '); ?>{{summaryState.Hostgroup.TotalServiceSummary.total}}
                             </div>
                         </div>
-                        <div class="col-md-12 padding-top-5" ng-repeat="host in summaryState.Hosts">
+
+                        <div class="col-md-12 padding-top-10">
+                            <div class="col-md-4">
+                                <?php echo __('Hosts overview'); ?>
+                            </div>
+                            <div class="col-md-8 no-padding">
+                                <div class="btn-group btn-group-justified" role="group">
+                                    <a class="btn btn-success state-button-small font-sm">
+                                        {{summaryState.Hostgroup.HostSummary.state[0]}}
+                                    </a>
+                                    <a class="btn btn-danger state-button-small font-sm">
+                                        {{summaryState.Hostgroup.HostSummary.state[1]}}
+                                    </a>
+                                    <a class="btn btn-default state-button-small font-sm">
+                                        {{summaryState.Hostgroup.HostSummary.state[2]}}
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12 padding-top-10">
+                            <div class="col-md-4">
+                                <?php echo __('Services overview'); ?>
+                            </div>
+                            <div class="col-md-8 no-padding">
+                                <div class="btn-group btn-group-justified" role="group">
+                                    <a class="btn btn-success state-button-small font-sm">
+                                        {{summaryState.Hostgroup.TotalServiceSummary.state[0]}}
+                                    </a>
+                                    <a class="btn btn-warning state-button-small font-sm">
+                                        {{summaryState.Hostgroup.TotalServiceSummary.state[1]}}
+                                    </a>
+                                    <a class="btn btn-danger state-button-small font-sm">
+                                        {{summaryState.Hostgroup.TotalServiceSummary.state[2]}}
+                                    </a>
+                                    <a class="btn btn-default state-button-small font-sm">
+                                        {{summaryState.Hostgroup.TotalServiceSummary.state[3]}}
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12 padding-top-10" ng-repeat="host in summaryState.Hosts">
                             <div class="col-md-4 cropText">
                                 {{host.Host.hostname}}
                             </div>
@@ -354,18 +397,18 @@
                                 <?php echo __('Not in monitoring'); ?>
                                 <i class="fa fa-eye-slash"></i>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-4 padding-right-0">
                                 <div class="btn-group btn-group-justified" role="group">
-                                    <a class="btn btn-success state-button-small ng-binding">
+                                    <a class="btn btn-success state-button-small font-sm">
                                         {{host.ServiceSummary.state[0]}}
                                     </a>
-                                    <a class="btn btn-warning state-button-small ng-binding">
+                                    <a class="btn btn-warning state-button-small font-sm">
                                         {{host.ServiceSummary.state[1]}}
                                     </a>
-                                    <a class="btn btn-danger state-button-small ng-binding">
+                                    <a class="btn btn-danger state-button-small font-sm">
                                         {{host.ServiceSummary.state[2]}}
                                     </a>
-                                    <a class="btn btn-default state-button-small ng-binding">
+                                    <a class="btn btn-default state-button-small font-sm">
                                         {{host.ServiceSummary.state[3]}}
                                     </a>
                                 </div>
