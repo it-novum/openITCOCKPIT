@@ -28,9 +28,11 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.selectedContainer = 0;
+        $scope.selectedHosttemplate = 0;
         $scope.hostname = 0;
         $scope.hostaddress = 0;
         $scope.init = true;
+
         $scope.load = function(){
             $http.get("/hosts/loadContainers.json", {
                 params: {
@@ -44,6 +46,10 @@ angular.module('openITCOCKPIT')
 
         $scope.containerSelected = function(){
             $scope.selectedContainer = $scope.post.Container.container_id;
+        };
+
+        $scope.hosttemplateSelected = function(){
+            $scope.selectedHosttemplate = $scope.post.Host.hosttemplate_id;
         };
 
 
@@ -69,7 +75,7 @@ angular.module('openITCOCKPIT')
             if($scope.init){
                 return;
             }
-            $http.get("/hosts/loadHosttemplateData/" + $scope.selectedContainer + ".json", {
+            $http.get("/hosts/loadHosttemplateData/" + $scope.selectedHosttemplate + ".json", {
                 params: {
                     'angular': true
                     //'containerId': $scope.selectedContainer,
@@ -77,9 +83,16 @@ angular.module('openITCOCKPIT')
                     //'selected[]': $scope.post.Hostgroup.Hosttemplate
                 }
             }).then(function(result){
-                $scope.hosttemplates = result.data.hosttemplates;
+                console.log(result);
+           /*     $scope.hosttemplates = result.data.hosttemplates;
                 $scope.contacts = result.data.contacts;
                 $scope.contactgroups = result.data.contactgroups;
+                $scope.Host.command_id = result.data.command_id;
+                */
+                $scope.post.Host.command_id = result.data.hosttemplate.Hosttemplate.command_id;
+                $scope.post.Host.Contact = result.data.hosttemplate.ContactIds;
+                $scope.post.Host.Contactgroup = result.data.hosttemplate.ContactgroupIds;
+                $scope.post.Host.Hostgroup = result.data.hosttemplate.HostgroupIds;
             });
         };
 
@@ -117,6 +130,9 @@ angular.module('openITCOCKPIT')
 
 
         $scope.submit = function(){
+            console.log($scope.post);
+            debugger;
+
             $http.post("/hosts/addwizard.json?angular=true",
                 $scope.post
             ).then(function(result){
@@ -126,8 +142,8 @@ angular.module('openITCOCKPIT')
                 window.location.href = '/hosts/addwizardoptional/';
             }, function errorCallback(result){
                 console.info('save failed');
-                console.log(result);
-                debugger;
+                //console.log(result);
+               // debugger;
                 /*if(result.data.hasOwnProperty('error')){
                     $scope.errors = result.data.error;
                 }*/
@@ -141,6 +157,10 @@ angular.module('openITCOCKPIT')
                 return;
             }
             $scope.loadData('');
+        }, true);
+
+        $scope.$watch('selectedHosttemplate', function(){
+            $scope.loadHosttemplateData();
         }, true);
 
         $scope.$watch('post.Host.name', function(){

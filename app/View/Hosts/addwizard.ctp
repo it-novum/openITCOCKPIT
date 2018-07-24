@@ -112,7 +112,9 @@ $notification_settings = [
                                             class="form-control"
                                             chosen="hosttemplates"
                                             ng-options="hosttemplate.key as hosttemplate.value for hosttemplate in hosttemplates"
-                                            ng-model="post.Host.hosttemplate_id">
+                                            ng-model="post.Host.hosttemplate_id"
+                                            ng-change="hosttemplateSelected()"
+                                    >
                                     </select>
                                     <div ng-repeat="error in errors.hosttemplate_id">
                                         <div class="help-block text-danger">{{ error }}</div>
@@ -189,15 +191,6 @@ $notification_settings = [
                                     </div>
                                 </div>
                             </div>
-                            <input type="hidden"
-                                   id="CommandId"
-                                   ng-model="post.Host.command_id">
-                            <input type="hidden"
-                                   id="NotifyPeriodId"
-                                   ng-model="post.Host.notify_period_id">
-                            <input type="hidden"
-                                   id="CheckPeriodId"
-                                   ng-model="post.Host.check_period_id">
                         </div>
                     </div> <!-- close col -->
                     <div class="col-xs-12 margin-top-10">

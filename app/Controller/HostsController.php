@@ -3559,6 +3559,7 @@ class HostsController extends AppController {
 
             }
 
+
             if ($this->Host->saveAll($data_to_save)) {
 
                 $changelog_data = $this->Changelog->parseDataForChangelog(
@@ -3589,6 +3590,7 @@ class HostsController extends AppController {
                 return;
                 //$this->setFlash(__('Data could not be saved'), false);
             }
+
         }
     }
 
@@ -3665,12 +3667,23 @@ class HostsController extends AppController {
             throw new NotFoundException(__('Invalid hosttemplate'));
         }
 
-        $this->Hosttemplate->find('first', [
-            'recursive'  => -1,
+        $hosttemplate = $this->Hosttemplate->find('first', [
+            //'recursive'  => -1,
             'conditions' => [
                 'Hosttemplate.id' => $hosttemplateId
             ],
         ]);
+
+        $hosttemplate = [
+            'Hosttemplate' => $hosttemplate['Hosttemplate'],
+            'ContactIds' => Hash::extract($hosttemplate, 'Contact.{n}.id'),
+            'ContactgroupIds' => Hash::extract($hosttemplate, 'Contactgroup.{n}.id'),
+            'HostgroupIds' => Hash::extract($hosttemplate, 'Hostgroup.{n}.id')
+        ];
+
+
+        $this->set('hosttemplate', $hosttemplate);
+        $this->set('_serialize', ['hosttemplate']);
     }
 
     public function timeline($id = null) {
