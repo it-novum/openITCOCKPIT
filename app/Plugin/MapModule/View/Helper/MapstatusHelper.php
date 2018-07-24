@@ -159,37 +159,37 @@ class MapstatusHelper extends AppHelper {
                 $badServices[] = $service;
             }
 
-            if(empty($badServices) && empty($ackServices) && empty($downtimeServices) && empty($downtimeAckServices)){
+            if (empty($badServices) && empty($ackServices) && empty($downtimeServices) && empty($downtimeAckServices)) {
                 return $this->getServicestatus(0);
             }
             $nonOkServices = [
-                'badServices' => $badServices,
-                'ackServices' => $ackServices,
-                'downtimeServices' => $downtimeServices,
+                'badServices'         => $badServices,
+                'ackServices'         => $ackServices,
+                'downtimeServices'    => $downtimeServices,
                 'downtimeAckServices' => $downtimeAckServices,
             ];
             $worstService = [];
-            foreach ($nonOkServices as $type => $services){
-                if(!empty($services)){
-                    foreach ($services as $key => $service){
+            foreach ($nonOkServices as $type => $services) {
+                if (!empty($services)) {
+                    foreach ($services as $key => $service) {
                         if (empty($worstService)) {
                             //fill with data
                             $worstService = [
                                 'typeKey' => $type,
-                                'key'   => $key,
-                                'state' => $service['Servicestatus']['current_state']
+                                'key'     => $key,
+                                'state'   => $service['Servicestatus']['current_state']
                             ];
                         }
                         if ($service['Servicestatus']['current_state'] > $worstService['state']) {
                             //override data when the state is more worse than the previous
                             $worstService = [
                                 'typeKey' => $type,
-                                'key'   => $key,
-                                'state' => $service['Servicestatus']['current_state']
+                                'key'     => $key,
+                                'state'   => $service['Servicestatus']['current_state']
                             ];
                         }
                     }
-                    if(!empty($worstService)){
+                    if (!empty($worstService)) {
                         break;
                     }
                 }
@@ -202,7 +202,7 @@ class MapstatusHelper extends AppHelper {
             $flapping = $nonOkServices[$typeKey][$key]['Servicestatus']['is_flapping'];
             $perfdata = $nonOkServices[$typeKey][$key]['Servicestatus']['perfdata'];
 
-            return  $this->getServicestatus($currentState, $ack, $downtime, $flapping, $perfdata);
+            return $this->getServicestatus($currentState, $ack, $downtime, $flapping, $perfdata);
         }
         return $status;
     }
@@ -287,8 +287,7 @@ class MapstatusHelper extends AppHelper {
      *
      * @return array           Array with the Hostinformation
      */
-    public
-    function hoststatusField($uuid, $field = null, $default = null) {
+    public function hoststatusField($uuid, $field = null, $default = null) {
         if ($field === null && isset($this->hoststatus[$uuid])) {
             return $this->hoststatus[$uuid];
         }
@@ -307,8 +306,7 @@ class MapstatusHelper extends AppHelper {
      *
      * @return array            Array with the current service state
      */
-    public
-    function servicestatus($uuid) {
+    public function servicestatus($uuid) {
         if (isset($this->servicestatus[$uuid]['current_state'])) {
             if ($this->servicestatus[$uuid]['problem_has_been_acknowledged'] == 1 && $this->servicestatus[$uuid]['scheduled_downtime_depth'] > 0) {
                 return [
@@ -372,8 +370,7 @@ class MapstatusHelper extends AppHelper {
     }
 
 
-    public
-    function servicestatusField($uuid, $field = null, $default = null) {
+    public function servicestatusField($uuid, $field = null, $default = null) {
         if ($field === null && isset($this->servicestatus[$uuid])) {
             return $this->servicestatus[$uuid];
         }
@@ -385,8 +382,7 @@ class MapstatusHelper extends AppHelper {
     }
 
 
-    public
-    function servicegroupstatus($uuid) {
+    public function servicegroupstatus($uuid) {
 
         $serviceUuids = Hash::extract($this->servicegroupstatus[$uuid], 'Service.{n}.uuid');
         $servicestates = [];
@@ -407,8 +403,7 @@ class MapstatusHelper extends AppHelper {
         return ['state' => -1, 'human_state' => __('Not found in monitoring'), 'image' => 'error.png'];
     }
 
-    public
-    function hostgroupstatus($uuid) {
+    public function hostgroupstatus($uuid) {
         $cumulative_service_state = false;
         if (!empty($this->hostgroupstatus[$uuid])) {
             $cumulative_host_state = Hash::apply($this->hostgroupstatus[$uuid], '{n}.Hoststatus.current_state', 'max');
@@ -431,8 +426,7 @@ class MapstatusHelper extends AppHelper {
         return ['state' => -1, 'human_state' => __('Not found in monitoring'), 'image' => 'error.png'];
     }
 
-    public
-    function hostgroupHoststatus($host) {
+    public function hostgroupHoststatus($host) {
         if (!empty($host['Servicestatus'])) {
             $servicestatus = [];
             foreach ($host['Servicestatus'] as $servicestates) {
@@ -452,8 +446,7 @@ class MapstatusHelper extends AppHelper {
     }
 
 
-    public
-    function hostgroupstatusValuesHost($state) {
+    public function hostgroupstatusValuesHost($state) {
         if (!isset($state)) {
             $err = [
                 'human_state' => __('Not found in monitoring'),
@@ -499,8 +492,7 @@ class MapstatusHelper extends AppHelper {
         return $states[$state];
     }
 
-    public
-    function hostgroupstatusValuesService($state) {
+    public function hostgroupstatusValuesService($state) {
         if (!isset($state)) {
             $err = [
                 'human_state' => __('Not found in monitoring'),
@@ -553,8 +545,7 @@ class MapstatusHelper extends AppHelper {
         return $states[$state];
     }
 
-    public
-    function ServicegroupstatusValues($state) {
+    public function ServicegroupstatusValues($state) {
         if (!isset($state)) {
             $err = [
                 'human_state' => __('Not found in monitoring'),
@@ -595,8 +586,7 @@ class MapstatusHelper extends AppHelper {
         return $states[$state];
     }
 
-    public
-    function mapstatus($id) {
+    public function mapstatus($id) {
         //returns the summary state for a Map
         $mapstructure = $this->mapstatus['structure'][$id];
         $mapstatus = $this->mapstatus['status'];
@@ -641,9 +631,9 @@ class MapstatusHelper extends AppHelper {
                 $cumulative_service_state = Hash::apply($allServicestates, '{n}', 'max');
             }
 
-            if($cumulative_host_state > 0){
+            if ($cumulative_host_state > 0) {
                 $state = $this->hostgroupstatusValuesHost($cumulative_host_state);
-            }else{
+            } else {
                 $state = $this->hostgroupstatusValuesService($cumulative_service_state);
             }
         }

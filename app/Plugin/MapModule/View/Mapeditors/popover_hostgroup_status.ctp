@@ -35,7 +35,6 @@ $hostgroupStatus = $this->Mapstatus->hostgroupstatus($hostgroups[0]['Hostgroup']
 $hostAmount = count($hostgroups[0]['Host']);
 $serviceStateArr = [];
 $hostStateArr = [];
-
 foreach ($hostgroups[0]['Host'] as $counter => $host) {
     //check if the servicestatus array is not empty
     if (!empty($host['Servicestatus'])) {
@@ -48,11 +47,16 @@ foreach ($hostgroups[0]['Host'] as $counter => $host) {
         //set a null value into the array
         $serviceStateArr[$host['uuid']] = null;
     }
-
-    $hostStateArr[$host['uuid']] = $host['Hoststatus']['current_state'];
+    if ($host['disabled'] == 0 && isset($host['Hoststatus'])) {
+        $hostStateArr[$host['uuid']] = $host['Hoststatus']['current_state'];
+    } else {
+        unset($hostgroups[0]['Host'][$counter]);
+    }
+}
+if (empty($hostStateArr)) {
+    $hostStateArr = -1;
 }
 $hoststate = max($hostStateArr);
-
 
 //count number of services
 $serviceAmountperHost = [];
@@ -82,7 +86,7 @@ $serviceAmount = array_sum($serviceAmountperHost);
         <tr>
             <td class="col-md-3 col-xs-3"><?php echo __('Summary State'); ?></td>
             <?php if (isset($hostgroups[0]['Host']) && $hostAmount > 0): ?>
-                <?php if($hoststate == 0): ?>
+                <?php if ($hoststate == 0): ?>
                     <td class="col-md-9 col-xs-9 <?php echo $this->Status->ServiceStatusColorSimple($hostgroupStatus['state'])['class']; ?>"> <?php echo $hostgroupStatus['human_state']; ?></td>
                 <?php else: ?>
                     <td class="col-md-9 col-xs-9 <?php echo $this->Status->HostStatusColorSimple($hostgroupStatus['state'])['class']; ?>"> <?php echo $hostgroupStatus['human_state']; ?></td>
@@ -109,9 +113,9 @@ $serviceAmount = array_sum($serviceAmountperHost);
         <?php
         $i = 0;
         foreach ($hostgroups[0]['Host'] as $key => $host) :
-            if($i == 10): ?>
+            if ($i == 10): ?>
                 <tr>
-                    <td colspan="3"><?php echo __('Showing '.$i. ' of '.$hostAmount. ' Hosts. Click on the icon to see all') ?></td>
+                    <td colspan="3"><?php echo __('Showing ' . $i . ' of ' . $hostAmount . ' Hosts. Click on the icon to see all') ?></td>
                 </tr>
                 <?php
                 break;
@@ -125,19 +129,20 @@ $serviceAmount = array_sum($serviceAmountperHost);
                 </td>
                 <!-- State -->
                 <?php $currentHostState = $host['Hoststatus']['current_state'];
-                 if (isset($serviceStateArr[$key]) && $currentHostState == 0): ?>
+                if (isset($serviceStateArr[$key]) && $currentHostState == 0): ?>
                     <td class="<?php echo $this->Status->ServiceStatusColorSimple(max($serviceStateArr[$key]))['class']; ?>"><?php echo $this->Status->ServiceStatusColorSimple(max($serviceStateArr[$key]))['human_state']; ?></td>
                 <?php else: ?>
                     <!-- there are no services for this host or the hoststate is NOT "OK" so display the hostdata -->
                     <td class="<?php echo $this->Status->HostStatusColorSimple($currentHostState)['class']; ?>"><?php echo $this->Status->HostStatusColorSimple($currentHostState)['human_state']; ?></td>
                 <?php endif; ?>
                 <!-- Output -->
-                <td title="<?php echo $this->Mapstatus->hostgroupHoststatus($host)['human_state']; ?>" class="cropText"><?php echo $this->Mapstatus->hostgroupHoststatus($host)['human_state']; ?>
+                <td title="<?php echo $this->Mapstatus->hostgroupHoststatus($host)['human_state']; ?>"
+                    class="cropText"><?php echo $this->Mapstatus->hostgroupHoststatus($host)['human_state']; ?>
                     . There are <?php echo $serviceAmountperHost[$key]; ?> Services
                 </td>
             </tr>
-        <?php
-        $i++;
+            <?php
+            $i++;
         endforeach; ?>
     </table>
 <?php endif; ?>

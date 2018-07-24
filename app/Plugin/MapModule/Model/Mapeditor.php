@@ -1161,7 +1161,6 @@ class Mapeditor extends MapModuleAppModel {
             $service = $service['Service'];
             $currentServiceUuid = $service['uuid'];
             $currentHostId = $service['host_id'];
-            $servicestatusByHostId[$currentHostId] = [];
             foreach ($hostgroupServicestatus as $serviceuuid => $servicestate) {
                 if ($currentServiceUuid == $serviceuuid) {
                     $servicestatusByHostId[$currentHostId][] = $servicestate['Servicestatus'];
@@ -1185,7 +1184,6 @@ class Mapeditor extends MapModuleAppModel {
                             ]
                         ];
                     }
-
                     $hostgroups[$key]['Host'][$hKey] = array_merge($hostgroups[$key]['Host'][$hKey], $hostgroupHostStatus[$host['uuid']]);
                     if (!empty($servicestatusByHostId)) {
                         foreach ($servicedata as $service) {
