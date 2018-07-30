@@ -115,12 +115,15 @@ class RotationsController extends MapModuleAppController {
         }
 
         //build rotation link
-        $link = '';
         foreach ($all_rotations as $key => $rotation) {
+            $all_rotations[$key]['Rotation']['ids'] = [];
             foreach ($rotation['Map'] as $rKey => $map) {
-                $link .= 'rotate[' . $rKey . ']:' . $map['id'] . '/';
+                if (!isset($all_rotations[$key]['Rotation']['first_id'])) {
+                    $all_rotations[$key]['Rotation']['first_id'] = $map['id'];
+                }
+                $all_rotations[$key]['Rotation']['ids'][] = $map['id'];
             }
-            $all_rotations[$key]['Rotation']['rotationLink'] = $link;
+            $all_rotations[$key]['Rotation']['ids'] = implode(',', $all_rotations[$key]['Rotation']['ids']);
         }
 
 

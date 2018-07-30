@@ -131,8 +131,14 @@
                                            ng-show="rotation.Rotation.allowEdit">
                                 </td>
                                 <td>
-                                    <a ng-if="rotation.Rotation.rotationLink.length" href="/map_module/mapeditors/view/{{ rotation.Rotation.rotationLink }}interval:{{ rotation.Rotation.interval }}" >{{ rotation.Rotation.name }}</a>
-                                    <a ng-if="!rotation.Rotation.rotationLink.length" href="/map_module/rotations/edit/{{ rotation.Rotation.id }}" >{{ rotation.Rotation.name }}</a>
+                                    <a ng-if="rotation.Rotation.ids.length"
+                                       ng-href="/map_module/mapeditors_new/view/{{ rotation.Rotation.first_id }}?rotation={{ rotation.Rotation.ids }}&interval={{ rotation.Rotation.interval }}">
+                                        {{ rotation.Rotation.name }}
+                                    </a>
+                                    <a ng-if="!rotation.Rotation.ids.length"
+                                       ng-href="/map_module/rotations/edit/{{ rotation.Rotation.id }}">
+                                        {{ rotation.Rotation.name }}
+                                    </a>
                                 </td>
                                 <td>
                                     {{ rotation.Rotation.interval }}
@@ -161,12 +167,13 @@
                                                 </li>
                                                 <li class="divider" ng-if="map.Map.allowEdit"></li>
                                             <?php endif; ?>
-                                            <li ng-if="rotation.Rotation.rotationLink.length">
-                                                <a href="/map_module/mapeditors/view/{{ rotation.Rotation.rotationLink }}interval:{{ rotation.Rotation.interval }}">
-                                                    <i class="fa fa-eye"></i> <?php echo __('View'); ?></a>
+                                            <li ng-if="rotation.Rotation.ids.length">
+                                                <a ng-href="/map_module/mapeditors_new/view/{{ rotation.Rotation.first_id }}?rotation={{ rotation.Rotation.ids }}&interval={{ rotation.Rotation.interval }}">
+                                                    <i class="fa fa-eye"></i> <?php echo __('View'); ?>
+                                                </a>
                                             </li>
-                                            <li ng-if="rotation.Rotation.rotationLink.length">
-                                                <a href="/map_module/mapeditors/view/{{ rotation.Rotation.rotationLink }}interval:{{ rotation.Rotation.interval }}/fullscreen:1">
+                                            <li ng-if="rotation.Rotation.ids.length">
+                                                <a ng-href="/map_module/mapeditors_new/view/{{ rotation.Rotation.first_id }}?rotation={{ rotation.Rotation.ids }}&interval={{ rotation.Rotation.interval }}&fullscreen=true">
                                                     <i class="glyphicon glyphicon-resize-full"></i> <?php echo __('View in fullscreen'); ?>
                                                 </a>
                                             </li>

@@ -56,6 +56,12 @@ class MapeditorsNewController extends MapModuleAppController {
     public function view($id) {
         if (!$this->isApiRequest()) {
             $this->layout = 'angularjs';
+            $isFullscreen = false;
+            if ($this->request->query('fullscreen') === 'true') {
+                $this->layout = 'angularjs_fullscreen';
+                $isFullscreen = true;
+            }
+            $this->set('isFullscreen', $isFullscreen);
             //Only ship template
             return;
         }
@@ -87,13 +93,13 @@ class MapeditorsNewController extends MapModuleAppController {
         }
 
         $acl = [
-            'hosts' => [
+            'hosts'         => [
                 'browser' => isset($this->PERMISSIONS['hosts']['browser'])
             ],
-            'services' => [
+            'services'      => [
                 'browser' => isset($this->PERMISSIONS['services']['browser'])
             ],
-            'hostgroups' => [
+            'hostgroups'    => [
                 'extended' => isset($this->PERMISSIONS['hostgroups']['extended'])
             ],
             'servicegroups' => [

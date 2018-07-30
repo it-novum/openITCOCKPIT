@@ -23,4 +23,4 @@
 //  confirmation.
 ?>
 
-<img ng-src="/map_module/img/items/{{item.iconset}}/{{currentIcon}}" ng-if="allowView"/>
+<img ng-src="/map_module/img/items/{{item.iconset}}/{{currentIcon}}" onerror="this.src='/map_module/img/items/missing.png';" ng-if="allowView"/>
