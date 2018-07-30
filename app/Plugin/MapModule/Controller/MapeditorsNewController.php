@@ -44,6 +44,7 @@ class MapeditorsNewController extends MapModuleAppController {
         'Host',
         'Service',
         'Hostgroup',
+        'Servicegroup',
         MONITORING_HOSTSTATUS,
         MONITORING_SERVICESTATUS
     ];
@@ -118,7 +119,6 @@ class MapeditorsNewController extends MapModuleAppController {
         if (!$this->isApiRequest()) {
             return;
         }
-
         $objectId = (int)$this->request->query('objectId');
         if ($objectId <= 0) {
             throw new RuntimeException('Invalid object id');
@@ -295,6 +295,7 @@ class MapeditorsNewController extends MapModuleAppController {
                         'Servicegroup.id' => $objectId
                     ]
                 ]);
+
                 if (!empty($servicegroup)) {
                     if ($this->hasRootPrivileges === false) {
                         if (!$this->allowedByContainerId(Hash::extract($servicegroup, 'Host.{n}.Container.{n}.HostsToContainer.container_id'))) {
@@ -428,7 +429,6 @@ class MapeditorsNewController extends MapModuleAppController {
         if ($objectId <= 0) {
             throw new RuntimeException('Invalid object id');
         }
-
         $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
 
         switch ($this->request->query('type')) {
@@ -471,7 +471,7 @@ class MapeditorsNewController extends MapModuleAppController {
 
                 throw new NotFoundException('Host not found!');
                 return;
-
+                break;
             case 'service':
                 $service = $this->Service->find('first', [
                     'recursive'  => -1,
@@ -594,23 +594,23 @@ class MapeditorsNewController extends MapModuleAppController {
                         'Service'      => [
                             'Host' => [
                                 'Container',
-                                'fields'     => [
-                                    'Host.id',
-                                    'Host.uuid',
-                                    'Host.name',
-                                    'Host.description'
-                                ],
                                 'conditions' => [
                                     'Host.disabled' => 0
                                 ]
                             ],
                             'Servicetemplate' => [
                                 'fields' => [
-                                    'Servicetemplate.id'
+                                    'Servicetemplate.id',
+                                    'Servicetemplate.name'
                                 ]
                             ],
                             'conditions' => [
                                 'Service.disabled' => 0
+                            ],
+                            'fields' => [
+                                'Service.id',
+                                'Service.uuid',
+                                'Service.name'
                             ]
                         ]
                     ],
@@ -634,9 +634,8 @@ class MapeditorsNewController extends MapModuleAppController {
                         }
                     }
 
-                    $summary = $this->MapNew->getHostgroupSummary(
+                    $summary = $this->MapNew->getServicegroupSummary(
                         $this->Service,
-                        $this->Hoststatus,
                         $this->Servicestatus,
                         $servicegroup
                     );

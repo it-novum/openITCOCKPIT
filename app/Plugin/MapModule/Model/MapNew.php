@@ -355,7 +355,7 @@ class MapNew extends MapModuleAppModel {
      * @param $hostgroup
      * @return array
      */
-    public function getServicegroupInformation(Model $Service,  Model $Servicestatus, $servicegroup) {
+    public function getServicegroupInformation(Model $Service, Model $Servicestatus, $servicegroup) {
         $ServicestatusFields = new ServicestatusFields($this->DbBackend);
         $ServicestatusFields->currentState()->scheduledDowntimeDepth()->problemHasBeenAcknowledged();
 
@@ -363,105 +363,48 @@ class MapNew extends MapModuleAppModel {
 
         $servicestatusByUuids = $Servicestatus->byUuid($serviceUuids, $ServicestatusFields);
 
-        $hostgroupLight = [
-            'id' => (int)$hostgroup['Hostgroup']['id'],
-            'name' => $hostgroup['Container']['name'],
-            'description' => $hostgroup['Hostgroup']['description']
+        $servicegroupLight = [
+            'id' => (int)$servicegroup['Servicegroup']['id'],
+            'name' => $servicegroup['Container']['name'],
+            'description' => $servicegroup['Servicegroup']['description']
         ];
 
-        if (empty($hoststatusByUuids)) {
+        if (empty($servicestatusByUuids)) {
             return [
                 'icon' => $this->errorIcon,
                 'color' => 'text-primary',
                 'background' => 'bg-color-blueLight',
-                'Hostgroup' => $hostgroupLight
+                'Servicegroup' => $servicegroupLight
             ];
         }
-        $worstHostState = array_values(
-            Hash::sort($hoststatusByUuids, '{s}.Hoststatus.current_state', 'desc')
+        $worstServiceState = array_values(
+            Hash::sort($servicestatusByUuids, '{s}.Servicestatus.current_state', 'desc')
         );
 
-        $hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus($worstHostState[0]['Hoststatus']);
+        $servicestatus = new \itnovum\openITCOCKPIT\Core\Servicestatus($worstServiceState[0]['Servicestatus']);
 
-        $icon = $this->hostIcons[$hoststatus->currentState()];
-        $color = $hoststatus->HostStatusColor();
-        $background = $hoststatus->HostStatusBackgroundColor();
+        $icon = $this->serviceIcons[$servicestatus->currentState()];
+        $color = $servicestatus->ServiceStatusColor();
+        $background = $servicestatus->ServiceStatusBackgroundColor();
 
 
-        if ($hoststatus->isAcknowledged()) {
+        if ($servicestatus->isAcknowledged()) {
             $icon = $this->ackIcon;
         }
 
-        if ($hoststatus->isInDowntime()) {
+        if ($servicestatus->isInDowntime()) {
             $icon = $this->downtimeIcon;
         }
 
-        if ($hoststatus->isAcknowledged() && $hoststatus->isInDowntime()) {
+        if ($servicestatus->isAcknowledged() && $servicestatus->isInDowntime()) {
             $icon = $this->ackAndDowntimeIcon;
-        }
-
-        if ($hoststatus->currentState() > 0) {
-            return [
-                'icon' => $icon,
-                'color' => $color,
-                'background' => $background,
-                'Hostgroup' => $hostgroupLight
-            ];
-        }
-
-        //Check services for cumulated state (only if host is up)
-        $hostIds = Hash::extract($hostgroup['Host'], '{n}.id');
-
-        //Check services for cumulated state (only if host is up)
-        $services = $Service->find('list', [
-            'recursive' => -1,
-            'fields' => [
-                'Service.uuid'
-            ],
-            'conditions' => [
-                'Service.host_id' => $hostIds,
-                'Service.disabled' => 0
-            ]
-        ]);
-
-        $ServicestatusFieds = new ServicestatusFields($this->DbBackend);
-        $ServicestatusFieds->currentState()->scheduledDowntimeDepth()->problemHasBeenAcknowledged();
-        $ServicestatusConditions = new ServicestatusConditions($this->DbBackend);
-        $ServicestatusConditions->servicesWarningCriticalAndUnknown();
-        $servicestatus = $Servicestatus->byUuid($services, $ServicestatusFieds, $ServicestatusConditions);
-
-        if (!empty($servicestatus)) {
-            $worstServiceState = array_values(
-                Hash::sort($servicestatus, '{s}.Servicestatus.current_state', 'desc')
-            );
-
-            $servicestatus = new \itnovum\openITCOCKPIT\Core\Servicestatus($worstServiceState[0]['Servicestatus']);
-            $serviceIcon = $this->serviceIcons[$servicestatus->currentState()];
-
-            if ($servicestatus->isAcknowledged()) {
-                $serviceIcon = $this->ackIcon;
-            }
-
-            if ($servicestatus->isInDowntime()) {
-                $serviceIcon = $this->downtimeIcon;
-            }
-
-            if ($servicestatus->isAcknowledged() && $servicestatus->isInDowntime()) {
-                $serviceIcon = $this->ackAndDowntimeIcon;
-            }
-            return [
-                'icon' => $serviceIcon,
-                'color' => $servicestatus->ServiceStatusColor(),
-                'background' => $servicestatus->ServiceStatusBackgroundColor(),
-                'Hostgroup' => $hostgroupLight
-            ];
         }
 
         return [
             'icon' => $icon,
             'color' => $color,
             'background' => $background,
-            'Hostgroup' => $hostgroupLight
+            'Servicegroup' => $servicegroupLight
         ];
     }
 
@@ -661,7 +604,7 @@ class MapNew extends MapModuleAppModel {
         }
         $hoststatusResult = [];
         $cumulatedHostState = -1;
-        $cumulatedServiceState = -1;
+        $cumulatedServiceState = null;
         $allServiceStatus = [];
         $totalServiceStateSummary = [
             'state' => [
@@ -751,6 +694,73 @@ class MapNew extends MapModuleAppModel {
             'Hostgroup' => $hostgroup,
             'Hosts' => $hoststatusResult,
             'CumulatedHumanState' => $CumulatedHumanState
+        ];
+    }
+
+    /**
+     * @param Model $Service
+     * @param Model $Servicestatus
+     * @param $servicegroup
+     * @param UserTime $UserTime
+     * @return array
+     */
+    public function getServicegroupSummary(Model $Service, Model $Servicestatus, $servicegroup) {
+        $ServicestatusFields = new ServicestatusFields($this->DbBackend);
+        $ServicestatusFields
+            ->currentState()
+            ->isHardstate()
+            ->output()
+            ->scheduledDowntimeDepth()
+            ->problemHasBeenAcknowledged();
+
+        $serviceUuids = Hash::extract($servicegroup['Service'], '{n}.uuid');
+        $ServicestatusConditions = new ServicestatusConditions($this->DbBackend);
+
+        $servicestatusResults = $Servicestatus->byUuid($serviceUuids, $ServicestatusFields, $ServicestatusConditions);
+        $serviceStateSummary = $Service->getServiceStateSummary($servicestatusResults, false);
+        $cumulatedServiceState = null;
+        $allServiceStatus = [];
+        foreach ($servicegroup['Service'] as $service) {
+            $Service = new \itnovum\openITCOCKPIT\Core\Views\Service([
+                'Service' => $service,
+                'Servicetemplate' => $service['Servicetemplate']
+            ]);
+            $Host = new \itnovum\openITCOCKPIT\Core\Views\Host(['Host' => $service['Host']]);
+
+            if (isset($servicestatusResults[$Service->getUuid()])) {
+                $Servicestatus = new \itnovum\openITCOCKPIT\Core\Servicestatus(
+                    $servicestatusResults[$Service->getUuid()]['Servicestatus']
+                );
+            } else {
+                $Servicestatus = new \itnovum\openITCOCKPIT\Core\Servicestatus(
+                    ['Servicestatus' => []]
+                );
+            }
+            $servicesResult[] = [
+                'Service' => $Service->toArray(),
+                'Servicestatus' => $Servicestatus->toArray(),
+                'Host' => $Host->toArray()
+            ];
+        }
+        $servicesResult = Hash::sort($servicesResult, '{s}.Servicestatus.currentState', 'desc');
+        if (!empty($servicestatusResults)) {
+            $cumulatedServiceState = Hash::apply($servicestatusResults, '{s}.Servicestatus.current_state', 'max');
+        }
+        $CumulatedServiceStatus = new \itnovum\openITCOCKPIT\Core\Servicestatus([
+            'current_state' => $cumulatedServiceState
+        ]);
+
+        $servicegroup = [
+            'id' => $servicegroup['Servicegroup']['id'],
+            'name' => $servicegroup['Container']['name'],
+            'description' => $servicegroup['Servicegroup']['description']
+        ];
+
+        return [
+            'Servicegroup' => $servicegroup,
+            'ServiceSummary' => $serviceStateSummary,
+            'Services' => $servicesResult,
+            'CumulatedHumanState' => $CumulatedServiceStatus->toArray()['humanState']
         ];
     }
 }
