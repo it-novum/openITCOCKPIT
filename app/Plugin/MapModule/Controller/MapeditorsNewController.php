@@ -246,13 +246,65 @@ class MapeditorsNewController extends MapModuleAppController {
                 break;
 
             case 'servicegroup':
-                $allowView = true;
-                $properties = [
-                    'icon'       => 'error.png',
-                    'color'      => 'text-primary',
-                    'background' => 'bg-color-blueLight',
-                    'data'       => []
-                ];
+                $servicegroup = $this->Servicegroup->find('first', [
+                    'recursive'  => -1,
+                    'contain'    => [
+                        'Container' => [
+                            'fields' => [
+                                'Container.name'
+                            ]
+                        ],
+                        'Service' => [
+                            'Host'      => [
+                                'Container',
+                                'fields'     => [
+                                    'Host.id',
+                                    'Host.uuid'
+                                ],
+                                'conditions' => [
+                                    'Host.disabled' => 0
+                                ]
+                            ],
+                            'Servicetemplate' => [
+                                'fields' => [
+                                    'Servicetemplate.name'
+                                ]
+                            ],
+                            'fields' => [
+                                'Service.id',
+                                'Service.uuid',
+                                'Service.name'
+                            ],
+                            'conditions' => [
+                                'Service.disabled' => 0
+                            ]
+                        ],
+
+                    ],
+                    'fields'     => [
+                        'Servicegroup.id',
+                        'Servicegroup.description'
+                    ],
+                    'conditions' => [
+                        'Servicegroup.id' => $objectId
+                    ]
+                ]);
+                if (!empty($servicegroup)) {
+                    if ($this->hasRootPrivileges === false) {
+                        if (!$this->allowedByContainerId(Hash::extract($servicegroup, 'Host.{n}.Container.{n}.HostsToContainer.container_id'))) {
+                            $allowView = false;
+                            break;
+                        }
+                    }
+                    $allowView = true;
+                    $properties = $this->MapNew->getServicegroupInformation(
+                        $this->Service,
+                        $this->Servicestatus,
+                        $servicegroup
+                    );
+                    break;
+                }
+                $allowView = false;
                 break;
             case 'map':
                 $allowView = true;
@@ -525,6 +577,71 @@ class MapeditorsNewController extends MapModuleAppController {
                 return;
                 break;
             case 'servicegroup':
+                $query = [
+                    'recursive'  => -1,
+                    'contain'    => [
+                        'Container' => [
+                            'fields' => [
+                                'Container.name'
+                            ]
+                        ],
+                        'Service'      => [
+                            'Host' => [
+                                'Container',
+                                'fields'     => [
+                                    'Host.id',
+                                    'Host.uuid',
+                                    'Host.name',
+                                    'Host.description'
+                                ],
+                                'conditions' => [
+                                    'Host.disabled' => 0
+                                ]
+                            ],
+                            'Servicetemplate' => [
+                                'fields' => [
+                                    'Servicetemplate.id'
+                                ]
+                            ],
+                            'conditions' => [
+                                'Service.disabled' => 0
+                            ]
+                        ]
+                    ],
+                    'fields'     => [
+                        'Servicegroup.description'
+                    ],
+                    'conditions' => [
+                        'Servicegroup.id' => $objectId
+                    ]
+                ];
+                if (!$this->hasRootPrivileges) {
+                    $query['conditions']['Container.parent_id'] = $this->MY_RIGHTS;
+                }
+                $servicegroup = $this->Servicegroup->find('first', $query);
+
+                if (!empty($servicegroup)) {
+                    if ($this->hasRootPrivileges === false) {
+                        if (!$this->allowedByContainerId(Hash::extract($servicegroup, 'Container.{n}.HostsToContainer.container_id'))) {
+                            $this->render403();
+                            return;
+                        }
+                    }
+
+                    $summary = $this->MapNew->getHostgroupSummary(
+                        $this->Service,
+                        $this->Hoststatus,
+                        $this->Servicestatus,
+                        $servicegroup
+                    );
+                    $this->set('type', 'servicegroup');
+                    $this->set('summary', $summary);
+                    $this->set('_serialize', ['servicegroup', 'summary']);
+                    return;
+                }
+
+                throw new NotFoundException('Service group not found!');
+                return;
                 break;
             case 'map':
                 break;
