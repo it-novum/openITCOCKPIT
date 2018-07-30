@@ -3,8 +3,8 @@ angular.module('openITCOCKPIT').directive('mapItem', function($http, $interval){
         restrict: 'E',
         templateUrl: '/map_module/mapeditors_new/mapitem.html',
         scope: {
-            'item': '=',
-            'refreshInterval': '='
+            'item': '='
+            //'refreshInterval': '='
         },
         controller: function($scope){
 
@@ -56,6 +56,9 @@ angular.module('openITCOCKPIT').directive('mapItem', function($http, $interval){
 
             $scope.load();
 
+            /*
+            //All objects on the map gets rerenderd by MapEditorsController.
+            //May be we need this in a later version?
             if($scope.refreshInterval > 0){
                 $scope.statusUpdateInterval = $interval(function(){
                     $scope.load();
@@ -67,6 +70,7 @@ angular.module('openITCOCKPIT').directive('mapItem', function($http, $interval){
             $scope.$on('$destroy', function() {
                 $scope.stop();
             });
+            */
 
         },
 

@@ -211,7 +211,7 @@ App.Components.GadgetComponent = Frontend.Component.extend({
                 fill: '#6e99ff'
             });
 
-        //bluew
+        //blue
         svg.circle(yellowLightGroup, x, lightDiameter+lightPadding*2+lightRadius, lightRadius, {
             fill: 'url(#yellowLightPattern_' + id + ')', stroke: '#444', strokeWidth: 2
         });

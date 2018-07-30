@@ -1,10 +1,9 @@
-angular.module('openITCOCKPIT').directive('graphItem', function($http, $interval){
+angular.module('openITCOCKPIT').directive('graphItem', function($http){
     return {
         restrict: 'E',
         templateUrl: '/map_module/mapeditors_new/graph.html',
         scope: {
-            'item': '=',
-            'refreshInterval': '='
+            'item': '='
         },
         controller: function($scope){
             $scope.selectedGraphdataSource = null;
@@ -245,18 +244,6 @@ angular.module('openITCOCKPIT').directive('graphItem', function($http, $interval
 
             $scope.load();
             $scope.loadTimezone();
-
-            if($scope.refreshInterval > 0){
-                $scope.statusUpdateInterval = $interval(function(){
-                    $scope.load();
-                }, $scope.refreshInterval);
-            }
-
-            //Disable status update interval, if the object gets removed from DOM.
-            //E.g in Map rotations
-            $scope.$on('$destroy', function() {
-                $scope.stop();
-            });
         },
 
         link: function(scope, element, attr){

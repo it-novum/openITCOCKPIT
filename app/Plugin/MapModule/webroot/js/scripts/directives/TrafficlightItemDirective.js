@@ -1,10 +1,9 @@
-angular.module('openITCOCKPIT').directive('trafficlightItem', function($http, $interval){
+angular.module('openITCOCKPIT').directive('trafficlightItem', function($http){
     return {
         restrict: 'E',
         templateUrl: '/map_module/mapeditors_new/trafficlight.html',
         scope: {
-            'item': '=',
-            'refreshInterval': '='
+            'item': '='
         },
         controller: function($scope){
 
@@ -239,18 +238,6 @@ angular.module('openITCOCKPIT').directive('trafficlightItem', function($http, $i
 
 
             $scope.load();
-
-            if($scope.refreshInterval > 0){
-                $scope.statusUpdateInterval = $interval(function(){
-                    $scope.load();
-                }, $scope.refreshInterval);
-            }
-
-            //Disable status update interval, if the object gets removed from DOM.
-            //E.g in Map rotations
-            $scope.$on('$destroy', function() {
-                $scope.stop();
-            });
         },
 
         link: function(scope, element, attr){

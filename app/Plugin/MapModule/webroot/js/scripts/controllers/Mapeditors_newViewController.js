@@ -17,11 +17,20 @@ angular.module('openITCOCKPIT')
                 }
             }).then(function(result){
                 $scope.refreshInterval = parseInt(result.data.map.Map.refresh_interval, 10);
-
                 $scope.map = result.data.map;
-
                 $scope.acl = result.data.ACL;
 
+                if($scope.init){
+                    console.log($scope.refreshInterval);
+
+                    if($scope.refreshInterval > 1000 && $scope.rotate === null){
+                        //Only refresh maps if they are not in a rotation.
+                        //Rotation will also refresh maps on change of current map
+                        $interval(function(){
+                            $scope.load();
+                        }, $scope.refreshInterval);
+                    }
+                }
 
                 $scope.init = false;
             });
@@ -90,7 +99,6 @@ angular.module('openITCOCKPIT')
                 $scope.load();
 
             }, $scope.rotationInterval);
-
         }
 
     });
