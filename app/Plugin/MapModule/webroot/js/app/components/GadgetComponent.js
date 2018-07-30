@@ -73,7 +73,7 @@ App.Components.GadgetComponent = Frontend.Component.extend({
         });
 
         gauge.draw();
-        
+
     },
 
     drawTrafficLight: function(svgContainerId, opt){
