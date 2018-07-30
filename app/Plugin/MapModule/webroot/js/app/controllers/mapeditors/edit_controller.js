@@ -529,7 +529,7 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
                 translate: ['0', '0'],
                 rotate: '0'
             }
-        }
+        };
 
         for(var i = 0; i < gadgets.length; i++){
             //create the container in the menu panel
@@ -790,6 +790,8 @@ App.Controllers.MapeditorsEditController = Frontend.AppController.extend({
                 case 'service':
                     $('#addServiceGadgetX').val(self.currentGadget['x']);
                     $('#addServiceGadgetY').val(self.currentGadget['y']);
+                    $('#addServiceGadgetSizeX').val(self.currentGadget['size_x']);
+                    $('#addServiceGadgetSizeY').val(self.currentGadget['size_y']);
                     $('#addServiceGadgetZIndex').val(self.currentGadget['z_index']);
                     if ('host_object_id' in self.currentGadget) {
 
