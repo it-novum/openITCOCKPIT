@@ -78,7 +78,7 @@
                  style="position:absolute; top: {{item.y}}px; left: {{item.x}}px;  z-index: {{item.z_index}};"
                  ng-mouseenter="showSummaryStateDelayed(item)">
                 <a ng-href="{{ getHref(item) }}">
-                    <map-item item="item"></map-item>
+                    <map-item item="item" refresh-interval="refreshInterval"></map-item>
                 </a>
             </div>
 
@@ -89,7 +89,7 @@
 
             <div ng-repeat="lineItem in map.Mapline">
                 <a ng-href="{{ getHref(lineItem) }}">
-                    <map-line item="lineItem"></map-line>
+                    <map-line item="lineItem" refresh-interval="refreshInterval"></map-line>
                 </a>
             </div>
 
@@ -101,12 +101,20 @@
             <div ng-repeat="gadgetItem in map.Mapgadget"
                  style="position:absolute; top: {{gadgetItem.y}}px; left: {{gadgetItem.x}}px;  z-index: {{gadgetItem.z_index}};">
                 <a ng-href="{{ getHref(gadgetItem) }}">
-                    <graph-item item="gadgetItem" ng-if="gadgetItem.gadget === 'RRDGraph'"></graph-item>
-                    <perfdata-text-item item="gadgetItem" ng-if="gadgetItem.gadget === 'Text'"></perfdata-text-item>
-                    <tacho-item item="gadgetItem" ng-if="gadgetItem.gadget === 'Tacho'"></tacho-item>
-                    <cylinder-item item="gadgetItem" ng-if="gadgetItem.gadget === 'Cylinder'"></cylinder-item>
+                    <graph-item item="gadgetItem" ng-if="gadgetItem.gadget === 'RRDGraph'"
+                                refresh-interval="refreshInterval"></graph-item>
+
+                    <perfdata-text-item item="gadgetItem" ng-if="gadgetItem.gadget === 'Text'"
+                                        refresh-interval="refreshInterval"></perfdata-text-item>
+                    <tacho-item item="gadgetItem" ng-if="gadgetItem.gadget === 'Tacho'"
+                                refresh-interval="refreshInterval"></tacho-item>
+
+                    <cylinder-item item="gadgetItem" ng-if="gadgetItem.gadget === 'Cylinder'"
+                                   refresh-interval="refreshInterval"></cylinder-item>
+
                     <trafficlight-item item="gadgetItem"
-                                       ng-if="gadgetItem.gadget === 'TrafficLight'"></trafficlight-item>
+                                       ng-if="gadgetItem.gadget === 'TrafficLight'"
+                                       refresh-interval="refreshInterval"></trafficlight-item>
                 </a>
             </div>
 

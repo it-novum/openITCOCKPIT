@@ -8,6 +8,7 @@ angular.module('openITCOCKPIT')
         $scope.rotate = QueryStringService.getValue('rotation', null);
         $scope.rotationInterval = parseInt(QueryStringService.getValue('interval', 0), 10) * 1000;
         $scope.rotationPossition = 1;
+        $scope.refreshInterval = 0;
 
         $scope.load = function(){
             $http.get("/map_module/mapeditors_new/view/" + $scope.id + ".json", {
@@ -15,9 +16,21 @@ angular.module('openITCOCKPIT')
                     'angular': true
                 }
             }).then(function(result){
+                $scope.refreshInterval = parseInt(result.data.map.Map.refresh_interval, 10);
                 $scope.map = result.data.map;
                 $scope.acl = result.data.ACL;
 
+                if($scope.init){
+                    console.log($scope.refreshInterval);
+
+                    if($scope.refreshInterval > 1000 && $scope.rotate === null){
+                        //Only refresh maps if they are not in a rotation.
+                        //Rotation will also refresh maps on change of current map
+                        $interval(function(){
+                            $scope.load();
+                        }, $scope.refreshInterval);
+                    }
+                }
 
                 $scope.init = false;
             });
@@ -86,7 +99,6 @@ angular.module('openITCOCKPIT')
                 $scope.load();
 
             }, $scope.rotationInterval);
-
         }
 
     });

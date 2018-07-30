@@ -4,6 +4,7 @@ angular.module('openITCOCKPIT').directive('mapItem', function($http, $interval){
         templateUrl: '/map_module/mapeditors_new/mapitem.html',
         scope: {
             'item': '='
+            //'refreshInterval': '='
         },
         controller: function($scope){
 
@@ -49,7 +50,28 @@ angular.module('openITCOCKPIT').directive('mapItem', function($http, $interval){
                 interval = null;
             };
 
+            $scope.stop = function(){
+                $interval.cancel($scope.statusUpdateInterval);
+            };
+
             $scope.load();
+
+            /*
+            //All objects on the map gets rerenderd by MapEditorsController.
+            //May be we need this in a later version?
+            if($scope.refreshInterval > 0){
+                $scope.statusUpdateInterval = $interval(function(){
+                    $scope.load();
+                }, $scope.refreshInterval);
+            }
+
+            //Disable status update interval, if the object gets removed from DOM.
+            //E.g in Map rotations
+            $scope.$on('$destroy', function() {
+                $scope.stop();
+            });
+            */
+
         },
 
         link: function(scope, element, attr){
