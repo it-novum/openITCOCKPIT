@@ -519,7 +519,7 @@
                 <div class="jarviswidget">
                     <header>
                         <h2 class="bold txt-color-blueDark">
-                            <i class="fa fa-cogs fa-lg txt-color-blueDark"></i>
+                            <i class="fa fa-image fa-lg txt-color-blueDark"></i>
                             <?php echo __('Map'); ?>
                         </h2>
                     </header>
@@ -529,7 +529,7 @@
                                 <?php echo __('Map name'); ?>
                             </div>
                             <div class="col-md-8 no-padding">
-                                {{summaryState.map.name}}
+                                {{summaryState.Map.name}}
                             </div>
                         </div>
                         <div class="col-md-12">
@@ -537,15 +537,20 @@
                                 <?php echo __('Map title'); ?>
                             </div>
                             <div class="col-md-8 no-padding">
-                                {{summaryState.map.title}}
+                                {{summaryState.Map.title}}
                             </div>
                         </div>
-                        <div class="col-md-12">
+                        <div class="col-md-12 padding-top-10">
                             <div class="col-md-4">
                                 <?php echo __('Summary state'); ?>
                             </div>
-                            <div class="col-md-8 no-padding">
+                            <div class="col-md-8 no-padding" ng-show="summaryState.HostSummary.total > 0|| summaryState.ServiceSummary.total > 0">
                                 <div class="text-center txt-color-white text-capitalize bg-{{ summaryState.CumulatedHumanState}}">
+                                    {{summaryState.CumulatedHumanState}}
+                                </div>
+                            </div>
+                            <div class="col-md-8 no-padding" ng-show="summaryState.HostSummary.total == 0 && summaryState.ServiceSummary.total == 0">
+                                <div class="text-center txt-color-white text-capitalize bg-primary">
                                     {{summaryState.CumulatedHumanState}}
                                 </div>
                             </div>
@@ -555,10 +560,10 @@
                                 <?php echo __('Summary output'); ?>
                             </div>
                             <div class="col-md-4 no-padding">
-                                <?php echo __('Hosts: '); ?>{{summaryState.map.HostSummary.total}}
+                                <?php echo __('Hosts: '); ?>{{summaryState.HostSummary.total}}
                             </div>
                             <div class="col-md-4 no-padding">
-                                <?php echo __('Services: '); ?>{{summaryState.map.ServiceSummary.total}}
+                                <?php echo __('Services: '); ?>{{summaryState.ServiceSummary.total}}
                             </div>
                         </div>
 
@@ -569,13 +574,13 @@
                             <div class="col-md-8 no-padding">
                                 <div class="btn-group btn-group-justified" role="group">
                                     <a class="btn btn-success state-button-small font-sm">
-                                        {{summaryState.map.HostSummary.state[0]}}
+                                        {{summaryState.HostSummary.state[0]}}
                                     </a>
                                     <a class="btn btn-danger state-button-small font-sm">
-                                        {{summaryState.map.HostSummary.state[1]}}
+                                        {{summaryState.HostSummary.state[1]}}
                                     </a>
                                     <a class="btn btn-default state-button-small font-sm">
-                                        {{summaryState.map.HostSummary.state[2]}}
+                                        {{summaryState.HostSummary.state[2]}}
                                     </a>
                                 </div>
                             </div>
@@ -587,16 +592,16 @@
                             <div class="col-md-8 no-padding">
                                 <div class="btn-group btn-group-justified" role="group">
                                     <a class="btn btn-success state-button-small font-sm">
-                                        {{summaryState.map.ServiceSummary.state[0]}}
+                                        {{summaryState.ServiceSummary.state[0]}}
                                     </a>
                                     <a class="btn btn-warning state-button-small font-sm">
-                                        {{summaryState.map.ServiceSummary.state[1]}}
+                                        {{summaryState.ServiceSummary.state[1]}}
                                     </a>
                                     <a class="btn btn-danger state-button-small font-sm">
-                                        {{summaryState.map.ServiceSummary.state[2]}}
+                                        {{summaryState.ServiceSummary.state[2]}}
                                     </a>
                                     <a class="btn btn-default state-button-small font-sm">
-                                        {{summaryState.map.ServiceSummary.state[3]}}
+                                        {{summaryState.ServiceSummary.state[3]}}
                                     </a>
                                 </div>
                             </div>
