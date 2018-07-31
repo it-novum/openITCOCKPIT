@@ -409,6 +409,121 @@ class MapNew extends MapModuleAppModel {
     }
 
     /**
+     * @param Model $Host
+     * @param Model $Hoststatus
+     * @param Model $Service
+     * @param Model $Servicestatus
+     * @param Model $Map
+     * @param $map
+     * @return array
+     */
+    public function getMapInformation(Model $Host, Model $Hoststatus, Model $Service, Model $Servicestatus, $map, $hosts, $services) {
+        if(empty($hosts) && empty($services)){
+            return [
+                'icon' => $this->errorIcon,
+                'color' => 'text-primary',
+                'background' => 'bg-color-blueLight',
+                'Map' => $map
+            ];
+        }
+        $map = [
+            'id' => $map['Map']['id'],
+            'name' => $map['Map']['name'],
+            'title' => $map['Map']['title']
+        ];
+        $hostsUuids = Hash::extract($hosts, '{n}.Host.uuid');
+
+        $HoststatusFields = new HoststatusFields($this->DbBackend);
+        $HoststatusFields->currentState()->scheduledDowntimeDepth()->problemHasBeenAcknowledged();
+        $hoststatusByUuids = $Hoststatus->byUuid($hostsUuids, $HoststatusFields);
+
+        $worstHostState = array_values(
+            Hash::sort($hoststatusByUuids, '{s}.Hoststatus.current_state', 'desc')
+        );
+
+        if(!empty($worstHostState)) {
+            $hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus($worstHostState[0]['Hoststatus']);
+        } else{
+            $hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus(['Hoststatus' => []]);
+
+        }
+        $icon = $this->hostIcons[$hoststatus->currentState()];
+        $color = $hoststatus->HostStatusColor();
+        $background = $hoststatus->HostStatusBackgroundColor();
+        $iconProperty = $icon;
+
+
+        if ($hoststatus->isAcknowledged()) {
+            $iconProperty = $this->ackIcon;
+        }
+
+        if ($hoststatus->isInDowntime()) {
+            $iconProperty = $this->downtimeIcon;
+        }
+
+        if ($hoststatus->isAcknowledged() && $hoststatus->isInDowntime()) {
+            $iconProperty = $this->ackAndDowntimeIcon;
+        }
+
+        if ($hoststatus->currentState() > 0) {
+            return [
+                'icon' => $icon,
+                'icon_property' => $iconProperty,
+                'color' => $color,
+                'background' => $background,
+                'Map' => $map
+            ];
+        }
+
+        $servicesUuids = Hash::extract($services, '{n}.Service.uuid');
+        $ServicestatusFieds = new ServicestatusFields($this->DbBackend);
+        $ServicestatusFieds->currentState()->scheduledDowntimeDepth()->problemHasBeenAcknowledged();
+        $ServicestatusConditions = new ServicestatusConditions($this->DbBackend);
+        $ServicestatusConditions->servicesWarningCriticalAndUnknown();
+        $servicestatus = $Servicestatus->byUuid($servicesUuids, $ServicestatusFieds, $ServicestatusConditions);
+        if (!empty($servicestatus)) {
+            $worstServiceState = array_values(
+                Hash::sort($servicestatus, '{s}.Servicestatus.current_state', 'desc')
+            );
+
+            $servicestatus = new \itnovum\openITCOCKPIT\Core\Servicestatus($worstServiceState[0]['Servicestatus']);
+            $serviceIcon = $this->serviceIcons[$servicestatus->currentState()];
+
+            $serviceIconProperty = $serviceIcon;
+            if ($servicestatus->isAcknowledged()) {
+                $serviceIconProperty = $this->ackIcon;
+            }
+
+            if ($servicestatus->isInDowntime()) {
+                $serviceIconProperty = $this->downtimeIcon;
+            }
+
+            if ($servicestatus->isAcknowledged() && $servicestatus->isInDowntime()) {
+                $serviceIconProperty = $this->ackAndDowntimeIcon;
+            }
+
+            return [
+                'icon' => $serviceIcon,
+                'icon_property' => $serviceIconProperty,
+                'isAcknowledged' => $servicestatus->isAcknowledged(),
+                'isInDowntime' => $servicestatus->isInDowntime(),
+                'color' => $servicestatus->ServiceStatusColor(),
+                'background' => $servicestatus->ServiceStatusBackgroundColor(),
+                'Map' => $map,
+            ];
+        }
+        return [
+            'icon' => $icon,
+            'icon_property' => $iconProperty,
+            'isAcknowledged' => $hoststatus->isAcknowledged(),
+            'isInDowntime' => $hoststatus->isInDowntime(),
+            'color' => $color,
+            'background' => $background,
+            'Map' => $map
+        ];
+    }
+
+    /**
      * @param Model $Service
      * @param Model $Hoststatus
      * @param Model $Servicestatus
