@@ -503,6 +503,8 @@ class MapeditorsNewController extends MapModuleAppController {
                                 $serviceIds[$serviceIdByServicegroup['ServicesToServicegroups']['service_id']] = $serviceIdByServicegroup['ServicesToServicegroups']['service_id'];
                             }
                         }
+
+
                         $hosts = [];
                         $services = [];
                         if (!empty($hostIds)) {
@@ -568,9 +570,7 @@ class MapeditorsNewController extends MapModuleAppController {
                         }
                         $allowView = true;
                         $properties = $this->MapNew->getMapInformation(
-                            $this->Host,
                             $this->Hoststatus,
-                            $this->Service,
                             $this->Servicestatus,
                             $map,
                             $hosts,

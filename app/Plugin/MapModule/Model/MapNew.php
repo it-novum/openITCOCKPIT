@@ -417,7 +417,7 @@ class MapNew extends MapModuleAppModel {
      * @param $map
      * @return array
      */
-    public function getMapInformation(Model $Host, Model $Hoststatus, Model $Service, Model $Servicestatus, $map, $hosts, $services) {
+    public function getMapInformation(Model $Hoststatus, Model $Servicestatus, $map, $hosts, $services) {
         if(empty($hosts) && empty($services)){
             return [
                 'icon' => $this->errorIcon,
