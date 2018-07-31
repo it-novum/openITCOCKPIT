@@ -381,6 +381,8 @@ class MapeditorsNewController extends MapModuleAppController {
                         }
                         $allVisibleItems = $this->Mapitem->find('all', $query);
 
+
+
                         $mapItemIdToResolve = $mapItemToResolve['Mapitem']['object_id'];
                         $mapIdGroupByMapId = Hash::combine(
                             $allVisibleItems,
@@ -391,123 +393,17 @@ class MapeditorsNewController extends MapModuleAppController {
                         $dependentMapsIds = $this->getDependendMaps($mapIdGroupByMapId, $mapItemIdToResolve);
                         $dependentMapsIds[] = $mapItemIdToResolve;
 
-                        $allDependentMapElements = $this->Map->find('all', [
-                            'recursive' => -1,
-                            'contain' => [
-                                'Mapitem' => [
-                                    'conditions' => [
-                                        'NOT' => [
-                                            'Mapitem.type' => 'map'
-                                        ]
-                                    ],
-                                    'fields' => [
-                                        'Mapitem.type',
-                                        'Mapitem.object_id'
-                                    ]
-                                ],
-                                'Mapline' => [
-                                    'conditions' => [
-                                        'NOT' => [
-                                            'Mapline.type' => 'stateless'
-                                        ]
-                                    ],
-                                    'fields' => [
-                                        'Mapline.type',
-                                        'Mapline.object_id'
-                                    ]
-                                ],
-                                'Mapgadget' => [
-                                    'fields' => [
-                                        'Mapgadget.type',
-                                        'Mapgadget.object_id'
-                                    ]
-                                ]
-                            ],
-                            'conditions' => [
-                                'Map.id' => $dependentMapsIds
-                            ]
-                        ]);
-                        $mapElementsByCategory = [
-                            'host' => [],
-                            'hostgroup' => [],
-                            'service' => [],
-                            'servicegroup' => []
-                        ];
-                        $allDependentMapElements = Hash::filter($allDependentMapElements);
-                        foreach ($allDependentMapElements as $allDependentMapElementArray) {
-                            foreach ($allDependentMapElementArray as $mapElementKey => $mapElementData) {
-                                if ($mapElementKey === 'Map') {
-                                    continue;
-                                }
-                                foreach ($mapElementData as $mapElement) {
-                                    $mapElementsByCategory[$mapElement['type']][$mapElement['object_id']] = $mapElement['object_id'];
-                                }
-                            }
-
-                        }
-                        $hostIds = $mapElementsByCategory['host'];
-                        if (!empty($mapElementsByCategory['hostgroup'])) {
-                            $query = [
-                                'recursive' => -1,
-                                'joins' => [
-                                    [
-                                        'table' => 'hosts_to_hostgroups',
-                                        'type' => 'INNER',
-                                        'alias' => 'HostsToHostgroups',
-                                        'conditions' => 'HostsToHostgroups.hostgroup_id = Hostgroup.id',
-                                    ],
-                                ],
-                                'fields' => [
-                                    'HostsToHostgroups.host_id'
-
-                                ],
-                                'conditions' => [
-                                    'Hostgroup.id' => $mapElementsByCategory['hostgroup']
-                                ]
-                            ];
-                            if ($this->hasRootPrivileges === false) {
-                                $query['conditions']['Hostgroup.container_id'] = $this->MY_RIGHTS;
-                            }
-
-                            $hostIdsByHostgroup = $this->Hostgroup->find('all', $query);
-                            foreach ($hostIdsByHostgroup as $hostIdByHostgroup) {
-                                $hostIds[$hostIdByHostgroup['HostsToHostgroups']['host_id']] = $hostIdByHostgroup['HostsToHostgroups']['host_id'];
-                            }
-                        }
-                        $serviceIds = $mapElementsByCategory['service'];
-                        if (!empty($mapElementsByCategory['servicegroup'])) {
-                            $query = [
-                                'recursive' => -1,
-                                'joins' => [
-                                    [
-                                        'table' => 'services_to_servicegroups',
-                                        'type' => 'INNER',
-                                        'alias' => 'ServicesToServicegroups',
-                                        'conditions' => 'ServicesToServicegroups.servicegroup_id = Servicegroup.id',
-                                    ],
-                                ],
-                                'fields' => [
-                                    'ServicesToServicegroups.service_id'
-
-                                ],
-                                'conditions' => [
-                                    'Servicegroup.id' => $mapElementsByCategory['servicegroup']
-                                ]
-                            ];
-                            if ($this->hasRootPrivileges === false) {
-                                $query['conditions']['Servicegroup.container_id'] = $this->MY_RIGHTS;
-                            }
-
-                            $serviceIdsByServicegroup = $this->Servicegroup->find('all', $query);
-                            foreach ($serviceIdsByServicegroup as $serviceIdByServicegroup) {
-                                $serviceIds[$serviceIdByServicegroup['ServicesToServicegroups']['service_id']] = $serviceIdByServicegroup['ServicesToServicegroups']['service_id'];
-                            }
-                        }
-
+                        // resolve all Elements (host and/or services of dependent map)
+                        $allDependentMapElements = $this->MapNew->getAllDependentElements(
+                            $this->Map,
+                            $dependentMapsIds,
+                            $this->Hostgroup,
+                            $this->Servicegroup
+                        );
 
                         $hosts = [];
                         $services = [];
-                        if (!empty($hostIds)) {
+                        if (!empty($allDependentMapElements['hostIds'])) {
                             $hosts = $this->Host->find('all', [
                                 'recursive' => -1,
                                 'contain' => [
@@ -522,7 +418,7 @@ class MapeditorsNewController extends MapModuleAppController {
                                     ]
                                 ],
                                 'conditions' => [
-                                    'Host.id' => $hostIds,
+                                    'Host.id' => $allDependentMapElements['hostIds'],
                                     'Host.disabled' => 0
                                 ],
                                 'fields' => [
@@ -543,7 +439,7 @@ class MapeditorsNewController extends MapModuleAppController {
                                 }
                             }
                         }
-                        if (!empty($serviceIds)) {
+                        if (!empty($allDependentMapElements['serviceIds'])) {
                             $services = $this->Service->find('all', [
                                 'recursive' => -1,
                                 'contain' => [
@@ -552,7 +448,7 @@ class MapeditorsNewController extends MapModuleAppController {
                                     ]
                                 ],
                                 'conditions' => [
-                                    'Service.id' => $serviceIds,
+                                    'Service.id' => $allDependentMapElements['serviceIds'],
                                     'Service.disabled' => 0
                                 ],
                                 'fields' => [

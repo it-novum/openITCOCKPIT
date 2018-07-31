@@ -515,6 +515,95 @@
                     </div>
                 </div>
             </article>
+            <article ng-if="iconType == 'map'">
+                <div class="jarviswidget">
+                    <header>
+                        <h2 class="bold txt-color-blueDark">
+                            <i class="fa fa-cogs fa-lg txt-color-blueDark"></i>
+                            <?php echo __('Map'); ?>
+                        </h2>
+                    </header>
+                    <div class="txt-color-blueDark font-xs padding-top-10 padding-bottom-10">
+                        <div class="col-md-12">
+                            <div class="col-md-4">
+                                <?php echo __('Map name'); ?>
+                            </div>
+                            <div class="col-md-8 no-padding">
+                                {{summaryState.map.name}}
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="col-md-4">
+                                <?php echo __('Map title'); ?>
+                            </div>
+                            <div class="col-md-8 no-padding">
+                                {{summaryState.map.title}}
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="col-md-4">
+                                <?php echo __('Summary state'); ?>
+                            </div>
+                            <div class="col-md-8 no-padding">
+                                <div class="text-center txt-color-white text-capitalize bg-{{ summaryState.CumulatedHumanState}}">
+                                    {{summaryState.CumulatedHumanState}}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12 padding-top-10">
+                            <div class="col-md-4">
+                                <?php echo __('Summary output'); ?>
+                            </div>
+                            <div class="col-md-4 no-padding">
+                                <?php echo __('Hosts: '); ?>{{summaryState.map.HostSummary.total}}
+                            </div>
+                            <div class="col-md-4 no-padding">
+                                <?php echo __('Services: '); ?>{{summaryState.map.ServiceSummary.total}}
+                            </div>
+                        </div>
+
+                        <div class="col-md-12 padding-top-10">
+                            <div class="col-md-4">
+                                <?php echo __('Hosts overview'); ?>
+                            </div>
+                            <div class="col-md-8 no-padding">
+                                <div class="btn-group btn-group-justified" role="group">
+                                    <a class="btn btn-success state-button-small font-sm">
+                                        {{summaryState.map.HostSummary.state[0]}}
+                                    </a>
+                                    <a class="btn btn-danger state-button-small font-sm">
+                                        {{summaryState.map.HostSummary.state[1]}}
+                                    </a>
+                                    <a class="btn btn-default state-button-small font-sm">
+                                        {{summaryState.map.HostSummary.state[2]}}
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12 padding-top-10">
+                            <div class="col-md-4">
+                                <?php echo __('Services overview'); ?>
+                            </div>
+                            <div class="col-md-8 no-padding">
+                                <div class="btn-group btn-group-justified" role="group">
+                                    <a class="btn btn-success state-button-small font-sm">
+                                        {{summaryState.map.ServiceSummary.state[0]}}
+                                    </a>
+                                    <a class="btn btn-warning state-button-small font-sm">
+                                        {{summaryState.map.ServiceSummary.state[1]}}
+                                    </a>
+                                    <a class="btn btn-danger state-button-small font-sm">
+                                        {{summaryState.map.ServiceSummary.state[2]}}
+                                    </a>
+                                    <a class="btn btn-default state-button-small font-sm">
+                                        {{summaryState.map.ServiceSummary.state[3]}}
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </article>
         </div>
     </section>
 </div>

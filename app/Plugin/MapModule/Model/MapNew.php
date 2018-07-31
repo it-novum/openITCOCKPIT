@@ -418,7 +418,7 @@ class MapNew extends MapModuleAppModel {
      * @return array
      */
     public function getMapInformation(Model $Hoststatus, Model $Servicestatus, $map, $hosts, $services) {
-        if(empty($hosts) && empty($services)){
+        if (empty($hosts) && empty($services)) {
             return [
                 'icon' => $this->errorIcon,
                 'color' => 'text-primary',
@@ -441,9 +441,9 @@ class MapNew extends MapModuleAppModel {
             Hash::sort($hoststatusByUuids, '{s}.Hoststatus.current_state', 'desc')
         );
 
-        if(!empty($worstHostState)) {
+        if (!empty($worstHostState)) {
             $hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus($worstHostState[0]['Hoststatus']);
-        } else{
+        } else {
             $hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus(['Hoststatus' => []]);
 
         }
@@ -876,6 +876,132 @@ class MapNew extends MapModuleAppModel {
             'ServiceSummary' => $serviceStateSummary,
             'Services' => $servicesResult,
             'CumulatedHumanState' => $CumulatedServiceStatus->toArray()['humanState']
+        ];
+    }
+
+    /**
+     * @param Model $Map
+     * @param $dependentMapsIds
+     * @param Model $Hostgroup
+     * @param Model $Servicegroup
+     * @return array with host and service ids
+     */
+    public function getAllDependentElements(Model $Map, $dependentMapsIds, Model $Hostgroup, Model $Servicegroup) {
+        $allDependentMapElements = $Map->find('all', [
+            'recursive' => -1,
+            'contain' => [
+                'Mapitem' => [
+                    'conditions' => [
+                        'NOT' => [
+                            'Mapitem.type' => 'map'
+                        ]
+                    ],
+                    'fields' => [
+                        'Mapitem.type',
+                        'Mapitem.object_id'
+                    ]
+                ],
+                'Mapline' => [
+                    'conditions' => [
+                        'NOT' => [
+                            'Mapline.type' => 'stateless'
+                        ]
+                    ],
+                    'fields' => [
+                        'Mapline.type',
+                        'Mapline.object_id'
+                    ]
+                ],
+                'Mapgadget' => [
+                    'fields' => [
+                        'Mapgadget.type',
+                        'Mapgadget.object_id'
+                    ]
+                ]
+            ],
+            'conditions' => [
+                'Map.id' => $dependentMapsIds
+            ]
+        ]);
+        $mapElementsByCategory = [
+            'host' => [],
+            'hostgroup' => [],
+            'service' => [],
+            'servicegroup' => []
+        ];
+        $allDependentMapElements = Hash::filter($allDependentMapElements);
+        foreach ($allDependentMapElements as $allDependentMapElementArray) {
+            foreach ($allDependentMapElementArray as $mapElementKey => $mapElementData) {
+                if ($mapElementKey === 'Map') {
+                    continue;
+                }
+                foreach ($mapElementData as $mapElement) {
+                    $mapElementsByCategory[$mapElement['type']][$mapElement['object_id']] = $mapElement['object_id'];
+                }
+            }
+
+        }
+        $hostIds = $mapElementsByCategory['host'];
+        if (!empty($mapElementsByCategory['hostgroup'])) {
+            $query = [
+                'recursive' => -1,
+                'joins' => [
+                    [
+                        'table' => 'hosts_to_hostgroups',
+                        'type' => 'INNER',
+                        'alias' => 'HostsToHostgroups',
+                        'conditions' => 'HostsToHostgroups.hostgroup_id = Hostgroup.id',
+                    ],
+                ],
+                'fields' => [
+                    'HostsToHostgroups.host_id'
+
+                ],
+                'conditions' => [
+                    'Hostgroup.id' => $mapElementsByCategory['hostgroup']
+                ]
+            ];
+            if ($this->hasRootPrivileges === false) {
+                $query['conditions']['Hostgroup.container_id'] = $this->MY_RIGHTS;
+            }
+
+            $hostIdsByHostgroup = $Hostgroup->find('all', $query);
+            foreach ($hostIdsByHostgroup as $hostIdByHostgroup) {
+                $hostIds[$hostIdByHostgroup['HostsToHostgroups']['host_id']] = $hostIdByHostgroup['HostsToHostgroups']['host_id'];
+            }
+        }
+        $serviceIds = $mapElementsByCategory['service'];
+        if (!empty($mapElementsByCategory['servicegroup'])) {
+            $query = [
+                'recursive' => -1,
+                'joins' => [
+                    [
+                        'table' => 'services_to_servicegroups',
+                        'type' => 'INNER',
+                        'alias' => 'ServicesToServicegroups',
+                        'conditions' => 'ServicesToServicegroups.servicegroup_id = Servicegroup.id',
+                    ],
+                ],
+                'fields' => [
+                    'ServicesToServicegroups.service_id'
+
+                ],
+                'conditions' => [
+                    'Servicegroup.id' => $mapElementsByCategory['servicegroup']
+                ]
+            ];
+            if ($this->hasRootPrivileges === false) {
+                $query['conditions']['Servicegroup.container_id'] = $this->MY_RIGHTS;
+            }
+
+            $serviceIdsByServicegroup = $Servicegroup->find('all', $query);
+            foreach ($serviceIdsByServicegroup as $serviceIdByServicegroup) {
+                $serviceIds[$serviceIdByServicegroup['ServicesToServicegroups']['service_id']] = $serviceIdByServicegroup['ServicesToServicegroups']['service_id'];
+            }
+        }
+        return  [
+            'hostIds' => $hostIds,
+            'serviceIds' => $serviceIds
         ];
     }
 }
