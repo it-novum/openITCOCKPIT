@@ -46,7 +46,7 @@
             {{map.Map.name}}
         </h2>
         <div class="widget-toolbar" role="menu">
-            <a class="btn btn-xs btn-default" href="https://dev-dziegler.oitc.itn/map_module/maps">
+            <a class="btn btn-xs btn-default" href="/map_module/maps">
                 <i class="glyphicon glyphicon-white glyphicon-arrow-left"></i>
                 <?php echo __('Back to list'); ?>
             </a>

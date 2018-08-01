@@ -27,69 +27,151 @@ App::uses('Folder', 'Utility');
 App::uses('File', 'Utility');
 App::uses('UUID', 'Lib');
 
-class BackgroundUploadsController extends MapModuleAppController
-{
+/**
+ * Class BackgroundUploadsController
+ * @property MapUpload $MapUpload
+ */
+class BackgroundUploadsController extends MapModuleAppController {
 
     public $layout = 'Admin.default';
     public $uses = [
         'MapModule.MapUpload',
     ];
+
     //prevent asking for a view
-    public $autoRender = false;
 
-    //public $backgroundFolder = new Folder(APP .'Plugin'. DS .'MapModule'. DS .'Upload');
-
-    public function upload()
-    {
+    public function upload() {
         if (empty($_FILES)) {
-            throw new ForbiddenException(__('There is no file to store'));
-        }
-
-        //define background image directory
-        $backgroundImgDirectory = APP.'Plugin'.DS.'MapModule'.DS.'webroot'.DS.'img'.DS.'backgrounds';
-        $backgroundFolder = new Folder($backgroundImgDirectory);
-        $fileExtension = pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION);
-        $uploadFilename = str_replace('.'.$fileExtension, '', pathinfo($_FILES['file']['name'], PATHINFO_BASENAME));
-        $saveFilename = UUID::v4();
-        $fullFilePath = $backgroundFolder->path.DS.$saveFilename.'.'.$fileExtension;
-        try{
-            //check if upload folder exist
-            if (!is_dir($backgroundImgDirectory)) {
-                mkdir($backgroundImgDirectory);
-            }
-            
-            if (!move_uploaded_file($_FILES['file']['tmp_name'], $fullFilePath)) {
-                throw new Exception(__('Cannot move uploaded file'));
-            }
-
-            $obj = [
-                'fullPath'       => $fullFilePath,
-                'uuidFilename'   => $saveFilename,
-                'fileExtension'  => $fileExtension,
-                'folderInstance' => $backgroundFolder,
+            $response = [
+                'success' => false,
+                'message' => __('There is no file to store')
             ];
-            $this->createThumbnailsFromBackgrounds($obj);
-            $this->MapUpload->save([
-                'upload_type'  => MapUpload::TYPE_BACKGROUND,
-                'upload_name'  => $uploadFilename.'.'.$fileExtension,
-                'saved_name'   => $saveFilename.'.'.$fileExtension,
-                'user_id'      => $this->Auth->user('id'),
-                'container_id' => '1',
-            ]);
-            echo 'Upload successful';
-        } catch (Exception $e) {
-            throw new ForbiddenException($uploadFilename.'.'.$fileExtension.': '.$e->getMessage());
+            $this->set('response', $response);
+            $this->set('_serialize', ['response']);
+            return;
         }
+
+        switch ($_FILES['file']['error']) {
+            case UPLOAD_ERR_OK:
+                $backgroundImgDirectory = APP . 'Plugin' . DS . 'MapModule' . DS . 'webroot' . DS . 'img' . DS . 'backgrounds';
+                $backgroundFolder = new Folder($backgroundImgDirectory);
+                $fileExtension = pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION);
+
+                if (!$this->MapUpload->isFileExtensionSupported($fileExtension)) {
+                    $response = [
+                        'success' => false,
+                        'message' => __('File extension ".%s" not supported!', $fileExtension)
+                    ];
+                    break;
+                }
+
+                $uploadFilename = str_replace('.' . $fileExtension, '', pathinfo($_FILES['file']['name'], PATHINFO_BASENAME));
+                $saveFilename = UUID::v4();
+                $fullFilePath = $backgroundFolder->path . DS . $saveFilename . '.' . $fileExtension;
+                try {
+                    //check if upload folder exist
+                    if (!is_dir($backgroundImgDirectory)) {
+                        mkdir($backgroundImgDirectory);
+                    }
+
+                    if (!move_uploaded_file($_FILES['file']['tmp_name'], $fullFilePath)) {
+                        throw new Exception(__('Cannot move uploaded file'));
+                    }
+
+                    $imageConfig = [
+                        'fullPath'      => $fullFilePath,
+                        'uuidFilename'  => $saveFilename,
+                        'fileExtension' => $fileExtension
+                    ];
+                    $this->MapUpload->createThumbnailsFromBackgrounds($imageConfig, $backgroundFolder);
+                    $this->MapUpload->save([
+                        'upload_type'  => MapUpload::TYPE_BACKGROUND,
+                        'upload_name'  => $uploadFilename . '.' . $fileExtension,
+                        'saved_name'   => $saveFilename . '.' . $fileExtension,
+                        'user_id'      => $this->Auth->user('id'),
+                        'container_id' => '1',
+                    ]);
+
+                    $response = [
+                        'success'  => true,
+                        'message'  => __('File uploaded successfully'),
+                        'filename' => $saveFilename . '.' . $fileExtension
+                    ];
+                } catch (Exception $e) {
+                    $response = [
+                        'success' => false,
+                        'message' => __('Upload failed: %s', $e->getMessage())
+                    ];
+                }
+
+                break;
+
+            case UPLOAD_ERR_INI_SIZE:
+                $response = [
+                    'success' => false,
+                    'message' => __('The uploaded file exceeds the upload_max_filesize directive in php.ini')
+                ];
+                break;
+
+            case UPLOAD_ERR_FORM_SIZE:
+                $response = [
+                    'success' => false,
+                    'message' => __('The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form')
+                ];
+                break;
+
+            case UPLOAD_ERR_PARTIAL:
+                $response = [
+                    'success' => false,
+                    'message' => __('The uploaded file was only partially uploaded')
+                ];
+                break;
+
+            case UPLOAD_ERR_NO_FILE:
+                $response = [
+                    'success' => false,
+                    'message' => __('No file was uploaded')
+                ];
+                break;
+
+            case UPLOAD_ERR_NO_TMP_DIR:
+                $response = [
+                    'success' => false,
+                    'message' => __('Missing a temporary folder.')
+                ];
+                break;
+
+            case UPLOAD_ERR_CANT_WRITE:
+                $response = [
+                    'success' => false,
+                    'message' => __('Failed to write file to disk.')
+                ];
+                break;
+
+            case UPLOAD_ERR_EXTENSION:
+                $response = [
+                    'success' => false,
+                    'message' => __('A PHP extension stopped the file upload.')
+                ];
+                break;
+        }
+
+        $this->response->statusCode(200);
+        if (!$response['success']) {
+            $this->response->statusCode(500);
+        }
+        $this->set('response', $response);
+        $this->set('_serialize', ['response']);
     }
 
-    public function uploadIconsSet()
-    {
+    public function uploadIconsSet() {
+        $this->autoRender = false;
         if (empty($_FILES)) {
             throw new ForbiddenException(__('There is no file to store'));
         }
 
-        $itemsImgDirectory = APP.'Plugin'.DS.'MapModule'.DS.'webroot'.DS.'img'.DS.'items';
-        $tempZipsDirectory = APP.'Plugin'.DS.'MapModule'.DS.'webroot'.DS.'img'.DS.'temp';
+        $itemsImgDirectory = APP . 'Plugin' . DS . 'MapModule' . DS . 'webroot' . DS . 'img' . DS . 'items';
+        $tempZipsDirectory = APP . 'Plugin' . DS . 'MapModule' . DS . 'webroot' . DS . 'img' . DS . 'temp';
 
         //check if upload folder exist
         if (!is_dir($itemsImgDirectory)) {
@@ -102,12 +184,12 @@ class BackgroundUploadsController extends MapModuleAppController
         }
 
         $fileExtension = pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION);
-        $uploadFilename = str_replace('.'.$fileExtension, '', pathinfo($_FILES['file']['name'], PATHINFO_BASENAME));
+        $uploadFilename = str_replace('.' . $fileExtension, '', pathinfo($_FILES['file']['name'], PATHINFO_BASENAME));
         $saveFilename = preg_replace("/[^a-zA-Z0-9]+/", "", $uploadFilename);
 
         $zipTempFolder = new Folder($tempZipsDirectory);
-        $fullZipTempPath = $zipTempFolder->path.DS.$saveFilename.'.zip';
-        $fullFolderTempPath = $zipTempFolder->path.DS.$saveFilename;
+        $fullZipTempPath = $zipTempFolder->path . DS . $saveFilename . '.zip';
+        $fullFolderTempPath = $zipTempFolder->path . DS . $saveFilename;
 
         try {
             if ($fileExtension !== 'zip') {
@@ -118,7 +200,7 @@ class BackgroundUploadsController extends MapModuleAppController
                 throw new Exception('The uploaded file exceeds the upload_max_filesize directive in php.ini');
             }
 
-            if (is_dir($itemsImgDirectory.DS.$saveFilename)) {
+            if (is_dir($itemsImgDirectory . DS . $saveFilename)) {
                 throw new Exception(__('Icons set already exists'), 13);
             }
 
@@ -141,13 +223,13 @@ class BackgroundUploadsController extends MapModuleAppController
             $iconsDir = $this->getIconsSubDirectory($fullFolderTempPath, $iconsNames);
 
             if (is_null($iconsDir)) {
-                throw new Exception(__('Please check the zip file. It must contain all icons: '.implode(', ', $iconsNames)));
+                throw new Exception(__('Please check the zip file. It must contain all icons: ' . implode(', ', $iconsNames)));
             }
 
-            mkdir($itemsImgDirectory.DS.$saveFilename);
+            mkdir($itemsImgDirectory . DS . $saveFilename);
             foreach (scandir($iconsDir) as $object) {
                 if ($object != "." && $object != ".." && in_array($object, $iconsNames))
-                    copy($iconsDir.DS.$object, $itemsImgDirectory.DS.$saveFilename.DS.$object);
+                    copy($iconsDir . DS . $object, $itemsImgDirectory . DS . $saveFilename . DS . $object);
             }
 
             $this->MapUpload->save([
@@ -159,10 +241,10 @@ class BackgroundUploadsController extends MapModuleAppController
             ]);
             echo 'Upload successful';
         } catch (Exception $e) {
-            if (is_dir($itemsImgDirectory.DS.$saveFilename) && $e->getCode() !== 13) {
-                $this->removeDirectory($itemsImgDirectory.DS.$saveFilename);
+            if (is_dir($itemsImgDirectory . DS . $saveFilename) && $e->getCode() !== 13) {
+                $this->removeDirectory($itemsImgDirectory . DS . $saveFilename);
             }
-            throw new ForbiddenException($uploadFilename.'.'.$fileExtension.': '.$e->getMessage());
+            throw new ForbiddenException($uploadFilename . '.' . $fileExtension . ': ' . $e->getMessage());
 
         } finally {
             if (is_file($fullZipTempPath)) {
@@ -176,16 +258,17 @@ class BackgroundUploadsController extends MapModuleAppController
 
     }
 
-    private function getIconsSubDirectory($startDir, $iconsNames)
-    {
+    private function getIconsSubDirectory($startDir, $iconsNames) {
+        $this->autoRender = false;
+
         $iconDir = null;
         foreach (scandir($startDir) as $object) {
             if ($object != "." && $object != "..") {
-                if (is_dir($startDir.DS.$object)) {
-                    $iconDir = $this->getIconsSubDirectory($startDir.DS.$object, $iconsNames);
+                if (is_dir($startDir . DS . $object)) {
+                    $iconDir = $this->getIconsSubDirectory($startDir . DS . $object, $iconsNames);
                     if (!is_null($iconDir))
                         return $iconDir;
-                } elseif (($keyO = array_search($object, $iconsNames)) !== false) {
+                } else if (($keyO = array_search($object, $iconsNames)) !== false) {
                     unset($iconsNames[$keyO]);
                 }
             }
@@ -198,141 +281,72 @@ class BackgroundUploadsController extends MapModuleAppController
         return $iconDir;
     }
 
-    private function removeDirectory($dir)
-    {
+    private function removeDirectory($dir) {
+        $this->autoRender = false;
+
         foreach (scandir($dir) as $object) {
             if ($object != "." && $object != "..") {
-                if (is_dir($dir."/".$object))
-                    $this->removeDirectory($dir."/".$object);
+                if (is_dir($dir . "/" . $object))
+                    $this->removeDirectory($dir . "/" . $object);
                 else
-                    unlink($dir."/".$object);
+                    unlink($dir . "/" . $object);
             }
         }
         rmdir($dir);
     }
 
-    public function createThumbnailsFromBackgrounds($obj, $isShell = false)
-    {
-        $file = $obj['fullPath'];
-        $folderInstance = $obj['folderInstance'];
 
-        //check if thumb folder exist
-        if (!is_dir($folderInstance->path.DS.'thumb')) {
-            mkdir($folderInstance->path.DS.'thumb');
+    public function delete() {
+        if (!$this->request->is('post')) {
+            throw new MethodNotAllowedException();
         }
 
-        $imgsize = getimagesize($file);
-        $width = $imgsize[0];
-        $height = $imgsize[1];
-        $imgtype = $imgsize[2];
-        $aspectRatio = $width / $height;
+        $filename = $this->request->data('filename');
+        $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
 
-        $thumbnailWidth = 150;
-        $thumbnailHeight = 150;
-
-
-        switch ($imgtype) {
-            // 1 = GIF, 2 = JPG, 3 = PNG, 4 = SWF, 5 = PSD, 6 = BMP, 7 = TIFF(intel byte order), 8 = TIFF(motorola byte order), 9 = JPC, 10 = JP2, 11 = JPX, 12 = JB2, 13 = SWC, 14 = IFF, 15 = WBMP, 16 = XBM
-            case 1:
-                $srcImg = imagecreatefromgif($file);
-                break;
-            case 2:
-                $srcImg = imagecreatefromjpeg($file);
-                break;
-            case 3:
-                $srcImg = imagecreatefrompng($file);
-                break;
-            default:
-                echo __('Filetype not supported!');
-                break;
+        $background = $this->MapUpload->find('first', [
+            'recursive'  => -1,
+            'conditions' => [
+                'MapUpload.saved_name'   => $filename,
+                'MapUpload.container_id' => $containerIds,
+            ],
+        ]);
+        if (empty($background)) {
+            throw new NotFoundException();
         }
 
-        //calculate the new height or width and keep the aspect ration
-        if ($aspectRatio == 1) {
-            //source image X = Y
-            $newWidth = $thumbnailWidth;
-            $newHeight = $thumbnailHeight;
-        } elseif ($aspectRatio > 1) {
-            //source image X > Y
-            $newWidth = $thumbnailWidth;
-            $newHeight = ($thumbnailHeight / $aspectRatio);
-        } else {
-            //source image X < Y
-            $newWidth = ($thumbnailWidth * $aspectRatio);
-            $newHeight = $thumbnailHeight;
+        if ($this->MapUpload->delete($background['MapUpload']['id'])) {
+            $backgroundImgDirectory = APP . 'Plugin' . DS . 'MapModule' . DS . 'webroot' . DS . 'img' . DS . 'backgrounds';
+
+            if (file_exists($backgroundImgDirectory . DS . $filename)) {
+                unlink($backgroundImgDirectory . DS . $filename);
+            }
+
+            if (file_exists($backgroundImgDirectory . DS . 'thumb' . DS . 'thumb_' . $filename)) {
+                unlink($backgroundImgDirectory . DS . 'thumb' . DS . 'thumb_' . $filename);
+            }
+
+            $response = [
+                'success' => true,
+                'message' => __('Background deleted successfully.')
+            ];
+            $this->set('response', $response);
+            $this->set('_serialize', ['response']);
+            return;
         }
 
-        $destImg = imagecreatetruecolor($newWidth, $newHeight);
-        $transparent = imagecolorallocatealpha($destImg, 0, 0, 0, 127);
-        imagefill($destImg, 0, 0, $transparent);
-        imageCopyResized($destImg, $srcImg, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
-        imagealphablending($destImg, false);
-        imagesavealpha($destImg, true);
-
-        if (!$isShell) {
-            header('Content-Type: image/'.$obj['fileExtension']);
-        }
-        switch ($imgtype) {
-            // 1 = GIF, 2 = JPG, 3 = PNG, 4 = SWF, 5 = PSD, 6 = BMP, 7 = TIFF(intel byte order), 8 = TIFF(motorola byte order), 9 = JPC, 10 = JP2, 11 = JPX, 12 = JB2, 13 = SWC, 14 = IFF, 15 = WBMP, 16 = XBM
-            case 1:
-                imagegif($destImg, $folderInstance->path.DS.'thumb'.DS.'thumb_'.$obj['uuidFilename'].'.'.$obj['fileExtension']);
-                break;
-            case 2:
-                imagejpeg($destImg, $folderInstance->path.DS.'thumb'.DS.'thumb_'.$obj['uuidFilename'].'.'.$obj['fileExtension']);
-                break;
-            case 3:
-                imagepng($destImg, $folderInstance->path.DS.'thumb'.DS.'thumb_'.$obj['uuidFilename'].'.'.$obj['fileExtension']);
-                break;
-            default:
-                echo __('Filetype not supported!');
-                break;
-        }
-        imagedestroy($destImg);
+        $this->response->statusCode(500);
+        $response = [
+            'success' => false,
+            'message' => __('Error while deleting background.')
+        ];
+        $this->set('response', $response);
+        $this->set('_serialize', ['response']);
     }
 
-    /**
-     * delete Background image
-     * base64 encoded due to a encoding issue
-     *
-     * @param $filename the uuid filename with file extension
-     */
-    public function delete($backgroundId)
-    {
-        //delete a background including its thumbnail
-        try {
-            $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
-            $mapUpload = $this->MapUpload->find('first', [
-                'conditions' => [
-                    'MapUpload.id'           => $backgroundId,
-                    'MapUpload.container_id' => $containerIds,
-                ],
-            ]);
-            if (empty($mapUpload)) {
-                throw new Exception('Background cannot be found');
-            }
-            $backgroundName = $mapUpload['MapUpload']['saved_name'];
-            if (!$this->MapUpload->delete($backgroundId)) {
-                throw new Exception('Backgound cannot be found');
-            }
-            //define background image directory
-            $backgroundImgDirectory = APP.'Plugin'.DS.'MapModule'.DS.'webroot'.DS.'img'.DS.'backgrounds';
+    public function deleteIconsSet($setId) {
+        $this->autoRender = false;
 
-            if (file_exists($backgroundImgDirectory.DS.$backgroundName)) {
-                unlink($backgroundImgDirectory.DS.$backgroundName);
-            }
-
-            if (file_exists($backgroundImgDirectory.DS.'thumb'.DS.'thumb_'.$backgroundName)) {
-                unlink($backgroundImgDirectory.DS.'thumb'.DS.'thumb_'.$backgroundName);
-            }
-
-            echo 'Background successfully deleted!';
-        } catch (Exception $e) {
-            echo $e->getMessage();
-        }
-    }
-
-    public function deleteIconsSet($setId)
-    {
         $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
         $mapUpload = $this->MapUpload->find('first', [
             'conditions' => [
@@ -347,7 +361,7 @@ class BackgroundUploadsController extends MapModuleAppController
         if (!$this->MapUpload->delete($setId)) {
             return false;
         }
-        $itemsImgDirectory = APP.'Plugin'.DS.'MapModule'.DS.'webroot'.DS.'img'.DS.'items'.DS.$iconSetName;
+        $itemsImgDirectory = APP . 'Plugin' . DS . 'MapModule' . DS . 'webroot' . DS . 'img' . DS . 'items' . DS . $iconSetName;
 
         if (is_dir($itemsImgDirectory)) {
             $this->removeDirectory($itemsImgDirectory);

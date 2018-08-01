@@ -22,7 +22,9 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+use itnovum\openITCOCKPIT\Core\System\FileUploadSize;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
+use Symfony\Component\Finder\Finder;
 
 
 /**
@@ -539,6 +541,63 @@ class MapeditorsNewController extends MapModuleAppController {
                 break;
         }
 
+    }
+
+    public function edit($id) {
+        if (!$this->isApiRequest()) {
+            $this->layout = 'angularjs';
+            //Only ship template
+            return;
+        }
+
+        $FileUploadSize = new FileUploadSize();
+
+
+        $id = (int)$id;
+        if (!$this->Map->exists($id)) {
+            throw new NotFoundException();
+        }
+        $map = $this->Map->find('first', [
+            'recursive'  => -1,
+            'contain'    => [
+                'Container',
+                'Mapitem',
+                'Mapline',
+                'Mapgadget',
+                'Mapicon',
+                'Maptext',
+            ],
+            'conditions' => [
+                'Map.id' => $id
+            ]
+        ]);
+
+        $this->set('map', $map);
+        $this->set('maxUploadLimit', $FileUploadSize->toArray());
+        $this->set('_serialize', ['map', 'maxUploadLimit']);
+    }
+
+    public function backgroundImages() {
+        if (!$this->isApiRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+
+        $finder = new Finder();
+        $res = $finder->files()->in(APP . 'Plugin' . DS . 'MapModule' . DS . 'webroot' . DS . 'img' . DS . 'backgrounds')->exclude('thumb');
+
+        $backgrounds = [];
+        /** @var \Symfony\Component\Finder\SplFileInfo $file */
+        foreach ($finder as $file) {
+            $backgrounds[] = [
+                'image' => $file->getFilename(),
+                'path' => sprintf('/map_module/img/backgrounds/%s', $file->getFilename()),
+                'thumbnail' => sprintf('/map_module/img/backgrounds/thumb/thumb_%s', $file->getFilename()),
+            ];
+        }
+
+        $this->set('backgrounds', $backgrounds);
+        $this->set('_serialize', ['backgrounds']);
     }
 
 }

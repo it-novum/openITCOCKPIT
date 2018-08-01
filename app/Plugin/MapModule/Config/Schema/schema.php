@@ -579,7 +579,9 @@ class MapModuleSchema extends CakeSchema {
         'container_id'    => ['type' => 'integer', 'null' => true, 'default' => null, 'length' => 10],
         'created'         => ['type' => 'datetime', 'null' => false, 'default' => null],
         'indexes'         => [
-            'PRIMARY' => ['column' => 'id', 'unique' => 1],
+            'PRIMARY'      => ['column' => 'id', 'unique' => 1],
+            'saved_name'   => ['column' => 'saved_name', 'unique' => 0],
+            'container_id' => ['column' => 'container_id', 'unique' => 0],
         ],
         'tableParameters' => ['charset' => 'utf8', 'collate' => 'utf8_unicode_ci', 'engine' => 'InnoDB'],
     ];

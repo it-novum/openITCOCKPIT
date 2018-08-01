@@ -138,7 +138,7 @@ angular.module('openITCOCKPIT')
 
                 }
             }
-            console.log(objects);
+            //console.log(objects);
             return objects;
         };
 
