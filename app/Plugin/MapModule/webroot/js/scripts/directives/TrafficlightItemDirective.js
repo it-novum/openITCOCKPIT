@@ -196,8 +196,8 @@ angular.module('openITCOCKPIT').directive('trafficlightItem', function($http){
                 var yellowLightGroup = svg.group(lights, 'yellowLightGroup_' + $scope.item.id);
                 if($scope.showYellow){
                     //yellow background
-                    var yellowLight = svg.circle(yellowLightGroup, x, lightDiameter+lightPadding*2, lightRadius, {
-                        fill: '#FFF000'
+                    var yellowLight = svg.circle(yellowLightGroup, x, lightDiameter+lightPadding*2+lightRadius, lightRadius, {
+                        fill: '#FFFF00'
                     });
                     if($scope.blink){
                         blinking(yellowLight, 'yellow');
@@ -215,10 +215,7 @@ angular.module('openITCOCKPIT').directive('trafficlightItem', function($http){
                         fill: '#6e99ff'
                     });
                 }
-                //yellow
-                svg.circle(yellowLightGroup, x, lightDiameter+lightPadding*2+lightRadius, lightRadius, {
-                    fill: 'url(#yellowLightPattern_' + $scope.item.id + ')', stroke: '#444', strokeWidth: 2
-                });
+
 
                 var greenLightGroup = svg.group(lights, 'greenLightGroup_' + $scope.item.id);
                 if($scope.showGreen){
