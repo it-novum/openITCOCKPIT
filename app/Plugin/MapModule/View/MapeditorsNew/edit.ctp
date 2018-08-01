@@ -120,13 +120,21 @@
                 <div class="row">
                     <div class="col-xs-12">
                         <div class="form-group smart-form">
-                            <?php echo __('Select object'); ?>
+                            <?php echo __('Select object type'); ?>
                             <label class="select">
-                                <select ng-model="item.itemObjectType">
+                                <select ng-model="currentItem.itemObjectType">
+                                    <?php if ($this->Acl->hasPermission('index', 'hosts', '')): ?>
                                     <option value="host"><?php echo __('Host'); ?></option>
-                                    <option value="service"><?php echo __('Service'); ?></option>
-                                    <option value="hostgroup"><?php echo __('Hostgroup'); ?></option>
-                                    <option value="servicegroup"><?php echo __('Servicegroup'); ?></option>
+                                    <?php endif; ?>
+                                    <?php if ($this->Acl->hasPermission('index', 'services', '')): ?>
+                                        <option value="service"><?php echo __('services'); ?></option>
+                                    <?php endif; ?>
+                                    <?php if ($this->Acl->hasPermission('index', 'hostgroups', '')): ?>
+                                        <option value="hostgroup"><?php echo __('Hostgroup'); ?></option>
+                                    <?php endif; ?>
+                                    <?php if ($this->Acl->hasPermission('index', 'servicegroups', '')): ?>
+                                        <option value="servicegroup"><?php echo __('Servicegroup'); ?></option>
+                                    <?php endif; ?>
                                     <option value="map"><?php echo __('Map'); ?></option>
                                 </select> <i></i>
                             </label>
@@ -139,20 +147,40 @@
                         </div>
                     </div>
                     <div class="col-xs-12">
-                        <div class="form-group required" ng-class="{'has-error': errors.Container.parent_id}">
+                        <div class="form-group required">
                             <select
-                                    id="HostgroupParentContainer"
+                                    id="AddEditItemObjectSelect"
                                     data-placeholder="<?php echo __('Please choose'); ?>"
                                     class="form-control"
-                                    chosen="containers"
-                                    ng-options="container.key as container.value for container in containers"
-                                    ng-model="post.Container.parent_id">
+                                    chosen="itemObjects"
+                                    callback="loadMoreItemObjects"
+                                    ng-options="itemObject.key as itemObject.value for itemObject in itemObjects"
+                                    ng-model="currentItem.object_id">
                             </select>
 
                         </div>
                     </div>
+                </div>
+                <br/>
 
-
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="form-group smart-form">
+                            <?php echo __('Select iconset'); ?>
+                        </div>
+                    </div>
+                    <div class="col-xs-12" ng-if="iconsets">
+                        <div class="row" style="max-height: 200px; overflow: auto;">
+                            <div class="col-xs-12 col-md-6 col-lg-3" ng-repeat="iconset in iconsets">
+                                <div class="thumbnail"
+                                     ng-class="{ 'selectedMapItem': iconset.MapUpload.saved_name === currentItem.iconset }">
+                                    <img class="image_picker_selector"
+                                         ng-click="setCurrentIconset(iconset.MapUpload.saved_name)"
+                                         ng-src="/map_module/img/items/{{iconset.MapUpload.saved_name}}/ok.png">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <br/>
 
@@ -163,7 +191,7 @@
                             <label class="input"> <b class="icon-prepend">X</b>
                                 <input type="number" min="0" class="input-sm"
                                        placeholder="<?php echo __('0'); ?>"
-                                       ng-model="item.x">
+                                       ng-model="currentItem.x">
                             </label>
                         </div>
                     </div>
@@ -173,7 +201,7 @@
                             <label class="input"> <b class="icon-prepend">Y</b>
                                 <input type="number" min="0" class="input-sm"
                                        placeholder="<?php echo __('0'); ?>"
-                                       ng-model="item.y">
+                                       ng-model="currentItem.y">
                             </label>
                         </div>
                     </div>
@@ -181,13 +209,11 @@
 
             </div>
 
-
-        </div>
-
-        <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">
-                <?php echo __('Close'); ?>
-            </button>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">
+                    <?php echo __('Close'); ?>
+                </button>
+            </div>
         </div>
     </div>
 </div>

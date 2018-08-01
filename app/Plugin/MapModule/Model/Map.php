@@ -24,6 +24,8 @@
 //	confirmation.
 
 
+use itnovum\openITCOCKPIT\Core\MapConditions;
+
 class Map extends MapModuleAppModel {
 
     public $hasAndBelongsToMany = [
@@ -132,6 +134,89 @@ class Map extends MapModuleAppModel {
 
         return $newMap;
 
+    }
+
+    /**
+     * @param MapConditions $MapConditions
+     * @param array $selected
+     * @param array $excluded
+     * @return array|null
+     */
+    public function getMapsForAngular(MapConditions $MapConditions, $selected = [], $excluded = []) {
+        $query = [
+            'recursive'  => -1,
+            'joins'      => [
+                [
+                    'table'      => 'maps_to_containers',
+                    'alias'      => 'MapsToContainers',
+                    'type'       => 'INNER',
+                    'conditions' => [
+                        'MapsToContainers.map_id = Map.id',
+                    ],
+                ],
+            ],
+            'conditions' => $MapConditions->getConditionsForFind(),
+            'order'      => [
+                'Map.name' => 'ASC',
+            ],
+            'group'      => [
+                'Map.id'
+            ],
+            'limit'      => self::ITN_AJAX_LIMIT
+        ];
+
+        if (is_array($selected)) {
+            $selected = array_filter($selected);
+        }
+        if (!empty($selected)) {
+            $query['conditions']['NOT'] = ['Map.id' => $selected];
+        }
+
+        $mapsWithLimit = $this->find('list', $query);
+
+        $selectedMaps = [];
+        if (!empty($selected)) {
+            $query = [
+                'recursive'  => -1,
+                'joins'      => [
+                    [
+                        'table'      => 'maps_to_containers',
+                        'alias'      => 'MapsToContainers',
+                        'type'       => 'INNER',
+                        'conditions' => [
+                            'MapsToContainers.map_id = Map.id',
+                        ],
+                    ],
+                ],
+                'conditions' => [
+                    'Map.id' => $selected
+                ],
+                'order'      => [
+                    'Map.name' => 'ASC',
+                ],
+                'group'      => [
+                    'Map.id'
+                ]
+            ];
+            if ($MapConditions->hasContainer()) {
+                $query['conditions']['MapsToContainers.container_id'] = $MapConditions->getContainerIds();
+            }
+
+            $selectedMaps = $this->find('list', $query);
+        }
+
+        $maps = $mapsWithLimit + $selectedMaps;
+
+        if(is_array($excluded) && !empty($excluded)){
+            foreach($excluded as $idToExclude){
+                if(isset($maps[$idToExclude])){
+                    unset($maps[$idToExclude]);
+                }
+            }
+        }
+
+        asort($maps, SORT_FLAG_CASE | SORT_NATURAL);
+        return $maps;
     }
 
 }

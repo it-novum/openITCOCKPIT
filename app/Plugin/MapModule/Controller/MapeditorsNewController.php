@@ -22,8 +22,10 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+use itnovum\openITCOCKPIT\Core\MapConditions;
 use itnovum\openITCOCKPIT\Core\System\FileUploadSize;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
+use itnovum\openITCOCKPIT\Filter\MapFilter;
 use Symfony\Component\Finder\Finder;
 
 
@@ -31,6 +33,8 @@ use Symfony\Component\Finder\Finder;
  * Class MapeditorsNewController
  * @property Map $Map
  * @property MapNew $MapNew
+ * @property Mapitem $Mapitem
+ * @property MapUpload $MapUpload
  * @property Host $Host
  * @property Service $Service
  * @property Hoststatus $Hoststatus
@@ -44,6 +48,7 @@ class MapeditorsNewController extends MapModuleAppController {
         'MapModule.Map',
         'MapModule.MapNew',
         'MapModule.Mapitem',
+        'MapModule.MapUpload',
         'Host',
         'Service',
         'Hostgroup',
@@ -1056,6 +1061,41 @@ class MapeditorsNewController extends MapModuleAppController {
 
         $this->set('backgrounds', $backgrounds);
         $this->set('_serialize', ['backgrounds']);
+    }
+
+    public function getIconsets() {
+        if (!$this->isApiRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        $iconsets = $this->MapUpload->getIconSets();
+
+        $this->set('iconsets', $iconsets);
+        $this->set('_serialize', ['iconsets']);
+    }
+
+    /**
+     * @todo Add to ACL depandencies
+     */
+    public function loadMapsByString() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        $selected = $this->request->query('selected');
+        $excluded = $this->request->query('excluded');
+
+        $MapFilter = new MapFilter($this->request);
+
+        $MapConditions = new MapConditions($MapFilter->indexFilter());
+        $MapConditions->setContainerIds($this->MY_RIGHTS);
+
+        $maps = $this->Map->makeItJavaScriptAble(
+            $this->Map->getMapsForAngular($MapConditions, $selected, $excluded)
+        );
+
+        $this->set(compact(['maps']));
+        $this->set('_serialize', ['maps']);
     }
 
 }
