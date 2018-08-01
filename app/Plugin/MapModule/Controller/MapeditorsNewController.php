@@ -390,9 +390,11 @@ class MapeditorsNewController extends MapModuleAppController {
                             '{n}.Mapitem.object_id',
                             '{n}.Mapitem.map_id'
                         );
-                        $dependentMapsIds = $this->getDependendMaps($mapIdGroupByMapId, $mapItemIdToResolve);
-                        $dependentMapsIds[] = $mapItemIdToResolve;
 
+                        if(isset($mapIdGroupByMapId[$mapItemIdToResolve])){
+                            $dependentMapsIds = $this->getDependendMaps($mapIdGroupByMapId, $mapItemIdToResolve);
+                        }
+                        $dependentMapsIds[] = $mapItemIdToResolve;
                         // resolve all Elements (host and/or services of dependent map)
                         $allDependentMapElements = $this->MapNew->getAllDependentMapsElements(
                             $this->Map,
