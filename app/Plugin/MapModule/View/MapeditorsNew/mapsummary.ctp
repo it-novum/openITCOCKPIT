@@ -22,7 +22,11 @@
 //  License agreement and license key will be shipped with the order
 //  confirmation.
 ?>
-<div class="map-summary-state-popover col-xs-12 no-padding animated slideInRight" ng-if="summaryState">
+<div class="map-summary-state-popover col-xs-12 no-padding animated slideInRight"
+     ng-if="summaryState"
+     ng-click="hideTooltip($event)"
+     ng-mouseover="stopInterval()"
+     ng-mouseleave="startInterval()">
     <section>
         <div class="row">
             <article ng-if="iconType == 'host'">
@@ -614,6 +618,7 @@
                     </div>
                 </div>
             </article>
+            <div class="tooltipProgressBar" style="width: {{percentValue}}%;"></div>
         </div>
     </section>
 </div>
