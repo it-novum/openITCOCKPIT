@@ -24,6 +24,8 @@
 //	confirmation.
 
 
+use Symfony\Component\Finder\Finder;
+
 class MapUpload extends MapModuleAppModel {
 
     const TYPE_BACKGROUND = 1;
@@ -183,6 +185,56 @@ class MapUpload extends MapModuleAppModel {
      */
     public function isFileExtensionSupported($fileExtension) {
         return in_array(strtolower(trim($fileExtension)), $this->supportedFileExtensions, true);
+    }
+
+    /**
+     * @return array
+     * @throws Exception
+     */
+    public function getIconSets() {
+        $basePath = APP . 'Plugin' . DS . 'MapModule' . DS . 'webroot' . DS . 'img' . DS . 'items';
+        $finder = new Finder();
+        $finder->directories()->in($basePath);
+
+        $allIconsets = $this->find('all', [
+            'conditions' => [
+                'MapUpload.upload_type' => self::TYPE_ICON_SET
+            ],
+            'recursive'  => -1
+        ]);
+
+        $availableIconsets = [];
+        foreach ($allIconsets as $iconset) {
+            if (file_exists($basePath . DS . $iconset['MapUpload']['saved_name'] . DS . 'ok.png')) {
+                $availableIconsets[$iconset['MapUpload']['saved_name']] = $iconset;
+            }
+        }
+
+        /** @var \Symfony\Component\Finder\SplFileInfo $folder */
+        foreach ($finder as $folder) {
+            $dirName = $folder->getFilename();
+
+            //Does icon set exists in database?
+            if (!isset($availableIconsets[$dirName])) {
+                if (file_exists($basePath . DS . $dirName . DS . 'ok.png')) {
+                    //Icon set is missing in database, add it
+                    $this->create();
+                    $data = [
+                        'upload_type'  => MapUpload::TYPE_ICON_SET,
+                        'upload_name'  => $dirName,
+                        'saved_name'   => $dirName,
+                        'user_id'      => null,
+                        'container_id' => 1
+                    ];
+                    if ($this->save($data)) {
+                        $data['id'] = $this->id;
+                        $availableIconsets[$dirName] = $data;
+                    }
+
+                }
+            }
+        }
+        return array_values($availableIconsets);
     }
 
 }

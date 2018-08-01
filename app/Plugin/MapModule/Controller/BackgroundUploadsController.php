@@ -302,13 +302,12 @@ class BackgroundUploadsController extends MapModuleAppController {
         }
 
         $filename = $this->request->data('filename');
-        $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
 
         $background = $this->MapUpload->find('first', [
             'recursive'  => -1,
             'conditions' => [
                 'MapUpload.saved_name'   => $filename,
-                'MapUpload.container_id' => $containerIds,
+                'MapUpload.container_id' => $this->MY_RIGHTS,
             ],
         ]);
         if (empty($background)) {
