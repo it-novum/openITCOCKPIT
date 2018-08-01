@@ -9,6 +9,8 @@ angular.module('openITCOCKPIT')
         $scope.action = null;
 
         $scope.currentItem = {};
+        $scope.maxZIndex = 0;
+
 
         $scope.load = function(){
             $http.get("/map_module/mapeditors_new/edit/" + $scope.id + ".json", {
@@ -18,12 +20,16 @@ angular.module('openITCOCKPIT')
             }).then(function(result){
                 $scope.map = result.data.map;
                 $scope.maxUploadLimit = result.data.maxUploadLimit;
+                $scope.maxZIndex = result.data.max_z_index;
+                $scope.layers = result.data.layers;
 
                 $scope.currentBackground = $scope.map.Map.background;
 
                 if($scope.init){
                     createDropzones();
                     loadBackgroundImages();
+
+                    setTimeout(makeDraggable, 250);
                 }
 
                 $scope.init = false;
@@ -149,6 +155,19 @@ angular.module('openITCOCKPIT')
             $scope.currentItem.iconset = iconset;
         };
 
+        $scope.addNewLayer = function(){
+            $scope.maxZIndex++;
+
+            var newZIndex = $scope.maxZIndex;
+            newZIndex = newZIndex.toString();
+
+            $scope.layers[newZIndex] = 'Layer ' + newZIndex;
+
+            if($scope.currentItem.hasOwnProperty('z_index')){
+                $scope.currentItem.z_index = newZIndex;
+            }
+        };
+
         var loadIconsets = function(){
             $http.get("/map_module/mapeditors_new/getIconsets.json", {
                 params: {
@@ -184,9 +203,14 @@ angular.module('openITCOCKPIT')
             }
             $scope.action = null;
 
-            //Set X and Y poss of the new object
-            $scope.currentItem.x = $event.originalEvent.clientX;
-            $scope.currentItem.y = $event.originalEvent.clientY;
+            // Create currentItem skeleton
+            // Set X and Y poss of the new object
+            $scope.currentItem = {
+                iconset: 'std_mid_64px',
+                z_index: '0', //Yes we need this as a string!
+                x: $event.originalEvent.clientX,
+                y: $event.originalEvent.clientY
+            };
             //console.log($event);
         };
 
@@ -265,8 +289,6 @@ angular.module('openITCOCKPIT')
                 for(var i in result.data.services){
                     var tmpService = result.data.services[i];
 
-                    console.log(tmpService);
-
                     var serviceName = tmpService.value.Service.name;
                     if(serviceName === null || serviceName === ''){
                         serviceName = tmpService.value.Servicetemplate.name;
@@ -330,6 +352,12 @@ angular.module('openITCOCKPIT')
                 }
             }).then(function(result){
                 $scope.itemObjects = result.data.maps;
+            });
+        };
+
+        var makeDraggable = function(){
+            $('.draggable').draggable({
+                //addClasses: false
             });
         };
 

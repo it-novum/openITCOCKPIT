@@ -61,7 +61,45 @@
             <img ng-src="/map_module/img/backgrounds/{{map.Map.background}}" ng-if="map.Map.background"/>
 
 
-            Map content hier!
+            <div ng-repeat="item in map.Mapitem" class="draggable"
+                 style="position:absolute; top: {{item.y}}px; left: {{item.x}}px;  z-index: {{item.z_index}}; cursor: move;">
+                <map-item item="item" refresh-interval="0"></map-item>
+            </div>
+
+            <div ng-repeat="textItem in map.Maptext" class="draggable"
+                 style="position:absolute; top: {{textItem.y}}px; left: {{textItem.x}}px;  z-index: {{textItem.z_index}}; cursor: move;">
+                <map-text item="textItem"></map-text>
+            </div>
+
+            <div ng-repeat="lineItem in map.Mapline" class="draggable" style="cursor: move;">
+                <map-line item="lineItem" refresh-interval="0"></map-line>
+            </div>
+
+            <div ng-repeat="iconItem in map.Mapicon"
+                 style="position:absolute; top: {{iconItem.y}}px; left: {{iconItem.x}}px;  z-index: {{iconItem.z_index}}; cursor: move;"
+                 class="draggable">
+                <map-icon item="iconItem"></map-icon>
+            </div>
+
+            <div ng-repeat="gadgetItem in map.Mapgadget" class="draggable"
+                 style="position:absolute; top: {{gadgetItem.y}}px; left: {{gadgetItem.x}}px;  z-index: {{gadgetItem.z_index}}; cursor: move;">
+                <graph-item item="gadgetItem" ng-if="gadgetItem.gadget === 'RRDGraph'"
+                            refresh-interval="0"></graph-item>
+
+                <perfdata-text-item item="gadgetItem" ng-if="gadgetItem.gadget === 'Text'"
+                                    refresh-interval="0"></perfdata-text-item>
+                <tacho-item item="gadgetItem" ng-if="gadgetItem.gadget === 'Tacho'"
+                            refresh-interval="0"></tacho-item>
+
+                <cylinder-item item="gadgetItem" ng-if="gadgetItem.gadget === 'Cylinder'"
+                               refresh-interval="0"></cylinder-item>
+
+                <trafficlight-item item="gadgetItem"
+                                   ng-if="gadgetItem.gadget === 'TrafficLight'"
+                                   refresh-interval="0"></trafficlight-item>
+            </div>
+
+            <div id="graph_data_tooltip"></div>
 
 
         </div>
@@ -124,10 +162,10 @@
                             <label class="select">
                                 <select ng-model="currentItem.itemObjectType">
                                     <?php if ($this->Acl->hasPermission('index', 'hosts', '')): ?>
-                                    <option value="host"><?php echo __('Host'); ?></option>
+                                        <option value="host"><?php echo __('Host'); ?></option>
                                     <?php endif; ?>
                                     <?php if ($this->Acl->hasPermission('index', 'services', '')): ?>
-                                        <option value="service"><?php echo __('services'); ?></option>
+                                        <option value="service"><?php echo __('Service'); ?></option>
                                     <?php endif; ?>
                                     <?php if ($this->Acl->hasPermission('index', 'hostgroups', '')): ?>
                                         <option value="hostgroup"><?php echo __('Hostgroup'); ?></option>
@@ -204,6 +242,35 @@
                                        ng-model="currentItem.y">
                             </label>
                         </div>
+                    </div>
+                </div>
+                <br/>
+
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="form-group smart-form">
+                            <?php echo __('Select layer'); ?>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-md-6 col-lg-10">
+                        <div class="form-group required">
+                            <select
+                                    id="selectItemLayerSelect"
+                                    data-placeholder="<?php echo __('Please choose'); ?>"
+                                    class="form-control"
+                                    chosen="layers"
+                                    ng-options="key as layerNo for (key , layerNo) in layers"
+                                    ng-model="currentItem.z_index">
+                            </select>
+                            <span class="help-block">
+                                <?php echo __('Layers could be used to stack items on a map. Empty layers will be deleted automatically.'); ?>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-md-6 col-lg-2">
+                        <button class="btn btn-block btn-default" ng-click="addNewLayer()">
+                            <?php echo __('Add new layer'); ?>
+                        </button>
                     </div>
                 </div>
 
