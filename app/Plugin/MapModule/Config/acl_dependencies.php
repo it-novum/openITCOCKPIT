@@ -42,6 +42,7 @@ $config = [
                 'servicesForWizard',
                 'hostFromSerice',
                 'hostFromService',
+                'getDependendMaps'
             ],
             'Maps'              => [
                 'loadUsersForTenant',
