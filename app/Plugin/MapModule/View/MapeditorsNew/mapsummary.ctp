@@ -142,7 +142,7 @@
                         </div>
                         <div class="col-md-12 padding-top-20" ng-show="summaryState.Services.length > 0">
                             <div class="col-md-4">
-                                <?php echo __('Service name'); ?>
+                                <?php echo __('Service'); ?>
                             </div>
                             <div class="col-md-4 no-padding">
                                 <?php echo __('State'); ?>
@@ -211,7 +211,7 @@
                         </div>
                         <div class="col-md-12">
                             <div class="col-md-4">
-                                <?php echo __('Service name'); ?>
+                                <?php echo __('Service'); ?>
                             </div>
                             <div class="col-md-8 no-padding">
                                 {{summaryState.Service.servicename}}
@@ -410,6 +410,203 @@
                                     </a>
                                     <a class="btn btn-default state-button-small font-sm">
                                         {{host.ServiceSummary.state[3]}}
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </article>
+            <article ng-if="iconType == 'servicegroup'">
+                <div class="jarviswidget">
+                    <header>
+                        <h2 class="bold txt-color-blueDark">
+                            <i class="fa fa-cogs fa-lg txt-color-blueDark"></i>
+                            <?php echo __('Service group'); ?>
+                        </h2>
+                    </header>
+                    <div class="txt-color-blueDark font-xs padding-top-10 padding-bottom-10">
+                        <div class="col-md-12">
+                            <div class="col-md-4">
+                                <?php echo __('Service group name'); ?>
+                            </div>
+                            <div class="col-md-8 no-padding">
+                                {{summaryState.Servicegroup.name}}
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="col-md-4">
+                                <?php echo __('Description'); ?>
+                            </div>
+                            <div class="col-md-8 no-padding">
+                                {{summaryState.Servicegroup.description}}
+                            </div>
+                        </div>
+                        <div class="col-md-12  padding-top-10">
+                            <div class="col-md-4">
+                                <?php echo __('Summary state'); ?>
+                            </div>
+                            <div class="col-md-8 no-padding" ng-show="summaryState.ServiceSummary.total > 0">
+                                <div class="text-center txt-color-white text-capitalize bg-{{ summaryState.CumulatedHumanState}}">
+                                    {{summaryState.CumulatedHumanState}}
+                                </div>
+                            </div>
+                            <div class="col-md-8 no-padding" ng-show="summaryState.ServiceSummary.total == 0">
+                                <div class="text-center txt-color-white text-capitalize bg-primary">
+                                    {{summaryState.CumulatedHumanState}}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12 padding-top-10">
+                            <div class="col-md-4">
+                                <?php echo __('Summary output'); ?>
+                            </div>
+                            <div class="col-md-4 no-padding">
+                                <?php echo __('Services: '); ?>{{summaryState.ServiceSummary.total}}
+                            </div>
+                        </div>
+
+                        <div class="col-md-12 padding-top-10">
+                            <div class="col-md-4">
+                                <?php echo __('Services overview'); ?>
+                            </div>
+                            <div class="col-md-8 no-padding">
+                                <div class="btn-group btn-group-justified" role="group">
+                                    <a class="btn btn-success state-button-small font-sm">
+                                        {{summaryState.ServiceSummary.state[0]}}
+                                    </a>
+                                    <a class="btn btn-warning state-button-small font-sm">
+                                        {{summaryState.ServiceSummary.state[1]}}
+                                    </a>
+                                    <a class="btn btn-danger state-button-small font-sm">
+                                        {{summaryState.ServiceSummary.state[2]}}
+                                    </a>
+                                    <a class="btn btn-default state-button-small font-sm">
+                                        {{summaryState.ServiceSummary.state[3]}}
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12 padding-top-20" ng-show="summaryState.Services.length > 0">
+                            <div class="col-md-6">
+                                <?php echo __('Service'); ?>
+                            </div>
+                            <div class="col-md-2 no-padding">
+                                <?php echo __('State'); ?>
+                            </div>
+                            <div class="col-md-4">
+                                <?php echo __('Output'); ?>
+                            </div>
+                        </div>
+                        <div class="col-md-12 padding-top-10" ng-repeat="service in summaryState.Services">
+                            <div class="col-md-6 cropText" title="{{service.Host.hostname}}/{{service.Service.servicename}}">
+                                {{service.Host.hostname}}/{{service.Service.servicename}}
+                            </div>
+                            <div ng-show="service.Servicestatus.isInMonitoring"
+                                 class="col-md-2 text-center txt-color-white text-capitalize bg-{{(service.Servicestatus.isHardstate)?service.Servicestatus.humanState:service.Servicestatus.humanState+'-soft'}}">
+                                <i ng-show="service.Servicestatus.problemHasBeenAcknowledged"
+                                   class="fa fa-user"></i>
+                                <i ng-show="service.Servicestatus.scheduledDowntimeDepth > 0"
+                                   class="fa fa-power-off"></i>&nbsp;
+                            </div>
+                            <div ng-hide="service.Servicestatus.isInMonitoring"
+                                 class="col-md-2 text-center txt-color-white bg-primary">
+                                <i class="fa fa-eye-slash"></i>
+                            </div>
+                            <div class="col-md-4 cropText">
+                                {{service.Servicestatus.output}}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </article>
+            <article ng-if="iconType == 'map'">
+                <div class="jarviswidget">
+                    <header>
+                        <h2 class="bold txt-color-blueDark">
+                            <i class="fa fa-image fa-lg txt-color-blueDark"></i>
+                            <?php echo __('Map'); ?>
+                        </h2>
+                    </header>
+                    <div class="txt-color-blueDark font-xs padding-top-10 padding-bottom-10">
+                        <div class="col-md-12">
+                            <div class="col-md-4">
+                                <?php echo __('Map name'); ?>
+                            </div>
+                            <div class="col-md-8 no-padding">
+                                {{summaryState.Map.name}}
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="col-md-4">
+                                <?php echo __('Map title'); ?>
+                            </div>
+                            <div class="col-md-8 no-padding">
+                                {{summaryState.Map.title}}
+                            </div>
+                        </div>
+                        <div class="col-md-12 padding-top-10">
+                            <div class="col-md-4">
+                                <?php echo __('Summary state'); ?>
+                            </div>
+                            <div class="col-md-8 no-padding" ng-show="summaryState.HostSummary.total > 0|| summaryState.ServiceSummary.total > 0">
+                                <div class="text-center txt-color-white text-capitalize bg-{{ summaryState.CumulatedHumanState}}">
+                                    {{summaryState.CumulatedHumanState}}
+                                </div>
+                            </div>
+                            <div class="col-md-8 no-padding" ng-show="summaryState.HostSummary.total == 0 && summaryState.ServiceSummary.total == 0">
+                                <div class="text-center txt-color-white text-capitalize bg-primary">
+                                    {{summaryState.CumulatedHumanState}}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12 padding-top-10">
+                            <div class="col-md-4">
+                                <?php echo __('Summary output'); ?>
+                            </div>
+                            <div class="col-md-4 no-padding">
+                                <?php echo __('Hosts: '); ?>{{summaryState.HostSummary.total}}
+                            </div>
+                            <div class="col-md-4 no-padding">
+                                <?php echo __('Services: '); ?>{{summaryState.ServiceSummary.total}}
+                            </div>
+                        </div>
+
+                        <div class="col-md-12 padding-top-10">
+                            <div class="col-md-4">
+                                <?php echo __('Hosts overview'); ?>
+                            </div>
+                            <div class="col-md-8 no-padding">
+                                <div class="btn-group btn-group-justified" role="group">
+                                    <a class="btn btn-success state-button-small font-sm">
+                                        {{summaryState.HostSummary.state[0]}}
+                                    </a>
+                                    <a class="btn btn-danger state-button-small font-sm">
+                                        {{summaryState.HostSummary.state[1]}}
+                                    </a>
+                                    <a class="btn btn-default state-button-small font-sm">
+                                        {{summaryState.HostSummary.state[2]}}
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12 padding-top-10">
+                            <div class="col-md-4">
+                                <?php echo __('Services overview'); ?>
+                            </div>
+                            <div class="col-md-8 no-padding">
+                                <div class="btn-group btn-group-justified" role="group">
+                                    <a class="btn btn-success state-button-small font-sm">
+                                        {{summaryState.ServiceSummary.state[0]}}
+                                    </a>
+                                    <a class="btn btn-warning state-button-small font-sm">
+                                        {{summaryState.ServiceSummary.state[1]}}
+                                    </a>
+                                    <a class="btn btn-danger state-button-small font-sm">
+                                        {{summaryState.ServiceSummary.state[2]}}
+                                    </a>
+                                    <a class="btn btn-default state-button-small font-sm">
+                                        {{summaryState.ServiceSummary.state[3]}}
                                     </a>
                                 </div>
                             </div>

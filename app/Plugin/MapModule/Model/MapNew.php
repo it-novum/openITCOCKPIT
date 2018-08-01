@@ -351,6 +351,184 @@ class MapNew extends MapModuleAppModel {
 
     /**
      * @param Model $Service
+     * @param Model $Servicestatus
+     * @param $hostgroup
+     * @return array
+     */
+    public function getServicegroupInformation(Model $Service, Model $Servicestatus, $servicegroup) {
+        $ServicestatusFields = new ServicestatusFields($this->DbBackend);
+        $ServicestatusFields->currentState()->scheduledDowntimeDepth()->problemHasBeenAcknowledged();
+
+        $serviceUuids = Hash::extract($servicegroup['Service'], '{n}.uuid');
+
+        $servicestatusByUuids = $Servicestatus->byUuid($serviceUuids, $ServicestatusFields);
+
+        $servicegroupLight = [
+            'id' => (int)$servicegroup['Servicegroup']['id'],
+            'name' => $servicegroup['Container']['name'],
+            'description' => $servicegroup['Servicegroup']['description']
+        ];
+
+        if (empty($servicestatusByUuids)) {
+            return [
+                'icon' => $this->errorIcon,
+                'color' => 'text-primary',
+                'background' => 'bg-color-blueLight',
+                'Servicegroup' => $servicegroupLight
+            ];
+        }
+        $worstServiceState = array_values(
+            Hash::sort($servicestatusByUuids, '{s}.Servicestatus.current_state', 'desc')
+        );
+
+        $servicestatus = new \itnovum\openITCOCKPIT\Core\Servicestatus($worstServiceState[0]['Servicestatus']);
+
+        $icon = $this->serviceIcons[$servicestatus->currentState()];
+        $color = $servicestatus->ServiceStatusColor();
+        $background = $servicestatus->ServiceStatusBackgroundColor();
+
+
+        if ($servicestatus->isAcknowledged()) {
+            $icon = $this->ackIcon;
+        }
+
+        if ($servicestatus->isInDowntime()) {
+            $icon = $this->downtimeIcon;
+        }
+
+        if ($servicestatus->isAcknowledged() && $servicestatus->isInDowntime()) {
+            $icon = $this->ackAndDowntimeIcon;
+        }
+
+        return [
+            'icon' => $icon,
+            'color' => $color,
+            'background' => $background,
+            'Servicegroup' => $servicegroupLight
+        ];
+    }
+
+    /**
+     * @param Model $Host
+     * @param Model $Hoststatus
+     * @param Model $Service
+     * @param Model $Servicestatus
+     * @param Model $Map
+     * @param $map
+     * @return array
+     */
+    public function getMapInformation(Model $Hoststatus, Model $Servicestatus, $map, $hosts, $services) {
+        if (empty($hosts) && empty($services)) {
+            return [
+                'icon' => $this->errorIcon,
+                'color' => 'text-primary',
+                'background' => 'bg-color-blueLight',
+                'Map' => $map
+            ];
+        }
+        $map = [
+            'id' => $map['Map']['id'],
+            'name' => $map['Map']['name'],
+            'title' => $map['Map']['title']
+        ];
+        $hostsUuids = Hash::extract($hosts, '{n}.Host.uuid');
+
+        $HoststatusFields = new HoststatusFields($this->DbBackend);
+        $HoststatusFields->currentState()->scheduledDowntimeDepth()->problemHasBeenAcknowledged();
+        $hoststatusByUuids = $Hoststatus->byUuid($hostsUuids, $HoststatusFields);
+        if (empty($hoststatusByUuids)) {
+            $hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus([]);
+            $icon = $this->errorIcon;
+            $color = $hoststatus->HostStatusColor();
+            $background = $hoststatus->HostStatusBackgroundColor();
+            $iconProperty = $icon;
+        } else {
+            $worstHostState = array_values(
+                Hash::sort($hoststatusByUuids, '{s}.Hoststatus.current_state', 'desc')
+            );
+            if (!empty($worstHostState)) {
+                $hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus($worstHostState[0]['Hoststatus']);
+            }
+            $icon = $this->hostIcons[$hoststatus->currentState()];
+            $color = $hoststatus->HostStatusColor();
+            $background = $hoststatus->HostStatusBackgroundColor();
+            $iconProperty = $icon;
+
+
+            if ($hoststatus->isAcknowledged()) {
+                $iconProperty = $this->ackIcon;
+            }
+
+            if ($hoststatus->isInDowntime()) {
+                $iconProperty = $this->downtimeIcon;
+            }
+
+            if ($hoststatus->isAcknowledged() && $hoststatus->isInDowntime()) {
+                $iconProperty = $this->ackAndDowntimeIcon;
+            }
+
+            if ($hoststatus->currentState() > 0) {
+                return [
+                    'icon' => $icon,
+                    'icon_property' => $iconProperty,
+                    'color' => $color,
+                    'background' => $background,
+                    'Map' => $map
+                ];
+            }
+        }
+
+
+        $servicesUuids = Hash::extract($services, '{n}.Service.uuid');
+        $ServicestatusFieds = new ServicestatusFields($this->DbBackend);
+        $ServicestatusFieds->currentState()->scheduledDowntimeDepth()->problemHasBeenAcknowledged();
+        $ServicestatusConditions = new ServicestatusConditions($this->DbBackend);
+        $ServicestatusConditions->servicesWarningCriticalAndUnknown();
+        $servicestatus = $Servicestatus->byUuid($servicesUuids, $ServicestatusFieds, $ServicestatusConditions);
+        if (!empty($servicestatus)) {
+            $worstServiceState = array_values(
+                Hash::sort($servicestatus, '{s}.Servicestatus.current_state', 'desc')
+            );
+
+            $servicestatus = new \itnovum\openITCOCKPIT\Core\Servicestatus($worstServiceState[0]['Servicestatus']);
+            $serviceIcon = $this->serviceIcons[$servicestatus->currentState()];
+
+            $serviceIconProperty = $serviceIcon;
+            if ($servicestatus->isAcknowledged()) {
+                $serviceIconProperty = $this->ackIcon;
+            }
+
+            if ($servicestatus->isInDowntime()) {
+                $serviceIconProperty = $this->downtimeIcon;
+            }
+
+            if ($servicestatus->isAcknowledged() && $servicestatus->isInDowntime()) {
+                $serviceIconProperty = $this->ackAndDowntimeIcon;
+            }
+
+            return [
+                'icon' => $serviceIcon,
+                'icon_property' => $serviceIconProperty,
+                'isAcknowledged' => $servicestatus->isAcknowledged(),
+                'isInDowntime' => $servicestatus->isInDowntime(),
+                'color' => $servicestatus->ServiceStatusColor(),
+                'background' => $servicestatus->ServiceStatusBackgroundColor(),
+                'Map' => $map,
+            ];
+        }
+        return [
+            'icon' => $icon,
+            'icon_property' => $iconProperty,
+            'isAcknowledged' => $hoststatus->isAcknowledged(),
+            'isInDowntime' => $hoststatus->isInDowntime(),
+            'color' => $color,
+            'background' => $background,
+            'Map' => $map
+        ];
+    }
+
+    /**
+     * @param Model $Service
      * @param Model $Hoststatus
      * @param Model $Servicestatus
      * @param $host
@@ -545,7 +723,7 @@ class MapNew extends MapModuleAppModel {
         }
         $hoststatusResult = [];
         $cumulatedHostState = -1;
-        $cumulatedServiceState = -1;
+        $cumulatedServiceState = null;
         $allServiceStatus = [];
         $totalServiceStateSummary = [
             'state' => [
@@ -635,6 +813,271 @@ class MapNew extends MapModuleAppModel {
             'Hostgroup' => $hostgroup,
             'Hosts' => $hoststatusResult,
             'CumulatedHumanState' => $CumulatedHumanState
+        ];
+    }
+
+    /**
+     * @param Model $Service
+     * @param Model $Servicestatus
+     * @param $servicegroup
+     * @return array
+     */
+    public function getServicegroupSummary(Model $Service, Model $Servicestatus, $servicegroup) {
+        $ServicestatusFields = new ServicestatusFields($this->DbBackend);
+        $ServicestatusFields
+            ->currentState()
+            ->isHardstate()
+            ->output()
+            ->scheduledDowntimeDepth()
+            ->problemHasBeenAcknowledged();
+
+        $serviceUuids = Hash::extract($servicegroup['Service'], '{n}.uuid');
+        $ServicestatusConditions = new ServicestatusConditions($this->DbBackend);
+
+        $servicestatusResults = $Servicestatus->byUuid($serviceUuids, $ServicestatusFields, $ServicestatusConditions);
+        $serviceStateSummary = $Service->getServiceStateSummary($servicestatusResults, false);
+        $cumulatedServiceState = null;
+        $allServiceStatus = [];
+        foreach ($servicegroup['Service'] as $service) {
+            $Service = new \itnovum\openITCOCKPIT\Core\Views\Service([
+                'Service' => $service,
+                'Servicetemplate' => $service['Servicetemplate']
+            ]);
+            $Host = new \itnovum\openITCOCKPIT\Core\Views\Host(['Host' => $service['Host']]);
+
+            if (isset($servicestatusResults[$Service->getUuid()])) {
+                $Servicestatus = new \itnovum\openITCOCKPIT\Core\Servicestatus(
+                    $servicestatusResults[$Service->getUuid()]['Servicestatus']
+                );
+            } else {
+                $Servicestatus = new \itnovum\openITCOCKPIT\Core\Servicestatus(
+                    ['Servicestatus' => []]
+                );
+            }
+            $servicesResult[] = [
+                'Service' => $Service->toArray(),
+                'Servicestatus' => $Servicestatus->toArray(),
+                'Host' => $Host->toArray()
+            ];
+        }
+        $servicesResult = Hash::sort($servicesResult, '{s}.Servicestatus.currentState', 'desc');
+        if (!empty($servicestatusResults)) {
+            $cumulatedServiceState = Hash::apply($servicestatusResults, '{s}.Servicestatus.current_state', 'max');
+        }
+        $CumulatedServiceStatus = new \itnovum\openITCOCKPIT\Core\Servicestatus([
+            'current_state' => $cumulatedServiceState
+        ]);
+
+        $servicegroup = [
+            'id' => $servicegroup['Servicegroup']['id'],
+            'name' => $servicegroup['Container']['name'],
+            'description' => $servicegroup['Servicegroup']['description']
+        ];
+
+        return [
+            'Servicegroup' => $servicegroup,
+            'ServiceSummary' => $serviceStateSummary,
+            'Services' => $servicesResult,
+            'CumulatedHumanState' => $CumulatedServiceStatus->toArray()['humanState']
+        ];
+    }
+
+    /**
+     * @param Model $Host
+     * @param Model $Hoststatus
+     * @param Model $Service
+     * @param Model $Servicestatus
+     * @param $map
+     * @param $hosts
+     * @param $services
+     * @return array map summary with host and service status overview
+     */
+    public function getMapSummary(Model $Host, Model $Hoststatus, Model $Service, Model $Servicestatus, $map, $hosts, $services) {
+        $cumulatedHostState = null;
+        $cumulatedServiceState = null;
+
+        $HoststatusFields = new HoststatusFields($this->DbBackend);
+        $HoststatusFields
+            ->currentState()
+            ->isHardstate()
+            ->scheduledDowntimeDepth()
+            ->problemHasBeenAcknowledged();
+
+        $hostUuids = Hash::extract($hosts, '{n}.Host.uuid');
+
+        $hoststatusByUuids = $Hoststatus->byUuid($hostUuids, $HoststatusFields);
+        $hostStateSummary = $Host->getHostStateSummary($hoststatusByUuids, false);
+
+        $ServicestatusFieds = new ServicestatusFields($this->DbBackend);
+        $ServicestatusFieds
+            ->currentState()
+            ->isHardstate()
+            ->scheduledDowntimeDepth()
+            ->problemHasBeenAcknowledged();
+        $ServicestatusConditions = new ServicestatusConditions($this->DbBackend);
+
+        $servicesUuids = Hash::extract($services, '{n}.Service.uuid');
+
+        $servicestatusResults = $Servicestatus->byUuid($servicesUuids, $ServicestatusFieds, $ServicestatusConditions);
+        $serviceStateSummary = $Service->getServiceStateSummary($servicestatusResults, false);
+
+        if (!empty($hoststatusByUuids)) {
+            $cumulatedHostState = (int)Hash::apply($hoststatusByUuids, '{s}.Hoststatus.current_state', 'max');
+        }
+        if (!empty($servicestatusResults)) {
+            $cumulatedServiceState = (int)Hash::apply($servicestatusResults, '{s}.Servicestatus.current_state', 'max');
+        }
+
+        $CumulatedHostStatus = new \itnovum\openITCOCKPIT\Core\Hoststatus([
+            'current_state' => $cumulatedHostState
+        ]);
+
+        $CumulatedHumanState = $CumulatedHostStatus->toArray()['humanState'];
+        if (($cumulatedHostState === 0 || is_null($cumulatedHostState)) && !is_null($cumulatedServiceState)) {
+            $CumulatedServiceStatus = new \itnovum\openITCOCKPIT\Core\Servicestatus([
+                'current_state' => $cumulatedServiceState
+            ]);
+            $CumulatedHumanState = $CumulatedServiceStatus->toArray()['humanState'];
+        }
+
+        $map = [
+            'id' => $map['Map']['id'],
+            'name' => $map['Map']['name'],
+            'title' => $map['Map']['title'],
+        ];
+
+        return [
+            'Map' => $map,
+            'HostSummary' => $hostStateSummary,
+            'ServiceSummary' => $serviceStateSummary,
+            'CumulatedHumanState' => $CumulatedHumanState
+
+        ];
+    }
+
+    /**
+     * @param Model $Map
+     * @param $dependentMapsIds
+     * @param Model $Hostgroup
+     * @param Model $Servicegroup
+     * @return array with host and service ids
+     */
+    public function getAllDependentMapsElements(Model $Map, $dependentMapsIds, Model $Hostgroup, Model $Servicegroup) {
+        $allDependentMapElements = $Map->find('all', [
+            'recursive' => -1,
+            'contain' => [
+                'Mapitem' => [
+                    'conditions' => [
+                        'NOT' => [
+                            'Mapitem.type' => 'map'
+                        ]
+                    ],
+                    'fields' => [
+                        'Mapitem.type',
+                        'Mapitem.object_id'
+                    ]
+                ],
+                'Mapline' => [
+                    'conditions' => [
+                        'NOT' => [
+                            'Mapline.type' => 'stateless'
+                        ]
+                    ],
+                    'fields' => [
+                        'Mapline.type',
+                        'Mapline.object_id'
+                    ]
+                ],
+                'Mapgadget' => [
+                    'fields' => [
+                        'Mapgadget.type',
+                        'Mapgadget.object_id'
+                    ]
+                ]
+            ],
+            'conditions' => [
+                'Map.id' => $dependentMapsIds
+            ]
+        ]);
+        $mapElementsByCategory = [
+            'host' => [],
+            'hostgroup' => [],
+            'service' => [],
+            'servicegroup' => []
+        ];
+        $allDependentMapElements = Hash::filter($allDependentMapElements);
+        foreach ($allDependentMapElements as $allDependentMapElementArray) {
+            foreach ($allDependentMapElementArray as $mapElementKey => $mapElementData) {
+                if ($mapElementKey === 'Map') {
+                    continue;
+                }
+                foreach ($mapElementData as $mapElement) {
+                    $mapElementsByCategory[$mapElement['type']][$mapElement['object_id']] = $mapElement['object_id'];
+                }
+            }
+
+        }
+        $hostIds = $mapElementsByCategory['host'];
+        if (!empty($mapElementsByCategory['hostgroup'])) {
+            $query = [
+                'recursive' => -1,
+                'joins' => [
+                    [
+                        'table' => 'hosts_to_hostgroups',
+                        'type' => 'INNER',
+                        'alias' => 'HostsToHostgroups',
+                        'conditions' => 'HostsToHostgroups.hostgroup_id = Hostgroup.id',
+                    ],
+                ],
+                'fields' => [
+                    'HostsToHostgroups.host_id'
+
+                ],
+                'conditions' => [
+                    'Hostgroup.id' => $mapElementsByCategory['hostgroup']
+                ]
+            ];
+            if ($this->hasRootPrivileges === false) {
+                $query['conditions']['Hostgroup.container_id'] = $this->MY_RIGHTS;
+            }
+
+            $hostIdsByHostgroup = $Hostgroup->find('all', $query);
+            foreach ($hostIdsByHostgroup as $hostIdByHostgroup) {
+                $hostIds[$hostIdByHostgroup['HostsToHostgroups']['host_id']] = $hostIdByHostgroup['HostsToHostgroups']['host_id'];
+            }
+        }
+        $serviceIds = $mapElementsByCategory['service'];
+        if (!empty($mapElementsByCategory['servicegroup'])) {
+            $query = [
+                'recursive' => -1,
+                'joins' => [
+                    [
+                        'table' => 'services_to_servicegroups',
+                        'type' => 'INNER',
+                        'alias' => 'ServicesToServicegroups',
+                        'conditions' => 'ServicesToServicegroups.servicegroup_id = Servicegroup.id',
+                    ],
+                ],
+                'fields' => [
+                    'ServicesToServicegroups.service_id'
+
+                ],
+                'conditions' => [
+                    'Servicegroup.id' => $mapElementsByCategory['servicegroup']
+                ]
+            ];
+            if ($this->hasRootPrivileges === false) {
+                $query['conditions']['Servicegroup.container_id'] = $this->MY_RIGHTS;
+            }
+
+            $serviceIdsByServicegroup = $Servicegroup->find('all', $query);
+            foreach ($serviceIdsByServicegroup as $serviceIdByServicegroup) {
+                $serviceIds[$serviceIdByServicegroup['ServicesToServicegroups']['service_id']] = $serviceIdByServicegroup['ServicesToServicegroups']['service_id'];
+            }
+        }
+        return [
+            'hostIds' => $hostIds,
+            'serviceIds' => $serviceIds
         ];
     }
 }
