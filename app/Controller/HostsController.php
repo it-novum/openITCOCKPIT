@@ -3674,11 +3674,35 @@ class HostsController extends AppController {
             ],
         ]);
 
+        $hosttemplateObj = new \itnovum\openITCOCKPIT\Core\Hosttemplate($hosttemplate);
+        //cast the hosttemplate values
+        $castedhosttemplate = $hosttemplateObj->castedValues();
+
+        $contactIds = Hash::extract($hosttemplate, 'Contact.{n}.id');
+        $contactgroupIds = Hash::extract($hosttemplate, 'Contactgroup.{n}.id');
+        $hostgroupIds = Hash::extract($hosttemplate, 'Hostgroup.{n}.id');
+
+        //cast other ids to int
+        foreach ($contactIds as $key => $id){
+            $contactIds[$key] = (int)$id;
+        }
+
+        foreach ($contactgroupIds as $key => $id){
+            $contactgroupIds[$key] = (int)$id;
+        }
+
+        foreach($hostgroupIds as $key => $id){
+            $hostgroupIds[$key] = (int)$id;
+        }
+
         $hosttemplate = [
-            'Hosttemplate' => $hosttemplate['Hosttemplate'],
-            'ContactIds' => Hash::extract($hosttemplate, 'Contact.{n}.id'),
-            'ContactgroupIds' => Hash::extract($hosttemplate, 'Contactgroup.{n}.id'),
-            'HostgroupIds' => Hash::extract($hosttemplate, 'Hostgroup.{n}.id')
+            'Hosttemplate' => $castedhosttemplate['Hosttemplate'],
+            'ContactIds' => $contactIds,
+            'ContactgroupIds' => $contactgroupIds,
+            'HostgroupIds' => $hostgroupIds,
+            'HostData' => [
+                'host_type' => GENERIC_HOST
+            ]
         ];
 
 

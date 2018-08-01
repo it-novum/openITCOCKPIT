@@ -23,7 +23,11 @@ angular.module('openITCOCKPIT')
                 notify_period_id: 0,
                 check_period_id: 0,
                 command_id: 0,
+                host_type: 1,
                 uuid: ''
+            },
+            Contact: {
+
             }
         };
 
@@ -89,10 +93,17 @@ angular.module('openITCOCKPIT')
                 $scope.contactgroups = result.data.contactgroups;
                 $scope.Host.command_id = result.data.command_id;
                 */
+                $scope.post.Host.description = result.data.hosttemplate.Hosttemplate.description;
+                $scope.post.Host.host_type = result.data.hosttemplate.Hosttemplate.host_type;
                 $scope.post.Host.command_id = result.data.hosttemplate.Hosttemplate.command_id;
                 $scope.post.Host.Contact = result.data.hosttemplate.ContactIds;
+                $scope.post.Contact = result.data.hosttemplate.ContactIds;
+                $scope.post.Contact = result.data.hosttemplate.ContactIds;
+                $scope.post.Contactgroup = result.data.hosttemplate.ContactgroupIds;
                 $scope.post.Host.Contactgroup = result.data.hosttemplate.ContactgroupIds;
                 $scope.post.Host.Hostgroup = result.data.hosttemplate.HostgroupIds;
+                $scope.post.Host.check_period_id = result.data.hosttemplate.Hosttemplate.check_period_id;
+                $scope.post.Host.notify_period_id = result.data.hosttemplate.Hosttemplate.notify_period_id;
             });
         };
 
@@ -131,7 +142,7 @@ angular.module('openITCOCKPIT')
 
         $scope.submit = function(){
             console.log($scope.post);
-            debugger;
+            //debugger;
 
             $http.post("/hosts/addwizard.json?angular=true",
                 $scope.post
