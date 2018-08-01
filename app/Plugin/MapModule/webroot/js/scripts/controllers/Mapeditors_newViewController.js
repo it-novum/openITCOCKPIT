@@ -21,8 +21,6 @@ angular.module('openITCOCKPIT')
                 $scope.acl = result.data.ACL;
 
                 if($scope.init){
-                    console.log($scope.refreshInterval);
-
                     if($scope.refreshInterval > 1000 && $scope.rotate === null){
                         //Only refresh maps if they are not in a rotation.
                         //Rotation will also refresh maps on change of current map
