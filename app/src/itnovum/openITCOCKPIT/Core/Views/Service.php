@@ -43,6 +43,11 @@ class Service {
     private $servicename = null;
 
     /**
+     * @var string|null
+     */
+    private $hostname = null;
+
+    /**
      * @var string
      */
     private $description;
@@ -126,6 +131,10 @@ class Service {
             $this->host_id = (int)$service['Host']['id'];
         }
 
+        if (isset($service['Host']['name'])) {
+            $this->hostname = $service['Host']['name'];
+        }
+
         if (isset($service['Service']['disabled'])) {
             $this->disabled = (bool)$service['Service']['disabled'];
         }
@@ -160,6 +169,13 @@ class Service {
      */
     public function getServicename(){
         return $this->servicename;
+    }
+
+    /**
+     * @return string
+     */
+    public function getHostname(){
+        return $this->hostname;
     }
 
     /**

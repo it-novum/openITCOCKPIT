@@ -891,18 +891,25 @@ class MapNew extends MapModuleAppModel {
      * @param $map
      * @param $hosts
      * @param $services
+     * @param UserTime $UserTime
      * @return array map summary with host and service status overview
      */
-    public function getMapSummary(Model $Host, Model $Hoststatus, Model $Service, Model $Servicestatus, $map, $hosts, $services) {
+    public function getMapSummary(Model $Host, Model $Hoststatus, Model $Service, Model $Servicestatus, $map, $hosts, $services, UserTime $UserTime) {
         $cumulatedHostState = null;
         $cumulatedServiceState = null;
+        $notOkHosts = [];
+        $notOkServices = [];
+        $counterForNotOkHostAndService = 0;
+        $limitForNotOkHostAndService = 50;
 
         $HoststatusFields = new HoststatusFields($this->DbBackend);
         $HoststatusFields
             ->currentState()
+            ->lastCheck()
             ->isHardstate()
             ->scheduledDowntimeDepth()
-            ->problemHasBeenAcknowledged();
+            ->problemHasBeenAcknowledged()
+            ->output();
 
         $hostUuids = Hash::extract($hosts, '{n}.Host.uuid');
 
@@ -912,9 +919,11 @@ class MapNew extends MapModuleAppModel {
         $ServicestatusFieds = new ServicestatusFields($this->DbBackend);
         $ServicestatusFieds
             ->currentState()
+            ->lastCheck()
             ->isHardstate()
             ->scheduledDowntimeDepth()
-            ->problemHasBeenAcknowledged();
+            ->problemHasBeenAcknowledged()
+            ->output();
         $ServicestatusConditions = new ServicestatusConditions($this->DbBackend);
 
         $servicesUuids = Hash::extract($services, '{n}.Service.uuid');
@@ -923,12 +932,55 @@ class MapNew extends MapModuleAppModel {
         $serviceStateSummary = $Service->getServiceStateSummary($servicestatusResults, false);
 
         if (!empty($hoststatusByUuids)) {
-            $cumulatedHostState = (int)Hash::apply($hoststatusByUuids, '{s}.Hoststatus.current_state', 'max');
-        }
-        if (!empty($servicestatusResults)) {
-            $cumulatedServiceState = (int)Hash::apply($servicestatusResults, '{s}.Servicestatus.current_state', 'max');
+            $worstHostState = array_values(
+                $hoststatusByUuids = Hash::sort($hoststatusByUuids, '{s}.Hoststatus.current_state', 'desc')
+            );
+            $cumulatedHostState = (int)$worstHostState[0]['Hoststatus']['current_state'];
+            if ($cumulatedHostState > 0) {
+                $hosts = Hash::combine($hosts, '{n}.Host.uuid', '{n}');
+                foreach ($hoststatusByUuids as $hostUuid => $hoststatusByUuid) {
+                    if ($counterForNotOkHostAndService > $limitForNotOkHostAndService) {
+                        break;
+                    }
+                    if ($hoststatusByUuid['Hoststatus']['current_state'] === '0') {
+                        break;
+                    }
+                    $hostStatus = new \itnovum\openITCOCKPIT\Core\Hoststatus($hoststatusByUuid['Hoststatus'], $UserTime);
+                    $host = new \itnovum\openITCOCKPIT\Core\Views\Host($hosts[$hostUuid]);
+
+                    $notOkHosts[] = [
+                        'Hoststatus' => $hostStatus->toArray(),
+                        'Host' => $host->toArray()
+                    ];
+                    $counterForNotOkHostAndService++;
+                }
+            }
         }
 
+        if (!empty($servicestatusResults)) {
+            $worstServiceState = array_values(
+                $servicestatusResults = Hash::sort($servicestatusResults, '{s}.Servicestatus.current_state', 'desc')
+            );
+            $cumulatedServiceState = (int)$worstServiceState[0]['Servicestatus']['current_state'];
+            if ($cumulatedServiceState > 0) {
+                $services = Hash::combine($services, '{n}.Service.uuid', '{n}');
+                foreach ($servicestatusResults as $serviceUuid => $servicestatusByUuid) {
+                    if ($counterForNotOkHostAndService > $limitForNotOkHostAndService) {
+                        break;
+                    }
+                    if ($servicestatusByUuid['Servicestatus']['current_state'] === '0') {
+                        break;
+                    }
+                    $serviceStatus = new \itnovum\openITCOCKPIT\Core\Servicestatus($servicestatusByUuid['Servicestatus'], $UserTime);
+                    $service = new \itnovum\openITCOCKPIT\Core\Views\Service($services[$serviceUuid]);
+                    $notOkServices[] = [
+                        'Servicestatus' => $serviceStatus->toArray(),
+                        'Service' => $service->toArray()
+                    ];
+                    $counterForNotOkHostAndService++;
+                }
+            }
+        }
         $CumulatedHostStatus = new \itnovum\openITCOCKPIT\Core\Hoststatus([
             'current_state' => $cumulatedHostState
         ]);
@@ -951,8 +1003,9 @@ class MapNew extends MapModuleAppModel {
             'Map' => $map,
             'HostSummary' => $hostStateSummary,
             'ServiceSummary' => $serviceStateSummary,
-            'CumulatedHumanState' => $CumulatedHumanState
-
+            'CumulatedHumanState' => $CumulatedHumanState,
+            'NotOkHosts' => $notOkHosts,
+            'NotOkServices' => $notOkServices
         ];
     }
 
