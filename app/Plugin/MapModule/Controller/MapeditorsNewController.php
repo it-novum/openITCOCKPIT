@@ -1035,13 +1035,25 @@ class MapeditorsNewController extends MapModuleAppController {
 
         $layers = [];
         foreach ($map as $modelName => $records) {
-            foreach ($records as $data) {
+            foreach ($records as $key => $data) {
                 if (isset($data['z_index'])) {
                     $zIndex = (int)$data['z_index'];
                     $layers[$zIndex] = sprintf('Layer %s', $zIndex);
                     if ($zIndex > $maxZIndex) {
                         $maxZIndex = $zIndex;
                     }
+                }
+
+                //Cast strings to ints
+                if (isset($data['x'])) {
+                    $map[$modelName][$key]['x'] = (int)$data['x'];
+                }
+                if (isset($data['y'])) {
+                    $map[$modelName][$key]['y'] = (int)$data['y'];
+                }
+
+                if (isset($data['object_id'])) {
+                    $map[$modelName][$key]['object_id'] = (int)$data['object_id'];
                 }
             }
         };

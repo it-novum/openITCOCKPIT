@@ -43,6 +43,7 @@
             <?php echo __('Edit map:'); ?>
             {{map.Map.name}}
         </h2>
+
         <div class="widget-toolbar" role="menu">
             <a class="btn btn-xs btn-default" href="/map_module/maps">
                 <i class="glyphicon glyphicon-white glyphicon-arrow-left"></i>
@@ -55,13 +56,47 @@
                 </a>
             <?php endif; ?>
         </div>
+
+        <div class="widget-toolbar" role="menu">
+            <div class="btn-group">
+                <button class="btn dropdown-toggle btn-xs btn-default" data-toggle="dropdown">
+                    <?php echo __('Grid size'); ?>
+                    <i class="fa fa-caret-down"></i>
+                </button>
+                <ul class="dropdown-menu pull-right">
+                    <?php
+                    $gridSizes = [5, 10, 15, 20, 25, 30, 50, 80];
+                    foreach ($gridSizes as $size): ?>
+                        <li>
+                            <a href="javascript:void(0)" ng-click="changeGridSize(<?php echo $size; ?>)">
+                                <?php printf('%sx%spx', $size, $size); ?>
+                            </a>
+                        </li>
+                    <?php endforeach; ?>
+                </ul>
+            </div>
+        </div>
+
+        <div class="widget-toolbar" role="menu">
+            <div class="form-group smart-form no-padding">
+                <label class="checkbox small-checkbox-label">
+                    <input type="checkbox" name="checkbox" checked="checked"
+                           ng-model="grid.enabled">
+                    <i class="checkbox-primary"></i>
+                    <?php echo __('Enable grid'); ?>
+                </label>
+            </div>
+        </div>
+
+
     </header>
     <div id="map-editor">
-        <div class="widget-body" style="overflow: auto; min-height:600px; " ng-click="addNewObjectFunc($event)">
+        <div class="widget-body" style="overflow: auto; min-height:600px; " ng-click="addNewObjectFunc($event)"
+             id="mainMapContainer">
             <img ng-src="/map_module/img/backgrounds/{{map.Map.background}}" ng-if="map.Map.background"/>
 
 
-            <div ng-repeat="item in map.Mapitem" class="draggable"
+            <div ng-repeat="item in map.Mapitem" class="draggable" ng-dblclick="editItem(item)"
                  style="position:absolute; top: {{item.y}}px; left: {{item.x}}px;  z-index: {{item.z_index}}; cursor: move;">
                 <map-item item="item" refresh-interval="0"></map-item>
             </div>
@@ -71,7 +106,7 @@
                 <map-text item="textItem"></map-text>
             </div>
 
-            <div ng-repeat="lineItem in map.Mapline" class="draggable" style="cursor: move;">
+            <div ng-repeat="lineItem in map.Mapline">
                 <map-line item="lineItem" refresh-interval="0"></map-line>
             </div>
 
@@ -160,7 +195,7 @@
                         <div class="form-group smart-form">
                             <?php echo __('Select object type'); ?>
                             <label class="select">
-                                <select ng-model="currentItem.itemObjectType">
+                                <select ng-model="currentItem.type">
                                     <?php if ($this->Acl->hasPermission('index', 'hosts', '')): ?>
                                         <option value="host"><?php echo __('Host'); ?></option>
                                     <?php endif; ?>
@@ -211,9 +246,10 @@
                         <div class="row" style="max-height: 200px; overflow: auto;">
                             <div class="col-xs-12 col-md-6 col-lg-3" ng-repeat="iconset in iconsets">
                                 <div class="thumbnail"
+                                     style="height: 175px; width: 175px;display: flex; align-items: center; overflow: hidden;"
+                                     ng-click="setCurrentIconset(iconset.MapUpload.saved_name)"
                                      ng-class="{ 'selectedMapItem': iconset.MapUpload.saved_name === currentItem.iconset }">
                                     <img class="image_picker_selector"
-                                         ng-click="setCurrentIconset(iconset.MapUpload.saved_name)"
                                          ng-src="/map_module/img/items/{{iconset.MapUpload.saved_name}}/ok.png">
                                 </div>
                             </div>
@@ -277,8 +313,17 @@
             </div>
 
             <div class="modal-footer">
+
+                <button type="button" class="btn btn-danger pull-left" data-dismiss="modal">
+                    <?php echo __('Delete'); ?>
+                </button>
+
                 <button type="button" class="btn btn-default" data-dismiss="modal">
                     <?php echo __('Close'); ?>
+                </button>
+
+                <button type="button" class="btn btn-primary" data-dismiss="modal">
+                    <?php echo __('Save'); ?>
                 </button>
             </div>
         </div>
@@ -303,48 +348,49 @@
                         <?php echo __('Choose background image'); ?>
                     </div>
                     <div class="col-xs-12">
-                        <div class="row" style="max-height: 400px; overflow: auto;"
-                        ">
-                        <div class="col-xs-12 col-md-6 col-lg-3" ng-repeat="background in backgrounds">
-                            <div class="thumbnail"
-                                 ng-class="{ 'selectedMapItem': background.image === map.Map.background }">
-                                <button class="btn btn-xs btn-danger pull-right"
-                                        ng-click="deleteBackground(background)">
-                                    <i class="fa fa-trash-o"></i>
-                                </button>
-                                <img class="image_picker_image"
-                                     ng-src="{{background.thumbnail}}"
-                                     ng-click="changeBackground(background)">
+                        <div class="row" style="max-height: 400px; overflow: auto;">
+                            <div class="col-xs-12 col-md-6 col-lg-3" ng-repeat="background in backgrounds">
+                                <div class="thumbnail"
+                                     style="height: 155px; width: 175px;display: flex; align-items: center; overflow: hidden;"
+                                     ng-click="changeBackground(background)"
+                                     ng-class="{ 'selectedMapItem': background.image === map.Map.background }">
+                                    <button class="btn btn-xs btn-danger"
+                                            style="position: absolute; top: 11px; left: 158px;"
+                                            ng-click="deleteBackground(background)">
+                                        <i class="fa fa-trash-o"></i>
+                                    </button>
+                                    <img class="image_picker_selector"
+                                         ng-src="{{background.thumbnail}}">
+                                </div>
                             </div>
+
+
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12">
+                        <?php echo __('Upload new background image'); ?>
+                    </div>
+                    <div class="col-xs-12 text-info">
+                        <i class="fa fa-info-circle"></i>
+                        <?php echo __('Max allowed file size: '); ?>
+                        {{ maxUploadLimit.string }}
+                    </div>
+                    <div class="col-xs-12">
+                        <div class="background-dropzone dropzone"
+                             action="/map_module/backgroundUploads/upload/.json">
                         </div>
                     </div>
                 </div>
 
-                <div class="col-xs-12">
-                    <?php echo __('Upload new background image'); ?>
-                </div>
-                <div class="col-xs-12 text-info">
-                    <i class="fa fa-info-circle"></i>
-                    <?php echo __('Max allowed file size: '); ?>
-                    {{ maxUploadLimit.string }}
-                </div>
-                <div class="col-xs-12">
-                    <div class="background-dropzone dropzone"
-                         action="/map_module/backgroundUploads/upload/.json">
-                    </div>
 
-
-                </div>
             </div>
 
-
-        </div>
-
-        <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">
-                <?php echo __('Close'); ?>
-            </button>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">
+                    <?php echo __('Close'); ?>
+                </button>
+            </div>
         </div>
     </div>
 </div>
-

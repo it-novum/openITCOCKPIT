@@ -11,6 +11,11 @@ angular.module('openITCOCKPIT')
         $scope.currentItem = {};
         $scope.maxZIndex = 0;
 
+        $scope.grid = {
+            enabled: true,
+            size: 15
+        };
+
 
         $scope.load = function(){
             $http.get("/map_module/mapeditors_new/edit/" + $scope.id + ".json", {
@@ -227,29 +232,35 @@ angular.module('openITCOCKPIT')
             $scope.action = 'item';
         };
 
+        $scope.editItem = function(item){
+            $scope.action = 'item';
+            $scope.currentItem = item;
+            $('#addEditMapItemModal').modal('show');
+        };
+
         /**
          * Load more objects if the user type to search in a select box.
          * @param searchString
          */
         $scope.loadMoreItemObjects = function(searchString){
-            if(typeof $scope.currentItem.itemObjectType !== "undefined"){
-                if($scope.currentItem.itemObjectType === 'host'){
+            if(typeof $scope.currentItem.type !== "undefined"){
+                if($scope.currentItem.type === 'host'){
                     loadHosts(searchString);
                 }
 
-                if($scope.currentItem.itemObjectType === 'service'){
+                if($scope.currentItem.type === 'service'){
                     loadServices(searchString);
                 }
 
-                if($scope.currentItem.itemObjectType === 'hostgroup'){
+                if($scope.currentItem.type === 'hostgroup'){
                     loadHostgroups(searchString);
                 }
 
-                if($scope.currentItem.itemObjectType === 'servicegroup'){
+                if($scope.currentItem.type === 'servicegroup'){
                     loadServicegroups(searchString);
                 }
 
-                if($scope.currentItem.itemObjectType === 'map'){
+                if($scope.currentItem.type === 'map'){
                     loadMaps(searchString);
                 }
             }
@@ -355,10 +366,26 @@ angular.module('openITCOCKPIT')
             });
         };
 
+        $scope.changeGridSize = function(size){
+            $scope.grid.size = parseInt(size, 10);
+            if($scope.grid.enabled){
+                makeDraggable();
+            }
+        };
+
         var makeDraggable = function(){
-            $('.draggable').draggable({
-                //addClasses: false
-            });
+            var options = {
+                grid: false
+            };
+
+            if($scope.grid.enabled){
+                options['grid'] = [
+                    $scope.grid.size,
+                    $scope.grid.size
+                ];
+            }
+
+            $('.draggable').draggable(options);
         };
 
 
@@ -370,30 +397,44 @@ angular.module('openITCOCKPIT')
             containment: "parent"
         });
 
-        $scope.$watch('currentItem.itemObjectType', function(){
+        $scope.$watchGroup(['currentItem.type', 'currentItem.object_id'], function(){
             //Initial load objects (like hosts or services) if the user pick an object type
             //while creating a new object on the map
-            if(typeof $scope.currentItem.itemObjectType !== "undefined"){
-                if($scope.currentItem.itemObjectType === 'host'){
-                    loadHosts('');
-                }
-
-                if($scope.currentItem.itemObjectType === 'service'){
-                    loadServices('');
-                }
-
-                if($scope.currentItem.itemObjectType === 'hostgroup'){
-                    loadHostgroups('');
-                }
-
-                if($scope.currentItem.itemObjectType === 'servicegroup'){
-                    loadServicegroups('');
-                }
-
-                if($scope.currentItem.itemObjectType === 'map'){
-                    loadMaps('');
+            var objectId = undefined;
+            if(typeof $scope.currentItem.object_id !== 'undefined'){
+                if($scope.currentItem.object_id !== null && $scope.currentItem.object_id > 0){
+                    objectId = $scope.currentItem.object_id;
                 }
             }
+
+            if(typeof $scope.currentItem.type !== "undefined"){
+                if($scope.currentItem.type === 'host'){
+                    loadHosts('', objectId);
+                }
+
+                if($scope.currentItem.type === 'service'){
+                    loadServices('', objectId);
+                }
+
+                if($scope.currentItem.type === 'hostgroup'){
+                    loadHostgroups('', objectId);
+                }
+
+                if($scope.currentItem.type === 'servicegroup'){
+                    loadServicegroups('', objectId);
+                }
+
+                if($scope.currentItem.type === 'map'){
+                    loadMaps('', objectId);
+                }
+            }
+        }, true);
+
+        $scope.$watch('grid.enabled', function(){
+            if($scope.init){
+                return;
+            }
+            makeDraggable();
         }, true);
 
     });
