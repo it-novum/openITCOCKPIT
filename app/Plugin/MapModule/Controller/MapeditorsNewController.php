@@ -1125,4 +1125,48 @@ class MapeditorsNewController extends MapModuleAppController {
         $this->set('_serialize', ['maps']);
     }
 
+    /**
+     * @todo Add to ACL depandencies
+     */
+    public function saveItem() {
+        if (!$this->request->is('post') || !$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        //Save new possition after drag and drop
+        if ($this->request->data('action') === 'dragstop') {
+            $item = $this->Mapitem->find('first', [
+                'recursive'  => -1,
+                'conditions' => [
+                    'Mapitem.id' => $this->request->data('Mapitem.id')
+                ]
+            ]);
+
+            $item['Mapitem']['x'] = (int)$this->request->data('Mapitem.x');
+            $item['Mapitem']['y'] = (int)$this->request->data('Mapitem.y');
+            if($this->Mapitem->save($item)){
+                $this->set('Mapitem', $item);
+                $this->set('_serialize', ['Mapitem']);
+                return;
+            }
+            $this->serializeErrorMessageFromModel('Mapitem');
+            return;
+        }
+
+
+        //Create new item or update existing one
+        if (!isset($this->request->data['MapItem']['id'])) {
+            $this->Mapitem->create();
+        }
+
+        if ($this->Mapitem->save($this->request->data)) {
+            $mapItem = $this->request->data;
+            $mapItem['Mapitem']['id'] = $this->Mapitem->id;
+            $this->set('Mapitem', $mapItem);
+            $this->set('_serialize', ['Mapitem']);
+            return;
+        }
+        $this->serializeErrorMessageFromModel('Mapitem');
+    }
+
 }

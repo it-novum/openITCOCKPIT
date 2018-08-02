@@ -97,7 +97,7 @@
 
 
             <div ng-repeat="item in map.Mapitem" class="draggable" ng-dblclick="editItem(item)"
-                 style="position:absolute; top: {{item.y}}px; left: {{item.x}}px;  z-index: {{item.z_index}}; cursor: move;">
+                 style="position:absolute; top: {{item.y}}px; left: {{item.x}}px;  z-index: {{item.z_index}}; cursor: move;" data-id="{{item.id}}" data-type="item">
                 <map-item item="item" refresh-interval="0"></map-item>
             </div>
 
@@ -170,7 +170,7 @@
             </div>
 
             <div class="mapToolbarTool" title="<?php echo __('Add stateless icon'); ?>">
-                <i class="fa fa-lg fa-object-group"></i>
+                <i class="fa fa-lg fa-diamond"></i>
             </div>
 
         </div>
@@ -192,8 +192,10 @@
 
                 <div class="row">
                     <div class="col-xs-12">
-                        <div class="form-group smart-form">
-                            <?php echo __('Select object type'); ?>
+                        <div class="form-group smart-form" ng-class="{'has-error': errors.type}">
+                            <span class="hintmark_red">
+                                <?php echo __('Select object type'); ?>
+                            </span>
                             <label class="select">
                                 <select ng-model="currentItem.type">
                                     <?php if ($this->Acl->hasPermission('index', 'hosts', '')): ?>
@@ -211,16 +213,19 @@
                                     <option value="map"><?php echo __('Map'); ?></option>
                                 </select> <i></i>
                             </label>
+                            <div ng-repeat="error in errors.type">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
                         </div>
                     </div>
 
                     <div class="col-xs-12">
-                        <div class="form-group smart-form">
+                        <div class="form-group smart-form hintmark_red">
                             <?php echo __('Select object'); ?>
                         </div>
                     </div>
                     <div class="col-xs-12">
-                        <div class="form-group required">
+                        <div class="form-group" ng-class="{'has-error': errors.object_id}">
                             <select
                                     id="AddEditItemObjectSelect"
                                     data-placeholder="<?php echo __('Please choose'); ?>"
@@ -230,7 +235,9 @@
                                     ng-options="itemObject.key as itemObject.value for itemObject in itemObjects"
                                     ng-model="currentItem.object_id">
                             </select>
-
+                            <div ng-repeat="error in errors.object_id">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -238,12 +245,13 @@
 
                 <div class="row">
                     <div class="col-xs-12">
-                        <div class="form-group smart-form">
+                        <div class="form-group smart-form hintmark_red">
                             <?php echo __('Select iconset'); ?>
                         </div>
                     </div>
                     <div class="col-xs-12" ng-if="iconsets">
-                        <div class="row" style="max-height: 200px; overflow: auto;">
+                        <div class="row" style="max-height: 200px; overflow: auto;"
+                             ng-class="{'has-error-border': errors.iconset}">
                             <div class="col-xs-12 col-md-6 col-lg-3" ng-repeat="iconset in iconsets">
                                 <div class="thumbnail"
                                      style="height: 175px; width: 175px;display: flex; align-items: center; overflow: hidden;"
@@ -254,29 +262,40 @@
                                 </div>
                             </div>
                         </div>
+                        <div ng-repeat="error in errors.iconset" class="row">
+                            <div class="col-xs-12">
+                                <div class="help-block text-danger" style="color: #a94442;">{{ error }}</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <br/>
 
                 <div class="row">
                     <div class="col-xs-12 col-lg-6 smart-form">
-                        <div class="form-group smart-form">
-                            <label class="label"><?php echo __('Position X'); ?></label>
+                        <div class="form-group smart-form" ng-class="{'has-error': errors.x}">
+                            <label class="label hintmark_red"><?php echo __('Position X'); ?></label>
                             <label class="input"> <b class="icon-prepend">X</b>
                                 <input type="number" min="0" class="input-sm"
                                        placeholder="<?php echo __('0'); ?>"
                                        ng-model="currentItem.x">
                             </label>
+                            <div ng-repeat="error in errors.x">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
                         </div>
                     </div>
-                    <div class="col-xs-12 col-lg-6 smart-form">
+                    <div class="col-xs-12 col-lg-6 smart-form" ng-class="{'has-error': errors.y}">
                         <div class="form-group smart-form">
-                            <label class="label"><?php echo __('Position Y'); ?></label>
+                            <label class="label hintmark_red"><?php echo __('Position Y'); ?></label>
                             <label class="input"> <b class="icon-prepend">Y</b>
                                 <input type="number" min="0" class="input-sm"
                                        placeholder="<?php echo __('0'); ?>"
                                        ng-model="currentItem.y">
                             </label>
+                        </div>
+                        <div ng-repeat="error in errors.y">
+                            <div class="help-block text-danger">{{ error }}</div>
                         </div>
                     </div>
                 </div>
@@ -284,12 +303,12 @@
 
                 <div class="row">
                     <div class="col-xs-12">
-                        <div class="form-group smart-form">
+                        <div class="form-group smart-form hintmark_red">
                             <?php echo __('Select layer'); ?>
                         </div>
                     </div>
                     <div class="col-xs-12 col-md-6 col-lg-10">
-                        <div class="form-group required">
+                        <div class="form-group required" ng-class="{'has-error': errors.z_index}">
                             <select
                                     id="selectItemLayerSelect"
                                     data-placeholder="<?php echo __('Please choose'); ?>"
@@ -298,6 +317,9 @@
                                     ng-options="key as layerNo for (key , layerNo) in layers"
                                     ng-model="currentItem.z_index">
                             </select>
+                            <div ng-repeat="error in errors.z_index">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
                             <span class="help-block">
                                 <?php echo __('Layers could be used to stack items on a map. Empty layers will be deleted automatically.'); ?>
                             </span>
@@ -322,7 +344,7 @@
                     <?php echo __('Close'); ?>
                 </button>
 
-                <button type="button" class="btn btn-primary" data-dismiss="modal">
+                <button type="button" class="btn btn-primary" ng-click="saveItem()">
                     <?php echo __('Save'); ?>
                 </button>
             </div>
