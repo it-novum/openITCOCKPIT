@@ -503,7 +503,8 @@
                             </div>
                         </div>
                         <div class="col-md-12 padding-top-10" ng-repeat="service in summaryState.Services">
-                            <div class="col-md-6 cropText" title="{{service.Host.hostname}}/{{service.Service.servicename}}">
+                            <div class="col-md-6 cropText"
+                                 title="{{service.Host.hostname}}/{{service.Service.servicename}}">
                                 {{service.Host.hostname}}/{{service.Service.servicename}}
                             </div>
                             <div ng-show="service.Servicestatus.isInMonitoring"
@@ -553,12 +554,14 @@
                             <div class="col-md-4">
                                 <?php echo __('Summary state'); ?>
                             </div>
-                            <div class="col-md-8 no-padding" ng-show="summaryState.HostSummary.total > 0|| summaryState.ServiceSummary.total > 0">
+                            <div class="col-md-8 no-padding"
+                                 ng-show="summaryState.HostSummary.total > 0|| summaryState.ServiceSummary.total > 0">
                                 <div class="text-center txt-color-white text-capitalize bg-{{ summaryState.CumulatedHumanState}}">
                                     {{summaryState.CumulatedHumanState}}
                                 </div>
                             </div>
-                            <div class="col-md-8 no-padding" ng-show="summaryState.HostSummary.total == 0 && summaryState.ServiceSummary.total == 0">
+                            <div class="col-md-8 no-padding"
+                                 ng-show="summaryState.HostSummary.total == 0 && summaryState.ServiceSummary.total == 0">
                                 <div class="text-center txt-color-white text-capitalize bg-primary">
                                     {{summaryState.CumulatedHumanState}}
                                 </div>
@@ -612,6 +615,84 @@
                                     <a class="btn btn-default state-button-small font-sm">
                                         {{summaryState.ServiceSummary.state[3]}}
                                     </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12 padding-top-10">
+                            <div class="col-md-12">
+                                <span class="bold">
+                                    <?php echo __('Host and services are not in state UP/OK'); ?>
+                                </span>
+                                <span class="text-info">(
+                                    <i class="fa fa-info-circle"></i>
+                                    <?php echo __(' maximal 20'); ?>
+                                </span>)
+                            </div>
+                        </div>
+                        <div ng-if="summaryState.NotOkHosts.length > 0 || summaryState.NotOkServices.length">
+                            <div class="col-md-12 padding-top-10" ng-show="summaryState.NotOkHosts.length > 0">
+                                <div class="col-md-4">
+                                    <?php echo __('Host'); ?>
+                                </div>
+                                <div class="col-md-4 no-padding">
+                                    <?php echo __('State'); ?>
+                                </div>
+                                <div class="col-md-4">
+                                    <?php echo __('Output'); ?>
+                                </div>
+                            </div>
+                            <div class="col-md-12 padding-top-5" ng-repeat="notOkHost in summaryState.NotOkHosts">
+                                <div class="col-md-4 cropText" title="{{notOkHost.Host.hostname}}">
+                                    {{notOkHost.Host.hostname}}
+                                </div>
+                                <div ng-show="notOkHost.Hoststatus.isInMonitoring"
+                                     class="col-md-4 text-center txt-color-white text-capitalize bg-{{(notOkHost.Hoststatus.isHardstate)?notOkHost.Hoststatus.humanState:notOkHost.Hoststatus.humanState+'-soft'}}">
+                                    {{notOkHost.Hoststatus.humanState}}
+                                    <i ng-show="notOkHost.Hoststatus.problemHasBeenAcknowledged"
+                                       class="fa fa-user"></i>
+                                    <i ng-show="notOkHost.Hoststatus.scheduledDowntimeDepth > 0"
+                                       class="fa fa-power-off"></i>
+                                </div>
+                                <div ng-hide="notOkHost.Hoststatus.isInMonitoring"
+                                     class="col-md-4 text-center txt-color-white bg-primary">
+                                    <?php echo __('Not in monitoring'); ?>
+                                    <i class="fa fa-eye-slash"></i>
+                                </div>
+                                <div class="col-md-4 cropText" title="notOkHost.Hoststatus.output">
+                                    {{notOkHost.Hoststatus.output}}
+                                </div>
+                            </div>
+                            <div class="col-md-12 padding-top-10" ng-show="summaryState.NotOkServices.length > 0">
+                                <div class="col-md-4">
+                                    <?php echo __('Service'); ?>
+                                </div>
+                                <div class="col-md-4 no-padding">
+                                    <?php echo __('State'); ?>
+                                </div>
+                                <div class="col-md-4">
+                                    <?php echo __('Output'); ?>
+                                </div>
+                            </div>
+                            <div class="col-md-12 padding-top-5" ng-repeat="notOkService in summaryState.NotOkServices">
+                                <div class="col-md-4 cropText"
+                                     title="{{notOkService.Service.hostname}}/{{notOkService.Service.hostname}}">
+                                    {{notOkService.Service.hostname}}/{{notOkService.Service.hostname}}
+                                </div>
+                                <div ng-show="notOkService.Servicestatus.isInMonitoring"
+                                     class="col-md-4 text-center txt-color-white text-capitalize bg-{{(notOkService.Servicestatus.isHardstate)?notOkService.Servicestatus.humanState:notOkService.Servicestatus.humanState+'-soft'}}">
+                                    {{notOkService.Servicestatus.humanState}}
+                                    <i ng-show="notOkService.Servicestatus.problemHasBeenAcknowledged"
+                                       class="fa fa-user"></i>
+                                    <i ng-show="notOkService.Servicestatus.scheduledDowntimeDepth > 0"
+                                       class="fa fa-power-off"></i>
+                                </div>
+                                <div ng-hide="notOkService.Servicestatus.isInMonitoring"
+                                     class="col-md-4 text-center txt-color-white bg-primary">
+                                    <?php echo __('Not in monitoring'); ?>
+                                    <i class="fa fa-eye-slash"></i>
+                                </div>
+                                <div class="col-md-4 cropText" title="notOkService.Servicestatus.output">
+                                    {{notOkService.Servicestatus.output}}
                                 </div>
                             </div>
                         </div>
