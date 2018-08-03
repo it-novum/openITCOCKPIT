@@ -213,8 +213,10 @@ angular.module('openITCOCKPIT')
             $scope.currentItem = {
                 iconset: 'std_mid_64px',
                 z_index: '0', //Yes we need this as a string!
-                x: $event.originalEvent.clientX,
-                y: $event.originalEvent.clientY
+                x: $event.offsetX,
+                y: $event.offsetY
+                //x: $event.pageX,
+                //y: $event.pageY
             };
             //console.log($event);
         };
@@ -235,7 +237,63 @@ angular.module('openITCOCKPIT')
         $scope.editItem = function(item){
             $scope.action = 'item';
             $scope.currentItem = item;
+            console.log(item);
             $('#addEditMapItemModal').modal('show');
+        };
+
+        $scope.saveItem = function(action){
+            if(typeof action === 'undefined'){
+                action = 'add_or_edit';
+            }
+
+            $scope.currentItem.map_id = $scope.id;
+            $http.post("/map_module/mapeditors_new/saveItem.json?angular=true",
+                {
+                    'Mapitem': $scope.currentItem,
+                    'action': action
+                }
+            ).then(function(result){
+                $scope.errors = {};
+                //Update possition in current scope json data
+                if($scope.currentItem.hasOwnProperty('id')){
+                    for(var i in $scope.map.Mapitem){
+                        if($scope.map.Mapitem[i].id == $scope.currentItem.id){
+                            $scope.map.Mapitem[i].x = $scope.currentItem.x;
+                            $scope.map.Mapitem[i].y = $scope.currentItem.y;
+                        }
+                    }
+                }else{
+                    //New created item
+                    $scope.map.Mapitem.push(result.data.Mapitem.Mapitem);
+                    setTimeout(makeDraggable, 250);
+                }
+
+                $('#addEditMapItemModal').modal('hide');
+                genericSuccess();
+            }, function errorCallback(result){
+                if(result.data.hasOwnProperty('error')){
+                    $scope.errors = result.data.error;
+                }
+                genericError();
+            });
+        };
+
+        var genericSuccess = function(){
+            new Noty({
+                theme: 'metroui',
+                type: 'success',
+                text: 'Data saved successfully',
+                timeout: 3500
+            }).show();
+        };
+
+        var genericError = function(){
+            new Noty({
+                theme: 'metroui',
+                type: 'error',
+                text: 'Error while saving data',
+                timeout: 3500
+            }).show();
         };
 
         /**
@@ -375,7 +433,32 @@ angular.module('openITCOCKPIT')
 
         var makeDraggable = function(){
             var options = {
-                grid: false
+                grid: false,
+                stop: function(event){
+                    var $this = $(this);
+                    var x = $this.css('left');
+                    var y = $this.css('top');
+                    var id = $this.data('id');
+                    var type = $this.data('type');
+
+                    x = parseInt(x.replace('px', ''), 10);
+                    y = parseInt(y.replace('px', ''), 10);
+
+                    switch(type){
+                        case 'item':
+                            $scope.currentItem = {
+                                id: id,
+                                x: x,
+                                y: y
+                            };
+                            $scope.saveItem('dragstop');
+                            break;
+
+                        default:
+                            console.log('Unknown map type');
+                            genericError();
+                    }
+                }
             };
 
             if($scope.grid.enabled){

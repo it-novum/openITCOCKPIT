@@ -23,12 +23,129 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class Mapitem extends MapModuleAppModel
-{
+class Mapitem extends MapModuleAppModel {
+
     public $belongsTo = [
         'Map' => [
             'className' => 'MapModule.Map',
             'dependent' => true,
         ],
     ];
+
+
+    public $validate = [
+        'iconset'   => [
+            'notBlank' => [
+                'rule'     => 'notBlank',
+                'message'  => 'Please select an iconset',
+                'required' => true,
+            ],
+        ],
+        'map_id'    => [
+            'notBlank' => [
+                'rule'     => 'notBlank',
+                'message'  => 'No Map selected',
+                'required' => true,
+            ],
+            'numeric'  => [
+                'rule'    => 'numeric',
+                'message' => 'No Map selected',
+            ],
+            'notZero'  => [
+                'rule'     => ['comparison', '>', 0],
+                'message'  => 'No Map selected',
+                'required' => true,
+            ],
+        ],
+        'object_id' => [
+            'notBlank' => [
+                'rule'     => 'notBlank',
+                'message'  => 'This field cannot be left blank.',
+                'required' => true,
+            ],
+            'numeric'  => [
+                'rule'    => 'numeric',
+                'message' => 'This field needs to be numeric.',
+            ],
+            'notZero'  => [
+                'rule'     => ['comparison', '>', 0],
+                'message'  => 'This field needs to be > 0',
+                'required' => true,
+            ],
+        ],
+        'x'         => [
+            'notBlank' => [
+                'rule'     => 'notBlank',
+                'message'  => 'This field cannot be left blank.',
+                'required' => true,
+            ],
+            'numeric'  => [
+                'rule'    => 'numeric',
+                'message' => 'This field needs to be numeric.',
+            ],
+            'notZero'  => [
+                'rule'     => ['comparison', '>', 0],
+                'message'  => 'This field needs to be > 0',
+                'required' => true,
+            ],
+        ],
+        'y'         => [
+            'notBlank' => [
+                'rule'     => 'notBlank',
+                'message'  => 'This field cannot be left blank.',
+                'required' => true,
+            ],
+            'numeric'  => [
+                'rule'    => 'numeric',
+                'message' => 'This field needs to be numeric.',
+            ],
+            'notZero'  => [
+                'rule'     => ['comparison', '>', 0],
+                'message'  => 'This field needs to be > 0',
+                'required' => true,
+            ],
+        ],
+        'z_index'   => [
+            'notBlank' => [
+                'rule'     => 'notBlank',
+                'message'  => 'This field cannot be left blank.',
+                'required' => true,
+            ],
+            'numeric'  => [
+                'rule'    => 'numeric',
+                'message' => 'This field needs to be numeric.',
+            ]
+        ],
+        'show_label'   => [
+            'numeric'  => [
+                'rule'    => 'numeric',
+                'message' => 'This field needs to be numeric.',
+            ]
+        ],
+        'label_possition'   => [
+            'numeric'  => [
+                'rule'    => 'numeric',
+                'message' => 'This field needs to be numeric.',
+            ]
+        ],
+        'type'      => [
+            'notBlank'       => [
+                'rule'     => 'notBlank',
+                'message'  => 'This field cannot be left blank.',
+                'required' => true,
+            ],
+            'valObjectTypes' => [
+                'rule'    => ['valObjectTypes'],
+                'message' => 'Unsupported object type',
+            ],
+
+        ],
+    ];
+
+    public function valObjectTypes($data) {
+        if (isset($data['type'])) {
+            return in_array($data['type'], ['host', 'service', 'hostgroup', 'servicegroup', 'map'], true);
+        }
+        return false;
+    }
 }

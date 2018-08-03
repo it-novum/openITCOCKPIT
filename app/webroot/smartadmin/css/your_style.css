@@ -2029,3 +2029,7 @@ label[class^='aco-host']:after, label[class^='aco-service']:after {
 .selectedMapItem {
     background: #0088cc;
 }
+
+.has-error-border {
+    border: 1px solid #a94442;
+}

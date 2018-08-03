@@ -15,6 +15,7 @@ angular.module('openITCOCKPIT').directive('mapItem', function($http, $interval){
                     params: {
                         'angular': true,
                         'objectId': $scope.item.object_id,
+                        'mapId': $scope.item.map_id,
                         'type': $scope.item.type
                     }
                 }).then(function(result){
@@ -23,6 +24,7 @@ angular.module('openITCOCKPIT').directive('mapItem', function($http, $interval){
                     $scope.allowView = result.data.allowView;
                     $scope.init = false;
 
+                    getLable(result.data.data);
 
                     $scope.currentIcon = $scope.icon;
 
@@ -31,6 +33,31 @@ angular.module('openITCOCKPIT').directive('mapItem', function($http, $interval){
                     }
 
                 });
+            };
+
+            var getLable = function(data){
+                $scope.lable = '';
+                switch($scope.item.type){
+                    case 'host':
+                        $scope.lable = data.Host.hostname;
+                        break;
+
+                    case 'service':
+                        $scope.lable = data.Host.hostname + '/' + data.Service.servicename;
+                        break;
+
+                    case 'hostgroup':
+                        $scope.lable = data.Hostgroup.name;
+                        break;
+
+                    case 'servicegroup':
+                        $scope.lable = data.Servicegroup.name;
+                        break;
+
+                    case 'map':
+                        $scope.lable = data.Map.name;
+                        break;
+                }
             };
 
             var startBlink = function(){
