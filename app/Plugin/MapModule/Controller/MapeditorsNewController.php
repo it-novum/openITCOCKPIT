@@ -103,10 +103,13 @@ class MapeditorsNewController extends MapModuleAppController {
 
         $acl = [
             'hosts'         => [
-                'browser' => isset($this->PERMISSIONS['hosts']['browser'])
+                'browser' => isset($this->PERMISSIONS['hosts']['browser']),
+                'index' => isset($this->PERMISSIONS['hosts']['index'])
             ],
             'services'      => [
-                'browser' => isset($this->PERMISSIONS['services']['browser'])
+                'browser' => isset($this->PERMISSIONS['services']['browser']),
+                'index' => isset($this->PERMISSIONS['services']['index'])
+
             ],
             'hostgroups'    => [
                 'extended' => isset($this->PERMISSIONS['hostgroups']['extended'])

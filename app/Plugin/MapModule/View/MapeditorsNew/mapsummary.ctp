@@ -46,7 +46,9 @@
                                 <?php echo __('Hostname'); ?>
                             </div>
                             <div class="col-md-8 no-padding">
-                                {{summaryState.Host.hostname}}
+                                <a ng-href="{{ getObjectHref(iconType, summaryState.Host.id) }}">
+                                    {{summaryState.Host.hostname}}
+                                </a>
                             </div>
                         </div>
                         <div class="col-md-12">
@@ -132,16 +134,16 @@
                                 <?php echo __('Services: '); ?> {{summaryState.ServiceSummary.total}}
                                 <div class="btn-group btn-group-justified" role="group"
                                      ng-show="summaryState.ServiceSummary.total > 0">
-                                    <a class="btn btn-success state-button-small font-sm" ng-href="{{ linkToServices(summaryState.ServiceIdsGroupByState[0]) }}">
+                                    <a class="btn btn-success state-button-small font-sm" ng-href="{{ getObjectsHref('service', summaryState.ServiceIdsGroupByState[0]) }}">
                                         {{summaryState.ServiceSummary.state[0]}}
                                     </a>
-                                    <a class="btn btn-warning state-button-small font-sm">
+                                    <a class="btn btn-warning state-button-small font-sm" ng-href="{{ getObjectsHref('service', summaryState.ServiceIdsGroupByState[1]) }}">
                                         {{summaryState.ServiceSummary.state[1]}}
                                     </a>
-                                    <a class="btn btn-danger state-button-small font-sm">
+                                    <a class="btn btn-danger state-button-small font-sm" ng-href="{{ getObjectsHref('service', summaryState.ServiceIdsGroupByState[2]) }}">
                                         {{summaryState.ServiceSummary.state[2]}}
                                     </a>
-                                    <a class="btn btn-default state-button-small font-sm">
+                                    <a class="btn btn-default state-button-small font-sm" ng-href="{{ getObjectsHref('service', summaryState.ServiceIdsGroupByState[3]) }}">
                                         {{summaryState.ServiceSummary.state[3]}}
                                     </a>
                                 </div>
@@ -159,8 +161,10 @@
                             </div>
                         </div>
                         <div class="col-md-12 padding-top-5" ng-repeat="service in summaryState.Services">
-                            <div class="col-md-4 cropText">
-                                {{service.Service.servicename}}
+                            <div class="col-md-4 cropText" title="{{service.Service.servicename}}">
+                                <a ng-href="{{ getObjectHref('service', service.Service.id) }}">
+                                    {{service.Service.servicename}}
+                                </a>
                             </div>
                             <div ng-show="service.Servicestatus.isInMonitoring"
                                  class="col-md-4 text-center txt-color-white text-capitalize bg-{{(service.Servicestatus.isHardstate)?service.Servicestatus.humanState:service.Servicestatus.humanState+'-soft'}}">

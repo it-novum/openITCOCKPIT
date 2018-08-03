@@ -23,7 +23,7 @@ angular.module('openITCOCKPIT').directive('mapSummary', function ($http, $interv
                 $scope.stopInterval();
             };
 
-            $scope.startInterval = function (){
+            $scope.startInterval = function () {
                 var showFor = 5000;
                 var intervalSpeed = 10;
                 $scope.percentValue = 100;
@@ -41,20 +41,83 @@ angular.module('openITCOCKPIT').directive('mapSummary', function ($http, $interv
                 }, intervalSpeed);
             };
 
-            $scope.stopInterval = function (){
-                if(typeof $scope.intervalRef !== "undefined"){
+            $scope.stopInterval = function () {
+                if (typeof $scope.intervalRef !== "undefined") {
                     $interval.cancel($scope.intervalRef);
                 }
 
             };
 
-            $scope.linkToServices = function(serviceIds){
-                var baseUrl = '/services/index?';
-                return baseUrl + $httpParamSerializer({
-                    'angular': true,
-                    'filter[Service.id][]': serviceIds
-                });
+            $scope.getObjectHref = function (type, objectId) {
+                var url = 'javascript:void(0);';
+                switch (type) {
+                    case 'host':
+                        if ($scope.acl.hosts.browser) {
+                            url = '/hosts/browser/' + objectId;
+                        }
+                        break;
+
+                    case 'service':
+                        if ($scope.acl.services.browser) {
+                            url = '/services/browser/' + objectId;
+                        }
+                        break;
+
+                    case 'hostgroup':
+                        if ($scope.acl.hostgroups.extended) {
+                            url = '/hostgroups/extended/' + objectId;
+                        }
+                        break;
+
+                    case 'servicegroup':
+                        if ($scope.acl.servicegroups.extended) {
+                            url = '/servicegroups/extended/' + objectId;
+                        }
+                        break;
+
+                    case 'map':
+                        url = '/map_module/mapeditors_new/view/' + objectId;
+                        break;
+
+                    default:
+                        url = 'javascript:void(0);';
+                        break;
+                }
+
+                return url;
             };
+
+            $scope.getObjectsHref = function (type, objectIds) {
+                var url = 'javascript:void(0);';
+                if (objectIds.length === 0) {
+                    return url;
+                }
+                switch (type) {
+                    case 'host':
+                        if ($scope.acl.hosts.index) {
+                            url = '/hosts/index?' + $httpParamSerializer({
+                                'angular': true,
+                                'filter[Host.id][]': objectIds
+                            });
+                        }
+                        break;
+
+                    case 'service':
+                        if ($scope.acl.services.index) {
+                            url = '/services/index?' + $httpParamSerializer({
+                                'angular': true,
+                                'filter[Service.id][]': objectIds
+                            });
+                        }
+                        break;
+                    default:
+                        url = 'javascript:void(0);';
+                        break;
+                }
+
+                return url;
+            };
+
         },
 
         link: function (scope, element, attr) {
