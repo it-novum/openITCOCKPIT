@@ -97,7 +97,8 @@
 
 
             <div ng-repeat="item in map.Mapitem" class="draggable" ng-dblclick="editItem(item)"
-                 style="position:absolute; top: {{item.y}}px; left: {{item.x}}px;  z-index: {{item.z_index}}; cursor: move;" data-id="{{item.id}}" data-type="item">
+                 style="position:absolute; top: {{item.y}}px; left: {{item.x}}px;  z-index: {{item.z_index}}; cursor: move;"
+                 data-id="{{item.id}}" data-type="item">
                 <map-item item="item" refresh-interval="0"></map-item>
             </div>
 
@@ -331,6 +332,63 @@
                         </button>
                     </div>
                 </div>
+                <br/>
+
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="form-group smart-form">
+                            <?php echo __('Label options'); ?>
+                        </div>
+                    </div>
+                    <div class="col-xs-12">
+                        <div class="form-group smart-form no-padding">
+                            <label class="checkbox small-checkbox-label">
+                                <input type="checkbox" name="checkbox"
+                                       ng-model="currentItem.show_label"
+                                       ng-true-value="1"
+                                       ng-false-value="0">
+                                <i class="checkbox-primary"></i>
+                                <?php echo __('Show label'); ?>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12">
+                        <div class="form-group smart-form">
+                            <?php echo __('Label possition'); ?>
+                        </div>
+                    </div>
+                    <div class="col-xs-12">
+                        <div class="btn-toolbar" role="toolbar">
+                            <button type="button" class="btn btn-default"
+                                    ng-class="{ 'btn-primary': currentItem.label_possition === 4 }"
+                                    ng-click="currentItem.label_possition = 4">
+                                <i class="fa fa-arrow-circle-left"></i>
+                                <?php echo __('Left'); ?>
+                            </button>
+                            <button type="button" class="btn btn-default"
+                                    ng-class="{ 'btn-primary': currentItem.label_possition === 1 }"
+                                    ng-click="currentItem.label_possition = 1">
+                                <i class="fa fa-arrow-circle-up"></i>
+                                <?php echo __('Top'); ?>
+                            </button>
+                            <button type="button" class="btn btn-default"
+                                    ng-class="{ 'btn-primary': currentItem.label_possition === 2 }"
+                                    ng-click="currentItem.label_possition = 2">
+                                <i class="fa fa-arrow-circle-down"></i>
+                                <?php echo __('Bottom'); ?>
+                            </button>
+                            <button type="button" class="btn btn-default"
+                                    ng-class="{ 'btn-primary': currentItem.label_possition === 3 }"
+                                    ng-click="currentItem.label_possition = 3">
+                                <i class="fa fa-arrow-circle-right"></i>
+                                <?php echo __('Right'); ?>
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+
 
             </div>
 

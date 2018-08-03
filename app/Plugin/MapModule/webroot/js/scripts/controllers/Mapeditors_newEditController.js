@@ -237,6 +237,7 @@ angular.module('openITCOCKPIT')
         $scope.editItem = function(item){
             $scope.action = 'item';
             $scope.currentItem = item;
+            console.log(item);
             $('#addEditMapItemModal').modal('show');
         };
 

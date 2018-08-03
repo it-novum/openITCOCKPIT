@@ -116,6 +116,18 @@ class Mapitem extends MapModuleAppModel {
                 'message' => 'This field needs to be numeric.',
             ]
         ],
+        'show_label'   => [
+            'numeric'  => [
+                'rule'    => 'numeric',
+                'message' => 'This field needs to be numeric.',
+            ]
+        ],
+        'label_possition'   => [
+            'numeric'  => [
+                'rule'    => 'numeric',
+                'message' => 'This field needs to be numeric.',
+            ]
+        ],
         'type'      => [
             'notBlank'       => [
                 'rule'     => 'notBlank',

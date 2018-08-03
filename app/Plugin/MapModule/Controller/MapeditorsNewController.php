@@ -1067,6 +1067,14 @@ class MapeditorsNewController extends MapModuleAppController {
                 if (isset($data['object_id'])) {
                     $map[$modelName][$key]['object_id'] = (int)$data['object_id'];
                 }
+
+                if (isset($data['show_label'])) {
+                    $map[$modelName][$key]['show_label'] = (int)$data['show_label'];
+                }
+
+                if (isset($data['label_possition'])) {
+                    $map[$modelName][$key]['label_possition'] = (int)$data['label_possition'];
+                }
             }
         };
 
