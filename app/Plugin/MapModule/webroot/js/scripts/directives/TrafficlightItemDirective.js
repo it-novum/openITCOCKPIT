@@ -34,6 +34,7 @@ angular.module('openITCOCKPIT').directive('trafficlightItem', function($http){
                     params: {
                         'angular': true,
                         'objectId': $scope.item.object_id,
+                        'mapId': $scope.item.map_id,
                         'type': $scope.item.type
                     }
                 }).then(function(result){
