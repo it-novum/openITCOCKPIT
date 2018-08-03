@@ -36,6 +36,9 @@
                             <i class="fa fa-desktop fa-lg txt-color-blueDark"></i>
                             <?php echo __('Host'); ?>
                         </h2>
+                        <div class="col-md-12 no-padding">
+                            <div class="tooltipProgressBar" style="width: {{percentValue}}%;"></div>
+                        </div>
                     </header>
                     <div class="txt-color-blueDark font-xs padding-top-10 padding-bottom-10">
                         <div class="col-md-12">
@@ -129,7 +132,7 @@
                                 <?php echo __('Services: '); ?> {{summaryState.ServiceSummary.total}}
                                 <div class="btn-group btn-group-justified" role="group"
                                      ng-show="summaryState.ServiceSummary.total > 0">
-                                    <a class="btn btn-success state-button-small font-sm">
+                                    <a class="btn btn-success state-button-small font-sm" ng-href="{{ linkToServices(summaryState.ServiceIdsGroupByState[0]) }}">
                                         {{summaryState.ServiceSummary.state[0]}}
                                     </a>
                                     <a class="btn btn-warning state-button-small font-sm">
@@ -186,6 +189,9 @@
                             <i class="fa fa-cog fa-lg txt-color-blueDark"></i>
                             <?php echo __('Service'); ?>
                         </h2>
+                        <div class="col-md-12 no-padding">
+                            <div class="tooltipProgressBar" style="width: {{percentValue}}%;"></div>
+                        </div>
                     </header>
                     <div class="txt-color-blueDark font-xs padding-top-10 padding-bottom-10">
                         <div class="col-md-12">
@@ -305,6 +311,9 @@
                             <i class="fa fa-sitemap fa-lg txt-color-blueDark"></i>
                             <?php echo __('Host group'); ?>
                         </h2>
+                        <div class="col-md-12 no-padding">
+                            <div class="tooltipProgressBar" style="width: {{percentValue}}%;"></div>
+                        </div>
                     </header>
                     <div class="txt-color-blueDark font-xs padding-top-10 padding-bottom-10">
                         <div class="col-md-12">
@@ -428,6 +437,9 @@
                             <i class="fa fa-cogs fa-lg txt-color-blueDark"></i>
                             <?php echo __('Service group'); ?>
                         </h2>
+                        <div class="col-md-12 no-padding">
+                            <div class="tooltipProgressBar" style="width: {{percentValue}}%;"></div>
+                        </div>
                     </header>
                     <div class="txt-color-blueDark font-xs padding-top-10 padding-bottom-10">
                         <div class="col-md-12">
@@ -532,6 +544,9 @@
                             <i class="fa fa-image fa-lg txt-color-blueDark"></i>
                             <?php echo __('Map'); ?>
                         </h2>
+                        <div class="col-md-12 no-padding">
+                            <div class="tooltipProgressBar" style="width: {{percentValue}}%;"></div>
+                        </div>
                     </header>
                     <div class="txt-color-blueDark font-xs padding-top-10 padding-bottom-10">
                         <div class="col-md-12">
@@ -699,7 +714,6 @@
                     </div>
                 </div>
             </article>
-            <div class="tooltipProgressBar" style="width: {{percentValue}}%;"></div>
         </div>
     </section>
 </div>

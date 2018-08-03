@@ -206,6 +206,10 @@ class Servicestatus extends Statusengine3ModuleAppModel {
             $query['conditions']['Service.host_id'] = $ServiceConditions->getHostId();
         }
 
+        if ($ServiceConditions->getServiceIds()) {
+            $query['conditions']['Service.id'] = $ServiceConditions->getServiceIds();
+        }
+
         return $query;
     }
 

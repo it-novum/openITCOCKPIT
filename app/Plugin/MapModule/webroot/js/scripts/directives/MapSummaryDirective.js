@@ -1,4 +1,4 @@
-angular.module('openITCOCKPIT').directive('mapSummary', function ($http, $interval) {
+angular.module('openITCOCKPIT').directive('mapSummary', function ($http, $interval, $httpParamSerializer) {
     return {
         restrict: 'E',
         templateUrl: '/map_module/mapeditors_new/mapsummary.html',
@@ -46,6 +46,14 @@ angular.module('openITCOCKPIT').directive('mapSummary', function ($http, $interv
                     $interval.cancel($scope.intervalRef);
                 }
 
+            };
+
+            $scope.linkToServices = function(serviceIds){
+                var baseUrl = '/services/index?';
+                return baseUrl + $httpParamSerializer({
+                    'angular': true,
+                    'filter[Service.id][]': serviceIds
+                });
             };
         },
 

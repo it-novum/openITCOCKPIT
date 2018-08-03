@@ -940,6 +940,7 @@ class MapeditorsNewController extends MapModuleAppController {
                                     'Host.disabled' => 0
                                 ],
                                 'fields' => [
+                                    'Host.id',
                                     'Host.uuid',
                                     'Host.name'
                                 ]
@@ -978,6 +979,7 @@ class MapeditorsNewController extends MapModuleAppController {
                                     'Service.disabled' => 0
                                 ],
                                 'fields' => [
+                                    'Service.id',
                                     'Service.uuid',
                                     'Service.name'
                                 ]
