@@ -13,12 +13,21 @@ angular.module('openITCOCKPIT')
             getValue: function(varName, defaultReturn){
 
                 defaultReturn = (typeof defaultReturn === 'undefined') ? null : defaultReturn;
-
                 var query = parseUri(decodeURIComponent(location.href)).queryKey;
                 if(query.hasOwnProperty(varName)){
                     return query[varName];
                 }
 
+                return defaultReturn;
+            },
+
+            serviceids: function(varName, defaultReturn){
+                defaultReturn = (typeof defaultReturn === 'undefined') ? null : defaultReturn;
+                var url = new URL(location.href);
+                var serviceIds = url.searchParams.getAll(varName);
+                if(serviceIds.length > 0){
+                    return serviceIds;
+                }
                 return defaultReturn;
             },
 

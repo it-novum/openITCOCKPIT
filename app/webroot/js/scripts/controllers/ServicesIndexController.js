@@ -24,6 +24,7 @@ angular.module('openITCOCKPIT')
                     output: ''
                 },
                 Service: {
+                    id: QueryStringService.serviceids('filter[Service.id][]', []),
                     name: QueryStringService.getValue('filter[Service.servicename]', ''),
                     keywords: ''
                 },
@@ -157,6 +158,7 @@ angular.module('openITCOCKPIT')
                 'direction': SortService.getDirection(),
                 'filter[Host.id]': $scope.filter.Host.id,
                 'filter[Host.name]': $scope.filter.Host.name,
+                'filter[Service.id][]': $scope.filter.Service.id,
                 'filter[Service.servicename]': $scope.filter.Service.name,
                 'filter[Servicestatus.output]': $scope.filter.Servicestatus.output,
                 'filter[Servicestatus.current_state][]': $rootScope.currentStateForApi($scope.filter.Servicestatus.current_state),
@@ -286,6 +288,7 @@ angular.module('openITCOCKPIT')
                 'direction': SortService.getDirection(),
                 'filter[Host.id]': $scope.filter.Host.id,
                 'filter[Host.name]': $scope.filter.Host.name,
+                'filter[Service.id]': $scope.filter.Service.id,
                 'filter[Service.servicename]': $scope.filter.Service.name,
                 'filter[Servicestatus.output]': $scope.filter.Servicestatus.output,
                 'filter[Servicestatus.current_state][]': $rootScope.currentStateForApi($scope.filter.Servicestatus.current_state),

@@ -36,6 +36,9 @@
                             <i class="fa fa-desktop fa-lg txt-color-blueDark"></i>
                             <?php echo __('Host'); ?>
                         </h2>
+                        <div class="col-md-12 no-padding">
+                            <div class="tooltipProgressBar" style="width: {{percentValue}}%;"></div>
+                        </div>
                     </header>
                     <div class="txt-color-blueDark font-xs padding-top-10 padding-bottom-10">
                         <div class="col-md-12">
@@ -43,7 +46,9 @@
                                 <?php echo __('Hostname'); ?>
                             </div>
                             <div class="col-md-8 no-padding">
-                                {{summaryState.Host.hostname}}
+                                <a ng-href="{{ getObjectHref(iconType, summaryState.Host.id) }}">
+                                    {{summaryState.Host.hostname}}
+                                </a>
                             </div>
                         </div>
                         <div class="col-md-12">
@@ -129,16 +134,16 @@
                                 <?php echo __('Services: '); ?> {{summaryState.ServiceSummary.total}}
                                 <div class="btn-group btn-group-justified" role="group"
                                      ng-show="summaryState.ServiceSummary.total > 0">
-                                    <a class="btn btn-success state-button-small font-sm">
+                                    <a class="btn btn-success state-button-small font-sm" ng-href="{{ getObjectsHref('service', summaryState.ServiceIdsGroupByState[0]) }}">
                                         {{summaryState.ServiceSummary.state[0]}}
                                     </a>
-                                    <a class="btn btn-warning state-button-small font-sm">
+                                    <a class="btn btn-warning state-button-small font-sm" ng-href="{{ getObjectsHref('service', summaryState.ServiceIdsGroupByState[1]) }}">
                                         {{summaryState.ServiceSummary.state[1]}}
                                     </a>
-                                    <a class="btn btn-danger state-button-small font-sm">
+                                    <a class="btn btn-danger state-button-small font-sm" ng-href="{{ getObjectsHref('service', summaryState.ServiceIdsGroupByState[2]) }}">
                                         {{summaryState.ServiceSummary.state[2]}}
                                     </a>
-                                    <a class="btn btn-default state-button-small font-sm">
+                                    <a class="btn btn-default state-button-small font-sm" ng-href="{{ getObjectsHref('service', summaryState.ServiceIdsGroupByState[3]) }}">
                                         {{summaryState.ServiceSummary.state[3]}}
                                     </a>
                                 </div>
@@ -156,8 +161,10 @@
                             </div>
                         </div>
                         <div class="col-md-12 padding-top-5" ng-repeat="service in summaryState.Services">
-                            <div class="col-md-4 cropText">
-                                {{service.Service.servicename}}
+                            <div class="col-md-4 cropText" title="{{service.Service.servicename}}">
+                                <a ng-href="{{ getObjectHref('service', service.Service.id) }}">
+                                    {{service.Service.servicename}}
+                                </a>
                             </div>
                             <div ng-show="service.Servicestatus.isInMonitoring"
                                  class="col-md-4 text-center txt-color-white text-capitalize bg-{{(service.Servicestatus.isHardstate)?service.Servicestatus.humanState:service.Servicestatus.humanState+'-soft'}}">
@@ -186,6 +193,9 @@
                             <i class="fa fa-cog fa-lg txt-color-blueDark"></i>
                             <?php echo __('Service'); ?>
                         </h2>
+                        <div class="col-md-12 no-padding">
+                            <div class="tooltipProgressBar" style="width: {{percentValue}}%;"></div>
+                        </div>
                     </header>
                     <div class="txt-color-blueDark font-xs padding-top-10 padding-bottom-10">
                         <div class="col-md-12">
@@ -193,7 +203,9 @@
                                 <?php echo __('Hostname'); ?>
                             </div>
                             <div class="col-md-8 no-padding">
-                                {{summaryState.Host.hostname}}
+                                <a ng-href="{{ getObjectHref('host', summaryState.Host.id) }}">
+                                    {{summaryState.Host.hostname}}
+                                </a>
                             </div>
                         </div>
                         <div class="col-md-12">
@@ -218,7 +230,9 @@
                                 <?php echo __('Service'); ?>
                             </div>
                             <div class="col-md-8 no-padding">
-                                {{summaryState.Service.servicename}}
+                                <a ng-href="{{ getObjectHref('service', summaryState.Service.id) }}">
+                                    {{summaryState.Service.servicename}}
+                                </a>
                             </div>
                         </div>
                         <div class="col-md-12">
@@ -305,6 +319,9 @@
                             <i class="fa fa-sitemap fa-lg txt-color-blueDark"></i>
                             <?php echo __('Host group'); ?>
                         </h2>
+                        <div class="col-md-12 no-padding">
+                            <div class="tooltipProgressBar" style="width: {{percentValue}}%;"></div>
+                        </div>
                     </header>
                     <div class="txt-color-blueDark font-xs padding-top-10 padding-bottom-10">
                         <div class="col-md-12">
@@ -428,6 +445,9 @@
                             <i class="fa fa-cogs fa-lg txt-color-blueDark"></i>
                             <?php echo __('Service group'); ?>
                         </h2>
+                        <div class="col-md-12 no-padding">
+                            <div class="tooltipProgressBar" style="width: {{percentValue}}%;"></div>
+                        </div>
                     </header>
                     <div class="txt-color-blueDark font-xs padding-top-10 padding-bottom-10">
                         <div class="col-md-12">
@@ -435,7 +455,9 @@
                                 <?php echo __('Service group name'); ?>
                             </div>
                             <div class="col-md-8 no-padding">
-                                {{summaryState.Servicegroup.name}}
+                                <a ng-href="{{ getObjectHref('servicegroup', summaryState.Servicegroup.id) }}">
+                                    {{summaryState.Servicegroup.name}}
+                                </a>
                             </div>
                         </div>
                         <div class="col-md-12">
@@ -476,16 +498,16 @@
                             </div>
                             <div class="col-md-8 no-padding">
                                 <div class="btn-group btn-group-justified" role="group">
-                                    <a class="btn btn-success state-button-small font-sm">
+                                    <a class="btn btn-success state-button-small font-sm" ng-href="{{ getObjectsHref('service', summaryState.ServiceIdsGroupByState[0]) }}">
                                         {{summaryState.ServiceSummary.state[0]}}
                                     </a>
-                                    <a class="btn btn-warning state-button-small font-sm">
+                                    <a class="btn btn-warning state-button-small font-sm" ng-href="{{ getObjectsHref('service', summaryState.ServiceIdsGroupByState[1]) }}">
                                         {{summaryState.ServiceSummary.state[1]}}
                                     </a>
-                                    <a class="btn btn-danger state-button-small font-sm">
+                                    <a class="btn btn-danger state-button-small font-sm" ng-href="{{ getObjectsHref('service', summaryState.ServiceIdsGroupByState[2]) }}">
                                         {{summaryState.ServiceSummary.state[2]}}
                                     </a>
-                                    <a class="btn btn-default state-button-small font-sm">
+                                    <a class="btn btn-default state-button-small font-sm" ng-href="{{ getObjectsHref('service', summaryState.ServiceIdsGroupByState[3]) }}">
                                         {{summaryState.ServiceSummary.state[3]}}
                                     </a>
                                 </div>
@@ -505,7 +527,10 @@
                         <div class="col-md-12 padding-top-10" ng-repeat="service in summaryState.Services">
                             <div class="col-md-6 cropText"
                                  title="{{service.Host.hostname}}/{{service.Service.servicename}}">
-                                {{service.Host.hostname}}/{{service.Service.servicename}}
+
+                                <a ng-href="{{ getObjectHref('service', service.Service.id) }}">
+                                    {{service.Host.hostname}}/{{service.Service.servicename}}
+                                </a>
                             </div>
                             <div ng-show="service.Servicestatus.isInMonitoring"
                                  class="col-md-2 text-center txt-color-white text-capitalize bg-{{(service.Servicestatus.isHardstate)?service.Servicestatus.humanState:service.Servicestatus.humanState+'-soft'}}">
@@ -532,6 +557,9 @@
                             <i class="fa fa-image fa-lg txt-color-blueDark"></i>
                             <?php echo __('Map'); ?>
                         </h2>
+                        <div class="col-md-12 no-padding">
+                            <div class="tooltipProgressBar" style="width: {{percentValue}}%;"></div>
+                        </div>
                     </header>
                     <div class="txt-color-blueDark font-xs padding-top-10 padding-bottom-10">
                         <div class="col-md-12">
@@ -699,7 +727,6 @@
                     </div>
                 </div>
             </article>
-            <div class="tooltipProgressBar" style="width: {{percentValue}}%;"></div>
         </div>
     </section>
 </div>

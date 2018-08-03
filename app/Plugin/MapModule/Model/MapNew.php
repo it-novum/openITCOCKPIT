@@ -567,6 +567,7 @@ class MapNew extends MapModuleAppModel {
                 ]
             ],
             'fields' => [
+                'Service.id',
                 'Service.name',
                 'Service.uuid'
             ],
@@ -588,6 +589,12 @@ class MapNew extends MapModuleAppModel {
         $servicesUuids = Hash::extract($services, '{n}.Service.uuid');
         $servicestatusResults = $Servicestatus->byUuid($servicesUuids, $ServicestatusFieds, $ServicestatusConditions);
         $ServiceSummary = $Service->getServiceStateSummary($servicestatusResults, false);
+        $serviceIdsGroupByState = [
+            0 => [],
+            1 => [],
+            2 => [],
+            3 => []
+        ];
         $servicesResult = [];
         foreach ($services as $service) {
             $Service = new \itnovum\openITCOCKPIT\Core\Views\Service($service);
@@ -595,6 +602,7 @@ class MapNew extends MapModuleAppModel {
                 $Servicestatus = new \itnovum\openITCOCKPIT\Core\Servicestatus(
                     $servicestatusResults[$Service->getUuid()]['Servicestatus']
                 );
+                $serviceIdsGroupByState[$Servicestatus->currentState()][] = $service['Service']['id'];
             } else {
                 $Servicestatus = new \itnovum\openITCOCKPIT\Core\Servicestatus(
                     ['Servicestatus' => []]
@@ -609,12 +617,12 @@ class MapNew extends MapModuleAppModel {
         $servicesResult = Hash::sort($servicesResult, '{s}.Servicestatus.currentState', 'desc');
 
         $Host = new \itnovum\openITCOCKPIT\Core\Views\Host($host);
-
         return [
             'Host' => $Host->toArray(),
             'Hoststatus' => $hoststatus->toArray(),
             'Services' => $servicesResult,
-            'ServiceSummary' => $ServiceSummary
+            'ServiceSummary' => $ServiceSummary,
+            'ServiceIdsGroupByState' => $serviceIdsGroupByState
         ];
     }
 
@@ -837,6 +845,12 @@ class MapNew extends MapModuleAppModel {
 
         $servicestatusResults = $Servicestatus->byUuid($serviceUuids, $ServicestatusFields, $ServicestatusConditions);
         $serviceStateSummary = $Service->getServiceStateSummary($servicestatusResults, false);
+        $serviceIdsGroupByState = [
+            0 => [],
+            1 => [],
+            2 => [],
+            3 => []
+        ];
         $cumulatedServiceState = null;
         $allServiceStatus = [];
         foreach ($servicegroup['Service'] as $service) {
@@ -850,6 +864,8 @@ class MapNew extends MapModuleAppModel {
                 $Servicestatus = new \itnovum\openITCOCKPIT\Core\Servicestatus(
                     $servicestatusResults[$Service->getUuid()]['Servicestatus']
                 );
+                $serviceIdsGroupByState[$Servicestatus->currentState()][] = $service['id'];
+
             } else {
                 $Servicestatus = new \itnovum\openITCOCKPIT\Core\Servicestatus(
                     ['Servicestatus' => []]
@@ -879,7 +895,8 @@ class MapNew extends MapModuleAppModel {
             'Servicegroup' => $servicegroup,
             'ServiceSummary' => $serviceStateSummary,
             'Services' => $servicesResult,
-            'CumulatedHumanState' => $CumulatedServiceStatus->toArray()['humanState']
+            'CumulatedHumanState' => $CumulatedServiceStatus->toArray()['humanState'],
+            'ServiceIdsGroupByState' => $serviceIdsGroupByState
         ];
     }
 
@@ -900,7 +917,7 @@ class MapNew extends MapModuleAppModel {
         $notOkHosts = [];
         $notOkServices = [];
         $counterForNotOkHostAndService = 0;
-        $limitForNotOkHostAndService = 50;
+        $limitForNotOkHostAndService = 20;
 
         $HoststatusFields = new HoststatusFields($this->DbBackend);
         $HoststatusFields

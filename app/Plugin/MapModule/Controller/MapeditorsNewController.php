@@ -103,10 +103,13 @@ class MapeditorsNewController extends MapModuleAppController {
 
         $acl = [
             'hosts'         => [
-                'browser' => isset($this->PERMISSIONS['hosts']['browser'])
+                'browser' => isset($this->PERMISSIONS['hosts']['browser']),
+                'index' => isset($this->PERMISSIONS['hosts']['index'])
             ],
             'services'      => [
-                'browser' => isset($this->PERMISSIONS['services']['browser'])
+                'browser' => isset($this->PERMISSIONS['services']['browser']),
+                'index' => isset($this->PERMISSIONS['services']['index'])
+
             ],
             'hostgroups'    => [
                 'extended' => isset($this->PERMISSIONS['hostgroups']['extended'])
@@ -663,6 +666,7 @@ class MapeditorsNewController extends MapModuleAppController {
                 $service = $this->Service->find('first', [
                     'recursive'  => -1,
                     'fields'     => [
+                        'Service.id',
                         'Service.uuid',
                         'Service.description'
                     ],
@@ -943,7 +947,8 @@ class MapeditorsNewController extends MapModuleAppController {
                                     'Host.id'       => $allDependentMapElements['hostIds'],
                                     'Host.disabled' => 0
                                 ],
-                                'fields'     => [
+                                'fields' => [
+                                    'Host.id',
                                     'Host.uuid',
                                     'Host.name'
                                 ]
@@ -981,7 +986,8 @@ class MapeditorsNewController extends MapModuleAppController {
                                     'Service.id'       => $allDependentMapElements['serviceIds'],
                                     'Service.disabled' => 0
                                 ],
-                                'fields'     => [
+                                'fields' => [
+                                    'Service.id',
                                     'Service.uuid',
                                     'Service.name'
                                 ]

@@ -1433,6 +1433,10 @@ class Service extends AppModel {
             $query['conditions']['Service.host_id'] = $ServiceConditions->getHostId();
         }
 
+        if ($ServiceConditions->getServiceIds()) {
+            $query['conditions']['Service.id'] = $ServiceConditions->getServiceIds();
+        }
+
         return $query;
 
     }
@@ -1543,6 +1547,10 @@ class Service extends AppModel {
 
         if ($ServiceConditions->getHostId()) {
             $query['conditions']['Service.host_id'] = $ServiceConditions->getHostId();
+        }
+
+        if ($ServiceConditions->getServiceIds()) {
+            $query['conditions']['Service.id'] = $ServiceConditions->getServiceIds();
         }
 
         return $query;
