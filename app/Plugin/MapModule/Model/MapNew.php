@@ -845,6 +845,12 @@ class MapNew extends MapModuleAppModel {
 
         $servicestatusResults = $Servicestatus->byUuid($serviceUuids, $ServicestatusFields, $ServicestatusConditions);
         $serviceStateSummary = $Service->getServiceStateSummary($servicestatusResults, false);
+        $serviceIdsGroupByState = [
+            0 => [],
+            1 => [],
+            2 => [],
+            3 => []
+        ];
         $cumulatedServiceState = null;
         $allServiceStatus = [];
         foreach ($servicegroup['Service'] as $service) {
@@ -858,6 +864,8 @@ class MapNew extends MapModuleAppModel {
                 $Servicestatus = new \itnovum\openITCOCKPIT\Core\Servicestatus(
                     $servicestatusResults[$Service->getUuid()]['Servicestatus']
                 );
+                $serviceIdsGroupByState[$Servicestatus->currentState()][] = $service['id'];
+
             } else {
                 $Servicestatus = new \itnovum\openITCOCKPIT\Core\Servicestatus(
                     ['Servicestatus' => []]
@@ -887,7 +895,8 @@ class MapNew extends MapModuleAppModel {
             'Servicegroup' => $servicegroup,
             'ServiceSummary' => $serviceStateSummary,
             'Services' => $servicesResult,
-            'CumulatedHumanState' => $CumulatedServiceStatus->toArray()['humanState']
+            'CumulatedHumanState' => $CumulatedServiceStatus->toArray()['humanState'],
+            'ServiceIdsGroupByState' => $serviceIdsGroupByState
         ];
     }
 
