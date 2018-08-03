@@ -194,7 +194,6 @@ angular.module('openITCOCKPIT')
             switch($scope.action){
                 case 'item':
                     $('#addEditMapItemModal').modal('show');
-
                     break;
 
                 default:
@@ -214,11 +213,12 @@ angular.module('openITCOCKPIT')
                 iconset: 'std_mid_64px',
                 z_index: '0', //Yes we need this as a string!
                 x: $event.offsetX,
-                y: $event.offsetY
+                y: $event.offsetY,
+                show_label: 0,
+                label_possition: 2
                 //x: $event.pageX,
                 //y: $event.pageY
             };
-            //console.log($event);
         };
 
         $scope.addItem = function(){
@@ -237,7 +237,6 @@ angular.module('openITCOCKPIT')
         $scope.editItem = function(item){
             $scope.action = 'item';
             $scope.currentItem = item;
-            console.log(item);
             $('#addEditMapItemModal').modal('show');
         };
 
@@ -260,6 +259,9 @@ angular.module('openITCOCKPIT')
                         if($scope.map.Mapitem[i].id == $scope.currentItem.id){
                             $scope.map.Mapitem[i].x = $scope.currentItem.x;
                             $scope.map.Mapitem[i].y = $scope.currentItem.y;
+
+                            //We are done here
+                            break;
                         }
                     }
                 }else{
@@ -274,6 +276,32 @@ angular.module('openITCOCKPIT')
                 if(result.data.hasOwnProperty('error')){
                     $scope.errors = result.data.error;
                 }
+                genericError();
+            });
+        };
+
+        $scope.deleteItem = function(){
+            $scope.currentItem.map_id = $scope.id;
+            $http.post("/map_module/mapeditors_new/deleteItem.json?angular=true",
+                {
+                    'Mapitem': $scope.currentItem,
+                    'action': 'delete'
+                }
+            ).then(function(result){
+                //Remove item from current scope
+                for(var i in $scope.map.Mapitem){
+                    if($scope.map.Mapitem[i].id == $scope.currentItem.id){
+                        $scope.map.Mapitem.splice(i, 1);
+
+                        //We are done here
+                        break;
+                    }
+                }
+
+                $('#addEditMapItemModal').modal('hide');
+                genericSuccess();
+                $scope.currentItem = {};
+            }, function errorCallback(result){
                 genericError();
             });
         };

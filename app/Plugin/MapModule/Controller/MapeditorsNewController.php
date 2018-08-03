@@ -1191,4 +1191,33 @@ class MapeditorsNewController extends MapModuleAppController {
         $this->serializeErrorMessageFromModel('Mapitem');
     }
 
+    /**
+     * @todo Add to ACL depandencies
+     */
+    public function deleteItem() {
+        if (!$this->request->is('post') || !$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        $id = $this->request->data('Mapitem.id');
+
+
+        if (!$this->Mapitem->exists($id)) {
+            throw new NotFoundException();
+        }
+
+        if (!is_numeric($id)) {
+            throw new InvalidArgumentException('Mapitem.id needs to be numeric');
+        }
+
+        if ($this->Mapitem->delete($id)) {
+            $this->set('success', true);
+            $this->set('_serialize', ['success']);
+            return;
+        }
+
+        $this->set('success', false);
+        $this->set('_serialize', ['success']);
+    }
+
 }

@@ -394,7 +394,7 @@
 
             <div class="modal-footer">
 
-                <button type="button" class="btn btn-danger pull-left" data-dismiss="modal">
+                <button type="button" class="btn btn-danger pull-left" ng-click="deleteItem()">
                     <?php echo __('Delete'); ?>
                 </button>
 
