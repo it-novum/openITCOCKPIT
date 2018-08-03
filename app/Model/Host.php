@@ -2078,7 +2078,7 @@ class Host extends AppModel {
      */
     public function getChangelogData($data){
 
-        debug($data);
+        //debug($data);
         $this->Hosttemplate = ClassRegistry::init('Hosttemplate');
         $this->Timeperiod = ClassRegistry::init('Timeperiod');
         $this->Command = ClassRegistry::init('Command');

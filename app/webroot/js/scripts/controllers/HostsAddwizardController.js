@@ -26,9 +26,6 @@ angular.module('openITCOCKPIT')
                 host_type: 1,
                 uuid: ''
             },
-            Contact: {
-
-            }
         };
 
         $scope.selectedContainer = 0;
@@ -36,6 +33,7 @@ angular.module('openITCOCKPIT')
         $scope.hostname = 0;
         $scope.hostaddress = 0;
         $scope.init = true;
+        $scope.discovered = false;
 
         $scope.load = function(){
             $http.get("/hosts/loadContainers.json", {
@@ -49,7 +47,9 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.containerSelected = function(){
-            $scope.selectedContainer = $scope.post.Container.container_id;
+            var contianerID = $scope.post.Container.container_id;
+            $scope.selectedContainer = contianerID;
+            $scope.post.Host.container_id = contianerID;
         };
 
         $scope.hosttemplateSelected = function(){
@@ -87,12 +87,6 @@ angular.module('openITCOCKPIT')
                     //'selected[]': $scope.post.Hostgroup.Hosttemplate
                 }
             }).then(function(result){
-                console.log(result);
-           /*     $scope.hosttemplates = result.data.hosttemplates;
-                $scope.contacts = result.data.contacts;
-                $scope.contactgroups = result.data.contactgroups;
-                $scope.Host.command_id = result.data.command_id;
-                */
                 $scope.post.Host.description = result.data.hosttemplate.Hosttemplate.description;
                 $scope.post.Host.host_type = result.data.hosttemplate.Hosttemplate.host_type;
                 $scope.post.Host.command_id = result.data.hosttemplate.Hosttemplate.command_id;
@@ -110,7 +104,7 @@ angular.module('openITCOCKPIT')
         $scope.getHostname = function(){
             //gethostnamebyaddr
             console.log($scope.address);
-            if(!$scope.address){
+            if(!$scope.address || $scope.discovered){
                 return;
             }
             $http.get('/hosts/gethostnamebyaddr/' + $scope.address + '.json', {
@@ -118,15 +112,17 @@ angular.module('openITCOCKPIT')
                     'angular': true
                 }
             }).then(function(result){
+
                 console.log(result.data);
-                $scope.result = result.data;
+                $scope.post.Host.name = result.data.fqdn;
+                $scope.discovered = true;
             });
         };
 
         $scope.getHostip = function(){
             //gethostipbyname
             console.log($scope.hostname);
-            if(!$scope.hostname){
+            if(!$scope.hostname || $scope.discovered){
                 return;
             }
             $http.get('/hosts/gethostipbyname/' + $scope.hostname + '.json', {
@@ -135,7 +131,8 @@ angular.module('openITCOCKPIT')
                 }
             }).then(function(result){
                 console.log(result.data);
-                $scope.result = result.data;
+                $scope.post.Host.address = result.data.hostaddress;
+                $scope.discovered = true;
             });
         };
 
@@ -149,7 +146,6 @@ angular.module('openITCOCKPIT')
             ).then(function(result){
                 console.log('Data saved successfully');
                 console.log(result);
-                debugger;
                 window.location.href = '/hosts/addwizardoptional/';
             }, function errorCallback(result){
                 console.info('save failed');
@@ -167,7 +163,8 @@ angular.module('openITCOCKPIT')
             if($scope.init){
                 return;
             }
-            $scope.loadData('');
+            //$scope.post.Host.container_id = $scope.post.Container.container_id;
+                $scope.loadData('');
         }, true);
 
         $scope.$watch('selectedHosttemplate', function(){
@@ -178,6 +175,7 @@ angular.module('openITCOCKPIT')
             console.log($scope.post.Host.name);
             $scope.hostname = $scope.post.Host.name;
             $scope.getHostip();
+            $scope.discovered = false;
 
         }, true);
 
@@ -185,6 +183,8 @@ angular.module('openITCOCKPIT')
             console.log($scope.post.Host.address);
             $scope.address = $scope.post.Host.address;
             $scope.getHostname();
+            $scope.discovered = false;
+
         }, true);
 
         $scope.load();

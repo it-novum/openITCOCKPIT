@@ -3498,8 +3498,12 @@ class HostsController extends AppController {
         $this->Frontend->setJson('address_placeholder', __('Will be auto detected if you enter a FQDN'));
         $userId = $this->Auth->user('id');
 
+
+
         if ($this->request->is('post') || $this->request->is('put')) {
-            $data_to_save = $this->request->data;
+           // debug($this->request->data);
+            //die();
+            //$data_to_save = $this->request->data;
             $ext_data_for_changelog = $this->Host->getChangelogData($this->request->data);
 
             if (isset($this->request->data['Host']['Contact'])) {
@@ -3619,15 +3623,15 @@ class HostsController extends AppController {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
-        $ip = '';
+        $hostaddress = '';
         if (isset($hostname) && $hostname != '') {
             $currentIp = gethostbyname($hostname);
             if (filter_var($currentIp, FILTER_VALIDATE_IP)) {
-                $ip = $currentIp;
+                $hostaddress = $currentIp;
             }
         }
-        $this->set('ip', $ip);
-        $this->set('_serialize', ['ip']);
+        $this->set('hostaddress', $hostaddress);
+        $this->set('_serialize', ['hostaddress']);
     }
 
     public function gethostnamebyaddr($hostaddress) {
@@ -3674,7 +3678,7 @@ class HostsController extends AppController {
             ],
         ]);
 
-        $hosttemplateObj = new \itnovum\openITCOCKPIT\Core\Hosttemplate($hosttemplate);
+        $hosttemplateObj = new \itnovum\openITCOCKPIT\Core\Hosttemplate($hosttemplate['Hosttemplate']);
         //cast the hosttemplate values
         $castedhosttemplate = $hosttemplateObj->castedValues();
 
