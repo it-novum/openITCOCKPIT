@@ -203,7 +203,9 @@
                                 <?php echo __('Hostname'); ?>
                             </div>
                             <div class="col-md-8 no-padding">
-                                {{summaryState.Host.hostname}}
+                                <a ng-href="{{ getObjectHref('host', summaryState.Host.id) }}">
+                                    {{summaryState.Host.hostname}}
+                                </a>
                             </div>
                         </div>
                         <div class="col-md-12">
@@ -228,7 +230,9 @@
                                 <?php echo __('Service'); ?>
                             </div>
                             <div class="col-md-8 no-padding">
-                                {{summaryState.Service.servicename}}
+                                <a ng-href="{{ getObjectHref('service', summaryState.Service.id) }}">
+                                    {{summaryState.Service.servicename}}
+                                </a>
                             </div>
                         </div>
                         <div class="col-md-12">
