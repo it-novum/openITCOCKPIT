@@ -1056,6 +1056,15 @@ class MapeditorsNewController extends MapModuleAppController {
         if (!$this->isApiRequest()) {
             $this->layout = 'angularjs';
             //Only ship template
+
+            $gadgetPreviews = [
+                'graph_gadget.png',
+                'tacho_gadget.png',
+                'trafficlight_gadget.png',
+                'cylinder_gadget.png',
+                'perfdata_gadget.png'
+            ];
+            $this->set('gadgetPreviews', $gadgetPreviews);
             return;
         }
 

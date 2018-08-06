@@ -655,15 +655,17 @@
                     <div class="col-xs-12" ng-if="iconsets">
                         <div class="row" style="max-height: 200px; overflow: auto;"
                              ng-class="{'has-error-border': errors.iconset}">
-                            <div class="col-xs-12 col-md-6 col-lg-3" ng-repeat="iconset in iconsets">
-                                <div class="thumbnail"
-                                     style="height: 175px; width: 175px;display: flex; align-items: center; overflow: hidden;"
-                                     ng-click="setCurrentIconset(iconset.MapUpload.saved_name)"
-                                     ng-class="{ 'selectedMapItem': iconset.MapUpload.saved_name === currentItem.iconset }">
-                                    <img class="image_picker_selector"
-                                         ng-src="/map_module/img/items/{{iconset.MapUpload.saved_name}}/ok.png">
+                            <?php foreach ($gadgetPreviews as $gadgetPreview): ?>
+                                <div class="col-xs-12 col-md-6 col-lg-3">
+                                    <div class="thumbnail"
+                                         style="height: 175px; width: 175px;display: flex; align-items: center; overflow: hidden;"
+                                         ng-click="setCurrentIconset(iconset.MapUpload.saved_name)"
+                                         ng-class="{ 'selectedMapItem': iconset.MapUpload.saved_name === currentItem.iconset }">
+                                        <img class="image_picker_selector"
+                                             ng-src="/map_module/img/gadget_previews/<?php echo h($gadgetPreview); ?>">
+                                    </div>
                                 </div>
-                            </div>
+                            <?php endforeach; ?>
                         </div>
                         <div ng-repeat="error in errors.iconset" class="row">
                             <div class="col-xs-12">
