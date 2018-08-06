@@ -738,6 +738,7 @@ class MapeditorsNewController extends MapModuleAppController {
                         ]
                     ],
                     'fields'     => [
+                        'Hostgroup.id',
                         'Hostgroup.description'
                     ],
                     'conditions' => [

@@ -24,7 +24,7 @@ angular.module('openITCOCKPIT')
                     output: ''
                 },
                 Service: {
-                    id: QueryStringService.serviceids('filter[Service.id][]', []),
+                    id: QueryStringService.getIds('filter[Service.id][]', []),
                     name: QueryStringService.getValue('filter[Service.servicename]', ''),
                     keywords: ''
                 },
