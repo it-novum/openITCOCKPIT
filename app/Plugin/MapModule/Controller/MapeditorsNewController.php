@@ -674,6 +674,7 @@ class MapeditorsNewController extends MapModuleAppController {
                     'recursive' => -1,
                     'fields' => [
                         'Service.id',
+                        'Service.name',
                         'Service.uuid',
                         'Service.description'
                     ],

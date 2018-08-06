@@ -102,18 +102,23 @@
                  style="position:absolute; top: {{gadgetItem.y}}px; left: {{gadgetItem.x}}px;  z-index: {{gadgetItem.z_index}};">
                 <a ng-href="{{ getHref(gadgetItem) }}">
                     <graph-item item="gadgetItem" ng-if="gadgetItem.gadget === 'RRDGraph'"
+                                ng-mouseenter="showSummaryStateDelayed(gadgetItem)"
                                 refresh-interval="refreshInterval"></graph-item>
 
                     <perfdata-text-item item="gadgetItem" ng-if="gadgetItem.gadget === 'Text'"
+                                        ng-mouseenter="showSummaryStateDelayed(gadgetItem)"
                                         refresh-interval="refreshInterval"></perfdata-text-item>
                     <tacho-item item="gadgetItem" ng-if="gadgetItem.gadget === 'Tacho'"
+                                ng-mouseenter="showSummaryStateDelayed(gadgetItem)"
                                 refresh-interval="refreshInterval"></tacho-item>
 
                     <cylinder-item item="gadgetItem" ng-if="gadgetItem.gadget === 'Cylinder'"
+                                   ng-mouseenter="showSummaryStateDelayed(gadgetItem)"
                                    refresh-interval="refreshInterval"></cylinder-item>
 
                     <trafficlight-item item="gadgetItem"
                                        ng-if="gadgetItem.gadget === 'TrafficLight'"
+                                       ng-mouseenter="showSummaryStateDelayed(gadgetItem)"
                                        refresh-interval="refreshInterval"></trafficlight-item>
                 </a>
             </div>
