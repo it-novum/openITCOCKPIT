@@ -856,12 +856,15 @@ class MapeditorsNewController extends MapModuleAppController {
                     ],
                     'conditions' => [
                         'Mapitem.object_id' => $objectId
+                    ],
+                    'fields' => [
+                        'Map.*',
+                        'Mapitem.object_id'
                     ]
                 ]);
                 if (!empty($map)) {
                     if ($this->hasRootPrivileges === false) {
                         if (!$this->allowedByContainerId(Hash::extract($map, 'Container.{n}.MapsToContainer.container_id'))) {
-                            $allowView = false;
                             break;
                         }
                     }

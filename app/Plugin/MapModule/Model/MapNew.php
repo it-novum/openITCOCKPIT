@@ -1055,6 +1055,7 @@ class MapNew extends MapModuleAppModel {
             'id' => $map['Map']['id'],
             'name' => $map['Map']['name'],
             'title' => $map['Map']['title'],
+            'object_id' => $map['Mapitem']['object_id']
         ];
 
         return [

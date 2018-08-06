@@ -571,7 +571,9 @@
                                 <?php echo __('Map name'); ?>
                             </div>
                             <div class="col-md-8 no-padding">
-                                {{summaryState.Map.name}}
+                                <a ng-href="{{ getObjectHref('map', summaryState.Map.object_id) }}">
+                                    {{summaryState.Map.name}}
+                                </a>
                             </div>
                         </div>
                         <div class="col-md-12">
