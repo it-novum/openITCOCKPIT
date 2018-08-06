@@ -88,8 +88,13 @@
             </div>
 
             <div ng-repeat="lineItem in map.Mapline">
-                <a ng-href="{{ getHref(lineItem) }}">
+                <a ng-show="lineItem.type != 'stateless'"
+                    ng-href="{{ getHref(lineItem) }}"
+                    ng-mouseenter="showSummaryStateDelayed(lineItem)">
                     <map-line item="lineItem" refresh-interval="refreshInterval"></map-line>
+                </a>
+                <a ng-show="lineItem.type == 'stateless'">
+                    <map-line item="lineItem"></map-line>
                 </a>
             </div>
 
