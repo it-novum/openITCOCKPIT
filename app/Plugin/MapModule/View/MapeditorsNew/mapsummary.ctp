@@ -617,13 +617,13 @@
                             </div>
                             <div class="col-md-8 no-padding">
                                 <div class="btn-group btn-group-justified" role="group">
-                                    <a class="btn btn-success state-button-small font-sm">
+                                    <a class="btn btn-success state-button-small font-sm" ng-href="{{ getObjectsHref('host', summaryState.HostIdsGroupByState[0]) }}">
                                         {{summaryState.HostSummary.state[0]}}
                                     </a>
-                                    <a class="btn btn-danger state-button-small font-sm">
+                                    <a class="btn btn-danger state-button-small font-sm" ng-href="{{ getObjectsHref('host', summaryState.HostIdsGroupByState[1]) }}">
                                         {{summaryState.HostSummary.state[1]}}
                                     </a>
-                                    <a class="btn btn-default state-button-small font-sm">
+                                    <a class="btn btn-default state-button-small font-sm" ng-href="{{ getObjectsHref('host', summaryState.HostIdsGroupByState[2]) }}">
                                         {{summaryState.HostSummary.state[2]}}
                                     </a>
                                 </div>
@@ -635,16 +635,16 @@
                             </div>
                             <div class="col-md-8 no-padding">
                                 <div class="btn-group btn-group-justified" role="group">
-                                    <a class="btn btn-success state-button-small font-sm">
+                                    <a class="btn btn-success state-button-small font-sm" ng-href="{{ getObjectsHref('service', summaryState.ServiceIdsGroupByState[0]) }}">
                                         {{summaryState.ServiceSummary.state[0]}}
                                     </a>
-                                    <a class="btn btn-warning state-button-small font-sm">
+                                    <a class="btn btn-warning state-button-small font-sm" ng-href="{{ getObjectsHref('service', summaryState.ServiceIdsGroupByState[1]) }}">
                                         {{summaryState.ServiceSummary.state[1]}}
                                     </a>
-                                    <a class="btn btn-danger state-button-small font-sm">
+                                    <a class="btn btn-danger state-button-small font-sm" ng-href="{{ getObjectsHref('service', summaryState.ServiceIdsGroupByState[2]) }}">
                                         {{summaryState.ServiceSummary.state[2]}}
                                     </a>
-                                    <a class="btn btn-default state-button-small font-sm">
+                                    <a class="btn btn-default state-button-small font-sm" ng-href="{{ getObjectsHref('service', summaryState.ServiceIdsGroupByState[3]) }}">
                                         {{summaryState.ServiceSummary.state[3]}}
                                     </a>
                                 </div>
@@ -675,7 +675,9 @@
                             </div>
                             <div class="col-md-12 padding-top-5" ng-repeat="notOkHost in summaryState.NotOkHosts">
                                 <div class="col-md-4 cropText" title="{{notOkHost.Host.hostname}}">
-                                    {{notOkHost.Host.hostname}}
+                                    <a ng-href="{{ getObjectHref('host', notOkHost.Host.id) }}">
+                                        {{notOkHost.Host.hostname}}
+                                    </a>
                                 </div>
                                 <div ng-show="notOkHost.Hoststatus.isInMonitoring"
                                      class="col-md-4 text-center txt-color-white text-capitalize bg-{{(notOkHost.Hoststatus.isHardstate)?notOkHost.Hoststatus.humanState:notOkHost.Hoststatus.humanState+'-soft'}}">
@@ -708,7 +710,9 @@
                             <div class="col-md-12 padding-top-5" ng-repeat="notOkService in summaryState.NotOkServices">
                                 <div class="col-md-4 cropText"
                                      title="{{notOkService.Service.hostname}}/{{notOkService.Service.hostname}}">
-                                    {{notOkService.Service.hostname}}/{{notOkService.Service.hostname}}
+                                    <a ng-href="{{ getObjectHref('service', notOkService.Service.id) }}">
+                                        {{notOkService.Service.hostname}}/{{notOkService.Service.servicename}}
+                                    </a>
                                 </div>
                                 <div ng-show="notOkService.Servicestatus.isInMonitoring"
                                      class="col-md-4 text-center txt-color-white text-capitalize bg-{{(notOkService.Servicestatus.isHardstate)?notOkService.Servicestatus.humanState:notOkService.Servicestatus.humanState+'-soft'}}">
