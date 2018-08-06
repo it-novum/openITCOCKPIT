@@ -467,7 +467,6 @@ class MapNew extends MapModuleAppModel {
             if ($hoststatus->isAcknowledged() && $hoststatus->isInDowntime()) {
                 $iconProperty = $this->ackAndDowntimeIcon;
             }
-
             if ($hoststatus->currentState() > 0) {
                 return [
                     'icon' => $icon,
@@ -479,7 +478,6 @@ class MapNew extends MapModuleAppModel {
             }
         }
 
-
         $servicesUuids = Hash::extract($services, '{n}.Service.uuid');
         $ServicestatusFieds = new ServicestatusFields($this->DbBackend);
         $ServicestatusFieds->currentState()->scheduledDowntimeDepth()->problemHasBeenAcknowledged();
@@ -490,7 +488,6 @@ class MapNew extends MapModuleAppModel {
             $worstServiceState = array_values(
                 Hash::sort($servicestatus, '{s}.Servicestatus.current_state', 'desc')
             );
-
             $servicestatus = new \itnovum\openITCOCKPIT\Core\Servicestatus($worstServiceState[0]['Servicestatus']);
             $serviceIcon = $this->serviceIcons[$servicestatus->currentState()];
 
