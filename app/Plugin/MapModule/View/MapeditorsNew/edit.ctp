@@ -568,7 +568,7 @@
                 </div>
                 <br/>
 
-                <div class="row">
+                <div class="row" ng-show="currentItem.type !== 'stateless'">
                     <div class="col-xs-12">
                         <div class="form-group smart-form">
                             <?php echo __('Label options'); ?>
