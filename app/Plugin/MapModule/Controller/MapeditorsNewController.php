@@ -35,6 +35,7 @@ use Symfony\Component\Finder\Finder;
  * @property MapNew $MapNew
  * @property Mapitem $Mapitem
  * @property MapUpload $MapUpload
+ * @property Mapline $Mapline
  * @property Host $Host
  * @property Service $Service
  * @property Hoststatus $Hoststatus
@@ -49,6 +50,7 @@ class MapeditorsNewController extends MapModuleAppController {
         'MapModule.MapNew',
         'MapModule.Mapitem',
         'MapModule.MapUpload',
+        'MapModule.Mapline',
         'Host',
         'Service',
         'Hostgroup',
@@ -1217,6 +1219,59 @@ class MapeditorsNewController extends MapModuleAppController {
         }
 
         if ($this->Mapitem->delete($id)) {
+            $this->set('success', true);
+            $this->set('_serialize', ['success']);
+            return;
+        }
+
+        $this->set('success', false);
+        $this->set('_serialize', ['success']);
+    }
+
+    /**
+     * @todo Add to ACL depandencies
+     */
+    public function saveLine() {
+        if (!$this->request->is('post') || !$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+
+        //Create new item or update existing one
+        if (!isset($this->request->data['Mapline']['id'])) {
+            $this->Mapline->create();
+        }
+
+        if ($this->Mapline->save($this->request->data)) {
+            $mapline = $this->request->data;
+            $mapline['Mapline']['id'] = $this->Mapline->id;
+            $this->set('Mapline', $mapline);
+            $this->set('_serialize', ['Mapline']);
+            return;
+        }
+        $this->serializeErrorMessageFromModel('Mapline');
+    }
+
+    /**
+     * @todo Add to ACL depandencies
+     */
+    public function deleteLine() {
+        if (!$this->request->is('post') || !$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        $id = $this->request->data('Mapline.id');
+
+
+        if (!$this->Mapline->exists($id)) {
+            throw new NotFoundException();
+        }
+
+        if (!is_numeric($id)) {
+            throw new InvalidArgumentException('Mapline.id needs to be numeric');
+        }
+
+        if ($this->Mapline->delete($id)) {
             $this->set('success', true);
             $this->set('_serialize', ['success']);
             return;

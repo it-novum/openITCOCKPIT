@@ -2033,3 +2033,7 @@ label[class^='aco-host']:after, label[class^='aco-service']:after {
 .has-error-border {
     border: 1px solid #a94442;
 }
+
+.bg-color-black {
+    background: #000000;
+}

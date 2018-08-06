@@ -10,6 +10,7 @@ angular.module('openITCOCKPIT')
 
         $scope.currentItem = {};
         $scope.maxZIndex = 0;
+        $scope.clickCount = 1;
 
         $scope.grid = {
             enabled: true,
@@ -188,12 +189,63 @@ angular.module('openITCOCKPIT')
                 return;
             }
 
-            $('#map-editor').css('cursor', 'default');
-            $scope.addNewObject = false;
+            var $mapEditor = $('#map-editor');
 
             switch($scope.action){
                 case 'item':
+                    $mapEditor.css('cursor', 'default');
+                    $scope.addNewObject = false;
+
                     $('#addEditMapItemModal').modal('show');
+
+                    // Create currentItem skeleton
+                    // Set X and Y poss of the new object
+                    $scope.currentItem = {
+                        iconset: 'std_mid_64px',
+                        z_index: '0', //Yes we need this as a string!
+                        x: $event.offsetX,
+                        y: $event.offsetY,
+                        show_label: 0,
+                        label_possition: 2
+                        //x: $event.pageX,
+                        //y: $event.pageY
+                    };
+
+                    $scope.action = null;
+                    break;
+
+                case 'line':
+                    if($scope.clickCount === 2){
+                        //Endpoint of the line
+                        $mapEditor.css('cursor', 'default');
+                        $scope.addNewObject = false;
+
+
+                        $scope.currentItem['endX'] = $event.offsetX;
+                        $scope.currentItem['endY'] = $event.offsetY;
+
+                        $('#addEditMapLineModal').modal('show');
+                    }
+
+                    if($scope.clickCount === 1){
+
+                        $scope.currentItem = {
+                            z_index: '0', //Yes we need this as a string!
+                            startX: $event.offsetX,
+                            startY: $event.offsetY,
+                            show_label: 0
+                        };
+
+                        new Noty({
+                            theme: 'metroui',
+                            type: 'info',
+                            layout: 'topCenter',
+                            text: 'Click a second time to define the endpoint of the line.',
+                            timeout: 3500
+                        }).show();
+                    }
+
+                    $scope.clickCount++;
                     break;
 
                 default:
@@ -205,20 +257,6 @@ angular.module('openITCOCKPIT')
                     }).show();
                     break;
             }
-            $scope.action = null;
-
-            // Create currentItem skeleton
-            // Set X and Y poss of the new object
-            $scope.currentItem = {
-                iconset: 'std_mid_64px',
-                z_index: '0', //Yes we need this as a string!
-                x: $event.offsetX,
-                y: $event.offsetY,
-                show_label: 0,
-                label_possition: 2
-                //x: $event.pageX,
-                //y: $event.pageY
-            };
         };
 
         $scope.addItem = function(){
@@ -299,6 +337,98 @@ angular.module('openITCOCKPIT')
                 }
 
                 $('#addEditMapItemModal').modal('hide');
+                genericSuccess();
+                $scope.currentItem = {};
+            }, function errorCallback(result){
+                genericError();
+            });
+        };
+
+        $scope.addLine = function(){
+            new Noty({
+                theme: 'metroui',
+                type: 'info',
+                layout: 'topCenter',
+                text: 'Click at the position on the map, where the line should start.',
+                timeout: 3500
+            }).show();
+            $scope.clickCount = 1;
+            $('#map-editor').css('cursor', 'crosshair');
+            $scope.addNewObject = true;
+            $scope.action = 'line';
+        };
+
+        $scope.editLine = function(lineItem){
+            $scope.action = 'line';
+            $scope.currentItem = lineItem;
+            $('#addEditMapLineModal').modal('show');
+        };
+
+        $scope.saveLine = function(action){
+            if(typeof action === 'undefined'){
+                action = 'add_or_edit';
+            }
+
+            $scope.currentItem.map_id = $scope.id;
+
+            if($scope.currentItem.type === 'stateless'){
+                $scope.currentItem.object_id = null;
+            }
+
+            $http.post("/map_module/mapeditors_new/saveLine.json?angular=true",
+                {
+                    'Mapline': $scope.currentItem,
+                    'action': action
+                }
+            ).then(function(result){
+                $scope.errors = {};
+                //Update possition in current scope json data
+                if($scope.currentItem.hasOwnProperty('id')){
+                    for(var i in $scope.map.Mapline){
+                        if($scope.map.Mapline[i].id == $scope.currentItem.id){
+                            $scope.map.Mapline[i].startX = $scope.currentItem.startX;
+                            $scope.map.Mapline[i].startY = $scope.currentItem.startY;
+                            $scope.map.Mapline[i].endx = $scope.currentItem.endX;
+                            $scope.map.Mapline[i].endY = $scope.currentItem.endY;
+
+                            //We are done here
+                            break;
+                        }
+                    }
+                }else{
+                    //New created item
+                    $scope.map.Mapline.push(result.data.Mapline.Mapline);
+                }
+
+                $('#addEditMapLineModal').modal('hide');
+                genericSuccess();
+            }, function errorCallback(result){
+                if(result.data.hasOwnProperty('error')){
+                    $scope.errors = result.data.error;
+                }
+                genericError();
+            });
+        };
+
+        $scope.deleteLine = function(){
+            $scope.currentItem.map_id = $scope.id;
+            $http.post("/map_module/mapeditors_new/deleteLine.json?angular=true",
+                {
+                    'Mapline': $scope.currentItem,
+                    'action': 'delete'
+                }
+            ).then(function(result){
+                //Remove item from current scope
+                for(var i in $scope.map.Mapline){
+                    if($scope.map.Mapline[i].id == $scope.currentItem.id){
+                        $scope.map.Mapline.splice(i, 1);
+
+                        //We are done here
+                        break;
+                    }
+                }
+
+                $('#addEditMapLineModal').modal('hide');
                 genericSuccess();
                 $scope.currentItem = {};
             }, function errorCallback(result){
