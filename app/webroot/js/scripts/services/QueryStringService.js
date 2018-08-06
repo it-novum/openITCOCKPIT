@@ -21,7 +21,7 @@ angular.module('openITCOCKPIT')
                 return defaultReturn;
             },
 
-            serviceids: function(varName, defaultReturn){
+            getIds: function(varName, defaultReturn){
                 defaultReturn = (typeof defaultReturn === 'undefined') ? null : defaultReturn;
                 var url = new URL(location.href);
                 var serviceIds = url.searchParams.getAll(varName);

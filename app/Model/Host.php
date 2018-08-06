@@ -1372,6 +1372,10 @@ class Host extends AppModel {
         $query['conditions']['Host.disabled'] = (int)$HostConditions->includeDisabled();
         $query['conditions']['HostsToContainers.container_id'] = $HostConditions->getContainerIds();
 
+        if ($HostConditions->getHostIds()) {
+            $query['conditions']['Host.id'] = $HostConditions->getHostIds();
+        }
+
         return $query;
     }
 
@@ -1448,6 +1452,10 @@ class Host extends AppModel {
 
         $query['conditions']['Host.disabled'] = (int)$HostConditions->includeDisabled();
         $query['conditions']['HostsToContainers.container_id'] = $HostConditions->getContainerIds();
+
+        if ($HostConditions->getHostIds()) {
+            $query['conditions']['Host.id'] = $HostConditions->getHostIds();
+        }
 
         return $query;
     }

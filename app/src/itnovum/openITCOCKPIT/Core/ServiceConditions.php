@@ -165,11 +165,9 @@ class ServiceConditions {
     }
 
     /**
-     * @param array $containerIds
+     * @param array $serviceIds
      */
     public function setServiceIds($serviceIds) {
         $this->serviceIds = $serviceIds;
     }
-
-
 }

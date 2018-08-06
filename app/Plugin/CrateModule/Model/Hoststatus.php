@@ -147,6 +147,10 @@ class Hoststatus extends CrateModuleAppModel {
 
         $query['conditions']['Host.disabled'] = (bool)$HostConditions->includeDisabled();
 
+        if ($HostConditions->getHostIds()) {
+            $query['conditions']['Host.id'] = $HostConditions->getHostIds();
+        }
+
         return $query;
     }
 

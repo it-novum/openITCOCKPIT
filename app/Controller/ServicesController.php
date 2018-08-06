@@ -157,8 +157,6 @@ class ServicesController extends AppController {
                     return;
                 }
             }
-            $serviceIds = $ServiceControllerRequest->getServiceIdsByRequest();
-            $ServiceConditions->setServiceIds($serviceIds);
 
             $ServiceConditions->setIncludeDisabled(false);
             $ServiceConditions->setContainerIds($browserContainerIds);
