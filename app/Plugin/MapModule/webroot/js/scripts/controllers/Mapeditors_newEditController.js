@@ -184,6 +184,7 @@ angular.module('openITCOCKPIT')
             });
         };
 
+        //Gets called by on-click on the map editor contain
         $scope.addNewObjectFunc = function($event){
             if(!$scope.addNewObject){
                 return;
@@ -219,6 +220,7 @@ angular.module('openITCOCKPIT')
                         //Endpoint of the line
                         $mapEditor.css('cursor', 'default');
                         $scope.addNewObject = false;
+                        $scope.action = null;
 
 
                         $scope.currentItem['endX'] = $event.offsetX;
@@ -246,6 +248,26 @@ angular.module('openITCOCKPIT')
                     }
 
                     $scope.clickCount++;
+                    break;
+
+                case 'gadget':
+                    $mapEditor.css('cursor', 'default');
+                    $scope.addNewObject = false;
+
+                    $('#addEditMapGadgetModal').modal('show');
+
+                    // Create currentItem skeleton
+                    // Set X and Y poss of the new object
+                    $scope.currentItem = {
+                        type: 'service', //Gadgets are only available for services
+                        z_index: '0', //Yes we need this as a string!
+                        x: $event.offsetX,
+                        y: $event.offsetY,
+                        show_label: 0,
+                        label_possition: 2
+                    };
+
+                    $scope.action = null;
                     break;
 
                 default:
@@ -429,6 +451,95 @@ angular.module('openITCOCKPIT')
                 }
 
                 $('#addEditMapLineModal').modal('hide');
+                genericSuccess();
+                $scope.currentItem = {};
+            }, function errorCallback(result){
+                genericError();
+            });
+        };
+
+        $scope.addGadget = function(){
+            new Noty({
+                theme: 'metroui',
+                type: 'info',
+                layout: 'topCenter',
+                text: 'Click at the position on the map, where you want to place the new Gadget.',
+                timeout: 3500
+            }).show();
+            $('#map-editor').css('cursor', 'crosshair');
+            $scope.addNewObject = true;
+            $scope.action = 'gadget';
+        };
+
+        $scope.editGadget = function(gadgetItem){
+            $scope.action = 'gadget';
+            $scope.currentItem = gadgetItem;
+            $('#addEditMapGadgetModal').modal('show');
+        };
+
+        $scope.saveGadget = function(action){
+            if(typeof action === 'undefined'){
+                action = 'add_or_edit';
+            }
+
+            $scope.currentItem.map_id = $scope.id;
+
+            if($scope.currentItem.type === 'stateless'){
+                $scope.currentItem.object_id = null;
+            }
+
+            $http.post("/map_module/mapeditors_new/saveGadget.json?angular=true",
+                {
+                    'Mapgadget': $scope.currentItem,
+                    'action': action
+                }
+            ).then(function(result){
+                $scope.errors = {};
+                //Update possition in current scope json data
+                if($scope.currentItem.hasOwnProperty('id')){
+                    for(var i in $scope.map.Mapgadget){
+                        if($scope.map.Mapgadget[i].id == $scope.currentItem.id){
+                            $scope.map.Mapgadget[i].x = $scope.currentItem.x;
+                            $scope.map.Mapgadget[i].y = $scope.currentItem.y;
+
+                            //We are done here
+                            break;
+                        }
+                    }
+                }else{
+                    //New created item
+                    $scope.map.Mapgadget.push(result.data.Mapgadget.Mapgadget);
+                }
+
+                $('#addEditMapGadgetModal').modal('hide');
+                genericSuccess();
+            }, function errorCallback(result){
+                if(result.data.hasOwnProperty('error')){
+                    $scope.errors = result.data.error;
+                }
+                genericError();
+            });
+        };
+
+        $scope.deleteGadget = function(){
+            $scope.currentItem.map_id = $scope.id;
+            $http.post("/map_module/mapeditors_new/deleteGadget.json?angular=true",
+                {
+                    'Mapline': $scope.currentItem,
+                    'action': 'delete'
+                }
+            ).then(function(result){
+                //Remove item from current scope
+                for(var i in $scope.map.Mapgadget){
+                    if($scope.map.Mapgadget[i].id == $scope.currentItem.id){
+                        $scope.map.Mapgadget.splice(i, 1);
+
+                        //We are done here
+                        break;
+                    }
+                }
+
+                $('#addEditMapGadgetModal').modal('hide');
                 genericSuccess();
                 $scope.currentItem = {};
             }, function errorCallback(result){

@@ -35,10 +35,11 @@ angular.module('openITCOCKPIT').directive('tachoItem', function($http){
                 }).then(function(result){
                     $scope.color = result.data.data.color;
                     var perfdata = result.data.data.Perfdata;
+                    var perfdataName;
 
                     if(perfdata !== null){
                         if(Object.keys(perfdata).length > 0){
-                            var perfdataName = Object.keys(perfdata)[0];
+                            perfdataName = Object.keys(perfdata)[0];
                             perfdata = perfdata[perfdataName];
 
                             perfdata.current = parseFloat(perfdata.current);
@@ -47,6 +48,18 @@ angular.module('openITCOCKPIT').directive('tachoItem', function($http){
                             perfdata.min = parseFloat(perfdata.min);
                             perfdata.max = parseFloat(perfdata.max);
 
+                            renderGauge(perfdataName, perfdata);
+                        }else{
+                            $scope.showLabel = true;
+
+                            perfdataName = 'No data available';
+                            perfdata = {};
+                            perfdata.current = 40;
+                            perfdata.warning = 80;
+                            perfdata.critical = 90;
+                            perfdata.min = 0;
+                            perfdata.max = 100;
+                            perfdata.unit = 'n/a';
                             renderGauge(perfdataName, perfdata);
                         }
                     }

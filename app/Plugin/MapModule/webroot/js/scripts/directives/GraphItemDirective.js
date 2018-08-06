@@ -49,6 +49,7 @@ angular.module('openITCOCKPIT').directive('graphItem', function($http){
                     }
                 }).then(function(result){
                     $scope.timezone = result.data.timezone;
+                    $scope.load();
                 });
             };
 
@@ -242,7 +243,6 @@ angular.module('openITCOCKPIT').directive('graphItem', function($http){
             };
 
 
-            $scope.load();
             $scope.loadTimezone();
         },
 

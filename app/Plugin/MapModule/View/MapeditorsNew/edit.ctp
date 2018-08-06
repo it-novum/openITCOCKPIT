@@ -153,7 +153,7 @@
 
             <div class="mapToolbarLine"></div>
 
-            <div class="mapToolbarTool" title="<?php echo __('Add gadget'); ?>">
+            <div class="mapToolbarTool" title="<?php echo __('Add gadget'); ?>" ng-click="addGadget()">
                 <i class="fa fa-lg fa-dashboard"></i>
             </div>
 
@@ -461,7 +461,7 @@
                     <div class="col-xs-12" ng-show="currentItem.type !== 'stateless'">
                         <div class="form-group" ng-class="{'has-error': errors.object_id}">
                             <select
-                                    id="AddEditItemObjectSelect"
+                                    id="AddEditLineObjectSelect"
                                     data-placeholder="<?php echo __('Please choose'); ?>"
                                     class="form-control"
                                     chosen="itemObjects"
@@ -505,7 +505,7 @@
                         </div>
                     </div>
                 </div>
-                <br />
+                <br/>
                 <div class="row">
                     <div class="col-xs-12 col-lg-6 smart-form">
                         <div class="form-group smart-form" ng-class="{'has-error': errors.endX}">
@@ -601,6 +601,210 @@
                 </button>
 
                 <button type="button" class="btn btn-primary" ng-click="saveLine()">
+                    <?php echo __('Save'); ?>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add/Edit map gadget modal -->
+<div id="addEditMapGadgetModal" class="modal" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">
+                    <i class="fa fa-desktop"></i>
+                    <?php echo __('Add or edit map item'); ?>
+                </h4>
+            </div>
+            <div class="modal-body">
+
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="form-group smart-form hintmark_red">
+                            <?php echo __('Select object'); ?>
+                        </div>
+                    </div>
+                    <div class="col-xs-12">
+                        <div class="form-group" ng-class="{'has-error': errors.object_id}">
+                            <select
+                                    id="AddEditGadgetObjectSelect"
+                                    data-placeholder="<?php echo __('Please choose'); ?>"
+                                    class="form-control"
+                                    chosen="itemObjects"
+                                    callback="loadMoreItemObjects"
+                                    ng-options="itemObject.key as itemObject.value for itemObject in itemObjects"
+                                    ng-model="currentItem.object_id">
+                            </select>
+                            <div ng-repeat="error in errors.object_id">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <br/>
+
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="form-group smart-form hintmark_red">
+                            <?php echo __('Select gadget type'); ?>
+                        </div>
+                    </div>
+                    <div class="col-xs-12" ng-if="iconsets">
+                        <div class="row" style="max-height: 200px; overflow: auto;"
+                             ng-class="{'has-error-border': errors.iconset}">
+                            <div class="col-xs-12 col-md-6 col-lg-3" ng-repeat="iconset in iconsets">
+                                <div class="thumbnail"
+                                     style="height: 175px; width: 175px;display: flex; align-items: center; overflow: hidden;"
+                                     ng-click="setCurrentIconset(iconset.MapUpload.saved_name)"
+                                     ng-class="{ 'selectedMapItem': iconset.MapUpload.saved_name === currentItem.iconset }">
+                                    <img class="image_picker_selector"
+                                         ng-src="/map_module/img/items/{{iconset.MapUpload.saved_name}}/ok.png">
+                                </div>
+                            </div>
+                        </div>
+                        <div ng-repeat="error in errors.iconset" class="row">
+                            <div class="col-xs-12">
+                                <div class="help-block text-danger" style="color: #a94442;">{{ error }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <br/>
+
+                <div class="row">
+                    <div class="col-xs-12 col-lg-6 smart-form">
+                        <div class="form-group smart-form" ng-class="{'has-error': errors.x}">
+                            <label class="label hintmark_red"><?php echo __('Position X'); ?></label>
+                            <label class="input"> <b class="icon-prepend">X</b>
+                                <input type="number" min="0" class="input-sm"
+                                       placeholder="<?php echo __('0'); ?>"
+                                       ng-model="currentItem.x">
+                            </label>
+                            <div ng-repeat="error in errors.x">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-lg-6 smart-form" ng-class="{'has-error': errors.y}">
+                        <div class="form-group smart-form">
+                            <label class="label hintmark_red"><?php echo __('Position Y'); ?></label>
+                            <label class="input"> <b class="icon-prepend">Y</b>
+                                <input type="number" min="0" class="input-sm"
+                                       placeholder="<?php echo __('0'); ?>"
+                                       ng-model="currentItem.y">
+                            </label>
+                        </div>
+                        <div ng-repeat="error in errors.y">
+                            <div class="help-block text-danger">{{ error }}</div>
+                        </div>
+                    </div>
+                </div>
+                <br/>
+
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="form-group smart-form hintmark_red">
+                            <?php echo __('Select layer'); ?>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-md-6 col-lg-10">
+                        <div class="form-group required" ng-class="{'has-error': errors.z_index}">
+                            <select
+                                    id="selectItemLayerSelect"
+                                    data-placeholder="<?php echo __('Please choose'); ?>"
+                                    class="form-control"
+                                    chosen="layers"
+                                    ng-options="key as layerNo for (key , layerNo) in layers"
+                                    ng-model="currentItem.z_index">
+                            </select>
+                            <div ng-repeat="error in errors.z_index">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                            <span class="help-block">
+                                <?php echo __('Layers could be used to stack items on a map. Empty layers will be deleted automatically.'); ?>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-md-6 col-lg-2">
+                        <button class="btn btn-block btn-default" ng-click="addNewLayer()">
+                            <?php echo __('Add new layer'); ?>
+                        </button>
+                    </div>
+                </div>
+                <br/>
+
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="form-group smart-form">
+                            <?php echo __('Label options'); ?>
+                        </div>
+                    </div>
+                    <div class="col-xs-12">
+                        <div class="form-group smart-form no-padding">
+                            <label class="checkbox small-checkbox-label">
+                                <input type="checkbox" name="checkbox"
+                                       ng-model="currentItem.show_label"
+                                       ng-true-value="1"
+                                       ng-false-value="0">
+                                <i class="checkbox-primary"></i>
+                                <?php echo __('Show label'); ?>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12">
+                        <div class="form-group smart-form">
+                            <?php echo __('Label possition'); ?>
+                        </div>
+                    </div>
+                    <div class="col-xs-12">
+                        <div class="btn-toolbar" role="toolbar">
+                            <button type="button" class="btn btn-default"
+                                    ng-class="{ 'btn-primary': currentItem.label_possition === 4 }"
+                                    ng-click="currentItem.label_possition = 4">
+                                <i class="fa fa-arrow-circle-left"></i>
+                                <?php echo __('Left'); ?>
+                            </button>
+                            <button type="button" class="btn btn-default"
+                                    ng-class="{ 'btn-primary': currentItem.label_possition === 1 }"
+                                    ng-click="currentItem.label_possition = 1">
+                                <i class="fa fa-arrow-circle-up"></i>
+                                <?php echo __('Top'); ?>
+                            </button>
+                            <button type="button" class="btn btn-default"
+                                    ng-class="{ 'btn-primary': currentItem.label_possition === 2 }"
+                                    ng-click="currentItem.label_possition = 2">
+                                <i class="fa fa-arrow-circle-down"></i>
+                                <?php echo __('Bottom'); ?>
+                            </button>
+                            <button type="button" class="btn btn-default"
+                                    ng-class="{ 'btn-primary': currentItem.label_possition === 3 }"
+                                    ng-click="currentItem.label_possition = 3">
+                                <i class="fa fa-arrow-circle-right"></i>
+                                <?php echo __('Right'); ?>
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+
+
+            </div>
+
+            <div class="modal-footer">
+
+                <button type="button" class="btn btn-danger pull-left" ng-click="deleteItem()">
+                    <?php echo __('Delete'); ?>
+                </button>
+
+                <button type="button" class="btn btn-default" data-dismiss="modal">
+                    <?php echo __('Close'); ?>
+                </button>
+
+                <button type="button" class="btn btn-primary" ng-click="saveItem()">
                     <?php echo __('Save'); ?>
                 </button>
             </div>
