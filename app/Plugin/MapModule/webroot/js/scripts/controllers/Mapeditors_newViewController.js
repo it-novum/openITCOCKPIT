@@ -10,6 +10,8 @@ angular.module('openITCOCKPIT')
         $scope.rotationPossition = 1;
         $scope.refreshInterval = 0;
 
+        var timer;
+
         $scope.load = function(){
             $http.get("/map_module/mapeditors_new/view/" + $scope.id + ".json", {
                 params: {
@@ -35,10 +37,14 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.showSummaryStateDelayed = function(item){
-            var timer = $timeout(function(){
+            timer = $timeout(function(){
                 //Method is in MapSummaryDirective
                 $scope.showSummaryState(item);
             }, 500);
+        };
+
+        $scope.cancelTimer = function(){
+            $timeout.cancel(timer);
         };
 
         $scope.getHref = function(item){

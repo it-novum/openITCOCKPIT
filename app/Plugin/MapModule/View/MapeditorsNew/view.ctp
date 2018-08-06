@@ -76,7 +76,8 @@
 
             <div ng-repeat="item in map.Mapitem"
                  style="position:absolute; top: {{item.y}}px; left: {{item.x}}px;  z-index: {{item.z_index}};"
-                 ng-mouseenter="showSummaryStateDelayed(item)">
+                 ng-mouseenter="showSummaryStateDelayed(item)"
+                 ng-mouseleave="cancelTimer()">
                 <a ng-href="{{ getHref(item) }}">
                     <map-item item="item" refresh-interval="refreshInterval"></map-item>
                 </a>
@@ -88,8 +89,14 @@
             </div>
 
             <div ng-repeat="lineItem in map.Mapline">
-                <a ng-href="{{ getHref(lineItem) }}">
+                <a ng-show="lineItem.type != 'stateless'"
+                    ng-href="{{ getHref(lineItem) }}"
+                    ng-mouseenter="showSummaryStateDelayed(lineItem)"
+                    ng-mouseleave="cancelTimer()">
                     <map-line item="lineItem" refresh-interval="refreshInterval"></map-line>
+                </a>
+                <a ng-show="lineItem.type == 'stateless'">
+                    <map-line item="lineItem"></map-line>
                 </a>
             </div>
 
@@ -103,22 +110,27 @@
                 <a ng-href="{{ getHref(gadgetItem) }}">
                     <graph-item item="gadgetItem" ng-if="gadgetItem.gadget === 'RRDGraph'"
                                 ng-mouseenter="showSummaryStateDelayed(gadgetItem)"
+                                ng-mouseleave="cancelTimer()"
                                 refresh-interval="refreshInterval"></graph-item>
 
                     <perfdata-text-item item="gadgetItem" ng-if="gadgetItem.gadget === 'Text'"
                                         ng-mouseenter="showSummaryStateDelayed(gadgetItem)"
+                                        ng-mouseleave="cancelTimer()"
                                         refresh-interval="refreshInterval"></perfdata-text-item>
                     <tacho-item item="gadgetItem" ng-if="gadgetItem.gadget === 'Tacho'"
                                 ng-mouseenter="showSummaryStateDelayed(gadgetItem)"
+                                ng-mouseleave="cancelTimer()"
                                 refresh-interval="refreshInterval"></tacho-item>
 
                     <cylinder-item item="gadgetItem" ng-if="gadgetItem.gadget === 'Cylinder'"
                                    ng-mouseenter="showSummaryStateDelayed(gadgetItem)"
+                                   ng-mouseleave="cancelTimer()"
                                    refresh-interval="refreshInterval"></cylinder-item>
 
                     <trafficlight-item item="gadgetItem"
                                        ng-if="gadgetItem.gadget === 'TrafficLight'"
                                        ng-mouseenter="showSummaryStateDelayed(gadgetItem)"
+                                       ng-mouseleave="cancelTimer()"
                                        refresh-interval="refreshInterval"></trafficlight-item>
                 </a>
             </div>
