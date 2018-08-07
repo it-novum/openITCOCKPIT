@@ -195,18 +195,7 @@ class HostAndServiceSummaryIcon {
 
     private function addServiceCircle($bitMaskServiceState) {
         $colors = $this->getDefaultColors();
-
-        imageSmoothArc( // <-- circle border
-            $this->image,
-            $this->center,
-            $this->center,
-            $this->sizeBorderInnerCircle,
-            $this->sizeBorderInnerCircle,
-            $colors['lightgray'],
-            0,
-            $this->CHART_END
-        );
-
+        
         $statusServiceOk = 1 << 0;
         $statusServiceWarning = 1 << 1;
         $statusServiceCritical = 1 << 2;
