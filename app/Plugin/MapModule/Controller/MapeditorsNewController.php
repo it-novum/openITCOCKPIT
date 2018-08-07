@@ -104,6 +104,9 @@ class MapeditorsNewController extends MapModuleAppController {
             return;
         }
 
+        $MapForAngular = new MapForAngular($map);
+        $map = $MapForAngular->toArray();
+
         $acl = [
             'hosts' => [
                 'browser' => isset($this->PERMISSIONS['hosts']['browser']),
