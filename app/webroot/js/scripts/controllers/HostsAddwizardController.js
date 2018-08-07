@@ -64,9 +64,6 @@ angular.module('openITCOCKPIT')
             $http.get("/hosts/loadElementsByContainerId/" + $scope.selectedContainer + ".json", {
                 params: {
                     'angular': true
-                    //'containerId': $scope.selectedContainer,
-                    //'filter[Hosttemplate.name]': searchString,
-                    //'selected[]': $scope.post.Hostgroup.Hosttemplate
                 }
             }).then(function(result){
                 $scope.hosttemplates = result.data.hosttemplates;
@@ -82,9 +79,6 @@ angular.module('openITCOCKPIT')
             $http.get("/hosts/loadHosttemplateData/" + $scope.selectedHosttemplate + ".json", {
                 params: {
                     'angular': true
-                    //'containerId': $scope.selectedContainer,
-                    //'filter[Hosttemplate.name]': searchString,
-                    //'selected[]': $scope.post.Hostgroup.Hosttemplate
                 }
             }).then(function(result){
                 $scope.post.Host.description = result.data.hosttemplate.Hosttemplate.description;
@@ -103,7 +97,6 @@ angular.module('openITCOCKPIT')
 
         $scope.getHostname = function(){
             //gethostnamebyaddr
-            console.log($scope.address);
             if(!$scope.address || $scope.discovered){
                 return;
             }
@@ -112,8 +105,6 @@ angular.module('openITCOCKPIT')
                     'angular': true
                 }
             }).then(function(result){
-
-                console.log(result.data);
                 $scope.post.Host.name = result.data.fqdn;
                 $scope.discovered = true;
             });
@@ -121,7 +112,6 @@ angular.module('openITCOCKPIT')
 
         $scope.getHostip = function(){
             //gethostipbyname
-            console.log($scope.hostname);
             if(!$scope.hostname || $scope.discovered){
                 return;
             }
@@ -130,7 +120,6 @@ angular.module('openITCOCKPIT')
                     'angular': true
                 }
             }).then(function(result){
-                console.log(result.data);
                 $scope.post.Host.address = result.data.hostaddress;
                 $scope.discovered = true;
             });
@@ -138,22 +127,16 @@ angular.module('openITCOCKPIT')
 
 
         $scope.submit = function(){
-            console.log($scope.post);
-            //debugger;
-
             $http.post("/hosts/addwizard.json?angular=true",
                 $scope.post
             ).then(function(result){
                 console.log('Data saved successfully');
-                console.log(result);
                 window.location.href = '/hosts/addwizardoptional/';
             }, function errorCallback(result){
                 console.info('save failed');
-                //console.log(result);
-               // debugger;
-                /*if(result.data.hasOwnProperty('error')){
+                if(result.data.hasOwnProperty('error')){
                     $scope.errors = result.data.error;
-                }*/
+                }
             });
 
         };
@@ -164,7 +147,7 @@ angular.module('openITCOCKPIT')
                 return;
             }
             //$scope.post.Host.container_id = $scope.post.Container.container_id;
-                $scope.loadData('');
+            $scope.loadData('');
         }, true);
 
         $scope.$watch('selectedHosttemplate', function(){
@@ -172,7 +155,6 @@ angular.module('openITCOCKPIT')
         }, true);
 
         $scope.$watch('post.Host.name', function(){
-            console.log($scope.post.Host.name);
             $scope.hostname = $scope.post.Host.name;
             $scope.getHostip();
             $scope.discovered = false;
@@ -180,7 +162,6 @@ angular.module('openITCOCKPIT')
         }, true);
 
         $scope.$watch('post.Host.address', function(){
-            console.log($scope.post.Host.address);
             $scope.address = $scope.post.Host.address;
             $scope.getHostname();
             $scope.discovered = false;

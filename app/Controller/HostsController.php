@@ -1381,8 +1381,6 @@ class HostsController extends AppController {
                 }
 
             }
-            debug($data_to_save);
-            die();
             if ($this->Host->saveAll($data_to_save)) {
                 $changelog_data = $this->Changelog->parseDataForChangelog(
                     $this->params['action'],
