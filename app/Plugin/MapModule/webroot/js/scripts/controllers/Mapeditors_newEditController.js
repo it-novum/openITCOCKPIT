@@ -488,10 +488,6 @@ angular.module('openITCOCKPIT')
 
             $scope.currentItem.map_id = $scope.id;
 
-            if($scope.currentItem.type === 'stateless'){
-                $scope.currentItem.object_id = null;
-            }
-
             $http.post("/map_module/mapeditors_new/saveGadget.json?angular=true",
                 {
                     'Mapgadget': $scope.currentItem,
@@ -548,6 +544,21 @@ angular.module('openITCOCKPIT')
                 $scope.currentItem = {};
             }, function errorCallback(result){
                 genericError();
+            });
+        };
+
+        var loadMetrics = function(){
+            $http.get("/map_module/mapeditors_new/getPerformanceDataMetrics/" + $scope.currentItem.object_id + ".json", {
+                params: {
+                    'angular': true
+                }
+            }).then(function(result){
+                var metrics = {};
+                for(var metricName in result.data.perfdata){
+                    metrics[metricName] = metricName;
+                }
+
+                $scope.metrics = metrics;
             });
         };
 
@@ -782,6 +793,12 @@ angular.module('openITCOCKPIT')
 
                 if($scope.currentItem.type === 'map'){
                     loadMaps('', objectId);
+                }
+            }
+
+            if($scope.currentItem.hasOwnProperty('gadget') && typeof objectId !== "undefined"){
+                if($scope.currentItem.gadget !== 'TrafficLight'){
+                    loadMetrics();
                 }
             }
         }, true);

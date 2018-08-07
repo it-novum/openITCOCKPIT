@@ -679,16 +679,16 @@
                         </div>
                     </div>
                     <div class="col-xs-12">
-                        <div class="form-group" ng-class="{'has-error': errors.object_id}">
+                        <div class="form-group" ng-class="{'has-error': errors.metric}">
                             <select
                                     id="AddEditGadgetObjectGaugeSelect"
                                     data-placeholder="<?php echo __('Please choose'); ?>"
                                     class="form-control"
-                                    chosen="itemObjects"
-                                    ng-options="itemObject.key as itemObject.value for itemObject in itemObjects"
+                                    chosen="metrics"
+                                    ng-options="key as value for (key , value) in metrics"
                                     ng-model="currentItem.metric">
                             </select>
-                            <div ng-repeat="error in errors.object_id">
+                            <div ng-repeat="error in errors.metric">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
                         </div>
@@ -737,6 +737,9 @@
                                        placeholder="<?php echo __('0'); ?>"
                                        ng-model="currentItem.size_x">
                             </label>
+                            <div class="help-block">
+                                <?php echo __('Keep blank for default width'); ?>
+                            </div>
                             <div ng-repeat="error in errors.size_x">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
@@ -752,6 +755,9 @@
                                        placeholder="<?php echo __('0'); ?>"
                                        ng-model="currentItem.size_y">
                             </label>
+                        </div>
+                        <div class="help-block">
+                            <?php echo __('Keep blank for default height'); ?>
                         </div>
                         <div ng-repeat="error in errors.size_y">
                             <div class="help-block text-danger">{{ error }}</div>
@@ -850,7 +856,7 @@
 
             <div class="modal-footer">
 
-                <button type="button" class="btn btn-danger pull-left" ng-click="deleteItem()">
+                <button type="button" class="btn btn-danger pull-left" ng-click="deleteGadget()">
                     <?php echo __('Delete'); ?>
                 </button>
 
@@ -858,7 +864,7 @@
                     <?php echo __('Close'); ?>
                 </button>
 
-                <button type="button" class="btn btn-primary" ng-click="saveItem()">
+                <button type="button" class="btn btn-primary" ng-click="saveGadget()">
                     <?php echo __('Save'); ?>
                 </button>
             </div>

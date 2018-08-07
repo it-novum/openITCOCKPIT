@@ -39,6 +39,7 @@ use Symfony\Component\Finder\Finder;
  * @property Mapitem $Mapitem
  * @property MapUpload $MapUpload
  * @property Mapline $Mapline
+ * @property Mapgadget $Mapgadget
  * @property Host $Host
  * @property Service $Service
  * @property Hoststatus $Hoststatus
@@ -54,6 +55,7 @@ class MapeditorsNewController extends MapModuleAppController {
         'MapModule.Mapitem',
         'MapModule.MapUpload',
         'MapModule.Mapline',
+        'MapModule.Mapgadget',
         'Host',
         'Service',
         'Hostgroup',
@@ -1185,7 +1187,12 @@ class MapeditorsNewController extends MapModuleAppController {
             $item['Mapitem']['y'] = (int)$this->request->data('Mapitem.y');
             $item['Mapitem']['show_label'] = (int)$this->request->data('Mapitem.show_label');
             if ($this->Mapitem->save($item)) {
-                $this->set('Mapitem', $item);
+                $mapitem = new \itnovum\openITCOCKPIT\Maps\ValueObjects\Mapitem($item['Mapitem']);
+
+                $this->set('Mapitem', [
+                    'Mapitem' => $mapitem->toArray()
+                ]);
+
                 $this->set('_serialize', ['Mapitem']);
                 return;
             }
@@ -1204,7 +1211,13 @@ class MapeditorsNewController extends MapModuleAppController {
         if ($this->Mapitem->save($item)) {
             $mapItem = $item;
             $mapItem['Mapitem']['id'] = (int)$this->Mapitem->id;
-            $this->set('Mapitem', $mapItem);
+
+            $mapitem = new \itnovum\openITCOCKPIT\Maps\ValueObjects\Mapitem($mapItem['Mapitem']);
+
+
+            $this->set('Mapitem', [
+                'Mapitem' => $mapitem->toArray()
+            ]);
             $this->set('_serialize', ['Mapitem']);
             return;
         }
@@ -1275,7 +1288,7 @@ class MapeditorsNewController extends MapModuleAppController {
             throw new MethodNotAllowedException();
         }
 
-        $id = $this->request->data('Mapline.id');
+        $id = $this->request->data('Mapgadget.id');
 
 
         if (!$this->Mapline->exists($id)) {
@@ -1295,6 +1308,63 @@ class MapeditorsNewController extends MapModuleAppController {
         $this->set('success', false);
         $this->set('_serialize', ['success']);
     }
+
+    /**
+     * @todo Add to ACL depandencies
+     */
+    public function saveGadget() {
+        if (!$this->request->is('post') || !$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+
+        //Create new gadget or update existing one
+        if (!isset($this->request->data['Mapgadget']['id'])) {
+            $this->Mapgadget->create();
+        }
+
+        $gadget = $this->request->data;
+        $gadget['Mapgadget']['show_label'] = (int)$this->request->data('Mapgadget.show_label');
+        if ($this->Mapgadget->save($gadget)) {
+            $Mapgadget = new \itnovum\openITCOCKPIT\Maps\ValueObjects\Mapgadget($gadget['Mapgadget']);
+            $this->set('Mapgadget', [
+                'Mapgadget' => $Mapgadget->toArray()
+            ]);
+            $this->set('_serialize', ['Mapgadget']);
+            return;
+        }
+        $this->serializeErrorMessageFromModel('Mapgadget');
+    }
+
+    /**
+     * @todo Add to ACL depandencies
+     */
+    public function deleteGadget() {
+        if (!$this->request->is('post') || !$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        $id = $this->request->data('Mapgadget.id');
+
+
+        if (!$this->Mapgadget->exists($id)) {
+            throw new NotFoundException();
+        }
+
+        if (!is_numeric($id)) {
+            throw new InvalidArgumentException('Mapgadget.id needs to be numeric');
+        }
+
+        if ($this->Mapgadget->delete($id)) {
+            $this->set('success', true);
+            $this->set('_serialize', ['success']);
+            return;
+        }
+
+        $this->set('success', false);
+        $this->set('_serialize', ['success']);
+    }
+
 
     /**
      * @todo Add to ACL depandencies
