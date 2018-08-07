@@ -264,7 +264,11 @@ angular.module('openITCOCKPIT')
                         x: $event.offsetX,
                         y: $event.offsetY,
                         show_label: 0,
-                        label_possition: 2
+                        label_possition: 2,
+                        gadget: 'RRDGraph',
+                        size_x: null,
+                        size_y: null,
+                        metric: null
                     };
 
                     $scope.action = null;

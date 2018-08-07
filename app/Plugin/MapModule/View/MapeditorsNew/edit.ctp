@@ -612,7 +612,7 @@
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
                 <h4 class="modal-title">
                     <i class="fa fa-desktop"></i>
-                    <?php echo __('Add or edit map item'); ?>
+                    <?php echo __('Add or edit map gadget'); ?>
                 </h4>
             </div>
             <div class="modal-body">
@@ -620,7 +620,7 @@
                 <div class="row">
                     <div class="col-xs-12">
                         <div class="form-group smart-form hintmark_red">
-                            <?php echo __('Select object'); ?>
+                            <?php echo __('Select service'); ?>
                         </div>
                     </div>
                     <div class="col-xs-12">
@@ -651,12 +651,12 @@
                     <div class="col-xs-12" ng-if="iconsets">
                         <div class="row" style="max-height: 200px; overflow: auto;"
                              ng-class="{'has-error-border': errors.iconset}">
-                            <?php foreach ($gadgetPreviews as $gadgetPreview): ?>
+                            <?php foreach ($gadgetPreviews as $gadgetName => $gadgetPreview): ?>
                                 <div class="col-xs-12 col-md-6 col-lg-3">
                                     <div class="thumbnail"
                                          style="height: 175px; width: 175px;display: flex; align-items: center; overflow: hidden;"
-                                         ng-click="setCurrentIconset(iconset.MapUpload.saved_name)"
-                                         ng-class="{ 'selectedMapItem': iconset.MapUpload.saved_name === currentItem.iconset }">
+                                         ng-click="currentItem.gadget = '<?php echo $gadgetName; ?>'"
+                                         ng-class="{ 'selectedMapItem': currentItem.gadget === '<?php echo $gadgetName; ?>' }">
                                         <img class="image_picker_selector"
                                              ng-src="/map_module/img/gadget_previews/<?php echo h($gadgetPreview); ?>">
                                     </div>
@@ -666,6 +666,30 @@
                         <div ng-repeat="error in errors.iconset" class="row">
                             <div class="col-xs-12">
                                 <div class="help-block text-danger" style="color: #a94442;">{{ error }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <br/>
+
+                <div class="row" ng-show="currentItem.gadget !== 'TrafficLight'">
+                    <div class="col-xs-12">
+                        <div class="form-group smart-form hintmark_red">
+                            <?php echo __('Select metric'); ?>
+                        </div>
+                    </div>
+                    <div class="col-xs-12">
+                        <div class="form-group" ng-class="{'has-error': errors.object_id}">
+                            <select
+                                    id="AddEditGadgetObjectGaugeSelect"
+                                    data-placeholder="<?php echo __('Please choose'); ?>"
+                                    class="form-control"
+                                    chosen="itemObjects"
+                                    ng-options="itemObject.key as itemObject.value for itemObject in itemObjects"
+                                    ng-model="currentItem.metric">
+                            </select>
+                            <div ng-repeat="error in errors.object_id">
+                                <div class="help-block text-danger">{{ error }}</div>
                             </div>
                         </div>
                     </div>
@@ -701,6 +725,40 @@
                     </div>
                 </div>
                 <br/>
+
+                <div class="row">
+                    <div class="col-xs-12 col-lg-6 smart-form">
+                        <div class="form-group smart-form" ng-class="{'has-error': errors.size_x}">
+                            <label class="label hintmark_red"><?php echo __('Width'); ?></label>
+                            <label class="input"> <b class="icon-prepend">
+                                    <i class="fa fa-arrows-h"></i>
+                                </b>
+                                <input type="number" min="0" class="input-sm"
+                                       placeholder="<?php echo __('0'); ?>"
+                                       ng-model="currentItem.size_x">
+                            </label>
+                            <div ng-repeat="error in errors.size_x">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-lg-6 smart-form" ng-class="{'has-error': errors.size_y}">
+                        <div class="form-group smart-form">
+                            <label class="label hintmark_red"><?php echo __('Height'); ?></label>
+                            <label class="input"> <b class="icon-prepend">
+                                    <i class="fa fa-arrows-v"></i>
+                                </b>
+                                <input type="number" min="0" class="input-sm"
+                                       placeholder="<?php echo __('0'); ?>"
+                                       ng-model="currentItem.size_y">
+                            </label>
+                        </div>
+                        <div ng-repeat="error in errors.size_y">
+                            <div class="help-block text-danger">{{ error }}</div>
+                        </div>
+                    </div>
+                </div>
+                <br />
 
                 <div class="row">
                     <div class="col-xs-12">
