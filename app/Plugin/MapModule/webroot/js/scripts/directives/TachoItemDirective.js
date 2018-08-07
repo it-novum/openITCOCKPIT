@@ -152,7 +152,7 @@ angular.module('openITCOCKPIT').directive('tachoItem', function($http){
             };
 
             var getMajorTicks = function(perfdataMax, numberOfTicks){
-                var tickSize = parseInt((perfdataMax / numberOfTicks), 10);
+                var tickSize = Math.ceil((perfdataMax / numberOfTicks));
 
                 var tickArr = [];
                 for(var i = 0; i < numberOfTicks; i++){
