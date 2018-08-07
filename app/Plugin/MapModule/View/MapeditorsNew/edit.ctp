@@ -344,9 +344,7 @@
                         <div class="form-group smart-form no-padding">
                             <label class="checkbox small-checkbox-label">
                                 <input type="checkbox" name="checkbox"
-                                       ng-model="currentItem.show_label"
-                                       ng-true-value="1"
-                                       ng-false-value="0">
+                                       ng-model="currentItem.show_label">
                                 <i class="checkbox-primary"></i>
                                 <?php echo __('Show label'); ?>
                             </label>
@@ -578,9 +576,7 @@
                         <div class="form-group smart-form no-padding">
                             <label class="checkbox small-checkbox-label">
                                 <input type="checkbox" name="checkbox"
-                                       ng-model="currentItem.show_label"
-                                       ng-true-value="1"
-                                       ng-false-value="0">
+                                       ng-model="currentItem.show_label">
                                 <i class="checkbox-primary"></i>
                                 <?php echo __('Show label'); ?>
                             </label>
@@ -748,9 +744,7 @@
                         <div class="form-group smart-form no-padding">
                             <label class="checkbox small-checkbox-label">
                                 <input type="checkbox" name="checkbox"
-                                       ng-model="currentItem.show_label"
-                                       ng-true-value="1"
-                                       ng-false-value="0">
+                                       ng-model="currentItem.show_label">
                                 <i class="checkbox-primary"></i>
                                 <?php echo __('Show label'); ?>
                             </label>

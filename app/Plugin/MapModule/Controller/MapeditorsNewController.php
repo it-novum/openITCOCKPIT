@@ -26,6 +26,7 @@ use itnovum\openITCOCKPIT\Core\MapConditions;
 use itnovum\openITCOCKPIT\Core\System\FileUploadSize;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
 use itnovum\openITCOCKPIT\Filter\MapFilter;
+use itnovum\openITCOCKPIT\Maps\MapForAngular;
 use Symfony\Component\Finder\Finder;
 
 
@@ -1070,7 +1071,6 @@ class MapeditorsNewController extends MapModuleAppController {
 
         $FileUploadSize = new FileUploadSize();
 
-        $maxZIndex = 0;
         $id = (int)$id;
         if (!$this->Map->exists($id)) {
             throw new NotFoundException();
@@ -1090,43 +1090,14 @@ class MapeditorsNewController extends MapModuleAppController {
             ]
         ]);
 
-        $layers = [];
-        foreach ($map as $modelName => $records) {
-            foreach ($records as $key => $data) {
-                if (isset($data['z_index'])) {
-                    $zIndex = (int)$data['z_index'];
-                    $layers[$zIndex] = sprintf('Layer %s', $zIndex);
-                    if ($zIndex > $maxZIndex) {
-                        $maxZIndex = $zIndex;
-                    }
-                }
+        $MapForAngular = new MapForAngular($map);
+        $map = $MapForAngular->toArray();
 
-                //Cast strings to ints
-                if (isset($data['x'])) {
-                    $map[$modelName][$key]['x'] = (int)$data['x'];
-                }
-                if (isset($data['y'])) {
-                    $map[$modelName][$key]['y'] = (int)$data['y'];
-                }
-
-                if (isset($data['object_id'])) {
-                    $map[$modelName][$key]['object_id'] = (int)$data['object_id'];
-                }
-
-                if (isset($data['show_label'])) {
-                    $map[$modelName][$key]['show_label'] = (int)$data['show_label'];
-                }
-
-                if (isset($data['label_possition'])) {
-                    $map[$modelName][$key]['label_possition'] = (int)$data['label_possition'];
-                }
-            }
-        };
 
         $this->set('map', $map);
         $this->set('maxUploadLimit', $FileUploadSize->toArray());
-        $this->set('max_z_index', $maxZIndex);
-        $this->set('layers', $layers);
+        $this->set('max_z_index', $MapForAngular->getMaxZIndex());
+        $this->set('layers', $MapForAngular->getLaysers());
         $this->set('_serialize', ['map', 'maxUploadLimit', 'max_z_index', 'layers']);
     }
 
@@ -1207,6 +1178,7 @@ class MapeditorsNewController extends MapModuleAppController {
 
             $item['Mapitem']['x'] = (int)$this->request->data('Mapitem.x');
             $item['Mapitem']['y'] = (int)$this->request->data('Mapitem.y');
+            $item['Mapitem']['show_label'] = (int)$this->request->data('Mapitem.show_label');
             if ($this->Mapitem->save($item)) {
                 $this->set('Mapitem', $item);
                 $this->set('_serialize', ['Mapitem']);
@@ -1222,9 +1194,11 @@ class MapeditorsNewController extends MapModuleAppController {
             $this->Mapitem->create();
         }
 
-        if ($this->Mapitem->save($this->request->data)) {
-            $mapItem = $this->request->data;
-            $mapItem['Mapitem']['id'] = $this->Mapitem->id;
+        $item = $this->request->data;
+        $item['Mapitem']['show_label'] = (int)$this->request->data('Mapitem.show_label');
+        if ($this->Mapitem->save($item)) {
+            $mapItem = $item;
+            $mapItem['Mapitem']['id'] = (int)$this->Mapitem->id;
             $this->set('Mapitem', $mapItem);
             $this->set('_serialize', ['Mapitem']);
             return;
@@ -1275,9 +1249,11 @@ class MapeditorsNewController extends MapModuleAppController {
             $this->Mapline->create();
         }
 
-        if ($this->Mapline->save($this->request->data)) {
-            $mapline = $this->request->data;
-            $mapline['Mapline']['id'] = $this->Mapline->id;
+        $line = $this->request->data;
+        $line['Mapline']['show_label'] = (int)$this->request->data('Mapline.show_label');
+        if ($this->Mapline->save($line)) {
+            $mapline = $line;
+            $mapline['Mapline']['id'] = (int)$this->Mapline->id;
             $this->set('Mapline', $mapline);
             $this->set('_serialize', ['Mapline']);
             return;
