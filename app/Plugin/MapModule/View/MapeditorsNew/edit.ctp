@@ -118,7 +118,7 @@
             </div>
 
             <div ng-repeat="gadgetItem in map.Mapgadget" class="draggable resizable"
-                 style="position:absolute; top: {{gadgetItem.y}}px; left: {{gadgetItem.x}}px;  z-index: {{gadgetItem.z_index}}; cursor: move;" data-id="{{gadgetItem.id}}" data-type="gadget">
+                 style="position:absolute; top: {{gadgetItem.y}}px; left: {{gadgetItem.x}}px;  z-index: {{gadgetItem.z_index}}; cursor: move;" data-id="{{gadgetItem.id}}" data-type="gadget" ng-dblclick="editGadget(gadgetItem)">
                 <graph-item item="gadgetItem" ng-if="gadgetItem.gadget === 'RRDGraph'"
                             refresh-interval="0"></graph-item>
 
@@ -655,7 +655,7 @@
                                 <div class="col-xs-12 col-md-6 col-lg-3">
                                     <div class="thumbnail"
                                          style="height: 175px; width: 175px;display: flex; align-items: center; overflow: hidden;"
-                                         ng-click="currentItem.gadget = '<?php echo $gadgetName; ?>'"
+                                         ng-click="currentItem.gadget = '<?php echo $gadgetName; ?>'; currentItem.size_x = null; currentItem.size_y = null;"
                                          ng-class="{ 'selectedMapItem': currentItem.gadget === '<?php echo $gadgetName; ?>' }">
                                         <img class="image_picker_selector"
                                              ng-src="/map_module/img/gadget_previews/<?php echo h($gadgetPreview); ?>">

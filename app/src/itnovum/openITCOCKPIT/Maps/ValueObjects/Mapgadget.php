@@ -97,6 +97,11 @@ class Mapgadget {
      */
     private $z_index;
 
+    /**
+     * @var null|string
+     */
+    private $metric;
+
 
     /**
      * @var int
@@ -164,6 +169,10 @@ class Mapgadget {
         if (isset($mapgadget['z_index'])) {
             //z_index needs to be a string :(
             $this->z_index = (string)$mapgadget['z_index'];
+        }
+
+        if (isset($mapgadget['metric'])) {
+            $this->metric = $mapgadget['metric'];
         }
 
 
@@ -272,6 +281,13 @@ class Mapgadget {
      */
     public function getLabelPossition() {
         return $this->label_possition;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getMetric() {
+        return $this->metric;
     }
 
     /**

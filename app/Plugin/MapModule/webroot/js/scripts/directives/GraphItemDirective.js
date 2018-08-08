@@ -10,7 +10,7 @@ angular.module('openITCOCKPIT').directive('graphItem', function($http){
             $scope.selectedGraphdataSource = null;
 
             $scope.width = 400;
-            $scope.height = 200;
+            $scope.height = 200; //200;
 
             $scope.item.size_x = parseInt($scope.item.size_x, 10);
             $scope.item.size_y = parseInt($scope.item.size_y, 10);
@@ -18,12 +18,9 @@ angular.module('openITCOCKPIT').directive('graphItem', function($http){
             if($scope.item.size_x > 0){
                 $scope.width = $scope.item.size_x;
             }
-            if($scope.item.size_y > 0 && ($scope.item.size_y - 48) > 0){
+            if($scope.item.size_y > 0){
                 $scope.height = $scope.item.size_y;
             }
-
-            //Original height of rrd graph in old style MapModule...
-            $scope.height = $scope.height - 48;
 
 
             $scope.load = function(){
@@ -37,7 +34,6 @@ angular.module('openITCOCKPIT').directive('graphItem', function($http){
                     $scope.host = result.data.host;
                     $scope.service = result.data.service;
                     $scope.allowView = result.data.allowView;
-                    $scope.init = false;
 
                     loadGraph($scope.host.uuid, $scope.service.uuid);
                 });
@@ -67,11 +63,19 @@ angular.module('openITCOCKPIT').directive('graphItem', function($http){
                 }).then(function(result){
                     $scope.isLoadingGraph = false;
                     $scope.dataSources = [];
-                    $scope.perfdata = result.data.performance_data;
-                    for(var dsKey in  $scope.perfdata){
-                        $scope.dataSources.push($scope.perfdata[dsKey].datasource.label);
+
+                    if($scope.item.metric === null){
+                        //Use the first metric
+                        $scope.perfdata = result.data.performance_data[0];
+                    }else{
+                        for(var metricNo in result.data.performance_data){
+                            if(result.data.performance_data[metricNo].datasource.name === $scope.item.metric){
+                                $scope.perfdata = result.data.performance_data[metricNo];
+                            }
+                        }
                     }
                     renderGraph($scope.perfdata);
+                    $scope.init = false;
                 });
             };
 
@@ -96,7 +100,7 @@ angular.module('openITCOCKPIT').directive('graphItem', function($http){
                     'z-index': 5040
                 });
 
-                $('#mapgraph-'+$scope.item.id).bind('plothover', function(event, pos, item){
+                $('#mapgraph-' + $scope.item.id).bind('plothover', function(event, pos, item){
                     $('#x').text(pos.pageX.toFixed(2));
                     $('#y').text(pos.pageY.toFixed(2));
 
@@ -151,33 +155,36 @@ angular.module('openITCOCKPIT').directive('graphItem', function($http){
             var renderGraph = function(performance_data){
                 initTooltip();
                 var graph_data = [];
-                for(var dsCount in performance_data){
-                    //graph_data[dsCount] = [];
 
-                    var gaugeData = [];
-                    for(var timestamp in performance_data[dsCount].data){
-                        //graph_data[dsCount].push([timestamp, performance_data[dsCount].data[timestamp]]);
-                        gaugeData.push([timestamp, performance_data[dsCount].data[timestamp]]);
-                    }
-                    graph_data.push({
-                        label: performance_data[dsCount].datasource.label,
-                        data: gaugeData,
-                        unit: performance_data[dsCount].datasource.unit
-                    });
-
-
-                    //graph_data.push(performance_data[key].data);
+                var gaugeData = [];
+                for(var timestamp in performance_data.data){
+                    //graph_data[dsCount].push([timestamp, performance_data[dsCount].data[timestamp]]);
+                    gaugeData.push([timestamp, performance_data.data[timestamp]]);
                 }
-                var color_amount = performance_data.length < 3 ? 3 : performance_data.length;
+
+
+                var label = $scope.host.hostname + '/' + $scope.service.servicename + '"'+ performance_data.datasource.label+'"';
+                if(performance_data.datasource.unit){
+                    label = label + ' in '+ performance_data.datasource.unit;
+                }
+
+                graph_data.push({
+                    label: label,
+                    data: gaugeData,
+                    unit: performance_data.datasource.unit
+                });
+
+
+                //graph_data.push(performance_data[key].data);
+
                 var color_generator = new ColorGenerator();
                 var options = {
                     width: '100%',
-                    height: $scope.height+'px',
-                    colors: color_generator.generate(color_amount, 90, 120),
+                    height: $scope.height + 'px',
+                    colors: color_generator.generate(1, 90, 120),
                     legend: {
                         show: true,
-                        noColumns: 3,
-                        container: $('#graph_legend-'+$scope.item.id) // container (as jQuery object) to put legend in, null means default on top of graph
+                        position: 'nw'
                     },
                     grid: {
                         hoverable: true,
@@ -198,7 +205,7 @@ angular.module('openITCOCKPIT').directive('graphItem', function($http){
                     },
                     xaxis: {
                         mode: 'time',
-                        timeformat: '%d.%m.%y %H:%M:%S', // This is handled by a plugin, if it is used -> jquery.flot.time.js
+                        timeformat: '%H:%M:%S', // This is handled by a plugin, if it is used -> jquery.flot.time.js
                         tickFormatter: function(val, axis){
                             var fooJS = new Date(val + ($scope.timezone.server_timezone_offset * 1000));
                             var fixTime = function(value){
@@ -207,7 +214,7 @@ angular.module('openITCOCKPIT').directive('graphItem', function($http){
                                 }
                                 return value;
                             };
-                            return fixTime(fooJS.getUTCDate()) + '.' + fixTime(fooJS.getUTCMonth() + 1) + '.' + fooJS.getUTCFullYear() + ' ' + fixTime(fooJS.getUTCHours()) + ':' + fixTime(fooJS.getUTCMinutes());
+                            return fixTime(fooJS.getUTCHours()) + ':' + fixTime(fooJS.getUTCMinutes());
                         }
                     },
                     lines: {
@@ -240,7 +247,13 @@ angular.module('openITCOCKPIT').directive('graphItem', function($http){
                     }
                 };
 
-                self.plot = $.plot('#mapgraph-'+$scope.item.id, graph_data, options);
+                if($scope.height < 130){
+                    options.xaxis = {
+                        ticks: false
+                    };
+                }
+
+                $scope.plot = $.plot('#mapgraph-' + $scope.item.id, graph_data, options);
             };
 
             $scope.$watch('item.size_x', function(){
@@ -249,7 +262,10 @@ angular.module('openITCOCKPIT').directive('graphItem', function($http){
                 }
 
                 $scope.width = $scope.item.size_x; //The view adds 10px
-                $scope.height = $scope.item.size_y - 48;
+                $scope.height = $scope.item.size_y; // - 48;
+
+                renderGraph($scope.perfdata);
+
             });
 
             $scope.loadTimezone();
