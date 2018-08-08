@@ -506,6 +506,27 @@ class MapModuleSchema extends CakeSchema {
         'tableParameters'        => ['charset' => 'utf8', 'collate' => 'utf8_unicode_ci', 'engine' => 'InnoDB'],
     ];
 
+    public $mapsummaryitems = [
+        'id'              => ['type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'],
+        'map_id'          => ['type' => 'integer', 'null' => false, 'default' => null],
+        'x'               => ['type' => 'integer', 'null' => false, 'default' => 0],
+        'y'               => ['type' => 'integer', 'null' => false, 'default' => 0],
+        'size_x'                 => ['type' => 'integer', 'null' => false, 'default' => 100],
+        'size_y'                 => ['type' => 'integer', 'null' => false, 'default' => 100],
+        'limit'           => ['type' => 'integer', 'null' => true, 'default' => 0],
+        'type'            => ['type' => 'string', 'null' => false, 'default' => null, 'length' => 20, 'collate' => 'utf8_unicode_ci', 'charset' => 'utf8'],
+        'object_id'       => ['type' => 'integer', 'null' => false, 'default' => null],
+        'z_index'         => ['type' => 'integer', 'null' => false, 'default' => 0],
+        'show_label'      => ['type' => 'integer', 'null' => false, 'default' => 0],
+        'label_possition' => ['type' => 'integer', 'null' => false, 'default' => 2],
+        'created'         => ['type' => 'datetime', 'null' => false, 'default' => null],
+        'modified'        => ['type' => 'datetime', 'null' => false, 'default' => null],
+        'indexes'         => [
+            'PRIMARY' => ['column' => 'id', 'unique' => 1],
+        ],
+        'tableParameters' => ['charset' => 'utf8', 'collate' => 'utf8_unicode_ci', 'engine' => 'InnoDB'],
+    ];
+
 
     public $rotations = [
         'id'              => ['type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'],

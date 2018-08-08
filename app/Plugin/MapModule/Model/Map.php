@@ -62,6 +62,10 @@ class Map extends MapModuleAppModel {
             'className' => 'MapModule.Maptext',
             'dependent' => true,
         ],
+        'Mapsummaryitem'   => [
+            'className' => 'MapModule.Mapsummaryitem',
+            'dependent' => true,
+        ]
     ];
 
 
