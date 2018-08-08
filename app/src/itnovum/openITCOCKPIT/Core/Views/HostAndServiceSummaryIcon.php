@@ -89,7 +89,7 @@ class HostAndServiceSummaryIcon {
 
     public function __construct($width) {
         $this->width = (int)$width;
-        if($this->width < $this->minWidth){
+        if ($this->width < $this->minWidth) {
             $this->width = $this->minWidth;
         }
         $this->center = $this->width / 2 - $this->border;
@@ -114,6 +114,7 @@ class HostAndServiceSummaryIcon {
         $this->setImageLayout(); //set transparency, colors, fonts, ...
         $this->addServiceCircle($bitMaskServiceState);
         $this->addHostCircle($bitMaskHostState);
+        $this->addHostAndServiceIcons();
     }
 
     /**
@@ -195,7 +196,7 @@ class HostAndServiceSummaryIcon {
 
     private function addServiceCircle($bitMaskServiceState) {
         $colors = $this->getDefaultColors();
-        
+
         $statusServiceOk = 1 << 0;
         $statusServiceWarning = 1 << 1;
         $statusServiceCritical = 1 << 2;
@@ -256,5 +257,32 @@ class HostAndServiceSummaryIcon {
             'lightgray' => [220, 220, 220, 1] //for circle border
 
         ];
+    }
+
+    private function addHostAndServiceIcons() {
+        if ($this->width < 90) {
+            return;
+        }
+        $white = imagecolorallocatealpha($this->image, 255, 255, 255, 70);
+        ImageTTFText(
+            $this->image,
+            (int)($this->sizeInnerCircle / 5),
+            0,
+            $this->center - ($this->sizeInnerCircle / 2) + $this->border * 2,
+            $this->center + $this->sizeInnerCircle / 10,
+            $white,
+            WWW_ROOT . "/smartadmin/fonts/fontawesome-webfont.ttf",
+            '&#xf108;'
+        );
+        ImageTTFText(
+            $this->image,
+            (int)($this->sizeInnerCircle / 5),
+            0,
+            $this->center - $this->sizeOuterCircle / 2 + $this->border * 2,
+            $this->center + $this->sizeInnerCircle / 10,
+            $white,
+            WWW_ROOT . "/smartadmin/fonts/fontawesome-webfont.ttf",
+            '&#xf013;'
+        );
     }
 }

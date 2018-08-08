@@ -29,6 +29,7 @@ use itnovum\openITCOCKPIT\Maps\ValueObjects\Mapgadget;
 use itnovum\openITCOCKPIT\Maps\ValueObjects\Mapicon;
 use itnovum\openITCOCKPIT\Maps\ValueObjects\Mapitem;
 use itnovum\openITCOCKPIT\Maps\ValueObjects\Mapline;
+use itnovum\openITCOCKPIT\Maps\ValueObjects\Mapsummaryitem;
 use itnovum\openITCOCKPIT\Maps\ValueObjects\Maptext;
 
 class MapForAngular {
@@ -106,6 +107,14 @@ class MapForAngular {
                 $text = new Maptext($maptext);
                 $this->laysers[$text->getZIndex()] = sprintf('Layer %s', $text->getZIndex());
                 $map['Maptext'][] = $text->toArray();
+            }
+        }
+
+        if (isset($this->map['Mapsummaryitem'])) {
+            foreach ($this->map['Mapsummaryitem'] as $mapsummaryitem) {
+                $summaryitem = new Mapsummaryitem($mapsummaryitem);
+                $this->laysers[$summaryitem->getZIndex()] = sprintf('Layer %s', $summaryitem->getZIndex());
+                $map['Mapsummaryitem'][] = $summaryitem->toArray();
             }
         }
 

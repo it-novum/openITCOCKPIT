@@ -135,6 +135,15 @@
                 </a>
             </div>
 
+            <div ng-repeat="item in map.Mapsummaryitem"
+                 style="position:absolute; top: {{item.y}}px; left: {{item.x}}px;  z-index: {{item.z_index}};"
+                 ng-mouseenter="showSummaryStateDelayed(item)"
+                 ng-mouseleave="cancelTimer()">
+                <a ng-href="{{ getHref(item) }}">
+                    <map-summary-item item="item" details="details" refresh-interval="refreshInterval"></map-summary-item>
+                </a>
+            </div>
+
             <map-summary></map-summary>
 
             <div id="graph_data_tooltip"></div>
