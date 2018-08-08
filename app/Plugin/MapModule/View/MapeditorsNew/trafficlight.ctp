@@ -22,5 +22,4 @@
 //  License agreement and license key will be shipped with the order
 //  confirmation.
 ?>
-
 <div id="map-trafficlight-{{item.id}}" style="width: {{width + 10}}px; height: {{height + 10}}px;"></div>

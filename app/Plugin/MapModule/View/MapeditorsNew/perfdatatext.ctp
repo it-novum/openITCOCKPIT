@@ -23,9 +23,10 @@
 //  confirmation.
 ?>
 
-<div class="{{color}}" style="font-size: {{fontSize}}px;">
-    <span ng-show="showLabel">{{perfdataName}}</span>
-    {{perfdata.current}}
-    {{perfdata.unit}}
-</div>
+<svg viewBox="0 0 70 18" width="{{width}}" height="{{height}}" id="map-perfdatatext-{{item.id}}">
+    <text x="0" y="15" fill="{{color}}">
+        {{text}}
+    </text>
+<svg>
+
 

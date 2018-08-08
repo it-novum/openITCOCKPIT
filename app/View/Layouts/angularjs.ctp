@@ -48,7 +48,7 @@ $scripts = [
     //'smartadmin/js/plugin/flot/jquery.flot.orderBar.js', //
     'smartadmin/js/plugin/flot/jquery.flot.fillbetween.js',
     //'smartadmin/js/plugin/flot/jquery.flot.pie.min.js', //
-    //'smartadmin/js/plugin/flot/jquery.flot.resize.js',
+    'smartadmin/js/plugin/flot/jquery.flot.resize.js',
     //'smartadmin/js/plugin/flot/jquery.flot.navigate.js', //
     'smartadmin/js/plugin/flot/jquery.flot.threshold.js',
     //'smartadmin/js/plugin/flot/jquery.flot.selection.js', //

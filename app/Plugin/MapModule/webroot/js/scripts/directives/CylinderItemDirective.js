@@ -6,8 +6,9 @@ angular.module('openITCOCKPIT').directive('cylinderItem', function($http){
             'item': '='
         },
         controller: function($scope){
+            $scope.init = true;
 
-            $scope.showLabel = parseInt($scope.item.show_label, 10) === 1;
+            $scope.showLabel = $scope.item.show_label;
             $scope.width = 80;
             $scope.height = 125;
 
@@ -46,6 +47,7 @@ angular.module('openITCOCKPIT').directive('cylinderItem', function($http){
                             perfdata.min = parseFloat(perfdata.min);
                             perfdata.max = parseFloat(perfdata.max);
 
+                            $scope.perfdata = perfdata;
                             renderCylinder(perfdata);
                         }
                     }
@@ -55,8 +57,17 @@ angular.module('openITCOCKPIT').directive('cylinderItem', function($http){
             };
 
             var renderCylinder = function(perfdata){
-                $('#map-cylinder-' + $scope.item.id).svg();
-                var svg = $('#map-cylinder-' + $scope.item.id).svg('get');
+                var $cylinder = $('#map-cylinder-' + $scope.item.id);
+                $cylinder.svg('destroy');
+
+                $cylinder.svg({
+                    settings: {
+                        width: $scope.width,
+                        height: $scope.height
+                    }
+                });
+                var svg = $cylinder.svg('get');
+
                 var value = 0;
 
                 if(isNaN(perfdata.max) && isNaN(perfdata.critical) === false){
@@ -179,6 +190,16 @@ angular.module('openITCOCKPIT').directive('cylinderItem', function($http){
                 );
 
             };
+
+            $scope.$watch('item.size_x', function(){
+                if($scope.init){
+                    return;
+                }
+
+                $scope.width = $scope.item.size_x -10; //The view adds 10px
+                $scope.height = $scope.item.size_y -10;
+                renderCylinder($scope.perfdata);
+            });
 
             $scope.load();
         },

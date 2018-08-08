@@ -488,12 +488,30 @@ angular.module('openITCOCKPIT')
 
             $scope.currentItem.map_id = $scope.id;
 
+            if(action === 'add_or_edit'){
+                if($scope.currentItem.gadget !== 'TrafficLight'){
+                    if($scope.currentItem.hasOwnProperty('metric') === false || $scope.currentItem.metric === null){
+                        $scope.errors = {
+                            metric: [
+                                'Please select a metric.'
+                            ]
+                        };
+                        return;
+                    }
+                }
+            }
+
             $http.post("/map_module/mapeditors_new/saveGadget.json?angular=true",
                 {
                     'Mapgadget': $scope.currentItem,
                     'action': action
                 }
             ).then(function(result){
+                if(action === 'resizestop'){
+                    //Nothing needs to be updated
+                    return;
+                }
+
                 $scope.errors = {};
                 //Update possition in current scope json data
                 if($scope.currentItem.hasOwnProperty('id')){
@@ -509,6 +527,7 @@ angular.module('openITCOCKPIT')
                 }else{
                     //New created item
                     $scope.map.Mapgadget.push(result.data.Mapgadget.Mapgadget);
+                    setTimeout(makeDraggable, 250);
                 }
 
                 $('#addEditMapGadgetModal').modal('hide');
@@ -738,6 +757,15 @@ angular.module('openITCOCKPIT')
                             $scope.saveItem('dragstop');
                             break;
 
+                        case 'gadget':
+                            $scope.currentItem = {
+                                id: id,
+                                x: x,
+                                y: y
+                            };
+                            $scope.saveGadget('dragstop');
+                            break;
+
                         default:
                             console.log('Unknown map type');
                             genericError();
@@ -753,6 +781,33 @@ angular.module('openITCOCKPIT')
             }
 
             $('.draggable').draggable(options);
+
+            $('.resizable').resizable({
+                aspectRatio: true,
+                helper: 'ui-resizable-helper',
+                stop: function(event, ui){
+                    var $this = $(this);
+                    var id = $this.data('id');
+
+                    var newWidth = parseInt(ui.size.width);
+                    var newHeight = parseInt(ui.size.height);
+
+                    for(var key in $scope.map.Mapgadget){
+                        if($scope.map.Mapgadget[key].id === id){
+                            $scope.map.Mapgadget[key].size_y = newHeight;
+                            //Set Y value first because $scope.$watch is listening to X value!
+                            $scope.map.Mapgadget[key].size_x = newWidth;
+                        }
+                    }
+
+                    $scope.currentItem = {
+                        id: id,
+                        size_x: newWidth,
+                        size_y: newHeight
+                    };
+                    $scope.saveGadget('resizestop');
+                }
+            });
         };
 
 

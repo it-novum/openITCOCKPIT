@@ -173,6 +173,16 @@ class Mapgadget extends MapModuleAppModel {
 
     public function valMetric($data) {
         //print_r($this->data);
+        //Uncomment this, if all "old" gadgets had set an metric
+        /*if (isset($this->data['Mapgadget']['gadget']) && $this->data['Mapgadget']['gadget'] !== 'TrafficLight') {
+            if (array_key_exists('metric', $this->data['Mapgadget'])) {
+                if ($this->data['Mapgadget']['metric'] === null) {
+                    return false;
+                }
+                return strlen($this->data['Mapgadget']['metric']) > 1;
+            }
+        }*/
+
         if (array_key_exists('metric', $data)) {
             if ($data['metric'] === null) {
                 return true;
@@ -192,9 +202,7 @@ class Mapgadget extends MapModuleAppModel {
             }
 
             if (is_numeric($data['size_x'])) {
-                if ($data['size_x'] > 0) {
-                    return true;
-                }
+                return true;
             }
         }
         return false;
@@ -208,9 +216,7 @@ class Mapgadget extends MapModuleAppModel {
             }
 
             if (is_numeric($data['size_y'])) {
-                if ($data['size_y'] > 0) {
-                    return true;
-                }
+                return true;
             }
         }
         return false;

@@ -1317,6 +1317,64 @@ class MapeditorsNewController extends MapModuleAppController {
             throw new MethodNotAllowedException();
         }
 
+        //Save new possition after drag and drop
+        if ($this->request->data('action') === 'dragstop') {
+            $gadget = $this->Mapgadget->find('first', [
+                'recursive'  => -1,
+                'conditions' => [
+                    'Mapgadget.id' => $this->request->data('Mapgadget.id')
+                ]
+            ]);
+
+            $gadget['Mapgadget']['x'] = (int)$this->request->data('Mapgadget.x');
+            $gadget['Mapgadget']['y'] = (int)$this->request->data('Mapgadget.y');
+
+            //NULL -> No metric selected. Cast to 0 and Gadget will use first existing metric in performance data string
+            $gadget['Mapgadget']['metric'] = (int)$gadget['Mapgadget']['metric'];
+            //$gadget['Mapgadget']['show_label'] = (int)$this->request->data('Mapgadget.show_label');
+            if ($this->Mapgadget->save($gadget)) {
+                $Mapgadget = new \itnovum\openITCOCKPIT\Maps\ValueObjects\Mapgadget($gadget['Mapgadget']);
+
+                $this->set('Mapgadget', [
+                    'Mapgadget' => $Mapgadget->toArray()
+                ]);
+
+                $this->set('_serialize', ['Mapgadget']);
+                return;
+            }
+            $this->serializeErrorMessageFromModel('Mapgadget');
+            return;
+        }
+
+        //Save new gadget size
+        if ($this->request->data('action') === 'resizestop') {
+            $gadget = $this->Mapgadget->find('first', [
+                'recursive'  => -1,
+                'conditions' => [
+                    'Mapgadget.id' => $this->request->data('Mapgadget.id')
+                ]
+            ]);
+
+            $gadget['Mapgadget']['size_x'] = (int)$this->request->data('Mapgadget.size_x');
+            $gadget['Mapgadget']['size_y'] = (int)$this->request->data('Mapgadget.size_y');
+
+            //NULL -> No metric selected. Cast to 0 and Gadget will use first existing metric in performance data string
+            $gadget['Mapgadget']['metric'] = (int)$gadget['Mapgadget']['metric'];
+            //$gadget['Mapgadget']['show_label'] = (int)$this->request->data('Mapgadget.show_label');
+            if ($this->Mapgadget->save($gadget)) {
+                $Mapgadget = new \itnovum\openITCOCKPIT\Maps\ValueObjects\Mapgadget($gadget['Mapgadget']);
+
+                $this->set('Mapgadget', [
+                    'Mapgadget' => $Mapgadget->toArray()
+                ]);
+
+                $this->set('_serialize', ['Mapgadget']);
+                return;
+            }
+            $this->serializeErrorMessageFromModel('Mapgadget');
+            return;
+        }
+
 
         //Create new gadget or update existing one
         if (!isset($this->request->data['Mapgadget']['id'])) {
@@ -1324,8 +1382,13 @@ class MapeditorsNewController extends MapModuleAppController {
         }
 
         $gadget = $this->request->data;
+
         $gadget['Mapgadget']['show_label'] = (int)$this->request->data('Mapgadget.show_label');
+        $gadget['Mapgadget']['size_x'] = (int)$this->request->data('Mapgadget.size_x');
+        $gadget['Mapgadget']['size_y'] = (int)$this->request->data('Mapgadget.size_y');
+
         if ($this->Mapgadget->save($gadget)) {
+            $gadget['Mapgadget']['id'] = $this->Mapgadget->id;
             $Mapgadget = new \itnovum\openITCOCKPIT\Maps\ValueObjects\Mapgadget($gadget['Mapgadget']);
             $this->set('Mapgadget', [
                 'Mapgadget' => $Mapgadget->toArray()

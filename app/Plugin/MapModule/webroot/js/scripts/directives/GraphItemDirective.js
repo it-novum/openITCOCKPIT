@@ -6,6 +6,7 @@ angular.module('openITCOCKPIT').directive('graphItem', function($http){
             'item': '='
         },
         controller: function($scope){
+            $scope.init = true;
             $scope.selectedGraphdataSource = null;
 
             $scope.width = 400;
@@ -242,6 +243,14 @@ angular.module('openITCOCKPIT').directive('graphItem', function($http){
                 self.plot = $.plot('#mapgraph-'+$scope.item.id, graph_data, options);
             };
 
+            $scope.$watch('item.size_x', function(){
+                if($scope.init){
+                    return;
+                }
+
+                $scope.width = $scope.item.size_x; //The view adds 10px
+                $scope.height = $scope.item.size_y - 48;
+            });
 
             $scope.loadTimezone();
         },

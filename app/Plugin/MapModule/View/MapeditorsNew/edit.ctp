@@ -117,8 +117,8 @@
                 <map-icon item="iconItem"></map-icon>
             </div>
 
-            <div ng-repeat="gadgetItem in map.Mapgadget" class="draggable"
-                 style="position:absolute; top: {{gadgetItem.y}}px; left: {{gadgetItem.x}}px;  z-index: {{gadgetItem.z_index}}; cursor: move;">
+            <div ng-repeat="gadgetItem in map.Mapgadget" class="draggable resizable"
+                 style="position:absolute; top: {{gadgetItem.y}}px; left: {{gadgetItem.x}}px;  z-index: {{gadgetItem.z_index}}; cursor: move;" data-id="{{gadgetItem.id}}" data-type="gadget">
                 <graph-item item="gadgetItem" ng-if="gadgetItem.gadget === 'RRDGraph'"
                             refresh-interval="0"></graph-item>
 

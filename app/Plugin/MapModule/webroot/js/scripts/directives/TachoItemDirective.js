@@ -6,8 +6,9 @@ angular.module('openITCOCKPIT').directive('tachoItem', function($http){
             'item': '='
         },
         controller: function($scope){
+            $scope.init = true;
 
-            $scope.showLabel = parseInt($scope.item.show_label, 10) === 1;
+            $scope.showLabel = $scope.item.show_label;
 
             $scope.item.size_x = parseInt($scope.item.size_x, 10);
             $scope.item.size_y = parseInt($scope.item.size_y, 10);
@@ -63,6 +64,9 @@ angular.module('openITCOCKPIT').directive('tachoItem', function($http){
                             renderGauge(perfdataName, perfdata);
                         }
                     }
+
+                    $scope.perfdataName = perfdataName;
+                    $scope.perfdata = perfdata;
 
                     $scope.init = false;
                 });
@@ -166,6 +170,17 @@ angular.module('openITCOCKPIT').directive('tachoItem', function($http){
             };
 
             $scope.load();
+
+            $scope.$watch('item.size_x', function(){
+                if($scope.init){
+                    return;
+                }
+
+                $scope.width = $scope.item.size_x;
+                $scope.height = $scope.width;
+
+                renderGauge($scope.perfdataName, $scope.perfdata);
+            });
         },
 
         link: function(scope, element, attr){
