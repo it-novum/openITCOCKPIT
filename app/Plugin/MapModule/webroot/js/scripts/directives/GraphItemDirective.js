@@ -183,8 +183,9 @@ angular.module('openITCOCKPIT').directive('graphItem', function($http){
                     height: $scope.height + 'px',
                     colors: color_generator.generate(1, 90, 120),
                     legend: {
-                        show: true,
-                        position: 'nw'
+                        show: $scope.item.show_label,
+                        position: 'nw',
+                        backgroundOpacity: 0
                     },
                     grid: {
                         hoverable: true,
@@ -256,7 +257,7 @@ angular.module('openITCOCKPIT').directive('graphItem', function($http){
                 $scope.plot = $.plot('#mapgraph-' + $scope.item.id, graph_data, options);
             };
 
-            $scope.$watch('item.size_x', function(){
+            $scope.$watchGroup(['item.size_x', 'item.show_label'], function(){
                 if($scope.init){
                     return;
                 }

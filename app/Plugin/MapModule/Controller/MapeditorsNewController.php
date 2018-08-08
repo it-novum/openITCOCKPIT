@@ -1737,7 +1737,6 @@ class MapeditorsNewController extends MapModuleAppController {
 
             //NULL -> No metric selected. Cast to 0 and Gadget will use first existing metric in performance data string
             $gadget['Mapgadget']['metric'] = $gadget['Mapgadget']['metric'];
-            //$gadget['Mapgadget']['show_label'] = (int)$this->request->data('Mapgadget.show_label');
             if ($this->Mapgadget->save($gadget)) {
                 $Mapgadget = new \itnovum\openITCOCKPIT\Maps\ValueObjects\Mapgadget($gadget['Mapgadget']);
 
@@ -1766,7 +1765,6 @@ class MapeditorsNewController extends MapModuleAppController {
 
             //NULL -> No metric selected. Cast to 0 and Gadget will use first existing metric in performance data string
             $gadget['Mapgadget']['metric'] = $gadget['Mapgadget']['metric'];
-            //$gadget['Mapgadget']['show_label'] = (int)$this->request->data('Mapgadget.show_label');
             if ($this->Mapgadget->save($gadget)) {
                 $Mapgadget = new \itnovum\openITCOCKPIT\Maps\ValueObjects\Mapgadget($gadget['Mapgadget']);
 

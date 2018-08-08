@@ -573,8 +573,19 @@ angular.module('openITCOCKPIT')
                 }
             }).then(function(result){
                 var metrics = {};
+
+                var firstMetric = null;
+
                 for(var metricName in result.data.perfdata){
+                    if(firstMetric === null){
+                        firstMetric = metricName;
+                    }
+
                     metrics[metricName] = metricName;
+                }
+
+                if($scope.currentItem.metric === null){
+                    $scope.currentItem.metric = firstMetric;
                 }
 
                 $scope.metrics = metrics;
