@@ -815,40 +815,6 @@
                         </div>
                     </div>
 
-                    <div class="col-xs-12">
-                        <div class="form-group smart-form">
-                            <?php echo __('Label possition'); ?>
-                        </div>
-                    </div>
-                    <div class="col-xs-12">
-                        <div class="btn-toolbar" role="toolbar">
-                            <button type="button" class="btn btn-default"
-                                    ng-class="{ 'btn-primary': currentItem.label_possition === 4 }"
-                                    ng-click="currentItem.label_possition = 4">
-                                <i class="fa fa-arrow-circle-left"></i>
-                                <?php echo __('Left'); ?>
-                            </button>
-                            <button type="button" class="btn btn-default"
-                                    ng-class="{ 'btn-primary': currentItem.label_possition === 1 }"
-                                    ng-click="currentItem.label_possition = 1">
-                                <i class="fa fa-arrow-circle-up"></i>
-                                <?php echo __('Top'); ?>
-                            </button>
-                            <button type="button" class="btn btn-default"
-                                    ng-class="{ 'btn-primary': currentItem.label_possition === 2 }"
-                                    ng-click="currentItem.label_possition = 2">
-                                <i class="fa fa-arrow-circle-down"></i>
-                                <?php echo __('Bottom'); ?>
-                            </button>
-                            <button type="button" class="btn btn-default"
-                                    ng-class="{ 'btn-primary': currentItem.label_possition === 3 }"
-                                    ng-click="currentItem.label_possition = 3">
-                                <i class="fa fa-arrow-circle-right"></i>
-                                <?php echo __('Right'); ?>
-                            </button>
-                        </div>
-                    </div>
-
                 </div>
 
 

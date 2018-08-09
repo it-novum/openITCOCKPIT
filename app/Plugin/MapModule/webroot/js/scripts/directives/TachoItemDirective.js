@@ -8,8 +8,6 @@ angular.module('openITCOCKPIT').directive('tachoItem', function($http){
         controller: function($scope){
             $scope.init = true;
 
-            $scope.showLabel = $scope.item.show_label;
-
             $scope.item.size_x = parseInt($scope.item.size_x, 10);
             $scope.item.size_y = parseInt($scope.item.size_y, 10);
 
@@ -35,48 +33,66 @@ angular.module('openITCOCKPIT').directive('tachoItem', function($http){
                     }
                 }).then(function(result){
                     $scope.color = result.data.data.color;
-                    var perfdata = result.data.data.Perfdata;
-                    var perfdataName;
+                    $scope.Host = result.data.data.Host;
+                    $scope.Service = result.data.data.Service;
 
-                    if(perfdata !== null){
-                        if(Object.keys(perfdata).length > 0){
-                            perfdataName = Object.keys(perfdata)[0];
-                            perfdata = perfdata[perfdataName];
+                    //Dummy data if there are no performance data records available
+                    $scope.perfdata = {
+                        current: 0,
+                        warning: 80,
+                        critical: 90,
+                        min: 0,
+                        max: 100,
+                        unit: 'n/a'
+                    };
+                    $scope.perfdataName = 'No data available';
 
-                            perfdata.current = parseFloat(perfdata.current);
-                            perfdata.warning = parseFloat(perfdata.warning);
-                            perfdata.critical = parseFloat(perfdata.critical);
-                            perfdata.min = parseFloat(perfdata.min);
-                            perfdata.max = parseFloat(perfdata.max);
 
-                            renderGauge(perfdataName, perfdata);
+                    if(result.data.data.Perfdata !== null){
+                        if($scope.item.metric !== null && result.data.data.Perfdata.hasOwnProperty($scope.item.metric)){
+                            $scope.perfdataName = $scope.item.metric;
+                            $scope.perfdata = result.data.data.Perfdata[$scope.item.metric];
                         }else{
-                            $scope.showLabel = true;
-
-                            perfdataName = 'No data available';
-                            perfdata = {};
-                            perfdata.current = 40;
-                            perfdata.warning = 80;
-                            perfdata.critical = 90;
-                            perfdata.min = 0;
-                            perfdata.max = 100;
-                            perfdata.unit = 'n/a';
-                            renderGauge(perfdataName, perfdata);
+                            //Use first metric.
+                            for(var metricName in result.data.data.Perfdata){
+                                $scope.perfdataName = metricName;
+                                $scope.perfdata = result.data.data.Perfdata[metricName];
+                                break;
+                            }
                         }
                     }
 
-                    $scope.perfdataName = perfdataName;
-                    $scope.perfdata = perfdata;
+                    $scope.perfdata.current = parseFloat($scope.perfdata.current);
+                    $scope.perfdata.warning = parseFloat($scope.perfdata.warning);
+                    $scope.perfdata.critical = parseFloat($scope.perfdata.critical);
+                    $scope.perfdata.min = parseFloat($scope.perfdata.min);
+                    $scope.perfdata.max = parseFloat($scope.perfdata.max);
+
+                    renderGauge($scope.perfdataName, $scope.perfdata);
+
 
                     $scope.init = false;
                 });
             };
 
             var renderGauge = function(perfdataName, perfdata){
-                if(perfdataName.length > 20){
-                    perfdataName = perfdataName.substr(0, 20);
-                    perfdataName += '...';
+                var units = perfdata.unit;
+                var label = perfdataName;
+
+                if(label.length > 20){
+                    label = label.substr(0, 20);
+                    label += '...';
                 }
+
+                if($scope.item.show_label === true){
+                    units = label + ' in ' + units;
+                    label = $scope.Host.hostname + '/' + $scope.Service.servicename;
+                    if(label.length > 20){
+                        label = label.substr(0, 20);
+                        label += '...';
+                    }
+                }
+
 
                 if(isNaN(perfdata.warning) || isNaN(perfdata.critical)){
                     perfdata.warning = null;
@@ -137,9 +153,9 @@ angular.module('openITCOCKPIT').directive('tachoItem', function($http){
                     value: perfdata.current,
                     minValue: perfdata.min,
                     maxValue: perfdata.max,
-                    units: perfdata.unit,
+                    units: units,
                     strokeTicks: true,
-                    title: perfdataName,
+                    title: label,
                     valueInt: intergetDigits,
                     valueDec: decimalDigits,
                     majorTicksDec: showDecimalDigitsGauge,

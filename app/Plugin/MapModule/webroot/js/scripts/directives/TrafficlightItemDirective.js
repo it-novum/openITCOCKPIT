@@ -8,7 +8,6 @@ angular.module('openITCOCKPIT').directive('trafficlightItem', function($http){
         controller: function($scope){
             $scope.init = true;
 
-            $scope.showLabel = $scope.item.show_label;
             $scope.width = 60;
             $scope.height = 150;
 
@@ -41,6 +40,9 @@ angular.module('openITCOCKPIT').directive('trafficlightItem', function($http){
                 }).then(function(result){
                     $scope.current_state = result.data.data.Servicestatus.currentState;
                     $scope.is_flapping = result.data.data.Servicestatus.isFlapping;
+
+                    $scope.Host = result.data.data.Host;
+                    $scope.Service = result.data.data.Service;
 
                     $scope.showGreen = false;
                     $scope.showYellow = false;
@@ -158,6 +160,16 @@ angular.module('openITCOCKPIT').directive('trafficlightItem', function($http){
                     fill: 'url(#tlBg_' + $scope.item.id + ')', stroke: '#444', strokeWidth: 2
                 });
 
+                if($scope.item.show_label){
+                    var rotateX = parseInt(($scope.height - 10 - ($scope.width / 8)), 10); //10 is svg padding 16 is font size;
+                    svg.text(tLBackground, 0, $scope.height - 10, ($scope.Host.hostname + '/' + $scope.Service.servicename), {
+                        fontSize: ($scope.width / 8),
+                        fontFamily: 'Verdana',
+                        fill: '#FFF',
+                        transform: 'rotate(-90, 0, ' + rotateX + ')'
+                    });
+                }
+
                 //pattern which are the small green, red and yellow "Dots" within a light
                 //red pattern
                 var redPattern;
@@ -244,13 +256,13 @@ angular.module('openITCOCKPIT').directive('trafficlightItem', function($http){
                 });
             };
 
-            $scope.$watch('item.size_x', function(){
+            $scope.$watchGroup(['item.size_x', 'item.show_label'], function(){
                 if($scope.init){
                     return;
                 }
 
-                $scope.width = $scope.item.size_x -10; //The view adds 10px
-                $scope.height = $scope.item.size_y -10;
+                $scope.width = $scope.item.size_x - 10; //The view adds 10px
+                $scope.height = $scope.item.size_y - 10;
                 renderTrafficlight();
             });
 

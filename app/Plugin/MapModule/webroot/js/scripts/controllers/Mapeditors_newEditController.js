@@ -206,7 +206,7 @@ angular.module('openITCOCKPIT')
                         z_index: '0', //Yes we need this as a string!
                         x: $event.offsetX,
                         y: $event.offsetY,
-                        show_label: 0,
+                        show_label: false,
                         label_possition: 2
                         //x: $event.pageX,
                         //y: $event.pageY
@@ -235,7 +235,7 @@ angular.module('openITCOCKPIT')
                             z_index: '0', //Yes we need this as a string!
                             startX: $event.offsetX,
                             startY: $event.offsetY,
-                            show_label: 0
+                            show_label: false
                         };
 
                         new Noty({
@@ -263,7 +263,7 @@ angular.module('openITCOCKPIT')
                         z_index: '0', //Yes we need this as a string!
                         x: $event.offsetX,
                         y: $event.offsetY,
-                        show_label: 0,
+                        show_label: false,
                         label_possition: 2,
                         gadget: 'RRDGraph',
                         size_x: null,

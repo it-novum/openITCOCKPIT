@@ -62,7 +62,6 @@ angular.module('openITCOCKPIT').directive('graphItem', function($http){
                     }
                 }).then(function(result){
                     $scope.isLoadingGraph = false;
-                    $scope.dataSources = [];
 
                     if($scope.item.metric === null){
                         //Use the first metric
