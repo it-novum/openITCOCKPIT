@@ -103,7 +103,7 @@
             </div>
 
             <div ng-repeat="textItem in map.Maptext" class="draggable"
-                 style="position:absolute; top: {{textItem.y}}px; left: {{textItem.x}}px;  z-index: {{textItem.z_index}}; cursor: move;">
+                 style="position:absolute; top: {{textItem.y}}px; left: {{textItem.x}}px;  z-index: {{textItem.z_index}}; cursor: move;" data-id="{{textItem.id}}" data-type="text" ng-dblclick="editText(textItem)">
                 <map-text item="textItem"></map-text>
             </div>
 
@@ -118,7 +118,8 @@
             </div>
 
             <div ng-repeat="gadgetItem in map.Mapgadget" class="draggable resizable"
-                 style="position:absolute; top: {{gadgetItem.y}}px; left: {{gadgetItem.x}}px;  z-index: {{gadgetItem.z_index}}; cursor: move;" data-id="{{gadgetItem.id}}" data-type="gadget" ng-dblclick="editGadget(gadgetItem)">
+                 style="position:absolute; top: {{gadgetItem.y}}px; left: {{gadgetItem.x}}px;  z-index: {{gadgetItem.z_index}}; cursor: move;"
+                 data-id="{{gadgetItem.id}}" data-type="gadget" ng-dblclick="editGadget(gadgetItem)">
                 <graph-item item="gadgetItem" ng-if="gadgetItem.gadget === 'RRDGraph'"
                             refresh-interval="0"></graph-item>
 
@@ -166,7 +167,7 @@
 
             <div class="mapToolbarLine"></div>
 
-            <div class="mapToolbarTool" title="<?php echo __('Add stateless text'); ?>">
+            <div class="mapToolbarTool" title="<?php echo __('Add stateless text'); ?>" ng-click="addText()">
                 <i class="fa fa-lg fa-font"></i>
             </div>
 
@@ -764,7 +765,7 @@
                         </div>
                     </div>
                 </div>
-                <br />
+                <br/>
 
                 <div class="row">
                     <div class="col-xs-12">
@@ -902,3 +903,354 @@
         </div>
     </div>
 </div>
+
+<!-- Add/Edit stateless text modal -->
+<div id="AddEditStatelessTextModal" class="modal" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">
+                    <i class="fa fa-font"></i>
+                    <?php echo __('Add or edit stateless text'); ?>
+                </h4>
+            </div>
+            <div class="modal-body">
+
+                <div ng-show="addLink">
+                    <div class="row">
+                        <div class="col-xs-12 smart-form">
+                            <div class="form-group smart-form">
+                                <label class="label hintmark_red"><?php echo __('URL'); ?></label>
+                                <label class="input"> <b class="icon-prepend">
+                                        <i class="fa fa-external-link-square"></i>
+                                    </b>
+                                    <input type="text" class="input-sm"
+                                           placeholder="https://openitcockpit.io"
+                                           id="modalLinkUrl">
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 smart-form">
+                            <div class="form-group smart-form">
+                                <label class="label hintmark_red"><?php echo __('URL'); ?></label>
+                                <label class="input"> <b class="icon-prepend">
+                                        <i class="fa fa-tag"></i>
+                                    </b>
+                                    <input type="text" class="input-sm"
+                                           placeholder="<?php echo __('Official page for openITCOCKPIT'); ?>"
+                                           id="modalLinkDescription">
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <br/>
+
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <div class="form-group smart-form no-padding">
+                                <label class="checkbox small-checkbox-label">
+                                    <input type="checkbox" name="checkbox"
+                                           id="modalLinkNewTab">
+                                    <i class="checkbox-primary"></i>
+                                    <?php echo __('Open in new tab'); ?>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-12 text-right margin-top-5">
+                            <button id="cancel-insert-link" type="button" class="btn btn-default" ng-click="addLink = false">
+                                <?php echo __('Cancel'); ?>
+                            </button>
+                            <button id="perform-insert-link" type="button" class="btn btn-primary">
+                                <?php echo __('Insert link'); ?>
+                            </button>
+                        </div>
+                    </div>
+                    <br />
+                    <br />
+                </div>
+
+
+                <div class="row" ng-hide="addLink">
+                    <div class="col-xs-12">
+                        <div class="form-horizontal clear jarviswidget">
+                            <header>
+                                <div class="widget-toolbar pull-left" role="menu">
+                                    <div class="btn-group">
+                                        <a href="javascript:void(0);"
+                                           class="btn btn-xs btn-default">
+                                            <i class="fa fa-font"></i>
+                                            <?php echo __('Font size'); ?>
+                                        </a>
+                                        <a href="javascript:void(0);" data-toggle="dropdown"
+                                           class="btn btn-xs btn-default dropdown-toggle"><span
+                                                    class="caret"></span></a>
+                                        <ul class="dropdown-menu">
+                                            <li>
+                                                <a href="javascript:void(0);" select-fsize="true"
+                                                   fsize="xx-small"><?php echo __('Smallest'); ?></a>
+                                            </li>
+                                            <li>
+                                                <a href="javascript:void(0);" select-fsize="true"
+                                                   fsize="x-small"><?php echo __('Smaller'); ?></a>
+                                            </li>
+                                            <li>
+                                                <a href="javascript:void(0);" select-fsize="true"
+                                                   fsize="small"><?php echo __('Small'); ?></a>
+                                            </li>
+                                            <li class="divider"></li>
+                                            <li>
+                                                <a href="javascript:void(0);" select-fsize="true"
+                                                   fsize="large"><?php echo __('Big'); ?></a>
+                                            </li>
+                                            <li>
+                                                <a href="javascript:void(0);" select-fsize="true"
+                                                   fsize="x-large"><?php echo __('Bigger'); ?></a>
+                                            </li>
+                                            <li>
+                                                <a href="javascript:void(0);" select-fsize="true"
+                                                   fsize="xx-large"><?php echo __('Biggest'); ?></a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <div class="widget-toolbar pull-left" style="border:0px;"
+                                         role="menu">
+                                        <a href="javascript:void(0);"
+                                           class="dropdown-toggle color-box selector bg-color-darken"
+                                           id="currentColor" color="#404040"
+                                           data-toggle="dropdown"></a>
+                                        <ul class="dropdown-menu arrow-box-up-right pull-right color-select">
+                                            <li style="display: inline-block; margin:0; float: none;">
+                                                                <span data-original-title="<?php echo __('Green Grass'); ?>"
+                                                                      data-placement="left" rel="tooltip"
+                                                                      data-widget-setstyle="jarviswidget-color-green"
+                                                                      select-color="true" color="#356E35"
+                                                                      class="bg-color-green"></span></li>
+                                            <li style="display: inline-block; margin:0; float: none;">
+                                                                <span data-original-title="<?php echo __('Dark Green'); ?>"
+                                                                      data-placement="top" rel="tooltip"
+                                                                      data-widget-setstyle="jarviswidget-color-greenDark"
+                                                                      select-color="true" color="#496949"
+                                                                      class="bg-color-greenDark"></span></li>
+                                            <li style="display: inline-block; margin:0; float: none;">
+                                                                <span data-original-title="<?php echo __('Light Green'); ?>"
+                                                                      data-placement="top" rel="tooltip"
+                                                                      data-widget-setstyle="jarviswidget-color-greenLight"
+                                                                      select-color="true" color="#71843F"
+                                                                      class="bg-color-greenLight"></span></li>
+                                            <li style="display: inline-block; margin:0; float: none;">
+                                                                <span data-original-title="<?php echo __('Purple'); ?>"
+                                                                      data-placement="top" rel="tooltip"
+                                                                      data-widget-setstyle="jarviswidget-color-purple"
+                                                                      select-color="true" color="#6E587A"
+                                                                      class="bg-color-purple"></span></li>
+                                            <li style="display: inline-block; margin:0; float: none;">
+                                                                <span data-original-title="<?php echo __('Magenta'); ?>"
+                                                                      data-placement="top" rel="tooltip"
+                                                                      data-widget-setstyle="jarviswidget-color-magenta"
+                                                                      select-color="true" color="#6E3671"
+                                                                      class="bg-color-magenta"></span></li>
+                                            <li style="display: inline-block; margin:0; float: none;">
+                                                                <span data-original-title="<?php echo __('Pink'); ?>"
+                                                                      data-placement="right" rel="tooltip"
+                                                                      data-widget-setstyle="jarviswidget-color-pink"
+                                                                      select-color="true" color="#AC5287"
+                                                                      class="bg-color-pink"></span></li>
+                                            <li style="display: inline-block; margin:0; float: none;">
+                                                                <span data-original-title="<?php echo __('Fade Pink'); ?>"
+                                                                      data-placement="left" rel="tooltip"
+                                                                      data-widget-setstyle="jarviswidget-color-pinkDark"
+                                                                      select-color="true" color="#A8829F"
+                                                                      class="bg-color-pinkDark"></span></li>
+                                            <li style="display: inline-block; margin:0; float: none;">
+                                                                <span data-original-title="<?php echo __('Light Blue'); ?>"
+                                                                      data-placement="top" rel="tooltip"
+                                                                      data-widget-setstyle="jarviswidget-color-blueLight"
+                                                                      select-color="true" color="#92A2A8"
+                                                                      class="bg-color-blueLight"></span></li>
+                                            <li style="display: inline-block; margin:0; float: none;">
+                                                                <span data-original-title="<?php echo __('Teal'); ?>"
+                                                                      data-placement="top" rel="tooltip"
+                                                                      data-widget-setstyle="jarviswidget-color-teal"
+                                                                      select-color="true" color="#568A89"
+                                                                      class="bg-color-teal"></span></li>
+                                            <li style="display: inline-block; margin:0; float: none;">
+                                                                <span data-original-title="<?php echo __('Ocean Blue'); ?>"
+                                                                      data-placement="top" rel="tooltip"
+                                                                      data-widget-setstyle="jarviswidget-color-blue"
+                                                                      select-color="true" color="#57889C"
+                                                                      class="bg-color-blue"></span></li>
+                                            <li style="display: inline-block; margin:0; float: none;">
+                                                                <span data-original-title="<?php echo __('Night Sky'); ?>"
+                                                                      data-placement="top" rel="tooltip"
+                                                                      data-widget-setstyle="jarviswidget-color-blueDark"
+                                                                      select-color="true" color="#4C4F53"
+                                                                      class="bg-color-blueDark"></span></li>
+                                            <li style="display: inline-block; margin:0; float: none;">
+                                                                <span data-original-title="<?php echo __('Night'); ?>"
+                                                                      data-placement="right" rel="tooltip"
+                                                                      data-widget-setstyle="jarviswidget-color-darken"
+                                                                      select-color="true" color="#404040"
+                                                                      class="bg-color-darken"></span></li>
+                                            <li style="display: inline-block; margin:0; float: none;">
+                                                                <span data-original-title="<?php echo __('Day Light'); ?>"
+                                                                      data-placement="left" rel="tooltip"
+                                                                      data-widget-setstyle="jarviswidget-color-yellow"
+                                                                      select-color="true" color="#B09B5B"
+                                                                      class="bg-color-yellow"></span></li>
+                                            <li style="display: inline-block; margin:0; float: none;">
+                                                                <span data-original-title="<?php echo __('Orange'); ?>"
+                                                                      data-placement="bottom" rel="tooltip"
+                                                                      data-widget-setstyle="jarviswidget-color-orange"
+                                                                      select-color="true" color="#C79121"
+                                                                      class="bg-color-orange"></span></li>
+                                            <li style="display: inline-block; margin:0; float: none;">
+                                                                <span data-original-title="<?php echo __('Dark Orange'); ?>"
+                                                                      data-placement="bottom" rel="tooltip"
+                                                                      data-widget-setstyle="jarviswidget-color-orangeDark"
+                                                                      select-color="true" color="#A57225"
+                                                                      class="bg-color-orangeDark"></span></li>
+                                            <li style="display: inline-block; margin:0; float: none;">
+                                                                <span data-original-title="<?php echo __('Red Rose'); ?>"
+                                                                      data-placement="bottom" rel="tooltip"
+                                                                      data-widget-setstyle="jarviswidget-color-red"
+                                                                      select-color="true" color="#A90329"
+                                                                      class="bg-color-red"></span></li>
+                                            <li style="display: inline-block; margin:0; float: none;">
+                                                                <span data-original-title="<?php echo __('Light Red'); ?>"
+                                                                      data-placement="bottom" rel="tooltip"
+                                                                      data-widget-setstyle="jarviswidget-color-redLight"
+                                                                      select-color="true" color="#A65858"
+                                                                      class="bg-color-redLight"></span></li>
+                                            <li style="display: inline-block; margin:0; float: none;">
+                                                                <span data-original-title="<?php echo __('Purity'); ?>"
+                                                                      data-placement="right" rel="tooltip"
+                                                                      data-widget-setstyle="jarviswidget-color-white"
+                                                                      select-color="true" color="#FFFFFF"
+                                                                      class="bg-color-white"></span></li>
+                                        </ul>
+                                    </div>
+                                    <span class="padding-left-10"></span>
+                                    <a href="javascript:void(0);" class="btn btn-default" wysiwyg="true"
+                                       task="bold"><i class="fa fa-bold"></i></a>
+                                    <a href="javascript:void(0);" class="btn btn-default" wysiwyg="true"
+                                       task="italic"><i class="fa fa-italic"></i></a>
+                                    <a href="javascript:void(0);" class="btn btn-default" wysiwyg="true"
+                                       task="underline"><i class="fa fa-underline"></i></a>
+                                    <span class="padding-left-10"></span>
+                                    <a href="javascript:void(0);" class="btn btn-default" wysiwyg="true"
+                                       task="left"><i class="fa fa-align-left"></i></a>
+                                    <a href="javascript:void(0);" class="btn btn-default" wysiwyg="true"
+                                       task="center"><i class="fa fa-align-center"></i></a>
+                                    <a href="javascript:void(0);" class="btn btn-default" wysiwyg="true"
+                                       task="right"><i class="fa fa-align-right"></i></a>
+                                    <a href="javascript:void(0);" class="btn btn-default" wysiwyg="true"
+                                       task="justify"><i class="fa fa-align-justify"></i></a>
+                                    <span class="padding-left-10"></span>
+                                    <a href="javascript:void(0);" class="btn btn-default" ng-click="addLink = true"
+                                       id="insert-link"><i class="fa fa-link"></i></a>
+                                </div>
+                                <div class="widget-toolbar pull-right" role="menu"></div>
+                            </header>
+                            <div>
+                                <div class="widget-body" ng-class="{'has-error': errors.text}">
+                                        <textarea class="form-control"
+                                                  style="width: 100%; height: 200px;"
+                                                  id="docuText"></textarea>
+                                </div>
+                                <div ng-repeat="error in errors.text">
+                                    <div class="help-block text-danger">{{ error }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-xs-12 col-lg-6 smart-form">
+                            <div class="form-group smart-form" ng-class="{'has-error': errors.x}">
+                                <label class="label hintmark_red"><?php echo __('Position X'); ?></label>
+                                <label class="input"> <b class="icon-prepend">X</b>
+                                    <input type="number" min="0" class="input-sm"
+                                           placeholder="<?php echo __('0'); ?>"
+                                           ng-model="currentItem.x">
+                                </label>
+                                <div ng-repeat="error in errors.x">
+                                    <div class="help-block text-danger">{{ error }}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-lg-6 smart-form" ng-class="{'has-error': errors.y}">
+                            <div class="form-group smart-form">
+                                <label class="label hintmark_red"><?php echo __('Position Y'); ?></label>
+                                <label class="input"> <b class="icon-prepend">Y</b>
+                                    <input type="number" min="0" class="input-sm"
+                                           placeholder="<?php echo __('0'); ?>"
+                                           ng-model="currentItem.y">
+                                </label>
+                            </div>
+                            <div ng-repeat="error in errors.y">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <br/>
+
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <div class="form-group smart-form hintmark_red">
+                                <?php echo __('Select layer'); ?>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-md-6 col-lg-10">
+                            <div class="form-group required" ng-class="{'has-error': errors.z_index}">
+                                <select
+                                        id="selectItemLayerSelect"
+                                        data-placeholder="<?php echo __('Please choose'); ?>"
+                                        class="form-control"
+                                        chosen="layers"
+                                        ng-options="key as layerNo for (key , layerNo) in layers"
+                                        ng-model="currentItem.z_index">
+                                </select>
+                                <div ng-repeat="error in errors.z_index">
+                                    <div class="help-block text-danger">{{ error }}</div>
+                                </div>
+                                <span class="help-block">
+                                <?php echo __('Layers could be used to stack items on a map. Empty layers will be deleted automatically.'); ?>
+                            </span>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-md-6 col-lg-2">
+                            <button class="btn btn-block btn-default" ng-click="addNewLayer()">
+                                <?php echo __('Add new layer'); ?>
+                            </button>
+                        </div>
+                    </div>
+                    <br/>
+
+                </div>
+
+                <div class="modal-footer">
+
+                    <button type="button" class="btn btn-danger pull-left" ng-click="deleteText()">
+                        <?php echo __('Delete'); ?>
+                    </button>
+
+                    <button type="button" class="btn btn-default" data-dismiss="modal">
+                        <?php echo __('Close'); ?>
+                    </button>
+
+                    <button type="button" class="btn btn-primary" ng-click="saveText()">
+                        <?php echo __('Save'); ?>
+                    </button>
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
