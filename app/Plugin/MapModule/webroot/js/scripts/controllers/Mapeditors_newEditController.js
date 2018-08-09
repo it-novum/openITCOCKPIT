@@ -49,7 +49,24 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.changeBackground = function(background){
-            $scope.map.Map.background = background.image;
+            $http.post("/map_module/mapeditors_new/saveBackground.json?angular=true",
+                {
+                    'Map': {
+                        id: $scope.id,
+                        background: background.image
+                    }
+                }
+            ).then(function(result){
+                $scope.errors = {};
+                $scope.map.Map.background = background.image;
+                genericSuccess();
+            }, function errorCallback(result){
+                if(result.data.hasOwnProperty('error')){
+                    $scope.errors = result.data.error;
+                }
+                genericError();
+            });
+
         };
 
         var loadBackgroundImages = function(selectedImage){

@@ -586,7 +586,7 @@ class MapeditorsNewController extends MapModuleAppController {
                     'contain'    => [
                         'Container',
                         'Service' => [
-                            'fields' => [
+                            'fields'     => [
                                 'Service.uuid'
                             ],
                             'conditions' => [
@@ -687,7 +687,7 @@ class MapeditorsNewController extends MapModuleAppController {
                             'conditions' => [
                                 'Host.disabled' => 0
                             ],
-                            'Service' => [
+                            'Service'    => [
                                 'fields'     => [
                                     'Service.id',
                                     'Service.uuid'
@@ -1955,6 +1955,42 @@ class MapeditorsNewController extends MapModuleAppController {
 
         $this->set('success', false);
         $this->set('_serialize', ['success']);
+    }
+
+    /**
+     * @todo Add to ACL depandencies
+     */
+    public function saveBackground() {
+        if (!$this->request->is('post') || !$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        $id = $this->request->data('Map.id');
+
+        if (!$this->Maptext->exists($id)) {
+            throw new NotFoundException();
+        }
+
+        $map = $this->Map->find('first', [
+            'recursive'  => -1,
+            'conditions' => [
+                'Map.id' => $id
+            ]
+        ]);
+
+        $map['Map']['background'] = $this->request->data('Map.background');
+
+        if ($this->Map->save($map)) {
+            $this->set('Map', [
+                'Map' => $map
+            ]);
+
+            $this->set('_serialize', ['Map']);
+            return;
+        }
+        $this->serializeErrorMessageFromModel('Map');
+        return;
+
     }
 
 }
