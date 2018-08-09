@@ -163,9 +163,9 @@ angular.module('openITCOCKPIT').directive('graphItem', function($http){
                 }
 
 
-                var label = $scope.host.hostname + '/' + $scope.service.servicename + '"'+ performance_data.datasource.label+'"';
+                var label = $scope.host.hostname + '/' + $scope.service.servicename + '"' + performance_data.datasource.label + '"';
                 if(performance_data.datasource.unit){
-                    label = label + ' in '+ performance_data.datasource.unit;
+                    label = label + ' in ' + performance_data.datasource.unit;
                 }
 
                 graph_data.push({
@@ -175,13 +175,12 @@ angular.module('openITCOCKPIT').directive('graphItem', function($http){
                 });
 
 
-                //graph_data.push(performance_data[key].data);
-
-                var color_generator = new ColorGenerator();
+                //var color_generator = new ColorGenerator();
                 var options = {
                     width: '100%',
                     height: $scope.height + 'px',
-                    colors: color_generator.generate(1, 90, 120),
+                    //colors: color_generator.generate(1, 90, 120),
+                    colors: ['#57889c'],
                     legend: {
                         show: $scope.item.show_label,
                         position: 'nw',
@@ -241,8 +240,20 @@ angular.module('openITCOCKPIT').directive('graphItem', function($http){
                         labelFormatter: function(label, series){
                             // series is the series object for the label
                             return '<a href="#' + label + '">' + label + '</a>';
-                        }
+                        },
+                        lineWidth: 1,
+                        fill: true,
+                        fillColor: {
+                            colors: [{
+                                opacity: 0.4
+                            }, {
+                                opacity: 0
+                            }]
+                        },
+                        steps: false
                     },
+
+
                     selection: {
                         mode: "x"
                     }

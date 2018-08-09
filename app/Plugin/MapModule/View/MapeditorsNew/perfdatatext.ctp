@@ -23,7 +23,7 @@
 //  confirmation.
 ?>
 
-<svg viewBox="0 0 70 18" width="{{width}}" height="{{height}}" id="map-perfdatatext-{{item.id}}">
+<svg viewBox="0 0 85 18" width="{{width}}" height="{{height}}" id="map-perfdatatext-{{item.id}}">
     <text x="0" y="15" fill="{{color}}">
         {{text}}
     </text>

@@ -53,7 +53,11 @@ angular.module('openITCOCKPIT').directive('perfdataTextItem', function($http){
                         }
                     }
 
-                    var text = $scope.perfdata.current + ' ' + $scope.perfdata.unit;
+                    var text = $scope.perfdata.current;
+                    if($scope.perfdata.unit !== null && $scope.perfdata.unit !== ''){
+                        text = text + ' ' + $scope.perfdata.unit;
+                    }
+
                     if($scope.showLabel){
                         text = $scope.perfdataName + text;
                     }
