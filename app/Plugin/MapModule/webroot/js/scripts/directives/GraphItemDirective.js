@@ -62,17 +62,10 @@ angular.module('openITCOCKPIT').directive('graphItem', function($http){
                     }
                 }).then(function(result){
                     $scope.isLoadingGraph = false;
+                    $scope.responsePerfdata = result.data.performance_data;
 
-                    if($scope.item.metric === null){
-                        //Use the first metric
-                        $scope.perfdata = result.data.performance_data[0];
-                    }else{
-                        for(var metricNo in result.data.performance_data){
-                            if(result.data.performance_data[metricNo].datasource.name === $scope.item.metric){
-                                $scope.perfdata = result.data.performance_data[metricNo];
-                            }
-                        }
-                    }
+
+                    processPerfdata();
                     renderGraph($scope.perfdata);
                     $scope.init = false;
                 });
@@ -267,6 +260,21 @@ angular.module('openITCOCKPIT').directive('graphItem', function($http){
                 $scope.plot = $.plot('#mapgraph-' + $scope.item.id, graph_data, options);
             };
 
+            var processPerfdata = function(){
+                if($scope.responsePerfdata !== null){
+                    if($scope.item.metric === null){
+                        //Use the first metric
+                        $scope.perfdata = $scope.responsePerfdata[0];
+                    }else{
+                        for(var metricNo in $scope.responsePerfdata){
+                            if($scope.responsePerfdata[metricNo].datasource.name === $scope.item.metric){
+                                $scope.perfdata = $scope.responsePerfdata[metricNo];
+                            }
+                        }
+                    }
+                }
+            };
+
             $scope.$watchGroup(['item.size_x', 'item.show_label'], function(){
                 if($scope.init){
                     return;
@@ -276,7 +284,23 @@ angular.module('openITCOCKPIT').directive('graphItem', function($http){
                 $scope.height = $scope.item.size_y; // - 48;
 
                 renderGraph($scope.perfdata);
+            });
 
+            $scope.$watch('item.object_id', function(){
+                if($scope.init){
+                    return;
+                }
+
+                $scope.load();
+            });
+
+            $scope.$watch('item.metric', function(){
+                if($scope.init){
+                    return;
+                }
+
+                processPerfdata();
+                renderGraph($scope.perfdata);
             });
 
             $scope.loadTimezone();

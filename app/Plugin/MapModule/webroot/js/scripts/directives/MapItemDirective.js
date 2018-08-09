@@ -7,6 +7,7 @@ angular.module('openITCOCKPIT').directive('mapItem', function($http, $interval){
             //'refreshInterval': '='
         },
         controller: function($scope){
+            $scope.init = true;
 
             var interval = null;
 
@@ -98,6 +99,15 @@ angular.module('openITCOCKPIT').directive('mapItem', function($http, $interval){
                 $scope.stop();
             });
             */
+
+            $scope.$watch('item.object_id', function(){
+                if($scope.init){
+                    return;
+                }
+
+                $scope.load();
+            });
+
 
         },
 

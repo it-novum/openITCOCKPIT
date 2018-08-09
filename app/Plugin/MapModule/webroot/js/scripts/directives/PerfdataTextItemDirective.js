@@ -8,10 +8,10 @@ angular.module('openITCOCKPIT').directive('perfdataTextItem', function($http){
         controller: function($scope){
             $scope.init = true;
 
-            $scope.showLabel = $scope.item.show_label;
-
-            $scope.width = '100%';
-            $scope.height = '100%';
+            //$scope.width = '100%';
+            //$scope.height = '100%';
+            $scope.width = $scope.item.size_x;
+            $scope.height = $scope.item.size_y;
 
             $scope.load = function(){
                 $http.get("/map_module/mapeditors_new/mapitem/.json", {
@@ -22,7 +22,7 @@ angular.module('openITCOCKPIT').directive('perfdataTextItem', function($http){
                         'type': $scope.item.type
                     }
                 }).then(function(result){
-                    var perfdata = result.data.data.Perfdata;
+                    $scope.responsePerfdata = result.data.data.Perfdata;
 
                     switch(result.data.data.color){
                         case 'txt-color-green':
@@ -46,42 +46,64 @@ angular.module('openITCOCKPIT').directive('perfdataTextItem', function($http){
                             break;
                     }
 
-                    if(perfdata !== null){
-                        if(Object.keys(perfdata).length > 0){
-                            $scope.perfdataName = Object.keys(perfdata)[0];
-                            $scope.perfdata = perfdata[$scope.perfdataName];
-                        }
-                    }
+                    processPerfdata();
 
-                    var text = $scope.perfdata.current;
-                    if($scope.perfdata.unit !== null && $scope.perfdata.unit !== ''){
-                        text = text + ' ' + $scope.perfdata.unit;
-                    }
-
-                    if($scope.showLabel){
-                        text = $scope.perfdataName + text;
-                    }
-                    $scope.text = text;
-
+                    /*
                     setTimeout(function(){
                         //Resolve strange resize bug on draggable
                         var $mapPerfdatatext = $('#map-perfdatatext-'+$scope.item.id);
                         $scope.width = $mapPerfdatatext.width();
                         $scope.height = $mapPerfdatatext.height();
 
-                    }, 150);
+                    }, 150);*/
 
                     $scope.init = false;
                 });
             };
 
-            $scope.$watch('item.size_x', function(){
+            var processPerfdata = function(){
+
+                if($scope.responsePerfdata !== null){
+                    if($scope.item.metric !== null && $scope.responsePerfdata.hasOwnProperty($scope.item.metric)){
+                        $scope.perfdataName = $scope.item.metric;
+                        $scope.perfdata = $scope.responsePerfdata[$scope.item.metric];
+                    }else{
+                        //Use first metric.
+                        for(var metricName in $scope.responsePerfdata){
+                            $scope.perfdataName = metricName;
+                            $scope.perfdata = $scope.responsePerfdata[metricName];
+                            break;
+                        }
+                    }
+                }
+
+                var text = $scope.perfdata.current;
+                if($scope.perfdata.unit !== null && $scope.perfdata.unit !== ''){
+                    text = text + ' ' + $scope.perfdata.unit;
+                }
+
+                if($scope.item.show_label){
+                    text = $scope.perfdataName + ' ' + text;
+                }
+                $scope.text = text;
+            };
+
+            $scope.$watchGroup(['item.size_x', 'item.show_label', 'item.metric'], function(){
                 if($scope.init){
                     return;
                 }
 
+                processPerfdata();
                 $scope.width = $scope.item.size_x;
                 $scope.height = $scope.item.size_y;
+            });
+
+            $scope.$watch('item.object_id', function(){
+                if($scope.init){
+                    return;
+                }
+
+                $scope.load();
             });
 
             $scope.load();

@@ -508,6 +508,7 @@ angular.module('openITCOCKPIT')
                 }
             ).then(function(result){
                 if(action === 'resizestop'){
+                    genericSuccess();
                     //Nothing needs to be updated
                     return;
                 }
@@ -544,7 +545,7 @@ angular.module('openITCOCKPIT')
             $scope.currentItem.map_id = $scope.id;
             $http.post("/map_module/mapeditors_new/deleteGadget.json?angular=true",
                 {
-                    'Mapline': $scope.currentItem,
+                    'Mapgadget': $scope.currentItem,
                     'action': 'delete'
                 }
             ).then(function(result){

@@ -36,24 +36,10 @@ angular.module('openITCOCKPIT').directive('cylinderItem', function($http){
                     $scope.Host = result.data.data.Host;
                     $scope.Service = result.data.data.Service;
 
-                    var perfdata = result.data.data.Perfdata;
 
-
-                    if(perfdata !== null){
-                        if(Object.keys(perfdata).length > 0){
-                            var perfdataName = Object.keys(perfdata)[0];
-                            perfdata = perfdata[perfdataName];
-
-                            perfdata.current = parseFloat(perfdata.current);
-                            perfdata.warning = parseFloat(perfdata.warning);
-                            perfdata.critical = parseFloat(perfdata.critical);
-                            perfdata.min = parseFloat(perfdata.min);
-                            perfdata.max = parseFloat(perfdata.max);
-
-                            $scope.perfdata = perfdata;
-                            renderCylinder(perfdata);
-                        }
-                    }
+                    $scope.responsePerfdata = result.data.data.Perfdata;
+                    processPerfdata();
+                    renderCylinder($scope.perfdata);
 
                     $scope.init = false;
                 });
@@ -205,14 +191,45 @@ angular.module('openITCOCKPIT').directive('cylinderItem', function($http){
 
             };
 
-            $scope.$watch('item.size_x', function(){
+            var processPerfdata = function(){
+                if($scope.responsePerfdata !== null){
+                    if($scope.item.metric !== null && $scope.responsePerfdata.hasOwnProperty($scope.item.metric)){
+                        $scope.perfdataName = $scope.item.metric;
+                        $scope.perfdata = $scope.responsePerfdata[$scope.item.metric];
+                    }else{
+                        //Use first metric.
+                        for(var metricName in $scope.responsePerfdata){
+                            $scope.perfdataName = metricName;
+                            $scope.perfdata = $scope.responsePerfdata[metricName];
+                            break;
+                        }
+                    }
+                }
+                $scope.perfdata.current = parseFloat($scope.perfdata.current);
+                $scope.perfdata.warning = parseFloat($scope.perfdata.warning);
+                $scope.perfdata.critical = parseFloat($scope.perfdata.critical);
+                $scope.perfdata.min = parseFloat($scope.perfdata.min);
+                $scope.perfdata.max = parseFloat($scope.perfdata.max);
+            };
+
+            $scope.$watchGroup(['item.size_x', 'item.show_label', 'item.metric'], function(){
                 if($scope.init){
                     return;
                 }
 
-                $scope.width = $scope.item.size_x -10; //The view adds 10px
-                $scope.height = $scope.item.size_y -10;
+                $scope.width = $scope.item.size_x - 10; //The view adds 10px
+                $scope.height = $scope.item.size_y - 10;
+
+                processPerfdata();
                 renderCylinder($scope.perfdata);
+            });
+
+            $scope.$watch('item.object_id', function(){
+                if($scope.init){
+                    return;
+                }
+
+                $scope.load();
             });
 
             $scope.load();

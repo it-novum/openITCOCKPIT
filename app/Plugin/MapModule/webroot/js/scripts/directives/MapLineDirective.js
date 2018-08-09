@@ -6,6 +6,7 @@ angular.module('openITCOCKPIT').directive('mapLine', function($http){
             'item': '='
         },
         controller: function($scope){
+            $scope.init = true;
 
             $scope.initLine = function(){
                 $scope.item.startX = parseInt($scope.item.startX, 10);
@@ -92,7 +93,12 @@ angular.module('openITCOCKPIT').directive('mapLine', function($http){
                 if($scope.init){
                     return;
                 }
+
                 $scope.initLine();
+                if($scope.item.type !== 'stateless'){
+                    $scope.load();
+
+                }
             }, true);
         },
 

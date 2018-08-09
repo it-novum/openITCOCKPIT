@@ -266,6 +266,14 @@ angular.module('openITCOCKPIT').directive('trafficlightItem', function($http){
                 renderTrafficlight();
             });
 
+            $scope.$watch('item.object_id', function(){
+                if($scope.init){
+                    return;
+                }
+
+                $scope.load();
+            });
+
             $scope.load();
         },
 

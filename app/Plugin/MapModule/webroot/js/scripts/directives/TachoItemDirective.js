@@ -35,39 +35,9 @@ angular.module('openITCOCKPIT').directive('tachoItem', function($http){
                     $scope.color = result.data.data.color;
                     $scope.Host = result.data.data.Host;
                     $scope.Service = result.data.data.Service;
+                    $scope.responsePerfdata = result.data.data.Perfdata;
 
-                    //Dummy data if there are no performance data records available
-                    $scope.perfdata = {
-                        current: 0,
-                        warning: 80,
-                        critical: 90,
-                        min: 0,
-                        max: 100,
-                        unit: 'n/a'
-                    };
-                    $scope.perfdataName = 'No data available';
-
-
-                    if(result.data.data.Perfdata !== null){
-                        if($scope.item.metric !== null && result.data.data.Perfdata.hasOwnProperty($scope.item.metric)){
-                            $scope.perfdataName = $scope.item.metric;
-                            $scope.perfdata = result.data.data.Perfdata[$scope.item.metric];
-                        }else{
-                            //Use first metric.
-                            for(var metricName in result.data.data.Perfdata){
-                                $scope.perfdataName = metricName;
-                                $scope.perfdata = result.data.data.Perfdata[metricName];
-                                break;
-                            }
-                        }
-                    }
-
-                    $scope.perfdata.current = parseFloat($scope.perfdata.current);
-                    $scope.perfdata.warning = parseFloat($scope.perfdata.warning);
-                    $scope.perfdata.critical = parseFloat($scope.perfdata.critical);
-                    $scope.perfdata.min = parseFloat($scope.perfdata.min);
-                    $scope.perfdata.max = parseFloat($scope.perfdata.max);
-
+                    processPerfdata();
                     renderGauge($scope.perfdataName, $scope.perfdata);
 
 
@@ -185,9 +155,43 @@ angular.module('openITCOCKPIT').directive('tachoItem', function($http){
                 return tickArr;
             };
 
+            var processPerfdata = function(){
+                //Dummy data if there are no performance data records available
+                $scope.perfdata = {
+                    current: 0,
+                    warning: 80,
+                    critical: 90,
+                    min: 0,
+                    max: 100,
+                    unit: 'n/a'
+                };
+                $scope.perfdataName = 'No data available';
+
+
+                if($scope.responsePerfdata !== null){
+                    if($scope.item.metric !== null && $scope.responsePerfdata.hasOwnProperty($scope.item.metric)){
+                        $scope.perfdataName = $scope.item.metric;
+                        $scope.perfdata = $scope.responsePerfdata[$scope.item.metric];
+                    }else{
+                        //Use first metric.
+                        for(var metricName in $scope.responsePerfdata){
+                            $scope.perfdataName = metricName;
+                            $scope.perfdata = $scope.responsePerfdata[metricName];
+                            break;
+                        }
+                    }
+                }
+
+                $scope.perfdata.current = parseFloat($scope.perfdata.current);
+                $scope.perfdata.warning = parseFloat($scope.perfdata.warning);
+                $scope.perfdata.critical = parseFloat($scope.perfdata.critical);
+                $scope.perfdata.min = parseFloat($scope.perfdata.min);
+                $scope.perfdata.max = parseFloat($scope.perfdata.max);
+            };
+
             $scope.load();
 
-            $scope.$watch('item.size_x', function(){
+            $scope.$watchGroup(['item.size_x', 'item.show_label'], function(){
                 if($scope.init){
                     return;
                 }
@@ -196,6 +200,23 @@ angular.module('openITCOCKPIT').directive('tachoItem', function($http){
                 $scope.height = $scope.width;
 
                 renderGauge($scope.perfdataName, $scope.perfdata);
+            });
+
+            $scope.$watch('item.metric', function(){
+                if($scope.init){
+                    return;
+                }
+
+                processPerfdata();
+                renderGauge($scope.perfdataName, $scope.perfdata);
+            });
+
+            $scope.$watch('item.object_id', function(){
+                if($scope.init){
+                    return;
+                }
+
+                $scope.load();
             });
         },
 
