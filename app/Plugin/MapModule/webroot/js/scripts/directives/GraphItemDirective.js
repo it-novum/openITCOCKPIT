@@ -280,14 +280,20 @@ angular.module('openITCOCKPIT').directive('graphItem', function($http){
                     return;
                 }
 
-                $scope.width = $scope.item.size_x; //The view adds 10px
-                $scope.height = $scope.item.size_y; // - 48;
+                if($scope.item.size_x > 0){
+                    $scope.width = $scope.item.size_x; //The view adds 10px
+                }
+
+                if($scope.item.size_y > 0){
+                    $scope.height = $scope.item.size_y;
+                }
 
                 renderGraph($scope.perfdata);
             });
 
             $scope.$watch('item.object_id', function(){
-                if($scope.init){
+                if($scope.init || $scope.item.object_id === null){
+                    //Avoid ajax error if user search a service in Gadget config modal
                     return;
                 }
 

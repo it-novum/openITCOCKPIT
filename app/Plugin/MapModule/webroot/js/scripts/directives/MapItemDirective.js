@@ -101,7 +101,8 @@ angular.module('openITCOCKPIT').directive('mapItem', function($http, $interval){
             */
 
             $scope.$watch('item.object_id', function(){
-                if($scope.init){
+                if($scope.init || $scope.item.object_id === null){
+                    //Avoid ajax error if user search a object in item config modal
                     return;
                 }
 

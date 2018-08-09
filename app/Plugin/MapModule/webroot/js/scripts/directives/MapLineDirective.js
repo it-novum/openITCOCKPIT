@@ -90,7 +90,8 @@ angular.module('openITCOCKPIT').directive('mapLine', function($http){
             }
 
             $scope.$watch('item', function(){
-                if($scope.init){
+                if($scope.init || $scope.item.object_id === null){
+                    //Avoid ajax error if user search a object in line config modal
                     return;
                 }
 

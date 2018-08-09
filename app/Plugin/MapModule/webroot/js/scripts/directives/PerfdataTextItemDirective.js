@@ -99,7 +99,8 @@ angular.module('openITCOCKPIT').directive('perfdataTextItem', function($http){
             });
 
             $scope.$watch('item.object_id', function(){
-                if($scope.init){
+                if($scope.init || $scope.item.object_id === null){
+                    //Avoid ajax error if user search a service in Gadget config modal
                     return;
                 }
 
