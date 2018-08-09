@@ -8,7 +8,6 @@ angular.module('openITCOCKPIT').directive('cylinderItem', function($http){
         controller: function($scope){
             $scope.init = true;
 
-            $scope.showLabel = $scope.item.show_label;
             $scope.width = 80;
             $scope.height = 125;
 
@@ -33,6 +32,10 @@ angular.module('openITCOCKPIT').directive('cylinderItem', function($http){
                     }
                 }).then(function(result){
                     $scope.current_state = result.data.data.Servicestatus.currentState;
+
+                    $scope.Host = result.data.data.Host;
+                    $scope.Service = result.data.data.Service;
+
                     var perfdata = result.data.data.Perfdata;
 
 
@@ -100,6 +103,17 @@ angular.module('openITCOCKPIT').directive('cylinderItem', function($http){
                 //the id schema must be like this "cyliner_"+id
                 var cylinder = svg.group('cylinder_' + $scope.item.id);
                 var cylinerGroup = svg.group(cylinder, 'cylinder_' + $scope.item.id);
+
+                if($scope.item.show_label){
+                    var rotateX = parseInt(($scope.height - 10 - ($scope.width / 8)), 10); //10 is svg padding 16 is font size;
+                    svg.text(cylinder, 0, $scope.height - 10, ($scope.Host.hostname + '/' + $scope.Service.servicename), {
+                        fontSize: ($scope.width / 8),
+                        fontFamily: 'Verdana',
+                        fill: '#000',
+                        transform: 'rotate(-90, 0, ' + rotateX + ')'
+                    });
+                }
+
                 var defs = svg.defs();
                 var stateColor = 'Blue';
 
