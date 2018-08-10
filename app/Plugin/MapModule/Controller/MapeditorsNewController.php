@@ -40,6 +40,7 @@ use Symfony\Component\Finder\Finder;
  * @property MapUpload $MapUpload
  * @property Mapline $Mapline
  * @property Mapgadget $Mapgadget
+ * @property Maptext $Maptext
  * @property Mapsummaryitem $Mapsummaryite
  * @property Host $Host
  * @property Service $Service
@@ -57,6 +58,7 @@ class MapeditorsNewController extends MapModuleAppController {
         'MapModule.MapUpload',
         'MapModule.Mapline',
         'MapModule.Mapgadget',
+        'MapModule.Maptext',
         'MapModule.Mapsummaryitem',
         'Host',
         'Service',
@@ -584,7 +586,7 @@ class MapeditorsNewController extends MapModuleAppController {
                     'contain'    => [
                         'Container',
                         'Service' => [
-                            'fields' => [
+                            'fields'     => [
                                 'Service.uuid'
                             ],
                             'conditions' => [
@@ -685,7 +687,7 @@ class MapeditorsNewController extends MapModuleAppController {
                             'conditions' => [
                                 'Host.disabled' => 0
                             ],
-                            'Service' => [
+                            'Service'    => [
                                 'fields'     => [
                                     'Service.id',
                                     'Service.uuid'
@@ -1869,6 +1871,126 @@ class MapeditorsNewController extends MapModuleAppController {
         }
         $this->set('perfdata', []);
         $this->set('_serialize', ['perfdata']);
+    }
+
+    /**
+     * @todo Add to ACL depandencies
+     */
+    public function saveText() {
+        if (!$this->request->is('post') || !$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        //Save new possition after drag and drop
+        if ($this->request->data('action') === 'dragstop') {
+            $maptext = $this->Maptext->find('first', [
+                'recursive'  => -1,
+                'conditions' => [
+                    'Maptext.id' => $this->request->data('Maptext.id')
+                ]
+            ]);
+
+            $maptext['Maptext']['x'] = (int)$this->request->data('Maptext.x');
+            $maptext['Maptext']['y'] = (int)$this->request->data('Maptext.y');
+
+            if ($this->Maptext->save($maptext)) {
+                $Maptext = new \itnovum\openITCOCKPIT\Maps\ValueObjects\Maptext($maptext['Maptext']);
+
+                $this->set('Maptext', [
+                    'Maptext' => $Maptext->toArray()
+                ]);
+
+                $this->set('_serialize', ['Maptext']);
+                return;
+            }
+            $this->serializeErrorMessageFromModel('Maptext');
+            return;
+        }
+
+        //Create new gadget or update existing one
+        if (!isset($this->request->data['Maptext']['id'])) {
+            $this->Maptext->create();
+        }
+
+        $text = $this->request->data;
+
+        $text['Maptext']['x'] = (int)$this->request->data('Maptext.x');
+        $text['Maptext']['y'] = (int)$this->request->data('Maptext.y');
+        if ($this->Maptext->save($text)) {
+            $text['Maptext']['id'] = $this->Maptext->id;
+            $Maptext = new \itnovum\openITCOCKPIT\Maps\ValueObjects\Maptext($text['Maptext']);
+            $this->set('Maptext', [
+                'Maptext' => $Maptext->toArray()
+            ]);
+            $this->set('_serialize', ['Maptext']);
+            return;
+        }
+        $this->serializeErrorMessageFromModel('Maptext');
+    }
+
+    /**
+     * @todo Add to ACL depandencies
+     */
+    public function deleteText() {
+        if (!$this->request->is('post') || !$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        $id = $this->request->data('Maptext.id');
+
+
+        if (!$this->Maptext->exists($id)) {
+            throw new NotFoundException();
+        }
+
+        if (!is_numeric($id)) {
+            throw new InvalidArgumentException('Maptext.id needs to be numeric');
+        }
+
+        if ($this->Maptext->delete($id)) {
+            $this->set('success', true);
+            $this->set('_serialize', ['success']);
+            return;
+        }
+
+        $this->set('success', false);
+        $this->set('_serialize', ['success']);
+    }
+
+    /**
+     * @todo Add to ACL depandencies
+     */
+    public function saveBackground() {
+        if (!$this->request->is('post') || !$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        $id = $this->request->data('Map.id');
+
+        if (!$this->Maptext->exists($id)) {
+            throw new NotFoundException();
+        }
+
+        $map = $this->Map->find('first', [
+            'recursive'  => -1,
+            'conditions' => [
+                'Map.id' => $id
+            ]
+        ]);
+
+        $map['Map']['background'] = $this->request->data('Map.background');
+
+        if ($this->Map->save($map)) {
+            $this->set('Map', [
+                'Map' => $map
+            ]);
+
+            $this->set('_serialize', ['Map']);
+            return;
+        }
+        $this->serializeErrorMessageFromModel('Map');
+        return;
+
     }
 
 }

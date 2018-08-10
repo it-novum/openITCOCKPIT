@@ -17,6 +17,8 @@ angular.module('openITCOCKPIT')
             size: 15
         };
 
+        $scope.addLink = false;
+
 
         $scope.load = function(){
             $http.get("/map_module/mapeditors_new/edit/" + $scope.id + ".json", {
@@ -47,7 +49,24 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.changeBackground = function(background){
-            $scope.map.Map.background = background.image;
+            $http.post("/map_module/mapeditors_new/saveBackground.json?angular=true",
+                {
+                    'Map': {
+                        id: $scope.id,
+                        background: background.image
+                    }
+                }
+            ).then(function(result){
+                $scope.errors = {};
+                $scope.map.Map.background = background.image;
+                genericSuccess();
+            }, function errorCallback(result){
+                if(result.data.hasOwnProperty('error')){
+                    $scope.errors = result.data.error;
+                }
+                genericError();
+            });
+
         };
 
         var loadBackgroundImages = function(selectedImage){
@@ -269,6 +288,24 @@ angular.module('openITCOCKPIT')
                         size_x: null,
                         size_y: null,
                         metric: null
+                    };
+
+                    $scope.action = null;
+                    break;
+
+                case 'text':
+                    $mapEditor.css('cursor', 'default');
+                    $scope.addNewObject = false;
+
+                    $('#AddEditStatelessTextModal').modal('show');
+
+                    // Create currentItem skeleton
+                    // Set X and Y poss of the new object
+                    $scope.currentItem = {
+                        z_index: '0', //Yes we need this as a string!
+                        x: $event.offsetX,
+                        y: $event.offsetY,
+                        text: ''
                     };
 
                     $scope.action = null;
@@ -567,6 +604,103 @@ angular.module('openITCOCKPIT')
             });
         };
 
+        $scope.addText = function(){
+            new Noty({
+                theme: 'metroui',
+                type: 'info',
+                layout: 'topCenter',
+                text: 'Click at the position on the map, where you want to create new text',
+                timeout: 3500
+            }).show();
+            $('#map-editor').css('cursor', 'crosshair');
+            $scope.addNewObject = true;
+            $scope.action = 'text';
+            $scope.addLink = false;
+            $('#docuText').val('');
+        };
+
+        $scope.editText = function(item){
+            $scope.action = 'text';
+            $scope.currentItem = item;
+            $scope.addLink = false;
+            $('#docuText').val(item.text);
+            $('#AddEditStatelessTextModal').modal('show');
+        };
+
+        $scope.saveText = function(action){
+            if(typeof action === 'undefined'){
+                action = 'add_or_edit';
+            }
+
+            $scope.currentItem.map_id = $scope.id;
+            if(action === 'add_or_edit'){
+                $scope.currentItem.text = $('#docuText').val();
+            }
+
+            $http.post("/map_module/mapeditors_new/saveText.json?angular=true",
+                {
+                    'Maptext': $scope.currentItem,
+                    'action': action
+                }
+            ).then(function(result){
+                $scope.errors = {};
+                //Update possition in current scope json data
+                if($scope.currentItem.hasOwnProperty('id')){
+                    for(var i in $scope.map.Maptext){
+                        if($scope.map.Maptext[i].id == $scope.currentItem.id){
+                            $scope.map.Maptext[i].x = $scope.currentItem.x;
+                            $scope.map.Maptext[i].y = $scope.currentItem.y;
+                            if(action === 'add_or_edit'){
+                                $scope.map.Maptext[i].text = $scope.currentItem.text;
+                            }
+
+                            //We are done here
+                            break;
+                        }
+                    }
+                }else{
+                    //New created item
+                    $scope.map.Maptext.push(result.data.Maptext.Maptext);
+                    setTimeout(makeDraggable, 250);
+                }
+
+                $('#AddEditStatelessTextModal').modal('hide');
+                genericSuccess();
+            }, function errorCallback(result){
+                if(result.data.hasOwnProperty('error')){
+                    $scope.errors = result.data.error;
+                }
+                genericError();
+            });
+        };
+
+        $scope.deleteText = function(){
+            $scope.currentItem.map_id = $scope.id;
+            $http.post("/map_module/mapeditors_new/deleteText.json?angular=true",
+                {
+                    'Maptext': $scope.currentItem,
+                    'action': 'delete'
+                }
+            ).then(function(result){
+                //Remove item from current scope
+                for(var i in $scope.map.Maptext){
+                    if($scope.map.Maptext[i].id == $scope.currentItem.id){
+                        $scope.map.Maptext.splice(i, 1);
+                        $('#docuText').val('');
+
+                        //We are done here
+                        break;
+                    }
+                }
+
+                $('#AddEditStatelessTextModal').modal('hide');
+                genericSuccess();
+                $scope.currentItem = {};
+            }, function errorCallback(result){
+                genericError();
+            });
+        };
+
         var loadMetrics = function(){
             $http.get("/map_module/mapeditors_new/getPerformanceDataMetrics/" + $scope.currentItem.object_id + ".json", {
                 params: {
@@ -592,6 +726,7 @@ angular.module('openITCOCKPIT')
                 $scope.metrics = metrics;
             });
         };
+
 
         var genericSuccess = function(){
             new Noty({
@@ -778,6 +913,15 @@ angular.module('openITCOCKPIT')
                             $scope.saveGadget('dragstop');
                             break;
 
+                        case 'text':
+                            $scope.currentItem = {
+                                id: id,
+                                x: x,
+                                y: y
+                            };
+                            $scope.saveText('dragstop');
+                            break;
+
                         default:
                             console.log('Unknown map type');
                             genericError();
@@ -830,6 +974,70 @@ angular.module('openITCOCKPIT')
             handle: "#mapToolsDragger",
             containment: "parent"
         });
+
+
+        //jQuery Bases WYSIWYG Editor
+        $("[wysiwyg='true']").click(function(){
+            var $textarea = $('#docuText');
+            var task = $(this).attr('task');
+            switch(task){
+                case 'bold':
+                    $textarea.surroundSelectedText('[b]', '[/b]');
+                    break;
+
+                case 'italic':
+                    $textarea.surroundSelectedText('[i]', '[/i]');
+                    break;
+
+                case 'underline':
+                    $textarea.surroundSelectedText('[u]', '[/u]');
+                    break;
+
+                case 'left':
+                    $textarea.surroundSelectedText('[left]', '[/left]');
+                    break;
+
+                case 'center':
+                    $textarea.surroundSelectedText('[center]', '[/center]');
+                    break;
+
+                case 'right':
+                    $textarea.surroundSelectedText('[right]', '[/right]');
+                    break;
+
+                case 'justify':
+                    $textarea.surroundSelectedText('[justify]', '[/justify]');
+                    break;
+            }
+        });
+
+        // Bind click event for color selector
+        $("[select-color='true']").click(function(){
+            var color = $(this).attr('color');
+            var $textarea = $('#docuText');
+            $textarea.surroundSelectedText("[color='" + color + "']", '[/color]');
+        });
+
+        // Bind click event for font size selector
+        $("[select-fsize='true']").click(function(){
+            var fontSize = $(this).attr('fsize');
+            var $textarea = $('#docuText');
+            $textarea.surroundSelectedText("[text='" + fontSize + "']", "[/text]");
+        });
+
+        $('#perform-insert-link').click(function(){
+            var $textarea = $('#docuText');
+            var url = $('#modalLinkUrl').val();
+            var description = $('#modalLinkDescription').val();
+            var selection = $textarea.getSelection();
+            var newTab = $('#modalLinkNewTab').is(':checked') ? " tab" : "";
+            $textarea.insertText("[url='" + url + "'" + newTab + "]" + description + '[/url]', selection.start, "collapseToEnd");
+            $('#modalLinkUrl').val('');
+            $('#modalLinkDescription').val('');
+            $scope.addLink = false;
+        });
+        /***** End WYSIWYG *****/
+
 
         $scope.$watchGroup(['currentItem.type', 'currentItem.object_id'], function(){
             //Initial load objects (like hosts or services) if the user pick an object type

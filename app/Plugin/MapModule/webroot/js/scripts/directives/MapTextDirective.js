@@ -40,7 +40,13 @@ angular.module('openITCOCKPIT').directive('mapText', function($http){
                 return resString;
             };
 
-            $scope.bbhtml = bbParser($scope.item.text);
+            //$scope.bbhtml = bbParser($scope.item.text);
+
+            $scope.$watch('item.text', function(){
+                if($scope.item.text !== null && typeof $scope.item.text !== 'undefined'){
+                    $scope.bbhtml = bbParser($scope.item.text);
+                }
+            });
 
         },
 

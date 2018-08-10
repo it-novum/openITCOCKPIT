@@ -61,7 +61,8 @@ $scripts = [
     'js/lib/jquery.svg.min.js',
     'js/lib/jquery.svgfilter.min.js',
     'smartadmin/js/plugin/dropzone/dropzone.min.js',
-    'vendor/noty/noty.min.js'
+    'vendor/noty/noty.min.js',
+    'js/lib/rangyinputs-jquery-1.1.2.min.js'
 ];
 
 if ($this->request->params['controller'] === 'statusmaps') {
