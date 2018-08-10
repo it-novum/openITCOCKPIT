@@ -1519,6 +1519,7 @@ class MapeditorsNewController extends MapModuleAppController {
                 'Text'         => 'perfdata_gadget.png'
             ];
             $this->set('gadgetPreviews', $gadgetPreviews);
+            $this->set('requiredIcons', $this->MapUpload->getIconsNames());
             return;
         }
 

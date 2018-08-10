@@ -49,17 +49,17 @@ class MapUpload extends MapModuleAppModel {
             'ack.png',
             'critical.png',
             'down.png',
+            'downtime_ack.png',
+            'downtime.png',
             'error.png',
-            'okaytime.png',
-            'okaytimeuser.png',
             'ok.png',
-            'pending.png',
             'sack.png',
+            'sdowntime_ack.png',
             'sdowntime.png',
             'unknown.png',
             'unreachable.png',
             'up.png',
-            'warning.png',
+            'warning.png'
         ];
     }
 

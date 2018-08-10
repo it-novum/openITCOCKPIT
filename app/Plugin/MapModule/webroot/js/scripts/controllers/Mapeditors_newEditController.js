@@ -19,6 +19,8 @@ angular.module('openITCOCKPIT')
 
         $scope.addLink = false;
 
+        $scope.uploadIconSet = false;
+
 
         $scope.load = function(){
             $http.get("/map_module/mapeditors_new/edit/" + $scope.id + ".json", {
@@ -199,6 +201,64 @@ angular.module('openITCOCKPIT')
                     }
                 }
             });
+
+            $('.iconset-dropzone').dropzone({
+                method: 'post',
+                maxFilesize: $scope.maxUploadLimit.value, //MB
+                acceptedFiles: '.zip', //mimetypes
+                paramName: "file",
+                success: function(obj){
+                    var $previewElement = $(obj.previewElement);
+
+                    var response = JSON.parse(obj.xhr.response);
+                    if(response.response.success){
+                        $previewElement.removeClass('dz-processing');
+                        $previewElement.addClass('dz-success');
+
+                        new Noty({
+                            theme: 'metroui',
+                            type: 'success',
+                            text: response.response.message,
+                            timeout: 3500
+                        }).show();
+
+                        loadIconsets(response.response.iconsetname);
+                        $scope.uploadIconSet = false;
+                        return;
+                    }
+
+                    $previewElement.removeClass('dz-processing');
+                    $previewElement.addClass('dz-error');
+                    new Noty({
+                        theme: 'metroui',
+                        type: 'error',
+                        text: response.response.message,
+                        timeout: 3500
+                    }).show();
+                },
+                error: function(obj, errorMessage, xhr){
+                    var $previewElement = $(obj.previewElement);
+                    $previewElement.removeClass('dz-processing');
+                    $previewElement.addClass('dz-error');
+
+                    if(typeof xhr === "undefined"){
+                        new Noty({
+                            theme: 'metroui',
+                            type: 'error',
+                            text: errorMessage,
+                            timeout: 3500
+                        }).show();
+                    }else{
+                        var response = JSON.parse(obj.xhr.response);
+                        new Noty({
+                            theme: 'metroui',
+                            type: 'error',
+                            text: response.response.message,
+                            timeout: 3500
+                        }).show();
+                    }
+                }
+            });
         };
 
         $scope.deleteBackground = function(background){
@@ -250,13 +310,18 @@ angular.module('openITCOCKPIT')
             }
         };
 
-        var loadIconsets = function(){
+        var loadIconsets = function(selectedIconset){
             $http.get("/map_module/mapeditors_new/getIconsets.json", {
                 params: {
                     'angular': true
                 }
             }).then(function(result){
+                $scope.iconsets = [];
                 $scope.iconsets = result.data.iconsets;
+
+                if(typeof selectedIconset !== "undefined"){
+                    $scope.currentItem.iconset = selectedIconset;
+                }
             });
         };
 
