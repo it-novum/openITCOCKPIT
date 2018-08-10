@@ -70,8 +70,6 @@ $notification_settings = [
                                     <?php echo __('Hostname'); ?>
                                 </label>
                                 <div class="col col-xs-10 col-md-10 col-lg-10">
-
-
                                     {{ post.hostname }}
                                 </div>
                             </div>

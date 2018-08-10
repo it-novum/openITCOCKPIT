@@ -67,8 +67,6 @@ angular.module('openITCOCKPIT')
                 }
             }).then(function(result){
                 $scope.hosttemplates = result.data.hosttemplates;
-                $scope.contacts = result.data.contacts;
-                $scope.contactgroups = result.data.contactgroups;
             });
         };
 

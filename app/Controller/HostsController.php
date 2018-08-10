@@ -3603,8 +3603,46 @@ class HostsController extends AppController {
     public function addwizardservices($hostId = null) {
         $this->layout = 'angularjs';
 
-        $this->set('hostId', $hostId);
-        $this->set('_serialize', ['hostId']);
+
+
+        if ($this->request->is('post') || $this->request->is('put')) {
+            $services = [
+
+            ];
+
+
+            if ($this->Host->saveAll($this->request->data)) {
+
+               /* $changelog_data = $this->Changelog->parseDataForChangelog(
+                    $this->params['action'],
+                    $this->params['controller'],
+                    $this->Host->id,
+                    OBJECT_HOST,
+                    $this->request->data('Host.container_id'),
+                    $userId,
+                    $this->request->data['Host']['name'],
+                    array_merge($this->request->data, $ext_data_for_changelog)
+                );
+                if ($changelog_data) {
+                    CakeLog::write('log', serialize($changelog_data));
+                }
+*/
+                if ($this->request->ext === 'json') {
+                    $this->serializeId();
+                    return;
+                }
+            } else {
+                if ($this->request->ext === 'json') {
+
+                    $this->serializeErrorMessage();
+                    return;
+                }
+                $this->serializeErrorMessage();
+                return;
+                //$this->setFlash(__('Data could not be saved'), false);
+            }
+        }
+
     }
 
     public function loadWizardServiceData($hostId){

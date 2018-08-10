@@ -153,44 +153,6 @@ $notification_settings = [
                                     </div>
                                 </div>
                             </div>
-                            <div class="form-group required" ng-class="{'has-error': errors.Contact}">
-                                <label class="col-xs-1 col-md-1 col-lg-1 control-label">
-                                    <?php echo __('Contacts'); ?>
-                                </label>
-                                <div class="col col-xs-10 col-md-10 col-lg-10">
-                                    <select
-                                            id="Contact"
-                                            data-placeholder="<?php echo __('Please choose'); ?>"
-                                            class="form-control"
-                                            chosen="contacts"
-                                            ng-options="contact.key as contact.value for contact in contacts"
-                                            ng-model="post.Host.Contact"
-                                            multiple>
-                                    </select>
-                                    <div ng-repeat="error in errors.Contact">
-                                        <div class="help-block text-danger">{{ error }}</div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="form-group required" ng-class="{'has-error': errors.Contactgroup}">
-                                <label class="col-xs-1 col-md-1 col-lg-1 control-label">
-                                    <?php echo __('Contactgroups'); ?>
-                                </label>
-                                <div class="col col-xs-10 col-md-10 col-lg-10">
-                                    <select
-                                            id="Contactgroup"
-                                            data-placeholder="<?php echo __('Please choose'); ?>"
-                                            class="form-control"
-                                            chosen="contactgroups"
-                                            ng-options="contactgroup.key as contactgroup.value for contactgroup in contactgroups"
-                                            ng-model="post.Host.Contactgroup"
-                                            multiple>
-                                    </select>
-                                    <div ng-repeat="error in errors.Contactgroup">
-                                        <div class="help-block text-danger">{{ error }}</div>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
                     </div> <!-- close col -->
                     <div class="col-xs-12 margin-top-10">
