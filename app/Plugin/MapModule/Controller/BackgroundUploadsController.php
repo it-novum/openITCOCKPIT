@@ -411,7 +411,7 @@ class BackgroundUploadsController extends MapModuleAppController {
 
                 //Copy new icons into iconsets directory
                 $destinationDirectory = $iconsetImgDirectory . DS . $iconsetName;
-                if(is_dir($destinationDirectory)){
+                if (is_dir($destinationDirectory)) {
                     throw new Exception(sprintf(
                         'Iconset "%s" already exists',
                         $iconsetName
@@ -436,8 +436,8 @@ class BackgroundUploadsController extends MapModuleAppController {
                 $fs->remove($unzipDirectory);
 
                 $response = [
-                    'success'  => true,
-                    'message'  => __('File uploaded successfully'),
+                    'success'     => true,
+                    'message'     => __('File uploaded successfully'),
                     'iconsetname' => $iconsetName
                 ];
             } catch (Exception $e) {
@@ -455,172 +455,4 @@ class BackgroundUploadsController extends MapModuleAppController {
         $this->set('response', $response);
         $this->set('_serialize', ['response']);
     }
-
-    /**
-     * @todo REMOVE ME!
-     */
-    public function uploadIconsSet() {
-        $this->autoRender = false;
-        if (empty($_FILES)) {
-            throw new ForbiddenException(__('There is no file to store'));
-        }
-
-        $itemsImgDirectory = APP . 'Plugin' . DS . 'MapModule' . DS . 'webroot' . DS . 'img' . DS . 'items';
-        $tempZipsDirectory = APP . 'Plugin' . DS . 'MapModule' . DS . 'webroot' . DS . 'img' . DS . 'temp';
-
-        //check if upload folder exist
-        if (!is_dir($itemsImgDirectory)) {
-            mkdir($itemsImgDirectory);
-            chmod($itemsImgDirectory, 0777);
-        }
-        if (!is_dir($tempZipsDirectory)) {
-            mkdir($tempZipsDirectory);
-            chmod($tempZipsDirectory, 0777);
-        }
-
-        $fileExtension = pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION);
-        $uploadFilename = str_replace('.' . $fileExtension, '', pathinfo($_FILES['file']['name'], PATHINFO_BASENAME));
-        $saveFilename = preg_replace("/[^a-zA-Z0-9]+/", "", $uploadFilename);
-
-        $zipTempFolder = new Folder($tempZipsDirectory);
-        $fullZipTempPath = $zipTempFolder->path . DS . $saveFilename . '.zip';
-        $fullFolderTempPath = $zipTempFolder->path . DS . $saveFilename;
-
-        try {
-            if ($fileExtension !== 'zip') {
-                throw new Exception(__('Only zip files are accepted'));
-            }
-
-            if ($_FILES['file']['error'] === 1) {
-                throw new Exception('The uploaded file exceeds the upload_max_filesize directive in php.ini');
-            }
-
-            if (is_dir($itemsImgDirectory . DS . $saveFilename)) {
-                throw new Exception(__('Icons set already exists'), 13);
-            }
-
-            mkdir($fullFolderTempPath);
-            chmod($fullFolderTempPath, 0777);
-
-            if (!move_uploaded_file($_FILES['file']['tmp_name'], $fullZipTempPath)) {
-                throw new Exception(__('Cannot upload zip'));
-            }
-
-            $myZip = new ZipArchive;
-            $openZip = $myZip->open($fullZipTempPath);
-            if (!$openZip) {
-                throw new Exception(__('Cannot unzip file'));
-            }
-            $myZip->extractTo($fullFolderTempPath);
-            $myZip->close();
-
-            $iconsNames = $this->MapUpload->getIconsNames();
-            $iconsDir = $this->getIconsSubDirectory($fullFolderTempPath, $iconsNames);
-
-            if (is_null($iconsDir)) {
-                throw new Exception(__('Please check the zip file. It must contain all icons: ' . implode(', ', $iconsNames)));
-            }
-
-            mkdir($itemsImgDirectory . DS . $saveFilename);
-            foreach (scandir($iconsDir) as $object) {
-                if ($object != "." && $object != ".." && in_array($object, $iconsNames))
-                    copy($iconsDir . DS . $object, $itemsImgDirectory . DS . $saveFilename . DS . $object);
-            }
-
-            $this->MapUpload->save([
-                'upload_type'  => MapUpload::TYPE_ICON_SET,
-                'upload_name'  => $uploadFilename,
-                'saved_name'   => $saveFilename,
-                'user_id'      => $this->Auth->user('id'),
-                'container_id' => '1',
-            ]);
-            echo 'Upload successful';
-        } catch (Exception $e) {
-            if (is_dir($itemsImgDirectory . DS . $saveFilename) && $e->getCode() !== 13) {
-                $this->removeDirectory($itemsImgDirectory . DS . $saveFilename);
-            }
-            throw new ForbiddenException($uploadFilename . '.' . $fileExtension . ': ' . $e->getMessage());
-
-        } finally {
-            if (is_file($fullZipTempPath)) {
-                unlink($fullZipTempPath);
-            }
-            if (is_dir($fullFolderTempPath)) {
-                $this->removeDirectory($fullFolderTempPath);
-            }
-        }
-
-
-    }
-
-    /**
-     * @todo REMOVE ME!
-     */
-    private function getIconsSubDirectory($startDir, $iconsNames) {
-        $this->autoRender = false;
-
-        $iconDir = null;
-        foreach (scandir($startDir) as $object) {
-            if ($object != "." && $object != "..") {
-                if (is_dir($startDir . DS . $object)) {
-                    $iconDir = $this->getIconsSubDirectory($startDir . DS . $object, $iconsNames);
-                    if (!is_null($iconDir))
-                        return $iconDir;
-                } else if (($keyO = array_search($object, $iconsNames)) !== false) {
-                    unset($iconsNames[$keyO]);
-                }
-            }
-        }
-
-        if (empty($iconsNames)) { // array contains the rest of icons we didn't find
-            return $startDir;
-        }
-
-        return $iconDir;
-    }
-
-    /**
-     * @todo REMOVE ME!
-     */
-    private function removeDirectory($dir) {
-        $this->autoRender = false;
-
-        foreach (scandir($dir) as $object) {
-            if ($object != "." && $object != "..") {
-                if (is_dir($dir . "/" . $object))
-                    $this->removeDirectory($dir . "/" . $object);
-                else
-                    unlink($dir . "/" . $object);
-            }
-        }
-        rmdir($dir);
-    }
-
-    /**
-     * @todo REMOVE ME!
-     */
-    public function deleteIconsSet($setId) {
-        $this->autoRender = false;
-
-        $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
-        $mapUpload = $this->MapUpload->find('first', [
-            'conditions' => [
-                'MapUpload.id'           => $setId,
-                'MapUpload.container_id' => $containerIds,
-            ],
-        ]);
-        if (empty($mapUpload)) {
-            return false;
-        }
-        $iconSetName = $mapUpload['MapUpload']['saved_name'];
-        if (!$this->MapUpload->delete($setId)) {
-            return false;
-        }
-        $itemsImgDirectory = APP . 'Plugin' . DS . 'MapModule' . DS . 'webroot' . DS . 'img' . DS . 'items' . DS . $iconSetName;
-
-        if (is_dir($itemsImgDirectory)) {
-            $this->removeDirectory($itemsImgDirectory);
-        }
-    }
-
 }

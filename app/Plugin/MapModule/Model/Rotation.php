@@ -23,15 +23,14 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class Rotation extends MapModuleAppModel
-{
+class Rotation extends MapModuleAppModel {
     public $hasAndBelongsToMany = [
         'Container' => [
             'className' => 'Container',
             'joinTable' => 'rotations_to_containers',
             'dependent' => true,
         ],
-        'Map' => [
+        'Map'       => [
             'className' => 'MapModule.Map',
             'joinTable' => 'maps_to_rotations',
             'unique'    => true,
@@ -43,18 +42,18 @@ class Rotation extends MapModuleAppModel
             'rule'    => ['multiple', ['min' => 1]],
             'message' => 'Please select one or more containers',
         ],
-        'name'     => [
+        'name'         => [
             'notBlank' => [
                 'rule'     => 'notBlank',
                 'message'  => 'This field cannot be left blank.',
                 'required' => true,
             ],
         ],
-        'Map'      => [
+        'Map'          => [
             'rule'    => ['multiple', ['min' => 1]],
             'message' => 'Please select one or more Map',
         ],
-        'interval' => [
+        'interval'     => [
             'notBlank' => [
                 'rule'     => 'notBlank',
                 'message'  => 'This field cannot be left blank.',
@@ -76,8 +75,7 @@ class Rotation extends MapModuleAppModel
     /*
     Custom validation rule for map field
     */
-    public function atLeastOne($data)
-    {
+    public function atLeastOne($data) {
         return !empty($this->data[$this->name]['Map']);
     }
 }
