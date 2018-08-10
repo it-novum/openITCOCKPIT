@@ -72,6 +72,15 @@ class HostControllerRequest {
         return $containerIds;
     }
 
+    /**
+     * @return bool
+     */
+    public function hasLimit(){
+        if(isset($this->request->query['limit'])){
+            return true;
+        }
+        return false;
+    }
 
     /**
      * @param string $sort
