@@ -107,7 +107,8 @@
                 <map-text item="textItem"></map-text>
             </div>
 
-            <div ng-repeat="lineItem in map.Mapline" ng-dblclick="editLine(lineItem)">
+            <div ng-repeat="lineItem in map.Mapline" ng-dblclick="editLine(lineItem)"
+                 style="position: absolute; top: {{lineItem.startY}}px; left: {{lineItem.startX}}px; cursor: move;" class="draggable">
                 <map-line item="lineItem" refresh-interval="0"></map-line>
             </div>
 

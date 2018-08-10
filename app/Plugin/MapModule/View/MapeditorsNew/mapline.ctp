@@ -26,7 +26,7 @@
 
 <div class="text-center" ng-if="allowView">
     <div
-            style="height: 5px; width: {{width}}px;position: absolute; top: {{top}}px; left: {{left}}px; transform: rotate({{arctan}}deg); z-index: {{z_index}}; transform-origin: {{origin}};"
+            style="height: 5px; width: {{width}}px;transform: rotate({{arctan}}deg); z-index: {{z_index}}; transform-origin: {{origin}};"
             class="{{background}}">
         <span ng-show="item.show_label"> {{lable}} </span>
     </div>
