@@ -51,6 +51,7 @@ use itnovum\openITCOCKPIT\Core\Views\HostPerfdataChecker;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
 use itnovum\openITCOCKPIT\Database\ScrollIndex;
 use itnovum\openITCOCKPIT\Filter\HostFilter;
+use itnovum\openITCOCKPIT\Filter\ServicetemplateFilter;
 use \itnovum\openITCOCKPIT\Monitoring\QueryHandler;
 use itnovum\openITCOCKPIT\Core\HostSharingPermissions;
 
@@ -3592,12 +3593,62 @@ class HostsController extends AppController {
                 return;
                 //$this->setFlash(__('Data could not be saved'), false);
             }
-
         }
     }
 
     public function addwizardoptional($id = null) {
         $this->layout = 'angularjs';
+    }
+
+    public function addwizardservices($hostId = null) {
+        $this->layout = 'angularjs';
+
+        $this->set('hostId', $hostId);
+        $this->set('_serialize', ['hostId']);
+    }
+
+    public function loadWizardServiceData($hostId){
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+        $data = [];
+        $hostInfo = $this->Host->find('first', [
+            'recursive' => -1,
+            'conditions' => [
+                'Host.id' => $hostId
+            ],
+            'fields' => [
+                'Host.name',
+                'Host.container_id'
+            ]
+        ]);
+
+        if(!empty($hostInfo)){
+
+            $hostContainerId = $hostInfo['Host']['container_id'];
+
+            if(!empty($hostContainerId)){
+                $this->Servicetemplate = ClassRegistry::init('Servicetemplate');
+                $servicetemplate = $this->Servicetemplate->find('first', [
+                    'recursive' => -1,
+                    'condtions' => [
+                       // 'Servicetemplate.container_id' => $hostContainerId,
+                        'Servicetemplate.name' => 'Ping'
+                    ],
+                    'fields' => [
+                        'Servicetemplate.id',
+                        'Servicetemplate.name'
+                    ]
+                ]);
+                $data = [
+                    'hostname' => $hostInfo['Host']['name'],
+                    'servicetemplateId' => $servicetemplate['Servicetemplate']['id'],
+                    'servicetemplateName' => $servicetemplate['Servicetemplate']['name']
+                ];
+            }
+        }
+        $this->set('data', $data);
+        $this->set('_serialize', ['data']);
     }
 
     public function loadContainers() {

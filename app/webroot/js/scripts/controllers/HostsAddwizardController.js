@@ -25,7 +25,7 @@ angular.module('openITCOCKPIT')
                 command_id: 0,
                 host_type: 1,
                 uuid: ''
-            },
+            }
         };
 
         $scope.selectedContainer = 0;
@@ -131,7 +131,7 @@ angular.module('openITCOCKPIT')
                 $scope.post
             ).then(function(result){
                 console.log('Data saved successfully');
-                window.location.href = '/hosts/addwizardoptional/';
+                window.location.href = '/hosts/addwizardservices/';
             }, function errorCallback(result){
                 console.info('save failed');
                 if(result.data.hasOwnProperty('error')){
