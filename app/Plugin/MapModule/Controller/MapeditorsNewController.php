@@ -2118,7 +2118,20 @@ class MapeditorsNewController extends MapModuleAppController {
         }
         $this->serializeErrorMessageFromModel('Map');
         return;
+    }
 
+    /**
+     * @todo Add to ACL depandencies
+     */
+    public function getIcons() {
+        if (!$this->isApiRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        $icons = $this->MapUpload->getIcons();
+
+        $this->set('icons', $icons);
+        $this->set('_serialize', ['icons']);
     }
 
 }

@@ -237,4 +237,84 @@ class MapUpload extends MapModuleAppModel {
         return array_values($availableIconsets);
     }
 
+    public function getIcons() {
+        $basePath = APP . 'Plugin' . DS . 'MapModule' . DS . 'webroot' . DS . 'img' . DS . 'icons';
+        if (!is_dir($basePath)) {
+            return [];
+        }
+
+        $finder = new Finder();
+        $finder->files()->in($basePath);
+        $icons = [];
+
+        /** @var \Symfony\Component\Finder\SplFileInfo $file */
+        foreach ($finder as $file) {
+            if (in_array($file->getExtension(), $this->supportedFileExtensions, true)) {
+                $icons[] = $file->getFilename();
+            }
+        }
+        return $icons;
+    }
+
+    public function getUploadResponse($error) {
+        switch ($error) {
+            case UPLOAD_ERR_OK:
+                $response = [
+                    'success' => true,
+                    'message' => __('File uploaded successfully')
+                ];
+                break;
+
+            case UPLOAD_ERR_INI_SIZE:
+                $response = [
+                    'success' => false,
+                    'message' => __('The uploaded file exceeds the upload_max_filesize directive in php.ini')
+                ];
+                break;
+
+            case UPLOAD_ERR_FORM_SIZE:
+                $response = [
+                    'success' => false,
+                    'message' => __('The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form')
+                ];
+                break;
+
+            case UPLOAD_ERR_PARTIAL:
+                $response = [
+                    'success' => false,
+                    'message' => __('The uploaded file was only partially uploaded')
+                ];
+                break;
+
+            case UPLOAD_ERR_NO_FILE:
+                $response = [
+                    'success' => false,
+                    'message' => __('No file was uploaded')
+                ];
+                break;
+
+            case UPLOAD_ERR_NO_TMP_DIR:
+                $response = [
+                    'success' => false,
+                    'message' => __('Missing a temporary folder.')
+                ];
+                break;
+
+            case UPLOAD_ERR_CANT_WRITE:
+                $response = [
+                    'success' => false,
+                    'message' => __('Failed to write file to disk.')
+                ];
+                break;
+
+            case UPLOAD_ERR_EXTENSION:
+                $response = [
+                    'success' => false,
+                    'message' => __('A PHP extension stopped the file upload.')
+                ];
+                break;
+        }
+        return $response;
+    }
+
 }

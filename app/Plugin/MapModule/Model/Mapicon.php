@@ -52,7 +52,7 @@ class Mapicon extends MapModuleAppModel {
         'icon'    => [
             'notBlank' => [
                 'rule'     => 'notBlank',
-                'message'  => 'Please enter a text',
+                'message'  => 'Please select an icon',
                 'required' => true,
             ]
         ],

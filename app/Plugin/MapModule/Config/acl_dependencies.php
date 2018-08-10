@@ -30,6 +30,8 @@ $config = [
             'BackgroundUploads' => [
                 'upload',
                 'createThumbnailsFromBackgrounds',
+                'icon',
+                'deleteIcon'
             ],
             'Mapeditors'        => [
                 'hostUuidFromServiceUuid',

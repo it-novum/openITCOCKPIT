@@ -113,7 +113,8 @@
 
             <div ng-repeat="iconItem in map.Mapicon"
                  style="position:absolute; top: {{iconItem.y}}px; left: {{iconItem.x}}px;  z-index: {{iconItem.z_index}}; cursor: move;"
-                 class="draggable">
+                 class="draggable"
+                 data-id="{{iconItem.id}}" data-type="icon" ng-dblclick="editIcon(iconItem)">
                 <map-icon item="iconItem"></map-icon>
             </div>
 
@@ -877,7 +878,7 @@
                         </div>
                     </div>
 
-                    <div class="col-xs-12">
+                    <div class="col-xs-12 padding-top-10">
                         <?php echo __('Upload new background image'); ?>
                     </div>
                     <div class="col-xs-12 text-info">
@@ -1269,31 +1270,99 @@
                 <div class="row">
                     <div class="col-xs-12">
                         <div class="form-group smart-form hintmark_red">
-                            <?php echo __('Select iconset'); ?>
+                            <?php echo __('Select icon'); ?>
                         </div>
                     </div>
-                    <div class="col-xs-12" ng-if="iconsets">
+                    <div class="col-xs-12" ng-if="icons">
                         <div class="row" style="max-height: 200px; overflow: auto;"
-                             ng-class="{'has-error-border': errors.iconset}">
-                            <div class="col-xs-12 col-md-6 col-lg-3" ng-repeat="iconset in iconsets">
+                             ng-class="{'has-error-border': errors.icon}">
+                            <div class="col-xs-12 col-md-6 col-lg-3" ng-repeat="icon in icons">
                                 <div class="thumbnail"
-                                     style="height: 175px; width: 175px;display: flex; align-items: center; overflow: hidden;"
-                                     ng-click="setCurrentIconset(iconset.MapUpload.saved_name)"
-                                     ng-class="{ 'selectedMapItem': iconset.MapUpload.saved_name === currentItem.iconset }">
+                                     style="height: 155px; width: 175px;display: flex; align-items: center; overflow: hidden;"
+                                     ng-click="currentItem.icon = icon"
+                                     ng-class="{ 'selectedMapItem': currentItem.icon === icon}">
+                                    <button class="btn btn-xs btn-danger"
+                                            style="position: absolute; top: 11px; left: 158px;"
+                                            ng-click="deleteIconImage(icon)">
+                                        <i class="fa fa-trash-o"></i>
+                                    </button>
                                     <img class="image_picker_selector"
-                                         ng-src="/map_module/img/items/{{iconset.MapUpload.saved_name}}/ok.png">
+                                         ng-src="/map_module/img/icons/{{icon}}">
                                 </div>
                             </div>
                         </div>
-                        <div ng-repeat="error in errors.iconset" class="row">
+                        <div ng-repeat="error in errors.icon" class="row">
                             <div class="col-xs-12">
                                 <div class="help-block text-danger" style="color: #a94442;">{{ error }}</div>
                             </div>
                         </div>
                     </div>
+                    <br />
 
-                    <div class="col-xs-12">
-                        <?php echo __('Upload new background image'); ?>
+                    <div class="row">
+                        <div class="col-xs-12 col-lg-6 smart-form">
+                            <div class="form-group smart-form" ng-class="{'has-error': errors.x}">
+                                <label class="label hintmark_red"><?php echo __('Position X'); ?></label>
+                                <label class="input"> <b class="icon-prepend">X</b>
+                                    <input type="number" min="0" class="input-sm"
+                                           placeholder="<?php echo __('0'); ?>"
+                                           ng-model="currentItem.x">
+                                </label>
+                                <div ng-repeat="error in errors.x">
+                                    <div class="help-block text-danger">{{ error }}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-lg-6 smart-form" ng-class="{'has-error': errors.y}">
+                            <div class="form-group smart-form">
+                                <label class="label hintmark_red"><?php echo __('Position Y'); ?></label>
+                                <label class="input"> <b class="icon-prepend">Y</b>
+                                    <input type="number" min="0" class="input-sm"
+                                           placeholder="<?php echo __('0'); ?>"
+                                           ng-model="currentItem.y">
+                                </label>
+                            </div>
+                            <div ng-repeat="error in errors.y">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <br/>
+
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <div class="form-group smart-form hintmark_red">
+                                <?php echo __('Select layer'); ?>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-md-6 col-lg-10">
+                            <div class="form-group required" ng-class="{'has-error': errors.z_index}">
+                                <select
+                                        id="selectItemLayerSelect"
+                                        data-placeholder="<?php echo __('Please choose'); ?>"
+                                        class="form-control"
+                                        chosen="layers"
+                                        ng-options="key as layerNo for (key , layerNo) in layers"
+                                        ng-model="currentItem.z_index">
+                                </select>
+                                <div ng-repeat="error in errors.z_index">
+                                    <div class="help-block text-danger">{{ error }}</div>
+                                </div>
+                                <span class="help-block">
+                                <?php echo __('Layers could be used to stack items on a map. Empty layers will be deleted automatically.'); ?>
+                            </span>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-md-6 col-lg-2">
+                            <button class="btn btn-block btn-default" ng-click="addNewLayer()">
+                                <?php echo __('Add new layer'); ?>
+                            </button>
+                        </div>
+                    </div>
+                    <br/>
+
+                    <div class="col-xs-12 padding-top-10">
+                        <?php echo __('Upload new icon'); ?>
                     </div>
                     <div class="col-xs-12 text-info">
                         <i class="fa fa-info-circle"></i>
@@ -1301,8 +1370,8 @@
                         {{ maxUploadLimit.string }}
                     </div>
                     <div class="col-xs-12">
-                        <div class="background-dropzone dropzone"
-                             action="/map_module/backgroundUploads/upload/.json">
+                        <div class="icon-dropzone dropzone"
+                             action="/map_module/backgroundUploads/icon/.json">
                         </div>
                     </div>
                 </div>
@@ -1311,8 +1380,16 @@
             </div>
 
             <div class="modal-footer">
+                <button type="button" class="btn btn-danger pull-left" ng-click="deleteIcon()">
+                    <?php echo __('Delete'); ?>
+                </button>
+
                 <button type="button" class="btn btn-default" data-dismiss="modal">
                     <?php echo __('Close'); ?>
+                </button>
+
+                <button type="button" class="btn btn-primary" ng-click="saveIcon()">
+                    <?php echo __('Save'); ?>
                 </button>
             </div>
         </div>

@@ -23,6 +23,9 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+/**
+ * @todo REMOVE ME!
+ */
 class Background extends MapModuleAppModel
 {
     public $useTable = false;

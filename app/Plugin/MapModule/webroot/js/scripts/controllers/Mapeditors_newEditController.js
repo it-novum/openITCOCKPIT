@@ -142,6 +142,63 @@ angular.module('openITCOCKPIT')
                     }
                 }
             });
+
+            $('.icon-dropzone').dropzone({
+                method: 'post',
+                maxFilesize: $scope.maxUploadLimit.value, //MB
+                acceptedFiles: 'image/*', //mimetypes
+                paramName: "file",
+                success: function(obj){
+                    var $previewElement = $(obj.previewElement);
+
+                    var response = JSON.parse(obj.xhr.response);
+                    if(response.response.success){
+                        $previewElement.removeClass('dz-processing');
+                        $previewElement.addClass('dz-success');
+
+                        new Noty({
+                            theme: 'metroui',
+                            type: 'success',
+                            text: response.response.message,
+                            timeout: 3500
+                        }).show();
+
+                        loadIcons(response.response.filename);
+                        return;
+                    }
+
+                    $previewElement.removeClass('dz-processing');
+                    $previewElement.addClass('dz-error');
+                    new Noty({
+                        theme: 'metroui',
+                        type: 'error',
+                        text: response.response.message,
+                        timeout: 3500
+                    }).show();
+                },
+                error: function(obj, errorMessage, xhr){
+                    var $previewElement = $(obj.previewElement);
+                    $previewElement.removeClass('dz-processing');
+                    $previewElement.addClass('dz-error');
+
+                    if(typeof xhr === "undefined"){
+                        new Noty({
+                            theme: 'metroui',
+                            type: 'error',
+                            text: errorMessage,
+                            timeout: 3500
+                        }).show();
+                    }else{
+                        var response = JSON.parse(obj.xhr.response);
+                        new Noty({
+                            theme: 'metroui',
+                            type: 'error',
+                            text: response.response.message,
+                            timeout: 3500
+                        }).show();
+                    }
+                }
+            });
         };
 
         $scope.deleteBackground = function(background){
@@ -200,6 +257,20 @@ angular.module('openITCOCKPIT')
                 }
             }).then(function(result){
                 $scope.iconsets = result.data.iconsets;
+            });
+        };
+
+        var loadIcons = function(selectedIcon){
+            $http.get("/map_module/mapeditors_new/getIcons.json", {
+                params: {
+                    'angular': true
+                }
+            }).then(function(result){
+                $scope.icons = result.data.icons;
+
+                if(typeof selectedIcon !== "undefined"){
+                    $scope.currentItem.icon = selectedIcon;
+                }
             });
         };
 
@@ -311,6 +382,24 @@ angular.module('openITCOCKPIT')
                     $scope.action = null;
                     break;
 
+                case 'icon':
+                    $mapEditor.css('cursor', 'default');
+                    $scope.addNewObject = false;
+
+                    $('#AddEditStatelessIconModal').modal('show');
+
+                    // Create currentItem skeleton
+                    // Set X and Y poss of the new object
+                    $scope.currentItem = {
+                        z_index: '0', //Yes we need this as a string!
+                        x: $event.offsetX,
+                        y: $event.offsetY
+
+                    };
+
+                    $scope.action = null;
+                    break;
+
                 default:
                     new Noty({
                         theme: 'metroui',
@@ -318,6 +407,8 @@ angular.module('openITCOCKPIT')
                         text: 'Unknown action - sorry :(',
                         timeout: 3500
                     }).show();
+                    $scope.action = null;
+                    $scope.addNewObject = false;
                     break;
             }
         };
@@ -787,6 +878,38 @@ angular.module('openITCOCKPIT')
             });
         };
 
+        $scope.deleteIconImage = function(filename){
+            $http.post("/map_module/BackgroundUploads/deleteIcon.json?angular=true",
+                {
+                    'filename': filename
+                }
+            ).then(function(result){
+                loadIcons();
+                new Noty({
+                    theme: 'metroui',
+                    type: 'success',
+                    text: result.data.response.message,
+                    timeout: 3500
+                }).show();
+            }, function errorCallback(result){
+                var text = '';
+                if(result.data.hasOwnProperty('message')){
+                    text = result.data.message;
+                }
+
+                if(result.data.hasOwnProperty('response')){
+                    text = result.data.response.message;
+                }
+
+                new Noty({
+                    theme: 'metroui',
+                    type: 'error',
+                    text: text,
+                    timeout: 3500
+                }).show();
+            });
+        };
+
         var loadMetrics = function(){
             $http.get("/map_module/mapeditors_new/getPerformanceDataMetrics/" + $scope.currentItem.object_id + ".json", {
                 params: {
@@ -1008,8 +1131,17 @@ angular.module('openITCOCKPIT')
                             $scope.saveText('dragstop');
                             break;
 
+                        case 'icon':
+                            $scope.currentItem = {
+                                id: id,
+                                x: x,
+                                y: y
+                            };
+                            $scope.saveIcon('dragstop');
+                            break;
+
                         default:
-                            console.log('Unknown map type');
+                            console.log('Unknown map object type');
                             genericError();
                     }
                 }
@@ -1055,6 +1187,7 @@ angular.module('openITCOCKPIT')
 
         $scope.load();
         loadIconsets();
+        loadIcons();
 
         $('#mapToolbar').draggable({
             handle: "#mapToolsDragger",

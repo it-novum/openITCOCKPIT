@@ -30,15 +30,16 @@ App::uses('UUID', 'Lib');
 /**
  * Class BackgroundUploadsController
  * @property MapUpload $MapUpload
+ * @property Mapicon $Mapicon
  */
 class BackgroundUploadsController extends MapModuleAppController {
 
     public $layout = 'Admin.default';
     public $uses = [
         'MapModule.MapUpload',
+        'MapModule.Mapicon',
     ];
 
-    //prevent asking for a view
 
     public function upload() {
         if (empty($_FILES)) {
@@ -51,109 +52,169 @@ class BackgroundUploadsController extends MapModuleAppController {
             return;
         }
 
-        switch ($_FILES['file']['error']) {
-            case UPLOAD_ERR_OK:
-                $backgroundImgDirectory = APP . 'Plugin' . DS . 'MapModule' . DS . 'webroot' . DS . 'img' . DS . 'backgrounds';
-                $backgroundFolder = new Folder($backgroundImgDirectory);
-                $fileExtension = pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION);
+        $response = $this->MapUpload->getUploadResponse($_FILES['file']['error']);
+        if ($_FILES['file']['error'] === UPLOAD_ERR_OK) {
+            $backgroundImgDirectory = APP . 'Plugin' . DS . 'MapModule' . DS . 'webroot' . DS . 'img' . DS . 'backgrounds';
+            $backgroundFolder = new Folder($backgroundImgDirectory);
+            $fileExtension = pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION);
 
-                if (!$this->MapUpload->isFileExtensionSupported($fileExtension)) {
-                    $response = [
-                        'success' => false,
-                        'message' => __('File extension ".%s" not supported!', $fileExtension)
-                    ];
-                    break;
+            if (!$this->MapUpload->isFileExtensionSupported($fileExtension)) {
+                $response = [
+                    'success' => false,
+                    'message' => __('File extension ".%s" not supported!', $fileExtension)
+                ];
+                $this->set('response', $response);
+                $this->set('_serialize', ['response']);
+                return;
+            }
+
+            $uploadFilename = str_replace('.' . $fileExtension, '', pathinfo($_FILES['file']['name'], PATHINFO_BASENAME));
+            $saveFilename = UUID::v4();
+            $fullFilePath = $backgroundFolder->path . DS . $saveFilename . '.' . $fileExtension;
+            try {
+                //check if upload folder exist
+                if (!is_dir($backgroundImgDirectory)) {
+                    mkdir($backgroundImgDirectory);
                 }
 
-                $uploadFilename = str_replace('.' . $fileExtension, '', pathinfo($_FILES['file']['name'], PATHINFO_BASENAME));
-                $saveFilename = UUID::v4();
-                $fullFilePath = $backgroundFolder->path . DS . $saveFilename . '.' . $fileExtension;
-                try {
-                    //check if upload folder exist
-                    if (!is_dir($backgroundImgDirectory)) {
-                        mkdir($backgroundImgDirectory);
-                    }
-
-                    if (!move_uploaded_file($_FILES['file']['tmp_name'], $fullFilePath)) {
-                        throw new Exception(__('Cannot move uploaded file'));
-                    }
-
-                    $imageConfig = [
-                        'fullPath'      => $fullFilePath,
-                        'uuidFilename'  => $saveFilename,
-                        'fileExtension' => $fileExtension
-                    ];
-                    $this->MapUpload->createThumbnailsFromBackgrounds($imageConfig, $backgroundFolder);
-                    $this->MapUpload->save([
-                        'upload_type'  => MapUpload::TYPE_BACKGROUND,
-                        'upload_name'  => $uploadFilename . '.' . $fileExtension,
-                        'saved_name'   => $saveFilename . '.' . $fileExtension,
-                        'user_id'      => $this->Auth->user('id'),
-                        'container_id' => '1',
-                    ]);
-
-                    $response = [
-                        'success'  => true,
-                        'message'  => __('File uploaded successfully'),
-                        'filename' => $saveFilename . '.' . $fileExtension
-                    ];
-                } catch (Exception $e) {
-                    $response = [
-                        'success' => false,
-                        'message' => __('Upload failed: %s', $e->getMessage())
-                    ];
+                if (!move_uploaded_file($_FILES['file']['tmp_name'], $fullFilePath)) {
+                    throw new Exception(__('Cannot move uploaded file'));
                 }
 
-                break;
+                $imageConfig = [
+                    'fullPath'      => $fullFilePath,
+                    'uuidFilename'  => $saveFilename,
+                    'fileExtension' => $fileExtension
+                ];
+                $this->MapUpload->createThumbnailsFromBackgrounds($imageConfig, $backgroundFolder);
+                $this->MapUpload->save([
+                    'upload_type'  => MapUpload::TYPE_BACKGROUND,
+                    'upload_name'  => $uploadFilename . '.' . $fileExtension,
+                    'saved_name'   => $saveFilename . '.' . $fileExtension,
+                    'user_id'      => $this->Auth->user('id'),
+                    'container_id' => '1',
+                ]);
 
-            case UPLOAD_ERR_INI_SIZE:
+                $response = [
+                    'success'  => true,
+                    'message'  => __('File uploaded successfully'),
+                    'filename' => $saveFilename . '.' . $fileExtension
+                ];
+            } catch (Exception $e) {
                 $response = [
                     'success' => false,
-                    'message' => __('The uploaded file exceeds the upload_max_filesize directive in php.ini')
+                    'message' => __('Upload failed: %s', $e->getMessage())
                 ];
-                break;
+            }
+        }
 
-            case UPLOAD_ERR_FORM_SIZE:
+
+        $this->response->statusCode(200);
+        if (!$response['success']) {
+            $this->response->statusCode(500);
+        }
+        $this->set('response', $response);
+        $this->set('_serialize', ['response']);
+    }
+
+    public function delete() {
+        if (!$this->request->is('post')) {
+            throw new MethodNotAllowedException();
+        }
+
+        $filename = $this->request->data('filename');
+
+        $background = $this->MapUpload->find('first', [
+            'recursive'  => -1,
+            'conditions' => [
+                'MapUpload.saved_name'   => $filename,
+                'MapUpload.container_id' => $this->MY_RIGHTS,
+            ],
+        ]);
+        if (empty($background)) {
+            throw new NotFoundException();
+        }
+
+        if ($this->MapUpload->delete($background['MapUpload']['id'])) {
+            $backgroundImgDirectory = APP . 'Plugin' . DS . 'MapModule' . DS . 'webroot' . DS . 'img' . DS . 'backgrounds';
+
+            if (file_exists($backgroundImgDirectory . DS . $filename)) {
+                unlink($backgroundImgDirectory . DS . $filename);
+            }
+
+            if (file_exists($backgroundImgDirectory . DS . 'thumb' . DS . 'thumb_' . $filename)) {
+                unlink($backgroundImgDirectory . DS . 'thumb' . DS . 'thumb_' . $filename);
+            }
+
+            $response = [
+                'success' => true,
+                'message' => __('Background deleted successfully.')
+            ];
+            $this->set('response', $response);
+            $this->set('_serialize', ['response']);
+            return;
+        }
+
+        $this->response->statusCode(500);
+        $response = [
+            'success' => false,
+            'message' => __('Error while deleting background.')
+        ];
+        $this->set('response', $response);
+        $this->set('_serialize', ['response']);
+    }
+
+    public function icon() {
+        if (empty($_FILES)) {
+            $response = [
+                'success' => false,
+                'message' => __('There is no file to store')
+            ];
+            $this->set('response', $response);
+            $this->set('_serialize', ['response']);
+            return;
+        }
+
+        $response = $this->MapUpload->getUploadResponse($_FILES['file']['error']);
+        if ($_FILES['file']['error'] === UPLOAD_ERR_OK) {
+            $iconImgDirectory = APP . 'Plugin' . DS . 'MapModule' . DS . 'webroot' . DS . 'img' . DS . 'icons';
+
+            //$iconFolder = new Folder($iconImgDirectory);
+            $fileExtension = pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION);
+
+            if (!$this->MapUpload->isFileExtensionSupported($fileExtension)) {
                 $response = [
                     'success' => false,
-                    'message' => __('The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form')
+                    'message' => __('File extension ".%s" not supported!', $fileExtension)
                 ];
-                break;
+                $this->set('response', $response);
+                $this->set('_serialize', ['response']);
+                return;
+            }
 
-            case UPLOAD_ERR_PARTIAL:
+            $fileName = preg_replace('/[^a-zA-Z0-9\.]+/', '', $_FILES['file']['name']);
+
+            try {
+                //check if icon folder exist
+                if (!is_dir($iconImgDirectory)) {
+                    mkdir($iconImgDirectory);
+                }
+
+                if (!move_uploaded_file($_FILES['file']['tmp_name'], $iconImgDirectory . DS . $fileName)) {
+                    throw new Exception(__('Cannot move uploaded file'));
+                }
+
+                $response = [
+                    'success'  => true,
+                    'message'  => __('File uploaded successfully'),
+                    'filename' => $fileName
+                ];
+            } catch (Exception $e) {
                 $response = [
                     'success' => false,
-                    'message' => __('The uploaded file was only partially uploaded')
+                    'message' => __('Upload failed: %s', $e->getMessage())
                 ];
-                break;
-
-            case UPLOAD_ERR_NO_FILE:
-                $response = [
-                    'success' => false,
-                    'message' => __('No file was uploaded')
-                ];
-                break;
-
-            case UPLOAD_ERR_NO_TMP_DIR:
-                $response = [
-                    'success' => false,
-                    'message' => __('Missing a temporary folder.')
-                ];
-                break;
-
-            case UPLOAD_ERR_CANT_WRITE:
-                $response = [
-                    'success' => false,
-                    'message' => __('Failed to write file to disk.')
-                ];
-                break;
-
-            case UPLOAD_ERR_EXTENSION:
-                $response = [
-                    'success' => false,
-                    'message' => __('A PHP extension stopped the file upload.')
-                ];
-                break;
+            }
         }
 
         $this->response->statusCode(200);
@@ -164,6 +225,44 @@ class BackgroundUploadsController extends MapModuleAppController {
         $this->set('_serialize', ['response']);
     }
 
+    public function deleteIcon(){
+        $iconImgDirectory = APP . 'Plugin' . DS . 'MapModule' . DS . 'webroot' . DS . 'img' . DS . 'icons';
+        if (!$this->request->is('post')) {
+            throw new MethodNotAllowedException();
+        }
+
+        $filename = $this->request->data('filename');
+        $fullFilePath = $iconImgDirectory . DS . $filename;
+
+        if (!file_exists($fullFilePath) || is_dir($fullFilePath)) {
+            throw new NotFoundException();
+        }
+
+        unlink($fullFilePath);
+        if($this->Mapicon->deleteAll(['Mapicon.icon' => $filename])){
+            $response = [
+                'success' => true,
+                'message' => __('Icon deleted successfully.')
+            ];
+            $this->set('response', $response);
+            $this->set('_serialize', ['response']);
+            return;
+        }
+
+        $this->response->statusCode(500);
+        $response = [
+            'success' => false,
+            'message' => __('Error while deleting icon.')
+        ];
+        $this->set('response', $response);
+        $this->set('_serialize', ['response']);
+
+
+    }
+
+    /**
+     * @todo REMOVE ME!
+     */
     public function uploadIconsSet() {
         $this->autoRender = false;
         if (empty($_FILES)) {
@@ -258,6 +357,9 @@ class BackgroundUploadsController extends MapModuleAppController {
 
     }
 
+    /**
+     * @todo REMOVE ME!
+     */
     private function getIconsSubDirectory($startDir, $iconsNames) {
         $this->autoRender = false;
 
@@ -281,6 +383,9 @@ class BackgroundUploadsController extends MapModuleAppController {
         return $iconDir;
     }
 
+    /**
+     * @todo REMOVE ME!
+     */
     private function removeDirectory($dir) {
         $this->autoRender = false;
 
@@ -295,54 +400,9 @@ class BackgroundUploadsController extends MapModuleAppController {
         rmdir($dir);
     }
 
-
-    public function delete() {
-        if (!$this->request->is('post')) {
-            throw new MethodNotAllowedException();
-        }
-
-        $filename = $this->request->data('filename');
-
-        $background = $this->MapUpload->find('first', [
-            'recursive'  => -1,
-            'conditions' => [
-                'MapUpload.saved_name'   => $filename,
-                'MapUpload.container_id' => $this->MY_RIGHTS,
-            ],
-        ]);
-        if (empty($background)) {
-            throw new NotFoundException();
-        }
-
-        if ($this->MapUpload->delete($background['MapUpload']['id'])) {
-            $backgroundImgDirectory = APP . 'Plugin' . DS . 'MapModule' . DS . 'webroot' . DS . 'img' . DS . 'backgrounds';
-
-            if (file_exists($backgroundImgDirectory . DS . $filename)) {
-                unlink($backgroundImgDirectory . DS . $filename);
-            }
-
-            if (file_exists($backgroundImgDirectory . DS . 'thumb' . DS . 'thumb_' . $filename)) {
-                unlink($backgroundImgDirectory . DS . 'thumb' . DS . 'thumb_' . $filename);
-            }
-
-            $response = [
-                'success' => true,
-                'message' => __('Background deleted successfully.')
-            ];
-            $this->set('response', $response);
-            $this->set('_serialize', ['response']);
-            return;
-        }
-
-        $this->response->statusCode(500);
-        $response = [
-            'success' => false,
-            'message' => __('Error while deleting background.')
-        ];
-        $this->set('response', $response);
-        $this->set('_serialize', ['response']);
-    }
-
+    /**
+     * @todo REMOVE ME!
+     */
     public function deleteIconsSet($setId) {
         $this->autoRender = false;
 
