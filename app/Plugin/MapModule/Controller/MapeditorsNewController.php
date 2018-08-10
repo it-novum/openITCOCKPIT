@@ -41,6 +41,7 @@ use Symfony\Component\Finder\Finder;
  * @property Mapline $Mapline
  * @property Mapgadget $Mapgadget
  * @property Maptext $Maptext
+ * @property Mapicon $Mapicon
  * @property Mapsummaryitem $Mapsummaryite
  * @property Host $Host
  * @property Service $Service
@@ -59,6 +60,7 @@ class MapeditorsNewController extends MapModuleAppController {
         'MapModule.Mapline',
         'MapModule.Mapgadget',
         'MapModule.Maptext',
+        'MapModule.Mapicon',
         'MapModule.Mapsummaryitem',
         'Host',
         'Service',
@@ -140,6 +142,9 @@ class MapeditorsNewController extends MapModuleAppController {
 
     }
 
+    /**
+     * @todo Add to ACL depandencies (view/edit)
+     */
     public function mapitem() {
         if (!$this->isApiRequest()) {
             return;
@@ -524,6 +529,9 @@ class MapeditorsNewController extends MapModuleAppController {
         $this->set('_serialize', ['type', 'allowView', 'data']);
     }
 
+    /**
+     * @todo Add to ACL depandencies
+     */
     public function getDependendMaps($maps, $parentMapId) {
         $allRelatedMapIdsOfParent = [];
 
@@ -544,26 +552,42 @@ class MapeditorsNewController extends MapModuleAppController {
 
     }
 
+
+    /**
+     * @todo Add to ACL depandencies
+     */
     public function mapline() {
         //Only ship template
         return;
     }
 
+    /**
+     * @todo Add to ACL depandencies
+     */
     public function mapicon() {
         //Only ship template
         return;
     }
 
+    /**
+     * @todo Add to ACL depandencies
+     */
     public function maptext() {
         //Only ship template
         return;
     }
 
+    /**
+     * @todo Add to ACL depandencies
+     */
     public function perfdatatext() {
         //Only ship template
         return;
     }
 
+    /**
+     * @todo Add to ACL depandencies
+     */
     public function mapsummaryitem() {
         if (!$this->isApiRequest()) {
             return;
@@ -968,6 +992,9 @@ class MapeditorsNewController extends MapModuleAppController {
         $this->set('_serialize', ['type', 'allowView', 'data']);
     }
 
+    /**
+     * @todo Add to ACL depandencies
+     */
     public function graph() {
         if (!$this->isApiRequest()) {
             return;
@@ -1019,22 +1046,33 @@ class MapeditorsNewController extends MapModuleAppController {
         $this->set('_serialize', ['allowView', 'host', 'service']);
     }
 
+    /**
+     * @todo Add to ACL depandencies
+     */
     public function tacho() {
         //Only ship template
         return;
     }
 
+    /**
+     * @todo Add to ACL depandencies
+     */
     public function cylinder() {
         //Only ship template
         return;
     }
 
+    /**
+     * @todo Add to ACL depandencies
+     */
     public function trafficlight() {
         //Only ship template
         return;
     }
 
-
+    /**
+     * @todo Add to ACL depandencies
+     */
     public function mapsummary() {
         if (!$this->isApiRequest()) {
             return;
@@ -1516,6 +1554,9 @@ class MapeditorsNewController extends MapModuleAppController {
         $this->set('_serialize', ['map', 'maxUploadLimit', 'max_z_index', 'layers']);
     }
 
+    /**
+     * @todo Add to ACL depandencies
+     */
     public function backgroundImages() {
         if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();
@@ -1539,6 +1580,9 @@ class MapeditorsNewController extends MapModuleAppController {
         $this->set('_serialize', ['backgrounds']);
     }
 
+    /**
+     * @todo Add to ACL depandencies
+     */
     public function getIconsets() {
         if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();
@@ -1907,7 +1951,7 @@ class MapeditorsNewController extends MapModuleAppController {
             return;
         }
 
-        //Create new gadget or update existing one
+        //Create new text or update existing one
         if (!isset($this->request->data['Maptext']['id'])) {
             $this->Maptext->create();
         }
@@ -1948,6 +1992,90 @@ class MapeditorsNewController extends MapModuleAppController {
         }
 
         if ($this->Maptext->delete($id)) {
+            $this->set('success', true);
+            $this->set('_serialize', ['success']);
+            return;
+        }
+
+        $this->set('success', false);
+        $this->set('_serialize', ['success']);
+    }
+
+    /**
+     * @todo Add to ACL depandencies
+     */
+    public function saveIcon() {
+        if (!$this->request->is('post') || !$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        //Save new possition after drag and drop
+        if ($this->request->data('action') === 'dragstop') {
+            $mapicon = $this->Mapicon->find('first', [
+                'recursive'  => -1,
+                'conditions' => [
+                    'Mapicon.id' => $this->request->data('Mapicon.id')
+                ]
+            ]);
+
+            $mapicon['Mapicon']['x'] = (int)$this->request->data('Mapicon.x');
+            $mapicon['Mapicon']['y'] = (int)$this->request->data('Mapicon.y');
+
+            if ($this->Mapicon->save($mapicon)) {
+                $Mapicon = new \itnovum\openITCOCKPIT\Maps\ValueObjects\Mapicon($mapicon['Mapicon']);
+
+                $this->set('Mapicon', [
+                    'Mapicon' => $Mapicon->toArray()
+                ]);
+
+                $this->set('_serialize', ['Mapicon']);
+                return;
+            }
+            $this->serializeErrorMessageFromModel('Mapicon');
+            return;
+        }
+
+        //Create new icon or update existing one
+        if (!isset($this->request->data['Mapicon']['id'])) {
+            $this->Mapicon->create();
+        }
+
+        $icon = $this->request->data;
+
+        $icon['Mapicon']['x'] = (int)$this->request->data('Mapicon.x');
+        $icon['Mapicon']['y'] = (int)$this->request->data('Mapicon.y');
+        if ($this->Mapicon->save($icon)) {
+            $icon['Mapicon']['id'] = $this->Mapicon->id;
+            $Mapicon = new \itnovum\openITCOCKPIT\Maps\ValueObjects\Mapicon($icon['Mapicon']);
+            $this->set('Mapicon', [
+                'Mapicon' => $Mapicon->toArray()
+            ]);
+            $this->set('_serialize', ['Mapicon']);
+            return;
+        }
+        $this->serializeErrorMessageFromModel('Mapicon');
+    }
+
+    /**
+     * @todo Add to ACL depandencies
+     */
+    public function deleteIcon() {
+        if (!$this->request->is('post') || !$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        $id = $this->request->data('Mapicon.id');
+
+
+        if (!$this->Maptext->exists($id)) {
+            throw new NotFoundException();
+        }
+
+        if (!is_numeric($id)) {
+            throw new InvalidArgumentException('Mapicon.id needs to be numeric');
+        }
+
+        if ($this->Mapicon->delete($id)) {
             $this->set('success', true);
             $this->set('_serialize', ['success']);
             return;

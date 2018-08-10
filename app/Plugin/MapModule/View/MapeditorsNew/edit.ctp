@@ -171,8 +171,8 @@
                 <i class="fa fa-lg fa-font"></i>
             </div>
 
-            <div class="mapToolbarTool" title="<?php echo __('Add stateless icon'); ?>">
-                <i class="fa fa-lg fa-diamond"></i>
+            <div class="mapToolbarTool" title="<?php echo __('Add stateless icon'); ?>" ng-click="addIcon()">
+                <i class="fa fa-lg fa-object-ungroup"></i>
             </div>
 
         </div>
@@ -416,7 +416,7 @@
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
                 <h4 class="modal-title">
-                    <i class="fa fa-desktop"></i>
+                    <i class="fa fa-pencil"></i>
                     <?php echo __('Add or edit line'); ?>
                 </h4>
             </div>
@@ -612,8 +612,8 @@
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
                 <h4 class="modal-title">
-                    <i class="fa fa-desktop"></i>
-                    <?php echo __('Add or edit map gadget'); ?>
+                    <i class="fa fa-dashboard"></i>
+                    <?php echo __('Add or edit gadget'); ?>
                 </h4>
             </div>
             <div class="modal-body">
@@ -1253,4 +1253,69 @@
     </div>
 </div>
 
+
+<!-- Add/Edit stateless icon modal -->
+<div id="AddEditStatelessIconModal" class="modal" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">
+                    <i class="fa fa-object-ungroup"></i>
+                    <?php echo __('Add or edit stateless icon'); ?>
+                </h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="form-group smart-form hintmark_red">
+                            <?php echo __('Select iconset'); ?>
+                        </div>
+                    </div>
+                    <div class="col-xs-12" ng-if="iconsets">
+                        <div class="row" style="max-height: 200px; overflow: auto;"
+                             ng-class="{'has-error-border': errors.iconset}">
+                            <div class="col-xs-12 col-md-6 col-lg-3" ng-repeat="iconset in iconsets">
+                                <div class="thumbnail"
+                                     style="height: 175px; width: 175px;display: flex; align-items: center; overflow: hidden;"
+                                     ng-click="setCurrentIconset(iconset.MapUpload.saved_name)"
+                                     ng-class="{ 'selectedMapItem': iconset.MapUpload.saved_name === currentItem.iconset }">
+                                    <img class="image_picker_selector"
+                                         ng-src="/map_module/img/items/{{iconset.MapUpload.saved_name}}/ok.png">
+                                </div>
+                            </div>
+                        </div>
+                        <div ng-repeat="error in errors.iconset" class="row">
+                            <div class="col-xs-12">
+                                <div class="help-block text-danger" style="color: #a94442;">{{ error }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12">
+                        <?php echo __('Upload new background image'); ?>
+                    </div>
+                    <div class="col-xs-12 text-info">
+                        <i class="fa fa-info-circle"></i>
+                        <?php echo __('Max allowed file size: '); ?>
+                        {{ maxUploadLimit.string }}
+                    </div>
+                    <div class="col-xs-12">
+                        <div class="background-dropzone dropzone"
+                             action="/map_module/backgroundUploads/upload/.json">
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">
+                    <?php echo __('Close'); ?>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 

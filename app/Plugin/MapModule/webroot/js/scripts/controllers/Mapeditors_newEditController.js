@@ -701,6 +701,92 @@ angular.module('openITCOCKPIT')
             });
         };
 
+        $scope.addIcon = function(){
+            new Noty({
+                theme: 'metroui',
+                type: 'info',
+                layout: 'topCenter',
+                text: 'Click at the position on the map, where you want to create a new icon',
+                timeout: 3500
+            }).show();
+            $('#map-editor').css('cursor', 'crosshair');
+            $scope.addNewObject = true;
+            $scope.action = 'icon';
+        };
+
+        $scope.editIcon = function(item){
+            $scope.action = 'icon';
+            $scope.currentItem = item;
+            $('#AddEditStatelessIconModal').modal('show');
+        };
+
+        $scope.saveIcon = function(action){
+            if(typeof action === 'undefined'){
+                action = 'add_or_edit';
+            }
+
+            $scope.currentItem.map_id = $scope.id;
+
+            $http.post("/map_module/mapeditors_new/saveIcon.json?angular=true",
+                {
+                    'Mapicon': $scope.currentItem,
+                    'action': action
+                }
+            ).then(function(result){
+                $scope.errors = {};
+                //Update possition in current scope json data
+                if($scope.currentItem.hasOwnProperty('id')){
+                    for(var i in $scope.map.Maptext){
+                        if($scope.map.Mapicon[i].id == $scope.currentItem.id){
+                            $scope.map.Mapicon[i].x = $scope.currentItem.x;
+                            $scope.map.Mapicon[i].y = $scope.currentItem.y;
+
+                            //We are done here
+                            break;
+                        }
+                    }
+                }else{
+                    //New created item
+                    $scope.map.Mapicon.push(result.data.Mapicon.Mapicon);
+                    setTimeout(makeDraggable, 250);
+                }
+
+                $('#AddEditStatelessIconModal').modal('hide');
+                genericSuccess();
+            }, function errorCallback(result){
+                if(result.data.hasOwnProperty('error')){
+                    $scope.errors = result.data.error;
+                }
+                genericError();
+            });
+        };
+
+        $scope.deleteIcon = function(){
+            $scope.currentItem.map_id = $scope.id;
+            $http.post("/map_module/mapeditors_new/deleteIcon.json?angular=true",
+                {
+                    'Mapicon': $scope.currentItem,
+                    'action': 'delete'
+                }
+            ).then(function(result){
+                //Remove item from current scope
+                for(var i in $scope.map.Mapicon){
+                    if($scope.map.Mapicon[i].id == $scope.currentItem.id){
+                        $scope.map.Mapicon.splice(i, 1);
+
+                        //We are done here
+                        break;
+                    }
+                }
+
+                $('#AddEditStatelessIconModal').modal('hide');
+                genericSuccess();
+                $scope.currentItem = {};
+            }, function errorCallback(result){
+                genericError();
+            });
+        };
+
         var loadMetrics = function(){
             $http.get("/map_module/mapeditors_new/getPerformanceDataMetrics/" + $scope.currentItem.object_id + ".json", {
                 params: {
