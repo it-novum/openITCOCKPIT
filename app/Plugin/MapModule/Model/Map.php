@@ -72,24 +72,35 @@ class Map extends MapModuleAppModel {
     ];
 
     public $validate = [
-        'name'         => [
+        'name'             => [
             'notBlank' => [
                 'rule'     => 'notBlank',
                 'message'  => 'This field cannot be left blank.',
                 'required' => true,
             ],
         ],
-        'title'        => [
+        'title'            => [
             'notBlank' => [
                 'rule'     => 'notBlank',
                 'message'  => 'This field cannot be left blank.',
                 'required' => true,
             ],
         ],
-        'container_id' => [
+        'container_id'     => [
             'rule'    => ['multiple', ['min' => 1]],
             'message' => 'Please select one or more containers',
         ],
+        'refresh_interval' => [
+            'notBlank' => [
+                'rule'     => 'notBlank',
+                'message'  => 'This field cannot be left blank.',
+                'required' => true,
+            ],
+            'numeric'  => [
+                'rule'    => 'numeric',
+                'message' => 'This field needs to be numeric.',
+            ]
+        ]
     ];
 
 
