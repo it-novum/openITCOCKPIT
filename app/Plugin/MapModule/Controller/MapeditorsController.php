@@ -33,7 +33,7 @@ use Symfony\Component\Finder\Finder;
 
 
 /**
- * Class MapeditorsNewController
+ * Class MapeditorsController
  * @property Map $Map
  * @property Mapitem $Mapitem
  * @property MapUpload $MapUpload
