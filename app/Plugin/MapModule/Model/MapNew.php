@@ -1108,6 +1108,11 @@ class MapNew extends MapModuleAppModel {
                     ]
                 ],
                 'Mapsummaryitem' => [
+                    'conditions' => [
+                        'NOT' => [
+                            'Mapsummaryitem.type' => 'map'
+                        ]
+                    ],
                     'fields' => [
                         'Mapsummaryitem.type',
                         'Mapsummaryitem.object_id'
