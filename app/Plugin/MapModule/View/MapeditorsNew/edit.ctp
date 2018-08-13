@@ -138,6 +138,9 @@
                 <trafficlight-item item="gadgetItem"
                                    ng-if="gadgetItem.gadget === 'TrafficLight'"
                                    refresh-interval="0"></trafficlight-item>
+
+                <temperature-item item="gadgetItem"
+                                  ng-if="gadgetItem.gadget === 'Temperature'"></temperature-item>
             </div>
 
             <div ng-repeat="summaryItem in map.Mapsummaryitem"

@@ -1118,24 +1118,35 @@ angular.module('openITCOCKPIT')
          */
         $scope.loadMoreItemObjects = function(searchString){
             if(typeof $scope.currentItem.type !== "undefined"){
+
+                //Avoid duplicate search requests because of $scope.currentItem.object_id will be set to
+                //null if the search result will not contain the current selected object_id. If object_id is null
+                //the watchGroup will be triggerd. This will cause duplicate search requests and overwrite results
+                var objectId = undefined;
+                if(typeof $scope.currentItem.object_id !== 'undefined'){
+                    if($scope.currentItem.object_id !== null && $scope.currentItem.object_id > 0){
+                        objectId = $scope.currentItem.object_id;
+                    }
+                }
+
                 if($scope.currentItem.type === 'host'){
-                    loadHosts(searchString);
+                    loadHosts(searchString, objectId);
                 }
 
                 if($scope.currentItem.type === 'service'){
-                    loadServices(searchString);
+                    loadServices(searchString, objectId);
                 }
 
                 if($scope.currentItem.type === 'hostgroup'){
-                    loadHostgroups(searchString);
+                    loadHostgroups(searchString, objectId);
                 }
 
                 if($scope.currentItem.type === 'servicegroup'){
-                    loadServicegroups(searchString);
+                    loadServicegroups(searchString, objectId);
                 }
 
                 if($scope.currentItem.type === 'map'){
-                    loadMaps(searchString);
+                    loadMaps(searchString, objectId);
                 }
             }
         };

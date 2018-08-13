@@ -166,7 +166,7 @@ class Mapgadget extends MapModuleAppModel {
 
     public function valGadgetTypes($data) {
         if (isset($data['gadget'])) {
-            return in_array($data['gadget'], ['Tacho', 'Cylinder', 'Text', 'TrafficLight', 'RRDGraph'], true);
+            return in_array($data['gadget'], ['Tacho', 'Cylinder', 'Text', 'TrafficLight', 'RRDGraph', 'Temperature'], true);
         }
         return false;
     }
