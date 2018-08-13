@@ -29,7 +29,6 @@ $config = [
         'always_allowed' => [
             'BackgroundUploads' => [
                 'upload',
-                'createThumbnailsFromBackgrounds',
                 'icon',
                 'deleteIcon',
                 'iconset'

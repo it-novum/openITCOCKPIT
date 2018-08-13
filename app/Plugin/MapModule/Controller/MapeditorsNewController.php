@@ -42,7 +42,7 @@ use Symfony\Component\Finder\Finder;
  * @property Mapgadget $Mapgadget
  * @property Maptext $Maptext
  * @property Mapicon $Mapicon
- * @property Mapsummaryitem $Mapsummaryite
+ * @property Mapsummaryitem $Mapsummaryitem
  * @property Host $Host
  * @property Service $Service
  * @property Hoststatus $Hoststatus
@@ -825,8 +825,7 @@ class MapeditorsNewController extends MapModuleAppController {
                         ],
                     ],
                     'conditions' => [
-                        'Map.id'            => $mapId,
-                        'Mapitem.object_id' => $objectId
+                        'Map.id' => $objectId,
                     ]
                 ]);
                 if (!empty($map)) {
@@ -836,6 +835,7 @@ class MapeditorsNewController extends MapModuleAppController {
                             break;
                         }
                     }
+
                     //fetch all dependent map items after permissions check
                     $mapItemToResolve = $this->Mapitem->find('first', [
                         'recursive'  => -1,
@@ -847,6 +847,7 @@ class MapeditorsNewController extends MapModuleAppController {
                             'Mapitem.object_id'
                         ]
                     ]);
+
                     if (!empty($mapItemToResolve)) {
                         $query = [
                             'recursive'  => -1,
@@ -891,92 +892,102 @@ class MapeditorsNewController extends MapModuleAppController {
                         }
                         $dependentMapsIds[] = $mapItemIdToResolve;
                         // resolve all Elements (host and/or services of dependent map)
-                        $allDependentMapElements = $this->MapNew->getAllDependentMapsElements(
+                        $allDependentMapElementsFromSubMaps = $this->MapNew->getAllDependentMapsElements(
                             $this->Map,
                             $dependentMapsIds,
                             $this->Hostgroup,
                             $this->Servicegroup
                         );
-
-                        $hosts = [];
-                        $services = [];
-                        if (!empty($allDependentMapElements['hostIds'])) {
-                            $hosts = $this->Host->find('all', [
-                                'recursive'  => -1,
-                                'contain'    => [
-                                    'Container',
-                                    'Service' => [
-                                        'conditions' => [
-                                            'Service.disabled' => 0
-                                        ],
-                                        'fields'     => [
-                                            'Service.id',
-                                            'Service.uuid'
-                                        ]
-                                    ]
-                                ],
-                                'conditions' => [
-                                    'Host.id'       => $allDependentMapElements['hostIds'],
-                                    'Host.disabled' => 0
-                                ],
-                                'fields'     => [
-                                    'Host.uuid'
-                                ]
-                            ]);
-                            if (!empty($hosts)) {
-                                if ($this->hasRootPrivileges === false) {
-                                    if (!$this->allowedByContainerId(Hash::extract($hosts, '{n}.Container.{n}.HostsToContainer.container_id'))) {
-                                        $allowView = false;
-                                        break;
-                                    }
-                                }
-                                foreach ($hosts as $host) {
-                                    foreach ($host['Service'] as $serviceData) {
-                                        $services[$serviceData['id']] = [
-                                            'Service' => $serviceData
-                                        ];
-                                    }
-                                }
-                            }
-                        }
-                        if (!empty($allDependentMapElements['serviceIds'])) {
-                            $dependentServices = $this->Service->find('all', [
-                                'recursive'  => -1,
-                                'contain'    => [
-                                    'Host' => [
-                                        'Container'
-                                    ]
-                                ],
-                                'conditions' => [
-                                    'Service.id'       => $allDependentMapElements['serviceIds'],
-                                    'Service.disabled' => 0
-                                ],
-                                'fields'     => [
-                                    'Service.id',
-                                    'Service.uuid'
-                                ]
-                            ]);
-                            if (!empty($services)) {
-                                if ($this->hasRootPrivileges === false) {
-                                    if (!$this->allowedByContainerId(Hash::extract($services, '{n}.Host.Container.{n}.HostsToContainer.container_id'))) {
-                                        $allowView = false;
-                                        break;
-                                    }
-                                }
-                                foreach ($dependentServices as $service) {
-                                    $services[$service['Service']['id']] = $service;
-                                }
-                            }
-                        }
-                        $allowView = true;
-                        $properties = $this->MapNew->getMapInformationForSummaryIcon(
-                            $this->Hoststatus,
-                            $this->Servicestatus,
-                            $map,
-                            $hosts,
-                            $services
-                        );
                     }
+                    $allDependentMapElements = $this->MapNew->getAllDependentMapsElements(
+                        $this->Map,
+                        [$map['Map']['id']],
+                        $this->Hostgroup,
+                        $this->Servicegroup
+                    );
+
+                    if (isset($allDependentMapElementsFromSubMaps)) {
+                        $allDependentMapElements = Hash::merge($allDependentMapElements, $allDependentMapElementsFromSubMaps);
+                    }
+
+                    $hosts = [];
+                    $services = [];
+                    if (!empty($allDependentMapElements['hostIds'])) {
+                        $hosts = $this->Host->find('all', [
+                            'recursive'  => -1,
+                            'contain'    => [
+                                'Container',
+                                'Service' => [
+                                    'conditions' => [
+                                        'Service.disabled' => 0
+                                    ],
+                                    'fields'     => [
+                                        'Service.id',
+                                        'Service.uuid'
+                                    ]
+                                ]
+                            ],
+                            'conditions' => [
+                                'Host.id'       => $allDependentMapElements['hostIds'],
+                                'Host.disabled' => 0
+                            ],
+                            'fields'     => [
+                                'Host.uuid'
+                            ]
+                        ]);
+                        if (!empty($hosts)) {
+                            if ($this->hasRootPrivileges === false) {
+                                if (!$this->allowedByContainerId(Hash::extract($hosts, '{n}.Container.{n}.HostsToContainer.container_id'))) {
+                                    $allowView = false;
+                                    break;
+                                }
+                            }
+                            foreach ($hosts as $host) {
+                                foreach ($host['Service'] as $serviceData) {
+                                    $services[$serviceData['id']] = [
+                                        'Service' => $serviceData
+                                    ];
+                                }
+                            }
+                        }
+                    }
+                    if (!empty($allDependentMapElements['serviceIds'])) {
+                        $dependentServices = $this->Service->find('all', [
+                            'recursive'  => -1,
+                            'contain'    => [
+                                'Host' => [
+                                    'Container'
+                                ]
+                            ],
+                            'conditions' => [
+                                'Service.id'       => $allDependentMapElements['serviceIds'],
+                                'Service.disabled' => 0
+                            ],
+                            'fields'     => [
+                                'Service.id',
+                                'Service.uuid'
+                            ]
+                        ]);
+                        if (!empty($services)) {
+                            if ($this->hasRootPrivileges === false) {
+                                if (!$this->allowedByContainerId(Hash::extract($services, '{n}.Host.Container.{n}.HostsToContainer.container_id'))) {
+                                    $allowView = false;
+                                    break;
+                                }
+                            }
+                            foreach ($dependentServices as $service) {
+                                $services[$service['Service']['id']] = $service;
+                            }
+                        }
+                    }
+                    $allowView = true;
+                    $properties = $this->MapNew->getMapInformationForSummaryIcon(
+                        $this->Hoststatus,
+                        $this->Servicestatus,
+                        $map,
+                        $hosts,
+                        $services
+                    );
                     break;
                 }
                 $allowView = false;
@@ -1538,6 +1549,7 @@ class MapeditorsNewController extends MapModuleAppController {
                 'Mapgadget',
                 'Mapicon',
                 'Maptext',
+                'Mapsummaryitem'
             ],
             'conditions' => [
                 'Map.id' => $id
@@ -2133,6 +2145,118 @@ class MapeditorsNewController extends MapModuleAppController {
 
         $this->set('icons', $icons);
         $this->set('_serialize', ['icons']);
+    }
+
+    /**
+     * @todo Add to ACL depandencies
+     */
+    public function saveSummaryitem() {
+        if (!$this->request->is('post') || !$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        //Save new possition after drag and drop
+        if ($this->request->data('action') === 'dragstop') {
+            $mapsummaryitem = $this->Mapsummaryitem->find('first', [
+                'recursive'  => -1,
+                'conditions' => [
+                    'Mapsummaryitem.id' => $this->request->data('Mapsummaryitem.id')
+                ]
+            ]);
+
+            $mapsummaryitem['Mapsummaryitem']['x'] = (int)$this->request->data('Mapsummaryitem.x');
+            $mapsummaryitem['Mapsummaryitem']['y'] = (int)$this->request->data('Mapsummaryitem.y');
+            if ($this->Mapsummaryitem->save($mapsummaryitem)) {
+                $Mapsummaryitem = new \itnovum\openITCOCKPIT\Maps\ValueObjects\Mapsummaryitem($mapsummaryitem['Mapsummaryitem']);
+
+                $this->set('Mapsummaryitem', [
+                    'Mapsummaryitem' => $Mapsummaryitem->toArray()
+                ]);
+
+                $this->set('_serialize', ['Mapsummaryitem']);
+                return;
+            }
+            $this->serializeErrorMessageFromModel('Mapsummaryitem');
+            return;
+        }
+
+        //Save new gadget size
+        if ($this->request->data('action') === 'resizestop') {
+            $mapsummaryitem = $this->Mapsummaryitem->find('first', [
+                'recursive'  => -1,
+                'conditions' => [
+                    'Mapsummaryitem.id' => $this->request->data('Mapsummaryitem.id')
+                ]
+            ]);
+
+            $mapsummaryitem['Mapsummaryitem']['size_x'] = (int)$this->request->data('Mapsummaryitem.size_x');
+            $mapsummaryitem['Mapsummaryitem']['size_y'] = (int)$this->request->data('Mapsummaryitem.size_y');
+
+            if ($this->Mapsummaryitem->save($mapsummaryitem)) {
+                $Mapsummaryitem = new \itnovum\openITCOCKPIT\Maps\ValueObjects\Mapsummaryitem($mapsummaryitem['Mapsummaryitem']);
+
+                $this->set('Mapsummaryitem', [
+                    'Mapsummaryitem' => $Mapsummaryitem->toArray()
+                ]);
+
+                $this->set('_serialize', ['Mapsummaryitem']);
+                return;
+            }
+            $this->serializeErrorMessageFromModel('Mapsummaryitem');
+            return;
+        }
+
+
+        //Create new Mapsummaryitem or update existing one
+        if (!isset($this->request->data['Mapsummaryitem']['id'])) {
+            $this->Mapsummaryitem->create();
+        }
+
+        $mapsummaryitem = $this->request->data;
+
+        $mapsummaryitem['Mapsummaryitem']['show_label'] = (int)$this->request->data('Mapsummaryitem.show_label');
+        $mapsummaryitem['Mapsummaryitem']['size_x'] = (int)$this->request->data('Mapsummaryitem.size_x');
+        $mapsummaryitem['Mapsummaryitem']['size_y'] = (int)$this->request->data('Mapsummaryitem.size_y');
+
+        if ($this->Mapsummaryitem->save($mapsummaryitem)) {
+            $gadget['Mapsummaryitem']['id'] = $this->Mapsummaryitem->id;
+            $Mapsummaryitem = new \itnovum\openITCOCKPIT\Maps\ValueObjects\Mapsummaryitem($mapsummaryitem['Mapsummaryitem']);
+            $this->set('Mapsummaryitem', [
+                'Mapsummaryitem' => $Mapsummaryitem->toArray()
+            ]);
+            $this->set('_serialize', ['Mapsummaryitem']);
+            return;
+        }
+        $this->serializeErrorMessageFromModel('Mapsummaryitem');
+    }
+
+    /**
+     * @todo Add to ACL depandencies
+     */
+    public function deleteSummaryitem() {
+        if (!$this->request->is('post') || !$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        $id = $this->request->data('Mapsummaryitem.id');
+
+
+        if (!$this->Mapsummaryitem->exists($id)) {
+            throw new NotFoundException();
+        }
+
+        if (!is_numeric($id)) {
+            throw new InvalidArgumentException('Mapsummaryitem.id needs to be numeric');
+        }
+
+        if ($this->Mapsummaryitem->delete($id)) {
+            $this->set('success', true);
+            $this->set('_serialize', ['success']);
+            return;
+        }
+
+        $this->set('success', false);
+        $this->set('_serialize', ['success']);
     }
 
 }

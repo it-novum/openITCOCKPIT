@@ -892,7 +892,7 @@ angular.module('openITCOCKPIT')
                 $scope.errors = {};
                 //Update possition in current scope json data
                 if($scope.currentItem.hasOwnProperty('id')){
-                    for(var i in $scope.map.Maptext){
+                    for(var i in $scope.map.Mapicon){
                         if($scope.map.Mapicon[i].id == $scope.currentItem.id){
                             $scope.map.Mapicon[i].x = $scope.currentItem.x;
                             $scope.map.Mapicon[i].y = $scope.currentItem.y;
@@ -972,6 +972,98 @@ angular.module('openITCOCKPIT')
                     text: text,
                     timeout: 3500
                 }).show();
+            });
+        };
+
+        $scope.addSummaryItem = function(){
+            new Noty({
+                theme: 'metroui',
+                type: 'info',
+                layout: 'topCenter',
+                text: 'Click at the position on the map, where you want to create a new status summary icon',
+                timeout: 3500
+            }).show();
+            $('#map-editor').css('cursor', 'crosshair');
+            $scope.addNewObject = true;
+            $scope.action = 'summaryItem';
+        };
+
+        $scope.editSummaryItem = function(item){
+            $scope.action = 'summaryItem';
+            $scope.currentItem = item;
+            $('#addEditSummaryItemModal').modal('show');
+        };
+
+        $scope.saveSummaryItem = function(action){
+            if(typeof action === 'undefined'){
+                action = 'add_or_edit';
+            }
+
+            $scope.currentItem.map_id = $scope.id;
+
+            $http.post("/map_module/mapeditors_new/saveSummaryitem.json?angular=true",
+                {
+                    'Mapsummaryitem': $scope.currentItem,
+                    'action': action
+                }
+            ).then(function(result){
+                if(action === 'resizestop'){
+                    genericSuccess();
+                    //Nothing needs to be updated
+                    return;
+                }
+
+                $scope.errors = {};
+                //Update possition in current scope json data
+                if($scope.currentItem.hasOwnProperty('id')){
+                    for(var i in $scope.map.Mapsummaryitem){
+                        if($scope.map.Mapsummaryitem[i].id == $scope.currentItem.id){
+                            $scope.map.Mapsummaryitem[i].x = $scope.currentItem.x;
+                            $scope.map.Mapsummaryitem[i].y = $scope.currentItem.y;
+
+                            //We are done here
+                            break;
+                        }
+                    }
+                }else{
+                    //New created item
+                    $scope.map.Mapsummaryitem.push(result.data.Mapsummaryitem.Mapsummaryitem);
+                    setTimeout(makeDraggable, 250);
+                }
+
+                $('#addEditSummaryItemModal').modal('hide');
+                genericSuccess();
+            }, function errorCallback(result){
+                if(result.data.hasOwnProperty('error')){
+                    $scope.errors = result.data.error;
+                }
+                genericError();
+            });
+        };
+
+        $scope.deleteSummaryItem = function(){
+            $scope.currentItem.map_id = $scope.id;
+            $http.post("/map_module/mapeditors_new/deleteSummaryitem.json?angular=true",
+                {
+                    'Mapsummaryitem': $scope.currentItem,
+                    'action': 'delete'
+                }
+            ).then(function(result){
+                //Remove item from current scope
+                for(var i in $scope.map.Mapsummaryitem){
+                    if($scope.map.Mapsummaryitem[i].id == $scope.currentItem.id){
+                        $scope.map.Mapsummaryitem.splice(i, 1);
+
+                        //We are done here
+                        break;
+                    }
+                }
+
+                $('#addEditSummaryItemModal').modal('hide');
+                genericSuccess();
+                $scope.currentItem = {};
+            }, function errorCallback(result){
+                genericError();
             });
         };
 
@@ -1205,6 +1297,15 @@ angular.module('openITCOCKPIT')
                             $scope.saveIcon('dragstop');
                             break;
 
+                        case 'summaryItem':
+                            $scope.currentItem = {
+                                id: id,
+                                x: x,
+                                y: y
+                            };
+                            $scope.saveSummaryItem('dragstop');
+                            break;
+
                         default:
                             console.log('Unknown map object type');
                             genericError();
@@ -1227,24 +1328,50 @@ angular.module('openITCOCKPIT')
                 stop: function(event, ui){
                     var $this = $(this);
                     var id = $this.data('id');
+                    var type = $this.data('type');
 
                     var newWidth = parseInt(ui.size.width);
                     var newHeight = parseInt(ui.size.height);
 
-                    for(var key in $scope.map.Mapgadget){
-                        if($scope.map.Mapgadget[key].id === id){
-                            $scope.map.Mapgadget[key].size_y = newHeight;
-                            //Set Y value first because $scope.$watch is listening to X value!
-                            $scope.map.Mapgadget[key].size_x = newWidth;
-                        }
-                    }
+                    switch(type){
+                        case 'gadget':
+                            for(var key in $scope.map.Mapgadget){
+                                if($scope.map.Mapgadget[key].id === id){
+                                    $scope.map.Mapgadget[key].size_y = newHeight;
+                                    //Set Y value first because $scope.$watch is listening to X value!
+                                    $scope.map.Mapgadget[key].size_x = newWidth;
+                                }
+                            }
 
-                    $scope.currentItem = {
-                        id: id,
-                        size_x: newWidth,
-                        size_y: newHeight
-                    };
-                    $scope.saveGadget('resizestop');
+                            $scope.currentItem = {
+                                id: id,
+                                size_x: newWidth,
+                                size_y: newHeight
+                            };
+                            $scope.saveGadget('resizestop');
+                            break;
+
+                        case 'summaryItem':
+                            for(var key in $scope.map.Mapsummaryitem){
+                                if($scope.map.Mapsummaryitem[key].id === id){
+                                    $scope.map.Mapsummaryitem[key].size_y = newHeight;
+                                    //Set Y value first because $scope.$watch is listening to X value!
+                                    $scope.map.Mapsummaryitem[key].size_x = newWidth;
+                                }
+                            }
+
+                            $scope.currentItem = {
+                                id: id,
+                                size_x: newWidth,
+                                size_y: newHeight
+                            };
+                            $scope.saveSummaryItem('resizestop');
+                            break;
+
+                        default:
+                            console.log('Unknown map object type');
+                            genericError();
+                    }
                 }
             });
         };
