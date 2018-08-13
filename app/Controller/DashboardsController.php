@@ -23,6 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 use itnovum\openITCOCKPIT\Core\Dashboards\HostStatusListJson;
+use itnovum\openITCOCKPIT\Core\Dashboards\ServiceStatusListJson;
 
 /**
  * Class DashboardsController
@@ -298,6 +299,50 @@ class DashboardsController extends AppController {
 
         if ($this->request->is('post')) {
             $config = $HostStatusListJson->standardizedData($this->request->data);
+
+            $this->Widget->id = $widgetId;
+            $this->Widget->saveField('json_data', json_encode($config));
+
+            $this->set('config', $config);
+            $this->set('_serialize', ['config']);
+            return;
+        }
+
+        throw new MethodNotAllowedException();
+    }
+
+    public function servicesStatusListWidget() {
+        if (!$this->isAngularJsRequest()) {
+            //Only ship template
+            return;
+        }
+
+        $widgetId = (int)$this->request->query('widgetId');
+        $ServiceStatusListJson = new ServiceStatusListJson();
+        if (!$this->Widget->exists($widgetId)) {
+            throw new NotFoundException('Widget not found');
+        }
+
+        if ($this->request->is('get')) {
+            $widget = $this->Widget->find('first', [
+                'recursive'  => -1,
+                'conditions' => [
+                    'Widget.id' => $widgetId
+                ]
+            ]);
+
+            $data = [];
+            if($widget['Widget']['json_data'] !== null && $widget['Widget']['json_data'] !== ''){
+                $data = json_decode($widget['Widget']['json_data'], true);
+            }
+            $config = $ServiceStatusListJson->standardizedData($data);
+            $this->set('config', $config);
+            $this->set('_serialize', ['config']);
+            return;
+        }
+
+        if ($this->request->is('post')) {
+            $config = $ServiceStatusListJson->standardizedData($this->request->data);
 
             $this->Widget->id = $widgetId;
             $this->Widget->saveField('json_data', json_encode($config));
