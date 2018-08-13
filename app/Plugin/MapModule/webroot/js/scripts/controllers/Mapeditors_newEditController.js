@@ -465,6 +465,25 @@ angular.module('openITCOCKPIT')
                     $scope.action = null;
                     break;
 
+                case 'summaryItem':
+                    $mapEditor.css('cursor', 'default');
+                    $scope.addNewObject = false;
+
+                    $('#addEditSummaryItemModal').modal('show');
+
+                    // Create currentItem skeleton
+                    // Set X and Y poss of the new object
+                    $scope.currentItem = {
+                        z_index: '0', //Yes we need this as a string!
+                        x: $event.offsetX,
+                        y: $event.offsetY,
+                        show_label: false,
+                        label_possition: 2
+                    };
+
+                    $scope.action = null;
+                    break;
+
                 default:
                     new Noty({
                         theme: 'metroui',

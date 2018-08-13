@@ -9,6 +9,11 @@ angular.module('openITCOCKPIT').directive('mapSummaryItem', function($http, $int
 
             var interval = null;
 
+            if($scope.item.size_x <= 0){
+                $scope.item.size_x = 100;
+            }
+
+
             $scope.load = function(){
                 $http.get("/map_module/mapeditors_new/mapsummaryitem/.json", {
                     params: {

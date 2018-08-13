@@ -2383,7 +2383,7 @@ class MapeditorsNewController extends MapModuleAppController {
             return;
         }
 
-        //Save new gadget size
+        //Save new Mapsummaryitem size
         if ($this->request->data('action') === 'resizestop') {
             $mapsummaryitem = $this->Mapsummaryitem->find('first', [
                 'recursive' => -1,
@@ -2422,7 +2422,7 @@ class MapeditorsNewController extends MapModuleAppController {
         $mapsummaryitem['Mapsummaryitem']['size_y'] = (int)$this->request->data('Mapsummaryitem.size_y');
 
         if ($this->Mapsummaryitem->save($mapsummaryitem)) {
-            $gadget['Mapsummaryitem']['id'] = $this->Mapsummaryitem->id;
+            $mapsummaryitem['Mapsummaryitem']['id'] = $this->Mapsummaryitem->id;
             $Mapsummaryitem = new \itnovum\openITCOCKPIT\Maps\ValueObjects\Mapsummaryitem($mapsummaryitem['Mapsummaryitem']);
             $this->set('Mapsummaryitem', [
                 'Mapsummaryitem' => $Mapsummaryitem->toArray()
