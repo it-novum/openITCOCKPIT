@@ -30,7 +30,7 @@
     <section>
         <div class="row">
             <article ng-if="iconType == 'host'">
-                <div class="jarviswidget">
+                <div class="jarviswidget bg-color-white">
                     <header>
                         <h2 class="bold txt-color-blueDark">
                             <i class="fa fa-desktop fa-lg txt-color-blueDark"></i>
@@ -187,7 +187,7 @@
                 </div>
             </article>
             <article ng-if="iconType == 'service'">
-                <div class="jarviswidget">
+                <div class="jarviswidget bg-color-white">
                     <header>
                         <h2 class="bold txt-color-blueDark">
                             <i class="fa fa-cog fa-lg txt-color-blueDark"></i>
@@ -313,7 +313,7 @@
                 </div>
             </article>
             <article ng-if="iconType == 'hostgroup'">
-                <div class="jarviswidget">
+                <div class="jarviswidget bg-color-white">
                     <header>
                         <h2 class="bold txt-color-blueDark">
                             <i class="fa fa-sitemap fa-lg txt-color-blueDark"></i>
@@ -443,7 +443,7 @@
                 </div>
             </article>
             <article ng-if="iconType == 'servicegroup'">
-                <div class="jarviswidget">
+                <div class="jarviswidget bg-color-white">
                     <header>
                         <h2 class="bold txt-color-blueDark">
                             <i class="fa fa-cogs fa-lg txt-color-blueDark"></i>
@@ -555,7 +555,7 @@
                 </div>
             </article>
             <article ng-if="iconType == 'map'">
-                <div class="jarviswidget">
+                <div class="jarviswidget bg-color-white">
                     <header>
                         <h2 class="bold txt-color-blueDark">
                             <i class="fa fa-image fa-lg txt-color-blueDark"></i>
