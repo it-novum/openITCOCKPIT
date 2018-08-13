@@ -69,7 +69,8 @@ $config = [
                 'enable_service_notifications',
                 'disable_service_notifications',
                 'getPieChart',
-                'getCumulatedHostAndServiceStateIcon'
+                'getCumulatedHostAndServiceStateIcon',
+                'getHostAndServiceStateSummaryIcon'
             ],
             'Automaps'         => [
                 'icon'

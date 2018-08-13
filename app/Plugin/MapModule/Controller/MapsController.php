@@ -291,6 +291,7 @@ class MapsController extends MapModuleAppController {
                 'Map'       => $this->request->data('Map'),
                 'Container' => Hash::extract($map, 'Container.{n}.id')
             ];
+            $newMap['Map']['background'] = $map['Map']['background'];
 
             $this->Map->create();
             if ($this->Map->save($newMap)) {
@@ -315,6 +316,7 @@ class MapsController extends MapModuleAppController {
                 if ($this->Map->saveAll($newMap)) {
                     $this->set('success', true);
                     $this->set('_serialize', ['success']);
+                    return;
                 }
             }
 

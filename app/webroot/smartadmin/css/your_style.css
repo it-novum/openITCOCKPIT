@@ -1986,6 +1986,7 @@ label[class^='aco-host']:after, label[class^='aco-service']:after {
     top: 50px;
     right: 0;
     width: 30%;
+    z-index: 99999;
 }
 
 #mapToolbar {
