@@ -287,7 +287,7 @@ class DashboardsController extends AppController {
             ]);
 
             $data = [];
-            if($widget['Widget']['json_data'] !== null && $widget['Widget']['json_data'] !== ''){
+            if ($widget['Widget']['json_data'] !== null && $widget['Widget']['json_data'] !== '') {
                 $data = json_decode($widget['Widget']['json_data'], true);
             }
             $config = $HostStatusListJson->standardizedData($data);
@@ -308,5 +308,12 @@ class DashboardsController extends AppController {
         }
 
         throw new MethodNotAllowedException();
+    }
+
+    public function hostsDowntimeWidget() {
+        if (!$this->isAngularJsRequest()) {
+            //Only ship template
+            return;
+        }
     }
 }
