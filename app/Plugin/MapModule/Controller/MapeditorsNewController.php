@@ -1084,6 +1084,14 @@ class MapeditorsNewController extends MapModuleAppController {
     /**
      * @todo Add to ACL depandencies
      */
+    public function temperature() {
+        //Only ship template
+        return;
+    }
+
+    /**
+     * @todo Add to ACL depandencies
+     */
     public function mapsummary() {
         if (!$this->isApiRequest()) {
             return;
@@ -1527,7 +1535,8 @@ class MapeditorsNewController extends MapModuleAppController {
                 'Tacho'        => 'tacho_gadget.png',
                 'TrafficLight' => 'trafficlight_gadget.png',
                 'Cylinder'     => 'cylinder_gadget.png',
-                'Text'         => 'perfdata_gadget.png'
+                'Text'         => 'perfdata_gadget.png',
+                'Temperature'  => 'temperature_gadget.png'
             ];
             $this->set('gadgetPreviews', $gadgetPreviews);
             $this->set('requiredIcons', $this->MapUpload->getIconsNames());

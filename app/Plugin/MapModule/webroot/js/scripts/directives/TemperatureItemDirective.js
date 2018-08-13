@@ -1,7 +1,7 @@
-angular.module('openITCOCKPIT').directive('tachoItem', function($http){
+angular.module('openITCOCKPIT').directive('temperatureItem', function($http){
     return {
         restrict: 'E',
-        templateUrl: '/map_module/mapeditors_new/tacho.html',
+        templateUrl: '/map_module/mapeditors_new/temperature.html',
         scope: {
             'item': '='
         },
@@ -11,16 +11,14 @@ angular.module('openITCOCKPIT').directive('tachoItem', function($http){
             $scope.item.size_x = parseInt($scope.item.size_x, 10);
             $scope.item.size_y = parseInt($scope.item.size_y, 10);
 
-            $scope.width = 200;
-            $scope.height = $scope.width;
+            $scope.width = 120;
+            $scope.height = 400;
 
             if($scope.item.size_x > 0){
                 $scope.width = $scope.item.size_x;
-                $scope.height = $scope.width;
             }
             if($scope.item.size_y > 0){
-                $scope.width = $scope.item.size_y;
-                $scope.height = $scope.width;
+                $scope.height = $scope.item.size_y;
             }
 
             $scope.load = function(){
@@ -120,8 +118,8 @@ angular.module('openITCOCKPIT').directive('tachoItem', function($http){
                     showDecimalDigitsGauge = 1;
                 }
 
-                var gauge = new RadialGauge({
-                    renderTo: 'map-tacho-' + $scope.item.id,
+                var gauge = new LinearGauge({
+                    renderTo: 'map-temperature-' + $scope.item.id,
                     height: $scope.height,
                     width: $scope.width,
                     value: perfdata.current,
@@ -201,7 +199,7 @@ angular.module('openITCOCKPIT').directive('tachoItem', function($http){
                 }
 
                 $scope.width = $scope.item.size_x;
-                $scope.height = $scope.width;
+                $scope.height = $scope.item.size_y;
 
                 renderGauge($scope.perfdataName, $scope.perfdata);
             });
