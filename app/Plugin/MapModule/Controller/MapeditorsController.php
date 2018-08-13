@@ -142,9 +142,6 @@ class MapeditorsController extends MapModuleAppController {
 
     }
 
-    /**
-     * @todo Add to ACL depandencies (view/edit)
-     */
     public function mapitem() {
         if (!$this->isApiRequest()) {
             return;
@@ -529,9 +526,6 @@ class MapeditorsController extends MapModuleAppController {
         $this->set('_serialize', ['type', 'allowView', 'data']);
     }
 
-    /**
-     * @todo Add to ACL depandencies
-     */
     public function getDependendMaps($maps, $parentMapId) {
         $allRelatedMapIdsOfParent = [];
 
@@ -552,42 +546,26 @@ class MapeditorsController extends MapModuleAppController {
 
     }
 
-
-    /**
-     * @todo Add to ACL depandencies
-     */
     public function mapline() {
         //Only ship template
         return;
     }
 
-    /**
-     * @todo Add to ACL depandencies
-     */
     public function mapicon() {
         //Only ship template
         return;
     }
 
-    /**
-     * @todo Add to ACL depandencies
-     */
     public function maptext() {
         //Only ship template
         return;
     }
 
-    /**
-     * @todo Add to ACL depandencies
-     */
     public function perfdatatext() {
         //Only ship template
         return;
     }
 
-    /**
-     * @todo Add to ACL depandencies
-     */
     public function mapsummaryitem() {
         if (!$this->isApiRequest()) {
             return;
@@ -1067,9 +1045,6 @@ class MapeditorsController extends MapModuleAppController {
         $this->set('_serialize', ['type', 'allowView', 'data']);
     }
 
-    /**
-     * @todo Add to ACL depandencies
-     */
     public function graph() {
         if (!$this->isApiRequest()) {
             return;
@@ -1121,41 +1096,26 @@ class MapeditorsController extends MapModuleAppController {
         $this->set('_serialize', ['allowView', 'host', 'service']);
     }
 
-    /**
-     * @todo Add to ACL depandencies
-     */
     public function tacho() {
         //Only ship template
         return;
     }
 
-    /**
-     * @todo Add to ACL depandencies
-     */
     public function cylinder() {
         //Only ship template
         return;
     }
 
-    /**
-     * @todo Add to ACL depandencies
-     */
     public function trafficlight() {
         //Only ship template
         return;
     }
 
-    /**
-     * @todo Add to ACL depandencies
-     */
     public function temperature() {
         //Only ship template
         return;
     }
 
-    /**
-     * @todo Add to ACL depandencies
-     */
     public function mapsummary() {
         if (!$this->isApiRequest()) {
             return;
@@ -1744,9 +1704,6 @@ class MapeditorsController extends MapModuleAppController {
         $this->set('_serialize', ['map', 'maxUploadLimit', 'max_z_index', 'layers']);
     }
 
-    /**
-     * @todo Add to ACL depandencies
-     */
     public function backgroundImages() {
         if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();
@@ -1770,9 +1727,6 @@ class MapeditorsController extends MapModuleAppController {
         $this->set('_serialize', ['backgrounds']);
     }
 
-    /**
-     * @todo Add to ACL depandencies
-     */
     public function getIconsets() {
         if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();
@@ -1784,9 +1738,6 @@ class MapeditorsController extends MapModuleAppController {
         $this->set('_serialize', ['iconsets']);
     }
 
-    /**
-     * @todo Add to ACL depandencies
-     */
     public function loadMapsByString() {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
@@ -1808,9 +1759,6 @@ class MapeditorsController extends MapModuleAppController {
         $this->set('_serialize', ['maps']);
     }
 
-    /**
-     * @todo Add to ACL depandencies
-     */
     public function saveItem() {
         if (!$this->request->is('post') || !$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
@@ -1866,9 +1814,6 @@ class MapeditorsController extends MapModuleAppController {
         $this->serializeErrorMessageFromModel('Mapitem');
     }
 
-    /**
-     * @todo Add to ACL depandencies
-     */
     public function deleteItem() {
         if (!$this->request->is('post') || !$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
@@ -1895,9 +1840,6 @@ class MapeditorsController extends MapModuleAppController {
         $this->set('_serialize', ['success']);
     }
 
-    /**
-     * @todo Add to ACL depandencies
-     */
     public function saveLine() {
         if (!$this->request->is('post') || !$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
@@ -1948,9 +1890,6 @@ class MapeditorsController extends MapModuleAppController {
         $this->serializeErrorMessageFromModel('Mapline');
     }
 
-    /**
-     * @todo Add to ACL depandencies
-     */
     public function deleteLine() {
         if (!$this->request->is('post') || !$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
@@ -1977,9 +1916,6 @@ class MapeditorsController extends MapModuleAppController {
         $this->set('_serialize', ['success']);
     }
 
-    /**
-     * @todo Add to ACL depandencies
-     */
     public function saveGadget() {
         if (!$this->request->is('post') || !$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
@@ -2065,9 +2001,6 @@ class MapeditorsController extends MapModuleAppController {
         $this->serializeErrorMessageFromModel('Mapgadget');
     }
 
-    /**
-     * @todo Add to ACL depandencies
-     */
     public function deleteGadget() {
         if (!$this->request->is('post') || !$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
@@ -2094,10 +2027,6 @@ class MapeditorsController extends MapModuleAppController {
         $this->set('_serialize', ['success']);
     }
 
-
-    /**
-     * @todo Add to ACL depandencies
-     */
     public function getPerformanceDataMetrics($serviceId) {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
@@ -2133,9 +2062,6 @@ class MapeditorsController extends MapModuleAppController {
         $this->set('_serialize', ['perfdata']);
     }
 
-    /**
-     * @todo Add to ACL depandencies
-     */
     public function saveText() {
         if (!$this->request->is('post') || !$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
@@ -2188,9 +2114,6 @@ class MapeditorsController extends MapModuleAppController {
         $this->serializeErrorMessageFromModel('Maptext');
     }
 
-    /**
-     * @todo Add to ACL depandencies
-     */
     public function deleteText() {
         if (!$this->request->is('post') || !$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
@@ -2217,9 +2140,6 @@ class MapeditorsController extends MapModuleAppController {
         $this->set('_serialize', ['success']);
     }
 
-    /**
-     * @todo Add to ACL depandencies
-     */
     public function saveIcon() {
         if (!$this->request->is('post') || !$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
@@ -2272,9 +2192,6 @@ class MapeditorsController extends MapModuleAppController {
         $this->serializeErrorMessageFromModel('Mapicon');
     }
 
-    /**
-     * @todo Add to ACL depandencies
-     */
     public function deleteIcon() {
         if (!$this->request->is('post') || !$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
@@ -2301,9 +2218,6 @@ class MapeditorsController extends MapModuleAppController {
         $this->set('_serialize', ['success']);
     }
 
-    /**
-     * @todo Add to ACL depandencies
-     */
     public function saveBackground() {
         if (!$this->request->is('post') || !$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
@@ -2336,9 +2250,6 @@ class MapeditorsController extends MapModuleAppController {
         return;
     }
 
-    /**
-     * @todo Add to ACL depandencies
-     */
     public function getIcons() {
         if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();
@@ -2350,9 +2261,6 @@ class MapeditorsController extends MapModuleAppController {
         $this->set('_serialize', ['icons']);
     }
 
-    /**
-     * @todo Add to ACL depandencies
-     */
     public function saveSummaryitem() {
         if (!$this->request->is('post') || !$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
@@ -2432,10 +2340,7 @@ class MapeditorsController extends MapModuleAppController {
         }
         $this->serializeErrorMessageFromModel('Mapsummaryitem');
     }
-
-    /**
-     * @todo Add to ACL depandencies
-     */
+    
     public function deleteSummaryitem() {
         if (!$this->request->is('post') || !$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();

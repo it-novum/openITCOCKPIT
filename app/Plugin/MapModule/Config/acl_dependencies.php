@@ -34,17 +34,23 @@ $config = [
                 'iconset'
             ],
             'Mapeditors'        => [
-                'hostUuidFromServiceUuid',
-                'fullscreen',
-                'popoverHostStatus',
-                'popoverServicegroupStatus',
-                'popoverHostgroupStatus',
-                'popoverServiceStatus',
-                'popoverMapStatus',
-                'servicesForWizard',
-                'hostFromSerice',
-                'hostFromService',
-                'getDependendMaps'
+                'mapitem',
+                'getDependendMaps',
+                'mapline',
+                'mapicon',
+                'maptext',
+                'perfdatatext',
+                'mapsummaryitem',
+                'graph',
+                'tacho',
+                'cylinder',
+                'trafficlight',
+                'temperature',
+                'mapsummary',
+                'backgroundImages',
+                'getIconsets',
+                'loadMapsByString',
+                'getPerformanceDataMetrics'
             ],
             'Maps'              => [
                 'loadUsersForTenant',
@@ -59,6 +65,25 @@ $config = [
             ]
         ],
         'dependencies'   => [
+            'Mapeditors' => [
+                'edit' => [
+                    'saveItem',
+                    'deleteItem',
+                    'saveLine',
+                    'deleteLine',
+                    'saveGadget',
+                    'deleteGadget',
+                    'saveText',
+                    'deleteText',
+                    'saveIcon',
+                    'deleteIcon',
+                    'saveBackground',
+                    'getIcons',
+                    'saveSummaryitem',
+                    'deleteSummaryitem',
+
+                ]
+            ]
         ],
         'roles_rights' => [
             'Administrator' => ['*'],
