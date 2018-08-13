@@ -941,7 +941,7 @@ class MapNew extends MapModuleAppModel {
      * @param UserTime $UserTime
      * @return array map summary with host and service status overview
      */
-    public function getMapSummary(Model $Host, Model $Hoststatus, Model $Service, Model $Servicestatus, $map, $hosts, $services, UserTime $UserTime) {
+    public function getMapSummary(Model $Host, Model $Hoststatus, Model $Service, Model $Servicestatus, $map, $hosts, $services, UserTime $UserTime, $summaryStateItem) {
         $cumulatedHostState = null;
         $cumulatedServiceState = null;
         $notOkHosts = [];
@@ -1053,7 +1053,7 @@ class MapNew extends MapModuleAppModel {
             'id' => $map['Map']['id'],
             'name' => $map['Map']['name'],
             'title' => $map['Map']['title'],
-            'object_id' => $map['Mapitem']['object_id']
+            'object_id' => ($summaryStateItem)?$map['Mapsummaryitem']['object_id']:$map['Mapitem']['object_id']
         ];
 
         return [
