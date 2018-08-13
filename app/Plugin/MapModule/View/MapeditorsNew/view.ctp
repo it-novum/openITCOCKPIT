@@ -90,9 +90,9 @@
 
             <div ng-repeat="lineItem in map.Mapline">
                 <a ng-show="lineItem.type != 'stateless'"
-                    ng-href="{{ getHref(lineItem) }}"
-                    ng-mouseenter="showSummaryStateDelayed(lineItem)"
-                    ng-mouseleave="cancelTimer()">
+                   ng-href="{{ getHref(lineItem) }}"
+                   ng-mouseenter="showSummaryStateDelayed(lineItem)"
+                   ng-mouseleave="cancelTimer()">
                     <map-line item="lineItem" refresh-interval="refreshInterval"></map-line>
                 </a>
                 <a ng-show="lineItem.type == 'stateless'">
@@ -132,6 +132,12 @@
                                        ng-mouseenter="showSummaryStateDelayed(gadgetItem)"
                                        ng-mouseleave="cancelTimer()"
                                        refresh-interval="refreshInterval"></trafficlight-item>
+
+                    <temperature-item item="gadgetItem"
+                                      ng-if="gadgetItem.gadget === 'Temperature'"
+                                      ng-mouseenter="showSummaryStateDelayed(gadgetItem)"
+                                      ng-mouseleave="cancelTimer()"
+                                      refresh-interval="refreshInterval"></temperature-item>
                 </a>
             </div>
 
@@ -140,7 +146,8 @@
                  ng-mouseenter="showSummaryStateDelayed(item)"
                  ng-mouseleave="cancelTimer()">
                 <a ng-href="{{ getHref(item) }}">
-                    <map-summary-item item="item" details="details" refresh-interval="refreshInterval"></map-summary-item>
+                    <map-summary-item item="item" details="details"
+                                      refresh-interval="refreshInterval"></map-summary-item>
                 </a>
             </div>
 
