@@ -23,7 +23,7 @@ angular.module('openITCOCKPIT')
 
 
         $scope.load = function(){
-            $http.get("/map_module/mapeditors_new/edit/" + $scope.id + ".json", {
+            $http.get("/map_module/mapeditors/edit/" + $scope.id + ".json", {
                 params: {
                     'angular': true
                 }
@@ -51,7 +51,7 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.changeBackground = function(background){
-            $http.post("/map_module/mapeditors_new/saveBackground.json?angular=true",
+            $http.post("/map_module/mapeditors/saveBackground.json?angular=true",
                 {
                     'Map': {
                         id: $scope.id,
@@ -72,7 +72,7 @@ angular.module('openITCOCKPIT')
         };
 
         var loadBackgroundImages = function(selectedImage){
-            $http.get("/map_module/mapeditors_new/backgroundImages.json", {
+            $http.get("/map_module/mapeditors/backgroundImages.json", {
                 params: {
                     'angular': true
                 }
@@ -311,7 +311,7 @@ angular.module('openITCOCKPIT')
         };
 
         var loadIconsets = function(selectedIconset){
-            $http.get("/map_module/mapeditors_new/getIconsets.json", {
+            $http.get("/map_module/mapeditors/getIconsets.json", {
                 params: {
                     'angular': true
                 }
@@ -326,7 +326,7 @@ angular.module('openITCOCKPIT')
         };
 
         var loadIcons = function(selectedIcon){
-            $http.get("/map_module/mapeditors_new/getIcons.json", {
+            $http.get("/map_module/mapeditors/getIcons.json", {
                 params: {
                     'angular': true
                 }
@@ -523,7 +523,7 @@ angular.module('openITCOCKPIT')
             }
 
             $scope.currentItem.map_id = $scope.id;
-            $http.post("/map_module/mapeditors_new/saveItem.json?angular=true",
+            $http.post("/map_module/mapeditors/saveItem.json?angular=true",
                 {
                     'Mapitem': $scope.currentItem,
                     'action': action
@@ -563,7 +563,7 @@ angular.module('openITCOCKPIT')
 
         $scope.deleteItem = function(){
             $scope.currentItem.map_id = $scope.id;
-            $http.post("/map_module/mapeditors_new/deleteItem.json?angular=true",
+            $http.post("/map_module/mapeditors/deleteItem.json?angular=true",
                 {
                     'Mapitem': $scope.currentItem,
                     'action': 'delete'
@@ -618,7 +618,7 @@ angular.module('openITCOCKPIT')
                 $scope.currentItem.object_id = null;
             }
 
-            $http.post("/map_module/mapeditors_new/saveLine.json?angular=true",
+            $http.post("/map_module/mapeditors/saveLine.json?angular=true",
                 {
                     'Mapline': $scope.currentItem,
                     'action': action
@@ -659,7 +659,7 @@ angular.module('openITCOCKPIT')
 
         $scope.deleteLine = function(){
             $scope.currentItem.map_id = $scope.id;
-            $http.post("/map_module/mapeditors_new/deleteLine.json?angular=true",
+            $http.post("/map_module/mapeditors/deleteLine.json?angular=true",
                 {
                     'Mapline': $scope.currentItem,
                     'action': 'delete'
@@ -722,7 +722,7 @@ angular.module('openITCOCKPIT')
                 }
             }
 
-            $http.post("/map_module/mapeditors_new/saveGadget.json?angular=true",
+            $http.post("/map_module/mapeditors/saveGadget.json?angular=true",
                 {
                     'Mapgadget': $scope.currentItem,
                     'action': action
@@ -768,7 +768,7 @@ angular.module('openITCOCKPIT')
 
         $scope.deleteGadget = function(){
             $scope.currentItem.map_id = $scope.id;
-            $http.post("/map_module/mapeditors_new/deleteGadget.json?angular=true",
+            $http.post("/map_module/mapeditors/deleteGadget.json?angular=true",
                 {
                     'Mapgadget': $scope.currentItem,
                     'action': 'delete'
@@ -825,7 +825,7 @@ angular.module('openITCOCKPIT')
                 $scope.currentItem.text = $('#docuText').val();
             }
 
-            $http.post("/map_module/mapeditors_new/saveText.json?angular=true",
+            $http.post("/map_module/mapeditors/saveText.json?angular=true",
                 {
                     'Maptext': $scope.currentItem,
                     'action': action
@@ -868,7 +868,7 @@ angular.module('openITCOCKPIT')
 
         $scope.deleteText = function(){
             $scope.currentItem.map_id = $scope.id;
-            $http.post("/map_module/mapeditors_new/deleteText.json?angular=true",
+            $http.post("/map_module/mapeditors/deleteText.json?angular=true",
                 {
                     'Maptext': $scope.currentItem,
                     'action': 'delete'
@@ -919,7 +919,7 @@ angular.module('openITCOCKPIT')
 
             $scope.currentItem.map_id = $scope.id;
 
-            $http.post("/map_module/mapeditors_new/saveIcon.json?angular=true",
+            $http.post("/map_module/mapeditors/saveIcon.json?angular=true",
                 {
                     'Mapicon': $scope.currentItem,
                     'action': action
@@ -959,7 +959,7 @@ angular.module('openITCOCKPIT')
 
         $scope.deleteIcon = function(){
             $scope.currentItem.map_id = $scope.id;
-            $http.post("/map_module/mapeditors_new/deleteIcon.json?angular=true",
+            $http.post("/map_module/mapeditors/deleteIcon.json?angular=true",
                 {
                     'Mapicon': $scope.currentItem,
                     'action': 'delete'
@@ -1041,7 +1041,7 @@ angular.module('openITCOCKPIT')
 
             $scope.currentItem.map_id = $scope.id;
 
-            $http.post("/map_module/mapeditors_new/saveSummaryitem.json?angular=true",
+            $http.post("/map_module/mapeditors/saveSummaryitem.json?angular=true",
                 {
                     'Mapsummaryitem': $scope.currentItem,
                     'action': action
@@ -1087,7 +1087,7 @@ angular.module('openITCOCKPIT')
 
         $scope.deleteSummaryItem = function(){
             $scope.currentItem.map_id = $scope.id;
-            $http.post("/map_module/mapeditors_new/deleteSummaryitem.json?angular=true",
+            $http.post("/map_module/mapeditors/deleteSummaryitem.json?angular=true",
                 {
                     'Mapsummaryitem': $scope.currentItem,
                     'action': 'delete'
@@ -1112,7 +1112,7 @@ angular.module('openITCOCKPIT')
         };
 
         var loadMetrics = function(){
-            $http.get("/map_module/mapeditors_new/getPerformanceDataMetrics/" + $scope.currentItem.object_id + ".json", {
+            $http.get("/map_module/mapeditors/getPerformanceDataMetrics/" + $scope.currentItem.object_id + ".json", {
                 params: {
                     'angular': true
                 }
@@ -1283,7 +1283,7 @@ angular.module('openITCOCKPIT')
                 selected = [];
             }
 
-            $http.get("/map_module/mapeditors_new/loadMapsByString.json", {
+            $http.get("/map_module/mapeditors/loadMapsByString.json", {
                 params: {
                     'angular': true,
                     'filter[Map.name]': searchString,

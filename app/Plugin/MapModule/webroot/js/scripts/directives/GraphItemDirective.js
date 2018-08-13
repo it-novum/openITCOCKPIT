@@ -1,7 +1,7 @@
 angular.module('openITCOCKPIT').directive('graphItem', function($http){
     return {
         restrict: 'E',
-        templateUrl: '/map_module/mapeditors_new/graph.html',
+        templateUrl: '/map_module/mapeditors/graph.html',
         scope: {
             'item': '='
         },
@@ -24,7 +24,7 @@ angular.module('openITCOCKPIT').directive('graphItem', function($http){
 
 
             $scope.load = function(){
-                $http.get("/map_module/mapeditors_new/graph/.json", {
+                $http.get("/map_module/mapeditors/graph/.json", {
                     params: {
                         'angular': true,
                         'serviceId': $scope.item.object_id,

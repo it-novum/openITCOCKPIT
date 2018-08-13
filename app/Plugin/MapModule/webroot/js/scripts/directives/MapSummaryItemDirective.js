@@ -1,7 +1,7 @@
 angular.module('openITCOCKPIT').directive('mapSummaryItem', function($http, $interval){
     return {
         restrict: 'E',
-        templateUrl: '/map_module/mapeditors_new/mapsummaryitem.html',
+        templateUrl: '/map_module/mapeditors/mapsummaryitem.html',
         scope: {
             'item': '='
         },
@@ -15,7 +15,7 @@ angular.module('openITCOCKPIT').directive('mapSummaryItem', function($http, $int
 
 
             $scope.load = function(){
-                $http.get("/map_module/mapeditors_new/mapsummaryitem/.json", {
+                $http.get("/map_module/mapeditors/mapsummaryitem/.json", {
                     params: {
                         'angular': true,
                         'objectId': $scope.item.object_id,

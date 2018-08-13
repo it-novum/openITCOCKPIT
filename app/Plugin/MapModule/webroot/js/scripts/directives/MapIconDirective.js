@@ -1,7 +1,7 @@
 angular.module('openITCOCKPIT').directive('mapIcon', function($http){
     return {
         restrict: 'E',
-        templateUrl: '/map_module/mapeditors_new/mapicon.html',
+        templateUrl: '/map_module/mapeditors/mapicon.html',
         scope: {
             'item': '='
         },

@@ -1,7 +1,7 @@
 angular.module('openITCOCKPIT').directive('tachoItem', function($http){
     return {
         restrict: 'E',
-        templateUrl: '/map_module/mapeditors_new/tacho.html',
+        templateUrl: '/map_module/mapeditors/tacho.html',
         scope: {
             'item': '='
         },
@@ -24,7 +24,7 @@ angular.module('openITCOCKPIT').directive('tachoItem', function($http){
             }
 
             $scope.load = function(){
-                $http.get("/map_module/mapeditors_new/mapitem/.json", {
+                $http.get("/map_module/mapeditors/mapitem/.json", {
                     params: {
                         'angular': true,
                         'objectId': $scope.item.object_id,

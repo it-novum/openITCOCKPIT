@@ -13,7 +13,7 @@ angular.module('openITCOCKPIT')
         var timer;
 
         $scope.load = function(){
-            $http.get("/map_module/mapeditors_new/view/" + $scope.id + ".json", {
+            $http.get("/map_module/mapeditors/view/" + $scope.id + ".json", {
                 params: {
                     'angular': true
                 }
@@ -76,7 +76,7 @@ angular.module('openITCOCKPIT')
                     break;
 
                 case 'map':
-                    url = '/map_module/mapeditors_new/view/' + item.object_id;
+                    url = '/map_module/mapeditors/view/' + item.object_id;
                     break;
 
                 default:

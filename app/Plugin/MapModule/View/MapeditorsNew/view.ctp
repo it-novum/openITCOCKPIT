@@ -56,13 +56,13 @@
                     <?php echo __('Edit'); ?>
                 </a>
             <?php endif; ?>
-            <a class="btn btn-xs btn-default" ng-href="/map_module/mapeditors_new/view/{{map.Map.id}}?fullscreen=true"
+            <a class="btn btn-xs btn-default" ng-href="/map_module/mapeditors/view/{{map.Map.id}}?fullscreen=true"
                ng-show="!fullscreen">
                 <i class="fa fa-expand"></i>
                 <?php echo __('Fullscreen'); ?>
             </a>
 
-            <a class="btn btn-xs btn-default" ng-href="/map_module/mapeditors_new/view/{{map.Map.id}}?fullscreen=false"
+            <a class="btn btn-xs btn-default" ng-href="/map_module/mapeditors/view/{{map.Map.id}}?fullscreen=false"
                ng-show="fullscreen">
                 <i class="fa fa-compress "></i>
                 <?php echo __('Leave fullscreen'); ?>

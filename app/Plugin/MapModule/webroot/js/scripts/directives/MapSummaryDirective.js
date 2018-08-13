@@ -1,11 +1,11 @@
 angular.module('openITCOCKPIT').directive('mapSummary', function ($http, $interval, $httpParamSerializer) {
     return {
         restrict: 'E',
-        templateUrl: '/map_module/mapeditors_new/mapsummary.html',
+        templateUrl: '/map_module/mapeditors/mapsummary.html',
 
         controller: function ($scope) {
             $scope.loadSumaryState = function (item, summary) {
-                $http.get("/map_module/mapeditors_new/mapsummary/.json", {
+                $http.get("/map_module/mapeditors/mapsummary/.json", {
                     params: {
                         'angular': true,
                         'objectId': item.object_id,
@@ -77,7 +77,7 @@ angular.module('openITCOCKPIT').directive('mapSummary', function ($http, $interv
                         break;
 
                     case 'map':
-                        url = '/map_module/mapeditors_new/view/' + objectId;
+                        url = '/map_module/mapeditors/view/' + objectId;
                         break;
 
                     default:

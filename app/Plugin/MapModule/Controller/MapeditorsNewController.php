@@ -74,7 +74,7 @@ class MapeditorsNewController extends MapModuleAppController {
     /**
      * @param int $id
      */
-    ///map_module/mapeditors_new/view/20
+    ///map_module/mapeditors/view/20
     public function view($id) {
         if (!$this->isApiRequest()) {
             $this->layout = 'angularjs';

@@ -132,7 +132,7 @@
                                 </td>
                                 <td>
                                     <a ng-if="rotation.Rotation.ids.length"
-                                       ng-href="/map_module/mapeditors_new/view/{{ rotation.Rotation.first_id }}?rotation={{ rotation.Rotation.ids }}&interval={{ rotation.Rotation.interval }}">
+                                       ng-href="/map_module/mapeditors/view/{{ rotation.Rotation.first_id }}?rotation={{ rotation.Rotation.ids }}&interval={{ rotation.Rotation.interval }}">
                                         {{ rotation.Rotation.name }}
                                     </a>
                                     <a ng-if="!rotation.Rotation.ids.length"
@@ -168,12 +168,12 @@
                                                 <li class="divider" ng-if="map.Map.allowEdit"></li>
                                             <?php endif; ?>
                                             <li ng-if="rotation.Rotation.ids.length">
-                                                <a ng-href="/map_module/mapeditors_new/view/{{ rotation.Rotation.first_id }}?rotation={{ rotation.Rotation.ids }}&interval={{ rotation.Rotation.interval }}">
+                                                <a ng-href="/map_module/mapeditors/view/{{ rotation.Rotation.first_id }}?rotation={{ rotation.Rotation.ids }}&interval={{ rotation.Rotation.interval }}">
                                                     <i class="fa fa-eye"></i> <?php echo __('View'); ?>
                                                 </a>
                                             </li>
                                             <li ng-if="rotation.Rotation.ids.length">
-                                                <a ng-href="/map_module/mapeditors_new/view/{{ rotation.Rotation.first_id }}?rotation={{ rotation.Rotation.ids }}&interval={{ rotation.Rotation.interval }}&fullscreen=true">
+                                                <a ng-href="/map_module/mapeditors/view/{{ rotation.Rotation.first_id }}?rotation={{ rotation.Rotation.ids }}&interval={{ rotation.Rotation.interval }}&fullscreen=true">
                                                     <i class="glyphicon glyphicon-resize-full"></i> <?php echo __('View in fullscreen'); ?>
                                                 </a>
                                             </li>

@@ -1,7 +1,7 @@
 angular.module('openITCOCKPIT').directive('mapItem', function($http, $interval){
     return {
         restrict: 'E',
-        templateUrl: '/map_module/mapeditors_new/mapitem.html',
+        templateUrl: '/map_module/mapeditors/mapitem.html',
         scope: {
             'item': '='
             //'refreshInterval': '='
@@ -12,7 +12,7 @@ angular.module('openITCOCKPIT').directive('mapItem', function($http, $interval){
             var interval = null;
 
             $scope.load = function(){
-                $http.get("/map_module/mapeditors_new/mapitem/.json", {
+                $http.get("/map_module/mapeditors/mapitem/.json", {
                     params: {
                         'angular': true,
                         'objectId': $scope.item.object_id,

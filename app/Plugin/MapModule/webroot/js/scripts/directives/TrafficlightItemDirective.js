@@ -1,7 +1,7 @@
 angular.module('openITCOCKPIT').directive('trafficlightItem', function($http){
     return {
         restrict: 'E',
-        templateUrl: '/map_module/mapeditors_new/trafficlight.html',
+        templateUrl: '/map_module/mapeditors/trafficlight.html',
         scope: {
             'item': '='
         },
@@ -30,7 +30,7 @@ angular.module('openITCOCKPIT').directive('trafficlightItem', function($http){
 
 
             $scope.load = function(){
-                $http.get("/map_module/mapeditors_new/mapitem/.json", {
+                $http.get("/map_module/mapeditors/mapitem/.json", {
                     params: {
                         'angular': true,
                         'objectId': $scope.item.object_id,

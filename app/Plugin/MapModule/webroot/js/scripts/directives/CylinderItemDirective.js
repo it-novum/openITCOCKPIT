@@ -1,7 +1,7 @@
 angular.module('openITCOCKPIT').directive('cylinderItem', function($http){
     return {
         restrict: 'E',
-        templateUrl: '/map_module/mapeditors_new/cylinder.html',
+        templateUrl: '/map_module/mapeditors/cylinder.html',
         scope: {
             'item': '='
         },
@@ -23,7 +23,7 @@ angular.module('openITCOCKPIT').directive('cylinderItem', function($http){
 
 
             $scope.load = function(){
-                $http.get("/map_module/mapeditors_new/mapitem/.json", {
+                $http.get("/map_module/mapeditors/mapitem/.json", {
                     params: {
                         'angular': true,
                         'objectId': $scope.item.object_id,

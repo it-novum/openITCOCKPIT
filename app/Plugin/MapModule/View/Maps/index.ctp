@@ -131,7 +131,7 @@
                                            ng-show="map.Map.allowEdit">
                                 </td>
                                 <td>
-                                    <a href="/map_module/mapeditors_new/view/{{ map.Map.id }}" >{{ map.Map.name }}</a>
+                                    <a href="/map_module/mapeditors/view/{{ map.Map.id }}" >{{ map.Map.name }}</a>
                                 </td>
                                 <td>
                                     {{ map.Map.title }}
@@ -174,11 +174,11 @@
                                                 <li class="divider" ng-if="map.Map.allowCopy"></li>
                                             <?php endif; ?>
                                             <li>
-                                                <a href="/map_module/mapeditors_new/view/{{map.Map.id}}">
+                                                <a href="/map_module/mapeditors/view/{{map.Map.id}}">
                                                     <i class="fa fa-eye"></i> <?php echo __('View'); ?></a>
                                             </li>
                                             <li>
-                                                <a ng-href="/map_module/mapeditors_new/view/{{map.Map.id}}?fullscreen=true">
+                                                <a ng-href="/map_module/mapeditors/view/{{map.Map.id}}?fullscreen=true">
                                                     <i class="fa fa-expand"></i> <?php echo __('View in fullscreen'); ?>
                                                 </a>
                                             </li>

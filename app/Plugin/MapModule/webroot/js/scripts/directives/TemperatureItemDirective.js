@@ -1,7 +1,7 @@
 angular.module('openITCOCKPIT').directive('temperatureItem', function($http){
     return {
         restrict: 'E',
-        templateUrl: '/map_module/mapeditors_new/temperature.html',
+        templateUrl: '/map_module/mapeditors/temperature.html',
         scope: {
             'item': '='
         },
@@ -22,7 +22,7 @@ angular.module('openITCOCKPIT').directive('temperatureItem', function($http){
             }
 
             $scope.load = function(){
-                $http.get("/map_module/mapeditors_new/mapitem/.json", {
+                $http.get("/map_module/mapeditors/mapitem/.json", {
                     params: {
                         'angular': true,
                         'objectId': $scope.item.object_id,

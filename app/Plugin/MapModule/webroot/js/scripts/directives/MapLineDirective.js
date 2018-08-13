@@ -1,7 +1,7 @@
 angular.module('openITCOCKPIT').directive('mapLine', function($http){
     return {
         restrict: 'E',
-        templateUrl: '/map_module/mapeditors_new/mapline.html',
+        templateUrl: '/map_module/mapeditors/mapline.html',
         scope: {
             'item': '='
         },
@@ -64,7 +64,7 @@ angular.module('openITCOCKPIT').directive('mapLine', function($http){
             };
 
             $scope.load = function(){
-                $http.get("/map_module/mapeditors_new/mapitem/.json", {
+                $http.get("/map_module/mapeditors/mapitem/.json", {
                     params: {
                         'angular': true,
                         'objectId': $scope.item.object_id,

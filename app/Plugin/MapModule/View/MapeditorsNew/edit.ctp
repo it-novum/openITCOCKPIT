@@ -50,7 +50,7 @@
                 <?php echo __('Back to list'); ?>
             </a>
             <?php if ($this->Acl->hasPermission('view', 'mapeditors', 'mapmodule')): ?>
-                <a class="btn btn-xs btn-default" ng-href="/map_module/mapeditors_new/view/{{map.Map.id}}">
+                <a class="btn btn-xs btn-default" ng-href="/map_module/mapeditors/view/{{map.Map.id}}">
                     <i class="fa fa-eye"></i>
                     <?php echo __('View'); ?>
                 </a>
