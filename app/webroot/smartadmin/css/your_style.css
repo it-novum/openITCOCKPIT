@@ -1982,8 +1982,8 @@ label[class^='aco-host']:after, label[class^='aco-service']:after {
 }
 
 .map-summary-state-popover {
-    position: absolute;
-    top: 0;
+    position: fixed;
+    top: 50px;
     right: 0;
     width: 30%;
 }
