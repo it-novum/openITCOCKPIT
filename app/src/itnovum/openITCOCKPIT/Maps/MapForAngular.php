@@ -42,7 +42,7 @@ class MapForAngular {
     /**
      * @var array
      */
-    private $laysers = [];
+    private $layers = [];
 
     /**
      * @var int|null
@@ -73,7 +73,7 @@ class MapForAngular {
         if (isset($this->map['Mapitem'])) {
             foreach ($this->map['Mapitem'] as $mapitem) {
                 $item = new Mapitem($mapitem);
-                $this->laysers[$item->getZIndex()] = sprintf('Layer %s', $item->getZIndex());
+                $this->layers[$item->getZIndex()] = sprintf('Layer %s', $item->getZIndex());
                 $map['Mapitem'][] = $item->toArray();
             }
         }
@@ -81,7 +81,7 @@ class MapForAngular {
         if (isset($this->map['Mapline'])) {
             foreach ($this->map['Mapline'] as $mapline) {
                 $line = new Mapline($mapline);
-                $this->laysers[$line->getZIndex()] = sprintf('Layer %s', $line->getZIndex());
+                $this->layers[$line->getZIndex()] = sprintf('Layer %s', $line->getZIndex());
                 $map['Mapline'][] = $line->toArray();
             }
         }
@@ -89,7 +89,7 @@ class MapForAngular {
         if (isset($this->map['Mapgadget'])) {
             foreach ($this->map['Mapgadget'] as $mapgadget) {
                 $gadget = new Mapgadget($mapgadget);
-                $this->laysers[$gadget->getZIndex()] = sprintf('Layer %s', $gadget->getZIndex());
+                $this->layers[$gadget->getZIndex()] = sprintf('Layer %s', $gadget->getZIndex());
                 $map['Mapgadget'][] = $gadget->toArray();
             }
         }
@@ -97,7 +97,7 @@ class MapForAngular {
         if (isset($this->map['Mapicon'])) {
             foreach ($this->map['Mapicon'] as $mapicon) {
                 $icon = new Mapicon($mapicon);
-                $this->laysers[$icon->getZIndex()] = sprintf('Layer %s', $icon->getZIndex());
+                $this->layers[$icon->getZIndex()] = sprintf('Layer %s', $icon->getZIndex());
                 $map['Mapicon'][] = $icon->toArray();
             }
         }
@@ -105,7 +105,7 @@ class MapForAngular {
         if (isset($this->map['Maptext'])) {
             foreach ($this->map['Maptext'] as $maptext) {
                 $text = new Maptext($maptext);
-                $this->laysers[$text->getZIndex()] = sprintf('Layer %s', $text->getZIndex());
+                $this->layers[$text->getZIndex()] = sprintf('Layer %s', $text->getZIndex());
                 $map['Maptext'][] = $text->toArray();
             }
         }
@@ -113,7 +113,7 @@ class MapForAngular {
         if (isset($this->map['Mapsummaryitem'])) {
             foreach ($this->map['Mapsummaryitem'] as $mapsummaryitem) {
                 $summaryitem = new Mapsummaryitem($mapsummaryitem);
-                $this->laysers[$summaryitem->getZIndex()] = sprintf('Layer %s', $summaryitem->getZIndex());
+                $this->layers[$summaryitem->getZIndex()] = sprintf('Layer %s', $summaryitem->getZIndex());
                 $map['Mapsummaryitem'][] = $summaryitem->toArray();
             }
         }
@@ -122,11 +122,11 @@ class MapForAngular {
             $map['Container'] = $this->map['Container'];
         }
 
-        if(empty($this->laysers)){
-            $this->laysers[0] = sprintf('Layer %s', 0);
+        if(empty($this->layers)){
+            $this->layers[0] = sprintf('Layer %s', 0);
         }
 
-        $this->max_z_index = (int)max(array_keys($this->laysers));
+        $this->max_z_index = (int)max(array_keys($this->layers));
 
         return $map;
     }
@@ -145,11 +145,11 @@ class MapForAngular {
     /**
      * @return array
      */
-    public function getLaysers() {
-        if (empty($this->laysers)) {
+    public function getLayers() {
+        if (empty($this->layers)) {
             $this->convertToArray();
         }
-        return $this->laysers;
+        return $this->layers;
     }
 
     /**

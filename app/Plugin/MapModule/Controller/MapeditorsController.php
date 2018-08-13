@@ -1699,7 +1699,7 @@ class MapeditorsController extends MapModuleAppController {
         $this->set('map', $map);
         $this->set('maxUploadLimit', $FileUploadSize->toArray());
         $this->set('max_z_index', $MapForAngular->getMaxZIndex());
-        $this->set('layers', $MapForAngular->getLaysers());
+        $this->set('layers', $MapForAngular->getLayers());
         $this->set('_serialize', ['map', 'maxUploadLimit', 'max_z_index', 'layers']);
     }
 
