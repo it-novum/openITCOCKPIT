@@ -4,12 +4,13 @@ angular.module('openITCOCKPIT').directive('mapSummary', function ($http, $interv
         templateUrl: '/map_module/mapeditors_new/mapsummary.html',
 
         controller: function ($scope) {
-            $scope.loadSumaryState = function (item) {
+            $scope.loadSumaryState = function (item, summary) {
                 $http.get("/map_module/mapeditors_new/mapsummary/.json", {
                     params: {
                         'angular': true,
                         'objectId': item.object_id,
-                        'type': item.type
+                        'type': item.type,
+                        'summary': summary
                     }
                 }).then(function (result) {
                     $('.map-summary-state-popover').switchClass('slideOutRight', 'slideInRight');
@@ -121,8 +122,8 @@ angular.module('openITCOCKPIT').directive('mapSummary', function ($http, $interv
         },
 
         link: function (scope, element, attr) {
-            scope.showSummaryState = function (item) {
-                scope.loadSumaryState(item);
+            scope.showSummaryState = function (item, summary) { //--> is summary item (true / false)
+                scope.loadSumaryState(item, summary);
             };
         }
     };

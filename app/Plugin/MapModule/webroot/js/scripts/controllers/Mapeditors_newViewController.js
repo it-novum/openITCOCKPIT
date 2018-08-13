@@ -36,10 +36,10 @@ angular.module('openITCOCKPIT')
             });
         };
 
-        $scope.showSummaryStateDelayed = function(item){
+        $scope.showSummaryStateDelayed = function(item, summary){ //--> is summary item (true / false)
             timer = $timeout(function(){
                 //Method is in MapSummaryDirective
-                $scope.showSummaryState(item);
+                $scope.showSummaryState(item, summary);
             }, 500);
         };
 
