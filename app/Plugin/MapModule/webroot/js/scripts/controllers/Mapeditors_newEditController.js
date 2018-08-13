@@ -474,6 +474,7 @@ angular.module('openITCOCKPIT')
                     }).show();
                     $scope.action = null;
                     $scope.addNewObject = false;
+                    $mapEditor.css('cursor', 'default');
                     break;
             }
         };
@@ -523,6 +524,10 @@ angular.module('openITCOCKPIT')
                     }
                 }else{
                     //New created item
+                    if(typeof $scope.map.Mapitem === "undefined"){
+                        $scope.map.Mapitem = [];
+                    }
+
                     $scope.map.Mapitem.push(result.data.Mapitem.Mapitem);
                     setTimeout(makeDraggable, 250);
                 }
@@ -605,10 +610,10 @@ angular.module('openITCOCKPIT')
                 if($scope.currentItem.hasOwnProperty('id')){
                     for(var i in $scope.map.Mapline){
                         if($scope.map.Mapline[i].id == $scope.currentItem.id){
-                            $scope.map.Mapline[i].startX = $scope.currentItem.startX;
                             $scope.map.Mapline[i].startY = $scope.currentItem.startY;
-                            $scope.map.Mapline[i].endx = $scope.currentItem.endX;
+                            $scope.map.Mapline[i].endX = $scope.currentItem.endX;
                             $scope.map.Mapline[i].endY = $scope.currentItem.endY;
+                            $scope.map.Mapline[i].startX = $scope.currentItem.startX; //Change this last because of $watch in directive
 
                             //We are done here
                             break;
@@ -616,6 +621,10 @@ angular.module('openITCOCKPIT')
                     }
                 }else{
                     //New created item
+                    if(typeof $scope.map.Mapline === "undefined"){
+                        $scope.map.Mapline = [];
+                    }
+
                     $scope.map.Mapline.push(result.data.Mapline.Mapline);
                 }
 
@@ -720,6 +729,10 @@ angular.module('openITCOCKPIT')
                     }
                 }else{
                     //New created item
+                    if(typeof $scope.map.Mapgadget === "undefined"){
+                        $scope.map.Mapgadget = [];
+                    }
+
                     $scope.map.Mapgadget.push(result.data.Mapgadget.Mapgadget);
                     setTimeout(makeDraggable, 250);
                 }
@@ -816,6 +829,10 @@ angular.module('openITCOCKPIT')
                     }
                 }else{
                     //New created item
+                    if(typeof $scope.map.Maptext === "undefined"){
+                        $scope.map.Maptext = [];
+                    }
+
                     $scope.map.Maptext.push(result.data.Maptext.Maptext);
                     setTimeout(makeDraggable, 250);
                 }
@@ -903,6 +920,10 @@ angular.module('openITCOCKPIT')
                     }
                 }else{
                     //New created item
+                    if(typeof $scope.map.Mapicon === "undefined"){
+                        $scope.map.Mapicon = [];
+                    }
+
                     $scope.map.Mapicon.push(result.data.Mapicon.Mapicon);
                     setTimeout(makeDraggable, 250);
                 }
@@ -1027,6 +1048,10 @@ angular.module('openITCOCKPIT')
                     }
                 }else{
                     //New created item
+                    if(typeof $scope.map.Mapsummaryitem === "undefined"){
+                        $scope.map.Mapsummaryitem = [];
+                    }
+
                     $scope.map.Mapsummaryitem.push(result.data.Mapsummaryitem.Mapsummaryitem);
                     setTimeout(makeDraggable, 250);
                 }
@@ -1267,7 +1292,6 @@ angular.module('openITCOCKPIT')
                     var y = $this.css('top');
                     var id = $this.data('id');
                     var type = $this.data('type');
-
                     x = parseInt(x.replace('px', ''), 10);
                     y = parseInt(y.replace('px', ''), 10);
 
@@ -1279,6 +1303,37 @@ angular.module('openITCOCKPIT')
                                 y: y
                             };
                             $scope.saveItem('dragstop');
+                            break;
+
+                        case 'line':
+                            var position = $this.position();
+                            x = position.left;
+                            y = position.top;
+
+                            var oldStartX = parseInt($this.data('oldstartx'), 10);
+                            var oldStartY = parseInt($this.data('oldstarty'), 10);
+                            var oldEndX = parseInt($this.data('oldendx'), 10);
+                            var oldEndY = parseInt($this.data('oldendy'), 10);
+
+                            //Get movement distance
+
+                            var distanceX = oldStartX - x;
+                            distanceX = distanceX * -1;
+                            var distanceY = oldStartY - y;
+                            distanceY = distanceY * -1;
+
+                            var endX = oldEndX + distanceX;
+                            var endY = oldEndY + distanceY;
+
+                            $scope.currentItem = {
+                                id: id,
+                                startX: parseInt(x, 10),
+                                startY: parseInt(y, 10),
+                                endX: parseInt(endX, 10),
+                                endY: parseInt(endY, 10)
+                            };
+
+                            $scope.saveLine('dragstop');
                             break;
 
                         case 'gadget':

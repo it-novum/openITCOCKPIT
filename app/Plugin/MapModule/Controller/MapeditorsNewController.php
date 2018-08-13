@@ -1735,6 +1735,32 @@ class MapeditorsNewController extends MapModuleAppController {
             throw new MethodNotAllowedException();
         }
 
+        //Save new possition after drag and drop
+        if ($this->request->data('action') === 'dragstop') {
+            $line = $this->Mapline->find('first', [
+                'recursive'  => -1,
+                'conditions' => [
+                    'Mapline.id' => $this->request->data('Mapline.id')
+                ]
+            ]);
+
+            $line['Mapline']['startX'] = (int)$this->request->data('Mapline.startX');
+            $line['Mapline']['startY'] = (int)$this->request->data('Mapline.startY');
+            $line['Mapline']['endX'] = (int)$this->request->data('Mapline.endX');
+            $line['Mapline']['endY'] = (int)$this->request->data('Mapline.endY');
+            if ($this->Mapline->save($line)) {
+                $Mapline = new \itnovum\openITCOCKPIT\Maps\ValueObjects\Mapline($line['Mapline']);
+
+                $this->set('Mapline', [
+                    'Mapline' => $Mapline->toArray()
+                ]);
+
+                $this->set('_serialize', ['Mapline']);
+                return;
+            }
+            $this->serializeErrorMessageFromModel('Mapline');
+            return;
+        }
 
         //Create new item or update existing one
         if (!isset($this->request->data['Mapline']['id'])) {

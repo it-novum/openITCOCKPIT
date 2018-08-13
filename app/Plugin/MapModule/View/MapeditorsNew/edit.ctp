@@ -110,6 +110,9 @@
 
             <div ng-repeat="lineItem in map.Mapline" ng-dblclick="editLine(lineItem)"
                  style="position: absolute; top: {{lineItem.startY}}px; left: {{lineItem.startX}}px; cursor: move;"
+                 data-id="{{lineItem.id}}" data-type="line"
+                 data-oldstartx="{{lineItem.startX}}" data-oldstarty="{{lineItem.startY}}"
+                 data-oldendx="{{lineItem.endX}}" data-oldendy="{{lineItem.endY}}"
                  class="draggable">
                 <map-line item="lineItem" refresh-interval="0"></map-line>
             </div>
@@ -1688,3 +1691,4 @@
         </div>
     </div>
 </div>
+
