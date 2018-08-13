@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('Mapeditors_newEditController', function($scope, $http, QueryStringService){
+    .controller('MapeditorsEditController', function($scope, $http, QueryStringService){
 
         $scope.init = true;
         $scope.id = QueryStringService.getCakeId();

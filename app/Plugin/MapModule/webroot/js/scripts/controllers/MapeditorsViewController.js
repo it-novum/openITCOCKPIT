@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('Mapeditors_newViewController', function($scope, $http, QueryStringService, $timeout, $interval){
+    .controller('MapeditorsViewController', function($scope, $http, QueryStringService, $timeout, $interval){
 
         $scope.init = true;
         $scope.id = QueryStringService.getCakeId();
