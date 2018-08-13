@@ -31,7 +31,67 @@ use Statusengine\PerfdataParser;
 
 class Map extends MapModuleAppModel {
 
-    public $useTable = false;
+    public $hasAndBelongsToMany = [
+        'Container' => [
+            'className' => 'Container',
+            'joinTable' => 'maps_to_containers',
+            'dependent' => true,
+        ],
+        'Rotation'  => [
+            'className' => 'MapModule.Rotation',
+            'joinTable' => 'maps_to_rotations',
+            'unique'    => true,
+        ],
+    ];
+
+    public $hasMany = [
+        'Mapitem'        => [
+            'className' => 'MapModule.Mapitem',
+            'dependent' => true,
+        ],
+        'Mapline'        => [
+            'className' => 'MapModule.Mapline',
+            'dependent' => true,
+        ],
+        'Mapgadget'      => [
+            'className' => 'MapModule.Mapgadget',
+            'dependent' => true,
+        ],
+        'Mapicon'        => [
+            'className' => 'MapModule.Mapicon',
+            'dependent' => true,
+        ],
+        'Maptext'        => [
+            'className' => 'MapModule.Maptext',
+            'dependent' => true,
+        ],
+        'Mapsummaryitem' => [
+            'className' => 'MapModule.Mapsummaryitem',
+            'dependent' => true,
+        ]
+    ];
+
+    public $validate = [
+        'name'         => [
+            'notBlank' => [
+                'rule'     => 'notBlank',
+                'message'  => 'This field cannot be left blank.',
+                'required' => true,
+            ],
+        ],
+        'title'        => [
+            'notBlank' => [
+                'rule'     => 'notBlank',
+                'message'  => 'This field cannot be left blank.',
+                'required' => true,
+            ],
+        ],
+        'container_id' => [
+            'rule'    => ['multiple', ['min' => 1]],
+            'message' => 'Please select one or more containers',
+        ],
+    ];
+
 
     private $hostIcons = [
         0 => 'up.png',
@@ -67,14 +127,14 @@ class Map extends MapModuleAppModel {
         if (empty($hoststatus)) {
             $HoststatusView = new \itnovum\openITCOCKPIT\Core\Hoststatus([]);
             return [
-                'icon' => $this->errorIcon,
-                'icon_property' => $this->errorIcon,
+                'icon'           => $this->errorIcon,
+                'icon_property'  => $this->errorIcon,
                 'isAcknowledged' => false,
-                'isInDowntime' => false,
-                'color' => 'text-primary',
-                'background' => 'bg-color-blueLight',
-                'Host' => $HostView->toArray(),
-                'Hoststatus' => $HoststatusView->toArray(),
+                'isInDowntime'   => false,
+                'color'          => 'text-primary',
+                'background'     => 'bg-color-blueLight',
+                'Host'           => $HostView->toArray(),
+                'Hoststatus'     => $HoststatusView->toArray(),
             ];
         }
 
@@ -98,25 +158,25 @@ class Map extends MapModuleAppModel {
 
         if ($hoststatus->currentState() > 0) {
             return [
-                'icon' => $icon,
-                'icon_property' => $this->errorIcon,
+                'icon'           => $icon,
+                'icon_property'  => $this->errorIcon,
                 'isAcknowledged' => $hoststatus->isAcknowledged(),
-                'isInDowntime' => $hoststatus->isInDowntime(),
-                'color' => $color,
-                'background' => $background,
-                'Host' => $HostView->toArray(),
-                'Hoststatus' => $hoststatus->toArray(),
+                'isInDowntime'   => $hoststatus->isInDowntime(),
+                'color'          => $color,
+                'background'     => $background,
+                'Host'           => $HostView->toArray(),
+                'Hoststatus'     => $hoststatus->toArray(),
             ];
         }
 
         //Check services for cumulated state (only if host is up)
         $services = $Service->find('list', [
-            'recursive' => -1,
-            'fields' => [
+            'recursive'  => -1,
+            'fields'     => [
                 'Service.uuid'
             ],
             'conditions' => [
-                'Service.host_id' => $host['Host']['id'],
+                'Service.host_id'  => $host['Host']['id'],
                 'Service.disabled' => 0
             ]
         ]);
@@ -149,26 +209,26 @@ class Map extends MapModuleAppModel {
             }
 
             return [
-                'icon' => $serviceIcon,
-                'icon_property' => $serviceIconProperty,
+                'icon'           => $serviceIcon,
+                'icon_property'  => $serviceIconProperty,
                 'isAcknowledged' => $servicestatus->isAcknowledged(),
-                'isInDowntime' => $servicestatus->isInDowntime(),
-                'color' => $servicestatus->ServiceStatusColor(),
-                'background' => $servicestatus->ServiceStatusBackgroundColor(),
-                'Host' => $HostView->toArray(),
-                'Hoststatus' => $hoststatus->toArray(),
+                'isInDowntime'   => $servicestatus->isInDowntime(),
+                'color'          => $servicestatus->ServiceStatusColor(),
+                'background'     => $servicestatus->ServiceStatusBackgroundColor(),
+                'Host'           => $HostView->toArray(),
+                'Hoststatus'     => $hoststatus->toArray(),
             ];
         }
 
         return [
-            'icon' => $icon,
-            'icon_property' => $iconProperty,
+            'icon'           => $icon,
+            'icon_property'  => $iconProperty,
             'isAcknowledged' => $hoststatus->isAcknowledged(),
-            'isInDowntime' => $hoststatus->isInDowntime(),
-            'color' => $color,
-            'background' => $background,
-            'Host' => $HostView->toArray(),
-            'Hoststatus' => $hoststatus->toArray()
+            'isInDowntime'   => $hoststatus->isInDowntime(),
+            'color'          => $color,
+            'background'     => $background,
+            'Host'           => $HostView->toArray(),
+            'Hoststatus'     => $hoststatus->toArray()
         ];
     }
 
@@ -186,16 +246,16 @@ class Map extends MapModuleAppModel {
         if (empty($servicestatus)) {
             $ServicestatusView = new \itnovum\openITCOCKPIT\Core\Servicestatus([]);
             return [
-                'icon' => $this->errorIcon,
-                'icon_property' => $this->errorIcon,
+                'icon'           => $this->errorIcon,
+                'icon_property'  => $this->errorIcon,
                 'isAcknowledged' => false,
-                'isInDowntime' => false,
-                'color' => 'text-primary',
-                'background' => 'bg-color-blueLight',
-                'Host' => $HostView->toArray(),
-                'Service' => $ServiceView->toArray(),
-                'Servicestatus' => $ServicestatusView->toArray(),
-                'Perfdata' => []
+                'isInDowntime'   => false,
+                'color'          => 'text-primary',
+                'background'     => 'bg-color-blueLight',
+                'Host'           => $HostView->toArray(),
+                'Service'        => $ServiceView->toArray(),
+                'Servicestatus'  => $ServicestatusView->toArray(),
+                'Perfdata'       => []
             ];
         }
 
@@ -220,16 +280,16 @@ class Map extends MapModuleAppModel {
 
 
         return [
-            'icon' => $icon,
-            'icon_property' => $iconProperty,
+            'icon'           => $icon,
+            'icon_property'  => $iconProperty,
             'isAcknowledged' => $servicestatus->isAcknowledged(),
-            'isInDowntime' => $servicestatus->isInDowntime(),
-            'color' => $servicestatus->ServiceStatusColor(),
-            'background' => $servicestatus->ServiceStatusBackgroundColor(),
-            'Host' => $HostView->toArray(),
-            'Service' => $ServiceView->toArray(),
-            'Perfdata' => $perfdata->parse(),
-            'Servicestatus' => $servicestatus->toArray()
+            'isInDowntime'   => $servicestatus->isInDowntime(),
+            'color'          => $servicestatus->ServiceStatusColor(),
+            'background'     => $servicestatus->ServiceStatusBackgroundColor(),
+            'Host'           => $HostView->toArray(),
+            'Service'        => $ServiceView->toArray(),
+            'Perfdata'       => $perfdata->parse(),
+            'Servicestatus'  => $servicestatus->toArray()
         ];
     }
 
@@ -249,17 +309,17 @@ class Map extends MapModuleAppModel {
         $hoststatusByUuids = $Hoststatus->byUuid($hostUuids, $HoststatusFields);
 
         $hostgroupLight = [
-            'id' => (int)$hostgroup['Hostgroup']['id'],
-            'name' => $hostgroup['Container']['name'],
+            'id'          => (int)$hostgroup['Hostgroup']['id'],
+            'name'        => $hostgroup['Container']['name'],
             'description' => $hostgroup['Hostgroup']['description']
         ];
 
         if (empty($hoststatusByUuids)) {
             return [
-                'icon' => $this->errorIcon,
-                'color' => 'text-primary',
+                'icon'       => $this->errorIcon,
+                'color'      => 'text-primary',
                 'background' => 'bg-color-blueLight',
-                'Hostgroup' => $hostgroupLight
+                'Hostgroup'  => $hostgroupLight
             ];
         }
         $worstHostState = array_values(
@@ -287,10 +347,10 @@ class Map extends MapModuleAppModel {
 
         if ($hoststatus->currentState() > 0) {
             return [
-                'icon' => $icon,
-                'color' => $color,
+                'icon'       => $icon,
+                'color'      => $color,
                 'background' => $background,
-                'Hostgroup' => $hostgroupLight
+                'Hostgroup'  => $hostgroupLight
             ];
         }
 
@@ -299,12 +359,12 @@ class Map extends MapModuleAppModel {
 
         //Check services for cumulated state (only if host is up)
         $services = $Service->find('list', [
-            'recursive' => -1,
-            'fields' => [
+            'recursive'  => -1,
+            'fields'     => [
                 'Service.uuid'
             ],
             'conditions' => [
-                'Service.host_id' => $hostIds,
+                'Service.host_id'  => $hostIds,
                 'Service.disabled' => 0
             ]
         ]);
@@ -335,18 +395,18 @@ class Map extends MapModuleAppModel {
                 $serviceIcon = $this->ackAndDowntimeIcon;
             }
             return [
-                'icon' => $serviceIcon,
-                'color' => $servicestatus->ServiceStatusColor(),
+                'icon'       => $serviceIcon,
+                'color'      => $servicestatus->ServiceStatusColor(),
                 'background' => $servicestatus->ServiceStatusBackgroundColor(),
-                'Hostgroup' => $hostgroupLight
+                'Hostgroup'  => $hostgroupLight
             ];
         }
 
         return [
-            'icon' => $icon,
-            'color' => $color,
+            'icon'       => $icon,
+            'color'      => $color,
             'background' => $background,
-            'Hostgroup' => $hostgroupLight
+            'Hostgroup'  => $hostgroupLight
         ];
     }
 
@@ -365,16 +425,16 @@ class Map extends MapModuleAppModel {
         $servicestatusByUuids = $Servicestatus->byUuid($serviceUuids, $ServicestatusFields);
 
         $servicegroupLight = [
-            'id' => (int)$servicegroup['Servicegroup']['id'],
-            'name' => $servicegroup['Container']['name'],
+            'id'          => (int)$servicegroup['Servicegroup']['id'],
+            'name'        => $servicegroup['Container']['name'],
             'description' => $servicegroup['Servicegroup']['description']
         ];
 
         if (empty($servicestatusByUuids)) {
             return [
-                'icon' => $this->errorIcon,
-                'color' => 'text-primary',
-                'background' => 'bg-color-blueLight',
+                'icon'         => $this->errorIcon,
+                'color'        => 'text-primary',
+                'background'   => 'bg-color-blueLight',
                 'Servicegroup' => $servicegroupLight
             ];
         }
@@ -402,9 +462,9 @@ class Map extends MapModuleAppModel {
         }
 
         return [
-            'icon' => $icon,
-            'color' => $color,
-            'background' => $background,
+            'icon'         => $icon,
+            'color'        => $color,
+            'background'   => $background,
             'Servicegroup' => $servicegroupLight
         ];
     }
@@ -419,17 +479,17 @@ class Map extends MapModuleAppModel {
      */
     public function getMapInformation(Model $Hoststatus, Model $Servicestatus, $map, $hosts, $services) {
         $map = [
-            'id' => $map['Map']['id'],
-            'name' => $map['Map']['name'],
+            'id'    => $map['Map']['id'],
+            'name'  => $map['Map']['name'],
             'title' => $map['Map']['title']
         ];
 
         if (empty($hosts) && empty($services)) {
             return [
-                'icon' => $this->errorIcon,
-                'color' => 'text-primary',
+                'icon'       => $this->errorIcon,
+                'color'      => 'text-primary',
                 'background' => 'bg-color-blueLight',
-                'Map' => $map
+                'Map'        => $map
             ];
         }
 
@@ -470,11 +530,11 @@ class Map extends MapModuleAppModel {
             }
             if ($hoststatus->currentState() > 0) {
                 return [
-                    'icon' => $icon,
+                    'icon'          => $icon,
                     'icon_property' => $iconProperty,
-                    'color' => $color,
-                    'background' => $background,
-                    'Map' => $map
+                    'color'         => $color,
+                    'background'    => $background,
+                    'Map'           => $map
                 ];
             }
         }
@@ -506,23 +566,23 @@ class Map extends MapModuleAppModel {
             }
 
             return [
-                'icon' => $serviceIcon,
-                'icon_property' => $serviceIconProperty,
+                'icon'           => $serviceIcon,
+                'icon_property'  => $serviceIconProperty,
                 'isAcknowledged' => $servicestatus->isAcknowledged(),
-                'isInDowntime' => $servicestatus->isInDowntime(),
-                'color' => $servicestatus->ServiceStatusColor(),
-                'background' => $servicestatus->ServiceStatusBackgroundColor(),
-                'Map' => $map,
+                'isInDowntime'   => $servicestatus->isInDowntime(),
+                'color'          => $servicestatus->ServiceStatusColor(),
+                'background'     => $servicestatus->ServiceStatusBackgroundColor(),
+                'Map'            => $map,
             ];
         }
         return [
-            'icon' => $icon,
-            'icon_property' => $iconProperty,
+            'icon'           => $icon,
+            'icon_property'  => $iconProperty,
             'isAcknowledged' => $hoststatus->isAcknowledged(),
-            'isInDowntime' => $hoststatus->isInDowntime(),
-            'color' => $color,
-            'background' => $background,
-            'Map' => $map
+            'isInDowntime'   => $hoststatus->isInDowntime(),
+            'color'          => $color,
+            'background'     => $background,
+            'Map'            => $map
         ];
     }
 
@@ -556,21 +616,21 @@ class Map extends MapModuleAppModel {
         $hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus($hoststatus['Hoststatus'], $UserTime);
 
         $services = $Service->find('all', [
-            'recursive' => -1,
-            'contain' => [
+            'recursive'  => -1,
+            'contain'    => [
                 'Servicetemplate' => [
                     'fields' => [
                         'Servicetemplate.name'
                     ]
                 ]
             ],
-            'fields' => [
+            'fields'     => [
                 'Service.id',
                 'Service.name',
                 'Service.uuid'
             ],
             'conditions' => [
-                'Service.host_id' => $host['Host']['id'],
+                'Service.host_id'  => $host['Host']['id'],
                 'Service.disabled' => 0
             ]
         ]);
@@ -608,7 +668,7 @@ class Map extends MapModuleAppModel {
             }
 
             $servicesResult[] = [
-                'Service' => $Service->toArray(),
+                'Service'       => $Service->toArray(),
                 'Servicestatus' => $Servicestatus->toArray()
             ];
         }
@@ -616,10 +676,10 @@ class Map extends MapModuleAppModel {
 
         $Host = new \itnovum\openITCOCKPIT\Core\Views\Host($host);
         return [
-            'Host' => $Host->toArray(),
-            'Hoststatus' => $hoststatus->toArray(),
-            'Services' => $servicesResult,
-            'ServiceSummary' => $ServiceSummary,
+            'Host'                   => $Host->toArray(),
+            'Hoststatus'             => $hoststatus->toArray(),
+            'Services'               => $servicesResult,
+            'ServiceSummary'         => $ServiceSummary,
             'ServiceIdsGroupByState' => $serviceIdsGroupByState
         ];
     }
@@ -680,9 +740,9 @@ class Map extends MapModuleAppModel {
         $Host = new \itnovum\openITCOCKPIT\Core\Views\Host($service);
 
         return [
-            'Host' => $Host->toArray(),
-            'Hoststatus' => $hoststatus->toArray(),
-            'Service' => $Service->toArray(),
+            'Host'          => $Host->toArray(),
+            'Hoststatus'    => $hoststatus->toArray(),
+            'Service'       => $Service->toArray(),
             'Servicestatus' => $Servicestatus->toArray()
         ];
     }
@@ -773,21 +833,21 @@ class Map extends MapModuleAppModel {
                 );
             }
             $services = $Service->find('all', [
-                'recursive' => -1,
-                'contain' => [
+                'recursive'  => -1,
+                'contain'    => [
                     'Servicetemplate' => [
                         'fields' => [
                             'Servicetemplate.name'
                         ]
                     ]
                 ],
-                'fields' => [
+                'fields'     => [
                     'Service.id',
                     'Service.name',
                     'Service.uuid'
                 ],
                 'conditions' => [
-                    'Service.host_id' => $Host->getId(),
+                    'Service.host_id'  => $Host->getId(),
                     'Service.disabled' => 0
                 ]
             ]);
@@ -802,7 +862,7 @@ class Map extends MapModuleAppModel {
                 2 => [],
                 3 => []
             ];
-            foreach ($servicestatusResults as $serviceUuid =>  $servicestatusResult) {
+            foreach ($servicestatusResults as $serviceUuid => $servicestatusResult) {
                 $allServiceStatus[] = $servicestatusResult['Servicestatus']['current_state'];
                 $serviceIdsGroupByState[$servicestatusResult['Servicestatus']['current_state']][] = $servicesIdsByUuid[$serviceUuid];
                 $serviceIdsGroupByStatePerHost[$servicestatusResult['Servicestatus']['current_state']][] = $servicesIdsByUuid[$serviceUuid];
@@ -810,9 +870,9 @@ class Map extends MapModuleAppModel {
 
             $serviceStateSummary = $Service->getServiceStateSummary($servicestatusResults, false);
             $hoststatusResult[] = [
-                'Host' => $Host->toArray(),
-                'Hoststatus' => $Hoststatus->toArray(),
-                'ServiceSummary' => $serviceStateSummary,
+                'Host'                   => $Host->toArray(),
+                'Hoststatus'             => $Hoststatus->toArray(),
+                'ServiceSummary'         => $serviceStateSummary,
                 'ServiceIdsGroupByState' => $serviceIdsGroupByStatePerHost
             ];
 
@@ -825,10 +885,10 @@ class Map extends MapModuleAppModel {
         $hoststatusResult = Hash::sort($hoststatusResult, '{s}.Hoststatus.currentState', 'desc');
 
         $hostgroup = [
-            'id' => $hostgroup['Hostgroup']['id'],
-            'name' => $hostgroup['Container']['name'],
-            'description' => $hostgroup['Hostgroup']['description'],
-            'HostSummary' => $hostStateSummary,
+            'id'                  => $hostgroup['Hostgroup']['id'],
+            'name'                => $hostgroup['Container']['name'],
+            'description'         => $hostgroup['Hostgroup']['description'],
+            'HostSummary'         => $hostStateSummary,
             'TotalServiceSummary' => $totalServiceStateSummary
         ];
 
@@ -847,10 +907,10 @@ class Map extends MapModuleAppModel {
             $CumulatedHumanState = $CumulatedServiceStatus->toArray()['humanState'];
         }
         return [
-            'Hostgroup' => $hostgroup,
-            'Hosts' => $hoststatusResult,
-            'CumulatedHumanState' => $CumulatedHumanState,
-            'HostIdsGroupByState' => $hostIdsGroupByState,
+            'Hostgroup'              => $hostgroup,
+            'Hosts'                  => $hoststatusResult,
+            'CumulatedHumanState'    => $CumulatedHumanState,
+            'HostIdsGroupByState'    => $hostIdsGroupByState,
             'ServiceIdsGroupByState' => $serviceIdsGroupByState
         ];
     }
@@ -885,7 +945,7 @@ class Map extends MapModuleAppModel {
         $allServiceStatus = [];
         foreach ($servicegroup['Service'] as $service) {
             $Service = new \itnovum\openITCOCKPIT\Core\Views\Service([
-                'Service' => $service,
+                'Service'         => $service,
                 'Servicetemplate' => $service['Servicetemplate']
             ]);
             $Host = new \itnovum\openITCOCKPIT\Core\Views\Host(['Host' => $service['Host']]);
@@ -902,9 +962,9 @@ class Map extends MapModuleAppModel {
                 );
             }
             $servicesResult[] = [
-                'Service' => $Service->toArray(),
+                'Service'       => $Service->toArray(),
                 'Servicestatus' => $Servicestatus->toArray(),
-                'Host' => $Host->toArray()
+                'Host'          => $Host->toArray()
             ];
         }
         $servicesResult = Hash::sort($servicesResult, '{s}.Servicestatus.currentState', 'desc');
@@ -916,16 +976,16 @@ class Map extends MapModuleAppModel {
         ]);
 
         $servicegroup = [
-            'id' => $servicegroup['Servicegroup']['id'],
-            'name' => $servicegroup['Container']['name'],
+            'id'          => $servicegroup['Servicegroup']['id'],
+            'name'        => $servicegroup['Container']['name'],
             'description' => $servicegroup['Servicegroup']['description']
         ];
 
         return [
-            'Servicegroup' => $servicegroup,
-            'ServiceSummary' => $serviceStateSummary,
-            'Services' => $servicesResult,
-            'CumulatedHumanState' => $CumulatedServiceStatus->toArray()['humanState'],
+            'Servicegroup'           => $servicegroup,
+            'ServiceSummary'         => $serviceStateSummary,
+            'Services'               => $servicesResult,
+            'CumulatedHumanState'    => $CumulatedServiceStatus->toArray()['humanState'],
             'ServiceIdsGroupByState' => $serviceIdsGroupByState
         ];
     }
@@ -1006,7 +1066,7 @@ class Map extends MapModuleAppModel {
                     if ($counterForNotOkHostAndService <= $limitForNotOkHostAndService && $currentHostState > 0) {
                         $notOkHosts[] = [
                             'Hoststatus' => $hostStatus->toArray(),
-                            'Host' => $host->toArray()
+                            'Host'       => $host->toArray()
                         ];
                         $counterForNotOkHostAndService++;
                     }
@@ -1030,7 +1090,7 @@ class Map extends MapModuleAppModel {
                     if ($counterForNotOkHostAndService <= $limitForNotOkHostAndService && $currentServiceState > 0) {
                         $notOkServices[] = [
                             'Servicestatus' => $serviceStatus->toArray(),
-                            'Service' => $service->toArray()
+                            'Service'       => $service->toArray()
                         ];
                         $counterForNotOkHostAndService++;
                     }
@@ -1050,20 +1110,20 @@ class Map extends MapModuleAppModel {
         }
 
         $map = [
-            'id' => $map['Map']['id'],
-            'name' => $map['Map']['name'],
-            'title' => $map['Map']['title'],
-            'object_id' => ($summaryStateItem)?$map['Mapsummaryitem']['object_id']:$map['Mapitem']['object_id']
+            'id'        => $map['Map']['id'],
+            'name'      => $map['Map']['name'],
+            'title'     => $map['Map']['title'],
+            'object_id' => ($summaryStateItem) ? $map['Mapsummaryitem']['object_id'] : $map['Mapitem']['object_id']
         ];
 
         return [
-            'Map' => $map,
-            'HostSummary' => $hostStateSummary,
-            'ServiceSummary' => $serviceStateSummary,
-            'CumulatedHumanState' => $CumulatedHumanState,
-            'NotOkHosts' => $notOkHosts,
-            'NotOkServices' => $notOkServices,
-            'HostIdsGroupByState' => $hostIdsGroupByState,
+            'Map'                    => $map,
+            'HostSummary'            => $hostStateSummary,
+            'ServiceSummary'         => $serviceStateSummary,
+            'CumulatedHumanState'    => $CumulatedHumanState,
+            'NotOkHosts'             => $notOkHosts,
+            'NotOkServices'          => $notOkServices,
+            'HostIdsGroupByState'    => $hostIdsGroupByState,
             'ServiceIdsGroupByState' => $serviceIdsGroupByState
         ];
     }
@@ -1077,31 +1137,31 @@ class Map extends MapModuleAppModel {
      */
     public function getAllDependentMapsElements(Model $Map, $dependentMapsIds, Model $Hostgroup, Model $Servicegroup) {
         $allDependentMapElements = $Map->find('all', [
-            'recursive' => -1,
-            'contain' => [
-                'Mapitem' => [
+            'recursive'  => -1,
+            'contain'    => [
+                'Mapitem'        => [
                     'conditions' => [
                         'NOT' => [
                             'Mapitem.type' => 'map'
                         ]
                     ],
-                    'fields' => [
+                    'fields'     => [
                         'Mapitem.type',
                         'Mapitem.object_id'
                     ]
                 ],
-                'Mapline' => [
+                'Mapline'        => [
                     'conditions' => [
                         'NOT' => [
                             'Mapline.type' => 'stateless'
                         ]
                     ],
-                    'fields' => [
+                    'fields'     => [
                         'Mapline.type',
                         'Mapline.object_id'
                     ]
                 ],
-                'Mapgadget' => [
+                'Mapgadget'      => [
                     'fields' => [
                         'Mapgadget.type',
                         'Mapgadget.object_id'
@@ -1113,7 +1173,7 @@ class Map extends MapModuleAppModel {
                             'Mapsummaryitem.type' => 'map'
                         ]
                     ],
-                    'fields' => [
+                    'fields'     => [
                         'Mapsummaryitem.type',
                         'Mapsummaryitem.object_id'
                     ]
@@ -1124,9 +1184,9 @@ class Map extends MapModuleAppModel {
             ]
         ]);
         $mapElementsByCategory = [
-            'host' => [],
-            'hostgroup' => [],
-            'service' => [],
+            'host'         => [],
+            'hostgroup'    => [],
+            'service'      => [],
             'servicegroup' => []
         ];
         $allDependentMapElements = Hash::filter($allDependentMapElements);
@@ -1144,16 +1204,16 @@ class Map extends MapModuleAppModel {
         $hostIds = $mapElementsByCategory['host'];
         if (!empty($mapElementsByCategory['hostgroup'])) {
             $query = [
-                'recursive' => -1,
-                'joins' => [
+                'recursive'  => -1,
+                'joins'      => [
                     [
-                        'table' => 'hosts_to_hostgroups',
-                        'type' => 'INNER',
-                        'alias' => 'HostsToHostgroups',
+                        'table'      => 'hosts_to_hostgroups',
+                        'type'       => 'INNER',
+                        'alias'      => 'HostsToHostgroups',
                         'conditions' => 'HostsToHostgroups.hostgroup_id = Hostgroup.id',
                     ],
                 ],
-                'fields' => [
+                'fields'     => [
                     'HostsToHostgroups.host_id'
 
                 ],
@@ -1173,16 +1233,16 @@ class Map extends MapModuleAppModel {
         $serviceIds = $mapElementsByCategory['service'];
         if (!empty($mapElementsByCategory['servicegroup'])) {
             $query = [
-                'recursive' => -1,
-                'joins' => [
+                'recursive'  => -1,
+                'joins'      => [
                     [
-                        'table' => 'services_to_servicegroups',
-                        'type' => 'INNER',
-                        'alias' => 'ServicesToServicegroups',
+                        'table'      => 'services_to_servicegroups',
+                        'type'       => 'INNER',
+                        'alias'      => 'ServicesToServicegroups',
                         'conditions' => 'ServicesToServicegroups.servicegroup_id = Servicegroup.id',
                     ],
                 ],
-                'fields' => [
+                'fields'     => [
                     'ServicesToServicegroups.service_id'
 
                 ],
@@ -1200,7 +1260,7 @@ class Map extends MapModuleAppModel {
             }
         }
         return [
-            'hostIds' => $hostIds,
+            'hostIds'    => $hostIds,
             'serviceIds' => $serviceIds
         ];
     }
@@ -1227,22 +1287,22 @@ class Map extends MapModuleAppModel {
 
         if (empty($hoststatus) && empty($servicestatus)) {
             return [
-                'BitMaskHostState' => $bitMaskHostState,
+                'BitMaskHostState'    => $bitMaskHostState,
                 'BitMaskServiceState' => $bitMaskServiceState,
-                'Host' => $HostView->toArray(),
+                'Host'                => $HostView->toArray(),
             ];
         }
-        if(isset($hoststatus['Hoststatus']['current_state'])){
+        if (isset($hoststatus['Hoststatus']['current_state'])) {
             $bitMaskHostState = 1 << $hoststatus['Hoststatus']['current_state'];
         }
 
-        foreach($servicestatus as $statusDetails){
+        foreach ($servicestatus as $statusDetails) {
             $bitMaskServiceState |= 1 << $statusDetails['Servicestatus']['current_state'];
         }
         return [
-            'BitMaskHostState' => $bitMaskHostState,
+            'BitMaskHostState'    => $bitMaskHostState,
             'BitMaskServiceState' => $bitMaskServiceState,
-            'Host' => $HostView->toArray(),
+            'Host'                => $HostView->toArray(),
         ];
     }
 
@@ -1268,25 +1328,25 @@ class Map extends MapModuleAppModel {
 
         if (empty($hoststatus) && empty($servicestatus)) {
             return [
-                'BitMaskHostState' => $bitMaskHostState,
+                'BitMaskHostState'    => $bitMaskHostState,
                 'BitMaskServiceState' => $bitMaskServiceState,
-                'Host' => $HostView->toArray(),
-                'Service' => $ServiceView->toArray(),
+                'Host'                => $HostView->toArray(),
+                'Service'             => $ServiceView->toArray(),
             ];
         }
-        if(isset($hoststatus['Hoststatus']['current_state'])){
+        if (isset($hoststatus['Hoststatus']['current_state'])) {
             $bitMaskHostState = 1 << $hoststatus['Hoststatus']['current_state'];
         }
 
-        if(isset($servicestatus['Servicestatus']['current_state'])){
+        if (isset($servicestatus['Servicestatus']['current_state'])) {
             $bitMaskServiceState = 1 << $servicestatus['Servicestatus']['current_state'];
         }
 
         return [
-            'BitMaskHostState' => $bitMaskHostState,
+            'BitMaskHostState'    => $bitMaskHostState,
             'BitMaskServiceState' => $bitMaskServiceState,
-            'Host' => $HostView->toArray(),
-            'Service' => $ServiceView->toArray(),
+            'Host'                => $HostView->toArray(),
+            'Service'             => $ServiceView->toArray(),
         ];
     }
 
@@ -1298,8 +1358,8 @@ class Map extends MapModuleAppModel {
      */
     public function getHostgroupInformationForSummaryIcon(Model $Hoststatus, Model $Servicestatus, $hostgroup) {
         $hostgroupLight = [
-            'id' => (int)$hostgroup['Hostgroup']['id'],
-            'name' => $hostgroup['Container']['name'],
+            'id'          => (int)$hostgroup['Hostgroup']['id'],
+            'name'        => $hostgroup['Container']['name'],
             'description' => $hostgroup['Hostgroup']['description']
         ];
         $bitMaskHostState = 0;
@@ -1316,21 +1376,21 @@ class Map extends MapModuleAppModel {
 
         if (empty($hoststatus) && empty($servicestatus)) {
             return [
-                'BitMaskHostState' => $bitMaskHostState,
+                'BitMaskHostState'    => $bitMaskHostState,
                 'BitMaskServiceState' => $bitMaskServiceState,
-                'Hostgroup' => $hostgroupLight
+                'Hostgroup'           => $hostgroupLight
             ];
         }
-        foreach($hoststatus as $statusDetails){
+        foreach ($hoststatus as $statusDetails) {
             $bitMaskHostState |= 1 << $statusDetails['Hoststatus']['current_state'];
         }
-        foreach($servicestatus as $statusDetails){
+        foreach ($servicestatus as $statusDetails) {
             $bitMaskServiceState |= 1 << $statusDetails['Servicestatus']['current_state'];
         }
         return [
-            'BitMaskHostState' => $bitMaskHostState,
+            'BitMaskHostState'    => $bitMaskHostState,
             'BitMaskServiceState' => $bitMaskServiceState,
-            'Hostgroup' => $hostgroupLight
+            'Hostgroup'           => $hostgroupLight
         ];
     }
 
@@ -1342,8 +1402,8 @@ class Map extends MapModuleAppModel {
      */
     public function getServicegroupInformationForSummaryIcon(Model $Hoststatus, Model $Servicestatus, $servicegroup) {
         $servicegroupLight = [
-            'id' => (int)$servicegroup['Servicegroup']['id'],
-            'name' => $servicegroup['Container']['name'],
+            'id'          => (int)$servicegroup['Servicegroup']['id'],
+            'name'        => $servicegroup['Container']['name'],
             'description' => $servicegroup['Servicegroup']['description']
         ];
         $bitMaskHostState = 0;
@@ -1359,21 +1419,21 @@ class Map extends MapModuleAppModel {
 
         if (empty($hoststatus) && empty($servicestatus)) {
             return [
-                'BitMaskHostState' => $bitMaskHostState,
+                'BitMaskHostState'    => $bitMaskHostState,
                 'BitMaskServiceState' => $bitMaskServiceState,
-                'Servicegroup' => $servicegroupLight
+                'Servicegroup'        => $servicegroupLight
             ];
         }
-        foreach($hoststatus as $statusDetails){
+        foreach ($hoststatus as $statusDetails) {
             $bitMaskHostState |= 1 << $statusDetails['Hoststatus']['current_state'];
         }
-        foreach($servicestatus as $statusDetails){
+        foreach ($servicestatus as $statusDetails) {
             $bitMaskServiceState |= 1 << $statusDetails['Servicestatus']['current_state'];
         }
         return [
-            'BitMaskHostState' => $bitMaskHostState,
+            'BitMaskHostState'    => $bitMaskHostState,
             'BitMaskServiceState' => $bitMaskServiceState,
-            'Servicegroup' => $servicegroupLight
+            'Servicegroup'        => $servicegroupLight
         ];
     }
 
@@ -1390,15 +1450,15 @@ class Map extends MapModuleAppModel {
         $bitMaskHostState = 0;
         $bitMaskServiceState = 0;
         $map = [
-            'id' => $map['Map']['id'],
-            'name' => $map['Map']['name'],
+            'id'    => $map['Map']['id'],
+            'name'  => $map['Map']['name'],
             'title' => $map['Map']['title']
         ];
         if (empty($hosts) && empty($services)) {
             return [
-                'BitMaskHostState' => $bitMaskHostState,
+                'BitMaskHostState'    => $bitMaskHostState,
                 'BitMaskServiceState' => $bitMaskServiceState,
-                'Map' => $map
+                'Map'                 => $map
             ];
         }
 
@@ -1414,21 +1474,21 @@ class Map extends MapModuleAppModel {
 
         if (empty($hoststatus) && empty($servicestatus)) {
             return [
-                'BitMaskHostState' => $bitMaskHostState,
+                'BitMaskHostState'    => $bitMaskHostState,
                 'BitMaskServiceState' => $bitMaskServiceState,
-                'Map' => $map
+                'Map'                 => $map
             ];
         }
-        foreach($hoststatus as $statusDetails){
+        foreach ($hoststatus as $statusDetails) {
             $bitMaskHostState |= 1 << $statusDetails['Hoststatus']['current_state'];
         }
-        foreach($servicestatus as $statusDetails){
+        foreach ($servicestatus as $statusDetails) {
             $bitMaskServiceState |= 1 << $statusDetails['Servicestatus']['current_state'];
         }
         return [
-            'BitMaskHostState' => $bitMaskHostState,
+            'BitMaskHostState'    => $bitMaskHostState,
             'BitMaskServiceState' => $bitMaskServiceState,
-            'Map' => $map
+            'Map'                 => $map
         ];
     }
 }

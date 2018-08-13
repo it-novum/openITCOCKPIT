@@ -35,7 +35,6 @@ use Symfony\Component\Finder\Finder;
 /**
  * Class MapeditorsNewController
  * @property Map $Map
- * @property MapNew $MapNew
  * @property Mapitem $Mapitem
  * @property MapUpload $MapUpload
  * @property Mapline $Mapline
@@ -181,7 +180,7 @@ class MapeditorsController extends MapModuleAppController {
                         }
                     }
                     $allowView = true;
-                    $properties = $this->MapNew->getHostInformation(
+                    $properties = $this->Map->getHostInformation(
                         $this->Service,
                         $this->Hoststatus,
                         $this->Servicestatus,
@@ -229,7 +228,7 @@ class MapeditorsController extends MapModuleAppController {
                         }
                     }
                     $allowView = true;
-                    $properties = $this->MapNew->getServiceInformation($this->Servicestatus, $service);
+                    $properties = $this->Map->getServiceInformation($this->Servicestatus, $service);
                     break;
                 }
                 $allowView = false;
@@ -271,7 +270,7 @@ class MapeditorsController extends MapModuleAppController {
                         }
                     }
                     $allowView = true;
-                    $properties = $this->MapNew->getHostgroupInformation(
+                    $properties = $this->Map->getHostgroupInformation(
                         $this->Service,
                         $this->Hoststatus,
                         $this->Servicestatus,
@@ -335,7 +334,7 @@ class MapeditorsController extends MapModuleAppController {
                         }
                     }
                     $allowView = true;
-                    $properties = $this->MapNew->getServicegroupInformation(
+                    $properties = $this->Map->getServicegroupInformation(
                         $this->Service,
                         $this->Servicestatus,
                         $servicegroup
@@ -425,7 +424,7 @@ class MapeditorsController extends MapModuleAppController {
                         }
                         $dependentMapsIds[] = $mapItemIdToResolve;
                         // resolve all Elements (host and/or services of dependent map)
-                        $allDependentMapElements = $this->MapNew->getAllDependentMapsElements(
+                        $allDependentMapElements = $this->Map->getAllDependentMapsElements(
                             $this->Map,
                             $dependentMapsIds,
                             $this->Hostgroup,
@@ -503,7 +502,7 @@ class MapeditorsController extends MapModuleAppController {
                             }
                         }
                         $allowView = true;
-                        $properties = $this->MapNew->getMapInformation(
+                        $properties = $this->Map->getMapInformation(
                             $this->Hoststatus,
                             $this->Servicestatus,
                             $map,
@@ -614,7 +613,7 @@ class MapeditorsController extends MapModuleAppController {
                         }
                     }
                     $allowView = true;
-                    $properties = $this->MapNew->getHostInformationForSummaryIcon(
+                    $properties = $this->Map->getHostInformationForSummaryIcon(
                         $this->Hoststatus,
                         $this->Servicestatus,
                         $host
@@ -661,7 +660,7 @@ class MapeditorsController extends MapModuleAppController {
                         }
                     }
                     $allowView = true;
-                    $properties = $this->MapNew->getServiceInformationForSummaryIcon(
+                    $properties = $this->Map->getServiceInformationForSummaryIcon(
                         $this->Hoststatus,
                         $this->Servicestatus,
                         $service
@@ -716,7 +715,7 @@ class MapeditorsController extends MapModuleAppController {
                         }
                     }
                     $allowView = true;
-                    $properties = $this->MapNew->getHostgroupInformationForSummaryIcon(
+                    $properties = $this->Map->getHostgroupInformationForSummaryIcon(
                         $this->Hoststatus,
                         $this->Servicestatus,
                         $hostgroup
@@ -779,7 +778,7 @@ class MapeditorsController extends MapModuleAppController {
                         }
                     }
                     $allowView = true;
-                    $properties = $this->MapNew->getServicegroupInformationForSummaryIcon(
+                    $properties = $this->Map->getServicegroupInformationForSummaryIcon(
                         $this->Hoststatus,
                         $this->Servicestatus,
                         $servicegroup
@@ -871,7 +870,7 @@ class MapeditorsController extends MapModuleAppController {
                         $dependentMapsIds[] = $mapSummaryItemIdToResolve;
 
                         // resolve all Elements (host and/or services of dependent map)
-                        $allDependentMapElementsFromSubMaps['mapsummaryitem'] = $this->MapNew->getAllDependentMapsElements(
+                        $allDependentMapElementsFromSubMaps['mapsummaryitem'] = $this->Map->getAllDependentMapsElements(
                             $this->Map,
                             $dependentMapsIds,
                             $this->Hostgroup,
@@ -932,7 +931,7 @@ class MapeditorsController extends MapModuleAppController {
                         }
                         $dependentMapsIds[] = $mapItemIdToResolve;
                         // resolve all Elements (host and/or services of dependent map)
-                        $allDependentMapElementsFromSubMaps['mapitem'] = $this->MapNew->getAllDependentMapsElements(
+                        $allDependentMapElementsFromSubMaps['mapitem'] = $this->Map->getAllDependentMapsElements(
                             $this->Map,
                             $dependentMapsIds,
                             $this->Hostgroup,
@@ -941,7 +940,7 @@ class MapeditorsController extends MapModuleAppController {
                     }
 
                     //simple item (host/hostgroup/service/servicegroup)
-                    $allDependentMapElementsFromSubMaps['item'] = $this->MapNew->getAllDependentMapsElements(
+                    $allDependentMapElementsFromSubMaps['item'] = $this->Map->getAllDependentMapsElements(
                         $this->Map,
                         [$map['Map']['id']],
                         $this->Hostgroup,
@@ -1023,7 +1022,7 @@ class MapeditorsController extends MapModuleAppController {
                         }
                     }
                     $allowView = true;
-                    $properties = $this->MapNew->getMapInformationForSummaryIcon(
+                    $properties = $this->Map->getMapInformationForSummaryIcon(
                         $this->Hoststatus,
                         $this->Servicestatus,
                         $map,
@@ -1153,7 +1152,7 @@ class MapeditorsController extends MapModuleAppController {
                             return;
                         }
                     }
-                    $summary = $this->MapNew->getHostSummary(
+                    $summary = $this->Map->getHostSummary(
                         $this->Service,
                         $this->Hoststatus,
                         $this->Servicestatus,
@@ -1206,7 +1205,7 @@ class MapeditorsController extends MapModuleAppController {
                             return;
                         }
                     }
-                    $summary = $this->MapNew->getServiceSummary(
+                    $summary = $this->Map->getServiceSummary(
                         $this->Service,
                         $this->Hoststatus,
                         $this->Servicestatus,
@@ -1266,7 +1265,7 @@ class MapeditorsController extends MapModuleAppController {
                         }
                     }
 
-                    $summary = $this->MapNew->getHostgroupSummary(
+                    $summary = $this->Map->getHostgroupSummary(
                         $this->Host,
                         $this->Service,
                         $this->Hoststatus,
@@ -1334,7 +1333,7 @@ class MapeditorsController extends MapModuleAppController {
                         }
                     }
 
-                    $summary = $this->MapNew->getServicegroupSummary(
+                    $summary = $this->Map->getServicegroupSummary(
                         $this->Service,
                         $this->Servicestatus,
                         $servicegroup
@@ -1459,7 +1458,7 @@ class MapeditorsController extends MapModuleAppController {
                         $dependentMapsIds[] = $mapSummaryItemIdToResolve;
 
                         // resolve all Elements (host and/or services of dependent map)
-                        $allDependentMapElementsFromSubMaps['mapsummaryitem'] = $this->MapNew->getAllDependentMapsElements(
+                        $allDependentMapElementsFromSubMaps['mapsummaryitem'] = $this->Map->getAllDependentMapsElements(
                             $this->Map,
                             $dependentMapsIds,
                             $this->Hostgroup,
@@ -1520,7 +1519,7 @@ class MapeditorsController extends MapModuleAppController {
                         }
                         $dependentMapsIds[] = $mapItemIdToResolve;
                         // resolve all Elements (host and/or services of dependent map)
-                        $allDependentMapElementsFromSubMaps['mapitem'] = $this->MapNew->getAllDependentMapsElements(
+                        $allDependentMapElementsFromSubMaps['mapitem'] = $this->Map->getAllDependentMapsElements(
                             $this->Map,
                             $dependentMapsIds,
                             $this->Hostgroup,
@@ -1529,7 +1528,7 @@ class MapeditorsController extends MapModuleAppController {
                     }
 
                     //simple item (host/hostgroup/service/servicegroup)
-                    $allDependentMapElementsFromSubMaps['item'] = $this->MapNew->getAllDependentMapsElements(
+                    $allDependentMapElementsFromSubMaps['item'] = $this->Map->getAllDependentMapsElements(
                         $this->Map,
                         [$map['Map']['id']],
                         $this->Hostgroup,
@@ -1627,7 +1626,7 @@ class MapeditorsController extends MapModuleAppController {
                         }
                     }
 
-                    $summary = $this->MapNew->getMapSummary(
+                    $summary = $this->Map->getMapSummary(
                         $this->Host,
                         $this->Hoststatus,
                         $this->Service,
