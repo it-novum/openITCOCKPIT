@@ -29,7 +29,7 @@ use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
 use Statusengine\PerfdataParser;
 
-class MapNew extends MapModuleAppModel {
+class Map extends MapModuleAppModel {
 
     public $useTable = false;
 
