@@ -113,7 +113,7 @@
                  data-id="{{lineItem.id}}" data-type="line"
                  data-oldstartx="{{lineItem.startX}}" data-oldstarty="{{lineItem.startY}}"
                  data-oldendx="{{lineItem.endX}}" data-oldendy="{{lineItem.endY}}"
-                 class="draggable" ng-show="item.display">
+                 class="draggable" ng-show="lineItem.display">
                 <map-line item="lineItem" refresh-interval="0"></map-line>
             </div>
 
