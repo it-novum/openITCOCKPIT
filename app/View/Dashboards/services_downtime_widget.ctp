@@ -46,7 +46,7 @@
                     <div class="col-xs-12 col-md-6 col-lg-3">
                         <label class="checkbox small-checkbox-label display-inline margin-right-5">
                             <input type="checkbox" name="checkbox" checked="checked"
-                                   ng-model="filter.DowntimeHost.was_not_cancelled"
+                                   ng-model="filter.DowntimeService.was_not_cancelled"
                                    ng-model-options="{debounce: 500}">
                             <i class="checkbox-default"></i>
                             <?php echo __('Was not cancelled'); ?>
@@ -56,7 +56,7 @@
                     <div class="col-xs-12 col-md-6 col-lg-3">
                         <label class="checkbox small-checkbox-label display-inline margin-right-5">
                             <input type="checkbox" name="checkbox" checked="checked"
-                                   ng-model="filter.DowntimeHost.was_cancelled"
+                                   ng-model="filter.DowntimeService.was_cancelled"
                                    ng-model-options="{debounce: 500}">
                             <i class="checkbox-primary"></i>
                             <?php echo __('Was cancelled'); ?>
@@ -90,10 +90,22 @@
         </div>
         <div class="col-xs-12 col-md-6">
             <div class="form-group smart-form">
+                <label class="input"> <i class="icon-prepend fa fa-cog"></i>
+                    <input type="text" class="input-sm"
+                           placeholder="<?php echo __('Filter by service name'); ?>"
+                           ng-model="filter.Service.name"
+                           ng-model-options="{debounce: 500}">
+                </label>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-12 col-md-6">
+            <div class="form-group smart-form">
                 <label class="input"> <i class="icon-prepend fa fa-filter"></i>
                     <input type="text" class="input-sm"
                            placeholder="<?php echo __('Filter by comment'); ?>"
-                           ng-model="filter.DowntimeHost.comment_data"
+                           ng-model="filter.DowntimeService.comment_data"
                            ng-model-options="{debounce: 500}">
                 </label>
             </div>
@@ -110,6 +122,10 @@
             <th class="no-sort" ng-click="orderBy('Host.name')">
                 <i class="fa" ng-class="getSortClass('Host.name')"></i>
                 <?php echo __('Host'); ?>
+            </th>
+            <th class="no-sort" ng-click="orderBy('Service.name')">
+                <i class="fa" ng-class="getSortClass('Service.name')"></i>
+                <?php echo __('Service'); ?>
             </th>
             <th class="no-sort" ng-click="orderBy('DowntimeHost.author_name')">
                 <i class="fa" ng-class="getSortClass('DowntimeHost.author_name')"></i>
@@ -144,9 +160,8 @@
         <tbody>
         <tr ng-repeat="downtime in downtimes">
             <td class="text-center">
-                <downtimeicon downtime="downtime.DowntimeHost"></downtimeicon>
+                <downtimeicon downtime="downtime.DowntimeService"></downtimeicon>
             </td>
-
             <td>
                 <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
                     <a href="/hosts/browser/{{ downtime.Host.id }}">
@@ -156,34 +171,36 @@
                     {{ downtime.Host.hostname }}
                 <?php endif; ?>
             </td>
-
             <td>
-                {{downtime.DowntimeHost.authorName}}
+                <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
+                    <a href="/services/browser/{{ downtime.Service.id }}">
+                        {{ downtime.Service.servicename }}
+                    </a>
+                <?php else: ?>
+                    {{ downtime.Service.servicename }}
+                <?php endif; ?>
             </td>
-
             <td>
-                {{downtime.DowntimeHost.commentData}}
+                {{downtime.DowntimeService.authorName}}
             </td>
-
             <td>
-                {{downtime.DowntimeHost.entryTime}}
+                {{downtime.DowntimeService.commentData}}
             </td>
-
             <td>
-                {{downtime.DowntimeHost.scheduledStartTime}}
+                {{downtime.DowntimeService.entryTime}}
             </td>
-
             <td>
-                {{downtime.DowntimeHost.scheduledEndTime}}
+                {{downtime.DowntimeService.scheduledStartTime}}
             </td>
-
             <td>
-                {{downtime.DowntimeHost.durationHuman}}
+                {{downtime.DowntimeService.scheduledEndTime}}
             </td>
-
             <td>
-                <span ng-if="downtime.DowntimeHost.wasCancelled"><?php echo __('Yes'); ?></span>
-                <span ng-if="!downtime.DowntimeHost.wasCancelled"><?php echo __('No'); ?></span>
+                {{downtime.DowntimeService.durationHuman}}
+            </td>
+            <td>
+                <span ng-if="downtime.DowntimeService.wasCancelled"><?php echo __('Yes'); ?></span>
+                <span ng-if="!downtime.DowntimeService.wasCancelled"><?php echo __('No'); ?></span>
             </td>
         </tr>
 

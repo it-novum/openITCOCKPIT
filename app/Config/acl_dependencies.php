@@ -145,9 +145,10 @@ $config = [
                 'servicesPiechartWidget',
                 'servicesPiechart180Widget',
                 'hostsStatusListWidget',
+                'servicesStatusListWidget',
                 'parentOutagesWidget',
                 'hostsDowntimeWidget',
-                'servicesStatusListWidget'
+                'servicesDowntimeWidget'
             ],
             'Hosts'            => [
                 'view',
