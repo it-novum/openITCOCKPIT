@@ -443,4 +443,11 @@ class DashboardsController extends AppController {
 
         throw new MethodNotAllowedException();
     }
+
+    public function noticeWidget() {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template
+            return;
+        }
+    }
 }

@@ -148,7 +148,8 @@ $config = [
                 'servicesStatusListWidget',
                 'parentOutagesWidget',
                 'hostsDowntimeWidget',
-                'servicesDowntimeWidget'
+                'servicesDowntimeWidget',
+                'noticeWidget'
             ],
             'Hosts'            => [
                 'view',

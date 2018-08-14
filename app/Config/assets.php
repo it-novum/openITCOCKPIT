@@ -37,8 +37,8 @@ $config = [
             //'vendor/vis-4.21.0/dist/vis-timeline-graph2d.min.css',
             'vendor/vis-4.21.0/dist/vis.css',
             'my_vis.css',
-            'vendor/noty/noty.css'
-
+            'vendor/noty/noty.css',
+            'flippy.css'
         ],
 
         'js'                        => [
