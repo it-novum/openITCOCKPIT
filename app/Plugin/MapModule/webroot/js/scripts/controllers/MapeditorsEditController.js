@@ -1316,6 +1316,7 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.hideLayer = function(key){
+            key = key.toString();
             $scope.visableLayers['layer_'+key] = false;
 
             var objectsToHide = [
@@ -1339,6 +1340,7 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.showLayer = function(key){
+            key = key.toString();
             $scope.visableLayers['layer_'+key] = true;
 
             var objectsToHide = [

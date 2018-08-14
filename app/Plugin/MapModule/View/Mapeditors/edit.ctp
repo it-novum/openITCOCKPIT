@@ -207,7 +207,7 @@
             <div class="layersContainer" style="overflow-y: auto;">
 
                 <div class="mapLayer" ng-repeat="(key, value) in layers"
-                     ng-class="{ 'selectedLayer': key === defaultLayer }">
+                     ng-class="{ 'selectedLayer': key == defaultLayer }">
                     <span class="cursor-pointer"
                           ng-click="setDefaultLayer(key)">
                         {{value}}
