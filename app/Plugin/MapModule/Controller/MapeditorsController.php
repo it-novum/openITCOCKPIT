@@ -1054,7 +1054,8 @@ class MapeditorsController extends MapModuleAppController {
             'recursive' => -1,
             'fields' => [
                 'Service.id',
-                'Service.uuid'
+                'Service.uuid',
+                'Service.name'
             ],
             'contain' => [
                 'Host' => [
@@ -2077,6 +2078,7 @@ class MapeditorsController extends MapModuleAppController {
 
             $maptext['Maptext']['x'] = (int)$this->request->data('Maptext.x');
             $maptext['Maptext']['y'] = (int)$this->request->data('Maptext.y');
+            $maptext['Maptext']['font_size'] = 11;
 
             if ($this->Maptext->save($maptext)) {
                 $Maptext = new \itnovum\openITCOCKPIT\Maps\ValueObjects\Maptext($maptext['Maptext']);
@@ -2101,6 +2103,7 @@ class MapeditorsController extends MapModuleAppController {
 
         $text['Maptext']['x'] = (int)$this->request->data('Maptext.x');
         $text['Maptext']['y'] = (int)$this->request->data('Maptext.y');
+        $maptext['Maptext']['font_size'] = 11;
         if ($this->Maptext->save($text)) {
             $text['Maptext']['id'] = $this->Maptext->id;
             $Maptext = new \itnovum\openITCOCKPIT\Maps\ValueObjects\Maptext($text['Maptext']);
