@@ -1313,7 +1313,6 @@ angular.module('openITCOCKPIT')
 
         $scope.setDefaultLayer = function(layerNo){
             $scope.defaultLayer = layerNo.toString();
-            console.log($scope.defaultLayer);
         };
 
         $scope.hideLayer = function(key){
