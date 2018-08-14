@@ -77,7 +77,7 @@ angular.module('openITCOCKPIT').directive('tachoItem', function($http){
                     perfdata.max = perfdata.critical;
                 }
 
-                if(isNaN(perfdata.min) || isNaN(perfdata.max)){
+                if(isNaN(perfdata.min) || isNaN(perfdata.max) || perfdata.min === null || perfdata.max === null){
                     perfdata.min = 0;
                     perfdata.max = 100;
                 }
