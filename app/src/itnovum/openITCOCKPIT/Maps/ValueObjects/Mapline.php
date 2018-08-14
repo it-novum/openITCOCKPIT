@@ -87,6 +87,13 @@ class Mapline {
      */
     private $show_label;
 
+    /**
+     * @var bool
+     * Required for frontend to show and hide layers
+     * Backend will not use this variable but it is an easy way to get it into the json
+     */
+    private $display = true;
+
 
     /**
      * Mapitem constructor.

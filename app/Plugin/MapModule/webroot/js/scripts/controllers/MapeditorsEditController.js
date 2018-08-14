@@ -21,6 +21,10 @@ angular.module('openITCOCKPIT')
 
         $scope.uploadIconSet = false;
 
+        $scope.defaultLayer = '0';
+
+        $scope.visableLayers = {};
+
 
         $scope.load = function(){
             $http.get("/map_module/mapeditors/edit/" + $scope.id + ".json", {
@@ -32,6 +36,10 @@ angular.module('openITCOCKPIT')
                 $scope.maxUploadLimit = result.data.maxUploadLimit;
                 $scope.maxZIndex = result.data.max_z_index;
                 $scope.layers = result.data.layers;
+
+                for(var k in $scope.layers){
+                    $scope.visableLayers['layer_'+k] = true;
+                }
 
                 $scope.currentBackground = $scope.map.Map.background;
 
@@ -304,6 +312,7 @@ angular.module('openITCOCKPIT')
             newZIndex = newZIndex.toString();
 
             $scope.layers[newZIndex] = 'Layer ' + newZIndex;
+            $scope.visableLayers['layer_' + newZIndex] = true;
 
             if($scope.currentItem.hasOwnProperty('z_index')){
                 $scope.currentItem.z_index = newZIndex;
@@ -358,7 +367,7 @@ angular.module('openITCOCKPIT')
                     // Set X and Y poss of the new object
                     $scope.currentItem = {
                         iconset: 'std_mid_64px',
-                        z_index: '0', //Yes we need this as a string!
+                        z_index: $scope.defaultLayer, //Yes we need this as a string!
                         x: $event.offsetX,
                         y: $event.offsetY,
                         show_label: false,
@@ -387,7 +396,7 @@ angular.module('openITCOCKPIT')
                     if($scope.clickCount === 1){
 
                         $scope.currentItem = {
-                            z_index: '0', //Yes we need this as a string!
+                            z_index: $scope.defaultLayer, //Yes we need this as a string!
                             startX: $event.offsetX,
                             startY: $event.offsetY,
                             show_label: false
@@ -415,7 +424,7 @@ angular.module('openITCOCKPIT')
                     // Set X and Y poss of the new object
                     $scope.currentItem = {
                         type: 'service', //Gadgets are only available for services
-                        z_index: '0', //Yes we need this as a string!
+                        z_index: $scope.defaultLayer, //Yes we need this as a string!
                         x: $event.offsetX,
                         y: $event.offsetY,
                         show_label: false,
@@ -438,7 +447,7 @@ angular.module('openITCOCKPIT')
                     // Create currentItem skeleton
                     // Set X and Y poss of the new object
                     $scope.currentItem = {
-                        z_index: '0', //Yes we need this as a string!
+                        z_index: $scope.defaultLayer, //Yes we need this as a string!
                         x: $event.offsetX,
                         y: $event.offsetY,
                         text: ''
@@ -456,7 +465,7 @@ angular.module('openITCOCKPIT')
                     // Create currentItem skeleton
                     // Set X and Y poss of the new object
                     $scope.currentItem = {
-                        z_index: '0', //Yes we need this as a string!
+                        z_index: $scope.defaultLayer, //Yes we need this as a string!
                         x: $event.offsetX,
                         y: $event.offsetY
 
@@ -474,7 +483,7 @@ angular.module('openITCOCKPIT')
                     // Create currentItem skeleton
                     // Set X and Y poss of the new object
                     $scope.currentItem = {
-                        z_index: '0', //Yes we need this as a string!
+                        z_index: $scope.defaultLayer, //Yes we need this as a string!
                         x: $event.offsetX,
                         y: $event.offsetY,
                         show_label: false,
@@ -1302,6 +1311,56 @@ angular.module('openITCOCKPIT')
             }
         };
 
+        $scope.setDefaultLayer = function(layerNo){
+            $scope.defaultLayer = layerNo.toString();
+            console.log($scope.defaultLayer);
+        };
+
+        $scope.hideLayer = function(key){
+            $scope.visableLayers['layer_'+key] = false;
+
+            var objectsToHide = [
+                'Mapitem',
+                'Mapgadget',
+                'Mapicon',
+                'Maptext',
+                'Mapsummaryitem'
+            ];
+            for(var arrayKey in objectsToHide){
+                var objectName = objectsToHide[arrayKey];
+                if($scope.map.hasOwnProperty(objectName)){
+                    for(var i in $scope.map[objectName]){
+                        if($scope.map[objectName][i].z_index === key){
+                            $scope.map[objectName][i].display = false;
+                        }
+                    }
+                }
+            }
+
+        };
+
+        $scope.showLayer = function(key){
+            $scope.visableLayers['layer_'+key] = true;
+
+            var objectsToHide = [
+                'Mapitem',
+                'Mapgadget',
+                'Mapicon',
+                'Maptext',
+                'Mapsummaryitem'
+            ];
+            for(var arrayKey in objectsToHide){
+                var objectName = objectsToHide[arrayKey];
+                if($scope.map.hasOwnProperty(objectName)){
+                    for(var i in $scope.map[objectName]){
+                        if($scope.map[objectName][i].z_index === key){
+                            $scope.map[objectName][i].display = true;
+                        }
+                    }
+                }
+            }
+        };
+
         var makeDraggable = function(){
             var options = {
                 grid: false,
@@ -1469,6 +1528,26 @@ angular.module('openITCOCKPIT')
         $('#mapToolbar').draggable({
             handle: "#mapToolsDragger",
             containment: "parent"
+        });
+
+        var $layersBox = $('#layersBox');
+        $layersBox.draggable({
+            handle: "#layersBoxDragger",
+            containment: "parent"
+        });
+        $layersBox.resizable({
+            ghost: true,
+            minWidth: 250,
+            maxWidth: 250,
+            minHeight: 150,
+            stop: function(event, ui){
+                var newHeight = parseInt(ui.size.height);
+                newHeight = newHeight - 20;
+                $('.layersContainer').css({
+                    height: newHeight + 'px'
+                });
+
+            }
         });
 
 

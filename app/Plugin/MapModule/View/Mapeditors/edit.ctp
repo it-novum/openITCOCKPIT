@@ -98,13 +98,13 @@
 
             <div ng-repeat="item in map.Mapitem" class="draggable" ng-dblclick="editItem(item)"
                  style="position:absolute; top: {{item.y}}px; left: {{item.x}}px;  z-index: {{item.z_index}}; cursor: move;"
-                 data-id="{{item.id}}" data-type="item">
+                 data-id="{{item.id}}" data-type="item" ng-show="item.display">
                 <map-item item="item" refresh-interval="0"></map-item>
             </div>
 
             <div ng-repeat="textItem in map.Maptext" class="draggable"
                  style="position:absolute; top: {{textItem.y}}px; left: {{textItem.x}}px;  z-index: {{textItem.z_index}}; cursor: move;"
-                 data-id="{{textItem.id}}" data-type="text" ng-dblclick="editText(textItem)">
+                 data-id="{{textItem.id}}" data-type="text" ng-dblclick="editText(textItem)" ng-show="textItem.display">
                 <map-text item="textItem"></map-text>
             </div>
 
@@ -113,20 +113,21 @@
                  data-id="{{lineItem.id}}" data-type="line"
                  data-oldstartx="{{lineItem.startX}}" data-oldstarty="{{lineItem.startY}}"
                  data-oldendx="{{lineItem.endX}}" data-oldendy="{{lineItem.endY}}"
-                 class="draggable">
+                 class="draggable" ng-show="item.display">
                 <map-line item="lineItem" refresh-interval="0"></map-line>
             </div>
 
             <div ng-repeat="iconItem in map.Mapicon"
                  style="position:absolute; top: {{iconItem.y}}px; left: {{iconItem.x}}px;  z-index: {{iconItem.z_index}}; cursor: move;"
                  class="draggable"
-                 data-id="{{iconItem.id}}" data-type="icon" ng-dblclick="editIcon(iconItem)">
+                 data-id="{{iconItem.id}}" data-type="icon" ng-dblclick="editIcon(iconItem)" ng-show="iconItem.display">
                 <map-icon item="iconItem"></map-icon>
             </div>
 
             <div ng-repeat="gadgetItem in map.Mapgadget" class="draggable resizable"
                  style="position:absolute; top: {{gadgetItem.y}}px; left: {{gadgetItem.x}}px;  z-index: {{gadgetItem.z_index}}; cursor: move;"
-                 data-id="{{gadgetItem.id}}" data-type="gadget" ng-dblclick="editGadget(gadgetItem)">
+                 data-id="{{gadgetItem.id}}" data-type="gadget" ng-dblclick="editGadget(gadgetItem)"
+                 ng-show="gadgetItem.display">
                 <graph-item item="gadgetItem" ng-if="gadgetItem.gadget === 'RRDGraph'"
                             refresh-interval="0"></graph-item>
 
@@ -149,7 +150,8 @@
             <div ng-repeat="summaryItem in map.Mapsummaryitem"
                  style="position:absolute; top: {{summaryItem.y}}px; left: {{summaryItem.x}}px;  z-index: {{summaryItem.z_index}};"
                  class="draggable resizable"
-                 data-id="{{summaryItem.id}}" data-type="summaryItem" ng-dblclick="editSummaryItem(summaryItem)">
+                 data-id="{{summaryItem.id}}" data-type="summaryItem" ng-dblclick="editSummaryItem(summaryItem)"
+                 ng-show="summaryItem.display">
                 <map-summary-item item="summaryItem"></map-summary-item>
             </div>
 
@@ -197,8 +199,34 @@
             <div class="mapToolbarTool" title="<?php echo __('Add stateless icon'); ?>" ng-click="addIcon()">
                 <i class="fa fa-lg fa-object-ungroup"></i>
             </div>
+        </div>
+
+        <div id="layersBox">
+            <div id="layersBoxDragger"></div>
+
+            <div class="layersContainer" style="overflow-y: auto;">
+
+                <div class="mapLayer" ng-repeat="(key, value) in layers"
+                     ng-class="{ 'selectedLayer': key === defaultLayer }">
+                    <span class="cursor-pointer"
+                          ng-click="setDefaultLayer(key)">
+                        {{value}}
+                    </span>
+                    <i class="fa fa-eye pull-right padding-right-5 cursor-pointer"
+                       ng-show="visableLayers['layer_'+key]"
+                       ng-click="hideLayer(key)"
+                       title="<?php echo __('Click to hide layer'); ?>"></i>
+                    <i class="fa fa-eye-slash pull-right padding-right-5 cursor-pointer"
+                       ng-hide="visableLayers['layer_'+key]"
+                       ng-click="showLayer(key)"
+                       title="<?php echo __('Click to show layer'); ?>"></i>
+
+                </div>
+
+            </div>
 
         </div>
+
     </div>
 </div>
 
