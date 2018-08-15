@@ -1334,7 +1334,7 @@ class Map extends MapModuleAppModel {
         $servicestatus = $Servicestatus->byUuid($service['Service']['uuid'], $ServicestatusFields);
 
         $HostView = new \itnovum\openITCOCKPIT\Core\Views\Host($service);
-        $ServiceView = new \itnovum\openITCOCKPIT\Core\Views\Host($service);
+        $ServiceView = new \itnovum\openITCOCKPIT\Core\Views\Service($service);
 
 
         if (empty($hoststatus) && empty($servicestatus)) {
