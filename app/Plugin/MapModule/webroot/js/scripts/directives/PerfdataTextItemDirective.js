@@ -85,6 +85,15 @@ angular.module('openITCOCKPIT').directive('perfdataTextItem', function($http){
                 if($scope.item.show_label){
                     text = $scope.perfdataName + ' ' + text;
                 }
+
+                if($scope.width <= 0){
+                    $scope.width = text.length * 11;
+                }
+
+                if($scope.height <= 0){
+                    $scope.height = 18;
+                }
+
                 $scope.text = text;
             };
 
