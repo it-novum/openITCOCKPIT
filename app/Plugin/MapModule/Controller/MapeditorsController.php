@@ -802,7 +802,6 @@ class MapeditorsController extends MapModuleAppController {
                         ],
                     ],
                     'conditions' => [
-                        //'Mapsummaryitem.map_id' => $mapId,
                         'Map.id'    => $objectId
                     ]
                 ]);
@@ -1010,7 +1009,7 @@ class MapeditorsController extends MapModuleAppController {
                                 'Service.uuid'
                             ]
                         ]);
-                        if (!empty($services)) {
+                        if (!empty($dependentServices)) {
                             if ($this->hasRootPrivileges === false) {
                                 if (!$this->allowedByContainerId(Hash::extract($services, '{n}.Host.Container.{n}.HostsToContainer.container_id'))) {
                                     $allowView = false;
