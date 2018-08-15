@@ -31,15 +31,16 @@
         timing-function="ease-in-out">
 
     <flippy-front>
-        <a href="javascript:void(0);" class="btn btn-default btn-xs txt-color-blueDark" ng-click="buttonClickedOff()">
+        <a href="javascript:void(0);" class="btn btn-default btn-xs txt-color-blueDark" ng-click="hideConfig()">
             <i class="fa fa-cog fa-sm"></i>
         </a>
-        <div class="padding-10">
-            {{widget.WidgetNotice.note}}
+        <div class="padding-10" >
+            <div style="display:inline"
+                 ng-bind-html="widget.WidgetNotice.htmlContent | trustAsHtml"></div>
         </div>
     </flippy-front>
     <flippy-back>
-        <a href="javascript:void(0);" class="btn btn-default btn-xs txt-color-blueDark" ng-click="buttonClickedOn()">
+        <a href="javascript:void(0);" class="btn btn-default btn-xs txt-color-blueDark" ng-click="showConfig()">
             <i class="fa fa-eye fa-sm"></i>
         </a>
         <div class="padding-top-10">

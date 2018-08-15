@@ -25,6 +25,7 @@
 use itnovum\openITCOCKPIT\Core\Dashboards\DowntimeHostListJson;
 use itnovum\openITCOCKPIT\Core\Dashboards\DowntimeServiceListJson;
 use itnovum\openITCOCKPIT\Core\Dashboards\HostStatusListJson;
+use itnovum\openITCOCKPIT\Core\Dashboards\NoticeListJson;
 use itnovum\openITCOCKPIT\Core\Dashboards\ServiceStatusListJson;
 
 /**
@@ -445,9 +446,53 @@ class DashboardsController extends AppController {
     }
 
     public function noticeWidget() {
-        if (!$this->isApiRequest()) {
-            //Only ship HTML template
+        if (!$this->isAngularJsRequest()) {
+            //Only ship template
             return;
         }
+        $widgetId = (int)$this->request->query('widgetId');
+        $NoticeListJson = new NoticeListJson();
+
+        if (!$this->Widget->exists($widgetId)) {
+            throw new NotFoundException('Widget not found');
+        }
+
+        if ($this->request->is('get')) {
+            $widget = $this->Widget->find('first', [
+                'recursive'  => -1,
+                'conditions' => [
+                    'Widget.id' => $widgetId
+                ]
+            ]);
+
+            $data = [];
+            $htmlContent = '';
+            if ($widget['Widget']['json_data'] !== null && $widget['Widget']['json_data'] !== '') {
+                $data = json_decode($widget['Widget']['json_data'], true);
+                if (!empty($data['note'])) {
+                    $parseDown = new ParsedownExtra();
+                    $htmlContent = $parseDown->text($data['note']);
+                }
+            }
+            $config = $NoticeListJson->standardizedData($data);
+            $this->set('config', $config);
+            $this->set('htmlContent', $htmlContent);
+
+            $this->set('_serialize', ['config', 'htmlContent']);
+            return;
+        }
+
+        if ($this->request->is('post')) {
+            $config = $NoticeListJson->standardizedData($this->request->data);
+
+            $this->Widget->id = $widgetId;
+            $this->Widget->saveField('json_data', json_encode($config));
+
+            $this->set('config', $config);
+            $this->set('_serialize', ['config']);
+            return;
+        }
+
+        throw new MethodNotAllowedException();
     }
 }
