@@ -1361,11 +1361,11 @@ class MapeditorsController extends MapModuleAppController {
                                 'table'      => 'mapsummaryitems',
                                 'type'       => 'INNER',
                                 'alias'      => 'Mapsummaryitem',
-                                'conditions' => 'Mapsummaryitem.map_id = Map.id',
+                                'conditions' => 'Mapsummaryitem.object_id = Map.id',
                             ],
                         ],
                         'conditions' => [
-                            'Mapsummaryitem.object_id' => $objectId
+                            'Map.id' => $objectId
                         ],
                         'fields'     => [
                             'Map.*',
