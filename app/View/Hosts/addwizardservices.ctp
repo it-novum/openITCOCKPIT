@@ -70,7 +70,7 @@ $notification_settings = [
                                     <?php echo __('Hostname'); ?>
                                 </label>
                                 <div class="col col-xs-10 col-md-10 col-lg-10">
-                                    {{ post.hostname }}
+                                    {{ hostname }}
                                 </div>
                             </div>
                             <div class="form-group required row" ng-class="{'has-error': errors.service_id}">
@@ -79,12 +79,12 @@ $notification_settings = [
                                 </label>
                                 <div class="col col-xs-10 col-md-10 col-lg-10">
                                     <select
-                                            id="HostService"
+                                            id="Servicetemplates"
                                             data-placeholder="<?php echo __('Please choose'); ?>"
                                             class="form-control"
-                                            chosen="services"
-                                            ng-options="service.key as service.value for service in services"
-                                            ng-model="post.Service.service_id">
+                                            chosen="servicetemplates"
+                                            ng-options="servicetemplate.key as servicetemplate.value for servicetemplate in servicetemplates"
+                                            ng-model="post.Servicetemplate.id">
                                     </select>
                                     <div ng-repeat="error in errors.service_id">
                                         <div class="help-block text-danger">{{ error }}</div>

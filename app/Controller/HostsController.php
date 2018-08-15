@@ -3603,47 +3603,57 @@ class HostsController extends AppController {
     public function addwizardservices($hostId = null) {
         $this->layout = 'angularjs';
 
-
+        if (!$this->Host->exists($hostId)) {
+            throw new NotFoundException(__('Invalid host'));
+        }
+        $userId = $this->Auth->user('id');
 
         if ($this->request->is('post') || $this->request->is('put')) {
-            $services = [
-
-            ];
-
-
-            if ($this->Host->saveAll($this->request->data)) {
-
-               /* $changelog_data = $this->Changelog->parseDataForChangelog(
-                    $this->params['action'],
-                    $this->params['controller'],
-                    $this->Host->id,
-                    OBJECT_HOST,
-                    $this->request->data('Host.container_id'),
-                    $userId,
-                    $this->request->data['Host']['name'],
-                    array_merge($this->request->data, $ext_data_for_changelog)
-                );
-                if ($changelog_data) {
-                    CakeLog::write('log', serialize($changelog_data));
-                }
+            $ext_data_for_changelog = $this->Host->getChangelogData($this->request->data);
+            $serviceDataToSave = [];
+            if (!empty($hostId)) {
+                //save services
+                $this->Service->create();
+                $serviceDataToSave[] = [
+                    'Service' => [
+                        'uuid'               => UUID::v4(),
+                        'servicetemplate_id' => 1,
+                        'host_id'            => $hostId,
+                        'service_type'       => GENERIC_SERVICE,
+                    ]
+                ];
+                if ($this->Service->saveAll($serviceDataToSave)) {
+                 /*   $changelog_data = $this->Changelog->parseDataForChangelog(
+                        $this->params['action'],
+                        $this->params['controller'],
+                        $this->Host->id,
+                        OBJECT_SERVICE,
+                        $this->request->data('Host.container_id'),
+                        $userId,
+                        $this->request->data['Host']['name'],
+                        array_merge($this->request->data, $ext_data_for_changelog)
+                    );
+                    if ($changelog_data) {
+                        CakeLog::write('log', serialize($changelog_data));
+                    }
 */
-                if ($this->request->ext === 'json') {
-                    $this->serializeId();
-                    return;
-                }
-            } else {
-                if ($this->request->ext === 'json') {
+                    if ($this->request->ext === 'json') {
+                        $this->serializeId();
+                        return;
+                    }
+                }else {
+                    if ($this->request->ext === 'json') {
 
+                        $this->serializeErrorMessage();
+                        return;
+                    }
                     $this->serializeErrorMessage();
                     return;
                 }
-                $this->serializeErrorMessage();
-                return;
-                //$this->setFlash(__('Data could not be saved'), false);
             }
         }
-
     }
+
 
     public function loadWizardServiceData($hostId){
         if (!$this->isAngularJsRequest()) {
@@ -3680,6 +3690,7 @@ class HostsController extends AppController {
                 ]);
                 $data = [
                     'hostname' => $hostInfo['Host']['name'],
+                    'containerId' => $hostInfo['Host']['container_id'],
                     'servicetemplateId' => $servicetemplate['Servicetemplate']['id'],
                     'servicetemplateName' => $servicetemplate['Servicetemplate']['name']
                 ];
