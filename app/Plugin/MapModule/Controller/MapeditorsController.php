@@ -803,6 +803,7 @@ class MapeditorsController extends MapModuleAppController {
                     ],
                     'conditions' => [
                         'Mapsummaryitem.object_id' => $objectId,
+                        'Mapsummaryitem.map_id'    => $mapId
                     ]
                 ]);
                 if (!empty($map)) {
