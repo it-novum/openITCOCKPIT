@@ -45,16 +45,17 @@ angular.module('openITCOCKPIT').directive('noticeWidget', function($http){
 
             $scope.showConfig = function() {
                 $scope.$broadcast('FLIP_EVENT_IN');
-            }
+            };
             $scope.hideConfig = function() {
                 $scope.$broadcast('FLIP_EVENT_OUT');
-            }
+            };
 
             $scope.saveSettings = function(){
                 var settings = {
                     'note': $scope.widget.WidgetNotice.note
                 };
                 $http.post("/dashboards/noticeWidget.json?angular=true&widgetId=" + $scope.widget.id, settings).then(function(result){
+                    $scope.load();
                     return true;
                 });
             };
@@ -62,8 +63,6 @@ angular.module('openITCOCKPIT').directive('noticeWidget', function($http){
             $scope.$watch('widget.WidgetNotice.note', function(){
                 if($scope.ready === true){
                     $scope.saveSettings();
-                    $scope.load();
-
                 }
             });
 
