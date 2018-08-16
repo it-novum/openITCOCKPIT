@@ -28,7 +28,6 @@ angular.module('openITCOCKPIT').directive('trafficlightWidget', function($http){
                 $http.get("/dashboards/trafficLightWidget.json", {
                     params: {
                         'angular': true,
-                        'recursive': true,
                         'widgetId': $scope.widget.id
                     }
                 }).then(function(result){
@@ -69,10 +68,12 @@ angular.module('openITCOCKPIT').directive('trafficlightWidget', function($http){
 
             $scope.saveSettings = function(){
                 console.log($scope.post.Service.id);
-                var settings = {
-                    'serviceId': $scope.post.Service.id
-                };
-                $http.post("/dashboards/trafficLightWidget.json?angular=true&widgetId=" + $scope.widget.id, settings).then(function(result){
+                $http.post("/dashboards/trafficLightWidget.json?angular=true", {
+                    Widget: {
+                        serviceId: $scope.post.Service.id
+                    },
+                    widgetId: $scope.widget.id
+                }).then(function(result){
                     //$scope.load();
                     console.log(result);
                     return true;

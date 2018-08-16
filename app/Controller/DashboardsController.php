@@ -560,13 +560,13 @@ class DashboardsController extends AppController {
             //Only ship HTML template
             return;
         }
-        $widgetId = (int)$this->request->query('widgetId');
-        if ($widgetId <= 0) {
-            throw new RuntimeException('Invalid widget id');
-        }
-        $serviceId = (int)$this->request->query('serviceId');
 
         if ($this->request->is('get')) {
+            $widgetId = (int)$this->request->query('widgetId');
+            if (!$this->Widget->exists($widgetId)) {
+                throw new RuntimeException('Invalid widget id');
+            }
+
             $query = [
                 'recursive'  => -1,
                 'conditions' => [
@@ -577,6 +577,7 @@ class DashboardsController extends AppController {
                 ]
             ];
             $widget = $this->Widget->find('first', $query);
+            $serviceId = null;
             if ($widget['Widget']['service_id']) {
                 $serviceId = $widget['Widget']['service_id'];
             }
@@ -585,12 +586,32 @@ class DashboardsController extends AppController {
             return;
         }
         if ($this->request->is('post')) {
-            if ($serviceId > 0) {
-                $this->Widget->id = $widgetId;
-                $this->Widget->saveField('service_id', $serviceId);
+            $widgetId = (int)$this->request->data('widgetId');
+            if (!$this->Widget->exists($widgetId)) {
+                throw new RuntimeException('Invalid widget id');
             }
-            $this->set('serviceId', $serviceId);
-            $this->set('_serialize', ['serviceId']);
+
+            $serviceId = (int)$this->request->data('Widget.serviceId');
+
+            $widget = $this->Widget->find('first', [
+                'recursive'  => -1,
+                'conditions' => [
+                    'Widget.id' => $widgetId
+                ],
+            ]);
+            if ($widget) {
+                $widget['Widget']['service_id'] = $serviceId;
+                if (!$this->Widget->save($widget)) {
+                    $this->response->statusCode(400);
+                    $this->serializeErrorMessageFromModel('Widget');
+                    return;
+                }
+
+                $this->set('serviceId', $serviceId);
+                $this->set('_serialize', ['serviceId']);
+                return;
+            }
+            $this->response->statusCode(400);
             return;
         }
         throw new MethodNotAllowedException();
