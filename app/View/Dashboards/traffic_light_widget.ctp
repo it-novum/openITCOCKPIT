@@ -34,7 +34,8 @@
         <a href="javascript:void(0);" class="btn btn-default btn-xs txt-color-blueDark" ng-click="showConfig()">
             <i class="fa fa-cog fa-sm"></i>
         </a>
-        <div class="padding-10" >
+        <div class="padding-10">
+            {{post.Service.id}}
 
         </div>
     </flippy-front>
@@ -45,14 +46,14 @@
         <div class="padding-top-10">
             <div class="form-group">
                 <label class="col col-md-2 control-label">
-                    <?php echo __('Services'); ?>
+                    <?php echo __('Service'); ?>
                 </label>
-                <div class="col col-md-6">
+                <div class="col col-md-8">
                     <select data-placeholder="<?php echo __('Please choose'); ?>"
                             class="form-control"
                             chosen="services"
                             ng-options="+(service.value.Service.id) as service.value.Host.name + '/' +((service.value.Service.name)?service.value.Service.name:service.value.Servicetemplate.name) group by service.value.Host.name for service in services"
-                            ng-model="post.TrafficLightWidget.Service">
+                            ng-model="post.Service.id">
                     </select>
 
                     <div ng-repeat="error in errors.Service">

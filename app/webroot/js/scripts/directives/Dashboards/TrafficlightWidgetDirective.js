@@ -12,8 +12,8 @@ angular.module('openITCOCKPIT').directive('trafficlightWidget', function($http){
             $scope.trafficlightTimeout = null;
 
             $scope.post = {
-                TrafficLightWidget: {
-                    Service : null
+                Service : {
+                    id: null
                 }
             };
 
@@ -22,8 +22,6 @@ angular.module('openITCOCKPIT').directive('trafficlightWidget', function($http){
             });
 
             $scope.load = function(options){
-                return;
-
                 options = options || {};
                 options.save = options.save || false;
 
@@ -34,7 +32,8 @@ angular.module('openITCOCKPIT').directive('trafficlightWidget', function($http){
                         'widgetId': $scope.widget.id
                     }
                 }).then(function(result){
-                    $scope.Service = result.data.data.Service;
+                    $scope.post.Service.id = result.data.serviceId;
+
                     $scope.init = false;
                     setTimeout(function(){
                         $scope.ready = true;
@@ -58,7 +57,7 @@ angular.module('openITCOCKPIT').directive('trafficlightWidget', function($http){
                         'angular': true,
                         'filter[Host.name]': searchString,
                         'filter[Service.servicename]': searchString,
-                        'selected[]': $scope.post.TrafficLightWidget.Service
+                        'selected[]': $scope.post.Service.id
                     }
                 }).then(function (result) {
                     $scope.services = result.data.services;
@@ -69,17 +68,18 @@ angular.module('openITCOCKPIT').directive('trafficlightWidget', function($http){
 
 
             $scope.saveSettings = function(){
-                return;
+                console.log($scope.post.Service.id);
                 var settings = {
-                    'serviceId': $scope.widget.WidgetTrafficlight.serviceId
+                    'serviceId': $scope.post.Service.id
                 };
                 $http.post("/dashboards/trafficLightWidget.json?angular=true&widgetId=" + $scope.widget.id, settings).then(function(result){
-                    $scope.load();
+                    //$scope.load();
+                    console.log(result);
                     return true;
                 });
             };
 
-            $scope.$watch('widget.WidgetTrafficlight.serviceId', function(){
+            $scope.$watch('post.Service.id', function(){
                 if($scope.ready === true){
                     $scope.saveSettings();
                 }
