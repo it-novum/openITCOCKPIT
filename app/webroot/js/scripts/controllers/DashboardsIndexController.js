@@ -9,12 +9,22 @@ angular.module('openITCOCKPIT')
 
 
         var $gridstack = null;
+        var tabSortCreated = false;
 
         var genericError = function(){
             new Noty({
                 theme: 'metroui',
                 type: 'error',
                 text: 'Error while saving data',
+                timeout: 3500
+            }).show();
+        };
+
+        var genericSuccess = function(){
+            new Noty({
+                theme: 'metroui',
+                type: 'success',
+                text: 'Data saved successfully',
                 timeout: 3500
             }).show();
         };
@@ -32,6 +42,7 @@ angular.module('openITCOCKPIT')
                 }
 
                 $scope.availableWidgets = result.data.widgets;
+                createTabSort();
 
                 $scope.loadTabContent($scope.activeTab);
 
@@ -45,6 +56,7 @@ angular.module('openITCOCKPIT')
                     'angular': true
                 }
             }).then(function(result){
+                $scope.activeTab = tabId;
                 $scope.activeWidgets = result.data.widgets;
             });
         };
@@ -215,6 +227,37 @@ angular.module('openITCOCKPIT')
                 });
             }
         }
+
+        var createTabSort = function(){
+            if(tabSortCreated === true){
+                return;
+            }
+
+            tabSortCreated = true;
+            $('.nav-tabs').sortable({
+                update: function(){
+                    var $tabbar = $(this);
+                    var $tabs = $tabbar.children();
+                    var tabIdsOrdered = [];
+                    $tabs.each(function(key, tab){
+                        var $tab = $(tab);
+                        var tabId = parseInt($tab.data('tab-id'), 10);
+                        tabIdsOrdered.push(tabId);
+                    });
+                    $http.post("/dashboards/saveTabOrder.json?angular=true",
+                        {
+                            order: tabIdsOrdered
+                        }
+                    ).then(function(result){
+                        genericSuccess();
+                    }, function errorCallback(result){
+                        genericError();
+                    });
+                },
+                placeholder: 'tabTargetDestination'
+            });
+
+        };
 
         $scope.checkDashboardLock = function(){
 

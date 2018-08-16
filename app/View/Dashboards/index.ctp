@@ -37,9 +37,10 @@
         <header>
             <div class="tabsContainer">
                 <ul class="nav nav-tabs pull-left ui-sortable">
-                    <li data-tab-id="1" class="ui-sortable-handle" ng-repeat="tab in tabs"
-                        ng-class="{'active':activeTab === tab.id}">
-                        <a class="pointer" href="#/dashboards/index/1">
+                    <li data-tab-id="{{tab.id}}" class="ui-sortable-handle" ng-repeat="tab in tabs"
+                        ng-class="{'active':activeTab === tab.id}"
+                        ng-click="loadTabContent(tab.id)">
+                        <a class="pointer" href="javascript:void(0);">
                             <span class="text ">
                                 {{tab.name}}
                             </span>
@@ -49,7 +50,8 @@
             </div>
 
             <div class="widget-toolbar">
-                <button class="btn btn-xs btn-primary">
+                <button class="btn btn-xs btn-primary"
+                        title="<?php echo __('Setup tab rotation'); ?>">
                     <i class="fa fa-refresh"></i>
                 </button>
             </div>
@@ -73,14 +75,16 @@
             </div>
 
             <div class="widget-toolbar">
-                <button class="btn btn-xs btn-default" ng-click="refresh()">
+                <button class="btn btn-xs btn-default" ng-click="refresh()"
+                        title="<?php echo __('Refresh'); ?>">
                     <i class="fa fa-refresh"></i>
                     <?php echo __('Refresh'); ?>
                 </button>
             </div>
 
             <div class="widget-toolbar">
-                <button class="btn btn-xs btn-success">
+                <button class="btn btn-xs btn-success"
+                        title="<?php echo __('Add tab'); ?>">
                     <i class="fa fa-plus"></i>
                 </button>
             </div>

@@ -177,6 +177,44 @@ class DashboardsController extends AppController {
         $this->serializeErrorMessageFromModel('Widget');
     }
 
+    public function saveTabOrder() {
+        if (!$this->request->is('post') || !$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        $newOrder = $this->request->data('order');
+        if (empty($newOrder) || !is_array($newOrder)) {
+            return;
+        }
+
+        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+        $success = true;
+
+        foreach ($newOrder as $key => $tabId) {
+            $tab = $this->DashboardTab->find('first', [
+                'recursive'  => -1,
+                'conditions' => [
+                    'DashboardTab.id'      => $tabId,
+                    'DashboardTab.user_id' => $User->getId()
+                ]
+            ]);
+
+            if (!empty($tab)) {
+                $tab['DashboardTab']['position'] = (int)$key;
+                if (!$this->DashboardTab->save($tab)) {
+                    $success = false;
+                }
+            }
+        }
+
+        if ($success === false) {
+            $this->response->statusCode(400);
+        }
+
+        $this->set('success', $success);
+        $this->set('_serialize', ['success']);
+    }
+
 
     /***** Basic Widgets *****/
     public function welcomeWidget() {

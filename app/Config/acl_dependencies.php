@@ -140,6 +140,7 @@ $config = [
                 'saveGrid',
                 'addWidgetToTab',
                 'removeWidgetFromTab',
+                'saveTabOrder',
                 'hostsPiechartWidget',
                 'hostsPiechart180Widget',
                 'servicesPiechartWidget',
