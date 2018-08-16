@@ -227,9 +227,7 @@ class DashboardsController extends AppController {
         ]);
 
         if ($result) {
-            $this->set('DashboardTab', [
-                'DashboardTab' => $result
-            ]);
+            $this->set('DashboardTab', $result);
             $this->set('_serialize', ['DashboardTab']);
             return;
         }

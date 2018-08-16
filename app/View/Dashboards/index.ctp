@@ -181,16 +181,16 @@
 
                 <div class="row">
                     <div class="col-xs-12 smart-form">
-                        <div class="form-group smart-form" ng-class="{'has-error': errors.startX}">
+                        <div class="form-group smart-form" ng-class="{'has-error': errors.name}">
                             <label class="label hintmark_red"><?php echo __('Tab name'); ?></label>
                             <label class="input"> <b class="icon-prepend">
                                     <i class="fa fa-tag"></i>
                                 </b>
                                 <input type="text" class="input-sm"
                                        placeholder="<?php echo __('Tab name'); ?>"
-                                       ng-model="currentItem.startX">
+                                       ng-model="newTabName">
                             </label>
-                            <div ng-repeat="error in errors.startX">
+                            <div ng-repeat="error in errors.name">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
                         </div>

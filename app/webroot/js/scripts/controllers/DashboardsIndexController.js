@@ -213,7 +213,21 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.addNewTab = function(){
+            $http.post("/dashboards/addNewTab.json?angular=true",
+                {
+                    DashboardTab: {
+                        name: $scope.newTabName
+                    }
+                }
+            ).then(function(result){
+                genericSuccess();
 
+                $scope.activeTab = parseInt(result.data.DashboardTab.DashboardTab.id, 10);
+                $scope.load();
+                $('#addNewTabModal').modal('hide');
+            }, function errorCallback(result){
+                genericError();
+            });
         };
 
         if(document.addEventListener){
