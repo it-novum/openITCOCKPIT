@@ -54,7 +54,7 @@ $notification_settings = [
 <div class="jarviswidget" id="wid-id-0">
     <header>
         <span class="widget-icon hidden-mobile hidden-tablet"> <i class="fa fa-pencil-square-o"></i> </span>
-        <h2 class="hidden-mobile hidden-tablet"><?php echo __('Add Services'); ?></h2>
+        <h2 class="hidden-mobile hidden-tablet"><?php echo __('Overview'); ?></h2>
         <div class="widget-toolbar hidden-mobile hidden-tablet" role="menu">
             <?php echo $this->Utils->backButton() ?>
         </div>
@@ -75,29 +75,16 @@ $notification_settings = [
                             </div>
                             <div class="form-group required row" ng-class="{'has-error': errors.service_id}">
                                 <label class="col-xs-2 col-md-2 col-lg-2 control-label">
-                                    <?php echo __('Standard Service'); ?>
+                                    <?php echo __('Services'); ?>
                                 </label>
-                                <div class="col col-xs-10 col-md-10 col-lg-10">
-                                    <select
-                                            id="Servicetemplates"
-                                            data-placeholder="<?php echo __('Please choose'); ?>"
-                                            class="form-control"
-                                            chosen="servicetemplates"
-                                            ng-options="servicetemplate.key as servicetemplate.value for servicetemplate in servicetemplates"
-                                            ng-model="post.Servicetemplate.id">
-                                    </select>
-                                    <div ng-repeat="error in errors.service_id">
-                                        <div class="help-block text-danger">{{ error }}</div>
-                                    </div>
-                                </div>
+                                <span ng-repeat="(key, value) in services">
                             </div>
                         </div>
                     </div> <!-- close col -->
                     <div class="col-xs-12 margin-top-10">
                         <div class="well formactions ">
                             <div class="pull-right">
-                                <input class="btn btn-primary" type="submit" value="Next">&nbsp;
-                                <a href="/hosts/index" class="btn btn-default">Cancel</a>
+                                <a href="/hosts/index" class="btn btn-primary">Finish</a>
                             </div>
                         </div>
                     </div>

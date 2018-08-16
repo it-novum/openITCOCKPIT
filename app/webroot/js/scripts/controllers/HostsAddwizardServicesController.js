@@ -31,15 +31,33 @@ angular.module('openITCOCKPIT')
                 return;
             }
 
-            $http.get("/servicetemplates/loadServicetemplatesByContainerId/.json", {
+            $http.get("/servicetemplates/loadServicetemplatesByContainerId.json", {
                 params: {
                     'angular': true,
-                    'containerId': $scope.containerId
+                    'containerId': $scope.containerId,
+                    'filter[Servicetemplate.name]': searchString,
                 }
             }).then(function(result){
                 console.log(result.data);
                 $scope.servicetemplates = result.data.servicetemplates;
             });
+        };
+
+
+        $scope.submit = function(){
+            $http.post("/hosts/addwizardservices/"+$scope.id+".json?angular=true",
+                $scope.post
+            ).then(function(result){
+                console.log('Data saved successfully');
+                window.location.href = '/hosts/addwizardoverview/'+$scope.id;
+            }, function errorCallback(result){
+                console.info('save failed');
+                if(result.data.hasOwnProperty('error')){
+                    $scope.errors = result.data.error;
+                    console.log($scope.errors);
+                }
+            });
+
         };
 
         $scope.load();

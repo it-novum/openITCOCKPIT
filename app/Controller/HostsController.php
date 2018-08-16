@@ -3654,6 +3654,25 @@ class HostsController extends AppController {
         }
     }
 
+    public function addwizardoverview($hostId){
+        $this->layout = 'angularjs';
+        if (!$this->Host->exists($hostId)) {
+            throw new NotFoundException(__('Invalid host'));
+        }
+
+        $hostInfo = $this->Host->find('first', [
+            'recursive' => -1,
+            'conditions' => [
+                'Host.id' => $hostId
+            ],
+            'fields' => [
+                'Host.name',
+                'Host.id'
+            ]
+        ]);
+
+
+    }
 
     public function loadWizardServiceData($hostId){
         if (!$this->isAngularJsRequest()) {
