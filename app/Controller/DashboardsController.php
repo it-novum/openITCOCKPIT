@@ -25,6 +25,7 @@
 use itnovum\openITCOCKPIT\Core\Dashboards\DowntimeHostListJson;
 use itnovum\openITCOCKPIT\Core\Dashboards\DowntimeServiceListJson;
 use itnovum\openITCOCKPIT\Core\Dashboards\HostStatusListJson;
+use itnovum\openITCOCKPIT\Core\Dashboards\NoticeJson;
 use itnovum\openITCOCKPIT\Core\Dashboards\NoticeListJson;
 use itnovum\openITCOCKPIT\Core\Dashboards\ServiceStatusListJson;
 
@@ -451,7 +452,7 @@ class DashboardsController extends AppController {
             return;
         }
         $widgetId = (int)$this->request->query('widgetId');
-        $NoticeListJson = new NoticeListJson();
+        $NoticeJson = new NoticeJson();
 
         if (!$this->Widget->exists($widgetId)) {
             throw new NotFoundException('Widget not found');
@@ -474,7 +475,7 @@ class DashboardsController extends AppController {
                     $htmlContent = $parseDown->text($data['note']);
                 }
             }
-            $config = $NoticeListJson->standardizedData($data);
+            $config = $NoticeJson->standardizedData($data);
             $this->set('config', $config);
             $this->set('htmlContent', $htmlContent);
 
@@ -483,7 +484,7 @@ class DashboardsController extends AppController {
         }
 
         if ($this->request->is('post')) {
-            $config = $NoticeListJson->standardizedData($this->request->data);
+            $config = $NoticeJson->standardizedData($this->request->data);
 
             $this->Widget->id = $widgetId;
             $this->Widget->saveField('json_data', json_encode($config));
@@ -494,5 +495,13 @@ class DashboardsController extends AppController {
         }
 
         throw new MethodNotAllowedException();
+    }
+
+    public function trafficLightWidget() {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template
+            return;
+        }
+
     }
 }

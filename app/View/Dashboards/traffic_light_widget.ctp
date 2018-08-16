@@ -31,25 +31,35 @@
         timing-function="ease-in-out">
 
     <flippy-front>
-        <a href="javascript:void(0);" class="btn btn-default btn-xs txt-color-blueDark" ng-click="hideConfig()">
+        <a href="javascript:void(0);" class="btn btn-default btn-xs txt-color-blueDark" ng-click="showConfig()">
             <i class="fa fa-cog fa-sm"></i>
         </a>
         <div class="padding-10" >
-            <div style="display:inline"
-                 ng-bind-html="widget.WidgetNotice.htmlContent | trustAsHtml"></div>
+
         </div>
     </flippy-front>
     <flippy-back>
-        <a href="javascript:void(0);" class="btn btn-default btn-xs txt-color-blueDark" ng-click="showConfig()">
+        <a href="javascript:void(0);" class="btn btn-default btn-xs txt-color-blueDark" ng-click="hideConfig()">
             <i class="fa fa-eye fa-sm"></i>
         </a>
         <div class="padding-top-10">
-            <textarea name="notes" class="form-control notice-text" maxlength="4000" cols="30" rows="10"
-                      ng-model-options="{debounce: 500}" ng-model="widget.WidgetNotice.note">
-            </textarea>
-            <span class="note"><i class="fa fa-code text-primary"></i>
-                <?php echo __('Insert text, html or markdown code'); ?>
-            </span>
+            <div class="form-group">
+                <label class="col col-md-2 control-label">
+                    <?php echo __('Services'); ?>
+                </label>
+                <div class="col col-md-6">
+                    <select data-placeholder="<?php echo __('Please choose'); ?>"
+                            class="form-control"
+                            chosen="services"
+                            ng-options="+(service.value.Service.id) as service.value.Host.name + '/' +((service.value.Service.name)?service.value.Service.name:service.value.Servicetemplate.name) group by service.value.Host.name for service in services"
+                            ng-model="post.TrafficLightWidget.Service">
+                    </select>
+
+                    <div ng-repeat="error in errors.Service">
+                        <div class="help-block text-danger">{{ error }}</div>
+                    </div>
+                </div>
+            </div>
         </div>
     </flippy-back>
 </flippy>

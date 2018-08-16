@@ -22,10 +22,11 @@ angular.module('openITCOCKPIT').directive('noticeWidget', function($http){
                 options = options || {};
                 options.save = options.save || false;
 
-                $http.get("/dashboards/noticeWidget.json?angular=true&widgetId=" + $scope.widget.id, {
+                $http.get("/dashboards/noticeWidget.json", {
                     params: {
                         'angular': true,
-                        'recursive': true
+                        'recursive': true,
+                        'widgetId': $scope.widget.id
                     }
                 }).then(function(result){
                     resizeTextarea();

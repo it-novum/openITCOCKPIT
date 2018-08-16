@@ -25,7 +25,7 @@
 namespace itnovum\openITCOCKPIT\Core\Dashboards;
 
 
-class NoticeListJson extends DashboardJsonStandardizer {
+class NoticeJson extends DashboardJsonStandardizer {
 
     /**
      * @var array
