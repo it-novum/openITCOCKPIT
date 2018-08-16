@@ -176,7 +176,7 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.refresh = function(){
-            console.log('Not implemented yet');
+            $scope.load();
         };
 
         $scope.toggleFullscreenMode = function(){
@@ -226,6 +226,7 @@ angular.module('openITCOCKPIT')
                 $scope.load();
                 $('#addNewTabModal').modal('hide');
             }, function errorCallback(result){
+                $scope.errors = result.data.error;
                 genericError();
             });
         };
