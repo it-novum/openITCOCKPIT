@@ -23,20 +23,6 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 ?>
-<?php
-$flapDetection_settings = [
-    'flap_detection_on_up'          => 'fa-square txt-color-greenLight',
-    'flap_detection_on_down'        => 'fa-square txt-color-redLight',
-    'flap_detection_on_unreachable' => 'fa-square txt-color-blueDark',
-];
-$notification_settings = [
-    'notify_on_recovery'    => 'fa-square txt-color-greenLight',
-    'notify_on_down'        => 'fa-square txt-color-redLight',
-    'notify_on_unreachable' => 'fa-square txt-color-blueDark',
-    'notify_on_flapping'    => 'fa-random',
-    'notify_on_downtime'    => 'fa-clock-o',
-];
-?>
 <div class="row">
     <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
         <h1 class="page-title txt-color-blueDark">
