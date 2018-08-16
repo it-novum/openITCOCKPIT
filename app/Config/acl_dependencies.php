@@ -141,6 +141,7 @@ $config = [
                 'addWidgetToTab',
                 'removeWidgetFromTab',
                 'saveTabOrder',
+                'addNewTab',
                 'hostsPiechartWidget',
                 'hostsPiechart180Widget',
                 'servicesPiechartWidget',

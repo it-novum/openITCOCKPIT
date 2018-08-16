@@ -84,7 +84,8 @@
 
             <div class="widget-toolbar">
                 <button class="btn btn-xs btn-success"
-                        title="<?php echo __('Add tab'); ?>">
+                        title="<?php echo __('Add tab'); ?>"
+                        data-toggle="modal" data-target="#addNewTabModal">
                     <i class="fa fa-plus"></i>
                 </button>
             </div>
@@ -163,3 +164,60 @@
         </div>
     </div>
 </article>
+
+
+<!-- Add new Tab modal -->
+<div id="addNewTabModal" class="modal" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">
+                    <i class="fa fa-plus"></i>
+                    <?php echo __('Create new tab'); ?>
+                </h4>
+            </div>
+            <div class="modal-body">
+
+                <div class="row">
+                    <div class="col-xs-12 smart-form">
+                        <div class="form-group smart-form" ng-class="{'has-error': errors.startX}">
+                            <label class="label hintmark_red"><?php echo __('Tab name'); ?></label>
+                            <label class="input"> <b class="icon-prepend">
+                                    <i class="fa fa-tag"></i>
+                                </b>
+                                <input type="text" class="input-sm"
+                                       placeholder="<?php echo __('Tab name'); ?>"
+                                       ng-model="currentItem.startX">
+                            </label>
+                            <div ng-repeat="error in errors.startX">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 padding-top-10">
+                        <button type="button" class="btn btn-primary pull-right" ng-click="addNewTab()">
+                            <?php echo __('Create new tab'); ?>
+                        </button>
+                    </div>
+                </div>
+
+                <hr/>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h4 class="modal-title">
+                            <?php echo __('Create from shared tab'); ?>
+                        </h4>
+                    </div>
+                </div>
+                <br/>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">
+                    <?php echo __('Close'); ?>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

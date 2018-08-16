@@ -6,6 +6,7 @@ angular.module('openITCOCKPIT')
         $scope.availableWidgets = [];
         $scope.gridstack = null;
         $scope.fullscreen = false;
+        $scope.errors = {};
 
 
         var $gridstack = null;
@@ -209,6 +210,10 @@ angular.module('openITCOCKPIT')
 
                 $scope.fullscreen = true;
             }
+        };
+
+        $scope.addNewTab = function(){
+
         };
 
         if(document.addEventListener){
