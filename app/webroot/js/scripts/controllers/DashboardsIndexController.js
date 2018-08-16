@@ -66,7 +66,9 @@ angular.module('openITCOCKPIT')
 
                 $gridstack.on('change', function(event, items){
                     if(typeof items !== 'undefined'){
-                        $scope.saveGrid(items);
+                        if(Array.isArray(items)){
+                            $scope.saveGrid(items);
+                        }
                     }
                 });
             }

@@ -24,7 +24,7 @@ angular.module('openITCOCKPIT').directive('trafficlightWidget', function($http){
             $scope.load = function(options){
                 return;
 
-                var options = options || {};
+                options = options || {};
                 options.save = options.save || false;
 
                 $http.get("/dashboards/trafficLightWidget.json", {
