@@ -23,6 +23,7 @@ angular.module('openITCOCKPIT')
                     output: ''
                 },
                 Host: {
+                    id: QueryStringService.getIds('filter[Host.id][]', []),
                     name: QueryStringService.getValue('filter[Host.name]', ''),
                     keywords: '',
                     address:  QueryStringService.getValue('filter[Host.address]', ''),
@@ -59,6 +60,7 @@ angular.module('openITCOCKPIT')
                 'sort': SortService.getSort(),
                 'page': $scope.currentPage,
                 'direction': SortService.getDirection(),
+                'filter[Host.id][]': $scope.filter.Host.id,
                 'filter[Host.name]': $scope.filter.Host.name,
                 'filter[Hoststatus.output]': $scope.filter.Hoststatus.output,
                 'filter[Hoststatus.current_state][]': $rootScope.currentStateForApi($scope.filter.Hoststatus.current_state),
@@ -138,7 +140,7 @@ angular.module('openITCOCKPIT')
 
                 }
             }
-            console.log(objects);
+            //console.log(objects);
             return objects;
         };
 

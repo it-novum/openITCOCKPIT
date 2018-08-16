@@ -29,6 +29,8 @@
  * a servoce belongsTo a container (many to one)
  */
 
+use itnovum\openITCOCKPIT\Core\ServicegroupConditions;
+
 class Servicegroup extends AppModel {
 
     public $belongsTo = [
@@ -125,5 +127,65 @@ class Servicegroup extends AppModel {
             }
         }
         return [];
+    }
+
+    public function getServicegroupsForAngular(ServicegroupConditions $ServicegroupConditions, $selected = []) {
+        $query = [
+            'recursive'  => -1,
+            'fields' => 'Container.name',
+            'joins'      => [
+                [
+                    'table'      => 'containers',
+                    'alias'      => 'Container',
+                    'type'       => 'INNER',
+                    'conditions' => [
+                        'Servicegroup.container_id = Container.id',
+                    ],
+                ],
+            ],
+            'conditions' => $ServicegroupConditions->getConditionsForFind(),
+            'order'      => [
+                'Container.name' => 'ASC',
+            ],
+            'group' => [
+                'Container.id'
+            ],
+            'limit' => self::ITN_AJAX_LIMIT
+        ];
+        if (is_array($selected)) {
+            $selected = array_filter($selected);
+        }
+        if (!empty($selected)) {
+            $query['conditions']['NOT'] = ['Servicegroup.id' => $selected];
+        }
+        $servicegroupsWithLimit = $this->find('list', $query);
+        $selectedServicegroups = [];
+        if (!empty($selected)) {
+            $query = [
+                'recursive'  => -1,
+                'fields' => 'Container.name',
+                'joins'      => [
+                    [
+                        'table'      => 'containers',
+                        'alias'      => 'Container',
+                        'type'       => 'INNER',
+                        'conditions' => [
+                            'Servicegroup.container_id = Container.id',
+                        ],
+                    ],
+                ],
+                'conditions' => [
+                    'Servicegroup.id' => $selected
+                ],
+                'order'      => [
+                    'Container.name' => 'ASC',
+                ],
+            ];
+            $selectedServicegroups = $this->find('list', $query);
+        }
+
+        $servicegroups = $servicegroupsWithLimit + $selectedServicegroups;
+        asort($servicegroups, SORT_FLAG_CASE | SORT_NATURAL);
+        return $servicegroups;
     }
 }

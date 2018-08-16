@@ -181,3 +181,9 @@
     right: 20px;
     color: grey;
 }
+
+.tooltipProgressBar{
+    height: 5px;
+    width: 100%;
+    background-color: #646464;
+}

@@ -609,7 +609,7 @@ angular.module('openITCOCKPIT')
                 return true;
             }
             return false;
-        }
+        };
 
         $scope.calculateFailures = function (totalTime, criticalItems, start, end) {
             var failuresDuration = 0;

@@ -50,6 +50,11 @@ class ServiceConditions {
     /**
      * @var array
      */
+    private $serviceIds = [];
+
+    /**
+     * @var array
+     */
     private $order = [];
 
     /**
@@ -152,5 +157,17 @@ class ServiceConditions {
         $this->hostId = $hostId;
     }
 
+    /**
+     * @return array
+     */
+    public function getServiceIds() {
+        return $this->serviceIds;
+    }
 
+    /**
+     * @param array $serviceIds
+     */
+    public function setServiceIds($serviceIds) {
+        $this->serviceIds = $serviceIds;
+    }
 }
