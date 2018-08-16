@@ -560,6 +560,39 @@ class DashboardsController extends AppController {
             //Only ship HTML template
             return;
         }
+        $widgetId = (int)$this->request->query('widgetId');
+        if ($widgetId <= 0) {
+            throw new RuntimeException('Invalid widget id');
+        }
+        $serviceId = (int)$this->request->query('serviceId');
 
+        if ($this->request->is('get')) {
+            $query = [
+                'recursive'  => -1,
+                'conditions' => [
+                    'Widget.id' => $widgetId
+                ],
+                'fields'     => [
+                    'Widget.service_id'
+                ]
+            ];
+            $widget = $this->Widget->find('first', $query);
+            if ($widget['Widget']['service_id']) {
+                $serviceId = $widget['Widget']['service_id'];
+            }
+            $this->set('serviceId', $serviceId);
+            $this->set('_serialize', ['serviceId']);
+            return;
+        }
+        if ($this->request->is('post')) {
+            if ($serviceId > 0) {
+                $this->Widget->id = $widgetId;
+                $this->Widget->saveField('service_id', $serviceId);
+            }
+            $this->set('serviceId', $serviceId);
+            $this->set('_serialize', ['serviceId']);
+            return;
+        }
+        throw new MethodNotAllowedException();
     }
 }
