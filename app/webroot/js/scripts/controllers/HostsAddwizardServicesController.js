@@ -2,7 +2,9 @@ angular.module('openITCOCKPIT')
     .controller('HostsAddwizardservicesController', function($scope, $http, QueryStringService){
         $scope.id = QueryStringService.getCakeId();
         $scope.post = {
-            servicetemplates: {}
+            Servicetemplate: {
+                id:1
+            }
         };
 
         $scope.init = true;

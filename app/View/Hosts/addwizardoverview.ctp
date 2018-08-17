@@ -55,15 +55,25 @@
                                 <label class="col-xs-2 col-md-2 col-lg-2 control-label">
                                     <?php echo __('Hostname'); ?>
                                 </label>
-                                <div class="col col-xs-10 col-md-10 col-lg-10">
-                                    {{ hostname }}
+                                <div class="col col-xs-10 col-md-10 col-lg-10 padding-top-5">
+                                    <a href="/hosts/browser/{{host.id}}">{{ host.name }}</a>
                                 </div>
                             </div>
-                            <div class="form-group required row" ng-class="{'has-error': errors.service_id}">
-                                <label class="col-xs-2 col-md-2 col-lg-2 control-label">
-                                    <?php echo __('Services'); ?>
-                                </label>
-                                <span ng-repeat="(key, value) in services">
+                            <div class="row">
+                                <div class="form-group required row" ng-class="{'has-error': errors.service_id}">
+                                    <label class="col-xs-2 col-md-2 col-lg-2 control-label">
+                                        <?php echo __('Services'); ?>
+                                    </label>
+                                    <div class="col col-xs-10 col-md-10 col-lg-10 padding-top-5">
+                                        <table>
+                                            <tr ng-repeat="service in services">
+                                                <td ng-repeat="value in service">
+                                                    <a href="/services/browser/{{ value.Service.id }}">{{ value.Servicetemplate.name }}</a>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div> <!-- close col -->

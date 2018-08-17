@@ -3607,9 +3607,8 @@ class HostsController extends AppController {
             throw new NotFoundException(__('Invalid host'));
         }
         $userId = $this->Auth->user('id');
-
         if ($this->request->is('post') || $this->request->is('put')) {
-            $ext_data_for_changelog = $this->Host->getChangelogData($this->request->data);
+
             $serviceDataToSave = [];
             if (!empty($hostId)) {
                 //save services
@@ -3617,26 +3616,12 @@ class HostsController extends AppController {
                 $serviceDataToSave[] = [
                     'Service' => [
                         'uuid'               => UUID::v4(),
-                        'servicetemplate_id' => 1,
+                        'servicetemplate_id' => $this->request->data['Servicetemplate']['id'],
                         'host_id'            => $hostId,
                         'service_type'       => GENERIC_SERVICE,
                     ]
                 ];
                 if ($this->Service->saveAll($serviceDataToSave)) {
-                 /*   $changelog_data = $this->Changelog->parseDataForChangelog(
-                        $this->params['action'],
-                        $this->params['controller'],
-                        $this->Host->id,
-                        OBJECT_SERVICE,
-                        $this->request->data('Host.container_id'),
-                        $userId,
-                        $this->request->data['Host']['name'],
-                        array_merge($this->request->data, $ext_data_for_changelog)
-                    );
-                    if ($changelog_data) {
-                        CakeLog::write('log', serialize($changelog_data));
-                    }
-*/
                     if ($this->request->ext === 'json') {
                         $this->serializeId();
                         return;
@@ -3654,24 +3639,37 @@ class HostsController extends AppController {
         }
     }
 
+
+
     public function addwizardoverview($hostId){
         $this->layout = 'angularjs';
         if (!$this->Host->exists($hostId)) {
             throw new NotFoundException(__('Invalid host'));
         }
 
-        $hostInfo = $this->Host->find('first', [
+    }
+
+    public function loadHostInfo($hostId){
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+        if (!$this->Host->exists($hostId)) {
+            throw new NotFoundException(__('Invalid host'));
+        }
+        $host = $this->Host->find('first', [
             'recursive' => -1,
             'conditions' => [
                 'Host.id' => $hostId
             ],
             'fields' => [
+                'Host.id',
                 'Host.name',
-                'Host.id'
+                'Host.container_id'
             ]
         ]);
 
-
+        $this->set('host', $host);
+        $this->set('_serialize', ['host']);
     }
 
     public function loadWizardServiceData($hostId){
