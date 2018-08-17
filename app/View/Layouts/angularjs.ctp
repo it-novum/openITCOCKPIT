@@ -58,15 +58,15 @@ $scripts = [
     'js/scripts/ng.app.js',
     'js/vendor/UUID.js-4.0.3/dist/uuid.core.js',
     'js/vendor/lodash/vendor/underscore/underscore.js',
-    'js/vendor/gridstack/src/gridstack.js',
-    'js/vendor/gridstack/src/gridstack.jQueryUI.js',
     'js/vendor/noty/noty.min.js',
     'js/vendor/gauge.min.js',
     'js/lib/jquery.svg.min.js',
     'js/lib/jquery.svgfilter.min.js',
     'smartadmin/js/plugin/dropzone/dropzone.min.js',
     'vendor/noty/noty.min.js',
-    'js/lib/rangyinputs-jquery-1.1.2.min.js'
+    'js/lib/rangyinputs-jquery-1.1.2.min.js',
+    'vendor/javascript-detect-element-resize/jquery.resize.js',
+    'vendor/angular-gridster/dist/angular-gridster.min.js',
 ];
 
 if ($this->request->params['controller'] === 'statusmaps') {

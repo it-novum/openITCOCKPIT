@@ -104,7 +104,7 @@ class Widget extends AppModel {
                 'icon'      => 'fa-pie-chart',
                 'directive' => 'hosts-piechart-widget',
                 'width'     => 6,
-                'height'    => 9
+                'height'    => 11
             ],
             [
                 'type_id'   => 7,
@@ -112,7 +112,7 @@ class Widget extends AppModel {
                 'icon'      => 'fa-pie-chart',
                 'directive' => 'hosts-piechart-180-widget',
                 'width'     => 6,
-                'height'    => 8
+                'height'    => 11
             ],
             [
                 'type_id'   => 4,
@@ -120,7 +120,7 @@ class Widget extends AppModel {
                 'icon'      => 'fa-pie-chart',
                 'directive' => 'services-piechart-widget',
                 'width'     => 6,
-                'height'    => 9
+                'height'    => 11
             ],
             [
                 'type_id'   => 8,
@@ -128,7 +128,7 @@ class Widget extends AppModel {
                 'icon'      => 'fa-pie-chart',
                 'directive' => 'services-piechart180-widget',
                 'width'     => 6,
-                'height'    => 8
+                'height'    => 11
             ],
             [
                 'type_id'   => 11,
@@ -136,7 +136,7 @@ class Widget extends AppModel {
                 'icon'      => 'fa-road',
                 'directive' => 'trafficlight-widget',
                 'width'     => 6,
-                'height'    => 7
+                'height'    => 13
             ],
             [
                 'type_id'   => 12,
@@ -152,7 +152,7 @@ class Widget extends AppModel {
                 'icon'      => 'fa-pencil-square-o',
                 'directive' => 'notice-widget',
                 'width'     => 6,
-                'height'    => 7
+                'height'    => 13
             ],
             [
                 'type_id'   => 15,
@@ -171,8 +171,8 @@ class Widget extends AppModel {
                 'title'     => __('Hosts in downtime'),
                 'icon'      => 'fa-power-off',
                 'directive' => 'hosts-downtime-widget',
-                'width'     => 6,
-                'height'    => 7
+                'width'     => 12,
+                'height'    => 14
             ];
         }
 
@@ -182,8 +182,8 @@ class Widget extends AppModel {
                 'title'     => __('Services in downtime'),
                 'icon'      => 'fa-power-off',
                 'directive' => 'services-downtime-widget',
-                'width'     => 6,
-                'height'    => 7
+                'width'     => 12,
+                'height'    => 14
             ];
         }
 

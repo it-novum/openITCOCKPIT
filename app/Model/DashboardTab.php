@@ -178,13 +178,16 @@ class DashboardTab extends AppModel {
                         //'Widget.json_data', //Do not add json data here!
                         'Widget.created',
                         'Widget.modified'
+                    ],
+                    'order'  => [
+                        'Widget.col' => 'ASC'
                     ]
                 ]
             ],
             'conditions' => [
                 'DashboardTab.id'      => $tabId,
                 'DashboardTab.user_id' => $userId
-            ]
+            ],
         ]);
         return $result;
     }

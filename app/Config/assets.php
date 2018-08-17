@@ -39,7 +39,8 @@ $config = [
             'my_vis.css',
             'vendor/noty/noty.css',
             'flippy.css',
-            'vendor/image-picker.css'
+            'vendor/image-picker.css',
+            '/vendor/angular-gridster/dist/angular-gridster.css'
         ],
 
         'js'                        => [

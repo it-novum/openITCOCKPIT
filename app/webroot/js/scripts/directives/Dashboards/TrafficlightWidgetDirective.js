@@ -7,7 +7,7 @@ angular.module('openITCOCKPIT').directive('trafficlightWidget', function($http){
         },
 
         controller: function($scope){
-            $scope.init = true
+            $scope.init = true;
 
             var $widget = $('#widget-' + $scope.widget.id);
             $scope.ready = false;

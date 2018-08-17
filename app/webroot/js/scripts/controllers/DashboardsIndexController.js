@@ -1,21 +1,53 @@
 angular.module('openITCOCKPIT')
-    .controller('DashboardsIndexController', function($scope, $http){
+    .controller('DashboardsIndexController', function($scope, $http, $timeout){
 
         /** public vars **/
         $scope.init = true;
         $scope.activeTab = null;
         $scope.availableWidgets = [];
-        $scope.gridstack = null;
         $scope.fullscreen = false;
         $scope.errors = {};
         $scope.viewTabRotateInterval = 0;
         $scope.intervalText = 'disabled';
 
+        $scope.gridsterOpts = {
+            minRows: 2, // the minimum height of the grid, in rows
+            maxRows: 100,
+            columns: 12, // the width of the grid, in columns
+            colWidth: 'auto', // can be an integer or 'auto'.  'auto' uses the pixel width of the element divided by 'columns'
+            //rowHeight: 'match', // can be an integer or 'match'.  Match uses the colWidth, giving you square widgets.
+            rowHeight: 25,
+            margins: [10, 10], // the pixel distance between each widget
+            defaultSizeX: 2, // the default width of a gridster item, if not specifed
+            defaultSizeY: 1, // the default height of a gridster item, if not specified
+            mobileBreakPoint: 600, // if the screen is not wider that this, remove the grid layout and stack the items
+            resizable: {
+                enabled: true,
+                start: function(event, uiWidget, $element){
+                }, // optional callback fired when resize is started,
+                resize: function(event, uiWidget, $element){
+                }, // optional callback fired when item is resized,
+                stop: function(event, uiWidget, $element){
+                } // optional callback fired when item is finished resizing
+            },
+            draggable: {
+                enabled: true, // whether dragging items is supported
+                handle: '.ui-sortable-handle', // optional selector for resize handle
+                start: function(event, uiWidget, $element){
+                }, // optional callback fired when drag is started,
+                drag: function(event, uiWidget, $element){
+                }, // optional callback fired when item is moved,
+                stop: function(event, uiWidget, $element){
+                } // optional callback fired when item is finished dragging
+            }
+        };
+
 
         /** private vars **/
-        var $gridstack = null;
         var tabSortCreated = false;
         var intervalId = null;
+        var disableWatch = false;
+        var watchTimeout = null;
 
         var genericError = function(){
             new Noty({
@@ -60,60 +92,60 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.loadTabContent = function(tabId){
+            disableWatch = true;
             $http.get("/dashboards/getWidgetsForTab/" + tabId + ".json", {
                 params: {
                     'angular': true
                 }
             }).then(function(result){
                 $scope.activeTab = tabId;
-                $scope.activeWidgets = result.data.widgets;
+
+                var widgets = [];
+                for(var i in result.data.widgets.Widget){
+                    widgets.push({
+                        sizeX: parseInt(result.data.widgets.Widget[i].width, 10),
+                        sizeY: parseInt(result.data.widgets.Widget[i].height, 10),
+                        col: parseInt(result.data.widgets.Widget[i].col, 10),
+                        row: parseInt(result.data.widgets.Widget[i].row, 10),
+
+                        id: parseInt(result.data.widgets.Widget[i].id, 10),
+                        icon: result.data.widgets.Widget[i].icon,
+                        title: result.data.widgets.Widget[i].title,
+                        directive: result.data.widgets.Widget[i].directive
+                    });
+                }
+
+                $scope.activeWidgets = widgets;
+
+                //Disable watch for some time to give angular time to render the template
+                //Will avoid a saveGrid method call in load (or tab switch)
+                setTimeout(function(){
+                    disableWatch = false;
+                }, 500);
             });
         };
 
-        $scope.renderGrid = function(){
-            // This method gets called from the index.ctp template!
-            if($gridstack === null){
 
-                //First page load
-                $gridstack = $('.grid-stack');
-
-                $gridstack.gridstack({
-                    float: true,
-                    cellHeight: 10,
-                    draggable: {
-                        handle: '.jarviswidget header[role="heading"]'
-                    }
-                });
-
-                $gridstack.on('change', function(event, items){
-                    if(typeof items !== 'undefined'){
-                        if(Array.isArray(items)){
-                            $scope.saveGrid(items);
-                        }
-                    }
-                });
-            }
-        };
-
-        $scope.saveGrid = function(items){
+        $scope.saveGrid = function(){
             $scope.checkDashboardLock();
 
             var postData = [];
-            for(var i in items){
+            for(var i in $scope.activeWidgets){
                 postData.push({
                     Widget: {
-                        id: items[i].id,
+                        id: $scope.activeWidgets[i].id,
                         dashboard_tab_id: $scope.activeTab,
-                        row: items[i].y,
-                        col: items[i].x,
-                        width: items[i].width,
-                        height: items[i].height
+                        row: $scope.activeWidgets[i].row,
+                        col: $scope.activeWidgets[i].col,
+                        width: $scope.activeWidgets[i].sizeX,
+                        height: $scope.activeWidgets[i].sizeY
                     }
                 });
             }
 
             $http.post("/dashboards/saveGrid/.json?angular=true", postData).then(
                 function(result){
+                    genericSuccess();
                     return true;
                 }, function errorCallback(result){
                     genericError();
@@ -129,26 +161,17 @@ angular.module('openITCOCKPIT')
             };
             $http.post("/dashboards/addWidgetToTab/.json?angular=true", postData).then(
                 function(result){
-                    $scope.activeWidgets.Widget.push(result.data.widget.Widget);
-                    //Wait a bit, that angular can render the template
-                    setTimeout(function(){
-                        var el = document.getElementById('widget-' + result.data.widget.Widget.id);
-                        var grid = $gridstack.data('gridstack');
-                        grid.addWidget(
-                            $(el),
-                            result.data.widget.Widget.row,
-                            result.data.widget.Widget.col,
-                            result.data.widget.Widget.width,
-                            result.data.widget.Widget.height,
-                            undefined,
-                            undefined,
-                            undefined,
-                            undefined,
-                            undefined,
-                            result.data.widget.Widget.id
-                        );
+                    $scope.activeWidgets.push({
+                        sizeX: parseInt(result.data.widget.Widget.width, 10),
+                        sizeY: parseInt(result.data.widget.Widget.height, 10),
+                        col: parseInt(result.data.widget.Widget.col, 10),
+                        row: parseInt(result.data.widget.Widget.row, 10),
 
-                    }, 250);
+                        id: parseInt(result.data.widget.Widget.id, 10),
+                        icon: result.data.widget.Widget.icon,
+                        title: result.data.widget.Widget.title,
+                        directive: result.data.widget.Widget.directive
+                    });
                     return true;
                 }, function errorCallback(result){
                     genericError();
@@ -167,17 +190,14 @@ angular.module('openITCOCKPIT')
             $http.post("/dashboards/removeWidgetFromTab/.json?angular=true", postData).then(
                 function(result){
                     var currentWidgets = [];
-                    for(var i in $scope.activeWidgets.Widget){
-                        if($scope.activeWidgets.Widget[i].id != id){
-                            currentWidgets.push($scope.activeWidgets.Widget[i]);
+                    for(var i in $scope.activeWidgets){
+                        if($scope.activeWidgets[i].id == id){
+                            $scope.activeWidgets.splice(i, 1);
+
+                            //We are done here
+                            break;
                         }
                     }
-
-                    var el = document.getElementById('widget-' + id);
-                    var grid = $gridstack.data('gridstack');
-                    grid.removeWidget(el);
-
-                    $scope.activeWidgets.Widget = currentWidgets;
                 }, function errorCallback(result){
                     genericError();
                 });
@@ -340,6 +360,29 @@ angular.module('openITCOCKPIT')
                 $scope.intervalText = sec + ' seconds';
             }
         });
+
+        $scope.$watch('activeWidgets', function(){
+            console.log(disableWatch);
+            if($scope.init === true || disableWatch === true){
+                return;
+            }
+
+            if(watchTimeout !== null){
+                $timeout.cancel(watchTimeout);
+            }
+
+            watchTimeout = $timeout(function(){
+                $scope.saveGrid();
+                /*
+                for(var i in $scope.activeWidgets){
+                    var col = $scope.activeWidgets[i].col;
+                    var row = $scope.activeWidgets[i].row;
+
+                    console.log('<col>'+col+'</col>     <row>'+row+'</row>');
+                }
+                */
+            }, 1500);
+        }, true);
 
         $scope.load();
     });
