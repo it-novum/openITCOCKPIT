@@ -1,16 +1,21 @@
 angular.module('openITCOCKPIT')
     .controller('DashboardsIndexController', function($scope, $http){
 
+        /** public vars **/
         $scope.init = true;
         $scope.activeTab = null;
         $scope.availableWidgets = [];
         $scope.gridstack = null;
         $scope.fullscreen = false;
         $scope.errors = {};
+        $scope.viewTabRotateInterval = 0;
+        $scope.intervalText = 'disabled';
 
 
+        /** private vars **/
         var $gridstack = null;
         var tabSortCreated = false;
+        var intervalId = null;
 
         var genericError = function(){
             new Noty({
@@ -41,6 +46,9 @@ angular.module('openITCOCKPIT')
                 if($scope.activeTab === null){
                     $scope.activeTab = $scope.tabs[0].id;
                 }
+
+                $scope.viewTabRotateInterval = result.data.tabRotationInterval;
+                updateInterval();
 
                 $scope.availableWidgets = result.data.widgets;
                 createTabSort();
@@ -231,6 +239,23 @@ angular.module('openITCOCKPIT')
             });
         };
 
+        $scope.saveTabRotateInterval = function(){
+            $http.post("/dashboards/saveTabRotateInterval.json?angular=true",
+                {
+                    User: {
+                        dashboard_tab_rotation: $scope.viewTabRotateInterval
+                    }
+                }
+            ).then(function(result){
+                genericSuccess();
+                updateInterval();
+
+            }, function errorCallback(result){
+                $scope.errors = result.data.error;
+                genericError();
+            });
+        };
+
         if(document.addEventListener){
             document.addEventListener('webkitfullscreenchange', fullscreenExitHandler, false);
             document.addEventListener('mozfullscreenchange', fullscreenExitHandler, false);
@@ -279,9 +304,42 @@ angular.module('openITCOCKPIT')
 
         };
 
+        var rotateTab = function(){
+            console.log('Implement me!');
+        };
+
+        var updateInterval = function(){
+            if(intervalId !== null){
+                $interval.cancel(intervalId);
+            }
+
+            if($scope.viewTabRotateInterval > 0){
+                intervalId = $interval(rotateTab, ($scope.viewTabRotateInterval * 1000));
+            }
+        };
+
         $scope.checkDashboardLock = function(){
 
         };
+
+        /** On Load stuff **/
+        $scope.$watch('viewTabRotateInterval', function(){
+            if($scope.init){
+                return;
+            }
+
+            if($scope.viewTabRotateInterval === 0){
+                $scope.intervalText = 'disabled';
+            }else{
+                var min = parseInt($scope.viewTabRotateInterval / 60, 10);
+                var sec = parseInt($scope.viewTabRotateInterval % 60, 10);
+                if(min > 0){
+                    $scope.intervalText = min + ' minutes, ' + sec + ' seconds';
+                    return;
+                }
+                $scope.intervalText = sec + ' seconds';
+            }
+        });
 
         $scope.load();
     });

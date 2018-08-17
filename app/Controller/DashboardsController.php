@@ -33,6 +33,7 @@ use itnovum\openITCOCKPIT\Core\Dashboards\ServiceStatusListJson;
  * Class DashboardsController
  * @property DashboardTab $DashboardTab
  * @property Widget $Widget
+ * @property User $User
  */
 class DashboardsController extends AppController {
 
@@ -44,7 +45,8 @@ class DashboardsController extends AppController {
         'Widget',
         'DashboardTab',
         'Parenthost',
-        MONITORING_HOSTSTATUS
+        MONITORING_HOSTSTATUS,
+        'User'
     ];
 
     public function index() {
@@ -56,6 +58,14 @@ class DashboardsController extends AppController {
 
         $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
 
+        $userRecord = $this->User->find('first', [
+            'recursive'  => -1,
+            'conditions' => [
+                'User.id' => $User->getId()
+            ]
+        ]);
+        $tabRotationInterval = (int)$userRecord['User']['dashboard_tab_rotation'];
+
         //Check if a tab exists for the given user
         if ($this->DashboardTab->hasUserATab($User->getId()) === false) {
             $this->DashboardTab->createNewTab($User->getId());
@@ -66,7 +76,8 @@ class DashboardsController extends AppController {
 
         $this->set('tabs', $tabs);
         $this->set('widgets', $widgets);
-        $this->set('_serialize', ['tabs', 'widgets']);
+        $this->set('tabRotationInterval', $tabRotationInterval);
+        $this->set('_serialize', ['tabs', 'widgets', 'tabRotationInterval']);
     }
 
     public function getWidgetsForTab($tabId) {
@@ -233,6 +244,22 @@ class DashboardsController extends AppController {
         }
         $this->serializeErrorMessageFromModel('DashboardTab');
         return;
+    }
+
+    public function saveTabRotateInterval(){
+        if (!$this->request->is('post') || !$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        $tabRotationInterval = (int)$this->request->data('User.dashboard_tab_rotation');
+
+        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+
+        $this->User->id = $User->getId();
+        $this->User->saveField('dashboard_tab_rotation', $tabRotationInterval);
+
+        $this->set('success', true);
+        $this->set('_serialize', ['success']);
     }
 
 

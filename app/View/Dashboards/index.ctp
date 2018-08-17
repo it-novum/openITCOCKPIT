@@ -51,8 +51,9 @@
 
             <div class="widget-toolbar">
                 <button class="btn btn-xs btn-primary"
-                        title="<?php echo __('Setup tab rotation'); ?>">
-                    <i class="fa fa-refresh"></i>
+                        title="<?php echo __('Setup tab rotation'); ?>"
+                        data-toggle="modal" data-target="#tabRotationModal">
+                    <i class="fa fa-spinner"></i>
                 </button>
             </div>
 
@@ -211,6 +212,44 @@
                     </div>
                 </div>
                 <br/>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">
+                    <?php echo __('Close'); ?>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Tab rotation modal -->
+<div id="tabRotationModal" class="modal" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">
+                    <i class="fa fa-spinner"></i>
+                    <?php echo __('Tab rotation interval'); ?>
+                </h4>
+            </div>
+            <div class="modal-body">
+
+                <div class="row">
+                    <div class="col-xs-12 smart-form">
+                        <label>
+                            <?php echo __('Set tab rotation interval'); ?>
+                        </label>
+                        <div class="slidecontainer">
+                            <input type="range" step="10" min="0" max="900" class="slider"
+                                   ng-model="viewTabRotateInterval" ng-mouseup="saveTabRotateInterval()">
+                            <div>
+                                <div class="help-block text-muted">{{ intervalText }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div class="modal-footer">

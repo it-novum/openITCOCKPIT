@@ -148,6 +148,7 @@ $config = [
                 'servicesPiechart180Widget',
                 'hostsStatusListWidget',
                 'servicesStatusListWidget',
+                'saveTabRotateInterval',
                 'parentOutagesWidget',
                 'hostsDowntimeWidget',
                 'servicesDowntimeWidget',
