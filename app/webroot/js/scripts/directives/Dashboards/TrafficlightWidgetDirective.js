@@ -13,7 +13,7 @@ angular.module('openITCOCKPIT').directive('trafficlightWidget', function($http){
             $scope.ready = false;
 
             $scope.trafficlightTimeout = null;
-            $scope.height = $widget.height() - 160;
+            $scope.height = $widget.height() - 140;
             $scope.width = $scope.height / 2.5;
             $scope.Service = null;
 
@@ -309,6 +309,12 @@ angular.module('openITCOCKPIT').directive('trafficlightWidget', function($http){
                 $scope.trafficlightTimeout = setTimeout(function(){
                     $scope.trafficlightTimeout = null;
                 }, 500);
+                if($scope.init){
+                    return;
+                }
+                $scope.height = $widget.height() - 140;
+                $scope.width = $scope.height/2.5;
+                renderTrafficlight();
             };
 
 
