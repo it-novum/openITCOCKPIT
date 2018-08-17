@@ -34,9 +34,11 @@
         <a href="javascript:void(0);" class="btn btn-default btn-xs txt-color-blueDark" ng-click="showConfig()">
             <i class="fa fa-cog fa-sm"></i>
         </a>
+        <span ng-if="!Service" class="text-info padding-left-20">
+            <?php echo __('No element selected');?>
+        </span>
         <div class="padding-10">
-            {{post.Service.id}}
-
+            <div id="trafficlight-{{widget.id}}"></div>
         </div>
     </flippy-front>
     <flippy-back>
@@ -45,10 +47,10 @@
         </a>
         <div class="padding-top-10">
             <div class="form-group">
-                <label class="col col-md-2 control-label">
+                <label class="col col-md-12 control-label">
                     <?php echo __('Service'); ?>
                 </label>
-                <div class="col col-md-8">
+                <div class="col col-md-12">
                     <select data-placeholder="<?php echo __('Please choose'); ?>"
                             class="form-control"
                             chosen="services"

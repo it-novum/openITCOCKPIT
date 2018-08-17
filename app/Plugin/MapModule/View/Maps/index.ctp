@@ -178,8 +178,8 @@
                                                     <i class="fa fa-eye"></i> <?php echo __('View'); ?></a>
                                             </li>
                                             <li>
-                                                <a href="/map_module/mapeditors/view/{{map.Map.id}}/fullscreen:1">
-                                                    <i class="glyphicon glyphicon-resize-full"></i> <?php echo __('View in fullscreen'); ?>
+                                                <a ng-href="/map_module/mapeditors/view/{{map.Map.id}}?fullscreen=true">
+                                                    <i class="fa fa-expand"></i> <?php echo __('View in fullscreen'); ?>
                                                 </a>
                                             </li>
                                             <?php if ($this->Acl->hasPermission('delete')): ?>

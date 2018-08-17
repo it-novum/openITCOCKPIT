@@ -28,12 +28,17 @@ use itnovum\openITCOCKPIT\Core\Dashboards\HostStatusListJson;
 use itnovum\openITCOCKPIT\Core\Dashboards\NoticeJson;
 use itnovum\openITCOCKPIT\Core\Dashboards\NoticeListJson;
 use itnovum\openITCOCKPIT\Core\Dashboards\ServiceStatusListJson;
+use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 
 /**
  * Class DashboardsController
  * @property DashboardTab $DashboardTab
  * @property Widget $Widget
+ * @property Parenthost $Parenthost
+ * @property Hoststatus $Hoststatus
  * @property User $User
+ * @property Servicestatus $Servicestatus
+ * @property Service $Service
  */
 class DashboardsController extends AppController {
 
@@ -42,11 +47,13 @@ class DashboardsController extends AppController {
     public $layout = 'blank';
 
     public $uses = [
-        'Widget',
         'DashboardTab',
+        'Widget',
         'Parenthost',
         MONITORING_HOSTSTATUS,
-        'User'
+        'User',
+        MONITORING_SERVICESTATUS,
+        'Service'
     ];
 
     public function index() {
@@ -246,7 +253,7 @@ class DashboardsController extends AppController {
         return;
     }
 
-    public function saveTabRotateInterval(){
+    public function saveTabRotateInterval() {
         if (!$this->request->is('post') || !$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
@@ -606,7 +613,7 @@ class DashboardsController extends AppController {
             $widget = $this->Widget->find('first', $query);
             $serviceId = null;
             if ($widget['Widget']['service_id']) {
-                $serviceId = $widget['Widget']['service_id'];
+                $serviceId = (int)$widget['Widget']['service_id'];
             }
             $this->set('serviceId', $serviceId);
             $this->set('_serialize', ['serviceId']);
@@ -627,7 +634,7 @@ class DashboardsController extends AppController {
                 ],
             ]);
             if ($widget) {
-                $widget['Widget']['service_id'] = $serviceId;
+                $widget['Widget']['service_id'] = (int)$serviceId;
                 if (!$this->Widget->save($widget)) {
                     $this->response->statusCode(400);
                     $this->serializeErrorMessageFromModel('Widget');
@@ -642,5 +649,80 @@ class DashboardsController extends AppController {
             return;
         }
         throw new MethodNotAllowedException();
+    }
+
+    public function getServiceWithStateById($id) {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+        if (!$this->Service->exists($id)) {
+            throw new NotFoundException('Invalid Service');
+        }
+        $query = [
+            'recursive'  => -1,
+            'contain'    => [
+                'Servicetemplate' => [
+                    'fields' => [
+                        'Servicetemplate.name'
+                    ],
+                ],
+            ],
+            'joins'      => [
+                [
+                    'table'      => 'hosts',
+                    'alias'      => 'Host',
+                    'type'       => 'INNER',
+                    'conditions' => [
+                        'Host.id = Service.host_id'
+                    ]
+                ],
+                [
+                    'table'      => 'hosts_to_containers',
+                    'alias'      => 'HostsToContainers',
+                    'type'       => 'INNER',
+                    'conditions' => [
+                        'HostsToContainers.host_id = Host.id',
+                    ],
+                ],
+            ],
+            'fields'     => [
+                'Service.id',
+                'Service.disabled',
+                'Service.name',
+                'Service.uuid',
+                'Host.name'
+            ],
+            'conditions' => [
+                'Service.id' => $id,
+
+            ],
+        ];
+
+        if (!$this->hasRootPrivileges) {
+            $query['conditions']['HostsToContainers.container_id'] = $this->MY_RIGHTS;
+        }
+
+        $service = $this->Service->find('first', $query);
+        if (!empty($service)) {
+            $ServicestatusFields = new ServicestatusFields($this->DbBackend);
+            $ServicestatusFields->currentState()->isFlapping();
+            $servicestatus = $this->Servicestatus->byUuid($service['Service']['uuid'], $ServicestatusFields);
+
+            if (!empty($servicestatus)) {
+                $Servicestatus = new \itnovum\openITCOCKPIT\Core\Servicestatus($servicestatus['Servicestatus']);
+            } else {
+                $Servicestatus = new \itnovum\openITCOCKPIT\Core\Servicestatus(
+                    ['Servicestatus' => []]
+                );
+            }
+            $Service = new \itnovum\openITCOCKPIT\Core\Views\Service($service);
+
+            $service = [
+                'Service'       => $Service->toArray(),
+                'Servicestatus' => $Servicestatus->toArray()
+            ];
+            $this->set('service', $service);
+            $this->set('_serialize', ['service']);
+        }
     }
 }

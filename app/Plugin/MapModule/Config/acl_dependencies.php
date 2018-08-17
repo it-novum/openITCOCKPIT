@@ -29,19 +29,28 @@ $config = [
         'always_allowed' => [
             'BackgroundUploads' => [
                 'upload',
-                'createThumbnailsFromBackgrounds',
+                'icon',
+                'deleteIcon',
+                'iconset'
             ],
             'Mapeditors'        => [
-                'hostUuidFromServiceUuid',
-                'fullscreen',
-                'popoverHostStatus',
-                'popoverServicegroupStatus',
-                'popoverHostgroupStatus',
-                'popoverServiceStatus',
-                'popoverMapStatus',
-                'servicesForWizard',
-                'hostFromSerice',
-                'hostFromService',
+                'mapitem',
+                'getDependendMaps',
+                'mapline',
+                'mapicon',
+                'maptext',
+                'perfdatatext',
+                'mapsummaryitem',
+                'graph',
+                'tacho',
+                'cylinder',
+                'trafficlight',
+                'temperature',
+                'mapsummary',
+                'backgroundImages',
+                'getIconsets',
+                'loadMapsByString',
+                'getPerformanceDataMetrics'
             ],
             'Maps'              => [
                 'loadUsersForTenant',
@@ -56,6 +65,25 @@ $config = [
             ]
         ],
         'dependencies'   => [
+            'Mapeditors' => [
+                'edit' => [
+                    'saveItem',
+                    'deleteItem',
+                    'saveLine',
+                    'deleteLine',
+                    'saveGadget',
+                    'deleteGadget',
+                    'saveText',
+                    'deleteText',
+                    'saveIcon',
+                    'deleteIcon',
+                    'saveBackground',
+                    'getIcons',
+                    'saveSummaryitem',
+                    'deleteSummaryitem',
+
+                ]
+            ]
         ],
         'roles_rights' => [
             'Administrator' => ['*'],

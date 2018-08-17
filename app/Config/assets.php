@@ -38,7 +38,8 @@ $config = [
             'vendor/vis-4.21.0/dist/vis.css',
             'my_vis.css',
             'vendor/noty/noty.css',
-            'flippy.css'
+            'flippy.css',
+            'vendor/image-picker.css'
         ],
 
         'js'                        => [

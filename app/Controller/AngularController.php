@@ -23,6 +23,7 @@
 //  confirmation.
 
 use \itnovum\openITCOCKPIT\Core\ValueObjects\User;
+use itnovum\openITCOCKPIT\Core\Views\HostAndServiceSummaryIcon;
 use itnovum\openITCOCKPIT\Core\Views\PieChart;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
 
@@ -590,7 +591,6 @@ class AngularController extends AppController {
         //Only ship HTML template
         return;
     }
-
     /**
      * @param int $up up|ok
      * @param int $down down|warning
@@ -637,6 +637,26 @@ class AngularController extends AppController {
         $PieChart->createHalfPieChart($chartData);
 
         $image = $PieChart->getImage();
+
+        $this->layout = false;
+        $this->render = false;
+        header('Content-Type: image/png');
+        imagepng($image, null, 0);
+        imagedestroy($image);
+    }
+
+    /**
+     * @param int $size
+     * @param int $bitMaskHostState
+     * @param int $bitMaskServiceState
+     * @throws Exception
+     */
+
+    public function getHostAndServiceStateSummaryIcon($size = 100, $bitMaskHostState = 0, $bitMaskServiceState = 0) {
+        session_write_close();
+        $HostAndServiceSummaryIcon = new HostAndServiceSummaryIcon($size);
+        $HostAndServiceSummaryIcon->createSummaryIcon($bitMaskHostState, $bitMaskServiceState);
+        $image = $HostAndServiceSummaryIcon->getImage();
 
         $this->layout = false;
         $this->render = false;

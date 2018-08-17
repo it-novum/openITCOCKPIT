@@ -53,16 +53,16 @@ class ServicestatusConditions {
     /**
      * @return bool
      */
-    public function hasConditions(){
+    public function hasConditions() {
         return !empty($this->conditions);
     }
 
-    public function servicesWarningCriticalAndUnknown(){
+    public function servicesWarningCriticalAndUnknown() {
         $this->addCondition('Servicestatus.current_state > 0');
         return $this;
     }
 
-    public function perfdataIsNotNull(){
+    public function perfdataIsNotNull() {
         $this->addCondition('Servicestatus.perfdata IS NOT NULL');
         return $this;
     }
@@ -71,10 +71,10 @@ class ServicestatusConditions {
      * @param $currentStateId
      * @return $this
      */
-    public function currentState($currentStateId){
-        if(is_array($currentStateId)){
+    public function currentState($currentStateId) {
+        if (is_array($currentStateId)) {
             $this->conditions['Servicestatus.current_state'] = $currentStateId;
-        }else {
+        } else {
             $this->conditions['Servicestatus.current_state'][] = $currentStateId;
         }
         return $this;
@@ -83,13 +83,13 @@ class ServicestatusConditions {
     /**
      * @param int $value
      */
-    public function setProblemHasBeenAcknowledged($value){
+    public function setProblemHasBeenAcknowledged($value) {
         $value = (int)$value;
-        if($this->DbBackend->isNdoUtils()) {
+        if ($this->DbBackend->isNdoUtils()) {
             $this->conditions['Servicestatus.problem_has_been_acknowledged'] = $value;
         }
 
-        if($this->DbBackend->isCrateDb()){
+        if ($this->DbBackend->isCrateDb()) {
             $this->conditions['Servicestatus.problem_has_been_acknowledged'] = (bool)$value;
         }
     }
@@ -97,11 +97,11 @@ class ServicestatusConditions {
     /**
      * @param int $value
      */
-    public function setScheduledDowntimeDepth($value){
+    public function setScheduledDowntimeDepth($value) {
         $value = (int)$value;
-        if($value === 0){
+        if ($value === 0) {
             $this->conditions['Servicestatus.scheduled_downtime_depth >'] = $value;
-        }else{
+        } else {
             $this->conditions['Servicestatus.scheduled_downtime_depth'] = $value;
         }
     }
