@@ -151,63 +151,6 @@
                     </ul>
                 </div>
 
-
-                <?php /*
-                    <div class="grid-stack">
-                        <div class="grid-stack-item" ng-repeat="activeWidget in activeWidgets.Widget"
-                             id="widget-{{activeWidget.id}}"
-                             data-gs-id="{{activeWidget.id}}"
-                             data-gs-height="{{activeWidget.height}}"
-                             data-gs-width="{{activeWidget.width}}"
-                             data-gs-x="{{activeWidget.col}}"
-                             data-gs-y="{{activeWidget.row}}">
-                            <div class="grid-stack-item-content">
-                                <div class="jarviswidget jarviswidget-color-blueDark jarviswidget-sortable">
-                                    <header role="heading" class="ui-sortable-handle" style="cursor: move;">
-                                        <div class="jarviswidget-ctrls" role="menu">
-                                            <a href="javascript:void(0);" class="button-icon jarviswidget-edit-btn"
-                                               title="<?php echo __('Edit widget'); ?>">
-                                                <i class="fa fa-cog "></i>
-                                            </a>
-                                            <div class="widget-toolbar pull-left" role="menu">
-                                                <a data-toggle="dropdown"
-                                                   class="dropdown-toggle color-box selector margin-top-0"
-                                                   href="javascript:void(0);">
-                                                </a>
-                                                <ul class="dropdown-menu arrow-box-up-right color-select pull-right padding-3">
-                                                    <li><span class="bg-color-green"
-                                                              data-widget-setstyle="jarviswidget-color-green"
-                                                              data-toggle="tooltip" data-placement="left"
-                                                              data-original-title="Green Grass"></span>
-                                                    </li>
-                                                </ul>
-                                            </div>
-                                            <a class="button-icon jarviswidget-delete-btn pointer"
-                                               title="<?php echo __('Remove widget'); ?>"
-                                               ng-click="removeWidgetFromTab(activeWidget.id)">
-                                                <i class="fa fa-times"></i>
-                                            </a>
-                                        </div>
-
-                                        <span class="widget-icon">
-                                            <i class="fa {{activeWidget.icon}}"></i>
-                                        </span>
-                                        <h2>{{activeWidget.title}}</h2>
-                                    </header>
-                                    <!-- Loading used AngularJs directives dynamically -->
-                                    <div role="content" id="widget-content-{{activeWidget.id}}">
-                                        <ng-include
-                                                src="'/dashboards/dynamicDirective?directive='+activeWidget.directive"></ng-include>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div ng-if="$last" ng-init="$last?renderGrid():null"></div>
-
-                        </div>
-                    </div>
-                     */ ?>
-
             </div>
         </div>
     </div>
