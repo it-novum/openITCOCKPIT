@@ -9,6 +9,7 @@ angular.module('openITCOCKPIT')
         $scope.errors = {};
         $scope.viewTabRotateInterval = 0;
         $scope.intervalText = 'disabled';
+        $scope.editMode = false;
 
         $scope.gridsterOpts = {
             minRows: 2, // the minimum height of the grid, in rows
@@ -142,7 +143,9 @@ angular.module('openITCOCKPIT')
                         row: $scope.activeWidgets[i].row,
                         col: $scope.activeWidgets[i].col,
                         width: $scope.activeWidgets[i].sizeX,
-                        height: $scope.activeWidgets[i].sizeY
+                        height: $scope.activeWidgets[i].sizeY,
+                        title: $scope.activeWidgets[i].title
+
                     }
                 });
             }
@@ -150,6 +153,9 @@ angular.module('openITCOCKPIT')
             $http.post("/dashboards/saveGrid/.json?angular=true", postData).then(
                 function(result){
                     genericSuccess();
+                    $scope.editMode = false;
+                    console.log('fdsssssssssssssssssssss');
+                    console.log($scope.editMode);
                     return true;
                 }, function errorCallback(result){
                     genericError();
@@ -300,13 +306,21 @@ angular.module('openITCOCKPIT')
                 }
             ).then(function(result){
                 $scope.errors = {};
+                $scope.editMode = false;
                 genericSuccess();
                 updateInterval();
-
             }, function errorCallback(result){
                 $scope.errors = result.data.error;
                 genericError();
             });
+        };
+
+        $scope.setEditMode = function(){
+            if($scope.editMode === true){
+                $scope.editMode = false;
+            } else{
+                $scope.editMode = true;
+            }
         };
 
         if(document.addEventListener){
