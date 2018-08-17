@@ -109,40 +109,41 @@
                         <li gridster-item="widget" ng-repeat="widget in activeWidgets"
                             style="display:flex; display: -webkit-flex; flex-direction: row; -webkit-flex-direction: row; -webkit-align-content: stretch; align-content: stretch;">
                             <div class="jarviswidget jarviswidget-color-blueDark jarviswidget-sortable bg-color-blue"
-                                 style="width:100%;">
+                                 style="width:100%;" id="widget-{{widget.id}}">
                                 <header role="heading" class="ui-sortable-handle" style="cursor: move;">
-                                    <div class="jarviswidget-ctrls" role="menu">
-                                        <a href="javascript:void(0);" class="button-icon jarviswidget-edit-btn"
-                                           title="<?php echo __('Edit widget'); ?>">
-                                            <i class="fa fa-cog "></i>
-                                        </a>
-                                        <div class="widget-toolbar pull-left" role="menu">
-                                            <a data-toggle="dropdown"
-                                               class="dropdown-toggle color-box selector margin-top-0"
-                                               href="javascript:void(0);">
-                                            </a>
-                                            <ul class="dropdown-menu arrow-box-up-right color-select pull-right padding-3">
-                                                <li><span class="bg-color-green"
-                                                          data-widget-setstyle="jarviswidget-color-green"
-                                                          data-toggle="tooltip" data-placement="left"
-                                                          data-original-title="Green Grass"></span>
-                                                </li>
-                                            </ul>
+                                    <div class="col col-lg-8">
+                                        <div class="smart-form no-padding" role="menu">
+                                            <div>
+                                                <label class="input">
+                                                    <i class="icon-prepend fa fa-road txt-color-blueDark"></i>
+                                                    <input type="text" placeholder="Title"
+                                                           style="background: none;"
+                                                           ng-model="widget.title"
+                                                           ng-readonly="editMode ? false : true"
+                                                           ng-model-options="{debounce: 500}"
+                                                           class="input-md no-border" />
+                                                </label>
+                                            </div>
                                         </div>
-                                        <a class="button-icon jarviswidget-delete-btn pointer"
-                                           title="<?php echo __('Remove widget'); ?>"
-                                           ng-click="removeWidgetFromTab(widget.id)">
-                                            <i class="fa fa-times"></i>
-                                        </a>
                                     </div>
-
-                                    <span class="widget-icon">
-                                        <i class="fa {{widget.icon}}"></i>
-                                    </span>
-                                    <h2>{{widget.title}}</h2>
+                                    <div class="col col-lg-4 no-padding">
+                                        <div class="widget-toolbar" role="menu">
+                                            <button class="btn btn-xs btn-success"
+                                                    title="<?php echo __('Edit title'); ?>"
+                                                    ng-click="setEditMode()">
+                                                <i ng-class="editMode ? 'fa fa-floppy-o' : 'fa fa-pencil'"></i>
+                                            </button>
+                                            <button class="btn btn-xs btn-danger"
+                                                    title="<?php echo __('Remove widget'); ?>"
+                                                    ng-click="removeWidgetFromTab(widget.id)">
+                                                <i class="fa fa-times"></i>
+                                            </button>
+                                        </div>
+                                    </div>
                                 </header>
                                 <!-- Loading used AngularJs directives dynamically -->
-                                <div role="content" id="widget-content-{{widget.id}}" style="height:100%; overflow: auto;">
+                                <div role="content" id="widget-content-{{widget.id}}"
+                                     style="height:100%; overflow: auto;">
                                     <ng-include
                                             src="'/dashboards/dynamicDirective?directive='+widget.directive"></ng-include>
                                 </div>
