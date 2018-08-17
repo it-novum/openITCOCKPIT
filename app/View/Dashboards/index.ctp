@@ -155,179 +155,166 @@
                                  data-widget-colorbutton="true"
                                  style="width:100%;" id="widget-{{widget.id}}">
                                 <header role="heading" class="ui-sortable-handle" style="cursor: move;">
-                                    <div class="col col-lg-8">
-                                        <div class="smart-form no-padding" role="menu">
-                                            <div>
-                                                <label class="input">
-                                                    <i class="icon-prepend fa fa-road txt-color-blueDark"></i>
-                                                    <input type="text" placeholder="Title"
-                                                           style="background: none;"
-                                                           ng-model="widget.title"
-                                                           ng-readonly="editMode ? false : true"
-                                                           ng-model-options="{debounce: 500}"
-                                                           class="input-md no-border"/>
-                                                </label>
-                                            </div>
-                                        </div>
+                                    <h2>
+                                        <i class="fa fa-road"></i>
+                                        {{widget.title}}
+                                    </h2>
+                                    <div class="jarviswidget-ctrls" role="menu">
+                                        <a class="button-icon jarviswidget-delete-btn pointer"
+                                           title="<?php echo __('Edit title'); ?>"
+                                           ng-click="setEditMode()">
+                                            <i ng-class="editMode ? 'fa fa-floppy-o' : 'fa fa-pencil'"></i>
+                                        </a>
+                                        <a class="button-icon jarviswidget-delete-btn pointer"
+                                           title="<?php echo __('Remove widget'); ?>"
+                                           ng-click="removeWidgetFromTab(widget.id)">
+                                            <i class="fa fa-times"></i>
+                                        </a>
                                     </div>
-                                    <div class="col col-lg-4 no-padding">
-                                        <div class="widget-toolbar" role="menu">
-                                            <a data-toggle="dropdown"
-                                               class="dropdown-toggle color-box"
-                                               href="javascript:void(0);">
-                                            </a>
-                                            <ul class="dropdown-menu arrow-box-up-right color-select pull-right padding-3">
-                                                <li>
+                                    <div class="widget-toolbar" role="menu">
+                                        <a data-toggle="dropdown"
+                                           class="dropdown-toggle color-box"
+                                           href="javascript:void(0);">
+                                        </a>
+                                        <ul class="dropdown-menu arrow-box-up-right color-select pull-right padding-3">
+                                            <li>
                                                     <span class="bg-color-green"
                                                           data-widget-setstyle="jarviswidget-color-green"
                                                           data-toggle="tooltip"
                                                           data-placement="left"
-                                                          data-original-title="Green Grass">
+                                                          data-original-title="<?php echo __('Green Grass'); ?>">
                                                     </span>
-                                                </li>
-                                                <li>
+                                            </li>
+                                            <li>
                                                     <span class="bg-color-greenDark"
                                                           data-widget-setstyle="jarviswidget-color-greenDark"
                                                           data-toggle="tooltip"
-                                                          data-placement="top" data-original-title="Dark Green">
+                                                          data-placement="top" data-original-title="<?php echo __('Dark Green'); ?>">
                                                     </span>
-                                                </li>
-                                                <li>
+                                            </li>
+                                            <li>
                                                     <span class="bg-color-greenLight"
                                                           data-widget-setstyle="jarviswidget-color-greenLight"
                                                           data-toggle="tooltip"
-                                                          data-placement="top" data-original-title="Light Green">
+                                                          data-placement="top" data-original-title="<?php echo __('Light Green'); ?>">
                                                     </span>
-                                                </li>
-                                                <li>
+                                            </li>
+                                            <li>
                                                     <span class="bg-color-purple"
                                                           data-widget-setstyle="jarviswidget-color-purple"
                                                           data-toggle="tooltip"
-                                                          data-placement="top" data-original-title="Purple">
+                                                          data-placement="top" data-original-title="<?php echo __('Purple'); ?>">
                                                     </span>
-                                                </li>
-                                                <li>
+                                            </li>
+                                            <li>
                                                     <span class="bg-color-magenta"
                                                           data-widget-setstyle="jarviswidget-color-magenta"
                                                           data-toggle="tooltip"
-                                                          data-placement="top" data-original-title="Magenta">
+                                                          data-placement="top" data-original-title="<?php echo __('Magenta'); ?>">
                                                     </span>
-                                                </li>
-                                                <li>
+                                            </li>
+                                            <li>
                                                     <span class="bg-color-pink"
                                                           data-widget-setstyle="jarviswidget-color-pink"
                                                           data-toggle="tooltip"
-                                                          data-placement="right" data-original-title="Pink">
+                                                          data-placement="right" data-original-title="<?php echo __('Pink'); ?>">
                                                     </span>
-                                                </li>
-                                                <li>
+                                            </li>
+                                            <li>
                                                     <span class="bg-color-pinkDark"
                                                           data-widget-setstyle="jarviswidget-color-pinkDark"
                                                           data-toggle="tooltip"
-                                                          data-placement="left" data-original-title="Fade Pink">
+                                                          data-placement="left" data-original-title="<?php echo __('Fade Pink'); ?>">
                                                     </span>
-                                                </li>
-                                                <li>
+                                            </li>
+                                            <li>
                                                     <span class="bg-color-blueLight"
                                                           data-widget-setstyle="jarviswidget-color-blueLight"
                                                           data-toggle="tooltip"
-                                                          data-placement="top" data-original-title="Light Blue">
+                                                          data-placement="top" data-original-title="<?php echo __('Light Blue'); ?>">
                                                     </span>
-                                                </li>
-                                                <li>
+                                            </li>
+                                            <li>
                                                     <span class="bg-color-teal"
                                                           data-widget-setstyle="jarviswidget-color-teal"
                                                           data-toggle="tooltip"
-                                                          data-placement="top" data-original-title="Teal">
+                                                          data-placement="top" data-original-title="<?php echo __('Teal'); ?>">
                                                     </span>
-                                                </li>
-                                                <li>
+                                            </li>
+                                            <li>
                                                     <span class="bg-color-blue"
                                                           data-widget-setstyle="jarviswidget-color-blue"
                                                           data-toggle="tooltip"
-                                                          data-placement="top" data-original-title="Ocean Blue">
+                                                          data-placement="top" data-original-title="<?php echo __('Ocean Blue'); ?>">
                                                     </span>
-                                                </li>
-                                                <li>
+                                            </li>
+                                            <li>
                                                     <span class="bg-color-blueDark"
                                                           data-widget-setstyle="jarviswidget-color-blueDark"
                                                           data-toggle="tooltip"
-                                                          data-placement="top" data-original-title="Night Sky">
+                                                          data-placement="top" data-original-title="<?php echo __('Night Sky'); ?>">
                                                     </span>
-                                                </li>
-                                                <li>
+                                            </li>
+                                            <li>
                                                     <span class="bg-color-darken"
                                                           data-widget-setstyle="jarviswidget-color-darken"
                                                           data-toggle="tooltip"
-                                                          data-placement="right" data-original-title="Night">
+                                                          data-placement="right" data-original-title="<?php echo __('Night'); ?>">
                                                     </span>
-                                                </li>
-                                                <li>
+                                            </li>
+                                            <li>
                                                     <span class="bg-color-yellow"
                                                           data-widget-setstyle="jarviswidget-color-yellow"
                                                           data-toggle="tooltip"
-                                                          data-placement="left" data-original-title="Day Light">
+                                                          data-placement="left" data-original-title="<?php echo __('Day Light'); ?>">
                                                     </span>
-                                                </li>
-                                                <li>
+                                            </li>
+                                            <li>
                                                     <span class="bg-color-orange"
                                                           data-widget-setstyle="jarviswidget-color-orange"
                                                           data-toggle="tooltip"
-                                                          data-placement="bottom" data-original-title="Orange">
+                                                          data-placement="bottom" data-original-title="<?php echo __('Orange'); ?>">
                                                     </span>
-                                                </li>
-                                                <li>
+                                            </li>
+                                            <li>
                                                     <span class="bg-color-orangeDark"
                                                           data-widget-setstyle="jarviswidget-color-orangeDark"
                                                           data-toggle="tooltip"
                                                           data-placement="bottom"
-                                                          data-original-title="Dark Orange">
+                                                          data-original-title="<?php echo __('Dark Orange'); ?>">
                                                     </span>
-                                                </li>
-                                                <li>
+                                            </li>
+                                            <li>
                                                     <span class="bg-color-red"
                                                           data-widget-setstyle="jarviswidget-color-red"
                                                           data-toggle="tooltip"
-                                                          data-placement="bottom" data-original-title="Red Rose">
+                                                          data-placement="bottom" data-original-title="<?php echo __('Red Rose'); ?>">
                                                     </span>
-                                                </li>
-                                                <li>
+                                            </li>
+                                            <li>
                                                     <span class="bg-color-redLight"
                                                           data-widget-setstyle="jarviswidget-color-redLight"
                                                           data-toggle="tooltip"
                                                           data-placement="bottom"
-                                                          data-original-title="Light Red">
+                                                          data-original-title="<?php echo __('Light Red'); ?>">
                                                     </span>
-                                                </li>
-                                                <li>
+                                            </li>
+                                            <li>
                                                     <span class="bg-color-white"
                                                           data-widget-setstyle="jarviswidget-color-white"
                                                           data-toggle="tooltip"
-                                                          data-placement="right" data-original-title="Purity">
+                                                          data-placement="right" data-original-title="<?php echo __('Purity'); ?>">
                                                     </span>
-                                                </li>
-                                                <li>
-                                                    <a href="javascript:void(0);" class="jarviswidget-remove-colors"
-                                                       data-widget-setstyle="" style="color: black !important;"
-                                                       data-toggle="tooltip" data-placement="bottom"
-                                                       data-original-title="Reset widget color to default">
-                                                        <?php __('Remove'); ?>
-                                                    </a>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                        <div class="widget-toolbar" role="menu">
-                                            <button class="btn btn-xs btn-success"
-                                                    title="<?php echo __('Edit title'); ?>"
-                                                    ng-click="setEditMode()">
-                                                <i ng-class="editMode ? 'fa fa-floppy-o' : 'fa fa-pencil'"></i>
-                                            </button>
-                                            <button class="btn btn-xs btn-danger"
-                                                    title="<?php echo __('Remove widget'); ?>"
-                                                    ng-click="removeWidgetFromTab(widget.id)">
-                                                <i class="fa fa-times"></i>
-                                            </button>
-                                        </div>
+                                            </li>
+                                            <li>
+                                                <a href="javascript:void(0);" class="jarviswidget-remove-colors"
+                                                   data-widget-setstyle="" style="color: black !important;"
+                                                   data-toggle="tooltip" data-placement="bottom"
+                                                   data-original-title="Reset widget color to default">
+                                                    <?php __('Remove'); ?>
+                                                </a>
+                                            </li>
+                                        </ul>
                                     </div>
                                 </header>
                                 <!-- Loading used AngularJs directives dynamically -->
