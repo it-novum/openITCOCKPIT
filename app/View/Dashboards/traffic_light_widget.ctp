@@ -34,6 +34,9 @@
         <a href="javascript:void(0);" class="btn btn-default btn-xs txt-color-blueDark" ng-click="showConfig()">
             <i class="fa fa-cog fa-sm"></i>
         </a>
+        <span ng-if="!Service" class="text-info padding-left-20">
+            <?php echo __('No element selected');?>
+        </span>
         <div class="padding-10">
             <div id="trafficlight-{{widget.id}}"></div>
         </div>

@@ -15,6 +15,7 @@ angular.module('openITCOCKPIT').directive('trafficlightWidget', function($http){
             $scope.trafficlightTimeout = null;
             $scope.height = $widget.height() - 160;
             $scope.width = $scope.height / 2.5;
+            $scope.Service = null;
 
 
             var timer = {
@@ -84,46 +85,47 @@ angular.module('openITCOCKPIT').directive('trafficlightWidget', function($http){
                         angular: true
                     }
                 }).then(function(result){
+                    if(!$.isEmptyObject(result.data.service)){
+                        $scope.current_state = result.data.service.Servicestatus.currentState;
+                        $scope.is_flapping = result.data.service.Servicestatus.isFlapping;
 
-                    $scope.current_state = result.data.service.Servicestatus.currentState;
-                    $scope.is_flapping = result.data.service.Servicestatus.isFlapping;
+                        $scope.Service = result.data.service.Service;
 
-                    $scope.Service = result.data.service.Service;
+                        $scope.showGreen = false;
+                        $scope.showYellow = false;
+                        $scope.showRed = false;
+                        $scope.showBlue = false;
+                        $scope.blink = false;
 
-                    $scope.showGreen = false;
-                    $scope.showYellow = false;
-                    $scope.showRed = false;
-                    $scope.showBlue = false;
-                    $scope.blink = false;
+                        stopBlinking();
+                        switch($scope.current_state){
+                            case 0:
+                                $scope.showGreen = true;
+                                break;
+                            case 1:
+                                $scope.showYellow = true;
+                                break;
+                            case 2:
+                                $scope.showRed = true;
+                                break;
+                            case 3:
+                                $scope.showGreen = true;
+                                $scope.showYellow = true;
+                                $scope.showRed = true;
+                                break;
+                            default:
+                                $scope.showBlue = true;
+                                break;
+                        }
 
-                    stopBlinking();
-                    switch($scope.current_state){
-                        case 0:
-                            $scope.showGreen = true;
-                            break;
-                        case 1:
-                            $scope.showYellow = true;
-                            break;
-                        case 2:
-                            $scope.showRed = true;
-                            break;
-                        case 3:
-                            $scope.showGreen = true;
-                            $scope.showYellow = true;
-                            $scope.showRed = true;
-                            break;
-                        default:
-                            $scope.showBlue = true;
-                            break;
+                        if($scope.is_flapping){
+                            $scope.blink = true;
+                        }
+
+                        renderTrafficlight();
+
+                        $scope.init = false;
                     }
-
-                    if($scope.is_flapping){
-                        $scope.blink = true;
-                    }
-
-                    renderTrafficlight();
-
-                    $scope.init = false;
                 });
             };
             var stopBlinking = function(){
