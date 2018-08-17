@@ -269,6 +269,39 @@ class DashboardsController extends AppController {
         $this->set('_serialize', ['success']);
     }
 
+    public function renameDashboardTab() {
+        if (!$this->request->is('post') || !$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+
+        $name = $this->request->data('DashboardTab.name');
+        $id = (int)$this->request->data('DashboardTab.id');
+
+        $dashboardTab = $this->DashboardTab->find('first', [
+            'conditions' => [
+                'DashboardTab.id'      => $id,
+                'DashboardTab.user_id' => $User->getId()
+            ]
+        ]);
+
+        if (empty($dashboardTab)) {
+            throw new NotFoundException();
+        }
+
+        $dashboardTab['DashboardTab']['name'] = $name;
+        if ($this->DashboardTab->save($dashboardTab)) {
+            $this->set('DashboardTab', [
+                'DashboardTab' => $dashboardTab
+            ]);
+
+            $this->set('_serialize', ['DashboardTab']);
+            return;
+        }
+        $this->serializeErrorMessageFromModel('DashboardTab');
+        return;
+    }
+
 
     /***** Basic Widgets *****/
     public function welcomeWidget() {

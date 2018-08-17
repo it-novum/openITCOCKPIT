@@ -263,6 +263,34 @@ angular.module('openITCOCKPIT')
             });
         };
 
+        $scope.triggerRenameTabModal = function(currentTabName){
+            $('#renameTabModal').modal('show');
+            $scope.renameTabName = currentTabName;
+        };
+
+        $scope.renameTab = function(){
+            $http.post("/dashboards/renameDashboardTab.json?angular=true",
+                {
+                    DashboardTab: {
+                        id: $scope.activeTab,
+                        name: $scope.renameTabName
+                    }
+                }
+            ).then(function(result){
+                $scope.errors = {};
+                for(var i in $scope.tabs){
+                    if($scope.tabs[i].id === $scope.activeTab){
+                        $scope.tabs[i].name = $scope.renameTabName;
+                    }
+                }
+                genericSuccess();
+                $('#renameTabModal').modal('hide');
+            }, function errorCallback(result){
+                $scope.errors = result.data.error;
+                genericError();
+            });
+        };
+
         $scope.saveTabRotateInterval = function(){
             $http.post("/dashboards/saveTabRotateInterval.json?angular=true",
                 {
@@ -271,6 +299,7 @@ angular.module('openITCOCKPIT')
                     }
                 }
             ).then(function(result){
+                $scope.errors = {};
                 genericSuccess();
                 updateInterval();
 

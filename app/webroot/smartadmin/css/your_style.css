@@ -2079,3 +2079,7 @@ label[class^='aco-host']:after, label[class^='aco-service']:after {
     background-color: #0088cc;
     color: #FFF;
 }
+
+.dashboard-tab-hover-fix:hover {
+    color: #fff!important;
+}

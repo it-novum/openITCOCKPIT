@@ -38,13 +38,43 @@
             <div class="tabsContainer">
                 <ul class="nav nav-tabs pull-left ui-sortable">
                     <li data-tab-id="{{tab.id}}" class="ui-sortable-handle" ng-repeat="tab in tabs"
-                        ng-class="{'active':activeTab === tab.id}"
-                        ng-click="loadTabContent(tab.id)">
-                        <a class="pointer" href="javascript:void(0);">
-                            <span class="text ">
+                        ng-class="{'active':activeTab === tab.id}">
+                        <a class="pointer" href="javascript:void(0);" ng-if="activeTab !== tab.id">
+                            <span class="text" ng-click="loadTabContent(tab.id)">
                                 {{tab.name}}
                             </span>
                         </a>
+
+                        <a href="javascript:void(0);"
+                           class="dropdown-toggle"
+                           data-toggle="dropdown"
+                           aria-expanded="false"
+                           ng-if="activeTab === tab.id">
+                            {{tab.name}}
+                            <b class="caret"></b>
+                        </a>
+                        <ul class="dropdown-menu" id="menuHack-tab-{{tab.id}}">
+                            <li>
+                                <a href="javascript:void(0);" class="dashboard-tab-hover-fix"
+                                   ng-click="triggerRenameTabModal(tab.name)">
+                                    <i class="fa fa-pencil-square-o"></i>
+                                    <?php echo __('Rename'); ?>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="javascript:void(0);" class="dashboard-tab-hover-fix">
+                                    <i class="fa fa-code-fork"></i>
+                                    <?php echo __('Start sharing'); ?>
+                                </a>
+                            </li>
+                            <li class="divider"></li>
+                            <li>
+                                <a href="javascript:void(0);" class="txt-color-red">
+                                    <i class="fa fa-trash-o"></i>
+                                    <?php echo __('Delete'); ?>
+                                </a>
+                            </li>
+                        </ul>
                     </li>
                 </ul>
             </div>
@@ -142,7 +172,8 @@
                                     <h2>{{widget.title}}</h2>
                                 </header>
                                 <!-- Loading used AngularJs directives dynamically -->
-                                <div role="content" id="widget-content-{{widget.id}}" style="height:100%; overflow: auto;">
+                                <div role="content" id="widget-content-{{widget.id}}"
+                                     style="height:100%; overflow: auto;">
                                     <ng-include
                                             src="'/dashboards/dynamicDirective?directive='+widget.directive"></ng-include>
                                 </div>
@@ -250,3 +281,54 @@
         </div>
     </div>
 </div>
+
+<!-- Rename tab modal -->
+<div id="renameTabModal" class="modal" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">
+                    <i class="fa fa-pencil-square-o"></i>
+                    <?php echo __('Rename tab'); ?>
+                </h4>
+            </div>
+            <div class="modal-body">
+
+                <div class="row">
+                    <div class="col-xs-12 smart-form">
+                        <div class="form-group smart-form" ng-class="{'has-error': errors.name}">
+                            <label class="label hintmark_red"><?php echo __('Tab name'); ?></label>
+                            <label class="input"> <b class="icon-prepend">
+                                    <i class="fa fa-tag"></i>
+                                </b>
+                                <input type="text" class="input-sm"
+                                       placeholder="<?php echo __('New tab name'); ?>"
+                                       ng-model="renameTabName">
+                            </label>
+                            <div ng-repeat="error in errors.name">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 padding-top-10">
+                        <button type="button" class="btn btn-primary pull-right" ng-click="renameTab()">
+                            <?php echo __('Rename tab'); ?>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">
+                    <?php echo __('Close'); ?>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
