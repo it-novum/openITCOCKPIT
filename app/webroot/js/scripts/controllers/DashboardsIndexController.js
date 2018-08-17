@@ -68,6 +68,12 @@ angular.module('openITCOCKPIT')
             }).show();
         };
 
+        $scope.enableWatch = function(){
+            setTimeout(function(){
+                disableWatch = false;
+            }, 500);
+        };
+
         $scope.load = function(){
             $http.get("/dashboards/index.json", {
                 params: {
@@ -120,9 +126,11 @@ angular.module('openITCOCKPIT')
 
                 //Disable watch for some time to give angular time to render the template
                 //Will avoid a saveGrid method call in load (or tab switch)
+                //Moved to $scope.enableWatch()
+                /*
                 setTimeout(function(){
                     disableWatch = false;
-                }, 500);
+                }, 500);*/
             });
         };
 
@@ -326,6 +334,64 @@ angular.module('openITCOCKPIT')
             });
         };
 
+        $scope.startSharing = function(tabId){
+            $http.post("/dashboards/startSharing.json?angular=true",
+                {
+                    DashboardTab: {
+                        id: tabId
+                    }
+                }
+            ).then(function(result){
+                new Noty({
+                    theme: 'metroui',
+                    type: 'info',
+                    layout: 'topCenter',
+                    text: 'Your dashboard is now shared. Other users of the system can use your shared dashboard tab as an template.',
+                    timeout: 3500
+                }).show();
+
+                for(var i in $scope.tabs){
+                    if($scope.tabs[i].id === $scope.activeTab){
+                        $scope.tabs[i].shared = true;
+                    }
+                }
+            }, function errorCallback(result){
+                $scope.errors = result.data.error;
+                genericError();
+            });
+        };
+
+        $scope.stopSharing = function(tabId){
+            $http.post("/dashboards/stopSharing.json?angular=true",
+                {
+                    DashboardTab: {
+                        id: tabId
+                    }
+                }
+            ).then(function(result){
+                genericSuccess();
+                for(var i in $scope.tabs){
+                    if($scope.tabs[i].id === $scope.activeTab){
+                        $scope.tabs[i].shared = false;
+                    }
+                }
+            }, function errorCallback(result){
+                $scope.errors = result.data.error;
+                genericError();
+            });
+        };
+
+        $scope.loadSharedTabs = function(){
+            $http.get("/dashboards/getSharedTabs.json", {
+                params: {
+                    'angular': true
+                }
+            }).then(function(result){
+                $scope.sharedTabs = result.data.tabs;
+            });
+        };
+
+
         $scope.saveTabRotateInterval = function(){
             $http.post("/dashboards/saveTabRotateInterval.json?angular=true",
                 {
@@ -467,14 +533,6 @@ angular.module('openITCOCKPIT')
 
             watchTimeout = $timeout(function(){
                 $scope.saveGrid();
-                /*
-                for(var i in $scope.activeWidgets){
-                    var col = $scope.activeWidgets[i].col;
-                    var row = $scope.activeWidgets[i].row;
-
-                    console.log('<col>'+col+'</col>     <row>'+row+'</row>');
-                }
-                */
             }, 1500);
         }, true);
 
