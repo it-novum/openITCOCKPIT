@@ -335,7 +335,7 @@ angular.module('openITCOCKPIT')
 
             var nextTabId = $scope.tabs[0].id; //Just in case we rotated through all tabs, just the first tab
             var index = 0;
-            for(var i in $scope.tabs){ //var index because i is a string -.-
+            for(var i in $scope.tabs){ //var index because i is a string and for no reason I don't want to parseInt it.
                 if($scope.tabs[i].id === $scope.activeTab){
                     //Check if next tab exist
                     var nextIndex = index + 1;
