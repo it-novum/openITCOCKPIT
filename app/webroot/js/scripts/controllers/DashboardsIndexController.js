@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('DashboardsIndexController', function($scope, $http, $timeout){
+    .controller('DashboardsIndexController', function($scope, $http, $timeout, $interval){
 
         /** public vars **/
         $scope.init = true;
@@ -129,6 +129,10 @@ angular.module('openITCOCKPIT')
 
         $scope.saveGrid = function(){
             $scope.checkDashboardLock();
+
+            if($scope.activeWidgets.length === 0){
+                return;
+            }
 
             var postData = [];
             for(var i in $scope.activeWidgets){
@@ -339,7 +343,25 @@ angular.module('openITCOCKPIT')
         };
 
         var rotateTab = function(){
-            console.log('Implement me!');
+            if($scope.tabs.length === 0){
+                return;
+            }
+
+            var nextTabId = $scope.tabs[0].id; //Just in case we rotated through all tabs, just the first tab
+            var index = 0;
+            for(var i in $scope.tabs){ //var index because i is a string -.-
+                if($scope.tabs[i].id === $scope.activeTab){
+                    //Check if next tab exist
+                    var nextIndex = index + 1;
+                    if(typeof $scope.tabs[nextIndex] !== 'undefined'){
+                        nextTabId = $scope.tabs[nextIndex].id;
+                        break;
+                    }
+                }
+                index++;
+            }
+            disableWatch = true;
+            $scope.loadTabContent(nextTabId);
         };
 
         var updateInterval = function(){
