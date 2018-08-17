@@ -144,6 +144,7 @@ $config = [
                 'removeWidgetFromTab',
                 'saveTabOrder',
                 'addNewTab',
+                'renameDashboardTab',
                 'hostsPiechartWidget',
                 'hostsPiechart180Widget',
                 'servicesPiechartWidget',
@@ -266,16 +267,16 @@ $config = [
                 'add'   => ['loadElementsByContainerId'],
                 'edit'  => ['loadElementsByContainerId'],
             ],
-            'Servicegroups' => [
-                'index'  =>     ['listToPdf', 'view', 'loadServicegroupsByContainerId', 'loadServicegroupsByString'],
-                'add'    =>     ['loadServices', 'mass_add', 'loadServicetemplates', 'loadContainers'],
-                'edit'   =>     ['loadServices', 'loadServicetemplates'],
-                'delete' =>     ['mass_delete'],
-                'extended' =>   ['loadServicegroupWithServicesById']
+            'Servicegroups'         => [
+                'index'    => ['listToPdf', 'view', 'loadServicegroupsByContainerId', 'loadServicegroupsByString'],
+                'add'      => ['loadServices', 'mass_add', 'loadServicetemplates', 'loadContainers'],
+                'edit'     => ['loadServices', 'loadServicetemplates'],
+                'delete'   => ['mass_delete'],
+                'extended' => ['loadServicegroupWithServicesById']
             ],
             'Services'              => [
                 'deactivate'  => ['mass_deactivate'],
-                'index'       => ['serviceByHostId', 'listToPdf', 'loadServices', 'view', 'loadServicesByContainerId', 'loadServicesByString','getSelectedServices'],
+                'index'       => ['serviceByHostId', 'listToPdf', 'loadServices', 'view', 'loadServicesByContainerId', 'loadServicesByString', 'getSelectedServices'],
                 'browser'     => ['servicesByHostId', 'longOutputByUuid'],
                 'add'         => ['loadContactsAndContactgroups', 'loadParametersByCommandId', 'loadNagParametersByCommandId', 'loadArgumentsAdd', 'loadServicetemplatesArguments', 'loadTemplateData', 'addCustomMacro', 'loadTemplateMacros'],
                 'edit'        => ['loadContactsAndContactgroups', 'loadParametersByCommandId', 'loadNagParametersByCommandId', 'loadArgumentsAdd', 'loadServicetemplatesArguments', 'loadTemplateData', 'addCustomMacro', 'loadTemplateMacros'],
@@ -329,8 +330,9 @@ $config = [
             'Notifications'         => [
                 'index' => ['services'],
             ],
-            'Statusmaps' => [
-                'index' => ['hostAndServicesSummaryStatus'
+            'Statusmaps'            => [
+                'index' => [
+                    'hostAndServicesSummaryStatus'
                 ]
             ],
         ],

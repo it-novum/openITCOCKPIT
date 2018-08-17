@@ -269,6 +269,34 @@ angular.module('openITCOCKPIT')
             });
         };
 
+        $scope.triggerRenameTabModal = function(currentTabName){
+            $('#renameTabModal').modal('show');
+            $scope.renameTabName = currentTabName;
+        };
+
+        $scope.renameTab = function(){
+            $http.post("/dashboards/renameDashboardTab.json?angular=true",
+                {
+                    DashboardTab: {
+                        id: $scope.activeTab,
+                        name: $scope.renameTabName
+                    }
+                }
+            ).then(function(result){
+                $scope.errors = {};
+                for(var i in $scope.tabs){
+                    if($scope.tabs[i].id === $scope.activeTab){
+                        $scope.tabs[i].name = $scope.renameTabName;
+                    }
+                }
+                genericSuccess();
+                $('#renameTabModal').modal('hide');
+            }, function errorCallback(result){
+                $scope.errors = result.data.error;
+                genericError();
+            });
+        };
+
         $scope.saveTabRotateInterval = function(){
             $http.post("/dashboards/saveTabRotateInterval.json?angular=true",
                 {
@@ -277,6 +305,7 @@ angular.module('openITCOCKPIT')
                     }
                 }
             ).then(function(result){
+                $scope.errors = {};
                 $scope.editMode = false;
                 genericSuccess();
                 updateInterval();
@@ -349,7 +378,7 @@ angular.module('openITCOCKPIT')
 
             var nextTabId = $scope.tabs[0].id; //Just in case we rotated through all tabs, just the first tab
             var index = 0;
-            for(var i in $scope.tabs){ //var index because i is a string -.-
+            for(var i in $scope.tabs){ //var index because i is a string and for no reason I don't want to parseInt it.
                 if($scope.tabs[i].id === $scope.activeTab){
                     //Check if next tab exist
                     var nextIndex = index + 1;
