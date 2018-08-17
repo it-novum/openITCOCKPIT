@@ -145,6 +145,7 @@ $config = [
                 'saveTabOrder',
                 'addNewTab',
                 'renameDashboardTab',
+                'deleteDashboardTab',
                 'hostsPiechartWidget',
                 'hostsPiechart180Widget',
                 'servicesPiechartWidget',

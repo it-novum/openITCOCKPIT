@@ -69,7 +69,8 @@
                             </li>
                             <li class="divider"></li>
                             <li>
-                                <a href="javascript:void(0);" class="txt-color-red">
+                                <a href="javascript:void(0);" class="txt-color-red"
+                                   ng-click="deleteTab(tab.id)">
                                     <i class="fa fa-trash-o"></i>
                                     <?php echo __('Delete'); ?>
                                 </a>

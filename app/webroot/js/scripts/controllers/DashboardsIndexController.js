@@ -154,8 +154,6 @@ angular.module('openITCOCKPIT')
                 function(result){
                     genericSuccess();
                     $scope.editMode = false;
-                    console.log('fdsssssssssssssssssssss');
-                    console.log($scope.editMode);
                     return true;
                 }, function errorCallback(result){
                     genericError();
@@ -297,6 +295,37 @@ angular.module('openITCOCKPIT')
             });
         };
 
+        $scope.deleteTab = function(tabId){
+            $http.post("/dashboards/deleteDashboardTab.json?angular=true",
+                {
+                    DashboardTab: {
+                        id: tabId
+                    }
+                }
+            ).then(function(result){
+                genericSuccess();
+
+                for(var i in $scope.tabs){
+                    if($scope.tabs[i].id === $scope.activeTab){
+                        $scope.tabs.splice(i, 1);
+                        //We are done here
+                        break;
+                    }
+                }
+
+                if(typeof $scope.tabs[0] !== 'undefined'){
+                    $scope.loadTabContent($scope.tabs[0].id);
+                }else{
+                    //All tabs where removed.
+                    //Reload page to get new default tab
+                    window.location.href = '/';
+                }
+            }, function errorCallback(result){
+                $scope.errors = result.data.error;
+                genericError();
+            });
+        };
+
         $scope.saveTabRotateInterval = function(){
             $http.post("/dashboards/saveTabRotateInterval.json?angular=true",
                 {
@@ -318,7 +347,7 @@ angular.module('openITCOCKPIT')
         $scope.setEditMode = function(){
             if($scope.editMode === true){
                 $scope.editMode = false;
-            } else{
+            }else{
                 $scope.editMode = true;
             }
         };
