@@ -151,12 +151,12 @@
                     <ul>
                         <li gridster-item="widget" ng-repeat="widget in activeWidgets"
                             style="display:flex; display: -webkit-flex; flex-direction: row; -webkit-flex-direction: row; -webkit-align-content: stretch; align-content: stretch;">
-                            <div class="jarviswidget jarviswidget-color-blueDark jarviswidget-sortable"
+                            <div class="jarviswidget {{widget.color}} jarviswidget-sortable"
                                  data-widget-colorbutton="true"
                                  style="width:100%;" id="widget-{{widget.id}}">
                                 <header role="heading" class="ui-sortable-handle" style="cursor: move;">
                                     <h2>
-                                        <i class="fa fa- {{widget.icon}}"></i>
+                                        <i class="fa fa-{{widget.icon}}"></i>
                                         {{widget.title}}
                                     </h2>
                                     <div class="jarviswidget-ctrls" role="menu">
@@ -173,138 +173,171 @@
                                     </div>
                                     <div class="widget-toolbar" role="menu">
                                         <a data-toggle="dropdown"
-                                           class="dropdown-toggle color-box"
-                                           href="javascript:void(0);">
+                                            class="dropdown-toggle color-box"
+                                            href="javascript:void(0);">
                                         </a>
                                         <ul class="dropdown-menu arrow-box-up-right color-select pull-right padding-3">
                                             <li>
-                                                    <span class="bg-color-green"
-                                                          data-widget-setstyle="jarviswidget-color-green"
-                                                          data-toggle="tooltip"
-                                                          data-placement="left"
-                                                          data-original-title="<?php echo __('Green Grass'); ?>">
-                                                    </span>
+                                                <span class="bg-color-green"
+                                                      data-widget-setstyle="jarviswidget-color-green"
+                                                      data-toggle="tooltip"
+                                                      data-placement="left"
+                                                      data-original-title="<?php echo __('Green Grass'); ?>"
+                                                      ng-click="widget.color='jarviswidget-color-green'">
+                                                </span>
                                             </li>
                                             <li>
-                                                    <span class="bg-color-greenDark"
-                                                          data-widget-setstyle="jarviswidget-color-greenDark"
-                                                          data-toggle="tooltip"
-                                                          data-placement="top" data-original-title="<?php echo __('Dark Green'); ?>">
-                                                    </span>
+                                                <span class="bg-color-greenDark"
+                                                      data-widget-setstyle="jarviswidget-color-greenDark"
+                                                      data-toggle="tooltip"
+                                                      data-placement="top"
+                                                      data-original-title="<?php echo __('Dark Green'); ?>"
+                                                      ng-click="widget.color='jarviswidget-color-greenDark'">
+                                                </span>
                                             </li>
                                             <li>
-                                                    <span class="bg-color-greenLight"
-                                                          data-widget-setstyle="jarviswidget-color-greenLight"
-                                                          data-toggle="tooltip"
-                                                          data-placement="top" data-original-title="<?php echo __('Light Green'); ?>">
-                                                    </span>
+                                                <span class="bg-color-greenLight"
+                                                      data-widget-setstyle="jarviswidget-color-greenLight"
+                                                      data-toggle="tooltip"
+                                                      data-placement="top"
+                                                      data-original-title="<?php echo __('Light Green'); ?>"
+                                                      ng-click="widget.color='jarviswidget-color-greenLight'">
+                                                </span>
                                             </li>
                                             <li>
-                                                    <span class="bg-color-purple"
-                                                          data-widget-setstyle="jarviswidget-color-purple"
-                                                          data-toggle="tooltip"
-                                                          data-placement="top" data-original-title="<?php echo __('Purple'); ?>">
-                                                    </span>
+                                                <span class="bg-color-purple"
+                                                      data-widget-setstyle="jarviswidget-color-purple"
+                                                      data-toggle="tooltip"
+                                                      data-placement="top"
+                                                      data-original-title="<?php echo __('Purple'); ?>"
+                                                      ng-click="widget.color='jarviswidget-color-purple'">
+                                                </span>
                                             </li>
                                             <li>
-                                                    <span class="bg-color-magenta"
-                                                          data-widget-setstyle="jarviswidget-color-magenta"
-                                                          data-toggle="tooltip"
-                                                          data-placement="top" data-original-title="<?php echo __('Magenta'); ?>">
-                                                    </span>
+                                                <span class="bg-color-magenta"
+                                                      data-widget-setstyle="jarviswidget-color-magenta"
+                                                      data-toggle="tooltip"
+                                                      data-placement="top"
+                                                      data-original-title="<?php echo __('Magenta'); ?>"
+                                                      ng-click="widget.color='jarviswidget-color-magenta'">
+                                                </span>
                                             </li>
                                             <li>
-                                                    <span class="bg-color-pink"
-                                                          data-widget-setstyle="jarviswidget-color-pink"
-                                                          data-toggle="tooltip"
-                                                          data-placement="right" data-original-title="<?php echo __('Pink'); ?>">
-                                                    </span>
+                                                <span class="bg-color-pink"
+                                                      data-widget-setstyle="jarviswidget-color-pink"
+                                                      data-toggle="tooltip"
+                                                      data-placement="right"
+                                                      data-original-title="<?php echo __('Pink'); ?>"
+                                                      ng-click="widget.color='jarviswidget-color-pink'">
+                                                </span>
                                             </li>
                                             <li>
-                                                    <span class="bg-color-pinkDark"
-                                                          data-widget-setstyle="jarviswidget-color-pinkDark"
-                                                          data-toggle="tooltip"
-                                                          data-placement="left" data-original-title="<?php echo __('Fade Pink'); ?>">
-                                                    </span>
+                                                <span class="bg-color-pinkDark"
+                                                      data-widget-setstyle="jarviswidget-color-pinkDark"
+                                                      data-toggle="tooltip"
+                                                      data-placement="left"
+                                                      data-original-title="<?php echo __('Fade Pink'); ?>"
+                                                      ng-click="widget.color='jarviswidget-color-pinkDark'">
+                                                </span>
                                             </li>
                                             <li>
-                                                    <span class="bg-color-blueLight"
-                                                          data-widget-setstyle="jarviswidget-color-blueLight"
-                                                          data-toggle="tooltip"
-                                                          data-placement="top" data-original-title="<?php echo __('Light Blue'); ?>">
-                                                    </span>
+                                                <span class="bg-color-blueLight"
+                                                      data-widget-setstyle="jarviswidget-color-blueLight"
+                                                      data-toggle="tooltip"
+                                                      data-placement="top"
+                                                      data-original-title="<?php echo __('Light Blue'); ?>"
+                                                      ng-click="widget.color='jarviswidget-color-blueLight'">
+                                                </span>
                                             </li>
                                             <li>
-                                                    <span class="bg-color-teal"
-                                                          data-widget-setstyle="jarviswidget-color-teal"
-                                                          data-toggle="tooltip"
-                                                          data-placement="top" data-original-title="<?php echo __('Teal'); ?>">
-                                                    </span>
+                                                <span class="bg-color-teal"
+                                                      data-widget-setstyle="jarviswidget-color-teal"
+                                                      data-toggle="tooltip"
+                                                      data-placement="top"
+                                                      data-original-title="<?php echo __('Teal'); ?>"
+                                                      ng-click="widget.color='jarviswidget-color-teal'">
+                                                </span>
                                             </li>
                                             <li>
-                                                    <span class="bg-color-blue"
-                                                          data-widget-setstyle="jarviswidget-color-blue"
-                                                          data-toggle="tooltip"
-                                                          data-placement="top" data-original-title="<?php echo __('Ocean Blue'); ?>">
-                                                    </span>
+                                                <span class="bg-color-blue"
+                                                      data-widget-setstyle="jarviswidget-color-blue"
+                                                      data-toggle="tooltip"
+                                                      data-placement="top"
+                                                      data-original-title="<?php echo __('Ocean Blue'); ?>"
+                                                      ng-click="widget.color='jarviswidget-color-blue'">
+                                                </span>
                                             </li>
                                             <li>
-                                                    <span class="bg-color-blueDark"
-                                                          data-widget-setstyle="jarviswidget-color-blueDark"
-                                                          data-toggle="tooltip"
-                                                          data-placement="top" data-original-title="<?php echo __('Night Sky'); ?>">
-                                                    </span>
+                                                <span class="bg-color-blueDark"
+                                                      data-widget-setstyle="jarviswidget-color-blueDark"
+                                                      data-toggle="tooltip"
+                                                      data-placement="top"
+                                                      data-original-title="<?php echo __('Night Sky'); ?>"
+                                                      ng-click="widget.color='jarviswidget-color-blueDark'">
+                                                </span>
                                             </li>
                                             <li>
-                                                    <span class="bg-color-darken"
-                                                          data-widget-setstyle="jarviswidget-color-darken"
-                                                          data-toggle="tooltip"
-                                                          data-placement="right" data-original-title="<?php echo __('Night'); ?>">
-                                                    </span>
+                                                <span class="bg-color-darken"
+                                                      data-widget-setstyle="jarviswidget-color-darken"
+                                                      data-toggle="tooltip"
+                                                      data-placement="right"
+                                                      data-original-title="<?php echo __('Night'); ?>"
+                                                      ng-click="widget.color='jarviswidget-color-darken'">
+                                                </span>
                                             </li>
                                             <li>
-                                                    <span class="bg-color-yellow"
-                                                          data-widget-setstyle="jarviswidget-color-yellow"
-                                                          data-toggle="tooltip"
-                                                          data-placement="left" data-original-title="<?php echo __('Day Light'); ?>">
-                                                    </span>
+                                                <span class="bg-color-yellow"
+                                                      data-widget-setstyle="jarviswidget-color-yellow"
+                                                      data-toggle="tooltip"
+                                                      data-placement="left"
+                                                      data-original-title="<?php echo __('Day Light'); ?>"
+                                                      ng-click="widget.color='jarviswidget-color-yellow'">
+                                                </span>
                                             </li>
                                             <li>
-                                                    <span class="bg-color-orange"
-                                                          data-widget-setstyle="jarviswidget-color-orange"
-                                                          data-toggle="tooltip"
-                                                          data-placement="bottom" data-original-title="<?php echo __('Orange'); ?>">
-                                                    </span>
+                                                <span class="bg-color-orange"
+                                                      data-widget-setstyle="jarviswidget-color-orange"
+                                                      data-toggle="tooltip"
+                                                      data-placement="bottom"
+                                                      data-original-title="<?php echo __('Orange'); ?>"
+                                                      ng-click="widget.color='jarviswidget-color-orange'">
+                                                </span>
                                             </li>
                                             <li>
-                                                    <span class="bg-color-orangeDark"
-                                                          data-widget-setstyle="jarviswidget-color-orangeDark"
-                                                          data-toggle="tooltip"
-                                                          data-placement="bottom"
-                                                          data-original-title="<?php echo __('Dark Orange'); ?>">
-                                                    </span>
+                                                <span class="bg-color-orangeDark"
+                                                      data-widget-setstyle="jarviswidget-color-orangeDark"
+                                                      data-toggle="tooltip"
+                                                      data-placement="bottom"
+                                                      data-original-title="<?php echo __('Dark Orange'); ?>"
+                                                      ng-click="widget.color='jarviswidget-color-orangeDark'">
+                                                </span>
                                             </li>
                                             <li>
-                                                    <span class="bg-color-red"
-                                                          data-widget-setstyle="jarviswidget-color-red"
-                                                          data-toggle="tooltip"
-                                                          data-placement="bottom" data-original-title="<?php echo __('Red Rose'); ?>">
-                                                    </span>
+                                                <span class="bg-color-red"
+                                                      data-widget-setstyle="jarviswidget-color-red"
+                                                      data-toggle="tooltip"
+                                                      data-placement="bottom"
+                                                      data-original-title="<?php echo __('Red Rose'); ?>"
+                                                      ng-click="widget.color='jarviswidget-color-red'">
+                                                </span>
                                             </li>
                                             <li>
-                                                    <span class="bg-color-redLight"
-                                                          data-widget-setstyle="jarviswidget-color-redLight"
-                                                          data-toggle="tooltip"
-                                                          data-placement="bottom"
-                                                          data-original-title="<?php echo __('Light Red'); ?>">
-                                                    </span>
+                                                <span class="bg-color-redLight"
+                                                      data-widget-setstyle="jarviswidget-color-redLight"
+                                                      data-toggle="tooltip"
+                                                      data-placement="bottom"
+                                                      data-original-title="<?php echo __('Light Red'); ?>"
+                                                      ng-click="widget.color='jarviswidget-color-redLight'">
+                                                </span>
                                             </li>
                                             <li>
-                                                    <span class="bg-color-white"
-                                                          data-widget-setstyle="jarviswidget-color-white"
-                                                          data-toggle="tooltip"
-                                                          data-placement="right" data-original-title="<?php echo __('Purity'); ?>">
-                                                    </span>
+                                                <span class="bg-color-white"
+                                                      data-widget-setstyle="jarviswidget-color-white"
+                                                      data-toggle="tooltip"
+                                                      data-placement="right"
+                                                      data-original-title="<?php echo __('Purity'); ?>"
+                                                      ng-click="widget.color='jarviswidget-color-white'">
+                                                </span>
                                             </li>
                                             <li>
                                                 <a href="javascript:void(0);" class="jarviswidget-remove-colors"

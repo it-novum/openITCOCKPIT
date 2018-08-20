@@ -118,6 +118,7 @@ angular.module('openITCOCKPIT')
                         id: parseInt(result.data.widgets.Widget[i].id, 10),
                         icon: result.data.widgets.Widget[i].icon,
                         title: result.data.widgets.Widget[i].title,
+                        color: result.data.widgets.Widget[i].color,
                         directive: result.data.widgets.Widget[i].directive
                     });
                 }
@@ -152,8 +153,8 @@ angular.module('openITCOCKPIT')
                         col: $scope.activeWidgets[i].col,
                         width: $scope.activeWidgets[i].sizeX,
                         height: $scope.activeWidgets[i].sizeY,
-                        title: $scope.activeWidgets[i].title
-
+                        title: $scope.activeWidgets[i].title,
+                        color: $scope.activeWidgets[i].color
                     }
                 });
             }
