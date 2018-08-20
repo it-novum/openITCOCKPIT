@@ -39,7 +39,13 @@
         </span>
             <div class="no-padding">
                 <center>
-                    <div id="trafficlight-{{widget.id}}"></div>
+                    <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
+                        <a ng-href="/services/browser/{{trafficlight.service_id}}">
+                            <div id="trafficlight-{{widget.id}}"></div>
+                        </a>
+                    <?php else: ?>
+                        <div id="trafficlight-{{widget.id}}"></div>
+                    <?php endif; ?>
                 </center>
             </div>
         </flippy-front>
