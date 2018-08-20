@@ -164,7 +164,7 @@
                                  style="width:100%;" id="widget-{{widget.id}}">
                                 <header role="heading" class="ui-sortable-handle" style="cursor: move;">
                                     <h2>
-                                        <i class="fa fa-{{widget.icon}}"></i>
+                                        <i class="fa {{widget.icon}}"></i>
                                         {{widget.title}}
                                     </h2>
                                     <div class="jarviswidget-ctrls" role="menu" ng-hide="dashboardIsLocked">
