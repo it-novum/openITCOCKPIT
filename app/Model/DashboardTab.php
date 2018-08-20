@@ -152,6 +152,55 @@ class DashboardTab extends AppModel {
     }
 
     /**
+     * @return array|null
+     */
+    public function getSharedTabs() {
+        $result = $this->find('all', [
+            'recursive'  => -1,
+            'joins'      => [
+                [
+                    'table'      => 'users',
+                    'alias'      => 'User',
+                    'type'       => 'INNER',
+                    'conditions' => [
+                        'User.id = DashboardTab.user_id',
+                    ],
+                ],
+            ],
+            'conditions' => [
+                'DashboardTab.shared' => 1,
+            ],
+            'fields' => [
+                'DashboardTab.*',
+                'User.firstname',
+                'User.lastname'
+            ]
+        ]);
+
+
+        $forJs = [];
+        foreach ($result as $row) {
+            $forJs[] = [
+                'id'                   => (int)$row['DashboardTab']['id'],
+                'position'             => (int)$row['DashboardTab']['position'],
+                'name'                 => sprintf(
+                    '%s, %s/%s',
+                    $row['User']['firstname'],
+                    $row['User']['lastname'],
+                    $row['DashboardTab']['name']
+                ),
+                'shared'               => (bool)$row['DashboardTab']['shared'],
+                'source_tab_id'        => (int)$row['DashboardTab']['source_tab_id'],
+                'check_for_updates'    => (bool)$row['DashboardTab']['check_for_updates'],
+                'source_last_modified' => (int)$row['DashboardTab']['source_last_modified']
+            ];
+        }
+
+
+        return $forJs;
+    }
+
+    /**
      * @param $userId
      * @param $tabId
      * @return array|null

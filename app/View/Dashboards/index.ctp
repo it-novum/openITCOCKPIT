@@ -40,7 +40,8 @@
                     <li data-tab-id="{{tab.id}}" class="ui-sortable-handle" ng-repeat="tab in tabs"
                         ng-class="{'active':activeTab === tab.id}">
                         <a class="pointer" href="javascript:void(0);" ng-if="activeTab !== tab.id">
-                            <span class="text" ng-click="loadTabContent(tab.id)">
+                            <span class="text" ng-click="loadTabContent(tab.id)"
+                                  ng-class="{ 'text-primary': tab.shared === true}">
                                 {{tab.name}}
                             </span>
                         </a>
@@ -49,8 +50,12 @@
                            class="dropdown-toggle"
                            data-toggle="dropdown"
                            aria-expanded="false"
-                           ng-if="activeTab === tab.id">
-                            {{tab.name}}
+                           ng-if="activeTab === tab.id"
+                           ng-class="{ 'text-primary': tab.shared}">
+                            <span class="text"
+                                  ng-class="{ 'text-primary': tab.shared === true}">
+                                {{tab.name}}
+                            </span>
                             <b class="caret"></b>
                         </a>
                         <ul class="dropdown-menu" id="menuHack-tab-{{tab.id}}">
@@ -61,15 +66,24 @@
                                     <?php echo __('Rename'); ?>
                                 </a>
                             </li>
-                            <li>
-                                <a href="javascript:void(0);" class="dashboard-tab-hover-fix">
+                            <li ng-hide="tab.shared">
+                                <a href="javascript:void(0);" class="dashboard-tab-hover-fix"
+                                   ng-click="startSharing(tab.id)">
                                     <i class="fa fa-code-fork"></i>
                                     <?php echo __('Start sharing'); ?>
                                 </a>
                             </li>
+                            <li ng-show="tab.shared">
+                                <a href="javascript:void(0);" class="dashboard-tab-hover-fix"
+                                   ng-click="stopSharing(tab.id)">
+                                    <i class="fa fa-code-fork"></i>
+                                    <?php echo __('Stop sharing'); ?>
+                                </a>
+                            </li>
                             <li class="divider"></li>
                             <li>
-                                <a href="javascript:void(0);" class="txt-color-red">
+                                <a href="javascript:void(0);" class="txt-color-red"
+                                   ng-click="deleteTab(tab.id)">
                                     <i class="fa fa-trash-o"></i>
                                     <?php echo __('Delete'); ?>
                                 </a>
@@ -116,7 +130,8 @@
             <div class="widget-toolbar">
                 <button class="btn btn-xs btn-success"
                         title="<?php echo __('Add tab'); ?>"
-                        data-toggle="modal" data-target="#addNewTabModal">
+                        data-toggle="modal" data-target="#addNewTabModal"
+                        ng-click="loadSharedTabs()">
                     <i class="fa fa-plus"></i>
                 </button>
             </div>
@@ -309,6 +324,7 @@
                                             src="'/dashboards/dynamicDirective?directive='+widget.directive"></ng-include>
                                 </div>
                             </div>
+                            <div ng-if="$last" ng-init="$last?enableWatch():null"></div>
                         </li>
                     </ul>
                 </div>
@@ -363,6 +379,22 @@
                         </h4>
                     </div>
                 </div>
+
+                <div class="row">
+                    <div class="col-xs-12">
+                        <?php echo __('Select shared tab'); ?>
+                    </div>
+                    <div class="col-xs-12">
+                        <select
+                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                class="form-control"
+                                chosen="sharedTabs"
+                                ng-options="sharedTab.id as sharedTab.name for sharedTab in sharedTabs"
+                                ng-model="createTabFromSharedTabId">
+                        </select>
+                    </div>
+                </div>
+
                 <br/>
             </div>
 

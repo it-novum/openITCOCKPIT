@@ -303,6 +303,106 @@ class DashboardsController extends AppController {
     }
 
 
+    public function deleteDashboardTab() {
+        if (!$this->request->is('post') || !$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+
+        $id = (int)$this->request->data('DashboardTab.id');
+
+        $dashboardTab = $this->DashboardTab->find('first', [
+            'conditions' => [
+                'DashboardTab.id'      => $id,
+                'DashboardTab.user_id' => $User->getId()
+            ]
+        ]);
+
+        if (empty($dashboardTab)) {
+            throw new NotFoundException();
+        }
+
+        if ($this->DashboardTab->delete($id)) {
+            $this->set('success', true);
+            $this->set('_serialize', ['success']);
+            return;
+        }
+        $this->serializeErrorMessageFromModel('DashboardTab');
+        return;
+    }
+
+    public function startSharing() {
+        if (!$this->request->is('post') || !$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+
+        $id = (int)$this->request->data('DashboardTab.id');
+
+        $dashboardTab = $this->DashboardTab->find('first', [
+            'conditions' => [
+                'DashboardTab.id'      => $id,
+                'DashboardTab.user_id' => $User->getId()
+            ]
+        ]);
+
+        if (empty($dashboardTab)) {
+            throw new NotFoundException();
+        }
+
+        $dashboardTab['DashboardTab']['shared'] = 1;
+
+        if ($this->DashboardTab->save($dashboardTab)) {
+            $this->set('success', true);
+            $this->set('_serialize', ['success']);
+            return;
+        }
+        $this->serializeErrorMessageFromModel('DashboardTab');
+        return;
+    }
+
+    public function stopSharing() {
+        if (!$this->request->is('post') || !$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+
+        $id = (int)$this->request->data('DashboardTab.id');
+
+        $dashboardTab = $this->DashboardTab->find('first', [
+            'conditions' => [
+                'DashboardTab.id'      => $id,
+                'DashboardTab.user_id' => $User->getId()
+            ]
+        ]);
+
+        if (empty($dashboardTab)) {
+            throw new NotFoundException();
+        }
+
+        $dashboardTab['DashboardTab']['shared'] = 0;
+
+        if ($this->DashboardTab->save($dashboardTab)) {
+            $this->set('success', true);
+            $this->set('_serialize', ['success']);
+            return;
+        }
+        $this->serializeErrorMessageFromModel('DashboardTab');
+        return;
+    }
+
+    public function getSharedTabs(){
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        $tabs = $this->DashboardTab->getSharedTabs();
+
+        $this->set('tabs', $tabs);
+        $this->set('_serialize', ['tabs']);
+    }
+
+
     /***** Basic Widgets *****/
     public function welcomeWidget() {
         if (!$this->isApiRequest()) {
