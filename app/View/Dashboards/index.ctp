@@ -101,7 +101,16 @@
                 </button>
             </div>
 
-            <div class="widget-toolbar" role="menu">
+            <div class="widget-toolbar">
+                <button class="btn btn-xs btn-primary"
+                        title="<?php echo __('Lock for edit'); ?>"
+                        ng-click="lockOrUnlockDashboard()">
+                    <i class="fa fa-lock"
+                       ng-class="{ 'fa-lock': dashboardIsLocked, 'fa-unlock': !dashboardIsLocked }"></i>
+                </button>
+            </div>
+
+            <div class="widget-toolbar" role="menu" ng-hide="dashboardIsLocked">
                 <div class="btn-group">
                     <button data-toggle="dropdown" class="btn dropdown-toggle btn-xs btn-success">
                         <?php echo __('Add Widget'); ?>
@@ -158,7 +167,7 @@
                                         <i class="fa fa-{{widget.icon}}"></i>
                                         {{widget.title}}
                                     </h2>
-                                    <div class="jarviswidget-ctrls" role="menu">
+                                    <div class="jarviswidget-ctrls" role="menu" ng-hide="dashboardIsLocked">
                                         <a class="button-icon jarviswidget-delete-btn pointer"
                                            title="<?php echo __('Edit title'); ?>"
                                            ng-click="triggerRenameWidgetModal(widget.id)">
@@ -170,7 +179,7 @@
                                             <i class="fa fa-times"></i>
                                         </a>
                                     </div>
-                                    <div class="widget-toolbar" role="menu">
+                                    <div class="widget-toolbar" role="menu" ng-hide="dashboardIsLocked">
                                         <a data-toggle="dropdown"
                                            class="dropdown-toggle color-box"
                                            href="javascript:void(0);">

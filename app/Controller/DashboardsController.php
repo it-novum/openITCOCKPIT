@@ -471,6 +471,7 @@ class DashboardsController extends AppController {
             $newCreatedDashboardTab['DashboardTab']['source_tab_id'] = (int)$newCreatedDashboardTab['DashboardTab']['source_tab_id'];
             $newCreatedDashboardTab['DashboardTab']['check_for_updates'] = (bool)$newCreatedDashboardTab['DashboardTab']['check_for_updates'];
             $newCreatedDashboardTab['DashboardTab']['last_update'] = (int)$newCreatedDashboardTab['DashboardTab']['last_update'];
+            $newCreatedDashboardTab['DashboardTab']['locked'] = (bool)$newCreatedDashboardTab['DashboardTab']['locked'];
 
             $this->set('DashboardTab', $newCreatedDashboardTab);
             $this->set('_serialize', ['DashboardTab']);
@@ -573,6 +574,7 @@ class DashboardsController extends AppController {
         }
 
         $tabToUpdate['DashboardTab']['last_update'] = time();
+        $tabToUpdate['DashboardTab']['locked'] = (bool)$sourceTabWithWidgets['DashboardTab']['locked'] ;
         $tabToUpdate['Widget'] = $sourceTabWithWidgets['Widget'];
 
         foreach ($tabToUpdate['Widget'] as $key => $widgetData) {
@@ -600,6 +602,7 @@ class DashboardsController extends AppController {
             $newCreatedDashboardTab['DashboardTab']['source_tab_id'] = (int)$tabToUpdate['DashboardTab']['source_tab_id'];
             $newCreatedDashboardTab['DashboardTab']['check_for_updates'] = (bool)$tabToUpdate['DashboardTab']['check_for_updates'];
             $newCreatedDashboardTab['DashboardTab']['last_update'] = (int)$tabToUpdate['DashboardTab']['last_update'];
+            $newCreatedDashboardTab['DashboardTab']['locked'] = (bool)$tabToUpdate['DashboardTab']['locked'];
 
             $this->set('DashboardTab', $tabToUpdate);
             $this->set('_serialize', ['DashboardTab']);
@@ -637,6 +640,37 @@ class DashboardsController extends AppController {
         }
 
         $this->serializeErrorMessageFromModel('Widget');
+    }
+
+    public function lockOrUnlockTab() {
+        if (!$this->request->is('post') || !$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+
+        $id = (int)$this->request->data('DashboardTab.id');
+        $locked = $this->request->data('DashboardTab.locked') === 'true';
+
+        $dashboardTab = $this->DashboardTab->find('first', [
+            'conditions' => [
+                'DashboardTab.id'      => $id,
+                'DashboardTab.user_id' => $User->getId()
+            ]
+        ]);
+
+        if (empty($dashboardTab)) {
+            throw new NotFoundException();
+        }
+
+        $dashboardTab['DashboardTab']['locked'] = $locked;
+
+        if ($this->DashboardTab->save($dashboardTab)) {
+            $this->set('success', true);
+            $this->set('_serialize', ['success']);
+            return;
+        }
+        $this->serializeErrorMessageFromModel('DashboardTab');
+        return;
     }
 
 

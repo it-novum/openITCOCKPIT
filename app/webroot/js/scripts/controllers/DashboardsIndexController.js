@@ -9,6 +9,7 @@ angular.module('openITCOCKPIT')
         $scope.errors = {};
         $scope.viewTabRotateInterval = 0;
         $scope.intervalText = 'disabled';
+        $scope.dashboardIsLocked = false;
 
         $scope.gridsterOpts = {
             minRows: 2, // the minimum height of the grid, in rows
@@ -106,6 +107,21 @@ angular.module('openITCOCKPIT')
             }).then(function(result){
                 $scope.activeTab = tabId;
 
+                for(var k in $scope.tabs){
+                    if($scope.tabs[k].id === $scope.activeTab){
+                        if($scope.tabs[k].locked === true){
+                            $scope.dashboardIsLocked = true;
+                            $scope.gridsterOpts.resizable.enabled = false;
+                            $scope.gridsterOpts.draggable.enabled = false;
+                        }else{
+                            $scope.dashboardIsLocked = false;
+                            $scope.gridsterOpts.resizable.enabled = true;
+                            $scope.gridsterOpts.draggable.enabled = true;
+                        }
+                        break;
+                    }
+                }
+
                 var widgets = [];
                 for(var i in result.data.widgets.Widget){
                     widgets.push({
@@ -145,7 +161,9 @@ angular.module('openITCOCKPIT')
 
 
         $scope.saveGrid = function(){
-            $scope.checkDashboardLock();
+            if($scope.dashboardIsLocked){
+                return;
+            }
 
             if($scope.activeWidgets.length === 0){
                 return;
@@ -177,6 +195,10 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.addWidgetToTab = function(typeId){
+            if($scope.dashboardIsLocked){
+                return;
+            }
+
             postData = {
                 Widget: {
                     dashboard_tab_id: $scope.activeTab,
@@ -204,6 +226,10 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.removeWidgetFromTab = function(id){
+            if($scope.dashboardIsLocked){
+                return;
+            }
+
             postData = {
                 Widget: {
                     id: id,
@@ -304,6 +330,10 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.triggerRenameTabModal = function(currentTabName){
+            if($scope.dashboardIsLocked){
+                return;
+            }
+
             $('#renameTabModal').modal('show');
             $scope.renameTabName = currentTabName;
         };
@@ -466,6 +496,17 @@ angular.module('openITCOCKPIT')
                     }
                 }
             ).then(function(result){
+                //Update local json
+                for(var k in $scope.tabs){
+                    if($scope.tabs[k].id === $scope.activeTab){
+                        $scope.tabs[k].locked = result.data.DashboardTab.DashboardTab.locked;
+                        $scope.dashboardIsLocked = result.data.DashboardTab.DashboardTab.locked;
+                        $scope.gridsterOpts.resizable.enabled = !$scope.dashboardIsLocked;
+                        $scope.gridsterOpts.draggable.enabled = !$scope.dashboardIsLocked;
+                        break;
+                    }
+                }
+
                 genericSuccess();
                 $('#updateAvailableModal').modal('hide');
                 $scope.loadTabContent($scope.activeTab);
@@ -475,6 +516,10 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.triggerRenameWidgetModal = function(widgetId){
+            if($scope.dashboardIsLocked){
+                return;
+            }
+
             $scope.renameWidgetTitle = '';
             for(var i in $scope.activeWidgets){
                 if($scope.activeWidgets[i].id === widgetId){
@@ -609,9 +654,34 @@ angular.module('openITCOCKPIT')
             });
         };
 
-        $scope.checkDashboardLock = function(){
+        $scope.lockOrUnlockDashboard = function(){
+            $scope.dashboardIsLocked = $scope.dashboardIsLocked !== true;
+            $scope.gridsterOpts.resizable.enabled = !$scope.dashboardIsLocked;
+            $scope.gridsterOpts.draggable.enabled = !$scope.dashboardIsLocked;
+
+            //Update local json data
+            for(var k in $scope.tabs){
+                if($scope.tabs[k].id === $scope.activeTab){
+                    $scope.tabs[k].locked = $scope.dashboardIsLocked;
+                    break;
+                }
+            }
+
+            $http.post("/dashboards/lockOrUnlockTab.json?angular=true",
+                {
+                    DashboardTab: {
+                        id: $scope.activeTab,
+                        locked: $scope.dashboardIsLocked.toString()
+                    }
+                }
+            ).then(function(result){
+                genericSuccess();
+            }, function errorCallback(result){
+                genericError();
+            });
 
         };
+
 
         /** On Load stuff **/
         $scope.$watch('viewTabRotateInterval', function(){

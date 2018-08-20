@@ -1565,13 +1565,14 @@ class AppSchema extends CakeSchema {
 
     public $dashboard_tabs = [
         'id'                => ['type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'],
-        'user_id'           => ['type' => 'integer', 'null' => false], // ID from the user.
-        'position'          => ['type' => 'integer', 'null' => false], //Position
-        'name'              => ['type' => 'string', 'null' => false], // The name of the tab.
-        'shared'            => ['type' => 'boolean', 'null' => false, 'default' => '0'], // The name of the tab.
-        'source_tab_id'     => ['type' => 'integer', 'null' => true], // The name of the tab.
+        'user_id'           => ['type' => 'integer', 'null' => false],
+        'position'          => ['type' => 'integer', 'null' => false],
+        'name'              => ['type' => 'string', 'null' => false],
+        'shared'            => ['type' => 'boolean', 'null' => false, 'default' => '0'],
+        'source_tab_id'     => ['type' => 'integer', 'null' => true],
         'check_for_updates' => ['type' => 'integer', 'null' => true, 'default' => null],
         'last_update'       => ['type' => 'integer', 'null' => true, 'default' => '0'],
+        'locked'            => ['type' => 'boolean', 'null' => false, 'default' => '0'],
         'created'           => ['type' => 'datetime', 'null' => false, 'default' => null],
         'modified'          => ['type' => 'datetime', 'null' => false, 'default' => null],
         'indexes'           => [
