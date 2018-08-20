@@ -153,6 +153,7 @@ $config = [
                 'checkForUpdates',
                 'neverPerformUpdates',
                 'updateSharedTab',
+                'renameWidget',
                 'hostsPiechartWidget',
                 'hostsPiechart180Widget',
                 'servicesPiechartWidget',

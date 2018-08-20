@@ -485,6 +485,47 @@ angular.module('openITCOCKPIT')
             });
         };
 
+        $scope.triggerRenameWidgetModal = function(widgetId){
+            $scope.renameWidgetTitle = '';
+            for(var i in $scope.activeWidgets){
+                if($scope.activeWidgets[i].id === widgetId){
+                    $scope.currentWidgetId = widgetId;
+                    $scope.renameWidgetTitle = $scope.activeWidgets[i].title;
+                    break;
+                }
+            }
+            $('#renameWidgetModal').modal('show');
+        };
+
+        $scope.renameWidget = function(){
+            if(typeof $scope.currentWidgetId === 'undefined' || $scope.currentWidgetId === null){
+                genericError();
+                return;
+            }
+
+            $http.post("/dashboards/renameWidget.json?angular=true",
+                {
+                    Widget: {
+                        id: $scope.currentWidgetId,
+                        name: $scope.renameWidgetTitle
+                    }
+                }
+            ).then(function(result){
+                $scope.errors = {};
+                for(var i in $scope.activeWidgets){
+                    if($scope.activeWidgets[i].id === $scope.currentWidgetId){
+                        $scope.activeWidgets[i].title = $scope.renameWidgetTitle;
+                    }
+                }
+                $scope.currentWidgetId = null;
+                genericSuccess();
+                $('#renameWidgetModal').modal('hide');
+            }, function errorCallback(result){
+                $scope.errors = result.data.error;
+                genericError();
+            });
+        };
+
         if(document.addEventListener){
             document.addEventListener('webkitfullscreenchange', fullscreenExitHandler, false);
             document.addEventListener('mozfullscreenchange', fullscreenExitHandler, false);

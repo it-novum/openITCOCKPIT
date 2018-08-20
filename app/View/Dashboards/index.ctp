@@ -161,8 +161,8 @@
                                     <div class="jarviswidget-ctrls" role="menu">
                                         <a class="button-icon jarviswidget-delete-btn pointer"
                                            title="<?php echo __('Edit title'); ?>"
-                                           ng-click="setEditMode()">
-                                            <i ng-class="editMode ? 'fa fa-floppy-o' : 'fa fa-pencil'"></i>
+                                           ng-click="triggerRenameWidgetModal(widget.id)">
+                                            <i class="fa fa-pencil"></i>
                                         </a>
                                         <a class="button-icon jarviswidget-delete-btn pointer"
                                            title="<?php echo __('Remove widget'); ?>"
@@ -172,8 +172,8 @@
                                     </div>
                                     <div class="widget-toolbar" role="menu">
                                         <a data-toggle="dropdown"
-                                            class="dropdown-toggle color-box"
-                                            href="javascript:void(0);">
+                                           class="dropdown-toggle color-box"
+                                           href="javascript:void(0);">
                                         </a>
                                         <ul class="dropdown-menu arrow-box-up-right color-select pull-right padding-3">
                                             <li>
@@ -541,7 +541,7 @@
                         <br/>
                         <?php echo __('This means the original dashboard was reorder, new objects where added or existing objects gets deleted.'); ?>
                         <?php echo __('You can now choose if you want to update your dashboard or keep your current dashboard.'); ?>
-                        <br/><br />
+                        <br/><br/>
                         <?php echo __('Warning: By updating your dashboard, local modifications will get lost.'); ?>
                     </div>
                 </div>
@@ -559,6 +559,53 @@
 
                 <button type="button" class="btn btn-default" data-dismiss="modal">
                     <?php echo __('No thanks'); ?>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Rename widget modal -->
+<div id="renameWidgetModal" class="modal" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">
+                    <i class="fa fa-pencil-square-o"></i>
+                    <?php echo __('Edit widget title'); ?>
+                </h4>
+            </div>
+            <div class="modal-body">
+
+                <div class="row">
+                    <div class="col-xs-12 smart-form">
+                        <div class="form-group smart-form" ng-class="{'has-error': errors.name}">
+                            <label class="label hintmark_red"><?php echo __('New title of widget'); ?></label>
+                            <label class="input"> <b class="icon-prepend">
+                                    <i class="fa fa-tag"></i>
+                                </b>
+                                <input type="text" class="input-sm"
+                                       placeholder="<?php echo __('New title of widget'); ?>"
+                                       ng-model="renameWidgetTitle">
+                            </label>
+                            <div ng-repeat="error in errors.name">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 padding-top-10">
+                        <button type="button" class="btn btn-primary pull-right" ng-click="renameWidget()">
+                            <?php echo __('Save widget title'); ?>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">
+                    <?php echo __('Close'); ?>
                 </button>
             </div>
         </div>
