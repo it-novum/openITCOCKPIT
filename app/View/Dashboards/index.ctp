@@ -393,6 +393,11 @@
                                 ng-model="createTabFromSharedTabId">
                         </select>
                     </div>
+                    <div class="col-xs-12 padding-top-10">
+                        <button type="button" class="btn btn-primary pull-right" ng-click="addFromSharedTab()">
+                            <?php echo __('Create from shared tab'); ?>
+                        </button>
+                    </div>
                 </div>
 
                 <br/>

@@ -391,7 +391,7 @@ class DashboardsController extends AppController {
         return;
     }
 
-    public function getSharedTabs(){
+    public function getSharedTabs() {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
@@ -400,6 +400,64 @@ class DashboardsController extends AppController {
 
         $this->set('tabs', $tabs);
         $this->set('_serialize', ['tabs']);
+    }
+
+    public function createFromSharedTab() {
+        if (!$this->request->is('post') || !$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+
+        $id = (int)$this->request->data('DashboardTab.id');
+
+        $sourceTabWithWidgets = $this->DashboardTab->find('first', [
+            'conditions' => [
+                'DashboardTab.id'     => $id,
+                'DashboardTab.shared' => 1
+            ]
+        ]);
+
+        if (empty($sourceTabWithWidgets)) {
+            throw new NotFoundException();
+        }
+
+        $copyTabWithWidgets = $sourceTabWithWidgets;
+
+        unset($copyTabWithWidgets['DashboardTab']['id']);
+        $copyTabWithWidgets['DashboardTab']['user_id'] = $User->getId();
+        $copyTabWithWidgets['DashboardTab']['position'] = $this->DashboardTab->getNextPosition($User->getId());
+        $copyTabWithWidgets['DashboardTab']['shared'] = 0;
+        $copyTabWithWidgets['DashboardTab']['source_tab_id'] = $id;
+        $copyTabWithWidgets['DashboardTab']['check_for_updates'] = 1;
+
+        foreach ($copyTabWithWidgets['Widget'] as $key => $widgetData) {
+            unset($copyTabWithWidgets['Widget'][$key]['id']);
+            unset($copyTabWithWidgets['Widget'][$key]['dashboard_tab_id']);
+        }
+
+        $this->DashboardTab->create();
+        if ($this->DashboardTab->saveAll($copyTabWithWidgets)) {
+            $newCreatedDashboardTab = $this->DashboardTab->find('first', [
+                'conditions' => [
+                    'DashboardTab.id'      => $this->DashboardTab->id,
+                    'DashboardTab.user_id' => $User->getId()
+                ]
+            ]);
+
+            $newCreatedDashboardTab['DashboardTab']['id'] = (int)$newCreatedDashboardTab['DashboardTab']['id'];
+            $newCreatedDashboardTab['DashboardTab']['user_id'] = (int)$newCreatedDashboardTab['DashboardTab']['user_id'];
+            $newCreatedDashboardTab['DashboardTab']['position'] = (int)$newCreatedDashboardTab['DashboardTab']['position'];
+            $newCreatedDashboardTab['DashboardTab']['shared'] = (bool)$newCreatedDashboardTab['DashboardTab']['shared'];
+            $newCreatedDashboardTab['DashboardTab']['source_tab_id'] = (int)$newCreatedDashboardTab['DashboardTab']['source_tab_id'];
+            $newCreatedDashboardTab['DashboardTab']['check_for_updates'] = (bool)$newCreatedDashboardTab['DashboardTab']['check_for_updates'];
+            $newCreatedDashboardTab['DashboardTab']['source_last_modified'] = (int)$newCreatedDashboardTab['DashboardTab']['source_last_modified'];
+
+            $this->set('DashboardTab', $newCreatedDashboardTab);
+            $this->set('_serialize', ['DashboardTab']);
+            return;
+        }
+
+        $this->serializeErrorMessageFromModel('DashboardTab');
     }
 
 

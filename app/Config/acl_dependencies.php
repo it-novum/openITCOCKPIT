@@ -149,6 +149,7 @@ $config = [
                 'startSharing',
                 'stopSharing',
                 'getSharedTabs',
+                'createFromSharedTab',
                 'hostsPiechartWidget',
                 'hostsPiechart180Widget',
                 'servicesPiechartWidget',

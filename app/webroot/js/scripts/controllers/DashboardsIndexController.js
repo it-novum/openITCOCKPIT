@@ -275,6 +275,25 @@ angular.module('openITCOCKPIT')
             });
         };
 
+        $scope.addFromSharedTab = function(){
+            $http.post("/dashboards/createFromSharedTab.json?angular=true",
+                {
+                    DashboardTab: {
+                        id: $scope.createTabFromSharedTabId
+                    }
+                }
+            ).then(function(result){
+                genericSuccess();
+
+                $scope.activeTab = parseInt(result.data.DashboardTab.DashboardTab.id, 10);
+                $scope.load();
+                $('#addNewTabModal').modal('hide');
+            }, function errorCallback(result){
+                $scope.errors = result.data.error;
+                genericError();
+            });
+        };
+
         $scope.triggerRenameTabModal = function(currentTabName){
             $('#renameTabModal').modal('show');
             $scope.renameTabName = currentTabName;

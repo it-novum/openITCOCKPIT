@@ -32,16 +32,19 @@ class Widget extends AppModel {
                 'rule'     => 'notBlank',
                 'message'  => 'This field cannot be left blank.',
                 'required' => true,
+                'on'       => 'update'
             ],
             'numeric'  => [
                 'rule'     => 'numeric',
                 'message'  => 'This field needs a numeric value.',
                 'required' => true,
+                'on'       => 'update'
             ],
             'notZero'  => [
                 'rule'     => ['comparison', '>', 0],
                 'message'  => 'The value should be greate than zero.',
                 'required' => true,
+                'on'       => 'update'
             ],
         ],
         'row'              => [
