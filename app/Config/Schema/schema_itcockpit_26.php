@@ -1564,20 +1564,20 @@ class AppSchema extends CakeSchema {
     ];
 
     public $dashboard_tabs = [
-        'id'                   => ['type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'],
-        'user_id'              => ['type' => 'integer', 'null' => false], // ID from the user.
-        'position'             => ['type' => 'integer', 'null' => false], //Position
-        'name'                 => ['type' => 'string', 'null' => false], // The name of the tab.
-        'shared'               => ['type' => 'boolean', 'null' => false, 'default' => '0'], // The name of the tab.
-        'source_tab_id'        => ['type' => 'integer', 'null' => true], // The name of the tab.
-        'check_for_updates'    => ['type' => 'integer', 'null' => true, 'default' => null],
-        'source_last_modified' => ['type' => 'datetime', 'null' => true, 'default' => null],
-        'created'              => ['type' => 'datetime', 'null' => false, 'default' => null],
-        'modified'             => ['type' => 'datetime', 'null' => false, 'default' => null],
-        'indexes'              => [
+        'id'                => ['type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'],
+        'user_id'           => ['type' => 'integer', 'null' => false], // ID from the user.
+        'position'          => ['type' => 'integer', 'null' => false], //Position
+        'name'              => ['type' => 'string', 'null' => false], // The name of the tab.
+        'shared'            => ['type' => 'boolean', 'null' => false, 'default' => '0'], // The name of the tab.
+        'source_tab_id'     => ['type' => 'integer', 'null' => true], // The name of the tab.
+        'check_for_updates' => ['type' => 'integer', 'null' => true, 'default' => null],
+        'last_update'       => ['type' => 'integer', 'null' => true, 'default' => '0'],
+        'created'           => ['type' => 'datetime', 'null' => false, 'default' => null],
+        'modified'          => ['type' => 'datetime', 'null' => false, 'default' => null],
+        'indexes'           => [
             'PRIMARY' => ['column' => 'id', 'unique' => 1],
         ],
-        'tableParameters'      => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB'],
+        'tableParameters'   => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB'],
     ];
 
     public $widgets = [

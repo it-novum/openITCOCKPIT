@@ -137,13 +137,13 @@ class DashboardTab extends AppModel {
         $forJs = [];
         foreach ($result as $row) {
             $forJs[] = [
-                'id'                   => (int)$row['DashboardTab']['id'],
-                'position'             => (int)$row['DashboardTab']['position'],
-                'name'                 => $row['DashboardTab']['name'],
-                'shared'               => (bool)$row['DashboardTab']['shared'],
-                'source_tab_id'        => (int)$row['DashboardTab']['source_tab_id'],
-                'check_for_updates'    => (bool)$row['DashboardTab']['check_for_updates'],
-                'source_last_modified' => (int)$row['DashboardTab']['source_last_modified']
+                'id'                => (int)$row['DashboardTab']['id'],
+                'position'          => (int)$row['DashboardTab']['position'],
+                'name'              => $row['DashboardTab']['name'],
+                'shared'            => (bool)$row['DashboardTab']['shared'],
+                'source_tab_id'     => (int)$row['DashboardTab']['source_tab_id'],
+                'check_for_updates' => (bool)$row['DashboardTab']['check_for_updates'],
+                'last_update'       => (int)$row['DashboardTab']['last_update']
             ];
         }
 
@@ -170,7 +170,7 @@ class DashboardTab extends AppModel {
             'conditions' => [
                 'DashboardTab.shared' => 1,
             ],
-            'fields' => [
+            'fields'     => [
                 'DashboardTab.*',
                 'User.firstname',
                 'User.lastname'
@@ -181,18 +181,18 @@ class DashboardTab extends AppModel {
         $forJs = [];
         foreach ($result as $row) {
             $forJs[] = [
-                'id'                   => (int)$row['DashboardTab']['id'],
-                'position'             => (int)$row['DashboardTab']['position'],
-                'name'                 => sprintf(
+                'id'                => (int)$row['DashboardTab']['id'],
+                'position'          => (int)$row['DashboardTab']['position'],
+                'name'              => sprintf(
                     '%s, %s/%s',
                     $row['User']['firstname'],
                     $row['User']['lastname'],
                     $row['DashboardTab']['name']
                 ),
-                'shared'               => (bool)$row['DashboardTab']['shared'],
-                'source_tab_id'        => (int)$row['DashboardTab']['source_tab_id'],
-                'check_for_updates'    => (bool)$row['DashboardTab']['check_for_updates'],
-                'source_last_modified' => (int)$row['DashboardTab']['source_last_modified']
+                'shared'            => (bool)$row['DashboardTab']['shared'],
+                'source_tab_id'     => (int)$row['DashboardTab']['source_tab_id'],
+                'check_for_updates' => (bool)$row['DashboardTab']['check_for_updates'],
+                'last_update'       => (int)$row['DashboardTab']['last_update']
             ];
         }
 

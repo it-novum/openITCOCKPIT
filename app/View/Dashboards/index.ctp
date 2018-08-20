@@ -118,7 +118,6 @@
                     </ul>
                 </div>
             </div>
-
             <div class="widget-toolbar">
                 <button class="btn btn-xs btn-default" ng-click="refresh()"
                         title="<?php echo __('Refresh'); ?>">
@@ -339,14 +338,6 @@
                                                       ng-click="widget.color='jarviswidget-color-white'">
                                                 </span>
                                             </li>
-                                            <li>
-                                                <a href="javascript:void(0);" class="jarviswidget-remove-colors"
-                                                   data-widget-setstyle="" style="color: black !important;"
-                                                   data-toggle="tooltip" data-placement="bottom"
-                                                   data-original-title="Reset widget color to default">
-                                                    <?php __('Remove'); ?>
-                                                </a>
-                                            </li>
                                         </ul>
                                     </div>
                                 </header>
@@ -361,7 +352,6 @@
                         </li>
                     </ul>
                 </div>
-
             </div>
         </div>
     </div>
@@ -425,6 +415,11 @@
                                 ng-options="sharedTab.id as sharedTab.name for sharedTab in sharedTabs"
                                 ng-model="createTabFromSharedTabId">
                         </select>
+                    </div>
+                    <div class="col-xs-12 padding-top-10">
+                        <button type="button" class="btn btn-primary pull-right" ng-click="addFromSharedTab()">
+                            <?php echo __('Create from shared tab'); ?>
+                        </button>
                     </div>
                 </div>
 
@@ -519,6 +514,51 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">
                     <?php echo __('Close'); ?>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Update available modal -->
+<div id="updateAvailableModal" class="modal" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">
+                    <i class="fa fa-code-fork"></i>
+                    <?php echo __('For your dashboard is an update available'); ?>
+                </h4>
+            </div>
+            <div class="modal-body">
+
+                <div class="row">
+                    <div class="col-xs-12 text-info">
+                        <i class="fa fa-info-circle"></i>
+                        <?php echo __('You created this dashboard out of an "shared" dashboard. The original dashboard was updated.'); ?>
+                        <br/>
+                        <?php echo __('This means the original dashboard was reorder, new objects where added or existing objects gets deleted.'); ?>
+                        <?php echo __('You can now choose if you want to update your dashboard or keep your current dashboard.'); ?>
+                        <br/><br />
+                        <?php echo __('Warning: By updating your dashboard, local modifications will get lost.'); ?>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger pull-left" ng-click="neverPerformUpdates()">
+                    <?php echo __('Never perform an update for this dashboard'); ?>
+                </button>
+
+                <button type="button" class="btn btn-primary " ng-click="performUpdate()">
+                    <?php echo __('Yes update'); ?>
+                </button>
+
+                <button type="button" class="btn btn-default" data-dismiss="modal">
+                    <?php echo __('No thanks'); ?>
                 </button>
             </div>
         </div>
