@@ -196,7 +196,8 @@ angular.module('openITCOCKPIT')
                         id: parseInt(result.data.widget.Widget.id, 10),
                         icon: result.data.widget.Widget.icon,
                         title: result.data.widget.Widget.title,
-                        directive: result.data.widget.Widget.directive
+                        directive: result.data.widget.Widget.directive,
+                        color: result.data.widget.Widget.color
                     });
                     return true;
                 }, function errorCallback(result){
