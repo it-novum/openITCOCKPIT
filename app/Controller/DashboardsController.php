@@ -27,8 +27,8 @@ use itnovum\openITCOCKPIT\Core\Dashboards\DowntimeServiceListJson;
 use itnovum\openITCOCKPIT\Core\Dashboards\HostStatusListJson;
 use itnovum\openITCOCKPIT\Core\Dashboards\HostStatusOverviewJson;
 use itnovum\openITCOCKPIT\Core\Dashboards\NoticeJson;
-use itnovum\openITCOCKPIT\Core\Dashboards\NoticeListJson;
 use itnovum\openITCOCKPIT\Core\Dashboards\ServiceStatusListJson;
+use itnovum\openITCOCKPIT\Core\Dashboards\TrafficlightJson;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 
 /**
@@ -472,6 +472,7 @@ class DashboardsController extends AppController {
             $newCreatedDashboardTab['DashboardTab']['source_tab_id'] = (int)$newCreatedDashboardTab['DashboardTab']['source_tab_id'];
             $newCreatedDashboardTab['DashboardTab']['check_for_updates'] = (bool)$newCreatedDashboardTab['DashboardTab']['check_for_updates'];
             $newCreatedDashboardTab['DashboardTab']['last_update'] = (int)$newCreatedDashboardTab['DashboardTab']['last_update'];
+            $newCreatedDashboardTab['DashboardTab']['locked'] = (bool)$newCreatedDashboardTab['DashboardTab']['locked'];
 
             $this->set('DashboardTab', $newCreatedDashboardTab);
             $this->set('_serialize', ['DashboardTab']);
@@ -574,6 +575,7 @@ class DashboardsController extends AppController {
         }
 
         $tabToUpdate['DashboardTab']['last_update'] = time();
+        $tabToUpdate['DashboardTab']['locked'] = (bool)$sourceTabWithWidgets['DashboardTab']['locked'];
         $tabToUpdate['Widget'] = $sourceTabWithWidgets['Widget'];
 
         foreach ($tabToUpdate['Widget'] as $key => $widgetData) {
@@ -601,6 +603,7 @@ class DashboardsController extends AppController {
             $newCreatedDashboardTab['DashboardTab']['source_tab_id'] = (int)$tabToUpdate['DashboardTab']['source_tab_id'];
             $newCreatedDashboardTab['DashboardTab']['check_for_updates'] = (bool)$tabToUpdate['DashboardTab']['check_for_updates'];
             $newCreatedDashboardTab['DashboardTab']['last_update'] = (int)$tabToUpdate['DashboardTab']['last_update'];
+            $newCreatedDashboardTab['DashboardTab']['locked'] = (bool)$tabToUpdate['DashboardTab']['locked'];
 
             $this->set('DashboardTab', $tabToUpdate);
             $this->set('_serialize', ['DashboardTab']);
@@ -638,6 +641,37 @@ class DashboardsController extends AppController {
         }
 
         $this->serializeErrorMessageFromModel('Widget');
+    }
+
+    public function lockOrUnlockTab() {
+        if (!$this->request->is('post') || !$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+
+        $id = (int)$this->request->data('DashboardTab.id');
+        $locked = $this->request->data('DashboardTab.locked') === 'true';
+
+        $dashboardTab = $this->DashboardTab->find('first', [
+            'conditions' => [
+                'DashboardTab.id'      => $id,
+                'DashboardTab.user_id' => $User->getId()
+            ]
+        ]);
+
+        if (empty($dashboardTab)) {
+            throw new NotFoundException();
+        }
+
+        $dashboardTab['DashboardTab']['locked'] = $locked;
+
+        if ($this->DashboardTab->save($dashboardTab)) {
+            $this->set('success', true);
+            $this->set('_serialize', ['success']);
+            return;
+        }
+        $this->serializeErrorMessageFromModel('DashboardTab');
+        return;
     }
 
 
@@ -946,58 +980,13 @@ class DashboardsController extends AppController {
             return;
         }
 
-        if ($this->request->is('post')) {
-            $config = $NoticeJson->standardizedData($this->request->data);
 
-            $this->Widget->id = $widgetId;
-            $this->Widget->saveField('json_data', json_encode($config));
-
-            $this->set('config', $config);
-            $this->set('_serialize', ['config']);
-            return;
-        }
-
-        throw new MethodNotAllowedException();
-    }
-
-    public function trafficLightWidget() {
-        if (!$this->isApiRequest()) {
-            //Only ship HTML template
-            return;
-        }
-
-        if ($this->request->is('get')) {
-            $widgetId = (int)$this->request->query('widgetId');
-            if (!$this->Widget->exists($widgetId)) {
-                throw new RuntimeException('Invalid widget id');
-            }
-
-            $query = [
-                'recursive'  => -1,
-                'conditions' => [
-                    'Widget.id' => $widgetId
-                ],
-                'fields'     => [
-                    'Widget.service_id'
-                ]
-            ];
-            $widget = $this->Widget->find('first', $query);
-            $serviceId = null;
-            if ($widget['Widget']['service_id']) {
-                $serviceId = (int)$widget['Widget']['service_id'];
-            }
-            $this->set('serviceId', $serviceId);
-            $this->set('_serialize', ['serviceId']);
-            return;
-        }
         if ($this->request->is('post')) {
             $widgetId = (int)$this->request->data('widgetId');
             if (!$this->Widget->exists($widgetId)) {
                 throw new RuntimeException('Invalid widget id');
             }
-
             $serviceId = (int)$this->request->data('Widget.serviceId');
-
             $widget = $this->Widget->find('first', [
                 'recursive'  => -1,
                 'conditions' => [
@@ -1011,7 +1000,6 @@ class DashboardsController extends AppController {
                     $this->serializeErrorMessageFromModel('Widget');
                     return;
                 }
-
                 $this->set('serviceId', $serviceId);
                 $this->set('_serialize', ['serviceId']);
                 return;
@@ -1022,13 +1010,82 @@ class DashboardsController extends AppController {
         throw new MethodNotAllowedException();
     }
 
-    public function getServiceWithStateById($id) {
-        if (!$this->isAngularJsRequest()) {
-            throw new MethodNotAllowedException();
+
+    public function trafficLightWidget() {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template
+            return;
         }
-        if (!$this->Service->exists($id)) {
-            throw new NotFoundException('Invalid Service');
+
+        $TrafficlightJson = new TrafficlightJson();
+
+        if ($this->request->is('get')) {
+            $widgetId = (int)$this->request->query('widgetId');
+            if (!$this->Widget->exists($widgetId)) {
+                throw new RuntimeException('Invalid widget id');
+            }
+
+            $widget = $this->Widget->find('first', [
+                'recursive'  => -1,
+                'conditions' => [
+                    'Widget.id' => $widgetId
+                ],
+                'fields'     => [
+                    'Widget.service_id',
+                    'Widget.json_data'
+                ]
+            ]);
+            $serviceId = (int)$widget['Widget']['service_id'];
+            if ($serviceId === 0) {
+                $serviceId = null;
+            }
+
+            $service = $this->getServicestatusByServiceId($serviceId);
+
+            $data = [];
+            if ($widget['Widget']['json_data'] !== null && $widget['Widget']['json_data'] !== '') {
+                $data = json_decode($widget['Widget']['json_data'], true);
+            }
+            $config = $TrafficlightJson->standardizedData($data);
+            $this->set('config', $config);
+            $this->set('service', $service);
+            $this->set('_serialize', ['service', 'config']);
+            return;
         }
+
+
+        if ($this->request->is('post')) {
+            $config = $TrafficlightJson->standardizedData($this->request->data);
+            $widgetId = (int)$this->request->data('Widget.id');
+            $serviceId = (int)$this->request->data('Widget.service_id');
+
+            if (!$this->Widget->exists($widgetId)) {
+                throw new RuntimeException('Invalid widget id');
+            }
+            $widget = $this->Widget->find('first', [
+                'recursive'  => -1,
+                'conditions' => [
+                    'Widget.id' => $widgetId
+                ],
+            ]);
+
+            $widget['Widget']['service_id'] = $serviceId;
+            $widget['Widget']['json_data'] = json_encode($config);
+            if ($this->Widget->save($widget)) {
+                $service = $this->getServicestatusByServiceId($serviceId);
+                $this->set('service', $service);
+                $this->set('config', $config);
+                $this->set('_serialize', ['service', 'config']);
+                return;
+            }
+
+            $this->serializeErrorMessageFromModel('Widget');
+            return;
+        }
+        throw new MethodNotAllowedException();
+    }
+
+    private function getServicestatusByServiceId($id) {
         $query = [
             'recursive'  => -1,
             'contain'    => [
@@ -1092,9 +1149,15 @@ class DashboardsController extends AppController {
                 'Service'       => $Service->toArray(),
                 'Servicestatus' => $Servicestatus->toArray()
             ];
-            $this->set('service', $service);
-            $this->set('_serialize', ['service']);
+
+            $service['Service']['id'] = (int)$service['Service']['id'];
+
+            return $service;
         }
+        return [
+            'Service'       => [],
+            'Servicestatus' => []
+        ];
     }
 
     public function hostStatusOverviewWidget() {

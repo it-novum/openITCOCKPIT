@@ -154,6 +154,7 @@ $config = [
                 'neverPerformUpdates',
                 'updateSharedTab',
                 'renameWidget',
+                'lockOrUnlockTab',
                 'hostsPiechartWidget',
                 'hostsPiechart180Widget',
                 'servicesPiechartWidget',

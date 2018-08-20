@@ -143,7 +143,8 @@ class DashboardTab extends AppModel {
                 'shared'            => (bool)$row['DashboardTab']['shared'],
                 'source_tab_id'     => (int)$row['DashboardTab']['source_tab_id'],
                 'check_for_updates' => (bool)$row['DashboardTab']['check_for_updates'],
-                'last_update'       => (int)$row['DashboardTab']['last_update']
+                'last_update'       => (int)$row['DashboardTab']['last_update'],
+                'locked'            => (bool)$row['DashboardTab']['locked']
             ];
         }
 
@@ -192,7 +193,8 @@ class DashboardTab extends AppModel {
                 'shared'            => (bool)$row['DashboardTab']['shared'],
                 'source_tab_id'     => (int)$row['DashboardTab']['source_tab_id'],
                 'check_for_updates' => (bool)$row['DashboardTab']['check_for_updates'],
-                'last_update'       => (int)$row['DashboardTab']['last_update']
+                'last_update'       => (int)$row['DashboardTab']['last_update'],
+                'locked'            => (bool)$row['DashboardTab']['locked']
             ];
         }
 

@@ -7,89 +7,46 @@ angular.module('openITCOCKPIT').directive('trafficlightWidget', function($http){
         },
 
         controller: function($scope){
+
+            /** public vars **/
             $scope.init = true;
-
-            var $widget = $('#widget-' + $scope.widget.id);
-            $scope.ready = false;
-
             $scope.trafficlightTimeout = null;
-            $scope.height = $widget.height() - 140;
-            $scope.width = $scope.height / 2.5;
-            $scope.Service = null;
+            $scope.trafficlight = {
+                service_id: null,
+                show_label: false
+            };
 
-
+            /** private vars **/
+            var $widget = $('#widget-' + $scope.widget.id);
+            var $widgetContent = $('#widget-content-' + $scope.widget.id);
             var timer = {
                 red: null,
                 yellow: null,
                 green: null
             };
 
-            $scope.post = {
-                Service: {
-                    id: null
-                }
-            };
+            //Calc dimensions
+            var offset = 50;
+            $scope.height = $widgetContent.height() - offset;
+            $scope.width = $scope.height / 2.5;
 
-            $widget.on('resize', function(event, items){
-                hasResize();
-            });
-
-            $scope.load = function(options){
-                options = options || {};
-                options.save = options.save || false;
-
+            $scope.load = function(){
                 $http.get("/dashboards/trafficLightWidget.json", {
                     params: {
                         'angular': true,
                         'widgetId': $scope.widget.id
                     }
                 }).then(function(result){
-                    $scope.post.Service.id = result.data.serviceId;
-                    if($scope.post.Service.id > 0){
-                        $scope.loadTrafficLightByServiceId($scope.post.Service.id);
-                    }
+                    if(Object.keys(result.data.service.Service).length > 0){
+                        $scope.Service = result.data.service.Service;
 
-                    $scope.init = false;
-                    setTimeout(function(){
-                        $scope.ready = true;
-                    }, 500);
-                });
-            };
+                        $scope.trafficlight.show_label = result.data.config.show_label;
+                        //User has permissions for this service / a services was selected
+                        $scope.trafficlight.service_id = result.data.service.Service.id;
 
-            $scope.load();
 
-            $scope.hideConfig = function(){
-                $scope.$broadcast('FLIP_EVENT_IN');
-            };
-            $scope.showConfig = function(){
-                $scope.$broadcast('FLIP_EVENT_OUT');
-                $scope.loadServices('');
-            };
-
-            $scope.loadServices = function(searchString){
-                $http.get("/services/loadServicesByString.json", {
-                    params: {
-                        'angular': true,
-                        'filter[Host.name]': searchString,
-                        'filter[Service.servicename]': searchString,
-                        'selected[]': $scope.post.Service.id
-                    }
-                }).then(function(result){
-                    $scope.services = result.data.services;
-                });
-            };
-
-            $scope.loadTrafficLightByServiceId = function(serviceId){
-                $http.get("/dashboards/getServiceWithStateById/" + serviceId + ".json", {
-                    params: {
-                        angular: true
-                    }
-                }).then(function(result){
-                    if(!$.isEmptyObject(result.data.service)){
                         $scope.current_state = result.data.service.Servicestatus.currentState;
                         $scope.is_flapping = result.data.service.Servicestatus.isFlapping;
-
-                        $scope.Service = result.data.service.Service;
 
                         $scope.showGreen = false;
                         $scope.showYellow = false;
@@ -123,11 +80,43 @@ angular.module('openITCOCKPIT').directive('trafficlightWidget', function($http){
                         }
 
                         renderTrafficlight();
-
-                        $scope.init = false;
+                    }else{
+                        //Avoid undefined errors
+                        $scope.Service = {
+                            hostname: 'Unknown host',
+                            servicename: 'Unknown service'
+                        }
                     }
+
+                    //Do not trigger watch on page load
+                    setTimeout(function(){
+                        $scope.init = false;
+                    }, 250);
                 });
             };
+
+            $scope.loadServices = function(searchString){
+                $http.get("/services/loadServicesByString.json", {
+                    params: {
+                        'angular': true,
+                        'filter[Host.name]': searchString,
+                        'filter[Service.servicename]': searchString,
+                        'selected[]': $scope.trafficlight.service_id
+                    }
+                }).then(function(result){
+                    $scope.services = result.data.services;
+                });
+            };
+
+            $scope.hideConfig = function(){
+                $scope.$broadcast('FLIP_EVENT_IN');
+                renderTrafficlight();
+            };
+            $scope.showConfig = function(){
+                $scope.$broadcast('FLIP_EVENT_OUT');
+                $scope.loadServices('');
+            };
+
             var stopBlinking = function(){
                 for(var i in timer){
                     if(timer[i] !== null){
@@ -188,15 +177,15 @@ angular.module('openITCOCKPIT').directive('trafficlightWidget', function($http){
                     fill: 'url(#tlBg)', stroke: '#444', strokeWidth: 2
                 });
 
-                //            if($scope.item.show_label){
-                var rotateX = parseInt(($scope.height - 10 - ($scope.width / 8)), 10); //10 is svg padding 16 is font size;
-                svg.text(tLBackground, 0, $scope.height - 10, ($scope.Service.hostname + '/' + $scope.Service.servicename), {
-                    fontSize: ($scope.width / 8),
-                    fontFamily: 'Verdana',
-                    fill: '#FFF',
-                    transform: 'rotate(-90, 0, ' + rotateX + ')'
-                });
-                //            }
+                if($scope.trafficlight.show_label){
+                    var rotateX = parseInt(($scope.height - 10 - ($scope.width / 8)), 10); //10 is svg padding 16 is font size;
+                    svg.text(tLBackground, 0, $scope.height - 10, ($scope.Service.hostname + '/' + $scope.Service.servicename), {
+                        fontSize: ($scope.width / 8),
+                        fontFamily: 'Verdana',
+                        fill: '#FFF',
+                        transform: 'rotate(-90, 0, ' + rotateX + ')'
+                    });
+                }
 
                 //pattern which are the small green, red and yellow "Dots" within a light
                 //red pattern
@@ -284,39 +273,52 @@ angular.module('openITCOCKPIT').directive('trafficlightWidget', function($http){
                 });
             };
 
-            $scope.saveSettings = function(){
-                $http.post("/dashboards/trafficLightWidget.json?angular=true", {
-                    Widget: {
-                        serviceId: $scope.post.Service.id
-                    },
-                    widgetId: $scope.widget.id
-                }).then(function(result){
-                    $scope.load();
-                    return true;
-                });
-            };
-
-            $scope.$watch('post.Service.id', function(){
-                if($scope.ready === true){
-                    $scope.saveSettings();
-                }
-            });
 
             var hasResize = function(){
+                if($scope.init){
+                    return;
+                }
+
                 if($scope.trafficlightTimeout){
                     clearTimeout($scope.trafficlightTimeout);
                 }
                 $scope.trafficlightTimeout = setTimeout(function(){
                     $scope.trafficlightTimeout = null;
                 }, 500);
-                if($scope.init){
-                    return;
-                }
-                $scope.height = $widget.height() - 140;
-                $scope.width = $scope.height/2.5;
+
+                $scope.height = $widgetContent.height() - offset;
+                $scope.width = $scope.height / 2.5;
                 renderTrafficlight();
             };
 
+
+            /** Page load / widget get loaded **/
+
+            //Add jQuery resize callback
+            $widget.on('resize', function(event, items){
+                hasResize();
+            });
+
+            $scope.load();
+
+            $scope.$watch('trafficlight', function(){
+                if($scope.init){
+                    return;
+                }
+
+                $http.post("/dashboards/trafficLightWidget.json?angular=true",
+                    {
+                        Widget: {
+                            id: $scope.widget.id,
+                            service_id: $scope.trafficlight.service_id
+                        },
+                        show_label: $scope.trafficlight.show_label
+                    }
+                ).then(function(result){
+                    //Update status
+                    $scope.load();
+                });
+            }, true);
 
         },
 
