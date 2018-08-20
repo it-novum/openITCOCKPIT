@@ -199,6 +199,14 @@ class Widget extends AppModel {
                 'width'     => 12,
                 'height'    => 16
             ];
+            $widgets[] = [
+                'type_id'   => 16,
+                'title'     => __('Host status overview'),
+                'icon'      => 'fa-info-circle',
+                'directive' => 'host-status-overview-widget',
+                'width'     => 12,
+                'height'    => 16
+            ];
         }
 
         if (isset($ACL_PERMISSIONS['services']['index'])) {

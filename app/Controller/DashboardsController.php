@@ -25,6 +25,7 @@
 use itnovum\openITCOCKPIT\Core\Dashboards\DowntimeHostListJson;
 use itnovum\openITCOCKPIT\Core\Dashboards\DowntimeServiceListJson;
 use itnovum\openITCOCKPIT\Core\Dashboards\HostStatusListJson;
+use itnovum\openITCOCKPIT\Core\Dashboards\HostStatusOverviewJson;
 use itnovum\openITCOCKPIT\Core\Dashboards\NoticeJson;
 use itnovum\openITCOCKPIT\Core\Dashboards\NoticeListJson;
 use itnovum\openITCOCKPIT\Core\Dashboards\ServiceStatusListJson;
@@ -1094,5 +1095,51 @@ class DashboardsController extends AppController {
             $this->set('service', $service);
             $this->set('_serialize', ['service']);
         }
+    }
+
+    public function hostStatusOverviewWidget() {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template
+            return;
+        }
+
+        $widgetId = (int)$this->request->query('widgetId');
+        $HostStatusOverviewJson = new HostStatusOverviewJson();
+        if (!$this->Widget->exists($widgetId)) {
+            throw new NotFoundException('Widget not found');
+        }
+
+        if ($this->request->is('get')) {
+            $widget = $this->Widget->find('first', [
+                'recursive'  => -1,
+                'conditions' => [
+                    'Widget.id' => $widgetId
+                ]
+            ]);
+
+            $data = [];
+            if ($widget['Widget']['json_data'] !== null && $widget['Widget']['json_data'] !== '') {
+                $data = json_decode($widget['Widget']['json_data'], true);
+            }
+            $config = $HostStatusOverviewJson->standardizedData($data);
+
+            $this->set('config', $config);
+            $this->set('_serialize', ['config']);
+            return;
+        }
+
+        if ($this->request->is('post')) {
+            $config = $HostStatusOverviewJson->standardizedData($this->request->data);
+
+            $this->Widget->id = $widgetId;
+            $this->Widget->saveField('json_data', json_encode($config));
+
+            $this->set('config', $config);
+            $this->set('_serialize', ['config']);
+            return;
+        }
+
+
+        throw new MethodNotAllowedException();
     }
 }
