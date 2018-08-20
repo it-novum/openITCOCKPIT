@@ -189,91 +189,104 @@
                                                     <span class="bg-color-greenDark"
                                                           data-widget-setstyle="jarviswidget-color-greenDark"
                                                           data-toggle="tooltip"
-                                                          data-placement="top" data-original-title="<?php echo __('Dark Green'); ?>">
+                                                          data-placement="top"
+                                                          data-original-title="<?php echo __('Dark Green'); ?>">
                                                     </span>
                                             </li>
                                             <li>
                                                     <span class="bg-color-greenLight"
                                                           data-widget-setstyle="jarviswidget-color-greenLight"
                                                           data-toggle="tooltip"
-                                                          data-placement="top" data-original-title="<?php echo __('Light Green'); ?>">
+                                                          data-placement="top"
+                                                          data-original-title="<?php echo __('Light Green'); ?>">
                                                     </span>
                                             </li>
                                             <li>
                                                     <span class="bg-color-purple"
                                                           data-widget-setstyle="jarviswidget-color-purple"
                                                           data-toggle="tooltip"
-                                                          data-placement="top" data-original-title="<?php echo __('Purple'); ?>">
+                                                          data-placement="top"
+                                                          data-original-title="<?php echo __('Purple'); ?>">
                                                     </span>
                                             </li>
                                             <li>
                                                     <span class="bg-color-magenta"
                                                           data-widget-setstyle="jarviswidget-color-magenta"
                                                           data-toggle="tooltip"
-                                                          data-placement="top" data-original-title="<?php echo __('Magenta'); ?>">
+                                                          data-placement="top"
+                                                          data-original-title="<?php echo __('Magenta'); ?>">
                                                     </span>
                                             </li>
                                             <li>
                                                     <span class="bg-color-pink"
                                                           data-widget-setstyle="jarviswidget-color-pink"
                                                           data-toggle="tooltip"
-                                                          data-placement="right" data-original-title="<?php echo __('Pink'); ?>">
+                                                          data-placement="right"
+                                                          data-original-title="<?php echo __('Pink'); ?>">
                                                     </span>
                                             </li>
                                             <li>
                                                     <span class="bg-color-pinkDark"
                                                           data-widget-setstyle="jarviswidget-color-pinkDark"
                                                           data-toggle="tooltip"
-                                                          data-placement="left" data-original-title="<?php echo __('Fade Pink'); ?>">
+                                                          data-placement="left"
+                                                          data-original-title="<?php echo __('Fade Pink'); ?>">
                                                     </span>
                                             </li>
                                             <li>
                                                     <span class="bg-color-blueLight"
                                                           data-widget-setstyle="jarviswidget-color-blueLight"
                                                           data-toggle="tooltip"
-                                                          data-placement="top" data-original-title="<?php echo __('Light Blue'); ?>">
+                                                          data-placement="top"
+                                                          data-original-title="<?php echo __('Light Blue'); ?>">
                                                     </span>
                                             </li>
                                             <li>
                                                     <span class="bg-color-teal"
                                                           data-widget-setstyle="jarviswidget-color-teal"
                                                           data-toggle="tooltip"
-                                                          data-placement="top" data-original-title="<?php echo __('Teal'); ?>">
+                                                          data-placement="top"
+                                                          data-original-title="<?php echo __('Teal'); ?>">
                                                     </span>
                                             </li>
                                             <li>
                                                     <span class="bg-color-blue"
                                                           data-widget-setstyle="jarviswidget-color-blue"
                                                           data-toggle="tooltip"
-                                                          data-placement="top" data-original-title="<?php echo __('Ocean Blue'); ?>">
+                                                          data-placement="top"
+                                                          data-original-title="<?php echo __('Ocean Blue'); ?>">
                                                     </span>
                                             </li>
                                             <li>
                                                     <span class="bg-color-blueDark"
                                                           data-widget-setstyle="jarviswidget-color-blueDark"
                                                           data-toggle="tooltip"
-                                                          data-placement="top" data-original-title="<?php echo __('Night Sky'); ?>">
+                                                          data-placement="top"
+                                                          data-original-title="<?php echo __('Night Sky'); ?>">
                                                     </span>
                                             </li>
                                             <li>
                                                     <span class="bg-color-darken"
                                                           data-widget-setstyle="jarviswidget-color-darken"
                                                           data-toggle="tooltip"
-                                                          data-placement="right" data-original-title="<?php echo __('Night'); ?>">
+                                                          data-placement="right"
+                                                          data-original-title="<?php echo __('Night'); ?>">
                                                     </span>
                                             </li>
                                             <li>
                                                     <span class="bg-color-yellow"
                                                           data-widget-setstyle="jarviswidget-color-yellow"
                                                           data-toggle="tooltip"
-                                                          data-placement="left" data-original-title="<?php echo __('Day Light'); ?>">
+                                                          data-placement="left"
+                                                          data-original-title="<?php echo __('Day Light'); ?>">
                                                     </span>
                                             </li>
                                             <li>
                                                     <span class="bg-color-orange"
                                                           data-widget-setstyle="jarviswidget-color-orange"
                                                           data-toggle="tooltip"
-                                                          data-placement="bottom" data-original-title="<?php echo __('Orange'); ?>">
+                                                          data-placement="bottom"
+                                                          data-original-title="<?php echo __('Orange'); ?>">
                                                     </span>
                                             </li>
                                             <li>
@@ -288,7 +301,8 @@
                                                     <span class="bg-color-red"
                                                           data-widget-setstyle="jarviswidget-color-red"
                                                           data-toggle="tooltip"
-                                                          data-placement="bottom" data-original-title="<?php echo __('Red Rose'); ?>">
+                                                          data-placement="bottom"
+                                                          data-original-title="<?php echo __('Red Rose'); ?>">
                                                     </span>
                                             </li>
                                             <li>
@@ -303,7 +317,8 @@
                                                     <span class="bg-color-white"
                                                           data-widget-setstyle="jarviswidget-color-white"
                                                           data-toggle="tooltip"
-                                                          data-placement="right" data-original-title="<?php echo __('Purity'); ?>">
+                                                          data-placement="right"
+                                                          data-original-title="<?php echo __('Purity'); ?>">
                                                     </span>
                                             </li>
                                             <li>
@@ -491,6 +506,51 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">
                     <?php echo __('Close'); ?>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Update available modal -->
+<div id="updateAvailableModal" class="modal" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">
+                    <i class="fa fa-code-fork"></i>
+                    <?php echo __('For your dashboard is an update available'); ?>
+                </h4>
+            </div>
+            <div class="modal-body">
+
+                <div class="row">
+                    <div class="col-xs-12 text-info">
+                        <i class="fa fa-info-circle"></i>
+                        <?php echo __('You created this dashboard out of an "shared" dashboard. The original dashboard was updated.'); ?>
+                        <br/>
+                        <?php echo __('This means the original dashboard was reorder, new objects where added or existing objects gets deleted.'); ?>
+                        <?php echo __('You can now choose if you want to update your dashboard or keep your current dashboard.'); ?>
+                        <br/><br />
+                        <?php echo __('Warning: By updating your dashboard, local modifications will get lost.'); ?>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger pull-left" ng-click="neverPerformUpdates()">
+                    <?php echo __('Never perform an update for this dashboard'); ?>
+                </button>
+
+                <button type="button" class="btn btn-primary " ng-click="performUpdate()">
+                    <?php echo __('Yes update'); ?>
+                </button>
+
+                <button type="button" class="btn btn-default" data-dismiss="modal">
+                    <?php echo __('No thanks'); ?>
                 </button>
             </div>
         </div>

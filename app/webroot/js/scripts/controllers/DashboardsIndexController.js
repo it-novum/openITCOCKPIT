@@ -124,6 +124,15 @@ angular.module('openITCOCKPIT')
 
                 $scope.activeWidgets = widgets;
 
+                //Check for updates if are available if this is a shared tab
+                for(var k in $scope.tabs){
+                    if($scope.tabs[k].id === $scope.activeTab && $scope.tabs[k].source_tab_id > 0){
+                        if($scope.tabs[k].check_for_updates === true){
+                            checkForUpdates($scope.activeTab);
+                        }
+                    }
+                }
+
                 //Disable watch for some time to give angular time to render the template
                 //Will avoid a saveGrid method call in load (or tab switch)
                 //Moved to $scope.enableWatch()
@@ -437,6 +446,43 @@ angular.module('openITCOCKPIT')
             }
         };
 
+        $scope.neverPerformUpdates = function(){
+            $http.post("/dashboards/neverPerformUpdates.json?angular=true",
+                {
+                    DashboardTab: {
+                        id: $scope.activeTab
+                    }
+                }
+            ).then(function(result){
+                for(var k in $scope.tabs){
+                    if($scope.tabs[k].id === $scope.activeTab && $scope.tabs[k].source_tab_id > 0){
+                        $scope.tabs[k].check_for_updates = false;
+                        break;
+                    }
+                }
+                genericSuccess();
+                $('#updateAvailableModal').modal('hide');
+            }, function errorCallback(result){
+                genericError();
+            });
+        };
+
+        $scope.performUpdate = function(){
+            $http.post("/dashboards/updateSharedTab.json?angular=true",
+                {
+                    DashboardTab: {
+                        id: $scope.activeTab
+                    }
+                }
+            ).then(function(result){
+                genericSuccess();
+                $('#updateAvailableModal').modal('hide');
+                $scope.loadTabContent($scope.activeTab);
+            }, function errorCallback(result){
+                genericError();
+            });
+        };
+
         if(document.addEventListener){
             document.addEventListener('webkitfullscreenchange', fullscreenExitHandler, false);
             document.addEventListener('mozfullscreenchange', fullscreenExitHandler, false);
@@ -504,6 +550,7 @@ angular.module('openITCOCKPIT')
                 index++;
             }
             disableWatch = true;
+            $('#updateAvailableModal').modal('hide');
             $scope.loadTabContent(nextTabId);
         };
 
@@ -515,6 +562,19 @@ angular.module('openITCOCKPIT')
             if($scope.viewTabRotateInterval > 0){
                 intervalId = $interval(rotateTab, ($scope.viewTabRotateInterval * 1000));
             }
+        };
+
+        var checkForUpdates = function(tabId){
+            $http.get("/dashboards/checkForUpdates.json", {
+                params: {
+                    'angular': true,
+                    'tabId': tabId
+                }
+            }).then(function(result){
+                if(result.data.updateAvailable === true){
+                    $('#updateAvailableModal').modal('show');
+                }
+            });
         };
 
         $scope.checkDashboardLock = function(){
