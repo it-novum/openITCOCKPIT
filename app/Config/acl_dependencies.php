@@ -169,7 +169,7 @@ $config = [
                 'noticeWidget',
                 'trafficLightWidget',
                 'getServiceWithStateById',
-                'hostsStatusOverviewWidget',
+                'hostStatusOverviewWidget',
                 'hostStatusCount',
                 'tachoWidget'
             ],
