@@ -138,7 +138,6 @@ class MapeditorsController extends MapModuleAppController {
         $this->set('ACL', $acl);
 
         $this->set('_serialize', ['map', 'ACL']);
-
     }
 
     public function mapitem() {
@@ -802,7 +801,7 @@ class MapeditorsController extends MapModuleAppController {
                         ],
                     ],
                     'conditions' => [
-                        'Map.id'    => $objectId
+                        'Map.id' => $objectId
                     ]
                 ]);
                 if (!empty($map)) {
@@ -2372,4 +2371,134 @@ class MapeditorsController extends MapModuleAppController {
         $this->set('_serialize', ['success']);
     }
 
+    public function mapDetails($id){
+        $id = (int)$id;
+        if (!$this->Map->exists($id)) {
+            throw new NotFoundException();
+        }
+        $map = $this->Map->find('first', [
+            'recursive'  => -1,
+            'conditions' => [
+                'Map.id' => $id
+            ]
+        ]);
+
+        $containerIdsToCheck = Hash::extract($map, 'Container.{n}.MapsToContainer.container_id');
+        if (!$this->allowedByContainerId($containerIdsToCheck, false)) {
+            $this->render403();
+            return;
+        }
+
+        $MapForAngular = new MapForAngular($map);
+        $map = $MapForAngular->toArray();
+
+        $this->set('map', $map);
+
+        $this->set('_serialize', ['map']);
+    }
+
+    public function viewDirective(){
+        $this->layout = 'blank';
+        //Ship template of Mapeditors view directive.
+        //It is a directive be able to also use the maps as an widget
+        return;
+    }
+
+    public function mapWidget() {
+        $this->layout = 'blank';
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template
+            return;
+        }
+
+        $this->loadModel('Widget');
+
+        if ($this->request->is('get')) {
+            $widgetId = (int)$this->request->query('widgetId');
+            if (!$this->Widget->exists($widgetId)) {
+                throw new RuntimeException('Invalid widget id');
+            }
+
+            $widget = $this->Widget->find('first', [
+                'recursive'  => -1,
+                'conditions' => [
+                    'Widget.id' => $widgetId
+                ],
+                'fields'     => [
+                    'Widget.json_data'
+                ]
+            ]);
+
+            $config = [
+                'map_id' => null
+            ];
+            if ($widget['Widget']['json_data'] !== null && $widget['Widget']['json_data'] !== '') {
+                $config = json_decode($widget['Widget']['json_data'], true);
+                if (!isset($config['map_id'])) {
+                    $config['map_id'] = null;
+                }
+            }
+
+            //Check map permissions
+            $map = $this->Map->find('first', [
+                'recursive'  => -1,
+                'contain'    => [
+                    'Container',
+                    'Mapitem',
+                    'Mapline',
+                    'Mapgadget',
+                    'Mapicon',
+                    'Maptext',
+                    'Mapsummaryitem'
+                ],
+                'conditions' => [
+                    'Map.id' => $config['map_id']
+                ]
+            ]);
+
+            $containerIdsToCheck = Hash::extract($map, 'Container.{n}.MapsToContainer.container_id');
+            if (!$this->allowedByContainerId($containerIdsToCheck, false)) {
+                $config['map_id'] = null;
+            }
+
+            $this->set('config', $config);
+            $this->set('_serialize', ['config']);
+            return;
+        }
+
+
+        if ($this->request->is('post')) {
+            $mapId = (int)$this->request->data('map_id');
+            if ($mapId === 0) {
+                $mapId = null;
+            }
+
+            $config = [
+                'map_id' => $mapId
+            ];
+
+            $widgetId = (int)$this->request->data('Widget.id');
+
+            if (!$this->Widget->exists($widgetId)) {
+                throw new RuntimeException('Invalid widget id');
+            }
+            $widget = $this->Widget->find('first', [
+                'recursive'  => -1,
+                'conditions' => [
+                    'Widget.id' => $widgetId
+                ],
+            ]);
+
+            $widget['Widget']['json_data'] = json_encode($config);
+            if ($this->Widget->save($widget)) {
+                $this->set('config', $config);
+                $this->set('_serialize', ['config']);
+                return;
+            }
+
+            $this->serializeErrorMessageFromModel('Widget');
+            return;
+        }
+        throw new MethodNotAllowedException();
+    }
 }

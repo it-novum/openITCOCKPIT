@@ -34,19 +34,11 @@
             <a href="javascript:void(0);" class="btn btn-default btn-xs txt-color-blueDark" ng-click="showConfig()">
                 <i class="fa fa-cog fa-sm"></i>
             </a>
-            <span ng-show="trafficlight.service_id === null" class="text-info padding-left-20">
+            <span ng-show="grafana.host_id === null" class="text-info padding-left-20">
             <?php echo __('No element selected'); ?>
         </span>
             <div class="no-padding">
-                <center>
-                    <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
-                        <a ng-href="/services/browser/{{trafficlight.service_id}}">
-                            <div id="trafficlight-{{widget.id}}"></div>
-                        </a>
-                    <?php else: ?>
-                        <div id="trafficlight-{{widget.id}}"></div>
-                    <?php endif; ?>
-                </center>
+                <iframe-directive url="grafana.iframe_url" ng-if="grafana.host_id"></iframe-directive>
             </div>
         </flippy-front>
         <flippy-back>
@@ -57,15 +49,14 @@
                 <div class="form-group">
                     <div class="row">
                         <label class="col-xs-12 control-label">
-                            <?php echo __('Service'); ?>
+                            <?php echo __('Grafana dashboard'); ?>
                         </label>
                         <div class="col-xs-12">
                             <select data-placeholder="<?php echo __('Please choose'); ?>"
                                     class="form-control"
-                                    chosen="services"
-                                    callback="loadServices"
-                                    ng-options="+(service.value.Service.id) as service.value.Host.name + '/' +((service.value.Service.name)?service.value.Service.name:service.value.Servicetemplate.name) group by service.value.Host.name for service in services"
-                                    ng-model="trafficlight.service_id">
+                                    chosen="availableGrafanaDashboards"
+                                    ng-options="aGD.GrafanaDashboard.host_id as aGD.Host.name for aGD in availableGrafanaDashboards"
+                                    ng-model="grafana.host_id">
                             </select>
 
                             <div ng-repeat="error in errors.Service">
@@ -77,26 +68,13 @@
 
                     <div class="row">
                         <div class="col-xs-12">
-                            <div class="form-group smart-form no-padding">
-                                <label class="checkbox small-checkbox-label">
-                                    <input type="checkbox" name="checkbox"
-                                           ng-model="trafficlight.show_label">
-                                    <i class="checkbox-primary"></i>
-                                    <?php echo __('Show label'); ?>
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                    <br />
-
-                    <div class="row">
-                        <div class="col-xs-12">
                             <button class="btn btn-primary pull-right"
-                                    ng-click="saveTrafficlight()">
+                                    ng-click="saveGrafana()">
                                 <?php echo __('Save'); ?>
                             </button>
                         </div>
                     </div>
+
                 </div>
             </div>
         </flippy-back>

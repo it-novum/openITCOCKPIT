@@ -560,6 +560,21 @@ angular.module('openITCOCKPIT')
             });
         };
 
+        $scope.restoreDefault = function(){
+            $http.post("/dashboards/restoreDefault.json?angular=true",
+                {
+                    DashboardTab: {
+                        id: $scope.activeTab
+                    }
+                }
+            ).then(function(result){
+                genericSuccess();
+                $scope.loadTabContent($scope.activeTab);
+            }, function errorCallback(result){
+                genericError();
+            });
+        };
+
         if(document.addEventListener){
             document.addEventListener('webkitfullscreenchange', fullscreenExitHandler, false);
             document.addEventListener('mozfullscreenchange', fullscreenExitHandler, false);

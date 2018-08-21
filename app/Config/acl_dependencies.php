@@ -155,6 +155,7 @@ $config = [
                 'updateSharedTab',
                 'renameWidget',
                 'lockOrUnlockTab',
+                'restoreDefault',
                 'hostsPiechartWidget',
                 'hostsPiechart180Widget',
                 'servicesPiechartWidget',
@@ -169,7 +170,8 @@ $config = [
                 'trafficLightWidget',
                 'getServiceWithStateById',
                 'hostsStatusOverviewWidget',
-                'hostStatusCount'
+                'hostStatusCount',
+                'tachoWidget'
             ],
             'Hosts'            => [
                 'view',

@@ -91,6 +91,10 @@ class Widget extends AppModel {
                 'directive' => 'welcome-widget', //AngularJS directive,
                 'width'     => 6,
                 'height'    => 7,
+                'default'   => [
+                    'row' => 0,
+                    'col' => 0
+                ]
             ],
             [
                 'type_id'   => 2,
@@ -98,7 +102,11 @@ class Widget extends AppModel {
                 'icon'      => 'fa-exchange',
                 'directive' => 'parent-outages-widget',
                 'width'     => 6,
-                'height'    => 7
+                'height'    => 7,
+                'default'   => [
+                    'row' => 0,
+                    'col' => 6
+                ]
             ],
 
             [
@@ -107,7 +115,11 @@ class Widget extends AppModel {
                 'icon'      => 'fa-pie-chart',
                 'directive' => 'hosts-piechart-widget',
                 'width'     => 6,
-                'height'    => 11
+                'height'    => 11,
+                'default'   => [
+                    'row' => 7,
+                    'col' => 0
+                ]
             ],
             [
                 'type_id'   => 7,
@@ -123,7 +135,11 @@ class Widget extends AppModel {
                 'icon'      => 'fa-pie-chart',
                 'directive' => 'services-piechart-widget',
                 'width'     => 6,
-                'height'    => 11
+                'height'    => 11,
+                'default'   => [
+                    'row' => 7,
+                    'col' => 6
+                ]
             ],
             [
                 'type_id'   => 8,
@@ -138,16 +154,16 @@ class Widget extends AppModel {
                 'title'     => __('Traffic light'),
                 'icon'      => 'fa-road',
                 'directive' => 'trafficlight-widget',
-                'width'     => 6,
-                'height'    => 13
+                'width'     => 3,
+                'height'    => 14
             ],
             [
                 'type_id'   => 12,
                 'title'     => __('Tachometer'),
                 'icon'      => 'fa-dashboard',
                 'directive' => 'tachometer-widget',
-                'width'     => 6,
-                'height'    => 7
+                'width'     => 3,
+                'height'    => 14
             ],
             [
                 'type_id'   => 13,
@@ -157,6 +173,7 @@ class Widget extends AppModel {
                 'width'     => 6,
                 'height'    => 13
             ],
+            /*
             [
                 'type_id'   => 15,
                 'title'     => __('Graphgenerator'),
@@ -165,6 +182,7 @@ class Widget extends AppModel {
                 'width'     => 6,
                 'height'    => 7
             ]
+            */
         ];
 
         //Depands on user rights
@@ -175,7 +193,11 @@ class Widget extends AppModel {
                 'icon'      => 'fa-power-off',
                 'directive' => 'hosts-downtime-widget',
                 'width'     => 12,
-                'height'    => 14
+                'height'    => 15,
+                'default'   => [
+                    'row' => 18,
+                    'col' => 0
+                ]
             ];
         }
 
@@ -186,7 +208,11 @@ class Widget extends AppModel {
                 'icon'      => 'fa-power-off',
                 'directive' => 'services-downtime-widget',
                 'width'     => 12,
-                'height'    => 14
+                'height'    => 15,
+                'default'   => [
+                    'row' => 32,
+                    'col' => 0
+                ]
             ];
         }
 
@@ -220,6 +246,23 @@ class Widget extends AppModel {
             ];
         }
 
+        //Load Plugin configuration files
+        $loadedModules = array_filter(CakePlugin::loaded(), function ($value) {
+            return strpos($value, 'Module') !== false;
+        });
+
+        foreach ($loadedModules as $loadedModule) {
+            $file = APP . 'Plugin' . DS . $loadedModule . DS . 'Lib' . DS . 'Widgets.php';
+            if (file_exists($file)) {
+                require_once $file;
+                $dynamicNamespaceWithClassName = sprintf('itnovum\openITCOCKPIT\%s\Widgets\Widgets', $loadedModule);
+                $ModuleWidgets = new $dynamicNamespaceWithClassName($ACL_PERMISSIONS);
+                foreach ($ModuleWidgets->getAvailableWidgets() as $moduleWidget) {
+                    $widgets[] = $moduleWidget;
+                }
+            }
+        }
+
         return $widgets;
     }
 
@@ -251,6 +294,25 @@ class Widget extends AppModel {
             }
         }
         return [];
+    }
+
+    /**
+     * @param $ACL_PERMISSIONS
+     * @return array
+     */
+    public function getDefaultWidgets($ACL_PERMISSIONS) {
+        $widgets = [];
+        foreach ($this->getAvailableWidgets($ACL_PERMISSIONS) as $widget) {
+            if (isset($widget['default'])) {
+                $widget['row'] = $widget['default']['row'];
+                $widget['col'] = $widget['default']['col'];
+                $widget['color'] = 'jarviswidget-color-blueDark';
+                unset($widget['default']);
+                $widgets[] = $widget;
+            }
+        }
+
+        return $widgets;
     }
 
 }
