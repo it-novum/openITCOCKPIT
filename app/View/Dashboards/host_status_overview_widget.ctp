@@ -89,7 +89,7 @@
         <div class="padding-5 statusCountText" id="host-status-front-{{widget.id}}">
            <div class="row text-center">
                <div class="col col-lg-12">
-                       1245500
+                       {{ 1245500 | number }}
                </div>
            </div>
         </div>
