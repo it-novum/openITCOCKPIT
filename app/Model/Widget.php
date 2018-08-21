@@ -193,7 +193,7 @@ class Widget extends AppModel {
                 'icon'      => 'fa-power-off',
                 'directive' => 'hosts-downtime-widget',
                 'width'     => 12,
-                'height'    => 14,
+                'height'    => 15,
                 'default'   => [
                     'row' => 18,
                     'col' => 0
@@ -208,7 +208,7 @@ class Widget extends AppModel {
                 'icon'      => 'fa-power-off',
                 'directive' => 'services-downtime-widget',
                 'width'     => 12,
-                'height'    => 14,
+                'height'    => 15,
                 'default'   => [
                     'row' => 32,
                     'col' => 0
