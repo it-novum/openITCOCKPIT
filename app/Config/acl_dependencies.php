@@ -168,7 +168,8 @@ $config = [
                 'noticeWidget',
                 'trafficLightWidget',
                 'getServiceWithStateById',
-                'hostsStatusOverviewWidget'
+                'hostsStatusOverviewWidget',
+                'hostStatusCount'
             ],
             'Hosts'            => [
                 'view',

@@ -29,7 +29,10 @@ use itnovum\openITCOCKPIT\Core\Dashboards\HostStatusOverviewJson;
 use itnovum\openITCOCKPIT\Core\Dashboards\NoticeJson;
 use itnovum\openITCOCKPIT\Core\Dashboards\ServiceStatusListJson;
 use itnovum\openITCOCKPIT\Core\Dashboards\TrafficlightJson;
+use itnovum\openITCOCKPIT\Core\HostConditions;
+use itnovum\openITCOCKPIT\Core\HostControllerRequest;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
+use itnovum\openITCOCKPIT\Filter\HostFilter;
 
 /**
  * Class DashboardsController
@@ -54,7 +57,8 @@ class DashboardsController extends AppController {
         MONITORING_HOSTSTATUS,
         'User',
         MONITORING_SERVICESTATUS,
-        'Service'
+        'Service',
+        'Host'
     ];
 
     public function index() {
@@ -1165,14 +1169,14 @@ class DashboardsController extends AppController {
             //Only ship HTML template
             return;
         }
-
-        $widgetId = (int)$this->request->query('widgetId');
         $HostStatusOverviewJson = new HostStatusOverviewJson();
-        if (!$this->Widget->exists($widgetId)) {
-            throw new NotFoundException('Widget not found');
-        }
 
         if ($this->request->is('get')) {
+            $widgetId = (int)$this->request->query('widgetId');
+            if (!$this->Widget->exists($widgetId)) {
+                throw new NotFoundException('Widget not found');
+            }
+
             $widget = $this->Widget->find('first', [
                 'recursive'  => -1,
                 'conditions' => [
@@ -1194,7 +1198,7 @@ class DashboardsController extends AppController {
         if ($this->request->is('post')) {
             $config = $HostStatusOverviewJson->standardizedData($this->request->data);
 
-            $this->Widget->id = $widgetId;
+            $this->Widget->id = (int)$this->request->data('Widget.id');;
             $this->Widget->saveField('json_data', json_encode($config));
 
             $this->set('config', $config);
@@ -1204,5 +1208,32 @@ class DashboardsController extends AppController {
 
 
         throw new MethodNotAllowedException();
+    }
+
+    public function hostStatusCount() {
+        $this->layout = 'angularjs';
+
+        $HostFilter =new HostFilter($this->request);
+        $HostControllerRequest =new HostControllerRequest($this->request, $HostFilter);
+        $HostCondition = new HostConditions();
+        $HostCondition->setIncludeDisabled(false);
+
+        if ($this->DbBackend->isNdoUtils()) {
+            $query = $this->Host->getHostIndexQuery($HostCondition, $HostFilter->indexFilter());
+            $modelName = 'Host';
+        }
+
+        if ($this->DbBackend->isCrateDb()) {
+            $query = $this->Hoststatus->getHostIndexQuery($HostCondition, $HostFilter->indexFilter());
+            $modelName = 'Hoststatus';
+        }
+
+        if ($this->DbBackend->isStatusengine3()) {
+            $query = $this->Host->getHostIndexQueryStatusengine3($HostCondition, $HostFilter->indexFilter());
+            $modelName = 'Host';
+        }
+        $statusCount = 10;
+        $this->set('statusCount', $statusCount);
+        $this->set('_serialize', ['statusCount']);
     }
 }

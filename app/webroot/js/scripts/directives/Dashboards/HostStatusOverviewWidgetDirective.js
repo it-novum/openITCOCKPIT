@@ -11,6 +11,9 @@ angular.module('openITCOCKPIT').directive('hostStatusOverviewWidget', function($
             $scope.init = true;
 
             var $widget = $('#widget-' + $scope.widget.id);
+            var $widgetContent = $('#widget-content-' + $scope.widget.id);
+            //$('#host-status-front-' + $scope.widget.id).css({'height': '100px!important;'});
+            //console.log($('#host-status-front-' + $scope.widget.id).height());
 
             $widget.on('resize', function(event, items){
                 hasResize();
@@ -32,8 +35,7 @@ angular.module('openITCOCKPIT').directive('hostStatusOverviewWidget', function($
                 $http.get("/dashboards/hostStatusOverviewWidget.json?angular=true&widgetId=" + $scope.widget.id, $scope.filter).then(function(result){
                     $scope.filter.Host = result.data.config.Host;
                     $scope.filter.Hoststatus = result.data.config.Hoststatus;
-                    console.log($scope.filter.Hoststatus);
-               //     $scope.load();
+                    $scope.load();
                 });
             };
 
@@ -47,18 +49,29 @@ angular.module('openITCOCKPIT').directive('hostStatusOverviewWidget', function($
                     'filter[Host.name]': $scope.filter.Host.name,
                     'filter[Hoststatus.current_state]': $scope.filter.Hoststatus.current_state
                 };
+                if($scope.filter.Hoststatus.current_state > 0){
+                    params = {
+                        'angular': true,
+                        'filter[Host.name]': $scope.filter.Host.name,
+                        'filter[Hoststatus.current_state]': $scope.filter.Hoststatus.current_state,
+                        'filter[Hoststatus.not_acknowledged]': $scope.filter.Hoststatus.not_acknowledged,
+                        'filter[Hoststatus.not_in_downtime]': $scope.filter.Hoststatus.not_in_downtime
+                    };
+                }
 
-                $http.get("/hosts/index.json", {
+                $http.get("/dashboards/hostStatusCount.json", {
                     params: params
                 }).then(function(result){
                     $scope.hosts = result.data.all_hosts;
-
-                    if(options.save === true){
-                        saveSettings(params);
-                    }
-
                     $scope.init = false;
                 });
+            };
+
+            $scope.hideConfig = function(){
+                $scope.$broadcast('FLIP_EVENT_IN');
+            };
+            $scope.showConfig = function(){
+                $scope.$broadcast('FLIP_EVENT_OUT');
             };
 
 
@@ -73,25 +86,29 @@ angular.module('openITCOCKPIT').directive('hostStatusOverviewWidget', function($
             };
 
 
-            var saveSettings = function(){
-                var settings = $scope.filter;
-                settings['scroll_interval'] = $scope.scroll_interval;
-                settings['useScroll'] = $scope.useScroll;
-                $http.post("/dashboards/hostStatusOverviewWidget.json?angular=true&widgetId=" + $scope.widget.id, settings).then(function(result){
-                    return true;
-                });
-            };
-
             loadWidgetConfig();
 
             $scope.$watch('filter', function(){
-                $scope.currentPage = 1;
-                if($scope.init === true){
-                    return true;
+                if($scope.init){
+                    return;
                 }
-
-                $scope.load({
-                    save: true
+                $http.post("/dashboards/hostStatusOverviewWidget.json?angular=true",
+                    {
+                        Widget: {
+                            id: $scope.widget.id
+                        },
+                        Hoststatus: {
+                            current_state: $scope.filter.Hoststatus.current_state,
+                            not_acknowledged: $scope.filter.Hoststatus.not_acknowledged,
+                            not_in_downtime: $scope.filter.Hoststatus.not_in_downtime
+                        },
+                        Host: {
+                            name: $scope.filter.Host.name
+                        }
+                    }
+                ).then(function(result){
+                    //Update status
+                    $scope.load();
                 });
             }, true);
         },

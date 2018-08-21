@@ -1317,7 +1317,6 @@ class Host extends AppModel {
             ],
             'conditions' => $conditions,
             'fields'     => [
-                //'DISTINCT (Host.id) as banane', //Fix pagination
                 'Host.id',
                 'Host.uuid',
                 'Host.name',
