@@ -87,6 +87,16 @@
                             </div>
                         </div>
                     </div>
+                    <br />
+
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <button class="btn btn-primary pull-right"
+                                    ng-click="saveTrafficlight()">
+                                <?php echo __('Save'); ?>
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </flippy-back>

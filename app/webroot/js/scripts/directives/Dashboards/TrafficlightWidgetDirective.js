@@ -117,6 +117,22 @@ angular.module('openITCOCKPIT').directive('trafficlightWidget', function($http){
                 $scope.loadServices('');
             };
 
+            $scope.saveTrafficlight = function(){
+                $http.post("/dashboards/trafficLightWidget.json?angular=true",
+                    {
+                        Widget: {
+                            id: $scope.widget.id,
+                            service_id: $scope.trafficlight.service_id
+                        },
+                        show_label: $scope.trafficlight.show_label
+                    }
+                ).then(function(result){
+                    //Update status
+                    $scope.load();
+                    $scope.hideConfig();
+                });
+            };
+
             var stopBlinking = function(){
                 for(var i in timer){
                     if(timer[i] !== null){
@@ -300,25 +316,6 @@ angular.module('openITCOCKPIT').directive('trafficlightWidget', function($http){
             });
 
             $scope.load();
-
-            $scope.$watch('trafficlight', function(){
-                if($scope.init){
-                    return;
-                }
-
-                $http.post("/dashboards/trafficLightWidget.json?angular=true",
-                    {
-                        Widget: {
-                            id: $scope.widget.id,
-                            service_id: $scope.trafficlight.service_id
-                        },
-                        show_label: $scope.trafficlight.show_label
-                    }
-                ).then(function(result){
-                    //Update status
-                    $scope.load();
-                });
-            }, true);
 
         },
 
