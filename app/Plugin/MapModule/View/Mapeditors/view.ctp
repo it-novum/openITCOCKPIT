@@ -70,13 +70,12 @@
         </div>
     </header>
     <div id="map-editor">
-        <div class="widget-body" style="overflow: auto; min-height:600px; ">
-            <?php
-
-            //Use CakePHP element to avoid duplicate code.
-            //So we can resuse the view element in the dashboards.
-            echo $this->element('MapModule.map_view');
-            ?>
-        </div>
+        <div class="widget-body"
+             style="overflow: auto;
+             min-height:600px;"
+             mapeditor-view=""
+             map-id="map.Map.id"
+             ng-if="map"
+        ></div>
     </div>
 </div>

@@ -214,6 +214,23 @@ class Widget extends AppModel {
             ];
         }
 
+        //Load Plugin configuration files
+        $loadedModules = array_filter(CakePlugin::loaded(), function ($value) {
+            return strpos($value, 'Module') !== false;
+        });
+
+        foreach ($loadedModules as $loadedModule) {
+            $file = APP . 'Plugin' . DS . $loadedModule . DS . 'Lib' . DS . 'Widgets.php';
+            if (file_exists($file)) {
+                require_once $file;
+                $dynamicNamespaceWithClassName = sprintf('itnovum\openITCOCKPIT\%s\Widgets\Widgets', $loadedModule);
+                $ModuleWidgets = new $dynamicNamespaceWithClassName($ACL_PERMISSIONS);
+                foreach ($ModuleWidgets->getAvailableWidgets() as $moduleWidget) {
+                    $widgets[] = $moduleWidget;
+                }
+            }
+        }
+
         return $widgets;
     }
 

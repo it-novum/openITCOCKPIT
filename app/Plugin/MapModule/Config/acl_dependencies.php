@@ -50,7 +50,10 @@ $config = [
                 'backgroundImages',
                 'getIconsets',
                 'loadMapsByString',
-                'getPerformanceDataMetrics'
+                'getPerformanceDataMetrics',
+                'mapWidget',
+                'viewDirective',
+                'mapDetails'
             ],
             'Maps'              => [
                 'loadUsersForTenant',

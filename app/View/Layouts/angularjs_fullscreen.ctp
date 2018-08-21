@@ -60,7 +60,9 @@ $scripts = [
     'js/vendor/gauge.min.js',
     'js/lib/jquery.svg.min.js',
     'js/lib/jquery.svgfilter.min.js',
-    'js/lib/rangyinputs-jquery-1.1.2.min.js'
+    'js/lib/rangyinputs-jquery-1.1.2.min.js',
+    'vendor/javascript-detect-element-resize/jquery.resize.js',
+    'vendor/angular-gridster/dist/angular-gridster.min.js'
 ];
 
 if ($this->request->params['controller'] === 'statusmaps') {

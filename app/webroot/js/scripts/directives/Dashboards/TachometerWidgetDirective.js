@@ -18,11 +18,6 @@ angular.module('openITCOCKPIT').directive('tachometerWidget', function($http){
             /** private vars **/
             var $widget = $('#widget-' + $scope.widget.id);
             var $widgetContent = $('#widget-content-' + $scope.widget.id);
-            var timer = {
-                red: null,
-                yellow: null,
-                green: null
-            };
 
             //Calc dimensions
             var offset = 50;
