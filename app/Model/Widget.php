@@ -138,16 +138,16 @@ class Widget extends AppModel {
                 'title'     => __('Traffic light'),
                 'icon'      => 'fa-road',
                 'directive' => 'trafficlight-widget',
-                'width'     => 6,
-                'height'    => 13
+                'width'     => 3,
+                'height'    => 14
             ],
             [
                 'type_id'   => 12,
                 'title'     => __('Tachometer'),
                 'icon'      => 'fa-dashboard',
                 'directive' => 'tachometer-widget',
-                'width'     => 6,
-                'height'    => 7
+                'width'     => 3,
+                'height'    => 14
             ],
             [
                 'type_id'   => 13,
@@ -157,6 +157,7 @@ class Widget extends AppModel {
                 'width'     => 6,
                 'height'    => 13
             ],
+            /*
             [
                 'type_id'   => 15,
                 'title'     => __('Graphgenerator'),
@@ -165,6 +166,7 @@ class Widget extends AppModel {
                 'width'     => 6,
                 'height'    => 7
             ]
+            */
         ];
 
         //Depands on user rights

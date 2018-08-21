@@ -27,8 +27,11 @@ use itnovum\openITCOCKPIT\Core\Dashboards\DowntimeServiceListJson;
 use itnovum\openITCOCKPIT\Core\Dashboards\HostStatusListJson;
 use itnovum\openITCOCKPIT\Core\Dashboards\NoticeJson;
 use itnovum\openITCOCKPIT\Core\Dashboards\ServiceStatusListJson;
+use itnovum\openITCOCKPIT\Core\Dashboards\TachoJson;
 use itnovum\openITCOCKPIT\Core\Dashboards\TrafficlightJson;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
+use itnovum\openITCOCKPIT\Core\ValueObjects\Perfdata;
+use Statusengine\PerfdataParser;
 
 /**
  * Class DashboardsController
@@ -1084,6 +1087,80 @@ class DashboardsController extends AppController {
         throw new MethodNotAllowedException();
     }
 
+    public function tachoWidget() {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template
+            return;
+        }
+
+        $TachoJson = new TachoJson();
+
+        if ($this->request->is('get')) {
+            $widgetId = (int)$this->request->query('widgetId');
+            if (!$this->Widget->exists($widgetId)) {
+                throw new RuntimeException('Invalid widget id');
+            }
+
+            $widget = $this->Widget->find('first', [
+                'recursive'  => -1,
+                'conditions' => [
+                    'Widget.id' => $widgetId
+                ],
+                'fields'     => [
+                    'Widget.service_id',
+                    'Widget.json_data'
+                ]
+            ]);
+            $serviceId = (int)$widget['Widget']['service_id'];
+            if ($serviceId === 0) {
+                $serviceId = null;
+            }
+
+            $service = $this->getServicestatusByServiceId($serviceId);
+
+            $data = [];
+            if ($widget['Widget']['json_data'] !== null && $widget['Widget']['json_data'] !== '') {
+                $data = json_decode($widget['Widget']['json_data'], true);
+            }
+            $config = $TachoJson->standardizedData($data);
+            $this->set('config', $config);
+            $this->set('service', $service);
+            $this->set('_serialize', ['service', 'config']);
+            return;
+        }
+
+
+        if ($this->request->is('post')) {
+            $config = $TachoJson->standardizedData($this->request->data);
+            $widgetId = (int)$this->request->data('Widget.id');
+            $serviceId = (int)$this->request->data('Widget.service_id');
+
+            if (!$this->Widget->exists($widgetId)) {
+                throw new RuntimeException('Invalid widget id');
+            }
+            $widget = $this->Widget->find('first', [
+                'recursive'  => -1,
+                'conditions' => [
+                    'Widget.id' => $widgetId
+                ],
+            ]);
+
+            $widget['Widget']['service_id'] = $serviceId;
+            $widget['Widget']['json_data'] = json_encode($config);
+            if ($this->Widget->save($widget)) {
+                $service = $this->getServicestatusByServiceId($serviceId);
+                $this->set('service', $service);
+                $this->set('config', $config);
+                $this->set('_serialize', ['service', 'config']);
+                return;
+            }
+
+            $this->serializeErrorMessageFromModel('Widget');
+            return;
+        }
+        throw new MethodNotAllowedException();
+    }
+
     private function getServicestatusByServiceId($id) {
         $query = [
             'recursive'  => -1,
@@ -1132,7 +1209,7 @@ class DashboardsController extends AppController {
         $service = $this->Service->find('first', $query);
         if (!empty($service)) {
             $ServicestatusFields = new ServicestatusFields($this->DbBackend);
-            $ServicestatusFields->currentState()->isFlapping();
+            $ServicestatusFields->currentState()->isFlapping()->perfdata();
             $servicestatus = $this->Servicestatus->byUuid($service['Service']['uuid'], $ServicestatusFields);
 
             if (!empty($servicestatus)) {
@@ -1143,10 +1220,12 @@ class DashboardsController extends AppController {
                 );
             }
             $Service = new \itnovum\openITCOCKPIT\Core\Views\Service($service);
+            $PerfdataParser = new PerfdataParser($Servicestatus->getPerfdata());
 
             $service = [
                 'Service'       => $Service->toArray(),
-                'Servicestatus' => $Servicestatus->toArray()
+                'Servicestatus' => $Servicestatus->toArray(),
+                'Perfdata'      => $PerfdataParser->parse()
             ];
 
             $service['Service']['id'] = (int)$service['Service']['id'];
@@ -1157,5 +1236,40 @@ class DashboardsController extends AppController {
             'Service'       => [],
             'Servicestatus' => []
         ];
+    }
+
+    public function getPerformanceDataMetrics($serviceId) {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        if (!$this->Service->exists($serviceId)) {
+            throw new NotFoundException();
+        }
+
+        $service = $this->Service->find('first', [
+            'recursive'  => -1,
+            'fields'     => [
+                'Service.id',
+                'Service.uuid'
+            ],
+            'conditions' => [
+                'Service.id' => $serviceId,
+            ],
+        ]);
+
+
+        $ServicestatusFields = new ServicestatusFields($this->DbBackend);
+        $ServicestatusFields->perfdata();
+        $servicestatus = $this->Servicestatus->byUuid($service['Service']['uuid'], $ServicestatusFields);
+
+        if (!empty($servicestatus)) {
+            $PerfdataParser = new PerfdataParser($servicestatus['Servicestatus']['perfdata']);
+            $this->set('perfdata', $PerfdataParser->parse());
+            $this->set('_serialize', ['perfdata']);
+            return;
+        }
+        $this->set('perfdata', []);
+        $this->set('_serialize', ['perfdata']);
     }
 }

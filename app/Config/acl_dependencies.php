@@ -167,6 +167,7 @@ $config = [
                 'servicesDowntimeWidget',
                 'noticeWidget',
                 'trafficLightWidget',
+                'tachoWidget'
             ],
             'Hosts'            => [
                 'view',
