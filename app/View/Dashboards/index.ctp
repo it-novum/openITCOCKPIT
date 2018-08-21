@@ -124,6 +124,14 @@
                                 {{availableWidget.title}}
                             </a>
                         </li>
+                        <li class="divider"></li>
+                        <li>
+                            <a href="javascript:void(0);"
+                               ng-click="restoreDefault()">
+                                <i class="fa fa-recycle"></i>
+                                <?php echo __('Restore default'); ?>
+                            </a>
+                        </li>
                     </ul>
                 </div>
             </div>

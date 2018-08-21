@@ -676,6 +676,41 @@ class DashboardsController extends AppController {
         return;
     }
 
+    public function restoreDefault() {
+        if (!$this->request->is('post') || !$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+
+        $id = (int)$this->request->data('DashboardTab.id');
+
+        $dashboardTab = $this->DashboardTab->find('first', [
+            'conditions' => [
+                'DashboardTab.id'      => $id,
+                'DashboardTab.user_id' => $User->getId()
+            ]
+        ]);
+
+        if (empty($dashboardTab)) {
+            throw new NotFoundException();
+        }
+
+        //Delete old widgets
+        $this->Widget->deleteAll([
+            'Widget.dashboard_tab_id' => $id
+        ]);
+
+        $dashboardTab['Widget'] = $this->Widget->getDefaultWidgets($this->PERMISSIONS);
+
+        if ($this->DashboardTab->saveAll($dashboardTab)) {
+            $this->set('success', true);
+            $this->set('_serialize', ['success']);
+            return;
+        }
+        $this->serializeErrorMessageFromModel('DashboardTab');
+        return;
+    }
+
 
     /***** Basic Widgets *****/
     public function welcomeWidget() {

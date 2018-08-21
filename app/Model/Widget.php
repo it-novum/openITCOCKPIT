@@ -91,6 +91,10 @@ class Widget extends AppModel {
                 'directive' => 'welcome-widget', //AngularJS directive,
                 'width'     => 6,
                 'height'    => 7,
+                'default'   => [
+                    'row' => 0,
+                    'col' => 0
+                ]
             ],
             [
                 'type_id'   => 2,
@@ -98,7 +102,11 @@ class Widget extends AppModel {
                 'icon'      => 'fa-exchange',
                 'directive' => 'parent-outages-widget',
                 'width'     => 6,
-                'height'    => 7
+                'height'    => 7,
+                'default'   => [
+                    'row' => 0,
+                    'col' => 6
+                ]
             ],
 
             [
@@ -107,7 +115,11 @@ class Widget extends AppModel {
                 'icon'      => 'fa-pie-chart',
                 'directive' => 'hosts-piechart-widget',
                 'width'     => 6,
-                'height'    => 11
+                'height'    => 11,
+                'default'   => [
+                    'row' => 7,
+                    'col' => 0
+                ]
             ],
             [
                 'type_id'   => 7,
@@ -123,7 +135,11 @@ class Widget extends AppModel {
                 'icon'      => 'fa-pie-chart',
                 'directive' => 'services-piechart-widget',
                 'width'     => 6,
-                'height'    => 11
+                'height'    => 11,
+                'default'   => [
+                    'row' => 7,
+                    'col' => 6
+                ]
             ],
             [
                 'type_id'   => 8,
@@ -177,7 +193,11 @@ class Widget extends AppModel {
                 'icon'      => 'fa-power-off',
                 'directive' => 'hosts-downtime-widget',
                 'width'     => 12,
-                'height'    => 14
+                'height'    => 14,
+                'default'   => [
+                    'row' => 18,
+                    'col' => 0
+                ]
             ];
         }
 
@@ -188,7 +208,11 @@ class Widget extends AppModel {
                 'icon'      => 'fa-power-off',
                 'directive' => 'services-downtime-widget',
                 'width'     => 12,
-                'height'    => 14
+                'height'    => 14,
+                'default'   => [
+                    'row' => 32,
+                    'col' => 0
+                ]
             ];
         }
 
@@ -262,6 +286,25 @@ class Widget extends AppModel {
             }
         }
         return [];
+    }
+
+    /**
+     * @param $ACL_PERMISSIONS
+     * @return array
+     */
+    public function getDefaultWidgets($ACL_PERMISSIONS) {
+        $widgets = [];
+        foreach ($this->getAvailableWidgets($ACL_PERMISSIONS) as $widget) {
+            if (isset($widget['default'])) {
+                $widget['row'] = $widget['default']['row'];
+                $widget['col'] = $widget['default']['col'];
+                $widget['color'] = 'jarviswidget-color-blueDark';
+                unset($widget['default']);
+                $widgets[] = $widget;
+            }
+        }
+
+        return $widgets;
     }
 
 }

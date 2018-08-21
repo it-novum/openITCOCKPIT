@@ -155,6 +155,7 @@ $config = [
                 'updateSharedTab',
                 'renameWidget',
                 'lockOrUnlockTab',
+                'restoreDefault',
                 'hostsPiechartWidget',
                 'hostsPiechart180Widget',
                 'servicesPiechartWidget',

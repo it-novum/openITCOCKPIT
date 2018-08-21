@@ -38,7 +38,7 @@
                             <input type="checkbox" name="checkbox" checked="checked"
                                    ng-model="filter.isRunning"
                                    ng-model-options="{debounce: 500}">
-                            <i class="checkbox-success"></i>
+                            <i class="checkbox-primary"></i>
                             <?php echo __('Is running'); ?>
                         </label>
                     </div>
@@ -48,7 +48,7 @@
                             <input type="checkbox" name="checkbox" checked="checked"
                                    ng-model="filter.DowntimeService.was_not_cancelled"
                                    ng-model-options="{debounce: 500}">
-                            <i class="checkbox-default"></i>
+                            <i class="checkbox-primary"></i>
                             <?php echo __('Was not cancelled'); ?>
                         </label>
                     </div>
