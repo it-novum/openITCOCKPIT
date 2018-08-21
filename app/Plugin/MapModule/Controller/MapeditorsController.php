@@ -2398,12 +2398,14 @@ class MapeditorsController extends MapModuleAppController {
     }
 
     public function viewDirective(){
+        $this->layout = 'blank';
         //Ship template of Mapeditors view directive.
         //It is a directive be able to also use the maps as an widget
         return;
     }
 
     public function mapWidget() {
+        $this->layout = 'blank';
         if (!$this->isApiRequest()) {
             //Only ship HTML template
             return;
