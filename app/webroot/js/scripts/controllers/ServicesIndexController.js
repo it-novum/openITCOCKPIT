@@ -348,6 +348,20 @@ angular.module('openITCOCKPIT')
             $('#serviceGraphFlot').html('');
         };
 
+        $scope.problemsOnly = function(){
+            defaultFilter();
+            $scope.filter.Servicestatus.not_in_downtime = true;
+            $scope.filter.Servicestatus.not_acknowledged = true;
+            $scope.filter.Servicestatus.current_state = {
+                ok: false,
+                warning: true,
+                critical: true,
+                unknown: true
+            };
+            SortService.setSort('Servicestatus.last_state_change');
+            SortService.setDirection('desc');
+        };
+
         var loadGraph = function(host, service){
             $http.get('/Graphgenerators/getPerfdataByUuid.json', {
                 params: {

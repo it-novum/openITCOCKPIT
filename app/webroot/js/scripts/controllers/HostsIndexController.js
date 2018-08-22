@@ -196,6 +196,19 @@ angular.module('openITCOCKPIT')
 
         };
 
+        $scope.problemsOnly = function(){
+            defaultFilter();
+            $scope.filter.Hoststatus.not_in_downtime = true;
+            $scope.filter.Hoststatus.not_acknowledged = true;
+            $scope.filter.Hoststatus.current_state = {
+                up: false,
+                down: true,
+                unreachable: true
+            };
+            SortService.setSort('Hoststatus.last_state_change');
+            SortService.setDirection('desc');
+        };
+
         $scope.changepage = function(page){
             $scope.undoSelection();
             if(page !== $scope.currentPage){
