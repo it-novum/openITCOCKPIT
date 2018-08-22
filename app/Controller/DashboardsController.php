@@ -1361,8 +1361,24 @@ class DashboardsController extends AppController {
             }
             $config = $HostStatusOverviewJson->standardizedData($data);
 
+            if ($this->DbBackend->isNdoUtils()) {
+                $query = $this->Host->getHoststatusCountBySelectedStatus($this->MY_RIGHTS, $config);
+                $modelName = 'Host';
+            }
+
+            if ($this->DbBackend->isCrateDb()) {
+                $query = $this->Hoststatus->getHoststatusCountBySelectedStatus($this->MY_RIGHTS, $config);
+                $modelName = 'Hoststatus';
+            }
+
+            if ($this->DbBackend->isStatusengine3()) {
+                $query = $this->Host->getHoststatusBySelectedStatusStatusengine3($this->MY_RIGHTS, $config);
+                $modelName = 'Host';
+            }
+            $statusCount = $this->{$modelName}->find('count', $query);
             $this->set('config', $config);
-            $this->set('_serialize', ['config']);
+            $this->set('statusCount', $statusCount);
+            $this->set('_serialize', ['config', 'statusCount']);
             return;
         }
 
@@ -1380,34 +1396,7 @@ class DashboardsController extends AppController {
 
         throw new MethodNotAllowedException();
     }
-
-    public function hostStatusCount() {
-        $this->layout = 'angularjs';
-
-        $HostFilter = new HostFilter($this->request);
-        $HostControllerRequest = new HostControllerRequest($this->request, $HostFilter);
-        $HostCondition = new HostConditions();
-        $HostCondition->setIncludeDisabled(false);
-
-        if ($this->DbBackend->isNdoUtils()) {
-            $query = $this->Host->getHostIndexQuery($HostCondition, $HostFilter->indexFilter());
-            $modelName = 'Host';
-        }
-
-        if ($this->DbBackend->isCrateDb()) {
-            $query = $this->Hoststatus->getHostIndexQuery($HostCondition, $HostFilter->indexFilter());
-            $modelName = 'Hoststatus';
-        }
-
-        if ($this->DbBackend->isStatusengine3()) {
-            $query = $this->Host->getHostIndexQueryStatusengine3($HostCondition, $HostFilter->indexFilter());
-            $modelName = 'Host';
-        }
-        $statusCount = 10;
-        $this->set('statusCount', $statusCount);
-        $this->set('_serialize', ['statusCount']);
-    }
-
+    
     public function getPerformanceDataMetrics($serviceId) {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();

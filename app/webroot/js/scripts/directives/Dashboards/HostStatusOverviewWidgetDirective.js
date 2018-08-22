@@ -30,70 +30,25 @@ angular.module('openITCOCKPIT').directive('hostStatusOverviewWidget', function($
                     name: ''
                 }
             };
+            $scope.statusCount = null;
 
-            var loadWidgetConfig = function(){
+            $scope.load = function(){
                 $http.get("/dashboards/hostStatusOverviewWidget.json?angular=true&widgetId=" + $scope.widget.id, $scope.filter).then(function(result){
                     $scope.filter.Host = result.data.config.Host;
-                    $scope.filter.Hoststatus = result.data.config.Hoststatus;
-                    $scope.load();
-                });
-            };
-
-            $scope.load = function(options){
-
-                options = options || {};
-                options.save = options.save || false;
-
-                var params = {
-                    'angular': true,
-                    'filter[Host.name]': $scope.filter.Host.name,
-                    'filter[Hoststatus.current_state]': $scope.filter.Hoststatus.current_state
-                };
-                if($scope.filter.Hoststatus.current_state > 0){
-                    params = {
-                        'angular': true,
-                        'filter[Host.name]': $scope.filter.Host.name,
-                        'filter[Hoststatus.current_state]': $scope.filter.Hoststatus.current_state,
-                        'filter[Hoststatus.not_acknowledged]': $scope.filter.Hoststatus.not_acknowledged,
-                        'filter[Hoststatus.not_in_downtime]': $scope.filter.Hoststatus.not_in_downtime
-                    };
-                }
-
-                $http.get("/dashboards/hostStatusCount.json", {
-                    params: params
-                }).then(function(result){
-                    $scope.hosts = result.data.all_hosts;
+                    $scope.filter.Hoststatus.current_state = result.data.config.Hoststatus.current_state;
+                    $scope.filter.Hoststatus.not_acknowledged = !result.data.config.Hoststatus.problem_has_been_acknowledged;
+                    $scope.filter.Hoststatus.not_in_downtime = !result.data.config.Hoststatus.scheduled_downtime_depth;
+                    $scope.statusCount = result.data.statusCount;
                     $scope.init = false;
                 });
             };
+
 
             $scope.hideConfig = function(){
                 $scope.$broadcast('FLIP_EVENT_IN');
             };
             $scope.showConfig = function(){
                 $scope.$broadcast('FLIP_EVENT_OUT');
-            };
-
-            $scope.saveHoststatusOverview = function(){
-                $http.post("/dashboards/hostStatusOverviewWidget.json?angular=true",
-                    {
-                        Widget: {
-                            id: $scope.widget.id
-                        },
-                        Hoststatus: {
-                            current_state: $scope.filter.Hoststatus.current_state,
-                            not_acknowledged: $scope.filter.Hoststatus.not_acknowledged,
-                            not_in_downtime: $scope.filter.Hoststatus.not_in_downtime
-                        },
-                        Host: {
-                            name: $scope.filter.Host.name
-                        }
-                    }
-                ).then(function(result){
-                    //Update status
-                    $scope.load();
-                    $scope.hideConfig();
-                });
             };
 
 
@@ -108,7 +63,35 @@ angular.module('openITCOCKPIT').directive('hostStatusOverviewWidget', function($
             };
 
 
-            loadWidgetConfig();
+            $scope.load();
+
+            $scope.$watch('filter', function(){
+                if($scope.init){
+                    return;
+                }
+            });
+            $scope.saveHoststatusOverview = function(){
+                $http.post("/dashboards/hostStatusOverviewWidget.json?angular=true",
+                    {
+                        Widget: {
+                            id: $scope.widget.id
+                        },
+                        Hoststatus: {
+                            current_state: $scope.filter.Hoststatus.current_state,
+                            problem_has_been_acknowledged: !$scope.filter.Hoststatus.not_acknowledged,
+                            scheduled_downtime_depth: !$scope.filter.Hoststatus.not_in_downtime
+                        },
+                        Host: {
+                            name: $scope.filter.Host.name
+                        }
+                    }
+                ).then(function(result){
+                    //Update status
+                    $scope.load();
+                    $scope.hideConfig();
+                });
+            };
+
         },
 
         link: function($scope, element, attr){

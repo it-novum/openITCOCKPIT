@@ -175,22 +175,6 @@ class Host extends AppModel {
                 'required' => true,
             ],
         ],
-        /*
-        'Contact' => [
-            'atLeastOne' => [
-                'rule' => ['atLeastOne'],
-                'message' => 'You must specify at least one contact or contact group.',
-                'required' => true
-            ]
-        ],
-        'Contactgroup' => [
-            'atLeastOne' => [
-                'rule' => ['atLeastOne'],
-                'message' => 'You must specify at least one contact or contact group',
-                'required' => true
-            ]
-        ],
-        */
         'command_id'         => [
             'numeric' => [
                 'rule'       => 'numeric',
@@ -2151,5 +2135,130 @@ class Host extends AppModel {
             $hostStateSummary['total']++;
         }
         return $hostStateSummary;
+    }
+
+
+    /**
+     * @param $MY_RIGHTS
+     * @param $conditions
+     * @return array
+     */
+    public function getHoststatusCountBySelectedStatus($MY_RIGHTS, $conditions) {
+        $query = [
+            'recursive' => -1,
+            'fields'    => [
+                'COUNT(DISTINCT Hoststatus.host_object_id) AS count',
+            ],
+            'joins'     => [
+                [
+                    'table'      => 'nagios_objects',
+                    'type'       => 'INNER',
+                    'alias'      => 'HostObject',
+                    'conditions' => 'Host.uuid = HostObject.name1 AND HostObject.objecttype_id = 1',
+                ],
+
+                [
+                    'table'      => 'nagios_hoststatus',
+                    'type'       => 'INNER',
+                    'alias'      => 'Hoststatus',
+                    'conditions' => 'Hoststatus.host_object_id = HostObject.object_id',
+                ],
+
+                [
+                    'table'      => 'hosts_to_containers',
+                    'alias'      => 'HostsToContainers',
+                    'type'       => 'INNER',
+                    'conditions' => [
+                        'HostsToContainers.host_id = Host.id',
+                    ],
+                ],
+            ],
+            'conditions' => [
+                'HostObject.is_active'           => 1,
+                'HostsToContainers.container_id' => $MY_RIGHTS,
+                'Host.disabled'                  => 0
+            ]
+        ];
+
+        if (!empty($conditions['Host']['name'])) {
+            $query['conditions']['Host.name LIKE'] = sprintf('%%%s%%', $conditions['Host']['name']);
+        }
+        $query['conditions']['Hoststatus.current_state'] = $conditions['Hoststatus']['current_state'];
+        if ($conditions['Hoststatus']['current_state'] > 0) {
+            if ($conditions['Hoststatus']['problem_has_been_acknowledged'] === false) {
+                $query['conditions']['Hoststatus.problem_has_been_acknowledged'] = false;
+            }
+            if ($conditions['Hoststatus']['scheduled_downtime_depth'] === false) {
+                $query['conditions']['Hoststatus.scheduled_downtime_depth'] = false;
+            }
+        }
+        return $query;
+    }
+
+    /**
+     * @param $MY_RIGHTS
+     * @param $conditions
+     * @return array
+     */
+    public function getHoststatusBySelectedStatusStatusengine3($MY_RIGHTS, $conditions) {
+        $query = [
+            'conditions' => [
+                'Host.disabled' => 0
+            ],
+            'contain'    => [],
+            'fields'     => [
+                'COUNT(Hoststatus.hostname) AS count',
+            ],
+            'joins'      => [
+                [
+                    'table'      => 'statusengine_hoststatus',
+                    'type'       => 'INNER',
+                    'alias'      => 'Hoststatus',
+                    'conditions' => 'Hoststatus.hostname = Host.uuid',
+                ],
+            ],
+        ];
+
+        $query['conditions']['Hoststatus.current_state'] = $conditions['Hoststatus']['current_state'];
+        if ($conditions['Hoststatus']['current_state'] > 0) {
+            if ($conditions['Hoststatus']['problem_has_been_acknowledged'] === false) {
+                $query['conditions']['Hoststatus.problem_has_been_acknowledged'] = false;
+            }
+            if ($conditions['Hoststatus']['scheduled_downtime_depth'] === false) {
+                $query['conditions']['Hoststatus.scheduled_downtime_depth'] = false;
+            }
+        }
+
+        $db = $this->getDataSource();
+        $subQuery = $db->buildStatement([
+            'fields'     => ['Host.uuid'],
+            'table'      => 'hosts',
+            'alias'      => 'Host',
+            'limit'      => null,
+            'offset'     => null,
+            'joins'      => [
+                [
+                    'table'      => 'hosts_to_containers',
+                    'alias'      => 'HostsToContainers',
+                    'type'       => 'INNER',
+                    'conditions' => [
+                        'HostsToContainers.host_id = Host.id',
+                    ],
+                ]
+            ],
+            'conditions' => [
+                'HostsToContainers.container_id' => $MY_RIGHTS
+            ],
+            'order'      => null,
+            'group'      => null
+        ], $this);
+        $subQuery = 'Hoststatus.hostname IN (' . $subQuery . ') ';
+        if (!empty($conditions['Host']['name'])) {
+            $query['conditions']['Host.name LIKE'] = sprintf('%%%s%%', $conditions['Host']['name']);
+        }
+        $subQueryExpression = $db->expression($subQuery);
+        $query['conditions'][] = $subQueryExpression->value;
+
+        return $query;
     }
 }

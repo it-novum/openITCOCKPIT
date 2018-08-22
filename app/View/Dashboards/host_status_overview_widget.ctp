@@ -88,7 +88,7 @@
         <div class="padding-5 statusCountText" id="host-status-front-{{widget.id}}">
             <div class="row text-center">
                 <div class="col col-lg-12 txt-color-white">
-                    {{ 1245500 | number }}
+                    {{ statusCount | number }}
                 </div>
             </div>
         </div>
@@ -108,7 +108,7 @@
                     </label>
                 </div>
             </div>
-            <div class="row padding-top-20">
+            <div class="row padding-top-10">
                 <div class="row">
 
                     <div class="col-xs-12 col-sm-6">

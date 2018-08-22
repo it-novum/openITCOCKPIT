@@ -206,4 +206,52 @@ class Hoststatus extends CrateModuleAppModel {
         }
         return $hoststatusCount;
     }
+
+
+    /**
+     * @param $MY_RIGHTS
+     * @param $conditions
+     * @return array
+     */
+    public function getHoststatusCountBySelectedStatus($MY_RIGHTS, $conditions) {
+        $this->virtualFields = [
+            'count' => 'COUNT(DISTINCT Hoststatus.hostname)'
+        ];
+        $query = [
+            'fields' => [
+                'Hoststatus.current_state',
+            ],
+            'joins' => [
+                [
+                    'table' => 'openitcockpit_hosts',
+                    'type' => 'INNER',
+                    'alias' => 'Host',
+                    'conditions' => 'Host.uuid = Hoststatus.hostname',
+                ]
+            ],
+            'conditions' => [
+                'Host.disabled'                  => false
+            ],
+
+            'array_difference' => [
+                'Host.container_ids' =>
+                    $MY_RIGHTS,
+            ]
+        ];
+
+        $query['conditions']['Hoststatus.current_state'] = $conditions['Hoststatus']['current_state'];
+        if ($conditions['Hoststatus']['current_state'] > 0) {
+            if ($conditions['Hoststatus']['problem_has_been_acknowledged'] === false) {
+                $query['conditions']['Hoststatus.problem_has_been_acknowledged'] = false;
+            }
+            if ($conditions['Hoststatus']['scheduled_downtime_depth'] === false) {
+                $query['conditions']['Hoststatus.scheduled_downtime_depth'] = 0;
+            }
+        }
+        if (!empty($conditions['Host']['name'])) {
+            $query['conditions']['Host.name LIKE'] = sprintf('%%%s%%', $conditions['Host']['name']);
+        }
+
+        return $query;
+    }
 }
