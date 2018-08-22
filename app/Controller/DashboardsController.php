@@ -56,6 +56,7 @@ class DashboardsController extends AppController
         'WidgetNotice',
         'MapModule.Map',
         'GraphgenTmpl',
+        'Systemsetting'
     ];
 
     const UPDATE_DISABLED = 0;
@@ -77,6 +78,22 @@ class DashboardsController extends AppController
 
     public function index($tabId = null)
     {
+        $askForHelp = false;
+        if(!$this->Cookie->check('askAgainForHelp')) {
+            $record = $this->Systemsetting->find('first', [
+                'recursive'  => -1,
+                'conditions' => [
+                    'Systemsetting.key' => 'SYSTEM.ANONYMOUS_STATISTICS'
+                ]
+            ]);
+            if (!empty($record)) {
+                if ($record['Systemsetting']['value'] === '2') {
+                    $askForHelp = true;
+                }
+            }
+        }
+        $this->set('askForHelp', $askForHelp);
+
         $userId = $this->Auth->user('id');
         $tab = [];
         if ($tabId !== null && is_numeric($tabId)) {
