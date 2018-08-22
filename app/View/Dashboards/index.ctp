@@ -481,6 +481,13 @@
                         </div>
                     </div>
                 </div>
+                <br/>
+                <div class="row">
+                    <div class="col-xs-12 text-info">
+                        <i class="fa fa-info-circle"></i>
+                        <?php echo __('If you only have one tab, the rotation will just refresh the data of your current tab.'); ?>
+                    </div>
+                </div>
             </div>
 
             <div class="modal-footer">
