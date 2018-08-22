@@ -718,7 +718,7 @@ angular.module('openITCOCKPIT')
         });
 
         $scope.$watch('activeWidgets', function(){
-            console.log(disableWatch);
+            //console.log(disableWatch);
             if($scope.init === true || disableWatch === true){
                 return;
             }
