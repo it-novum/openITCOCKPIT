@@ -2101,3 +2101,44 @@ label[class^='aco-host']:after, label[class^='aco-service']:after {
     margin-left: -125px;
     display:none;
 }
+
+/* dashboards host/service status overview */
+.bg-host-0, .bg-service-0 {
+    background-color: #449D44 !important;
+}
+
+.bg-service-1 {
+    background-color: #DF8F1D !important;
+}
+
+.bg-host-1, .bg-service-2 {
+    background-color: #C9302C !important;
+}
+
+.bg-host-2, .bg-service-3 {
+    background-color: #92A2A8 !important;
+}
+
+.bg-host-background-icon:after {
+    font-family: "FontAwesome";
+    padding-left: 5px;
+    position: absolute;
+    bottom: 0px;
+    right: 5px;
+    font-size: calc(2.5vw + 2.5vh);
+}
+
+.bg-host-front-0:after {
+    content: "\f058";
+    color: rgba(255, 255, 255, 0.1);
+}
+
+.bg-host-front-1:after {
+    content: "\f06a";
+    color: rgba(255, 255, 255, 0.1);
+}
+
+.bg-host-front-2:after {
+    content: "\f06a";
+    color: rgba(255, 255, 255, 0.1);
+}

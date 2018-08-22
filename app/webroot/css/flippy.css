@@ -74,7 +74,7 @@ flippy.fancy {
     position: relative;
     cursor: pointer;
     width: 100%;
-    height: 250px;
+    height: inherit!important;
 }
 flippy.fancy img {
     height: 100%;
