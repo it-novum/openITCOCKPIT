@@ -60,6 +60,4 @@ angular.module('openITCOCKPIT')
         $scope.$watch('init', function(){
             $scope.loadServicetemplates();
         });
-
-
     });
