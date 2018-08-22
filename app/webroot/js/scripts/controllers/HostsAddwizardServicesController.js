@@ -12,17 +12,13 @@ angular.module('openITCOCKPIT')
 
 
         $scope.load = function(){
-            $http.get("/hosts/loadWizardServiceData/"+$scope.id+".json", {
+            $http.get("/hosts/loadHostInfo/"+$scope.id+".json", {
                 params: {
                     'angular': true
                 }
             }).then(function(result){
-                console.log(result.data.data);
-                $scope.hostname = result.data.data.hostname;
-                $scope.containerId = result.data.data.containerId;
-
-                $scope.servicetemplateName = result.data.data.servicetemplateName;
-                $scope.servicetemplateId = result.data.data.servicetemplateId;
+                $scope.hostname = result.data.host.Host.name;
+                $scope.containerId = result.data.host.Host.container_id;
                 $scope.init = false;
             });
         };
@@ -40,7 +36,6 @@ angular.module('openITCOCKPIT')
                     'filter[Servicetemplate.name]': searchString,
                 }
             }).then(function(result){
-                console.log(result.data);
                 $scope.servicetemplates = result.data.servicetemplates;
             });
         };
@@ -59,7 +54,6 @@ angular.module('openITCOCKPIT')
                     console.log($scope.errors);
                 }
             });
-
         };
 
         $scope.load();

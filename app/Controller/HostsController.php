@@ -3500,9 +3500,6 @@ class HostsController extends AppController {
 
 
         if ($this->request->is('post') || $this->request->is('put')) {
-           // debug($this->request->data);
-            //die();
-            //$data_to_save = $this->request->data;
             $ext_data_for_changelog = $this->Host->getChangelogData($this->request->data);
 
             if (isset($this->request->data['Host']['Contact'])) {
@@ -3591,14 +3588,10 @@ class HostsController extends AppController {
                 }
                 $this->serializeErrorMessage();
                 return;
-                //$this->setFlash(__('Data could not be saved'), false);
             }
         }
     }
 
-    public function addwizardoptional($id = null) {
-        $this->layout = 'angularjs';
-    }
 
     public function addwizardservices($hostId = null) {
         $this->layout = 'angularjs';
@@ -3672,50 +3665,6 @@ class HostsController extends AppController {
         $this->set('_serialize', ['host']);
     }
 
-    public function loadWizardServiceData($hostId){
-        if (!$this->isAngularJsRequest()) {
-            throw new MethodNotAllowedException();
-        }
-        $data = [];
-        $hostInfo = $this->Host->find('first', [
-            'recursive' => -1,
-            'conditions' => [
-                'Host.id' => $hostId
-            ],
-            'fields' => [
-                'Host.name',
-                'Host.container_id'
-            ]
-        ]);
-
-        if(!empty($hostInfo)){
-
-            $hostContainerId = $hostInfo['Host']['container_id'];
-
-            if(!empty($hostContainerId)){
-                $this->Servicetemplate = ClassRegistry::init('Servicetemplate');
-                $servicetemplate = $this->Servicetemplate->find('first', [
-                    'recursive' => -1,
-                    'condtions' => [
-                       // 'Servicetemplate.container_id' => $hostContainerId,
-                        'Servicetemplate.name' => 'Ping'
-                    ],
-                    'fields' => [
-                        'Servicetemplate.id',
-                        'Servicetemplate.name'
-                    ]
-                ]);
-                $data = [
-                    'hostname' => $hostInfo['Host']['name'],
-                    'containerId' => $hostInfo['Host']['container_id'],
-                    'servicetemplateId' => $servicetemplate['Servicetemplate']['id'],
-                    'servicetemplateName' => $servicetemplate['Servicetemplate']['name']
-                ];
-            }
-        }
-        $this->set('data', $data);
-        $this->set('_serialize', ['data']);
-    }
 
     public function loadContainers() {
         if (!$this->isAngularJsRequest()) {

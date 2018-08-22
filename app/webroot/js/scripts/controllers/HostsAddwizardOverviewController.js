@@ -20,7 +20,6 @@ angular.module('openITCOCKPIT')
                 }
             }).then(function(result){
                 $scope.services = result.data.services;
-                console.log($scope.services);
             });
         };
 
