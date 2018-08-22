@@ -35,8 +35,8 @@ class HostStatusOverviewJson extends DashboardJsonStandardizer {
     protected $fields = [
         'Hoststatus' => [
             'current_state'   => 0,
-            'not_acknowledged' => true,
-            'not_in_downtime' => true
+            'problem_has_been_acknowledged' => true,
+            'scheduled_downtime_depth' => true
         ],
         'Host'       => [
             'name' => ''

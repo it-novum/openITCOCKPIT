@@ -175,22 +175,6 @@ class Host extends AppModel {
                 'required' => true,
             ],
         ],
-        /*
-        'Contact' => [
-            'atLeastOne' => [
-                'rule' => ['atLeastOne'],
-                'message' => 'You must specify at least one contact or contact group.',
-                'required' => true
-            ]
-        ],
-        'Contactgroup' => [
-            'atLeastOne' => [
-                'rule' => ['atLeastOne'],
-                'message' => 'You must specify at least one contact or contact group',
-                'required' => true
-            ]
-        ],
-        */
         'command_id'         => [
             'numeric' => [
                 'rule'       => 'numeric',
@@ -2151,5 +2135,107 @@ class Host extends AppModel {
             $hostStateSummary['total']++;
         }
         return $hostStateSummary;
+    }
+
+
+    /**
+     * @param $MY_RIGHTS
+     * @param HostConditions $HostConditions
+     * @return array
+     */
+    public function getHoststatusCountBySelectedStatus($MY_RIGHTS, HostConditions $HostConditions) {
+        $query = [
+            'recursive' => -1,
+            'conditions' => [
+                'Host.disabled'                  => 0,
+                'HostObject.is_active'           => 1,
+                'HostsToContainers.container_id' => $MY_RIGHTS,
+                $HostConditions->getConditionsForFind(),
+            ],
+            'fields'     => [
+                'COUNT(DISTINCT Hoststatus.host_object_id) AS count',
+            ],
+            'joins'      => [
+                [
+                    'table'      => 'nagios_objects',
+                    'type'       => 'INNER',
+                    'alias'      => 'HostObject',
+                    'conditions' => 'Host.uuid = HostObject.name1 AND HostObject.objecttype_id = 1',
+                ],
+
+                [
+                    'table'      => 'nagios_hoststatus',
+                    'type'       => 'INNER',
+                    'alias'      => 'Hoststatus',
+                    'conditions' => 'Hoststatus.host_object_id = HostObject.object_id',
+                ],
+
+                [
+                    'table'      => 'hosts_to_containers',
+                    'alias'      => 'HostsToContainers',
+                    'type'       => 'INNER',
+                    'conditions' => [
+                        'HostsToContainers.host_id = Host.id',
+                    ],
+                ],
+            ],
+        ];
+
+        return $query;
+    }
+
+    /**
+     * @param $MY_RIGHTS
+     * @param HostConditions $HostConditions
+     * @return array
+     */
+    public function getHoststatusBySelectedStatusStatusengine3($MY_RIGHTS, HostConditions $HostConditions) {
+        $query = [
+            'conditions' => [
+                'Host.disabled' => 0,
+                $HostConditions->getConditionsForFind()
+            ],
+            'contain'    => [],
+            'fields'     => [
+                'COUNT(Hoststatus.hostname) AS count',
+            ],
+            'joins'      => [
+                [
+                    'table'      => 'statusengine_hoststatus',
+                    'type'       => 'INNER',
+                    'alias'      => 'Hoststatus',
+                    'conditions' => 'Hoststatus.hostname = Host.uuid',
+                ],
+            ],
+        ];
+
+        $db = $this->getDataSource();
+        $subQuery = $db->buildStatement([
+            'fields'     => ['Host.uuid'],
+            'table'      => 'hosts',
+            'alias'      => 'Host',
+            'limit'      => null,
+            'offset'     => null,
+            'joins'      => [
+                [
+                    'table'      => 'hosts_to_containers',
+                    'alias'      => 'HostsToContainers',
+                    'type'       => 'INNER',
+                    'conditions' => [
+                        'HostsToContainers.host_id = Host.id',
+                    ],
+                ]
+            ],
+            'conditions' => [
+                'HostsToContainers.container_id' => $MY_RIGHTS
+            ],
+            'order'      => null,
+            'group'      => null
+        ], $this);
+        $subQuery = 'Hoststatus.hostname IN (' . $subQuery . ') ';
+        $subQueryExpression = $db->expression($subQuery);
+        $query['conditions'][] = $subQueryExpression->value;
+
+        return $query;
     }
 }

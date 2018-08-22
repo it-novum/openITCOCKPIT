@@ -206,4 +206,43 @@ class Hoststatus extends CrateModuleAppModel {
         }
         return $hoststatusCount;
     }
+
+
+    /**
+     * @param $MY_RIGHTS
+     * @param HostConditions $HostConditions
+     * @return int hoststatusCount
+     */
+    public function getHoststatusCountBySelectedStatus($MY_RIGHTS, HostConditions $HostConditions) {
+        $this->virtualFields = [
+            'count' => 'COUNT(DISTINCT Hoststatus.hostname)'
+        ];
+        $query = [
+            'fields' => [
+                'Hoststatus.current_state',
+            ],
+            'joins' => [
+                [
+                    'table' => 'openitcockpit_hosts',
+                    'type' => 'INNER',
+                    'alias' => 'Host',
+                    'conditions' => 'Host.uuid = Hoststatus.hostname',
+                ]
+            ],
+            'conditions' => [
+                'Host.disabled'                  => false
+            ],
+
+            'array_difference' => [
+                'Host.container_ids' =>
+                    $MY_RIGHTS,
+            ]
+        ];
+
+        if (isset($HostConditions['Hoststatus.problem_has_been_acknowledged'])) {
+            $query['Hoststatus.problem_has_been_acknowledged'] = (bool)$HostConditions['Hoststatus.problem_has_been_acknowledged'];
+        }
+
+        return $query;
+    }
 }
