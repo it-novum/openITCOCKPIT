@@ -74,24 +74,7 @@ angular.module('openITCOCKPIT').directive('hostStatusOverviewWidget', function($
                 $scope.$broadcast('FLIP_EVENT_OUT');
             };
 
-
-            var hasResize = function(){
-                return;
-                if($scope.hostListTimeout){
-                    clearTimeout($scope.hostListTimeout);
-                }
-                $scope.hostListTimeout = setTimeout(function(){
-                    $scope.load();
-                }, 500);
-            };
-
-
-            loadWidgetConfig();
-
-            $scope.$watch('filter', function(){
-                if($scope.init){
-                    return;
-                }
+            $scope.saveHoststatusOverview = function(){
                 $http.post("/dashboards/hostStatusOverviewWidget.json?angular=true",
                     {
                         Widget: {
@@ -109,8 +92,23 @@ angular.module('openITCOCKPIT').directive('hostStatusOverviewWidget', function($
                 ).then(function(result){
                     //Update status
                     $scope.load();
+                    $scope.hideConfig();
                 });
-            }, true);
+            };
+
+
+            var hasResize = function(){
+                return;
+                if($scope.hostListTimeout){
+                    clearTimeout($scope.hostListTimeout);
+                }
+                $scope.hostListTimeout = setTimeout(function(){
+                    $scope.load();
+                }, 500);
+            };
+
+
+            loadWidgetConfig();
         },
 
         link: function($scope, element, attr){

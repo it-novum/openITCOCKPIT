@@ -23,6 +23,8 @@
 //  confirmation.
 ?>
 
+<?php echo $this->Html->css('vendor/radio_buttons.css'); ?>
+
 <div class="row">
     <div class="col-xs-12">
         <h1 class="page-title txt-color-blueDark">
