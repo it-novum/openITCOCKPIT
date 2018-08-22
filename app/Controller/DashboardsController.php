@@ -28,6 +28,7 @@ use itnovum\openITCOCKPIT\Core\Dashboards\HostStatusListJson;
 use itnovum\openITCOCKPIT\Core\Dashboards\HostStatusOverviewJson;
 use itnovum\openITCOCKPIT\Core\Dashboards\NoticeJson;
 use itnovum\openITCOCKPIT\Core\Dashboards\ServiceStatusListJson;
+use itnovum\openITCOCKPIT\Core\Dashboards\ServiceStatusOverviewJson;
 use itnovum\openITCOCKPIT\Core\Dashboards\TachoJson;
 use itnovum\openITCOCKPIT\Core\Dashboards\TrafficlightJson;
 use itnovum\openITCOCKPIT\Core\HostConditions;
@@ -1384,6 +1385,68 @@ class DashboardsController extends AppController {
 
         if ($this->request->is('post')) {
             $config = $HostStatusOverviewJson->standardizedData($this->request->data);
+
+            $this->Widget->id = (int)$this->request->data('Widget.id');;
+            $this->Widget->saveField('json_data', json_encode($config));
+
+            $this->set('config', $config);
+            $this->set('_serialize', ['config']);
+            return;
+        }
+
+
+        throw new MethodNotAllowedException();
+    }
+
+    public function serviceStatusOverviewWidget() {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template
+            return;
+        }
+        $ServiceStatusOverviewJson = new ServiceStatusOverviewJson();
+
+        if ($this->request->is('get')) {
+            $widgetId = (int)$this->request->query('widgetId');
+            if (!$this->Widget->exists($widgetId)) {
+                throw new NotFoundException('Widget not found');
+            }
+
+            $widget = $this->Widget->find('first', [
+                'recursive'  => -1,
+                'conditions' => [
+                    'Widget.id' => $widgetId
+                ]
+            ]);
+
+            $data = [];
+            if ($widget['Widget']['json_data'] !== null && $widget['Widget']['json_data'] !== '') {
+                $data = json_decode($widget['Widget']['json_data'], true);
+            }
+            $config = $ServiceStatusOverviewJson->standardizedData($data);
+
+            if ($this->DbBackend->isNdoUtils()) {
+                $query = $this->Service->getServicestatusCountBySelectedStatus($this->MY_RIGHTS, $config);
+                $modelName = 'Service';
+            }
+
+            if ($this->DbBackend->isCrateDb()) {
+                $query = $this->Servicestatus->getServicestatusCountBySelectedStatus($this->MY_RIGHTS, $config);
+                $modelName = 'Servicestatus';
+            }
+
+            if ($this->DbBackend->isStatusengine3()) {
+                $query = $this->Service->getServicestatusBySelectedStatusStatusengine3($this->MY_RIGHTS, $config);
+                $modelName = 'Service';
+            }
+            $statusCount = $this->{$modelName}->find('count', $query);
+            $this->set('config', $config);
+            $this->set('statusCount', $statusCount);
+            $this->set('_serialize', ['config', 'statusCount']);
+            return;
+        }
+
+        if ($this->request->is('post')) {
+            $config = $ServiceStatusOverviewJson->standardizedData($this->request->data);
 
             $this->Widget->id = (int)$this->request->data('Widget.id');;
             $this->Widget->saveField('json_data', json_encode($config));

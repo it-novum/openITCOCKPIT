@@ -231,7 +231,7 @@ class Widget extends AppModel {
                 'icon'      => 'fa-info-circle',
                 'directive' => 'host-status-overview-widget',
                 'width'     => 3,
-                'height'    => 13
+                'height'    => 15
             ];
         }
 
@@ -243,6 +243,14 @@ class Widget extends AppModel {
                 'directive' => 'services-status-widget',
                 'width'     => 12,
                 'height'    => 16
+            ];
+            $widgets[] = [
+                'type_id'   => 17,
+                'title'     => __('Service status overview'),
+                'icon'      => 'fa-info-circle',
+                'directive' => 'service-status-overview-widget',
+                'width'     => 3,
+                'height'    => 15
             ];
         }
 

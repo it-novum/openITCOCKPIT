@@ -1608,6 +1608,7 @@ label[class^='aco-host']:after, label[class^='aco-service']:after {
     padding: 1em;
     border-radius: 8px;
     display: none;
+    z-index:2;
 }
 
 .text-transform-none {
@@ -2119,7 +2120,7 @@ label[class^='aco-host']:after, label[class^='aco-service']:after {
     background-color: #92A2A8 !important;
 }
 
-.bg-host-background-icon:after {
+.bg-host-background-icon:after, .bg-service-background-icon:after {
     font-family: "FontAwesome";
     padding-left: 5px;
     position: absolute;
@@ -2128,17 +2129,22 @@ label[class^='aco-host']:after, label[class^='aco-service']:after {
     font-size: calc(2.5vw + 2.5vh);
 }
 
-.bg-host-front-0:after {
+.bg-host-front-0:after, .bg-service-front-0:after {
     content: "\f058";
     color: rgba(255, 255, 255, 0.1);
 }
 
-.bg-host-front-1:after {
+.bg-service-front-1:after {
+    content: "\f06a";
+    color: rgba(255, 217, 56, 0.1);
+}
+
+.bg-host-front-1:after, .bg-service-front-2:after {
     content: "\f06a";
     color: rgba(255, 255, 255, 0.1);
 }
 
-.bg-host-front-2:after {
+.bg-host-front-2:after, .bg-service-front-3:after {
     content: "\f06a";
     color: rgba(255, 255, 255, 0.1);
 }

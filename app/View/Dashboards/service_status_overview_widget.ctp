@@ -31,7 +31,7 @@
             timing-function="ease-in-out">
 
         <flippy-front
-                class="bg-host-{{filter.Hoststatus.current_state}} bg-host-background-icon bg-host-front-{{filter.Hoststatus.current_state}}">
+                class="bg-service-{{filter.Servicestatus.current_state}} bg-service-background-icon bg-service-front-{{filter.Servicestatus.current_state}}">
             <a href="javascript:void(0);" class="btn btn-default btn-xs txt-color-blueDark" ng-click="showConfig()">
                 <i class="fa fa-cog fa-sm"></i>
             </a>
@@ -59,50 +59,70 @@
                     </div>
                 </div>
                 <div class="row padding-top-10">
+                    <div class="form-group smart-form">
+                        <label class="input"> <i class="icon-prepend fa fa-cog"></i>
+                            <input type="text" class="input-sm"
+                                   placeholder="<?php echo __('Filter by service name'); ?>"
+                                   ng-model="filter.Service.name"
+                                   ng-model-options="{debounce: 500}">
+                        </label>
+                    </div>
+                </div>
+                <div class="row padding-top-10">
                     <div class="row">
 
                         <div class="col-xs-12 col-sm-6">
                             <fieldset>
-                                <legend><?php echo __('Host status'); ?></legend>
+                                <legend><?php echo __('Service status'); ?></legend>
                                 <div class="radio radio-success">
                                     <input type="radio"
                                            id="widget-radio0-{{widget.id}}"
-                                           ng-model="filter.Hoststatus.current_state"
+                                           ng-model="filter.Servicestatus.current_state"
                                            ng-value="0">
                                     <label for="widget-radio0-{{widget.id}}">
-                                        <?php echo __('Up'); ?>
+                                        <?php echo __('Ok'); ?>
+                                    </label>
+                                </div>
+
+                                <div class="radio radio-warning">
+                                    <input type="radio"
+                                           id="widget-radio1-{{widget.id}}"
+                                           ng-model="filter.Servicestatus.current_state"
+                                           ng-value="1">
+                                    <label for="widget-radio1-{{widget.id}}">
+                                        <?php echo __('Warning'); ?>
                                     </label>
                                 </div>
 
                                 <div class="radio radio-danger">
                                     <input type="radio"
-                                           id="widget-radio1-{{widget.id}}"
-                                           ng-model="filter.Hoststatus.current_state"
-                                           ng-value="1">
-                                    <label for="widget-radio1-{{widget.id}}">
-                                        <?php echo __('Down'); ?>
+                                           id="widget-radio2-{{widget.id}}"
+                                           ng-model="filter.Servicestatus.current_state"
+                                           ng-value="2">
+                                    <label for="widget-radio2-{{widget.id}}">
+                                        <?php echo __('Critical'); ?>
                                     </label>
                                 </div>
 
                                 <div class="radio radio-default">
                                     <input type="radio"
-                                           id="widget-radio2-{{widget.id}}"
-                                           ng-model="filter.Hoststatus.current_state"
-                                           ng-value="2">
-                                    <label for="widget-radio2-{{widget.id}}">
-                                        <?php echo __('Unreachable'); ?>
+                                           id="widget-radio3-{{widget.id}}"
+                                           ng-model="filter.Servicestatus.current_state"
+                                           ng-value="3">
+                                    <label for="widget-radio3-{{widget.id}}">
+                                        <?php echo __('Unknown'); ?>
                                     </label>
                                 </div>
                             </fieldset>
                         </div>
 
-                        <div class="col-xs-12 col-sm-6" ng-show="filter.Hoststatus.current_state > 0">
+                        <div class="col-xs-12 col-sm-6" ng-show="filter.Servicestatus.current_state > 0">
                             <fieldset>
                                 <legend><?php echo __('Properties'); ?></legend>
                                 <div class="form-group smart-form">
                                     <label class="checkbox small-checkbox-label display-inline margin-right-5"">
                                     <input type="checkbox" name="checkbox" checked="checked"
-                                           ng-model="filter.Hoststatus.not_acknowledged">
+                                           ng-model="filter.Servicestatus.not_acknowledged">
                                     <i class="checkbox-primary"></i>
                                     <?php echo __('Not Acknowledged'); ?>
                                     </label>
@@ -111,7 +131,7 @@
                                 <div class="form-group smart-form">
                                     <label class="checkbox small-checkbox-label display-inline margin-right-5">
                                         <input type="checkbox" name="checkbox" checked="checked"
-                                               ng-model="filter.Hoststatus.not_in_downtime">
+                                               ng-model="filter.Servicestatus.not_in_downtime">
                                         <i class="checkbox-primary"></i>
                                         <?php echo __('Not in Downtime'); ?>
                                     </label>
@@ -121,7 +141,7 @@
 
                         <div class="row">
                             <div class="col-xs-12">
-                                <button class="btn btn-primary pull-right" ng-click="saveHoststatusOverview()">
+                                <button class="btn btn-primary pull-right" ng-click="saveServicestatusOverview()">
                                     <?php echo __('Save'); ?>
                                 </button>
                             </div>

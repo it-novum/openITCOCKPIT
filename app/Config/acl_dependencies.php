@@ -170,7 +170,8 @@ $config = [
                 'trafficLightWidget',
                 'getServiceWithStateById',
                 'hostStatusOverviewWidget',
-                'tachoWidget'
+                'tachoWidget',
+                'serviceStatusOverviewWidget'
             ],
             'Hosts'            => [
                 'view',
