@@ -204,6 +204,12 @@ class AngularController extends AppController {
             $containerIds = array_merge($containerIds, $recursiveContainerIds);
         }
 
+        //We need integers for cratedb
+        $containerIdsForQuery = [];
+        foreach($containerIds as $containerId){
+            $containerIdsForQuery[] = (int)$containerId;
+        }
+
         $hoststatusCount = [
             '0' => 0,
             '1' => 0,
@@ -219,18 +225,18 @@ class AngularController extends AppController {
 
 
         if ($this->DbBackend->isNdoUtils()) {
-            $hoststatusCount = $this->Host->getHoststatusCount($containerIds, true);
-            $servicestatusCount = $this->Host->getServicestatusCount($containerIds, true);
+            $hoststatusCount = $this->Host->getHoststatusCount($containerIdsForQuery, true);
+            $servicestatusCount = $this->Host->getServicestatusCount($containerIdsForQuery, true);
         }
 
         if ($this->DbBackend->isCrateDb()) {
-            $hoststatusCount = $this->Hoststatus->getHoststatusCount($containerIds, true);
-            $servicestatusCount = $this->Servicestatus->getServicestatusCount($containerIds, true);
+            $hoststatusCount = $this->Hoststatus->getHoststatusCount($containerIdsForQuery, true);
+            $servicestatusCount = $this->Servicestatus->getServicestatusCount($containerIdsForQuery, true);
         }
 
         if ($this->DbBackend->isStatusengine3()) {
-            $hoststatusCount = $this->Host->getHoststatusCountStatusengine3($containerIds, true);
-            $servicestatusCount = $this->Host->getServicestatusCountStatusengine3($containerIds, true);
+            $hoststatusCount = $this->Host->getHoststatusCountStatusengine3($containerIdsForQuery, true);
+            $servicestatusCount = $this->Host->getServicestatusCountStatusengine3($containerIdsForQuery, true);
         }
 
         $hoststatusSum = array_sum($hoststatusCount);
