@@ -33,6 +33,10 @@ angular.module('openITCOCKPIT').directive('tachometerWidget', function($http){
                 }).then(function(result){
                     if(Object.keys(result.data.service.Service).length > 0){
                         $scope.Service = result.data.service.Service;
+                        $scope.Host = result.data.service.Host;
+                        $scope.ACL = result.data.ACL;
+
+
                         $scope.responsePerfdata = result.data.service.Perfdata;
 
                         $scope.tacho.show_label = result.data.config.show_label;
@@ -40,6 +44,7 @@ angular.module('openITCOCKPIT').directive('tachometerWidget', function($http){
                         $scope.tacho.service_id = result.data.service.Service.id;
                         $scope.tacho.metric = result.data.config.metric;
 
+                        $scope.tachoHref = getHref();
                         processPerfdata();
                         renderGauge($scope.perfdataName, $scope.perfdata);
                     }else{
@@ -97,6 +102,27 @@ angular.module('openITCOCKPIT').directive('tachometerWidget', function($http){
                     $scope.load();
                     $scope.hideConfig();
                 });
+            };
+
+            var getHref = function(){
+                var url = 'javascript:void(0);';
+
+                if($scope.Service.isEVCService){
+                    if($scope.ACL.evc.view){
+                        return '/eventcorrelation_module/eventcorrelations/view/' + $scope.Host.id
+                    }
+
+                    if($scope.ACL.services.index){
+                        return '/services/browser/' + $scope.Service.id
+                    }
+                }else{
+                    if($scope.ACL.services.index){
+                        return '/services/browser/' + $scope.Service.id
+                    }
+                }
+
+
+                return url;
             };
 
             var renderGauge = function(perfdataName, perfdata){

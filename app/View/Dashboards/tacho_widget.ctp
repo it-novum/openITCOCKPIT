@@ -39,8 +39,8 @@
         </span>
             <div class="no-padding">
                 <center>
-                    <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
-                        <a ng-href="/services/browser/{{tacho.service_id}}">
+                    <?php if ($this->Acl->hasPermission('browser', 'services') || $this->Acl->hasPermission('view', 'eventcorrelations', 'EventcorrelationModule')): ?>
+                        <a ng-href="{{tachoHref}}">
                             <canvas id="tacho-{{widget.id}}"></canvas>
                         </a>
                     <?php else: ?>

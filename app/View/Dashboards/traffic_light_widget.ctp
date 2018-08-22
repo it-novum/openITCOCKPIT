@@ -39,8 +39,8 @@
         </span>
             <div class="no-padding">
                 <center>
-                    <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
-                        <a ng-href="/services/browser/{{trafficlight.service_id}}">
+                    <?php if ($this->Acl->hasPermission('browser', 'services') || $this->Acl->hasPermission('view', 'eventcorrelations', 'EventcorrelationModule')): ?>
+                        <a ng-href="{{trafficlightHref}}">
                             <div id="trafficlight-{{widget.id}}"></div>
                         </a>
                     <?php else: ?>
@@ -87,7 +87,7 @@
                             </div>
                         </div>
                     </div>
-                    <br />
+                    <br/>
 
                     <div class="row">
                         <div class="col-xs-12">

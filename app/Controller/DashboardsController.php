@@ -101,7 +101,7 @@ class DashboardsController extends AppController {
         //Check if a tab exists for the given user
         if ($this->DashboardTab->hasUserATab($User->getId()) === false) {
             $result = $this->DashboardTab->createNewTab($User->getId());
-            if($result){
+            if ($result) {
                 //Create default widgets
                 $result['Widget'] = $this->Widget->getDefaultWidgets($this->PERMISSIONS);
                 $this->DashboardTab->saveAll($result);
@@ -1112,7 +1112,8 @@ class DashboardsController extends AppController {
             $config = $TrafficlightJson->standardizedData($data);
             $this->set('config', $config);
             $this->set('service', $service);
-            $this->set('_serialize', ['service', 'config']);
+            $this->set('ACL', $this->getAcls());
+            $this->set('_serialize', ['service', 'config', 'ACL']);
             return;
         }
 
@@ -1138,7 +1139,8 @@ class DashboardsController extends AppController {
                 $service = $this->getServicestatusByServiceId($serviceId);
                 $this->set('service', $service);
                 $this->set('config', $config);
-                $this->set('_serialize', ['service', 'config']);
+                $this->set('ACL', $this->getAcls());
+                $this->set('_serialize', ['service', 'config', 'ACL']);
                 return;
             }
 
@@ -1186,7 +1188,8 @@ class DashboardsController extends AppController {
             $config = $TachoJson->standardizedData($data);
             $this->set('config', $config);
             $this->set('service', $service);
-            $this->set('_serialize', ['service', 'config']);
+            $this->set('ACL', $this->getAcls());
+            $this->set('_serialize', ['service', 'config', 'ACL']);
             return;
         }
 
@@ -1212,7 +1215,8 @@ class DashboardsController extends AppController {
                 $service = $this->getServicestatusByServiceId($serviceId);
                 $this->set('service', $service);
                 $this->set('config', $config);
-                $this->set('_serialize', ['service', 'config']);
+                $this->set('ACL', $this->getAcls());
+                $this->set('_serialize', ['service', 'config', 'ACL']);
                 return;
             }
 
@@ -1255,6 +1259,8 @@ class DashboardsController extends AppController {
                 'Service.disabled',
                 'Service.name',
                 'Service.uuid',
+                'Service.service_type',
+                'Host.id',
                 'Host.name'
             ],
             'conditions' => [
@@ -1280,23 +1286,53 @@ class DashboardsController extends AppController {
                     ['Servicestatus' => []]
                 );
             }
+            $Host = new \itnovum\openITCOCKPIT\Core\Views\Host($service);
             $Service = new \itnovum\openITCOCKPIT\Core\Views\Service($service);
             $PerfdataParser = new PerfdataParser($Servicestatus->getPerfdata());
 
-            $service = [
+
+            $serviceForJs = [
+                'Host'          => $Host->toArray(),
                 'Service'       => $Service->toArray(),
                 'Servicestatus' => $Servicestatus->toArray(),
                 'Perfdata'      => $PerfdataParser->parse()
             ];
 
-            $service['Service']['id'] = (int)$service['Service']['id'];
+            $serviceForJs['Service']['isGenericService'] = $service['Service']['service_type'] == GENERIC_SERVICE;
+            $serviceForJs['Service']['isEVCService'] = $service['Service']['service_type'] == EVK_SERVICE;
+            $serviceForJs['Service']['isSLAService'] = $service['Service']['service_type'] == SLA_SERVICE;
+            $serviceForJs['Service']['isMkService'] = $service['Service']['service_type'] == MK_SERVICE;
 
-            return $service;
+            $serviceForJs['Service']['id'] = (int)$serviceForJs['Service']['id'];
+            $serviceForJs['Host']['id'] = (int)$serviceForJs['Host']['id'];
+
+            return $serviceForJs;
         }
         return [
             'Service'       => [],
             'Servicestatus' => []
         ];
+    }
+
+    /**
+     * @return array
+     */
+    private function getAcls() {
+        $acl = [
+            'hosts'    => [
+                'browser' => isset($this->PERMISSIONS['hosts']['browser']),
+                'index'   => isset($this->PERMISSIONS['hosts']['index'])
+            ],
+            'services' => [
+                'browser' => isset($this->PERMISSIONS['services']['browser']),
+                'index'   => isset($this->PERMISSIONS['services']['index'])
+
+            ],
+            'evc'      => [
+                'view' => isset($this->PERMISSIONS['eventcorrelationmodule']['eventcorrelations']['view']),
+            ],
+        ];
+        return $acl;
     }
 
     public function hostStatusOverviewWidget() {
