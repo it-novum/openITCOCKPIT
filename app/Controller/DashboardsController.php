@@ -100,7 +100,12 @@ class DashboardsController extends AppController {
 
         //Check if a tab exists for the given user
         if ($this->DashboardTab->hasUserATab($User->getId()) === false) {
-            $this->DashboardTab->createNewTab($User->getId());
+            $result = $this->DashboardTab->createNewTab($User->getId());
+            if($result){
+                //Create default widgets
+                $result['Widget'] = $this->Widget->getDefaultWidgets($this->PERMISSIONS);
+                $this->DashboardTab->saveAll($result);
+            }
         }
         $tabs = $this->DashboardTab->getAllTabsByUserId($User->getId());
 
