@@ -1304,22 +1304,20 @@ class DashboardsController extends AppController {
             }
             $config = $HostStatusOverviewJson->standardizedData($data);
 
-            $HostCondition = new HostConditions(Hash::flatten($config));
             if ($this->DbBackend->isNdoUtils()) {
-                $query = $this->Host->getHoststatusCountBySelectedStatus($this->MY_RIGHTS, $HostCondition);
+                $query = $this->Host->getHoststatusCountBySelectedStatus($this->MY_RIGHTS, $config);
                 $modelName = 'Host';
             }
 
             if ($this->DbBackend->isCrateDb()) {
-                $query = $this->Hoststatus->getHoststatusCountBySelectedStatus($HostCondition, $HostCondition);
+                $query = $this->Hoststatus->getHoststatusCountBySelectedStatus($this->MY_RIGHTS, $config);
                 $modelName = 'Hoststatus';
             }
 
             if ($this->DbBackend->isStatusengine3()) {
-                $query = $this->Host->getHoststatusBySelectedStatusStatusengine3($this->MY_RIGHTS, $HostCondition);
+                $query = $this->Host->getHoststatusBySelectedStatusStatusengine3($this->MY_RIGHTS, $config);
                 $modelName = 'Host';
             }
-
             $statusCount = $this->{$modelName}->find('count', $query);
             $this->set('config', $config);
             $this->set('statusCount', $statusCount);

@@ -2140,22 +2140,16 @@ class Host extends AppModel {
 
     /**
      * @param $MY_RIGHTS
-     * @param HostConditions $HostConditions
+     * @param $conditions
      * @return array
      */
-    public function getHoststatusCountBySelectedStatus($MY_RIGHTS, HostConditions $HostConditions) {
+    public function getHoststatusCountBySelectedStatus($MY_RIGHTS, $conditions) {
         $query = [
             'recursive' => -1,
-            'conditions' => [
-                'Host.disabled'                  => 0,
-                'HostObject.is_active'           => 1,
-                'HostsToContainers.container_id' => $MY_RIGHTS,
-                $HostConditions->getConditionsForFind(),
-            ],
-            'fields'     => [
+            'fields'    => [
                 'COUNT(DISTINCT Hoststatus.host_object_id) AS count',
             ],
-            'joins'      => [
+            'joins'     => [
                 [
                     'table'      => 'nagios_objects',
                     'type'       => 'INNER',
@@ -2179,21 +2173,37 @@ class Host extends AppModel {
                     ],
                 ],
             ],
+            'conditions' => [
+                'HostObject.is_active'           => 1,
+                'HostsToContainers.container_id' => $MY_RIGHTS,
+                'Host.disabled'                  => 0
+            ]
         ];
 
+        if (!empty($conditions['Host']['name'])) {
+            $query['conditions']['Host.name LIKE'] = sprintf('%%%s%%', $conditions['Host']['name']);
+        }
+        $query['conditions']['Hoststatus.current_state'] = $conditions['Hoststatus']['current_state'];
+        if ($conditions['Hoststatus']['current_state'] > 0) {
+            if ($conditions['Hoststatus']['problem_has_been_acknowledged'] === false) {
+                $query['conditions']['Hoststatus.problem_has_been_acknowledged'] = false;
+            }
+            if ($conditions['Hoststatus']['scheduled_downtime_depth'] === false) {
+                $query['conditions']['Hoststatus.scheduled_downtime_depth'] = false;
+            }
+        }
         return $query;
     }
 
     /**
      * @param $MY_RIGHTS
-     * @param HostConditions $HostConditions
+     * @param $conditions
      * @return array
      */
-    public function getHoststatusBySelectedStatusStatusengine3($MY_RIGHTS, HostConditions $HostConditions) {
+    public function getHoststatusBySelectedStatusStatusengine3($MY_RIGHTS, $conditions) {
         $query = [
             'conditions' => [
-                'Host.disabled' => 0,
-                $HostConditions->getConditionsForFind()
+                'Host.disabled' => 0
             ],
             'contain'    => [],
             'fields'     => [
@@ -2208,6 +2218,16 @@ class Host extends AppModel {
                 ],
             ],
         ];
+
+        $query['conditions']['Hoststatus.current_state'] = $conditions['Hoststatus']['current_state'];
+        if ($conditions['Hoststatus']['current_state'] > 0) {
+            if ($conditions['Hoststatus']['problem_has_been_acknowledged'] === false) {
+                $query['conditions']['Hoststatus.problem_has_been_acknowledged'] = false;
+            }
+            if ($conditions['Hoststatus']['scheduled_downtime_depth'] === false) {
+                $query['conditions']['Hoststatus.scheduled_downtime_depth'] = false;
+            }
+        }
 
         $db = $this->getDataSource();
         $subQuery = $db->buildStatement([
@@ -2233,6 +2253,9 @@ class Host extends AppModel {
             'group'      => null
         ], $this);
         $subQuery = 'Hoststatus.hostname IN (' . $subQuery . ') ';
+        if (!empty($conditions['Host']['name'])) {
+            $query['conditions']['Host.name LIKE'] = sprintf('%%%s%%', $conditions['Host']['name']);
+        }
         $subQueryExpression = $db->expression($subQuery);
         $query['conditions'][] = $subQueryExpression->value;
 

@@ -210,10 +210,10 @@ class Hoststatus extends CrateModuleAppModel {
 
     /**
      * @param $MY_RIGHTS
-     * @param HostConditions $HostConditions
-     * @return int hoststatusCount
+     * @param $conditions
+     * @return array
      */
-    public function getHoststatusCountBySelectedStatus($MY_RIGHTS, HostConditions $HostConditions) {
+    public function getHoststatusCountBySelectedStatus($MY_RIGHTS, $conditions) {
         $this->virtualFields = [
             'count' => 'COUNT(DISTINCT Hoststatus.hostname)'
         ];
@@ -239,8 +239,17 @@ class Hoststatus extends CrateModuleAppModel {
             ]
         ];
 
-        if (isset($HostConditions['Hoststatus.problem_has_been_acknowledged'])) {
-            $query['Hoststatus.problem_has_been_acknowledged'] = (bool)$HostConditions['Hoststatus.problem_has_been_acknowledged'];
+        $query['conditions']['Hoststatus.current_state'] = $conditions['Hoststatus']['current_state'];
+        if ($conditions['Hoststatus']['current_state'] > 0) {
+            if ($conditions['Hoststatus']['problem_has_been_acknowledged'] === false) {
+                $query['conditions']['Hoststatus.problem_has_been_acknowledged'] = false;
+            }
+            if ($conditions['Hoststatus']['scheduled_downtime_depth'] === false) {
+                $query['conditions']['Hoststatus.scheduled_downtime_depth'] = 0;
+            }
+        }
+        if (!empty($conditions['Host']['name'])) {
+            $query['conditions']['Host.name LIKE'] = sprintf('%%%s%%', $conditions['Host']['name']);
         }
 
         return $query;

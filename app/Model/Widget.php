@@ -231,7 +231,7 @@ class Widget extends AppModel {
                 'icon'      => 'fa-info-circle',
                 'directive' => 'host-status-overview-widget',
                 'width'     => 3,
-                'height'    => 9
+                'height'    => 13
             ];
         }
 

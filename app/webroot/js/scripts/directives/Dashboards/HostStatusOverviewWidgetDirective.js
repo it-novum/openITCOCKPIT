@@ -30,11 +30,15 @@ angular.module('openITCOCKPIT').directive('hostStatusOverviewWidget', function($
                     name: ''
                 }
             };
+            $scope.statusCount = null;
 
             $scope.load = function(){
                 $http.get("/dashboards/hostStatusOverviewWidget.json?angular=true&widgetId=" + $scope.widget.id, $scope.filter).then(function(result){
                     $scope.filter.Host = result.data.config.Host;
-                    $scope.filter.Hoststatus = result.data.config.Hoststatus;
+                    $scope.filter.Hoststatus.current_state = result.data.config.Hoststatus.current_state;
+                    $scope.filter.Hoststatus.not_acknowledged = !result.data.config.Hoststatus.problem_has_been_acknowledged;
+                    $scope.filter.Hoststatus.not_in_downtime = !result.data.config.Hoststatus.scheduled_downtime_depth;
+                    $scope.statusCount = result.data.statusCount;
                     $scope.init = false;
                 });
             };
@@ -65,6 +69,8 @@ angular.module('openITCOCKPIT').directive('hostStatusOverviewWidget', function($
                 if($scope.init){
                     return;
                 }
+            });
+            $scope.saveHoststatusOverview = function(){
                 $http.post("/dashboards/hostStatusOverviewWidget.json?angular=true",
                     {
                         Widget: {
@@ -72,8 +78,8 @@ angular.module('openITCOCKPIT').directive('hostStatusOverviewWidget', function($
                         },
                         Hoststatus: {
                             current_state: $scope.filter.Hoststatus.current_state,
-                            problem_has_been_acknowledged: $scope.filter.Hoststatus.not_acknowledged,
-                            scheduled_downtime_depth: $scope.filter.Hoststatus.not_in_downtime
+                            problem_has_been_acknowledged: !$scope.filter.Hoststatus.not_acknowledged,
+                            scheduled_downtime_depth: !$scope.filter.Hoststatus.not_in_downtime
                         },
                         Host: {
                             name: $scope.filter.Host.name
@@ -82,8 +88,10 @@ angular.module('openITCOCKPIT').directive('hostStatusOverviewWidget', function($
                 ).then(function(result){
                     //Update status
                     $scope.load();
+                    $scope.hideConfig();
                 });
-            }, true);
+            };
+
         },
 
         link: function($scope, element, attr){
