@@ -180,6 +180,9 @@ $config = [
                 'loadParentHostsByString',
                 'loadParentHostsById',
                 'hoststatus'
+            ],
+            'Statistics'       => [
+                'ask_anonymous_statistics'
             ]
         ],
         'dependencies'   => [
@@ -348,6 +351,9 @@ $config = [
                 'index' => [
                     'hostAndServicesSummaryStatus'
                 ]
+            ],
+            'Statistics'            => [
+                'index' => ['saveStatisticDecision']
             ],
         ],
         'roles_rights'   => [

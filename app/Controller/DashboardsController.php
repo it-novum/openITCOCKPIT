@@ -61,12 +61,29 @@ class DashboardsController extends AppController {
         'User',
         MONITORING_SERVICESTATUS,
         'Service',
-        'Host'
+        'Host',
+        'Systemsetting'
     ];
 
     public function index() {
         $this->layout = 'angularjs';
         if (!$this->isAngularJsRequest()) {
+            $askForHelp = false;
+            if (!$this->Cookie->check('askAgainForHelp')) {
+                $record = $this->Systemsetting->find('first', [
+                    'recursive'  => -1,
+                    'conditions' => [
+                        'Systemsetting.key' => 'SYSTEM.ANONYMOUS_STATISTICS'
+                    ]
+                ]);
+                if (!empty($record)) {
+                    if ($record['Systemsetting']['value'] === '2') {
+                        $askForHelp = true;
+                    }
+                }
+            }
+            $this->set('askForHelp', $askForHelp);
+
             //Only ship template
             return;
         }
@@ -716,7 +733,6 @@ class DashboardsController extends AppController {
         return;
     }
 
-
     /***** Basic Widgets *****/
     public function welcomeWidget() {
         if (!$this->isApiRequest()) {
@@ -1327,8 +1343,8 @@ class DashboardsController extends AppController {
     public function hostStatusCount() {
         $this->layout = 'angularjs';
 
-        $HostFilter =new HostFilter($this->request);
-        $HostControllerRequest =new HostControllerRequest($this->request, $HostFilter);
+        $HostFilter = new HostFilter($this->request);
+        $HostControllerRequest = new HostControllerRequest($this->request, $HostFilter);
         $HostCondition = new HostConditions();
         $HostCondition->setIncludeDisabled(false);
 
@@ -1350,7 +1366,7 @@ class DashboardsController extends AppController {
         $this->set('statusCount', $statusCount);
         $this->set('_serialize', ['statusCount']);
     }
-    
+
     public function getPerformanceDataMetrics($serviceId) {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
