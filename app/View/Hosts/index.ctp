@@ -90,6 +90,11 @@ $this->Paginator->options(['url' => $this->params['named']]);
                             <i class="fa fa-filter"></i>
                             <?php echo __('Filter'); ?>
                         </button>
+
+                        <button type="button" class="btn btn-xs btn-danger" ng-click="problemsOnly()">
+                            <i class="fa fa-exclamation-triangle"></i>
+                            <?php echo __('Unhandled only'); ?>
+                        </button>
                     </div>
                     <div class="jarviswidget-ctrls" role="menu"></div>
 

@@ -61,12 +61,29 @@ class DashboardsController extends AppController {
         'User',
         MONITORING_SERVICESTATUS,
         'Service',
-        'Host'
+        'Host',
+        'Systemsetting'
     ];
 
     public function index() {
         $this->layout = 'angularjs';
         if (!$this->isAngularJsRequest()) {
+            $askForHelp = false;
+            if (!$this->Cookie->check('askAgainForHelp')) {
+                $record = $this->Systemsetting->find('first', [
+                    'recursive'  => -1,
+                    'conditions' => [
+                        'Systemsetting.key' => 'SYSTEM.ANONYMOUS_STATISTICS'
+                    ]
+                ]);
+                if (!empty($record)) {
+                    if ($record['Systemsetting']['value'] === '2') {
+                        $askForHelp = true;
+                    }
+                }
+            }
+            $this->set('askForHelp', $askForHelp);
+
             //Only ship template
             return;
         }
@@ -83,7 +100,12 @@ class DashboardsController extends AppController {
 
         //Check if a tab exists for the given user
         if ($this->DashboardTab->hasUserATab($User->getId()) === false) {
-            $this->DashboardTab->createNewTab($User->getId());
+            $result = $this->DashboardTab->createNewTab($User->getId());
+            if($result){
+                //Create default widgets
+                $result['Widget'] = $this->Widget->getDefaultWidgets($this->PERMISSIONS);
+                $this->DashboardTab->saveAll($result);
+            }
         }
         $tabs = $this->DashboardTab->getAllTabsByUserId($User->getId());
 
@@ -716,7 +738,6 @@ class DashboardsController extends AppController {
         return;
     }
 
-
     /***** Basic Widgets *****/
     public function welcomeWidget() {
         if (!$this->isApiRequest()) {
@@ -1339,7 +1360,6 @@ class DashboardsController extends AppController {
 
         throw new MethodNotAllowedException();
     }
-
     
     public function getPerformanceDataMetrics($serviceId) {
         if (!$this->isAngularJsRequest()) {
