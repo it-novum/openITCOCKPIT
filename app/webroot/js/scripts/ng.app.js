@@ -1,4 +1,4 @@
-angular.module('openITCOCKPIT', [])
+angular.module('openITCOCKPIT', ['gridster'])
 
     .factory("httpInterceptor", function($q, $rootScope, $timeout){
         return {

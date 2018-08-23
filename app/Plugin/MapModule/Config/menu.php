@@ -37,7 +37,7 @@ $config = [
                 'map'      => [
                     'url'               => ['controller' => 'maps', 'action' => 'index', 'plugin' => 'map_module'],
                     'title'             => 'Maps',
-                    'icon'              => 'bolt',
+                    'icon'              => 'map-marker',
                     'parent_controller' => 'maps',
                 ],
                 'rotation' => [

@@ -36,8 +36,11 @@ $config = [
             '/smartadmin/js/plugin/fullcalendar-2.3.1/fullcalendar.min.css',
             //'vendor/vis-4.21.0/dist/vis-timeline-graph2d.min.css',
             'vendor/vis-4.21.0/dist/vis.css',
-            'my_vis.css'
-
+            'my_vis.css',
+            'vendor/noty/noty.css',
+            'flippy.css',
+            'vendor/image-picker.css',
+            '/vendor/angular-gridster/dist/angular-gridster.css'
         ],
 
         'js'                        => [

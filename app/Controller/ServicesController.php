@@ -141,7 +141,6 @@ class ServicesController extends AppController {
             //Only ship HTML template
             return;
         }
-
         $ServiceFilter = new ServiceFilter($this->request);
         $ServiceControllerRequest = new ServiceControllerRequest($this->request, $ServiceFilter);
         $ServiceConditions = new ServiceConditions();

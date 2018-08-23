@@ -264,4 +264,59 @@ class Servicestatus extends CrateModuleAppModel {
         return $servicestatusCount;
     }
 
+    /**
+     * @param $MY_RIGHTS
+     * @param $conditions
+     * @return array
+     */
+    public function getServicestatusCountBySelectedStatus($MY_RIGHTS, $conditions) {
+        $this->virtualFields = [
+            'count' => 'COUNT(DISTINCT Servicestatus.service_description)'
+        ];
+        $query = [
+            'fields' => [
+                'Servicestatus.current_state',
+            ],
+            'joins' => [
+                [
+                    'table' => 'openitcockpit_services',
+                    'type' => 'INNER',
+                    'alias' => 'Service',
+                    'conditions' => 'Service.uuid = Servicestatus.service_description',
+                ],
+                [
+                    'table' => 'openitcockpit_hosts',
+                    'type' => 'INNER',
+                    'alias' => 'Host',
+                    'conditions' => 'Host.uuid = Servicestatus.hostname',
+                ]
+            ],
+            'conditions' => [
+                'Service.disabled'                  => false
+            ],
+
+            'array_difference' => [
+                'Host.container_ids' =>
+                    $MY_RIGHTS,
+            ]
+        ];
+        $query['conditions']['Servicestatus.current_state'] = $conditions['Servicestatus']['current_state'];
+        if ($conditions['Servicestatus']['current_state'] > 0) {
+            if ($conditions['Servicestatus']['problem_has_been_acknowledged'] === false) {
+                $query['conditions']['Servicestatus.problem_has_been_acknowledged'] = false;
+            }
+            if ($conditions['Servicestatus']['scheduled_downtime_depth'] === false) {
+                $query['conditions']['Servicestatus.scheduled_downtime_depth'] = 0;
+            }
+        }
+        if (!empty($conditions['Host']['name'])) {
+            $query['conditions']['Host.name LIKE'] = sprintf('%%%s%%', $conditions['Host']['name']);
+        }
+
+        if (!empty($conditions['Service']['name'])) {
+            $query['conditions']['Service.name LIKE'] = sprintf('%%%s%%', $conditions['Service']['name']);
+        }
+        return $query;
+    }
 }
+

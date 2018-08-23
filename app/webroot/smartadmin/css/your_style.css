@@ -1608,6 +1608,7 @@ label[class^='aco-host']:after, label[class^='aco-service']:after {
     padding: 1em;
     border-radius: 8px;
     display: none;
+    z-index:2;
 }
 
 .text-transform-none {
@@ -1951,20 +1952,19 @@ label[class^='aco-host']:after, label[class^='aco-service']:after {
     padding: 0 5px;
 }
 
-
 .state-button-small {
-    padding:0 2px;
+    padding: 0 2px;
     font-size: 12px;
 }
 
 .tooltip-arrow-image {
-    border-right-color: transparent!important;
+    border-right-color: transparent !important;
 }
 
 .tooltip-inner-image {
     padding: 5px 10px;
     font-size: 11px;
-    font-family: Arial,Helvetica,sans-serif;
+    font-family: Arial, Helvetica, sans-serif;
     font-weight: 700;
     border-radius: 0;
     color: #fff;
@@ -1977,7 +1977,174 @@ label[class^='aco-host']:after, label[class^='aco-service']:after {
 }
 
 .notify-label {
-    display:inline-block;
+    display: inline-block;
     line-height: 1.4;
     min-width: 150px;
+}
+
+#widget-container {
+    background: #EEEEEF;
+}
+
+.map-summary-state-popover {
+    position: fixed;
+    top: 50px;
+    right: 0;
+    width: 30%;
+    z-index: 99999;
+}
+
+#mapToolbar {
+    width: 40px;
+    height: 300px;
+    border: 1px solid #333;
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background-color: #3a3633;
+}
+
+#mapToolsDragger {
+    width: 100%;
+    height: 15px;
+    background-color: #201d1c;
+    cursor: move;
+}
+
+.mapToolbarTool {
+    color: #c0bbb7;
+    border: 1px solid #403f3d;
+    border-radius: 4px;
+    background-color: #403f3d;
+    margin: 4px;
+    text-align: center;
+    padding-bottom: 2px;
+}
+
+.mapToolbarTool:hover {
+    color: #fff;
+}
+
+.mapToolbarLine {
+    color: #c0bbb7;
+    background-color: #403f3d;
+    height: 2px;
+    padding: 1px;
+}
+
+.selectedMapItem {
+    background: #0088cc;
+}
+
+.has-error-border {
+    border: 1px solid #a94442;
+}
+
+.bg-color-black {
+    background: #000000;
+}
+
+.ui-resizable-helper {
+    border: 2px dotted #00F;
+}
+
+#layersBox {
+    width: 250px;
+    height: 200px;
+    border: 1px solid #333;
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    background-color: #3a3633;
+}
+
+#layersBoxDragger {
+    width: 100%;
+    height: 15px;
+    background-color: #201d1c;
+    cursor: move;
+}
+
+.layersContainer {
+    height: 180px;
+}
+
+.mapLayer {
+    padding: 5px;
+    color: #c0bbb7;
+    background-color: #403f3d;
+    margin-top: 5px;
+}
+
+.selectedLayer {
+    background-color: #0088cc;
+    color: #FFF;
+}
+
+.dashboard-tab-hover-fix:hover {
+    color: #fff !important;
+}
+
+#manyThanksForYourSupport {
+    background: rgba(71, 69, 68, 0.8);
+    color: #60fb62;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    border-radius: 16px;
+    width: 250px;
+    height: 250px;
+    z-index: 9999;
+    font-size: 20px;
+    text-align: center;
+    padding-top: 50px;
+    margin-top: -125px;
+    margin-left: -125px;
+    display:none;
+}
+
+/* dashboards host/service status overview */
+.bg-host-0, .bg-service-0 {
+    background-color: #449D44 !important;
+}
+
+.bg-service-1 {
+    background-color: #DF8F1D !important;
+}
+
+.bg-host-1, .bg-service-2 {
+    background-color: #C9302C !important;
+}
+
+.bg-host-2, .bg-service-3 {
+    background-color: #92A2A8 !important;
+}
+
+.bg-host-background-icon:after, .bg-service-background-icon:after {
+    font-family: "FontAwesome";
+    padding-left: 5px;
+    position: absolute;
+    bottom: 0px;
+    right: 5px;
+    font-size: calc(2.5vw + 2.5vh);
+}
+
+.bg-host-front-0:after, .bg-service-front-0:after {
+    content: "\f058";
+    color: rgba(255, 255, 255, 0.1);
+}
+
+.bg-service-front-1:after {
+    content: "\f06a";
+    color: rgba(255, 217, 56, 0.1);
+}
+
+.bg-host-front-1:after, .bg-service-front-2:after {
+    content: "\f06a";
+    color: rgba(255, 255, 255, 0.1);
+}
+
+.bg-host-front-2:after, .bg-service-front-3:after {
+    content: "\f06a";
+    color: rgba(255, 255, 255, 0.1);
 }
