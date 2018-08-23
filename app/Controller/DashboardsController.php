@@ -22,1119 +22,1476 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+use itnovum\openITCOCKPIT\Core\Dashboards\DowntimeHostListJson;
+use itnovum\openITCOCKPIT\Core\Dashboards\DowntimeServiceListJson;
+use itnovum\openITCOCKPIT\Core\Dashboards\HostStatusListJson;
+use itnovum\openITCOCKPIT\Core\Dashboards\HostStatusOverviewJson;
+use itnovum\openITCOCKPIT\Core\Dashboards\NoticeJson;
+use itnovum\openITCOCKPIT\Core\Dashboards\ServiceStatusListJson;
+use itnovum\openITCOCKPIT\Core\Dashboards\ServiceStatusOverviewJson;
+use itnovum\openITCOCKPIT\Core\Dashboards\TachoJson;
+use itnovum\openITCOCKPIT\Core\Dashboards\TrafficlightJson;
+use itnovum\openITCOCKPIT\Core\HostConditions;
+use itnovum\openITCOCKPIT\Core\HostControllerRequest;
+use itnovum\openITCOCKPIT\Core\ServicestatusFields;
+use itnovum\openITCOCKPIT\Filter\HostFilter;
+use itnovum\openITCOCKPIT\Core\ValueObjects\Perfdata;
+use Statusengine\PerfdataParser;
 
+/**
+ * Class DashboardsController
+ * @property DashboardTab $DashboardTab
+ * @property Widget $Widget
+ * @property Parenthost $Parenthost
+ * @property Hoststatus $Hoststatus
+ * @property User $User
+ * @property Servicestatus $Servicestatus
+ * @property Service $Service
+ */
+class DashboardsController extends AppController {
 
-class DashboardsController extends AppController
-{
-    public $layout = 'Admin.default';
-    public $helpers = [
-        'PieChart',
-        'Status',
-        'Monitoring',
-        'Bbcode',
-        'Dashboard',
-    ];
-    public $components = [
-        'Bbcode',
-    ];
+    //Most calls are API calls or modal html requests
+    //Blank is the best default for Dashboards...
+    public $layout = 'blank';
+
     public $uses = [
-        MONITORING_HOSTSTATUS,
-        MONITORING_SERVICESTATUS,
-        MONITORING_PARENTHOST,
-        'Host',
         'DashboardTab',
         'Widget',
-        'WidgetHostStatusList',
-        'WidgetServiceStatusList',
-        'Service',
-        MONITORING_OBJECTS,
-        'Rrd',
+        'Parenthost',
+        MONITORING_HOSTSTATUS,
         'User',
-        'Servicegroup',
-        'Hostgroup',
-        'WidgetTacho',
-        'WidgetNotice',
-        'MapModule.Map',
-        'GraphgenTmpl',
+        MONITORING_SERVICESTATUS,
+        'Service',
+        'Host',
+        'Systemsetting'
     ];
 
-    const UPDATE_DISABLED = 0;
-    const CHECK_FOR_UPDATES = 1;
-    const AUTO_UPDATE = 2;
-
-    public function beforeFilter()
-    {
-        require_once APP.'Lib'.DS.'Dashboards'.DS.'DashboardHandler.php';
-        //Dashboard is allays allowed
-        if ($this->Auth->loggedIn() === true) {
-            $this->Auth->allow();
-        }
-        parent::beforeFilter();
-        if ($this->Auth->loggedIn() === true) {
-            $this->DashboardHandler = new Dashboard\DashboardHandler($this);
-        }
-    }
-
-    public function index($tabId = null)
-    {
-        $userId = $this->Auth->user('id');
-        $tab = [];
-        if ($tabId !== null && is_numeric($tabId)) {
-            $tab = $this->DashboardTab->find('first', [
-                'conditions' => [
-                    'user_id' => $this->Auth->user('id'),
-                    'id'      => $tabId,
-                ],
-            ]);
-        }
-        //No tab given, select first tab of the user
-        if (empty($tab)) {
-            $tab = $this->DashboardTab->find('first', [
-                'conditions' => [
-                    'user_id' => $this->Auth->user('id'),
-                ],
-                'order'      => [
-                    'position' => 'ASC',
-                ],
-            ]);
-        }
-        if (empty($tab)) {
-            //No tab found. Create one
-            $result = $this->DashboardTab->createNewTab($userId);
-            if ($result) {
-                $tabId = $result['DashboardTab']['id'];
-                //Fill new tab with default dashboards
-                $this->Widget->create();
-                $defaultWidgets = $this->DashboardHandler->getDefaultDashboards($tabId);
-                $this->Widget->saveAll($defaultWidgets);
-                //normalize data for controller workflow
-                $tab = $this->DashboardTab->findById($tabId);
-            }
-        } else {
-            $tabId = $tab['DashboardTab']['id'];
-        }
-
-        //Find all tabs of the user, to create tab bar
-        $tabs = $this->DashboardTab->find('all', [
-            'recursive'  => -1,
-            'contain'    => [],
-            'conditions' => [
-                'user_id' => $this->Auth->user('id'),
-            ],
-            'order'      => [
-                'position' => 'ASC',
-            ],
-        ]);
-
-        $allWidgets = $this->DashboardHandler->getAllWidgets();
-
-        $preparedWidgets = $this->DashboardHandler->prepareForRender($tab);
-
-        $this->Frontend->setJson('lang', ['newTitle' => __('New title')]);
-        $this->Frontend->setJson('tabId', $tabId);
-
-        //Find shared tabs
-        $this->DashboardTab->bindModel([
-            'belongsTo' => [
-                'User',
-            ],
-        ]);
-        $_sharedTabs = $this->DashboardTab->find('all', [
-            'recursive'  => -1,
-            'contain'    => [
-                'User' => [
-                    'fields' => [
-                        'User.id',
-                        'User.usergroup_id',
-                        'User.firstname',
-                        'User.lastname',
-                    ],
-                ],
-            ],
-            'fields'     => [
-                'DashboardTab.id',
-                'DashboardTab.name',
-            ],
-            'conditions' => [
-                'shared' => 1,
-            ],
-            'order'      => [
-                'User.id' => 'ASC',
-            ],
-        ]);
-        $sharedTabs = [];
-        foreach ($_sharedTabs as $sharedTab) {
-            $sharedTabs[$sharedTab['DashboardTab']['id']] = $sharedTab['User']['firstname'].' '.$sharedTab['User']['lastname'].DS.$sharedTab['DashboardTab']['name'];
-        }
-
-        //Was this tab created from a shared tab?
-        $updateAvailable = false;
-        if ($tab['DashboardTab']['source_tab_id'] > 0) {
-            if ($this->DashboardTab->exists($tab['DashboardTab']['source_tab_id'])) {
-                //Does the source tab exists?
-                $sourceTab = $this->DashboardTab->find('first', [
+    public function index() {
+        $this->layout = 'angularjs';
+        if (!$this->isAngularJsRequest()) {
+            $askForHelp = false;
+            if (!$this->Cookie->check('askAgainForHelp')) {
+                $record = $this->Systemsetting->find('first', [
                     'recursive'  => -1,
-                    'contain'    => [],
                     'conditions' => [
-                        'DashboardTab.id'         => $tab['DashboardTab']['source_tab_id'],
-                        'DashboardTab.shared'     => 1,
-                        'DashboardTab.modified >' => $tab['DashboardTab']['modified'],
-                    ],
+                        'Systemsetting.key' => 'SYSTEM.ANONYMOUS_STATISTICS'
+                    ]
                 ]);
-                if (!empty($sourceTab)) {
-                    //Source tab was modified, show update notice or run auto update
-                    if ($tab['DashboardTab']['check_for_updates'] == self::CHECK_FOR_UPDATES) {
-                        //Display update available message
-                        $updateAvailable = true;
-                    }
-
-                    if ($tab['DashboardTab']['check_for_updates'] == self::AUTO_UPDATE) {
-                        //Delete old widgets
-                        foreach ($tab['Widget'] as $widget) {
-                            $this->Widget->delete($widget['id']);
-                        }
-                        $error = $this->Widget->copySharedWidgets($sourceTab, $tab, $userId);
-                        if ($error === false) {
-                            $this->setFlash(__('Tab automatically updated'));
-                            $this->redirect([
-                                'action' => 'index',
-                                $tab['DashboardTab']['id'],
-                            ]);
-                        } else {
-                            $this->setFlash(__('Automatically tab failed'), false);
-                            $this->redirect(['action' => 'index']);
-                        }
+                if (!empty($record)) {
+                    if ($record['Systemsetting']['value'] === '2') {
+                        $askForHelp = true;
                     }
                 }
-            } else {
-                //Source tab not found, reset association
-                $tab['DashboardTab']['source_tab_id'] = null;
-                $tab['DashboardTab']['check_for_updates'] = self::UPDATE_DISABLED;
-                $this->DashboardTab->id = $tab['DashboardTab']['id'];
-                $this->DashboardTab->saveField('source_tab_id', $tab['DashboardTab']['source_tab_id']);
-                $this->DashboardTab->saveField('check_for_updates', $tab['DashboardTab']['check_for_updates']);
+            }
+            $this->set('askForHelp', $askForHelp);
+
+            //Only ship template
+            return;
+        }
+
+        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+
+        $userRecord = $this->User->find('first', [
+            'recursive'  => -1,
+            'conditions' => [
+                'User.id' => $User->getId()
+            ]
+        ]);
+        $tabRotationInterval = (int)$userRecord['User']['dashboard_tab_rotation'];
+
+        //Check if a tab exists for the given user
+        if ($this->DashboardTab->hasUserATab($User->getId()) === false) {
+            $result = $this->DashboardTab->createNewTab($User->getId());
+            if ($result) {
+                //Create default widgets
+                $result['Widget'] = $this->Widget->getDefaultWidgets($this->PERMISSIONS);
+                $this->DashboardTab->saveAll($result);
             }
         }
+        $tabs = $this->DashboardTab->getAllTabsByUserId($User->getId());
 
-        //Get tab rotate interval
-        $user = $this->User->find('first', [
-            'recursive'  => -1,
-            'contain'    => [],
-            'conditions' => [
-                'User.id' => $this->Auth->user('id'),
-            ],
-            'fields'     => [
-                'dashboard_tab_rotation',
-            ],
-        ]);
-        $tabRotateInterval = $user['User']['dashboard_tab_rotation'];
+        $widgets = $this->Widget->getAvailableWidgets($this->PERMISSIONS);
 
-        $this->Frontend->setJson('updateAvailable', $updateAvailable);
-        $this->Frontend->setJson('tabRotationInterval', $tabRotateInterval);
-        $this->Frontend->setJson('lang_minutes', __('minutes'));
-        $this->Frontend->setJson('lang_seconds', __('seconds'));
-        $this->Frontend->setJson('lang_and', __('and'));
-        $this->Frontend->setJson('lang_disabled', __('disabled'));
-        $this->set(compact([
-            'tab',
-            'tabs',
-            'allWidgets',
-            'preparedWidgets',
-            'sharedTabs',
-            'updateAvailable',
-            'tabRotateInterval',
-        ]));
+        $this->set('tabs', $tabs);
+        $this->set('widgets', $widgets);
+        $this->set('tabRotationInterval', $tabRotationInterval);
+        $this->set('_serialize', ['tabs', 'widgets', 'tabRotationInterval']);
     }
 
-    //Will redirect the user to the next tab
-    public function next($currentTabId)
-    {
-        $userId = $this->Auth->user('id');
-        $tabs = $this->DashboardTab->find('all', [
-            'recursive'  => -1,
-            'contain'    => [],
-            'conditions' => [
-                'user_id' => $this->Auth->user('id'),
-            ],
-            'order'      => [
-                'position' => 'ASC',
-            ],
-            'fields'     => [
-                'DashboardTab.id',
-                'DashboardTab.position',
-            ],
-        ]);
-        $tabs = Hash::extract($tabs, '{n}.DashboardTab.id');
-        $nextTabId = $tabs[0];
-
-        $currentKey = array_search($currentTabId, $tabs);
-        $nextKey = $currentKey + 1;
-        if (isset($tabs[$nextKey])) {
-            $nextTabId = $tabs[$nextKey];
-        }
-        $this->redirect([
-            'action' => 'index',
-            $nextTabId,
-        ]);
-    }
-
-    public function add()
-    {
-        $widget = [];
-        if (!$this->request->is('ajax')) {
+    public function getWidgetsForTab($tabId) {
+        if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
-        if (isset($this->request->data['typeId']) && isset($this->request->data['tabId'])) {
-            $typeId = $this->request->data['typeId'];
-            $tabId = $this->request->data['tabId'];
-            $tab = $this->DashboardTab->find('first', [
-                'recursive'  => -1,
-                'contain'    => [],
-                'conditions' => [
-                    'user_id' => $this->Auth->user('id'),
-                    'id'      => $tabId,
-                ],
-            ]);
-            //Check if the tab exists and is owned by the user
-            if (!empty($tab)) {
-                $_widget = $this->DashboardHandler->getWidgetByTypeId($typeId, $tabId);
-                $this->Widget->create();
-                if ($this->Widget->saveAll($_widget)) {
-                    $resultForRender = $this->Widget->find('first', [
-                        'conditions' => [
-                            'Widget.id' => $this->Widget->id,
-                        ],
-                        'recursive'  => -1,
-                        'contain'    => [],
-                    ]);
-                    //prepareForRender requires multidimensional Widget array
-                    $resultForRender = [
-                        'Widget' => [
-                            $resultForRender['Widget'],
-                        ],
-                    ];
-                    $widget = $this->DashboardHandler->prepareForRender($resultForRender);
-                    $this->DashboardTab->id = $tabId;
-                    $this->DashboardTab->saveField('modified', date('Y-m-d H:i:s'));
-                }
-            }
-        }
-        //Set the widget or an empty array
-        $this->set('widget', $widget);
-    }
 
-    public function createTab()
-    {
-        if ($this->request->is('post') || $this->request->is('put')) {
-            if (isset($this->request->data['dashboard']['name'])) {
-                $tabName = $this->request->data['dashboard']['name'];
-                $userId = $this->Auth->user('id');
-                if (mb_strlen($tabName) > 0) {
-                    $result = $this->DashboardTab->createNewTab($userId, [
-                        'name' => $tabName,
-                    ]);
-                    if (isset($result['DashboardTab']['id'])) {
-                        $this->redirect([
-                            'action' => 'index',
-                            $result['DashboardTab']['id'],
-                        ]);
-                    }
-                }
-            }
-        }
-        $this->redirect([
-            'action' => 'index',
-        ]);
-    }
-
-    public function createTabFromSharing()
-    {
-        $sourceTabId = $this->request->data('dashboard.source_tab');
-        $sourceTab = $this->DashboardTab->find('first', [
-            'recursive'  => -1,
-            'contain'    => [],
-            'conditions' => [
-                'id'     => $sourceTabId,
-                'shared' => 1,
-            ],
-        ]);
-        if (empty($sourceTab)) {
-            throw new NotFoundException(__('Invalid tab'));
-        }
-        $userId = $this->Auth->user('id');
-        $newTab = $this->DashboardTab->createNewTab($userId, [
-            'name'              => $sourceTab['DashboardTab']['name'],
-            'source_tab_id'     => $sourceTab['DashboardTab']['id'],
-            'check_for_updates' => 1,
-        ]);
-
-        $error = $this->Widget->copySharedWidgets($sourceTab, $newTab, $userId);
-
-        if ($error === false) {
-            $this->setFlash(__('Tab copied successfully'));
-            $this->redirect([
-                'action' => 'index',
-                $newTab['DashboardTab']['id'],
-            ]);
-        }
-
-        $this->setFlash(__('Could not use shared tab'), false);
-        $this->redirect(['action' => 'index']);
-    }
-
-    public function updateSharedTab()
-    {
-        if ($this->request->is('post') || $this->request->is('put')) {
-            $tabId = $this->request->data('dashboard.tabId');
-            $askAgain = $this->request->data('dashboard.ask_again');
-            $userId = $this->Auth->user('id');
-
-            $tab = $this->DashboardTab->find('first', [
-                'recursive'  => -1,
-                'contain'    => [
-                    'Widget',
-                ],
-                'conditions' => [
-                    'id'      => $tabId,
-                    'user_id' => $userId,
-                ],
-            ]);
-            if (!empty($tab)) {
-                //Delete old widgets
-                foreach ($tab['Widget'] as $widget) {
-                    $this->Widget->delete($widget['id']);
-                }
-
-                if ($this->DashboardTab->exists($tab['DashboardTab']['source_tab_id'])) {
-                    $sourceTab = $this->DashboardTab->find('first', [
-                        'recursive'  => -1,
-                        'contain'    => [],
-                        'conditions' => [
-                            'id'     => $tab['DashboardTab']['source_tab_id'],
-                            'shared' => 1,
-                        ],
-                    ]);
-                    $error = $this->Widget->copySharedWidgets($sourceTab, $tab, $userId);
-
-                    $this->DashboardTab->id = $tab['DashboardTab']['id'];
-                    if ($askAgain == 1) {
-                        $this->DashboardTab->saveField('check_for_updates', self::AUTO_UPDATE);
-                    }
-                    $this->DashboardTab->saveField('modified', date('Y-m-d H:i:s'));
-
-                    if ($error === false) {
-                        $this->setFlash(__('Tab updated successfully'));
-                        $this->redirect([
-                            'action' => 'index',
-                            $tab['DashboardTab']['id'],
-                        ]);
-                    }
-                    $this->setFlash(__('Could not update tab'), false);
-                    $this->redirect(['action' => 'index']);
-                }
-            }
-        }
-    }
-
-    public function disableUpdate()
-    {
-        if (!$this->request->is('post')) {
-            throw new MethodNotAllowedException();
-        }
-        $this->autoRender = false;
-        if (isset($this->request->data['tabId'])) {
-            $tabId = $this->request->data['tabId'];
-            $userId = $this->Auth->user('id');
-            $tab = $this->DashboardTab->find('first', [
-                'recursive'  => -1,
-                'contain'    => [],
-                'conditions' => [
-                    'id'      => $tabId,
-                    'user_id' => $userId,
-                ],
-            ]);
-            if (!empty($tab)) {
-                $this->DashboardTab->id = $tab['DashboardTab']['id'];
-                $this->DashboardTab->saveField('source_tab_id', null);
-                $this->DashboardTab->saveField('check_for_updates', self::UPDATE_DISABLED);
-            }
-        }
-    }
-
-    public function renameTab()
-    {
-        if ($this->request->is('post') || $this->request->is('put')) {
-            if (isset($this->request->data['dashboard']['name']) && isset($this->request->data['dashboard']['id'])) {
-                $tabName = $this->request->data['dashboard']['name'];
-                $tabId = $this->request->data['dashboard']['id'];
-                $userId = $this->Auth->user('id');
-                if (mb_strlen($tabName) > 0) {
-                    $result = $this->DashboardTab->find('first', [
-                        'recursive'  => -1,
-                        'contain'    => [],
-                        'conditions' => [
-                            'id'      => $tabId,
-                            'user_id' => $userId,
-                        ],
-                    ]);
-                    if (!empty($result)) {
-                        $this->DashboardTab->id = $tabId;
-                        if ($this->DashboardTab->saveField('name', $tabName)) {
-                            $this->redirect([
-                                'action' => 'index',
-                                $tabId,
-                            ]);
-                        }
-                    }
-                }
-            }
-        }
-        $this->setFlash(__('Could not rename tab'), false);
-        $this->redirect([
-            'action' => 'index',
-            $tabId,
-        ]);
-    }
-
-    public function deleteTab($tabId = null)
-    {
         if (!$this->DashboardTab->exists($tabId)) {
-            throw new NotFoundException(__('Invalid tab'));
+            throw new NotFoundException(sprintf('Tab width id %s not found', $tabId));
         }
 
-        if (!$this->request->is('post')) {
+        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+        $widgets = $this->DashboardTab->getWidgetsForTabByUserIdAndTabId($User->getId(), $tabId);
+
+        $this->set('widgets', $widgets);
+        $this->set('_serialize', ['widgets']);
+    }
+
+    public function dynamicDirective() {
+        $directiveName = $this->request->query('directive');
+        if (strlen($directiveName) < 2) {
+            throw new RuntimeException('Wrong AngularJS directive name?');
+        }
+        $this->set('directiveName', $directiveName);
+    }
+
+    public function saveGrid() {
+        if (!$this->isAngularJsRequest() || !$this->request->is('post')) {
             throw new MethodNotAllowedException();
         }
 
-        $tab = $this->DashboardTab->findById($tabId);
-        $userId = $this->Auth->user('id');
-        if ($tab['DashboardTab']['user_id'] == $userId) {
-            $this->DashboardTab->id = $tab['DashboardTab']['id'];
-            if ($this->DashboardTab->delete()) {
-                $this->setFlash(__('Tab deleted'));
-                $this->redirect(['action' => 'index']);
-            }
-        }
+        if ($this->Widget->saveAll($this->request->data)) {
 
-        $this->setFlash(__('Could not delete tab'), false);
-        $this->redirect(['action' => 'index']);
-    }
-
-    public function restoreDefault($tabId = null)
-    {
-        $tab = $this->DashboardTab->find('first', [
-            'conditions' => [
-                'user_id' => $this->Auth->user('id'),
-                'id'      => $tabId,
-            ],
-        ]);
-        if (empty($tab) || $tab['DashboardTab']['id'] == null) {
-            throw new NotFoundException(__('Invalid tab'));
-        }
-        if ($this->Widget->deleteAll(['Widget.dashboard_tab_id' => $tab['DashboardTab']['id']])) {
-            $defaultWidgets = $this->DashboardHandler->getDefaultDashboards($tabId);
-            $this->Widget->saveAll($defaultWidgets);
-            $this->DashboardTab->id = $tabId;
-            $this->DashboardTab->saveField('modified', date('Y-m-d H:i:s'));
-        }
-        $this->redirect(['action' => 'index', $tabId]);
-    }
-
-    public function updateTitle()
-    {
-        $this->autoRender = false;
-        if (!$this->request->is('ajax')) {
-            throw new MethodNotAllowedException();
-        }
-        if (isset($this->request->data['widgetId']) && isset($this->request->data['title'])) {
-            $widgetId = $this->request->data['widgetId'];
-            $title = $this->request->data['title'];
-            $userId = $this->Auth->user('id');
-            if ($this->Widget->exists($widgetId)) {
-                $widget = $this->Widget->findById($widgetId);
-                if ($widget['DashboardTab']['user_id'] == $userId) {
-                    $widget['Widget']['title'] = $title;
-                    $this->Widget->save($widget);
-                }
-            }
-        }
-    }
-
-    public function updateColor()
-    {
-        $this->autoRender = false;
-        if (!$this->request->is('ajax')) {
-            throw new MethodNotAllowedException();
-        }
-        if (isset($this->request->data['widgetId']) && isset($this->request->data['color'])) {
-            $widgetId = $this->request->data['widgetId'];
-            $color = $this->request->data['color'];
-            $userId = $this->Auth->user('id');
-            if ($this->Widget->exists($widgetId)) {
-                $widget = $this->Widget->findById($widgetId);
-                if ($widget['DashboardTab']['user_id'] == $userId) {
-                    $widget['Widget']['color'] = str_replace('bg-', 'jarviswidget-', $color);
-                    $this->Widget->save($widget);
-                }
-            }
-        }
-    }
-
-    public function updatePosition()
-    {
-        $this->autoRender = false;
-        if (!$this->request->is('ajax')) {
-            throw new MethodNotAllowedException();
-        }
-        if (isset($this->request->data['tabId']) && isset($this->request->data[0])) {
-            $userId = $this->Auth->user('id');
-            $tab = $this->DashboardTab->find('first', [
-                'recursive'  => -1,
-                'contain'    => [
-                    'Widget',
-                ],
-                'conditions' => [
-                    'id'      => $this->request->data['tabId'],
-                    'user_id' => $userId,
-                ],
-            ]);
-            if (!empty($tab)) {
-                $widgetIds = Hash::extract($tab['Widget'], '{n}.id');
-                $data = [];
-                foreach ($this->request->data as $widget) {
-                    if (is_array($widget) && isset($widget['id'])) {
-                        if (in_array($widget['id'], $widgetIds)) {
-                            $data[] = [
-                                'id'     => $widget['id'],
-                                'row'    => $widget['row'],
-                                'col'    => $widget['col'],
-                                'width'  => $widget['width'],
-                                'height' => $widget['height'],
-                            ];
-                        }
-                    }
-                }
-                if (!empty($data)) {
-                    $this->Widget->saveAll($data);
-                    $this->DashboardTab->id = $tab['DashboardTab']['id'];
-                    $this->DashboardTab->saveField('modified', date('Y-m-d H:i:s'));
-                }
-            }
-        }
-    }
-
-    public function deleteWidget()
-    {
-        $this->autoRender = false;
-        if (!$this->request->is('ajax')) {
-            throw new MethodNotAllowedException();
-        }
-        if (isset($this->request->data['widgetId'])) {
-            $widgetId = $this->request->data['widgetId'];
-            $userId = $this->Auth->user('id');
-            if ($this->Widget->exists($widgetId)) {
-                $widget = $this->Widget->find('first', [
-                    'contain'    => [
-                        'DashboardTab',
-                    ],
-                    'conditions' => [
-                        'Widget.id' => $widgetId,
-                    ],
-                ]);
-                if ($widget['DashboardTab']['user_id'] == $userId) {
-                    $this->Widget->delete($widget['Widget']['id']);
-                    $this->DashboardTab->id = $widget['DashboardTab']['id'];
-                    $this->DashboardTab->saveField('modified', date('Y-m-d H:i:s'));
-                }
-            }
-        }
-    }
-
-    public function updateTabPosition()
-    {
-        if (!$this->request->is('post')) {
-            throw new MethodNotAllowedException();
-        }
-        $this->autoRender = false;
-        $tabIdsOrdered = $this->request->data('tabIdsOrdered');
-        if (is_array($tabIdsOrdered) && !empty($tabIdsOrdered)) {
-            $userId = $this->Auth->user('id');
-            $position = 1;
-            foreach ($tabIdsOrdered as $tabId) {
+            //Update DashboardTab last modified
+            if (isset($this->request->data[0]['Widget']['dashboard_tab_id'])) {
+                $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
                 $tab = $this->DashboardTab->find('first', [
                     'recursive'  => -1,
-                    'contain'    => [],
                     'conditions' => [
-                        'id'      => $tabId,
-                        'user_id' => $userId,
-                    ],
-                    'fields'     => [
-                        'id',
-                        'user_id',
-                    ],
+                        'DashboardTab.id'      => $this->request->data[0]['Widget']['dashboard_tab_id'],
+                        'DashboardTab.user_id' => $User->getId()
+                    ]
                 ]);
+
                 if (!empty($tab)) {
-                    $this->DashboardTab->id = $tabId;
-                    $this->DashboardTab->saveField('position', $position);
-                    $position++;
+                    $tab['DashboardTab']['modified'] = date('Y-m-d H:i:s');
+                    $this->DashboardTab->save($tab);
+                }
+            }
+
+
+            $this->set('message', __('Successfully saved'));
+            $this->set('_serialize', ['message']);
+            return;
+        }
+        $this->serializeErrorMessageFromModel('Widget');
+    }
+
+    public function addWidgetToTab() {
+        if (!$this->isAngularJsRequest() || !$this->request->is('post')) {
+            throw new MethodNotAllowedException();
+        }
+
+        if (!isset($this->request->data['Widget']['typeId']) || !isset($this->request->data['Widget']['dashboard_tab_id'])) {
+            throw new RuntimeException('Missing parameter typeId || dashboard_tab_id');
+        }
+
+        $this->request->data['Widget']['dashboard_tab_id'] = (int)$this->request->data['Widget']['dashboard_tab_id'];
+
+        if (!$this->DashboardTab->exists($this->request->data['Widget']['dashboard_tab_id'])) {
+            throw new NotFoundException('DashboardTab does not exists!');
+        }
+
+        if (!$this->Widget->isWidgetAvailable($this->request->data['Widget']['typeId'], $this->PERMISSIONS)) {
+            throw new NotFoundException('Widget not found!');
+        }
+
+        $widget = $this->Widget->getWidgetByTypeId($this->request->data['Widget']['typeId'], $this->PERMISSIONS);
+        $data = [
+            'dashboard_tab_id' => $this->request->data['Widget']['dashboard_tab_id'],
+            'type_id'          => $this->request->data['Widget']['typeId'],
+            'row'              => 0,
+            'col'              => 0,
+            'width'            => $widget['width'],
+            'height'           => $widget['height'],
+            'title'            => $widget['title'],
+            'icon'             => $widget['icon'],
+            'color'            => 'jarviswidget-color-blueDark',
+            'directive'        => $widget['directive']
+        ];
+
+        $this->Widget->create();
+        if ($this->Widget->save($data)) {
+            $widget = $this->Widget->find('first', [
+                'recursive'  => -1,
+                'conditions' => [
+                    'Widget.id' => $this->Widget->id
+                ]
+            ]);
+            $this->set('message', __('Successfully saved'));
+            $this->set('widget', $widget);
+            $this->set('_serialize', ['message', 'widget']);
+            return;
+        }
+        $this->serializeErrorMessageFromModel('Widget');
+    }
+
+    public function removeWidgetFromTab() {
+        if (!$this->isAngularJsRequest() || !$this->request->is('post')) {
+            throw new MethodNotAllowedException();
+        }
+
+        if (!isset($this->request->data['Widget']['id']) || !isset($this->request->data['Widget']['dashboard_tab_id'])) {
+            throw new RuntimeException('Missing parameter id || dashboard_tab_id');
+        }
+
+        $this->request->data['Widget']['id'] = (int)$this->request->data['Widget']['id'];
+
+        if (!$this->Widget->exists($this->request->data['Widget']['id'])) {
+            throw new NotFoundException('Widget does not exists!');
+        }
+        if ($this->Widget->delete($this->request->data['Widget']['id'])) {
+            $this->set('message', __('Successfully deleted'));
+            $this->set('_serialize', ['message', 'widget']);
+            return;
+        }
+        $this->serializeErrorMessageFromModel('Widget');
+    }
+
+    public function saveTabOrder() {
+        if (!$this->request->is('post') || !$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        $newOrder = $this->request->data('order');
+        if (empty($newOrder) || !is_array($newOrder)) {
+            return;
+        }
+
+        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+        $success = true;
+
+        foreach ($newOrder as $key => $tabId) {
+            $tab = $this->DashboardTab->find('first', [
+                'recursive'  => -1,
+                'conditions' => [
+                    'DashboardTab.id'      => $tabId,
+                    'DashboardTab.user_id' => $User->getId()
+                ]
+            ]);
+
+            if (!empty($tab)) {
+                $tab['DashboardTab']['position'] = (int)$key;
+                if (!$this->DashboardTab->save($tab)) {
+                    $success = false;
                 }
             }
         }
+
+        if ($success === false) {
+            $this->response->statusCode(400);
+        }
+
+        $this->set('success', $success);
+        $this->set('_serialize', ['success']);
     }
 
-    public function saveTabRotationInterval()
-    {
-        if (!$this->request->is('post')) {
+    function addNewTab() {
+        if (!$this->request->is('post') || !$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
-        $this->autoRender = false;
-        if (isset($this->request->data['value'])) {
-            if (is_numeric($this->request->data['value'])) {
-                $userId = $this->Auth->user('id');
-                $user = $this->User->find('first', [
-                    'recursive'  => -1,
-                    'contain'    => [],
-                    'conditions' => [
-                        'User.id' => $userId,
-                    ],
-                    'fields'     => [
-                        'User.id',
-                        'User.dashboard_tab_rotation',
-                    ],
-                ]);
-                $this->User->id = $user['User']['id'];
-                $this->User->saveField('dashboard_tab_rotation', $this->request->data['value']);
-            }
+
+        $name = $this->request->data('DashboardTab.name');
+        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+        $result = $this->DashboardTab->createNewTab($User->getId(), [
+            'name' => $name
+        ]);
+
+        if ($result) {
+            $this->set('DashboardTab', $result);
+            $this->set('_serialize', ['DashboardTab']);
+            return;
         }
+        $this->serializeErrorMessageFromModel('DashboardTab');
+        return;
     }
 
-    public function startSharing($tabId)
-    {
-        $userId = $this->Auth->user('id');
+    public function saveTabRotateInterval() {
+        if (!$this->request->is('post') || !$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        $tabRotationInterval = (int)$this->request->data('User.dashboard_tab_rotation');
+
+        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+
+        $this->User->id = $User->getId();
+        $this->User->saveField('dashboard_tab_rotation', $tabRotationInterval);
+
+        $this->set('success', true);
+        $this->set('_serialize', ['success']);
+    }
+
+    public function renameDashboardTab() {
+        if (!$this->request->is('post') || !$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+
+        $name = $this->request->data('DashboardTab.name');
+        $id = (int)$this->request->data('DashboardTab.id');
+
+        $dashboardTab = $this->DashboardTab->find('first', [
+            'conditions' => [
+                'DashboardTab.id'      => $id,
+                'DashboardTab.user_id' => $User->getId()
+            ]
+        ]);
+
+        if (empty($dashboardTab)) {
+            throw new NotFoundException();
+        }
+
+        $dashboardTab['DashboardTab']['name'] = $name;
+        if ($this->DashboardTab->save($dashboardTab)) {
+            $this->set('DashboardTab', [
+                'DashboardTab' => $dashboardTab
+            ]);
+
+            $this->set('_serialize', ['DashboardTab']);
+            return;
+        }
+        $this->serializeErrorMessageFromModel('DashboardTab');
+        return;
+    }
+
+
+    public function deleteDashboardTab() {
+        if (!$this->request->is('post') || !$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+
+        $id = (int)$this->request->data('DashboardTab.id');
+
+        $dashboardTab = $this->DashboardTab->find('first', [
+            'conditions' => [
+                'DashboardTab.id'      => $id,
+                'DashboardTab.user_id' => $User->getId()
+            ]
+        ]);
+
+        if (empty($dashboardTab)) {
+            throw new NotFoundException();
+        }
+
+        if ($this->DashboardTab->delete($id)) {
+            $this->set('success', true);
+            $this->set('_serialize', ['success']);
+            return;
+        }
+        $this->serializeErrorMessageFromModel('DashboardTab');
+        return;
+    }
+
+    public function startSharing() {
+        if (!$this->request->is('post') || !$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+
+        $id = (int)$this->request->data('DashboardTab.id');
+
+        $dashboardTab = $this->DashboardTab->find('first', [
+            'conditions' => [
+                'DashboardTab.id'      => $id,
+                'DashboardTab.user_id' => $User->getId()
+            ]
+        ]);
+
+        if (empty($dashboardTab)) {
+            throw new NotFoundException();
+        }
+
+        $dashboardTab['DashboardTab']['shared'] = 1;
+
+        if ($this->DashboardTab->save($dashboardTab)) {
+            $this->set('success', true);
+            $this->set('_serialize', ['success']);
+            return;
+        }
+        $this->serializeErrorMessageFromModel('DashboardTab');
+        return;
+    }
+
+    public function stopSharing() {
+        if (!$this->request->is('post') || !$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+
+        $id = (int)$this->request->data('DashboardTab.id');
+
+        $dashboardTab = $this->DashboardTab->find('first', [
+            'conditions' => [
+                'DashboardTab.id'      => $id,
+                'DashboardTab.user_id' => $User->getId()
+            ]
+        ]);
+
+        if (empty($dashboardTab)) {
+            throw new NotFoundException();
+        }
+
+        $dashboardTab['DashboardTab']['shared'] = 0;
+
+        if ($this->DashboardTab->save($dashboardTab)) {
+            $this->set('success', true);
+            $this->set('_serialize', ['success']);
+            return;
+        }
+        $this->serializeErrorMessageFromModel('DashboardTab');
+        return;
+    }
+
+    public function getSharedTabs() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        $tabs = $this->DashboardTab->getSharedTabs();
+
+        $this->set('tabs', $tabs);
+        $this->set('_serialize', ['tabs']);
+    }
+
+    public function createFromSharedTab() {
+        if (!$this->request->is('post') || !$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+
+        $id = (int)$this->request->data('DashboardTab.id');
+
+        $sourceTabWithWidgets = $this->DashboardTab->find('first', [
+            'conditions' => [
+                'DashboardTab.id'     => $id,
+                'DashboardTab.shared' => 1
+            ]
+        ]);
+
+        if (empty($sourceTabWithWidgets)) {
+            throw new NotFoundException();
+        }
+
+        $copyTabWithWidgets = $sourceTabWithWidgets;
+
+        unset($copyTabWithWidgets['DashboardTab']['id']);
+        $copyTabWithWidgets['DashboardTab']['user_id'] = $User->getId();
+        $copyTabWithWidgets['DashboardTab']['position'] = $this->DashboardTab->getNextPosition($User->getId());
+        $copyTabWithWidgets['DashboardTab']['shared'] = 0;
+        $copyTabWithWidgets['DashboardTab']['source_tab_id'] = $id;
+        $copyTabWithWidgets['DashboardTab']['check_for_updates'] = 1;
+        $copyTabWithWidgets['DashboardTab']['last_update'] = time();
+
+        foreach ($copyTabWithWidgets['Widget'] as $key => $widgetData) {
+            unset($copyTabWithWidgets['Widget'][$key]['id']);
+            unset($copyTabWithWidgets['Widget'][$key]['dashboard_tab_id']);
+        }
+
+        $this->DashboardTab->create();
+        if ($this->DashboardTab->saveAll($copyTabWithWidgets)) {
+            $newCreatedDashboardTab = $this->DashboardTab->find('first', [
+                'conditions' => [
+                    'DashboardTab.id'      => $this->DashboardTab->id,
+                    'DashboardTab.user_id' => $User->getId()
+                ]
+            ]);
+
+            $newCreatedDashboardTab['DashboardTab']['id'] = (int)$newCreatedDashboardTab['DashboardTab']['id'];
+            $newCreatedDashboardTab['DashboardTab']['user_id'] = (int)$newCreatedDashboardTab['DashboardTab']['user_id'];
+            $newCreatedDashboardTab['DashboardTab']['position'] = (int)$newCreatedDashboardTab['DashboardTab']['position'];
+            $newCreatedDashboardTab['DashboardTab']['shared'] = (bool)$newCreatedDashboardTab['DashboardTab']['shared'];
+            $newCreatedDashboardTab['DashboardTab']['source_tab_id'] = (int)$newCreatedDashboardTab['DashboardTab']['source_tab_id'];
+            $newCreatedDashboardTab['DashboardTab']['check_for_updates'] = (bool)$newCreatedDashboardTab['DashboardTab']['check_for_updates'];
+            $newCreatedDashboardTab['DashboardTab']['last_update'] = (int)$newCreatedDashboardTab['DashboardTab']['last_update'];
+            $newCreatedDashboardTab['DashboardTab']['locked'] = (bool)$newCreatedDashboardTab['DashboardTab']['locked'];
+
+            $this->set('DashboardTab', $newCreatedDashboardTab);
+            $this->set('_serialize', ['DashboardTab']);
+            return;
+        }
+
+        $this->serializeErrorMessageFromModel('DashboardTab');
+    }
+
+    public function checkForUpdates() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        $tabId = (int)$this->request->query('tabId');
+        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+        if (!$this->DashboardTab->exists($tabId)) {
+            throw new NotFoundException('DashboardTab not found');
+        }
+
         $tab = $this->DashboardTab->find('first', [
             'recursive'  => -1,
-            'contain'    => [],
             'conditions' => [
-                'id'      => $tabId,
-                'user_id' => $userId,
-            ],
-            'fields'     => [
-                'id',
-                'user_id',
-            ],
+                'DashboardTab.id'      => $tabId,
+                'DashboardTab.user_id' => $User->getId()
+            ]
         ]);
-        if (empty($tab)) {
-            throw new NotFoundException(__('Invalid tab'));
-        }
 
-        $this->DashboardTab->id = $tabId;
-        $this->DashboardTab->saveField('shared', 1);
-        $this->redirect([
-            'action' => 'index',
-            $tabId,
-        ]);
-    }
-
-    public function stopSharing($tabId)
-    {
-        $userId = $this->Auth->user('id');
-        $tab = $this->DashboardTab->find('first', [
+        $sourceTab = $this->DashboardTab->find('first', [
             'recursive'  => -1,
-            'contain'    => [],
             'conditions' => [
-                'id'      => $tabId,
-                'user_id' => $userId,
+                'DashboardTab.id' => $tab['DashboardTab']['source_tab_id']
+            ]
+        ]);
+
+        $updateAvailable = false;
+        if (!empty($sourceTab) && !empty($tab)) {
+            if (strtotime($sourceTab['DashboardTab']['modified']) > $tab['DashboardTab']['last_update']) {
+                $updateAvailable = true;
+            }
+        }
+
+        $this->set('updateAvailable', $updateAvailable);
+        $this->set('_serialize', ['updateAvailable']);
+    }
+
+    public function neverPerformUpdates() {
+        if (!$this->request->is('post') || !$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+
+        $id = (int)$this->request->data('DashboardTab.id');
+
+        $dashboardTab = $this->DashboardTab->find('first', [
+            'conditions' => [
+                'DashboardTab.id'      => $id,
+                'DashboardTab.user_id' => $User->getId()
+            ]
+        ]);
+
+        if (empty($dashboardTab)) {
+            throw new NotFoundException();
+        }
+
+        $dashboardTab['DashboardTab']['check_for_updates'] = 0;
+
+        if ($this->DashboardTab->save($dashboardTab)) {
+            $this->set('success', true);
+            $this->set('_serialize', ['success']);
+            return;
+        }
+        $this->serializeErrorMessageFromModel('DashboardTab');
+        return;
+    }
+
+    public function updateSharedTab() {
+        if (!$this->request->is('post') || !$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+
+        $id = (int)$this->request->data('DashboardTab.id');
+
+        $tabToUpdate = $this->DashboardTab->find('first', [
+            'conditions' => [
+                'DashboardTab.id'      => $id,
+                'DashboardTab.user_id' => $User->getId()
+            ]
+        ]);
+
+        $sourceTabWithWidgets = $this->DashboardTab->find('first', [
+            'conditions' => [
+                'DashboardTab.id' => $tabToUpdate['DashboardTab']['source_tab_id']
+            ]
+        ]);
+
+        if (empty($sourceTabWithWidgets) || empty($tabToUpdate)) {
+            throw new NotFoundException();
+        }
+
+        $tabToUpdate['DashboardTab']['last_update'] = time();
+        $tabToUpdate['DashboardTab']['locked'] = (bool)$sourceTabWithWidgets['DashboardTab']['locked'];
+        $tabToUpdate['Widget'] = $sourceTabWithWidgets['Widget'];
+
+        foreach ($tabToUpdate['Widget'] as $key => $widgetData) {
+            unset($tabToUpdate['Widget'][$key]['id']);
+            unset($tabToUpdate['Widget'][$key]['dashboard_tab_id']);
+        }
+
+        //Delete old widgets
+        $this->Widget->deleteAll([
+            'Widget.dashboard_tab_id' => $id
+        ]);
+
+        if ($this->DashboardTab->saveAll($tabToUpdate)) {
+            $tabToUpdate = $this->DashboardTab->find('first', [
+                'conditions' => [
+                    'DashboardTab.id'      => $id,
+                    'DashboardTab.user_id' => $User->getId()
+                ]
+            ]);
+
+            $newCreatedDashboardTab['DashboardTab']['id'] = (int)$tabToUpdate['DashboardTab']['id'];
+            $newCreatedDashboardTab['DashboardTab']['user_id'] = (int)$tabToUpdate['DashboardTab']['user_id'];
+            $newCreatedDashboardTab['DashboardTab']['position'] = (int)$tabToUpdate['DashboardTab']['position'];
+            $newCreatedDashboardTab['DashboardTab']['shared'] = (bool)$tabToUpdate['DashboardTab']['shared'];
+            $newCreatedDashboardTab['DashboardTab']['source_tab_id'] = (int)$tabToUpdate['DashboardTab']['source_tab_id'];
+            $newCreatedDashboardTab['DashboardTab']['check_for_updates'] = (bool)$tabToUpdate['DashboardTab']['check_for_updates'];
+            $newCreatedDashboardTab['DashboardTab']['last_update'] = (int)$tabToUpdate['DashboardTab']['last_update'];
+            $newCreatedDashboardTab['DashboardTab']['locked'] = (bool)$tabToUpdate['DashboardTab']['locked'];
+
+            $this->set('DashboardTab', $tabToUpdate);
+            $this->set('_serialize', ['DashboardTab']);
+            return;
+        }
+
+        $this->serializeErrorMessageFromModel('DashboardTab');
+    }
+
+    public function renameWidget() {
+        if (!$this->request->is('post') || !$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+
+        $widgetId = (int)$this->request->data('Widget.id');
+        $name = $this->request->data('Widget.name');
+
+        $widget = $this->Widget->find('first', [
+            'recursive'  => -1,
+            'conditions' => [
+                'Widget.id' => $widgetId
+            ]
+        ]);
+
+        if (empty($widget)) {
+            throw new NotFoundException();
+        }
+
+        $widget['Widget']['name'] = $name;
+        if ($this->Widget->save($widget)) {
+            $this->set('success', true);
+            $this->set('_serialize', ['success']);
+            return;
+        }
+
+        $this->serializeErrorMessageFromModel('Widget');
+    }
+
+    public function lockOrUnlockTab() {
+        if (!$this->request->is('post') || !$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+
+        $id = (int)$this->request->data('DashboardTab.id');
+        $locked = $this->request->data('DashboardTab.locked') === 'true';
+
+        $dashboardTab = $this->DashboardTab->find('first', [
+            'conditions' => [
+                'DashboardTab.id'      => $id,
+                'DashboardTab.user_id' => $User->getId()
+            ]
+        ]);
+
+        if (empty($dashboardTab)) {
+            throw new NotFoundException();
+        }
+
+        $dashboardTab['DashboardTab']['locked'] = $locked;
+
+        if ($this->DashboardTab->save($dashboardTab)) {
+            $this->set('success', true);
+            $this->set('_serialize', ['success']);
+            return;
+        }
+        $this->serializeErrorMessageFromModel('DashboardTab');
+        return;
+    }
+
+    public function restoreDefault() {
+        if (!$this->request->is('post') || !$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+
+        $id = (int)$this->request->data('DashboardTab.id');
+
+        $dashboardTab = $this->DashboardTab->find('first', [
+            'conditions' => [
+                'DashboardTab.id'      => $id,
+                'DashboardTab.user_id' => $User->getId()
+            ]
+        ]);
+
+        if (empty($dashboardTab)) {
+            throw new NotFoundException();
+        }
+
+        //Delete old widgets
+        $this->Widget->deleteAll([
+            'Widget.dashboard_tab_id' => $id
+        ]);
+
+        $dashboardTab['Widget'] = $this->Widget->getDefaultWidgets($this->PERMISSIONS);
+
+        if ($this->DashboardTab->saveAll($dashboardTab)) {
+            $this->set('success', true);
+            $this->set('_serialize', ['success']);
+            return;
+        }
+        $this->serializeErrorMessageFromModel('DashboardTab');
+        return;
+    }
+
+    /***** Basic Widgets *****/
+    public function welcomeWidget() {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template
+            return;
+        }
+    }
+
+    public function parentOutagesWidget() {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template
+            return;
+        }
+
+
+        $containerIds = [];
+        if ($this->hasRootPrivileges === false) {
+            $containerIds = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_HOST, [], $this->hasRootPrivileges, [CT_HOSTGROUP]);
+        }
+
+        $query = [
+            'recursive' => -1,
+            'fields'    => [
+                'DISTINCT Host.uuid',
+                'Host.id',
+                'Host.name'
+            ],
+
+            'joins' => [
+                [
+                    'table'      => 'hosts',
+                    'type'       => 'INNER',
+                    'alias'      => 'Host',
+                    'conditions' => 'Parenthost.parenthost_id = Host.id'
+
+                ]
+            ],
+            'order' => [
+                'Host.name' => 'asc'
+            ],
+            'group' => 'Parenthost.parenthost_id'
+        ];
+
+        if (!empty($containerIds)) {
+            $query['joins'] = \Hash::merge($query['joins'], [
+                [
+                    'table'      => 'hosts_to_containers',
+                    'alias'      => 'HostsToContainers',
+                    'type'       => 'LEFT',
+                    'conditions' => [
+                        'HostsToContainers.host_id = Host.id',
+                    ],
+                ]
+            ]);
+            $query['conditions']['HostsToContainers.container_id'] = $containerIds;
+        }
+
+        $parentHosts = $this->Parenthost->find('all', $query);
+        $hostUuids = Hash::extract($parentHosts, '{n}.Host.uuid');
+        $HoststatusFields = new \itnovum\openITCOCKPIT\Core\HoststatusFields($this->DbBackend);
+        $HoststatusFields->currentState();
+        $HoststatusConditions = new \itnovum\openITCOCKPIT\Core\HoststatusConditions($this->DbBackend);
+        $HoststatusConditions->hostsDownAndUnreachable();
+        $hoststatus = $this->Hoststatus->byUuid($hostUuids, $HoststatusFields, $HoststatusConditions);
+        $query['conditions']['Host.uuid'] = array_keys($hoststatus);
+
+        if (isset($this->request->query['filter']['Host.name']) && strlen($this->request->query['filter']['Host.name']) > 0) {
+            $query['conditions']['Host.name LIKE'] = sprintf('%%%s%%', $this->request->query['filter']['Host.name']);
+        }
+
+        $parent_outages = $this->Parenthost->find('all', $query);
+
+        $this->set(compact(['parent_outages']));
+        $this->set('_serialize', ['parent_outages']);
+    }
+
+    public function hostsPiechartWidget() {
+        return;
+    }
+
+    public function hostsPiechart180Widget() {
+        return;
+    }
+
+
+    public function servicesPiechartWidget() {
+        return;
+    }
+
+    public function servicesPiechart180Widget() {
+        return;
+    }
+
+    public function hostsStatusListWidget() {
+        if (!$this->isAngularJsRequest()) {
+            //Only ship template
+            return;
+        }
+
+        $widgetId = (int)$this->request->query('widgetId');
+        $HostStatusListJson = new HostStatusListJson();
+        if (!$this->Widget->exists($widgetId)) {
+            throw new NotFoundException('Widget not found');
+        }
+
+        if ($this->request->is('get')) {
+            $widget = $this->Widget->find('first', [
+                'recursive'  => -1,
+                'conditions' => [
+                    'Widget.id' => $widgetId
+                ]
+            ]);
+
+            $data = [];
+            if ($widget['Widget']['json_data'] !== null && $widget['Widget']['json_data'] !== '') {
+                $data = json_decode($widget['Widget']['json_data'], true);
+            }
+            $config = $HostStatusListJson->standardizedData($data);
+            $this->set('config', $config);
+            $this->set('_serialize', ['config']);
+            return;
+        }
+
+        if ($this->request->is('post')) {
+            $config = $HostStatusListJson->standardizedData($this->request->data);
+
+            $this->Widget->id = $widgetId;
+            $this->Widget->saveField('json_data', json_encode($config));
+
+            $this->set('config', $config);
+            $this->set('_serialize', ['config']);
+            return;
+        }
+
+        throw new MethodNotAllowedException();
+    }
+
+    public function hostsDowntimeWidget() {
+        if (!$this->isAngularJsRequest()) {
+            //Only ship template
+            return;
+        }
+        $widgetId = (int)$this->request->query('widgetId');
+        $DowntimeHostListJson = new DowntimeHostListJson();
+
+        if (!$this->Widget->exists($widgetId)) {
+            throw new NotFoundException('Widget not found');
+        }
+
+        if ($this->request->is('get')) {
+            $widget = $this->Widget->find('first', [
+                'recursive'  => -1,
+                'conditions' => [
+                    'Widget.id' => $widgetId
+                ]
+            ]);
+
+            $data = [];
+            if ($widget['Widget']['json_data'] !== null && $widget['Widget']['json_data'] !== '') {
+                $data = json_decode($widget['Widget']['json_data'], true);
+            }
+            $config = $DowntimeHostListJson->standardizedData($data);
+            $this->set('config', $config);
+            $this->set('_serialize', ['config']);
+            return;
+        }
+
+        if ($this->request->is('post')) {
+            $config = $DowntimeHostListJson->standardizedData($this->request->data);
+
+            $this->Widget->id = $widgetId;
+            $this->Widget->saveField('json_data', json_encode($config));
+
+            $this->set('config', $config);
+            $this->set('_serialize', ['config']);
+            return;
+        }
+
+        throw new MethodNotAllowedException();
+    }
+
+    public function servicesDowntimeWidget() {
+        if (!$this->isAngularJsRequest()) {
+            //Only ship template
+            return;
+        }
+        $widgetId = (int)$this->request->query('widgetId');
+        $DowntimeServiceListJson = new DowntimeServiceListJson();
+
+        if (!$this->Widget->exists($widgetId)) {
+            throw new NotFoundException('Widget not found');
+        }
+
+        if ($this->request->is('get')) {
+            $widget = $this->Widget->find('first', [
+                'recursive'  => -1,
+                'conditions' => [
+                    'Widget.id' => $widgetId
+                ]
+            ]);
+
+            $data = [];
+            if ($widget['Widget']['json_data'] !== null && $widget['Widget']['json_data'] !== '') {
+                $data = json_decode($widget['Widget']['json_data'], true);
+            }
+            $config = $DowntimeServiceListJson->standardizedData($data);
+            $this->set('config', $config);
+            $this->set('_serialize', ['config']);
+            return;
+        }
+
+        if ($this->request->is('post')) {
+            $config = $DowntimeServiceListJson->standardizedData($this->request->data);
+
+            $this->Widget->id = $widgetId;
+            $this->Widget->saveField('json_data', json_encode($config));
+
+            $this->set('config', $config);
+            $this->set('_serialize', ['config']);
+            return;
+        }
+
+        throw new MethodNotAllowedException();
+    }
+
+    public function servicesStatusListWidget() {
+        if (!$this->isAngularJsRequest()) {
+            //Only ship template
+            return;
+        }
+        $widgetId = (int)$this->request->query('widgetId');
+        $ServiceStatusListJson = new ServiceStatusListJson();
+        if (!$this->Widget->exists($widgetId)) {
+            throw new NotFoundException('Widget not found');
+        }
+
+        if ($this->request->is('get')) {
+            $widget = $this->Widget->find('first', [
+                'recursive'  => -1,
+                'conditions' => [
+                    'Widget.id' => $widgetId
+                ]
+            ]);
+
+            $data = [];
+            if ($widget['Widget']['json_data'] !== null && $widget['Widget']['json_data'] !== '') {
+                $data = json_decode($widget['Widget']['json_data'], true);
+            }
+            $config = $ServiceStatusListJson->standardizedData($data);
+            $this->set('config', $config);
+            $this->set('_serialize', ['config']);
+            return;
+        }
+
+        if ($this->request->is('post')) {
+            $config = $ServiceStatusListJson->standardizedData($this->request->data);
+
+            $this->Widget->id = $widgetId;
+            $this->Widget->saveField('json_data', json_encode($config));
+
+            $this->set('config', $config);
+            $this->set('_serialize', ['config']);
+            return;
+        }
+
+        throw new MethodNotAllowedException();
+    }
+
+    public function noticeWidget() {
+        if (!$this->isAngularJsRequest()) {
+            //Only ship template
+            return;
+        }
+        $widgetId = (int)$this->request->query('widgetId');
+        $NoticeJson = new NoticeJson();
+
+        if (!$this->Widget->exists($widgetId)) {
+            throw new NotFoundException('Widget not found');
+        }
+
+        if ($this->request->is('get')) {
+            $widget = $this->Widget->find('first', [
+                'recursive'  => -1,
+                'conditions' => [
+                    'Widget.id' => $widgetId
+                ]
+            ]);
+
+            $data = [];
+            $htmlContent = '';
+            if ($widget['Widget']['json_data'] !== null && $widget['Widget']['json_data'] !== '') {
+                $data = json_decode($widget['Widget']['json_data'], true);
+                if (!empty($data['note'])) {
+                    $parseDown = new ParsedownExtra();
+                    $htmlContent = $parseDown->text($data['note']);
+                }
+            }
+            $config = $NoticeJson->standardizedData($data);
+            $this->set('config', $config);
+            $this->set('htmlContent', $htmlContent);
+
+            $this->set('_serialize', ['config', 'htmlContent']);
+            return;
+        }
+
+
+        if ($this->request->is('post')) {
+            $widgetId = (int)$this->request->data('widgetId');
+            if (!$this->Widget->exists($widgetId)) {
+                throw new RuntimeException('Invalid widget id');
+            }
+            $serviceId = (int)$this->request->data('Widget.serviceId');
+            $widget = $this->Widget->find('first', [
+                'recursive'  => -1,
+                'conditions' => [
+                    'Widget.id' => $widgetId
+                ],
+            ]);
+            if ($widget) {
+                $widget['Widget']['service_id'] = (int)$serviceId;
+                if (!$this->Widget->save($widget)) {
+                    $this->response->statusCode(400);
+                    $this->serializeErrorMessageFromModel('Widget');
+                    return;
+                }
+                $this->set('serviceId', $serviceId);
+                $this->set('_serialize', ['serviceId']);
+                return;
+            }
+            $this->response->statusCode(400);
+            return;
+        }
+        throw new MethodNotAllowedException();
+    }
+
+
+    public function trafficLightWidget() {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template
+            return;
+        }
+
+        $TrafficlightJson = new TrafficlightJson();
+
+        if ($this->request->is('get')) {
+            $widgetId = (int)$this->request->query('widgetId');
+            if (!$this->Widget->exists($widgetId)) {
+                throw new RuntimeException('Invalid widget id');
+            }
+
+            $widget = $this->Widget->find('first', [
+                'recursive'  => -1,
+                'conditions' => [
+                    'Widget.id' => $widgetId
+                ],
+                'fields'     => [
+                    'Widget.service_id',
+                    'Widget.json_data'
+                ]
+            ]);
+            $serviceId = (int)$widget['Widget']['service_id'];
+            if ($serviceId === 0) {
+                $serviceId = null;
+            }
+
+            $service = $this->getServicestatusByServiceId($serviceId);
+
+            $data = [];
+            if ($widget['Widget']['json_data'] !== null && $widget['Widget']['json_data'] !== '') {
+                $data = json_decode($widget['Widget']['json_data'], true);
+            }
+            $config = $TrafficlightJson->standardizedData($data);
+            $this->set('config', $config);
+            $this->set('service', $service);
+            $this->set('ACL', $this->getAcls());
+            $this->set('_serialize', ['service', 'config', 'ACL']);
+            return;
+        }
+
+
+        if ($this->request->is('post')) {
+            $config = $TrafficlightJson->standardizedData($this->request->data);
+            $widgetId = (int)$this->request->data('Widget.id');
+            $serviceId = (int)$this->request->data('Widget.service_id');
+
+            if (!$this->Widget->exists($widgetId)) {
+                throw new RuntimeException('Invalid widget id');
+            }
+            $widget = $this->Widget->find('first', [
+                'recursive'  => -1,
+                'conditions' => [
+                    'Widget.id' => $widgetId
+                ],
+            ]);
+
+            $widget['Widget']['service_id'] = $serviceId;
+            $widget['Widget']['json_data'] = json_encode($config);
+            if ($this->Widget->save($widget)) {
+                $service = $this->getServicestatusByServiceId($serviceId);
+                $this->set('service', $service);
+                $this->set('config', $config);
+                $this->set('ACL', $this->getAcls());
+                $this->set('_serialize', ['service', 'config', 'ACL']);
+                return;
+            }
+
+            $this->serializeErrorMessageFromModel('Widget');
+            return;
+        }
+        throw new MethodNotAllowedException();
+    }
+
+    public function tachoWidget() {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template
+            return;
+        }
+
+        $TachoJson = new TachoJson();
+
+        if ($this->request->is('get')) {
+            $widgetId = (int)$this->request->query('widgetId');
+            if (!$this->Widget->exists($widgetId)) {
+                throw new RuntimeException('Invalid widget id');
+            }
+
+            $widget = $this->Widget->find('first', [
+                'recursive'  => -1,
+                'conditions' => [
+                    'Widget.id' => $widgetId
+                ],
+                'fields'     => [
+                    'Widget.service_id',
+                    'Widget.json_data'
+                ]
+            ]);
+            $serviceId = (int)$widget['Widget']['service_id'];
+            if ($serviceId === 0) {
+                $serviceId = null;
+            }
+
+            $service = $this->getServicestatusByServiceId($serviceId);
+
+            $data = [];
+            if ($widget['Widget']['json_data'] !== null && $widget['Widget']['json_data'] !== '') {
+                $data = json_decode($widget['Widget']['json_data'], true);
+            }
+            $config = $TachoJson->standardizedData($data);
+            $this->set('config', $config);
+            $this->set('service', $service);
+            $this->set('ACL', $this->getAcls());
+            $this->set('_serialize', ['service', 'config', 'ACL']);
+            return;
+        }
+
+
+        if ($this->request->is('post')) {
+            $config = $TachoJson->standardizedData($this->request->data);
+            $widgetId = (int)$this->request->data('Widget.id');
+            $serviceId = (int)$this->request->data('Widget.service_id');
+
+            if (!$this->Widget->exists($widgetId)) {
+                throw new RuntimeException('Invalid widget id');
+            }
+            $widget = $this->Widget->find('first', [
+                'recursive'  => -1,
+                'conditions' => [
+                    'Widget.id' => $widgetId
+                ],
+            ]);
+
+            $widget['Widget']['service_id'] = $serviceId;
+            $widget['Widget']['json_data'] = json_encode($config);
+            if ($this->Widget->save($widget)) {
+                $service = $this->getServicestatusByServiceId($serviceId);
+                $this->set('service', $service);
+                $this->set('config', $config);
+                $this->set('ACL', $this->getAcls());
+                $this->set('_serialize', ['service', 'config', 'ACL']);
+                return;
+            }
+
+            $this->serializeErrorMessageFromModel('Widget');
+            return;
+        }
+        throw new MethodNotAllowedException();
+    }
+
+    private function getServicestatusByServiceId($id) {
+        $query = [
+            'recursive'  => -1,
+            'contain'    => [
+                'Servicetemplate' => [
+                    'fields' => [
+                        'Servicetemplate.name'
+                    ],
+                ],
+            ],
+            'joins'      => [
+                [
+                    'table'      => 'hosts',
+                    'alias'      => 'Host',
+                    'type'       => 'INNER',
+                    'conditions' => [
+                        'Host.id = Service.host_id'
+                    ]
+                ],
+                [
+                    'table'      => 'hosts_to_containers',
+                    'alias'      => 'HostsToContainers',
+                    'type'       => 'INNER',
+                    'conditions' => [
+                        'HostsToContainers.host_id = Host.id',
+                    ],
+                ],
             ],
             'fields'     => [
-                'id',
-                'user_id',
+                'Service.id',
+                'Service.disabled',
+                'Service.name',
+                'Service.uuid',
+                'Service.service_type',
+                'Host.id',
+                'Host.name'
+            ],
+            'conditions' => [
+                'Service.id' => $id,
+
+            ],
+        ];
+
+        if (!$this->hasRootPrivileges) {
+            $query['conditions']['HostsToContainers.container_id'] = $this->MY_RIGHTS;
+        }
+
+        $service = $this->Service->find('first', $query);
+        if (!empty($service)) {
+            $ServicestatusFields = new ServicestatusFields($this->DbBackend);
+            $ServicestatusFields->currentState()->isFlapping()->perfdata();
+            $servicestatus = $this->Servicestatus->byUuid($service['Service']['uuid'], $ServicestatusFields);
+
+            if (!empty($servicestatus)) {
+                $Servicestatus = new \itnovum\openITCOCKPIT\Core\Servicestatus($servicestatus['Servicestatus']);
+            } else {
+                $Servicestatus = new \itnovum\openITCOCKPIT\Core\Servicestatus(
+                    ['Servicestatus' => []]
+                );
+            }
+            $Host = new \itnovum\openITCOCKPIT\Core\Views\Host($service);
+            $Service = new \itnovum\openITCOCKPIT\Core\Views\Service($service);
+            $PerfdataParser = new PerfdataParser($Servicestatus->getPerfdata());
+
+
+            $serviceForJs = [
+                'Host'          => $Host->toArray(),
+                'Service'       => $Service->toArray(),
+                'Servicestatus' => $Servicestatus->toArray(),
+                'Perfdata'      => $PerfdataParser->parse()
+            ];
+
+            $serviceForJs['Service']['isGenericService'] = $service['Service']['service_type'] == GENERIC_SERVICE;
+            $serviceForJs['Service']['isEVCService'] = $service['Service']['service_type'] == EVK_SERVICE;
+            $serviceForJs['Service']['isSLAService'] = $service['Service']['service_type'] == SLA_SERVICE;
+            $serviceForJs['Service']['isMkService'] = $service['Service']['service_type'] == MK_SERVICE;
+
+            $serviceForJs['Service']['id'] = (int)$serviceForJs['Service']['id'];
+            $serviceForJs['Host']['id'] = (int)$serviceForJs['Host']['id'];
+
+            return $serviceForJs;
+        }
+        return [
+            'Service'       => [],
+            'Servicestatus' => []
+        ];
+    }
+
+    /**
+     * @return array
+     */
+    private function getAcls() {
+        $acl = [
+            'hosts'    => [
+                'browser' => isset($this->PERMISSIONS['hosts']['browser']),
+                'index'   => isset($this->PERMISSIONS['hosts']['index'])
+            ],
+            'services' => [
+                'browser' => isset($this->PERMISSIONS['services']['browser']),
+                'index'   => isset($this->PERMISSIONS['services']['index'])
+
+            ],
+            'evc'      => [
+                'view' => isset($this->PERMISSIONS['eventcorrelationmodule']['eventcorrelations']['view']),
+            ],
+        ];
+        return $acl;
+    }
+
+    public function hostStatusOverviewWidget() {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template
+            return;
+        }
+        $HostStatusOverviewJson = new HostStatusOverviewJson();
+
+        if ($this->request->is('get')) {
+            $widgetId = (int)$this->request->query('widgetId');
+            if (!$this->Widget->exists($widgetId)) {
+                throw new NotFoundException('Widget not found');
+            }
+
+            $widget = $this->Widget->find('first', [
+                'recursive'  => -1,
+                'conditions' => [
+                    'Widget.id' => $widgetId
+                ]
+            ]);
+
+            $data = [];
+            if ($widget['Widget']['json_data'] !== null && $widget['Widget']['json_data'] !== '') {
+                $data = json_decode($widget['Widget']['json_data'], true);
+            }
+            $config = $HostStatusOverviewJson->standardizedData($data);
+
+            if ($this->DbBackend->isNdoUtils()) {
+                $query = $this->Host->getHoststatusCountBySelectedStatus($this->MY_RIGHTS, $config);
+                $modelName = 'Host';
+            }
+
+            if ($this->DbBackend->isCrateDb()) {
+                $query = $this->Hoststatus->getHoststatusCountBySelectedStatus($this->MY_RIGHTS, $config);
+                $modelName = 'Hoststatus';
+            }
+
+            if ($this->DbBackend->isStatusengine3()) {
+                $query = $this->Host->getHoststatusBySelectedStatusStatusengine3($this->MY_RIGHTS, $config);
+                $modelName = 'Host';
+            }
+            $statusCount = $this->{$modelName}->find('count', $query);
+            $this->set('config', $config);
+            $this->set('statusCount', $statusCount);
+            $this->set('_serialize', ['config', 'statusCount']);
+            return;
+        }
+
+        if ($this->request->is('post')) {
+            $config = $HostStatusOverviewJson->standardizedData($this->request->data);
+
+            $this->Widget->id = (int)$this->request->data('Widget.id');;
+            $this->Widget->saveField('json_data', json_encode($config));
+
+            $this->set('config', $config);
+            $this->set('_serialize', ['config']);
+            return;
+        }
+
+
+        throw new MethodNotAllowedException();
+    }
+
+    public function serviceStatusOverviewWidget() {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template
+            return;
+        }
+        $ServiceStatusOverviewJson = new ServiceStatusOverviewJson();
+
+        if ($this->request->is('get')) {
+            $widgetId = (int)$this->request->query('widgetId');
+            if (!$this->Widget->exists($widgetId)) {
+                throw new NotFoundException('Widget not found');
+            }
+
+            $widget = $this->Widget->find('first', [
+                'recursive'  => -1,
+                'conditions' => [
+                    'Widget.id' => $widgetId
+                ]
+            ]);
+
+            $data = [];
+            if ($widget['Widget']['json_data'] !== null && $widget['Widget']['json_data'] !== '') {
+                $data = json_decode($widget['Widget']['json_data'], true);
+            }
+            $config = $ServiceStatusOverviewJson->standardizedData($data);
+
+            if ($this->DbBackend->isNdoUtils()) {
+                $query = $this->Service->getServicestatusCountBySelectedStatus($this->MY_RIGHTS, $config);
+                $modelName = 'Service';
+            }
+
+            if ($this->DbBackend->isCrateDb()) {
+                $query = $this->Servicestatus->getServicestatusCountBySelectedStatus($this->MY_RIGHTS, $config);
+                $modelName = 'Servicestatus';
+            }
+
+            if ($this->DbBackend->isStatusengine3()) {
+                $query = $this->Service->getServicestatusBySelectedStatusStatusengine3($this->MY_RIGHTS, $config);
+                $modelName = 'Service';
+            }
+            $statusCount = $this->{$modelName}->find('count', $query);
+            $this->set('config', $config);
+            $this->set('statusCount', $statusCount);
+            $this->set('_serialize', ['config', 'statusCount']);
+            return;
+        }
+
+        if ($this->request->is('post')) {
+            $config = $ServiceStatusOverviewJson->standardizedData($this->request->data);
+
+            $this->Widget->id = (int)$this->request->data('Widget.id');;
+            $this->Widget->saveField('json_data', json_encode($config));
+
+            $this->set('config', $config);
+            $this->set('_serialize', ['config']);
+            return;
+        }
+
+
+        throw new MethodNotAllowedException();
+    }
+    
+    public function getPerformanceDataMetrics($serviceId) {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        if (!$this->Service->exists($serviceId)) {
+            throw new NotFoundException();
+        }
+
+        $service = $this->Service->find('first', [
+            'recursive'  => -1,
+            'fields'     => [
+                'Service.id',
+                'Service.uuid'
+            ],
+            'conditions' => [
+                'Service.id' => $serviceId,
             ],
         ]);
-        if (empty($tab)) {
-            throw new NotFoundException(__('Invalid tab'));
+
+
+        $ServicestatusFields = new ServicestatusFields($this->DbBackend);
+        $ServicestatusFields->perfdata();
+        $servicestatus = $this->Servicestatus->byUuid($service['Service']['uuid'], $ServicestatusFields);
+
+        if (!empty($servicestatus)) {
+            $PerfdataParser = new PerfdataParser($servicestatus['Servicestatus']['perfdata']);
+            $this->set('perfdata', $PerfdataParser->parse());
+            $this->set('_serialize', ['perfdata']);
+            return;
         }
-
-        $this->DashboardTab->id = $tabId;
-        $this->DashboardTab->saveField('shared', 0);
-        $this->redirect([
-            'action' => 'index',
-            $tabId,
-        ]);
-    }
-
-    public function refresh()
-    {
-        $widget = [];
-        $element = 'Dashboard'.DS.'404.ctp';
-        if (!$this->request->is('ajax')) {
-            throw new MethodNotAllowedException();
-        }
-
-        if (isset($this->request->data['widgetId'])) {
-            $widgetId = $this->request->data['widgetId'];
-            $userId = $this->Auth->user('id');
-            if ($this->Widget->exists($widgetId)) {
-                $widget = $this->Widget->find('first', [
-                    'contain'    => [
-                        'DashboardTab',
-                    ],
-                    'conditions' => [
-                        'Widget.id' => $widgetId,
-                    ],
-                ]);
-                if ($widget['DashboardTab']['user_id'] != $userId) {
-                    $widgetId = [];
-                } else {
-                    $result = $this->DashboardHandler->refresh($widget);
-                    $element = $result['element'];
-                }
-            }
-        }
-
-        //Set the widget or an empty array
-        $this->set('widget', $widget);
-        $this->set('element', $element);
-    }
-
-    public function saveStatuslistSettings()
-    {
-        $this->autoRender = false;
-        if (!$this->request->is('ajax')) {
-            throw new MethodNotAllowedException();
-        }
-        if (isset($this->request->data['widgetId']) && isset($this->request->data['settings']) && isset($this->request->data['widgetTypeId'])) {
-            $widgetId = $this->request->data['widgetId'];
-            $settings = $this->request->data['settings'];
-            $widgetTypeId = $this->request->data['widgetTypeId'];
-
-            if ($widgetTypeId == 9 || $widgetTypeId == 10) {
-                if ($widgetTypeId == 9) {
-                    $contain = 'WidgetHostStatusList';
-                }
-
-                if ($widgetTypeId == 10) {
-                    $contain = 'WidgetServiceStatusList';
-                }
-                if ($this->Widget->exists($widgetId)) {
-                    $userId = $this->Auth->user('id');
-                    $widget = $this->Widget->find('first', [
-                        'contain'    => [
-                            $contain,
-                            'DashboardTab',
-                        ],
-                        'conditions' => [
-                            'Widget.id' => $widgetId,
-                        ],
-                    ]);
-                    if ($widget['DashboardTab']['user_id'] == $userId) {
-                        foreach ($settings as $dbField => $value) {
-                            if ($value !== null && isset($widget[$contain][$dbField])) {
-                                $widget[$contain][$dbField] = $value;
-                            }
-                        }
-                        $this->Widget->saveAll($widget);
-                        $this->DashboardTab->id = $widget['DashboardTab']['id'];
-                        $this->DashboardTab->saveField('modified', date('Y-m-d H:i:s'));
-                    }
-                }
-            }
-        }
-    }
-
-    public function saveTrafficLightService()
-    {
-        $this->autoRender = false;
-        if (!$this->request->is('ajax')) {
-            throw new MethodNotAllowedException();
-        }
-        if (isset($this->request->data['widgetId']) && isset($this->request->data['serviceId'])) {
-            $widgetId = $this->request->data['widgetId'];
-            $serviceId = (int)$this->request->data['serviceId'];
-            $userId = $this->Auth->user('id');
-            if ($this->Widget->exists($widgetId)) {
-                $widget = $this->Widget->findById($widgetId);
-                if ($widget['DashboardTab']['user_id'] == $userId) {
-                    $widget['Widget']['service_id'] = $serviceId;
-                    $this->Widget->save($widget);
-                    $this->DashboardTab->id = $widget['DashboardTab']['id'];
-                    $this->DashboardTab->saveField('modified', date('Y-m-d H:i:s'));
-                }
-            }
-        }
-    }
-
-    public function saveMapId()
-    {
-        $this->autoRender = false;
-        if (!$this->request->is('ajax')) {
-            throw new MethodNotAllowedException();
-        }
-        if (isset($this->request->data['widgetId'])) {
-            $widgetId = $this->request->data['widgetId'];
-            $mapId = (int)$this->request->data['mapId'];
-            if ($mapId === 0) {
-                $mapId = null;
-            }
-            $userId = $this->Auth->user('id');
-            if ($this->Widget->exists($widgetId)) {
-                $widget = $this->Widget->findById($widgetId);
-                if ($widget['DashboardTab']['user_id'] == $userId) {
-                    $widget['Widget']['map_id'] = $mapId;
-                    $this->Widget->save($widget);
-                    $this->DashboardTab->id = $widget['DashboardTab']['id'];
-                    $this->DashboardTab->saveField('modified', date('Y-m-d H:i:s'));
-                }
-            }
-        }
-    }
-
-    public function saveGraphId()
-    {
-        $this->autoRender = false;
-        if (!$this->request->is('ajax')) {
-            throw new MethodNotAllowedException();
-        }
-        if (isset($this->request->data['widgetId'])) {
-            $widgetId = $this->request->data['widgetId'];
-            $graphId = (int)$this->request->data['graphId'];
-            if ($graphId === 0) {
-                $graphId = null;
-            }
-            $userId = $this->Auth->user('id');
-            if ($this->Widget->exists($widgetId)) {
-                $widget = $this->Widget->findById($widgetId);
-                if ($widget['DashboardTab']['user_id'] == $userId) {
-                    $widget['Widget']['graph_id'] = $graphId;
-                    $this->Widget->save($widget);
-                    $this->DashboardTab->id = $widget['DashboardTab']['id'];
-                    $this->DashboardTab->saveField('modified', date('Y-m-d H:i:s'));
-                }
-            }
-        }
-    }
-
-    public function getTachoPerfdata()
-    {
-        if (!$this->request->is('ajax')) {
-            throw new MethodNotAllowedException();
-        }
-
-        $perfdata = [];
-        if (isset($this->request->data['widgetId']) && isset($this->request->data['serviceId'])) {
-            $widgetId = $this->request->data['widgetId'];
-            $serviceId = (int)$this->request->data['serviceId'];
-            $userId = $this->Auth->user('id');
-            if ($this->Widget->exists($widgetId)) {
-                $widget = $this->Widget->findById($widgetId);
-                if ($widget['DashboardTab']['user_id'] == $userId) {
-                    $widget['Widget']['service_id'] = $serviceId;
-                    //$this->Widget->save($widget);
-                    //$this->DashboardTab->id = $widget['DashboardTab']['id'];
-                    //$this->DashboardTab->saveField('modified', date('Y-m-d H:i:s'));
-
-                    $service = $this->Service->find('first', [
-                        'recursive'  => -1,
-                        'contain'    => [],
-                        'conditions' => [
-                            'Service.id' => $serviceId,
-                        ],
-                        'joins'      => [
-                            [
-                                'table'      => 'nagios_objects',
-                                'type'       => 'INNER',
-                                'alias'      => 'ServiceObject',
-                                'conditions' => 'Service.uuid = ServiceObject.name2 AND ServiceObject.objecttype_id = 2',
-                            ],
-                            [
-                                'table'      => 'nagios_servicestatus',
-                                'type'       => 'LEFT OUTER',
-                                'alias'      => 'Servicestatus',
-                                'conditions' => 'Servicestatus.service_object_id = ServiceObject.object_id',
-                            ],
-                        ],
-                        'fields'     => [
-                            'Service.id',
-                            'Service.uuid',
-                            'Servicestatus.current_state',
-                            'Servicestatus.perfdata',
-                        ],
-                    ]);
-
-
-                    if (isset($service['Servicestatus']['perfdata'])) {
-                        $perfdata = [];
-                        $_perfdata = $this->Rrd->parsePerfData($service['Servicestatus']['perfdata']);
-                        $keys = ['current', 'unit', 'warn', 'crit', 'min', 'max'];
-                        foreach ($_perfdata as $dsName => $data) {
-                            foreach ($keys as $key) {
-                                if (isset($data[$key])) {
-                                    if ($data[$key] == '' && $key !== 'unit') {
-                                        $data[$key] = 0;
-                                    }
-                                    $perfdata[$dsName][$key] = $data[$key];
-                                } else {
-                                    $perfdata[$dsName][$key] = 0;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        $this->set('perfdata', $perfdata);
+        $this->set('perfdata', []);
         $this->set('_serialize', ['perfdata']);
-    }
-
-    public function saveTachoConfig()
-    {
-        if ($this->request->is('post') || $this->request->is('put')) {
-            $tachoConfig = $this->request->data['dashboard'];
-            $widgetTachoId = null;
-            if (isset($tachoConfig['widgetTachoId'])) {
-                $widgetTachoId = $tachoConfig['widgetTachoId'];
-            }
-            $requiredKeys = [
-                'ds',
-                'min',
-                'max',
-                'warn',
-                'crit',
-                'tabId',
-                'widgetId',
-                'serviceId',
-            ];
-            foreach ($requiredKeys as $key) {
-                if (!isset($tachoConfig[$key]) || $tachoConfig[$key] == '') {
-                    $this->setFlash(__('One or more parameters are missing'), false);
-
-                    return $this->redirect(['action' => 'index']);
-                }
-            }
-
-            $userId = $this->Auth->user('id');
-            $tab = $this->DashboardTab->find('first', [
-                'recursive'  => -1,
-                'contain'    => [],
-                'conditions' => [
-                    'id'      => $tachoConfig['tabId'],
-                    'user_id' => $userId,
-                ],
-            ]);
-            if (empty($tab) && !$this->Widget->exists($tachoConfig['widgetId'])) {
-                $this->setFlash(__('Given tab not found in database'), false);
-
-                return $this->redirect(['action' => 'index']);
-            }
-
-            $data = [
-                'WidgetTacho' => [
-                    'widget_id'   => $tachoConfig['widgetId'],
-                    'min'         => $tachoConfig['min'],
-                    'max'         => $tachoConfig['max'],
-                    'warn'        => $tachoConfig['warn'],
-                    'crit'        => $tachoConfig['crit'],
-                    'data_source' => $tachoConfig['ds'],
-                ],
-            ];
-            if ($widgetTachoId !== null) {
-                $data['WidgetTacho']['id'] = $widgetTachoId;
-            }
-            if ($this->WidgetTacho->save($data)) {
-                $this->Widget->id = $data['WidgetTacho']['widget_id'];
-                $this->Widget->saveField('service_id', $tachoConfig['serviceId']);
-            }
-
-            return $this->redirect(['action' => 'index', $tachoConfig['tabId']]);
-        }
-
-        return $this->redirect(['action' => 'index']);
-    }
-
-    public function saveNotice()
-    {
-        if ($this->request->is('post') || $this->request->is('put')) {
-            $noticeConfig = $this->request->data['dashboard'];
-            $widgetNoticeId = null;
-            //$note = Purifier::clean($noticeConfig['noticeText'], 'StandardConfig');
-            $note = htmlspecialchars($noticeConfig['noticeText']);
-
-            if (isset($noticeConfig['WidgetNoticeId'])) {
-                $widgetNoticeId = $noticeConfig['WidgetNoticeId'];
-            }
-            $userId = $this->Auth->user('id');
-            $tab = $this->DashboardTab->find('first', [
-                'recursive'  => -1,
-                'contain'    => [],
-                'conditions' => [
-                    'id'      => $noticeConfig['tabId'],
-                    'user_id' => $userId,
-                ],
-            ]);
-            if (empty($tab) && !$this->Widget->exists($noticeConfig['widgetId'])) {
-                $this->setFlash(__('Given tab not found in database'), false);
-
-                return $this->redirect(['action' => 'index']);
-            }
-
-            $data = [
-                'WidgetNotice' => [
-                    'widget_id' => $noticeConfig['widgetId'],
-                    'note'      => $note,
-                ],
-            ];
-            if ($widgetNoticeId !== null) {
-                $data['WidgetNotice']['id'] = $widgetNoticeId;
-            }
-
-            if ($this->WidgetNotice->save($data)) {
-                $this->Widget->id = $data['WidgetNotice']['widget_id'];
-            }
-
-            return $this->redirect(['action' => 'index', $noticeConfig['tabId']]);
-        }
-
-        return $this->redirect(['action' => 'index']);
-    }
-
-    public function saveMap()
-    {
-        $this->autoRender = false;
-        if (!$this->request->is('ajax')) {
-            throw new MethodNotAllowedException();
-        }
-        if (isset($this->request->data['widgetId']) && isset($this->request->data['mapId'])) {
-            $widgetId = $this->request->data['widgetId'];
-            $mapId = (int)$this->request->data['mapId'];
-            $userId = $this->Auth->user('id');
-            if ($this->Widget->exists($widgetId)) {
-                $widget = $this->Widget->findById($widgetId);
-                if ($widget['DashboardTab']['user_id'] == $userId) {
-                    $widget['Widget']['map_id'] = $mapId;
-                    $this->Widget->save($widget);
-                    $this->DashboardTab->id = $widget['DashboardTab']['id'];
-                    $this->DashboardTab->saveField('modified', date('Y-m-d H:i:s'));
-                }
-            }
-        }
-    }
-
-    public function saveGrafanaId(){
-        $this->autoRender = false;
-        if (isset($this->request->data['dashboard']['widgetId'])) {
-            $widgetId = $this->request->data['dashboard']['widgetId'];
-            $hostId = $this->request->data['dashboard']['hostId'];
-            $tabId = $this->request->data['dashboard']['tabId'];
-            if ($this->Widget->exists($widgetId)) {
-                $widget = $this->Widget->findById($widgetId);
-                $widget['Widget']['host_id'] = $hostId;
-                if($this->Widget->save($widget)){
-                    $this->DashboardTab->id = $widget['DashboardTab']['id'];
-                    $this->DashboardTab->saveField('modified', date('Y-m-d H:i:s'));
-                    return $this->redirect(['action' => 'index', $tabId]);
-                }else{
-                    return $this->redirect(['action' => 'index']);
-                }
-            }
-        }
     }
 }

@@ -25,7 +25,12 @@
 
 $config = [
     'acl_dependencies' => [
-        'always_allowed' => [],
+        'always_allowed' => [
+            'GrafanaConfiguration' => [
+                'grafanaWidget',
+                'getGrafanaDashboards'
+            ]
+        ],
         'dependencies'   => [
             'GrafanaConfiguration' => [
                 'index' => ['testGrafanaConnection', 'loadHostgroups'],

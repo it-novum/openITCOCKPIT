@@ -288,6 +288,14 @@ class AppController extends Controller {
             $this->Paginator->settings['limit'] = 25;
         }
 
+        if(is_numeric($this->request->query('limit'))){
+            $queryStringLimit = (int)$this->request->query('limit');
+            if($queryStringLimit > 1000){
+                $queryStringLimit = 1000;
+            }
+            $this->Paginator->settings['limit'] = $queryStringLimit;
+        }
+
         $permissionsFromCache = Cache::read($cacheKey, 'permissions');
         $this->userLimit = (int)$this->Paginator->settings['limit'];
         $this->MY_RIGHTS = $permissionsFromCache['MY_RIGHTS'];

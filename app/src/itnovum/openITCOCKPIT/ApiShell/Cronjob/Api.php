@@ -29,6 +29,11 @@ use itnovum\openITCOCKPIT\ApiShell\Exceptions\RecordExistsExceptions;
 use itnovum\openITCOCKPIT\ApiShell\Interfaces\ApiInterface;
 use itnovum\openITCOCKPIT\ApiShell\OptionParser;
 
+/**
+ * Class Api
+ * @package itnovum\openITCOCKPIT\ApiShell\Cronjob
+ * @property \Cronjob $Database
+ */
 class Api extends CoreApi implements ApiInterface
 {
 
@@ -84,6 +89,12 @@ class Api extends CoreApi implements ApiInterface
         if (!$this->Database->checkForCronjob('SystemHealth', 'Core')) {
             //Cron does not exists, so we create it
             $this->Database->add('SystemHealth', 'Core', 1);
+        }
+
+        //Check if SystemMetrics cronjob exists
+        if (!$this->Database->checkForCronjob('SystemMetrics', 'Core')) {
+            //Cron does not exists, so we create it
+            $this->Database->add('SystemMetrics', 'Core', 240);
         }
     }
 

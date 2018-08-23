@@ -23,6 +23,7 @@
 //  confirmation.
 
 use \itnovum\openITCOCKPIT\Core\ValueObjects\User;
+use itnovum\openITCOCKPIT\Core\Views\HostAndServiceSummaryIcon;
 use itnovum\openITCOCKPIT\Core\Views\PieChart;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
 
@@ -203,6 +204,12 @@ class AngularController extends AppController {
             $containerIds = array_merge($containerIds, $recursiveContainerIds);
         }
 
+        //We need integers for cratedb
+        $containerIdsForQuery = [];
+        foreach($containerIds as $containerId){
+            $containerIdsForQuery[] = (int)$containerId;
+        }
+
         $hoststatusCount = [
             '0' => 0,
             '1' => 0,
@@ -218,18 +225,18 @@ class AngularController extends AppController {
 
 
         if ($this->DbBackend->isNdoUtils()) {
-            $hoststatusCount = $this->Host->getHoststatusCount($containerIds, true);
-            $servicestatusCount = $this->Host->getServicestatusCount($containerIds, true);
+            $hoststatusCount = $this->Host->getHoststatusCount($containerIdsForQuery, true);
+            $servicestatusCount = $this->Host->getServicestatusCount($containerIdsForQuery, true);
         }
 
         if ($this->DbBackend->isCrateDb()) {
-            $hoststatusCount = $this->Hoststatus->getHoststatusCount($containerIds, true);
-            $servicestatusCount = $this->Servicestatus->getServicestatusCount($containerIds, true);
+            $hoststatusCount = $this->Hoststatus->getHoststatusCount($containerIdsForQuery, true);
+            $servicestatusCount = $this->Servicestatus->getServicestatusCount($containerIdsForQuery, true);
         }
 
         if ($this->DbBackend->isStatusengine3()) {
-            $hoststatusCount = $this->Host->getHoststatusCountStatusengine3($containerIds, true);
-            $servicestatusCount = $this->Host->getServicestatusCountStatusengine3($containerIds, true);
+            $hoststatusCount = $this->Host->getHoststatusCountStatusengine3($containerIdsForQuery, true);
+            $servicestatusCount = $this->Host->getServicestatusCountStatusengine3($containerIdsForQuery, true);
         }
 
         $hoststatusSum = array_sum($hoststatusCount);
@@ -590,7 +597,6 @@ class AngularController extends AppController {
         //Only ship HTML template
         return;
     }
-
     /**
      * @param int $up up|ok
      * @param int $down down|warning
@@ -610,6 +616,53 @@ class AngularController extends AppController {
         $PieChart->createPieChart($chartData);
 
         $image = $PieChart->getImage();
+
+        $this->layout = false;
+        $this->render = false;
+        header('Content-Type: image/png');
+        imagepng($image, null, 0);
+        imagedestroy($image);
+    }
+
+    /**
+     * @param int $up up|ok
+     * @param int $down down|warning
+     * @param int $unreachable unreachable|critical
+     * @param int $unknown unknown
+     * @throws Exception
+     */
+    public function getHalfPieChart($up = 0, $down = 0, $unreachable = 1, $unknown = null) {
+        session_write_close();
+        $PieChart = new PieChart();
+
+        $chartData = [$up, $down, $unreachable];
+        if ($unknown !== null) {
+            $chartData = [$up, $down, $unreachable, $unknown];
+        }
+
+        $PieChart->createHalfPieChart($chartData);
+
+        $image = $PieChart->getImage();
+
+        $this->layout = false;
+        $this->render = false;
+        header('Content-Type: image/png');
+        imagepng($image, null, 0);
+        imagedestroy($image);
+    }
+
+    /**
+     * @param int $size
+     * @param int $bitMaskHostState
+     * @param int $bitMaskServiceState
+     * @throws Exception
+     */
+
+    public function getHostAndServiceStateSummaryIcon($size = 100, $bitMaskHostState = 0, $bitMaskServiceState = 0) {
+        session_write_close();
+        $HostAndServiceSummaryIcon = new HostAndServiceSummaryIcon($size);
+        $HostAndServiceSummaryIcon->createSummaryIcon($bitMaskHostState, $bitMaskServiceState);
+        $image = $HostAndServiceSummaryIcon->getImage();
 
         $this->layout = false;
         $this->render = false;

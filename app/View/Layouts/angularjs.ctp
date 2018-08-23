@@ -48,7 +48,7 @@ $scripts = [
     //'smartadmin/js/plugin/flot/jquery.flot.orderBar.js', //
     'smartadmin/js/plugin/flot/jquery.flot.fillbetween.js',
     //'smartadmin/js/plugin/flot/jquery.flot.pie.min.js', //
-    //'smartadmin/js/plugin/flot/jquery.flot.resize.js',
+    'smartadmin/js/plugin/flot/jquery.flot.resize.js',
     //'smartadmin/js/plugin/flot/jquery.flot.navigate.js', //
     'smartadmin/js/plugin/flot/jquery.flot.threshold.js',
     //'smartadmin/js/plugin/flot/jquery.flot.selection.js', //
@@ -57,6 +57,16 @@ $scripts = [
     'js/vendor/vis-4.21.0/dist/vis.js',
     'js/scripts/ng.app.js',
     'js/vendor/UUID.js-4.0.3/dist/uuid.core.js',
+    'js/vendor/lodash/vendor/underscore/underscore.js',
+    'js/vendor/noty/noty.min.js',
+    'js/vendor/gauge.min.js',
+    'js/lib/jquery.svg.min.js',
+    'js/lib/jquery.svgfilter.min.js',
+    'smartadmin/js/plugin/dropzone/dropzone.min.js',
+    'vendor/noty/noty.min.js',
+    'js/lib/rangyinputs-jquery-1.1.2.min.js',
+    'vendor/javascript-detect-element-resize/jquery.resize.js',
+    'vendor/angular-gridster/dist/angular-gridster.min.js',
 ];
 
 if ($this->request->params['controller'] === 'statusmaps') {
@@ -125,6 +135,11 @@ if (ENVIRONMENT === Environments::PRODUCTION) {
     ?>
 </head>
 <body class="<?= $bodyClass ?>">
+
+<script>
+    Dropzone.autoDiscover = false;
+</script>
+
 <div id="global-loading">
     <i class="fa fa-refresh fa-spin"></i>
 </div>

@@ -27,13 +27,13 @@ use itnovum\openITCOCKPIT\Core\Http;
 
 App::uses('Folder', 'Utility');
 App::uses('HttpSocket', 'Network/Http');
-App::import('Controller', 'MapModule.BackgroundUploads');
 App::import('Controller', 'MapModule.Maps');
 App::import('Model', 'Host');
 App::import('Model', 'Service');
 App::import('Model', 'Hostgroup');
 App::import('Model', 'Servicegroup');
 App::import('Model', 'MapModule.Map');
+App::import('Model', 'MapModule.MapUpload');
 
 class NagvisMigrationShell extends AppShell {
 
@@ -176,6 +176,7 @@ class NagvisMigrationShell extends AppShell {
         $this->service = new Service();
         $this->hostgroup = new Hostgroup();
         $this->servicegroup = new Servicegroup();
+        $this->MapUpload = new MapUpload();
         $this->map = new Map();
 
         $this->availableMaps = $this->getMapNames();
@@ -1063,11 +1064,9 @@ class NagvisMigrationShell extends AppShell {
             $data = [
                 'fullPath'       => $fullFilePath,
                 'uuidFilename'   => $filename,
-                'fileExtension'  => $fileExtension,
-                'folderInstance' => $folderInstance,
+                'fileExtension'  => $fileExtension
             ];
-            $backgroundUploadInstance = new BackgroundUploadsController();
-            $backgroundUploadInstance->createThumbnailsFromBackgrounds($data, true);
+            $this->MapUpload->createThumbnailsFromBackgrounds($data, $folderInstance);
         }
     }
 

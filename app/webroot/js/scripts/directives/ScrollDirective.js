@@ -4,11 +4,19 @@ angular.module('openITCOCKPIT').directive('scroll', function($http, $filter, $ro
         templateUrl: '/angular/scroll.html',
         scope: {
             'scroll': '=',
-            'clickAction': '='
+            'clickAction': '=',
+            'onlyButtons': '=?'
         },
         controller: function($scope){
             var paginatorLimit = 5;
             var paginatorOffset = 2;
+            var onlyButtons = false;
+
+            if(typeof $scope.onlyButtons !== 'undefined'){
+                onlyButtons = true;
+            }
+
+            $scope.onlyButtons = onlyButtons;
 
             $scope.changePage = function(page){
                 $scope.clickAction(page);
