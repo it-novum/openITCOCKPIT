@@ -1,4 +1,4 @@
-angular.module('openITCOCKPIT').directive('hostStatusOverviewWidget', function($http, $rootScope, $interval){
+angular.module('openITCOCKPIT').directive('hostStatusOverviewWidget', function($http, $rootScope, $interval, $httpParamSerializer){
     return {
         restrict: 'E',
         templateUrl: '/dashboards/hostStatusOverviewWidget.html',
@@ -38,6 +38,7 @@ angular.module('openITCOCKPIT').directive('hostStatusOverviewWidget', function($
                     $scope.filter.Hoststatus.not_acknowledged = !result.data.config.Hoststatus.problem_has_been_acknowledged;
                     $scope.filter.Hoststatus.not_in_downtime = !result.data.config.Hoststatus.scheduled_downtime_depth;
                     $scope.statusCount = result.data.statusCount;
+                    $scope.widgetHref = $scope.linkForHostList();
                     $scope.init = false;
                 });
             };
@@ -52,6 +53,9 @@ angular.module('openITCOCKPIT').directive('hostStatusOverviewWidget', function($
 
 
             var hasResize = function(){
+                if($scope.init){
+                    return;
+                }
                 $scope.frontWidgetHeight = parseInt(($widget.height() - 30), 10); //-30px header
                 $scope.fontSize = $scope.frontWidgetHeight / 2;
 
@@ -66,12 +70,10 @@ angular.module('openITCOCKPIT').directive('hostStatusOverviewWidget', function($
 
             $scope.load();
 
-            $scope.$watch('filter', function(){
+            $scope.saveHoststatusOverview = function(){
                 if($scope.init){
                     return;
                 }
-            });
-            $scope.saveHoststatusOverview = function(){
                 $http.post("/dashboards/hostStatusOverviewWidget.json?angular=true",
                     {
                         Widget: {
@@ -91,6 +93,22 @@ angular.module('openITCOCKPIT').directive('hostStatusOverviewWidget', function($
                     $scope.load();
                     $scope.hideConfig();
                 });
+            };
+
+            $scope.linkForHostList = function(){
+                if($scope.init){
+                    return;
+                }
+
+                var options = {
+                    'angular': true,
+                    'filter[Host.name]': $scope.filter.Host.name,
+                    'has_not_been_acknowledged': ($scope.filter.Hoststatus.not_acknowledged)?'1':'0',
+                    'not_in_downtime': ($scope.filter.Hoststatus.not_in_downtime)?'1':'0'
+                };
+                var currentState = 'filter[Hoststatus.current_state]['+$scope.filter.Hoststatus.current_state+']';
+                options[currentState] = 1;
+                return  '/hosts/index/?' + $httpParamSerializer(options);
             };
 
         },
