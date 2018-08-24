@@ -114,7 +114,12 @@ class MySQLHealth {
     private function parseGlobalStatusResult($rawResult) {
         $result = [];
         foreach ($rawResult as $record) {
-            $result[$record['STATUS']['Variable_name']] = $record['STATUS']['Value'];
+            if(isset($record['STATUS'])){
+                $result[$record['STATUS']['Variable_name']] = $record['STATUS']['Value'];
+            }
+            if(isset($record['global_status'])){
+                $result[$record['global_status']['Variable_name']] = $record['global_status']['Value'];
+            }
         }
         return $result;
     }
