@@ -36,11 +36,21 @@
                 <i class="fa fa-cog fa-sm"></i>
             </a>
             <div class="padding-5" style="font-size:{{fontSize}}px;">
-                <div class="row text-center">
-                    <div class="col col-lg-12 txt-color-white">
-                        {{ statusCount | number }}
+                <?php if ($this->Acl->hasPermission('index', 'hosts')): ?>
+                    <a ng-href="{{widgetHref}}">
+                        <div class="row text-center">
+                            <div class="col col-lg-12 txt-color-white">
+                                {{ statusCount | number }}
+                            </div>
+                        </div>
+                    </a>
+                <?php else: ?>
+                    <div class="row text-center">
+                        <div class="col col-lg-12 txt-color-white">
+                            {{ statusCount | number }}
+                        </div>
                     </div>
-                </div>
+                <?php endif; ?>
             </div>
         </flippy-front>
         <flippy-back>

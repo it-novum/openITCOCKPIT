@@ -1,4 +1,4 @@
-angular.module('openITCOCKPIT').directive('serviceStatusOverviewWidget', function($http, $rootScope, $interval){
+angular.module('openITCOCKPIT').directive('serviceStatusOverviewWidget', function($http, $rootScope, $interval, $httpParamSerializer){
     return {
         restrict: 'E',
         templateUrl: '/dashboards/serviceStatusOverviewWidget.html',
@@ -42,6 +42,7 @@ angular.module('openITCOCKPIT').directive('serviceStatusOverviewWidget', functio
                     $scope.filter.Servicestatus.not_acknowledged = !result.data.config.Servicestatus.problem_has_been_acknowledged;
                     $scope.filter.Servicestatus.not_in_downtime = !result.data.config.Servicestatus.scheduled_downtime_depth;
                     $scope.statusCount = result.data.statusCount;
+                    $scope.widgetHref = $scope.linkForServiceList();
                     $scope.init = false;
                 });
             };
@@ -56,6 +57,9 @@ angular.module('openITCOCKPIT').directive('serviceStatusOverviewWidget', functio
 
 
             var hasResize = function(){
+                if($scope.init){
+                    return;
+                }
                 $scope.frontWidgetHeight = parseInt(($widget.height() - 30), 10); //-30px header
                 $scope.fontSize = $scope.frontWidgetHeight / 2;
 
@@ -70,12 +74,10 @@ angular.module('openITCOCKPIT').directive('serviceStatusOverviewWidget', functio
 
             $scope.load();
 
-            $scope.$watch('filter', function(){
+            $scope.saveServicestatusOverview = function(){
                 if($scope.init){
                     return;
                 }
-            });
-            $scope.saveServicestatusOverview = function(){
                 $http.post("/dashboards/serviceStatusOverviewWidget.json?angular=true",
                     {
                         Widget: {
@@ -100,10 +102,26 @@ angular.module('openITCOCKPIT').directive('serviceStatusOverviewWidget', functio
                 });
             };
 
+            $scope.linkForServiceList = function(){
+                if($scope.init){
+                    return;
+                }
+
+                var options = {
+                    'angular': true,
+                    'filter[Host.name]': $scope.filter.Host.name,
+                    'filter[Service.servicename]': $scope.filter.Service.name,
+                    'has_not_been_acknowledged': ($scope.filter.Servicestatus.not_acknowledged)?'1':'0',
+                    'not_in_downtime': ($scope.filter.Servicestatus.not_in_downtime)?'1':'0'
+                };
+                var currentState = 'filter[Servicestatus.current_state]['+$scope.filter.Servicestatus.current_state+']';
+                options[currentState] = 1;
+                return  '/services/index/?' + $httpParamSerializer(options);
+            };
         },
 
-        link: function($scope, element, attr){
-
-        }
+        link:
+            function($scope, element, attr){
+            }
     };
 });
