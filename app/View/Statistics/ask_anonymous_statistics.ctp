@@ -106,7 +106,7 @@
                     <?php echo __('I want more information'); ?>
                 </a>
                 <button type="button" class="btn btn-success" ng-click="save(1)">
-                    <?php echo __('Yes, i want to help'); ?>
+                    <?php echo __('Yes, I want to help'); ?>
                 </button>
                 <button type="button" class="btn btn-danger" data-dismiss="modal" ng-click="save(0)">
                     <?php echo __('No, thanks'); ?>
