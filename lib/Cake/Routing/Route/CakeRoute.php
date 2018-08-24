@@ -316,7 +316,7 @@ class CakeRoute {
 						}
 						$val = $arr;
 					}
-					$named = array_replace_recursive($named, array($key => $val));
+					$named = array_merge_recursive($named, array($key => $val));
 				}
 			} else {
 				$pass[] = $param;
