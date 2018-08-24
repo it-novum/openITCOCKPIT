@@ -65,6 +65,11 @@ class GrafanaPanel {
     private $ThresholdCollection;
 
     /**
+     * @var int
+     */
+    private $span = 6;
+
+    /**
      * @var array
      */
     private $panel = [
@@ -123,8 +128,23 @@ class GrafanaPanel {
         ]
     ];
 
-    public function __construct($panelId) {
+    /**
+     * GrafanaPanel constructor.
+     * @param $panelId
+     * @param int $span
+     */
+    public function __construct($panelId, $span = 6) {
         $this->panelId = $panelId;
+        $span = (int)$span;
+        if($span <= 0){
+            $span = 1;
+        }
+
+        if($span > 12){
+            $span = 12;
+        }
+
+        $this->span = $span;
     }
 
     /**
@@ -134,6 +154,7 @@ class GrafanaPanel {
         $this->panel['id'] = $this->panelId;
         $this->panel['title'] = $this->title;
         $this->panel['targets'] = $this->targets;
+        $this->panel['span'] = $this->span;
 
         if ($this->SeriesOverrides->hasOverrides()) {
             $this->panel['seriesOverrides'] = $this->SeriesOverrides->getOverrides();
