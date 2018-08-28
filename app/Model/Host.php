@@ -2063,6 +2063,176 @@ class Host extends AppModel {
     }
 
     /**
+     * get the data for host changelog
+     * @param $data
+     * @return array
+     */
+    public function getChangelogData($data) {
+
+        //debug($data);
+        $this->Hosttemplate = ClassRegistry::init('Hosttemplate');
+        $this->Timeperiod = ClassRegistry::init('Timeperiod');
+        $this->Command = ClassRegistry::init('Command');
+        $this->Contact = ClassRegistry::init('Contact');
+        $this->Contactgroup = ClassRegistry::init('Contactgroup');
+        $this->Hostgroup = ClassRegistry::init('Hostgroup');
+
+        $ext_data_for_changelog = [];
+        if ($data['Host']['Contact']) {
+            if ($contactsForChangelog = $this->Contact->find('list', [
+                'conditions' => [
+                    'Contact.id' => $data['Host']['Contact'],
+                ],
+            ])
+            ) {
+                foreach ($contactsForChangelog as $contactId => $contactName) {
+                    $ext_data_for_changelog['Contact'][] = [
+                        'id'   => $contactId,
+                        'name' => $contactName,
+                    ];
+                }
+                unset($contactsForChangelog);
+            }
+        }
+        if ($data['Host']['Contactgroup']) {
+            if ($contactgroupsForChangelog = $this->Contactgroup->find('all', [
+                'recursive'  => -1,
+                'contain'    => [
+                    'Container' => [
+                        'fields' => [
+                            'Container.name',
+                        ],
+                    ],
+                ],
+                'fields'     => [
+                    'Contactgroup.id',
+                ],
+                'conditions' => [
+                    'Contactgroup.id' => $data['Host']['Contactgroup'],
+                ],
+            ])
+            ) {
+                foreach ($contactgroupsForChangelog as $contactgroupData) {
+                    $ext_data_for_changelog['Contactgroup'][] = [
+                        'id'   => $contactgroupData['Contactgroup']['id'],
+                        'name' => $contactgroupData['Container']['name'],
+                    ];
+                }
+                unset($contactgroupsForChangelog);
+            }
+        }
+        if ($data['Host']['Hostgroup']) {
+            if ($hostgroupsForChangelog = $this->Hostgroup->find('all', [
+                'recursive'  => -1,
+                'contain'    => [
+                    'Container' => [
+                        'fields' => [
+                            'Container.name',
+                        ],
+                    ],
+                ],
+                'fields'     => [
+                    'Hostgroup.id',
+                ],
+                'conditions' => [
+                    'Hostgroup.id' => $data['Host']['Hostgroup'],
+                ],
+            ])
+            ) {
+                foreach ($hostgroupsForChangelog as $hostgroupData) {
+                    $ext_data_for_changelog['Hostgroup'][] = [
+                        'id'   => $hostgroupData['Hostgroup']['id'],
+                        'name' => $hostgroupData['Container']['name'],
+                    ];
+                }
+                unset($hostgroupsForChangelog);
+            }
+        }
+        if ($data['Host']['notify_period_id']) {
+            if ($timeperiodsForChangelog = $this->Timeperiod->find('list', [
+                'conditions' => [
+                    'Timeperiod.id' => $data['Host']['notify_period_id'],
+                ],
+            ])
+            ) {
+                foreach ($timeperiodsForChangelog as $timeperiodId => $timeperiodName) {
+                    $ext_data_for_changelog['NotifyPeriod'] = [
+                        'id'   => $timeperiodId,
+                        'name' => $timeperiodName,
+                    ];
+                }
+                unset($timeperiodsForChangelog);
+            }
+        }
+        if ($data['Host']['check_period_id']) {
+            if ($timeperiodsForChangelog = $this->Timeperiod->find('list', [
+                'conditions' => [
+                    'Timeperiod.id' => $data['Host']['check_period_id'],
+                ],
+            ])
+            ) {
+                foreach ($timeperiodsForChangelog as $timeperiodId => $timeperiodName) {
+                    $ext_data_for_changelog['CheckPeriod'] = [
+                        'id'   => $timeperiodId,
+                        'name' => $timeperiodName,
+                    ];
+                }
+                unset($timeperiodsForChangelog);
+            }
+        }
+        if ($data['Host']['hosttemplate_id']) {
+            if ($hosttemplatesForChangelog = $this->Hosttemplate->find('list', [
+                'conditions' => [
+                    'Hosttemplate.id' => $data['Host']['hosttemplate_id'],
+                ],
+            ])
+            ) {
+                foreach ($hosttemplatesForChangelog as $hosttemplateId => $hosttemplateName) {
+                    $ext_data_for_changelog['Hosttemplate'] = [
+                        'id'   => $hosttemplateId,
+                        'name' => $hosttemplateName,
+                    ];
+                }
+                unset($hosttemplatesForChangelog);
+            }
+        }
+        if ($data['Host']['command_id']) {
+            if ($commandsForChangelog = $this->Command->find('list', [
+                'conditions' => [
+                    'Command.id' => $data['Host']['command_id'],
+                ],
+            ])
+            ) {
+                foreach ($commandsForChangelog as $commandId => $commandName) {
+                    $ext_data_for_changelog['CheckCommand'] = [
+                        'id'   => $commandId,
+                        'name' => $commandName,
+                    ];
+                }
+                unset($commandsForChangelog);
+            }
+        }
+        if ($data['Host']['Parenthost']) {
+            if ($hostsForChangelog = $this->Host->find('list', [
+                'conditions' => [
+                    'Host.id' => $data['Host']['Parenthost'],
+                ],
+            ])
+            ) {
+                foreach ($hostsForChangelog as $hostId => $hostName) {
+                    $ext_data_for_changelog['Parenthost'][] = [
+                        'id'   => $hostId,
+                        'name' => $hostName,
+                    ];
+                }
+                unset($hostsForChangelog);
+            }
+        }
+        return $ext_data_for_changelog;
+    }
+
+
+        /**
      * @param $hoststatus
      * @param bool $extended show details ('acknowledged', 'in downtime', ...)
      * @return array
