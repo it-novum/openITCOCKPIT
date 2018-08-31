@@ -80,15 +80,36 @@ $this->Paginator->options(['url' => $this->params['named']]);
                             <?php echo __('Refresh'); ?>
                         </button>
 
-                        <?php if ($this->Acl->hasPermission('add', 'hosts')): ?>
-                            <a href="/hosts/add" class="btn btn-xs btn-success">
+                        <?php if ($this->Acl->hasPermission('add')): ?>
+                            <div class="btn-group">
+                                 <a href="/hosts/add/"
+                                   class="btn btn-xs btn-success">
+                                    &nbsp;New
+                                </a>
+                                <button type="button" class="btn btn-xs btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <span class="caret"></span>
+                                    <span class="sr-only">Toggle Dropdown</span>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a href="/hosts/add">Add</a></li>
+                                    <li><a href="/hosts/addwizard">Add with Wizard</a></li>
+                                </ul>
+                            </div>
+
+                        <?php //if ($this->Acl->hasPermission('add', 'hosts')): ?>
+                            <!--<a href="/hosts/add" class="btn btn-xs btn-success">
                                 <i class="fa fa-plus"></i>
-                                <?php echo __('New'); ?>
-                            </a>
+                                <?php// echo __('New'); ?>
+                            </a>-->
                         <?php endif; ?>
                         <button type="button" class="btn btn-xs btn-primary" ng-click="triggerFilter()">
                             <i class="fa fa-filter"></i>
                             <?php echo __('Filter'); ?>
+                        </button>
+
+                        <button type="button" class="btn btn-xs btn-danger" ng-click="problemsOnly()">
+                            <i class="fa fa-exclamation-triangle"></i>
+                            <?php echo __('Unhandled only'); ?>
                         </button>
                     </div>
                     <div class="jarviswidget-ctrls" role="menu"></div>

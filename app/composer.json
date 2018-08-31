@@ -25,6 +25,7 @@
     "prefer-stable": true,
     "require": {
         "symfony/filesystem": "^3.2",
+        "symfony/finder": "^3.2",
         "crate/crate-pdo": "~0.6.0",
         "crate/crate-dbal": "~0.3.0",
         "ddeboer/imap": "^0.5.2",

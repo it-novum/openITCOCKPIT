@@ -45,6 +45,11 @@ class HostConditions {
     /**
      * @var array
      */
+    private $hostIds = [];
+
+    /**
+     * @var array
+     */
     private $order = [];
 
     /**
@@ -127,5 +132,17 @@ class HostConditions {
         return $this->order;
     }
 
+    /**
+     * @return array
+     */
+    public function getHostIds() {
+        return $this->hostIds;
+    }
 
+    /**
+     * @param array $hostIds
+     */
+    public function setHostIds($hostIds) {
+        $this->hostIds = $hostIds;
+    }
 }

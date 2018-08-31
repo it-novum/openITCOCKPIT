@@ -175,22 +175,6 @@ class Host extends AppModel {
                 'required' => true,
             ],
         ],
-        /*
-        'Contact' => [
-            'atLeastOne' => [
-                'rule' => ['atLeastOne'],
-                'message' => 'You must specify at least one contact or contact group.',
-                'required' => true
-            ]
-        ],
-        'Contactgroup' => [
-            'atLeastOne' => [
-                'rule' => ['atLeastOne'],
-                'message' => 'You must specify at least one contact or contact group',
-                'required' => true
-            ]
-        ],
-        */
         'command_id'         => [
             'numeric' => [
                 'rule'       => 'numeric',
@@ -1317,7 +1301,6 @@ class Host extends AppModel {
             ],
             'conditions' => $conditions,
             'fields'     => [
-                //'DISTINCT (Host.id) as banane', //Fix pagination
                 'Host.id',
                 'Host.uuid',
                 'Host.name',
@@ -1371,6 +1354,10 @@ class Host extends AppModel {
 
         $query['conditions']['Host.disabled'] = (int)$HostConditions->includeDisabled();
         $query['conditions']['HostsToContainers.container_id'] = $HostConditions->getContainerIds();
+
+        if ($HostConditions->getHostIds()) {
+            $query['conditions']['Host.id'] = $HostConditions->getHostIds();
+        }
 
         return $query;
     }
@@ -1448,6 +1435,10 @@ class Host extends AppModel {
 
         $query['conditions']['Host.disabled'] = (int)$HostConditions->includeDisabled();
         $query['conditions']['HostsToContainers.container_id'] = $HostConditions->getContainerIds();
+
+        if ($HostConditions->getHostIds()) {
+            $query['conditions']['Host.id'] = $HostConditions->getHostIds();
+        }
 
         return $query;
     }
@@ -2069,5 +2060,375 @@ class Host extends AppModel {
         }
 
         parent::afterDelete();
+    }
+
+    /**
+     * get the data for host changelog
+     * @param $data
+     * @return array
+     */
+    public function getChangelogData($data) {
+
+        //debug($data);
+        $this->Hosttemplate = ClassRegistry::init('Hosttemplate');
+        $this->Timeperiod = ClassRegistry::init('Timeperiod');
+        $this->Command = ClassRegistry::init('Command');
+        $this->Contact = ClassRegistry::init('Contact');
+        $this->Contactgroup = ClassRegistry::init('Contactgroup');
+        $this->Hostgroup = ClassRegistry::init('Hostgroup');
+
+        $ext_data_for_changelog = [];
+        if ($data['Host']['Contact']) {
+            if ($contactsForChangelog = $this->Contact->find('list', [
+                'conditions' => [
+                    'Contact.id' => $data['Host']['Contact'],
+                ],
+            ])
+            ) {
+                foreach ($contactsForChangelog as $contactId => $contactName) {
+                    $ext_data_for_changelog['Contact'][] = [
+                        'id'   => $contactId,
+                        'name' => $contactName,
+                    ];
+                }
+                unset($contactsForChangelog);
+            }
+        }
+        if ($data['Host']['Contactgroup']) {
+            if ($contactgroupsForChangelog = $this->Contactgroup->find('all', [
+                'recursive'  => -1,
+                'contain'    => [
+                    'Container' => [
+                        'fields' => [
+                            'Container.name',
+                        ],
+                    ],
+                ],
+                'fields'     => [
+                    'Contactgroup.id',
+                ],
+                'conditions' => [
+                    'Contactgroup.id' => $data['Host']['Contactgroup'],
+                ],
+            ])
+            ) {
+                foreach ($contactgroupsForChangelog as $contactgroupData) {
+                    $ext_data_for_changelog['Contactgroup'][] = [
+                        'id'   => $contactgroupData['Contactgroup']['id'],
+                        'name' => $contactgroupData['Container']['name'],
+                    ];
+                }
+                unset($contactgroupsForChangelog);
+            }
+        }
+        if ($data['Host']['Hostgroup']) {
+            if ($hostgroupsForChangelog = $this->Hostgroup->find('all', [
+                'recursive'  => -1,
+                'contain'    => [
+                    'Container' => [
+                        'fields' => [
+                            'Container.name',
+                        ],
+                    ],
+                ],
+                'fields'     => [
+                    'Hostgroup.id',
+                ],
+                'conditions' => [
+                    'Hostgroup.id' => $data['Host']['Hostgroup'],
+                ],
+            ])
+            ) {
+                foreach ($hostgroupsForChangelog as $hostgroupData) {
+                    $ext_data_for_changelog['Hostgroup'][] = [
+                        'id'   => $hostgroupData['Hostgroup']['id'],
+                        'name' => $hostgroupData['Container']['name'],
+                    ];
+                }
+                unset($hostgroupsForChangelog);
+            }
+        }
+        if ($data['Host']['notify_period_id']) {
+            if ($timeperiodsForChangelog = $this->Timeperiod->find('list', [
+                'conditions' => [
+                    'Timeperiod.id' => $data['Host']['notify_period_id'],
+                ],
+            ])
+            ) {
+                foreach ($timeperiodsForChangelog as $timeperiodId => $timeperiodName) {
+                    $ext_data_for_changelog['NotifyPeriod'] = [
+                        'id'   => $timeperiodId,
+                        'name' => $timeperiodName,
+                    ];
+                }
+                unset($timeperiodsForChangelog);
+            }
+        }
+        if ($data['Host']['check_period_id']) {
+            if ($timeperiodsForChangelog = $this->Timeperiod->find('list', [
+                'conditions' => [
+                    'Timeperiod.id' => $data['Host']['check_period_id'],
+                ],
+            ])
+            ) {
+                foreach ($timeperiodsForChangelog as $timeperiodId => $timeperiodName) {
+                    $ext_data_for_changelog['CheckPeriod'] = [
+                        'id'   => $timeperiodId,
+                        'name' => $timeperiodName,
+                    ];
+                }
+                unset($timeperiodsForChangelog);
+            }
+        }
+        if ($data['Host']['hosttemplate_id']) {
+            if ($hosttemplatesForChangelog = $this->Hosttemplate->find('list', [
+                'conditions' => [
+                    'Hosttemplate.id' => $data['Host']['hosttemplate_id'],
+                ],
+            ])
+            ) {
+                foreach ($hosttemplatesForChangelog as $hosttemplateId => $hosttemplateName) {
+                    $ext_data_for_changelog['Hosttemplate'] = [
+                        'id'   => $hosttemplateId,
+                        'name' => $hosttemplateName,
+                    ];
+                }
+                unset($hosttemplatesForChangelog);
+            }
+        }
+        if ($data['Host']['command_id']) {
+            if ($commandsForChangelog = $this->Command->find('list', [
+                'conditions' => [
+                    'Command.id' => $data['Host']['command_id'],
+                ],
+            ])
+            ) {
+                foreach ($commandsForChangelog as $commandId => $commandName) {
+                    $ext_data_for_changelog['CheckCommand'] = [
+                        'id'   => $commandId,
+                        'name' => $commandName,
+                    ];
+                }
+                unset($commandsForChangelog);
+            }
+        }
+        if ($data['Host']['Parenthost']) {
+            if ($hostsForChangelog = $this->Host->find('list', [
+                'conditions' => [
+                    'Host.id' => $data['Host']['Parenthost'],
+                ],
+            ])
+            ) {
+                foreach ($hostsForChangelog as $hostId => $hostName) {
+                    $ext_data_for_changelog['Parenthost'][] = [
+                        'id'   => $hostId,
+                        'name' => $hostName,
+                    ];
+                }
+                unset($hostsForChangelog);
+            }
+        }
+        return $ext_data_for_changelog;
+    }
+
+
+        /**
+     * @param $hoststatus
+     * @param bool $extended show details ('acknowledged', 'in downtime', ...)
+     * @return array
+     */
+    public function getHostStateSummary($hoststatus, $extended = true) {
+        $hostStateSummary = [
+            'state' => [
+                0 => 0,
+                1 => 0,
+                2 => 0
+            ],
+            'total' => 0
+        ];
+        if ($extended === true) {
+            $hostStateSummary = [
+                'state'        => [
+                    0 => 0,
+                    1 => 0,
+                    2 => 0
+                ],
+                'acknowledged' => [
+                    0 => 0,
+                    1 => 0,
+                    2 => 0
+                ],
+                'in_downtime'  => [
+                    0 => 0,
+                    1 => 0,
+                    2 => 0
+                ],
+                'not_handled'  => [
+                    0 => 0,
+                    1 => 0,
+                    2 => 0
+                ],
+                'passive'      => [
+                    0 => 0,
+                    1 => 0,
+                    2 => 0
+                ],
+                'total'        => 0
+            ];
+        }
+        if (empty($hoststatus)) {
+            return $hostStateSummary;
+        }
+        foreach ($hoststatus as $host) {
+            //Check for randome exit codes like 255...
+            if ($host['Hoststatus']['current_state'] > 2) {
+                $host['Hoststatus']['current_state'] = 2;
+            }
+
+            $hostStateSummary['state'][$host['Hoststatus']['current_state']]++;
+            if ($extended === true) {
+                if ($host['Hoststatus']['current_state'] > 0) {
+                    if ($host['Hoststatus']['problem_has_been_acknowledged'] > 0) {
+                        $hostStateSummary['acknowledged'][$host['Hoststatus']['current_state']]++;
+                    } else {
+                        $hostStateSummary['not_handled'][$host['Hoststatus']['current_state']]++;
+                    }
+                }
+
+                if ($host['Hoststatus']['scheduled_downtime_depth'] > 0) {
+                    $hostStateSummary['in_downtime'][$host['Hoststatus']['current_state']]++;
+                }
+                if ($host['Hoststatus']['active_checks_enabled'] == 0) {
+                    $hostStateSummary['passive'][$host['Hoststatus']['current_state']]++;
+                }
+            }
+            $hostStateSummary['total']++;
+        }
+        return $hostStateSummary;
+    }
+
+
+    /**
+     * @param $MY_RIGHTS
+     * @param $conditions
+     * @return array
+     */
+    public function getHoststatusCountBySelectedStatus($MY_RIGHTS, $conditions) {
+        $query = [
+            'recursive' => -1,
+            'fields'    => [
+                'COUNT(DISTINCT Hoststatus.host_object_id) AS count',
+            ],
+            'joins'     => [
+                [
+                    'table'      => 'nagios_objects',
+                    'type'       => 'INNER',
+                    'alias'      => 'HostObject',
+                    'conditions' => 'Host.uuid = HostObject.name1 AND HostObject.objecttype_id = 1',
+                ],
+
+                [
+                    'table'      => 'nagios_hoststatus',
+                    'type'       => 'INNER',
+                    'alias'      => 'Hoststatus',
+                    'conditions' => 'Hoststatus.host_object_id = HostObject.object_id',
+                ],
+
+                [
+                    'table'      => 'hosts_to_containers',
+                    'alias'      => 'HostsToContainers',
+                    'type'       => 'INNER',
+                    'conditions' => [
+                        'HostsToContainers.host_id = Host.id',
+                    ],
+                ],
+            ],
+            'conditions' => [
+                'HostObject.is_active'           => 1,
+                'HostsToContainers.container_id' => $MY_RIGHTS,
+                'Host.disabled'                  => 0
+            ]
+        ];
+
+        if (!empty($conditions['Host']['name'])) {
+            $query['conditions']['Host.name LIKE'] = sprintf('%%%s%%', $conditions['Host']['name']);
+        }
+        $query['conditions']['Hoststatus.current_state'] = $conditions['Hoststatus']['current_state'];
+        if ($conditions['Hoststatus']['current_state'] > 0) {
+            if ($conditions['Hoststatus']['problem_has_been_acknowledged'] === false) {
+                $query['conditions']['Hoststatus.problem_has_been_acknowledged'] = false;
+            }
+            if ($conditions['Hoststatus']['scheduled_downtime_depth'] === false) {
+                $query['conditions']['Hoststatus.scheduled_downtime_depth'] = false;
+            }
+        }
+        return $query;
+    }
+
+    /**
+     * @param $MY_RIGHTS
+     * @param $conditions
+     * @return array
+     */
+    public function getHoststatusBySelectedStatusStatusengine3($MY_RIGHTS, $conditions) {
+        $query = [
+            'conditions' => [
+                'Host.disabled' => 0
+            ],
+            'contain'    => [],
+            'fields'     => [
+                'COUNT(Hoststatus.hostname) AS count',
+            ],
+            'joins'      => [
+                [
+                    'table'      => 'statusengine_hoststatus',
+                    'type'       => 'INNER',
+                    'alias'      => 'Hoststatus',
+                    'conditions' => 'Hoststatus.hostname = Host.uuid',
+                ],
+            ],
+        ];
+
+        $query['conditions']['Hoststatus.current_state'] = $conditions['Hoststatus']['current_state'];
+        if ($conditions['Hoststatus']['current_state'] > 0) {
+            if ($conditions['Hoststatus']['problem_has_been_acknowledged'] === false) {
+                $query['conditions']['Hoststatus.problem_has_been_acknowledged'] = false;
+            }
+            if ($conditions['Hoststatus']['scheduled_downtime_depth'] === false) {
+                $query['conditions']['Hoststatus.scheduled_downtime_depth'] = false;
+            }
+        }
+
+        $db = $this->getDataSource();
+        $subQuery = $db->buildStatement([
+            'fields'     => ['Host.uuid'],
+            'table'      => 'hosts',
+            'alias'      => 'Host',
+            'limit'      => null,
+            'offset'     => null,
+            'joins'      => [
+                [
+                    'table'      => 'hosts_to_containers',
+                    'alias'      => 'HostsToContainers',
+                    'type'       => 'INNER',
+                    'conditions' => [
+                        'HostsToContainers.host_id = Host.id',
+                    ],
+                ]
+            ],
+            'conditions' => [
+                'HostsToContainers.container_id' => $MY_RIGHTS
+            ],
+            'order'      => null,
+            'group'      => null
+        ], $this);
+        $subQuery = 'Hoststatus.hostname IN (' . $subQuery . ') ';
+        if (!empty($conditions['Host']['name'])) {
+            $query['conditions']['Host.name LIKE'] = sprintf('%%%s%%', $conditions['Host']['name']);
+        }
+        $subQueryExpression = $db->expression($subQuery);
+        $query['conditions'][] = $subQueryExpression->value;
+
+        return $query;
     }
 }

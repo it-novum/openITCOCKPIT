@@ -51,6 +51,7 @@ use itnovum\openITCOCKPIT\Core\Views\HostPerfdataChecker;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
 use itnovum\openITCOCKPIT\Database\ScrollIndex;
 use itnovum\openITCOCKPIT\Filter\HostFilter;
+use itnovum\openITCOCKPIT\Filter\ServicetemplateFilter;
 use \itnovum\openITCOCKPIT\Monitoring\QueryHandler;
 use itnovum\openITCOCKPIT\Core\HostSharingPermissions;
 
@@ -228,13 +229,13 @@ class HostsController extends AppController {
         $ServicestatusFields->currentState();
 
         foreach ($hosts as $host) {
-            $serviceUuids = $this->Service->find('list',[
-               'fields' => [
-                   'Service.uuid'
-               ],
-               'conditions' => [
-                   'Service.host_id' => $host['Host']['id']
-               ]
+            $serviceUuids = $this->Service->find('list', [
+                'fields'     => [
+                    'Service.uuid'
+                ],
+                'conditions' => [
+                    'Service.host_id' => $host['Host']['id']
+                ]
             ]);
             $servicestatus = $this->Servicestatus->byUuid($serviceUuids, $ServicestatusFields);
             $serviceStateSummary = $this->Service->getServiceStateSummary($servicestatus, false);
@@ -270,8 +271,8 @@ class HostsController extends AppController {
             }
 
             $tmpRecord = [
-                'Host'       => $Host->toArray(),
-                'Hoststatus' => $Hoststatus->toArray(),
+                'Host'                 => $Host->toArray(),
+                'Hoststatus'           => $Hoststatus->toArray(),
                 'ServicestatusSummary' => $serviceStateSummary
             ];
             $tmpRecord['Host']['has_graphs'] = $PerfdataChecker->hasRrdFolder();
@@ -3114,7 +3115,7 @@ class HostsController extends AppController {
 
     public function loadElementsByContainerId($container_id = null, $host_id = 0) {
         $hosttemplate_type = GENERIC_HOST;
-        if (!$this->request->is('ajax')) {
+        if (!$this->request->is('ajax') && !$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
 
@@ -3478,6 +3479,303 @@ class HostsController extends AppController {
         }
         $this->set('hoststatus', $hoststatus);
         $this->set('_serialize', ['hoststatus']);
+    }
+
+
+    public function addwizard() {
+        $this->layout = 'angularjs';
+        /*  if (!$this->isApiRequest()) {
+              throw new MethodNotAllowedException();
+          }*/
+
+        $this->Frontend->setJson('lang_minutes', __('minutes'));
+        $this->Frontend->setJson('lang_seconds', __('seconds'));
+        $this->Frontend->setJson('lang_and', __('and'));
+        $this->Frontend->setJson('dns_hostname_lookup_failed', __('Could not resolve hostname'));
+        $this->Frontend->setJson('dns_ipaddress_lookup_failed', __('Could not reverse lookup your ip address'));
+        $this->Frontend->setJson('hostname_placeholder', __('Will be auto detected if you enter a ip address'));
+        $this->Frontend->setJson('address_placeholder', __('Will be auto detected if you enter a FQDN'));
+        $userId = $this->Auth->user('id');
+
+
+
+        if ($this->request->is('post') || $this->request->is('put')) {
+            $ext_data_for_changelog = $this->Host->getChangelogData($this->request->data);
+
+            if (isset($this->request->data['Host']['Contact'])) {
+                $this->request->data['Contact']['Contact'] = $this->request->data['Host']['Contact'];
+            } else {
+                $this->request->data['Host']['Contact'] = [];
+            }
+
+            if (isset($this->request->data['Host']['Contactgroup'])) {
+                $this->request->data['Contactgroup']['Contactgroup'] = $this->request->data['Host']['Contactgroup'];
+            }
+
+            if (!isset($this->request->data['Host']['Parenthost'])) {
+                $this->request->data['Host']['Parenthost'] = [];
+            }
+            if (is_array($this->request->data['Host']['Parenthost'])) {
+                $this->request->data['Parenthost']['Parenthost'] = $this->request->data['Host']['Parenthost'];
+            } else {
+                $this->request->data['Parenthost']['Parenthost'] = [];
+            }
+
+            if (isset($this->request->data['Host']['Hostgroup']) && is_array($this->request->data['Host']['Hostgroup'])) {
+                $this->request->data['Hostgroup']['Hostgroup'] = $this->request->data['Host']['Hostgroup'];
+            } else {
+                $this->request->data['Hostgroup']['Hostgroup'] = [];
+            }
+
+            $hosttemplate = [];
+            if (isset($this->request->data['Host']['hosttemplate_id']) &&
+                $this->Hosttemplate->exists($this->request->data['Host']['hosttemplate_id'])
+            ) {
+                $hosttemplate = $this->Hosttemplate->findById($this->request->data['Host']['hosttemplate_id']);
+            }
+            App::uses('UUID', 'Lib');
+
+            $data_to_save = $this->Host->prepareForSave(
+                $this->_diffWithTemplate($this->request->data, $hosttemplate),
+                $this->request->data,
+                'add'
+            );
+            $data_to_save['Host']['own_customvariables'] = 0;
+            //Add Customvariables data to $data_to_save
+            $data_to_save['Customvariable'] = [];
+            if (isset($this->request->data['Customvariable'])) {
+                $customVariableDiffer = new CustomVariableDiffer($this->request->data['Customvariable'], $hosttemplate['Customvariable']);
+                $customVariablesToSaveRepository = $customVariableDiffer->getCustomVariablesToSaveAsRepository();
+                $data_to_save['Customvariable'] = $customVariablesToSaveRepository->getAllCustomVariablesAsArray();
+                if (!empty($data_to_save)) {
+                    $data_to_save['Host']['own_customvariables'] = 1;
+                }
+            }
+
+            if (CakePlugin::loaded('MaximoModule')) {
+                if (!empty($this->request->data['Maximoconfiguration'])) {
+                    $data_to_save['Maximoconfiguration'] = $this->request->data['Maximoconfiguration'];
+                }
+
+            }
+
+
+            if ($this->Host->saveAll($data_to_save)) {
+
+                $changelog_data = $this->Changelog->parseDataForChangelog(
+                    $this->params['action'],
+                    $this->params['controller'],
+                    $this->Host->id,
+                    OBJECT_HOST,
+                    $this->request->data('Host.container_id'),
+                    $userId,
+                    $this->request->data['Host']['name'],
+                    array_merge($this->request->data, $ext_data_for_changelog)
+                );
+                if ($changelog_data) {
+                    CakeLog::write('log', serialize($changelog_data));
+                }
+
+                if ($this->request->ext === 'json') {
+                    $this->serializeId();
+                    return;
+                }
+            } else {
+                if ($this->request->ext === 'json') {
+
+                    $this->serializeErrorMessage();
+                    return;
+                }
+                $this->serializeErrorMessage();
+                return;
+            }
+        }
+    }
+
+
+    public function addwizardservices($hostId = null) {
+        $this->layout = 'angularjs';
+
+        if (!$this->Host->exists($hostId)) {
+            throw new NotFoundException(__('Invalid host'));
+        }
+        $userId = $this->Auth->user('id');
+        if ($this->request->is('post') || $this->request->is('put')) {
+
+            $serviceDataToSave = [];
+            if (!empty($hostId)) {
+                //save services
+                $this->Service->create();
+                $serviceDataToSave[] = [
+                    'Service' => [
+                        'uuid'               => UUID::v4(),
+                        'servicetemplate_id' => $this->request->data['Servicetemplate']['id'],
+                        'host_id'            => $hostId,
+                        'service_type'       => GENERIC_SERVICE,
+                    ]
+                ];
+                if ($this->Service->saveAll($serviceDataToSave)) {
+                    if ($this->request->ext === 'json') {
+                        $this->serializeId();
+                        return;
+                    }
+                }else {
+                    if ($this->request->ext === 'json') {
+
+                        $this->serializeErrorMessage();
+                        return;
+                    }
+                    $this->serializeErrorMessage();
+                    return;
+                }
+            }
+        }
+    }
+
+
+
+    public function addwizardoverview($hostId){
+        $this->layout = 'angularjs';
+        if (!$this->Host->exists($hostId)) {
+            throw new NotFoundException(__('Invalid host'));
+        }
+
+    }
+
+    public function loadHostInfo($hostId){
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+        if (!$this->Host->exists($hostId)) {
+            throw new NotFoundException(__('Invalid host'));
+        }
+        $host = $this->Host->find('first', [
+            'recursive' => -1,
+            'conditions' => [
+                'Host.id' => $hostId
+            ],
+            'fields' => [
+                'Host.id',
+                'Host.name',
+                'Host.container_id'
+            ]
+        ]);
+
+        $this->set('host', $host);
+        $this->set('_serialize', ['host']);
+    }
+
+
+    public function loadContainers() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        if ($this->hasRootPrivileges === true) {
+            $containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_HOST, [], $this->hasRootPrivileges, [CT_HOSTGROUP]);
+        } else {
+            $containers = $this->Tree->easyPath($this->getWriteContainers(), OBJECT_HOST, [], $this->hasRootPrivileges, [CT_HOSTGROUP]);
+        }
+        $containers = $this->Host->makeItJavaScriptAble($containers);
+
+
+        $this->set('containers', $containers);
+        $this->set('_serialize', ['containers']);
+    }
+
+    public function gethostipbyname($hostname) {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+        $hostaddress = '';
+        if (isset($hostname) && $hostname != '') {
+            $currentIp = gethostbyname($hostname);
+            if (filter_var($currentIp, FILTER_VALIDATE_IP)) {
+                $hostaddress = $currentIp;
+            }
+        }
+        $this->set('hostaddress', $hostaddress);
+        $this->set('_serialize', ['hostaddress']);
+    }
+
+    public function gethostnamebyaddr($hostaddress) {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+        $fqdn = '';
+        if (isset($hostaddress) && filter_var($hostaddress, FILTER_VALIDATE_IP)) {
+            $currentFqdn = gethostbyaddr($hostaddress);
+            if (strlen($currentFqdn) > 0 && $currentFqdn != $hostaddress) {
+                $fqdn = $currentFqdn;
+            } else {
+                $msg = 'failed -> ' . $hostaddress . ' - ' . $currentFqdn . ' - ' . strlen($currentFqdn);
+                $this->set('msg', $msg);
+                $this->set('_serialize', ['msg']);
+                return;
+            }
+        } else {
+            $msg = 'failed -> ' . $hostaddress . ' - ' . filter_var($hostaddress, FILTER_VALIDATE_IP);
+            $this->set('msg', $msg);
+            $this->set('_serialize', ['msg']);
+            return;
+        }
+
+        $this->set('fqdn', $fqdn);
+        $this->set('hostaddress', $hostaddress);
+        //  $this->set('currentfqdn', $currentFqdn);
+        $this->set('_serialize', ['fqdn', 'hostaddress']);
+    }
+
+    public function loadHosttemplateData($hosttemplateId) {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        if (!$this->Hosttemplate->exists($hosttemplateId)) {
+            throw new NotFoundException(__('Invalid hosttemplate'));
+        }
+
+        $hosttemplate = $this->Hosttemplate->find('first', [
+            //'recursive'  => -1,
+            'conditions' => [
+                'Hosttemplate.id' => $hosttemplateId
+            ],
+        ]);
+
+        $hosttemplateObj = new \itnovum\openITCOCKPIT\Core\Hosttemplate($hosttemplate['Hosttemplate']);
+        //cast the hosttemplate values
+        $castedhosttemplate = $hosttemplateObj->castedValues();
+
+        $contactIds = Hash::extract($hosttemplate, 'Contact.{n}.id');
+        $contactgroupIds = Hash::extract($hosttemplate, 'Contactgroup.{n}.id');
+        $hostgroupIds = Hash::extract($hosttemplate, 'Hostgroup.{n}.id');
+
+        //cast other ids to int
+        foreach ($contactIds as $key => $id){
+            $contactIds[$key] = (int)$id;
+        }
+
+        foreach ($contactgroupIds as $key => $id){
+            $contactgroupIds[$key] = (int)$id;
+        }
+
+        foreach($hostgroupIds as $key => $id){
+            $hostgroupIds[$key] = (int)$id;
+        }
+
+        $hosttemplate = [
+            'Hosttemplate' => $castedhosttemplate['Hosttemplate'],
+            'ContactIds' => $contactIds,
+            'ContactgroupIds' => $contactgroupIds,
+            'HostgroupIds' => $hostgroupIds,
+            'HostData' => [
+                'host_type' => GENERIC_HOST
+            ]
+        ];
+
+
+        $this->set('hosttemplate', $hosttemplate);
+        $this->set('_serialize', ['hosttemplate']);
     }
 
     public function timeline($id = null) {

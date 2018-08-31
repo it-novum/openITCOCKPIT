@@ -451,6 +451,8 @@ class MapModuleSchema extends CakeSchema {
         'type'            => ['type' => 'string', 'null' => false, 'default' => null, 'length' => 20, 'collate' => 'utf8_unicode_ci', 'charset' => 'utf8'],
         'object_id'       => ['type' => 'integer', 'null' => false, 'default' => null],
         'z_index'         => ['type' => 'integer', 'null' => false, 'default' => 0],
+        'show_label'      => ['type' => 'integer', 'null' => false, 'default' => 0],
+        'label_possition' => ['type' => 'integer', 'null' => false, 'default' => 2],
         'created'         => ['type' => 'datetime', 'null' => false, 'default' => null],
         'modified'        => ['type' => 'datetime', 'null' => false, 'default' => null],
         'indexes'         => [
@@ -467,10 +469,11 @@ class MapModuleSchema extends CakeSchema {
         'endX'            => ['type' => 'integer', 'null' => false, 'default' => 0],
         'endY'            => ['type' => 'integer', 'null' => false, 'default' => 0],
         'limit'           => ['type' => 'integer', 'null' => true, 'default' => 0],
-        'iconset'         => ['type' => 'string', 'null' => false, 'default' => null, 'length' => 128, 'collate' => 'utf8_unicode_ci', 'charset' => 'utf8'],
+        'iconset'         => ['type' => 'string', 'null' => true, 'default' => null, 'length' => 128, 'collate' => 'utf8_unicode_ci', 'charset' => 'utf8'],
         'type'            => ['type' => 'string', 'null' => false, 'default' => null, 'length' => 20, 'collate' => 'utf8_unicode_ci', 'charset' => 'utf8'],
         'object_id'       => ['type' => 'integer', 'null' => true, 'default' => null],
         'z_index'         => ['type' => 'integer', 'null' => false, 'default' => 0],
+        'show_label'      => ['type' => 'integer', 'null' => false, 'default' => 0],
         'created'         => ['type' => 'datetime', 'null' => false, 'default' => null],
         'modified'        => ['type' => 'datetime', 'null' => false, 'default' => null],
         'indexes'         => [
@@ -494,12 +497,34 @@ class MapModuleSchema extends CakeSchema {
         'show_label'             => ['type' => 'integer', 'null' => false, 'default' => 1, 'length' => 5],
         'font_size'              => ['type' => 'integer', 'null' => false, 'default' => 13],
         'z_index'                => ['type' => 'integer', 'null' => false, 'default' => 0],
+        'metric'                 => ['type' => 'string', 'null' => true, 'default' => null, 'length' => 256, 'collate' => 'utf8_unicode_ci', 'charset' => 'utf8'],
         'created'                => ['type' => 'datetime', 'null' => false, 'default' => null],
         'modified'               => ['type' => 'datetime', 'null' => false, 'default' => null],
         'indexes'                => [
             'PRIMARY' => ['column' => 'id', 'unique' => 1],
         ],
         'tableParameters'        => ['charset' => 'utf8', 'collate' => 'utf8_unicode_ci', 'engine' => 'InnoDB'],
+    ];
+
+    public $mapsummaryitems = [
+        'id'              => ['type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'],
+        'map_id'          => ['type' => 'integer', 'null' => false, 'default' => null],
+        'x'               => ['type' => 'integer', 'null' => false, 'default' => 0],
+        'y'               => ['type' => 'integer', 'null' => false, 'default' => 0],
+        'size_x'                 => ['type' => 'integer', 'null' => false, 'default' => 100],
+        'size_y'                 => ['type' => 'integer', 'null' => false, 'default' => 100],
+        'limit'           => ['type' => 'integer', 'null' => true, 'default' => 0],
+        'type'            => ['type' => 'string', 'null' => false, 'default' => null, 'length' => 20, 'collate' => 'utf8_unicode_ci', 'charset' => 'utf8'],
+        'object_id'       => ['type' => 'integer', 'null' => false, 'default' => null],
+        'z_index'         => ['type' => 'integer', 'null' => false, 'default' => 0],
+        'show_label'      => ['type' => 'integer', 'null' => false, 'default' => 0],
+        'label_possition' => ['type' => 'integer', 'null' => false, 'default' => 2],
+        'created'         => ['type' => 'datetime', 'null' => false, 'default' => null],
+        'modified'        => ['type' => 'datetime', 'null' => false, 'default' => null],
+        'indexes'         => [
+            'PRIMARY' => ['column' => 'id', 'unique' => 1],
+        ],
+        'tableParameters' => ['charset' => 'utf8', 'collate' => 'utf8_unicode_ci', 'engine' => 'InnoDB'],
     ];
 
 
@@ -579,7 +604,9 @@ class MapModuleSchema extends CakeSchema {
         'container_id'    => ['type' => 'integer', 'null' => true, 'default' => null, 'length' => 10],
         'created'         => ['type' => 'datetime', 'null' => false, 'default' => null],
         'indexes'         => [
-            'PRIMARY' => ['column' => 'id', 'unique' => 1],
+            'PRIMARY'      => ['column' => 'id', 'unique' => 1],
+            'saved_name'   => ['column' => 'saved_name', 'unique' => 0],
+            'container_id' => ['column' => 'container_id', 'unique' => 0],
         ],
         'tableParameters' => ['charset' => 'utf8', 'collate' => 'utf8_unicode_ci', 'engine' => 'InnoDB'],
     ];

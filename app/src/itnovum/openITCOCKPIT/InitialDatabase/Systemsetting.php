@@ -289,6 +289,14 @@ class Systemsetting extends Importer {
             ],
             [
                 'Systemsetting' => [
+                    'key'     => 'SYSTEM.ANONYMOUS_STATISTICS',
+                    'value'   => '2',
+                    'info'    => 'Determines if you want to support the developers of openITCOCKPIT by providing anonymous statistical data or not.',
+                    'section' => 'SYSTEM'
+                ],
+            ],
+            [
+                'Systemsetting' => [
                     'key'     => 'FRONTEND.SYSTEMNAME',
                     'value'   => 'openITCOCKPIT',
                     'info'    => 'The name of your system',

@@ -141,7 +141,6 @@ class ServicesController extends AppController {
             //Only ship HTML template
             return;
         }
-
         $ServiceFilter = new ServiceFilter($this->request);
         $ServiceControllerRequest = new ServiceControllerRequest($this->request, $ServiceFilter);
         $ServiceConditions = new ServiceConditions();
@@ -3221,7 +3220,7 @@ class ServicesController extends AppController {
 
         $ServiceCondition = new ServiceConditions($ServiceFilter->indexFilter());
         $ServiceCondition->setContainerIds($containerIds);
-        $ServiceCondition->includeDisabled(true);
+        $ServiceCondition->includeDisabled();
 
         $services = $this->Service->makeItJavaScriptAble(
             $this->Service->getServicesForAngular($ServiceCondition, $selected)
@@ -3247,6 +3246,24 @@ class ServicesController extends AppController {
             $this->Service->getServicesForAngular($ServiceCondition, $selected)
         );
 
+
+        $this->set(compact(['services']));
+        $this->set('_serialize', ['services']);
+    }
+
+    public function loadServicesByHostId(){
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+        $this->Service->virtualFields['servicename'] = 'IF((Service.name IS NULL OR Service.name=""), Servicetemplate.name, Service.name)';
+        $ServiceFilter = new ServiceFilter($this->request);
+
+        $ServiceCondition = new ServiceConditions($ServiceFilter->notMonitoredFilter());
+        $ServiceCondition->setContainerIds($this->MY_RIGHTS);
+
+        $services = $this->Service->makeItJavaScriptAble(
+            $this->Service->getServicesForAngular($ServiceCondition)
+        );
 
         $this->set(compact(['services']));
         $this->set('_serialize', ['services']);
