@@ -89,6 +89,19 @@ if (ENVIRONMENT === Environments::PRODUCTION) {
     $uncompressedAngular = str_replace(WWW_ROOT, '', $core->findRecursive('.*\.js'));
     foreach (CakePlugin::loaded() as $pluginName) {
         $plugin = new Folder(APP . 'Plugin' . DS . $pluginName . DS . 'webroot' . DS . 'js' . DS . 'scripts');
+        $pluginConfig = APP . 'Plugin' . DS . $pluginName . DS . 'Config' . DS . 'config.php';
+        if (file_exists($pluginConfig)) {
+            $config = [];
+            include $pluginConfig;
+            if (str_replace('module', '', strtolower($pluginName)) == $this->request->params['controller'] &&
+                isset($config) && is_array($config) && isset($config['assets']) && is_array($config['assets']) &&
+                isset($config['assets']['js']) && is_array($config['assets']['js'])) {
+
+                foreach ($config['assets']['js'] as $jsFilePath) {
+                    $scripts[] = ltrim($jsFilePath, '/');
+                }
+            }
+        }
         $filenames = str_replace(APP . 'Plugin' . DS . $pluginName . DS . 'webroot' . DS, '', $plugin->findRecursive('.*\.js'));
         if (!empty($filenames)) {
             $fullPath = [];
@@ -198,7 +211,7 @@ if (ENVIRONMENT === Environments::PRODUCTION) {
 
 <?php printf('<script src="/%s"></script>', 'smartadmin/js/app.js'); ?>
 <script>
-    $(document).ready(function () {
+    $(document).ready(function(){
         //pageSetUp();
 
     });
