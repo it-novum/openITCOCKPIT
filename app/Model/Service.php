@@ -1806,8 +1806,10 @@ class Service extends AppModel {
             ],
             'fields' => [
                 'Service.id',
+                'Service.uuid',
                 'Service.name',
                 'Host.id',
+                'Host.uuid',
                 'Host.name',
                 'Servicetemplate.name'
 
