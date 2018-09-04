@@ -101,7 +101,7 @@
                                                        name="data[<?php echo $i; ?>][Macro][name]">
                                                 <input class="form-control systemsetting-input <?php echo ($macro['Macro']['password']) ? 'macroPassword' : ''; ?>"
                                                        type="text" maxlength="255"
-                                                       value="<?php echo $macro['Macro']['value']; ?>"
+                                                       value="<?php echo htmlspecialchars($macro['Macro']['value']); ?>"
                                                        name="data[<?php echo $i; ?>][Macro][value]">
                                             </div>
                                         </td>
