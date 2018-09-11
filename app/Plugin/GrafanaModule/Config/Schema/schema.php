@@ -92,8 +92,6 @@ class GrafanaModuleSchema extends CakeSchema {
         'id'               => ['type' => 'integer', 'null' => false, 'key' => 'primary'],
         'configuration_id' => ['type' => 'integer', 'null' => false, 'key' => 'index'],
         'name'             => ['type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_unicode_ci', 'charset' => 'utf8'],
-        'host_id'          => ['type' => 'integer', 'null' => false, 'key' => 'index'],
-        'host_uuid'        => ['type' => 'string', 'null' => false, 'length' => 200, 'collate' => 'utf8_unicode_ci', 'charset' => 'utf8'],
         'indexes'          => [
             'PRIMARY' => [
                 'column' => 'id',
@@ -103,13 +101,15 @@ class GrafanaModuleSchema extends CakeSchema {
         'tableParameters'  => ['charset' => 'utf8', 'collate' => 'utf8_unicode_ci', 'engine' => 'InnoDB'],
     ];
 
-    public $services_to_grafana_userdashboards = [
+    public $grafana_userdashboards_data = [
         'id'               => ['type' => 'integer', 'null' => false, 'key' => 'primary'],
         'userdashboard_id' => ['type' => 'integer', 'null' => false, 'key' => 'index'],
+        'row'              => ['type' => 'integer', 'null' => false, 'key' => 'index'],
+        'panel'            => ['type' => 'integer', 'null' => false, 'key' => 'index'],
+        'metric'           => ['type' => 'integer', 'null' => false, 'key' => 'index'],
         'host_id'          => ['type' => 'integer', 'null' => false, 'key' => 'index'],
-        'host_uuid'        => ['type' => 'string', 'null' => false, 'length' => 200, 'collate' => 'utf8_unicode_ci', 'charset' => 'utf8'],
         'service_id'       => ['type' => 'integer', 'null' => false, 'key' => 'index'],
-        'service_uuid'     => ['type' => 'string', 'null' => false, 'length' => 200, 'collate' => 'utf8_unicode_ci', 'charset' => 'utf8'],
+        'metric_value'     => ['type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_unicode_ci', 'charset' => 'utf8'],
         'indexes'          => [
             'PRIMARY' => [
                 'column' => 'id',

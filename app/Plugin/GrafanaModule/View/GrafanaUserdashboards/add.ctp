@@ -30,57 +30,68 @@
     <div>
         <div class="widget-body">
             <form ng-submit="submit();" class="form-horizontal">
-                <div class="row">
-                    <button class="btn btn-success" ng-click="addNewMetric();">Add Metric</button>
-                    <div class="row" ng-repeat="(key, metric) in metrics">
-                        <div class="col col-lg-3">
-                            <select
-                                    id="HostContainer"
-                                    data-placeholder="<?php echo __('Please choose Host'); ?>"
-                                    class="form-control"
-                                    chosen="hosts"
-                                    ng-options="host.key as host.value for host in hosts"
-                                    ng-model="post.metrics[key].hostId"
-                                    ng-change="containerSelected()"
-                            >
-                            </select>
-                            <div ng-repeat="error in errors.container_id">
-                                <div class="help-block text-danger">{{ error }}</div>
+                <button class="btn btn-xs btn-success" ng-click="addNewRow();">Add Row</button>
+                <div class="row" ng-repeat="(rowKey, row) in inputData.data">
+                    <button class="btn btn-xs btn-success" ng-click="addNewPanel(rowKey);">Add Panel</button>
+                    <button class="btn btn-xs btn-danger" ng-click="removeRow(rowKey);">Remove Row</button>
+                    <div class="col col-lg-3" style="border: 1px solid black;"
+                         ng-repeat="(panelKey, panel) in inputData.data[rowKey]">
+                        <button class="btn btn-xs btn-success" ng-click="addNewMetric(rowKey, panelKey);">Add Metric
+                        </button>
+                        <button class="btn btn-xs btn-danger" ng-click="removePanel(rowKey, panelKey);">Remove Panel
+                        </button>
+
+
+                        <div class="row" style="border: 1px solid red"
+                             ng-repeat="(metricKey, metric) in inputData.data[rowKey][panelKey]">
+                            <div class="col col-lg-12">
+                                <select
+                                        id="HostContainer"
+                                        data-placeholder="<?php echo __('Please choose Host'); ?>"
+                                        class="form-control"
+                                        chosen="inputData.hosts"
+                                        ng-options="host.key as host.value for host in inputData.hosts"
+                                        ng-model="inputData.data[rowKey][panelKey][metricKey].hostId"
+                                        ng-change="hostSelected(inputData.data[rowKey][panelKey][metricKey].hostId, rowKey, panelKey, metricKey)"
+                                >
+                                </select>
+                                <div ng-repeat="error in errors.container_id">
+                                    <div class="help-block text-danger">{{ error }}</div>
+                                </div>
+                            </div>
+                            <div class="col col-lg-12">
+                                <select
+                                        id="ServiceContainer"
+                                        data-placeholder="<?php echo __('Please choose Service'); ?>"
+                                        class="form-control"
+                                        chosen="inputData.data[rowKey][panelKey][metricKey].services"
+                                        ng-options="service.value.Service.id as ((service.value.Service.name)?service.value.Service.name:service.value.Servicetemplate.name) for service in inputData.data[rowKey][panelKey][metricKey].services"
+                                        ng-model="inputData.data[rowKey][panelKey][metricKey].serviceId"
+                                        ng-change="serviceSelected(inputData.data[rowKey][panelKey][metricKey].serviceId, rowKey, panelKey, metricKey)"
+                                >
+                                </select>
+                            </div>
+
+                            <div class="col col-lg-10">
+                                <select
+                                        id="MetricContainer"
+                                        data-placeholder="<?php echo __('Please choose Metric'); ?>"
+                                        class="form-control"
+                                        chosen="inputData.data[rowKey][panelKey][metricKey].metrics"
+                                        ng-options="metric.label as metric.name for metric in inputData.data[rowKey][panelKey][metricKey].metrics"
+                                        ng-model="inputData.data[rowKey][panelKey][metricKey].metric"
+                                        ng-change="metricSelected(rowKey, panelKey, metricKey)"
+                                >
+                                </select>
+                            </div>
+                            <div class="col col-lg-2">
+                                <button class="btn btn-xs btn-danger" ng-click="removeMetric(rowKey, panelKey, metricKey)">-</button>
                             </div>
                         </div>
-                        <div class="col col-lg-4">
-                            <select
-                                    id="ServiceContainer"
-                                    data-placeholder="<?php echo __('Please choose Service'); ?>"
-                                    class="form-control"
-                                    chosen="services"
-                                    ng-options="service.key as service.value for service in services"
-                                    ng-model="post.Container.container_id"
-                                    ng-change="containerSelected()"
-                            >
-                            </select>
-                        </div>
-
-                        <div class="col col-lg-4">
-                            <select
-                                    id="MetricContainer"
-                                    data-placeholder="<?php echo __('Please choose Metric'); ?>"
-                                    class="form-control"
-                                    chosen="metrics"
-                                    ng-options="metric.key as metric.value for metric in metrics"
-                                    ng-model="post.Container.container_id"
-                                    ng-change="containerSelected()"
-                            >
-                            </select>
-                        </div>
-                        <div class="col col-lg-1">
-                            <button class="remove" ng-show="$last" ng-click="removeChoice()">-</button>
-                        </div>
-                        {{metrics[key].hostId}}
                     </div>
-                    {{metrics}}
                 </div>
             </form>
+            <div id="grafanaUserdashboards"></div>
         </div>
     </div>
 </div>
