@@ -25,5 +25,10 @@
 
 
 class GrafanaUserdashboard extends GrafanaModuleAppModel {
-
+    public $belongsTo = [
+        'GrafanaConfiguration' => [
+            'className' => 'GrafanaModule.GrafanaConfiguration',
+            'foreignKey' => 'configuration_id'
+        ],
+    ];
 }

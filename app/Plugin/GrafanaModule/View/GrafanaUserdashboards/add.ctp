@@ -30,68 +30,34 @@
     <div>
         <div class="widget-body">
             <form ng-submit="submit();" class="form-horizontal">
-                <button class="btn btn-xs btn-success" ng-click="addNewRow();">Add Row</button>
-                <div class="row" ng-repeat="(rowKey, row) in inputData.data">
-                    <button class="btn btn-xs btn-success" ng-click="addNewPanel(rowKey);">Add Panel</button>
-                    <button class="btn btn-xs btn-danger" ng-click="removeRow(rowKey);">Remove Row</button>
-                    <div class="col col-lg-3" style="border: 1px solid black;"
-                         ng-repeat="(panelKey, panel) in inputData.data[rowKey]">
-                        <button class="btn btn-xs btn-success" ng-click="addNewMetric(rowKey, panelKey);">Add Metric
-                        </button>
-                        <button class="btn btn-xs btn-danger" ng-click="removePanel(rowKey, panelKey);">Remove Panel
-                        </button>
-
-
-                        <div class="row" style="border: 1px solid red"
-                             ng-repeat="(metricKey, metric) in inputData.data[rowKey][panelKey]">
-                            <div class="col col-lg-12">
-                                <select
-                                        id="HostContainer"
-                                        data-placeholder="<?php echo __('Please choose Host'); ?>"
-                                        class="form-control"
-                                        chosen="inputData.hosts"
-                                        ng-options="host.key as host.value for host in inputData.hosts"
-                                        ng-model="inputData.data[rowKey][panelKey][metricKey].hostId"
-                                        ng-change="hostSelected(inputData.data[rowKey][panelKey][metricKey].hostId, rowKey, panelKey, metricKey)"
-                                >
-                                </select>
-                                <div ng-repeat="error in errors.container_id">
-                                    <div class="help-block text-danger">{{ error }}</div>
-                                </div>
+                <div class="row">
+                    <div class="form-group required" ng-class="{'has-error': errors.name}">
+                        <label class="col col-md-2 control-label">
+                            <?php echo __('Userdashboard name'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+                            <input
+                                    class="form-control"
+                                    type="text"
+                                    placeholder="My awesome Dashboard"
+                                    ng-model="post.GrafanaUserdashboard.name">
+                            <div ng-repeat="error in errors.name">
+                                <div class="help-block text-danger">{{ error }}</div>
                             </div>
-                            <div class="col col-lg-12">
-                                <select
-                                        id="ServiceContainer"
-                                        data-placeholder="<?php echo __('Please choose Service'); ?>"
-                                        class="form-control"
-                                        chosen="inputData.data[rowKey][panelKey][metricKey].services"
-                                        ng-options="service.value.Service.id as ((service.value.Service.name)?service.value.Service.name:service.value.Servicetemplate.name) for service in inputData.data[rowKey][panelKey][metricKey].services"
-                                        ng-model="inputData.data[rowKey][panelKey][metricKey].serviceId"
-                                        ng-change="serviceSelected(inputData.data[rowKey][panelKey][metricKey].serviceId, rowKey, panelKey, metricKey)"
-                                >
-                                </select>
-                            </div>
-
-                            <div class="col col-lg-10">
-                                <select
-                                        id="MetricContainer"
-                                        data-placeholder="<?php echo __('Please choose Metric'); ?>"
-                                        class="form-control"
-                                        chosen="inputData.data[rowKey][panelKey][metricKey].metrics"
-                                        ng-options="metric.label as metric.name for metric in inputData.data[rowKey][panelKey][metricKey].metrics"
-                                        ng-model="inputData.data[rowKey][panelKey][metricKey].metric"
-                                        ng-change="metricSelected(rowKey, panelKey, metricKey)"
-                                >
-                                </select>
-                            </div>
-                            <div class="col col-lg-2">
-                                <button class="btn btn-xs btn-danger" ng-click="removeMetric(rowKey, panelKey, metricKey)">-</button>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 margin-top-10">
+                        <div class="well formactions ">
+                            <div class="pull-right">
+                                <input class="btn btn-primary" type="submit" value="Save">&nbsp;
+                                <a href="/grafana_module/grafana_userdashboards/index"
+                                   class="btn btn-default">Cancel</a>
                             </div>
                         </div>
                     </div>
                 </div>
+
             </form>
-            <div id="grafanaUserdashboards"></div>
         </div>
     </div>
 </div>

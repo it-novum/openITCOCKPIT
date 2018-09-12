@@ -33,8 +33,9 @@ class GrafanaUserdashboardsController extends GrafanaModuleAppController {
         'Service',
         'Rrd',
         'GrafanaModule.GrafanaConfiguration',
-        'GrafanaModule.GrafanaConfigurationHostgroupMembership',
-        'GrafanaModule.GrafanaDashboard'
+        'GrafanaModule.GrafanaDashboard',
+        'GrafanaModule.GrafanaUserdashboard',
+        'GrafanaModule.GrafanaUserdashboardData',
     ];
 
     public $components = [
@@ -47,14 +48,40 @@ class GrafanaUserdashboardsController extends GrafanaModuleAppController {
     }
 
     public function add() {
+        $grafanaConfig = $this->GrafanaConfiguration->find('first', [
+            'recursive' => -1,
+            'order' => 'id DESC'
+        ]);
 
-      /*  if ($this->request->is('post') || $this->request->is('put')) {
+        if(empty($grafanaConfig)){
+            //grafana is not yet configurated
+        }
 
-        }*/
+        if ($this->request->is('post')) {
+            if (!isset($this->request->data['GrafanaUserdashboard']['configuration_id'])|| empty($this->request->data['GrafanaUserdashboard']['configuration_id'])) {
+                $lastId = $grafanaConfig['GrafanaConfiguration']['id'];
+                $this->request->data['GrafanaUserdashboard']['configuration_id'] = $lastId;
+            }
+            if ($this->GrafanaUserdashboard->saveAll($this->request->data)) {
+
+
+                if ($this->isAngularJsRequest()) {
+                    $this->setFlash(__('Grafana Userdashboard Name successfully saved'));
+                }
+
+                if ($this->request->ext === 'json') {
+                    $this->serializeId();
+                    return;
+                }
+            } else {
+                $this->serializeErrorMessage();
+                return;
+            }
+        }
     }
 
 
-    public function edit() {
+    public function editor($userdashboardId = null) {
 
     }
 
@@ -74,7 +101,7 @@ class GrafanaUserdashboardsController extends GrafanaModuleAppController {
         }
 
         $perfdataStructure = [];
-        if(!empty($this->request->query['hostUuid']) && !empty($this->request->query['serviceUuid'])){
+        if (!empty($this->request->query['hostUuid']) && !empty($this->request->query['serviceUuid'])) {
             $service_uuid = $this->request->query['serviceUuid'];
             $host_uuid = $this->request->query['hostUuid'];
 
