@@ -101,7 +101,7 @@ class GrafanaModuleSchema extends CakeSchema {
         'tableParameters'  => ['charset' => 'utf8', 'collate' => 'utf8_unicode_ci', 'engine' => 'InnoDB'],
     ];
 
-    public $grafana_userdashboards_data = [
+    public $grafana_userdashboard_data = [
         'id'               => ['type' => 'integer', 'null' => false, 'key' => 'primary'],
         'userdashboard_id' => ['type' => 'integer', 'null' => false, 'key' => 'index'],
         'row'              => ['type' => 'integer', 'null' => false, 'key' => 'index'],

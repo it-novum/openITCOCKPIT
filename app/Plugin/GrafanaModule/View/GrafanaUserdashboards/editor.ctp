@@ -79,7 +79,7 @@
                                         class="form-control"
                                         chosen="inputData.data[rowKey][panelKey][metricKey].metrics"
                                         ng-options="metric.label as metric.name for metric in inputData.data[rowKey][panelKey][metricKey].metrics"
-                                        ng-model="inputData.data[rowKey][panelKey][metricKey].metric"
+                                        ng-model="inputData.data[rowKey][panelKey][metricKey].metricValue"
                                         ng-change="metricSelected(rowKey, panelKey, metricKey)"
                                 >
                                 </select>

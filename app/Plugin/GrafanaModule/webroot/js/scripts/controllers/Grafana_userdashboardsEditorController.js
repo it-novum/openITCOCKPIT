@@ -2,10 +2,9 @@ angular.module('openITCOCKPIT')
     .controller('Grafana_userdashboardsEditorController', function($scope, $http, QueryStringService){
         $scope.id = QueryStringService.getCakeId();
 
-        console.log($scope.id);
         $scope.inputData = {
             data: [
-                [//row1
+                /*[//row1
                     [//panel1
                         {//metric1 in panel1
                             hostId: 1,
@@ -22,10 +21,12 @@ angular.module('openITCOCKPIT')
                             metrics: null
                         }
                     ]
-                ]
+                ]*/
             ],
             hosts: []
         };
+
+
 
 
         $scope.addNewRow = function(){
@@ -57,7 +58,9 @@ angular.module('openITCOCKPIT')
             $scope.inputData.data[rowKey][panelKey].push({
                 hostId: null,
                 serviceId: null,
-                metric: null,
+                metricValue: null,
+                row:rowKey,
+                panel:panelKey,
                 services: null,
                 metrics: null
             });
@@ -90,6 +93,7 @@ angular.module('openITCOCKPIT')
                 }
             }).then(function(result){
                 $scope.inputData.data[rowKey][panelKey][metricKey].services = result.data.services;
+                $scope.inputData.data[rowKey][panelKey][metricKey]['metric'] = metricKey;
             });
         };
 
@@ -142,22 +146,86 @@ angular.module('openITCOCKPIT')
               console.log('panel ' + panelKey);
               console.log('metric ' + metricKey);
   */
-            $scope.saveData();
+            var newData = $scope.cleanupData($scope.inputData.data);
+            $scope.saveData(newData);
         };
 
-        $scope.saveData = function(){
-            console.log($scope.inputData.data);
+        $scope.saveData = function(dataToSave){
+            if(dataToSave != null && dataToSave.length > 0){
+                $http.post("/grafana_module/grafana_userdashboards/editor/" + $scope.id + ".json?angular=true",
+                    dataToSave
+                ).then(function(result){
 
-            $http.post("/grafana_module/grafana_userdashboards/editor/" + $scope.id + ".json?angular=true",
-                $scope.inputData.data
-            ).then(function(result){
+                    //window.location.href = '/tenants/index';
+                }, function errorCallback(result){
+                    if(result.data.hasOwnProperty('error')){
+                        $scope.errors = result.data.error;
+                    }
+                });
+            }
 
-                //window.location.href = '/tenants/index';
-            }, function errorCallback(result){
-                if(result.data.hasOwnProperty('error')){
-                    $scope.errors = result.data.error;
+        };
+
+
+        /**
+         * removes all unessescary data from the inputData.data array like the available services from the chosen host
+         * or the available metrics of the chosen service
+         */
+        $scope.cleanupData = function(data){
+            var filteredInputData = [];
+            for(var r in data){
+                if(Array.isArray(data[r])){
+                    filteredInputData[r] = [];
+                    for(var p in data[r]){
+                        filteredInputData[r][p] = [];
+                        for(var m in data[r][p]){
+                            var currentData = data[r][p][m];
+                            if(currentData.hasOwnProperty('metricValue')){
+                                console.log(currentData);
+                                var dataToSave = {
+                                    host_id: currentData['hostId'],
+                                    service_id: currentData['serviceId'],
+                                    metric_value: currentData['metricValue'],
+                                    row:currentData['row'],
+                                    panel:currentData['panel'],
+                                    metric: currentData['metric']
+                                };
+
+                                filteredInputData[r][p][m] = dataToSave;
+                            }
+                        }
+                    }
                 }
-            });
+            }
+
+            return filteredInputData;
+/*
+        $scope.inputData = {
+            data: [
+                [//row1
+                    [//panel1
+                        {//metric1 in panel1
+                            hostId: 1,
+                            serviceId: 2,
+                            metric: null,
+                            services: null,
+                            metrics: null
+                        },
+                        {//metric2 in panel1
+                            hostId: 2,
+                            serviceId: 7,
+                            metric: null,
+                            services: null,
+                            metrics: null
+                        }
+                    ]
+                ]
+            ],
+            hosts: []
+        };
+ */
+
+
         };
 
         $scope.$watch('errors', function(){

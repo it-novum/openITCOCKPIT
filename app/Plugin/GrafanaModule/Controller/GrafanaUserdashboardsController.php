@@ -50,17 +50,16 @@ class GrafanaUserdashboardsController extends GrafanaModuleAppController {
     public function add() {
         $grafanaConfig = $this->GrafanaConfiguration->find('first', [
             'recursive' => -1,
-            'order' => 'id DESC'
+            'order'     => 'id DESC'
         ]);
 
-        if(empty($grafanaConfig)){
+        if (empty($grafanaConfig)) {
             //grafana is not yet configurated
         }
 
         if ($this->request->is('post')) {
-            if (!isset($this->request->data['GrafanaUserdashboard']['configuration_id'])|| empty($this->request->data['GrafanaUserdashboard']['configuration_id'])) {
-                $lastId = $grafanaConfig['GrafanaConfiguration']['id'];
-                $this->request->data['GrafanaUserdashboard']['configuration_id'] = $lastId;
+            if (!isset($this->request->data['GrafanaUserdashboard']['configuration_id']) || empty($this->request->data['GrafanaUserdashboard']['configuration_id'])) {
+                $this->request->data['GrafanaUserdashboard']['configuration_id'] = $grafanaConfig['GrafanaConfiguration']['id'];;
             }
             if ($this->GrafanaUserdashboard->saveAll($this->request->data)) {
 
@@ -82,7 +81,34 @@ class GrafanaUserdashboardsController extends GrafanaModuleAppController {
 
 
     public function editor($userdashboardId = null) {
+        if (!$this->GrafanaUserdashboard->exists($userdashboardId)) {
+            throw new NotFoundException(__('Invalid Userdashboard'));
+        }
 
+        if ($this->request->is('post')) {
+            $dataToSave = $this->GrafanaUserdashboardData->flattenData($this->request->data);
+            foreach ($dataToSave as $key => $data) {
+                $dataToSave[$key]['userdashboard_id'] = $userdashboardId;
+            }
+
+            //delete old records first
+            $this->GrafanaUserdashboardData->deleteAll([
+                'userdashboard_id' => $userdashboardId
+            ], false);
+
+            if ($this->GrafanaUserdashboardData->saveAll($dataToSave)) {
+                if ($this->isAngularJsRequest()) {
+                    $this->setFlash(__('Grafana Userdashboard Data successfully saved'));
+                }
+                if ($this->request->ext === 'json') {
+                    $this->serializeId();
+                    return;
+                }
+            } else {
+                $this->serializeErrorMessage();
+                return;
+            }
+        }
     }
 
     public function delete() {

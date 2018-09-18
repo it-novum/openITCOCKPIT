@@ -24,19 +24,34 @@
 //	confirmation.
 
 
-class GrafanaUserdashboard extends GrafanaModuleAppModel {
+class GrafanaUserdashboardData extends GrafanaModuleAppModel {
+
+    //public $useTable = 'grafana_userdashboards_data';
     public $belongsTo = [
-        'GrafanaConfiguration' => [
-            'className' => 'GrafanaModule.GrafanaConfiguration',
-            'foreignKey' => 'configuration_id'
+        'GrafanaUserdashboards' => [
+            'className'  => 'GrafanaModule.GrafanaUserdashboard',
+            'foreignKey' => 'userdashboard_id'
+        ],
+        'Host'                  => [
+            'className'  => 'Host',
+            'foreignKey' => 'host_id'
+        ],
+        'Service'               => [
+            'className'  => 'Service',
+            'foreignKey' => 'service_id'
         ],
     ];
 
-    public $hasMany = [
-        'GrafanaUserdashboardData' => [
-            'className'  => 'GrafanaUserdashboardData',
-            'dependent'  => true,
-            'foreignKey' => 'userdashboard_id',
-        ],
-    ];
+
+    public function flattenData($data, $returnData = []) {
+        foreach ($data as $contentKey => $content) {
+            foreach ($content as $newKey => $newData) {
+                if (is_array($newData) && !empty($newData)) {
+                    $returnData = array_merge($returnData, $newData);
+                    $this->flattenData($newData, $returnData);
+                }
+            }
+        }
+        return $returnData;
+    }
 }

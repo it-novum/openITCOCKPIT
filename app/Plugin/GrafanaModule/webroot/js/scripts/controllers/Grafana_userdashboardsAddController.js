@@ -1,5 +1,7 @@
 angular.module('openITCOCKPIT')
     .controller('Grafana_userdashboardsAddController', function($scope, $http){
+
+
         $scope.submit = function(){
             $http.post("/grafana_module/grafana_userdashboards/add.json?angular=true",
                 $scope.post
