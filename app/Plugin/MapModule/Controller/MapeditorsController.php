@@ -1121,7 +1121,7 @@ class MapeditorsController extends MapModuleAppController {
         }
 
         $objectId = (int)$this->request->query('objectId');
-        $summaryStateItem = $this->request->query('summary');
+        $summaryStateItem = $this->request->query('summary') === 'true';
         if ($objectId <= 0) {
             throw new RuntimeException('Invalid object id');
         }
@@ -1381,7 +1381,7 @@ class MapeditorsController extends MapModuleAppController {
                                 'table'      => 'mapitems',
                                 'type'       => 'INNER',
                                 'alias'      => 'Mapitem',
-                                'conditions' => 'Mapitem.map_id = Map.id',
+                                'conditions' => 'Mapitem.object_id = Map.id',
                             ],
                         ],
                         'conditions' => [
