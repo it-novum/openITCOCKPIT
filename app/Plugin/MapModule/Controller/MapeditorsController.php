@@ -1122,7 +1122,6 @@ class MapeditorsController extends MapModuleAppController {
 
         $objectId = (int)$this->request->query('objectId');
         $summaryStateItem = $this->request->query('summary');
-        $summaryStateItem = ($summaryStateItem === 'false')?false:true;
         if ($objectId <= 0) {
             throw new RuntimeException('Invalid object id');
         }
@@ -1382,7 +1381,7 @@ class MapeditorsController extends MapModuleAppController {
                                 'table'      => 'mapitems',
                                 'type'       => 'INNER',
                                 'alias'      => 'Mapitem',
-                                'conditions' => 'Mapitem.object_id = Map.id',
+                                'conditions' => 'Mapitem.map_id = Map.id',
                             ],
                         ],
                         'conditions' => [
@@ -1394,6 +1393,7 @@ class MapeditorsController extends MapModuleAppController {
                         ]
                     ]);
                 }
+
                 if (!empty($map)) {
                     if ($this->hasRootPrivileges === false) {
                         if (!$this->allowedByContainerId(Hash::extract($map, 'Container.{n}.MapsToContainer.container_id'))) {
