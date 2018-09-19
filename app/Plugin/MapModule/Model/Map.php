@@ -1529,6 +1529,10 @@ class Map extends MapModuleAppModel {
             'group'      => [
                 'Map.id'
             ],
+            'fields' => [
+                'Map.id',
+                'Map.name'
+            ],
             'limit'      => self::ITN_AJAX_LIMIT
         ];
         if (is_array($selected)) {
