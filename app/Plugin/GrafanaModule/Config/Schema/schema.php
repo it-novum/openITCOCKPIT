@@ -90,6 +90,7 @@ class GrafanaModuleSchema extends CakeSchema {
 
     public $grafana_userdashboards = [
         'id'               => ['type' => 'integer', 'null' => false, 'key' => 'primary'],
+        'container_id'     => ['type' => 'integer', 'null' => false, 'key' => 'index'],
         'configuration_id' => ['type' => 'integer', 'null' => false, 'key' => 'index'],
         'name'             => ['type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_unicode_ci', 'charset' => 'utf8'],
         'indexes'          => [

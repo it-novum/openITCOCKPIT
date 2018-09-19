@@ -43,7 +43,34 @@ class GrafanaUserdashboardsController extends GrafanaModuleAppController {
     ];
 
     public function index() {
+        if (!$this->isApiRequest()) {
+            //Only ship template for AngularJs
+            return;
+        }
+        $allUserdashboards = $this->GrafanaUserdashboard->find('all',[
+           // 'recursive' => -1,
+            'conditions' => [
+                'container_id' => $this->MY_RIGHTS
+            ]
+        ]);
 
+
+        foreach ($allUserdashboards as $key => $dashboard) {
+            $allUserdashboards[$key]['GrafanaUserdashboard']['allowEdit'] = false;
+            if ($this->hasRootPrivileges == true) {
+                $allUserdashboards[$key]['GrafanaUserdashboard']['allowEdit'] = true;
+                continue;
+            }
+            foreach ($dashboard['Container'] as $cKey => $container) {
+                if ($this->MY_RIGHTS_LEVEL[$container['id']] == WRITE_RIGHT) {
+                    $allUserdashboards[$key]['GrafanaUserdashboard']['allowEdit'] = true;
+                    continue;
+                }
+            }
+        }
+
+        $this->set('allUserdashboards', $allUserdashboards);
+        $this->set('_serialize', ['allUserdashboards']);
 
     }
 
@@ -86,6 +113,9 @@ class GrafanaUserdashboardsController extends GrafanaModuleAppController {
         }
 
         if ($this->request->is('post')) {
+            //non-transformed data for the Grafana dashboard creation
+
+            //data to save in DB
             $dataToSave = $this->GrafanaUserdashboardData->flattenData($this->request->data);
             foreach ($dataToSave as $key => $data) {
                 $dataToSave[$key]['userdashboard_id'] = $userdashboardId;
@@ -109,6 +139,10 @@ class GrafanaUserdashboardsController extends GrafanaModuleAppController {
                 return;
             }
         }
+    }
+
+    public function view() {
+
     }
 
     public function delete() {
@@ -141,6 +175,44 @@ class GrafanaUserdashboardsController extends GrafanaModuleAppController {
         $this->set('perfdataStructure', $perfdataStructure);
         $this->set('_serialize', ['perfdataStructure', 'sizeof']);
     }
+
+    public function loadContainers() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        if ($this->hasRootPrivileges === true) {
+            $containers = $this->Tree->easyPath($this->MY_RIGHTS, CT_TENANT, [], $this->hasRootPrivileges);
+        } else {
+            $containers = $this->Tree->easyPath($this->getWriteContainers(), CT_TENANT, [], $this->hasRootPrivileges);
+        }
+        $containers = $this->Container->makeItJavaScriptAble($containers);
+
+
+        $this->set('containers', $containers);
+        $this->set('_serialize', ['containers']);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     /**

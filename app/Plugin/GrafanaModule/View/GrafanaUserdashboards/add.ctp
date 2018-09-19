@@ -31,7 +31,29 @@
         <div class="widget-body">
             <form ng-submit="submit();" class="form-horizontal">
                 <div class="row">
-                    <div class="form-group required" ng-class="{'has-error': errors.name}">
+                    <div class="form-group required" ng-class="{'has-error': errors.container_id}">
+                        <div class="col col-xs-10">
+                            <label class="col col-md-2 control-label">
+                                <?php echo __('Container'); ?>
+                            </label>
+                            <div class="col col-xs-10">
+                                <select
+                                        id="MapContainer"
+                                        data-placeholder="<?php echo __('Please choose'); ?>"
+                                        class="form-control"
+                                        chosen="containers"
+                                        ng-options="container.key as container.value for container in containers"
+                                        ng-model="post.GrafanaUserdashboard.container_id">
+                                </select>
+                                <div ng-repeat="error in errors.container_id">
+                                    <div class="help-block text-danger">{{ error }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group required" ng-class="{'has-error': errors.name}">
+                    <div class="col col-xs-10">
                         <label class="col col-md-2 control-label">
                             <?php echo __('Userdashboard name'); ?>
                         </label>
