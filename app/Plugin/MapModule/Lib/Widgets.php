@@ -25,7 +25,9 @@
 namespace itnovum\openITCOCKPIT\MapModule\Widgets;
 
 
-class Widgets {
+use itnovum\openITCOCKPIT\Core\Dashboards\ModuleWidgetsInterface;
+
+class Widgets implements ModuleWidgetsInterface {
 
     /**
      * @var array

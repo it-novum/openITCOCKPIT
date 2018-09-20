@@ -1,5 +1,5 @@
 <?php
-// Copyright (C) <2015>  <it-novum GmbH>
+// Copyright (C) <2018>  <it-novum GmbH>
 //
 // This file is dual licensed
 //
@@ -22,42 +22,20 @@
 //  License agreement and license key will be shipped with the order
 //  confirmation.
 
-namespace itnovum\openITCOCKPIT\GrafanaModule\Widgets;
+namespace itnovum\openITCOCKPIT\Core\Dashboards;
 
 
-use itnovum\openITCOCKPIT\Core\Dashboards\ModuleWidgetsInterface;
-
-class Widgets implements ModuleWidgetsInterface {
+interface ModuleWidgetsInterface {
 
     /**
-     * @var array
+     * ModuleWidgetsInterface constructor.
+     * @param array $ACL_PERMISSIONS
      */
-    private $ACL_PERMISSIONS = [];
-
-    /**
-     * Widgets constructor.
-     * @param $ACL_PERMISSIONS
-     */
-    public function __construct($ACL_PERMISSIONS) {
-        $this->ACL_PERMISSIONS = $ACL_PERMISSIONS;
-    }
+    public function __construct($ACL_PERMISSIONS);
 
     /**
      * @return array
      */
-    public function getAvailableWidgets() {
-        $widgets = [
-            [
-                'type_id'   => 200,
-                'title'     => __('Grafana'),
-                'icon'      => 'fa-area-chart',
-                'directive' => 'grafana-widget',
-                'width'     => 12,
-                'height'    => 25
-            ]
-        ];
-
-        return $widgets;
-    }
+    public function getAvailableWidgets();
 
 }
