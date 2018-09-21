@@ -82,7 +82,7 @@ var GraphDefaults = (function(){
             tooltip: false,
             xaxis: {
                 mode: 'time',
-                timeformat: '%d.%m.%y %H:%M:%S', // This is handled by a plugin, if it is used -> jquery.flot.time.js
+                timeformat: '%d.%m.%y %H:%M:%S' // This is handled by a plugin, if it is used -> jquery.flot.time.js
             },
             lines: {
                 show: true,

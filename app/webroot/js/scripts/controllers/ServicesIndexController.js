@@ -387,7 +387,6 @@ angular.module('openITCOCKPIT')
                 //graph_data.push(performance_data[key].data);
             }
             var color_amount = performance_data.length < 3 ? 3 : performance_data.length;
-            var color_generator = new ColorGenerator();
 
             var GraphDefaultsObj = new GraphDefaults();
 
