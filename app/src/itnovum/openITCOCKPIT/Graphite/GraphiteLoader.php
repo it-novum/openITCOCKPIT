@@ -43,9 +43,14 @@ class GraphiteLoader {
 
     /**
      * @var string
-     * Start time as string
+     * Start time in seconds
      */
-    private $from = '-12hours';
+    private $from = 3600;
+
+    /**
+     * @var bool
+     */
+    private $useJsTimestamp = false;
 
     /**
      * GraphiteLoader constructor.
@@ -67,6 +72,29 @@ class GraphiteLoader {
      */
     public function setHideNullValues($hideNullValues) {
         $this->hideNullValues = (bool)$hideNullValues;
+    }
+
+    /**
+     * @param $useJsTimestamp
+     * @return bool
+     */
+    public function setUseJsTimestamp($useJsTimestamp) {
+        return $this->useJsTimestamp = (bool)$useJsTimestamp;
+    }
+
+    /**
+     * @param int $from
+     * Start value in seconds from now
+     */
+    public function setFrom($from){
+        $this->from = (int)$from;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isUseJsTimestamp() {
+        return $this->useJsTimestamp;
     }
 
 
@@ -162,7 +190,7 @@ class GraphiteLoader {
     private function getBaseRequestOptions() {
         $options = [
             'format' => 'json',
-            'from'   => $this->from
+            'from'   => sprintf('-%ss', $this->from)
         ];
 
         if ($this->hideNullValues) {
@@ -208,7 +236,11 @@ class GraphiteLoader {
                 if ($this->hideNullValues && $datapoint[0] === null) {
                     continue;
                 }
-                $normalizedData[$datapoint[1]] = $datapoint[0];
+                $timestamp = $datapoint[1];
+                if ($this->useJsTimestamp) {
+                    $timestamp = $timestamp * 1000;
+                }
+                $normalizedData[$timestamp] = $datapoint[0];
             }
         }
         return $normalizedData;

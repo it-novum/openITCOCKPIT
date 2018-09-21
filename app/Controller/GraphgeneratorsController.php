@@ -23,21 +23,31 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use itnovum\openITCOCKPIT\Core\DbBackend;
+use itnovum\openITCOCKPIT\Core\PerfdataBackend;
+use itnovum\openITCOCKPIT\Core\ServicestatusFields;
+use itnovum\openITCOCKPIT\Graphite\GraphiteConfig;
+use itnovum\openITCOCKPIT\Graphite\GraphiteLoader;
+use itnovum\openITCOCKPIT\Graphite\GraphiteMetric;
+use Statusengine\PerfdataParser;
+
 App::uses('UUID', 'Lib');
 App::uses('Graphgenerator', 'Model');
 
 /**
  * Class GraphgeneratorsController
- * @property Rrd              Rrd RRD
- * @property Host             Host
- * @property Service          Service
- * @property GraphgenTmpl     GraphgenTmpl
+ * @property Rrd Rrd RRD
+ * @property Host Host
+ * @property Service Service
+ * @property GraphgenTmpl GraphgenTmpl
  * @property GraphgenTmplConf GraphgenTmplConf
- * @property GraphCollection  $GraphCollection
- * @property Graphgenerator   $Graphgenerator
+ * @property GraphCollection $GraphCollection
+ * @property Graphgenerator $Graphgenerator
+ * @property Servicestatus $Servicestatus
+ * @property DbBackend $DbBackend
+ * @property PerfdataBackend $PerfdataBackend
  */
-class GraphgeneratorsController extends AppController
-{
+class GraphgeneratorsController extends AppController {
     const REDUCE_METHOD_STEPS = 1;
     const REDUCE_METHOD_AVERAGE = 2;
     const MAX_RESPONSE_GRAPH_POINTS = 1000;
@@ -52,6 +62,7 @@ class GraphgeneratorsController extends AppController
         'GraphCollection',
         'GraphCollectionItem',
         'Graphgenerator',
+        MONITORING_SERVICESTATUS
     ];
     public $helpers = ['ListFilter.ListFilter'];
 
@@ -60,8 +71,7 @@ class GraphgeneratorsController extends AppController
      *
      * @param int $configuration_id
      */
-    public function index($configuration_id = 0)
-    {
+    public function index($configuration_id = 0) {
         $this->__unbindAssociations('Host');
 
         $userContainerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
@@ -131,8 +141,7 @@ class GraphgeneratorsController extends AppController
         ]);
     }
 
-    public function view($configuration_id = 0)
-    {
+    public function view($configuration_id = 0) {
         $this->layout = 'Admin.fullscreen';
         $this->index($configuration_id);
     }
@@ -140,8 +149,7 @@ class GraphgeneratorsController extends AppController
     /**
      * Listing the existing configurations to load and edit them.
      */
-    public function listing()
-    {
+    public function listing() {
 //		$graphgen_tmpls = $this->GraphgenTmpl->find('all');
 //		$this->set('graphgen_tmpls', $graphgen_tmpls);
 
@@ -157,7 +165,7 @@ class GraphgeneratorsController extends AppController
         $_conditions = [];
         if (!empty($searchArray)) {
             foreach ($searchArray as $field => $value) {
-                $_conditions['Host.'.$field.' LIKE'] = '%'.$value.'%';
+                $_conditions['Host.' . $field . ' LIKE'] = '%' . $value . '%';
             }
             $conditions = Hash::merge($conditions, $_conditions);
         }
@@ -216,8 +224,7 @@ class GraphgeneratorsController extends AppController
     /**
      * This is the only public available delete function for the graph configurations yet.
      */
-    public function mass_delete()
-    {
+    public function mass_delete() {
         $args_are_valid = true;
         $args = func_get_args();
         foreach ($args as $arg) {
@@ -227,8 +234,8 @@ class GraphgeneratorsController extends AppController
         }
 
         if ($args_are_valid) {
-            $this->GraphgenTmpl->deleteAll('GraphgenTmpl.id IN ('.implode(',', $args).')');
-            $this->GraphgenTmplConf->deleteAll('GraphgenTmplConf.graphgen_tmpl_id IN ('.implode(',', $args).')');
+            $this->GraphgenTmpl->deleteAll('GraphgenTmpl.id IN (' . implode(',', $args) . ')');
+            $this->GraphgenTmplConf->deleteAll('GraphgenTmplConf.graphgen_tmpl_id IN (' . implode(',', $args) . ')');
             $this->setFlash(__('The Graph configurations have been deleted successfully.'));
         } else {
             $this->setFlash(__('Could not delete the graph configurations. The given arguments are invalid.'), false);
@@ -237,8 +244,7 @@ class GraphgeneratorsController extends AppController
         $this->redirect(['action' => 'listing']);
     }
 
-    public function saveGraphTemplate()
-    {
+    public function saveGraphTemplate() {
         $this->allowOnlyAjaxRequests();
         $this->allowOnlyPostRequests();
         //debug($this->request->data['GraphgenTmpl']['id']);
@@ -259,8 +265,7 @@ class GraphgeneratorsController extends AppController
     }
 
 
-    public function loadGraphTemplate($id)
-    {
+    public function loadGraphTemplate($id) {
         $this->allowOnlyAjaxRequests();
 
         $data = $this->GraphgenTmpl->find('all', [
@@ -275,8 +280,7 @@ class GraphgeneratorsController extends AppController
      *
      * @param string $hostId
      */
-    public function loadServicesByHostId($hostId)
-    {
+    public function loadServicesByHostId($hostId) {
         $this->allowOnlyAjaxRequests();
 
         $userContainerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
@@ -313,8 +317,7 @@ class GraphgeneratorsController extends AppController
     /*
      * XHR
      */
-    public function loadPerfDataStructures()
-    {
+    public function loadPerfDataStructures() {
         $this->set('_serialize', ['perf_data']);
         if (!isset($this->request->data['host_and_services_uuids']) ||
             empty($this->request->data['host_and_services_uuids'])
@@ -334,8 +337,7 @@ class GraphgeneratorsController extends AppController
      * @param string $host_uuid
      * @param string $service_uuid
      */
-    public function loadServiceruleFromService($host_uuid, $service_uuid)
-    {
+    public function loadServiceruleFromService($host_uuid, $service_uuid) {
         $this->allowOnlyAjaxRequests();
 
         $userContainerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
@@ -360,8 +362,7 @@ class GraphgeneratorsController extends AppController
      *
      * @return array
      */
-    public function fetchGraphData()
-    {
+    public function fetchGraphData() {
         $this->allowOnlyAjaxRequests();
 
         $result = [];
@@ -381,9 +382,9 @@ class GraphgeneratorsController extends AppController
             }
 
             foreach ($service_uuids as $service_uuid_arr) {
-                if(is_array($service_uuid_arr)){
+                if (is_array($service_uuid_arr)) {
                     $service_uuid = $service_uuid_arr[0];
-                }else{
+                } else {
                     $service_uuid = $service_uuid_arr;
                 }
                 if (!UUID::is_valid($service_uuid)) {
@@ -405,9 +406,9 @@ class GraphgeneratorsController extends AppController
                 'start' => $this->request->data('start'),
                 'end'   => $this->request->data('end'),
             ];
-        }elseif(preg_match("/^[0-9]{2}\\-[0-9]{2}\\-[0-9]{4} +[0-9]{2}:[0-9]{2}$/", $this->request->data('start')) &&
-            preg_match("/^[0-9]{2}\\-[0-9]{2}\\-[0-9]{4} +[0-9]{2}:[0-9]{2}$/", $this->request->data('end'))){
-            if(strtotime($this->request->data('end')) - strtotime($this->request->data('start')) <= 0){
+        } else if (preg_match("/^[0-9]{2}\\-[0-9]{2}\\-[0-9]{4} +[0-9]{2}:[0-9]{2}$/", $this->request->data('start')) &&
+            preg_match("/^[0-9]{2}\\-[0-9]{2}\\-[0-9]{4} +[0-9]{2}:[0-9]{2}$/", $this->request->data('end'))) {
+            if (strtotime($this->request->data('end')) - strtotime($this->request->data('start')) <= 0) {
                 return [];
             }
             $options = [
@@ -437,10 +438,10 @@ class GraphgeneratorsController extends AppController
 
         foreach ($host_and_service_uuids as $host_uuid => $service_uuids) {
             foreach ($service_uuids as $service_uuid_arr) {
-                if(is_array($service_uuid_arr)){
+                if (is_array($service_uuid_arr)) {
                     $service_uuid = $service_uuid_arr[0];
                     $service_value = isset($service_uuid_arr[1]) ? strtolower($service_uuid_arr[1]) : null;
-                }else{
+                } else {
                     $service_uuid = $service_uuid_arr;
                     $service_value = null;
                 }
@@ -461,7 +462,7 @@ class GraphgeneratorsController extends AppController
 
                 // Add hostname
                 $host = $this->Host->find('first', [
-                    'recursive' => -1,
+                    'recursive'  => -1,
                     'conditions' => [
                         'Host.uuid' => $host_uuid
                     ]
@@ -469,8 +470,8 @@ class GraphgeneratorsController extends AppController
                 $additional_information['hostname'] = $host['Host']['name'];
 
                 $service = $this->Service->find('first', [
-                    'recursive' => -1,
-                    'contain' => [
+                    'recursive'  => -1,
+                    'contain'    => [
                         'Servicetemplate' => [
                             'fields' => [
                                 'Servicetemplate.name'
@@ -480,7 +481,7 @@ class GraphgeneratorsController extends AppController
                     'conditions' => [
                         'Service.uuid' => $service_uuid
                     ],
-                    'fields' => [
+                    'fields'     => [
                         'Service.id',
                         'Service.uuid',
                         'Service.name'
@@ -500,8 +501,8 @@ class GraphgeneratorsController extends AppController
         $this->set('rrd_data', $result);
     }
 
-    public function getPerfdataByUuid(){
-        if(!$this->isAngularJsRequest()){
+    public function getPerfdataByUuid() {
+        if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
 
@@ -509,42 +510,87 @@ class GraphgeneratorsController extends AppController
         $serviceUuid = $this->request->query('service_uuid');
         $hours = (int)$this->request->query('hours');
         $jsTimestamp = (bool)$this->request->query('jsTimestamp');
-        if($hours < 1){
+        if ($hours < 1) {
             $hours = 3;
         }
 
-        if(!$this->Rrd->isValidHostAndServiceUuid($hostUuid, $serviceUuid)){
-            $this->set('error', __('No Graph found for given host and service uuid'));
-            $this->set('_serialize', ['error']);
-            $this->response->statusCode(404);
-            return;
-        }
-
-
-        $options = [
-            'start' => time() - $hours * 3600,
-            'end'   => time(),
-        ];
-
         $performance_data = [];
-        $rrd_data = $this->Rrd->getPerfDataFiles($hostUuid, $serviceUuid, $options, null);
-        $limit = (int)self::MAX_RESPONSE_GRAPH_POINTS / sizeof($rrd_data['data']);
-        foreach($rrd_data['xml_data'] as $dataSource){
 
-            $tmpData = $this->reduceData($rrd_data['data'][$dataSource['ds']], $limit, self::REDUCE_METHOD_AVERAGE);
-            $data = [];
-            if($jsTimestamp){
-                foreach($tmpData as $timestamp => $value){
-                    $data[($timestamp * 1000)] = $value;
+        if ($this->PerfdataBackend->isWhisper()) {
+            $ServicestatusFields = new ServicestatusFields($this->DbBackend);
+            $ServicestatusFields->perfdata();
+            $servicestatus = $this->Servicestatus->byUuid($serviceUuid, $ServicestatusFields);
+            if (!empty($servicestatus)) {
+                $PerfdataParser = new PerfdataParser($servicestatus['Servicestatus']['perfdata']);
+                $perfdataMetadata = $PerfdataParser->parse();
+
+                $GraphiteConfig = new GraphiteConfig();
+                $GraphiteLoader = new GraphiteLoader($GraphiteConfig);
+                $GraphiteLoader->setUseJsTimestamp($jsTimestamp);
+                $GraphiteLoader->setFrom($hours * 3600);
+
+                foreach ($perfdataMetadata as $metricName => $metric) {
+                    $GraphiteMetric = new GraphiteMetric(
+                        $hostUuid,
+                        $serviceUuid,
+                        $metricName
+                    );
+
+                    $datasource = [
+                        'ds'    => $metricName,
+                        'name'  => $metricName,
+                        'label' => $metricName,
+                        'unit'  => $metric['unit'],
+                        'act'   => $metric['current'],
+                        'warn'  => $metric['warning'],
+                        'crit'  => $metric['critical'],
+                        'min'   => $metric['min'],
+                        'max'   => $metric['max'],
+                    ];
+
+                    $performance_data[] = [
+                        'datasource' => $datasource,
+                        'data'       => $GraphiteLoader->getSeriesAvg($GraphiteMetric)
+                    ];
                 }
-            }else{
-                $data = $tmpData;
             }
 
-            $performance_data[] = [
-                'datasource' => $dataSource,
-                'data' => $data
+
+        }
+
+        if ($this->PerfdataBackend->isRrdtool()) {
+            if (!$this->Rrd->isValidHostAndServiceUuid($hostUuid, $serviceUuid)) {
+                $this->set('error', __('No Graph found for given host and service uuid'));
+                $this->set('_serialize', ['error']);
+                $this->response->statusCode(404);
+                return;
+            }
+
+
+            $options = [
+                'start' => time() - $hours * 3600,
+                'end'   => time(),
             ];
+
+            $rrd_data = $this->Rrd->getPerfDataFiles($hostUuid, $serviceUuid, $options, null);
+            $limit = (int)self::MAX_RESPONSE_GRAPH_POINTS / sizeof($rrd_data['data']);
+            foreach ($rrd_data['xml_data'] as $dataSource) {
+
+                $tmpData = $this->reduceData($rrd_data['data'][$dataSource['ds']], $limit, self::REDUCE_METHOD_AVERAGE);
+                $data = [];
+                if ($jsTimestamp) {
+                    foreach ($tmpData as $timestamp => $value) {
+                        $data[($timestamp * 1000)] = $value;
+                    }
+                } else {
+                    $data = $tmpData;
+                }
+
+                $performance_data[] = [
+                    'datasource' => $dataSource,
+                    'data'       => $data
+                ];
+            }
         }
 
         $this->set('performance_data', $performance_data);
@@ -552,8 +598,7 @@ class GraphgeneratorsController extends AppController
 
     }
 
-    private function reduceData($data, $limit = 500, $technique = self::REDUCE_METHOD_AVERAGE)
-    {
+    private function reduceData($data, $limit = 500, $technique = self::REDUCE_METHOD_AVERAGE) {
         switch ($technique) {
             case self::REDUCE_METHOD_STEPS:
                 return $this->reduceDataBySteps($data, $limit);
@@ -564,8 +609,7 @@ class GraphgeneratorsController extends AppController
         }
     }
 
-    private function reduceDataByAverage($data, $limit = 500)
-    {
+    private function reduceDataByAverage($data, $limit = 500) {
         $data_count = count($data);
         if ($data_count <= $limit) {
             return $data;
@@ -593,8 +637,7 @@ class GraphgeneratorsController extends AppController
         return $result;
     }
 
-    private function reduceDataBySteps($data, $limit = 500)
-    {
+    private function reduceDataBySteps($data, $limit = 500) {
         $data_count = count($data);
         if ($data_count <= $limit) {
             return $data;
