@@ -263,7 +263,7 @@ class ServicesController extends AppController {
             $Hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus($service['Hoststatus'], $UserTime);
             $Service = new \itnovum\openITCOCKPIT\Core\Views\Service($service, null, $allowEdit);
             $Servicestatus = new \itnovum\openITCOCKPIT\Core\Servicestatus($service['Servicestatus'], $UserTime);
-            $PerfdataChecker = new PerfdataChecker($Host, $Service);
+            $PerfdataChecker = new PerfdataChecker($Host, $Service, $this->PerfdataBackend, $Servicestatus);
 
             $tmpRecord = [
                 'Service'       => $Service->toArray(),
@@ -271,7 +271,7 @@ class ServicesController extends AppController {
                 'Servicestatus' => $Servicestatus->toArray(),
                 'Hoststatus'    => $Hoststatus->toArray()
             ];
-            $tmpRecord['Service']['has_graph'] = $PerfdataChecker->hasRrdFile();
+            $tmpRecord['Service']['has_graph'] = $PerfdataChecker->hasPerfdata();
             $all_services[] = $tmpRecord;
         }
 
@@ -2004,11 +2004,6 @@ class ServicesController extends AppController {
 
         $rawHost = $this->Host->find('first', $this->Host->getQueryForServiceBrowser($rawService['Service']['host_id']));
 
-        $PerfdataChecker = new PerfdataChecker(
-            new \itnovum\openITCOCKPIT\Core\Views\Host($rawHost),
-            new \itnovum\openITCOCKPIT\Core\Views\Service($rawService)
-        );
-
         $containerIdsToCheck = Hash::extract($rawHost, 'Container.{n}.HostsToContainer.container_id');
         $containerIdsToCheck[] = $rawHost['Host']['container_id'];
 
@@ -2093,7 +2088,6 @@ class ServicesController extends AppController {
 
 
         $mergedService['Service']['allowEdit'] = $allowEdit;
-        $mergedService['Service']['has_graph'] = $PerfdataChecker->hasRrdFile();
         $mergedService['checkIntervalHuman'] = $UserTime->secondsInHumanShort($mergedService['Service']['check_interval']);
         $mergedService['retryIntervalHuman'] = $UserTime->secondsInHumanShort($mergedService['Service']['retry_interval']);
         $mergedService['notificationIntervalHuman'] = $UserTime->secondsInHumanShort($mergedService['Service']['notification_interval']);
@@ -2176,6 +2170,14 @@ class ServicesController extends AppController {
         $Servicestatus = new \itnovum\openITCOCKPIT\Core\Servicestatus($servicestatus['Servicestatus'], $UserTime);
         $servicestatus = $Servicestatus->toArrayForBrowser();
         $servicestatus['longOutputHtml'] = $this->Bbcode->nagiosNl2br($this->Bbcode->asHtml($Servicestatus->getLongOutput(), true));
+
+        $PerfdataChecker = new PerfdataChecker(
+            new \itnovum\openITCOCKPIT\Core\Views\Host($rawHost),
+            new \itnovum\openITCOCKPIT\Core\Views\Service($rawService),
+            $this->PerfdataBackend,
+            $Servicestatus
+        );
+        $mergedService['Service']['has_graph'] = $PerfdataChecker->hasPerfdata();
 
 
         //Check for acknowledgements and downtimes

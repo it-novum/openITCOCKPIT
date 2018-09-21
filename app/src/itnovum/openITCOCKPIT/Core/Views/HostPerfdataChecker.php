@@ -25,6 +25,8 @@
 namespace itnovum\openITCOCKPIT\Core\Views;
 
 
+use itnovum\openITCOCKPIT\Core\PerfdataBackend;
+
 class HostPerfdataChecker {
 
     /**
@@ -33,15 +35,28 @@ class HostPerfdataChecker {
     private $hostUuid;
 
     /**
-     * PerfdataChecker constructor.
-     * @param Host $Host
+     * @var PerfdataBackend
      */
-    public function __construct(Host $Host) {
+    private $PerfdataBackend;
+
+    /**
+     * HostPerfdataChecker constructor.
+     * @param Host $Host
+     * @param PerfdataBackend $PerfdataBackend
+     */
+    public function __construct(Host $Host, PerfdataBackend $PerfdataBackend) {
         $this->hostUuid = $Host->getUuid();
+        $this->PerfdataBackend = $PerfdataBackend;
     }
 
-    public function hasRrdFolder() {
-        return is_dir(sprintf('/opt/openitc/nagios/share/perfdata/%s', $this->hostUuid));
+    /**
+     * @return bool
+     */
+    public function hasPerfdata() {
+        if($this->PerfdataBackend->isRrdtool()) {
+            return is_dir(sprintf('/opt/openitc/nagios/share/perfdata/%s', $this->hostUuid));
+        }
+        return true;
     }
 
 }

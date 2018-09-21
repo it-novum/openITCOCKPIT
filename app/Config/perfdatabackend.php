@@ -24,8 +24,8 @@
 
 $config = [
     // @todo enable Whisper by default!
-    'perfdatabackend' => 'Rrdtool',
+    //'perfdatabackend' => 'Rrdtool',
     //'perfdatabackend' => 'Crate',
-    //'perfdatabackend' => 'Whisper',
+    'perfdatabackend' => 'Whisper',
 ];
 

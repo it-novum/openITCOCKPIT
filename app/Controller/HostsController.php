@@ -248,7 +248,7 @@ class HostsController extends AppController {
             );
             $Host = new \itnovum\openITCOCKPIT\Core\Views\Host($host);
             $Hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus($host['Hoststatus'], $UserTime);
-            $PerfdataChecker = new HostPerfdataChecker($Host);
+            $PerfdataChecker = new HostPerfdataChecker($Host, $this->PerfdataBackend);
 
             $hostSharingPermissions = new HostSharingPermissions(
                 $Host->getContainerId(), $this->hasRootPrivileges, $Host->getContainerIds(), $this->MY_RIGHTS
@@ -274,7 +274,7 @@ class HostsController extends AppController {
                 'Hoststatus' => $Hoststatus->toArray(),
                 'ServicestatusSummary' => $serviceStateSummary
             ];
-            $tmpRecord['Host']['has_graphs'] = $PerfdataChecker->hasRrdFolder();
+            $tmpRecord['Host']['has_graphs'] = $PerfdataChecker->hasPerfdata();
             $tmpRecord['Host']['allow_sharing'] = $allowSharing;
             $tmpRecord['Host']['satelliteName'] = $satelliteName;
             $tmpRecord['Host']['satelliteId'] = $satellite_id;
