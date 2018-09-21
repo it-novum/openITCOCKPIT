@@ -109,71 +109,23 @@ angular.module('openITCOCKPIT').directive('hostServiceList', function($http){
                     }
                     //graph_data.push(performance_data[key].data);
                 }
-                var color_amount = performance_data.length < 3 ? 3 : performance_data.length;
-                var color_generator = new ColorGenerator();
-                var options = {
-                    width: '100%',
-                    height: '500px',
-                    colors: color_generator.generate(color_amount, 90, 120),
-                    legend: false,
-                    grid: {
-                        hoverable: true,
-                        markings: self.threshold_lines,
-                        borderWidth: {
-                            top: 1,
-                            right: 1,
-                            bottom: 1,
-                            left: 1
-                        },
-                        borderColor: {
-                            top: '#CCCCCC'
-                        }
-                    },
-                    tooltip: false,
-                    xaxis: {
-                        mode: 'time',
-                        timeformat: '%d.%m.%y %H:%M:%S', // This is handled by a plugin, if it is used -> jquery.flot.time.js
-                        tickFormatter: function(val, axis){
-                            var fooJS = new Date(val + ($scope.timezone.server_timezone_offset * 1000));
-                            var fixTime = function(value){
-                                if(value < 10){
-                                    return '0' + value;
-                                }
-                                return value;
-                            };
-                            return fixTime(fooJS.getUTCDate()) + '.' + fixTime(fooJS.getUTCMonth() + 1) + '.' + fooJS.getUTCFullYear() + ' ' + fixTime(fooJS.getUTCHours()) + ':' + fixTime(fooJS.getUTCMinutes());
-                        }
-                    },
-                    lines: {
-                        show: true,
-                        lineWidth: 1,
-                        fill: true,
-                        steps: 0,
-                        fillColor: {
-                            colors: [{
-                                opacity: 0.5
-                            },
-                                {
-                                    opacity: 0.3
-                                }]
-                        }
-                    },
-                    points: {
-                        show: false,
-                        radius: 1
-                    },
-                    series: {
-                        show: true,
-                        labelFormatter: function(label, series){
-                            // series is the series object for the label
-                            return '<a href="#' + label + '">' + label + '</a>';
-                        }
-                    },
-                    selection: {
-                        mode: "x"
-                    }
-                };
 
+
+                var GraphDefaultsObj = new GraphDefaults();
+                var color_amount = performance_data.length < 3 ? 3 : performance_data.length;
+                var colors = GraphDefaultsObj.getColors(color_amount);
+                var options = GraphDefaultsObj.getDefaultOptions();
+                options.colors = colors.border;
+                options.xaxis.tickFormatter = function(val, axis){
+                    var fooJS = new Date(val + ($scope.timezone.server_timezone_offset * 1000));
+                    var fixTime = function(value){
+                        if(value < 10){
+                            return '0' + value;
+                        }
+                        return value;
+                    };
+                    return fixTime(fooJS.getUTCDate()) + '.' + fixTime(fooJS.getUTCMonth() + 1) + '.' + fooJS.getUTCFullYear() + ' ' + fixTime(fooJS.getUTCHours()) + ':' + fixTime(fooJS.getUTCMinutes());
+                };
                 self.plot = $.plot('#serviceGraphFlot', graph_data, options);
             };
 
