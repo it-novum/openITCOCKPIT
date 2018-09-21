@@ -9,8 +9,8 @@ var GraphDefaults = (function(){
         this.criticalFillColor = '#E54126';
         this.criticalBorderColor = '#BF1B00';
 
-        this.warningFillColor = '#FF9B53';
-        this.warningBorderColor = '#E0752D';
+        this.warningFillColor = '#fff552';
+        this.warningBorderColor = '#e0de12';
 
         this.unknownFillColor = '#9B9B9B';
         this.unknownBorderColor = '#757575';

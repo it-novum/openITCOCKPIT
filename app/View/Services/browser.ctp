@@ -1106,7 +1106,7 @@ if (!$QueryHandler->exists()): ?>
                 <div class="widget-body">
 
                     <div id="graph_data_tooltip"></div>
-                    <div id="graphCanvas" style="height: 500px;"></div>
+                    <div id="graphCanvas" style="height: 300px;"></div>
 
                 </div>
             </div>
