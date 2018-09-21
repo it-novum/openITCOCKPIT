@@ -40,6 +40,7 @@ $scripts = [
     //'vendor/angular-bootstrap/ui-bootstrap-tpls.min.js',
     'js/app/layoutfix.js',
     'js/lib/ColorGenerator.js',
+    'js/lib/GraphDefaults.js',
     'js/lib/colr.js',
     'js/lib/php.js',
     'smartadmin/js/plugin/flot/jquery.flot.cust.js',
