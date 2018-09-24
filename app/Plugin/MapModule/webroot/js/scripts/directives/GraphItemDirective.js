@@ -1,4 +1,4 @@
-angular.module('openITCOCKPIT').directive('graphItem', function($http){
+angular.module('openITCOCKPIT').directive('graphItem', function($http, $timeout){
     return {
         restrict: 'E',
         templateUrl: '/map_module/mapeditors/graph.html',
@@ -160,6 +160,8 @@ angular.module('openITCOCKPIT').directive('graphItem', function($http){
                     label = label + ' in ' + performance_data.datasource.unit;
                 }
 
+                label = htmlspecialchars(label);
+
                 graph_data.push({
                     label: label,
                     data: gaugeData,
@@ -288,7 +290,10 @@ angular.module('openITCOCKPIT').directive('graphItem', function($http){
                     $scope.height = $scope.item.size_y;
                 }
 
-                renderGraph($scope.perfdata);
+                //Let AngularJS update the template and rerender graph
+                $timeout(function(){
+                    renderGraph($scope.perfdata)
+                }, 250);
             });
 
             $scope.$watch('item.object_id', function(){
