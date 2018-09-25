@@ -47,6 +47,7 @@ $config = [
             'lib/php.js',
             'lib/colr.js',
             'lib/ColorGenerator.js',
+            'lib/GraphDefaults.js',
             'app/bootstrap',
             'app/layoutfix',
             'vendor/jquery.blockUI',
