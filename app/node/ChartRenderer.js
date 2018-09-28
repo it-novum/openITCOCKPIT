@@ -16,6 +16,10 @@ app.use(bodyParser.urlencoded({limit: '500mb', extended: true}));
 app.post('/AreaChart', function(request, response){
     //console.log(request.body);      // json data
 
+    //If graph appears to be gray in pdf, this is a bug in wkhtmltopdf 12.5-1
+    //https://github.com/wkhtmltopdf/wkhtmltopdf/issues/2208
+    //https://github.com/wkhtmltopdf/wkhtmltopdf/issues/3387
+
     var getColor = function(index){
         var bgColors = [
             'rgba(54, 162, 235, 0.2)',
