@@ -31,7 +31,6 @@ class GrafanaUserdashboardsController extends GrafanaModuleAppController {
     public $uses = [
         'Host',
         'Service',
-        'Rrd',
         'GrafanaModule.GrafanaConfiguration',
         'GrafanaModule.GrafanaDashboard',
         'GrafanaModule.GrafanaUserdashboard',
@@ -47,8 +46,8 @@ class GrafanaUserdashboardsController extends GrafanaModuleAppController {
             //Only ship template for AngularJs
             return;
         }
-        $allUserdashboards = $this->GrafanaUserdashboard->find('all',[
-           // 'recursive' => -1,
+        $allUserdashboards = $this->GrafanaUserdashboard->find('all', [
+            // 'recursive' => -1,
             'conditions' => [
                 'container_id' => $this->MY_RIGHTS
             ]
@@ -112,9 +111,27 @@ class GrafanaUserdashboardsController extends GrafanaModuleAppController {
             throw new NotFoundException(__('Invalid Userdashboard'));
         }
 
-        if ($this->request->is('post')) {
-            //non-transformed data for the Grafana dashboard creation
 
+        $userdashboardData = $this->GrafanaUserdashboardData->find('all', [
+            'recursive'  => -1,
+            'conditions' => [
+                'GrafanaUserdashboardData.userdashboard_id' => $userdashboardId
+            ]
+        ]);
+        $userContainerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+        $userdashboardData = $this->GrafanaUserdashboardData->expandData($userdashboardData, false, $userContainerIds);
+
+        $hosts = $this->GrafanaUserdashboardData->getHosts($this->MY_RIGHTS);
+        $userdashboardData['hosts'] = $hosts;
+
+
+        $this->set('userdashboardData', $userdashboardData);
+        $this->set('_serialize', ['userdashboardData']);
+
+        //$this->getGrafanaUserdashboardUrl($userdashboardId);
+
+
+        if ($this->request->is('post')) {
             //data to save in DB
             $dataToSave = $this->GrafanaUserdashboardData->flattenData($this->request->data);
             foreach ($dataToSave as $key => $data) {
@@ -141,6 +158,28 @@ class GrafanaUserdashboardsController extends GrafanaModuleAppController {
         }
     }
 
+    public function getGrafanaUserdashboardUrl($userdashboardId) {
+
+        $userdashboardData = $this->GrafanaUserdashboardData->find('all', [
+            'recursive'  => -1,
+            'conditions' => [
+                'GrafanaUserdashboardData.userdashboard_id' => $userdashboardId
+            ]
+        ]);
+        debug($userdashboardData);
+        $userdashboardDataForGrafana = $this->GrafanaUserdashboardData->expandData($userdashboardData, true);
+        debug($userdashboardDataForGrafana);
+
+        $userdashboard = new \itnovum\openITCOCKPIT\Grafana\GrafanaUserdashboard();
+        $userdashboard->setRows($userdashboardDataForGrafana);
+        $userdashboard->setTitle('cooler title');
+        $userdashboard->createUserdashboard();
+
+        $this->set('userdashboardDataForGrafana', $userdashboardDataForGrafana);
+        $this->set('_serialize', ['userdashboardDataForGrafana']);
+    }
+
+
     public function view() {
 
     }
@@ -166,11 +205,8 @@ class GrafanaUserdashboardsController extends GrafanaModuleAppController {
             $host_uuid = $this->request->query['hostUuid'];
 
             $userContainerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
-            if ($this->Host->hostsByContainerId($userContainerIds, 'first', ['Host.uuid' => $host_uuid])) {
-                $perfdataStructure = $this->Rrd->getPerfDataStructureByHostAndServiceUuid($host_uuid, $service_uuid);
-            }
+            $perfdataStructure = $this->GrafanaUserdashboardData->getPerfdataStructure($host_uuid, $service_uuid, $userContainerIds);
         }
-
         $this->set('sizeof', sizeof($perfdataStructure));
         $this->set('perfdataStructure', $perfdataStructure);
         $this->set('_serialize', ['perfdataStructure', 'sizeof']);
@@ -193,26 +229,19 @@ class GrafanaUserdashboardsController extends GrafanaModuleAppController {
         $this->set('_serialize', ['containers']);
     }
 
+    public function loadHosts(){
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
 
 
 
+        $hosts = $this->GrafanaUserdashboardData->getHosts($this->MY_RIGHTS);
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        $this->set('hosts', $hosts);
+        $this->set('_serialize', ['hosts']);
+    }
 
 
     /**

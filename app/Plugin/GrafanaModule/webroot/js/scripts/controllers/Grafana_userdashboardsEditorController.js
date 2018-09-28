@@ -27,6 +27,63 @@ angular.module('openITCOCKPIT')
         };
 
 
+        $scope.load = function(){
+            $http.get("/grafana_module/grafana_userdashboards/editor/" + $scope.id + ".json", {
+                params: {
+                    'angular': true
+                }
+            }).then(function(result){
+                //console.log(result.data.userdashboardData);
+                var transformedData = $scope.transformStructure(result.data.userdashboardData);
+                console.log(transformedData);
+                $scope.inputData = transformedData;
+            }, function errorCallback(result){
+                if(result.status === 404){
+                    window.location.href = '/angular/not_found';
+                }
+            });
+        };
+
+        $scope.transformStructure = function(data){
+            var ret = {
+                data:[],
+             //   hosts:[]
+            };
+            //generate empty row entries for right editor order
+            var maxKey = Math.max(Object.keys(data.data))+1;
+            var arrayStruc = Array.from({length: maxKey}, (v, i) => []);
+            for(var r in data.data){
+                //rows
+                //generate empty panel entries
+                maxRowKey = Math.max(Object.keys(data.data[r]));
+                if(arrayStruc[r].length != maxRowKey){
+                    arrayStruc[r] =Array.from({length: maxRowKey}, (v, i) => []);
+                }
+                for(var p in data.data[r]){
+                    //panels
+                    //generate empty metric entries
+                    maxPanelKey = Math.max(Object.keys(data.data[r][p]));
+                    if(arrayStruc[r][p] != maxPanelKey){
+                        arrayStruc[r][p] = Array.from({length: maxPanelKey}, (v, i) => {});
+                    }
+                    for(var m in data.data[r][p]){
+                        //metrics
+                    /*    maxMetricKey = Math.max(Object.keys(data.data[r][p][m]));
+                        if(arrayStruc[r][p][m] != maxMetricKey){
+                            arrayStruc[r][p][m] = Array.from({length: maxMetricKey}, (v, i) => i);
+                        }*/
+                        arrayStruc[r][p][m] = data.data[r][p][m];
+
+                    }
+                }
+            }
+            ret.data = arrayStruc;
+
+           // console.log(data.hosts);
+            ret.hosts = data.hosts;
+
+            return ret;
+        };
 
 
         $scope.addNewRow = function(){
@@ -34,6 +91,10 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.addNewPanel = function(rowKey){
+            console.log(rowKey);
+            console.log($scope.inputData.data[rowKey]);
+            console.log($scope.inputData.data[rowKey].length);
+
             //maximum 4 panels per row
             if($scope.inputData.data[rowKey].length < 4){
                 $scope.inputData.data[rowKey].push([]);
@@ -59,8 +120,8 @@ angular.module('openITCOCKPIT')
                 hostId: null,
                 serviceId: null,
                 metricValue: null,
-                row:rowKey,
-                panel:panelKey,
+                row: rowKey,
+                panel: panelKey,
                 services: null,
                 metrics: null
             });
@@ -68,12 +129,14 @@ angular.module('openITCOCKPIT')
 
 
         $scope.loadHosts = function(){
-            $http.get("/hosts/loadHostsByString.json", {
+            $http.get("/grafana_module/grafana_userdashboards/loadHosts.json", {
                 params: {
                     'angular': true
                 }
             }).then(function(result){
                 $scope.inputData.hosts = result.data.hosts;
+console.log(result.data.hosts);
+console.log($scope.inputData);
             }, function errorCallback(result){
                 if(result.status === 404){
                     window.location.href = '/angular/not_found';
@@ -142,11 +205,8 @@ angular.module('openITCOCKPIT')
 
 
         $scope.metricSelected = function(rowKey, panelKey, metricKey){
-            /*  console.log('row ' + rowKey);
-              console.log('panel ' + panelKey);
-              console.log('metric ' + metricKey);
-  */
             var newData = $scope.cleanupData($scope.inputData.data);
+            console.log(newData);
             $scope.saveData(newData);
         };
 
@@ -155,15 +215,30 @@ angular.module('openITCOCKPIT')
                 $http.post("/grafana_module/grafana_userdashboards/editor/" + $scope.id + ".json?angular=true",
                     dataToSave
                 ).then(function(result){
-
-                    //window.location.href = '/tenants/index';
+                    $scope.getGrafanaUrl($scope.id);
                 }, function errorCallback(result){
                     if(result.data.hasOwnProperty('error')){
+                        console.log(result.data);
                         $scope.errors = result.data.error;
                     }
                 });
             }
+        };
 
+        $scope.getGrafanaUrl = function(id){
+            if(id == null){
+                return;
+            }
+
+            $http.get("/grafana_module/grafana_userdashboards/getGrafanaUserdashboardUrl/"+id+".json", {
+                params: {
+                    'angular': true,
+                    'hostUuid': uuids.hostUuid,
+                    'serviceUuid': uuids.serviceUuid
+                }
+            }).then(function(result){
+                console.log(result);
+            });
         };
 
 
@@ -181,56 +256,31 @@ angular.module('openITCOCKPIT')
                         for(var m in data[r][p]){
                             var currentData = data[r][p][m];
                             if(currentData.hasOwnProperty('metricValue')){
-                                console.log(currentData);
                                 var dataToSave = {
                                     host_id: currentData['hostId'],
                                     service_id: currentData['serviceId'],
                                     metric_value: currentData['metricValue'],
-                                    row:currentData['row'],
-                                    panel:currentData['panel'],
+                                    row: currentData['row'],
+                                    panel: currentData['panel'],
                                     metric: currentData['metric']
                                 };
-
                                 filteredInputData[r][p][m] = dataToSave;
                             }
                         }
                     }
                 }
             }
-
             return filteredInputData;
-/*
-        $scope.inputData = {
-            data: [
-                [//row1
-                    [//panel1
-                        {//metric1 in panel1
-                            hostId: 1,
-                            serviceId: 2,
-                            metric: null,
-                            services: null,
-                            metrics: null
-                        },
-                        {//metric2 in panel1
-                            hostId: 2,
-                            serviceId: 7,
-                            metric: null,
-                            services: null,
-                            metrics: null
-                        }
-                    ]
-                ]
-            ],
-            hosts: []
         };
- */
 
 
-        };
 
         $scope.$watch('errors', function(){
             console.log($scope.errors);
         });
+
+
         $scope.loadHosts();
+        $scope.load();
 
     });

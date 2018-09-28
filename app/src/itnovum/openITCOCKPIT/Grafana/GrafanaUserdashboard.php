@@ -1,13 +1,10 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: pappertmaximilian
- * Date: 18.09.18
- * Time: 15:14
- */
+
 
 namespace itnovum\openITCOCKPIT\Grafana;
 
+use Configure;
+use GrafanaConfiguration;
 use GuzzleHttp\Client;
 use itnovum\openITCOCKPIT\Core\DbBackend;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
@@ -28,7 +25,7 @@ use Statusengine\PerfdataParser;
 class GrafanaUserdashboard {
 
 
-    /*public $uses = [
+    public $uses = [
         'Systemsetting',
         MONITORING_CORECONFIG_MODEL,
         'Host',
@@ -51,8 +48,17 @@ class GrafanaUserdashboard {
         'Servicecommandargumentvalue',
         'Aro',
         'Aco',
-        'Calendar'
-    ];*/
+        'Calendar',
+        'GrafanaModule.GrafanaConfiguration'
+    ];
+
+    private $rows = [];
+
+    private $title = 'User Generated Dashboard';
+
+    private $editable = true;
+
+    private $hideControls = true;
 
     public function createUserdashboard() {
 
@@ -60,24 +66,25 @@ class GrafanaUserdashboard {
         Configure::load('dbbackend');
         $this->DbBackend = new DbBackend(Configure::read('dbbackend'));
 
-        /**
-         * test
-         */
 
-        $grafanaUserdashboardConfig = $this->creationTestData();
+        //test
 
-        /**
-         * test end
-         */
+       // $grafanaUserdashboardConfig = $this->creationTestData();
+
+        //test end
+
+        $grafanaUserdashboardConfig = $this->rows;
+
 
         //Remove loadModel testing stuff
-        $this->loadModel('Host');
+      /*  $this->loadModel('Host');
         $this->loadModel('Service');
         $this->loadModel('Proxy');
         $this->loadModel(MONITORING_SERVICESTATUS);
         $this->loadModel('GrafanaModule.GrafanaConfiguration');
+*/
 
-
+        $this->GrafanaConfiguration = new GrafanaConfiguration();
         $grafanaConfiguration = $this->GrafanaConfiguration->find('first', [
             'recursive' => -1,
             'contain'   => [
@@ -98,10 +105,10 @@ class GrafanaUserdashboard {
             $tag = new GrafanaTag();
 
             $GrafanaDashboard = new \itnovum\openITCOCKPIT\Grafana\GrafanaDashboard();
-            $GrafanaDashboard->setTitle('Hier ein toller tittel vom user?');
-            $GrafanaDashboard->setEditable(true); //Set to false for production
+            $GrafanaDashboard->setTitle($this->title);
+            $GrafanaDashboard->setEditable($this->editable); //Set to false for production
             $GrafanaDashboard->setTags($tag->getTag());
-            $GrafanaDashboard->setHideControls(true);
+            $GrafanaDashboard->setHideControls($this->hideControls);
 
             foreach ($grafanaUserdashboardConfig as $row) {
                 $GrafanaRow = new GrafanaRow();
@@ -191,7 +198,7 @@ class GrafanaUserdashboard {
             $json = $GrafanaDashboard->getGrafanaDashboardJson();
 
             //print_r(json_decode($json, true)); return;
-
+debug($json);
             if ($json) {
                 $request = new \GuzzleHttp\Psr7\Request('POST', $GrafanaApiConfiguration->getApiUrl() . '/dashboards/db', ['content-type' => 'application/json'], $json);
                 try {
@@ -212,6 +219,23 @@ class GrafanaUserdashboard {
             $this->out('<error>' . $client . '</error>');
             $this->out('<error>Connection check failed</error>');
         }
+
+    }
+
+    public function setRows($rows){
+        $this->rows = $rows;
+    }
+
+    public function setTitle($title){
+        $this->title = $title;
+    }
+
+    public function setHideControls($hideControls){
+        $this->hideControls = $hideControls;
+    }
+
+    public function setEditable($editable){
+        $this->editable = $editable;
     }
 
     public function creationTestData(){
