@@ -1,17 +1,20 @@
 var express = require('express');
 const ChartjsNode = require('chartjs-node');
+var bodyParser = require('body-parser');
+const util = require('util');
+
 
 //https://github.com/vmpowerio/chartjs-node/issues/26
-if (global.CanvasGradient === undefined) {
-    global.CanvasGradient = function() {};
+if(global.CanvasGradient === undefined){
+    global.CanvasGradient = function(){
+    };
 }
 var app = express();
-
-app.use(express.json());
+app.use(bodyParser.json({limit: '500mb'}));
+app.use(bodyParser.urlencoded({limit: '500mb', extended: true}));
 
 app.post('/AreaChart', function(request, response){
     //console.log(request.body);      // json data
-
 
     var getColor = function(index){
         var bgColors = [
@@ -32,7 +35,7 @@ app.post('/AreaChart', function(request, response){
             'rgba(255, 159, 64, 1)'
         ];
 
-        if(index > (bgColors.length -1)){
+        if(index > (bgColors.length - 1)){
             return {
                 background: 'rgba(0, 0, 0, 0.2)',
                 border: 'rgba(0, 0, 0, 1)'
@@ -70,19 +73,18 @@ app.post('/AreaChart', function(request, response){
             },
             gridLines: {
                 display: false
-            },
+            }
         }];
     }
 
     for(var i in request.body.data){
         var color = getColor(i);
+        var label = request.body.data[i].datasource.label;
+        if(request.body.data[i].datasource.unit != '' && request.body.data[i].datasource.unit !== null){
+            label = request.body.data[i].datasource.label + ' in ' + request.body.data[i].datasource.unit;
+        }
 
         if(useTwoYAxes === true){
-            var label = request.body.data[i].datasource.label;
-            if(request.body.data[i].datasource.unit != ''){
-                label = request.body.data[i].datasource.label + ' in ' + request.body.data[i].datasource.unit;
-            }
-
             datasets.push({
                 label: label,
                 borderColor: color.border,
@@ -90,7 +92,8 @@ app.post('/AreaChart', function(request, response){
                 borderWidth: 1,
                 fill: true,
                 data: Object.values(request.body.data[i].data),
-                yAxisID: (i == 0)?'A':'B'
+                yAxisID: (i == 0) ? 'A' : 'B',
+                pointRadius: 0
             });
         }else{
             datasets.push({
@@ -99,7 +102,8 @@ app.post('/AreaChart', function(request, response){
                 backgroundColor: color.background,
                 borderWidth: 1,
                 fill: true,
-                data: Object.values(request.body.data[i].data)
+                data: Object.values(request.body.data[i].data),
+                pointRadius: 0
             });
         }
     }
@@ -122,20 +126,21 @@ app.post('/AreaChart', function(request, response){
         }
     };
 
-    var chartNode = new ChartjsNode(request.body.settings.width, request.body.settings.height);
-    return chartNode.drawChart(chartJsOptions).then(function(){
-        //chart is created
-        //get image as png buffer
-        return chartNode.getImageBuffer('image/png');
+    //console.log(util.inspect(chartJsOptions, false, null, true /* enable colors */));
+    //console.log("\n");
 
-    })
+
+    var chartNode = new ChartjsNode(request.body.settings.width, request.body.settings.height);
+    return chartNode.drawChart(chartJsOptions)
+        .then(function(){
+            //chart is created
+            //get image as png buffer
+            return chartNode.getImageBuffer('image/png');
+        })
         .then(function(buffer){
             response.writeHead(200, {'Content-Type': 'image/png'});
             response.end(buffer, 'binary');
-            //return chartNode.getImageStream('image/png');
         });
-
-
 });
 
 app.listen(8084, '127.0.0.1');

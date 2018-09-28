@@ -450,7 +450,7 @@ class GraphgeneratorsController extends AppController {
                 $tmp_limit = $limit / $data_sources_count;
                 foreach ($rrd_data['data'] as $key => $value_array) {
                     // Limit the returned data to prevent client performance issues.
-                    $rrd_data['data'][$key] = $this->reduceData($rrd_data['data'][$key], $tmp_limit, self::REDUCE_METHOD_AVERAGE);
+                    $rrd_data['data'][$key] = $this->Rrd->reduceData($rrd_data['data'][$key], $tmp_limit, self::REDUCE_METHOD_AVERAGE);
 
                     /*$correctedTime = [];
                     foreach($value_array as $timestamp => $value){
@@ -576,7 +576,7 @@ class GraphgeneratorsController extends AppController {
             $limit = (int)self::MAX_RESPONSE_GRAPH_POINTS / sizeof($rrd_data['data']);
             foreach ($rrd_data['xml_data'] as $dataSource) {
 
-                $tmpData = $this->reduceData($rrd_data['data'][$dataSource['ds']], $limit, self::REDUCE_METHOD_AVERAGE);
+                $tmpData = $this->Rrd->reduceData($rrd_data['data'][$dataSource['ds']], $limit, self::REDUCE_METHOD_AVERAGE);
                 $data = [];
                 if ($jsTimestamp) {
                     foreach ($tmpData as $timestamp => $value) {
@@ -596,65 +596,5 @@ class GraphgeneratorsController extends AppController {
         $this->set('performance_data', $performance_data);
         $this->set('_serialize', ['performance_data']);
 
-    }
-
-    private function reduceData($data, $limit = 500, $technique = self::REDUCE_METHOD_AVERAGE) {
-        switch ($technique) {
-            case self::REDUCE_METHOD_STEPS:
-                return $this->reduceDataBySteps($data, $limit);
-            case self::REDUCE_METHOD_AVERAGE:
-                return $this->reduceDataByAverage($data, $limit);
-            default:
-                return $data;
-        }
-    }
-
-    private function reduceDataByAverage($data, $limit = 500) {
-        $data_count = count($data);
-        if ($data_count <= $limit) {
-            return $data;
-        }
-
-        $percent = $data_count / $limit;
-        $step_size = ceil($percent);
-
-        $i = 1;
-        $result = [];
-        $average_value_of_last_step = 0;
-        $average_time_of_last_step = 0;
-        foreach ($data as $timestamp => $value) {
-            $average_value_of_last_step += $value;
-            $average_time_of_last_step += $timestamp;
-            if ($i % $step_size == 0) {
-                $result[(int)($average_time_of_last_step / $step_size)] = $average_value_of_last_step / $step_size;
-
-                $average_value_of_last_step = 0;
-                $average_time_of_last_step = 0;
-            }
-            $i++;
-        }
-
-        return $result;
-    }
-
-    private function reduceDataBySteps($data, $limit = 500) {
-        $data_count = count($data);
-        if ($data_count <= $limit) {
-            return $data;
-        }
-
-        $percent = $data_count / $limit;
-        $steps = ceil($percent);
-
-        $i = 0;
-        $result = [];
-        foreach ($data as $key => $value) {
-            if ($i % $steps == 0) {
-                $result[$key] = $value;
-            }
-            $i++;
-        }
-
-        return $result;
     }
 }

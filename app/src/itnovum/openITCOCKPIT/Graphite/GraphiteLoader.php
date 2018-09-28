@@ -50,7 +50,29 @@ class GraphiteLoader {
     /**
      * @var bool
      */
+    private $useAbsoluteDate = false;
+
+    /**
+     * @var int
+     * Start timestamp
+     */
+    private $start = 0;
+
+    /**
+     * @var int
+     * End timestamp
+     */
+    private $end = 0;
+
+    /**
+     * @var bool
+     */
     private $useJsTimestamp = false;
+
+    /**
+     * @var int
+     */
+    private $maxDataPoints = 1000;
 
     /**
      * GraphiteLoader constructor.
@@ -86,7 +108,8 @@ class GraphiteLoader {
      * @param int $from
      * Start value in seconds from now
      */
-    public function setFrom($from){
+    public function setFrom($from) {
+        $this->useAbsoluteDate = false;
         $this->from = (int)$from;
     }
 
@@ -95,6 +118,30 @@ class GraphiteLoader {
      */
     public function isUseJsTimestamp() {
         return $this->useJsTimestamp;
+    }
+
+    /**
+     * @param int $start
+     * @param int $end
+     */
+    public function setAbsoluteDate($start, $end) {
+        $this->useAbsoluteDate = true;
+        $this->start = $start;
+        $this->end = $end;
+    }
+
+    /**
+     * @return int
+     */
+    public function getMaxDataPoints() {
+        return $this->maxDataPoints;
+    }
+
+    /**
+     * @param int $maxDataPoints
+     */
+    public function setMaxDataPoints($maxDataPoints) {
+        $this->maxDataPoints = $maxDataPoints;
     }
 
 
@@ -147,7 +194,7 @@ class GraphiteLoader {
     public function getSeriesAvg(GraphiteMetric $GraphiteMetric) {
         $options = $this->getBaseRequestOptions();
         $options['target'] = sprintf(
-            'averageSeries(%s.%s)',
+            'consolidateBy(%s.%s, "average")',
             $this->GraphiteConfig->getGraphitePrefix(),
             $GraphiteMetric->getMetricPath()
         );
@@ -161,11 +208,18 @@ class GraphiteLoader {
      */
     public function getSeriesMin(GraphiteMetric $GraphiteMetric) {
         $options = $this->getBaseRequestOptions();
+        //$options['target'] = sprintf(
+        //    'minSeries(%s.%s)',
+        //    $this->GraphiteConfig->getGraphitePrefix(),
+        //    $GraphiteMetric->getMetricPath()
+        //);
+
         $options['target'] = sprintf(
-            'minSeries(%s.%s)',
+            'consolidateBy(%s.%s, "min")',
             $this->GraphiteConfig->getGraphitePrefix(),
             $GraphiteMetric->getMetricPath()
         );
+
         return $this->normalizeData($this->sendRequest($options));
     }
 
@@ -177,7 +231,7 @@ class GraphiteLoader {
     public function getSeriesMax(GraphiteMetric $GraphiteMetric) {
         $options = $this->getBaseRequestOptions();
         $options['target'] = sprintf(
-            'maxSeries(%s.%s)',
+            'consolidateBy(%s.%s, "max")',
             $this->GraphiteConfig->getGraphitePrefix(),
             $GraphiteMetric->getMetricPath()
         );
@@ -190,8 +244,16 @@ class GraphiteLoader {
     private function getBaseRequestOptions() {
         $options = [
             'format' => 'json',
-            'from'   => sprintf('-%ss', $this->from)
+            'maxDataPoints' => $this->maxDataPoints
         ];
+
+        if ($this->useAbsoluteDate) {
+            $options['from'] = date('H:i_Ymd', $this->start);
+            $options['until'] = date('H:i_Ymd', $this->end);
+        } else {
+            $options['from'] = sprintf('-%ss', $this->from);
+
+        }
 
         if ($this->hideNullValues) {
             $options['noNullPoints'] = 'true';
