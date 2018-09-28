@@ -29,12 +29,19 @@ $config = [
             'GrafanaConfiguration' => [
                 'grafanaWidget',
                 'getGrafanaDashboards'
+            ],
+            'GrafanaUserdashboards' => [
+              'grafanaMetric',
+              'grafanaRow',
+              'grafanaPanel',
+              'getPerformanceDataMetrics'
             ]
         ],
         'dependencies'   => [
             'GrafanaConfiguration' => [
                 'index' => ['testGrafanaConnection', 'loadHostgroups'],
             ],
+
         ],
         'roles_rights'   => [
             'Administrator' => ['*'],

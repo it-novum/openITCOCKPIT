@@ -23,22 +23,23 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use itnovum\openITCOCKPIT\Core\Views\Host;
+use itnovum\openITCOCKPIT\Core\Views\Service;
+use itnovum\openITCOCKPIT\Core\ServicestatusFields;
+use Statusengine\PerfdataParser;
 
 class GrafanaUserdashboardsController extends GrafanaModuleAppController {
 
     public $layout = 'angularjs';
 
     public $uses = [
-        'Host',
-        'Service',
         'GrafanaModule.GrafanaConfiguration',
         'GrafanaModule.GrafanaDashboard',
         'GrafanaModule.GrafanaUserdashboard',
         'GrafanaModule.GrafanaUserdashboardData',
-    ];
-
-    public $components = [
-        'CustomValidationErrors'
+        'Host',
+        'Service',
+        MONITORING_SERVICESTATUS
     ];
 
     public function index() {
@@ -112,14 +113,58 @@ class GrafanaUserdashboardsController extends GrafanaModuleAppController {
         }
 
 
-        $userdashboardData = $this->GrafanaUserdashboardData->find('all', [
-            'recursive'  => -1,
-            'conditions' => [
-                'GrafanaUserdashboardData.userdashboard_id' => $userdashboardId
-            ]
-        ]);
-        $userContainerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
-        $userdashboardData = $this->GrafanaUserdashboardData->expandData($userdashboardData, false, $userContainerIds);
+        if($this->request->is('GET')){
+            $this->GrafanaUserdashboardData->bindModel(['belongsTo' => ['Host']]);
+            $this->GrafanaUserdashboardData->bindModel(['belongsTo' => ['Service']]);
+
+            $dashboard = $this->GrafanaUserdashboard->find('first', [
+              'conditions' => [
+                  'GrafanaUserdashboard.id' => $userdashboardId
+              ],
+              'contain' => [
+                  'GrafanaUserdashboardData' => [
+                      'Host' => [
+                          'fields' => [
+                              'Host.id',
+                              'Host.name'
+                          ]
+                      ],
+                      'Service' => [
+                          'fields' => [
+                              'Service.id',
+                              'Service.name'
+                          ],
+                          'Servicetemplate' => [
+                              'fields' => [
+                                  'Servicetemplate.name'
+                              ]
+                          ]
+                      ]
+                  ]
+              ]
+            ]);
+
+            foreach($dashboard['GrafanaUserdashboardData'] as $panel){
+                $host = new Host($panel);
+                $panel['Host'] = $host->toArray();
+
+                $panel['Servicetemplate'] = $panel['Service']['Servicetemplate'];
+                $service = new Service($panel);
+                $panel['Service'] = $service->toArray();
+                $rowsWithPanes[$panel['row']][$panel['panel']][] = $panel;
+            }
+
+            $dashboard['rows'] = $rowsWithPanes;
+            //debug($userdashboardData);
+            $this->set('userdashboardData', $dashboard);
+            $this->set('_serialize', ['userdashboardData']);
+
+            return;
+        }
+
+
+
+        $userdashboardData = $this->GrafanaUserdashboardData->expandData($userdashboardData, false, $this->MY_RIGHTS);
 
         $hosts = $this->GrafanaUserdashboardData->getHosts($this->MY_RIGHTS);
         $userdashboardData['hosts'] = $hosts;
@@ -411,5 +456,57 @@ class GrafanaUserdashboardsController extends GrafanaModuleAppController {
         $this->set('grafana_dashboards', $grafanaDashboards);
         $this->set('_serialize', ['grafana_dashboards']);
 
+    }
+
+    /****************/
+    public function grafanaRow(){
+      $this->layout = 'blank';
+      return;
+    }
+
+    public function grafanaPanel(){
+      $this->layout = 'blank';
+      return;
+    }
+
+    public function grafanaMetric(){
+      $this->layout = 'blank';
+      return;
+    }
+
+
+    public function getPerformanceDataMetrics($serviceId) {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        if (!$this->Service->exists($serviceId)) {
+            throw new NotFoundException();
+        }
+
+        $service = $this->Service->find('first', [
+            'recursive'  => -1,
+            'fields'     => [
+                'Service.id',
+                'Service.uuid'
+            ],
+            'conditions' => [
+                'Service.id' => $serviceId,
+            ],
+        ]);
+
+
+        $ServicestatusFields = new ServicestatusFields($this->DbBackend);
+        $ServicestatusFields->perfdata();
+        $servicestatus = $this->Servicestatus->byUuid($service['Service']['uuid'], $ServicestatusFields);
+
+        if (!empty($servicestatus)) {
+            $PerfdataParser = new PerfdataParser($servicestatus['Servicestatus']['perfdata']);
+            $this->set('perfdata', $PerfdataParser->parse());
+            $this->set('_serialize', ['perfdata']);
+            return;
+        }
+        $this->set('perfdata', []);
+        $this->set('_serialize', ['perfdata']);
     }
 }

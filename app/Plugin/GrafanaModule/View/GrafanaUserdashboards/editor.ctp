@@ -29,6 +29,14 @@
     </header>
     <div>
         <div class="widget-body">
+
+            <div class="row padding-top-10" ng-repeat="(rowId, row) in data">
+                <grafana-row row="row" row-id="rowId"></grafana-row>
+            </div>
+
+
+
+
             <form ng-submit="submit();" class="form-horizontal">
                 <button class="btn btn-xs btn-success" ng-click="addNewRow();">Add Row</button>
                 <div class="row" ng-repeat="(rowKey, row) in inputData.data">

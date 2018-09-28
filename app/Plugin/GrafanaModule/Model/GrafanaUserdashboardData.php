@@ -26,11 +26,11 @@
 class GrafanaUserdashboardData extends GrafanaModuleAppModel {
 
     public $belongsTo = [
-        'GrafanaUserdashboards' => [
+        'GrafanaUserdashboard' => [
             'className'  => 'GrafanaModule.GrafanaUserdashboard',
             'foreignKey' => 'userdashboard_id'
         ],
-        'Host'                  => [
+        'Host'                 => [
             'className'  => 'Host',
             'foreignKey' => 'host_id'
         ],
@@ -203,5 +203,6 @@ class GrafanaUserdashboardData extends GrafanaModuleAppModel {
         }
         return $perfdataStructure;
     }
+
 
 }
