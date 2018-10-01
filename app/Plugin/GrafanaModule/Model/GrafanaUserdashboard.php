@@ -37,8 +37,8 @@ class GrafanaUserdashboard extends GrafanaModuleAppModel {
     ];
 
     public $hasMany = [
-        'GrafanaUserdashboardData' => [
-            'className'  => 'GrafanaUserdashboardData',
+        'GrafanaUserdashboardPanel' => [
+            'className'  => 'GrafanaModule.GrafanaUserdashboardPanel',
             'dependent'  => true,
             'foreignKey' => 'userdashboard_id',
         ],

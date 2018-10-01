@@ -31,7 +31,6 @@ $config = [
                 'getGrafanaDashboards'
             ],
             'GrafanaUserdashboards' => [
-              'grafanaMetric',
               'grafanaRow',
               'grafanaPanel',
               'getPerformanceDataMetrics'
@@ -40,6 +39,9 @@ $config = [
         'dependencies'   => [
             'GrafanaConfiguration' => [
                 'index' => ['testGrafanaConnection', 'loadHostgroups'],
+            ],
+            'GrafanaUserdashboards' => [
+                'editor' => ['addMetricToPanel', 'removeMetricFromPanel'],
             ],
 
         ],

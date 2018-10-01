@@ -3,8 +3,8 @@ angular.module('openITCOCKPIT').directive('grafanaRow', function(){
         restrict: 'E',
         templateUrl: '/grafana_module/grafana_userdashboards/grafanaRow.html',
         scope: {
-            'row': '=',
-            'rowId': '='
+            'id': '=',
+            'row': '='
         },
         controller: function($scope){
 

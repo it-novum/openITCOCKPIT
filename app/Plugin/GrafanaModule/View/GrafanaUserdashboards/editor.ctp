@@ -4,8 +4,7 @@
 // This file is licensed under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 // The license agreement and license key were sent with the order confirmation.
 ?>
-<div class="alert auto-hide alert-success" style="display:none;"
-     id="flashMessage"></div>
+
 <div class="row">
     <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
         <h1 class="page-title txt-color-blueDark">
@@ -30,23 +29,23 @@
     <div>
         <div class="widget-body">
 
-            <div class="row padding-top-10" ng-repeat="(rowId, row) in data">
-                <grafana-row row="row" row-id="rowId"></grafana-row>
+            <div class="row padding-top-10" ng-repeat="row in data">
+                <grafana-row id="id" row="row"></grafana-row>
             </div>
 
 
 
 
             <form ng-submit="submit();" class="form-horizontal">
-                <button class="btn btn-xs btn-success" ng-click="addNewRow();">Add Row</button>
+                <button class="btn btn-xs btn-success" ng-click="addNewRow();"><?php echo __('Add Row'); ?></button>
                 <div class="row" ng-repeat="(rowKey, row) in inputData.data">
-                    <button class="btn btn-xs btn-success" ng-click="addNewPanel(rowKey);">Add Panel</button>
-                    <button class="btn btn-xs btn-danger" ng-click="removeRow(rowKey);">Remove Row</button>
+                    <button class="btn btn-xs btn-success" ng-click="addNewPanel(rowKey);"><?php echo __('Add Panel'); ?></button>
+                    <button class="btn btn-xs btn-danger" ng-click="removeRow(rowKey);"><?php echo __('Remove Row'); ?></button>
                     <div class="col col-lg-3" style="border: 1px solid black;"
                          ng-repeat="(panelKey, panel) in inputData.data[rowKey]">
-                        <button class="btn btn-xs btn-success" ng-click="addNewMetric(rowKey, panelKey);">Add Metric
+                        <button class="btn btn-xs btn-success" ng-click="addNewMetric(rowKey, panelKey);"><?php echo __('Add Metric'); ?>
                         </button>
-                        <button class="btn btn-xs btn-danger" ng-click="removePanel(rowKey, panelKey);">Remove Panel
+                        <button class="btn btn-xs btn-danger" ng-click="removePanel(rowKey, panelKey);"><?php echo __('Remove Panel'); ?>
                         </button>
 
 

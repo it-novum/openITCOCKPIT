@@ -102,15 +102,26 @@ class GrafanaModuleSchema extends CakeSchema {
         'tableParameters'  => ['charset' => 'utf8', 'collate' => 'utf8_unicode_ci', 'engine' => 'InnoDB'],
     ];
 
-    public $grafana_userdashboard_data = [
+    public $grafana_userdashboard_panels = [
         'id'               => ['type' => 'integer', 'null' => false, 'key' => 'primary'],
         'userdashboard_id' => ['type' => 'integer', 'null' => false, 'key' => 'index'],
         'row'              => ['type' => 'integer', 'null' => false, 'key' => 'index'],
-        'panel'            => ['type' => 'integer', 'null' => false, 'key' => 'index'],
-        'metric'           => ['type' => 'integer', 'null' => false, 'key' => 'index'],
+        'unit'             => ['type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_unicode_ci', 'charset' => 'utf8'],
+        'indexes'          => [
+            'PRIMARY' => [
+                'column' => 'id',
+                'unique' => 1
+            ],
+        ],
+        'tableParameters'  => ['charset' => 'utf8', 'collate' => 'utf8_unicode_ci', 'engine' => 'InnoDB'],
+    ];
+
+    public $grafana_userdashboard_metrics = [
+        'id'               => ['type' => 'integer', 'null' => false, 'key' => 'primary'],
+        'panel_id'         => ['type' => 'integer', 'null' => false, 'key' => 'index'],
+        'metric'           => ['type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_unicode_ci', 'charset' => 'utf8'],
         'host_id'          => ['type' => 'integer', 'null' => false, 'key' => 'index'],
         'service_id'       => ['type' => 'integer', 'null' => false, 'key' => 'index'],
-        'metric_value'     => ['type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_unicode_ci', 'charset' => 'utf8'],
         'indexes'          => [
             'PRIMARY' => [
                 'column' => 'id',
