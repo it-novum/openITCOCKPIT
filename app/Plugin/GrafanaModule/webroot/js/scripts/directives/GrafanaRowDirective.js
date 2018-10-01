@@ -8,7 +8,6 @@ angular.module('openITCOCKPIT').directive('grafanaRow', function($http){
             'rowId': '='
         },
         controller: function($scope){
-
             $scope.addPanel = function(){
                 var data = {
                     GrafanaUserdashboardPanel: {

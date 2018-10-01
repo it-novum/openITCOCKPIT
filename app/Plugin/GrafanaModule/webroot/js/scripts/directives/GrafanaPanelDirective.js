@@ -15,6 +15,8 @@ angular.module('openITCOCKPIT').directive('grafanaPanel', function($http){
             $scope.rowId = parseInt($scope.panel.row, 10);
 
             $scope.addMetric = function(){
+                $scope.currentServiceId = null;
+                $scope.currentServiceMetric = null;
                 loadServices(''); //Load initial services
             };
 
