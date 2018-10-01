@@ -41,7 +41,7 @@ class GrafanaUserdashboardPanel extends GrafanaModuleAppModel {
     ];
 
     public $validate = [
-        'userdashboard_id'     => [
+        'userdashboard_id' => [
             'notBlank' => [
                 'rule'     => 'notBlank',
                 'message'  => 'No userdashboard_id found in dataset',
@@ -49,7 +49,7 @@ class GrafanaUserdashboardPanel extends GrafanaModuleAppModel {
             ],
             'numeric'  => [
                 'rule'    => 'numeric',
-                'message'  => 'No userdashboard_id found in dataset',
+                'message' => 'No userdashboard_id found in dataset',
             ],
             'notZero'  => [
                 'rule'     => ['comparison', '>', 0],
@@ -57,7 +57,7 @@ class GrafanaUserdashboardPanel extends GrafanaModuleAppModel {
                 'required' => true,
             ],
         ],
-        'row'  => [
+        'row'              => [
             'notBlank' => [
                 'rule'     => 'notBlank',
                 'message'  => 'No row found in dataset',
@@ -65,7 +65,7 @@ class GrafanaUserdashboardPanel extends GrafanaModuleAppModel {
             ],
             'numeric'  => [
                 'rule'    => 'numeric',
-                'message'  => 'No row found in dataset',
+                'message' => 'No row found in dataset',
             ],
         ]
     ];

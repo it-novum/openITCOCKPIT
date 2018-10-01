@@ -43,9 +43,9 @@ angular.module('openITCOCKPIT').directive('grafanaRow', function($http){
 
             $scope.removePanel = function(panelId){
                 $http.post("/grafana_module/grafana_userdashboards/removePanel.json?angular=true",
-                {
-                    id: parseInt(panelId, 10)
-                }
+                    {
+                        id: parseInt(panelId, 10)
+                    }
                 ).then(function(result){
                     if(result.data.success){
                         new Noty({
@@ -78,7 +78,7 @@ angular.module('openITCOCKPIT').directive('grafanaRow', function($http){
             };
 
             var setPanelClass = function(){
-                $scope.panelClass = 'col-lg-' + (12/$scope.row.length);
+                $scope.panelClass = 'col-lg-' + (12 / $scope.row.length);
             };
 
             var removePanelFromRow = function(panelId){

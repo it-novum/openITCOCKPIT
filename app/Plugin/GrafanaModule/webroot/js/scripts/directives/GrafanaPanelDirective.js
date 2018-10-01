@@ -70,9 +70,9 @@ angular.module('openITCOCKPIT').directive('grafanaPanel', function($http){
 
             $scope.removeMetric = function(metric){
                 $http.post("/grafana_module/grafana_userdashboards/removeMetricFromPanel.json?angular=true",
-                {
-                    id: parseInt(metric.id, 10)
-                }
+                    {
+                        id: parseInt(metric.id, 10)
+                    }
                 ).then(function(result){
                     $scope.errors = {};
 

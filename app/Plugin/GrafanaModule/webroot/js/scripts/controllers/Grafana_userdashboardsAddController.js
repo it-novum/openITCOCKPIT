@@ -2,9 +2,9 @@ angular.module('openITCOCKPIT')
     .controller('Grafana_userdashboardsAddController', function($scope, $http){
 
         $scope.post = {
-            GrafanaUserdashboard:{
+            GrafanaUserdashboard: {
                 container_id: null,
-                name:''
+                name: ''
             }
         };
 

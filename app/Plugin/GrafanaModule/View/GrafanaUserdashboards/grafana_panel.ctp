@@ -3,11 +3,11 @@
         <div class="row margin-bottom-10">
             <div class="btn-group pull-right">
                 <button class="btn btn-xs btn-success" ng-click="addMetric()">
-                  <i class="fa fa-plus"> </i>
+                    <i class="fa fa-plus"> </i>
                     <?php echo __('Add Metric'); ?>
                 </button>
                 <button class="btn btn-xs btn-danger" ng-click="removePanel()">
-                  <i class="fa fa-trash"> </i>
+                    <i class="fa fa-trash"> </i>
                     <?php echo __('Remove Panel'); ?>
                 </button>
             </div>

@@ -30,18 +30,18 @@ class GrafanaUserdashboardMetric extends GrafanaModuleAppModel {
             'className'  => 'GrafanaModule.GrafanaUserdashboardPanel',
             'foreignKey' => 'panel_id'
         ],
-        'Host'                 => [
+        'Host'                      => [
             'className'  => 'Host',
             'foreignKey' => 'host_id'
         ],
-        'Service'               => [
+        'Service'                   => [
             'className'  => 'Service',
             'foreignKey' => 'service_id'
         ],
     ];
 
     public $validate = [
-        'panel_id'     => [
+        'panel_id'   => [
             'notBlank' => [
                 'rule'     => 'notBlank',
                 'message'  => 'No userdashboard_id found in dataset',
@@ -49,7 +49,7 @@ class GrafanaUserdashboardMetric extends GrafanaModuleAppModel {
             ],
             'numeric'  => [
                 'rule'    => 'numeric',
-                'message'  => 'No userdashboard_id found in dataset',
+                'message' => 'No userdashboard_id found in dataset',
             ],
             'notZero'  => [
                 'rule'     => ['comparison', '>', 0],
@@ -57,18 +57,18 @@ class GrafanaUserdashboardMetric extends GrafanaModuleAppModel {
                 'required' => true,
             ],
         ],
-        'metric'          => [
+        'metric'     => [
             'valObjectTypes' => [
                 'rule'    => ['valMetric'],
                 'message' => 'Metric needs to be a string or null',
             ],
-            'notBlank' => [
+            'notBlank'       => [
                 'rule'     => 'notBlank',
                 'message'  => 'This field cannot be left blank.',
                 'required' => true,
             ],
         ],
-        'host_id'          => [
+        'host_id'    => [
             'notBlank' => [
                 'rule'     => 'notBlank',
                 'message'  => 'This field cannot be left blank.',
@@ -84,7 +84,7 @@ class GrafanaUserdashboardMetric extends GrafanaModuleAppModel {
                 'required' => true,
             ],
         ],
-        'service_id'          => [
+        'service_id' => [
             'notBlank' => [
                 'rule'     => 'notBlank',
                 'message'  => 'This field cannot be left blank.',
