@@ -353,12 +353,12 @@ class MapeditorsController extends MapModuleAppController {
                             'table'      => 'mapitems',
                             'type'       => 'INNER',
                             'alias'      => 'Mapitem',
-                            'conditions' => 'Mapitem.map_id = Map.id',
+                            'conditions' => 'Mapitem.object_id = Map.id',
                         ],
                     ],
                     'conditions' => [
-                        'Map.id'            => $mapId,
-                        'Mapitem.object_id' => $objectId
+                        'Map.id'            => $objectId,
+                        'Mapitem.map_id' => $mapId
                     ]
                 ]);
                 if (!empty($map)) {
@@ -372,8 +372,9 @@ class MapeditorsController extends MapModuleAppController {
                     $mapItemToResolve = $this->Mapitem->find('first', [
                         'recursive'  => -1,
                         'conditions' => [
-                            'Mapitem.map_id' => $map['Map']['id'],
-                            'Mapitem.type'   => 'map'
+                            'Mapitem.object_id' => $map['Map']['id'],
+                            'Mapitem.type'   => 'map',
+                            'Mapitem.map_id'   => $mapId
                         ],
                         'fields'     => [
                             'Mapitem.object_id'
