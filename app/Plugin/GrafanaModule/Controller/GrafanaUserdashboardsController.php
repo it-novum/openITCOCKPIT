@@ -117,7 +117,7 @@ class GrafanaUserdashboardsController extends GrafanaModuleAppController {
 
 
     public function editor($userdashboardId = null) {
-        if (!$this->request->is('GET')){
+        if (!$this->request->is('GET')) {
             throw new MethodNotAllowedException();
         }
 
