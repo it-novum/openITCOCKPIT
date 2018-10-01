@@ -5,7 +5,8 @@ angular.module('openITCOCKPIT').directive('grafanaPanel', function($http){
         scope: {
             'id': '=',
             'panel': '=',
-            'panelId': '='
+            'panelId': '=',
+            'removeCallback': '='
         },
         controller: function($scope){
 
@@ -165,6 +166,11 @@ angular.module('openITCOCKPIT').directive('grafanaPanel', function($http){
                     }
                     $scope.metrics = metrics;
                 });
+            };
+
+            $scope.removePanel = function(){
+                //Call callback from parent scrope
+                $scope.removeCallback($scope.panelId);
             };
 
             var removeMetricFromPanel = function(metricId){

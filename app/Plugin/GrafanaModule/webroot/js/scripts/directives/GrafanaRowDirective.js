@@ -1,33 +1,101 @@
-angular.module('openITCOCKPIT').directive('grafanaRow', function(){
+angular.module('openITCOCKPIT').directive('grafanaRow', function($http){
     return {
         restrict: 'E',
         templateUrl: '/grafana_module/grafana_userdashboards/grafanaRow.html',
         scope: {
             'id': '=',
-            'row': '='
+            'row': '=',
+            'rowId': '='
         },
         controller: function($scope){
 
-            $scope.panelClass = 'col-md-3';
+            $scope.addPanel = function(){
+                var data = {
+                    GrafanaUserdashboardPanel: {
+                        row: parseInt($scope.rowId, 10), //int
+                        userdashboard_id: $scope.id //int
+                    }
+                };
 
-            $scope.$watch('row', function(){
-                switch(Object.keys($scope.row).length){
-                    case 1:
-                        $scope.panelClass = 'col-md-12';
-                        break;
+                $http.post("/grafana_module/grafana_userdashboards/addPanel.json?angular=true", data
+                ).then(function(result){
+                    if(result.data.hasOwnProperty('panel')){
+                        new Noty({
+                            theme: 'metroui',
+                            type: 'success',
+                            text: 'Panel added successfully',
+                            timeout: 3500
+                        }).show();
 
-                    case 2:
-                        $scope.panelClass = 'col-md-6';
-                        break;
+                        //Add new created panel to local json
+                        $scope.row.push(result.data.panel);
+                        setPanelClass();
+                    }
 
-                    case 3:
-                        $scope.panelClass = 'col-md-4';
-                        break;
+                }, function errorCallback(result){
+                    new Noty({
+                        theme: 'metroui',
+                        type: 'error',
+                        text: 'Error while adding panel',
+                        timeout: 3500
+                    }).show();
+                });
+            };
 
-                    case 3:
-                        $scope.panelClass = 'col-md-3';
-                        break;
+            $scope.removePanel = function(panelId){
+                $http.post("/grafana_module/grafana_userdashboards/removePanel.json?angular=true",
+                {
+                    id: parseInt(panelId, 10)
                 }
+                ).then(function(result){
+                    if(result.data.success){
+                        new Noty({
+                            theme: 'metroui',
+                            type: 'success',
+                            text: 'Panel removed successfully',
+                            timeout: 3500
+                        }).show();
+
+                        //Remove panel from local json
+                        removePanelFromRow(panelId);
+                    }else{
+                        new Noty({
+                            theme: 'metroui',
+                            type: 'error',
+                            text: 'Error while removing panel',
+                            timeout: 3500
+                        }).show();
+                    }
+
+                }, function errorCallback(result){
+                    new Noty({
+                        theme: 'metroui',
+                        type: 'error',
+                        text: 'Error while removing panel',
+                        timeout: 3500
+                    }).show();
+                });
+            };
+
+            var setPanelClass = function(){
+                $scope.panelClass = 'col-lg-' + (12/$scope.row.length);
+            };
+
+            var removePanelFromRow = function(panelId){
+                panelId = parseInt(panelId, 10);
+                for(var i in $scope.row){
+                    var rowId = parseInt($scope.row[i].id, 10);
+                    if(rowId === panelId){
+                        $scope.row.splice(i, 1);
+
+                    }
+                }
+            };
+
+            //Dynamic panel layout
+            $scope.panelClass = 'col-md-3';
+            $scope.$watch('row', function(){
+                setPanelClass();
             });
 
         },

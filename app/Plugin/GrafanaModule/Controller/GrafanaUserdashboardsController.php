@@ -334,7 +334,6 @@ class GrafanaUserdashboardsController extends GrafanaModuleAppController {
             return;
        }
        $this->serializeErrorMessageFromModel('GrafanaUserdashboardMetric');
-
     }
 
     public function removeMetricFromPanel(){
@@ -345,6 +344,41 @@ class GrafanaUserdashboardsController extends GrafanaModuleAppController {
         if($this->GrafanaUserdashboardMetric->exists($this->request->data('id'))){
             $id = $this->request->data('id');
             if ($this->GrafanaUserdashboardMetric->delete($id)) {
+                $this->set('success', true);
+                $this->set('_serialize', ['success']);
+                return;
+            }
+        }
+
+        $this->set('success', false);
+        $this->set('_serialize', ['success']);
+    }
+
+    public function addPanel(){
+        if (!$this->request->is('post') || !$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        $this->GrafanaUserdashboardPanel->create();
+        if($this->GrafanaUserdashboardPanel->save($this->request->data)){
+            $id = $this->GrafanaUserdashboardPanel->id;
+            $this->set('panel', [
+                'id'               => $id,
+                'row'              => $this->request->data['GrafanaUserdashboardPanel']['row'],
+                'userdashboard_id' => $this->request->data['GrafanaUserdashboardPanel']['userdashboard_id'],
+                'unit'             => '',
+                'metrics'          => []
+            ]);
+            $this->set('_serialize', ['panel']);
+            return;
+        }
+        $this->serializeErrorMessageFromModel('GrafanaUserdashboardPanel');
+    }
+
+    public function removePanel(){
+        if($this->GrafanaUserdashboardPanel->exists($this->request->data('id'))){
+            $id = $this->request->data('id');
+            if ($this->GrafanaUserdashboardPanel->delete($id)) {
                 $this->set('success', true);
                 $this->set('_serialize', ['success']);
                 return;

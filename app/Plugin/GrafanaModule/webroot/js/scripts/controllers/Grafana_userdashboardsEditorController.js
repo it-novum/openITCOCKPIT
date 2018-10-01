@@ -8,8 +8,6 @@ angular.module('openITCOCKPIT')
                     'angular': true
                 }
             }).then(function(result){
-                console.log(result.data);
-
                 $scope.data = result.data.userdashboardData.rows;
             }, function errorCallback(result){
                 if(result.status === 404){

@@ -6,7 +6,7 @@
                   <i class="fa fa-plus"> </i>
                     <?php echo __('Add Metric'); ?>
                 </button>
-                <button class="btn btn-xs btn-danger">
+                <button class="btn btn-xs btn-danger" ng-click="removePanel()">
                   <i class="fa fa-trash"> </i>
                     <?php echo __('Remove Panel'); ?>
                 </button>
@@ -22,13 +22,13 @@
                         <?php else: ?>
                             {{metric.Host.hostname}}
                         <?php endif; ?>
-                        .
+                        <i class="fa fa-chevron-right"></i>
                         <?php if ($this->Acl->hasPermission('browser', 'services', '')): ?>
                             <a href="/services/browser/{{metric.Service.id}}">{{metric.Service.servicename}}</a>
                         <?php else: ?>
                             {{metric.Service.servicename}}
                         <?php endif; ?>
-                        .
+                        <i class="fa fa-chevron-right"></i>
                         {{metric.metric}}
                         <i class="fa fa-trash-o text-danger pull-right pointer" ng-click="removeMetric(metric)"></i>
                     </div>
