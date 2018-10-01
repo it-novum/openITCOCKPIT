@@ -17,8 +17,18 @@
             <li ng-repeat="metric in panel.metrics">
                 <div class=" panel panel-default margin-bottom-5" style="background-color:#f2f2f2">
                     <div class="panel-body padding-top-5 padding-bottom-5">
-                        <a href="hosts/browser/{{metric.Host.id}}">{{metric.Host.hostname}}</a>/
-                        {{metric.Service.servicename}}/
+                        <?php if ($this->Acl->hasPermission('browser', 'hosts', '')): ?>
+                            <a href="/hosts/browser/{{metric.Host.id}}">{{metric.Host.hostname}}</a>
+                        <?php else: ?>
+                            {{metric.Host.hostname}}
+                        <?php endif; ?>
+                        .
+                        <?php if ($this->Acl->hasPermission('browser', 'services', '')): ?>
+                            <a href="/services/browser/{{metric.Service.id}}">{{metric.Service.servicename}}</a>
+                        <?php else: ?>
+                            {{metric.Service.servicename}}
+                        <?php endif; ?>
+                        .
                         {{metric.metric}}
                         <i class="fa fa-trash-o text-danger pull-right pointer" ng-click="removeMetric(metric)"></i>
                     </div>
