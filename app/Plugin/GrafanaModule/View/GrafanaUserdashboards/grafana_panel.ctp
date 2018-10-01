@@ -38,7 +38,7 @@
 
         <div class="col-xs-12 text-info text-center" ng-show="panel.metrics.length == 0">
             <i class="fa fa-info-circle"></i>
-            <?php echo __('This panel is empty. Start by adding a metric to this panel.'); ?>
+            <?php echo __('This panel is empty. Start by adding a metrics.'); ?>
         </div>
 
         <!-- Add new metric to panel modal -->

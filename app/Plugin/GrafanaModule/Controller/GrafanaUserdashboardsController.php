@@ -28,6 +28,16 @@ use itnovum\openITCOCKPIT\Core\Views\Service;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use Statusengine\PerfdataParser;
 
+/**
+ * Class GrafanaUserdashboardsController
+ * @property GrafanaConfiguration $GrafanaConfiguration
+ * @property GrafanaDashboard $GrafanaDashboard
+ * @property GrafanaUserdashboardPanel $GrafanaUserdashboardPanel
+ * @property GrafanaUserdashboardMetric $GrafanaUserdashboardMetric
+ * @property \Host $Host
+ * @property \Service $Service
+ * @property Servicestatus $Servicestatus
+ */
 class GrafanaUserdashboardsController extends GrafanaModuleAppController {
 
     public $layout = 'angularjs';
@@ -93,94 +103,89 @@ class GrafanaUserdashboardsController extends GrafanaModuleAppController {
 
 
                 if ($this->isAngularJsRequest()) {
-                    $this->setFlash(__('Grafana Userdashboard Name successfully saved'));
+                    $this->setFlash(__('User defined Grafana dashboard created successfully.'));
                 }
 
                 if ($this->request->ext === 'json') {
                     $this->serializeId();
-                    return;
                 }
-            } else {
-                $this->serializeErrorMessage();
                 return;
             }
+            $this->serializeErrorMessage();
         }
     }
 
 
     public function editor($userdashboardId = null) {
+        if (!$this->request->is('GET')){
+            throw new MethodNotAllowedException();
+        }
+
         if (!$this->GrafanaUserdashboard->exists($userdashboardId)) {
             throw new NotFoundException(__('Invalid Userdashboard'));
         }
 
-
-        if ($this->request->is('GET')) {
-            //$this->GrafanaUserdashboardData->bindModel(['belongsTo' => ['Host']]);
-            //$this->GrafanaUserdashboardData->bindModel(['belongsTo' => ['Service']]);
-
-            $dashboard = $this->GrafanaUserdashboard->find('first', [
-                'conditions' => [
-                    'GrafanaUserdashboard.id' => $userdashboardId
-                ],
-                'contain'    => [
-                    'GrafanaUserdashboardPanel' => [
-                        'GrafanaUserdashboardMetric' => [
-                            'Host'    => [
-                                'fields' => [
-                                    'Host.id',
-                                    'Host.name'
-                                ]
-                            ],
-                            'Service' => [
-                                'fields'          => [
-                                    'Service.id',
-                                    'Service.name'
-                                ],
-                                'Servicetemplate' => [
-                                    'fields' => [
-                                        'Servicetemplate.name'
-                                    ]
-                                ]
+        $dashboard = $this->GrafanaUserdashboard->find('first', [
+            'conditions' => [
+                'GrafanaUserdashboard.id' => $userdashboardId
+            ],
+            'contain'    => [
+                'GrafanaUserdashboardPanel' => [
+                    'GrafanaUserdashboardMetric' => [
+                        'Host'    => [
+                            'fields' => [
+                                'Host.id',
+                                'Host.name'
                             ]
                         ],
-                        'order'                      => [
-                            'GrafanaUserdashboardPanel.row' => 'ASC'
+                        'Service' => [
+                            'fields'          => [
+                                'Service.id',
+                                'Service.name'
+                            ],
+                            'Servicetemplate' => [
+                                'fields' => [
+                                    'Servicetemplate.name'
+                                ]
+                            ]
                         ]
+                    ],
+                    'order'                      => [
+                        'GrafanaUserdashboardPanel.row' => 'ASC'
                     ]
                 ]
-            ]);
+            ]
+        ]);
 
-            //debug($dashboard);
-
-            $rowsWithPanelsAndMetrics = [];
-            foreach ($dashboard['GrafanaUserdashboardPanel'] as $k => $panel) {
-                $rowsWithPanelsAndMetrics[$panel['row']][$k] = [
-                    'id'               => $panel['id'],
-                    'userdashboard_id' => $panel['userdashboard_id'],
-                    'row'              => $panel['row'],
-                    'unit'             => $panel['unit'],
-                    'metrics'          => []
-                ];
-                foreach ($panel['GrafanaUserdashboardMetric'] as $metric) {
-                    $metric['Servicetemplate'] = [];
-                    if (isset($metric['Service']['Servicetemplate'])) {
-                        $metric['Servicetemplate'] = $metric['Service']['Servicetemplate'];
-                    }
-                    $host = new Host($metric);
-                    $service = new Service($metric);
-                    $metric['Host'] = $host->toArray();
-                    $metric['Service'] = $service->toArray();
-                    $rowsWithPanelsAndMetrics[$panel['row']][$k]['metrics'][] = $metric;
-                };
-            }
-
-            $dashboard['rows'] = $rowsWithPanelsAndMetrics;
-            //debug($userdashboardData);
-            $this->set('userdashboardData', $dashboard);
-            $this->set('_serialize', ['userdashboardData']);
-
-            return;
+        $rowsWithPanelsAndMetrics = [];
+        foreach ($dashboard['GrafanaUserdashboardPanel'] as $k => $panel) {
+            $rowsWithPanelsAndMetrics[$panel['row']][$k] = [
+                'id'               => $panel['id'],
+                'userdashboard_id' => $panel['userdashboard_id'],
+                'row'              => $panel['row'],
+                'unit'             => $panel['unit'],
+                'metrics'          => []
+            ];
+            foreach ($panel['GrafanaUserdashboardMetric'] as $metric) {
+                $metric['Servicetemplate'] = [];
+                if (isset($metric['Service']['Servicetemplate'])) {
+                    $metric['Servicetemplate'] = $metric['Service']['Servicetemplate'];
+                }
+                $host = new Host($metric);
+                $service = new Service($metric);
+                $metric['Host'] = $host->toArray();
+                $metric['Service'] = $service->toArray();
+                $rowsWithPanelsAndMetrics[$panel['row']][$k]['metrics'][] = $metric;
+            };
         }
+
+        $dashboard['rows'] = $rowsWithPanelsAndMetrics;
+        //debug($userdashboardData);
+        $this->set('userdashboardData', $dashboard);
+        $this->set('_serialize', ['userdashboardData']);
+
+        return;
+
     }
 
     public function getGrafanaUserdashboardUrl($userdashboardId) {
@@ -387,5 +392,9 @@ class GrafanaUserdashboardsController extends GrafanaModuleAppController {
 
         $this->set('success', false);
         $this->set('_serialize', ['success']);
+    }
+
+    public function addRow() {
+
     }
 }

@@ -43,4 +43,47 @@ class GrafanaUserdashboard extends GrafanaModuleAppModel {
             'foreignKey' => 'userdashboard_id',
         ],
     ];
+
+    public $validate = [
+        'container_id'     => [
+            'notBlank' => [
+                'rule'     => 'notBlank',
+                'message'  => 'This field cannot be left blank.',
+                'required' => true,
+            ],
+            'numeric'  => [
+                'rule'    => 'numeric',
+                'message' => 'This field needs to be numeric',
+            ],
+            'notZero'  => [
+                'rule'     => ['comparison', '>', 0],
+                'message'  => 'This field needs to be numeric',
+                'required' => true,
+            ],
+        ],
+        'configuration_id' => [
+            'notBlank' => [
+                'rule'     => 'notBlank',
+                'message'  => 'This field cannot be left blank.',
+                'required' => true,
+            ],
+            'numeric'  => [
+                'rule'    => 'numeric',
+                'message' => 'This field needs to be numeric',
+            ],
+            'notZero'  => [
+                'rule'     => ['comparison', '>', 0],
+                'message'  => 'This field needs to be numeric',
+                'required' => true,
+            ],
+        ],
+        'name'             => [
+            'notBlank' => [
+                'rule'     => 'notBlank',
+                'message'  => 'This field cannot be left blank.',
+                'required' => true,
+            ],
+        ],
+    ];
+
 }

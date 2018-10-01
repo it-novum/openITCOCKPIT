@@ -41,7 +41,7 @@ $config = [
                 'index' => ['testGrafanaConnection', 'loadHostgroups'],
             ],
             'GrafanaUserdashboards' => [
-                'editor' => ['addMetricToPanel', 'removeMetricFromPanel', 'addPanel', 'removePanel'],
+                'editor' => ['addMetricToPanel', 'removeMetricFromPanel', 'addPanel', 'removePanel', 'addRow'],
             ],
 
         ],

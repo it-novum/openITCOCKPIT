@@ -21,7 +21,7 @@
 <div class="jarviswidget">
     <header>
         <span class="widget-icon hidden-mobile hidden-tablet"> <i class="fa fa-pencil-square-o"></i> </span>
-        <h2 class="hidden-mobile hidden-tablet"><?php echo __('User Dashboard Add'); ?></h2>
+        <h2 class="hidden-mobile hidden-tablet"><?php echo __('Edit user defined Grafana dashboard'); ?></h2>
         <div class="widget-toolbar" role="menu">
             <?php echo $this->Utils->backButton() ?>
         </div>
@@ -31,6 +31,14 @@
 
             <div class="row padding-top-10" ng-repeat="(rowId, row) in data">
                 <grafana-row id="id" row="row" row-id="rowId"></grafana-row>
+            </div>
+            <div class="row">
+                <div class="col-xs-12">
+                    <button class="btn btn-success btn-xs" ng-class="addRow()">
+                        <i class="fa fa-plus"></i>
+                        <?php echo __('Add row'); ?>
+                    </button>
+                </div>
             </div>
         </div>
     </div>
