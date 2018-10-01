@@ -31,7 +31,7 @@ use Statusengine\PerfdataParser;
 /**
  * Class GrafanaUserdashboardsController
  * @property GrafanaConfiguration $GrafanaConfiguration
- * @property GrafanaDashboard $GrafanaDashboard
+ * @property GrafanaUserdashboard $GrafanaUserdashboard
  * @property GrafanaUserdashboardPanel $GrafanaUserdashboardPanel
  * @property GrafanaUserdashboardMetric $GrafanaUserdashboardMetric
  * @property \Host $Host
@@ -44,7 +44,6 @@ class GrafanaUserdashboardsController extends GrafanaModuleAppController {
 
     public $uses = [
         'GrafanaModule.GrafanaConfiguration',
-        'GrafanaModule.GrafanaDashboard',
         'GrafanaModule.GrafanaUserdashboard',
         'GrafanaModule.GrafanaUserdashboardPanel',
         'GrafanaModule.GrafanaUserdashboardMetric',
@@ -395,6 +394,28 @@ class GrafanaUserdashboardsController extends GrafanaModuleAppController {
     }
 
     public function addRow() {
+        if (!$this->request->is('post') || !$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
 
+        $id = $this->request->data('id');
+        if (!$this->GrafanaUserdashboard->exists($id)) {
+            throw new NotFoundException('GrafanaUserdashboard does not exisits');
+        }
+
+        $this->GrafanaUserdashboardPanel->create();
+        $data = [
+            'GrafanaUserdashboardPanel' => [
+                'userdashboard_id' => $id,
+                'row'              => $this->GrafanaUserdashboardPanel->getNextRow($id)
+            ]
+        ];
+        if ($this->GrafanaUserdashboardPanel->save($data)) {
+            $id = $this->GrafanaUserdashboardPanel->id;
+            $this->set('success', true);
+            $this->set('_serialize', ['success']);
+            return;
+        }
+        $this->serializeErrorMessageFromModel('GrafanaUserdashboardPanel');
     }
 }

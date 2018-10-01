@@ -34,7 +34,7 @@
             </div>
             <div class="row">
                 <div class="col-xs-12">
-                    <button class="btn btn-success btn-xs" ng-class="addRow()">
+                    <button class="btn btn-success btn-xs" ng-click="addRow()">
                         <i class="fa fa-plus"></i>
                         <?php echo __('Add row'); ?>
                     </button>

@@ -30,38 +30,36 @@ angular.module('openITCOCKPIT')
             });
         };
 
+
         $scope.addRow = function(){
             var data = {
-                GrafanaUserdashboardPanel: {
-                    row: parseInt($scope.rowId, 10), //int
-                    userdashboard_id: $scope.id //int
-                }
+                id: $scope.id
             };
 
             $http.post("/grafana_module/grafana_userdashboards/addRow.json?angular=true", data
             ).then(function(result){
-                if(result.data.hasOwnProperty('panel')){
+                if(result.data.hasOwnProperty('success')){
                     new Noty({
                         theme: 'metroui',
                         type: 'success',
-                        text: 'Panel added successfully',
+                        text: 'Row added successfully',
                         timeout: 3500
                     }).show();
 
                     //Add new created panel to local json
-                    $scope.row.push(result.data.panel);
-                    setPanelClass();
+                    $scope.load();
                 }
 
             }, function errorCallback(result){
                 new Noty({
                     theme: 'metroui',
                     type: 'error',
-                    text: 'Error while adding panel',
+                    text: 'Error while adding row',
                     timeout: 3500
                 }).show();
             });
         };
+
 
         $scope.load();
 

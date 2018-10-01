@@ -70,4 +70,26 @@ class GrafanaUserdashboardPanel extends GrafanaModuleAppModel {
         ]
     ];
 
+    /**
+     * @param $dashboardId
+     * @return int
+     */
+    public function getNextRow($dashboardId){
+        $result = $this->find('first', [
+            'recursive'  => -1,
+            'contain'    => [],
+            'conditions' => [
+                'GrafanaUserdashboardPanel.userdashboard_id' => $dashboardId,
+            ],
+            'order'      => [
+                'GrafanaUserdashboardPanel.row' => 'DESC',
+            ],
+        ]);
+        if (!empty($result)) {
+            return (int)$result['GrafanaUserdashboardPanel']['row'] + 1;
+        }
+
+        return 0;
+    }
+
 }
