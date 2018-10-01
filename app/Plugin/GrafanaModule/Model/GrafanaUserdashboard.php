@@ -23,30 +23,24 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-$config = [
-    'acl_dependencies' => [
-        'always_allowed' => [
-            'GrafanaConfiguration' => [
-                'grafanaWidget',
-                'getGrafanaDashboards'
-            ],
-            'GrafanaUserdashboards' => [
-              'grafanaRow',
-              'grafanaPanel',
-              'getPerformanceDataMetrics'
-            ]
-        ],
-        'dependencies'   => [
-            'GrafanaConfiguration' => [
-                'index' => ['testGrafanaConnection', 'loadHostgroups'],
-            ],
-            'GrafanaUserdashboards' => [
-                'editor' => ['addMetricToPanel', 'removeMetricFromPanel', 'addPanel', 'removePanel'],
-            ],
 
+class GrafanaUserdashboard extends GrafanaModuleAppModel {
+    public $belongsTo = [
+        'Container'    => [
+            'className'  => 'Container',
+            'foreignKey' => 'container_id',
         ],
-        'roles_rights'   => [
-            'Administrator' => ['*'],
-        ]
-    ],
-];
+        'GrafanaConfiguration' => [
+            'className' => 'GrafanaModule.GrafanaConfiguration',
+            'foreignKey' => 'configuration_id'
+        ],
+    ];
+
+    public $hasMany = [
+        'GrafanaUserdashboardPanel' => [
+            'className'  => 'GrafanaModule.GrafanaUserdashboardPanel',
+            'dependent'  => true,
+            'foreignKey' => 'userdashboard_id',
+        ],
+    ];
+}

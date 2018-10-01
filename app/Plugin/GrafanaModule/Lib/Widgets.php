@@ -25,9 +25,7 @@
 namespace itnovum\openITCOCKPIT\GrafanaModule\Widgets;
 
 
-use itnovum\openITCOCKPIT\Core\Dashboards\ModuleWidgetsInterface;
-
-class Widgets implements ModuleWidgetsInterface {
+class Widgets {
 
     /**
      * @var array
