@@ -418,4 +418,32 @@ class GrafanaUserdashboardsController extends GrafanaModuleAppController {
         }
         $this->serializeErrorMessageFromModel('GrafanaUserdashboardPanel');
     }
+
+    public function removeRow() {
+        if (!$this->request->is('post') || !$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        $id = $this->request->data('id');
+        if (!$this->GrafanaUserdashboard->exists($id)) {
+            throw new NotFoundException('GrafanaUserdashboard does not exisits');
+        }
+
+        throw new NotImplementedException();
+
+        $this->GrafanaUserdashboardPanel->create();
+        $data = [
+            'GrafanaUserdashboardPanel' => [
+                'userdashboard_id' => $id,
+                'row'              => $this->GrafanaUserdashboardPanel->getNextRow($id)
+            ]
+        ];
+        if ($this->GrafanaUserdashboardPanel->save($data)) {
+            $id = $this->GrafanaUserdashboardPanel->id;
+            $this->set('success', true);
+            $this->set('_serialize', ['success']);
+            return;
+        }
+        $this->serializeErrorMessageFromModel('GrafanaUserdashboardPanel');
+    }
 }
