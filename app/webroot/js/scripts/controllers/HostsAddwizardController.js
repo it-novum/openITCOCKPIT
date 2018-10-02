@@ -129,7 +129,8 @@ angular.module('openITCOCKPIT')
                 $scope.post
             ).then(function(result){
                 console.log('Data saved successfully');
-                window.location.href = '/hosts/addwizardservices/';
+                var id = result.data.id;
+                window.location.href = '/hosts/addwizardservices/'+id;
             }, function errorCallback(result){
                 console.info('save failed');
                 if(result.data.hasOwnProperty('error')){

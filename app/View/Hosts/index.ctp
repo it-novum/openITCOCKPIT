@@ -80,7 +80,7 @@ $this->Paginator->options(['url' => $this->params['named']]);
                             <?php echo __('Refresh'); ?>
                         </button>
 
-                        <?php if ($this->Acl->hasPermission('add')): ?>
+                        <?php if ($this->Acl->hasPermission('add', 'hosts')): ?>
                             <div class="btn-group">
                                  <a href="/hosts/add/"
                                    class="btn btn-xs btn-success">
@@ -95,12 +95,6 @@ $this->Paginator->options(['url' => $this->params['named']]);
                                     <li><a href="/hosts/addwizard">Add with Wizard</a></li>
                                 </ul>
                             </div>
-
-                        <?php //if ($this->Acl->hasPermission('add', 'hosts')): ?>
-                            <!--<a href="/hosts/add" class="btn btn-xs btn-success">
-                                <i class="fa fa-plus"></i>
-                                <?php// echo __('New'); ?>
-                            </a>-->
                         <?php endif; ?>
                         <button type="button" class="btn btn-xs btn-primary" ng-click="triggerFilter()">
                             <i class="fa fa-filter"></i>
