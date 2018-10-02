@@ -52,14 +52,14 @@
                     <div class="col-xs-12 col-md-12 col-lg-12">
                         <div class="tab-content">
                             <div class="row">
-                                <label class="col-xs-2 col-md-2 col-lg-2 control-label">
+                                <label class="col-xs-2 col-md-2 col-lg-2 control-label padding-top-10">
                                     <?php echo __('Hostname'); ?>
                                 </label>
-                                <div class="col col-xs-10 col-md-10 col-lg-10">
+                                <div class="col col-xs-10 col-md-10 col-lg-10 padding-top-10">
                                     {{ hostname }}
                                 </div>
                             </div>
-                            <div class="form-group required row" ng-class="{'has-error': errors.service_id}">
+                            <div class="form-group required row padding-top-10" ng-class="{'has-error': errors.service_id}">
                                 <label class="col-xs-2 col-md-2 col-lg-2 control-label">
                                     <?php echo __('Standard Service'); ?>
                                 </label>

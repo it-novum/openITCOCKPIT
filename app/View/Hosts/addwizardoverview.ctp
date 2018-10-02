@@ -52,27 +52,27 @@
                     <div class="col-xs-12 col-md-12 col-lg-12">
                         <div class="tab-content">
                             <div class="row">
-                                <label class="col-xs-2 col-md-2 col-lg-2 control-label">
+                                <label class="col-xs-2 control-label padding-top-10">
                                     <?php echo __('Hostname'); ?>
                                 </label>
-                                <div class="col col-xs-10 col-md-10 col-lg-10 padding-top-5">
+                                <div class="col col-xs-10 padding-top-10">
                                     <a href="/hosts/browser/{{host.id}}">{{ host.name }}</a>
                                 </div>
                             </div>
-                            <div class="row">
-                                <div class="form-group required row" ng-class="{'has-error': errors.service_id}">
-                                    <label class="col-xs-2 col-md-2 col-lg-2 control-label">
-                                        <?php echo __('Services'); ?>
-                                    </label>
-                                    <div class="col col-xs-10 col-md-10 col-lg-10 padding-top-5">
-                                        <table>
-                                            <tr ng-repeat="service in services">
-                                                <td ng-repeat="value in service">
-                                                    <a href="/services/browser/{{ value.Service.id }}">{{ value.Servicetemplate.name }}</a>
-                                                </td>
-                                            </tr>
-                                        </table>
-                                    </div>
+                            <div class="row padding-top-10">
+                                <label class="col-xs-2 control-label">
+                                    <?php echo __('Services'); ?>
+                                </label>
+                                <div class="col col-xs-10 padding-top-5" ng-class="{'has-error': errors.service_id}">
+                                    <table>
+                                        <tr ng-repeat=" service in services">
+                                            <td ng-repeat="value in service">
+                                                <a href="/services/browser/{{ value.Service.id }}">
+                                                    {{ value.Servicetemplate.name }}
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    </table>
                                 </div>
                             </div>
                         </div>
@@ -80,6 +80,7 @@
                     <div class="col-xs-12 margin-top-10">
                         <div class="well formactions ">
                             <div class="pull-right">
+                                <a href="/hosts/addwizardservices/{{ id }}" class="btn btn-default">Back</a>
                                 <a href="/hosts/index" class="btn btn-primary">Finish</a>
                             </div>
                         </div>
