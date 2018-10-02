@@ -2150,9 +2150,11 @@ label[class^='aco-host']:after, label[class^='aco-service']:after {
 }
 
 .grafana-row {
-    border: 1px solid #dde4ed;
+    border-style: solid;
+    border-width: 1px 1px 1px 7px;
+    border-color: #dde4ed #dde4ed #dde4ed #667896;
     position: relative;
-    border-radius: 3px;
+    border-radius: 7px 3px 3px 7px;
     background: #f5f6f9;
     /*
     background: repeating-linear-gradient(
@@ -2166,7 +2168,9 @@ label[class^='aco-host']:after, label[class^='aco-service']:after {
 
 .grafana-panel {
     background-color: #fff;
-    border: 1px solid #dde4ed;
+    border-style: solid;
+    border-width: 1px 1px 1px 7px;
+    border-color: #dde4ed #dde4ed #dde4ed #394556;
     position: relative;
-    border-radius: 3px;
+    border-radius: 7px 3px 3px 7px;
 }
