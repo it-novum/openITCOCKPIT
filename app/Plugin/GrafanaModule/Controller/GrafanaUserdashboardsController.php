@@ -27,6 +27,8 @@ use GuzzleHttp\Client;
 use itnovum\openITCOCKPIT\Core\Views\Host;
 use itnovum\openITCOCKPIT\Core\Views\Service;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
+use itnovum\openITCOCKPIT\Database\ScrollIndex;
+use itnovum\openITCOCKPIT\Filter\GrafanaUserDashboardFilter;
 use itnovum\openITCOCKPIT\Grafana\GrafanaApiConfiguration;
 use itnovum\openITCOCKPIT\Grafana\GrafanaPanel;
 use itnovum\openITCOCKPIT\Grafana\GrafanaRow;
@@ -51,6 +53,7 @@ use Statusengine\PerfdataParser;
  * @property \Service $Service
  * @property Servicestatus $Servicestatus
  * @property Proxy $Proxy
+ * @property AppPaginatorComponent $Paginator
  */
 class GrafanaUserdashboardsController extends GrafanaModuleAppController {
 
@@ -67,42 +70,67 @@ class GrafanaUserdashboardsController extends GrafanaModuleAppController {
         'Proxy'
     ];
 
+    public $components = [
+        'Paginator' => ['className' => 'AppPaginator'],
+    ];
+
     public function index() {
         if (!$this->isApiRequest()) {
             //Only ship template for AngularJs
             return;
         }
-        $allUserdashboards = $this->GrafanaUserdashboard->find('all', [
-            // 'recursive' => -1,
-            'conditions' => [
-                'container_id' => $this->MY_RIGHTS
-            ]
-        ]);
 
+        $GrafanaUserDashboardFilter = new GrafanaUserDashboardFilter($this->request);
+        $conditions = $GrafanaUserDashboardFilter->indexFilter();
+        $conditions['GrafanaUserdashboard.container_id'] = $this->MY_RIGHTS;
+
+        $query = [
+            'recursive'  => -1,
+            'conditions' => $conditions,
+            'order'      => $GrafanaUserDashboardFilter->getOrderForPaginator('GrafanaUserdashboard.name', 'ASC')
+        ];
+
+        if ($this->isScrollRequest()) {
+            $this->Paginator->settings['page'] = $GrafanaUserDashboardFilter->getPage();
+            $ScrollIndex = new ScrollIndex($this->Paginator, $this);
+            $allUserdashboards = $this->GrafanaUserdashboard->find('all', array_merge($this->Paginator->settings, $query));
+            $ScrollIndex->determineHasNextPage($allUserdashboards);
+            $ScrollIndex->scroll();
+        } else {
+            $this->Paginator->settings['page'] = $GrafanaUserDashboardFilter->getPage();
+            $this->Paginator->settings = array_merge($this->Paginator->settings, $query);
+            $allUserdashboards = $this->Paginator->paginate('GrafanaUserdashboard', [], [key($this->Paginator->settings['order'])]);
+        }
 
         foreach ($allUserdashboards as $key => $dashboard) {
             $allUserdashboards[$key]['GrafanaUserdashboard']['allowEdit'] = false;
             if ($this->hasRootPrivileges == true) {
                 $allUserdashboards[$key]['GrafanaUserdashboard']['allowEdit'] = true;
                 continue;
-            }
-            foreach ($dashboard['Container'] as $cKey => $container) {
-                if ($this->MY_RIGHTS_LEVEL[$container['id']] == WRITE_RIGHT) {
-                    $allUserdashboards[$key]['GrafanaUserdashboard']['allowEdit'] = true;
-                    continue;
+            } else {
+                foreach ($dashboard['Container'] as $cKey => $container) {
+                    if ($this->MY_RIGHTS_LEVEL[$container['id']] == WRITE_RIGHT) {
+                        $allUserdashboards[$key]['GrafanaUserdashboard']['allowEdit'] = true;
+                        continue;
+                    }
                 }
             }
         }
 
-        $this->set('allUserdashboards', $allUserdashboards);
-        $this->set('_serialize', ['allUserdashboards']);
+        $this->set('all_userdashboards', $allUserdashboards);
+        $toJson = ['all_userdashboards', 'paging'];
+        if ($this->isScrollRequest()) {
+            $toJson = ['all_userdashboards', 'scroll'];
+        }
+        $this->set('_serialize', $toJson);
+        $this->set('_serialize', $toJson);
 
     }
 
     public function add() {
         $grafanaConfig = $this->GrafanaConfiguration->find('first', [
             'recursive' => -1,
-            'order'     => ['GrafanaConfiguration.id' =>  'DESC']
+            'order'     => ['GrafanaConfiguration.id' => 'DESC']
         ]);
 
         if (empty($grafanaConfig)) {
@@ -178,16 +206,25 @@ class GrafanaUserdashboardsController extends GrafanaModuleAppController {
     }
 
     public function view($id) {
-        if(!$this->GrafanaUserdashboard->exists($id)){
+        if (!$this->GrafanaUserdashboard->exists($id)) {
             throw new NotFoundException();
         }
 
         $dashboard = $this->GrafanaUserdashboard->find('first', [
-            'recursive' => -1,
+            'recursive'  => -1,
             'conditions' => [
-                'GrafanaUserdashboard.id' => $id
+                'GrafanaUserdashboard.id'           => $id,
+                'GrafanaUserdashboard.container_id' => $this->MY_RIGHTS
             ]
         ]);
+
+        if (empty($dashboard)) {
+            $this->redirect([
+                'controller' => 'Angular',
+                'action'     => 'forbidden',
+                'plugin'     => ''
+            ]);
+        }
 
         $grafanaConfiguration = $this->GrafanaConfiguration->find('first', [
             'recursive' => -1,
@@ -210,7 +247,45 @@ class GrafanaUserdashboardsController extends GrafanaModuleAppController {
 
     }
 
-    public function delete() {
+    public function delete($id) {
+        if (!$this->request->is('post')) {
+            throw new MethodNotAllowedException();
+        }
+
+        if (!$this->GrafanaUserdashboard->exists($id)) {
+            throw new NotFoundException();
+        }
+
+        $writeContainers = [];
+        foreach ($this->MY_RIGHTS_LEVEL as $containerId => $permissionLevel) {
+            if ($permissionLevel == WRITE_RIGHT) {
+                $writeContainers[] = $containerId;
+            }
+        }
+
+        $dashboard = $this->GrafanaUserdashboard->find('first', [
+            'recursive'  => -1,
+            'conditions' => [
+                'GrafanaUserdashboard.id'           => $id,
+                'GrafanaUserdashboard.container_id' => $writeContainers
+            ]
+        ]);
+
+        if (!empty($dashboard)) {
+            if ($this->GrafanaUserdashboard->delete($dashboard['GrafanaUserdashboard']['id'])) {
+                $this->set('success', true);
+                $this->set('message', __('User defined Grafana dashboard successfully deleted'));
+                $this->set('_serialize', ['success', 'message']);
+                return;
+            }
+        }
+
+        $this->response->statusCode(400);
+        $this->set('success', false);
+        $this->set('message', __('Could not delete user defined Grafana dashboard'));
+        $this->set('_serialize', ['success', 'message']);
+
+        //@todo also remove from grafana!
 
     }
 

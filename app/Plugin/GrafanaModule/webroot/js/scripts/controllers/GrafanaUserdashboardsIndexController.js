@@ -4,6 +4,7 @@ angular.module('openITCOCKPIT')
         SortService.setSort('GrafanaUserdashboard.name');
         SortService.setDirection('asc');
         $scope.currentPage = 1;
+        $scope.useScroll = true;
 
         /*** Filter Settings ***/
         var defaultFilter = function(){
@@ -14,6 +15,7 @@ angular.module('openITCOCKPIT')
             };
         };
         /*** Filter end ***/
+
         $scope.massChange = {};
         $scope.selectedElements = 0;
         $scope.deleteUrl = '/grafana_module/grafana_userdashboards/delete/';
@@ -23,10 +25,16 @@ angular.module('openITCOCKPIT')
         $scope.load = function(){
             $http.get("/grafana_module/grafana_userdashboards/index.json", {
                 params: {
-                    'angular': true
+                    'angular': true,
+                    'scroll': $scope.useScroll,
+                    'filter[GrafanaUserdashboard.name]': $scope.filter.GrafanaUserdashboard.name
                 }
             }).then(function(result){
-                $scope.allUserdashboards = result.data.allUserdashboards;
+                $scope.allUserdashboards = result.data.all_userdashboards;
+                $scope.paging = result.data.paging;
+                $scope.scroll = result.data.scroll;
+                $scope.init = false;
+
             }, function errorCallback(result){
                 if(result.status === 404){
                     window.location.href = '/angular/not_found';
@@ -60,7 +68,6 @@ angular.module('openITCOCKPIT')
                     if($scope.allUserdashboards[key].GrafanaUserdashboard.allowEdit){
                         var id = $scope.allUserdashboards[key].GrafanaUserdashboard.id;
                         $scope.massChange[id] = true;
-                        $scope.selectedElements = MassChangeService.getCount();
                     }
                 }
             }
@@ -81,7 +88,7 @@ angular.module('openITCOCKPIT')
 
         $scope.getObjectForDelete = function(GrafanaUserdashboard){
             var object = {};
-            object[allUserdashboards.GrafanaUserdashboard.id] = allUserdashboards.GrafanaUserdashboard.name;
+            object[GrafanaUserdashboard.GrafanaUserdashboard.id] = GrafanaUserdashboard.GrafanaUserdashboard.name;
             return object;
         };
 
@@ -92,6 +99,23 @@ angular.module('openITCOCKPIT')
             }
         };
 
+        $scope.changeMode = function(val){
+            $scope.useScroll = val;
+            $scope.load();
+        };
+
+        $scope.$watch('filter', function(){
+            $scope.currentPage = 1;
+            $scope.undoSelection();
+            $scope.load();
+        }, true);
+
+        $scope.$watch('massChange', function(){
+            MassChangeService.setSelected($scope.massChange);
+            $scope.selectedElements = MassChangeService.getCount();
+        }, true);
+
+        defaultFilter();
         $scope.load();
 
     });

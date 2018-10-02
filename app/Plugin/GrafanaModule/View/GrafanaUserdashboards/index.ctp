@@ -19,24 +19,29 @@
         </h1>
     </div>
 </div>
-<div id="error_msg"></div>
+
+<massdelete></massdelete>
+
 <div class="jarviswidget">
     <header>
-        <span class="widget-icon hidden-mobile hidden-tablet"> <i class="fa fa-pencil-square-o"></i> </span>
-        <h2 class="hidden-mobile hidden-tablet"><?php echo __('User Dashboard List'); ?></h2>
+        <span class="widget-icon hidden-mobile hidden-tablet"> <i class="fa fa-dashboard"></i> </span>
+        <h2 class="hidden-mobile hidden-tablet"><?php echo __('User defined Grafana dashboards'); ?></h2>
 
         <div class="widget-toolbar" role="menu">
             <button type="button" class="btn btn-xs btn-default" ng-click="load()">
                 <i class="fa fa-refresh"></i>
                 <?php echo __('Refresh'); ?>
             </button>
-
             <?php if ($this->Acl->hasPermission('add', 'GrafanaUserdashboards', 'GrafanaModule')): ?>
                 <a href="/grafana_module/grafana_userdashboards/add" class="btn btn-xs btn-success">
                     <i class="fa fa-plus"></i>
                     <?php echo __('New'); ?>
                 </a>
             <?php endif; ?>
+            <button type="button" class="btn btn-xs btn-primary" ng-click="triggerFilter()">
+                <i class="fa fa-filter"></i>
+                <?php echo __('Filter'); ?>
+            </button>
         </div>
         <div class="jarviswidget-ctrls" role="menu">
         </div>
@@ -48,10 +53,10 @@
                 <div class="row">
                     <div class="col-xs-12 col-md-6">
                         <div class="form-group smart-form">
-                            <label class="input"> <i class="icon-prepend fa fa-sitemap"></i>
+                            <label class="input"> <i class="icon-prepend fa fa-tag"></i>
                                 <input type="text" class="input-sm"
-                                       placeholder="<?php echo __('Filter by Userdashboard name'); ?>"
-                                       ng-model="filter.Userdashboard.name"
+                                       placeholder="<?php echo __('Filter by name'); ?>"
+                                       ng-model="filter.GrafanaUserdashboard.name"
                                        ng-model-options="{debounce: 500}">
                             </label>
                         </div>
@@ -85,7 +90,7 @@
                 </thead>
                 <tbody>
                 <tr ng-repeat="userdashboard in allUserdashboards">
-                    <td class="text-center" class="width-15">
+                    <td class="text-center width-15">
                         <input type="checkbox"
                                ng-model="massChange[userdashboard.GrafanaUserdashboard.id]"
                                ng-show="userdashboard.GrafanaUserdashboard.allowEdit">
@@ -130,11 +135,6 @@
                                     <a href="/grafana_module/grafana_userdashboards/view/{{userdashboard.GrafanaUserdashboard.id}}">
                                         <i class="fa fa-eye"></i> <?php echo __('View'); ?></a>
                                 </li>
-                                <li>
-                                    <a ng-href="/grafana_module/grafana_userdashboards/view/{{userdashboard.GrafanaUserdashboard.id}}?fullscreen=true">
-                                        <i class="fa fa-expand"></i> <?php echo __('View in fullscreen'); ?>
-                                    </a>
-                                </li>
                                 <?php if ($this->Acl->hasPermission('delete', 'GrafanaUserdashboards', 'GrafanaModule')): ?>
                                     <li class="divider" ng-if="userdashboard.GrafanaUserdashboard.allowEdit"></li>
                                     <li ng-if="userdashboard.GrafanaUserdashboard.allowEdit">
@@ -151,7 +151,7 @@
                 </tbody>
             </table>
             <div class="row margin-top-10 margin-bottom-10">
-                <div class="row margin-top-10 margin-bottom-10" ng-show="userdashboard.length == 0">
+                <div class="row margin-top-10 margin-bottom-10" ng-show="allUserdashboards.length == 0">
                     <div class="col-xs-12 text-center txt-color-red italic">
                         <?php echo __('No entries match the selection'); ?>
                     </div>
@@ -162,25 +162,27 @@
                     <span ng-show="selectedElements > 0">({{selectedElements}})</span>
                 </div>
                 <div class="col-xs-12 col-md-2">
-                                <span ng-click="selectAll()" class="pointer">
-                                    <i class="fa fa-lg fa-check-square-o"></i>
-                                    <?php echo __('Select all'); ?>
-                                </span>
+                    <span ng-click="selectAll()" class="pointer">
+                        <i class="fa fa-lg fa-check-square-o"></i>
+                        <?php echo __('Select all'); ?>
+                    </span>
                 </div>
                 <div class="col-xs-12 col-md-2">
-                                <span ng-click="undoSelection()" class="pointer">
-                                    <i class="fa fa-lg fa-square-o"></i>
-                                    <?php echo __('Undo selection'); ?>
-                                </span>
+                    <span ng-click="undoSelection()" class="pointer">
+                        <i class="fa fa-lg fa-square-o"></i>
+                        <?php echo __('Undo selection'); ?>
+                    </span>
                 </div>
                 <div class="col-xs-12 col-md-2 txt-color-red">
-                                <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">
-                                    <i class="fa fa-lg fa-trash-o"></i>
-                                    <?php echo __('Delete all'); ?>
-                                </span>
+                    <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">
+                        <i class="fa fa-lg fa-trash-o"></i>
+                        <?php echo __('Delete all'); ?>
+                    </span>
                 </div>
             </div>
+            <scroll scroll="scroll" click-action="changepage" ng-if="scroll"></scroll>
             <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>
+            <?php echo $this->element('paginator_or_scroll'); ?>
         </div>
     </div>
 </div>
