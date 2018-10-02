@@ -1,7 +1,23 @@
+<?php
+use itnovum\openITCOCKPIT\Grafana\GrafanaTargetUnits;
+$GrafanaUnits = new GrafanaTargetUnits();
+$allGrafanaUnits = $GrafanaUnits->getUnits();
+?>
 <div class="grafana-panel padding-5">
 
     <div class="row padding-bottom-5">
         <div class="col-xs-12 no-padding">
+            <label><?php echo __('Panel unit:'); ?></label>
+            <select ng-model="panel.unit">
+                <?php foreach($allGrafanaUnits as $category => $units): ?>
+                    <optgroup label="<?php echo h($category); ?>">
+                        <?php foreach($units as $unitKey => $unitName): ?>
+                            <option value="<?php echo h($unitKey); ?>"><?php echo h($unitName); ?></option>
+                        <?php endforeach; ?>
+                    </optgroup>
+                <?php endforeach;; ?>
+            </select>
+
             <div class="btn-group pull-right">
                 <button class="btn btn-xs btn-default txt-color-green" ng-click="addMetric()">
                     <i class="fa fa-plus"> </i>

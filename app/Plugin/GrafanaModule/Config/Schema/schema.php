@@ -106,7 +106,7 @@ class GrafanaModuleSchema extends CakeSchema {
         'id'               => ['type' => 'integer', 'null' => false, 'key' => 'primary'],
         'userdashboard_id' => ['type' => 'integer', 'null' => false, 'key' => 'index'],
         'row'              => ['type' => 'integer', 'null' => false, 'key' => 'index'],
-        'unit'             => ['type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_unicode_ci', 'charset' => 'utf8'],
+        'unit'             => ['type' => 'string', 'null' => false, 'default' => 'none', 'collate' => 'utf8_unicode_ci', 'charset' => 'utf8'],
         'indexes'          => [
             'PRIMARY' => [
                 'column' => 'id',

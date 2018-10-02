@@ -13,6 +13,7 @@ angular.module('openITCOCKPIT').directive('grafanaPanel', function($http){
             $scope.currentServiceId = null;
             $scope.currentServiceMetric = null;
             $scope.rowId = parseInt($scope.panel.row, 10);
+            $scope.init = true;
 
             $scope.addMetric = function(){
                 $scope.currentServiceId = null;
@@ -186,8 +187,49 @@ angular.module('openITCOCKPIT').directive('grafanaPanel', function($http){
                 $scope.panel.metrics = metrics;
             };
 
+            var savePanelUnit = function(){
+                $http.post("/grafana_module/grafana_userdashboards/savePanelUnit.json?angular=true",
+                    {
+                        id: parseInt($scope.panel.id, 10),
+                        unit: $scope.panel.unit
+                    }
+                ).then(function(result){
+                    if(result.data.success){
+                        new Noty({
+                            theme: 'metroui',
+                            type: 'success',
+                            text: 'Panel unit saved successfully',
+                            timeout: 3500
+                        }).show();
+                    }else{
+                        new Noty({
+                            theme: 'metroui',
+                            type: 'error',
+                            text: 'Error while saving panel unit',
+                            timeout: 3500
+                        }).show();
+                    }
+
+                }, function errorCallback(result){
+                    new Noty({
+                        theme: 'metroui',
+                        type: 'error',
+                        text: 'Error while saving panel unit',
+                        timeout: 3500
+                    }).show();
+                });
+            };
+
             $scope.$watch('currentServiceId', function(){
                 loadMetrics();
+            });
+
+            $scope.$watch('panel.unit', function(){
+                if($scope.init){
+                    $scope.init = false;
+                    return;
+                }
+                savePanelUnit();
             });
 
         },

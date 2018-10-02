@@ -26,6 +26,7 @@
 use itnovum\openITCOCKPIT\Core\Views\Host;
 use itnovum\openITCOCKPIT\Core\Views\Service;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
+use itnovum\openITCOCKPIT\Grafana\GrafanaTargetUnits;
 use Statusengine\PerfdataParser;
 
 /**
@@ -430,6 +431,35 @@ class GrafanaUserdashboardsController extends GrafanaModuleAppController {
                 'GrafanaUserdashboardPanel.id' => $ids
             ];
             if($this->GrafanaUserdashboardPanel->deleteAll($conditions)){
+                $this->set('success', true);
+                $this->set('_serialize', ['success']);
+                return;
+            }
+        }
+
+        $this->set('success', false);
+        $this->set('_serialize', ['success']);
+    }
+
+    public function savePanelUnit() {
+        if (!$this->request->is('post') || !$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        $id = $this->request->data('id');
+        $unit = $this->request->data('unit');
+
+        $GrafanaTargetUnits = new GrafanaTargetUnits();
+        if($this->GrafanaUserdashboardPanel->exists($id) && $GrafanaTargetUnits->exists($unit)){
+            $panel = $this->GrafanaUserdashboardPanel->find('first', [
+                'recursive' => -1,
+                'conditions' => [
+                    'GrafanaUserdashboardPanel.id' => $id
+                ],
+            ]);
+
+            $panel['GrafanaUserdashboardPanel']['unit'] = $unit;
+            if($this->GrafanaUserdashboardPanel->save($panel)){
                 $this->set('success', true);
                 $this->set('_serialize', ['success']);
                 return;
