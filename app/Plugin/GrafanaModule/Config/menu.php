@@ -34,10 +34,16 @@ $config = [
             'order'    => 2,
             'parent'   => 'grafana',
             'children' => [
-                'map'      => [
+                'config'      => [
                     'url'               => ['controller' => 'grafana_configuration', 'action' => 'index', 'plugin' => 'grafana_module'],
                     'title'             => 'Configuration',
                     'icon'              => 'cogs',
+                    'parent_controller' => 'grafana',
+                ],
+                'userdashboards'      => [
+                    'url'               => ['controller' => 'grafana_userdashboards', 'action' => 'index', 'plugin' => 'grafana_module'],
+                    'title'             => 'User Dashboards',
+                    'icon'              => 'area-chart',
                     'parent_controller' => 'grafana',
                 ],
             ],
