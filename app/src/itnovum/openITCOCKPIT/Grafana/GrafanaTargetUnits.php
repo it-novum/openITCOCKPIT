@@ -29,6 +29,27 @@ namespace itnovum\openITCOCKPIT\Grafana;
 
 class GrafanaTargetUnits {
 
+    /**
+     * @return array
+     */
+    public function getUnitsForJavaScript() {
+        $jsCategoriesAndUnits = [];
+        foreach ($this->getUnits() as $category => $units) {
+            $jsUnits = [];
+            foreach($units as $key => $unit){
+                $jsUnits[] = [
+                    'key' => $key,
+                    'unit' => $unit
+                ];
+            }
+
+            $jsCategoriesAndUnits[] = [
+                'key' => $category,
+                'values' => $jsUnits
+            ];
+        }
+        return $jsCategoriesAndUnits;
+    }
 
     /**
      * @return array
@@ -297,9 +318,9 @@ class GrafanaTargetUnits {
      * @param $unit
      * @return bool
      */
-    public function exists($unit){
-        foreach($this->getUnits() as $category => $units){
-            if(isset($units[$unit])){
+    public function exists($unit) {
+        foreach ($this->getUnits() as $category => $units) {
+            if (isset($units[$unit])) {
                 return true;
             }
         }

@@ -86,4 +86,74 @@ class GrafanaUserdashboard extends GrafanaModuleAppModel {
         ],
     ];
 
+    /**
+     * @param $id
+     * @return array
+     */
+    public function getQuery($id) {
+        return [
+            'conditions' => [
+                'GrafanaUserdashboard.id' => $id
+            ],
+            'contain'    => [
+                'GrafanaUserdashboardPanel' => [
+                    'GrafanaUserdashboardMetric' => [
+                        'Host'    => [
+                            'fields' => [
+                                'Host.id',
+                                'Host.name',
+                                'Host.uuid'
+                            ]
+                        ],
+                        'Service' => [
+                            'fields'          => [
+                                'Service.id',
+                                'Service.name',
+                                'Service.uuid'
+                            ],
+                            'Servicetemplate' => [
+                                'fields' => [
+                                    'Servicetemplate.name'
+                                ]
+                            ]
+                        ]
+                    ],
+                    'order'                      => [
+                        'GrafanaUserdashboardPanel.row' => 'ASC'
+                    ]
+                ]
+            ]
+        ];
+    }
+
+    /**
+     * @param array $findResult
+     * @return array
+     */
+    public function extractRowsWithPanelsAndMetricsFromFindResult($findResult) {
+        $rowsWithPanelsAndMetrics = [];
+        foreach ($findResult['GrafanaUserdashboardPanel'] as $k => $panel) {
+            $rowsWithPanelsAndMetrics[$panel['row']][$k] = [
+                'id'               => $panel['id'],
+                'userdashboard_id' => $panel['userdashboard_id'],
+                'row'              => $panel['row'],
+                'unit'             => $panel['unit'],
+                'title'             => $panel['title'],
+                'metrics'          => []
+            ];
+            foreach ($panel['GrafanaUserdashboardMetric'] as $metric) {
+                $metric['Servicetemplate'] = [];
+                if (isset($metric['Service']['Servicetemplate'])) {
+                    $metric['Servicetemplate'] = $metric['Service']['Servicetemplate'];
+                }
+                $host = new \itnovum\openITCOCKPIT\Core\Views\Host($metric);
+                $service = new \itnovum\openITCOCKPIT\Core\Views\Service($metric);
+                $metric['Host'] = $host->toArray();
+                $metric['Service'] = $service->toArray();
+                $rowsWithPanelsAndMetrics[$panel['row']][$k]['metrics'][] = $metric;
+            };
+        }
+        return $rowsWithPanelsAndMetrics;
+    }
+
 }

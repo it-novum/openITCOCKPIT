@@ -92,7 +92,8 @@ class GrafanaModuleSchema extends CakeSchema {
         'id'               => ['type' => 'integer', 'null' => false, 'key' => 'primary'],
         'container_id'     => ['type' => 'integer', 'null' => false, 'key' => 'index'],
         'configuration_id' => ['type' => 'integer', 'null' => false, 'key' => 'index'],
-        'name'             => ['type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_unicode_ci', 'charset' => 'utf8'],
+        'name'             => ['type' => 'string', 'null' => false, 'default' => '', 'collate' => 'utf8_unicode_ci', 'charset' => 'utf8'],
+        'grafana_id'       => ['type' => 'string', 'null' => false, 'default' => '', 'collate' => 'utf8_unicode_ci', 'charset' => 'utf8'],
         'indexes'          => [
             'PRIMARY' => [
                 'column' => 'id',
@@ -107,6 +108,7 @@ class GrafanaModuleSchema extends CakeSchema {
         'userdashboard_id' => ['type' => 'integer', 'null' => false, 'key' => 'index'],
         'row'              => ['type' => 'integer', 'null' => false, 'key' => 'index'],
         'unit'             => ['type' => 'string', 'null' => false, 'default' => 'none', 'collate' => 'utf8_unicode_ci', 'charset' => 'utf8'],
+        'title'            => ['type' => 'string', 'null' => false, 'default' => '', 'collate' => 'utf8_unicode_ci', 'charset' => 'utf8'],
         'indexes'          => [
             'PRIMARY' => [
                 'column' => 'id',

@@ -1,5 +1,7 @@
 <?php
+
 use itnovum\openITCOCKPIT\Grafana\GrafanaTargetUnits;
+
 $GrafanaUnits = new GrafanaTargetUnits();
 $allGrafanaUnits = $GrafanaUnits->getUnits();
 ?>
@@ -7,21 +9,18 @@ $allGrafanaUnits = $GrafanaUnits->getUnits();
 
     <div class="row padding-bottom-5">
         <div class="col-xs-12 no-padding">
-            <label><?php echo __('Panel unit:'); ?></label>
-            <select ng-model="panel.unit">
-                <?php foreach($allGrafanaUnits as $category => $units): ?>
-                    <optgroup label="<?php echo h($category); ?>">
-                        <?php foreach($units as $unitKey => $unitName): ?>
-                            <option value="<?php echo h($unitKey); ?>"><?php echo h($unitName); ?></option>
-                        <?php endforeach; ?>
-                    </optgroup>
-                <?php endforeach;; ?>
-            </select>
-
+            {{panel.title}}
+            <span class="text-muted italic" ng-show="humanUnit">
+                in {{humanUnit}}
+            </span>
             <div class="btn-group pull-right">
                 <button class="btn btn-xs btn-default txt-color-green" ng-click="addMetric()">
                     <i class="fa fa-plus"> </i>
                     <?php echo __('Add Metric'); ?>
+                </button>
+                <button class="btn btn-xs btn-default" ng-click="openPanelOptions()">
+                    <i class="fa fa-wrench fa-flip-horizontal"></i>
+                    <?php echo __('Panel options'); ?>
                 </button>
                 <button class="btn btn-xs btn-default txt-color-red" ng-click="removePanel()">
                     <i class="fa fa-trash"> </i>
@@ -62,7 +61,7 @@ $allGrafanaUnits = $GrafanaUnits->getUnits();
         </div>
     </div>
 
-    <div class="row"  ng-show="panel.metrics.length == 0">
+    <div class="row" ng-show="panel.metrics.length == 0">
         <div class="col-xs-12 text-center padding-bottom-5 text-info">
             <i class="fa fa-info-circle"></i>
             <?php echo __('This panel is empty. Start by adding metrics.'); ?>
@@ -142,6 +141,86 @@ $allGrafanaUnits = $GrafanaUnits->getUnits();
 
                 <button type="button" class="btn btn-primary" ng-click="saveMetric()">
                     <?php echo __('Add metric'); ?>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Panel options modal -->
+<div id="panelOptionsModal_{{rowId}}_{{panelId}}" class="modal" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">
+                    <i class="fa fa-wrench fa-flip-horizontal"></i>
+                    <?php echo __('Panel options'); ?>
+                </h4>
+            </div>
+            <div class="modal-body">
+
+                <div class="row">
+
+                    <div class="col-xs-12">
+                        <div class="form-group smart-form">
+                            <?php echo __('Panel title'); ?>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 smart-form">
+                        <div class="form-group smart-form">
+                            <label class="input"> <b class="icon-prepend">
+                                    <i class="fa fa-pencil"></i>
+                                </b>
+                                <input type="text" class="input-sm"
+                                       ng-model="panel.title"
+                                       ng-model-options="{debounce: 500}">
+                            </label>
+                        </div>
+                    </div>
+                    <br/>
+
+                    <div class="col-xs-12 padding-top-5">
+                        <div class="form-group smart-form">
+                            <?php echo __('Panel unit'); ?>
+                        </div>
+                    </div>
+                    <div class="col-xs-12">
+                        <div class="form-group">
+                            <!-- Date comes from API and PHP. PHP is required for the optgroup API data is used to tell Angular to render the chosen box-->
+                            <select
+                                    data-placeholder="<?php echo __('Please choose'); ?>"
+                                    class="form-control"
+                                    chosen="grafanaUnits"
+                                    ng-model="panel.unit"
+                                    ng-model-options="{debounce: 500}">
+                                <?php foreach ($allGrafanaUnits as $category => $units): ?>
+                                    <optgroup label="<?php echo h($category); ?>">
+                                        <?php foreach ($units as $unitKey => $unitName): ?>
+                                            <option value="<?php echo h($unitKey); ?>"><?php echo h($unitName); ?></option>
+                                        <?php endforeach; ?>
+                                    </optgroup>
+                                <?php endforeach;; ?>
+                            </select>
+                        </div>
+                    </div>
+                    <br/>
+                </div>
+                <br/>
+
+                <div class="row">
+                    <div class="col-xs-12 text-info">
+                        <i class="fa fa-info-circle"></i>
+                        <?php echo __('Changes will be saved automatically.'); ?>
+                    </div>
+                </div>
+
+
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">
+                    <?php echo __('Close'); ?>
                 </button>
             </div>
         </div>

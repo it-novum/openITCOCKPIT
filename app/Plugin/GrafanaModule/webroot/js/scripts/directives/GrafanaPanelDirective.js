@@ -6,7 +6,8 @@ angular.module('openITCOCKPIT').directive('grafanaPanel', function($http){
             'id': '=',
             'panel': '=',
             'panelId': '=',
-            'removeCallback': '='
+            'removeCallback': '=',
+            'grafanaUnits': '='
         },
         controller: function($scope){
 
@@ -14,6 +15,7 @@ angular.module('openITCOCKPIT').directive('grafanaPanel', function($http){
             $scope.currentServiceMetric = null;
             $scope.rowId = parseInt($scope.panel.row, 10);
             $scope.init = true;
+            $scope.humanUnit = '';
 
             $scope.addMetric = function(){
                 $scope.currentServiceId = null;
@@ -176,6 +178,10 @@ angular.module('openITCOCKPIT').directive('grafanaPanel', function($http){
                 $scope.removeCallback($scope.panelId);
             };
 
+            $scope.openPanelOptions = function(){
+                $('#panelOptionsModal_' + $scope.rowId + '_' + $scope.panelId).modal('show');
+            };
+
             var removeMetricFromPanel = function(metricId){
                 var metrics = [];
                 metricId = parseInt(metricId, 10);
@@ -187,11 +193,12 @@ angular.module('openITCOCKPIT').directive('grafanaPanel', function($http){
                 $scope.panel.metrics = metrics;
             };
 
-            var savePanelUnit = function(){
+            var savePanelOptions = function(){
                 $http.post("/grafana_module/grafana_userdashboards/savePanelUnit.json?angular=true",
                     {
                         id: parseInt($scope.panel.id, 10),
-                        unit: $scope.panel.unit
+                        unit: $scope.panel.unit,
+                        title: $scope.panel.title
                     }
                 ).then(function(result){
                     if(result.data.success){
@@ -224,12 +231,24 @@ angular.module('openITCOCKPIT').directive('grafanaPanel', function($http){
                 loadMetrics();
             });
 
-            $scope.$watch('panel.unit', function(){
+            $scope.$watchGroup(['panel.unit', 'panel.title'], function(){
+                for(var i in $scope.grafanaUnits){
+                    if($scope.grafanaUnits[i].hasOwnProperty($scope.panel.unit)){
+                        $scope.humanUnit = $scope.grafanaUnits[i][$scope.panel.unit];
+
+                        if($scope.humanUnit === 'None'){
+
+                            //Dont show none
+                            $scope.humanUnit = '';
+                        }
+                    }
+                }
+
                 if($scope.init){
                     $scope.init = false;
                     return;
                 }
-                savePanelUnit();
+                savePanelOptions();
             });
 
         },

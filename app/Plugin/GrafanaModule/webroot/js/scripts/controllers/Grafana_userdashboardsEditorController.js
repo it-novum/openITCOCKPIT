@@ -1,6 +1,7 @@
 angular.module('openITCOCKPIT')
     .controller('Grafana_userdashboardsEditorController', function($scope, $http, QueryStringService){
         $scope.id = QueryStringService.getCakeId();
+        $scope.name = '';
 
         $scope.load = function(){
             $http.get("/grafana_module/grafana_userdashboards/editor/" + $scope.id + ".json", {
@@ -23,6 +24,10 @@ angular.module('openITCOCKPIT')
                 }
 
                 $scope.data = data;
+
+                $scope.name = result.data.userdashboardData.GrafanaUserdashboard.name;
+                $scope.grafanaUnits = result.data.grafanaUnits;
+
             }, function errorCallback(result){
                 if(result.status === 404){
                     window.location.href = '/angular/not_found';
