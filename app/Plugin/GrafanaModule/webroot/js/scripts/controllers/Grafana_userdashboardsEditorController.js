@@ -41,8 +41,7 @@ angular.module('openITCOCKPIT')
                 id: $scope.id
             };
 
-            $http.post("/grafana_module/grafana_userdashboards/addRow.json?angular=true", data
-            ).then(function(result){
+            $http.post("/grafana_module/grafana_userdashboards/addRow.json?angular=true", data).then(function(result){
                 if(result.data.hasOwnProperty('success')){
                     new Noty({
                         theme: 'metroui',
@@ -63,6 +62,35 @@ angular.module('openITCOCKPIT')
                     timeout: 3500
                 }).show();
             });
+        };
+
+        $scope.synchronizeWithGrafana = function(){
+            $('#synchronizeWithGrafanaModal').modal('show');
+
+            $scope.syncError = false;
+            var data = {
+                id: $scope.id
+            };
+
+            $http.post("/grafana_module/grafana_userdashboards/synchronizeWithGrafana.json?angular=true", data).then(function(result){
+
+
+                if(result.data.success){
+                    new Noty({
+                        theme: 'metroui',
+                        type: 'success',
+                        text: 'Synchronization successfully',
+                        timeout: 3500
+                    }).show();
+                    $('#synchronizeWithGrafanaModal').modal('hide');
+                    return;
+                }
+
+                $scope.syncError = result.data.message;
+            }, function errorCallback(result){
+                $scope.syncError = result.data.message;
+            });
+
         };
 
         /**

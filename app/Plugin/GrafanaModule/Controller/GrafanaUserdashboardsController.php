@@ -102,7 +102,7 @@ class GrafanaUserdashboardsController extends GrafanaModuleAppController {
     public function add() {
         $grafanaConfig = $this->GrafanaConfiguration->find('first', [
             'recursive' => -1,
-            'order'     => 'id DESC'
+            'order'     => ['GrafanaConfiguration.id' =>  'DESC']
         ]);
 
         if (empty($grafanaConfig)) {
@@ -173,8 +173,40 @@ class GrafanaUserdashboardsController extends GrafanaModuleAppController {
         $this->set('_serialize', ['userdashboardDataForGrafana']);
     }
 
+    public function edit() {
 
-    public function view() {
+    }
+
+    public function view($id) {
+        if(!$this->GrafanaUserdashboard->exists($id)){
+            throw new NotFoundException();
+        }
+
+        $dashboard = $this->GrafanaUserdashboard->find('first', [
+            'recursive' => -1,
+            'conditions' => [
+                'GrafanaUserdashboard.id' => $id
+            ]
+        ]);
+
+        $grafanaConfiguration = $this->GrafanaConfiguration->find('first', [
+            'recursive' => -1,
+            'contain'   => [
+                'GrafanaConfigurationHostgroupMembership'
+            ]
+        ]);
+
+        if (empty($grafanaConfiguration)) {
+            $this->setFlash(__('No Grafana configuration found.'), false);
+            return;
+        }
+
+        /** @var GrafanaApiConfiguration $GrafanaApiConfiguration */
+        $GrafanaApiConfiguration = GrafanaApiConfiguration::fromArray($grafanaConfiguration);
+        $iframeUrl = $GrafanaApiConfiguration->getIframeUrlForUserDashboard($dashboard['GrafanaUserdashboard']['grafana_url']);
+
+        $this->set('dashboard', $dashboard);
+        $this->set('iframeUrl', $iframeUrl);
 
     }
 
@@ -436,8 +468,14 @@ class GrafanaUserdashboardsController extends GrafanaModuleAppController {
         $this->set('_serialize', ['success']);
     }
 
-    public function synchronizeWithGrafana($id) {
-        //$id = $this->request->data('id');
+    public function synchronizeWithGrafana($id = null) {
+        if (!$this->request->is('get') && !$this->request->is('post')) {
+            throw new MethodNotAllowedException();
+        }
+
+        if ($id === null) {
+            $id = $this->request->data('id');
+        }
         if (!$this->GrafanaUserdashboard->exists($id)) {
             throw new NotFoundException();
         }
@@ -448,8 +486,12 @@ class GrafanaUserdashboardsController extends GrafanaModuleAppController {
                 'GrafanaConfigurationHostgroupMembership'
             ]
         ]);
+
         if (empty($grafanaConfiguration)) {
-            throw new RuntimeException('No Grafana configuration found');
+            $this->set('success', false);
+            $this->set('message', __('No Grafana configuration found.'));
+            $this->set('_serialize', ['success', 'message']);
+            return;
         }
 
         /** @var GrafanaApiConfiguration $GrafanaApiConfiguration */
@@ -467,6 +509,9 @@ class GrafanaUserdashboardsController extends GrafanaModuleAppController {
             $GrafanaDashboard->setEditable(true);
             $GrafanaDashboard->setTags($tag->getTag());
             $GrafanaDashboard->setHideControls(false);
+            $GrafanaDashboard->setAutoRefresh('1m');
+            $GrafanaDashboard->setTimeInHours('3');
+
 
             foreach ($rows as $row) {
                 $GrafanaRow = new GrafanaRow();
@@ -474,10 +519,11 @@ class GrafanaUserdashboardsController extends GrafanaModuleAppController {
                     $GrafanaTargetCollection = new GrafanaTargetCollection();
                     $SpanSize = 12 / sizeof($row);
                     $GrafanaPanel = new GrafanaPanel($panel['id'], $SpanSize);
-                    $GrafanaPanel->setTitle($panel['id'] . 'User entered panel title');
+                    $GrafanaPanel->setTitle($panel['title']);
 
                     foreach ($panel['metrics'] as $metric) {
                         //@todo implement perfdata backends
+                        $replacedMetricName = preg_replace('/[^a-zA-Z^0-9\-\.]/', '_', $metric['metric']);
                         $GrafanaTargetCollection->addTarget(
                             new GrafanaTarget(
                                 sprintf(
@@ -485,7 +531,7 @@ class GrafanaUserdashboardsController extends GrafanaModuleAppController {
                                     $GrafanaApiConfiguration->getGraphitePrefix(),
                                     $metric['Host']['uuid'],
                                     $metric['Service']['uuid'],
-                                    $metric['metric']
+                                    $replacedMetricName
                                 ),
                                 new GrafanaTargetUnit($panel['unit'], true),
                                 new GrafanaThresholds(null, null),
@@ -516,16 +562,37 @@ class GrafanaUserdashboardsController extends GrafanaModuleAppController {
                 } catch (BadRequestException $e) {
                     $response = $e->getResponse();
                     $responseBody = $response->getBody()->getContents();
-                    debug('<error>' . $responseBody . '</error>');
+                    $message = $responseBody;
+                    $success = false;
+                } catch (\Exception $e) {
+                    $message = $e->getMessage();
+                    $success = false;
                 }
                 if ($response->getStatusCode() == 200) {
-                    debug('<success>Dashboard created</success>');
+
+                    //Save Grafana URL and GUI to database
+                    $responseBody = $response->getBody()->getContents();
+                    $data = json_decode($responseBody);
+
+                    $dashboard = $this->GrafanaUserdashboard->find('first', [
+                        'recursive'  => -1,
+                        'conditions' => [
+                            'GrafanaUserdashboard.id' => $id
+                        ]
+                    ]);
+                    $dashboard['GrafanaUserdashboard']['grafana_uid'] = $data->uid;
+                    $dashboard['GrafanaUserdashboard']['grafana_url'] = $data->url;
+                    if ($this->GrafanaUserdashboard->save($dashboard)) {
+                        $message = __('Synchronization finished successfully');
+                        $success = true;
+                    }
                 }
             }
 
         }
 
-        debug($dashboard);
-
+        $this->set('success', $success);
+        $this->set('message', $message);
+        $this->set('_serialize', ['success', 'message']);
     }
 }

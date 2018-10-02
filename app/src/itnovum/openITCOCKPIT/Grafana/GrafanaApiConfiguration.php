@@ -246,4 +246,15 @@ class GrafanaApiConfiguration {
             $this->dashboardStyle
         );
     }
+
+    public function getIframeUrlForUserDashboard($url) {
+        //&kiosk=tv require Grafana 5.3+ to work
+        //https://github.com/grafana/grafana/issues/13493
+        return sprintf(
+            '%s%s?theme=%s&kiosk=tv',
+            $this->getUiUrl(),
+            $url,
+            $this->dashboardStyle
+        );
+    }
 }
