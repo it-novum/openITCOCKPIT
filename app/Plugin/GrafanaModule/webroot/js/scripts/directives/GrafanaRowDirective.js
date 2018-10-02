@@ -5,7 +5,8 @@ angular.module('openITCOCKPIT').directive('grafanaRow', function($http){
         scope: {
             'id': '=',
             'row': '=',
-            'rowId': '='
+            'rowId': '=',
+            'removeRowCallback': '='
         },
         controller: function($scope){
             $scope.addPanel = function(){
@@ -72,6 +73,50 @@ angular.module('openITCOCKPIT').directive('grafanaRow', function($http){
                         theme: 'metroui',
                         type: 'error',
                         text: 'Error while removing panel',
+                        timeout: 3500
+                    }).show();
+                });
+            };
+
+            $scope.removeRow = function(){
+                //Remove all panels and the row is gone as well
+                var panelIds = [];
+                for(var i in $scope.row){
+                    var id = parseInt($scope.row[i].id);
+                    if(isNaN(id) === false){
+                        panelIds.push($scope.row[i].id);
+                    }
+                }
+
+                $http.post("/grafana_module/grafana_userdashboards/removeRow.json?angular=true",
+                    {
+                        'ids': panelIds
+                    }
+                ).then(function(result){
+                    if(result.data.success){
+                        new Noty({
+                            theme: 'metroui',
+                            type: 'success',
+                            text: 'Row removed successfully',
+                            timeout: 3500
+                        }).show();
+
+                        //Call callback from parent scrope to reload data (Grafana_userdashboardsEditorController)
+                        $scope.removeRowCallback();
+                    }else{
+                        new Noty({
+                            theme: 'metroui',
+                            type: 'error',
+                            text: 'Error while removing row',
+                            timeout: 3500
+                        }).show();
+                    }
+
+                }, function errorCallback(result){
+                    new Noty({
+                        theme: 'metroui',
+                        type: 'error',
+                        text: 'Error while removing row',
                         timeout: 3500
                     }).show();
                 });

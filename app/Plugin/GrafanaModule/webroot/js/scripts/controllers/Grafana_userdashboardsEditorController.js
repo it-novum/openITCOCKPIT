@@ -60,6 +60,13 @@ angular.module('openITCOCKPIT')
             });
         };
 
+        /**
+         * Gets called from child scops, if a row was deleted.
+         */
+        $scope.removeRowCallback = function(){
+            $scope.load();
+        };
+
 
         $scope.load();
 

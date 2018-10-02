@@ -7,7 +7,7 @@
                     <?php echo __('Add Panel'); ?>
                 </button>
 
-                <button class="btn btn-xs btn-danger">
+                <button class="btn btn-xs btn-danger" ng-click="removeRow()">
                     <i class="fa fa-plus"> </i>
                     <?php echo __('Remove Row'); ?>
                 </button>

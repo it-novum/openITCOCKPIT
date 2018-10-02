@@ -424,26 +424,19 @@ class GrafanaUserdashboardsController extends GrafanaModuleAppController {
             throw new MethodNotAllowedException();
         }
 
-        $id = $this->request->data('id');
-        if (!$this->GrafanaUserdashboard->exists($id)) {
-            throw new NotFoundException('GrafanaUserdashboard does not exisits');
+        $ids = $this->request->data('ids');
+        if(!empty($ids) && is_array($ids)){
+            $conditions = [
+                'GrafanaUserdashboardPanel.id' => $ids
+            ];
+            if($this->GrafanaUserdashboardPanel->deleteAll($conditions)){
+                $this->set('success', true);
+                $this->set('_serialize', ['success']);
+                return;
+            }
         }
 
-        throw new NotImplementedException();
-
-        $this->GrafanaUserdashboardPanel->create();
-        $data = [
-            'GrafanaUserdashboardPanel' => [
-                'userdashboard_id' => $id,
-                'row'              => $this->GrafanaUserdashboardPanel->getNextRow($id)
-            ]
-        ];
-        if ($this->GrafanaUserdashboardPanel->save($data)) {
-            $id = $this->GrafanaUserdashboardPanel->id;
-            $this->set('success', true);
-            $this->set('_serialize', ['success']);
-            return;
-        }
-        $this->serializeErrorMessageFromModel('GrafanaUserdashboardPanel');
+        $this->set('success', false);
+        $this->set('_serialize', ['success']);
     }
 }

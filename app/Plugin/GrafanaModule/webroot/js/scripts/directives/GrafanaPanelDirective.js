@@ -171,7 +171,7 @@ angular.module('openITCOCKPIT').directive('grafanaPanel', function($http){
             };
 
             $scope.removePanel = function(){
-                //Call callback from parent scrope
+                //Call callback from parent scrope (GrafanaRowDirective)
                 $scope.removeCallback($scope.panelId);
             };
 

@@ -2154,6 +2154,14 @@ label[class^='aco-host']:after, label[class^='aco-service']:after {
     position: relative;
     border-radius: 3px;
     background: #f5f6f9;
+    /*
+    background: repeating-linear-gradient(
+            45deg,
+            #fff,
+            #fff 10px,
+            #f5f6f9 10px,
+            #f5f6f9 20px
+    );*/
 }
 
 .grafana-panel {
