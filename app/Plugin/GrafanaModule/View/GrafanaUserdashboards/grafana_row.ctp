@@ -17,7 +17,7 @@
 
     <div class="row padding-bottom-10">
         <div class="col-xs-12 col-md-6" ng-class="panelClass" ng-repeat="panel in row">
-            <grafana-panel id="id" panel="panel" panel-id="panel.id" remove-callback="removePanel" grafana-units="grafanaUnits"></grafana-panel>
+            <grafana-panel id="id" panel="panel" panel-id="panel.id" remove-callback="removePanel" grafana-units="grafanaUnits" container-id="containerId"></grafana-panel>
         </div>
     </div>
 </div>

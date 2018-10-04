@@ -7,7 +7,8 @@ angular.module('openITCOCKPIT').directive('grafanaRow', function($http){
             'row': '=',
             'rowId': '=',
             'removeRowCallback': '=',
-            'grafanaUnits': '='
+            'grafanaUnits': '=',
+            'containerId': '='
         },
         controller: function($scope){
             $scope.addPanel = function(){

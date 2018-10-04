@@ -43,7 +43,7 @@
     <div>
         <div class="widget-body">
             <div class="row padding-top-10" ng-repeat="(rowId, row) in data">
-                <grafana-row id="id" row="row" row-id="rowId" remove-row-callback="removeRowCallback" grafana-units="grafanaUnits"></grafana-row>
+                <grafana-row id="id" row="row" row-id="rowId" remove-row-callback="removeRowCallback" grafana-units="grafanaUnits" container-id="containerId"></grafana-row>
             </div>
 
             <hr/>

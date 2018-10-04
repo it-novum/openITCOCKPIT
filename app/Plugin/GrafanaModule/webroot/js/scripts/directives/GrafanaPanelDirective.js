@@ -7,7 +7,8 @@ angular.module('openITCOCKPIT').directive('grafanaPanel', function($http){
             'panel': '=',
             'panelId': '=',
             'removeCallback': '=',
-            'grafanaUnits': '='
+            'grafanaUnits': '=',
+            'containerId': '='
         },
         controller: function($scope){
 
@@ -116,12 +117,13 @@ angular.module('openITCOCKPIT').directive('grafanaPanel', function($http){
                     selected = [];
                 }
 
-                $http.get("/services/loadServicesByString.json", {
+                $http.get("/services/loadServicesByContainerId.json", {
                     params: {
                         'angular': true,
                         'filter[Host.name]': searchString,
                         'filter[Service.servicename]': searchString,
-                        'selected[]': selected
+                        'selected[]': selected,
+                        'containerId': $scope.containerId
                     }
                 }).then(function(result){
 
