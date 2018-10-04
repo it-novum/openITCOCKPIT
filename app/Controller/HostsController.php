@@ -3483,113 +3483,8 @@ class HostsController extends AppController {
 
 
     public function addwizard() {
+        //Return HTML Template for PaginatorDirective
         $this->layout = 'angularjs';
-        /*  if (!$this->isApiRequest()) {
-              throw new MethodNotAllowedException();
-          }*/
-
-        $this->Frontend->setJson('lang_minutes', __('minutes'));
-        $this->Frontend->setJson('lang_seconds', __('seconds'));
-        $this->Frontend->setJson('lang_and', __('and'));
-        $this->Frontend->setJson('dns_hostname_lookup_failed', __('Could not resolve hostname'));
-        $this->Frontend->setJson('dns_ipaddress_lookup_failed', __('Could not reverse lookup your ip address'));
-        $this->Frontend->setJson('hostname_placeholder', __('Will be auto detected if you enter a ip address'));
-        $this->Frontend->setJson('address_placeholder', __('Will be auto detected if you enter a FQDN'));
-        $userId = $this->Auth->user('id');
-
-
-
-        if ($this->request->is('post') || $this->request->is('put')) {
-            $ext_data_for_changelog = $this->Host->getChangelogData($this->request->data);
-
-            if (isset($this->request->data['Host']['Contact'])) {
-                $this->request->data['Contact']['Contact'] = $this->request->data['Host']['Contact'];
-            } else {
-                $this->request->data['Host']['Contact'] = [];
-            }
-
-            if (isset($this->request->data['Host']['Contactgroup'])) {
-                $this->request->data['Contactgroup']['Contactgroup'] = $this->request->data['Host']['Contactgroup'];
-            }
-
-            if (!isset($this->request->data['Host']['Parenthost'])) {
-                $this->request->data['Host']['Parenthost'] = [];
-            }
-            if (is_array($this->request->data['Host']['Parenthost'])) {
-                $this->request->data['Parenthost']['Parenthost'] = $this->request->data['Host']['Parenthost'];
-            } else {
-                $this->request->data['Parenthost']['Parenthost'] = [];
-            }
-
-            if (isset($this->request->data['Host']['Hostgroup']) && is_array($this->request->data['Host']['Hostgroup'])) {
-                $this->request->data['Hostgroup']['Hostgroup'] = $this->request->data['Host']['Hostgroup'];
-            } else {
-                $this->request->data['Hostgroup']['Hostgroup'] = [];
-            }
-
-            $hosttemplate = [];
-            if (isset($this->request->data['Host']['hosttemplate_id']) &&
-                $this->Hosttemplate->exists($this->request->data['Host']['hosttemplate_id'])
-            ) {
-                $hosttemplate = $this->Hosttemplate->findById($this->request->data['Host']['hosttemplate_id']);
-            }
-            App::uses('UUID', 'Lib');
-
-            $data_to_save = $this->Host->prepareForSave(
-                $this->_diffWithTemplate($this->request->data, $hosttemplate),
-                $this->request->data,
-                'add'
-            );
-            $data_to_save['Host']['own_customvariables'] = 0;
-            //Add Customvariables data to $data_to_save
-            $data_to_save['Customvariable'] = [];
-            if (isset($this->request->data['Customvariable'])) {
-                $customVariableDiffer = new CustomVariableDiffer($this->request->data['Customvariable'], $hosttemplate['Customvariable']);
-                $customVariablesToSaveRepository = $customVariableDiffer->getCustomVariablesToSaveAsRepository();
-                $data_to_save['Customvariable'] = $customVariablesToSaveRepository->getAllCustomVariablesAsArray();
-                if (!empty($data_to_save)) {
-                    $data_to_save['Host']['own_customvariables'] = 1;
-                }
-            }
-
-            if (CakePlugin::loaded('MaximoModule')) {
-                if (!empty($this->request->data['Maximoconfiguration'])) {
-                    $data_to_save['Maximoconfiguration'] = $this->request->data['Maximoconfiguration'];
-                }
-
-            }
-
-
-            if ($this->Host->saveAll($data_to_save)) {
-
-                $changelog_data = $this->Changelog->parseDataForChangelog(
-                    $this->params['action'],
-                    $this->params['controller'],
-                    $this->Host->id,
-                    OBJECT_HOST,
-                    $this->request->data('Host.container_id'),
-                    $userId,
-                    $this->request->data['Host']['name'],
-                    array_merge($this->request->data, $ext_data_for_changelog)
-                );
-                if ($changelog_data) {
-                    CakeLog::write('log', serialize($changelog_data));
-                }
-
-                if ($this->request->ext === 'json') {
-                    $this->serializeId();
-                    return;
-                }
-            } else {
-                if ($this->request->ext === 'json') {
-
-                    $this->serializeErrorMessage();
-                    return;
-                }
-                $this->serializeErrorMessage();
-                return;
-            }
-        }
     }
 
 
@@ -3635,6 +3530,7 @@ class HostsController extends AppController {
 
 
     public function addwizardoverview($hostId){
+        //Return HTML Template for PaginatorDirective
         $this->layout = 'angularjs';
         if (!$this->Host->exists($hostId)) {
             throw new NotFoundException(__('Invalid host'));

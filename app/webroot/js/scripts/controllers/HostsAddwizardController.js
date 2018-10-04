@@ -23,8 +23,8 @@ angular.module('openITCOCKPIT')
                 notify_period_id: 0,
                 check_period_id: 0,
                 command_id: 0,
-                host_type: 1,
-                uuid: ''
+                host_type: 1
+              //  uuid: ''
             }
         };
 
@@ -125,7 +125,7 @@ angular.module('openITCOCKPIT')
 
 
         $scope.submit = function(){
-            $http.post("/hosts/addwizard.json?angular=true",
+            $http.post("/hosts/add.json?angular=true",
                 $scope.post
             ).then(function(result){
                 console.log('Data saved successfully');
