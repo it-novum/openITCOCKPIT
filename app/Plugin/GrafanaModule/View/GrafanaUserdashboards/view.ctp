@@ -28,12 +28,20 @@
 
         </h2>
         <div class="widget-toolbar">
+            <?php if ($this->Acl->hasPermission('editor', 'GrafanaUserdashboards', 'GrafanaModule') && $allowEdit): ?>
+                <a href="/grafana_module/grafana_userdashboards/editor/<?php echo h($dashboard['GrafanaUserdashboard']['id']); ?>"
+                   class="btn btn-default btn-xs">
+                    <i class="fa fa-cog"></i>
+                    <?php echo __('Open in Editor'); ?>
+                </a>
+            <?php endif; ?>
             <?php echo $this->Utils->backButton() ?>
         </div>
     </header>
     <div>
         <div class="widget-body">
-            <iframe src="<?php echo $iframeUrl; ?>" onload="this.height=(screen.height+15);" width="100%" frameborder="0"></iframe>
+            <iframe src="<?php echo $iframeUrl; ?>" onload="this.height=(screen.height+15);" width="100%"
+                    frameborder="0"></iframe>
         </div>
     </div>
 </div>

@@ -262,6 +262,9 @@ class GrafanaUserdashboardsController extends GrafanaModuleAppController {
             'conditions' => [
                 'GrafanaUserdashboard.id'           => $id,
                 'GrafanaUserdashboard.container_id' => $this->MY_RIGHTS
+            ],
+            'contain' => [
+                'Container'
             ]
         ]);
 
@@ -285,13 +288,19 @@ class GrafanaUserdashboardsController extends GrafanaModuleAppController {
             return;
         }
 
+        $allowEdit = $this->hasRootPrivileges;
+        if ($allowEdit === false) {
+            $allowEdit = $this->MY_RIGHTS_LEVEL[$dashboard['Container']['id']] == WRITE_RIGHT;
+        }
+
+
         /** @var GrafanaApiConfiguration $GrafanaApiConfiguration */
         $GrafanaApiConfiguration = GrafanaApiConfiguration::fromArray($grafanaConfiguration);
         $iframeUrl = $GrafanaApiConfiguration->getIframeUrlForUserDashboard($dashboard['GrafanaUserdashboard']['grafana_url']);
 
         $this->set('dashboard', $dashboard);
         $this->set('iframeUrl', $iframeUrl);
-
+        $this->set('allowEdit', $allowEdit);
     }
 
     public function delete($id) {
@@ -319,7 +328,34 @@ class GrafanaUserdashboardsController extends GrafanaModuleAppController {
         ]);
 
         if (!empty($dashboard)) {
+            $grafanaConfiguration = $this->GrafanaConfiguration->find('first', [
+                'recursive' => -1,
+                'contain'   => [
+                    'GrafanaConfigurationHostgroupMembership'
+                ]
+            ]);
             if ($this->GrafanaUserdashboard->delete($dashboard['GrafanaUserdashboard']['id'])) {
+                if (!empty($grafanaConfiguration)) {
+                    /** @var GrafanaApiConfiguration $GrafanaApiConfiguration */
+                    $GrafanaApiConfiguration = GrafanaApiConfiguration::fromArray($grafanaConfiguration);
+                    $client = $this->GrafanaConfiguration->testConnection($GrafanaApiConfiguration, $this->Proxy->getSettings());
+                    if ($client instanceof Client) {
+                        $deleteUrl = sprintf(
+                            '%s/dashboards/uid/%s',
+                            $GrafanaApiConfiguration->getApiUrl(),
+                            $dashboard['GrafanaUserdashboard']['grafana_uid']
+                        );
+                        $request = new \GuzzleHttp\Psr7\Request('DELETE', $deleteUrl, ['content-type' => 'application/json']);
+                        try {
+                            $response = $client->send($request);
+                        } catch (\Exception $e) {
+                            //Error while deleting dashboard form Grafana
+                            //$message = $e->getMessage();
+                            //$success = false;
+                        }
+                    }
+                }
+
                 $this->set('success', true);
                 $this->set('message', __('User defined Grafana dashboard successfully deleted'));
                 $this->set('_serialize', ['success', 'message']);
@@ -331,9 +367,6 @@ class GrafanaUserdashboardsController extends GrafanaModuleAppController {
         $this->set('success', false);
         $this->set('message', __('Could not delete user defined Grafana dashboard'));
         $this->set('_serialize', ['success', 'message']);
-
-        //@todo also remove from grafana!
-
     }
 
     public function loadContainers() {
@@ -659,9 +692,9 @@ class GrafanaUserdashboardsController extends GrafanaModuleAppController {
                                 new GrafanaThresholds(null, null),
                                 sprintf(
                                     '%s.%s.%s',
-                                    $metric['Host']['hostname'],
-                                    $metric['Service']['servicename'],
-                                    $metric['metric']
+                                    $this->replaceUmlauts($metric['Host']['hostname']),
+                                    $this->replaceUmlauts($metric['Service']['servicename']),
+                                    $this->replaceUmlauts($metric['metric'])
                                 )//Alias
                             ));
                     }
@@ -809,5 +842,17 @@ class GrafanaUserdashboardsController extends GrafanaModuleAppController {
             return;
         }
         throw new MethodNotAllowedException();
+    }
+
+    /**
+     * @param string $str
+     * @return string
+     */
+    private function replaceUmlauts($str) {
+        return str_replace(
+            ['ä', 'ü', 'ö', 'Ä', 'Ü', 'Ö', 'ß'],
+            ['ae', 'ue', 'oe', 'Ae', 'Ue', 'Oe', 'ss'],
+            $str
+        );
     }
 }

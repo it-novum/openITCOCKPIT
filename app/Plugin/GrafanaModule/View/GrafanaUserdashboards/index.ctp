@@ -131,7 +131,7 @@
                                 <?php if ($this->Acl->hasPermission('edit', 'GrafanaUserdashboards', 'GrafanaModule')): ?>
                                     <li ng-if="userdashboard.GrafanaUserdashboard.allowEdit">
                                         <a href="/grafana_module/grafana_userdashboards/edit/{{userdashboard.GrafanaUserdashboard.id}}">
-                                            <i class="fa fa-edit"></i> <?php echo __('Edit Settings'); ?>
+                                            <i class="fa fa-edit"></i> <?php echo __('Edit settings'); ?>
                                         </a>
                                     </li>
                                     <li class="divider" ng-if="userdashboard.GrafanaUserdashboard.allowEdit"></li>

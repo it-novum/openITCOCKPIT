@@ -14,6 +14,9 @@ angular.module('openITCOCKPIT')
 
         $scope.id = QueryStringService.getCakeId();
 
+        $scope.deleteUrl = "/grafana_module/grafana_userdashboards/delete/"+$scope.id+".json?angular=true";
+        $scope.sucessUrl = '/grafana_module/grafana_userdashboards/index';
+
         $scope.load = function(){
             $http.get("/grafana_module/grafana_userdashboards/edit/"+$scope.id+".json", {
                 params: {

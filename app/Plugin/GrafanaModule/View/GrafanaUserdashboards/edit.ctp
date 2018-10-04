@@ -18,14 +18,32 @@
         </h1>
     </div>
 </div>
-<div id="error_msg"></div>
+
+<confirm-delete></confirm-delete>
+
 <div class="jarviswidget">
     <header>
         <span class="widget-icon hidden-mobile hidden-tablet"> <i class="fa fa-pencil-square-o"></i> </span>
         <h2 class="hidden-mobile hidden-tablet"><?php echo __('Edit user defined Grafana dashboard'); ?></h2>
         <div class="widget-toolbar" role="menu">
+            <?php if ($this->Acl->hasPermission('delete', 'GrafanaUserdashboards', 'GrafanaModule')): ?>
+                <button type="button" class="btn btn-danger btn-xs" ng-click="confirmDelete(post.GrafanaUserdashboard)">
+                    <i class="fa fa-trash-o"></i>
+                    <?php echo __('Delete'); ?>
+                </button>
+            <?php endif; ?>
             <?php echo $this->Utils->backButton() ?>
         </div>
+
+        <div class="widget-toolbar">
+            <?php if ($this->Acl->hasPermission('editor', 'GrafanaUserdashboards', 'GrafanaModule')): ?>
+                <a href="/grafana_module/grafana_userdashboards/editor/{{id}}" class="btn btn-default btn-xs">
+                    <i class="fa fa-edit"></i>
+                    <?php echo __('Open in Editor'); ?>
+                </a>
+            <?php endif; ?>
+        </div>
+
     </header>
     <div>
         <div class="widget-body">

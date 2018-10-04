@@ -33,17 +33,26 @@
             {{name}}
         </h2>
         <div class="widget-toolbar">
+            <?php if ($this->Acl->hasPermission('edit', 'GrafanaUserdashboards', 'GrafanaModule')): ?>
+                <a href="/grafana_module/grafana_userdashboards/edit/{{id}}" class="btn btn-default btn-xs">
+                    <i class="fa fa-edit"></i>
+                    <?php echo __('Edit settings'); ?>
+                </a>
+            <?php endif; ?>
+            <?php echo $this->Utils->backButton() ?>
+        </div>
+        <div class="widget-toolbar">
             <button class="btn btn-primary btn-xs" ng-click="synchronizeWithGrafana()">
                 <i class="fa fa-refresh"></i>
                 <?php echo __('Synchronize with Grafana'); ?>
             </button>
-            <?php echo $this->Utils->backButton() ?>
         </div>
     </header>
     <div>
         <div class="widget-body">
             <div class="row padding-top-10" ng-repeat="(rowId, row) in data">
-                <grafana-row id="id" row="row" row-id="rowId" remove-row-callback="removeRowCallback" grafana-units="grafanaUnits" container-id="containerId"></grafana-row>
+                <grafana-row id="id" row="row" row-id="rowId" remove-row-callback="removeRowCallback"
+                             grafana-units="grafanaUnits" container-id="containerId"></grafana-row>
             </div>
 
             <hr/>
