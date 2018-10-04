@@ -38,7 +38,6 @@
                             </label>
                             <div class="col col-xs-10">
                                 <select
-                                        id="MapContainer"
                                         data-placeholder="<?php echo __('Please choose'); ?>"
                                         class="form-control"
                                         chosen="containers"

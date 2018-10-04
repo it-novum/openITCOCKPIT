@@ -138,6 +138,7 @@ class GrafanaUserdashboardsController extends GrafanaModuleAppController {
         }
 
         if ($this->request->is('post')) {
+            $this->GrafanaUserdashboard->create();
             if (!isset($this->request->data['GrafanaUserdashboard']['configuration_id']) || empty($this->request->data['GrafanaUserdashboard']['configuration_id'])) {
                 $this->request->data['GrafanaUserdashboard']['configuration_id'] = $grafanaConfig['GrafanaConfiguration']['id'];;
             }
@@ -201,8 +202,54 @@ class GrafanaUserdashboardsController extends GrafanaModuleAppController {
         $this->set('_serialize', ['userdashboardDataForGrafana']);
     }
 
-    public function edit() {
-        
+    public function edit($id) {
+        if (!$this->GrafanaUserdashboard->exists($id)) {
+            throw new NotFoundException();
+        }
+
+        $dashboard = $this->GrafanaUserdashboard->find('first', [
+            'recursive'  => -1,
+            'conditions' => [
+                'GrafanaUserdashboard.id'           => $id,
+                'GrafanaUserdashboard.container_id' => $this->MY_RIGHTS
+            ]
+        ]);
+
+        if (empty($dashboard)) {
+            $this->redirect([
+                'controller' => 'Angular',
+                'action'     => 'forbidden',
+                'plugin'     => ''
+            ]);
+        }
+        $dashboard['GrafanaUserdashboard']['container_id'] = (int)$dashboard['GrafanaUserdashboard']['container_id'];
+
+        if (!$this->isAngularJsRequest()) {
+            //Only ship html template
+            return;
+        }
+
+        if ($this->isAngularJsRequest()) {
+            if ($this->request->is('GET')) {
+                $this->set('dashboard', $dashboard);
+                $this->set('_serialize', ['dashboard']);
+                return;
+            }
+
+            if ($this->request->is('POST')) {
+                if ($this->GrafanaUserdashboard->save($this->request->data)) {
+                    if ($this->isAngularJsRequest()) {
+                        $this->setFlash(__('User defined Grafana dashboard edit successfully.'));
+                    }
+                    $this->set('dahboard', $this->request->data);
+                    $this->set('_serialize', ['dashboard']);
+                    return;
+                }
+                $this->serializeErrorMessage();
+            }
+        }
+
+
     }
 
     public function view($id) {
