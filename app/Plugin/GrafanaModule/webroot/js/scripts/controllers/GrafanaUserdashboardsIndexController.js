@@ -27,6 +27,9 @@ angular.module('openITCOCKPIT')
                 params: {
                     'angular': true,
                     'scroll': $scope.useScroll,
+                    'sort': SortService.getSort(),
+                    'page': $scope.currentPage,
+                    'direction': SortService.getDirection(),
                     'filter[GrafanaUserdashboard.name]': $scope.filter.GrafanaUserdashboard.name
                 }
             }).then(function(result){
@@ -116,6 +119,6 @@ angular.module('openITCOCKPIT')
         }, true);
 
         defaultFilter();
-        $scope.load();
+        SortService.setCallback($scope.load);
 
     });

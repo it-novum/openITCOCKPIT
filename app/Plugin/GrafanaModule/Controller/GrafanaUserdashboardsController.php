@@ -87,7 +87,7 @@ class GrafanaUserdashboardsController extends GrafanaModuleAppController {
         $query = [
             'recursive'  => -1,
             'conditions' => $conditions,
-            'order'      => $GrafanaUserDashboardFilter->getOrderForPaginator('GrafanaUserdashboard.name', 'ASC')
+            'order'      => $GrafanaUserDashboardFilter->getOrderForPaginator('GrafanaUserdashboard.name', 'ASC'),
         ];
 
         if ($this->isScrollRequest()) {

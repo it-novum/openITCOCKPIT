@@ -96,9 +96,13 @@
                                ng-show="userdashboard.GrafanaUserdashboard.allowEdit">
                     </td>
                     <td>
-                        <a href="/grafana_module/grafana_userdashboards/view/{{ userdashboard.GrafanaUserdashboard.id }}">
+                        <?php if ($this->Acl->hasPermission('view', 'GrafanaUserdashboards', 'GrafanaModule')): ?>
+                            <a href="/grafana_module/grafana_userdashboards/view/{{ userdashboard.GrafanaUserdashboard.id }}">
+                                {{ userdashboard.GrafanaUserdashboard.name }}
+                            </a>
+                        <?php else: ?>
                             {{ userdashboard.GrafanaUserdashboard.name }}
-                        </a>
+                        <?php endif; ?>
                     </td>
                     <td>
                         <div class="btn-group">
@@ -131,10 +135,12 @@
                                     <li class="divider" ng-if="userdashboard.GrafanaUserdashboard.allowEdit"></li>
                                 <?php endif; ?>
 
-                                <li>
-                                    <a href="/grafana_module/grafana_userdashboards/view/{{userdashboard.GrafanaUserdashboard.id}}">
-                                        <i class="fa fa-eye"></i> <?php echo __('View'); ?></a>
-                                </li>
+                                <?php if ($this->Acl->hasPermission('view', 'GrafanaUserdashboards', 'GrafanaModule')): ?>
+                                    <li>
+                                        <a href="/grafana_module/grafana_userdashboards/view/{{userdashboard.GrafanaUserdashboard.id}}">
+                                            <i class="fa fa-eye"></i> <?php echo __('View'); ?></a>
+                                    </li>
+                                <?php endif; ?>
                                 <?php if ($this->Acl->hasPermission('delete', 'GrafanaUserdashboards', 'GrafanaModule')): ?>
                                     <li class="divider" ng-if="userdashboard.GrafanaUserdashboard.allowEdit"></li>
                                     <li ng-if="userdashboard.GrafanaUserdashboard.allowEdit">
