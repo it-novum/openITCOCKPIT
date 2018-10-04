@@ -47,13 +47,24 @@ class Widgets {
         $widgets = [
             [
                 'type_id'   => 200,
-                'title'     => __('Grafana'),
+                'title'     => __('Grafana (auto generated)'),
                 'icon'      => 'fa-area-chart',
                 'directive' => 'grafana-widget',
                 'width'     => 12,
                 'height'    => 25
             ]
         ];
+
+        if (isset($this->ACL_PERMISSIONS['grafanamodule']['grafanauserdashboards']['index']) && isset($this->ACL_PERMISSIONS['grafanamodule']['grafanauserdashboards']['view'])) {
+            $widgets[] = [
+                'type_id'   => 201,
+                'title'     => __('Grafana (user defined)'),
+                'icon'      => 'fa-dashboard',
+                'directive' => 'grafana-widget-userdefined',
+                'width'     => 12,
+                'height'    => 25
+            ];
+        }
 
         return $widgets;
     }

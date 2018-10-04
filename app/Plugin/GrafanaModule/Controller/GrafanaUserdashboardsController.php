@@ -717,4 +717,97 @@ class GrafanaUserdashboardsController extends GrafanaModuleAppController {
         $this->set('message', $message);
         $this->set('_serialize', ['success', 'message']);
     }
+
+    public function grafanaWidget() {
+        $this->layout = 'blank';
+
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template
+            return;
+        }
+
+        $this->loadModel('Widget');
+        if ($this->request->is('get')) {
+            $widgetId = (int)$this->request->query('widgetId');
+            if (!$this->Widget->exists($widgetId)) {
+                throw new RuntimeException('Invalid widget id');
+            }
+
+            $widget = $this->Widget->find('first', [
+                'recursive'  => -1,
+                'conditions' => [
+                    'Widget.id' => $widgetId
+                ],
+                'fields'     => [
+                    'Widget.json_data'
+                ]
+            ]);
+
+            $grafanaDashboardId = null;
+            if ($widget['Widget']['json_data'] !== null && $widget['Widget']['json_data'] !== '') {
+                $json = @json_decode($widget['Widget']['json_data'], true);
+                if (isset($json['GrafanaUserdashboard']['id'])) {
+                    $grafanaDashboardId = $json['GrafanaUserdashboard']['id'];
+                }
+            }
+
+
+            $dashboard = $this->GrafanaUserdashboard->find('first', [
+                'recursive'  => -1,
+                'conditions' => [
+                    'GrafanaUserdashboard.id' => $grafanaDashboardId
+                ]
+            ]);
+
+            $iframeUrl = '';
+            if (!empty($grafanaDashboardId) && !empty($dashboard)) {
+                $grafanaConfiguration = $this->GrafanaConfiguration->find('first');
+                if (!empty($grafanaConfiguration)) {
+                    $GrafanaConfiguration = GrafanaApiConfiguration::fromArray($grafanaConfiguration);
+                    $iframeUrl = $GrafanaConfiguration->getIframeUrlForUserDashboard($dashboard['GrafanaUserdashboard']['grafana_url']);
+                }
+            }
+
+
+            $this->set('grafana_userdashboard_id', $grafanaDashboardId);
+            $this->set('iframe_url', $iframeUrl);
+            $this->set('_serialize', ['grafana_userdashboard_id', 'iframe_url']);
+            return;
+        }
+
+        if ($this->request->is('post')) {
+            $grafanaDashboardId = (int)$this->request->data('dashboard_id');
+            if ($grafanaDashboardId === 0) {
+                $grafanaDashboardId = null;
+            }
+
+            $widgetId = (int)$this->request->data('Widget.id');
+
+            if (!$this->Widget->exists($widgetId)) {
+                throw new RuntimeException('Invalid widget id');
+            }
+            $widget = $this->Widget->find('first', [
+                'recursive'  => -1,
+                'conditions' => [
+                    'Widget.id' => $widgetId
+                ],
+            ]);
+
+            $widget['Widget']['json_data'] = json_encode([
+                'GrafanaUserdashboard' => [
+                    'id' => $grafanaDashboardId
+                ]
+            ]);
+
+            if ($this->Widget->save($widget)) {
+                $this->set('grafana_userdashboard_id', $grafanaDashboardId);
+                $this->set('_serialize', ['grafana_userdashboard_id']);
+                return;
+            }
+
+            $this->serializeErrorMessageFromModel('Widget');
+            return;
+        }
+        throw new MethodNotAllowedException();
+    }
 }

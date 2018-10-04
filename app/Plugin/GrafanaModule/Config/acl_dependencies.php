@@ -33,7 +33,8 @@ $config = [
             'GrafanaUserdashboards' => [
                 'grafanaRow',
                 'grafanaPanel',
-                'getPerformanceDataMetrics'
+                'getPerformanceDataMetrics',
+                'grafanaWidget'
             ]
         ],
         'dependencies'   => [
