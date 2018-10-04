@@ -127,6 +127,8 @@
                                             <i class="fa fa-cog"></i> <?php echo __('Open in Editor'); ?>
                                         </a>
                                     </li>
+                                <?php endif; ?>
+                                <?php if ($this->Acl->hasPermission('edit', 'GrafanaUserdashboards', 'GrafanaModule')): ?>
                                     <li ng-if="userdashboard.GrafanaUserdashboard.allowEdit">
                                         <a href="/grafana_module/grafana_userdashboards/edit/{{userdashboard.GrafanaUserdashboard.id}}">
                                             <i class="fa fa-edit"></i> <?php echo __('Edit Settings'); ?>

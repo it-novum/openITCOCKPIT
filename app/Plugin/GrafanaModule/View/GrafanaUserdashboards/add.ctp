@@ -22,7 +22,7 @@
 <div class="jarviswidget">
     <header>
         <span class="widget-icon hidden-mobile hidden-tablet"> <i class="fa fa-pencil-square-o"></i> </span>
-        <h2 class="hidden-mobile hidden-tablet"><?php echo __('User Dashboard Add'); ?></h2>
+        <h2 class="hidden-mobile hidden-tablet"><?php echo __('Create new user defined Grafana dashboard'); ?></h2>
         <div class="widget-toolbar" role="menu">
             <?php echo $this->Utils->backButton() ?>
         </div>
@@ -71,7 +71,7 @@
                     <div class="col-xs-12 margin-top-10">
                         <div class="well formactions ">
                             <div class="pull-right">
-                                <input class="btn btn-primary" type="submit" value="Save">&nbsp;
+                                <input class="btn btn-primary" type="submit" value="<?php echo __('Save'); ?>">&nbsp;
                                 <a href="/grafana_module/grafana_userdashboards/index"
                                    class="btn btn-default">Cancel</a>
                             </div>

@@ -202,7 +202,7 @@ class GrafanaUserdashboardsController extends GrafanaModuleAppController {
     }
 
     public function edit() {
-
+        
     }
 
     public function view($id) {
