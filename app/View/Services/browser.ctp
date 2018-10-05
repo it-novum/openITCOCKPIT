@@ -1077,6 +1077,31 @@ if (!$QueryHandler->exists()): ?>
                                     <?php echo __('5 days'); ?>
                                 </a>
                             </li>
+                            <li>
+                                <a href="javascript:void(0);" ng-click="changeGraphTimespan(24*7)">
+                                    <?php echo __('7 days'); ?>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="javascript:void(0);" ng-click="changeGraphTimespan(24*30)">
+                                    <?php echo __('30 days'); ?>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="javascript:void(0);" ng-click="changeGraphTimespan(24*90)">
+                                    <?php echo __('90 days'); ?>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="javascript:void(0);" ng-click="changeGraphTimespan(24*31*6)">
+                                    <?php echo __('6 months'); ?>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="javascript:void(0);" ng-click="changeGraphTimespan(24*365)">
+                                    <?php echo __('1 year'); ?>
+                                </a>
+                            </li>
                         </ul>
                     </div>
                 </div>
@@ -1095,6 +1120,16 @@ if (!$QueryHandler->exists()): ?>
                             </li>
                         </ul>
                     </div>
+                </div>
+
+                <div class="widget-toolbar form-group smart-form" role="menu">
+                    <label class="checkbox small-checkbox-label display-inline margin-right-5">
+                        <input type="checkbox" name="checkbox" checked="checked"
+                               ng-model="graphAutoRefresh"
+                               ng-model-options="{debounce: 500}">
+                        <i class="checkbox-primary"></i>
+                        <?php echo __('Refresh'); ?>
+                    </label>
                 </div>
 
 

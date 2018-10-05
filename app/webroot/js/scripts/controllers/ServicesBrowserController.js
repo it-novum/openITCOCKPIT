@@ -29,10 +29,12 @@ angular.module('openITCOCKPIT')
         $scope.timelineIsLoading = false;
         $scope.failureDurationInPercent = null;
 
-
-        var graphTimeSpan = 4;
+        $scope.graphStart = (parseInt(new Date().getTime() / 1000, 10) - (3 * 3600));
+        $scope.graphEnd = parseInt(new Date().getTime() / 1000, 10);
+        $scope.graphAutoRefresh = true;
 
         var flappingInterval;
+        var zoomCallbackWasBind = false;
 
         $scope.showFlashMsg = function(){
             $scope.showFlashSuccess = true;
@@ -174,7 +176,9 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.changeGraphTimespan = function(timespan){
-            graphTimeSpan = timespan;
+            $scope.graphStart = (parseInt(new Date().getTime() / 1000, 10) - (timespan * 3600));
+            $scope.graphEnd = parseInt(new Date().getTime() / 1000, 10);
+            //graphTimeSpan = timespan;
             loadGraph($scope.host.Host.uuid, $scope.mergedService.Service.uuid);
         };
 
@@ -212,7 +216,9 @@ angular.module('openITCOCKPIT')
                     angular: true,
                     host_uuid: hostUuid,
                     service_uuid: serviceuuid,
-                    hours: graphTimeSpan,
+                    //hours: graphTimeSpan,
+                    start: $scope.graphStart,
+                    end: $scope.graphEnd,
                     jsTimestamp: 1
                 }
             }).then(function(result){
@@ -391,7 +397,27 @@ angular.module('openITCOCKPIT')
             };
 
 
-            self.plot = $.plot('#graphCanvas', [graph_data], options);
+            plot = $.plot('#graphCanvas', [graph_data], options);
+
+            if(zoomCallbackWasBind === false){
+                $("#graphCanvas").bind("plotselected", function(event, ranges){
+                    var start = parseInt(ranges.xaxis.from / 1000, 10);
+                    var end = parseInt(ranges.xaxis.to / 1000);
+
+                    $scope.graphStart = start;
+                    $scope.graphEnd = end;
+
+                    //Zoomed from right to left?
+                    if(start > end){
+                        $scope.graphStart = end;
+                        $scoope.graphEnd = start;
+                    }
+
+                    loadGraph($scope.host.Host.uuid, $scope.mergedService.Service.uuid);
+                });
+            }
+
+            zoomCallbackWasBind = true;
         };
 
         $scope.loadTimelineData = function(_properties){

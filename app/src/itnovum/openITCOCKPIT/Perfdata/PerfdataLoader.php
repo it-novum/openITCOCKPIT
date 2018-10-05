@@ -150,8 +150,6 @@ class PerfdataLoader {
 
                 }
             }
-
-
         }
 
         if ($this->PerfdataBackend->isRrdtool()) {
@@ -162,34 +160,6 @@ class PerfdataLoader {
                 ];
 
                 $rrd_data = $this->Rrd->getPerfDataFiles($hostUuid, $serviceUuid, $options, null, $type);
-
-                /*
-                foreach($rrd_data['xml_data'] as $DS){
-                    $graphData = [];
-                    $DSIndex = (int)$DS['ds'];
-                    if(isset($rrd_data['data'][$DSIndex])){
-                        foreach($rrd_data['data'][$DSIndex] as $timestamp => $value){
-                            if($value === null){
-                                continue;
-                            }
-
-                            if ($jsTimestamp) {
-                                $graphData[($timestamp * 1000)] = $value;
-                            }else{
-                                $graphData[$timestamp] = $value;
-                            }
-                        }
-                    }
-                    $performance_data[] = [
-                        'datasource' => $DS,
-                        'data'       => $graphData
-                    ];
-                }
-
-                return $performance_data;
-                */
-
-
 
                 $limit = (int)self::MAX_RESPONSE_GRAPH_POINTS / sizeof($rrd_data['data']);
                 foreach ($rrd_data['xml_data'] as $dataSource) {

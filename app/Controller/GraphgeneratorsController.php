@@ -26,9 +26,11 @@
 use itnovum\openITCOCKPIT\Core\DbBackend;
 use itnovum\openITCOCKPIT\Core\PerfdataBackend;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
+use itnovum\openITCOCKPIT\Core\ValueObjects\Perfdata;
 use itnovum\openITCOCKPIT\Graphite\GraphiteConfig;
 use itnovum\openITCOCKPIT\Graphite\GraphiteLoader;
 use itnovum\openITCOCKPIT\Graphite\GraphiteMetric;
+use itnovum\openITCOCKPIT\Perfdata\PerfdataLoader;
 use Statusengine\PerfdataParser;
 
 App::uses('UUID', 'Lib');
@@ -508,90 +510,36 @@ class GraphgeneratorsController extends AppController {
 
         $hostUuid = $this->request->query('host_uuid');
         $serviceUuid = $this->request->query('service_uuid');
-        $hours = (int)$this->request->query('hours');
+        $hours = $this->request->query('hours');
+        $start = (int)$this->request->query('start');
+        $end = (int)$this->request->query('end');
         $jsTimestamp = (bool)$this->request->query('jsTimestamp');
-        if ($hours < 1) {
-            $hours = 3;
+
+        $PerfdataLoader = new PerfdataLoader($this->DbBackend, $this->PerfdataBackend, $this->Servicestatus, $this->Rrd);
+        if (is_numeric($hours)) {
+            $hours = (int)$hours;
+            $start = time() - ($hours * 3600);
+            $end = time();
         }
 
-        $performance_data = [];
-
-        if ($this->PerfdataBackend->isWhisper()) {
-            $ServicestatusFields = new ServicestatusFields($this->DbBackend);
-            $ServicestatusFields->perfdata();
-            $servicestatus = $this->Servicestatus->byUuid($serviceUuid, $ServicestatusFields);
-            if (!empty($servicestatus)) {
-                $PerfdataParser = new PerfdataParser($servicestatus['Servicestatus']['perfdata']);
-                $perfdataMetadata = $PerfdataParser->parse();
-
-                $GraphiteConfig = new GraphiteConfig();
-                $GraphiteLoader = new GraphiteLoader($GraphiteConfig);
-                $GraphiteLoader->setUseJsTimestamp($jsTimestamp);
-                $GraphiteLoader->setFrom($hours * 3600);
-
-                foreach ($perfdataMetadata as $metricName => $metric) {
-                    $GraphiteMetric = new GraphiteMetric(
-                        $hostUuid,
-                        $serviceUuid,
-                        $metricName
-                    );
-
-                    $datasource = [
-                        'ds'    => $metricName,
-                        'name'  => $metricName,
-                        'label' => $metricName,
-                        'unit'  => $metric['unit'],
-                        'act'   => $metric['current'],
-                        'warn'  => $metric['warning'],
-                        'crit'  => $metric['critical'],
-                        'min'   => $metric['min'],
-                        'max'   => $metric['max'],
-                    ];
-
-                    $performance_data[] = [
-                        'datasource' => $datasource,
-                        'data'       => $GraphiteLoader->getSeriesAvg($GraphiteMetric)
-                    ];
-                }
-            }
-
-
+        if ($start === null || $end === null) {
+            $start = time() - (3 * 3600);
+            $end = time();
         }
 
-        if ($this->PerfdataBackend->isRrdtool()) {
-            if (!$this->Rrd->isValidHostAndServiceUuid($hostUuid, $serviceUuid)) {
-                $this->set('error', __('No Graph found for given host and service uuid'));
-                $this->set('_serialize', ['error']);
-                $this->response->statusCode(404);
-                return;
-            }
+        try {
+            $performance_data = $PerfdataLoader->getPerfdataByUuid($hostUuid, $serviceUuid, $start, $end, $jsTimestamp);
+            $this->set('performance_data', $performance_data);
+            $this->set('_serialize', ['performance_data']);
 
-
-            $options = [
-                'start' => time() - $hours * 3600,
-                'end'   => time(),
+        } catch (\Exception $e) {
+            error_log($e->getMessage());
+            $performance_data[] = [
+                'datasource' => [],
+                'data'       => []
             ];
-
-            $rrd_data = $this->Rrd->getPerfDataFiles($hostUuid, $serviceUuid, $options, null);
-            $limit = (int)self::MAX_RESPONSE_GRAPH_POINTS / sizeof($rrd_data['data']);
-            foreach ($rrd_data['xml_data'] as $dataSource) {
-
-                $tmpData = $this->Rrd->reduceData($rrd_data['data'][$dataSource['ds']], $limit, self::REDUCE_METHOD_AVERAGE);
-                $data = [];
-                if ($jsTimestamp) {
-                    foreach ($tmpData as $timestamp => $value) {
-                        $data[($timestamp * 1000)] = $value;
-                    }
-                } else {
-                    $data = $tmpData;
-                }
-
-                $performance_data[] = [
-                    'datasource' => $dataSource,
-                    'data'       => $data
-                ];
-            }
         }
+
 
         $this->set('performance_data', $performance_data);
         $this->set('_serialize', ['performance_data']);
