@@ -3220,7 +3220,7 @@ class ServicesController extends AppController {
 
         $ServiceCondition = new ServiceConditions($ServiceFilter->indexFilter());
         $ServiceCondition->setContainerIds($containerIds);
-        $ServiceCondition->includeDisabled(true);
+        $ServiceCondition->setIncludeDisabled(false);
 
         $services = $this->Service->makeItJavaScriptAble(
             $this->Service->getServicesForAngular($ServiceCondition, $selected)

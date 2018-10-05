@@ -152,10 +152,16 @@ class ServicegroupsController extends AppController {
                         'Service.id',
                         'Service.name'
                     ],
+                    'conditions' => [
+                        'Service.disabled' => 0
+                    ],
                     'Host'            => [
                         'fields' => [
                             'Host.id',
                             'Host.name'
+                        ],
+                        'conditions' => [
+                            'Host.disabled' => 0
                         ]
                     ],
                     'Servicetemplate' => [
