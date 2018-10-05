@@ -184,7 +184,7 @@
                         </p>
                         <div class="progress progress-sm">
                             <div class="progress-bar bg-color-darken"
-                                 style="width: {{ systemHealth.swap.memory.percentage }}%;"></div>
+                                 style="width: {{ systemHealth.memory_usage.swap.percentage }}%;"></div>
                         </div>
                     </div>
                 </span>
