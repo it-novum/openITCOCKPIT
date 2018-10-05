@@ -623,13 +623,18 @@ class UsersController extends AppController {
     public function resetPassword($id = null) {
         $this->autoRender = false;
         if (!$this->User->exists($id)) {
-            $this->setFlash(__('Invalide user'), false);
+            $this->setFlash(__('Invalid user'), false);
             $this->redirect(['action' => 'index']);
 
             return;
         }
 
-        $user = $this->User->findById($id);
+        $user = $this->User->find('first', [
+            'recursive' => -1,
+            'conditions' => [
+                'User.id' => $id
+            ]
+        ]);
         $generatePassword = function () {
             $char = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
             $size = (sizeof($char) - 1);
@@ -663,18 +668,10 @@ class UsersController extends AppController {
                 'contentId' => '100',
             ],
         ]);
-
-        $user['User']['new_password'] = $newPassword;
-        $user['User']['confirm_new_password'] = $newPassword;
-        unset($user['User']['password']);
-        unset($user['Usergroup']);
-        foreach ($user['ContainerUserMembership'] as $key => $container) {
-            $user['User']['Container'][] = $container['container_id'];
-        }
-        unset($user['ContainerUserMembership']);
-        if ($this->User->saveAll($user)) {
+        $this->User->id = $id;
+        if ($this->User->saveField('password', AuthComponent::password($newPassword))) {
             $Email->send();
-            $this->setFlash(__('Password reset successfully. A mail with the new password was set to <b>' . $user['User']['email'] . '</b>'));
+            $this->setFlash(__('Password reset successfully. A mail with the new password was sent to <b>' . h($user['User']['email']) . '</b>'));
             $this->redirect(['action' => 'index']);
 
             return;
