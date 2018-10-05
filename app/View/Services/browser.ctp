@@ -346,7 +346,7 @@ if (!$QueryHandler->exists()): ?>
 
                                     <div class="row" ng-show="hoststatus.currentState > 0">
                                         <div class="col-xs-12 margin-bottom-10">
-                                            <div class="browser-border padding-10" style="width: 100%;">
+                                            <div class="browser-border padding-10 bg-info" style="width: 100%;">
                                                 <div>
                                                     <h4 class="no-padding text-info">
                                                         <i class="fa fa-exclamation-triangle"></i>
