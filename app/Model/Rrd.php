@@ -193,29 +193,31 @@ class Rrd extends AppModel {
         ];
 
 
-        $perf_data = rrd_fetch($rrd_path, $options);
-        $perf_data_filtered = [];
-        if (!$perf_data) {
+        $perfdata = rrd_fetch($rrd_path, $options);
+
+
+        if(empty($perfdata) || empty($perfdata['data'])){
             return [];
         }
-        foreach ($perf_data as $key => $value) {
-            if ($key == 'data') {
-                foreach (array_keys($perf_data['data']) as $sub_key => $data_array) {
-                    $perf_data_filtered['data'][$data_array] = [];
-                    foreach ($perf_data['data'][$data_array] as $timestamp => $item_value) {
-                        if (strcasecmp(trim($item_value), 'NAN') != 0) {
-                            $perf_data_filtered['data'][$data_array][$timestamp] = $item_value;
-                        } else {
-                            $perf_data_filtered['data'][$data_array][$timestamp] = null;
-                        }
-                    }
+
+
+        $dataSources = array_keys($perfdata['data']); //save memory
+        foreach($dataSources as $dsIndex){
+            foreach(array_keys($perfdata['data'][$dsIndex]) as $timestamp){
+                if(is_nan($perfdata['data'][$dsIndex][$timestamp])){
+                    $perfdata['data'][$dsIndex][$timestamp] = null;
                 }
-            } else {
-                $perf_data_filtered[$key] = $value;
             }
         }
 
-        return $perf_data_filtered;
+        return $perfdata;
+
+    }
+
+    public function convert($size)
+    {
+        $unit=array('b','kb','mb','gb','tb','pb');
+        return @round($size/pow(1024,($i=floor(log($size,1024)))),2).' '.$unit[$i];
     }
 
     public function isValidHostUuid($host_uuid) {
