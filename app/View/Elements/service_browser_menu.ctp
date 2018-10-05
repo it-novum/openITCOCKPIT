@@ -85,32 +85,17 @@
     <?php endif; ?>
 <?php endif; ?>
 
+<?php
+if ($this->Acl->hasPermission('edit', 'services') && !empty($additionalLinksList)):
+    if ($service['Service']['name'] === null || $service['Service']['name'] === ''):
+        $service['Service']['name'] = $service['Servicetemplate']['name'];
+    endif; ?>
     <div class="btn-group">
         <a href="javascript:void(0);" class="btn btn-default btn-sm"><?php echo __('More'); ?></a>
         <a href="javascript:void(0);" data-toggle="dropdown" class="btn btn-default dropdown-toggle btn-sm"><span
                     class="caret"></span></a>
         <ul class="dropdown-menu dropdown-menu-right">
-            <?php if ($this->Monitoring->checkForServiceGraph($service['Host']['uuid'], $service['Service']['uuid'])): ?>
-                <li>
-                    <a href="/services/grapherSwitch/<?php echo $service['Service']['id']; ?>"><i
-                                class="fa fa-area-chart"></i> <?php echo __('Grapher'); ?></a>
-                </li>
-            <?php endif; ?>
-
-            <?php if ($this->Acl->hasPermission('edit', 'services')):
-                if (!empty($additionalLinksList)):
-                    echo '<li class="divider"></li>';
-                endif;// @TODO extend additional links mit service object
-                if ($service['Service']['name'] === null || $service['Service']['name'] === ''):
-                    $service['Service']['name'] = $service['Servicetemplate']['name'];
-                endif;
-                echo $this->AdditionalLinks->renderAsListItems($additionalLinksList, $service['Service']['id'], $service);
-            endif; ?>
+            <?php echo $this->AdditionalLinks->renderAsListItems($additionalLinksList, $service['Service']['id'], $service); ?>
         </ul>
     </div>
-
-<?php
-/* old way:
-<a href="/notifications/serviceNotification/<?php echo $service['Service']['id']; ?>" class="btn btn-default btn-sm"><i class="fa fa-envelope "></i> <?php echo $this->Html->underline('n', __('Notifications')); ?></a>
-*/
-?>
+<?php endif; ?>

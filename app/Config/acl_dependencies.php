@@ -117,12 +117,6 @@ $config = [
                 'serviceMacro',
             ],
             'Services'         => [
-                'grapherSwitch',
-                'grapher',
-                'grapherTemplate',
-                'grapherZoom',
-                'grapherZoomTemplate',
-                'createGrapherErrorPng',
                 'icon',
                 'servicecumulatedstatusicon',
                 'details'
