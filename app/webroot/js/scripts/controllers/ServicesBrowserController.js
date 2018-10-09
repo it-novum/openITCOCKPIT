@@ -471,10 +471,6 @@ angular.module('openITCOCKPIT')
                     //We dont need to autorefresh data from yesterday
                     if((end + graphAutoRefreshIntervalInSeconds + 120) < currentTimestamp){
                         disableGraphAutorefresh();
-                    }else{
-                        if($scope.graphAutoRefresh){
-                            enableGraphAutorefresh();
-                        }
                     }
 
                     loadGraph($scope.host.Host.uuid, $scope.mergedService.Service.uuid, false, start, end, true);
@@ -673,7 +669,6 @@ angular.module('openITCOCKPIT')
         var enableGraphAutorefresh = function(){
             $scope.graphAutoRefresh = true;
 
-            $scope.graphAutoRefreshInterval = 10000; // @todo todo remove me!
             if(graphAutoRefreshIntervalId === null){
                 graphAutoRefreshIntervalId = $interval(function(){
                     //Find last timestamp to only load new data and keep the existing
