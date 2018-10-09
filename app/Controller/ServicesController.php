@@ -54,6 +54,7 @@ use itnovum\openITCOCKPIT\Core\Views\UserTime;
 use itnovum\openITCOCKPIT\Database\ScrollIndex;
 use itnovum\openITCOCKPIT\Filter\ServiceFilter;
 use itnovum\openITCOCKPIT\Monitoring\QueryHandler;
+use Statusengine\PerfdataParser;
 
 /**
  * @property Container $Container
@@ -2178,6 +2179,8 @@ class ServicesController extends AppController {
             $Servicestatus
         );
         $mergedService['Service']['has_graph'] = $PerfdataChecker->hasPerfdata();
+        $PerfdataParser = new PerfdataParser($Servicestatus->getPerfdata());
+        $mergedService['Perfdata'] = $PerfdataParser->parse();
 
 
         //Check for acknowledgements and downtimes

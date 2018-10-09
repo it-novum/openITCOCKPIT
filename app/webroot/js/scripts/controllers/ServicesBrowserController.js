@@ -13,11 +13,10 @@ angular.module('openITCOCKPIT')
 
         $scope.serviceStatusTextClass = 'txt-primary';
 
-        $scope.selectedGraphdataSource = null;
-
         $scope.isLoadingGraph = false;
 
         $scope.dataSources = [];
+        $scope.currentDataSource = null;
 
         $scope.visTimeline = null;
         $scope.visTimelineInit = true;
@@ -29,12 +28,14 @@ angular.module('openITCOCKPIT')
         $scope.timelineIsLoading = false;
         $scope.failureDurationInPercent = null;
 
-        $scope.graphStart = (parseInt(new Date().getTime() / 1000, 10) - (3 * 3600));
-        $scope.graphEnd = parseInt(new Date().getTime() / 1000, 10);
         $scope.graphAutoRefresh = true;
+        $scope.graphAutoRefreshInterval = 0;
 
         var flappingInterval;
         var zoomCallbackWasBind = false;
+        var graphAutoRefreshIntervalId = null;
+        var lastGraphStart = 0;
+        var lastGraphEnd = 0;
 
         $scope.showFlashMsg = function(){
             $scope.showFlashSuccess = true;
@@ -89,8 +90,21 @@ angular.module('openITCOCKPIT')
                     $scope.priorities[i] = true;
                 }
 
+                $scope.graphAutoRefreshInterval = parseInt($scope.mergedService.Service.check_interval, 10) * 1000;
+
+                var graphStart = (parseInt(new Date().getTime() / 1000, 10) - (3 * 3600));
+                var graphEnd = parseInt(new Date().getTime() / 1000, 10);
+                $scope.dataSources = [];
+                for(var dsName in result.data.mergedService.Perfdata){
+                    $scope.dataSources.push(dsName);
+                }
+                if($scope.dataSources.length > 0){
+                    $scope.currentDataSource = $scope.dataSources[0];
+                }
+
+
                 if($scope.mergedService.Service.has_graph){
-                    loadGraph($scope.host.Host.uuid, $scope.mergedService.Service.uuid);
+                    loadGraph($scope.host.Host.uuid, $scope.mergedService.Service.uuid, false, graphStart, graphEnd);
                 }
 
                 $scope.init = false;
@@ -176,15 +190,15 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.changeGraphTimespan = function(timespan){
-            $scope.graphStart = (parseInt(new Date().getTime() / 1000, 10) - (timespan * 3600));
-            $scope.graphEnd = parseInt(new Date().getTime() / 1000, 10);
+            var start = (parseInt(new Date().getTime() / 1000, 10) - (timespan * 3600));
+            var end = parseInt(new Date().getTime() / 1000, 10);
             //graphTimeSpan = timespan;
-            loadGraph($scope.host.Host.uuid, $scope.mergedService.Service.uuid);
+            loadGraph($scope.host.Host.uuid, $scope.mergedService.Service.uuid, false, start, end);
         };
 
-        $scope.changeDataSource = function(dsId){
-            $scope.selectedGraphdataSource = dsId;
-            renderGraph($scope.perfdata)
+        $scope.changeDataSource = function(gaugeName){
+            $scope.currentDataSource = gaugeName;
+            loadGraph($scope.host.Host.uuid, $scope.mergedService.Service.uuid, false, lastGraphStart, lastGraphEnd);
         };
 
         var getServicestatusTextColor = function(){
@@ -209,27 +223,66 @@ angular.module('openITCOCKPIT')
         };
 
 
-        var loadGraph = function(hostUuid, serviceuuid){
-            $scope.isLoadingGraph = true;
-            $http.get('/Graphgenerators/getPerfdataByUuid.json', {
-                params: {
-                    angular: true,
-                    host_uuid: hostUuid,
-                    service_uuid: serviceuuid,
-                    //hours: graphTimeSpan,
-                    start: $scope.graphStart,
-                    end: $scope.graphEnd,
-                    jsTimestamp: 1
-                }
-            }).then(function(result){
-                $scope.isLoadingGraph = false;
-                $scope.dataSources = [];
-                $scope.perfdata = result.data.performance_data;
-                for(var dsKey in  $scope.perfdata){
-                    $scope.dataSources.push($scope.perfdata[dsKey].datasource.label);
-                }
-                renderGraph($scope.perfdata);
-            });
+        var loadGraph = function(hostUuid, serviceuuid, appendData, start, end){
+
+            lastGraphStart = start;
+            lastGraphEnd = end;
+
+            if($scope.dataSources.length > 0){
+                $scope.isLoadingGraph = true;
+                $http.get('/Graphgenerators/getPerfdataByUuid.json', {
+                    params: {
+                        angular: true,
+                        host_uuid: hostUuid,
+                        service_uuid: serviceuuid,
+                        //hours: graphTimeSpan,
+                        start: start,
+                        end: end,
+                        jsTimestamp: 1,
+                        gauge: $scope.currentDataSource
+                    }
+                }).then(function(result){
+                    $scope.isLoadingGraph = false;
+                    if(appendData === false){
+                        //Did we got date from Server?
+                        if(result.data.performance_data.length > 0){
+                            //Use the first metrics the server gave us.
+                            $scope.perfdata = result.data.performance_data[0];
+                        }else{
+                            $scope.perfdata = {
+                                data: {},
+                                datasource: {
+                                    ds: null,
+                                    name: null,
+                                    label: null,
+                                    unit: null,
+                                    act: null,
+                                    warn: null,
+                                    crit: null,
+                                    min: null,
+                                    max: null
+                                }
+                            };
+                        }
+                    }
+
+                    if(appendData === true){
+                        if(result.data.performance_data.length > 0){
+                            //Append new data to current graph
+                            for(var timestamp in result.data.performance_data[0].data){
+                                $scope.perfdata.data[timestamp] = result.data.performance_data[0].data[timestamp];
+                            }
+                        }
+                    }
+
+
+                    if($scope.graphAutoRefresh === true && $scope.graphAutoRefreshInterval > 1000){
+                        enableGraphAutorefresh();
+                    }
+
+                    renderGraph($scope.perfdata);
+                });
+            }
         };
 
         var initTooltip = function(){
@@ -309,21 +362,18 @@ angular.module('openITCOCKPIT')
 
             var thresholdLines = [];
             var thresholdAreas = [];
-            if($scope.selectedGraphdataSource === null){
-                $scope.selectedGraphdataSource = 0;
-            }
 
             var GraphDefaultsObj = new GraphDefaults();
 
             var defaultColor = GraphDefaultsObj.defaultFillColor;
 
-            if(performance_data[$scope.selectedGraphdataSource].datasource.warn !== "" &&
-                performance_data[$scope.selectedGraphdataSource].datasource.crit !== "" &&
-                performance_data[$scope.selectedGraphdataSource].datasource.warn !== null &&
-                performance_data[$scope.selectedGraphdataSource].datasource.crit !== null){
+            if(performance_data.datasource.warn !== "" &&
+                performance_data.datasource.crit !== "" &&
+                performance_data.datasource.warn !== null &&
+                performance_data.datasource.crit !== null){
 
-                var warn = parseFloat(performance_data[$scope.selectedGraphdataSource].datasource.warn);
-                var crit = parseFloat(performance_data[$scope.selectedGraphdataSource].datasource.crit);
+                var warn = parseFloat(performance_data.datasource.warn);
+                var crit = parseFloat(performance_data.datasource.crit);
 
                 //Add warning and critical line to chart
                 thresholdLines.push({
@@ -366,8 +416,8 @@ angular.module('openITCOCKPIT')
             }
 
             var graph_data = [];
-            for(var timestamp in performance_data[$scope.selectedGraphdataSource].data){
-                graph_data.push([timestamp, performance_data[$scope.selectedGraphdataSource].data[timestamp]]);
+            for(var timestamp in performance_data.data){
+                graph_data.push([timestamp, performance_data.data[timestamp]]);
             }
 
             var options = GraphDefaultsObj.getDefaultOptions();
@@ -404,16 +454,28 @@ angular.module('openITCOCKPIT')
                     var start = parseInt(ranges.xaxis.from / 1000, 10);
                     var end = parseInt(ranges.xaxis.to / 1000);
 
-                    $scope.graphStart = start;
-                    $scope.graphEnd = end;
 
                     //Zoomed from right to left?
                     if(start > end){
-                        $scope.graphStart = end;
-                        $scoope.graphEnd = start;
+                        var tmpStart = end;
+                        end = start;
+                        start = tmpStart;
                     }
 
-                    loadGraph($scope.host.Host.uuid, $scope.mergedService.Service.uuid);
+                    var currentTimestamp = Math.floor(Date.now() / 1000);
+                    var graphAutoRefreshIntervalInSeconds = $scope.graphAutoRefreshInterval / 1000;
+
+                    //Only enable autorefresh, if graphEnd timestamp is near to now
+                    //We dont need to autorefresh data from yesterday
+                    if((end + graphAutoRefreshIntervalInSeconds + 120) < currentTimestamp){
+                        disableGraphAutorefresh();
+                    }else{
+                        if($scope.graphAutoRefresh){
+                            enableGraphAutorefresh();
+                        }
+                    }
+
+                    loadGraph($scope.host.Host.uuid, $scope.mergedService.Service.uuid, false, start, end);
                 });
             }
 
@@ -606,6 +668,37 @@ angular.module('openITCOCKPIT')
             return (failuresDuration / totalTime * 100).toFixed(3);
         };
 
+        var enableGraphAutorefresh = function(){
+            $scope.graphAutoRefresh = true;
+
+            $scope.graphAutoRefreshInterval = 10000; // @todo todo remove me!
+            if(graphAutoRefreshIntervalId === null){
+                graphAutoRefreshIntervalId = $interval(function(){
+                    //Find last timestamp to only load new data and keep the existing
+                    var lastTimestampInCurrentData = 0;
+                    for(var timestamp in $scope.perfdata.data){
+                        if(timestamp > lastTimestampInCurrentData){
+                            lastTimestampInCurrentData = timestamp;
+                        }
+                    }
+
+                    lastTimestampInCurrentData = lastTimestampInCurrentData / 1000;
+                    var start = lastTimestampInCurrentData;
+                    var end = Math.floor(Date.now() / 1000);
+                    loadGraph($scope.host.Host.uuid, $scope.mergedService.Service.uuid, true, start, end);
+                }, $scope.graphAutoRefreshInterval);
+            }
+        };
+
+        var disableGraphAutorefresh = function(){
+            $scope.graphAutoRefresh = false;
+
+            if(graphAutoRefreshIntervalId !== null){
+                $interval.cancel(graphAutoRefreshIntervalId);
+            }
+            graphAutoRefreshIntervalId = null;
+        };
+
         $scope.load();
         $scope.loadTimezone();
 
@@ -622,6 +715,19 @@ angular.module('openITCOCKPIT')
 
                 }
             }
+        });
+
+        $scope.$watch('graphAutoRefresh', function(){
+            if($scope.init){
+                return;
+            }
+
+            if($scope.graphAutoRefresh === true){
+                enableGraphAutorefresh();
+            }else{
+                disableGraphAutorefresh();
+            }
+
         });
 
     });

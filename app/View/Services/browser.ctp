@@ -1113,8 +1113,8 @@ if (!$QueryHandler->exists()): ?>
                             <span class="caret"></span>
                         </button>
                         <ul class="dropdown-menu pull-right">
-                            <li ng-repeat="(dsId, dsName) in dataSources">
-                                <a href="javascript:void(0);" ng-click="changeDataSource(dsId)">
+                            <li ng-repeat="dsName in dataSources">
+                                <a href="javascript:void(0);" ng-click="changeDataSource(dsName)">
                                     {{dsName}}
                                 </a>
                             </li>
@@ -1125,10 +1125,9 @@ if (!$QueryHandler->exists()): ?>
                 <div class="widget-toolbar form-group smart-form" role="menu">
                     <label class="checkbox small-checkbox-label display-inline margin-right-5">
                         <input type="checkbox" name="checkbox" checked="checked"
-                               ng-model="graphAutoRefresh"
-                               ng-model-options="{debounce: 500}">
+                               ng-model="graphAutoRefresh">
                         <i class="checkbox-primary"></i>
-                        <?php echo __('Refresh'); ?>
+                        <?php echo __('Auto refresh'); ?>
                     </label>
                 </div>
 

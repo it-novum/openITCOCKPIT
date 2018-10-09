@@ -72,6 +72,7 @@ class PerfdataLoader {
      * @param PerfdataBackend $PerfdataBackend
      * @param \Model $Servicestatus
      * @param \Model $Rrd
+     * @param null|string $gauge
      */
     public function __construct(DbBackend $DbBackend, PerfdataBackend $PerfdataBackend, \Model $Servicestatus, \Model $Rrd) {
         $this->DbBackend = $DbBackend;
@@ -81,16 +82,21 @@ class PerfdataLoader {
     }
 
     /**
-     * @param string $hostUuid
-     * @param string $serviceUuid
-     * @param int $start
-     * @param int $end
+     * @param $hostUuid
+     * @param $serviceUuid
+     * @param $start
+     * @param $end
      * @param bool $jsTimestamp
      * @param string $type
+     * @param null|string $gauge
      * @return array
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function getPerfdataByUuid($hostUuid, $serviceUuid, $start, $end, $jsTimestamp = false, $type = 'avg'){
+    public function getPerfdataByUuid($hostUuid, $serviceUuid, $start, $end, $jsTimestamp = false, $type = 'avg', $gauge = null){
+        if($gauge === ''){
+            $gauge = null;
+        }
+
         $performance_data = [];
 
         if ($this->PerfdataBackend->isWhisper()) {
@@ -107,6 +113,12 @@ class PerfdataLoader {
                 $GraphiteLoader->setAbsoluteDate($start, $end);
 
                 foreach ($perfdataMetadata as $metricName => $metric) {
+                    if($gauge !== null){
+                        if($gauge !== $metricName){
+                            continue;
+                        }
+                    }
+
                     $GraphiteMetric = new GraphiteMetric(
                         $hostUuid,
                         $serviceUuid,
@@ -163,6 +175,11 @@ class PerfdataLoader {
 
                 $limit = (int)self::MAX_RESPONSE_GRAPH_POINTS / sizeof($rrd_data['data']);
                 foreach ($rrd_data['xml_data'] as $dataSource) {
+                    if($gauge !== null){
+                        if($gauge !== $dataSource['name']){
+                            continue;
+                        }
+                    }
 
                     $tmpData = $this->Rrd->reduceData($rrd_data['data'][$dataSource['ds']], $limit, self::REDUCE_METHOD_AVERAGE);
                     $data = [];
