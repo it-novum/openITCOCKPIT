@@ -58,6 +58,8 @@ class ChartRenderClient {
      */
     private $height = 350;
 
+    private $startTimestamp = 0;
+
     public function __construct() {
         $this->Client = new Client(['base_uri' => $this->address]);
     }
@@ -84,6 +86,24 @@ class ChartRenderClient {
     }
 
     /**
+     * @param int $timestamp
+     */
+    public function setGraphStartTimestamp($timestamp) {
+        $this->startTimestamp = $timestamp;
+    }
+
+
+    /**
+     * @return int
+     */
+    public function getGraphStartAsISO() {
+         if($this->startTimestamp === 0){
+             $this->startTimestamp = time();
+         }
+         return date('c', $this->startTimestamp);
+    }
+
+    /**
      * @param array $data
      * @return string binary png image
      */
@@ -94,7 +114,8 @@ class ChartRenderClient {
                 'settings' => [
                     'width'  => $this->width,
                     'height' => $this->height,
-                    'title'  => $this->title
+                    'title'  => $this->title,
+                    'graph_start' => $this->getGraphStartAsISO()
                 ]
             ]
         ]);
@@ -113,7 +134,8 @@ class ChartRenderClient {
                 'data'       => []
             ];
             foreach ($gauge['data'] as $timestamp => $value) {
-                $result[$index]['data'][date('d.m.Y H:i', $timestamp)] = $value;
+                //ISO date for metric values
+                $result[$index]['data'][date('c', $timestamp)] = $value;
             }
         }
         return $result;

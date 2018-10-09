@@ -72,7 +72,7 @@ class GraphiteLoader {
     /**
      * @var int
      */
-    private $maxDataPoints = 1000;
+    private $maxDataPoints = 2000;
 
     /**
      * GraphiteLoader constructor.
@@ -183,6 +183,7 @@ class GraphiteLoader {
             $this->GraphiteConfig->getGraphitePrefix(),
             $GraphiteMetric->getMetricPath()
         );
+
         return $this->normalizeData($this->sendRequest($options));
     }
 
@@ -198,6 +199,7 @@ class GraphiteLoader {
             $this->GraphiteConfig->getGraphitePrefix(),
             $GraphiteMetric->getMetricPath()
         );
+
         return $this->normalizeData($this->sendRequest($options));
     }
 

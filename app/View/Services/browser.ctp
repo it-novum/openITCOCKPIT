@@ -1131,6 +1131,15 @@ if (!$QueryHandler->exists()): ?>
                     </label>
                 </div>
 
+                <div class="widget-toolbar form-group smart-form" role="menu">
+                    <label class="checkbox small-checkbox-label display-inline margin-right-5">
+                        <input type="checkbox" name="checkbox" checked="checked"
+                               ng-model="showDatapoints">
+                        <i class="checkbox-primary"></i>
+                        <?php echo __('Show data points'); ?>
+                    </label>
+                </div>
+
 
                 <span class="widget-icon hidden-mobile"> <i class="fa fa-area-chart"></i> </span>
                 <h2 class="hidden-mobile"><?php echo __('Service graphs'); ?></h2>

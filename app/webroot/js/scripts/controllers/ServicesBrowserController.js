@@ -30,6 +30,7 @@ angular.module('openITCOCKPIT')
 
         $scope.graphAutoRefresh = true;
         $scope.graphAutoRefreshInterval = 0;
+        $scope.showDatapoints = false;
 
         var flappingInterval;
         var zoomCallbackWasBind = false;
@@ -443,10 +444,13 @@ angular.module('openITCOCKPIT')
             options.series.color = defaultColor;
             options.series.threshold = thresholdAreas;
             options.lines.fillColor.colors = [{opacity: 0.3}, {brightness: 1, opacity: 0.6}];
+
             options.points = {
-                show: false,
+                show: $scope.showDatapoints,
                 radius: 1
             };
+
+            options.xaxis.min = lastGraphStart * 1000;
 
 
             plot = $.plot('#graphCanvas', [graph_data], options);
@@ -728,7 +732,13 @@ angular.module('openITCOCKPIT')
             }else{
                 disableGraphAutorefresh();
             }
+        });
 
+        $scope.$watch('showDatapoints', function(){
+            if($scope.init){
+                return;
+            }
+            loadGraph($scope.host.Host.uuid, $scope.mergedService.Service.uuid, true, lastGraphStart, lastGraphEnd, false);
         });
 
     });

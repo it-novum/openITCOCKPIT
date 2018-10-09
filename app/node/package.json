@@ -10,6 +10,7 @@
     "dependencies": {
         "chart.js": "^2.7.2",
         "chartjs-node": "^1.7.1",
-        "express": "^4.16.3"
+        "express": "^4.16.3",
+        "moment": "^2.22.2"
     }
 }

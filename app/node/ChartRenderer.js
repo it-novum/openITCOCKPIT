@@ -2,7 +2,7 @@ var express = require('express');
 const ChartjsNode = require('chartjs-node');
 var bodyParser = require('body-parser');
 const util = require('util');
-
+var moment = require('moment');
 
 //https://github.com/vmpowerio/chartjs-node/issues/26
 if(global.CanvasGradient === undefined){
@@ -53,6 +53,7 @@ app.post('/AreaChart', function(request, response){
     };
 
     var labels = Object.keys(request.body.data[0].data);
+
     var datasets = [];
 
     var useTwoYAxes = false;
@@ -121,7 +122,25 @@ app.post('/AreaChart', function(request, response){
         },
         options: {
             scales: {
-                yAxes: yAxes
+                yAxes: yAxes,
+
+                xAxes: [{
+                    type: 'time',
+                    time: {
+                        min: moment((request.body.settings.graph_start)),
+                        displayFormats: {
+                            'millisecond': 'MMM DD',
+                            'second': 'MMM DD',
+                            'minute': 'MMM DD',
+                            'hour': 'MMM DD',
+                            'day': 'MMM DD',
+                            'week': 'MMM DD',
+                            'month': 'MMM DD',
+                            'quarter': 'MMM DD',
+                            'year': 'MMM DD'
+                        }
+                    }
+                }]
             },
             title: {
                 display: displayTitle,
@@ -130,6 +149,7 @@ app.post('/AreaChart', function(request, response){
         }
     };
 
+    //console.log(util.inspect(chartJsOptions,  false, null, true ));
     //console.log(util.inspect(chartJsOptions, false, null, true /* enable colors */));
     //console.log("\n");
 
