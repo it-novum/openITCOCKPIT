@@ -104,7 +104,7 @@ angular.module('openITCOCKPIT')
 
 
                 if($scope.mergedService.Service.has_graph){
-                    loadGraph($scope.host.Host.uuid, $scope.mergedService.Service.uuid, false, graphStart, graphEnd);
+                    loadGraph($scope.host.Host.uuid, $scope.mergedService.Service.uuid, false, graphStart, graphEnd, true);
                 }
 
                 $scope.init = false;
@@ -193,12 +193,12 @@ angular.module('openITCOCKPIT')
             var start = (parseInt(new Date().getTime() / 1000, 10) - (timespan * 3600));
             var end = parseInt(new Date().getTime() / 1000, 10);
             //graphTimeSpan = timespan;
-            loadGraph($scope.host.Host.uuid, $scope.mergedService.Service.uuid, false, start, end);
+            loadGraph($scope.host.Host.uuid, $scope.mergedService.Service.uuid, false, start, end, true);
         };
 
         $scope.changeDataSource = function(gaugeName){
             $scope.currentDataSource = gaugeName;
-            loadGraph($scope.host.Host.uuid, $scope.mergedService.Service.uuid, false, lastGraphStart, lastGraphEnd);
+            loadGraph($scope.host.Host.uuid, $scope.mergedService.Service.uuid, false, lastGraphStart, lastGraphEnd, false);
         };
 
         var getServicestatusTextColor = function(){
@@ -223,10 +223,12 @@ angular.module('openITCOCKPIT')
         };
 
 
-        var loadGraph = function(hostUuid, serviceuuid, appendData, start, end){
+        var loadGraph = function(hostUuid, serviceuuid, appendData, start, end, saveStartAndEnd){
 
-            lastGraphStart = start;
-            lastGraphEnd = end;
+            if(saveStartAndEnd){
+                lastGraphStart = start;
+                lastGraphEnd = end;
+            }
 
             if($scope.dataSources.length > 0){
                 $scope.isLoadingGraph = true;
@@ -475,7 +477,7 @@ angular.module('openITCOCKPIT')
                         }
                     }
 
-                    loadGraph($scope.host.Host.uuid, $scope.mergedService.Service.uuid, false, start, end);
+                    loadGraph($scope.host.Host.uuid, $scope.mergedService.Service.uuid, false, start, end, true);
                 });
             }
 
@@ -677,15 +679,19 @@ angular.module('openITCOCKPIT')
                     //Find last timestamp to only load new data and keep the existing
                     var lastTimestampInCurrentData = 0;
                     for(var timestamp in $scope.perfdata.data){
+                        timestamp = parseInt(timestamp, 10);
                         if(timestamp > lastTimestampInCurrentData){
                             lastTimestampInCurrentData = timestamp;
                         }
                     }
 
                     lastTimestampInCurrentData = lastTimestampInCurrentData / 1000;
+
                     var start = lastTimestampInCurrentData;
                     var end = Math.floor(Date.now() / 1000);
-                    loadGraph($scope.host.Host.uuid, $scope.mergedService.Service.uuid, true, start, end);
+                    if(start > 0){
+                        loadGraph($scope.host.Host.uuid, $scope.mergedService.Service.uuid, true, start, end, false);
+                    }
                 }, $scope.graphAutoRefreshInterval);
             }
         };
