@@ -4,6 +4,9 @@ angular.module('openITCOCKPIT').directive('serviceStatusDetails', function($http
         templateUrl: '/services/details.html',
         controller: function($scope){
 
+            var graphStart = 0;
+            var graphEnd = 0;
+
             $scope.showServiceDetailsFlashMsg = function(){
                 $scope.showFlashSuccess = true;
                 $scope.autoRefreshCounter = 5;
@@ -111,12 +114,16 @@ angular.module('openITCOCKPIT').directive('serviceStatusDetails', function($http
             };
 
             var loadGraph = function(hostUuid, serviceUuid){
+                graphEnd = Math.floor(Date.now() / 1000);
+                graphStart = graphEnd - (3600 * 4);
+
                 $http.get('/Graphgenerators/getPerfdataByUuid.json', {
                     params: {
                         angular: true,
                         host_uuid: hostUuid,
                         service_uuid: serviceUuid,
-                        hours: 4,
+                        start: graphStart,
+                        end: graphEnd,
                         jsTimestamp: 1
                     }
                 }).then(function(result){
@@ -247,6 +254,8 @@ angular.module('openITCOCKPIT').directive('serviceStatusDetails', function($http
                     show: false,
                     radius: 1
                 };
+                options.xaxis.min = graphStart * 1000;
+                options.xaxis.max = graphEnd * 1000;
 
                 self.plot = $.plot('#graphCanvas', graph_data, options);
             };

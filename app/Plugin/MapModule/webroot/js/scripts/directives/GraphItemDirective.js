@@ -22,6 +22,9 @@ angular.module('openITCOCKPIT').directive('graphItem', function($http, $timeout)
                 $scope.height = $scope.item.size_y;
             }
 
+            var graphStart = 0;
+            var graphEnd = 0;
+
 
             $scope.load = function(){
                 $http.get("/map_module/mapeditors/graph/.json", {
@@ -51,13 +54,16 @@ angular.module('openITCOCKPIT').directive('graphItem', function($http, $timeout)
             };
 
             var loadGraph = function(hostUuid, serviceuuid){
+                graphEnd = Math.floor(Date.now() / 1000);
+                graphStart = graphEnd - (3600 * 1);
                 $scope.isLoadingGraph = true;
                 $http.get('/Graphgenerators/getPerfdataByUuid.json', {
                     params: {
                         angular: true,
                         host_uuid: hostUuid,
                         service_uuid: serviceuuid,
-                        hours: 1,
+                        start: graphStart,
+                        end: graphEnd,
                         jsTimestamp: 1
                     }
                 }).then(function(result){
@@ -206,6 +212,9 @@ angular.module('openITCOCKPIT').directive('graphItem', function($http, $timeout)
                         ticks: false
                     };
                 }
+
+                options.xaxis.min = graphStart * 1000;
+                options.xaxis.max = graphEnd * 1000;
 
                 $scope.plot = $.plot('#mapgraph-' + $scope.item.id, graph_data, options);
             };

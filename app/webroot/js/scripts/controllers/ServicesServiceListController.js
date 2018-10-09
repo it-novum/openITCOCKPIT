@@ -22,6 +22,9 @@ angular.module('openITCOCKPIT')
             }
         };
 
+        var graphStart = 0;
+        var graphEnd = 0;
+
         $scope.changeTab = function(tab){
             if(tab !== $scope.activeTab){
                 $scope.services = [];
@@ -287,12 +290,16 @@ angular.module('openITCOCKPIT')
         };
 
         var loadGraph = function(host, service){
+            graphEnd = Math.floor(Date.now() / 1000);
+            graphStart = graphEnd - (3600 * 4);
+
             $http.get('/Graphgenerators/getPerfdataByUuid.json', {
                 params: {
                     angular: true,
                     host_uuid: host.Host.uuid,
                     service_uuid: service.Service.uuid,
-                    hours: 4,
+                    start: graphStart,
+                    end: graphEnd,
                     jsTimestamp: 1
                 }
             }).then(function(result){
@@ -325,6 +332,8 @@ angular.module('openITCOCKPIT')
                 };
                 return fixTime(fooJS.getUTCDate()) + '.' + fixTime(fooJS.getUTCMonth() + 1) + '.' + fooJS.getUTCFullYear() + ' ' + fixTime(fooJS.getUTCHours()) + ':' + fixTime(fooJS.getUTCMinutes());
             };
+            options.xaxis.min = graphStart * 1000;
+            options.xaxis.max = graphEnd * 1000;
 
             self.plot = $.plot('#serviceGraphFlot', graph_data, options);
         };

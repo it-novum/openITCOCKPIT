@@ -37,6 +37,7 @@ angular.module('openITCOCKPIT')
         var graphAutoRefreshIntervalId = null;
         var lastGraphStart = 0;
         var lastGraphEnd = 0;
+        var graphRenderEnd = 0;
 
         $scope.showFlashMsg = function(){
             $scope.showFlashSuccess = true;
@@ -230,6 +231,9 @@ angular.module('openITCOCKPIT')
                 lastGraphStart = start;
                 lastGraphEnd = end;
             }
+
+            //The last timestamp in the y-axe
+            graphRenderEnd = end;
 
             if($scope.dataSources.length > 0){
                 $scope.isLoadingGraph = true;
@@ -451,6 +455,7 @@ angular.module('openITCOCKPIT')
             };
 
             options.xaxis.min = lastGraphStart * 1000;
+            options.xaxis.max = graphRenderEnd * 1000;
 
 
             plot = $.plot('#graphCanvas', [graph_data], options);
