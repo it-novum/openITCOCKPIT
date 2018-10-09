@@ -73,7 +73,6 @@ use Statusengine\PerfdataParser;
  * @property Servicetemplatecommandargumentvalue $Servicetemplatecommandargumentvalue
  * @property Servicetemplateeventcommandargumentvalue $Servicetemplateeventcommandargumentvalue
  * @property DeletedService $DeletedService
- * @property Rrd $Rrd
  * @property AcknowledgedService $AcknowledgedService
  * @property DowntimeService $DowntimeService
  * @property BbcodeComponent $Bbcode
@@ -120,7 +119,6 @@ class ServicesController extends AppController {
         MONITORING_ACKNOWLEDGED_SERVICE,
         MONITORING_OBJECTS,
         'DeletedService',
-        'Rrd',
         'Container',
         'Documentation',
         'Systemsetting',
@@ -2292,17 +2290,6 @@ class ServicesController extends AppController {
             'hostDowntime',
             'canSubmitExternalCommands'
         ]);
-
-        /*
-        // Wos is desch?
-        $serviceAllValues = $this->Rrd->getPerfDataFiles($service['Host']['uuid'], $service['Service']['uuid']);
-        $serviceValues = [];
-        if (isset($serviceAllValues['xml_data']) && !empty($serviceAllValues['xml_data'])) {
-            foreach ($serviceAllValues['xml_data'] as $serviceValueArr) {
-                $serviceValues[$serviceValueArr['ds']] = $service['Host']['name'] . '/' . $service['Service']['name'] . '/' . $serviceValueArr['name'];
-            }
-        }
-        */
     }
 
     /*

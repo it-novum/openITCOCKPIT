@@ -58,7 +58,15 @@ class ChartRenderClient {
      */
     private $height = 350;
 
+    /**
+     * @var int
+     */
     private $startTimestamp = 0;
+
+    /**
+     * @var int
+     */
+    private $endTimestamp = 0;
 
     public function __construct() {
         $this->Client = new Client(['base_uri' => $this->address]);
@@ -92,15 +100,31 @@ class ChartRenderClient {
         $this->startTimestamp = $timestamp;
     }
 
+    /**
+     * @param int $timestamp
+     */
+    public function setGraphEndTimestamp($timestamp) {
+        $this->endTimestamp = $timestamp;
+    }
 
     /**
      * @return int
      */
     public function getGraphStartAsISO() {
-         if($this->startTimestamp === 0){
-             $this->startTimestamp = time();
-         }
-         return date('c', $this->startTimestamp);
+        if ($this->startTimestamp === 0) {
+            $this->startTimestamp = time();
+        }
+        return date('c', $this->startTimestamp);
+    }
+
+    /**
+     * @return int
+     */
+    public function getGraphEndAsISO() {
+        if ($this->endTimestamp === 0) {
+            $this->endTimestamp = time();
+        }
+        return date('c', $this->endTimestamp);
     }
 
     /**
@@ -112,10 +136,11 @@ class ChartRenderClient {
             RequestOptions::JSON => [
                 'data'     => $this->timestampToDate($data),
                 'settings' => [
-                    'width'  => $this->width,
-                    'height' => $this->height,
-                    'title'  => $this->title,
-                    'graph_start' => $this->getGraphStartAsISO()
+                    'width'       => $this->width,
+                    'height'      => $this->height,
+                    'title'       => $this->title,
+                    'graph_start' => $this->getGraphStartAsISO(),
+                    'graph_end'   => $this->getGraphEndAsISO()
                 ]
             ]
         ]);

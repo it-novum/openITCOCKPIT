@@ -128,11 +128,12 @@ app.post('/AreaChart', function(request, response){
                     type: 'time',
                     time: {
                         min: moment((request.body.settings.graph_start)),
+                        max: moment((request.body.settings.graph_end)),
                         displayFormats: {
-                            'millisecond': 'MMM DD',
-                            'second': 'MMM DD',
-                            'minute': 'MMM DD',
-                            'hour': 'MMM DD',
+                            'millisecond': 'SSSS',
+                            'second': 'HH:mm',
+                            'minute': 'HH:mm',
+                            'hour': 'HH:mm',
                             'day': 'MMM DD',
                             'week': 'MMM DD',
                             'month': 'MMM DD',
