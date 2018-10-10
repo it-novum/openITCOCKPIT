@@ -59,7 +59,8 @@
                                     {{ hostname }}
                                 </div>
                             </div>
-                            <div class="form-group required row padding-top-10" ng-class="{'has-error': errors.service_id}">
+                            <div class="form-group required row padding-top-10"
+                                 ng-class="{'has-error': errors.service_id}">
                                 <label class="col-xs-2 col-md-2 col-lg-2 control-label">
                                     <?php echo __('Standard Service'); ?>
                                 </label>

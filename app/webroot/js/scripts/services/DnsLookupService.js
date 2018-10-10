@@ -22,6 +22,18 @@ angular.module('openITCOCKPIT').service('DnsLookupService', function($http){
                     'angular': true
                 }
             })
+        },
+
+
+        setAutoLookup: function(value){
+            if(typeof value === "boolean"){
+                window.localStorage.setItem('autoDNSLookup', value);
+            }
+        },
+
+        getAutoLookup: function(){
+            return window.localStorage.getItem('autoDNSLookup');
         }
+
     }
 });

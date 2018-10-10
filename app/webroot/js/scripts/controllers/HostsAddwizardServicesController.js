@@ -3,16 +3,15 @@ angular.module('openITCOCKPIT')
         $scope.id = QueryStringService.getCakeId();
         $scope.post = {
             Servicetemplate: {
-                id:1
+                id: 1
             }
         };
 
         $scope.init = true;
         $scope.containerId = null;
 
-
         $scope.load = function(){
-            $http.get("/hosts/loadHostInfo/"+$scope.id+".json", {
+            $http.get("/hosts/loadHostInfo/" + $scope.id + ".json", {
                 params: {
                     'angular': true
                 }
@@ -42,11 +41,11 @@ angular.module('openITCOCKPIT')
 
 
         $scope.submit = function(){
-            $http.post("/hosts/addwizardservices/"+$scope.id+".json?angular=true",
+            $http.post("/hosts/addwizardservices/" + $scope.id + ".json?angular=true",
                 $scope.post
             ).then(function(result){
                 console.log('Data saved successfully');
-                window.location.href = '/hosts/addwizardoverview/'+$scope.id;
+                window.location.href = '/hosts/addwizardoverview/' + $scope.id;
             }, function errorCallback(result){
                 console.info('save failed');
                 if(result.data.hasOwnProperty('error')){

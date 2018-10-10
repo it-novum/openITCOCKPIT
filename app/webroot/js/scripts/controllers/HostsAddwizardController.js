@@ -32,7 +32,7 @@ angular.module('openITCOCKPIT')
         $scope.hostname = 0;
         $scope.hostaddress = 0;
         $scope.init = true;
-        $scope.dnsLookup = true;
+        $scope.dnsLookup = DnsLookupService.getAutoLookup();
 
         $scope.load = function(){
             $http.get("/hosts/loadContainers.json", {
@@ -99,7 +99,7 @@ angular.module('openITCOCKPIT')
             ).then(function(result){
                 console.log('Data saved successfully');
                 var id = result.data.id;
-                window.location.href = '/hosts/addwizardservices/'+id;
+                window.location.href = '/hosts/addwizardservices/' + id;
             }, function errorCallback(result){
                 console.info('save failed');
                 if(result.data.hasOwnProperty('error')){
@@ -119,6 +119,13 @@ angular.module('openITCOCKPIT')
         $scope.$watch('selectedHosttemplate', function(){
             $scope.loadHosttemplateData();
         }, true);
+
+
+        $scope.$watch('dnsLookup', function(){
+            if(DnsLookupService.getAutoLookup() == null || DnsLookupService.getAutoLookup() != $scope.dnsLookup){
+                DnsLookupService.setAutoLookup($scope.dnsLookup);
+            }
+        });
 
 
         $scope.$watch('post.Host.name', function(){
