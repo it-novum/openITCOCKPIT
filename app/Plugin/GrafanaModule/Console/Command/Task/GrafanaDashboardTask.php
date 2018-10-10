@@ -21,6 +21,19 @@ use itnovum\openITCOCKPIT\Grafana\GrafanaYAxes;
 use \itnovum\openITCOCKPIT\Grafana\GrafanaApiConfiguration;
 use itnovum\openITCOCKPIT\Grafana\GrafanaTag;
 
+/**
+ * Class GrafanaDashboardTask
+ * @property Host $Host
+ * @property Servicetemplate $Servicetemplate
+ * @property Service $Service
+ * @property Hoststatus $Hoststatus
+ * @property Servicestatus $Servicestatus
+ * @property Rrd $Rrd
+ * @property GrafanaConfiguration $GrafanaConfiguration
+ * @property GrafanaConfigurationHostgroupMembership $GrafanaConfigurationHostgroupMembership
+ * @property GrafanaDashboard $GrafanaDashboard
+ * @property Proxy $Proxy
+ */
 class GrafanaDashboardTask extends AppShell implements CronjobInterface {
 
     public $uses = [
@@ -278,17 +291,24 @@ class GrafanaDashboardTask extends AppShell implements CronjobInterface {
                 throw new Exception('No Tag given');
             }
 
-            $json = $this->getGrafanaDashboardsByTag($tag);
-            $dashboardsToDelete = Hash::extract($json, '{n}.title');
+            //Only delete auto generated dashboards
+            $dashboards = $this->GrafanaDashboard->find('all', [
+                'recursive' => -1,
+                'fields' => [
+                    'GrafanaDashboard.host_uuid'
+                ]
+            ]);
 
-            foreach ($dashboardsToDelete as $dashboardSlug) {
-                $request = new Request('DELETE', $this->GrafanaApiConfiguration->getApiUrl() . '/dashboards/db/' . $dashboardSlug);
+
+            foreach ($dashboards as $dashboard) {
+                $hostUuid = $dashboard['GrafanaDashboard']['host_uuid'];
+                $request = new Request('DELETE', $this->GrafanaApiConfiguration->getApiUrl() . '/dashboards/db/' . $hostUuid);
                 $response = $this->client->send($request);
 
                 if ($response->getStatusCode() == 200) {
                     $body = $response->getBody();
                     $response = json_decode($body->getContents());
-                    $this->out('<success>Dashboard ' . $dashboardSlug . ' deleted!</success>');
+                    $this->out('<success>Dashboard ' . $hostUuid . ' deleted!</success>');
                 }
             }
         } catch (Exception $e) {
