@@ -2209,7 +2209,7 @@ class Aro extends Importer {
                         'parent_id' => '318',
                         'model' => null,
                         'foreign_key' => null,
-                        'alias' => 'gethostbyname',
+                        'alias' => 'gethostipbyname',
                         'lft' => '729',
                         'rght' => '730',
                         'Permission' => array(
@@ -2227,7 +2227,7 @@ class Aro extends Importer {
                         'parent_id' => '318',
                         'model' => null,
                         'foreign_key' => null,
-                        'alias' => 'gethostbyaddr',
+                        'alias' => 'gethostnamebyaddr',
                         'lft' => '731',
                         'rght' => '732',
                         'Permission' => array(

@@ -109,11 +109,6 @@ angular.module('openITCOCKPIT')
 
         };
 
-        $scope.$watch('dnsLookup', function(){
-           console.log($scope.dnsLookup);
-        });
-
-
         $scope.$watch('selectedContainer', function(){
             if($scope.init){
                 return;

@@ -2614,31 +2614,6 @@ class HostsController extends AppController {
     }
 
 
-    public function gethostbyname() {
-        $this->autoRender = false;
-        if ($this->request->is('ajax') && isset($this->request->data['hostname']) && $this->request->data['hostname'] != '') {
-            $ip = gethostbyname($this->request->data['hostname']);
-            if (filter_var($ip, FILTER_VALIDATE_IP)) {
-                echo $ip;
-
-                return;
-            }
-        }
-        echo '';
-    }
-
-    public function gethostbyaddr() {
-        $this->autoRender = false;
-        if ($this->request->is('ajax') && isset($this->request->data['address']) && filter_var($this->request->data['address'], FILTER_VALIDATE_IP)) {
-            $fqdn = gethostbyaddr($this->request->data['address']);
-            if (strlen($fqdn) > 0 && $fqdn != $this->request->data['address']) {
-                echo $fqdn;
-
-                return;
-            }
-        }
-        echo '';
-    }
 
     public function loadHosttemplate($hosttemplate_id = null) {
         $this->allowOnlyAjaxRequests();
