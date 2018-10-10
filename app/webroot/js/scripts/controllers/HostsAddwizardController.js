@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('HostsAddwizardController', function($scope, $http){
+    .controller('HostsAddwizardController', function($scope, $http, DnsLookupService){
         $scope.post = {
             Container: {
                 Container: [],
@@ -24,7 +24,6 @@ angular.module('openITCOCKPIT')
                 check_period_id: 0,
                 command_id: 0,
                 host_type: 1
-              //  uuid: ''
             }
         };
 
@@ -33,7 +32,7 @@ angular.module('openITCOCKPIT')
         $scope.hostname = 0;
         $scope.hostaddress = 0;
         $scope.init = true;
-        $scope.discovered = false;
+        $scope.dnsLookup = true;
 
         $scope.load = function(){
             $http.get("/hosts/loadContainers.json", {
@@ -93,36 +92,6 @@ angular.module('openITCOCKPIT')
             });
         };
 
-        $scope.getHostname = function(){
-            //gethostnamebyaddr
-            if(!$scope.address || $scope.discovered){
-                return;
-            }
-            $http.get('/hosts/gethostnamebyaddr/' + $scope.address + '.json', {
-                params: {
-                    'angular': true
-                }
-            }).then(function(result){
-                $scope.post.Host.name = result.data.fqdn;
-                $scope.discovered = true;
-            });
-        };
-
-        $scope.getHostip = function(){
-            //gethostipbyname
-            if(!$scope.hostname || $scope.discovered){
-                return;
-            }
-            $http.get('/hosts/gethostipbyname/' + $scope.hostname + '.json', {
-                params: {
-                    'angular': true
-                }
-            }).then(function(result){
-                $scope.post.Host.address = result.data.hostaddress;
-                $scope.discovered = true;
-            });
-        };
-
 
         $scope.submit = function(){
             $http.post("/hosts/add.json?angular=true",
@@ -140,12 +109,15 @@ angular.module('openITCOCKPIT')
 
         };
 
+        $scope.$watch('dnsLookup', function(){
+           console.log($scope.dnsLookup);
+        });
+
 
         $scope.$watch('selectedContainer', function(){
             if($scope.init){
                 return;
             }
-            //$scope.post.Host.container_id = $scope.post.Container.container_id;
             $scope.loadData('');
         }, true);
 
@@ -153,18 +125,33 @@ angular.module('openITCOCKPIT')
             $scope.loadHosttemplateData();
         }, true);
 
-        $scope.$watch('post.Host.name', function(){
-            $scope.hostname = $scope.post.Host.name;
-            $scope.getHostip();
-            $scope.discovered = false;
 
+        $scope.$watch('post.Host.name', function(){
+            if($scope.init){
+                return;
+            }
+
+            if(!$scope.dnsLookup){
+                return;
+            }
+            $scope.hostname = $scope.post.Host.name;
+            DnsLookupService.getHostip($scope.hostname).then(function(data){
+                $scope.post.Host.address = data.data.hostaddress;
+            });
         }, true);
 
         $scope.$watch('post.Host.address', function(){
-            $scope.address = $scope.post.Host.address;
-            $scope.getHostname();
-            $scope.discovered = false;
+            if($scope.init){
+                return;
+            }
 
+            if(!$scope.dnsLookup){
+                return;
+            }
+            $scope.address = $scope.post.Host.address;
+            DnsLookupService.getHostname($scope.address).then(function(data){
+                $scope.post.Host.name = data.data.fqdn;
+            });
         }, true);
 
         $scope.load();

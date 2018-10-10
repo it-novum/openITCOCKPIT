@@ -49,7 +49,7 @@
                   data-original-title="<?php echo __('auto DNS lookup'); ?>"><i class="fa fa-search"></i></span>
             <span class="onoffswitch">
                 <input type="checkbox" id="autoDNSlookup" checked="checked" class="onoffswitch-checkbox"
-                       name="onoffswitch">
+                       name="onoffswitch" ng-model="dnsLookup">
                 <label for="autoDNSlookup" class="onoffswitch-label">
                     <span data-swchoff-text="<?php echo __('Off'); ?>" data-swchon-text="<?php echo __('On'); ?>"
                           class="onoffswitch-inner"></span>
