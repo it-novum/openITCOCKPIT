@@ -657,6 +657,14 @@ class Systemsetting extends Importer {
             ],
             [
                 'Systemsetting' => [
+                    'key'     => 'INIT.NODEJS_SERVER',
+                    'value'   => 'service nodejs_server status',
+                    'info'    => 'Command to query the status of openITCOCKPITs NodeJS Server backend',
+                    'section' => 'INIT'
+                ],
+            ],
+            [
+                'Systemsetting' => [
                     'key'     => 'TICKET_SYSTEM.URL',
                     'value'   => '',
                     'info'    => 'Link to the ticket system',
