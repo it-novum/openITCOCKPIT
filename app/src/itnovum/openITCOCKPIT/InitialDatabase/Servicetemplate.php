@@ -69,7 +69,6 @@ class Servicetemplate extends Importer {
                             'check_command_args' => '',
                             'checkcommand_info' => '',
                             'eventhandler_command_id' => '0',
-                            'timeperiod_id' => '0',
                             'check_interval' => '300',
                             'retry_interval' => '60',
                             'max_check_attempts' => '3',
