@@ -783,19 +783,17 @@ class DashboardsController extends AppController {
         ];
 
         if (!empty($containerIds)) {
-            $query['joins'] = \Hash::merge($query['joins'], [
-                [
-                    'table'      => 'hosts_to_containers',
-                    'alias'      => 'HostsToContainers',
-                    'type'       => 'LEFT',
-                    'conditions' => [
-                        'HostsToContainers.host_id = Host.id',
-                    ],
-                ]
-            ]);
+            $query['joins'][] = [
+                'table'      => 'hosts_to_containers',
+                'alias'      => 'HostsToContainers',
+                'type'       => 'LEFT',
+                'conditions' => [
+                    'HostsToContainers.host_id = Host.id',
+                ],
+            ];
             $query['conditions']['HostsToContainers.container_id'] = $containerIds;
         }
-
+        
         $parentHosts = $this->Parenthost->find('all', $query);
         $hostUuids = Hash::extract($parentHosts, '{n}.Host.uuid');
         $HoststatusFields = new \itnovum\openITCOCKPIT\Core\HoststatusFields($this->DbBackend);
