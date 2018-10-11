@@ -42,7 +42,9 @@ class Importer implements ImporterInterface
     public function isTableEmpty()
     {
         $this->unbindAllAssociations();
-        $result = $this->Model->find('all');
+        $result = $this->Model->find('all', [
+            'recursive' => -1
+        ]);
 
         return empty($result);
 
