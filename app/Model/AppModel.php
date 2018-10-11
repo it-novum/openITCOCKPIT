@@ -271,8 +271,4 @@ class AppModel extends Model {
 
         return $select;
     }
-
-    public function clearCache(){
-        $this->_clearCache();
-    }
 }
