@@ -1046,11 +1046,10 @@ class DashboardsController extends AppController {
 
 
         if ($this->request->is('post')) {
-            $widgetId = (int)$this->request->data('widgetId');
+            $widgetId = (int)$this->request->query('widgetId');
             if (!$this->Widget->exists($widgetId)) {
                 throw new RuntimeException('Invalid widget id');
             }
-            $serviceId = (int)$this->request->data('Widget.serviceId');
             $widget = $this->Widget->find('first', [
                 'recursive'  => -1,
                 'conditions' => [
@@ -1058,13 +1057,14 @@ class DashboardsController extends AppController {
                 ],
             ]);
             if ($widget) {
-                $widget['Widget']['service_id'] = (int)$serviceId;
+                $widget['Widget']['json_data'] = json_encode([
+                    'note' => $this->request->data('note')
+                ]);
                 if (!$this->Widget->save($widget)) {
                     $this->response->statusCode(400);
                     $this->serializeErrorMessageFromModel('Widget');
                     return;
                 }
-                $this->set('serviceId', $serviceId);
                 $this->set('_serialize', ['serviceId']);
                 return;
             }
@@ -1459,7 +1459,7 @@ class DashboardsController extends AppController {
 
         throw new MethodNotAllowedException();
     }
-    
+
     public function getPerformanceDataMetrics($serviceId) {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
