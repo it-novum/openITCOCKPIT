@@ -49,6 +49,13 @@ class Command extends AppModel
                 'message' => 'This command name has already been taken.',
             ],
         ],
+        'command_line' => [
+            'notBlank' => [
+                'rule'     => 'notBlank',
+                'message'  => 'This field cannot be left blank.',
+                'required' => true,
+            ],
+        ],
         'uuid' => [
             'notBlank' => [
                 'rule'     => 'notBlank',
