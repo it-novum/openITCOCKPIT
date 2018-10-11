@@ -57,9 +57,6 @@ angular.module('openITCOCKPIT').directive('servicesDowntimeWidget', function($ht
                         scrollInterval = 5000;
                     }
                     $scope.scroll_interval = scrollInterval;
-                    if($scope.useScroll){
-                        $scope.startScroll();
-                    }
                     $scope.load();
                 });
             };
@@ -97,6 +94,9 @@ angular.module('openITCOCKPIT').directive('servicesDowntimeWidget', function($ht
 
                     if(options.save === true){
                         saveSettings(params);
+                    }
+                    if($scope.useScroll){
+                        $scope.startScroll();
                     }
 
                     $scope.init = false;
