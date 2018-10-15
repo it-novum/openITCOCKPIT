@@ -5,20 +5,27 @@
 [md]: /documentations/wiki/additional-help/markdown/en "Markdown Cheatsheet"
 
 [//]: # (Pictures)
-[Host downtimes]: /img/docs/dashboard/dashboards/host_downtimes.png (Host downtimes)
-[Hosts Piechart]: /img/docs/dashboard/dashboards/hosts_piechart.png (Hosts Piechart)
-[Parentoutages]: /img/docs/dashboard/dashboards/parentoutages.png (Parentoutages)
-[Service downtimes]: /img/docs/dashboard/dashboards/service_downtimes.png (Service downtimes)
-[Services Piechart]: /img/docs/dashboard/dashboards/services_piechart.png (Services Piechart)
-[Trafficlight]: /img/docs/dashboard/dashboards/trafficlight.png (Trafficlight)
-[Tachometer]: /img/docs/dashboard/dashboards/tachometer.png (Tachometer)
 [Welcome]: /img/docs/dashboard/dashboards/welcome.png (Welcome)
-[Services Statuslist]: /img/docs/dashboard/dashboards/services_statuslist.png (Services Statuslist)
-[Hosts Statuslist]: /img/docs/dashboard/dashboards/hosts_statuslist.png (Hosts Statuslist)
-[Maps]: /img/docs/dashboard/dashboards/maps.png (Maps)
-[Browser]: /img/docs/dashboard/dashboards/browser.png (Browser)
+[Parent outages]: /img/docs/dashboard/dashboards/parentoutages.png (Parent outages)
+[Hosts pie chart]: /img/docs/dashboard/dashboards/hosts_pie_chart.png (Hosts pie chart)
+[Hosts pie chart 180]: /img/docs/dashboard/dashboards/hosts_pie_chart_180.png (Hosts pie chart 180)
+[Services pie chart]: /img/docs/dashboard/dashboards/services_pie_chart.png (Services pie chart)
+[Services pie chart 180]: /img/docs/dashboard/dashboards/services_pie_chart_180.png (Services pie chart 180)
+[Traffic light]: /img/docs/dashboard/dashboards/trafficlight.png (Traffic light)
+[Tachometer]: /img/docs/dashboard/dashboards/tachometer.png (Tachometer)
 [Notice]: /img/docs/dashboard/dashboards/notice.png (Notice)
-[Graph Generator]: /img/docs/dashboard/dashboards/graph_generator.png (Graph Generator)
+[Notice edit]: /img/docs/dashboard/dashboards/notice_edit.png (Notice edit)
+[Hosts in downtime]: /img/docs/dashboard/dashboards/host_downtimes.png (Hosts in downtime)
+[Services in downtime]: /img/docs/dashboard/dashboards/service_downtimes.png (Services in downtime)
+[Host status list]: /img/docs/dashboard/dashboards/host_status_list.png (Host status list)
+[Host status overview]: /img/docs/dashboard/dashboards/host_status_overview.png (Host status overview)
+[Host status overview down]: /img/docs/dashboard/dashboards/host_status_overview_down.png (Host status overview down)
+[Service status list]: /img/docs/dashboard/dashboards/service_status_list.png (Service status list)
+[Service status overview]: /img/docs/dashboard/dashboards/service_status_overview.png (Service status overview)
+[Service status overview critical]: /img/docs/dashboard/dashboards/service_status_overview_critical.png (Service status overview critical)
+[Event correlation]: /img/docs/dashboard/dashboards/event_correlation.png (Event correlation)
+[Grafana]: /img/docs/dashboard/dashboards/grafana.png (Grafana)
+[Map]: /img/docs/dashboard/dashboards/maps.png (Map)
 
 [//]: # (Content)
 
@@ -36,14 +43,11 @@ Click on
 <a class="btn btn-xs btn-success"><i class="fa fa-plus"></i></a>
 in the right corner of the tab bar.
 
-A drop down appears where you click on
-<a class="btn btn-xs btn-default"><i class="fa fa-plus"></i> New Tab</a>.
-
 A pop up dialog appears where you can set the name of the new tab.
 
-Click on <a class="btn btn-xs btn-primary">OK</a> to create your new tab.
+Click on <a class="btn btn-xs btn-primary">Create new tab</a> to create your new tab.
 
-Click on <a class="btn btn-xs btn-default">Cancel</a> if you want to discard your changes.
+Click on <a class="btn btn-xs btn-default">Close</a> if you want to discard your changes.
 
 The new tab appears after the last tab.
 
@@ -58,7 +62,7 @@ Click on
 in the right corner of the tab bar.
 
 A drop down appears where you choose a shared tab and click on
-<a class="btn btn-xs btn-primary">Save</a> to create the shared tab.
+<a class="btn btn-xs btn-primary">Create from shared tab</a> to create the shared tab.
 
 The new tab appears after the last tab.
 
@@ -72,9 +76,9 @@ Click on
 <a class="btn btn-default btn-xs"><i class="fa fa-pencil-square-o"></i> Rename</a>,
 a pop up appears where you can edit the current tab name.
 
-Click on <a class="btn btn-xs btn-primary">OK</a> to save the new tab name.
+Click on <a class="btn btn-xs btn-primary">Rename tab</a> to save the new tab name.
 
-Click on <a class="btn btn-xs btn-default">Cancel</a> if you want to discard your changes.
+Click on <a class="btn btn-xs btn-default">Close</a> if you want to discard your changes.
 
 ## How do I share a tab?
 
@@ -83,7 +87,7 @@ Click on the current tab name.
 A drop down menu appears.
 
 Click on
-<a class="btn btn-default btn-xs"><i class="fa fa-share-alt"></i> Start sharing</a>,
+<a class="btn btn-default btn-xs"><i class="fa fa-code-fork"></i> Start sharing</a>,
 a pop up appears which you have to confirm to start the tab sharing.
 
 ## How do I stop the tab sharing?
@@ -93,7 +97,7 @@ Click on the current tab name.
 A drop down menu appears.
 
 Click on
-<a class="btn btn-default btn-xs"><i class="fa fa-share-alt"></i> Stop sharing</a>,
+<a class="btn btn-default btn-xs"><i class="fa fa-code-fork"></i> Stop sharing</a>,
 a pop up appears which you have to confirm to stop the tab sharing.
 
 ## How do I delete a tab?
@@ -104,36 +108,55 @@ A drop down menu appears.
 
 Click on
 <a class="btn btn-default btn-xs txt-color-red"><i class="fa fa-trash-o"></i> Delete</a>
-a pop up appears which you have to confirm to delete the current tab.
+to delete the current tab without a request.
 
 ## How do I configure a tab rotation?
 Click on
-<a class="btn btn-xs btn-success"><i class="fa fa-refresh"></i></a>
+<a class="btn btn-xs btn-primary"><i class="fa fa-spinner"></i></a>
 in the right corner of the tab bar.
 
 A drop down appears where you choose the tab rotation interval time via a slider.
 
-After you have chosen a new value, the drop down disappears.
+The interval will be saved instantly.
+
+After you have chosen a new value, you can close the drop down.
 
 Set it to zero to stop the rotation.
 
-If the rotation is on, the rotation button is rotating.
+## How do I lock a tab?
+
+Click on
+<a class="btn btn-primary btn-xs"><i class="fa fa-unlock"></i></a>
+to lock the current tab for editing.
+
+Click on
+<a class="btn btn-primary btn-xs"><i class="fa fa-lock"></i></a>
+to unlock a locked tab.
+
+## How do I view a tab in fullscreen mode?
+
+Click on
+<a class="btn btn-success btn-xs"><i class="fa fa-arrows-alt"></i></a>
+to open the tab in fullscreen mode.
+
+Press F11 or ESC to disable the fullscreen mode.
 
 ## How to add a Widget?
 Click on
-<a class="btn btn-xs btn-success"><i class="fa fa-plus"></i> New Widget</a>
+<a class="btn btn-xs btn-success">Add Widget <i class="fa fa-caret-down"></i></a>
 in the upper right corner.
 
 A drop down menu opens with all widgets that you can choose from
 and an additional **Recreate default page** option.
-This option to recreates the default page in the current tab,
+
+This option recreates the default page on the current tab,
 this means the default widgets replace your current widgets in your current tab.
 
 ## How can I rename a widget?
 
 Click in the widget bar on
-<a class="btn btn-xs btn-default"><i class="fa fa-cog"></i></a>,
-a pop up appears where you rename your widget.
+<a class="btn btn-xs btn-default"><i class="fa fa-pencil"></i></a>,
+a pop up appears where you can rename your widget.
 
 ## How can I resize a widget?
 
@@ -153,7 +176,7 @@ because all widgets have a gravitational like pull towards the tab bar.
 ## How can I delete a widget?
 Click in the widget bar on
 <a class="btn btn-xs btn-default"><i class="fa fa-times"></i></a>,
-a pop up appears confirm to delete the widget.
+to delete the widget instantly.
 
 ## How can I color a widgets bar?
 Click in the widget bar on
@@ -162,120 +185,135 @@ a pop up appears where you can choose a new color for the widget bar.
 
 ## What widgets are there?
 
-#### <i class="fa fa-power-off"></i> Host downtimes
-
-Display if there is currently a host downtime.
-
-![Host downtimes]
-
-#### <i class="fa fa-pie-chart"></i> Hosts Piechart
-
-Display a pie chart of all host states.
-You can click on the state color below the chart
-to display the hosts with the state you clicked.
-
-![Hosts Piechart]
-
-#### <i class="fa fa-exchange"></i> Parentoutages
-
-Displays if parent hosts are down or unreachable.
-
-![Parentoutages]
-
-#### <i class="fa fa-power-off"></i> Service downtimes
-
-Display if there is currently a service downtime.
-
-![Service downtimes]
-
-#### <i class="fa fa-pie-chart"></i> Services Piechart
-
-Display a pie chart of all service states.
-You can click on the state color below the chart
-to display the hosts with the state you clicked.
-
-![Services Piechart]
-
-#### <i class="fa fa-road"></i> Trafficlight
-
-Displays the current state of a service as a traffic light.
-
-![Trafficlight]
-
-#### <i class="fa fa-tachometer"></i> Tachometer
-
-Display the value of a service such as the local disk space.
-
-You have to define the following values:
-
-* **Minimum** - Start value of the tachometer
-* **Warning** - Begin of the warning range
-* **Critical** - Begin of the critical range
-* **Maximum** - End value of the tachometer
-
-![Tachometer]
-
 #### <i class="fa fa-comment"></i> Welcome
 
 Shows you what timezone you configured and how many hosts and services you have.
 
 ![Welcome]
 
-#### <i class="fa fa-list-alt"></i> Services Statuslist
+#### <i class="fa fa-exchange"></i> Parent outages
 
-Shows you services with different states in a listing,
-which automatically browses through the pages after the configured interval.
+Displays if parent hosts are down or unreachable.
 
-You can configure the following:
-* **Pause and scroll direction** - Pause the animation and choose wether the services are faded in from right to left or bottom to top.
-* **Paging interval (secs)** - After the interval the widget will browse to the next page.
-* **States to show** - Displays only the services with the selected states.
-* **Show acknowledged or services in downtime** - Choose if acknowledged services and/or services in downtime should be displayed.
-* **Search** - Search through the available services.
+![Parent outages]
 
-Click on <a class="btn btn-xs btn-primary">Save</a> to save your widget configuration.
+#### <i class="fa fa-pie-chart"></i> Hosts pie chart (180)
 
-![Services Statuslist]
+Display a pie chart of all host states.
+You can click on the state color below the chart
+to display the hosts with the state you clicked.
 
-#### <i class="fa fa-list-alt"></i> Hosts Statuslist
+![Hosts pie chart]
+![Hosts pie chart 180]
+
+#### <i class="fa fa-pie-chart"></i> Services pie chart
+
+Display a pie chart of all service states.
+You can click on the state color below the chart
+to display the hosts with the state you clicked.
+
+![Services pie chart]
+![Services pie chart 180]
+
+#### <i class="fa fa-road"></i> Traffic light
+
+Displays the current state of a service as a traffic light.
+
+![Traffic light]
+
+#### <i class="fa fa-tachometer"></i> Tachometer
+
+Display the value of a service such as the local disk space.
+
+<!--You have to define the following values:
+
+* **Minimum** - Start value of the tachometer
+* **Warning** - Begin of the warning range
+* **Critical** - Begin of the critical range
+* **Maximum** - End value of the tachometer-->
+
+![Tachometer]
+
+#### <i class="fa fa-pencil-square-o"></i> Notice
+
+Make a notice formated via text, html or [mark down][md].
+
+![Notice]
+![Notice edit]
+
+#### <i class="fa fa-power-off"></i> Hosts in downtime
+
+Display if there is currently a host downtime.
+
+![Hosts in downtime]
+
+#### <i class="fa fa-power-off"></i> Services in downtime
+
+Display if there is currently a service downtime.
+
+![Services in downtime]
+
+#### <i class="fa fa-list-alt"></i> Host status list
 
 Shows you hosts with different states in a listing,
 which automatically browses through the pages after the configured interval.
 
 You can configure the following:
-* **Hosts per page** - How many rows a page has.
-* **Refresh interval (min)** - After the refresh interval the host date reloads.
-* **Paging interval (secs)** - After the interval the widget will browse to the next page.
+* **Pause scrolling** - Pause the scroll animation.
+* **Scroll interval (secs)** - After the interval the widget will browse to the next page.
 * **State colors** - Displays only the hosts with the ticked states.
-* **Search** - Search through the available hosts.
+* **Filters** - Filter the services with the available filters 'host name', 'service name' and 'service output'.
 
-Click on <a class="btn btn-xs btn-primary">Save</a> to save your widget configuration.
+Your configuration changes will be saved instantly.
 
-![Hosts Statuslist]
+![Host status list]
 
-#### <i class="fa fa-globe"></i> Maps
+#### <i class="fa fa-list-alt"></i> Host status overview
+
+Shows the number of hosts in a given state
+
+![Host status overview]
+![Host status overview down]
+
+#### <i class="fa fa-list-alt"></i> Service status list
+
+Shows you services with different states in a listing,
+which automatically browses through the pages after the configured interval.
+
+You can configure the following:
+* **Pause scrolling** - Pause the scroll animation.
+* **Scroll interval (secs)** - After the interval the widget will browse to the next page.
+* **States to show** - Displays only the services with the selected states.
+* **Show acknowledged or services in downtime** - Choose if acknowledged services and/or services in downtime should be displayed.
+* **Filters** - Filter the services with the available filters 'host name', 'service name' and 'service output'.
+
+Your configuration changes will be saved instantly.
+
+![Service status list]
+
+#### <i class="fa fa-list-alt"></i> Service status overview
+
+Shows the number of services in a given state
+
+![Service status overview]
+![Service status overview critical]
+
+#### <i class="fa fa-line-chart"></i> Event correlation
+
+Shows an existing event correlation configuration with the current states.
+
+![Event correlation]
+
+#### <i class="fa fa-line-chart"></i> Grafana
+
+Shows an existing grafana dashboard.
+
+![Grafana]
+
+#### <i class="fa fa-globe"></i> Map
 
 This widget displays the map you chose.
 To learn more about maps, click [here][maps doc].
 
-![Maps]
-
-#### <i class="fa fa-laptop"></i> Browser
-
-You can use the browser to browse to a secure URL (HTTPS).
-
-![Browser]
-
-#### <i class="fa fa-pencil-square-o"></i> Notice
-
-Make a notice formated via [mark down][md].
-
-![Notice]
-
-#### <i class="fa fa-line-chart"></i> Graph Generator
-
-Shows a graph of a service.
-To learn more about graphs, click [here][graphs].
-
-![Graph Generator]
+![Map]
 
