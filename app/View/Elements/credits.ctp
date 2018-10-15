@@ -52,6 +52,7 @@
         <p><?php echo $this->html->image('logos/jquery.png'); ?></p>
         <p><?php echo $this->html->image('logos/jquery_ui.png'); ?></p>
         <p><?php echo $this->html->image('logos/AngularJS-medium.png'); ?></p>
+        <p class="padding-top-80"><?php echo $this->html->image('logos/Statusengine_dark.png'); ?></p>
         <div class="clearfix"></div>
 
         <div class="fineprint">All trademarks are the property of the trademark owners.</div>
