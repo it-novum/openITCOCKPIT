@@ -126,7 +126,6 @@ App.Controllers.ContactsEditController = Frontend.AppController.extend({
                             }
                             $timeperiodSelectbox.trigger("chosen:updated");
                         }
-                        self.Ajaxloader.hide()
                     }
                 });
                 $.ajax({
@@ -158,9 +157,9 @@ App.Controllers.ContactsEditController = Frontend.AppController.extend({
                             }
                         }
                         $userSelectbox.trigger("chosen:updated");
-                        self.Ajaxloader.hide()
                     }
                 });
+                self.Ajaxloader.hide()
             }
         });
     }
