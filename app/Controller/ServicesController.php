@@ -2003,9 +2003,11 @@ class ServicesController extends AppController {
         }
 
         $rawHost = $this->Host->find('first', $this->Host->getQueryForServiceBrowser($rawService['Service']['host_id']));
+        $host = new \itnovum\openITCOCKPIT\Core\Views\Host($rawHost);
+        $rawHost['Host']['is_satellite_host'] = $host->isSatelliteHost();
 
         $PerfdataChecker = new PerfdataChecker(
-            new \itnovum\openITCOCKPIT\Core\Views\Host($rawHost),
+            $host,
             new \itnovum\openITCOCKPIT\Core\Views\Service($rawService)
         );
 
