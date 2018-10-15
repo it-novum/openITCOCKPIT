@@ -68,7 +68,7 @@ class HostgroupConditions {
     public function getConditionsForFind(){
         $conditions = $this->conditions;
         if(!empty($this->containerIds)){
-            $conditions['Hostgroup.container_id'] = $this->containerIds;
+            $conditions['Container.parent_id'] = $this->containerIds;
         }
 
         return $conditions;
@@ -122,6 +122,4 @@ class HostgroupConditions {
     public function getOrder(){
         return $this->order;
     }
-
-
 }
