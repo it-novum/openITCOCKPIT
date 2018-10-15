@@ -72,7 +72,6 @@ flippy.fancy {
     float: left;
     margin: 0 10px 10px 0;
     position: relative;
-    cursor: pointer;
     width: 100%;
     height: inherit!important;
 }
