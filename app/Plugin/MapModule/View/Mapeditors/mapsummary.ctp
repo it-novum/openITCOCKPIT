@@ -35,6 +35,9 @@
                         <h2 class="bold txt-color-blueDark">
                             <i class="fa fa-desktop fa-lg txt-color-blueDark"></i>
                             <?php echo __('Host'); ?>
+                            <span class="text-danger" ng-if="summaryState.Host.disabled">
+                                <?php echo __(' (DISABLED)'); ?>
+                            </span>
                         </h2>
                         <div class="col-md-12 no-padding">
                             <div class="tooltipProgressBar" style="width: {{percentValue}}%;"></div>
@@ -46,7 +49,8 @@
                                 <?php echo __('Hostname'); ?>
                             </div>
                             <div class="col-md-8 no-padding">
-                                <a ng-init="hostLink=getObjectHref(iconType, summaryState.Host.id) " ng-href="{{ hostLink }}">
+                                <a ng-init="hostLink=getObjectHref(iconType, summaryState.Host.id) "
+                                   ng-href="{{ hostLink }}">
                                     {{summaryState.Host.hostname}}
                                 </a>
                             </div>
@@ -201,6 +205,9 @@
                         <h2 class="bold txt-color-blueDark">
                             <i class="fa fa-cog fa-lg txt-color-blueDark"></i>
                             <?php echo __('Service'); ?>
+                            <span class="text-danger" ng-if="summaryState.Service.disabled">
+                                <?php echo __(' (DISABLED)'); ?>
+                            </span>
                         </h2>
                         <div class="col-md-12 no-padding">
                             <div class="tooltipProgressBar" style="width: {{percentValue}}%;"></div>
@@ -738,7 +745,7 @@
                             <div class="col-md-12 padding-top-5" ng-repeat="notOkHost in summaryState.NotOkHosts">
                                 <div class="col-md-4 cropText" title="{{notOkHost.Host.hostname}}">
                                     <a ng-init="linkHost[notOkHost.Host.id]=getObjectHref('host', notOkHost.Host.id)"
-                                        ng-href="{{ linkHost[notOkHost.Host.id] }}">
+                                       ng-href="{{ linkHost[notOkHost.Host.id] }}">
                                         {{notOkHost.Host.hostname}}
                                     </a>
                                 </div>
@@ -774,7 +781,7 @@
                                 <div class="col-md-4 cropText"
                                      title="{{notOkService.Service.hostname}}/{{notOkService.Service.hostname}}">
                                     <a ng-init="linkService[notOkService.Service.id]=getObjectHref('service', notOkService.Service.id)"
-                                        ng-href="{{ linkService[notOkService.Service.id] }}">
+                                       ng-href="{{ linkService[notOkService.Service.id] }}">
                                         {{notOkService.Service.hostname}}/{{notOkService.Service.servicename}}
                                     </a>
                                 </div>
