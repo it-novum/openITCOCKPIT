@@ -39,7 +39,8 @@ angular.module('openITCOCKPIT').directive('grafanaWidgetUserdefined', function($
             $scope.loadGrafanaUserDashboards = function(){
                 $http.get("/grafana_module/grafana_userdashboards/index.json", {
                     params: {
-                        'angular': true
+                        'angular': true,
+                        'skipUnsyncDashboards': true
                     }
                 }).then(function(result){
                     var availableGrafanaUserdefeinedDashboards = [];

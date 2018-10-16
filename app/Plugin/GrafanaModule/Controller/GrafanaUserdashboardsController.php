@@ -80,10 +80,17 @@ class GrafanaUserdashboardsController extends GrafanaModuleAppController {
             return;
         }
 
+        $skipUnsyncDashboards = $this->request->query('skipUnsyncDashboards');
         $GrafanaUserDashboardFilter = new GrafanaUserDashboardFilter($this->request);
         $conditions = $GrafanaUserDashboardFilter->indexFilter();
         $conditions['GrafanaUserdashboard.container_id'] = $this->MY_RIGHTS;
 
+        if($skipUnsyncDashboards){
+            $conditions['AND']['NOT'] = [
+                'GrafanaUserdashboard.grafana_url IS NULL',
+                'GrafanaUserdashboard.grafana_url' => ''
+            ];
+        }
         $query = [
             'recursive'  => -1,
             'conditions' => $conditions,

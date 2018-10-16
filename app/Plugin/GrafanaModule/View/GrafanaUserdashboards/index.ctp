@@ -72,8 +72,7 @@
                 </div>
             </div>
 
-            <table id="userdashboard_list" class="table table-striped table-hover table-bordered smart-form"
-                   style="">
+            <table id="userdashboard_list" class="table table-striped table-hover table-bordered">
                 <thead>
                 <tr>
                     <th class="no-sort sorting_disabled width-15">
@@ -83,7 +82,7 @@
                         <i class="fa" ng-class="getSortClass('GrafanaUserdashboard.name')"></i>
                         <?php echo __('User dashboard name'); ?>
                     </th>
-                    <th class="no-sort text-center" style="width:60px;">
+                    <th class="no-sort text-center" style="width:70px;">
                         <i class="fa fa-gear fa-lg"></i>
                     </th>
                 </tr>
@@ -97,24 +96,29 @@
                     </td>
                     <td>
                         <?php if ($this->Acl->hasPermission('view', 'GrafanaUserdashboards', 'GrafanaModule')): ?>
-                            <a href="/grafana_module/grafana_userdashboards/view/{{ userdashboard.GrafanaUserdashboard.id }}">
+                            <a href="/grafana_module/grafana_userdashboards/view/{{ userdashboard.GrafanaUserdashboard.id }}"
+                               ng-show="userdashboard.GrafanaUserdashboard.grafana_url !== ''">
                                 {{ userdashboard.GrafanaUserdashboard.name }}
                             </a>
+                            <span ng-show="userdashboard.GrafanaUserdashboard.grafana_url == ''">{{ userdashboard.GrafanaUserdashboard.name }}
+                            </span>
+                            <span ng-show="userdashboard.GrafanaUserdashboard.grafana_url == ''"
+                                class="label label-primary font-xs">
+                                <?php echo __('Not synchronized'); ?>
+                            </span>
                         <?php else: ?>
                             {{ userdashboard.GrafanaUserdashboard.name }}
                         <?php endif; ?>
                     </td>
                     <td>
-                        <div class="btn-group">
+                        <div class="btn-group smart-form">
                             <?php if ($this->Acl->hasPermission('edit', 'GrafanaUserdashboards', 'GrafanaModule')): ?>
                                 <a href="/grafana_module/grafana_userdashboards/editor/{{userdashboard.GrafanaUserdashboard.id}}"
                                    ng-if="userdashboard.GrafanaUserdashboard.allowEdit"
                                    class="btn btn-default">&nbsp;<i class="fa fa-cog "></i>&nbsp;</a>
                             <?php else: ?>
                                 <a href="javascript:void(0);" class="btn btn-default">
-                                    &nbsp;
                                     <i class="fa fa-cog"></i>
-                                    &nbsp;
                                 </a>
                             <?php endif; ?>
                             <a href="javascript:void(0);" data-toggle="dropdown"
