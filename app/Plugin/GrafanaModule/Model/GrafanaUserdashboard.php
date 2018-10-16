@@ -83,6 +83,11 @@ class GrafanaUserdashboard extends GrafanaModuleAppModel {
                 'message'  => 'This field cannot be left blank.',
                 'required' => true,
             ],
+            'unique' => [
+                'rule' => 'isUnique',
+                'message' => 'This user dashboard name has already been taken.',
+                'required' => true,
+            ],
         ],
     ];
 

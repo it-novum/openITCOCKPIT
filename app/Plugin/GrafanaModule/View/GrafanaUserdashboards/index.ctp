@@ -81,7 +81,7 @@
                     </th>
                     <th class="no-sort" ng-click="orderBy('GrafanaUserdashboard.name')">
                         <i class="fa" ng-class="getSortClass('GrafanaUserdashboard.name')"></i>
-                        <?php echo __('Userdashboard name'); ?>
+                        <?php echo __('User dashboard name'); ?>
                     </th>
                     <th class="no-sort text-center" style="width:60px;">
                         <i class="fa fa-gear fa-lg"></i>

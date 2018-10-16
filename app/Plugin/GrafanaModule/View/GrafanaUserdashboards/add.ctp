@@ -55,7 +55,7 @@
                 <div class="form-group required" ng-class="{'has-error': errors.name}">
                     <div class="col col-xs-10">
                         <label class="col col-md-2 control-label">
-                            <?php echo __('Userdashboard name'); ?>
+                            <?php echo __('User dashboard name'); ?>
                         </label>
                         <div class="col col-xs-10">
                             <input
