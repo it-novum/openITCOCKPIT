@@ -192,6 +192,7 @@ $allGrafanaUnits = $GrafanaUnits->getUnits();
                                     data-placeholder="<?php echo __('Please choose'); ?>"
                                     class="form-control"
                                     chosen="grafanaUnits"
+                                    ng-init="panel.unit = panel.unit || 'none'"
                                     ng-model="panel.unit"
                                     ng-model-options="{debounce: 500}">
                                 <?php foreach ($allGrafanaUnits as $category => $units): ?>
