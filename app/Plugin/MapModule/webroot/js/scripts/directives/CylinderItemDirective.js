@@ -1,12 +1,14 @@
-angular.module('openITCOCKPIT').directive('cylinderItem', function($http){
+angular.module('openITCOCKPIT').directive('cylinderItem', function($http, $interval){
     return {
         restrict: 'E',
         templateUrl: '/map_module/mapeditors/cylinder.html',
         scope: {
-            'item': '='
+            'item': '=',
+            'refreshInterval': '='
         },
         controller: function($scope){
             $scope.init = true;
+            $scope.statusUpdateInterval = null;
 
             $scope.width = 80;
             $scope.height = 125;
@@ -41,9 +43,23 @@ angular.module('openITCOCKPIT').directive('cylinderItem', function($http){
                     processPerfdata();
                     renderCylinder($scope.perfdata);
 
+                    initRefreshTimer();
+
                     $scope.init = false;
                 });
             };
+
+            $scope.stop = function(){
+                if($scope.statusUpdateInterval !== null){
+                    $interval.cancel($scope.statusUpdateInterval);
+                }
+            };
+
+            //Disable status update interval, if the object gets removed from DOM.
+            //E.g in Map rotations
+            $scope.$on('$destroy', function(){
+                $scope.stop();
+            });
 
             var renderCylinder = function(perfdata){
                 var $cylinder = $('#map-cylinder-' + $scope.item.id);
@@ -210,6 +226,14 @@ angular.module('openITCOCKPIT').directive('cylinderItem', function($http){
                 $scope.perfdata.critical = parseFloat($scope.perfdata.critical);
                 $scope.perfdata.min = parseFloat($scope.perfdata.min);
                 $scope.perfdata.max = parseFloat($scope.perfdata.max);
+            };
+
+            var initRefreshTimer = function(){
+                if($scope.refreshInterval > 0 && $scope.statusUpdateInterval === null){
+                    $scope.statusUpdateInterval = $interval(function(){
+                        $scope.load();
+                    }, $scope.refreshInterval);
+                }
             };
 
             $scope.$watchGroup(['item.size_x', 'item.show_label', 'item.metric'], function(){

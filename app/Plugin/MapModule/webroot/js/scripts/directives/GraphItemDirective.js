@@ -1,12 +1,15 @@
-angular.module('openITCOCKPIT').directive('graphItem', function($http, $timeout){
+angular.module('openITCOCKPIT').directive('graphItem', function($http, $timeout, $interval){
     return {
         restrict: 'E',
         templateUrl: '/map_module/mapeditors/graph.html',
         scope: {
-            'item': '='
+            'item': '=',
+            'refreshInterval': '='
         },
         controller: function($scope){
             $scope.init = true;
+            $scope.statusUpdateInterval = null;
+
             $scope.selectedGraphdataSource = null;
 
             $scope.width = 400;
@@ -35,6 +38,8 @@ angular.module('openITCOCKPIT').directive('graphItem', function($http, $timeout)
                     $scope.service = result.data.service;
                     $scope.allowView = result.data.allowView;
 
+                    initRefreshTimer();
+
                     loadGraph($scope.host.uuid, $scope.service.uuid);
                 });
             };
@@ -49,6 +54,19 @@ angular.module('openITCOCKPIT').directive('graphItem', function($http, $timeout)
                     $scope.load();
                 });
             };
+
+
+            $scope.stop = function(){
+                if($scope.statusUpdateInterval !== null){
+                    $interval.cancel($scope.statusUpdateInterval);
+                }
+            };
+
+            //Disable status update interval, if the object gets removed from DOM.
+            //E.g in Map rotations
+            $scope.$on('$destroy', function(){
+                $scope.stop();
+            });
 
             var loadGraph = function(hostUuid, serviceuuid){
                 $scope.isLoadingGraph = true;
@@ -274,6 +292,14 @@ angular.module('openITCOCKPIT').directive('graphItem', function($http, $timeout)
                             }
                         }
                     }
+                }
+            };
+
+            var initRefreshTimer = function(){
+                if($scope.refreshInterval > 0 && $scope.statusUpdateInterval === null){
+                    $scope.statusUpdateInterval = $interval(function(){
+                        $scope.load();
+                    }, $scope.refreshInterval);
                 }
             };
 

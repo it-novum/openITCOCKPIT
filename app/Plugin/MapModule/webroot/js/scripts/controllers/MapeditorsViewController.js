@@ -8,6 +8,8 @@ angular.module('openITCOCKPIT')
         $scope.rotate = QueryStringService.getValue('rotation', null);
         $scope.rotationInterval = parseInt(QueryStringService.getValue('interval', 0), 10) * 1000;
         $scope.rotationPossition = 1;
+        $scope.rotationPossition = 90;
+
 
         $scope.loadMapDetails = function(){
             $http.get("/map_module/mapeditors/mapDetails/" + $scope.id + ".json", {
@@ -16,9 +18,14 @@ angular.module('openITCOCKPIT')
                 }
             }).then(function(result){
                 $scope.map = result.data.map;
+                $scope.refreshInterval = $scope.map.Map.refresh_interval;
+                if($scope.refreshInterval !== 0 && $scope.refreshInterval < 5000){
+                    $scope.refreshInterval = 5000;
+                }
                 $scope.init = false;
             });
         };
+
 
         $scope.loadMapDetails();
 
@@ -36,5 +43,6 @@ angular.module('openITCOCKPIT')
 
             }, $scope.rotationInterval);
         }
+
 
     });

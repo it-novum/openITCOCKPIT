@@ -144,7 +144,7 @@
                                    refresh-interval="0"></trafficlight-item>
 
                 <temperature-item item="gadgetItem"
-                                  ng-if="gadgetItem.gadget === 'Temperature'"></temperature-item>
+                                  ng-if="gadgetItem.gadget === 'Temperature'" refresh-interval="0"></temperature-item>
             </div>
 
             <div ng-repeat="summaryItem in map.Mapsummaryitem"
@@ -152,7 +152,7 @@
                  class="draggable resizable"
                  data-id="{{summaryItem.id}}" data-type="summaryItem" ng-dblclick="editSummaryItem(summaryItem)"
                  ng-show="summaryItem.display">
-                <map-summary-item item="summaryItem"></map-summary-item>
+                <map-summary-item item="summaryItem" refresh-interval="0"></map-summary-item>
             </div>
 
 

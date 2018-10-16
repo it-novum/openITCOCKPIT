@@ -1,12 +1,14 @@
-angular.module('openITCOCKPIT').directive('perfdataTextItem', function($http){
+angular.module('openITCOCKPIT').directive('perfdataTextItem', function($http, $interval){
     return {
         restrict: 'E',
         templateUrl: '/map_module/mapeditors/perfdatatext.html',
         scope: {
-            'item': '='
+            'item': '=',
+            'refreshInterval': '='
         },
         controller: function($scope){
             $scope.init = true;
+            $scope.statusUpdateInterval = null;
 
             //$scope.width = '100%';
             //$scope.height = '100%';
@@ -56,10 +58,23 @@ angular.module('openITCOCKPIT').directive('perfdataTextItem', function($http){
                         $scope.height = $mapPerfdatatext.height();
 
                     }, 150);*/
+                    initRefreshTimer();
 
                     $scope.init = false;
                 });
             };
+
+            $scope.stop = function(){
+                if($scope.statusUpdateInterval !== null){
+                    $interval.cancel($scope.statusUpdateInterval);
+                }
+            };
+
+            //Disable status update interval, if the object gets removed from DOM.
+            //E.g in Map rotations
+            $scope.$on('$destroy', function(){
+                $scope.stop();
+            });
 
             var processPerfdata = function(){
 
@@ -95,6 +110,14 @@ angular.module('openITCOCKPIT').directive('perfdataTextItem', function($http){
                 }
 
                 $scope.text = text;
+            };
+
+            var initRefreshTimer = function(){
+                if($scope.refreshInterval > 0 && $scope.statusUpdateInterval === null){
+                    $scope.statusUpdateInterval = $interval(function(){
+                        $scope.load();
+                    }, $scope.refreshInterval);
+                }
             };
 
             $scope.$watchGroup(['item.size_x', 'item.show_label', 'item.metric'], function(){

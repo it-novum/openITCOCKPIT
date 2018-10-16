@@ -1,12 +1,14 @@
-angular.module('openITCOCKPIT').directive('trafficlightItem', function($http){
+angular.module('openITCOCKPIT').directive('trafficlightItem', function($http, $interval){
     return {
         restrict: 'E',
         templateUrl: '/map_module/mapeditors/trafficlight.html',
         scope: {
-            'item': '='
+            'item': '=',
+            'refreshInterval': '='
         },
         controller: function($scope){
             $scope.init = true;
+            $scope.statusUpdateInterval = null;
 
             $scope.width = 60;
             $scope.height = 150;
@@ -77,9 +79,23 @@ angular.module('openITCOCKPIT').directive('trafficlightItem', function($http){
 
                     renderTrafficlight();
 
+                    initRefreshTimer();
+
                     $scope.init = false;
                 });
             };
+
+            $scope.stop = function(){
+                if($scope.statusUpdateInterval !== null){
+                    $interval.cancel($scope.statusUpdateInterval);
+                }
+            };
+
+            //Disable status update interval, if the object gets removed from DOM.
+            //E.g in Map rotations
+            $scope.$on('$destroy', function(){
+                $scope.stop();
+            });
 
             var blinking = function(el, color){
                 //set the animation interval high to prevent high CPU usage
@@ -254,6 +270,14 @@ angular.module('openITCOCKPIT').directive('trafficlightItem', function($http){
                 svg.circle(greenLightGroup, x, lightDiameter * 2 + lightPadding * 3 + lightRadius, lightRadius, {
                     fill: 'url(#greenLightPattern_' + $scope.item.id + ')', stroke: '#444', strokeWidth: 2
                 });
+            };
+
+            var initRefreshTimer = function(){
+                if($scope.refreshInterval > 0 && $scope.statusUpdateInterval === null){
+                    $scope.statusUpdateInterval = $interval(function(){
+                        $scope.load();
+                    }, $scope.refreshInterval);
+                }
             };
 
             $scope.$watchGroup(['item.size_x', 'item.show_label'], function(){
