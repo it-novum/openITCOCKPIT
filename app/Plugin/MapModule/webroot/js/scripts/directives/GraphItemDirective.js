@@ -30,6 +30,7 @@ angular.module('openITCOCKPIT').directive('graphItem', function($http, $timeout,
                 $http.get("/map_module/mapeditors/graph/.json", {
                     params: {
                         'angular': true,
+                        'disableGlobalLoader': true,
                         'serviceId': $scope.item.object_id,
                         'type': $scope.item.type
                     }
@@ -47,7 +48,8 @@ angular.module('openITCOCKPIT').directive('graphItem', function($http, $timeout,
             $scope.loadTimezone = function(){
                 $http.get("/angular/user_timezone.json", {
                     params: {
-                        'angular': true
+                        'angular': true,
+                        'disableGlobalLoader': true
                     }
                 }).then(function(result){
                     $scope.timezone = result.data.timezone;
@@ -73,6 +75,7 @@ angular.module('openITCOCKPIT').directive('graphItem', function($http, $timeout,
                 $http.get('/Graphgenerators/getPerfdataByUuid.json', {
                     params: {
                         angular: true,
+                        disableGlobalLoader: true,
                         host_uuid: hostUuid,
                         service_uuid: serviceuuid,
                         hours: 1,

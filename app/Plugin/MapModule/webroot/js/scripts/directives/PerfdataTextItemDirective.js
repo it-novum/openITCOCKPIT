@@ -19,6 +19,7 @@ angular.module('openITCOCKPIT').directive('perfdataTextItem', function($http, $i
                 $http.get("/map_module/mapeditors/mapitem/.json", {
                     params: {
                         'angular': true,
+                        'disableGlobalLoader': true,
                         'objectId': $scope.item.object_id,
                         'mapId': $scope.item.map_id,
                         'type': $scope.item.type
