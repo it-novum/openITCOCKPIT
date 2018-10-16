@@ -8,7 +8,6 @@ angular.module('openITCOCKPIT')
         $scope.rotate = QueryStringService.getValue('rotation', null);
         $scope.rotationInterval = parseInt(QueryStringService.getValue('interval', 0), 10) * 1000;
         $scope.rotationPossition = 1;
-        $scope.rotationPossition = 90;
 
 
         $scope.loadMapDetails = function(){
@@ -31,7 +30,7 @@ angular.module('openITCOCKPIT')
 
         if($scope.rotate !== null && $scope.rotationInterval > 0){
             $scope.rotate = $scope.rotate.split(',');
-
+            
             $interval(function(){
                 $scope.rotationPossition++;
                 if($scope.rotationPossition > $scope.rotate.length){
