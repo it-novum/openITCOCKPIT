@@ -2230,7 +2230,7 @@ class MapeditorsController extends MapModuleAppController {
 
         $id = $this->request->data('Map.id');
 
-        if (!$this->Maptext->exists($id)) {
+        if (!$this->Map->exists($id)) {
             throw new NotFoundException();
         }
 
