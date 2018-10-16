@@ -77,28 +77,10 @@ endif;
 
                             <div class="form-group">
                                 <div class="input-group">
-                                    <?php echo $this->Form->input('email', [
+                                    <?php echo $this->Form->input('username', [
                                         'class'         => 'form-control',
-                                        'placeholder'   => __('Type your email'),
-                                        'type'          => 'email',
-                                        'inputDefaults' => [
-                                            'wrapInput' => false,
-                                            'label'     => false,
-                                            'div'       => false,
-                                        ]
-                                    ]); ?>
-                                    <span class="input-group-addon">
-                                        <i class="fa fa-lg fa-user"></i>
-                                    </span>
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <div class="input-group">
-                                    <?php echo $this->Form->input('samaccountname', [
-                                        'class'         => 'form-control',
-                                        'placeholder'   => __('Type your LDAP username'),
-                                        'type'          => 'email',
+                                        'placeholder'   => __('Type your email or username'),
+                                        'type'          => 'text',
                                         'inputDefaults' => [
                                             'wrapInput' => false,
                                             'label'     => false,
