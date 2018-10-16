@@ -2174,3 +2174,5 @@ label[class^='aco-host']:after, label[class^='aco-service']:after {
     position: relative;
     border-radius: 7px 3px 3px 7px;
 }
+
+iframe { -webkit-backface-visibility:hidden }
