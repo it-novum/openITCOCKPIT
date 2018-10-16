@@ -3327,11 +3327,13 @@ class HostsController extends AppController {
         }
 
         $selected = $this->request->query('selected');
+        $includeDisabled = $this->request->query('includeDisabled') === 'true';
 
         $HostFilter = new HostFilter($this->request);
 
 
         $HostCondition = new HostConditions($HostFilter->ajaxFilter());
+        $HostCondition->setIncludeDisabled($includeDisabled);
         $HostCondition->setContainerIds($this->MY_RIGHTS);
         if ($onlyHostsWithWritePermission) {
             $writeContainers = [];
