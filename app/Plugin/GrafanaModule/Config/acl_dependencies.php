@@ -26,15 +26,27 @@
 $config = [
     'acl_dependencies' => [
         'always_allowed' => [
-            'GrafanaConfiguration' => [
+            'GrafanaConfiguration'  => [
                 'grafanaWidget',
                 'getGrafanaDashboards'
+            ],
+            'GrafanaUserdashboards' => [
+                'grafanaRow',
+                'grafanaPanel',
+                'getPerformanceDataMetrics',
+                'grafanaWidget'
             ]
         ],
         'dependencies'   => [
-            'GrafanaConfiguration' => [
+            'GrafanaConfiguration'  => [
                 'index' => ['testGrafanaConnection', 'loadHostgroups'],
             ],
+            'GrafanaUserdashboards' => [
+                'add'    => ['loadContainers'],
+                'edit'   => ['loadContainers'],
+                'editor' => ['addMetricToPanel', 'removeMetricFromPanel', 'addPanel', 'removePanel', 'addRow', 'removeRow', 'savePanelUnit', 'synchronizeWithGrafana'],
+            ],
+
         ],
         'roles_rights'   => [
             'Administrator' => ['*'],
