@@ -57,6 +57,9 @@ app/Plugin/PostgresModule
 app/Plugin/WMIModule
 app/Plugin/PagerdutyModule
 app/Plugin/OpenstreetmapModule
+app/Plugin/LinuxBasicMonitoringSSHModule
+app/Plugin/VMWAREModule
+app/Plugin/WindowsBasicMonitoringNSCPModule
 app/Lib/AvailableVersion.php
 app/docs/en/administration/systemsettings.md
 app/docs/en/api/systemsettings.md
