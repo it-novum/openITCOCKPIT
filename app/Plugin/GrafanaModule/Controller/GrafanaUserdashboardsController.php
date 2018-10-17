@@ -960,7 +960,7 @@ class GrafanaUserdashboardsController extends GrafanaModuleAppController {
                     'now-24h' => __('Last 24 hours'),
                 ],
                 'update_interval' => [
-                    '0'   => __('Disabled'),
+                    //'0'   => __('Disabled'), //Does not work via URL becuase is still in dashboard json :/
                     '5s'  => __('Refresh every 5s'),
                     '10s' => __('Refresh every 10s'),
                     '30s' => __('Refresh every 30s'),
