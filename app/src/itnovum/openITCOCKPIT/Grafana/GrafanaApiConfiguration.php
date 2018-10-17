@@ -250,8 +250,11 @@ class GrafanaApiConfiguration {
     public function getIframeUrlForUserDashboard($url) {
         //&kiosk=tv require Grafana 5.3+ to work
         //https://github.com/grafana/grafana/issues/13493
+        //Since Grafana 5.3, users can escape the &kiosk mode by pressing esc key.
+        //Also &kiosk=tv is not very helpful. So we implemented an datepicker for now.
+
         return sprintf(
-            '%s%s?theme=%s&kiosk=tv',
+            '%s%s?theme=%s&kiosk',
             $this->getUiUrl(),
             $url,
             $this->dashboardStyle
