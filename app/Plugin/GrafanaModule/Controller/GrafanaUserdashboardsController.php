@@ -85,7 +85,7 @@ class GrafanaUserdashboardsController extends GrafanaModuleAppController {
         $conditions = $GrafanaUserDashboardFilter->indexFilter();
         $conditions['GrafanaUserdashboard.container_id'] = $this->MY_RIGHTS;
 
-        if($skipUnsyncDashboards){
+        if ($skipUnsyncDashboards) {
             $conditions['AND']['NOT'] = [
                 'GrafanaUserdashboard.grafana_url IS NULL',
                 'GrafanaUserdashboard.grafana_url' => ''
@@ -270,7 +270,7 @@ class GrafanaUserdashboardsController extends GrafanaModuleAppController {
                 'GrafanaUserdashboard.id'           => $id,
                 'GrafanaUserdashboard.container_id' => $this->MY_RIGHTS
             ],
-            'contain' => [
+            'contain'    => [
                 'Container'
             ]
         ]);
@@ -305,16 +305,71 @@ class GrafanaUserdashboardsController extends GrafanaModuleAppController {
         $GrafanaApiConfiguration = GrafanaApiConfiguration::fromArray($grafanaConfiguration);
 
         $dashboardFoundInGrafana = false;
-        if($this->GrafanaConfiguration->existsUserDashboard($GrafanaApiConfiguration, $this->Proxy->getSettings(), $dashboard['GrafanaUserdashboard']['grafana_uid'])){
+        if ($this->GrafanaConfiguration->existsUserDashboard($GrafanaApiConfiguration, $this->Proxy->getSettings(), $dashboard['GrafanaUserdashboard']['grafana_uid'])) {
             $dashboardFoundInGrafana = true;
         }
 
-        $iframeUrl = $GrafanaApiConfiguration->getIframeUrlForUserDashboard($dashboard['GrafanaUserdashboard']['grafana_url']);
-
         $this->set('dashboard', $dashboard);
-        $this->set('iframeUrl', $iframeUrl);
         $this->set('allowEdit', $allowEdit);
         $this->set('dashboardFoundInGrafana', $dashboardFoundInGrafana);
+    }
+
+    public function getViewIframeUrl($id) {
+        if(!$this->isAngularJsRequest()){
+            throw new MethodNotAllowedException();
+        }
+
+        if (!$this->GrafanaUserdashboard->exists($id)) {
+            throw new NotFoundException();
+        }
+
+        $dashboard = $this->GrafanaUserdashboard->find('first', [
+            'recursive'  => -1,
+            'conditions' => [
+                'GrafanaUserdashboard.id'           => $id,
+                'GrafanaUserdashboard.container_id' => $this->MY_RIGHTS
+            ],
+            'contain'    => [
+                'Container'
+            ]
+        ]);
+
+        if (empty($dashboard)) {
+            throw new NotFoundException();
+        }
+
+        $grafanaConfiguration = $this->GrafanaConfiguration->find('first', [
+            'recursive' => -1,
+            'contain'   => [
+                'GrafanaConfigurationHostgroupMembership'
+            ]
+        ]);
+
+        if (empty($grafanaConfiguration)) {
+            throw new RuntimeException('No Grafana configuration found.');
+        }
+
+        /** @var GrafanaApiConfiguration $GrafanaApiConfiguration */
+        $GrafanaApiConfiguration = GrafanaApiConfiguration::fromArray($grafanaConfiguration);
+
+        $dashboardFoundInGrafana = false;
+        if ($this->GrafanaConfiguration->existsUserDashboard($GrafanaApiConfiguration, $this->Proxy->getSettings(), $dashboard['GrafanaUserdashboard']['grafana_uid'])) {
+            $dashboardFoundInGrafana = true;
+        }
+
+        $from = $this->request->query('from');
+        if($from === null){
+            $from = 'now-3h';
+        }
+        $refresh = $this->request->query('refresh');
+        if($refresh === null){
+            $refresh = 0;
+        }
+        $iframeUrl = $GrafanaApiConfiguration->getIframeUrlForUserDashboard($dashboard['GrafanaUserdashboard']['grafana_url'], $from, $refresh);
+
+        $this->set('dashboardFoundInGrafana', $dashboardFoundInGrafana);
+        $this->set('iframeUrl', $iframeUrl);
+        $this->set('_serialize', ['dashboardFoundInGrafana', 'iframeUrl']);
     }
 
     public function delete($id) {
@@ -811,7 +866,7 @@ class GrafanaUserdashboardsController extends GrafanaModuleAppController {
                 $grafanaConfiguration = $this->GrafanaConfiguration->find('first');
                 if (!empty($grafanaConfiguration)) {
                     $GrafanaConfiguration = GrafanaApiConfiguration::fromArray($grafanaConfiguration);
-                    if($this->GrafanaConfiguration->existsUserDashboard($GrafanaConfiguration, $this->Proxy->getSettings(), $dashboard['GrafanaUserdashboard']['grafana_uid'])){
+                    if ($this->GrafanaConfiguration->existsUserDashboard($GrafanaConfiguration, $this->Proxy->getSettings(), $dashboard['GrafanaUserdashboard']['grafana_uid'])) {
                         $iframeUrl = $GrafanaConfiguration->getIframeUrlForUserDashboard($dashboard['GrafanaUserdashboard']['grafana_url']);
                     }
                 }
@@ -870,5 +925,53 @@ class GrafanaUserdashboardsController extends GrafanaModuleAppController {
             ['ae', 'ue', 'oe', 'Ae', 'Ue', 'Oe', 'ss'],
             $str
         );
+    }
+
+    public function grafanaTimepicker() {
+        if (!$this->isAngularJsRequest()) {
+            $this->layout = 'blank';
+            //Only ship HTML Template
+            return;
+        }
+
+        if ($this->isAngularJsRequest()) {
+            $timeranges = [
+                'quick'           => [
+                    'now-2d'  => __('Last 2 days'),
+                    'now-7d'  => __('Last 7 days'),
+                    'now-30d' => __('Last 30 days'),
+                    'now-90d' => __('Last 90 days'),
+                    'now-6M'  => __('Last 6 months'),
+                    'now-1y'  => __('Last year')
+                ],
+                'today'           => [
+                    'now%2Fd' => __('Today so far'),
+                    'now%2Fw' => __('This week so far'),
+                    'now%2FM' => __('This month so far')
+                ],
+                'last'            => [
+                    'now-5m'  => __('Last 5 minutes'),
+                    'now-15m' => __('Last 15 minutes'),
+                    'now-30m' => __('Last 30 minutes'),
+                    'now-1h'  => __('Last 1 hour'),
+                    'now-3h'  => __('Last 3 hours'),
+                    'now-6h'  => __('Last 6 hours'),
+                    'now-12h' => __('Last 12 hours'),
+                    'now-24h' => __('Last 24 hours'),
+                ],
+                'update_interval' => [
+                    '0'   => __('Disabled'),
+                    '5s'  => __('Refresh every 5s'),
+                    '10s' => __('Refresh every 10s'),
+                    '30s' => __('Refresh every 30s'),
+                    '1m'  => __('Refresh every 1m'),
+                    '5m'  => __('Refresh every 5m'),
+                    '15m' => __('Refresh every 15m')
+                ]
+            ];
+            $this->set('timeranges', $timeranges);
+            $this->set('_serialize', ['timeranges']);
+        }
+
     }
 }

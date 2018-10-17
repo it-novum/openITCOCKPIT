@@ -34,7 +34,8 @@ $config = [
                 'grafanaRow',
                 'grafanaPanel',
                 'getPerformanceDataMetrics',
-                'grafanaWidget'
+                'grafanaWidget',
+                'grafanaTimepicker',
             ]
         ],
         'dependencies'   => [
@@ -45,6 +46,7 @@ $config = [
                 'add'    => ['loadContainers'],
                 'edit'   => ['loadContainers'],
                 'editor' => ['addMetricToPanel', 'removeMetricFromPanel', 'addPanel', 'removePanel', 'addRow', 'removeRow', 'savePanelUnit', 'synchronizeWithGrafana'],
+                'view'   => ['getViewIframeUrl']
             ],
 
         ],

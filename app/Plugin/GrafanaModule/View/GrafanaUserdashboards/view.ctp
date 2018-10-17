@@ -25,7 +25,6 @@
             echo __('Dashboard:');
             echo h($dashboard['GrafanaUserdashboard']['name']);
             ?>
-
         </h2>
         <div class="widget-toolbar">
             <?php if ($this->Acl->hasPermission('editor', 'GrafanaUserdashboards', 'GrafanaModule') && $allowEdit): ?>
@@ -37,12 +36,15 @@
             <?php endif; ?>
             <?php echo $this->Utils->backButton() ?>
         </div>
+
+        <div class="widget-toolbar">
+            <grafana-timepicker callback="grafanaTimepickerCallback"></grafana-timepicker>
+        </div>
     </header>
     <div>
         <div class="widget-body">
             <?php if ($dashboardFoundInGrafana === true): ?>
-                <iframe src="<?php echo $iframeUrl; ?>" onload="this.height=(screen.height+15);" width="100%"
-                        frameborder="0"></iframe>
+                <iframe-directive url="iframeUrl" ng-if="dashboardFoundInGrafana"></iframe-directive>
             <?php else: ?>
                 <div class="jumbotron text-center bg-color-white">
                     <div id="notFoundSvg">
