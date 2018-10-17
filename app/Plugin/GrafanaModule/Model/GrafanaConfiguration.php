@@ -28,6 +28,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Psr7\Request;
+use itnovum\openITCOCKPIT\Grafana\GrafanaApiConfiguration;
 
 class GrafanaConfiguration extends GrafanaModuleAppModel {
 
@@ -143,7 +144,9 @@ class GrafanaConfiguration extends GrafanaModuleAppModel {
 
     /**
      * @param $grafanaApiConfiguration
-     * @return Client|string    Either a Instance of Client or the Exception message
+     * @param $proxySettings
+     * @return Client|string
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function testConnection($grafanaApiConfiguration, $proxySettings) {
         $options = [
@@ -215,7 +218,37 @@ class GrafanaConfiguration extends GrafanaModuleAppModel {
         if ($response->getStatusCode() == 200) {
             $body = $response->getBody();
             $response = json_decode($body->getContents());
-            debug($response);
+            //debug($response);
         }
     }
+
+    /**
+     * @param GrafanaApiConfiguration $grafanaApiConfiguration
+     * @param $proxySettings
+     * @param $uid
+     * @return bool
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public function existsUserDashboard(GrafanaApiConfiguration $grafanaApiConfiguration, $proxySettings, $uid){
+        $client = $this->testConnection($grafanaApiConfiguration, $proxySettings);
+        $request = new \GuzzleHttp\Psr7\Request(
+            'GET',
+            sprintf('%s/dashboards/uid/%s', $grafanaApiConfiguration->getApiUrl(), $uid),
+            ['content-type' => 'application/json']
+        );
+
+        try{
+            $response = $client->send($request);
+        }catch (\Exception $e){
+            debug($e->getMessage());
+            return false;
+        }
+
+        if ($response->getStatusCode() == 200) {
+            return true;
+        }
+
+        return false;
+    }
+
 }

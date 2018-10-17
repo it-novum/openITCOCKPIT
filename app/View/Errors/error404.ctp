@@ -30,7 +30,7 @@
             <?php echo __('Error'); ?>
             <span>>
                 <?php echo __('404'); ?>
-			</span>
+            </span>
         </h1>
     </div>
 </div>

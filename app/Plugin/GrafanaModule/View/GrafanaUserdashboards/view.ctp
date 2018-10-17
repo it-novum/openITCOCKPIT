@@ -40,8 +40,42 @@
     </header>
     <div>
         <div class="widget-body">
-            <iframe src="<?php echo $iframeUrl; ?>" onload="this.height=(screen.height+15);" width="100%"
-                    frameborder="0"></iframe>
+            <?php if ($dashboardFoundInGrafana === true): ?>
+                <iframe src="<?php echo $iframeUrl; ?>" onload="this.height=(screen.height+15);" width="100%"
+                        frameborder="0"></iframe>
+            <?php else: ?>
+                <div class="jumbotron text-center bg-color-white">
+                    <div id="notFoundSvg">
+                        <svg class="scaling-svg">
+                            <symbol id="not-found-text">
+                                <text text-anchor="middle"
+                                      x="50%"
+                                      y="80%"
+                                      class="textline"
+                                      fill="none" stroke="#a94442">
+                                    <?php echo __('404 Ooops...'); ?>
+                                </text>
+                            </symbol>
+                            <g class="g-ants">
+                                <use xlink:href="#not-found-text"
+                                     class="text-add"></use>
+                                <use xlink:href="#not-found-text"
+                                     class="text-add"></use>
+                                <use xlink:href="#not-found-text"
+                                     class="text-add"></use>
+                                <use xlink:href="#not-found-text"
+                                     class="text-add"></use>
+                                <use xlink:href="#not-found-text"
+                                     class="text-add"></use>
+                            </g>
+                        </svg>
+                    </div>
+                    <h1><?php //echo __('Ooops...'); ?></h1>
+                    <p>
+                        <?php echo __('Dashboard not found in Grafana'); ?>
+                    </p>
+                </div>
+            <?php endif; ?>
         </div>
     </div>
 </div>

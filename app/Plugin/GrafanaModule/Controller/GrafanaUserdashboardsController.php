@@ -303,11 +303,18 @@ class GrafanaUserdashboardsController extends GrafanaModuleAppController {
 
         /** @var GrafanaApiConfiguration $GrafanaApiConfiguration */
         $GrafanaApiConfiguration = GrafanaApiConfiguration::fromArray($grafanaConfiguration);
+
+        $dashboardFoundInGrafana = false;
+        if($this->GrafanaConfiguration->existsUserDashboard($GrafanaApiConfiguration, $this->Proxy->getSettings(), $dashboard['GrafanaUserdashboard']['grafana_uid'])){
+            $dashboardFoundInGrafana = true;
+        }
+
         $iframeUrl = $GrafanaApiConfiguration->getIframeUrlForUserDashboard($dashboard['GrafanaUserdashboard']['grafana_url']);
 
         $this->set('dashboard', $dashboard);
         $this->set('iframeUrl', $iframeUrl);
         $this->set('allowEdit', $allowEdit);
+        $this->set('dashboardFoundInGrafana', $dashboardFoundInGrafana);
     }
 
     public function delete($id) {
@@ -804,7 +811,9 @@ class GrafanaUserdashboardsController extends GrafanaModuleAppController {
                 $grafanaConfiguration = $this->GrafanaConfiguration->find('first');
                 if (!empty($grafanaConfiguration)) {
                     $GrafanaConfiguration = GrafanaApiConfiguration::fromArray($grafanaConfiguration);
-                    $iframeUrl = $GrafanaConfiguration->getIframeUrlForUserDashboard($dashboard['GrafanaUserdashboard']['grafana_url']);
+                    if($this->GrafanaConfiguration->existsUserDashboard($GrafanaConfiguration, $this->Proxy->getSettings(), $dashboard['GrafanaUserdashboard']['grafana_uid'])){
+                        $iframeUrl = $GrafanaConfiguration->getIframeUrlForUserDashboard($dashboard['GrafanaUserdashboard']['grafana_url']);
+                    }
                 }
             }
 
