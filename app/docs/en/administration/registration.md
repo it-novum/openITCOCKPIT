@@ -19,7 +19,7 @@ You can see the following details:
 * **Your license key**
 
 Click on <a class="btn btn-default btn-xs" name="creditos"><i class="fa fa-users"></i> Credits</a>
-to unleash the credit feature where you can see who to credit for openITCOCKPIT v3.
+to unleash the credit feature where you can see who to credit for openITCOCKPIT.
 (This feature works here too.)
 
 <script type="text/javascript" src="/js/vendor/endcredits/endcredits.js"></script>

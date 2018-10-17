@@ -29,9 +29,9 @@
 
 [//]: # (Content)
 
-## What is the Dashboard in openITCOCKPIT v3?
+## What is the Dashboard in openITCOCKPIT?
 
-Every user has his [own dashboard][page] that he can customize the way he likes it.
+Every user has it's [own dashboard][page] that can be customized.
 A dashboard has tabs and tabs contain widgets.
 A widget is a small tool that
 retrieves information from your monitoring system
@@ -54,7 +54,7 @@ The new tab appears after the last tab.
 ## What is a shared tab?
 A shared tab is a tab from another user that is shared across all users of your openITCOCKPIT implementation.
 
-If the user has changed his tab other users that use the shared tab get notified and asked if they want to update their tab.
+If a shared tab gets changed by the author, all users will get notified and asked if they want to update their tab.
 
 ## How to add a shared tab?
 Click on
@@ -62,7 +62,7 @@ Click on
 in the right corner of the tab bar.
 
 A drop down appears where you choose a shared tab and click on
-<a class="btn btn-xs btn-primary">Create from shared tab</a> to create the shared tab.
+<a class="btn btn-xs btn-primary">Create from shared tab</a>.
 
 The new tab appears after the last tab.
 
@@ -183,11 +183,11 @@ Click in the widget bar on
 <i class="fa fa-lg fa-square-o"></i>,
 a pop up appears where you can choose a new color for the widget bar.
 
-## What widgets are there?
+## What Widgets are available?
 
 #### <i class="fa fa-comment"></i> Welcome
 
-Shows you what timezone you configured and how many hosts and services you have.
+Shows you what timezone you configured and how many hosts and services are monitored.
 
 ![Welcome]
 
@@ -201,7 +201,7 @@ Displays if parent hosts are down or unreachable.
 
 Display a pie chart of all host states.
 You can click on the state color below the chart
-to display the hosts with the state you clicked.
+to get a list of all objects in the particular state.
 
 ![Hosts pie chart]
 ![Hosts pie chart 180]
@@ -210,7 +210,7 @@ to display the hosts with the state you clicked.
 
 Display a pie chart of all service states.
 You can click on the state color below the chart
-to display the hosts with the state you clicked.
+to get a list of all objects in the particular state.
 
 ![Services pie chart]
 ![Services pie chart 180]
@@ -256,7 +256,7 @@ Display if there is currently a service downtime.
 #### <i class="fa fa-list-alt"></i> Host status list
 
 Shows you hosts with different states in a listing,
-which automatically browses through the pages after the configured interval.
+which automatically browses through the pages by the configured interval.
 
 You can configure the following:
 * **Pause scrolling** - Pause the scroll animation.
@@ -300,7 +300,7 @@ Shows the number of services in a given state
 
 #### <i class="fa fa-line-chart"></i> Event correlation
 
-Shows an existing event correlation configuration with the current states.
+Shows the current state of a given event correlation.
 
 ![Event correlation]
 

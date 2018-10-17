@@ -112,7 +112,7 @@ class MapsController extends MapModuleAppController {
             return;
         }
 
-        if ($this->request->is('post') || $this->request->is('put')) {
+        if (($this->request->is('post') || $this->request->is('put')) && isset($this->request->data['Map'])) {
             $this->request->data['Container'] = $this->request->data['Map']['container_id'];
 
             if (empty($this->request->data['Map']['refresh_interval'])) {
