@@ -80,7 +80,7 @@ class ErrorImage {
      */
     public function getImageAsPngStream() {
         $fileName = md5(rand() . time() . rand()) . '.png';
-        $fullImagePath = WWW_ROOT . 'img' . DS . 'graphs' . DS . $fileName;
+        $fullImagePath = APP . 'tmp' . DS . $fileName;
 
 
         $img = imagecreatetruecolor($this->width, $this->height);
