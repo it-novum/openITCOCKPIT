@@ -70,6 +70,7 @@ class AngularAssets implements AngularAssetsInterface {
         'js/lib/rangyinputs-jquery-1.1.2.min.js',
         'vendor/javascript-detect-element-resize/jquery.resize.js',
         'vendor/angular-gridster/dist/angular-gridster.min.js',
+        'js/lib/GraphDefaults.js'
     ];
 
     /**
