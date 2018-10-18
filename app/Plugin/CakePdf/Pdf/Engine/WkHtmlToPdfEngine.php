@@ -54,6 +54,7 @@ class WkHtmlToPdfEngine extends AbstractPdfEngine
      */
     protected function _exec($cmd, $input)
     {
+        //print_r($cmd);die();
         $result = ['stdout' => '', 'stderr' => '', 'return' => ''];
 
         $proc = proc_open($cmd, [0 => ['pipe', 'r'], 1 => ['pipe', 'w'], 2 => ['pipe', 'w']], $pipes);
@@ -93,6 +94,7 @@ class WkHtmlToPdfEngine extends AbstractPdfEngine
             'page-size'        => $this->_Pdf->pageSize(),
             'encoding'         => $this->_Pdf->encoding(),
             'title'            => $this->_Pdf->title(),
+            //'javascript-delay' => 1000
         ];
 
         $margin = $this->_Pdf->margin();

@@ -1,5 +1,5 @@
 <?php
-// Copyright (C) <2015>  <it-novum GmbH>
+// Copyright (C) <2018>  <it-novum GmbH>
 //
 // This file is dual licensed
 //
@@ -22,12 +22,10 @@
 //  License agreement and license key will be shipped with the order
 //  confirmation.
 
-namespace itnovum\openITCOCKPIT\Core\Views;
+namespace itnovum\openITCOCKPIT\Graphite;
 
 
-use itnovum\openITCOCKPIT\Core\PerfdataBackend;
-
-class HostPerfdataChecker {
+class GraphiteMetric {
 
     /**
      * @var string
@@ -35,28 +33,38 @@ class HostPerfdataChecker {
     private $hostUuid;
 
     /**
-     * @var PerfdataBackend
+     * @var string
      */
-    private $PerfdataBackend;
+    private $serviceUuid;
 
     /**
-     * HostPerfdataChecker constructor.
-     * @param Host $Host
-     * @param PerfdataBackend $PerfdataBackend
+     * @var string
      */
-    public function __construct(Host $Host, PerfdataBackend $PerfdataBackend) {
-        $this->hostUuid = $Host->getUuid();
-        $this->PerfdataBackend = $PerfdataBackend;
+    private $metric;
+
+    /**
+     * GraphiteMetric constructor.
+     * @param string $hostUuid
+     * @param string $serviceUuid
+     * @param string $metric
+     */
+    public function __construct($hostUuid, $serviceUuid, $metric) {
+        $this->hostUuid = $hostUuid;
+        $this->serviceUuid = $serviceUuid;
+        $this->metric = $this->replaceIllegalCharacters($metric);
     }
 
-    /**
-     * @return bool
-     */
-    public function hasPerfdata() {
-        if($this->PerfdataBackend->isRrdtool()) {
-            return is_dir(sprintf('/opt/openitc/nagios/share/perfdata/%s', $this->hostUuid));
-        }
-        return true;
+    public function getMetricPath() {
+        return sprintf(
+            '%s.%s.%s',
+            $this->hostUuid,
+            $this->serviceUuid,
+            $this->metric
+        );
+    }
+
+    public function replaceIllegalCharacters($str) {
+        return preg_replace('/[^a-zA-Z^0-9\-\.]/', '_', $str);
     }
 
 }

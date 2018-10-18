@@ -1,5 +1,5 @@
 <?php
-// Copyright (C) <2015>  <it-novum GmbH>
+// Copyright (C) <2018>  <it-novum GmbH>
 //
 // This file is dual licensed
 //
@@ -22,41 +22,38 @@
 //  License agreement and license key will be shipped with the order
 //  confirmation.
 
-namespace itnovum\openITCOCKPIT\Core\Views;
+namespace itnovum\openITCOCKPIT\Core;
 
 
-use itnovum\openITCOCKPIT\Core\PerfdataBackend;
-
-class HostPerfdataChecker {
+class PerfdataBackend {
 
     /**
-     * @var string
+     * DbBackend constructor.
+     * @param string $backend
      */
-    private $hostUuid;
-
-    /**
-     * @var PerfdataBackend
-     */
-    private $PerfdataBackend;
-
-    /**
-     * HostPerfdataChecker constructor.
-     * @param Host $Host
-     * @param PerfdataBackend $PerfdataBackend
-     */
-    public function __construct(Host $Host, PerfdataBackend $PerfdataBackend) {
-        $this->hostUuid = $Host->getUuid();
-        $this->PerfdataBackend = $PerfdataBackend;
+    public function __construct($perfdataBackend) {
+        $this->perfdataBackend = $perfdataBackend;
     }
 
     /**
      * @return bool
      */
-    public function hasPerfdata() {
-        if($this->PerfdataBackend->isRrdtool()) {
-            return is_dir(sprintf('/opt/openitc/nagios/share/perfdata/%s', $this->hostUuid));
-        }
-        return true;
+    public function isRrdtool() {
+        return $this->perfdataBackend === 'Rrdtool';
+    }
+
+    /**
+     * @return bool
+     */
+    public function isCrateDb() {
+        return $this->perfdataBackend === 'Crate';
+    }
+
+    /**
+     * @return bool
+     */
+    public function isWhisper() {
+        return $this->perfdataBackend === 'Whisper';
     }
 
 }

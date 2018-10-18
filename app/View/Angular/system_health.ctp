@@ -141,6 +141,19 @@
                 </span>
             </li>
 
+            <li ng-if="!systemHealth.isNodeJsServerRunning">
+                <span>
+                    <div class="bar-holder no-padding">
+                        <p class="margin-bottom-5">
+                            <i class="fa fa-warning warning"></i>
+                            <strong><?php echo __('Warning'); ?></strong>
+                            <br/>
+                            <i><?php echo __('NodeJS Server is not running'); ?></i>
+                        </p>
+                    </div>
+                </span>
+            </li>
+
             <li ng-if="systemHealth.load.state !== 'ok'">
                 <span>
                     <div class="bar-holder no-padding">

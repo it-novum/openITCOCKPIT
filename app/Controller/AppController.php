@@ -36,6 +36,7 @@ App::uses('User', 'Model');
 App::uses('UUID', 'Lib');
 
 use itnovum\openITCOCKPIT\Core\DbBackend;
+use itnovum\openITCOCKPIT\Core\PerfdataBackend;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 
 /**
@@ -145,6 +146,11 @@ class AppController extends Controller {
     protected $DbBackend;
 
     /**
+     * @var PerfdataBackend
+     */
+    protected $PerfdataBackend;
+
+    /**
      * Called before every controller actions. Should not be overridden.
      * @return void
      */
@@ -165,8 +171,11 @@ class AppController extends Controller {
         //$this->Auth->allow();
 
         Configure::load('dbbackend');
+        Configure::load('perfdatabackend');
         $this->DbBackend = new DbBackend(Configure::read('dbbackend'));
+        $this->PerfdataBackend = new PerfdataBackend(Configure::read('perfdatabackend'));
         $this->set('DbBackend', $this->DbBackend);
+        $this->set('PerfdataBackend', $this->PerfdataBackend);
 
         $this->Auth->authorize = 'Actions';
         //$this->Auth->authorize = 'Controller';

@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('HostsBrowserController', function ($scope, $rootScope, $http, QueryStringService, SortService, $interval) {
+    .controller('HostsBrowserController', function($scope, $rootScope, $http, QueryStringService, SortService, $interval){
 
         $scope.id = QueryStringService.getCakeId();
 
@@ -61,12 +61,15 @@ angular.module('openITCOCKPIT')
 
         var flappingInterval;
 
-        $scope.showFlashMsg = function () {
+        var graphStart = 0;
+        var graphEnd = 0;
+
+        $scope.showFlashMsg = function(){
             $scope.showFlashSuccess = true;
             $scope.autoRefreshCounter = 5;
-            var interval = $interval(function () {
+            var interval = $interval(function(){
                 $scope.autoRefreshCounter--;
-                if ($scope.autoRefreshCounter === 0) {
+                if($scope.autoRefreshCounter === 0){
                     $scope.loadHost();
                     $interval.cancel(interval);
                     $scope.showFlashSuccess = false;
@@ -74,12 +77,12 @@ angular.module('openITCOCKPIT')
             }, 1000);
         };
 
-        $scope.loadHost = function () {
+        $scope.loadHost = function(){
             $http.get("/hosts/browser/" + $scope.id + ".json", {
                 params: {
                     'angular': true
                 }
-            }).then(function (result) {
+            }).then(function(result){
                 $scope.mergedHost = result.data.mergedHost;
                 $scope.mergedHost.Host.disabled = parseInt($scope.mergedHost.Host.disabled, 10);
                 $scope.tags = $scope.mergedHost.Host.tags.split(',');
@@ -110,7 +113,7 @@ angular.module('openITCOCKPIT')
                     5: false
                 };
                 var priority = parseInt($scope.mergedHost.Host.priority, 10);
-                for (var i = 1; i <= priority; i++) {
+                for(var i = 1; i <= priority; i++){
                     $scope.priorities[i] = true;
                 }
 
@@ -120,18 +123,18 @@ angular.module('openITCOCKPIT')
             });
         };
 
-        $scope.loadTimezone = function () {
+        $scope.loadTimezone = function(){
             $http.get("/angular/user_timezone.json", {
                 params: {
                     'angular': true
                 }
-            }).then(function (result) {
+            }).then(function(result){
                 $scope.timezone = result.data.timezone;
             });
         };
 
-        $scope.changeTab = function (tab) {
-            if (tab !== $scope.activeTab) {
+        $scope.changeTab = function(tab){
+            if(tab !== $scope.activeTab){
                 $scope.services = [];
                 $scope.activeTab = tab;
 
@@ -144,8 +147,8 @@ angular.module('openITCOCKPIT')
 
         };
 
-        $scope.load = function () {
-            switch ($scope.activeTab) {
+        $scope.load = function(){
+            switch($scope.activeTab){
                 case 'active':
                     $scope.loadActiveServices();
                     break;
@@ -160,7 +163,7 @@ angular.module('openITCOCKPIT')
             }
         };
 
-        $scope.loadActiveServices = function () {
+        $scope.loadActiveServices = function(){
             var params = {
                 'angular': true,
                 'sort': SortService.getSort(),
@@ -175,7 +178,7 @@ angular.module('openITCOCKPIT')
 
             $http.get("/services/index.json", {
                 params: params
-            }).then(function (result) {
+            }).then(function(result){
                 $scope.services = [];
                 $scope.services = result.data.all_services;
 
@@ -183,7 +186,7 @@ angular.module('openITCOCKPIT')
             });
         };
 
-        $scope.loadNotMonitoredServices = function () {
+        $scope.loadNotMonitoredServices = function(){
             var params = {
                 'angular': true,
                 'sort': SortService.getSort(),
@@ -194,7 +197,7 @@ angular.module('openITCOCKPIT')
 
             $http.get("/services/notMonitored.json", {
                 params: params
-            }).then(function (result) {
+            }).then(function(result){
                 $scope.services = [];
                 $scope.services = result.data.all_services;
 
@@ -202,7 +205,7 @@ angular.module('openITCOCKPIT')
             });
         };
 
-        $scope.loadDisabledServices = function () {
+        $scope.loadDisabledServices = function(){
             var params = {
                 'angular': true,
                 'sort': SortService.getSort(),
@@ -213,7 +216,7 @@ angular.module('openITCOCKPIT')
 
             $http.get("/services/disabled.json", {
                 params: params
-            }).then(function (result) {
+            }).then(function(result){
                 $scope.services = [];
                 $scope.services = result.data.all_services;
 
@@ -221,30 +224,30 @@ angular.module('openITCOCKPIT')
             });
         };
 
-        $scope.getObjectForDelete = function (hostname, service) {
+        $scope.getObjectForDelete = function(hostname, service){
             var object = {};
             object[service.Service.id] = hostname + '/' + service.Service.servicename;
             return object;
         };
 
-        $scope.getObjectForDowntimeDelete = function () {
+        $scope.getObjectForDowntimeDelete = function(){
             var object = {};
             object[$scope.downtime.internalDowntimeId] = $scope.mergedHost.Host.name;
             return object;
         };
 
-        $scope.getObjectsForExternalCommand = function () {
+        $scope.getObjectsForExternalCommand = function(){
             return [$scope.mergedHost];
         };
 
-        $scope.changepage = function (page) {
-            if (page !== $scope.currentPage) {
+        $scope.changepage = function(page){
+            if(page !== $scope.currentPage){
                 $scope.currentPage = page;
                 $scope.load();
             }
         };
 
-        $scope.mouseenter = function ($event, hostUuid, service) {
+        $scope.mouseenter = function($event, hostUuid, service){
             $scope.isLoadingGraph = true;
             var offset = {
                 top: $event.relatedTarget.offsetTop + 40,
@@ -259,14 +262,14 @@ angular.module('openITCOCKPIT')
             var $popupGraphContainer = $('#serviceGraphContainer');
 
 
-            if ((offset.top - currentScrollPosition + margin + $popupGraphContainer.height()) > $(window).innerHeight()) {
+            if((offset.top - currentScrollPosition + margin + $popupGraphContainer.height()) > $(window).innerHeight()){
                 //There is no space in the window for the popup, we need to set it to an higher point
                 $popupGraphContainer.css({
                     'top': parseInt(offset.top - $popupGraphContainer.height() - margin + 10),
                     'left': parseInt(offset.left + margin),
                     'padding': '6px'
                 });
-            } else {
+            }else{
                 //Default Popup
                 $popupGraphContainer.css({
                     'top': parseInt(offset.top + margin),
@@ -279,138 +282,96 @@ angular.module('openITCOCKPIT')
             loadGraph(hostUuid, service);
         };
 
-        $scope.mouseleave = function () {
+        $scope.mouseleave = function(){
             $('#serviceGraphContainer').hide();
             $('#serviceGraphFlot').html('');
         };
 
-        var loadGraph = function (hostUuid, service) {
+        var loadGraph = function(hostUuid, service){
+            graphEnd = Math.floor(Date.now() / 1000);
+            graphStart = graphEnd - (3600 * 4);
+
             $http.get('/Graphgenerators/getPerfdataByUuid.json', {
                 params: {
                     angular: true,
                     host_uuid: hostUuid,
                     service_uuid: service.Service.uuid,
-                    hours: 4,
+                    start: graphStart,
+                    end: graphEnd,
                     jsTimestamp: 1
                 }
-            }).then(function (result) {
+            }).then(function(result){
                 $scope.isLoadingGraph = false;
                 renderGraph(result.data.performance_data);
             });
         };
 
-        var renderGraph = function (performance_data) {
+        var renderGraph = function(performance_data){
             var graph_data = [];
-            for (var dsCount in performance_data) {
+            for(var dsCount in performance_data){
                 graph_data[dsCount] = [];
-                for (var timestamp in performance_data[dsCount].data) {
+                for(var timestamp in performance_data[dsCount].data){
                     graph_data[dsCount].push([timestamp, performance_data[dsCount].data[timestamp]]);
                 }
                 //graph_data.push(performance_data[key].data);
             }
+
+            var GraphDefaultsObj = new GraphDefaults();
             var color_amount = performance_data.length < 3 ? 3 : performance_data.length;
-            var color_generator = new ColorGenerator();
-            var options = {
-                width: '100%',
-                height: '500px',
-                colors: color_generator.generate(color_amount, 90, 120),
-                legend: false,
-                grid: {
-                    hoverable: true,
-                    markings: [],
-                    borderWidth: {
-                        top: 1,
-                        right: 1,
-                        bottom: 1,
-                        left: 1
-                    },
-                    borderColor: {
-                        top: '#CCCCCC'
+            var colors = GraphDefaultsObj.getColors(color_amount);
+            var options = GraphDefaultsObj.getDefaultOptions();
+            options.colors = colors.border;
+            options.xaxis.tickFormatter = function(val, axis){
+                var fooJS = new Date(val + ($scope.timezone.server_timezone_offset * 1000));
+                var fixTime = function(value){
+                    if(value < 10){
+                        return '0' + value;
                     }
-                },
-                tooltip: false,
-                xaxis: {
-                    mode: 'time',
-                    timeformat: '%d.%m.%y %H:%M:%S', // This is handled by a plugin, if it is used -> jquery.flot.time.js
-                    tickFormatter: function (val, axis) {
-                        var fooJS = new Date(val + ($scope.timezone.server_timezone_offset * 1000));
-                        var fixTime = function (value) {
-                            if (value < 10) {
-                                return '0' + value;
-                            }
-                            return value;
-                        };
-                        return fixTime(fooJS.getUTCDate()) + '.' + fixTime(fooJS.getUTCMonth() + 1) + '.' + fooJS.getUTCFullYear() + ' ' + fixTime(fooJS.getUTCHours()) + ':' + fixTime(fooJS.getUTCMinutes());
-                    }
-                },
-                lines: {
-                    show: true,
-                    lineWidth: 1,
-                    fill: true,
-                    steps: 0,
-                    fillColor: {
-                        colors: [{
-                            opacity: 0.5
-                        },
-                            {
-                                opacity: 0.3
-                            }]
-                    }
-                },
-                points: {
-                    show: false,
-                    radius: 1
-                },
-                series: {
-                    show: true,
-                    labelFormatter: function (label, series) {
-                        // series is the series object for the label
-                        return '<a href="#' + label + '">' + label + '</a>';
-                    }
-                },
-                selection: {
-                    mode: "x"
-                }
+                    return value;
+                };
+                return fixTime(fooJS.getUTCDate()) + '.' + fixTime(fooJS.getUTCMonth() + 1) + '.' + fooJS.getUTCFullYear() + ' ' + fixTime(fooJS.getUTCHours()) + ':' + fixTime(fooJS.getUTCMinutes());
             };
 
+            options.xaxis.min = graphStart * 1000;
+            options.xaxis.max = graphEnd * 1000;
             self.plot = $.plot('#serviceGraphFlot', graph_data, options);
         };
 
-        $scope.stateIsUp = function () {
+        $scope.stateIsUp = function(){
             return parseInt($scope.hoststatus.currentState, 10) === 0;
         };
 
-        $scope.stateIsDown = function () {
+        $scope.stateIsDown = function(){
             return parseInt($scope.hoststatus.currentState, 10) === 1;
         };
 
-        $scope.stateIsUnreachable = function () {
+        $scope.stateIsUnreachable = function(){
             return parseInt($scope.hoststatus.currentState, 10) === 2;
         };
 
-        $scope.stateIsNotInMonitoring = function () {
+        $scope.stateIsNotInMonitoring = function(){
             return !$scope.hoststatus.isInMonitoring;
         };
 
-        $scope.startFlapping = function () {
+        $scope.startFlapping = function(){
             $scope.stopFlapping();
-            flappingInterval = $interval(function () {
-                if ($scope.flappingState === 0) {
+            flappingInterval = $interval(function(){
+                if($scope.flappingState === 0){
                     $scope.flappingState = 1;
-                } else {
+                }else{
                     $scope.flappingState = 0;
                 }
             }, 750);
         };
 
-        $scope.stopFlapping = function () {
-            if (flappingInterval) {
+        $scope.stopFlapping = function(){
+            if(flappingInterval){
                 $interval.cancel(flappingInterval);
             }
             flappingInterval = null;
         };
 
-        $scope.ping = function () {
+        $scope.ping = function(){
             $scope.pingResult = [];
             $scope.isPinging = true;
             $http.get("/hosts/ping.json", {
@@ -418,14 +379,14 @@ angular.module('openITCOCKPIT')
                     'angular': true,
                     'address': $scope.mergedHost.Host.address
                 }
-            }).then(function (result) {
+            }).then(function(result){
                 $scope.pingResult = result.data.output;
                 $scope.isPinging = false;
             });
         };
 
-        var getHoststatusTextColor = function () {
-            switch ($scope.hoststatus.currentState) {
+        var getHoststatusTextColor = function(){
+            switch($scope.hoststatus.currentState){
                 case 0:
                 case '0':
                     return 'txt-color-green';
@@ -441,12 +402,12 @@ angular.module('openITCOCKPIT')
             return 'txt-primary';
         };
 
-        var buildParentHostProblems = function () {
+        var buildParentHostProblems = function(){
             $scope.hasParentHostProblems = false;
-            for (var key in $scope.parenthosts) {
+            for(var key in $scope.parenthosts){
                 var parentHostUuid = $scope.parenthosts[key].uuid;
-                if ($scope.parentHoststatus.hasOwnProperty(parentHostUuid)) {
-                    if ($scope.parentHoststatus[parentHostUuid].currentState > 0) {
+                if($scope.parentHoststatus.hasOwnProperty(parentHostUuid)){
+                    if($scope.parentHoststatus[parentHostUuid].currentState > 0){
                         $scope.parentHostProblems[parentHostUuid] = {
                             id: $scope.parenthosts[key].id,
                             name: $scope.parenthosts[key].name,
@@ -458,14 +419,14 @@ angular.module('openITCOCKPIT')
             }
         };
 
-        $scope.loadTimelineData = function (_properties) {
+        $scope.loadTimelineData = function(_properties){
             var properties = _properties || {};
             var start = properties.start || -1;
             var end = properties.end || -1;
 
             $scope.timelineIsLoading = true;
 
-            if (start > $scope.visTimelineStart && end < $scope.visTimelineEnd) {
+            if(start > $scope.visTimelineStart && end < $scope.visTimelineEnd){
                 $scope.timelineIsLoading = false;
                 //Zoom in data we already have
                 return;
@@ -477,7 +438,7 @@ angular.module('openITCOCKPIT')
                     start: start,
                     end: end
                 }
-            }).then(function (result) {
+            }).then(function(result){
 
                 var timelinedata = {
                     items: new vis.DataSet(result.data.statehistory),
@@ -532,25 +493,25 @@ angular.module('openITCOCKPIT')
             });
         };
 
-        var renderTimeline = function (timelinedata, options) {
+        var renderTimeline = function(timelinedata, options){
             var container = document.getElementById('visualization');
-            if ($scope.visTimeline === null) {
+            if($scope.visTimeline === null){
                 $scope.visTimeline = new vis.Timeline(container, timelinedata.items, timelinedata.groups, options);
-                $scope.visTimeline.on('rangechanged', function (properties) {
-                    if ($scope.visTimelineInit) {
+                $scope.visTimeline.on('rangechanged', function(properties){
+                    if($scope.visTimelineInit){
                         $scope.visTimelineInit = false;
                         return;
                     }
 
-                    if ($scope.timelineIsLoading) {
+                    if($scope.timelineIsLoading){
                         console.warn('Timeline already loading date. Waiting for server result before sending next request.');
                         return;
                     }
 
-                    if ($scope.visTimeout) {
+                    if($scope.visTimeout){
                         clearTimeout($scope.visTimeout);
                     }
-                    $scope.visTimeout = setTimeout(function () {
+                    $scope.visTimeout = setTimeout(function(){
                         $scope.visTimeout = null;
                         $scope.loadTimelineData({
                             start: parseInt(properties.start.getTime() / 1000, 10),
@@ -558,19 +519,19 @@ angular.module('openITCOCKPIT')
                         });
                     }, 500);
                 });
-            } else {
+            }else{
                 //Update existing timeline
                 $scope.visTimeline.setItems(timelinedata.items);
             }
 
-            $scope.visTimeline.on('changed', function () {
-                if ($scope.visTimelineInit) {
+            $scope.visTimeline.on('changed', function(){
+                if($scope.visTimelineInit){
                     return;
                 }
-                if ($scope.visChangeTimeout) {
+                if($scope.visChangeTimeout){
                     clearTimeout($scope.visChangeTimeout);
                 }
-                $scope.visChangeTimeout = setTimeout(function () {
+                $scope.visChangeTimeout = setTimeout(function(){
                     $scope.visChangeTimeout = null;
                     var timeRange = $scope.visTimeline.getWindow();
                     var visTimelineStartAsTimestamp = new Date(timeRange.start).getTime();
@@ -581,7 +542,7 @@ angular.module('openITCOCKPIT')
                             start: 'Date',
                             end: 'Date'
                         },
-                        filter: function (item) {
+                        filter: function(item){
                             return (item.group == 5 &&
                                 (item.className === 'bg-down' || item.className === 'bg-down-soft') &&
                                 $scope.CheckIfItemInRange(
@@ -605,43 +566,43 @@ angular.module('openITCOCKPIT')
             });
         };
 
-        $scope.showTimeline = function () {
+        $scope.showTimeline = function(){
             $scope.showTimelineTab = true;
             $scope.loadTimelineData();
         };
 
-        $scope.hideTimeline = function () {
+        $scope.hideTimeline = function(){
             $scope.showTimelineTab = false;
         };
 
-        $scope.CheckIfItemInRange = function (start, end, item) {
+        $scope.CheckIfItemInRange = function(start, end, item){
             var itemStart = item.start.getTime();
             var itemEnd = item.end.getTime();
-            if (itemEnd < start) {
+            if(itemEnd < start){
                 return false;
             }
-            else if (itemStart > end) {
+            else if(itemStart > end){
                 return false;
             }
-            else if (itemStart >= start && itemEnd <= end) {
+            else if(itemStart >= start && itemEnd <= end){
                 return true;
             }
-            else if (itemStart >= start && itemEnd > end) { //item started behind the start and ended behind the end
+            else if(itemStart >= start && itemEnd > end){ //item started behind the start and ended behind the end
                 return true;
             }
-            else if (itemStart < start && itemEnd > start && itemEnd < end) { //item started before the start and ended behind the end
+            else if(itemStart < start && itemEnd > start && itemEnd < end){ //item started before the start and ended behind the end
                 return true;
             }
-            else if (itemStart < start && itemEnd >= end) { // item startet before the start and enden before the end
+            else if(itemStart < start && itemEnd >= end){ // item startet before the start and enden before the end
                 return true;
             }
             return false;
         }
 
-        $scope.calculateFailures = function (totalTime, criticalItems, start, end) {
+        $scope.calculateFailures = function(totalTime, criticalItems, start, end){
             var failuresDuration = 0;
 
-            criticalItems.forEach(function (criticalItem) {
+            criticalItems.forEach(function(criticalItem){
                 var itemStart = criticalItem.start.getTime();
                 var itemEnd = criticalItem.end.getTime();
                 failuresDuration += ((itemEnd > end) ? end : itemEnd) - ((itemStart < start) ? start : itemStart);
@@ -653,22 +614,22 @@ angular.module('openITCOCKPIT')
         $scope.loadTimezone();
         SortService.setCallback($scope.load);
 
-        $scope.$watch('activeServiceFilter', function () {
-            if ($scope.init) {
+        $scope.$watch('activeServiceFilter', function(){
+            if($scope.init){
                 return;
             }
             $scope.currentPage = 1;
             $scope.load();
         }, true);
 
-        $scope.$watch('hoststatus.isFlapping', function () {
-            if ($scope.hoststatus) {
-                if ($scope.hoststatus.hasOwnProperty('isFlapping')) {
-                    if ($scope.hoststatus.isFlapping === true) {
+        $scope.$watch('hoststatus.isFlapping', function(){
+            if($scope.hoststatus){
+                if($scope.hoststatus.hasOwnProperty('isFlapping')){
+                    if($scope.hoststatus.isFlapping === true){
                         $scope.startFlapping();
                     }
 
-                    if ($scope.hoststatus.isFlapping === false) {
+                    if($scope.hoststatus.isFlapping === false){
                         $scope.stopFlapping();
                     }
 

@@ -22,41 +22,10 @@
 //  License agreement and license key will be shipped with the order
 //  confirmation.
 
-namespace itnovum\openITCOCKPIT\Core\Views;
+$config = [
+    // @todo enable Whisper by default!
+    //'perfdatabackend' => 'Rrdtool',
+    //'perfdatabackend' => 'Crate',
+    'perfdatabackend' => 'Whisper',
+];
 
-
-use itnovum\openITCOCKPIT\Core\PerfdataBackend;
-
-class HostPerfdataChecker {
-
-    /**
-     * @var string
-     */
-    private $hostUuid;
-
-    /**
-     * @var PerfdataBackend
-     */
-    private $PerfdataBackend;
-
-    /**
-     * HostPerfdataChecker constructor.
-     * @param Host $Host
-     * @param PerfdataBackend $PerfdataBackend
-     */
-    public function __construct(Host $Host, PerfdataBackend $PerfdataBackend) {
-        $this->hostUuid = $Host->getUuid();
-        $this->PerfdataBackend = $PerfdataBackend;
-    }
-
-    /**
-     * @return bool
-     */
-    public function hasPerfdata() {
-        if($this->PerfdataBackend->isRrdtool()) {
-            return is_dir(sprintf('/opt/openitc/nagios/share/perfdata/%s', $this->hostUuid));
-        }
-        return true;
-    }
-
-}
