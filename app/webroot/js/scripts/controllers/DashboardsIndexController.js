@@ -13,7 +13,7 @@ angular.module('openITCOCKPIT')
 
         $scope.gridsterOpts = {
             minRows: 2, // the minimum height of the grid, in rows
-            maxRows: 100,
+            maxRows: 999,
             columns: 12, // the width of the grid, in columns
             colWidth: 'auto', // can be an integer or 'auto'.  'auto' uses the pixel width of the element divided by 'columns'
             //rowHeight: 'match', // can be an integer or 'match'.  Match uses the colWidth, giving you square widgets.

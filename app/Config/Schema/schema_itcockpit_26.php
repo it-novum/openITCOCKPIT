@@ -968,7 +968,7 @@ class AppSchema extends CakeSchema {
         'check_command_args'           => ['type' => 'string', 'null' => false, 'default' => null, 'length' => 1000, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
         'checkcommand_info'            => ['type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
         'eventhandler_command_id'      => ['type' => 'integer', 'null' => false, 'default' => '0'],
-        'timeperiod_id'                => ['type' => 'integer', 'null' => false, 'default' => null],
+        'timeperiod_id'                => ['type' => 'integer', 'null' => true,'default' => null],
         'check_interval'               => ['type' => 'integer', 'null' => false, 'default' => '1', 'length' => 5],
         'retry_interval'               => ['type' => 'integer', 'null' => false, 'default' => '3', 'length' => 5],
         'max_check_attempts'           => ['type' => 'integer', 'null' => false, 'default' => '1', 'length' => 3],

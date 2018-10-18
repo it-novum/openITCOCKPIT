@@ -1213,7 +1213,8 @@ angular.module('openITCOCKPIT')
                 params: {
                     'angular': true,
                     'filter[Host.name]': searchString,
-                    'selected[]': selected
+                    'selected[]': selected,
+                    'includeDisabled': 'true'
                 }
             }).then(function(result){
                 $scope.itemObjects = result.data.hosts;
@@ -1230,7 +1231,8 @@ angular.module('openITCOCKPIT')
                     'angular': true,
                     'filter[Host.name]': searchString,
                     'filter[Service.servicename]': searchString,
-                    'selected[]': selected
+                    'selected[]': selected,
+                    'includeDisabled': 'true'
                 }
             }).then(function(result){
 

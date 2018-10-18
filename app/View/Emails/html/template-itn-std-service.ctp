@@ -709,6 +709,14 @@
                                     $parameters['servicestatus'],
                                     $parameters['serviceUuid']
                                 );
+                                ?>
+                                <br />
+                                <p>
+                                <?php
+                                echo nl2br(h($parameters['servicestatus'][$parameters['serviceUuid']]['Servicestatus']['long_output']));
+                                ?>
+                                </p>
+                            <?php
                             endif;
                             ?>
                             <br/><br/>

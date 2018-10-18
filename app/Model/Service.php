@@ -1824,6 +1824,10 @@ class Service extends AppModel {
             $query['conditions']['OR'] = $ServiceConditions->getConditions();
         }
 
+        if($ServiceConditions->includeDisabled() === false){
+            $query['conditions']['Service.disabled'] = (int)$ServiceConditions->includeDisabled();
+        }
+
         if (is_array($selected)) {
             $selected = array_filter($selected);
         }
@@ -1897,6 +1901,11 @@ class Service extends AppModel {
                     'Service.id'
                 ]
             ];
+
+            if($ServiceConditions->includeDisabled() === false){
+                $query['conditions']['Service.disabled'] = (int)$ServiceConditions->includeDisabled();
+            }
+
             $query['conditions']['HostsToContainers.container_id'] = $ServiceConditions->getContainerIds();
             $selectedServices = $this->find('all', $query);
             $selectedServices = Hash::combine($selectedServices, '{n}.Service.id', '{n}');

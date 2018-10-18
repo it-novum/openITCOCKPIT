@@ -417,7 +417,8 @@ class ContactgroupsController extends AppController {
             $this->setFlash(__('Contact groups deleted'));
             $this->redirect(['action' => 'index']);
         }
-
+        $contactgroupsToDelete = [];
+        $contactgroupsCanotDelete = [];
         foreach (func_get_args() as $contactgroupId) {
             if ($this->Contactgroup->exists($contactgroupId)) {
                 $contactgroup = $this->Contactgroup->find('first', [
@@ -433,7 +434,6 @@ class ContactgroupsController extends AppController {
                     if ($this->__allowDelete($contactgroupId)) {
                         $contactgroupsToDelete[$contactgroupId] = $contactgroup;
                     } else {
-                        debug($contactgroup['Container']['name']);
                         $contactgroupsCanotDelete[$contactgroupId] = $contactgroup['Container']['name'];
                     }
                 }

@@ -148,7 +148,12 @@ if (!$QueryHandler->exists()): ?>
                                             <?php echo __(' Next check'); ?>
                                         </div>
                                         <div class="col-xs-6">
-                                            {{ servicestatus.nextCheck }}
+                                            <span ng-if="mergedService.Service.active_checks_enabled && host.Host.is_satellite_host === false">
+                                                {{ servicestatus.nextCheck }}
+                                            </span>
+                                            <span ng-if="mergedService.Service.active_checks_enabled === false || host.Host.is_satellite_host === true">
+                                            <?php echo __('n/a'); ?>
+                                        </span>
                                         </div>
                                     </div>
                                     <div class="row" ng-show="servicestatus.isHardstate">
@@ -736,11 +741,16 @@ if (!$QueryHandler->exists()): ?>
                                         <div class="text-center txt-color-white">
                                             <div><?php echo __('Next check'); ?></div>
                                             <h3 class="margin-top-0">
-                                                {{ servicestatus.nextCheck }}
-                                                <small style="color: #333;"
-                                                       ng-show="servicestatus.latency > 1">
-                                                    (+ {{ servicestatus.latency }})
-                                                </small>
+                                                <span ng-if="mergedService.Service.active_checks_enabled && host.Host.is_satellite_host === false">
+                                                    {{ servicestatus.nextCheck }}
+                                                    <small style="color: #333;" ng-show="servicestatus.latency > 1">
+                                                        (+ {{ servicestatus.latency }})
+                                                    </small>
+                                                </span>
+                                                <span ng-if="mergedService.Service.active_checks_enabled === false || host.Host.is_satellite_host === true">
+                                            <?php echo __('n/a'); ?>
+
+
                                             </h3>
                                         </div>
 

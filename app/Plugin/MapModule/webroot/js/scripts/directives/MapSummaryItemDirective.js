@@ -3,9 +3,11 @@ angular.module('openITCOCKPIT').directive('mapSummaryItem', function($http, $int
         restrict: 'E',
         templateUrl: '/map_module/mapeditors/mapsummaryitem.html',
         scope: {
-            'item': '='
+            'item': '=',
+            'refreshInterval': '='
         },
         controller: function($scope){
+            $scope.statusUpdateInterval = null;
 
             var interval = null;
 
@@ -18,6 +20,7 @@ angular.module('openITCOCKPIT').directive('mapSummaryItem', function($http, $int
                 $http.get("/map_module/mapeditors/mapsummaryitem/.json", {
                     params: {
                         'angular': true,
+                        'disableGlobalLoader': true,
                         'objectId': $scope.item.object_id,
                         'mapId': $scope.item.map_id,
                         'type': $scope.item.type
@@ -29,6 +32,7 @@ angular.module('openITCOCKPIT').directive('mapSummaryItem', function($http, $int
 
                     $scope.init = false;
                     getLable(result.data.data);
+                    initRefreshTimer();
                 });
             };
 
@@ -58,26 +62,26 @@ angular.module('openITCOCKPIT').directive('mapSummaryItem', function($http, $int
             };
 
             $scope.stop = function(){
-                $interval.cancel($scope.statusUpdateInterval);
+                if($scope.statusUpdateInterval !== null){
+                    $interval.cancel($scope.statusUpdateInterval);
+                }
             };
-
-            $scope.load();
-
-            /*
-            //All objects on the map gets rerenderd by MapEditorsController.
-            //May be we need this in a later version?
-            if($scope.refreshInterval > 0){
-                $scope.statusUpdateInterval = $interval(function(){
-                    $scope.load();
-                }, $scope.refreshInterval);
-            }
 
             //Disable status update interval, if the object gets removed from DOM.
             //E.g in Map rotations
-            $scope.$on('$destroy', function() {
+            $scope.$on('$destroy', function(){
                 $scope.stop();
             });
-            */
+
+            var initRefreshTimer = function(){
+                if($scope.refreshInterval > 0 && $scope.statusUpdateInterval === null){
+                    $scope.statusUpdateInterval = $interval(function(){
+                        $scope.load();
+                    }, $scope.refreshInterval);
+                }
+            };
+
+            $scope.load();
 
         },
 

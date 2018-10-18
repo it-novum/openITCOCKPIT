@@ -2002,6 +2002,8 @@ class ServicesController extends AppController {
         }
 
         $rawHost = $this->Host->find('first', $this->Host->getQueryForServiceBrowser($rawService['Service']['host_id']));
+        $host = new \itnovum\openITCOCKPIT\Core\Views\Host($rawHost);
+        $rawHost['Host']['is_satellite_host'] = $host->isSatelliteHost();
 
         $containerIdsToCheck = Hash::extract($rawHost, 'Container.{n}.HostsToContainer.container_id');
         $containerIdsToCheck[] = $rawHost['Host']['container_id'];
@@ -2865,7 +2867,7 @@ class ServicesController extends AppController {
 
         $ServiceCondition = new ServiceConditions($ServiceFilter->indexFilter());
         $ServiceCondition->setContainerIds($containerIds);
-        $ServiceCondition->includeDisabled(true);
+        $ServiceCondition->setIncludeDisabled(false);
 
         $services = $this->Service->makeItJavaScriptAble(
             $this->Service->getServicesForAngular($ServiceCondition, $selected)
@@ -2881,9 +2883,12 @@ class ServicesController extends AppController {
         }
         $this->Service->virtualFields['servicename'] = 'IF((Service.name IS NULL OR Service.name=""), Servicetemplate.name, Service.name)';
         $selected = $this->request->query('selected');
+        $includeDisabled = $this->request->query('includeDisabled') === 'true';
+
         $ServiceFilter = new ServiceFilter($this->request);
 
         $ServiceCondition = new ServiceConditions($ServiceFilter->indexFilter());
+        $ServiceCondition->setIncludeDisabled($includeDisabled);
         $ServiceCondition->setContainerIds($this->MY_RIGHTS);
         $ServiceCondition->includeDisabled();
 

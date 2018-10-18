@@ -159,6 +159,17 @@ class LoginController extends AppController
         }
 
         if ($this->request->is('post') || $this->request->is('put')) {
+            //ITC-1901 workaround
+            if(isset($this->request->data['LoginUser']['username'])){
+                $this->request->data['LoginUser']['email'] = $this->request->data['LoginUser']['username'];
+            }
+
+            if(isset($this->request->data['LoginUser']['auth_method']) && $this->request->data['LoginUser']['auth_method'] === 'ldap'){
+                $this->request->data['LoginUser']['samaccountname'] = $this->request->data['LoginUser']['email'];
+                unset($this->request->data['email']);
+            }
+
+
             $this->Auth->logout();
             $this->request->data = ['User' => $this->data['LoginUser']];
 

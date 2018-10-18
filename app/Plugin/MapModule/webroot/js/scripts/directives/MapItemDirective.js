@@ -3,11 +3,13 @@ angular.module('openITCOCKPIT').directive('mapItem', function($http, $interval){
         restrict: 'E',
         templateUrl: '/map_module/mapeditors/mapitem.html',
         scope: {
-            'item': '='
-            //'refreshInterval': '='
+            'item': '=',
+            'refreshInterval': '='
         },
         controller: function($scope){
             $scope.init = true;
+            $scope.statusUpdateInterval = null;
+
 
             var interval = null;
 
@@ -15,6 +17,7 @@ angular.module('openITCOCKPIT').directive('mapItem', function($http, $interval){
                 $http.get("/map_module/mapeditors/mapitem/.json", {
                     params: {
                         'angular': true,
+                        'disableGlobalLoader': true,
                         'objectId': $scope.item.object_id,
                         'mapId': $scope.item.map_id,
                         'type': $scope.item.type
@@ -79,15 +82,15 @@ angular.module('openITCOCKPIT').directive('mapItem', function($http, $interval){
             };
 
             $scope.stop = function(){
-                $interval.cancel($scope.statusUpdateInterval);
+                if($scope.statusUpdateInterval !== null){
+                    $interval.cancel($scope.statusUpdateInterval);
+                }
             };
 
             $scope.load();
 
-            /*
-            //All objects on the map gets rerenderd by MapEditorsController.
-            //May be we need this in a later version?
-            if($scope.refreshInterval > 0){
+
+            if($scope.refreshInterval > 0 && $scope.statusUpdateInterval === null){
                 $scope.statusUpdateInterval = $interval(function(){
                     $scope.load();
                 }, $scope.refreshInterval);
@@ -98,7 +101,7 @@ angular.module('openITCOCKPIT').directive('mapItem', function($http, $interval){
             $scope.$on('$destroy', function() {
                 $scope.stop();
             });
-            */
+
 
             $scope.$watch('item.object_id', function(){
                 if($scope.init || $scope.item.object_id === null){

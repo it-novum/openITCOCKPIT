@@ -151,10 +151,13 @@ if (!$QueryHandler->exists()): ?>
                                     </div>
                                     <div class="row">
                                         <div class="col-xs-6">
-                                            <?php echo __(' Next check'); ?>
+                                            <?php echo __('Next check'); ?>
                                         </div>
                                         <div class="col-xs-6">
-                                            {{ hoststatus.nextCheck }}
+                                            <span ng-if="mergedHost.Host.active_checks_enabled && mergedHost.Host.is_satellite_host === false">{{ hoststatus.nextCheck }}</span>
+                                            <span ng-if="mergedHost.Host.active_checks_enabled === false || mergedHost.Host.is_satellite_host === true">
+                                                <?php echo __('n/a'); ?>
+                                            </span>
                                         </div>
                                     </div>
                                     <div class="row" ng-show="hoststatus.isHardstate">
@@ -626,11 +629,15 @@ if (!$QueryHandler->exists()): ?>
                                         <div class="text-center txt-color-white">
                                             <div><?php echo __('Next check'); ?></div>
                                             <h3 class="margin-top-0">
-                                                {{ hoststatus.nextCheck }}
-                                                <small style="color: #333;"
-                                                       ng-show="hoststatus.latency > 1">
-                                                    (+ {{ hoststatus.latency }})
-                                                </small>
+                                                <span ng-if="mergedHost.Host.active_checks_enabled && mergedHost.Host.is_satellite_host === false">
+                                                    {{ hoststatus.nextCheck }}
+                                                    <small style="color: #333;"
+                                                           ng-show="hoststatus.latency > 1">(+ {{ hoststatus.latency }})
+                                                    </small>
+                                                </span>
+                                                <span ng-if="mergedHost.Host.active_checks_enabled === false || mergedHost.Host.is_satellite_host === true">
+                                                    <?php echo __('n/a'); ?>
+                                                </span>
                                             </h3>
                                         </div>
 

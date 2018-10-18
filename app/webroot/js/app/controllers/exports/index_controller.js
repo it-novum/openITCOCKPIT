@@ -34,6 +34,19 @@ App.Controllers.ExportsIndexController = Frontend.AppController.extend({
         var _self = this;
 
 
+        $('#selectAllSat').click(function(){
+            $('.sync_instance').each(function (key, obj) {
+                $(obj).prop('checked', true);
+            });
+        });
+
+        $('#deselectAllSat').click(function(){
+            $('.sync_instance').each(function (key, obj) {
+                $(obj).prop('checked', false);
+            });
+        });
+
+
         $('#saveInstacesForSync').click(function(){
             _self.saveInstacesForSync();
         });

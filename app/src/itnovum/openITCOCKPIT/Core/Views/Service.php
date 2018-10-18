@@ -207,6 +207,13 @@ class Service {
     }
 
     /**
+     * @return bool|int
+     */
+    public function isDisabled() {
+        return $this->disabled;
+    }
+
+    /**
      * @return array
      */
     public function toArray(){

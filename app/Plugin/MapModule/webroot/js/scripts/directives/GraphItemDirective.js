@@ -1,12 +1,15 @@
-angular.module('openITCOCKPIT').directive('graphItem', function($http, $timeout){
+angular.module('openITCOCKPIT').directive('graphItem', function($http, $timeout, $interval){
     return {
         restrict: 'E',
         templateUrl: '/map_module/mapeditors/graph.html',
         scope: {
-            'item': '='
+            'item': '=',
+            'refreshInterval': '='
         },
         controller: function($scope){
             $scope.init = true;
+            $scope.statusUpdateInterval = null;
+
             $scope.selectedGraphdataSource = null;
 
             $scope.width = 400;
@@ -30,6 +33,7 @@ angular.module('openITCOCKPIT').directive('graphItem', function($http, $timeout)
                 $http.get("/map_module/mapeditors/graph/.json", {
                     params: {
                         'angular': true,
+                        'disableGlobalLoader': true,
                         'serviceId': $scope.item.object_id,
                         'type': $scope.item.type
                     }
@@ -38,6 +42,8 @@ angular.module('openITCOCKPIT').directive('graphItem', function($http, $timeout)
                     $scope.service = result.data.service;
                     $scope.allowView = result.data.allowView;
 
+                    initRefreshTimer();
+
                     loadGraph($scope.host.uuid, $scope.service.uuid);
                 });
             };
@@ -45,13 +51,27 @@ angular.module('openITCOCKPIT').directive('graphItem', function($http, $timeout)
             $scope.loadTimezone = function(){
                 $http.get("/angular/user_timezone.json", {
                     params: {
-                        'angular': true
+                        'angular': true,
+                        'disableGlobalLoader': true
                     }
                 }).then(function(result){
                     $scope.timezone = result.data.timezone;
                     $scope.load();
                 });
             };
+
+
+            $scope.stop = function(){
+                if($scope.statusUpdateInterval !== null){
+                    $interval.cancel($scope.statusUpdateInterval);
+                }
+            };
+
+            //Disable status update interval, if the object gets removed from DOM.
+            //E.g in Map rotations
+            $scope.$on('$destroy', function(){
+                $scope.stop();
+            });
 
             var loadGraph = function(hostUuid, serviceuuid){
                 graphEnd = Math.floor(Date.now() / 1000);
@@ -60,6 +80,7 @@ angular.module('openITCOCKPIT').directive('graphItem', function($http, $timeout)
                 $http.get('/Graphgenerators/getPerfdataByUuid.json', {
                     params: {
                         angular: true,
+                        disableGlobalLoader: true,
                         host_uuid: hostUuid,
                         service_uuid: serviceuuid,
                         start: graphStart,
@@ -231,6 +252,14 @@ angular.module('openITCOCKPIT').directive('graphItem', function($http, $timeout)
                             }
                         }
                     }
+                }
+            };
+
+            var initRefreshTimer = function(){
+                if($scope.refreshInterval > 0 && $scope.statusUpdateInterval === null){
+                    $scope.statusUpdateInterval = $interval(function(){
+                        $scope.load();
+                    }, $scope.refreshInterval);
                 }
             };
 

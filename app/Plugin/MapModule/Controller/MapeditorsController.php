@@ -164,11 +164,11 @@ class MapeditorsController extends MapModuleAppController {
                     'fields'     => [
                         'Host.id',
                         'Host.uuid',
-                        'Host.name'
+                        'Host.name',
+                        'Host.disabled'
                     ],
                     'conditions' => [
-                        'Host.id'       => $objectId,
-                        'Host.disabled' => 0
+                        'Host.id'       => $objectId
                     ]
                 ]);
                 if (!empty($host)) {
@@ -196,7 +196,8 @@ class MapeditorsController extends MapModuleAppController {
                     'fields'     => [
                         'Service.id',
                         'Service.name',
-                        'Service.uuid'
+                        'Service.uuid',
+                        'Service.disabled'
                     ],
                     'contain'    => [
                         'Host'            => [
@@ -214,8 +215,7 @@ class MapeditorsController extends MapModuleAppController {
                         ]
                     ],
                     'conditions' => [
-                        'Service.id'       => $objectId,
-                        'Service.disabled' => 0
+                        'Service.id'       => $objectId
                     ],
                 ]);
 
@@ -353,12 +353,12 @@ class MapeditorsController extends MapModuleAppController {
                             'table'      => 'mapitems',
                             'type'       => 'INNER',
                             'alias'      => 'Mapitem',
-                            'conditions' => 'Mapitem.map_id = Map.id',
+                            'conditions' => 'Mapitem.object_id = Map.id',
                         ],
                     ],
                     'conditions' => [
-                        'Map.id'            => $mapId,
-                        'Mapitem.object_id' => $objectId
+                        'Map.id'            => $objectId,
+                        'Mapitem.map_id' => $mapId
                     ]
                 ]);
                 if (!empty($map)) {
@@ -372,8 +372,9 @@ class MapeditorsController extends MapModuleAppController {
                     $mapItemToResolve = $this->Mapitem->find('first', [
                         'recursive'  => -1,
                         'conditions' => [
-                            'Mapitem.map_id' => $map['Map']['id'],
-                            'Mapitem.type'   => 'map'
+                            'Mapitem.object_id' => $map['Map']['id'],
+                            'Mapitem.type'   => 'map',
+                            'Mapitem.map_id'   => $mapId
                         ],
                         'fields'     => [
                             'Mapitem.object_id'
@@ -597,11 +598,11 @@ class MapeditorsController extends MapModuleAppController {
                     'fields'     => [
                         'Host.id',
                         'Host.name',
-                        'Host.uuid'
+                        'Host.uuid',
+                        'Host.disabled'
                     ],
                     'conditions' => [
-                        'Host.id'       => $objectId,
-                        'Host.disabled' => 0
+                        'Host.id'       => $objectId
                     ]
                 ]);
                 if (!empty($host)) {
@@ -628,7 +629,8 @@ class MapeditorsController extends MapModuleAppController {
                     'fields'     => [
                         'Service.id',
                         'Service.name',
-                        'Service.uuid'
+                        'Service.uuid',
+                        'Service.disabled'
                     ],
                     'contain'    => [
                         'Host'            => [
@@ -646,8 +648,7 @@ class MapeditorsController extends MapModuleAppController {
                         ]
                     ],
                     'conditions' => [
-                        'Service.id'       => $objectId,
-                        'Service.disabled' => 0
+                        'Service.id'       => $objectId
                     ],
                 ]);
 
@@ -1072,8 +1073,7 @@ class MapeditorsController extends MapModuleAppController {
                 ]
             ],
             'conditions' => [
-                'Service.id'       => $serviceId,
-                'Service.disabled' => 0
+                'Service.id'       => $serviceId
             ],
         ]);
         if (empty($service)) {
@@ -1138,11 +1138,11 @@ class MapeditorsController extends MapModuleAppController {
                         'Host.id',
                         'Host.uuid',
                         'Host.name',
-                        'Host.description'
+                        'Host.description',
+                        'Host.disabled'
                     ],
                     'conditions' => [
-                        'Host.id'       => $objectId,
-                        'Host.disabled' => 0
+                        'Host.id'       => $objectId
                     ]
                 ]);
                 if (!empty($host)) {
@@ -1175,7 +1175,8 @@ class MapeditorsController extends MapModuleAppController {
                         'Service.id',
                         'Service.name',
                         'Service.uuid',
-                        'Service.description'
+                        'Service.description',
+                        'Service.disabled'
                     ],
                     'contain'    => [
                         'Host'            => [
@@ -1193,8 +1194,7 @@ class MapeditorsController extends MapModuleAppController {
                         ]
                     ],
                     'conditions' => [
-                        'Service.id'       => $objectId,
-                        'Service.disabled' => 0
+                        'Service.id'       => $objectId
                     ],
                 ]);
 
@@ -2229,7 +2229,7 @@ class MapeditorsController extends MapModuleAppController {
 
         $id = $this->request->data('Map.id');
 
-        if (!$this->Maptext->exists($id)) {
+        if (!$this->Map->exists($id)) {
             throw new NotFoundException();
         }
 

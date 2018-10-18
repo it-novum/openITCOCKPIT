@@ -167,7 +167,7 @@ class NagiosNotificationTask extends AppShell {
             Configure::load('dbbackend');
             $DbBackend = new DbBackend(Configure::read('dbbackend'));
             $ServicestatusFields = new ServicestatusFields($DbBackend);
-            $ServicestatusFields->currentState();
+            $ServicestatusFields->currentState()->longOutput();
 
             $evcTree = $this->Eventcorrelation->getEvcTreeData($parameters['hostId'], []);
             $servicestatus = $this->Servicestatus->byUuid(Hash::extract($evcTree, '{n}.{*}.{n}.Service.uuid'), $ServicestatusFields);
