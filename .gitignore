@@ -60,6 +60,8 @@ app/Plugin/OpenstreetmapModule
 app/Plugin/LinuxBasicMonitoringSSHModule
 app/Plugin/VMWAREModule
 app/Plugin/WindowsBasicMonitoringNSCPModule
+app/Plugin/MasterSelfMonitoringModule
+app/Plugin/SatelliteSelfMonitoringModule
 app/Lib/AvailableVersion.php
 app/docs/en/administration/systemsettings.md
 app/docs/en/api/systemsettings.md
