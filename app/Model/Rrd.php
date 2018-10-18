@@ -29,7 +29,11 @@ class Rrd extends AppModel {
     var $useTable = false;
     public $rrd_path = null;
 
-    public function getPerfDataFiles($host_uuid, $service_uuid, $options = [], $service_value = null) {
+    const REDUCE_METHOD_STEPS = 1;
+    const REDUCE_METHOD_AVERAGE = 2;
+    const MAX_RESPONSE_GRAPH_POINTS = 1000;
+
+    public function getPerfDataFiles($host_uuid, $service_uuid, $options = [], $service_value = null, $type = 'avg') {
         $result = [];
 
         App::uses('Folder', 'Utility');
@@ -45,7 +49,7 @@ class Rrd extends AppModel {
             return $result;
         }
         $xml_data = ['xml_data' => $this->getPerfDataStructure($perfdata_dir->pwd() . '/' . $perfdata_files[1])];
-        $perfdata_from_rrd = $this->getPerfDataFromRrd($perfdata_dir->pwd() . '/' . $perfdata_files[0], $options);
+        $perfdata_from_rrd = $this->getPerfDataFromRrd($perfdata_dir->pwd() . '/' . $perfdata_files[0], $options, $type);
 
         if (!empty($xml_data['xml_data']) && !is_null($service_value)) { // ignoring other values if $service_value is set
             $neededIndex = null;
@@ -152,10 +156,26 @@ class Rrd extends AppModel {
         return $result;
     }
 
-    public function getPerfDataFromRrd($rrd_path = null, $options = []) {
+    public function getPerfDataFromRrd($rrd_path = null, $options = [], $type = 'avg') {
+        switch ($type) {
+            case 'MIN':
+            case 'min':
+                $type = 'MIN';
+                break;
+
+            case 'MAX':
+            case 'max':
+                $type = 'MAX';
+                break;
+
+            default:
+                $type = 'AVERAGE';
+                break;
+        }
+
         $_options = [
-            'start' => time() - (24 * 3600 * 31),
-            'end' => time(),
+            'start'     => time() - (24 * 3600 * 31),
+            'end'       => time(),
             'step_size' => 60,
         ];
         $_options = Hash::merge($_options, $options);
@@ -163,7 +183,7 @@ class Rrd extends AppModel {
         list($start, $end) = $this->fixResolution($_options['start'], $_options['end'], $_options['step_size']);
 
         $options = [
-            'AVERAGE',
+            $type,
             '--resolution',
             $_options['step_size'],
             '--start',
@@ -172,29 +192,32 @@ class Rrd extends AppModel {
             $end,
         ];
 
-        $perf_data = rrd_fetch($rrd_path, $options);
-        $perf_data_filtered = [];
-        if (!$perf_data) {
+
+        $perfdata = rrd_fetch($rrd_path, $options);
+
+
+        if(empty($perfdata) || empty($perfdata['data'])){
             return [];
         }
-        foreach ($perf_data as $key => $value) {
-            if ($key == 'data') {
-                foreach (array_keys($perf_data['data']) as $sub_key => $data_array) {
-                    $perf_data_filtered['data'][$data_array] = [];
-                    foreach ($perf_data['data'][$data_array] as $timestamp => $item_value) {
-                        if (strcasecmp(trim($item_value), 'NAN') != 0) {
-                            $perf_data_filtered['data'][$data_array][$timestamp] = $item_value;
-                        } else {
-                            $perf_data_filtered['data'][$data_array][$timestamp] = null;
-                        }
-                    }
+
+
+        $dataSources = array_keys($perfdata['data']); //save memory
+        foreach($dataSources as $dsIndex){
+            foreach(array_keys($perfdata['data'][$dsIndex]) as $timestamp){
+                if(is_nan($perfdata['data'][$dsIndex][$timestamp])){
+                    $perfdata['data'][$dsIndex][$timestamp] = null;
                 }
-            } else {
-                $perf_data_filtered[$key] = $value;
             }
         }
 
-        return $perf_data_filtered;
+        return $perfdata;
+
+    }
+
+    public function convert($size)
+    {
+        $unit=array('b','kb','mb','gb','tb','pb');
+        return @round($size/pow(1024,($i=floor(log($size,1024)))),2).' '.$unit[$i];
     }
 
     public function isValidHostUuid($host_uuid) {
@@ -265,11 +288,11 @@ class Rrd extends AppModel {
             'LINE2:predict#337AB7:Trend Prediction',
         ];
 
-        if(!empty($legend)){
+        if (!empty($legend)) {
             array_push($_rrd_options, $legend);
         }
 
-        if(!empty($height)){
+        if (!empty($height)) {
             array_push($_rrd_options, '--height', $height);
         }
 
@@ -283,16 +306,16 @@ class Rrd extends AppModel {
             array_push($_rrd_options, $color);
         }
 
-        if($showThreshold){
-            if (isset($rrd_structure_datasource['warn']) && $rrd_structure_datasource['warn'] > 0){
+        if ($showThreshold) {
+            if (isset($rrd_structure_datasource['warn']) && $rrd_structure_datasource['warn'] > 0) {
                 $__rrd_options = [
-                    'LINE1:'.$rrd_structure_datasource['warn'].'#FFFF00:'.__('Warning')
+                    'LINE1:' . $rrd_structure_datasource['warn'] . '#FFFF00:' . __('Warning')
                 ];
                 $_rrd_options = Hash::merge($_rrd_options, $__rrd_options);
             }
-            if (isset($rrd_structure_datasource['crit']) && $rrd_structure_datasource['crit'] > 0){
+            if (isset($rrd_structure_datasource['crit']) && $rrd_structure_datasource['crit'] > 0) {
                 $__rrd_options = [
-                    'LINE1:'.$rrd_structure_datasource['crit'].'#FF0000:'.__('Critical')
+                    'LINE1:' . $rrd_structure_datasource['crit'] . '#FF0000:' . __('Critical')
                 ];
                 $_rrd_options = Hash::merge($_rrd_options, $__rrd_options);
             }
@@ -311,7 +334,7 @@ class Rrd extends AppModel {
         $ret = rrd_graph($targetPath . DS . $fileName, $rrd_options);
         if ($ret) {
             return [
-                'webPath' => DS . 'img' . DS . 'graphs' . DS . $fileName,
+                'webPath'  => DS . 'img' . DS . 'graphs' . DS . $fileName,
                 'diskPath' => $targetPath . DS . $fileName,
             ];
         } else {
@@ -333,7 +356,7 @@ class Rrd extends AppModel {
         $ret = rrd_graph($targetPath . DS . $fileName, $rrdOptions);
         if ($ret) {
             return [
-                'webPath' => DS . 'img' . DS . 'graphs' . DS . $fileName,
+                'webPath'  => DS . 'img' . DS . 'graphs' . DS . $fileName,
                 'diskPath' => $targetPath . DS . $fileName,
             ];
         } else {
@@ -367,5 +390,65 @@ class Rrd extends AppModel {
     public function parsePerfData($perfdata_string) {
         $StatusenginePerformanceDataParser = new PerfdataParser($perfdata_string);
         return $StatusenginePerformanceDataParser->parse();
+    }
+
+    public function reduceData($data, $limit = 500, $technique = self::REDUCE_METHOD_AVERAGE) {
+        switch ($technique) {
+            case self::REDUCE_METHOD_STEPS:
+                return $this->reduceDataBySteps($data, $limit);
+            case self::REDUCE_METHOD_AVERAGE:
+                return $this->reduceDataByAverage($data, $limit);
+            default:
+                return $data;
+        }
+    }
+
+    private function reduceDataByAverage($data, $limit = 500) {
+        $data_count = count($data);
+        if ($data_count <= $limit) {
+            return $data;
+        }
+
+        $percent = $data_count / $limit;
+        $step_size = ceil($percent);
+
+        $i = 1;
+        $result = [];
+        $average_value_of_last_step = 0;
+        $average_time_of_last_step = 0;
+        foreach ($data as $timestamp => $value) {
+            $average_value_of_last_step += $value;
+            $average_time_of_last_step += $timestamp;
+            if ($i % $step_size == 0) {
+                $result[(int)($average_time_of_last_step / $step_size)] = $average_value_of_last_step / $step_size;
+
+                $average_value_of_last_step = 0;
+                $average_time_of_last_step = 0;
+            }
+            $i++;
+        }
+
+        return $result;
+    }
+
+    private function reduceDataBySteps($data, $limit = 500) {
+        $data_count = count($data);
+        if ($data_count <= $limit) {
+            return $data;
+        }
+
+        $percent = $data_count / $limit;
+        $steps = ceil($percent);
+
+        $i = 0;
+        $result = [];
+        foreach ($data as $key => $value) {
+            if ($i % $steps == 0) {
+                $result[$key] = $value;
+            }
+            $i++;
+        }
+
+        return $result;
     }
 }

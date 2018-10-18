@@ -105,7 +105,7 @@
                             'wrapGridClass'    => 'col col-xs-2',
                             'captionGridClass' => 'col col-xs-2 no-padding',
                             'captionClass'     => 'control-label text-left no-padding ',
-                            'icon'             => '<i class="fa fa-square txt-color-greenLight"></i> ',
+                            'icon'             => '<i class="fa fa-square ok"></i> ',
                             'required'         => false,
                             'checked'          => (boolean)$this->Html->getParameter('Automap.show_ok', true),
                         ]); ?>
@@ -116,7 +116,7 @@
                             'wrapGridClass'    => 'col col-xs-2',
                             'captionGridClass' => 'col col-xs-2 no-padding',
                             'captionClass'     => 'control-label text-left no-padding',
-                            'icon'             => '<i class="fa fa-square txt-color-orange"></i> ',
+                            'icon'             => '<i class="fa fa-square warning"></i> ',
                             'checked'          => (boolean)$this->Html->getParameter('Automap.show_warning', true),
                         ]); ?>
                     </div>
@@ -126,7 +126,7 @@
                             'wrapGridClass'    => 'col col-xs-2',
                             'captionGridClass' => 'col col-xs-2 no-padding',
                             'captionClass'     => 'control-label text-left no-padding',
-                            'icon'             => '<i class="fa fa-square txt-color-redLight"></i> ',
+                            'icon'             => '<i class="fa fa-square critical"></i> ',
                             'checked'          => (boolean)$this->Html->getParameter('Automap.show_critical', true),
                         ]); ?>
                     </div>
@@ -136,7 +136,7 @@
                             'wrapGridClass'    => 'col col-xs-2',
                             'captionGridClass' => 'col col-xs-2 no-padding',
                             'captionClass'     => 'control-label text-left no-padding',
-                            'icon'             => '<i class="fa fa-square txt-color-blueDark"></i> ',
+                            'icon'             => '<i class="fa fa-square unknown"></i> ',
                             'checked'          => (boolean)$this->Html->getParameter('Automap.show_unknown', true),
                         ]); ?>
                     </div>

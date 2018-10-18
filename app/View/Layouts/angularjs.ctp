@@ -28,8 +28,8 @@ if ($sideMenuClosed) {
     $bodyClass = 'minified';
 }
 
-$AngularAssets = new \itnovum\openITCOCKPIT\Core\AngularJS\AngularAssets();
 
+$AngularAssets = new \itnovum\openITCOCKPIT\Core\AngularJS\AngularAssets();
 $scripts = $AngularAssets->getJsFiles();
 
 if ($this->request->params['controller'] === 'statusmaps') {

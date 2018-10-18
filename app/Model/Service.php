@@ -1364,6 +1364,7 @@ class Service extends AppModel {
                 'Servicestatus.problem_has_been_acknowledged',
                 'Servicestatus.acknowledgement_type',
                 'Servicestatus.is_flapping',
+                'Servicestatus.perfdata',
 
                 'Servicetemplate.id',
                 'Servicetemplate.uuid',
@@ -1479,6 +1480,7 @@ class Service extends AppModel {
                 'Servicetemplate.description',
                 'Servicetemplate.active_checks_enabled',
                 'Servicetemplate.tags',
+                'Servicestatus.perfdata',
 
                 'Host.name',
                 'Host.id',

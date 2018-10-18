@@ -469,7 +469,8 @@ class ServicegroupsController extends AppController {
             ->problemHasBeenAcknowledged()
             ->acknowledgementType()
             ->scheduledDowntimeDepth()
-            ->notificationsEnabled();
+            ->notificationsEnabled()
+            ->perfdata();
         $hoststatus = $this->Hoststatus->byUuid($hosts, $HoststatusFields);
         $servicestatus = $this->Servicestatus->byUuid($services, $ServicestatusFields);
 
@@ -504,7 +505,7 @@ class ServicegroupsController extends AppController {
             $Host = new \itnovum\openITCOCKPIT\Core\Views\Host($service, $allowEdit);
             $Hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus($service['Hoststatus'], $UserTime);
             $Servicestatus = new \itnovum\openITCOCKPIT\Core\Servicestatus($service['Servicestatus'], $UserTime);
-            $PerfdataChecker = new PerfdataChecker($Host, $Service);
+            $PerfdataChecker = new PerfdataChecker($Host, $Service, $this->PerfdataBackend, $Servicestatus);
 
             $tmpRecord = [
                 'Service'       => $Service->toArray(),
@@ -512,7 +513,7 @@ class ServicegroupsController extends AppController {
                 'Servicestatus' => $Servicestatus->toArray(),
                 'Hoststatus'    => $Hoststatus->toArray()
             ];
-            $tmpRecord['Service']['has_graph'] = $PerfdataChecker->hasRrdFile();
+            $tmpRecord['Service']['has_graph'] = $PerfdataChecker->hasPerfdata();
             $all_services[] = $tmpRecord;
         }
 

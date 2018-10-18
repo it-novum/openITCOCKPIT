@@ -169,6 +169,14 @@
                            data-placement="right" rel="tooltip" class="text-info" href="javascript:void(0);"><i
                                     class="fa fa-info-circle"></i></a>
                     </dd>
+
+                    <dt><?php echo __('NodeJS Server'); ?>:</dt>
+                    <dd>
+                        <?php echo ($backgroundProcessStatus['isNodeJsServerRunning']) ? '<span class="text-success"><i class="fa fa-check"></i> '.__('Running').'</span>' : '<span class="text-danger"><i class="fa fa-close"></i> '.__('Not running!').'</span>'; ?>
+                        <a data-original-title="<?php echo __('Service required to run server side JavaScript.'); ?>"
+                           data-placement="right" rel="tooltip" class="text-info" href="javascript:void(0);"><i
+                                    class="fa fa-info-circle"></i></a>
+                    </dd>
                 </dl>
             <?php endif; ?>
             <?php if ($gearmanReachable === false): ?>
