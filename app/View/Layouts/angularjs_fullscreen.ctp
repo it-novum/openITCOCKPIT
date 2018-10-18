@@ -28,9 +28,7 @@ if ($sideMenuClosed) {
     $bodyClass = 'minified';
 }
 
-
 $AngularAssets = new \itnovum\openITCOCKPIT\Core\AngularJS\AngularAssets();
-
 $scripts = $AngularAssets->getJsFiles();
 
 

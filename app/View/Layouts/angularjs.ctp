@@ -30,7 +30,6 @@ if ($sideMenuClosed) {
 
 
 $AngularAssets = new \itnovum\openITCOCKPIT\Core\AngularJS\AngularAssets();
-
 $scripts = $AngularAssets->getJsFiles();
 
 if ($this->request->params['controller'] === 'statusmaps') {
