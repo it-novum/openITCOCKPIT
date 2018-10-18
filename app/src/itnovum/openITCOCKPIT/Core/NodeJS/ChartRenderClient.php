@@ -26,6 +26,7 @@ namespace itnovum\openITCOCKPIT\Core\NodeJS;
 
 
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\RequestOptions;
 
@@ -132,19 +133,49 @@ class ChartRenderClient {
      * @return string binary png image
      */
     public function getAreaChartAsPngStream($data) {
-        $response = $this->Client->post('/AreaChart', [
-            RequestOptions::JSON => [
-                'data'     => $this->timestampToDate($data),
-                'settings' => [
-                    'width'       => $this->width,
-                    'height'      => $this->height,
-                    'title'       => $this->title,
-                    'graph_start' => $this->getGraphStartAsISO(),
-                    'graph_end'   => $this->getGraphEndAsISO()
+        try {
+            $response = $this->Client->post('/AreaChart', [
+                RequestOptions::JSON => [
+                    'data'     => $this->timestampToDate($data),
+                    'settings' => [
+                        'width'       => $this->width,
+                        'height'      => $this->height,
+                        'title'       => $this->title,
+                        'graph_start' => $this->getGraphStartAsISO(),
+                        'graph_end'   => $this->getGraphEndAsISO()
+                    ]
                 ]
-            ]
-        ]);
-        return $response->getBody()->getContents();
+            ]);
+            return $response->getBody()->getContents();
+        } catch (ClientException $e) {
+
+            $response = $e->getResponse();
+            $targetPath = WWW_ROOT . 'img' . DS . 'graphs';
+            $fileName = md5(rand() . time() . rand()) . '.png';
+
+            $img = imagecreatetruecolor($this->width, $this->height);
+            imagesavealpha($img, true);
+            $background = imagecolorallocatealpha($img, 232, 168, 78, 0);
+            $textColor = imagecolorallocate($img, 0, 0, 0);
+            imagefill($img, 0, 0, $background);
+            imagestring($img, 5, 5, 5, sprintf('Chart render server returned with an error.'), $textColor);
+            imagestring($img, 5, 5, 25, sprintf('Error %s %s', $response->getStatusCode(), $response->getReasonPhrase()), $textColor);
+
+            $error = str_split($e->getMessage(), 80);
+            $y = 25;
+            foreach ($error as $line) {
+                $y = $y + 15;
+                imagestring($img, 5, 5, $y, $line, $textColor);
+            }
+
+
+            imagepng($img, $targetPath . DS . $fileName);
+            imagedestroy($img);
+
+            $binaryBlob = file_get_contents($targetPath . DS . $fileName);
+            unlink($targetPath . DS . $fileName);
+            return $binaryBlob;
+        }
     }
 
     /**
