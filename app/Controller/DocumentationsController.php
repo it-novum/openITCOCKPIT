@@ -316,18 +316,11 @@ class DocumentationsController extends AppController {
                         'file'        => 'locations',
                         'icon'        => 'fa fa-location-arrow',
                     ],
-                    'graphgenerator'        => [
-                        'name'        => __('Graphgenerator'),
-                        'description' => 'You can generate graphs with data from diffrent services.',
-                        'file'        => 'graphgenerator',
+                    'grafana'        => [
+                        'name'        => __('Grafana'),
+                        'description' => 'You can generate graphs with data from different services.',
+                        'file'        => 'grafana',
                         'icon'        => 'fa fa-area-chart',
-                    ],
-                    'graph_collections'     => [
-                        'name'        => __('Graph Collections'),
-                        'description' => 'A graph collection will display you all graphs at once ' .
-                            'by overlaying them in a smart way.',
-                        'file'        => 'graph_collections',
-                        'icon'        => 'fa fa-list-alt',
                     ],
                     'downtimes'             => [
                         'name'        => __('Downtimes'),
