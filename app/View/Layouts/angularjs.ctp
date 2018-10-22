@@ -97,8 +97,7 @@ if (ENVIRONMENT === Environments::PRODUCTION) {
     endforeach;
     ?>
 </head>
-<body class="<?= $bodyClass ?>">
-
+<body ng-cloak class="<?= $bodyClass ?> ng-cloak">
 <script>
     Dropzone.autoDiscover = false;
 </script>
@@ -121,8 +120,6 @@ if (ENVIRONMENT === Environments::PRODUCTION) {
                 <?php echo $this->Html->link($title_for_layout, ['action' => 'index'], ['icon' => 'fa fa-cube']); ?>
             </li>
         </ol>
-
-
         <?php if ($loggedIn && $this->Auth->user('showstatsinmenu')): ?>
             <menustats></menustats>
         <?php endif; ?>
