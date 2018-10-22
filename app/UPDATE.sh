@@ -154,6 +154,7 @@ else
         systemctl restart oitc_cmd
         systemctl restart gearman_worker
         systemctl restart push_notification
+        systemctl restart nodejs_server
     fi
 
     if [ $CODENAME = "xenial" ] || [ $CODENAME = "stretch" ]; then
@@ -178,6 +179,9 @@ else
 
         service push_notification stop
         service push_notification start
+
+        service nodejs_server stop
+        service nodejs_server start
 
         service php5-fpm stop
         service php5-fpm start
