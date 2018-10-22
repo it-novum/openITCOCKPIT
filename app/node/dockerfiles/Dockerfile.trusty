@@ -5,6 +5,10 @@ FROM ubuntu:trusty
 #
 # Run build on CI system or docker
 # docker run --rm -t -i -v $(pwd):/build/ trusty_npm:latest /usr/bin/npm install .
+#
+# To run in a CI like Jenkins
+# cp dockerfiles/Dockerfile.${OSVERSION} Dockerfile
+# docker run --rm -i -v $(pwd):/build/ ${OSVERSION}_npm:latest /usr/bin/npm install .
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV HTTP_PROXY="http://proxy.master.dns:8080"

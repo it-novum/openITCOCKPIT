@@ -5,6 +5,10 @@ FROM ubuntu:xenial
 #
 # Run build on CI system or docker
 # docker run --rm -t -i -v $(pwd):/build/ xenial_npm:latest /usr/bin/npm install .
+#
+# To run in a CI like Jenkins
+# cp dockerfiles/Dockerfile.${OSVERSION} Dockerfile
+# docker run --rm -i -v $(pwd):/build/ ${OSVERSION}_npm:latest /usr/bin/npm install .
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV HTTP_PROXY="http://proxy.master.dns:8080"
@@ -36,7 +40,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y nodejs \
 && apt-get clean
 
 #Install build depends
-RUN apt-get update && apt-get install -y libfreetype6-dev libcairo2-dev libpangox-1.0-dev, libgif-dev, libjpeg-dev, libpng12-0, libpng12-dev build-essential \
+RUN apt-get update && apt-get install -y libfreetype6-dev libcairo2-dev libpangox-1.0-dev libgif-dev libjpeg-dev libpng12-0 libpng12-dev build-essential \
 && apt-get clean
 
 RUN mkdir -p /build
