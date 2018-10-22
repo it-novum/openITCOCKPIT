@@ -126,6 +126,9 @@ app.post('/AreaChart', function(request, response){
 
                 xAxes: [{
                     type: 'time',
+                    ticks: {
+                        fontSize: 10,
+                    },
                     time: {
                         min: moment((request.body.settings.graph_start)),
                         max: moment((request.body.settings.graph_end)),
@@ -133,7 +136,7 @@ app.post('/AreaChart', function(request, response){
                             'millisecond': 'SSSS',
                             'second': 'HH:mm',
                             'minute': 'HH:mm',
-                            'hour': 'HH:mm',
+                            'hour': 'MMM D, HH:mm',
                             'day': 'MMM DD',
                             'week': 'MMM DD',
                             'month': 'MMM DD',
