@@ -25,6 +25,21 @@
     </div>
 </div>
 
+<?php if ($hasGrafanaConfig === false): ?>
+    <div class="alert alert-danger alert-block">
+        <a class="close" data-dismiss="alert" href="#">×</a>
+        <h4 class="alert-heading"><?php echo __('No Grafana configuration found!'); ?></h4>
+        <?php
+        $msg = __('Grafana Configuration');
+        if ($this->Acl->hasPermission('index', 'GrafanaConfiguration', 'GrafanaModule')):
+            $msg = sprintf('<a href="/grafana_module/grafana_configuration">%s</a>', $msg);
+        endif;
+        ?>
+
+        <?php echo __('A valid %s is required, before this feature can be used.', $msg); ?>
+    </div>
+<?php endif; ?>
+
 <div class="jarviswidget">
     <header>
         <span class="widget-icon hidden-mobile hidden-tablet"> <i class="fa fa-dashboard"></i> </span>

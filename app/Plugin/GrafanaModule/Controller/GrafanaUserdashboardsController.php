@@ -140,9 +140,11 @@ class GrafanaUserdashboardsController extends GrafanaModuleAppController {
             'order'     => ['GrafanaConfiguration.id' => 'DESC']
         ]);
 
-        if (empty($grafanaConfig)) {
-            //grafana is not yet configurated
+        $hasGrafanaConfig = false;
+        if (!empty($grafanaConfig)) {
+            $hasGrafanaConfig = true;
         }
+        $this->set('hasGrafanaConfig', $hasGrafanaConfig);
 
         if ($this->request->is('post')) {
             $this->GrafanaUserdashboard->create();
@@ -174,6 +176,16 @@ class GrafanaUserdashboardsController extends GrafanaModuleAppController {
         if (!$this->GrafanaUserdashboard->exists($userdashboardId)) {
             throw new NotFoundException(__('Invalid Userdashboard'));
         }
+
+        $grafanaConfig = $this->GrafanaConfiguration->find('first', [
+            'recursive' => -1,
+            'order'     => ['GrafanaConfiguration.id' => 'DESC']
+        ]);
+        $hasGrafanaConfig = false;
+        if (!empty($grafanaConfig)) {
+            $hasGrafanaConfig = true;
+        }
+        $this->set('hasGrafanaConfig', $hasGrafanaConfig);
 
         $dashboard = $this->GrafanaUserdashboard->find('first', $this->GrafanaUserdashboard->getQuery($userdashboardId));
         $dashboard['rows'] = $this->GrafanaUserdashboard->extractRowsWithPanelsAndMetricsFromFindResult($dashboard);
@@ -230,6 +242,16 @@ class GrafanaUserdashboardsController extends GrafanaModuleAppController {
             ]);
         }
         $dashboard['GrafanaUserdashboard']['container_id'] = (int)$dashboard['GrafanaUserdashboard']['container_id'];
+
+        $grafanaConfig = $this->GrafanaConfiguration->find('first', [
+            'recursive' => -1,
+            'order'     => ['GrafanaConfiguration.id' => 'DESC']
+        ]);
+        $hasGrafanaConfig = false;
+        if (!empty($grafanaConfig)) {
+            $hasGrafanaConfig = true;
+        }
+        $this->set('hasGrafanaConfig', $hasGrafanaConfig);
 
         if (!$this->isAngularJsRequest()) {
             //Only ship html template
