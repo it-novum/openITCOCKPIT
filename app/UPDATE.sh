@@ -99,6 +99,8 @@ oitc api --model Cronjob --action create_missing_cronjobs --data ""
 oitc compress
 
 #Acc ALC dependencies config for itc core
+echo "---------------------------------------------------------------"
+echo "Scan for new user permissions. This will take a while..."
 oitc AclExtras.AclExtras aco_sync
 
 #Set missing new ACL permissions
