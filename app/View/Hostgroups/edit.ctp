@@ -154,8 +154,10 @@
                 <div class="col-xs-12 margin-top-10">
                     <div class="well formactions ">
                         <div class="pull-right">
-                            <input class="btn btn-primary" type="submit" value="Save">&nbsp;
-                            <a href="/hostgroups/index" class="btn btn-default">Cancel</a>
+                            <input class="btn btn-primary" type="submit" value="<?php echo __('Save'); ?>">&nbsp;
+                            <a href="/grafana_module/grafana_userdashboards/index" class="btn btn-default">
+                                <?php echo __('Cancel'); ?>
+                            </a>
                         </div>
                     </div>
                 </div>

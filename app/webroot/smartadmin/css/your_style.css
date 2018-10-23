@@ -1608,7 +1608,7 @@ label[class^='aco-host']:after, label[class^='aco-service']:after {
     padding: 1em;
     border-radius: 8px;
     display: none;
-    z-index:2;
+    z-index: 2;
 }
 
 .text-transform-none {
@@ -2100,7 +2100,7 @@ label[class^='aco-host']:after, label[class^='aco-service']:after {
     padding-top: 50px;
     margin-top: -125px;
     margin-left: -125px;
-    display:none;
+    display: none;
 }
 
 /* dashboards host/service status overview */
@@ -2148,3 +2148,31 @@ label[class^='aco-host']:after, label[class^='aco-service']:after {
     content: "\f06a";
     color: rgba(255, 255, 255, 0.1);
 }
+
+.grafana-row {
+    border-style: solid;
+    border-width: 1px 1px 1px 7px;
+    border-color: #dde4ed #dde4ed #dde4ed #667896;
+    position: relative;
+    border-radius: 7px 3px 3px 7px;
+    background: #f5f6f9;
+    /*
+    background: repeating-linear-gradient(
+            45deg,
+            #fff,
+            #fff 10px,
+            #f5f6f9 10px,
+            #f5f6f9 20px
+    );*/
+}
+
+.grafana-panel {
+    background-color: #fff;
+    border-style: solid;
+    border-width: 1px 1px 1px 7px;
+    border-color: #dde4ed #dde4ed #dde4ed #394556;
+    position: relative;
+    border-radius: 7px 3px 3px 7px;
+}
+
+iframe { -webkit-backface-visibility:hidden }

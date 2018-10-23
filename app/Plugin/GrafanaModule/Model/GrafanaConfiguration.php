@@ -28,6 +28,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Psr7\Request;
+use itnovum\openITCOCKPIT\Grafana\GrafanaApiConfiguration;
 
 class GrafanaConfiguration extends GrafanaModuleAppModel {
 
@@ -38,24 +39,24 @@ class GrafanaConfiguration extends GrafanaModuleAppModel {
     ];
 
     public $validate = [
-        'api_url' => [
+        'api_url'         => [
             'allowEmpty' => [
-                'rule' => 'notBlank',
-                'message' => 'This field cannot be left blank',
+                'rule'     => 'notBlank',
+                'message'  => 'This field cannot be left blank',
                 'required' => true,
             ],
         ],
-        'api_key' => [
+        'api_key'         => [
             'allowEmpty' => [
-                'rule' => 'notBlank',
-                'message' => 'This field cannot be left blank',
+                'rule'     => 'notBlank',
+                'message'  => 'This field cannot be left blank',
                 'required' => true,
             ],
         ],
         'graphite_prefix' => [
             'allowEmpty' => [
-                'rule' => 'notBlank',
-                'message' => 'This field cannot be left blank',
+                'rule'     => 'notBlank',
+                'message'  => 'This field cannot be left blank',
                 'required' => true,
             ],
         ],
@@ -72,15 +73,15 @@ class GrafanaConfiguration extends GrafanaModuleAppModel {
         $hostgroupMembershipsForGrafanaConfiguration = [];
         foreach ($hostgroups as $hostgroupId) {
             $hostgroupMembershipsForGrafanaConfiguration[] = [
-                'hostgroup_id' => $hostgroupId,
-                'excluded' => '0',
+                'hostgroup_id'     => $hostgroupId,
+                'excluded'         => '0',
                 'configuration_id' => 1
             ];
         }
         foreach ($hostgroupsExluded as $hostgroupId) {
             $hostgroupMembershipsForGrafanaConfiguration[] = [
-                'hostgroup_id' => $hostgroupId,
-                'excluded' => '1',
+                'hostgroup_id'     => $hostgroupId,
+                'excluded'         => '1',
                 'configuration_id' => 1
             ];
         }
@@ -143,21 +144,23 @@ class GrafanaConfiguration extends GrafanaModuleAppModel {
 
     /**
      * @param $grafanaApiConfiguration
-     * @return Client|string    Either a Instance of Client or the Exception message
+     * @param $proxySettings
+     * @return Client|string
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function testConnection($grafanaApiConfiguration, $proxySettings) {
         $options = [
             'headers' => [
                 'authorization' => 'Bearer ' . $grafanaApiConfiguration->getApiKey()
             ],
-            'verify' => $grafanaApiConfiguration->isIgnoreSslCertificate()
+            'verify'  => $grafanaApiConfiguration->isIgnoreSslCertificate()
         ];
-        if ($grafanaApiConfiguration->isUseProxy() && !(empty($proxySettings['ipaddress'])&empty($proxySettings['port']))) {
+        if ($grafanaApiConfiguration->isUseProxy() && !(empty($proxySettings['ipaddress']) & empty($proxySettings['port']))) {
             $options['proxy'] = [
                 'http'  => sprintf('%s:%s', $proxySettings['ipaddress'], $proxySettings['port']),
                 'https' => sprintf('%s:%s', $proxySettings['ipaddress'], $proxySettings['port'])
             ];
-        }else{
+        } else {
             $options['proxy'] = [
                 'http'  => false,
                 'https' => false
@@ -191,7 +194,7 @@ class GrafanaConfiguration extends GrafanaModuleAppModel {
 
         $grafanaConfiguration = $this->find('first', [
             'recursive' => -1,
-            'contain' => [
+            'contain'   => [
                 'GrafanaConfigurationHostgroupMembership'
             ]
         ]);
@@ -215,7 +218,37 @@ class GrafanaConfiguration extends GrafanaModuleAppModel {
         if ($response->getStatusCode() == 200) {
             $body = $response->getBody();
             $response = json_decode($body->getContents());
-            debug($response);
+            //debug($response);
         }
     }
+
+    /**
+     * @param GrafanaApiConfiguration $grafanaApiConfiguration
+     * @param $proxySettings
+     * @param $uid
+     * @return bool
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public function existsUserDashboard(GrafanaApiConfiguration $grafanaApiConfiguration, $proxySettings, $uid) {
+        $client = $this->testConnection($grafanaApiConfiguration, $proxySettings);
+        $request = new \GuzzleHttp\Psr7\Request(
+            'GET',
+            sprintf('%s/dashboards/uid/%s', $grafanaApiConfiguration->getApiUrl(), $uid),
+            ['content-type' => 'application/json']
+        );
+
+        try {
+            $response = $client->send($request);
+        } catch (\Exception $e) {
+            debug($e->getMessage());
+            return false;
+        }
+
+        if ($response->getStatusCode() == 200) {
+            return true;
+        }
+
+        return false;
+    }
+
 }

@@ -36,11 +36,17 @@ class GrafanaTargetUnit {
     private $unit;
 
     /**
+     * @var bool
+     */
+    private $isStatic;
+
+    /**
      * GrafanaTargetUnit constructor.
      * @param $unit
      */
-    public function __construct($unit) {
+    public function __construct($unit, $isStatic = false) {
         $this->unit = $unit;
+        $this->isStatic = $isStatic;
     }
 
     /**
@@ -54,6 +60,13 @@ class GrafanaTargetUnit {
      * @return string
      */
     public function getUnit() {
+
+        //For units that are not suported by this class.
+        //This class was build to convert Nagios/rrdtool units to Grafana...
+        if($this->isStatic){
+            return $this->unit;
+        }
+
         switch ($this->unit) {
             // time
             case 'hz':
