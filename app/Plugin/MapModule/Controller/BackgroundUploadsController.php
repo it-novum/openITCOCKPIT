@@ -58,6 +58,12 @@ class BackgroundUploadsController extends MapModuleAppController {
         $response = $this->MapUpload->getUploadResponse($_FILES['file']['error']);
         if ($_FILES['file']['error'] === UPLOAD_ERR_OK) {
             $backgroundImgDirectory = APP . 'Plugin' . DS . 'MapModule' . DS . 'webroot' . DS . 'img' . DS . 'backgrounds';
+
+            //check if upload folder exist
+            if (!is_dir($backgroundImgDirectory)) {
+                mkdir($backgroundImgDirectory);
+            }
+
             $backgroundFolder = new Folder($backgroundImgDirectory);
             $fileExtension = pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION);
 
@@ -75,11 +81,6 @@ class BackgroundUploadsController extends MapModuleAppController {
             $saveFilename = UUID::v4();
             $fullFilePath = $backgroundFolder->path . DS . $saveFilename . '.' . $fileExtension;
             try {
-                //check if upload folder exist
-                if (!is_dir($backgroundImgDirectory)) {
-                    mkdir($backgroundImgDirectory);
-                }
-
                 if (!move_uploaded_file($_FILES['file']['tmp_name'], $fullFilePath)) {
                     throw new Exception(__('Cannot move uploaded file'));
                 }
