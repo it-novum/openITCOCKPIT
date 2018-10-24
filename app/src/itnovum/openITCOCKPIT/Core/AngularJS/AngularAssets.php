@@ -54,7 +54,7 @@ class AngularAssets implements AngularAssetsInterface {
         'smartadmin/js/plugin/flot/jquery.flot.resize.js',
         //'smartadmin/js/plugin/flot/jquery.flot.navigate.js', //
         'smartadmin/js/plugin/flot/jquery.flot.threshold.js',
-        //'smartadmin/js/plugin/flot/jquery.flot.selection.js', //
+        'smartadmin/js/plugin/flot/jquery.flot.selection.js', //
         'js/lib/jquery.nestable.js',
         'js/lib/parseuri.js',
         'js/vendor/vis-4.21.0/dist/vis.js',

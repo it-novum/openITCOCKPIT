@@ -71,7 +71,13 @@ class ChartRenderClient {
     private $endTimestamp = 0;
 
     public function __construct() {
-        $this->Client = new Client(['base_uri' => $this->address]);
+        $this->Client = new Client([
+            'base_uri' => $this->address,
+            'proxy'    => [
+                'http'  => false,
+                'https' => false
+            ]
+        ]);
     }
 
     /**
@@ -156,17 +162,18 @@ class ChartRenderClient {
                 $response->getStatusCode(),
                 $response->getReasonPhrase()
             ));
+            debug(strip_tags($response->getBody()->getContents()));
             $ErrorImage->setErrorText($response->getBody()->getContents());
 
             return $ErrorImage->getImageAsPngStream();
-        } catch (ConnectException $e){
+        } catch (ConnectException $e) {
             $ErrorImage = new ErrorImage($this->width, $this->height);
             $ErrorImage->setHeadline(sprintf(
                 'Error: Could not connect'
             ));
             $ErrorImage->setErrorText($e->getMessage());
             return $ErrorImage->getImageAsPngStream();
-        }catch (\Exception $e){
+        } catch (\Exception $e) {
             $ErrorImage = new ErrorImage($this->width, $this->height);
             $ErrorImage->setHeadline(sprintf(
                 'Unknown error.'

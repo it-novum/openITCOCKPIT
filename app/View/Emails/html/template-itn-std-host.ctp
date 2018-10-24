@@ -464,7 +464,7 @@
                     <tr>
                         <td>
                             <?php if (!$parameters['no-attachments']): ?>
-                                <img src="cid:100" height="30" width="120"/>
+                                <img src="cid:100"  width="120"/>
                             <?php endif; ?>
                         </td>
                         <td align="right"><h6 class="collapse"><?php echo __('openITCOCKPIT Notification'); ?></h6></td>
