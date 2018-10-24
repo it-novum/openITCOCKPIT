@@ -256,7 +256,6 @@ class MapsController extends MapModuleAppController {
             //Only ship HTML template for angular
             return;
         }
-
         if ($this->request->is('get')) {
             $map = $this->Map->find('first', [
                 //'recursive' => -1,
@@ -292,6 +291,7 @@ class MapsController extends MapModuleAppController {
                 'Container' => Hash::extract($map, 'Container.{n}.id')
             ];
             $newMap['Map']['background'] = $map['Map']['background'];
+            $newMap['Map']['refresh_interval'] = $newMap['Map']['refresh_interval'] * 1000; // in milliseconds
 
             $this->Map->create();
             if ($this->Map->save($newMap)) {
