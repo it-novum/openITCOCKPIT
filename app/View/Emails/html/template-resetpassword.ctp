@@ -446,7 +446,7 @@
             <div class="content">
                 <table>
                     <tr>
-                        <td><img src="cid:100" height="30" width="120"/></td>
+                        <td><img src="cid:100"  width="120"/></td>
                         <td align="right"><h6 class="collapse"><?php echo __('One-time password'); ?></h6></td>
                     </tr>
                     <tr>

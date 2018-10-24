@@ -260,7 +260,7 @@ $allowSharing = $hostSharingPermissions->allowSharing();
                             );
 
                             echo $this->Form->input('Host.Parenthost', [
-                                    'options'          => [],
+                                    'options'          => $_parenthosts,
                                     'data-placeholder' => __('Please, start typing...'),
                                     'class'            => 'chosen,',
                                     'multiple'         => true,

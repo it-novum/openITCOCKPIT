@@ -33,6 +33,11 @@ class HostConditions {
     private $conditions = [];
 
     /**
+     * @var array
+     */
+    private $notConditions = [];
+
+    /**
      * @var bool
      */
     private $includeDisabled = false;
@@ -65,6 +70,30 @@ class HostConditions {
      */
     public function getConditions(){
         return $this->conditions;
+    }
+
+    /**
+     * @param array $conditions
+     */
+    public function setNotConditions($conditions) {
+        $this->notConditions = $conditions;
+    }
+
+    /**
+     * @return array
+     */
+    public function getNotConditions() {
+        if($this->hasNotConditions()){
+            return $this->notConditions;
+        }
+        return [];
+    }
+
+    /**
+     * @return boolean
+     */
+    public function hasNotConditions(){
+        return !empty($this->notConditions);
     }
 
     /**

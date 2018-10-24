@@ -1,12 +1,15 @@
-angular.module('openITCOCKPIT').directive('graphItem', function($http, $timeout){
+angular.module('openITCOCKPIT').directive('graphItem', function($http, $timeout, $interval){
     return {
         restrict: 'E',
         templateUrl: '/map_module/mapeditors/graph.html',
         scope: {
-            'item': '='
+            'item': '=',
+            'refreshInterval': '='
         },
         controller: function($scope){
             $scope.init = true;
+            $scope.statusUpdateInterval = null;
+
             $scope.selectedGraphdataSource = null;
 
             $scope.width = 400;
@@ -22,11 +25,15 @@ angular.module('openITCOCKPIT').directive('graphItem', function($http, $timeout)
                 $scope.height = $scope.item.size_y;
             }
 
+            var graphStart = 0;
+            var graphEnd = 0;
+
 
             $scope.load = function(){
                 $http.get("/map_module/mapeditors/graph/.json", {
                     params: {
                         'angular': true,
+                        'disableGlobalLoader': true,
                         'serviceId': $scope.item.object_id,
                         'type': $scope.item.type
                     }
@@ -35,6 +42,8 @@ angular.module('openITCOCKPIT').directive('graphItem', function($http, $timeout)
                     $scope.service = result.data.service;
                     $scope.allowView = result.data.allowView;
 
+                    initRefreshTimer();
+
                     loadGraph($scope.host.uuid, $scope.service.uuid);
                 });
             };
@@ -42,7 +51,8 @@ angular.module('openITCOCKPIT').directive('graphItem', function($http, $timeout)
             $scope.loadTimezone = function(){
                 $http.get("/angular/user_timezone.json", {
                     params: {
-                        'angular': true
+                        'angular': true,
+                        'disableGlobalLoader': true
                     }
                 }).then(function(result){
                     $scope.timezone = result.data.timezone;
@@ -50,14 +60,31 @@ angular.module('openITCOCKPIT').directive('graphItem', function($http, $timeout)
                 });
             };
 
+
+            $scope.stop = function(){
+                if($scope.statusUpdateInterval !== null){
+                    $interval.cancel($scope.statusUpdateInterval);
+                }
+            };
+
+            //Disable status update interval, if the object gets removed from DOM.
+            //E.g in Map rotations
+            $scope.$on('$destroy', function(){
+                $scope.stop();
+            });
+
             var loadGraph = function(hostUuid, serviceuuid){
+                graphEnd = Math.floor(Date.now() / 1000);
+                graphStart = graphEnd - (3600 * 1);
                 $scope.isLoadingGraph = true;
                 $http.get('/Graphgenerators/getPerfdataByUuid.json', {
                     params: {
                         angular: true,
+                        disableGlobalLoader: true,
                         host_uuid: hostUuid,
                         service_uuid: serviceuuid,
-                        hours: 1,
+                        start: graphStart,
+                        end: graphEnd,
                         jsTimestamp: 1
                     }
                 }).then(function(result){
@@ -169,88 +196,36 @@ angular.module('openITCOCKPIT').directive('graphItem', function($http, $timeout)
                 });
 
 
-                //var color_generator = new ColorGenerator();
-                var options = {
-                    width: '100%',
-                    height: $scope.height + 'px',
-                    //colors: color_generator.generate(1, 90, 120),
-                    colors: ['#57889c'],
-                    legend: {
-                        show: $scope.item.show_label,
-                        position: 'nw',
-                        backgroundOpacity: 0
-                    },
-                    grid: {
-                        hoverable: true,
-                        markings: [],
-                        borderWidth: {
-                            top: 1,
-                            right: 1,
-                            bottom: 1,
-                            left: 1
-                        },
-                        borderColor: {
-                            top: '#CCCCCC'
-                        }
-                    },
-                    tooltip: true,
-                    tooltipOpts: {
-                        defaultTheme: false
-                    },
-                    xaxis: {
-                        mode: 'time',
-                        timeformat: '%H:%M:%S', // This is handled by a plugin, if it is used -> jquery.flot.time.js
-                        tickFormatter: function(val, axis){
-                            var fooJS = new Date(val + ($scope.timezone.server_timezone_offset * 1000));
-                            var fixTime = function(value){
-                                if(value < 10){
-                                    return '0' + value;
-                                }
-                                return value;
-                            };
-                            return fixTime(fooJS.getUTCHours()) + ':' + fixTime(fooJS.getUTCMinutes());
-                        }
-                    },
-                    lines: {
-                        show: true,
-                        lineWidth: 1,
-                        fill: true,
-                        steps: 0,
-                        fillColor: {
-                            colors: [{
-                                opacity: 0.5
-                            },
-                                {
-                                    opacity: 0.3
-                                }]
-                        }
-                    },
-                    points: {
-                        show: false,
-                        radius: 1
-                    },
-                    series: {
-                        show: true,
-                        labelFormatter: function(label, series){
-                            // series is the series object for the label
-                            return '<a href="#' + label + '">' + label + '</a>';
-                        },
-                        lineWidth: 1,
-                        fill: true,
-                        fillColor: {
-                            colors: [{
-                                opacity: 0.4
-                            }, {
-                                opacity: 0
-                            }]
-                        },
-                        steps: false
-                    },
+                var GraphDefaultsObj = new GraphDefaults();
+                var options = GraphDefaultsObj.getDefaultOptions();
+                options.height = $scope.height + 'px';
+                options.colors = [GraphDefaultsObj.defaultBorderColor];
 
+                options.legend = {
+                    show: $scope.item.show_label,
+                    position: 'nw',
+                    backgroundOpacity: 0
+                };
 
-                    selection: {
-                        mode: "x"
-                    }
+                options.tooltip = true;
+                options.tooltipOpts = {
+                    defaultTheme: false
+                };
+
+                options.xaxis.tickFormatter = function(val, axis){
+                    var fooJS = new Date(val + ($scope.timezone.server_timezone_offset * 1000));
+                    var fixTime = function(value){
+                        if(value < 10){
+                            return '0' + value;
+                        }
+                        return value;
+                    };
+                    return fixTime(fooJS.getUTCDate()) + '.' + fixTime(fooJS.getUTCMonth() + 1) + '.' + fooJS.getUTCFullYear() + ' ' + fixTime(fooJS.getUTCHours()) + ':' + fixTime(fooJS.getUTCMinutes());
+                };
+
+                options.points = {
+                    show: false,
+                    radius: 1
                 };
 
                 if($scope.height < 130){
@@ -258,6 +233,9 @@ angular.module('openITCOCKPIT').directive('graphItem', function($http, $timeout)
                         ticks: false
                     };
                 }
+
+                options.xaxis.min = graphStart * 1000;
+                options.xaxis.max = graphEnd * 1000;
 
                 $scope.plot = $.plot('#mapgraph-' + $scope.item.id, graph_data, options);
             };
@@ -274,6 +252,14 @@ angular.module('openITCOCKPIT').directive('graphItem', function($http, $timeout)
                             }
                         }
                     }
+                }
+            };
+
+            var initRefreshTimer = function(){
+                if($scope.refreshInterval > 0 && $scope.statusUpdateInterval === null){
+                    $scope.statusUpdateInterval = $interval(function(){
+                        $scope.load();
+                    }, $scope.refreshInterval);
                 }
             };
 

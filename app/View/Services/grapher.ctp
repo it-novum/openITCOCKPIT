@@ -109,6 +109,7 @@ if($rrd_structure_datasources):
         foreach ($rrd_structure_datasources as $rrd_structure_datasource):
             $critValue = isset($rrd_structure_datasource['crit']) ? $rrd_structure_datasource['crit'] : '';
             $warnValue = isset($rrd_structure_datasource['warn']) ? $rrd_structure_datasource['warn'] : '';
+            $serviceName = ($service['Service']['name'])?$service['Service']['name']:$service['Servicetemplate']['name'];
             if(!$showThresholds){
                 unset($rrd_structure_datasource['crit']);
                 unset($rrd_structure_datasource['warn']);
@@ -120,7 +121,7 @@ if($rrd_structure_datasources):
                 'path'         => $rrd_path,
                 'start'        => $graph['start'],
                 'end'          => $graph['end'],
-                'label'        => $service['Host']['name'].' / '.$service['Servicetemplate']['name'],
+                'label'        => $service['Host']['name'].' / '.$serviceName,
             ], [], true);
             $error = false;
             if (!isset($imageUrl['webPath'])):

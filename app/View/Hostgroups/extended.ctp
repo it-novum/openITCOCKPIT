@@ -298,15 +298,14 @@
                             </td>
 
                             <td>
-                                <span ng-if="host.Host.active_checks_enabled && host.Host.is_satellite_host === false">{{ host.Hoststatus.lastCheck }}</span>
-                                <span ng-if="host.Host.active_checks_enabled === false || host.Host.is_satellite_host === true">
-                                            <?php echo __('n/a'); ?>
-                                        </span>
+                                <span ng-if="host.Hoststatus.activeChecksEnabled && host.Host.is_satellite_host === false">{{ host.Hoststatus.lastCheck }}</span>
+                                <span ng-if="host.Hoststatus.activeChecksEnabled === false || host.Host.is_satellite_host === true">
+                                    <?php echo __('n/a'); ?>
+                                </span>
                             </td>
-
                             <td>
-                                <span ng-if="host.Host.active_checks_enabled && host.Host.is_satellite_host === false">{{ host.Hoststatus.nextCheck }}</span>
-                                <span ng-if="host.Host.active_checks_enabled === false || host.Host.is_satellite_host === true">
+                                <span ng-if="host.Hoststatus.activeChecksEnabled && host.Host.is_satellite_host === false">{{ host.Hoststatus.nextCheck }}</span>
+                                <span ng-if="host.Hoststatus.activeChecksEnabled === false || host.Host.is_satellite_host === true">
                                                 <?php echo __('n/a'); ?>
                                             </span>
                             </td>
@@ -434,6 +433,14 @@
                         <?php echo __('No entries match the selection'); ?>
                     </div>
                     <br/>
+
+                    <div id="serviceGraphContainer" class="popup-graph-container">
+                        <div class="text-center padding-top-20 padding-bottom-20" style="width:100%;" ng-show="isLoadingGraph">
+                            <i class="fa fa-refresh fa-4x fa-spin"></i>
+                        </div>
+                        <div id="serviceGraphFlot"></div>
+                    </div>
+
                 </div>
             </div>
 

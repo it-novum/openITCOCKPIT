@@ -54,22 +54,36 @@ $config = [
                 ],
             ],
         ],
-        'admin'         => [
-            'url'      => ['controller' => 'changelogs', 'action' => 'index', 'plugin' => ''],
-            'title'    => 'Administration',
-            'icon'     => 'cogs',
+        'configuration' => [
+            'url'      => ['controller' => 'systemsettings', 'action' => 'index', 'plugin' => ''],
+            'title'    => 'Configuration',
+            'icon'     => 'wrench',
             'order'    => 9,
             'children' => [
-                'changelog'          => [
-                    'url'               => ['controller' => 'changelogs', 'action' => 'index'],
-                    'title'             => 'Change Log',
-                    'icon'              => 'code-fork',
+                'itc_systemsettings' => [
+                    'url'               => ['controller' => 'systemsettings', 'action' => 'index'],
+                    'title'             => 'System Settings',
+                    'icon'              => 'wrench',
                     'parent_controller' => 'Administrators',
                 ],
                 'proxy'              => [
                     'url'               => ['controller' => 'proxy', 'action' => 'index'],
                     'title'             => 'Proxy Settings',
                     'icon'              => 'bolt',
+                    'parent_controller' => 'Administrators',
+                ],
+            ],
+        ],
+        'admin'         => [
+            'url'      => ['controller' => 'changelogs', 'action' => 'index', 'plugin' => ''],
+            'title'    => 'Administration',
+            'icon'     => 'cogs',
+            'order'    => 10,
+            'children' => [
+                'changelog'          => [
+                    'url'               => ['controller' => 'changelogs', 'action' => 'index'],
+                    'title'             => 'Change Log',
+                    'icon'              => 'code-fork',
                     'parent_controller' => 'Administrators',
                 ],
                 'packetmanager'      => [
@@ -102,12 +116,6 @@ $config = [
                     'icon'              => 'medkit',
                     'parent_controller' => 'Administrators',
                 ],
-                'itc_systemsettings' => [
-                    'url'               => ['controller' => 'systemsettings', 'action' => 'index'],
-                    'title'             => 'System Settings',
-                    'icon'              => 'wrench',
-                    'parent_controller' => 'Administrators',
-                ],
                 'itc_cronjobs'       => [
                     'url'               => ['controller' => 'cronjobs', 'action' => 'index'],
                     'title'             => 'Cron Jobs',
@@ -126,7 +134,7 @@ $config = [
                     'icon'              => 'database ',
                     'parent_controller' => 'Administrators',
                 ],
-                'itc_statistics'        => [
+                'itc_statistics'     => [
                     'url'               => ['controller' => 'statistics', 'action' => 'index'],
                     'title'             => 'Anonymous statistics',
                     'icon'              => 'line-chart ',

@@ -450,49 +450,51 @@
         }
     }
 
-
     /* EVC Summary View*/
-    .criticalEvcSummary{
-        color:white!important;
-        -webkit-box-shadow: 3px 3px 1px -2px rgba(0,0,0,0.75);
-        -moz-box-shadow: 3px 3px 1px -2px rgba(0,0,0,0.75);
-        box-shadow: 3px 3px 1px -2px rgba(0,0,0,0.75);
-        padding:2px;
-        background: linear-gradient(to right,  #4c4f53 15px,#d9534f 2%); /* W3C */
+    .criticalEvcSummary {
+        color: white !important;
+        -webkit-box-shadow: 3px 3px 1px -2px rgba(0, 0, 0, 0.75);
+        -moz-box-shadow: 3px 3px 1px -2px rgba(0, 0, 0, 0.75);
+        box-shadow: 3px 3px 1px -2px rgba(0, 0, 0, 0.75);
+        padding: 2px;
+        background: linear-gradient(to right, #4c4f53 15px, #d9534f 2%); /* W3C */
 
     }
-    .criticalEvcSummary:after{
+
+    .criticalEvcSummary:after {
         font-family: FontAwesome;
         /*content: "\f071";*/
-        color:white;
-    }
-    .okEvcSummary{
-        -webkit-box-shadow: 3px 3px 1px -2px rgba(0,0,0,0.75);
-        -moz-box-shadow: 3px 3px 1px -2px rgba(0,0,0,0.75);
-        box-shadow: 3px 3px 1px -2px rgba(0,0,0,0.75);
-        padding:5px;
-        color:white;
-        background: linear-gradient(to right,  #4c4f53 15px,#5cb85c 2%); /* W3C */
-    }
-    .unknownEvcSummary{
-        -webkit-box-shadow: 3px 3px 1px -2px rgba(0,0,0,0.75);
-        -moz-box-shadow: 3px 3px 1px -2px rgba(0,0,0,0.75);
-        box-shadow: 3px 3px 1px -2px rgba(0,0,0,0.75);
-        padding:2px;
-        color:white;
-        background: linear-gradient(to right,  #4c4f53 15px,#888888 2%); /* W3C */
+        color: white;
     }
 
-    .warningEvcSummary{
-        -webkit-box-shadow: 3px 3px 1px -2px rgba(0,0,0,0.75);
-        -moz-box-shadow: 3px 3px 1px -2px rgba(0,0,0,0.75);
-        box-shadow: 3px 3px 1px -2px rgba(0,0,0,0.75);
-        padding:2px;
-        color:white;
-        background: linear-gradient(to right,  #4c4f53 15px,#f0ad4e 2%); /* W3C */
+    .okEvcSummary {
+        -webkit-box-shadow: 3px 3px 1px -2px rgba(0, 0, 0, 0.75);
+        -moz-box-shadow: 3px 3px 1px -2px rgba(0, 0, 0, 0.75);
+        box-shadow: 3px 3px 1px -2px rgba(0, 0, 0, 0.75);
+        padding: 5px;
+        color: white;
+        background: linear-gradient(to right, #4c4f53 15px, #5cb85c 2%); /* W3C */
     }
 
-    .disabledEvcSummary{
+    .unknownEvcSummary {
+        -webkit-box-shadow: 3px 3px 1px -2px rgba(0, 0, 0, 0.75);
+        -moz-box-shadow: 3px 3px 1px -2px rgba(0, 0, 0, 0.75);
+        box-shadow: 3px 3px 1px -2px rgba(0, 0, 0, 0.75);
+        padding: 2px;
+        color: white;
+        background: linear-gradient(to right, #4c4f53 15px, #888888 2%); /* W3C */
+    }
+
+    .warningEvcSummary {
+        -webkit-box-shadow: 3px 3px 1px -2px rgba(0, 0, 0, 0.75);
+        -moz-box-shadow: 3px 3px 1px -2px rgba(0, 0, 0, 0.75);
+        box-shadow: 3px 3px 1px -2px rgba(0, 0, 0, 0.75);
+        padding: 2px;
+        color: white;
+        background: linear-gradient(to right, #4c4f53 15px, #f0ad4e 2%); /* W3C */
+    }
+
+    .disabledEvcSummary {
         background: repeating-linear-gradient(
                 -45deg,
                 #ffffff,
@@ -501,14 +503,15 @@
                 #eaf0f2 20px
         );
     }
-    .disabledEvcSummary:after{
+
+    .disabledEvcSummary:after {
         content: "\f1e6";
         font-family: FontAwesome;
-        color:#ff0000;
-        font-size:11px;
+        color: #ff0000;
+        font-size: 11px;
     }
 
-    .gatter{
+    .gatter {
         display: block;
         white-space: nowrap;
         font-family: Verdana;
@@ -518,58 +521,66 @@
         -webkit-transform-origin: center center;
         -ms-transform: rotate(-90deg);
         -ms-transform-origin: center center;
-        width:15px;
-        bottom:1px;
-        position:absolute;
-        font-size:14px;
+        width: 15px;
+        bottom: 1px;
+        position: absolute;
+        font-size: 14px;
         text-shadow: 1px 1px #7d7d7d;
-        font-family:'Courier New', Arial;
+        font-family: 'Courier New', Arial;
     }
 
-    #evcSummary{
-        border-spacing:5px;
+    #evcSummary {
+        border-spacing: 5px;
         border-collapse: separate;
     }
 
-    #evcSummary  td{
-        position:relative;
-    }
-    #evcSummary  td div {
-        position:absolute;
-        left:0;
-    }
-    #evcSummary  span{
-        padding:5px 10px 5px 20px;
-        display:inline-block;
-        font-size:13px;
-        font-family:'Courier New', Arial;
+    #evcSummary td {
+        position: relative;
     }
 
+    #evcSummary td div {
+        position: absolute;
+        left: 0;
+    }
 
-    .disabledEvcSummary span{
-        padding:15px 1px 15px 20px;
-        display:inline-block;
-        font-size:13px;
-        font-family:'Courier New', Arial;
+    #evcSummary span {
+        padding: 5px 10px 5px 20px;
+        display: inline-block;
+        font-size: 13px;
+        font-family: 'Courier New', Arial;
     }
-    .borderOkEvcSummary{
-        border-right:5px solid #5cb85c;
+
+    .disabledEvcSummary span {
+        padding: 15px 1px 15px 20px;
+        display: inline-block;
+        font-size: 13px;
+        font-family: 'Courier New', Arial;
     }
-    .borderWarningEvcSummary{
-        border-right:5px solid #f0ad4e;
+
+    .borderOkEvcSummary {
+        border-right: 5px solid #5cb85c;
     }
-    .borderCriticalEvcSummary{
-        border-right:5px solid #d9534f;
+
+    .borderWarningEvcSummary {
+        border-right: 5px solid #f0ad4e;
     }
-    .borderUnknownEvcSummary{
-        border-right:5px solid #888888;
+
+    .borderCriticalEvcSummary {
+        border-right: 5px solid #d9534f;
     }
-    .borderDisabledEvcSummary{
-        border-right:5px solid #dee3e5;
+
+    .borderUnknownEvcSummary {
+        border-right: 5px solid #888888;
     }
-    .borderNotMonitoredEvcSummary{
-        border-right:5px solid #428bca;
+
+    .borderDisabledEvcSummary {
+        border-right: 5px solid #dee3e5;
     }
+
+    .borderNotMonitoredEvcSummary {
+        border-right: 5px solid #428bca;
+    }
+
     .virtualLayerService {
         font-weight: bold;
         padding: 10px 1px 10px 15px !important;
@@ -588,7 +599,7 @@
                     <tr>
                         <td>
                             <?php if (!$parameters['no-attachments']): ?>
-                                <img src="cid:100" height="30" width="120"/>
+                                <img src="cid:100"  width="120"/>
                             <?php endif; ?>
                         </td>
                         <td align="right"><h6 class="collapse"><?php echo __('openITCOCKPIT Notification'); ?></h6></td>
@@ -632,10 +643,10 @@
                                         <td colspan="2">
                                             <i class="fa fa-user fa-stack-2x"></i>
                                             <strong><?php
-                                                echo __('The current status was acknowledged by %s ',$parameters['serviceackauthor']);
+                                                echo __('The current status was acknowledged by %s ', $parameters['serviceackauthor']);
                                                 echo __('with the comment "');
-                                                if (!empty($_systemsettings['TICKET_SYSTEM']['TICKET_SYSTEM.URL']) && preg_match('/^(Ticket)_?(\d+);?(\d+)/',$parameters['serviceackcomment'],$ticketDetails)):
-                                                    echo (isset($ticketDetails[1],$ticketDetails[3],$ticketDetails[2])) ?
+                                                if (!empty($_systemsettings['TICKET_SYSTEM']['TICKET_SYSTEM.URL']) && preg_match('/^(Ticket)_?(\d+);?(\d+)/', $parameters['serviceackcomment'], $ticketDetails)):
+                                                    echo (isset($ticketDetails[1], $ticketDetails[3], $ticketDetails[2])) ?
                                                         $this->Html->link(
                                                             $ticketDetails[1] . ' ' . $ticketDetails[2],
                                                             $_systemsettings['TICKET_SYSTEM']['TICKET_SYSTEM.URL'] . $ticketDetails[3],
@@ -647,7 +658,7 @@
                                             </strong>
                                         </td>
                                     </tr>
-                                    <?php
+                                <?php
                                 endif;
                                 ?>
                                 <tr>
@@ -683,19 +694,29 @@
                                 <?php if (!$parameters['no-attachments']): ?>
                                     <?php foreach ($contentIDs as $contentID): ?>
                                         <tr>
-                                            <td><img src="cid:<?php echo $contentID; ?>" alt='Generated RRD image' width="560" height="180"/></td>
+                                            <td>
+                                                <img src="cid:<?php echo $contentID; ?>" alt='Chart' width="560" height="180" style="background:#fff;background-color:#fff;"/>
+                                            </td>
                                         </tr>
                                     <?php endforeach; ?>
                                 <?php endif; ?>
                             </table>
                             <?php
-                            if(!empty($parameters['evcTree'])):
+                            if (!empty($parameters['evcTree'])):
                                 $this->Helpers->load('EventcorrelationModule.Evc');
                                 echo $this->Evc->getEvcDataAsTable(
                                     $parameters['evcTree'],
                                     $parameters['servicestatus'],
                                     $parameters['serviceUuid']
                                 );
+                                ?>
+                                <br />
+                                <p>
+                                <?php
+                                echo nl2br(h($parameters['servicestatus'][$parameters['serviceUuid']]['Servicestatus']['long_output']));
+                                ?>
+                                </p>
+                            <?php
                             endif;
                             ?>
                             <br/><br/>

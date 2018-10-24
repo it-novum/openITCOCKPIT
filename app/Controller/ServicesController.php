@@ -54,6 +54,7 @@ use itnovum\openITCOCKPIT\Core\Views\UserTime;
 use itnovum\openITCOCKPIT\Database\ScrollIndex;
 use itnovum\openITCOCKPIT\Filter\ServiceFilter;
 use itnovum\openITCOCKPIT\Monitoring\QueryHandler;
+use Statusengine\PerfdataParser;
 
 /**
  * @property Container $Container
@@ -72,7 +73,6 @@ use itnovum\openITCOCKPIT\Monitoring\QueryHandler;
  * @property Servicetemplatecommandargumentvalue $Servicetemplatecommandargumentvalue
  * @property Servicetemplateeventcommandargumentvalue $Servicetemplateeventcommandargumentvalue
  * @property DeletedService $DeletedService
- * @property Rrd $Rrd
  * @property AcknowledgedService $AcknowledgedService
  * @property DowntimeService $DowntimeService
  * @property BbcodeComponent $Bbcode
@@ -119,7 +119,6 @@ class ServicesController extends AppController {
         MONITORING_ACKNOWLEDGED_SERVICE,
         MONITORING_OBJECTS,
         'DeletedService',
-        'Rrd',
         'Container',
         'Documentation',
         'Systemsetting',
@@ -263,7 +262,7 @@ class ServicesController extends AppController {
             $Hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus($service['Hoststatus'], $UserTime);
             $Service = new \itnovum\openITCOCKPIT\Core\Views\Service($service, null, $allowEdit);
             $Servicestatus = new \itnovum\openITCOCKPIT\Core\Servicestatus($service['Servicestatus'], $UserTime);
-            $PerfdataChecker = new PerfdataChecker($Host, $Service);
+            $PerfdataChecker = new PerfdataChecker($Host, $Service, $this->PerfdataBackend, $Servicestatus);
 
             $tmpRecord = [
                 'Service'       => $Service->toArray(),
@@ -271,7 +270,7 @@ class ServicesController extends AppController {
                 'Servicestatus' => $Servicestatus->toArray(),
                 'Hoststatus'    => $Hoststatus->toArray()
             ];
-            $tmpRecord['Service']['has_graph'] = $PerfdataChecker->hasRrdFile();
+            $tmpRecord['Service']['has_graph'] = $PerfdataChecker->hasPerfdata();
             $all_services[] = $tmpRecord;
         }
 
@@ -2003,11 +2002,8 @@ class ServicesController extends AppController {
         }
 
         $rawHost = $this->Host->find('first', $this->Host->getQueryForServiceBrowser($rawService['Service']['host_id']));
-
-        $PerfdataChecker = new PerfdataChecker(
-            new \itnovum\openITCOCKPIT\Core\Views\Host($rawHost),
-            new \itnovum\openITCOCKPIT\Core\Views\Service($rawService)
-        );
+        $host = new \itnovum\openITCOCKPIT\Core\Views\Host($rawHost);
+        $rawHost['Host']['is_satellite_host'] = $host->isSatelliteHost();
 
         $containerIdsToCheck = Hash::extract($rawHost, 'Container.{n}.HostsToContainer.container_id');
         $containerIdsToCheck[] = $rawHost['Host']['container_id'];
@@ -2093,7 +2089,6 @@ class ServicesController extends AppController {
 
 
         $mergedService['Service']['allowEdit'] = $allowEdit;
-        $mergedService['Service']['has_graph'] = $PerfdataChecker->hasRrdFile();
         $mergedService['checkIntervalHuman'] = $UserTime->secondsInHumanShort($mergedService['Service']['check_interval']);
         $mergedService['retryIntervalHuman'] = $UserTime->secondsInHumanShort($mergedService['Service']['retry_interval']);
         $mergedService['notificationIntervalHuman'] = $UserTime->secondsInHumanShort($mergedService['Service']['notification_interval']);
@@ -2176,6 +2171,16 @@ class ServicesController extends AppController {
         $Servicestatus = new \itnovum\openITCOCKPIT\Core\Servicestatus($servicestatus['Servicestatus'], $UserTime);
         $servicestatus = $Servicestatus->toArrayForBrowser();
         $servicestatus['longOutputHtml'] = $this->Bbcode->nagiosNl2br($this->Bbcode->asHtml($Servicestatus->getLongOutput(), true));
+
+        $PerfdataChecker = new PerfdataChecker(
+            new \itnovum\openITCOCKPIT\Core\Views\Host($rawHost),
+            new \itnovum\openITCOCKPIT\Core\Views\Service($rawService),
+            $this->PerfdataBackend,
+            $Servicestatus
+        );
+        $mergedService['Service']['has_graph'] = $PerfdataChecker->hasPerfdata();
+        $PerfdataParser = new PerfdataParser($Servicestatus->getPerfdata());
+        $mergedService['Perfdata'] = $PerfdataParser->parse();
 
 
         //Check for acknowledgements and downtimes
@@ -2287,17 +2292,6 @@ class ServicesController extends AppController {
             'hostDowntime',
             'canSubmitExternalCommands'
         ]);
-
-        /*
-        // Wos is desch?
-        $serviceAllValues = $this->Rrd->getPerfDataFiles($service['Host']['uuid'], $service['Service']['uuid']);
-        $serviceValues = [];
-        if (isset($serviceAllValues['xml_data']) && !empty($serviceAllValues['xml_data'])) {
-            foreach ($serviceAllValues['xml_data'] as $serviceValueArr) {
-                $serviceValues[$serviceValueArr['ds']] = $service['Host']['name'] . '/' . $service['Service']['name'] . '/' . $serviceValueArr['name'];
-            }
-        }
-        */
     }
 
     /*
@@ -2405,353 +2399,6 @@ class ServicesController extends AppController {
             //Only ship HTML template
             return;
         }
-    }
-
-    public function grapherSwitch($id) {
-        if (!$this->Service->exists($id)) {
-            throw new NotFoundException(__('Invalid service'));
-        }
-        $service = $this->Service->find('first', [
-            'recursive'  => -1,
-            'conditions' => [
-                'Service.id' => $id
-            ],
-            'contain'    => [
-                'Servicetemplate' => [
-                    'fields'       => [
-                        'Servicetemplate.id',
-                        'Servicetemplate.command_id'
-                    ],
-                    'CheckCommand' => [
-                        'fields' => [
-                            'CheckCommand.id',
-                            'CheckCommand.uuid'
-                        ]
-                    ]
-                ],
-                'CheckCommand'    => [
-                    'fields' => [
-                        'CheckCommand.id',
-                        'CheckCommand.uuid'
-                    ]
-                ]
-            ],
-            'fields'     => [
-                'Service.id',
-                'Service.command_id'
-            ]
-        ]);
-
-        $commandUuid = $service['CheckCommand']['uuid'];
-        if ($commandUuid === null || $commandUuid === '') {
-            $commandUuid = $service['Servicetemplate']['CheckCommand']['uuid'];
-        }
-
-        if (file_exists(APP . 'GrapherTemplates' . DS . $commandUuid . '.php')) {
-            return $this->redirect('/services/grapherTemplate/' . $service['Service']['id']);
-        }
-
-        return $this->redirect('/services/grapher/' . $service['Service']['id']);
-    }
-
-    public function grapher($id) {
-        if (!$this->Service->exists($id)) {
-            throw new NotFoundException(__('Invalid service'));
-        }
-
-        $service = $this->Service->find('first', [
-            'recursive'  => -1,
-            'conditions' => [
-                'Service.id' => $id
-
-            ],
-            'contain'    => [
-                'Servicetemplate' => [
-                    'fields' => [
-                        'Servicetemplate.id',
-                        'Servicetemplate.name'
-                    ]
-                ],
-                'Host'            => [
-                    'fields' => [
-                        'Host.id',
-                        'Host.uuid',
-                        'Host.name',
-                        'Host.address',
-                        'Host.container_id'
-                    ],
-                    'Container'
-                ]
-            ],
-            'fields'     => [
-                'Service.id',
-                'Service.uuid',
-                'Service.name',
-                'Service.host_id',
-                'Service.service_type',
-                'Service.service_url'
-            ]
-        ]);
-
-
-        if (!$this->allowedByContainerId(Hash::extract($service, 'Host.Container.{n}.HostsToContainer.container_id'), false)) {
-            $this->render403();
-            return;
-        }
-
-        $allowEdit = false;
-        if ($this->allowedByContainerId(Hash::extract($service, 'Host.Container.{n}.HostsToContainer.container_id'))) {
-            $allowEdit = true;
-        }
-
-        $docuExists = $this->Documentation->existsForUuid($service['Service']['uuid']);
-
-        $services = $this->Service->find('all', [
-            'recursive'  => -1,
-            'conditions' => [
-                'Service.host_id'  => $service['Host']['id'],
-                'Service.disabled' => 0
-            ],
-            'contain'    => [
-                'Servicetemplate'
-            ],
-            'fields'     => [
-                'Service.id',
-                'IF(Service.name IS NULL, Servicetemplate.name, Service.name) AS ServiceName',
-            ]
-        ]);
-
-
-        $ServicestatusFields = new ServicestatusFields($this->DbBackend);
-        $ServicestatusFields->wildcard();
-        $servicestatus = $this->Servicestatus->byUuid($service['Service']['uuid'], $ServicestatusFields);
-        $showThresholds = is_null($this->Session->read('service_thresholds_' . $id)) ? '1' : $this->Session->read('service_thresholds_' . $id);
-        $this->set(compact(['service', 'servicestatus', 'allowEdit', 'services', 'docuExists', 'showThresholds']));
-    }
-
-    public function grapherTemplate($id) {
-        if (!$this->Service->exists($id)) {
-            throw new NotFoundException(__('Invalid service'));
-        }
-
-        $service = $this->Service->find('first', [
-            'recursive'  => -1,
-            'conditions' => [
-                'Service.id' => $id
-            ],
-            'contain'    => [
-                'Servicetemplate' => [
-                    'fields'       => [
-                        'Servicetemplate.id',
-                        'Servicetemplate.name',
-                        'Servicetemplate.command_id'
-                    ],
-                    'CheckCommand' => [
-                        'fields' => [
-                            'CheckCommand.id',
-                            'CheckCommand.uuid'
-                        ]
-                    ]
-                ],
-                'Host'            => [
-                    'fields' => [
-                        'Host.id',
-                        'Host.uuid',
-                        'Host.name',
-                        'Host.address',
-                        'Host.container_id'
-                    ],
-                    'Container'
-                ],
-                'CheckCommand'    => [
-                    'fields' => [
-                        'CheckCommand.id',
-                        'CheckCommand.uuid'
-                    ]
-                ]
-            ],
-            'fields'     => [
-                'Service.id',
-                'Service.uuid',
-                'Service.name',
-                'Service.host_id',
-                'Service.service_type',
-                'Service.service_url',
-                'Service.command_id'
-            ]
-        ]);
-
-        if (!$this->allowedByContainerId(Hash::extract($service, 'Host.Container.{n}.HostsToContainer.container_id'), false)) {
-            $this->render403();
-            return;
-        }
-
-        $allowEdit = false;
-        if ($this->allowedByContainerId(Hash::extract($service, 'Host.Container.{n}.HostsToContainer.container_id'))) {
-            $allowEdit = true;
-        }
-
-        $docuExists = $this->Documentation->existsForUuid($service['Service']['uuid']);
-
-        $services = $this->Service->find('all', [
-            'recursive'  => -1,
-            'conditions' => [
-                'Service.host_id'  => $service['Host']['id'],
-                'Service.disabled' => 0
-            ],
-            'contain'    => [
-                'Servicetemplate'
-            ],
-            'fields'     => [
-                'Service.id',
-                'IF(Service.name IS NULL, Servicetemplate.name, Service.name) AS ServiceName',
-            ]
-        ]);
-
-        $commandUuid = $service['CheckCommand']['uuid'];
-        if ($commandUuid === null || $commandUuid === '') {
-            $commandUuid = $service['Servicetemplate']['CheckCommand']['uuid'];
-        }
-
-        $ServicestatusField = new ServicestatusFields($this->DbBackend);
-        $ServicestatusField->wildcard();
-        $servicestatus = $this->Servicestatus->byUuid($service['Service']['uuid'], $ServicestatusField);
-        $this->set(compact(['service', 'servicestatus', 'allowEdit', 'services', 'docuExists', 'commandUuid']));
-
-    }
-
-    public function grapherZoom($id, $ds, $newStart, $newEnd, $showThresholds) {
-        if (!$this->Service->exists($id)) {
-            throw new NotFoundException(__('Invalid service'));
-        }
-
-        $this->Session->write('service_thresholds_' . $id, $showThresholds);
-
-        //Avoid RRD errors
-        if ($newStart > $newEnd) {
-            $_newEnd = $newEnd;
-            $newEnd = $newStart;
-            $newStart = $_newEnd;
-        }
-
-        $service = $this->Service->findById($id);
-        $this->set(compact(['service', 'ds', 'newStart', 'newEnd']));
-        $this->layout = false;
-        $this->render = false;
-        header('Content-Type: image/png');
-
-
-        $rrd_path = Configure::read('rrd.path');
-
-        $File = new File($rrd_path . $service['Host']['uuid'] . DS . $service['Service']['uuid'] . '.xml', false);
-        if (!$File->exists()) {
-            $errorImage = $this->createGrapherErrorPng('No such file or directory');
-            imagepng($errorImage);
-            imagedestroy($errorImage);
-            return;
-        }
-
-        $rrd_structure_datasources = $this->Rrd->getPerfDataStructure($rrd_path . $service['Host']['uuid'] . DS . $service['Service']['uuid'] . '.xml');
-        foreach ($rrd_structure_datasources as $rrd_structure_datasource):
-            if ($rrd_structure_datasource['ds'] == $ds):
-                if ($showThresholds !== '1') {
-                    unset($rrd_structure_datasource['crit']);
-                    unset($rrd_structure_datasource['warn']);
-                }
-
-                $imageUrl = $this->Rrd->createRrdGraph($rrd_structure_datasource, [
-                    'host_uuid'    => $service['Host']['uuid'],
-                    'service_uuid' => $service['Service']['uuid'],
-                    'path'         => $rrd_path,
-                    'start'        => $newStart,
-                    'end'          => $newEnd,
-                    'label'        => $service['Host']['name'] . ' / ' . $service['Servicetemplate']['name'],
-                ], [], true);
-                if (!isset($imageUrl['diskPath'])) {
-                    //The image is broken, i gues we have an RRD error here, so we render the RRD return text into an image and send it to the browser.
-                    $errorImage = $this->createGrapherErrorPng($imageUrl);
-                    imagepng($errorImage);
-                    imagedestroy($errorImage);
-
-                    return;
-                }
-
-                $image = imagecreatefrompng($imageUrl['diskPath']);
-
-                imagepng($image);
-                imagedestroy($image);
-            endif;
-        endforeach;
-    }
-
-    public function grapherZoomTemplate($id, $ds, $newStart, $newEnd, $commandUuid) {
-        if (!$this->Service->exists($id)) {
-            throw new NotFoundException(__('Invalid service'));
-        }
-
-        //Avoid RRD errors
-        if ($newStart > $newEnd) {
-            $_newEnd = $newEnd;
-            $newEnd = $newStart;
-            $newStart = $_newEnd;
-        }
-
-        $service = $this->Service->findById($id);
-        $this->set(compact(['service', 'ds', 'newStart', 'newEnd']));
-        $this->layout = false;
-        $this->render = false;
-        header('Content-Type: image/png');
-        $rrd_path = Configure::read('rrd.path');
-
-        //Loading template
-        $templateSettings = [];
-        require_once APP . 'GrapherTemplates' . DS . $commandUuid . '.php';
-
-        foreach ($templateSettings as $key => $templateSetting):
-            if ($key == $ds):
-                $rrdOptions = [
-                    '--slope-mode',
-                    '--start', $newStart,
-                    '--end', $newEnd,
-                    '--width', 850,
-                    '--color', 'BACK#FFFFFF',
-                    '--border', 1,
-                    '--imgformat', 'PNG',
-                ];
-
-                //Merging template settings to our default settings
-                $rrdOptions = Hash::merge($rrdOptions, $templateSetting);
-
-                $imageUrl = $this->Rrd->createRrdGraphFromTemplate($rrdOptions);
-
-                if (!isset($imageUrl['diskPath'])) {
-                    //The image is broken, i gues we have an RRD error here, so we render the RRD return text into an image and send it to the browser.
-                    $errorImage = $this->createGrapherErrorPng($imageUrl);
-                    imagepng($errorImage);
-                    imagedestroy($errorImage);
-
-                    return;
-                }
-
-                $image = imagecreatefrompng($imageUrl['diskPath']);
-
-                imagepng($image);
-                imagedestroy($image);
-            endif;
-        endforeach;
-    }
-
-    public function createGrapherErrorPng($error) {
-        $img = imagecreatetruecolor(947, 173);
-        imagesavealpha($img, true);
-        $background = imagecolorallocatealpha($img, 255, 110, 110, 0);
-        $textColor = imagecolorallocate($img, 255, 255, 255);
-        imagefill($img, 0, 0, $background);
-
-        imagestring($img, 5, 5, 5, 'Error:', $textColor);
-        imagestring($img, 5, 5, 25, $error, $textColor);
-
-        return $img;
     }
 
     /**
@@ -3220,7 +2867,7 @@ class ServicesController extends AppController {
 
         $ServiceCondition = new ServiceConditions($ServiceFilter->indexFilter());
         $ServiceCondition->setContainerIds($containerIds);
-        $ServiceCondition->includeDisabled(true);
+        $ServiceCondition->setIncludeDisabled(false);
 
         $services = $this->Service->makeItJavaScriptAble(
             $this->Service->getServicesForAngular($ServiceCondition, $selected)
@@ -3236,9 +2883,12 @@ class ServicesController extends AppController {
         }
         $this->Service->virtualFields['servicename'] = 'IF((Service.name IS NULL OR Service.name=""), Servicetemplate.name, Service.name)';
         $selected = $this->request->query('selected');
+        $includeDisabled = $this->request->query('includeDisabled') === 'true';
+
         $ServiceFilter = new ServiceFilter($this->request);
 
         $ServiceCondition = new ServiceConditions($ServiceFilter->indexFilter());
+        $ServiceCondition->setIncludeDisabled($includeDisabled);
         $ServiceCondition->setContainerIds($this->MY_RIGHTS);
         $ServiceCondition->includeDisabled();
 

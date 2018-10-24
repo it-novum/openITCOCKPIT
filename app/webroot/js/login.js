@@ -26,28 +26,6 @@ $(document).ready(function(){
 
     localStorage.removeItem('browserUuid');
 
-    handleLoginMethodChange($('#LoginUserAuthMethod').val());
-
-    $('#LoginUserAuthMethod').change(function(){
-        handleLoginMethodChange($(this).val());
-    });
-
-    function handleLoginMethodChange(value){
-        if(typeof value === 'undefined'){
-            value = 'session';
-        }
-
-        if(value == 'session'){
-            $('#LoginUserSamaccountname').parent().parent().hide();
-            $('#LoginUserEmail').parent().parent().show();
-        }
-
-        if(value == 'ldap'){
-            $('#LoginUserSamaccountname').parent().parent().show();
-            $('#LoginUserEmail').parent().parent().hide();
-        }
-    }
-
 
     particlesJS('particles-js',
 

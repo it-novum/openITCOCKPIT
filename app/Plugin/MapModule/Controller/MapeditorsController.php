@@ -164,11 +164,11 @@ class MapeditorsController extends MapModuleAppController {
                     'fields'     => [
                         'Host.id',
                         'Host.uuid',
-                        'Host.name'
+                        'Host.name',
+                        'Host.disabled'
                     ],
                     'conditions' => [
-                        'Host.id'       => $objectId,
-                        'Host.disabled' => 0
+                        'Host.id'       => $objectId
                     ]
                 ]);
                 if (!empty($host)) {
@@ -196,7 +196,8 @@ class MapeditorsController extends MapModuleAppController {
                     'fields'     => [
                         'Service.id',
                         'Service.name',
-                        'Service.uuid'
+                        'Service.uuid',
+                        'Service.disabled'
                     ],
                     'contain'    => [
                         'Host'            => [
@@ -214,8 +215,7 @@ class MapeditorsController extends MapModuleAppController {
                         ]
                     ],
                     'conditions' => [
-                        'Service.id'       => $objectId,
-                        'Service.disabled' => 0
+                        'Service.id'       => $objectId
                     ],
                 ]);
 
@@ -598,11 +598,11 @@ class MapeditorsController extends MapModuleAppController {
                     'fields'     => [
                         'Host.id',
                         'Host.name',
-                        'Host.uuid'
+                        'Host.uuid',
+                        'Host.disabled'
                     ],
                     'conditions' => [
-                        'Host.id'       => $objectId,
-                        'Host.disabled' => 0
+                        'Host.id'       => $objectId
                     ]
                 ]);
                 if (!empty($host)) {
@@ -629,7 +629,8 @@ class MapeditorsController extends MapModuleAppController {
                     'fields'     => [
                         'Service.id',
                         'Service.name',
-                        'Service.uuid'
+                        'Service.uuid',
+                        'Service.disabled'
                     ],
                     'contain'    => [
                         'Host'            => [
@@ -647,8 +648,7 @@ class MapeditorsController extends MapModuleAppController {
                         ]
                     ],
                     'conditions' => [
-                        'Service.id'       => $objectId,
-                        'Service.disabled' => 0
+                        'Service.id'       => $objectId
                     ],
                 ]);
 
@@ -1073,8 +1073,7 @@ class MapeditorsController extends MapModuleAppController {
                 ]
             ],
             'conditions' => [
-                'Service.id'       => $serviceId,
-                'Service.disabled' => 0
+                'Service.id'       => $serviceId
             ],
         ]);
         if (empty($service)) {
@@ -1139,11 +1138,11 @@ class MapeditorsController extends MapModuleAppController {
                         'Host.id',
                         'Host.uuid',
                         'Host.name',
-                        'Host.description'
+                        'Host.description',
+                        'Host.disabled'
                     ],
                     'conditions' => [
-                        'Host.id'       => $objectId,
-                        'Host.disabled' => 0
+                        'Host.id'       => $objectId
                     ]
                 ]);
                 if (!empty($host)) {
@@ -1176,7 +1175,8 @@ class MapeditorsController extends MapModuleAppController {
                         'Service.id',
                         'Service.name',
                         'Service.uuid',
-                        'Service.description'
+                        'Service.description',
+                        'Service.disabled'
                     ],
                     'contain'    => [
                         'Host'            => [
@@ -1194,8 +1194,7 @@ class MapeditorsController extends MapModuleAppController {
                         ]
                     ],
                     'conditions' => [
-                        'Service.id'       => $objectId,
-                        'Service.disabled' => 0
+                        'Service.id'       => $objectId
                     ],
                 ]);
 
@@ -1710,11 +1709,15 @@ class MapeditorsController extends MapModuleAppController {
         }
 
         if (!is_dir(APP . 'Plugin' . DS . 'MapModule' . DS . 'webroot' . DS . 'img' . DS . 'backgrounds')) {
-            mkdir(APP . 'Plugin' . DS . 'MapModule' . DS . 'webroot' . DS . 'img' . DS . 'mapsummaryitem');
+            mkdir(APP . 'Plugin' . DS . 'MapModule' . DS . 'webroot' . DS . 'img' . DS . 'backgrounds');
+        }
+
+        if (!is_dir(APP . 'Plugin' . DS . 'MapModule' . DS . 'webroot' . DS . 'img' . DS . 'backgrounds' . DS . 'thumb')) {
+            mkdir(APP . 'Plugin' . DS . 'MapModule' . DS . 'webroot' . DS . 'img' . DS . 'backgrounds' . DS . 'thumb');
         }
 
         $finder = new Finder();
-        $res = $finder->files()->in(APP . 'Plugin' . DS . 'MapModule' . DS . 'webroot' . DS . 'img' . DS . 'backgrounds')->exclude('thumb');
+        $finder->files()->in(APP . 'Plugin' . DS . 'MapModule' . DS . 'webroot' . DS . 'img' . DS . 'backgrounds')->exclude('thumb');
 
         $backgrounds = [];
         /** @var \Symfony\Component\Finder\SplFileInfo $file */
@@ -2230,7 +2233,7 @@ class MapeditorsController extends MapModuleAppController {
 
         $id = $this->request->data('Map.id');
 
-        if (!$this->Maptext->exists($id)) {
+        if (!$this->Map->exists($id)) {
             throw new NotFoundException();
         }
 

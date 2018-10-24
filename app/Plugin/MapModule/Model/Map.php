@@ -132,10 +132,9 @@ class Map extends MapModuleAppModel {
         $HoststatusFields = new HoststatusFields($this->DbBackend);
         $HoststatusFields->currentState()->scheduledDowntimeDepth()->problemHasBeenAcknowledged();
         $hoststatus = $Hoststatus->byUuid($host['Host']['uuid'], $HoststatusFields);
-
         $HostView = new \itnovum\openITCOCKPIT\Core\Views\Host($host);
 
-        if (empty($hoststatus)) {
+        if (empty($hoststatus) || $host['Host']['disabled']) {
             $HoststatusView = new \itnovum\openITCOCKPIT\Core\Hoststatus([]);
             return [
                 'icon'           => $this->errorIcon,
@@ -254,7 +253,7 @@ class Map extends MapModuleAppModel {
         $servicestatus = $Servicestatus->byUuid($service['Service']['uuid'], $ServicestatusFields);
         $HostView = new \itnovum\openITCOCKPIT\Core\Views\Host($service);
         $ServiceView = new \itnovum\openITCOCKPIT\Core\Views\Service($service);
-        if (empty($servicestatus)) {
+        if (empty($servicestatus) || $service['Service']['disabled']) {
             $ServicestatusView = new \itnovum\openITCOCKPIT\Core\Servicestatus([]);
             return [
                 'icon'           => $this->errorIcon,
@@ -1296,7 +1295,7 @@ class Map extends MapModuleAppModel {
         $HostView = new \itnovum\openITCOCKPIT\Core\Views\Host($host);
 
 
-        if (empty($hoststatus) && empty($servicestatus)) {
+        if ((empty($hoststatus) && empty($servicestatus)) || $host['Host']['disabled']) {
             return [
                 'BitMaskHostState'    => $bitMaskHostState,
                 'BitMaskServiceState' => $bitMaskServiceState,
@@ -1337,7 +1336,7 @@ class Map extends MapModuleAppModel {
         $ServiceView = new \itnovum\openITCOCKPIT\Core\Views\Service($service);
 
 
-        if (empty($hoststatus) && empty($servicestatus)) {
+        if ((empty($hoststatus) && empty($servicestatus)) || $service['Service']['disabled']) {
             return [
                 'BitMaskHostState'    => $bitMaskHostState,
                 'BitMaskServiceState' => $bitMaskServiceState,

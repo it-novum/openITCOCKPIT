@@ -99,6 +99,8 @@ oitc api --model Cronjob --action create_missing_cronjobs --data ""
 oitc compress
 
 #Acc ALC dependencies config for itc core
+echo "---------------------------------------------------------------"
+echo "Scan for new user permissions. This will take a while..."
 oitc AclExtras.AclExtras aco_sync
 
 #Set missing new ACL permissions
@@ -154,6 +156,7 @@ else
         systemctl restart oitc_cmd
         systemctl restart gearman_worker
         systemctl restart push_notification
+        systemctl restart nodejs_server
     fi
 
     if [ $CODENAME = "xenial" ] || [ $CODENAME = "stretch" ]; then
@@ -178,6 +181,9 @@ else
 
         service push_notification stop
         service push_notification start
+
+        service nodejs_server stop
+        service nodejs_server start
 
         service php5-fpm stop
         service php5-fpm start

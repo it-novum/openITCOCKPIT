@@ -66,7 +66,8 @@ class SystemHealthTask extends AppShell implements CronjobInterface {
             'isStatusengineInstalled'         => false,
             'isStatusenginePerfdataProcessor' => false,
             'isDistributeModuleInstalled'     => false,
-            'isPushNotificationRunning'       => false
+            'isPushNotificationRunning'       => false,
+            'isNodeJsServerRunning'           => false
         ];
 
         $CpuLoad = new CpuLoad();
@@ -122,6 +123,11 @@ class SystemHealthTask extends AppShell implements CronjobInterface {
         exec($systemsetting['INIT']['INIT.PUSH_NOTIFICATION'] . $errorRedirect, $output, $returncode);
         if ($returncode == 0) {
             $data['isPushNotificationRunning'] = true;
+        }
+
+        exec($systemsetting['INIT']['INIT.NODEJS_SERVER'] . $errorRedirect, $output, $returncode);
+        if ($returncode == 0) {
+            $data['isNodeJsServerRunning'] = true;
         }
 
         if (file_exists('/opt/openitc/nagios/bin/ndo2db')) {

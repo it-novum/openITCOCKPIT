@@ -1,12 +1,14 @@
-angular.module('openITCOCKPIT').directive('mapLine', function($http){
+angular.module('openITCOCKPIT').directive('mapLine', function($http, $interval){
     return {
         restrict: 'E',
         templateUrl: '/map_module/mapeditors/mapline.html',
         scope: {
-            'item': '='
+            'item': '=',
+            'refreshInterval': '='
         },
         controller: function($scope){
             $scope.init = true;
+            $scope.statusUpdateInterval = null;
 
             $scope.initLine = function(){
                 $scope.item.startX = parseInt($scope.item.startX, 10);
@@ -63,10 +65,21 @@ angular.module('openITCOCKPIT').directive('mapLine', function($http){
                 }
             };
 
+            var initRefreshTimer = function(){
+                if($scope.item.type !== 'stateless'){
+                    if($scope.refreshInterval > 0 && $scope.statusUpdateInterval === null){
+                        $scope.statusUpdateInterval = $interval(function(){
+                            $scope.load();
+                        }, $scope.refreshInterval);
+                    }
+                }
+            };
+
             $scope.load = function(){
                 $http.get("/map_module/mapeditors/mapitem/.json", {
                     params: {
                         'angular': true,
+                        'disableGlobalLoader': true,
                         'objectId': $scope.item.object_id,
                         'mapId': $scope.item.map_id,
                         'type': $scope.item.type
@@ -76,6 +89,7 @@ angular.module('openITCOCKPIT').directive('mapLine', function($http){
                     $scope.allowView = result.data.allowView;
                     $scope.init = false;
                     getLable(result.data.data);
+                    initRefreshTimer();
                 });
             };
 
@@ -88,6 +102,19 @@ angular.module('openITCOCKPIT').directive('mapLine', function($http){
             }else{
                 $scope.load();
             }
+
+
+            $scope.stop = function(){
+                if($scope.statusUpdateInterval !== null){
+                    $interval.cancel($scope.statusUpdateInterval);
+                }
+            };
+
+            //Disable status update interval, if the object gets removed from DOM.
+            //E.g in Map rotations
+            $scope.$on('$destroy', function() {
+                $scope.stop();
+            });
 
 
             $scope.$watch('item', function(){

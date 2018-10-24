@@ -162,6 +162,7 @@ class Servicestatus extends CrateModuleAppModel {
                 'Servicestatus.problem_has_been_acknowledged',
                 'Servicestatus.acknowledgement_type',
                 'Servicestatus.is_flapping',
+                'Servicestatus.perfdata',
 
 
                 'Host.name',

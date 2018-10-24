@@ -35,6 +35,9 @@
                         <h2 class="bold txt-color-blueDark">
                             <i class="fa fa-desktop fa-lg txt-color-blueDark"></i>
                             <?php echo __('Host'); ?>
+                            <span class="text-danger" ng-if="summaryState.Host.disabled">
+                                <?php echo __(' (DISABLED)'); ?>
+                            </span>
                         </h2>
                         <div class="col-md-12 no-padding">
                             <div class="tooltipProgressBar" style="width: {{percentValue}}%;"></div>
@@ -46,7 +49,8 @@
                                 <?php echo __('Hostname'); ?>
                             </div>
                             <div class="col-md-8 no-padding">
-                                <a ng-init="hostLink=getObjectHref(iconType, summaryState.Host.id) " ng-href="{{ hostLink }}">
+                                <a ng-init="hostLink=getObjectHref(iconType, summaryState.Host.id) "
+                                   ng-href="{{ hostLink }}">
                                     {{summaryState.Host.hostname}}
                                 </a>
                             </div>
@@ -76,44 +80,46 @@
                                 <i class="fa fa-eye-slash"></i>
                             </div>
                         </div>
-                        <div class="col-md-12">
-                            <div class="col-md-4">
-                                <?php echo __('Output'); ?>
+                        <div ng-show="summaryState.Hoststatus.isInMonitoring">
+                            <div class="col-md-12">
+                                <div class="col-md-4">
+                                    <?php echo __('Output'); ?>
+                                </div>
+                                <div class="col-md-8 no-padding">
+                                    {{summaryState.Hoststatus.output}}
+                                </div>
                             </div>
-                            <div class="col-md-8 no-padding">
-                                {{summaryState.Hoststatus.output}}
+                            <div class="col-md-12">
+                                <div class="col-md-4">
+                                    <?php echo __('Perfdata'); ?>
+                                </div>
+                                <div class="col-md-8 no-padding">
+                                    {{summaryState.Hoststatus.perfdata}}
+                                </div>
                             </div>
-                        </div>
-                        <div class="col-md-12">
-                            <div class="col-md-4">
-                                <?php echo __('Perfdata'); ?>
+                            <div class="col-md-12">
+                                <div class="col-md-4">
+                                    <?php echo __('Current attempt'); ?>
+                                </div>
+                                <div class="col-md-8 no-padding">
+                                    {{summaryState.Hoststatus.current_check_attempt}}/{{summaryState.Hoststatus.max_check_attempts}}
+                                </div>
                             </div>
-                            <div class="col-md-8 no-padding">
-                                {{summaryState.Hoststatus.perfdata}}
+                            <div class="col-md-12">
+                                <div class="col-md-4">
+                                    <?php echo __('Last check'); ?>
+                                </div>
+                                <div class="col-md-8 no-padding">
+                                    {{summaryState.Hoststatus.lastCheck}}
+                                </div>
                             </div>
-                        </div>
-                        <div class="col-md-12">
-                            <div class="col-md-4">
-                                <?php echo __('Current attempt'); ?>
-                            </div>
-                            <div class="col-md-8 no-padding">
-                                {{summaryState.Hoststatus.current_check_attempt}}/{{summaryState.Hoststatus.max_check_attempts}}
-                            </div>
-                        </div>
-                        <div class="col-md-12">
-                            <div class="col-md-4">
-                                <?php echo __('Last check'); ?>
-                            </div>
-                            <div class="col-md-8 no-padding">
-                                {{summaryState.Hoststatus.lastCheck}}
-                            </div>
-                        </div>
-                        <div class="col-md-12">
-                            <div class="col-md-4">
-                                <?php echo __('Next check'); ?>
-                            </div>
-                            <div class="col-md-8 no-padding">
-                                {{summaryState.Hoststatus.nextCheck}}
+                            <div class="col-md-12">
+                                <div class="col-md-4">
+                                    <?php echo __('Next check'); ?>
+                                </div>
+                                <div class="col-md-8 no-padding">
+                                    {{summaryState.Hoststatus.nextCheck}}
+                                </div>
                             </div>
                         </div>
                         <div class="col-md-12">
@@ -201,6 +207,9 @@
                         <h2 class="bold txt-color-blueDark">
                             <i class="fa fa-cog fa-lg txt-color-blueDark"></i>
                             <?php echo __('Service'); ?>
+                            <span class="text-danger" ng-if="summaryState.Service.disabled">
+                                <?php echo __(' (DISABLED)'); ?>
+                            </span>
                         </h2>
                         <div class="col-md-12 no-padding">
                             <div class="tooltipProgressBar" style="width: {{percentValue}}%;"></div>
@@ -272,52 +281,54 @@
                                 <i class="fa fa-eye-slash"></i>
                             </div>
                         </div>
-                        <div class="col-md-12">
-                            <div class="col-md-4">
-                                <?php echo __('Output'); ?>
+                        <div ng-show="summaryState.Servicestatus.isInMonitoring">
+                            <div class="col-md-12">
+                                <div class="col-md-4">
+                                    <?php echo __('Output'); ?>
+                                </div>
+                                <div class="col-md-8 no-padding">
+                                    {{summaryState.Servicestatus.output}}
+                                </div>
                             </div>
-                            <div class="col-md-8 no-padding">
-                                {{summaryState.Servicestatus.output}}
+                            <div class="col-md-12">
+                                <div class="col-md-4">
+                                    <?php echo __('Perfdata'); ?>
+                                </div>
+                                <div class="col-md-8 no-padding">
+                                    {{summaryState.Servicestatus.perfdata}}
+                                </div>
                             </div>
-                        </div>
-                        <div class="col-md-12">
-                            <div class="col-md-4">
-                                <?php echo __('Perfdata'); ?>
+                            <div class="col-md-12">
+                                <div class="col-md-4">
+                                    <?php echo __('Current attempt'); ?>
+                                </div>
+                                <div class="col-md-8 no-padding">
+                                    {{summaryState.Servicestatus.current_check_attempt}}/{{summaryState.Servicestatus.max_check_attempts}}
+                                </div>
                             </div>
-                            <div class="col-md-8 no-padding">
-                                {{summaryState.Servicestatus.perfdata}}
+                            <div class="col-md-12">
+                                <div class="col-md-4">
+                                    <?php echo __('Last check'); ?>
+                                </div>
+                                <div class="col-md-8 no-padding">
+                                    {{summaryState.Servicestatus.lastCheck}}
+                                </div>
                             </div>
-                        </div>
-                        <div class="col-md-12">
-                            <div class="col-md-4">
-                                <?php echo __('Current attempt'); ?>
+                            <div class="col-md-12">
+                                <div class="col-md-4">
+                                    <?php echo __('Next check'); ?>
+                                </div>
+                                <div class="col-md-8 no-padding">
+                                    {{summaryState.Servicestatus.nextCheck}}
+                                </div>
                             </div>
-                            <div class="col-md-8 no-padding">
-                                {{summaryState.Servicestatus.current_check_attempt}}/{{summaryState.Servicestatus.max_check_attempts}}
-                            </div>
-                        </div>
-                        <div class="col-md-12">
-                            <div class="col-md-4">
-                                <?php echo __('Last check'); ?>
-                            </div>
-                            <div class="col-md-8 no-padding">
-                                {{summaryState.Servicestatus.lastCheck}}
-                            </div>
-                        </div>
-                        <div class="col-md-12">
-                            <div class="col-md-4">
-                                <?php echo __('Next check'); ?>
-                            </div>
-                            <div class="col-md-8 no-padding">
-                                {{summaryState.Servicestatus.nextCheck}}
-                            </div>
-                        </div>
-                        <div class="col-md-12">
-                            <div class="col-md-4">
-                                <?php echo __('Last state change'); ?>
-                            </div>
-                            <div class="col-md-8 no-padding">
-                                {{summaryState.Servicestatus.last_state_change}}
+                            <div class="col-md-12">
+                                <div class="col-md-4">
+                                    <?php echo __('Last state change'); ?>
+                                </div>
+                                <div class="col-md-8 no-padding">
+                                    {{summaryState.Servicestatus.last_state_change}}
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -738,7 +749,7 @@
                             <div class="col-md-12 padding-top-5" ng-repeat="notOkHost in summaryState.NotOkHosts">
                                 <div class="col-md-4 cropText" title="{{notOkHost.Host.hostname}}">
                                     <a ng-init="linkHost[notOkHost.Host.id]=getObjectHref('host', notOkHost.Host.id)"
-                                        ng-href="{{ linkHost[notOkHost.Host.id] }}">
+                                       ng-href="{{ linkHost[notOkHost.Host.id] }}">
                                         {{notOkHost.Host.hostname}}
                                     </a>
                                 </div>
@@ -774,7 +785,7 @@
                                 <div class="col-md-4 cropText"
                                      title="{{notOkService.Service.hostname}}/{{notOkService.Service.hostname}}">
                                     <a ng-init="linkService[notOkService.Service.id]=getObjectHref('service', notOkService.Service.id)"
-                                        ng-href="{{ linkService[notOkService.Service.id] }}">
+                                       ng-href="{{ linkService[notOkService.Service.id] }}">
                                         {{notOkService.Service.hostname}}/{{notOkService.Service.servicename}}
                                     </a>
                                 </div>

@@ -28,42 +28,9 @@ if ($sideMenuClosed) {
     $bodyClass = 'minified';
 }
 
-$scripts = [
-    'vendor/jquery/dist/jquery.min.js',
-    'vendor/jqueryui/jquery-ui.min.js',
-    'vendor/bootstrap/dist/js/bootstrap.min.js',
-    'vendor/angular/angular.min.js',
-    //'vendor/angular-ui-router/release/angular-ui-router.min.js',
-    'js/lib/jquery-cookie.js',
-    'js/vendor/chosen.jquery.min.js',
-    'js/plugin/bootstrap-tags/bootstrap-tagsinput.min.js',
-    //'vendor/angular-bootstrap/ui-bootstrap-tpls.min.js',
-    'js/app/layoutfix.js',
-    'js/lib/ColorGenerator.js',
-    'js/lib/colr.js',
-    'js/lib/php.js',
-    'smartadmin/js/plugin/flot/jquery.flot.cust.js',
-    'smartadmin/js/plugin/flot/jquery.flot.time.js',
-    //'smartadmin/js/plugin/jquery-validate/jquery.validate.min.js', //
-    //'smartadmin/js/plugin/flot/jquery.flot.orderBar.js', //
-    'smartadmin/js/plugin/flot/jquery.flot.fillbetween.js',
-    //'smartadmin/js/plugin/flot/jquery.flot.pie.min.js', //
-    'smartadmin/js/plugin/flot/jquery.flot.resize.js',
-    //'smartadmin/js/plugin/flot/jquery.flot.navigate.js', //
-    'smartadmin/js/plugin/flot/jquery.flot.threshold.js',
-    //'smartadmin/js/plugin/flot/jquery.flot.selection.js', //
-    'js/lib/jquery.nestable.js',
-    'js/lib/parseuri.js',
-    'js/vendor/vis-4.21.0/dist/vis.js',
-    'js/scripts/ng.app.js',
-    'js/vendor/UUID.js-4.0.3/dist/uuid.core.js',
-    'js/vendor/gauge.min.js',
-    'js/lib/jquery.svg.min.js',
-    'js/lib/jquery.svgfilter.min.js',
-    'js/lib/rangyinputs-jquery-1.1.2.min.js',
-    'vendor/javascript-detect-element-resize/jquery.resize.js',
-    'vendor/angular-gridster/dist/angular-gridster.min.js'
-];
+$AngularAssets = new \itnovum\openITCOCKPIT\Core\AngularJS\AngularAssets();
+$scripts = $AngularAssets->getJsFiles();
+
 
 if ($this->request->params['controller'] === 'statusmaps') {
     $scripts[] = 'smartadmin/js/notification/SmartNotification.js';

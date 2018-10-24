@@ -83,6 +83,11 @@ class Host {
     private $allow_edit = false;
 
     /**
+     * @var bool
+     */
+    private $disabled = false;
+
+    /**
      * Host constructor.
      * @param array $host
      * @param bool $allowEdit
@@ -147,6 +152,10 @@ class Host {
 
         if (isset($host['Host']['tags'])) {
             $this->tags = $host['Host']['tags'];
+        }
+
+        if (isset($host['Host']['disabled'])) {
+            $this->disabled = (bool)$host['Host']['disabled'];
         }
 
     }
@@ -229,6 +238,13 @@ class Host {
      */
     public function getTags() {
         return $this->tags;
+    }
+
+    /**
+     * @return bool|int
+     */
+    public function isDisabled() {
+        return $this->disabled;
     }
 
     /**

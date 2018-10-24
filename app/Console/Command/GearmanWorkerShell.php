@@ -665,15 +665,16 @@ class GearmanWorkerShell extends AppShell {
                 $errorRedirect = ' 2> /dev/null';
 
                 $state = [
-                    'isNagiosRunning'        => false,
-                    'isNdoRunning'           => false,
-                    'isStatusengineRunning'  => false,
-                    'isNpcdRunning'          => false,
-                    'isOitcCmdRunning'       => false,
-                    'isSudoServerRunning'    => false,
-                    'isPhpNstaRunning'       => false,
-                    'isGearmanWorkerRunning' => true,
+                    'isNagiosRunning'           => false,
+                    'isNdoRunning'              => false,
+                    'isStatusengineRunning'     => false,
+                    'isNpcdRunning'             => false,
+                    'isOitcCmdRunning'          => false,
+                    'isSudoServerRunning'       => false,
+                    'isPhpNstaRunning'          => false,
+                    'isGearmanWorkerRunning'    => true,
                     'isPushNotificationRunning' => false,
+                    'isNodeJsServerRunning'     => false
                 ];
 
                 exec($systemsetting['MONITORING']['MONITORING.STATUS'] . $errorRedirect, $output, $returncode);
@@ -714,6 +715,11 @@ class GearmanWorkerShell extends AppShell {
                 exec($systemsetting['INIT']['INIT.PUSH_NOTIFICATION'] . $errorRedirect, $output, $returncode);
                 if ($returncode == 0) {
                     $state['isPushNotificationRunning'] = true;
+                }
+
+                exec($systemsetting['INIT']['INIT.NODEJS_SERVER'] . $errorRedirect, $output, $returncode);
+                if ($returncode == 0) {
+                    $state['isNodeJsServerRunning'] = true;
                 }
 
                 $return = $state;

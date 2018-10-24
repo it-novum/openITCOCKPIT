@@ -47,7 +47,7 @@
         <map-line item="lineItem" refresh-interval="refreshInterval"></map-line>
     </a>
     <a ng-show="lineItem.type == 'stateless'">
-        <map-line item="lineItem"></map-line>
+        <map-line item="lineItem" refresh-interval="0"></map-line>
     </a>
 </div>
 

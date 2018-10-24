@@ -25,6 +25,9 @@
 namespace itnovum\openITCOCKPIT\Core\Views;
 
 
+use itnovum\openITCOCKPIT\Core\PerfdataBackend;
+use itnovum\openITCOCKPIT\Core\Servicestatus;
+
 class PerfdataChecker {
 
     /**
@@ -38,17 +41,38 @@ class PerfdataChecker {
     private $serviceUuid;
 
     /**
+     * @var PerfdataBackend
+     */
+    private $PerfdataBackend;
+
+    /**
+     * @var Servicestatus
+     */
+    private $Servicestatus;
+
+    /**
      * PerfdataChecker constructor.
      * @param Host $Host
      * @param Service $Service
+     * @param PerfdataBackend $PerfdataBackend
+     * @param Servicestatus $Servicestatus#
      */
-    public function __construct(Host $Host, Service $Service) {
+    public function __construct(Host $Host, Service $Service, PerfdataBackend $PerfdataBackend, Servicestatus $Servicestatus) {
         $this->hostUuid = $Host->getUuid();
         $this->serviceUuid = $Service->getUuid();
+        $this->PerfdataBackend = $PerfdataBackend;
+        $this->Servicestatus = $Servicestatus;
     }
 
-    public function hasRrdFile() {
-        return file_exists(sprintf('/opt/openitc/nagios/share/perfdata/%s/%s.rrd', $this->hostUuid, $this->serviceUuid));
+    /**
+     * @return bool
+     */
+    public function hasPerfdata() {
+        if($this->PerfdataBackend->isRrdtool()){
+            return file_exists(sprintf('/opt/openitc/nagios/share/perfdata/%s/%s.rrd', $this->hostUuid, $this->serviceUuid));
+        }
+
+        return !empty($this->Servicestatus->getPerfdata());
     }
 
 }
