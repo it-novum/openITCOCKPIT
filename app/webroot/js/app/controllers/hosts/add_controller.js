@@ -207,8 +207,8 @@ App.Controllers.HostsAddController = Frontend.AppController.extend({
                 $note = $hostname.parent();
 
                 var callback = function(response){
-                    if(response.responseText != ''){
-                        $('#HostAddress').val(response.responseText);
+                    if(response.responseJSON != null){
+                        $('#HostAddress').val(response.responseJSON.hostaddress);
                         this.Highlight.highlight($('#HostAddress').parent());
                     }else{
                         $label.html(icon + $label.html());
@@ -220,10 +220,9 @@ App.Controllers.HostsAddController = Frontend.AppController.extend({
                 if($hostname.val() != ''){
                     this.Ajaxloader.show();
                     ret = $.ajax({
-                        url: "/Hosts/gethostbyname",
-                        type: "POST",
+                        url: "/Hosts/gethostipbyname/" + encodeURIComponent($hostname.val()) + ".json?angular=true",
+                        type: "GET",
                         cache: false,
-                        data: "hostname=" + encodeURIComponent($hostname.val()),
                         error: function(){
                         },
                         success: function(){
@@ -243,8 +242,8 @@ App.Controllers.HostsAddController = Frontend.AppController.extend({
                 $label = $hostaddress.parent().parent().find('label');
                 $note = $hostaddress.parent();
                 var callback = function(response){
-                    if(response.responseText != ''){
-                        $('#HostName').val(response.responseText);
+                    if(response.responseJSON != null){
+                        $('#HostName').val(response.responseJSON.fqdn);
                         this.Highlight.highlight($('#HostName').parent());
                     }else{
                         $label.html(icon + $label.html());
@@ -255,13 +254,13 @@ App.Controllers.HostsAddController = Frontend.AppController.extend({
                 if($hostaddress.val() != ''){
                     this.Ajaxloader.show();
                     ret = $.ajax({
-                        url: "/Hosts/gethostbyaddr",
-                        type: "POST",
+                        url: "/Hosts/gethostnamebyaddr/" + encodeURIComponent($hostaddress.val()) + ".json?angular=true",
+                        type: "GET",
                         cache: false,
-                        data: "address=" + encodeURIComponent($hostaddress.val()),
                         error: function(){
                         },
-                        success: callback,
+                        success: function(){
+                        },
                         complete: callback
                     });
                 }
