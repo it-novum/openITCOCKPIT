@@ -39,13 +39,23 @@ App.Controllers.LocationsEditController = Frontend.AppController.extend({
 		/*
 		 * Binding events
 		 */
-		$('#LocationLatitude').change(function(){
-			this.setMarker();
-		}.bind(this));
-		
-		$('#LocationLongitude').change(function(){
-			this.setMarker();
-		}.bind(this));
+        $('#LocationLatitude').keyup(function(){
+            var locationLatitudeValue = $(this).val().replace(/,/gi, '.').replace(/[^\d.-]/g, '');
+            $(this).val(locationLatitudeValue);
+        });
+
+        $('#LocationLongitude').keyup(function(){
+            var locationLongitudeValue = $(this).val().replace(/,/gi, '.').replace(/[^\d.-]/g, '');
+            $(this).val(locationLongitudeValue);
+        });
+
+        $('#LocationLatitude').change(function(){
+            this.setMarker();
+        }.bind(this));
+
+        $('#LocationLongitude').change(function(){
+            this.setMarker();
+        }.bind(this));
 		
 		this.$mapDiv.vectorMap({
 			map: 'world_mill_en',
