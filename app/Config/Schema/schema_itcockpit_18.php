@@ -1,15 +1,12 @@
 <?php
 
-class AppSchema extends CakeSchema
-{
+class AppSchema extends CakeSchema {
 
-    public function before($event = [])
-    {
+    public function before($event = []) {
         return true;
     }
 
-    public function after($event = [])
-    {
+    public function after($event = []) {
     }
 
     public $changelogs = [

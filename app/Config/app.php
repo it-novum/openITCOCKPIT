@@ -6,11 +6,11 @@ $config = [
     ],
     'attachments' => [
         'allowedExtensions' => ['doc', 'docx', 'xls', 'xlsx', 'png', 'jpg', 'jpeg', 'pdf', 'ppt', 'pptx'],
-        'path'              => APP.'webroot/files/attachments/',
+        'path'              => APP . 'webroot/files/attachments/',
     ],
     'ckeditor'    => [
         'allowedExtensions' => ['png', 'jpg', 'jpeg'],
-        'path'              => APP.'webroot/files/images/',
+        'path'              => APP . 'webroot/files/images/',
     ],
     'languages'   => [
         'en-us' => 'english',
