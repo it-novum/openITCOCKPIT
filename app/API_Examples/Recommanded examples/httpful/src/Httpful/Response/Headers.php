@@ -2,18 +2,15 @@
 
 namespace Httpful\Response;
 
-final class Headers implements \ArrayAccess, \Countable
-{
+final class Headers implements \ArrayAccess, \Countable {
 
     private $headers;
 
-    private function __construct($headers)
-    {
+    private function __construct($headers) {
         $this->headers = $headers;
     }
 
-    public static function fromString($string)
-    {
+    public static function fromString($string) {
         $lines = preg_split("/(\r|\n)+/", $string, -1, PREG_SPLIT_NO_EMPTY);
         array_shift($lines); // HTTP HEADER
         $headers = [];
@@ -25,35 +22,29 @@ final class Headers implements \ArrayAccess, \Countable
         return new self($headers);
     }
 
-    public function offsetExists($offset)
-    {
+    public function offsetExists($offset) {
         return isset($this->headers[strtolower($offset)]);
     }
 
-    public function offsetGet($offset)
-    {
+    public function offsetGet($offset) {
         if (isset($this->headers[$name = strtolower($offset)])) {
             return $this->headers[$name];
         }
     }
 
-    public function offsetSet($offset, $value)
-    {
+    public function offsetSet($offset, $value) {
         throw new \Exception("Headers are read-only.");
     }
 
-    public function offsetUnset($offset)
-    {
+    public function offsetUnset($offset) {
         throw new \Exception("Headers are read-only.");
     }
 
-    public function count()
-    {
+    public function count() {
         return count($this->headers);
     }
 
-    public function toArray()
-    {
+    public function toArray() {
         return $this->headers;
     }
 

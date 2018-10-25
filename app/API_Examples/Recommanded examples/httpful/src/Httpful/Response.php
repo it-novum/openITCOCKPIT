@@ -6,8 +6,7 @@ namespace Httpful;
  * Models an HTTP response
  * @author Nate Good <me@nategood.com>
  */
-class Response
-{
+class Response {
 
     public $body,
         $raw_body,
@@ -25,13 +24,12 @@ class Response
     private $parsers;
 
     /**
-     * @param string  $body
-     * @param string  $headers
+     * @param string $body
+     * @param string $headers
      * @param Request $request
-     * @param array   $meta_data
+     * @param array $meta_data
      */
-    public function __construct($body, $headers, Request $request, array $meta_data = [])
-    {
+    public function __construct($body, $headers, Request $request, array $meta_data = []) {
         $this->request = $request;
         $this->raw_headers = $headers;
         $this->raw_body = $body;
@@ -55,16 +53,14 @@ class Response
      * http://pretty-rfc.herokuapp.com/RFC2616#status.codes
      * @return bool Did we receive a 4xx or 5xx?
      */
-    public function hasErrors()
-    {
+    public function hasErrors() {
         return $this->code >= 400;
     }
 
     /**
      * @return return bool
      */
-    public function hasBody()
-    {
+    public function hasBody() {
         return !empty($this->body);
     }
 
@@ -76,8 +72,7 @@ class Response
      *
      * @param string Http response body
      */
-    public function _parse($body)
-    {
+    public function _parse($body) {
         // If the user decided to forgo the automatic
         // smart parsing, short circuit.
         if (!$this->request->auto_parse) {
@@ -111,8 +106,7 @@ class Response
      *
      * @param string $headers raw headers
      */
-    public function _parseHeaders($headers)
-    {
+    public function _parseHeaders($headers) {
         $headers = preg_split("/(\r|\n)+/", $headers, -1, \PREG_SPLIT_NO_EMPTY);
         $parse_headers = [];
         for ($i = 1; $i < count($headers); $i++) {
@@ -125,7 +119,7 @@ class Response
                 // If a header appears more than once, it must also be able to
                 // be represented as a single header with a comma-separated
                 // list of values.  We transform accordingly.
-                $parse_headers[$key] .= ','.$value;
+                $parse_headers[$key] .= ',' . $value;
             } else {
                 $parse_headers[$key] = $value;
             }
@@ -134,8 +128,7 @@ class Response
         return $parse_headers;
     }
 
-    public function _parseCode($headers)
-    {
+    public function _parseCode($headers) {
         $parts = explode(' ', substr($headers, 0, strpos($headers, "\r\n")));
         if (count($parts) < 2 || !is_numeric($parts[1])) {
             throw new \Exception("Unable to parse response code from HTTP response due to malformed response");
@@ -148,8 +141,7 @@ class Response
      * After we've parse the headers, let's clean things
      * up a bit and treat some headers specially
      */
-    public function _interpretHeaders()
-    {
+    public function _interpretHeaders() {
         // Parse the Content-Type and charset
         $content_type = isset($this->headers['Content-Type']) ? $this->headers['Content-Type'] : '';
         $content_type = explode(';', $content_type);
@@ -186,8 +178,7 @@ class Response
     /**
      * @return string
      */
-    public function __toString()
-    {
+    public function __toString() {
         return $this->raw_body;
     }
 }

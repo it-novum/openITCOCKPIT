@@ -192,7 +192,7 @@ if (php_sapi_name() == 'cli') {
 }
 
 /*
-	Loading custom Plugin config.php files
+    Loading custom Plugin config.php files
 */
 
 $modulePlugins = array_filter(CakePlugin::loaded(), function ($value) {

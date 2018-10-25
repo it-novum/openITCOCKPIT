@@ -6,8 +6,7 @@ namespace Httpful;
  * Class to organize the Mime stuff a bit more
  * @author Nate Good <me@nategood.com>
  */
-class Mime
-{
+class Mime {
     const JSON = 'application/json';
     const XML = 'application/xml';
     const XHTML = 'application/html+xml';
@@ -45,8 +44,7 @@ class Mime
      *
      * @param string common name for mime type (e.g. json)
      */
-    public static function getFullMime($short_name)
-    {
+    public static function getFullMime($short_name) {
         return array_key_exists($short_name, self::$mimes) ? self::$mimes[$short_name] : $short_name;
     }
 
@@ -55,8 +53,7 @@ class Mime
      *
      * @param string $short_name
      */
-    public static function supportsMimeType($short_name)
-    {
+    public static function supportsMimeType($short_name) {
         return array_key_exists($short_name, self::$mimes);
     }
 }
