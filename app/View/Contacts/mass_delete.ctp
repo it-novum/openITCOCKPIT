@@ -77,7 +77,7 @@ endif;
                             <?php foreach ($contactsToDelete as $key => $contactToDelete): ?>
                                 <li class="list-group-item list-group-item-danger">
                                     <?php echo h($contactToDelete['Contact']['name']); ?>
-                                    <?php echo $this->Form->input('Contact.delete.'.$key, ['value' => $contactToDelete['Contact']['id'], 'type' => 'hidden']); ?>
+                                    <?php echo $this->Form->input('Contact.delete.' . $key, ['value' => $contactToDelete['Contact']['id'], 'type' => 'hidden']); ?>
                                 </li>
                             <?php endforeach; ?>
                         </ul>
@@ -93,15 +93,15 @@ endif;
                             <?php foreach ($contactsCanotDelete as $contactId => $contactCanotDelete): ?>
                                 <li class="list-group-item list-group-item-info">
                                     <?php echo h($contactCanotDelete);
-                                    if($hasRootPrivileges && $this->Acl->hasPermission('usedBy')):
+                                    if ($hasRootPrivileges && $this->Acl->hasPermission('usedBy')):
                                         echo $this->Html->link(__('Used by ...'), [
                                             'controller' => 'contacts',
-                                            'action' => 'usedBy',
+                                            'action'     => 'usedBy',
                                             $contactId
                                         ], [
                                             'target' => '_blank',
-                                            'icon' => 'fa fa-reply-all fa-flip-horizontal',
-                                            'class' => 'padding-10'
+                                            'icon'   => 'fa fa-reply-all fa-flip-horizontal',
+                                            'class'  => 'padding-10'
                                         ]);
                                     endif;
                                     ?>

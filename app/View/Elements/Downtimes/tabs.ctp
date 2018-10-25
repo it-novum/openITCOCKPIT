@@ -24,7 +24,7 @@
 ?>
 <ul class="nav nav-tabs pull-right" id="widget-tab-1">
     <?php if ($this->Acl->hasPermission('host', 'downtimes')): ?>
-        <li class="<?php echo ($this->action === 'host')?'active':''; ?>">
+        <li class="<?php echo ($this->action === 'host') ? 'active' : ''; ?>">
             <a href="<?php echo Router::url(['controller' => 'downtimes', 'action' => 'host']); ?>">
                 <i class="fa fa-desktop"></i>
                 <span class="hidden-mobile hidden-tablet"> <?php echo __('Host downtimes'); ?></span>
@@ -32,7 +32,7 @@
         </li>
     <?php endif; ?>
     <?php if ($this->Acl->hasPermission('service', 'downtimes')): ?>
-        <li class="<?php echo ($this->action === 'service')?'active':''; ?>">
+        <li class="<?php echo ($this->action === 'service') ? 'active' : ''; ?>">
             <a href="<?php echo Router::url(['controller' => 'downtimes', 'action' => 'service']); ?>">
                 <i class="fa fa-cog"></i>
                 <span class="hidden-mobile hidden-tablet"> <?php echo __('Service downtimes'); ?></span>

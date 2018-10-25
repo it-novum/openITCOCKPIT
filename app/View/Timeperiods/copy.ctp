@@ -57,9 +57,9 @@
                         <fieldset>
                             <legend><?php echo $timeperiod['Timeperiod']['name'] ?></legend>
                             <?php
-                            echo $this->Form->input('Timeperiod.'.$key.'.name', ['value' => $timeperiod['Timeperiod']['name'], 'label' => __('Time Period name'), 'required' => true, 'help' => __('This is the default name for the timeperiod')]);
-                            echo $this->Form->input('Timeperiod.'.$key.'.description', ['value' => $timeperiod['Timeperiod']['description'], 'label' => __('Description'), 'required' => false]);
-                            echo $this->Form->input('Timeperiod.'.$key.'.container_id', ['value' => $timeperiod['Timeperiod']['container_id'], 'type' => 'hidden']);
+                            echo $this->Form->input('Timeperiod.' . $key . '.name', ['value' => $timeperiod['Timeperiod']['name'], 'label' => __('Time Period name'), 'required' => true, 'help' => __('This is the default name for the timeperiod')]);
+                            echo $this->Form->input('Timeperiod.' . $key . '.description', ['value' => $timeperiod['Timeperiod']['description'], 'label' => __('Description'), 'required' => false]);
+                            echo $this->Form->input('Timeperiod.' . $key . '.container_id', ['value' => $timeperiod['Timeperiod']['container_id'], 'type' => 'hidden']);
                             ?>
                         </fieldset>
                     </div> <!-- close col -->

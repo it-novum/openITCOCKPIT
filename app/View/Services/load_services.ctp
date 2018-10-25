@@ -58,7 +58,7 @@ if (!empty($services)):
                     -->
                     <header>
                         <div class="widget-toolbar" role="menu">
-                            <?php echo $this->Html->link(__('New'), '/'.$this->params['controller'].'/add', ['class' => 'btn btn-xs btn-success', 'icon' => 'fa fa-plus']); ?>
+                            <?php echo $this->Html->link(__('New'), '/' . $this->params['controller'] . '/add', ['class' => 'btn btn-xs btn-success', 'icon' => 'fa fa-plus']); ?>
                             <?php echo $this->Html->link(__('Filter'), 'javascript:', ['class' => 'oitc-list-filter btn btn-xs btn-primary toggle', 'hide-on-render' => 'true', 'icon' => 'fa fa-filter']); ?>
                             <?php
                             /*if($isFilter):
@@ -134,7 +134,7 @@ if (!empty($services)):
 
                         <!-- widget content -->
                         <div class="widget-body no-padding">
-                            <?php echo $this->ListFilter->renderFilterbox($filters, [], '<i class="fa fa-filter"></i> '.__('Filter'), false, false); ?>
+                            <?php echo $this->ListFilter->renderFilterbox($filters, [], '<i class="fa fa-filter"></i> ' . __('Filter'), false, false); ?>
                             <table id="service_list" class="table table-striped table-bordered smart-form" style="">
                                 <thead>
                                 <tr>
@@ -161,7 +161,7 @@ if (!empty($services)):
                                     //debug($service['Service']);
                                     //debug($service); ?>
                                     <tr>
-                                        <td class="text-center"><?php echo $this->Status->humanServiceStatus($service['Service']['uuid'], '/service/browser/'.$service['Service']['id'])['html_icon']; ?></td>
+                                        <td class="text-center"><?php echo $this->Status->humanServiceStatus($service['Service']['uuid'], '/service/browser/' . $service['Service']['id'])['html_icon']; ?></td>
                                         <td class="text-center"><i class="fa fa-area-chart fa-lg "></i></td>
                                         <td class="text-center"><i class="fa fa-arrow-down  fa-lg"></i></td>
                                         <td>
@@ -193,7 +193,7 @@ if (!empty($services)):
                                 <div class="row">
                                     <div class="col-sm-6">
                                         <div class="dataTables_info" style="line-height: 32px;"
-                                             id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('Page').' {:page} '.__('of').' {:pages}, '.__('Total').' {:count} '.__('entries')); ?></div>
+                                             id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('Page') . ' {:page} ' . __('of') . ' {:pages}, ' . __('Total') . ' {:count} ' . __('entries')); ?></div>
                                     </div>
                                     <div class="col-sm-6 text-right">
                                         <div class="dataTables_paginate paging_bootstrap">
@@ -219,7 +219,7 @@ if (!empty($services)):
 
     </section>
     <!-- end widget grid -->
-    <?php
+<?php
 else:
 
 endif;

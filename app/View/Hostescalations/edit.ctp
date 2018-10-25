@@ -178,7 +178,8 @@
                     'style'            => 'width:100%;',
                     'label'            => __('Timeperiod'),
                     'data-placeholder' => __('Please choose a contact'),
-                    'selected'         => $hostescalation['Timeperiod']['id']]
+                    'selected'         => $hostescalation['Timeperiod']['id']
+                ]
             );
 
             echo $this->Form->input('Hostescalation.Contact', [
@@ -218,7 +219,7 @@
                     <div style="border-bottom:1px solid lightGray;">
                         <?php echo $this->Form->fancyCheckbox($escalation_option, [
                             'caption' => ucfirst(preg_replace('/escalate_on_/', '', $escalation_option)),
-                            'icon'    => '<i class="fa '.$icon.'"></i> ',
+                            'icon'    => '<i class="fa ' . $icon . '"></i> ',
                             'checked' => (bool)$this->request->data['Hostescalation'][$escalation_option],
                         ]); ?>
                         <div class="clearfix"></div>

@@ -57,7 +57,7 @@
             frameborder="0" style="width: 100%;"></iframe>
 
     <script type="text/javascript">
-        $('iframe').ready(function () {
+        $('iframe').ready(function(){
             $('iframe').css('height', '3500px');
         });
     </script>

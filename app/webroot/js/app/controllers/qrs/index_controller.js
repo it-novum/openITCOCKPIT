@@ -25,9 +25,9 @@
 App.Controllers.QrIndexController = Frontend.AppController.extend({
 
 
-	components: ['Qr'],
+    components: ['Qr'],
 
-	_initialize: function(){
-		this.Qr._printPage(this.getVar('qr_url'), this.getVar('qr_width'), this.getVar('qr_height'))
-	}
+    _initialize: function(){
+        this.Qr._printPage(this.getVar('qr_url'), this.getVar('qr_width'), this.getVar('qr_height'))
+    }
 });

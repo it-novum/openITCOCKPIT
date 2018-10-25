@@ -25,10 +25,8 @@
 use itnovum\openITCOCKPIT\ApiShell\OptionParser;
 
 // run test with: oitc test app Shell/Api/OptionParser
-class OptionParserTest extends CakeTestCase
-{
-    public function testParseNormal()
-    {
+class OptionParserTest extends CakeTestCase {
+    public function testParseNormal() {
         $parameters = [
             'model'  => 'Systemsettings',
             'action' => 'add',
@@ -40,8 +38,7 @@ class OptionParserTest extends CakeTestCase
         $this->assertInstanceOf('\itnovum\openITCOCKPIT\ApiShell\OptionParser', $optionParser);
     }
 
-    public function testThrowMissingModel()
-    {
+    public function testThrowMissingModel() {
         $parameters = [
             'action' => 'add',
             'data'   => 'This is a test',
@@ -52,8 +49,7 @@ class OptionParserTest extends CakeTestCase
         $optionParser->parse($parameters);
     }
 
-    public function testThrowMissingAction()
-    {
+    public function testThrowMissingAction() {
         $parameters = [
             'model' => 'Systemsettings',
             'data'  => 'This is a test',
@@ -64,8 +60,7 @@ class OptionParserTest extends CakeTestCase
         $optionParser->parse($parameters);
     }
 
-    public function testThrowMissingData()
-    {
+    public function testThrowMissingData() {
         $parameters = [
             'model'  => 'Systemsettings',
             'action' => 'add',
@@ -76,8 +71,7 @@ class OptionParserTest extends CakeTestCase
         $optionParser->parse($parameters);
     }
 
-    public function testGetOptions()
-    {
+    public function testGetOptions() {
         $parameters = [
             'model'  => 'systemsettings',
             'plugin' => 'Foobar',

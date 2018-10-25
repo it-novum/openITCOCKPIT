@@ -51,8 +51,9 @@
             echo $this->Form->create('Servicetemplategroup', [
                 'class' => 'form-horizontal clear',
             ]);
-            echo $this->Form->input('Container.parent_id', ['options'       => $this->Html->chosenPlaceholder($containers), 'class' => 'chosen', 'style' => 'width: 100%;', 'label' => __('Container'),
-                                                            'SelectionMode' => 'single',
+            echo $this->Form->input('Container.parent_id', [
+                'options'       => $this->Html->chosenPlaceholder($containers), 'class' => 'chosen', 'style' => 'width: 100%;', 'label' => __('Container'),
+                'SelectionMode' => 'single',
             ]);
             echo $this->Form->input('Container.name', ['label' => __('Service Template Group Name')]);
             echo $this->Form->input('Servicetemplategroup.Servicetemplate', ['options' => $servicetemplates, 'class' => 'chosen optgroup_show', 'multiple' => true, 'style' => 'width:100%;', 'label' => __('Service Templates'), 'data-placeholder' => __('Please choose a service template')]);

@@ -45,7 +45,7 @@
                         <div class="widget-toolbar" role="menu">
                             <?php
                             if ($this->Acl->hasPermission('add')):
-                                echo $this->Html->link(__('New'), '/'.$this->params['controller'].'/add', ['class' => 'btn btn-xs btn-success', 'icon' => 'fa fa-plus']);
+                                echo $this->Html->link(__('New'), '/' . $this->params['controller'] . '/add', ['class' => 'btn btn-xs btn-success', 'icon' => 'fa fa-plus']);
                                 echo " "; //Fix HTML if search is implemented
                             endif;
                             // TODO Implement Search
@@ -68,7 +68,8 @@
                         <!-- widget content -->
                         <div class="widget-body no-padding">
                             <div class="mobile_table">
-                                <table id="hostdependency_list" class="table table-striped table-hover table-bordered smart-form"
+                                <table id="hostdependency_list"
+                                       class="table table-striped table-hover table-bordered smart-form"
                                        style="">
                                     <thead>
                                     <tr>
@@ -105,8 +106,8 @@
                                                         else:
                                                             echo h($host['Host']['name']);
                                                         endif;
-                                                        echo ($host['Host']['disabled'])?
-                                                            ' <i class="fa fa-power-off text-danger" title="disabled" aria-hidden="true"></i>':'';
+                                                        echo ($host['Host']['disabled']) ?
+                                                            ' <i class="fa fa-power-off text-danger" title="disabled" aria-hidden="true"></i>' : '';
                                                         echo '</li>';
                                                     endforeach;
                                                     ?>
@@ -130,8 +131,8 @@
                                                         else:
                                                             echo h($host_dependent['Host']['name']);
                                                         endif;
-                                                        echo ($host_dependent['Host']['disabled'])?
-                                                            ' <i class="fa fa-power-off text-danger" title="disabled" aria-hidden="true"></i>':'';
+                                                        echo ($host_dependent['Host']['disabled']) ?
+                                                            ' <i class="fa fa-power-off text-danger" title="disabled" aria-hidden="true"></i>' : '';
                                                         echo '</li>';
                                                     endforeach;
                                                     ?>
@@ -232,7 +233,7 @@
                                 <div class="row">
                                     <div class="col-sm-6">
                                         <div class="dataTables_info" style="line-height: 32px;"
-                                             id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('Page').' {:page} '.__('of').' {:pages}, '.__('Total').' {:count} '.__('entries')); ?></div>
+                                             id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('Page') . ' {:page} ' . __('of') . ' {:pages}, ' . __('Total') . ' {:count} ' . __('entries')); ?></div>
                                     </div>
                                     <div class="col-sm-6 text-right">
                                         <div class="dataTables_paginate paging_bootstrap">
@@ -258,26 +259,25 @@
  * @return string `<i />` HTML object with icons for each options
  * @since 3.0
  */
-function __viewDependencyOptions($hostdependency = [], $options_mode)
-{
+function __viewDependencyOptions($hostdependency = [], $options_mode) {
     $options = [
-        $options_mode.'_fail_on_up'          => [
+        $options_mode . '_fail_on_up'          => [
             'color' => 'txt-color-greenLight',
             'class' => 'fa fa-square',
         ],
-        $options_mode.'_fail_on_down'        => [
+        $options_mode . '_fail_on_down'        => [
             'color' => 'txt-color-redLight',
             'class' => 'fa fa-square',
         ],
-        $options_mode.'_fail_on_unreachable' => [
+        $options_mode . '_fail_on_unreachable' => [
             'color' => 'txt-color-blueDark',
             'class' => 'fa fa-square',
         ],
-        $options_mode.'_fail_on_pending'     => [
+        $options_mode . '_fail_on_pending'     => [
             'color' => '',
             'class' => 'fa fa-square-o',
         ],
-        $options_mode.'_none'                => [
+        $options_mode . '_none'                => [
             'color' => '',
             'class' => 'fa fa-minus-square-o',
         ],
@@ -285,7 +285,7 @@ function __viewDependencyOptions($hostdependency = [], $options_mode)
     $html = '';
     foreach ($options as $option => $layout_sett) { //$layout_sett => color + icons for options
         if (isset($hostdependency['Hostdependency'][$option]) && $hostdependency['Hostdependency'][$option] == 1) {
-            $html .= '<i class="'.$layout_sett['class'].' '.$layout_sett['color'].'" title="'.preg_replace('/('.$options_mode.'_|fail_on_)/', '', $option).'"></i>&nbsp';
+            $html .= '<i class="' . $layout_sett['class'] . ' ' . $layout_sett['color'] . '" title="' . preg_replace('/(' . $options_mode . '_|fail_on_)/', '', $option) . '"></i>&nbsp';
         }
     }
 

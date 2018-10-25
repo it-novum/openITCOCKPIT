@@ -155,9 +155,9 @@
                 <?php echo $this->Form->input('user_id', [
                     'options' => $this->Html->chosenPlaceholder($_users),
                     'class'   => 'chosen',
-                    'value' => $contact['Contact']['user_id'],
-                    'style' => 'width: 100%',
-                    'help'  => __('For browser notifications, a user needs to be assigned to the contact. User Id will be automatically available as $_CONTACTOITCUSERID$ contact macro.')
+                    'value'   => $contact['Contact']['user_id'],
+                    'style'   => 'width: 100%',
+                    'help'    => __('For browser notifications, a user needs to be assigned to the contact. User Id will be automatically available as $_CONTACTOITCUSERID$ contact macro.')
                 ]); ?>
             </div>
             <br/>

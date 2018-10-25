@@ -40,7 +40,7 @@
 <div class="jarviswidget" id="wid-id-0">
     <header>
         <span class="widget-icon hidden-mobile hidden-tablet"> <i class="fa fa-pencil-square-o"></i> </span>
-        <h2 class="hidden-mobile hidden-tablet"><?php echo __('Copy'); ?> <?php echo $this->Utils->pluralize($contacts, __('contacts'), __('contacts')); ?></h2>
+        <h2 class="hidden-mobile hidden-tablet"><?php echo __('Copy'); ?><?php echo $this->Utils->pluralize($contacts, __('contacts'), __('contacts')); ?></h2>
         <div class="widget-toolbar hidden-mobile hidden-tablet" role="menu">
             <?php echo $this->Utils->backButton(__('Back'), $back_url); ?>
         </div>
@@ -57,11 +57,11 @@
                         <fieldset>
                             <legend><?php echo $contact['Contact']['name'] ?></legend>
                             <?php
-                            echo $this->Form->input('Contact.'.$key.'.name', ['value' => $contact['Contact']['name'], 'label' => __('Contact name'), 'required' => true]);
-                            echo $this->Form->input('Contact.'.$key.'.description', ['value' => $contact['Contact']['description'], 'label' => __('Description'), 'required' => false]);
-                            echo $this->Form->input('Contact.'.$key.'.email', ['value' => $contact['Contact']['email'], 'label' => __('E-Mail'), 'required' => true]);
-                            echo $this->Form->input('Contact.'.$key.'.phone', ['value' => $contact['Contact']['phone'], 'label' => __('Phone'), 'required' => true]);
-                            echo $this->Form->input('Contact.'.$key.'.source', ['value' => $contact['Contact']['id'], 'type' => 'hidden']);
+                            echo $this->Form->input('Contact.' . $key . '.name', ['value' => $contact['Contact']['name'], 'label' => __('Contact name'), 'required' => true]);
+                            echo $this->Form->input('Contact.' . $key . '.description', ['value' => $contact['Contact']['description'], 'label' => __('Description'), 'required' => false]);
+                            echo $this->Form->input('Contact.' . $key . '.email', ['value' => $contact['Contact']['email'], 'label' => __('E-Mail'), 'required' => true]);
+                            echo $this->Form->input('Contact.' . $key . '.phone', ['value' => $contact['Contact']['phone'], 'label' => __('Phone'), 'required' => true]);
+                            echo $this->Form->input('Contact.' . $key . '.source', ['value' => $contact['Contact']['id'], 'type' => 'hidden']);
                             ?>
                         </fieldset>
                     </div> <!-- close col -->

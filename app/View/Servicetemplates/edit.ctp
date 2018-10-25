@@ -58,7 +58,7 @@ $notification_settings = [
         <h2><?php echo __('Edit Service template'); ?></h2>
         <div class="widget-toolbar" role="menu">
             <?php if ($this->Acl->hasPermission('delete')): ?>
-                <?php echo $this->Utils->deleteButton(null, Hash::merge([$servicetemplate['Servicetemplate']['id']] ,$this->params['named']), [], true, __('All attached services will be deleted too.')); ?>
+                <?php echo $this->Utils->deleteButton(null, Hash::merge([$servicetemplate['Servicetemplate']['id']], $this->params['named']), [], true, __('All attached services will be deleted too.')); ?>
             <?php endif; ?>
             <?php echo $this->Utils->backButton(__('Back'), $back_url); ?>
         </div>
@@ -101,7 +101,7 @@ $notification_settings = [
                                         'style'            => 'width: 100%',
                                         'label'            => ['text' => __('Container'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
                                         'wrapInput'        => 'col col-xs-10 col-md-10 col-lg-10',
-                                        'help'      => count($servicetemplate['Service']) > 0 ? __('There are Services using this Service Template. Therefore the number of Containers is decreased.') : '',
+                                        'help'             => count($servicetemplate['Service']) > 0 ? __('There are Services using this Service Template. Therefore the number of Containers is decreased.') : '',
                                     ]
                                 );
                             else:
@@ -142,7 +142,7 @@ $notification_settings = [
                             ]);
                             echo $this->Form->input('Servicetemplate.Servicegroup', [
                                 'options'          => $this->Html->chosenPlaceholder($_servicegroups),
-                                'selected'  => $this->request->data['Servicegroup'],
+                                'selected'         => $this->request->data['Servicegroup'],
                                 'data-placeholder' => __('Please select...'),
                                 'class'            => 'chosen',
                                 'label'            => ['text' => __('Servicegroup'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
@@ -241,7 +241,7 @@ $notification_settings = [
                                     <div style="border-bottom:1px solid lightGray;">
                                         <?php echo $this->Form->fancyCheckbox($notification_setting, [
                                             'caption'          => ucfirst(preg_replace('/notify_on_/', '', $notification_setting)),
-                                            'icon'             => '<i class="fa '.$icon.'"></i> ',
+                                            'icon'             => '<i class="fa ' . $icon . '"></i> ',
                                             'class'            => 'onoffswitch-checkbox notification_control',
                                             'checked'          => $this->request->data['Servicetemplate'][$notification_setting],
                                             'captionGridClass' => 'col col-xs-2',
@@ -303,10 +303,10 @@ $notification_settings = [
                                 'options'          => $this->Html->chosenPlaceholder($commands),
                                 'data-placeholder' => __('Please select...'),
                                 'selected'         => $this->request->data['Servicetemplate']['command_id'],
-                                'label'            => ['text' => '<a href="/commands/edit/'.$this->request->data['Servicetemplate']['command_id'].'"><i class="fa fa-cog"></i> </a>'.__('Check command'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
+                                'label'            => ['text' => '<a href="/commands/edit/' . $this->request->data['Servicetemplate']['command_id'] . '"><i class="fa fa-cog"></i> </a>' . __('Check command'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
                                 'class'            => 'chosen col col-xs-12',
                                 'wrapInput'        => 'col col-xs-10 col-md-10 col-lg-10',
-                                'help'             => '<span class="text-danger">'.__('Warning: If you change the check command, all service custom arguments will be reset to service template default!').'</span>'
+                                'help'             => '<span class="text-danger">' . __('Warning: If you change the check command, all service custom arguments will be reset to service template default!') . '</span>'
                             ]);
                             ?>
                             <!-- Command arguments -->
@@ -320,14 +320,14 @@ $notification_settings = [
                                             $value = $servicetemplatecommandargumentvalues[$commandargument['Commandargument']['id']]['value'];
                                         }
 
-                                        echo $this->Form->input('Servicetemplatecommandargumentvalue.'.$commandargument['Commandargument']['id'].'.value', [
+                                        echo $this->Form->input('Servicetemplatecommandargumentvalue.' . $commandargument['Commandargument']['id'] . '.value', [
                                             'label' => [
                                                 'class' => 'col col-md-2 control-label text-primary',
                                                 'text'  => $commandargument['Commandargument']['human_name'],
                                             ],
                                             'value' => $value,
                                         ]);
-                                        echo $this->Form->input('Servicetemplatecommandargumentvalue.'.$commandargument['Commandargument']['id'].'.commandargument_id', [
+                                        echo $this->Form->input('Servicetemplatecommandargumentvalue.' . $commandargument['Commandargument']['id'] . '.commandargument_id', [
                                             'type'  => 'hidden',
                                             'value' => $commandargument['Commandargument']['id'],
                                         ]);
@@ -338,7 +338,7 @@ $notification_settings = [
                                                 $value = $servicetemplatecommandargumentvalues[$commandargument['Commandargument']['id']]['id'];
                                             }
 
-                                            echo $this->Form->input('Servicetemplatecommandargumentvalue.'.$commandargument['Commandargument']['id'].'.id', [
+                                            echo $this->Form->input('Servicetemplatecommandargumentvalue.' . $commandargument['Commandargument']['id'] . '.id', [
                                                 'type'  => 'hidden',
                                                 'value' => $value,
                                             ]);
@@ -442,7 +442,7 @@ $notification_settings = [
                                 <div style="border-bottom:1px solid lightGray;">
                                     <?php echo $this->Form->fancyCheckbox($flapDetection_setting, [
                                         'caption'          => ucfirst(preg_replace('/flap_detection_on_/', '', $flapDetection_setting)),
-                                        'icon'             => '<i class="fa '.$icon.'"></i> ',
+                                        'icon'             => '<i class="fa ' . $icon . '"></i> ',
                                         'class'            => 'onoffswitch-checkbox flapdetection_control',
                                         'checked'          => $this->request->data['Servicetemplate'][$flapDetection_setting],
                                         'wrapGridClass'    => 'col col-xs-1',
@@ -498,7 +498,7 @@ $notification_settings = [
                                 'label'            => ['text' => __('Eventhandler'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
                                 'class'            => 'chosen col col-xs-12',
                                 'wrapInput'        => 'col col-xs-10 col-md-10 col-lg-10',
-                                'help'             => '<span class="text-danger">'.__('Warning: If you change the event handler command, all service custom arguments will be reset to service template default!').'</span>'
+                                'help'             => '<span class="text-danger">' . __('Warning: If you change the event handler command, all service custom arguments will be reset to service template default!') . '</span>'
                             ]); ?>
                             <div id="EventhandlerCommandArgs"></div>
                             <br>

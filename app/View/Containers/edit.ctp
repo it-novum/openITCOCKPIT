@@ -1,4 +1,4 @@
-<?php if ($this->Acl->hasPermission('edit','containers')): ?>
+<?php if ($this->Acl->hasPermission('edit', 'containers')): ?>
     <a ng-if="container.Container.containertype_id == <?php echo CT_NODE; ?>"
        class="txt-color-red padding-left-10 font-xs pointer"
        ng-click="openModal()"
@@ -41,7 +41,8 @@
                 </div>
 
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-danger pull-left" ng-click="delete()" ng-class="{'has-error': errors.id}">
+                    <button type="button" class="btn btn-danger pull-left" ng-click="delete()"
+                            ng-class="{'has-error': errors.id}">
                         <i class="fa fa-refresh fa-spin" ng-show="isDeleting"></i>
                         <?php echo __('Delete'); ?>
                     </button>

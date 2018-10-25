@@ -24,7 +24,7 @@
 
 App.Controllers.ServicesCopyController = Frontend.AppController.extend({
 
-    _initialize:function(){
+    _initialize: function(){
         this.loadInitialData('#ServiceHostId');
 
         var ChosenAjaxObj = new ChosenAjax({
@@ -82,7 +82,7 @@ App.Controllers.ServicesCopyController = Frontend.AppController.extend({
     buildList: function(data){
         var html = '';
         for(var i in data){
-            html += '<option value="' + data[i].key + '">'+htmlspecialchars(data[i].value)+'</option>';
+            html += '<option value="' + data[i].key + '">' + htmlspecialchars(data[i].value) + '</option>';
         }
         return html;
     },

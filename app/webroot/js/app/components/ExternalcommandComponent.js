@@ -23,34 +23,34 @@
 //	confirmation.
 
 App.Components.ExternalcommandComponent = Frontend.Component.extend({
-	$flashSuccess:null,
-	$autoRefreshCounter: null,
-	delay: 5,
-	intervalObject: null,
-	
-	setup: function(){
-		this.$flashSuccess = $('#flashSuccess');
-		this.$autoRefreshCounter = $('#autoRefreshCounter');
-	},
-	
-	refresh: function(){
-		this.show();
-		this.$autoRefreshCounter.html(this.delay);
-		this.intervalObject = setInterval(function(){
-			this.delay--;
-			this.$autoRefreshCounter.html(this.delay);
-			if(this.delay == 0){
-				document.location = document.location;
-			}
-		}.bind(this), 1000);
-	},
-	
-	show: function(){
-		this.$flashSuccess.show();
-	},
-	
-	hide: function(){
-		this.$flashSuccess.hide();
-	}
-	
+    $flashSuccess: null,
+    $autoRefreshCounter: null,
+    delay: 5,
+    intervalObject: null,
+
+    setup: function(){
+        this.$flashSuccess = $('#flashSuccess');
+        this.$autoRefreshCounter = $('#autoRefreshCounter');
+    },
+
+    refresh: function(){
+        this.show();
+        this.$autoRefreshCounter.html(this.delay);
+        this.intervalObject = setInterval(function(){
+            this.delay--;
+            this.$autoRefreshCounter.html(this.delay);
+            if(this.delay == 0){
+                document.location = document.location;
+            }
+        }.bind(this), 1000);
+    },
+
+    show: function(){
+        this.$flashSuccess.show();
+    },
+
+    hide: function(){
+        this.$flashSuccess.hide();
+    }
+
 });

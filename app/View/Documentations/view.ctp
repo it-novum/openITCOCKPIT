@@ -338,9 +338,9 @@ echo $this->Form->input('uuid', ['type' => 'hidden', 'value' => $uuid]);
                         'style'       => 'width: 100%;'
                     ]); ?>
                     <?php echo $this->Form->input('description', [
-                            'label' => __('Description:'),
-                            'placeholder' => __('Official page for openITCOCKPIT'),
-                            'style' => 'width: 100%;'
+                        'label'       => __('Description:'),
+                        'placeholder' => __('Official page for openITCOCKPIT'),
+                        'style'       => 'width: 100%;'
                     ]); ?>
                 </div>
 

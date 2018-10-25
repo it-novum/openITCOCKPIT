@@ -47,8 +47,8 @@
     <div id="lockContainer">
         <?php
         if ($user['image'] != null && $user['image'] != ''):
-            if (file_exists(WWW_ROOT.'userimages'.DS.$user['image'])):
-                echo $this->html->image('/userimages'.DS.$user['image'], ['width' => 120, 'height' => 'auto', 'id' => 'userImage', 'style' => 'border-left: 3px solid #40AC2B;']);
+            if (file_exists(WWW_ROOT . 'userimages' . DS . $user['image'])):
+                echo $this->html->image('/userimages' . DS . $user['image'], ['width' => 120, 'height' => 'auto', 'id' => 'userImage', 'style' => 'border-left: 3px solid #40AC2B;']);
             else:
                 echo $this->html->image('fallback_user.png', ['width' => 120, 'height' => 'auto', 'id' => 'userImage', 'style' => 'border-left: 3px solid #40AC2B;']);
             endif;

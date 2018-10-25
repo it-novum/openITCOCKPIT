@@ -23,11 +23,9 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class ChangelogHelper extends AppHelper
-{
+class ChangelogHelper extends AppHelper {
 
-    public function singleArray($models, $data)
-    {
+    public function singleArray($models, $data) {
         if (!is_array($models)) {
             $models = [$models];
         }
@@ -35,8 +33,8 @@ class ChangelogHelper extends AppHelper
         foreach ($models as $model) {
             if (!empty($data[$model])) {
                 foreach ($data[$model]['before'] as $fieldName => $fieldValue) {
-                    $html .= '<p class="font-sm">'.__($fieldName).'</p>';
-                    $html .= '<small><span class="txt-color-red">'.__($fieldValue).'</span> <i class="fa fa-caret-right"></i> <span class="txt-color-green">'.__($data[$model]['after'][$fieldName]).'</span></small>';
+                    $html .= '<p class="font-sm">' . __($fieldName) . '</p>';
+                    $html .= '<small><span class="txt-color-red">' . __($fieldValue) . '</span> <i class="fa fa-caret-right"></i> <span class="txt-color-green">' . __($data[$model]['after'][$fieldName]) . '</span></small>';
                 }
             }
         }
@@ -44,8 +42,7 @@ class ChangelogHelper extends AppHelper
         return $html;
     }
 
-    public function multiArray($models, $data)
-    {
+    public function multiArray($models, $data) {
         $html = '';
         foreach ($models as $model => $fields) {
             if (!empty($data[$model])) {
@@ -53,9 +50,9 @@ class ChangelogHelper extends AppHelper
                 $old = [];
                 if (!empty($data[$model]['before'])) {
                     $hasChanges = true;
-                    $_old = Set::classicExtract($data[$model], 'before.{n}.{('.implode('|', $fields).')}');
+                    $_old = Set::classicExtract($data[$model], 'before.{n}.{(' . implode('|', $fields) . ')}');
                     foreach ($_old as $__old):
-                        $old[] = $__old[$fields[0]].' => '.$__old[$fields[1]];
+                        $old[] = $__old[$fields[0]] . ' => ' . $__old[$fields[1]];
                     endforeach;
                 }
                 $new_args = [];
@@ -63,12 +60,12 @@ class ChangelogHelper extends AppHelper
                     $hasChanges = true;
                     $_new_args = Set::classicExtract($data[$model], 'after.{n}.{(name|human_name)}');
                     foreach ($_new_args as $new_arg):
-                        $new_args[] = $new_arg[$fields[0]].' => '.$new_arg[$fields[1]];
+                        $new_args[] = $new_arg[$fields[0]] . ' => ' . $new_arg[$fields[1]];
                     endforeach;
                 }
                 if ($hasChanges) {
-                    $html .= '<p class="font-sm">'.__('Commandarguments').'</p>';
-                    $html .= '<small><span class="txt-color-red">'.implode(', ', $old).'</span> <i class="fa fa-caret-right"></i> <span class="txt-color-green">'.implode(', ', $new_args).'</span></small>';
+                    $html .= '<p class="font-sm">' . __('Commandarguments') . '</p>';
+                    $html .= '<small><span class="txt-color-red">' . implode(', ', $old) . '</span> <i class="fa fa-caret-right"></i> <span class="txt-color-green">' . implode(', ', $new_args) . '</span></small>';
                 }
             }
         }
@@ -76,8 +73,7 @@ class ChangelogHelper extends AppHelper
         return $html;
     }
 
-    public function getActionIcon($action = 'edit')
-    {
+    public function getActionIcon($action = 'edit') {
         switch ($action) {
             case 'add':
                 return 'fa-plus';
@@ -91,8 +87,7 @@ class ChangelogHelper extends AppHelper
         }
     }
 
-    public function getActionColors($action = 'edit')
-    {
+    public function getActionColors($action = 'edit') {
         switch ($action) {
             case 'add':
                 return 'greenLight';

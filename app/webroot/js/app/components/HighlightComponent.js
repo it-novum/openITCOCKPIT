@@ -24,22 +24,22 @@
 
 App.Components.HighlightComponent = Frontend.Component.extend({
 
-	$selector: null,
-	
-	highlight: function($selector, conf) {
-		conf = conf || {};
-		conf.speed = conf.speed || 600;
-		conf.html = conf.html || '';
-		this.$selector = $selector;
-		$div = $('<div class="highlight">'+conf.html+'</div>');
-		$div.css({
-			'width': this.$selector.width() + 'px',
-			'height': this.$selector.height() + 'px',
-			'left': this.$selector.css('padding-left')
-		});
-		this.$selector.append($div);
-		$div.fadeOut(conf.speed, function(){
-			$div.remove();
-		});
-	}
+    $selector: null,
+
+    highlight: function($selector, conf){
+        conf = conf || {};
+        conf.speed = conf.speed || 600;
+        conf.html = conf.html || '';
+        this.$selector = $selector;
+        $div = $('<div class="highlight">' + conf.html + '</div>');
+        $div.css({
+            'width': this.$selector.width() + 'px',
+            'height': this.$selector.height() + 'px',
+            'left': this.$selector.css('padding-left')
+        });
+        this.$selector.append($div);
+        $div.fadeOut(conf.speed, function(){
+            $div.remove();
+        });
+    }
 });

@@ -65,13 +65,13 @@
 
                 <?php
                 $link = __('user defined macro');
-                if($this->Acl->hasPermission('index', 'macros')):
+                if ($this->Acl->hasPermission('index', 'macros')):
                     $link = sprintf('<a href="/macros">%s</a>', $link);
                 endif;
                 ?>
 
                 <?php echo __('A $-sign needs to be escaped manually (\$). Semicolons (;) needs to be defined as %s.', $link); ?>
-                <br />
+                <br/>
                 <?php echo __('Nagios supports up to 32 $ARGx$ macros ($ARG1$ through $ARG32$)'); ?>
             </div>
             <br/><br/>

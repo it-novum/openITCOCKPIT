@@ -51,11 +51,11 @@
             ]);
 
             echo $this->Form->input('evaluationMethod', [
-                'before'  => '<label class="col col-md-2 text-right">'.__('Evaluation').'</label>',
+                'before'  => '<label class="col col-md-2 text-right">' . __('Evaluation') . '</label>',
                 'type'    => 'radio',
                 'options' => [
-                    'DowntimereportHost'    => '<i class="fa fa-desktop"></i> '.__('Hosts '),
-                    'DowntimereportService' => '<i class="fa fa-gears"></i> '.__('Hosts and Services '),
+                    'DowntimereportHost'    => '<i class="fa fa-desktop"></i> ' . __('Hosts '),
+                    'DowntimereportService' => '<i class="fa fa-gears"></i> ' . __('Hosts and Services '),
                 ],
                 'class'   => 'padding-right-10',
                 'default' => 'DowntimereportHost',

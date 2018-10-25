@@ -23,73 +23,73 @@
 //	confirmation.
 
 App.Controllers.DocumentationsViewController = Frontend.AppController.extend({
-	$currentColor: null,
-	$textarea: null,
-	
-	//components: ['Ajaxloader'],
+    $currentColor: null,
+    $textarea: null,
 
-	_initialize: function() {
-		var self = this;
+    //components: ['Ajaxloader'],
 
-		this.$currentColor = $('#currentColor');
-		this.$textarea = $('#docuText');
+    _initialize: function(){
+        var self = this;
 
-		// Bind click event for color selector
-		$("[select-color='true']").click(function(){
-			var color = $(this).attr('color');
-			self.$textarea.surroundSelectedText('[color='+color+']', '[/color]');
-		});
-		
-		// Bind click event for font size selector
-		$("[select-fsize='true']").click(function(){
-			var fontSize = $(this).attr('fsize');
-			self.$textarea.surroundSelectedText('['+fontSize+']', '[/'+fontSize+']');
-		});
-		
-		// Bind click event to insert hyperlinks
-		$('#insertWysiwygHyperlink').click(function(){
-			var url = $('#url').val();
-			var description = $('#description').val();
-			var sel = self.$textarea.getSelection();
-			self.$textarea.insertText('[url='+url+']'+description+'[/url]', sel.start, "collapseToEnd");
-		});
-		
-		// Bind other buttons
-		$("[wysiwyg='true']").click(function(){
-			var task = $(this).attr('task');
-			switch(task){
-				case 'bold':
-					self.$textarea.surroundSelectedText('[b]', '[/b]');
-					break;
-					
-				case 'italic':
-					self.$textarea.surroundSelectedText('[i]', '[/i]');
-					break;
-					
-				case 'underline':
-					self.$textarea.surroundSelectedText('[u]', '[/u]');
-					break;
-					
-				case 'left':
-					self.$textarea.surroundSelectedText('[left]', '[/left]');
-					break;
-					
-				case 'center':
-					self.$textarea.surroundSelectedText('[center]', '[/center]');
-					break;
-				
-				case 'right':
-					self.$textarea.surroundSelectedText('[right]', '[/right]');
-					break;
-					
-				case 'justify':
-					self.$textarea.surroundSelectedText('[justify]', '[/justify]');
-					break;
-					
-				case 'code':
-					self.$textarea.surroundSelectedText('[code]', '[/code]');
-					break;
-			}
-		});
-	}
+        this.$currentColor = $('#currentColor');
+        this.$textarea = $('#docuText');
+
+        // Bind click event for color selector
+        $("[select-color='true']").click(function(){
+            var color = $(this).attr('color');
+            self.$textarea.surroundSelectedText('[color=' + color + ']', '[/color]');
+        });
+
+        // Bind click event for font size selector
+        $("[select-fsize='true']").click(function(){
+            var fontSize = $(this).attr('fsize');
+            self.$textarea.surroundSelectedText('[' + fontSize + ']', '[/' + fontSize + ']');
+        });
+
+        // Bind click event to insert hyperlinks
+        $('#insertWysiwygHyperlink').click(function(){
+            var url = $('#url').val();
+            var description = $('#description').val();
+            var sel = self.$textarea.getSelection();
+            self.$textarea.insertText('[url=' + url + ']' + description + '[/url]', sel.start, "collapseToEnd");
+        });
+
+        // Bind other buttons
+        $("[wysiwyg='true']").click(function(){
+            var task = $(this).attr('task');
+            switch(task){
+                case 'bold':
+                    self.$textarea.surroundSelectedText('[b]', '[/b]');
+                    break;
+
+                case 'italic':
+                    self.$textarea.surroundSelectedText('[i]', '[/i]');
+                    break;
+
+                case 'underline':
+                    self.$textarea.surroundSelectedText('[u]', '[/u]');
+                    break;
+
+                case 'left':
+                    self.$textarea.surroundSelectedText('[left]', '[/left]');
+                    break;
+
+                case 'center':
+                    self.$textarea.surroundSelectedText('[center]', '[/center]');
+                    break;
+
+                case 'right':
+                    self.$textarea.surroundSelectedText('[right]', '[/right]');
+                    break;
+
+                case 'justify':
+                    self.$textarea.surroundSelectedText('[justify]', '[/justify]');
+                    break;
+
+                case 'code':
+                    self.$textarea.surroundSelectedText('[code]', '[/code]');
+                    break;
+            }
+        });
+    }
 });

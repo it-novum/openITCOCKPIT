@@ -90,9 +90,10 @@
                 </header>
                 <div>
                     <div class="widget-body no-padding">
-                        <?php echo $this->ListFilter->renderFilterbox($filters, [], '<i class="fa fa-filter"></i> '.__('Filter'), false, false); ?>
+                        <?php echo $this->ListFilter->renderFilterbox($filters, [], '<i class="fa fa-filter"></i> ' . __('Filter'), false, false); ?>
                         <div class="mobile_table">
-                            <table id="datatable_fixed_column" class="table table-striped table-hover table-bordered smart-form">
+                            <table id="datatable_fixed_column"
+                                   class="table table-striped table-hover table-bordered smart-form">
                                 <thead>
                                 <tr>
                                     <?php $order = $this->Paginator->param('order'); ?>
@@ -137,7 +138,7 @@
                                                     <?php if ($this->Acl->hasPermission('delete')): ?>
                                                         <li class="divider"></li>
                                                         <li>
-                                                            <?php echo $this->Form->postLink('<i class="fa fa-trash-o"></i> '.__('Delete'), ['controller' => 'commands', 'action' => 'delete', $command['Command']['id']], ['class' => 'txt-color-red', 'escape' => false]); ?>
+                                                            <?php echo $this->Form->postLink('<i class="fa fa-trash-o"></i> ' . __('Delete'), ['controller' => 'commands', 'action' => 'delete', $command['Command']['id']], ['class' => 'txt-color-red', 'escape' => false]); ?>
                                                         </li>
                                                     <?php endif; ?>
                                                 </ul>
@@ -164,7 +165,7 @@
                         <div class="row">
                             <div class="col-sm-6">
                                 <div class="dataTables_info" style="line-height: 32px;"
-                                     id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('Page').' {:page} '.__('of').' {:pages}, '.__('Total').' {:count} '.__('entries')); ?></div>
+                                     id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('Page') . ' {:page} ' . __('of') . ' {:pages}, ' . __('Total') . ' {:count} ' . __('entries')); ?></div>
                             </div>
                             <div class="col-sm-6 text-right">
                                 <div class="dataTables_paginate paging_bootstrap">

@@ -112,7 +112,7 @@
                 <?php if ($error): ?>
                     <div class="alert alert-danger alert-block">
                         <a href="#" data-dismiss="alert" class="close">×</a>
-                        <h4 class="alert-heading"><?php echo __('Error No.:').$error['errno']; ?></h4>
+                        <h4 class="alert-heading"><?php echo __('Error No.:') . $error['errno']; ?></h4>
                         <?php echo $error['error']; ?>
                     </div>
                 <?php else: ?>

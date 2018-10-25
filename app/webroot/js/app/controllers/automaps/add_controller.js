@@ -23,36 +23,36 @@
 //	confirmation.
 
 App.Controllers.AutomapsAddController = Frontend.AppController.extend({
-	
-	_initialize: function() {
 
-		$('#AutomapFontSize').slider({tooltip: 'hide'}).on('slideStop', function(ev){
+    _initialize: function(){
 
-			var fontsizes = {
-				1: 'xx-small',
-				2: 'x-small',
-				3: 'small',
-				4: 'medium',
-				5: 'large',
-				6: 'x-large',
-				7: 'xx-large'
-			};
-			
-			var sliderValue = $('#AutomapFontSize').slider('getValue');
-			
-			$('#fontExample').css('font-size', fontsizes[sliderValue]);
-			
-		}.bind(this));
-		
-		/*
-		 * Bind change event for AutomapShowLabel
-		 */
-		$('#AutomapShowLabel').change(function(){
-			if($(this).is(':checked') === true){
-				$('#fontExample').html('<span><i class="fa fa-square txt-color-greenLight"></i> Hostname/Servicedescription</span>');
-			}else{
-				$('#fontExample').html('<span><i class="fa fa-square txt-color-greenLight"></i></span>');
-			}
-		});
-	}
+        $('#AutomapFontSize').slider({tooltip: 'hide'}).on('slideStop', function(ev){
+
+            var fontsizes = {
+                1: 'xx-small',
+                2: 'x-small',
+                3: 'small',
+                4: 'medium',
+                5: 'large',
+                6: 'x-large',
+                7: 'xx-large'
+            };
+
+            var sliderValue = $('#AutomapFontSize').slider('getValue');
+
+            $('#fontExample').css('font-size', fontsizes[sliderValue]);
+
+        }.bind(this));
+
+        /*
+         * Bind change event for AutomapShowLabel
+         */
+        $('#AutomapShowLabel').change(function(){
+            if($(this).is(':checked') === true){
+                $('#fontExample').html('<span><i class="fa fa-square txt-color-greenLight"></i> Hostname/Servicedescription</span>');
+            }else{
+                $('#fontExample').html('<span><i class="fa fa-square txt-color-greenLight"></i></span>');
+            }
+        });
+    }
 });

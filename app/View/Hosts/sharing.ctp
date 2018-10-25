@@ -40,7 +40,7 @@
 <div class="jarviswidget" id="wid-id-0">
     <header>
         <span class="widget-icon hidden-mobile hidden-tablet"> <i class="fa fa-sitemap fa-rotate-270"></i> </span>
-        <h2 class="hidden-mobile hidden-tablet"><?php echo __('Sharing').': '.$host['Host']['name']; ?></h2>
+        <h2 class="hidden-mobile hidden-tablet"><?php echo __('Sharing') . ': ' . $host['Host']['name']; ?></h2>
         <div class="widget-toolbar hidden-mobile hidden-tablet" role="menu">
             <?php echo $this->Utils->backButton(__('Back')); ?>
         </div>

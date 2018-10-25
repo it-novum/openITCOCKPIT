@@ -24,33 +24,33 @@
 ?>
 <div>
     <flippy vertical
-        class="fancy"
-        flip="['custom:FLIP_EVENT_OUT']"
-        flip-back="['custom:FLIP_EVENT_IN']"
-        duration="800"
-        timing-function="ease-in-out">
+            class="fancy"
+            flip="['custom:FLIP_EVENT_OUT']"
+            flip-back="['custom:FLIP_EVENT_IN']"
+            duration="800"
+            timing-function="ease-in-out">
 
-    <flippy-front>
-        <a href="javascript:void(0);" class="btn btn-default btn-xs txt-color-blueDark" ng-click="hideConfig()">
-            <i class="fa fa-cog fa-sm"></i>
-        </a>
-        <div class="padding-10" >
-            <div style="display:inline"
-                 ng-bind-html="widget.WidgetNotice.htmlContent | trustAsHtml"></div>
-        </div>
-    </flippy-front>
-    <flippy-back>
-        <a href="javascript:void(0);" class="btn btn-default btn-xs txt-color-blueDark" ng-click="showConfig()">
-            <i class="fa fa-eye fa-sm"></i>
-        </a>
-        <div class="padding-top-10">
+        <flippy-front>
+            <a href="javascript:void(0);" class="btn btn-default btn-xs txt-color-blueDark" ng-click="hideConfig()">
+                <i class="fa fa-cog fa-sm"></i>
+            </a>
+            <div class="padding-10">
+                <div style="display:inline"
+                     ng-bind-html="widget.WidgetNotice.htmlContent | trustAsHtml"></div>
+            </div>
+        </flippy-front>
+        <flippy-back>
+            <a href="javascript:void(0);" class="btn btn-default btn-xs txt-color-blueDark" ng-click="showConfig()">
+                <i class="fa fa-eye fa-sm"></i>
+            </a>
+            <div class="padding-top-10">
             <textarea name="notes" class="form-control notice-text" maxlength="4000" cols="30" rows="10"
                       ng-model-options="{debounce: 500}" ng-model="widget.WidgetNotice.note">
             </textarea>
-            <span class="note"><i class="fa fa-code text-primary"></i>
-                <?php echo __('Insert text, html or markdown code'); ?>
+                <span class="note"><i class="fa fa-code text-primary"></i>
+                    <?php echo __('Insert text, html or markdown code'); ?>
             </span>
-        </div>
-    </flippy-back>
-</flippy>
+            </div>
+        </flippy-back>
+    </flippy>
 </div>

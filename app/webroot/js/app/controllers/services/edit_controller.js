@@ -698,33 +698,33 @@ App.Controllers.ServicesEditController = Frontend.AppController.extend({
                             }else if(key == 'tags'){ //modifying value for tags
                                 self.updateTags({tags: responseObject.servicetemplate.Servicetemplate[key]});
                             }else if(in_array(key, [ // modifying value for fancy checkboxes
-                                    'notify_on_recovery',
-                                    'notify_on_warning',
-                                    'notify_on_unknown',
-                                    'notify_on_critical',
-                                    'notify_on_downtime',
-                                    'notify_on_flapping',
-                                    'notify_on_downtime',
-                                    'flap_detection_enabled',
-                                    'flap_detection_on_ok',
-                                    'flap_detection_on_warning',
-                                    'flap_detection_on_unknown',
-                                    'flap_detection_on_critical',
-                                    'is_volatile',
-                                    'freshness_checks_enabled',
-                                    'process_performance_data',
-                                    'active_checks_enabled'
-                                ])){
+                                'notify_on_recovery',
+                                'notify_on_warning',
+                                'notify_on_unknown',
+                                'notify_on_critical',
+                                'notify_on_downtime',
+                                'notify_on_flapping',
+                                'notify_on_downtime',
+                                'flap_detection_enabled',
+                                'flap_detection_on_ok',
+                                'flap_detection_on_warning',
+                                'flap_detection_on_unknown',
+                                'flap_detection_on_critical',
+                                'is_volatile',
+                                'freshness_checks_enabled',
+                                'process_performance_data',
+                                'active_checks_enabled'
+                            ])){
                                 self.updateCheckbox({
                                     value: responseObject.servicetemplate.Servicetemplate[key],
                                     selector: self.fieldMap[key]
                                 });
                             }else if(in_array(key, [ // modifying value of selectbox
-                                    'notify_period_id',
-                                    'command_id',
-                                    'check_period_id',
-                                    'eventhandler_command_id'
-                                ])){
+                                'notify_period_id',
+                                'command_id',
+                                'check_period_id',
+                                'eventhandler_command_id'
+                            ])){
                                 self.updateSelectbox({
                                     value: responseObject.servicetemplate.Servicetemplate[key],
                                     selector: self.fieldMap[key]

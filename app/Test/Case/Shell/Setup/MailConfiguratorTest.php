@@ -27,17 +27,14 @@
 namespace itnovum\openITCOCKPIT\SetupShell;
 
 
-class MailConfiguratorTest extends \PHPUnit_Framework_TestCase
-{
+class MailConfiguratorTest extends \PHPUnit_Framework_TestCase {
     private $resourcePath;
 
-    public function setUp()
-    {
-        $this->resourcePath = TESTS.'resources'.DS.'Shell'.DS.'Setup'.DS;
+    public function setUp() {
+        $this->resourcePath = TESTS . 'resources' . DS . 'Shell' . DS . 'Setup' . DS;
     }
 
-    public function testGetConfigWithUsernameAndPassword()
-    {
+    public function testGetConfigWithUsernameAndPassword() {
         $mailConfigurator = new MailConfigurator(
             new MailConfigValue('host'),
             new MailConfigValueInt(50),
@@ -46,13 +43,12 @@ class MailConfiguratorTest extends \PHPUnit_Framework_TestCase
         );
 
         $this->assertStringEqualsFile(
-            $this->resourcePath.'MailConfigWithUsernameAndPassword.txt',
+            $this->resourcePath . 'MailConfigWithUsernameAndPassword.txt',
             $mailConfigurator->getConfig()
         );
     }
 
-    public function testGetConfigWithoutCredentials()
-    {
+    public function testGetConfigWithoutCredentials() {
         $mailConfigurator = new MailConfigurator(
             new MailConfigValue('host'),
             new MailConfigValueInt(50),
@@ -61,7 +57,7 @@ class MailConfiguratorTest extends \PHPUnit_Framework_TestCase
         );
 
         $this->assertStringEqualsFile(
-            $this->resourcePath.'MailConfigWithoutCredentials.txt',
+            $this->resourcePath . 'MailConfigWithoutCredentials.txt',
             $mailConfigurator->getConfig()
         );
     }

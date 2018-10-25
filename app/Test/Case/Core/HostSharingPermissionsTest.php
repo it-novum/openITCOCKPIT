@@ -27,36 +27,30 @@
 namespace itnovum\openITCOCKPIT\Core;
 
 
-class HostSharingPermissionsTest extends \PHPUnit_Framework_TestCase
-{
+class HostSharingPermissionsTest extends \PHPUnit_Framework_TestCase {
     //run test: oitc test app Core/HostSharingPermissions
 
-    public function testInstance()
-    {
+    public function testInstance() {
         $hostSharingPermissions = new HostSharingPermissions(0, false, [], []);
         $this->assertInstanceOf('\itnovum\openITCOCKPIT\Core\HostSharingPermissions', $hostSharingPermissions);
     }
 
-    public function testIsRootHostAndRestrictedUserTrue()
-    {
+    public function testIsRootHostAndRestrictedUserTrue() {
         $hostSharingPermissions = new HostSharingPermissions(1, false, [], []);
         $this->assertTrue($hostSharingPermissions->isRootHostAndRestrictedUser());
     }
 
-    public function testIsRootHostAndRestrictedUserFalse()
-    {
+    public function testIsRootHostAndRestrictedUserFalse() {
         $hostSharingPermissions = new HostSharingPermissions(1, true, [], []);
         $this->assertFalse($hostSharingPermissions->isRootHostAndRestrictedUser());
     }
 
-    public function testIsNotRootHostAndRestrictedUserFalse()
-    {
+    public function testIsNotRootHostAndRestrictedUserFalse() {
         $hostSharingPermissions = new HostSharingPermissions(5, false, [], []);
         $this->assertFalse($hostSharingPermissions->isRootHostAndRestrictedUser());
     }
 
-    public function testCleanHostContainerArray()
-    {
+    public function testCleanHostContainerArray() {
         $host = $this->getHostInRootContainerSharedToNonRootContainer();
         $hostSharingPermissions = new HostSharingPermissions($host['Host']['container_id'], false, $host['Container'], []);
         $result = $hostSharingPermissions->cleanHostContainerArray($host['Host']['container_id'], $host['Container']);
@@ -64,71 +58,62 @@ class HostSharingPermissionsTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($assert, $result);
     }
 
-    public function testIsSharedToNotPermittedContainersFalse()
-    {
+    public function testIsSharedToNotPermittedContainersFalse() {
         $host = $this->getHostInRootContainerSharedToNonRootContainer();
         $hostSharingPermissions = new HostSharingPermissions($host['Host']['container_id'], false, $host['Container'], [4, 8, 20]);
         $this->assertFalse($hostSharingPermissions->isSharedToNotPermittedContainers());
     }
 
-    public function testIsSharedToNotPermittedContainersTrue()
-    {
+    public function testIsSharedToNotPermittedContainersTrue() {
         $host = $this->getHostInRootContainerSharedToNonRootContainer();
         $hostSharingPermissions = new HostSharingPermissions($host['Host']['container_id'], false, $host['Container'], [14, 8, 20]);
         $this->assertTrue($hostSharingPermissions->isSharedToNotPermittedContainers());
     }
 
-    public function testAllowSharingIfRootHostAndRestrictedUser()
-    {
+    public function testAllowSharingIfRootHostAndRestrictedUser() {
         $rootHost = $this->getHostInRootContainerSharedToNonRootContainer();
         $hostSharingPermissions = new HostSharingPermissions($rootHost['Host']['container_id'], false, $rootHost['Container'], []);
         $this->assertFalse($hostSharingPermissions->allowSharing());
     }
 
-    public function testAllowSharingIfNotRootHostAndRestrictedUserWithContainerPermissions()
-    {
+    public function testAllowSharingIfNotRootHostAndRestrictedUserWithContainerPermissions() {
         $nonRootHost = $this->getHostNotRootContainerSharedToNonRootContainer();
         $hostSharingPermissions = new HostSharingPermissions($nonRootHost['Host']['container_id'], false, $nonRootHost['Container'], [2, 10, 50, 100, 4]);
         $this->assertTrue($hostSharingPermissions->allowSharing());
     }
 
-    public function testAllowSharingIfRootHostAndRootUser()
-    {
+    public function testAllowSharingIfRootHostAndRootUser() {
         $rootHost = $this->getHostInRootContainerSharedToNonRootContainer();
         $hostSharingPermissions = new HostSharingPermissions($rootHost['Host']['container_id'], true, $rootHost['Container'], [1, 2, 3, 4, 5, 6]);
         $this->assertTrue($hostSharingPermissions->allowSharing());
     }
 
-    public function testAllowSharingIfNotRootHostAndRestrictedUserWithSharingToRoot()
-    {
+    public function testAllowSharingIfNotRootHostAndRestrictedUserWithSharingToRoot() {
         $nonRootHost = $this->getHostNotInRootButSharedToRoot();
         $hostSharingPermissions = new HostSharingPermissions($nonRootHost['Host']['container_id'], false, $nonRootHost['Container'], [2, 10, 50, 100, 4]);
         $this->assertFalse($hostSharingPermissions->allowSharing());
     }
 
-    public function testAllowSharingIfPrimaryContainerHostNotPermittedForRestrictedUsert()
-    {
+    public function testAllowSharingIfPrimaryContainerHostNotPermittedForRestrictedUsert() {
         $nonRootHost = $this->getHostNotInRootButSharedToRoot();
         $hostSharingPermissions = new HostSharingPermissions($nonRootHost['Host']['container_id'], false, $nonRootHost['Container'], [14, 20]);
         $this->assertFalse($hostSharingPermissions->allowSharing());
     }
 
-    private function getHostNotRootContainerSharedToNonRootContainer()
-    {
+    private function getHostNotRootContainerSharedToNonRootContainer() {
         $data = [
             'Host'      => [
                 'container_id' => '10',
             ],
             'Container' => [
-                4,10
+                4, 10
             ]
         ];
 
         return $data;
     }
 
-    private function getHostNotInRootButSharedToRoot()
-    {
+    private function getHostNotInRootButSharedToRoot() {
         $host = $this->getHostNotRootContainerSharedToNonRootContainer();
         $host['Container'][] = [
             27
@@ -137,8 +122,7 @@ class HostSharingPermissionsTest extends \PHPUnit_Framework_TestCase
         return $host;
     }
 
-    private function getHostInRootContainerSharedToNonRootContainer()
-    {
+    private function getHostInRootContainerSharedToNonRootContainer() {
         $data = [
             'Host'      => [
                 'container_id' => '1',

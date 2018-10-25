@@ -177,25 +177,25 @@
                                                                 break;
 
                                                             case 'SYSTEM.ANONYMOUS_STATISTICS':
-                                                                if($value['value'] == '0'):
+                                                                if ($value['value'] == '0'):
                                                                     $state = __('Anonymous statistics are disabled');
                                                                 endif;
-                                                                if($value['value'] == '1'):
+                                                                if ($value['value'] == '1'):
                                                                     $state = __('Anonymous statistics are enabled');
                                                                 endif;
-                                                                if($value['value'] == '2'):
+                                                                if ($value['value'] == '2'):
                                                                     $state = __('Anonymous statistics are disabled - Waiting for your approval');
                                                                 endif;
                                                                 ?><input type="text"
                                                                          value="<?php echo h($state); ?>"
                                                                          class="form-control systemsetting-input"
                                                                          disabled="disabled" readonly="readonly">
-                                                                <?php if($this->Acl->hasPermission('index', 'statistics')): ?>
-                                                                    <br />
-                                                                    <a href="/statistics/index">
-                                                                        <?php echo __('Click for more information.'); ?>
-                                                                    </a>
-                                                                <?php endif; ?>
+                                                                <?php if ($this->Acl->hasPermission('index', 'statistics')): ?>
+                                                                <br/>
+                                                                <a href="/statistics/index">
+                                                                    <?php echo __('Click for more information.'); ?>
+                                                                </a>
+                                                            <?php endif; ?>
                                                                 <?php
                                                                 break;
 

@@ -70,7 +70,8 @@
                                     'action'     => 'wiki',
                                     $categoryUrl,
                                     $pageUrl,
-                                    $language]); ?>
+                                    $language
+                                ]); ?>
                                 <div class="search-results clearfix">
                                     <h4><a href="<?php echo $currentLink; ?>"><?php echo h($page['name']); ?></a></h4>
                                     <?php if (isset($page['description'])): ?>
@@ -90,7 +91,7 @@
             <?php if ($renderPage === true): ?>
                 <h1>
                     <?php if ($icon !== ''): ?>
-                        <?php echo '<i class="'.$icon.'" style="margin-right: 0.5em;"></i>'; ?>
+                        <?php echo '<i class="' . $icon . '" style="margin-right: 0.5em;"></i>'; ?>
                     <?php endif; ?>
                     <?php echo $subjectTitle; ?>
                 </h1>

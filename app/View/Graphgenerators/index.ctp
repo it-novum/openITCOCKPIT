@@ -83,7 +83,7 @@
                         <?php endif; ?>
                         <li>
                             <?php if ($this->Acl->hasPermission('listing')):
-                                echo $this->Html->link(__('List'), '/'.$this->params['controller'].'/listing', ['class' => 'hidden-mobile hidden-tablet', 'icon' => 'fa fa-lg fa-list-alt']);
+                                echo $this->Html->link(__('List'), '/' . $this->params['controller'] . '/listing', ['class' => 'hidden-mobile hidden-tablet', 'icon' => 'fa fa-lg fa-list-alt']);
                                 echo " "; //Need a space for nice buttons
                             endif; ?>
                         </li>

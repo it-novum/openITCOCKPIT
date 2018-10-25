@@ -173,7 +173,7 @@
                     <div style="border-bottom:1px solid lightGray;">
                         <?php echo $this->Form->fancyCheckbox($escalation_option, [
                             'caption' => ucfirst(preg_replace('/escalate_on_/', '', $escalation_option)),
-                            'icon'    => '<i class="fa '.$icon.'"></i> ',
+                            'icon'    => '<i class="fa ' . $icon . '"></i> ',
                             'checked' => $this->CustomValidationErrors->refill($escalation_option, false),
                         ]); ?>
                         <div class="clearfix"></div>

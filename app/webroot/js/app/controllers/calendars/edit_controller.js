@@ -24,16 +24,16 @@
 
 App.Controllers.CalendarsEditController = Frontend.AppController.extend({
 
-	components: ['Ajaxloader', 'Fullcalendar'],
+    components: ['Ajaxloader', 'Fullcalendar'],
 
-	_initialize: function() {
-		this.Ajaxloader.setup();
-		var self = this;
-		var $calendar = $('#calendar');
-		var events = [];
-		if(this.getVar('events')){
-			events = this.getVar('events');
-		}
-		this.Fullcalendar.setup($calendar, events);
-	},
+    _initialize: function(){
+        this.Ajaxloader.setup();
+        var self = this;
+        var $calendar = $('#calendar');
+        var events = [];
+        if(this.getVar('events')){
+            events = this.getVar('events');
+        }
+        this.Fullcalendar.setup($calendar, events);
+    },
 });

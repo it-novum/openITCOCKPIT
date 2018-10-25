@@ -23,25 +23,25 @@
 //	confirmation.
 
 App.Controllers.ContactgroupsAddController = Frontend.AppController.extend({
-	$table: null,
-	$contacts: null,
+    $table: null,
+    $contacts: null,
 
-	components: ['Ajaxloader', 'ContainerSelectbox'],
+    components: ['Ajaxloader', 'ContainerSelectbox'],
 
-	_initialize: function() {
-		var self = this;
+    _initialize: function(){
+        var self = this;
 
-		this.Ajaxloader.setup();
-		this.ContainerSelectbox.setup(this.Ajaxloader);
-		// Bind change event for Container Selectbox
-		this.ContainerSelectbox.addContainerEventListener({
-			selectBoxSelector: '#ContainerParentId',
-			ajaxUrl: '/contactgroups/loadContacts/:selectBoxValue:' + '.json',
-			fieldTypes: {
-				contacts: '#ContactgroupContact',
-			},
-			dataPlaceholderEmpty: self.getVar('data_placeholder_empty'),
-			dataPlaceholder: self.getVar('data_placeholder')
-		});
-	},
+        this.Ajaxloader.setup();
+        this.ContainerSelectbox.setup(this.Ajaxloader);
+        // Bind change event for Container Selectbox
+        this.ContainerSelectbox.addContainerEventListener({
+            selectBoxSelector: '#ContainerParentId',
+            ajaxUrl: '/contactgroups/loadContacts/:selectBoxValue:' + '.json',
+            fieldTypes: {
+                contacts: '#ContactgroupContact',
+            },
+            dataPlaceholderEmpty: self.getVar('data_placeholder_empty'),
+            dataPlaceholder: self.getVar('data_placeholder')
+        });
+    },
 });

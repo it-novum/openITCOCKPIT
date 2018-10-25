@@ -59,13 +59,13 @@ class CommandsControllerTest extends ControllerTestCase {
         $expectedCommands = [
             [
                 'Command' => [
-                    'id' => 1,
-                    'name' => 'My first command',
+                    'id'           => 1,
+                    'name'         => 'My first command',
                     'command_line' => 'My first command_line',
                     'command_type' => 1,
-                    'human_args' => 'My first human_args',
-                    'uuid' => '1234567890',
-                    'description' => 'My first human_args'
+                    'human_args'   => 'My first human_args',
+                    'uuid'         => '1234567890',
+                    'description'  => 'My first human_args'
                 ]
             ]
         ];
@@ -96,31 +96,31 @@ class CommandsControllerTest extends ControllerTestCase {
     public function testGetEdit() {
         $this->testAction('/commands/edit/1', ['method' => 'get']);
         $expectedCommand = [
-            'Command' => [
-                'id' => 1,
-                'name' => 'My first command',
+            'Command'         => [
+                'id'           => 1,
+                'name'         => 'My first command',
                 'command_line' => 'My first command_line',
                 'command_type' => 1,
-                'human_args' => 'My first human_args',
-                'uuid' => '1234567890',
-                'description' => 'My first human_args'
+                'human_args'   => 'My first human_args',
+                'uuid'         => '1234567890',
+                'description'  => 'My first human_args'
             ],
             'Commandargument' => [
                 [
-                    'id' => 1,
+                    'id'         => 1,
                     'command_id' => 1,
-                    'name' => 'My name',
+                    'name'       => 'My name',
                     'human_name' => 'My human_name',
-                    'created' => '2017-01-17 14:24:01',
-                    'modified' => '2017-01-17 14:24:01'
+                    'created'    => '2017-01-17 14:24:01',
+                    'modified'   => '2017-01-17 14:24:01'
                 ],
                 [
-                    'id' => 2,
+                    'id'         => 2,
                     'command_id' => 1,
-                    'name' => 'My name 2',
+                    'name'       => 'My name 2',
                     'human_name' => 'My human_name 2',
-                    'created' => '2017-01-17 14:24:02',
-                    'modified' => '2017-01-17 14:24:02'
+                    'created'    => '2017-01-17 14:24:02',
+                    'modified'   => '2017-01-17 14:24:02'
                 ]
             ]
         ];
@@ -129,46 +129,46 @@ class CommandsControllerTest extends ControllerTestCase {
 
     public function testPostEdit() {
         $data = [
-            'Command' => [
-                'id' => '1',
+            'Command'         => [
+                'id'           => '1',
                 'command_type' => '2',
-                'name' => 'Changed name',
+                'name'         => 'Changed name',
                 'command_line' => 'Changed Command line test',
-                'description' => 'Changed Description'
+                'description'  => 'Changed Description'
             ],
             'Commandargument' => [
                 'hash1' => [
                     'command_id' => '1',
-                    'name' => '$ARG1$',
+                    'name'       => '$ARG1$',
                     'human_name' => 'Changed Human_name'
                 ],
                 'hash2' => [
                     'command_id' => '1',
-                    'name' => '$ARG2$',
+                    'name'       => '$ARG2$',
                     'human_name' => 'New Human_name'
                 ]
             ]
         ];
         $this->testAction('/commands/edit/1', ['data' => $data, 'method' => 'post']);
         $expectedCommand = [
-            'Command' => [
-                'id' => 1,
-                'name' => 'Changed name',
+            'Command'         => [
+                'id'           => 1,
+                'name'         => 'Changed name',
                 'command_line' => 'Changed Command line test',
                 'command_type' => '2',
-                'human_args' => 'My first human_args',
-                'uuid' => '1234567890',
-                'description' => 'Changed Description'
+                'human_args'   => 'My first human_args',
+                'uuid'         => '1234567890',
+                'description'  => 'Changed Description'
             ],
             'Commandargument' => [
                 [
                     'command_id' => '1',
-                    'name' => '$ARG1$',
+                    'name'       => '$ARG1$',
                     'human_name' => 'Changed Human_name'
                 ],
                 [
                     'command_id' => '1',
-                    'name' => '$ARG2$',
+                    'name'       => '$ARG2$',
                     'human_name' => 'New Human_name'
                 ]
             ]
@@ -208,21 +208,21 @@ class CommandsControllerTest extends ControllerTestCase {
 
     public function testAdd() {
         $data = [
-            'Command' => [
+            'Command'         => [
                 'command_type' => '3',
-                'name' => 'Test name',
+                'name'         => 'Test name',
                 'command_line' => 'Command line test',
-                'description' => 'Description test'
+                'description'  => 'Description test'
             ],
             'Commandargument' => [
                 'hash1' => [
                     'command_id' => '',
-                    'name' => '$ARG1$',
+                    'name'       => '$ARG1$',
                     'human_name' => 'ARG TEST 1'
                 ],
                 'hash2' => [
                     'command_id' => '',
-                    'name' => '$ARG2$',
+                    'name'       => '$ARG2$',
                     'human_name' => 'ARG TEST 2'
                 ]
             ]
@@ -241,23 +241,23 @@ class CommandsControllerTest extends ControllerTestCase {
         unset($myCommand['Commandargument'][1]['modified']);
 
         $expectedCommand = [
-            'Command' => [
-                'id' => $myCommand['Command']['id'],
+            'Command'         => [
+                'id'           => $myCommand['Command']['id'],
                 'command_type' => '3',
-                'name' => 'Test name',
+                'name'         => 'Test name',
                 'command_line' => 'Command line test',
-                'description' => 'Description test',
-                'human_args' => null
+                'description'  => 'Description test',
+                'human_args'   => null
             ],
             'Commandargument' => [
                 [
                     'command_id' => $myCommand['Command']['id'],
-                    'name' => '$ARG1$',
+                    'name'       => '$ARG1$',
                     'human_name' => 'ARG TEST 1'
                 ],
                 [
                     'command_id' => $myCommand['Command']['id'],
-                    'name' => '$ARG2$',
+                    'name'       => '$ARG2$',
                     'human_name' => 'ARG TEST 2'
                 ]
             ]
@@ -275,13 +275,13 @@ class CommandsControllerTest extends ControllerTestCase {
         $expectedMacros = [
             [
                 'Macro' => [
-                    'id' => '1',
-                    'name' => 'Macro name',
-                    'value' => 'Macro value',
-                    'password' => '1',
+                    'id'          => '1',
+                    'name'        => 'Macro name',
+                    'value'       => 'Macro value',
+                    'password'    => '1',
                     'description' => 'Macro description',
-                    'created' => '2017-01-20 14:44:47',
-                    'modified' => '2017-01-20 14:44:47'
+                    'created'     => '2017-01-20 14:44:47',
+                    'modified'    => '2017-01-20 14:44:47'
                 ]
             ]
         ];
@@ -292,43 +292,43 @@ class CommandsControllerTest extends ControllerTestCase {
         $this->testAction('/commands/copy/1/2', ['method' => 'get']);
         $expectedCommands = [
             1 => [
-                'Command' => [
-                    'id' => '1',
-                    'name' => 'My first command',
+                'Command'         => [
+                    'id'           => '1',
+                    'name'         => 'My first command',
                     'command_line' => 'My first command_line',
                     'command_type' => 1,
-                    'description' => 'My first human_args'
+                    'description'  => 'My first human_args'
                 ],
                 'Commandargument' => [
                     [
-                        'name' => 'My name',
+                        'name'       => 'My name',
                         'human_name' => 'My human_name'
                     ],
                     [
-                        'name' => 'My name 2',
+                        'name'       => 'My name 2',
                         'human_name' => 'My human_name 2'
                     ]
                 ],
             ],
             2 => [
-                'Command' => [
-                    'id' => '2',
-                    'name' => 'My second command',
+                'Command'         => [
+                    'id'           => '2',
+                    'name'         => 'My second command',
                     'command_line' => 'My second command_line',
                     'command_type' => 2,
-                    'description' => 'My second human_args'
+                    'description'  => 'My second human_args'
                 ],
                 'Commandargument' => [
                     [
-                        'name' => 'My name 3',
+                        'name'       => 'My name 3',
                         'human_name' => 'My human_name 3',
                     ],
                     [
-                        'name' => 'My name 4',
+                        'name'       => 'My name 4',
                         'human_name' => 'My human_name 4',
                     ],
                     [
-                        'name' => 'My name 5',
+                        'name'       => 'My name 5',
                         'human_name' => 'My human_name 5',
                     ]
                 ],
@@ -341,14 +341,14 @@ class CommandsControllerTest extends ControllerTestCase {
         $data = [
             'Command' => [
                 1 => [
-                    'name' => 'Copied name 1',
+                    'name'         => 'Copied name 1',
                     'command_line' => 'Copied command_line 1',
-                    'description' => 'Copied description 1'
+                    'description'  => 'Copied description 1'
                 ],
                 2 => [
-                    'name' => 'Copied name 2',
+                    'name'         => 'Copied name 2',
                     'command_line' => 'Copied command_line 2',
-                    'description' => 'Copied description 2'
+                    'description'  => 'Copied description 2'
                 ]
             ]
         ];
@@ -359,48 +359,48 @@ class CommandsControllerTest extends ControllerTestCase {
         ]);
         $expectedCommands = [
             [
-                'Command' => [
-                    'name' => 'Copied name 2',
+                'Command'         => [
+                    'name'         => 'Copied name 2',
                     'command_line' => 'Copied command_line 2',
                     'command_type' => 2,
-                    'description' => 'Copied description 2',
-                    'human_args' => null,
+                    'description'  => 'Copied description 2',
+                    'human_args'   => null,
                 ],
                 'Commandargument' => [
                     [
                         'command_id' => $copiedCommands[0]['Command']['id'],
-                        'name' => 'My name 3',
+                        'name'       => 'My name 3',
                         'human_name' => 'My human_name 3'
                     ],
                     [
                         'command_id' => $copiedCommands[0]['Command']['id'],
-                        'name' => 'My name 4',
+                        'name'       => 'My name 4',
                         'human_name' => 'My human_name 4'
                     ],
                     [
                         'command_id' => $copiedCommands[0]['Command']['id'],
-                        'name' => 'My name 5',
+                        'name'       => 'My name 5',
                         'human_name' => 'My human_name 5'
                     ]
                 ],
             ],
             [
-                'Command' => [
-                    'name' => 'Copied name 1',
+                'Command'         => [
+                    'name'         => 'Copied name 1',
                     'command_line' => 'Copied command_line 1',
                     'command_type' => 1,
-                    'description' => 'Copied description 1',
-                    'human_args' => null,
+                    'description'  => 'Copied description 1',
+                    'human_args'   => null,
                 ],
                 'Commandargument' => [
                     [
                         'command_id' => $copiedCommands[1]['Command']['id'],
-                        'name' => 'My name',
+                        'name'       => 'My name',
                         'human_name' => 'My human_name'
                     ],
                     [
                         'command_id' => $copiedCommands[1]['Command']['id'],
-                        'name' => 'My name 2',
+                        'name'       => 'My name 2',
                         'human_name' => 'My human_name 2'
                     ],
                 ],

@@ -54,8 +54,10 @@ App.Components.ContainerSelectboxComponent = Frontend.Component.extend({
                 url: ajaxUrl,
                 type: 'post',
                 dataType: 'json',
-                error: function(){},
-                success: function(){},
+                error: function(){
+                },
+                success: function(){
+                },
                 complete: function(response){
                     var fieldType,
                         key,
@@ -63,7 +65,7 @@ App.Components.ContainerSelectboxComponent = Frontend.Component.extend({
                     if(Object.keys(options.optionGroupFieldTypes).length > 0){
                         for(fieldType in response.responseJSON){
                             $querySelect = $(options.optionGroupFieldTypes[fieldType]);
-                            var oldValues = ($querySelect.val())?$querySelect.val():[];
+                            var oldValues = ($querySelect.val()) ? $querySelect.val() : [];
                             $querySelect.html('');
                             $querySelect.attr('data-placeholder', options.dataPlaceholder);
 
@@ -77,7 +79,7 @@ App.Components.ContainerSelectboxComponent = Frontend.Component.extend({
 
                     for(fieldType in response.responseJSON){
                         $querySelect = $(options.fieldTypes[fieldType]);
-                        var oldValues = ($querySelect.val())?$querySelect.val():[];
+                        var oldValues = ($querySelect.val()) ? $querySelect.val() : [];
                         $querySelect.html('');
                         $querySelect.attr('data-placeholder', options.dataPlaceholder);
 
@@ -90,8 +92,8 @@ App.Components.ContainerSelectboxComponent = Frontend.Component.extend({
         });
     },
 
-    getFilteredSelections:function($querySelect, values, newData){
-        values = (values instanceof Array)?values:[values];
+    getFilteredSelections: function($querySelect, values, newData){
+        values = (values instanceof Array) ? values : [values];
         for(var key in newData){
             var selected = false;
             if(in_array(newData[key].key, values)){
@@ -101,22 +103,22 @@ App.Components.ContainerSelectboxComponent = Frontend.Component.extend({
         }
     },
 
-    getFilteredSelectionsForOptionGroup:function($querySelect, values, newData, typeKey){
+    getFilteredSelectionsForOptionGroup: function($querySelect, values, newData, typeKey){
         var optgroupLabel = null;
         var $optGroupObject = null;
-        values = (values instanceof Array)?values:[values];
+        values = (values instanceof Array) ? values : [values];
         for(var key in newData){
 
             for(var subKey in newData[key].value){
                 if(optgroupLabel != subKey){
                     optgroupLabel = subKey;
-                    this.addOptionGroupForInputField($querySelect, typeKey+'_'+newData[key].key, optgroupLabel);
-                    $optGroupObject = $('#'+typeKey+'_'+newData[key].key);
+                    this.addOptionGroupForInputField($querySelect, typeKey + '_' + newData[key].key, optgroupLabel);
+                    $optGroupObject = $('#' + typeKey + '_' + newData[key].key);
                 }
 
                 for(var k in newData[key]['value'][subKey]){
                     var selected = false;
-                    if (in_array(k, values)) {
+                    if(in_array(k, values)){
                         selected = true;
                     }
                     this.addOptionsForInputField($optGroupObject, k, newData[key]['value'][subKey][k], selected);
@@ -125,7 +127,7 @@ App.Components.ContainerSelectboxComponent = Frontend.Component.extend({
         }
     },
 
-    addOptionsForInputField:function($querySelect, optionKey, optionValue, selected){
+    addOptionsForInputField: function($querySelect, optionKey, optionValue, selected){
         $querySelect.append(
             $('<option>', {
                 value: optionKey,
@@ -135,7 +137,7 @@ App.Components.ContainerSelectboxComponent = Frontend.Component.extend({
         );
     },
 
-    addOptionGroupForInputField:function($querySelect, id, optionGroupLabel){
+    addOptionGroupForInputField: function($querySelect, id, optionGroupLabel){
         $querySelect.append(
             $('<optgroup>', {
                 id: id,

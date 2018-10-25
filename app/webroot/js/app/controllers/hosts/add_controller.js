@@ -31,7 +31,7 @@ App.Controllers.HostsAddController = Frontend.AppController.extend({
 
     components: ['Highlight', 'Ajaxloader', 'CustomVariables', 'ContainerSelectbox'],
 
-    _initialize: function() {
+    _initialize: function(){
         var self = this;
 
         this.Ajaxloader.setup();
@@ -63,7 +63,7 @@ App.Controllers.HostsAddController = Frontend.AppController.extend({
         });
         var $inputs = $('#HostAddForm :input');
         var values = {};
-        $inputs.each(function() {
+        $inputs.each(function(){
             if(this.name.length > 0){
                 values[this.name] = $(this).val();
             }
@@ -100,22 +100,22 @@ App.Controllers.HostsAddController = Frontend.AppController.extend({
         });
 
         //get the containers for sharing
-        if($('#HostSharedContainer').length) {
-            $('#HostContainerId').change(function () {
+        if($('#HostSharedContainer').length){
+            $('#HostContainerId').change(function(){
                 var containerId = $(this).val()
                 $.ajax({
                     url: '/Hosts/getSharingContainers/' + containerId + '.json',
                     type: 'post',
                     cache: false,
                     dataType: 'json',
-                    complete: function (response) {
+                    complete: function(response){
                         $hostSharingContainer = $('#HostSharedContainer')
                         var prevSelectedContainer = $hostSharingContainer.val();
                         var res = response.responseJSON;
                         var html = '<select>';
-                        for (var key in res) {
+                        for(var key in res){
                             var selected = '';
-                            if (Array.isArray(prevSelectedContainer) &&  _.contains(prevSelectedContainer, key)) {
+                            if(Array.isArray(prevSelectedContainer) && _.contains(prevSelectedContainer, key)){
                                 selected = 'selected';
                             }
                             html += '<option value="' + key + '" ' + selected + '>' + res[key] + '</option>';
@@ -189,9 +189,9 @@ App.Controllers.HostsAddController = Frontend.AppController.extend({
         this.inputPlaceholder();
         $('input[type="checkbox"]#autoDNSlookup').on('change.inputPlaceholder', function(){
             if($('input[type="checkbox"]#autoDNSlookup').prop('checked') == true){
-                $.cookie('oitc_autoDNSlookup', 'true', { expires: 365 });
+                $.cookie('oitc_autoDNSlookup', 'true', {expires: 365});
             }else{
-                $.cookie('oitc_autoDNSlookup', 'false', { expires: 365 });
+                $.cookie('oitc_autoDNSlookup', 'false', {expires: 365});
             }
 
             this.inputPlaceholder();
@@ -199,7 +199,7 @@ App.Controllers.HostsAddController = Frontend.AppController.extend({
 
         // Automatically DNS lookup after the hostname has changed
         $('#HostName').focusout(function(){
-            if ($('input[type="checkbox"]#autoDNSlookup').prop('checked')){
+            if($('input[type="checkbox"]#autoDNSlookup').prop('checked')){
                 $('.ajax_icon').remove();
                 var icon = '<i class="fa fa-warning fa-lg txt-color-redLight ajax_icon"></i> ';
                 $hostname = $('#HostName');
@@ -212,7 +212,7 @@ App.Controllers.HostsAddController = Frontend.AppController.extend({
                         this.Highlight.highlight($('#HostAddress').parent());
                     }else{
                         $label.html(icon + $label.html());
-                        $note.append('<span class="note ajax_icon">'+this.getVar('dns_hostname_lookup_failed')+'</span>');
+                        $note.append('<span class="note ajax_icon">' + this.getVar('dns_hostname_lookup_failed') + '</span>');
                     }
                     this.Ajaxloader.hide();
                 }.bind(this);
@@ -220,13 +220,15 @@ App.Controllers.HostsAddController = Frontend.AppController.extend({
                 if($hostname.val() != ''){
                     this.Ajaxloader.show();
                     ret = $.ajax({
-                            url: "/Hosts/gethostbyname",
-                            type: "POST",
-                            cache: false,
-                            data: "hostname="+encodeURIComponent($hostname.val()),
-                            error: function(){},
-                            success: function(){},
-                            complete: callback
+                        url: "/Hosts/gethostbyname",
+                        type: "POST",
+                        cache: false,
+                        data: "hostname=" + encodeURIComponent($hostname.val()),
+                        error: function(){
+                        },
+                        success: function(){
+                        },
+                        complete: callback
                     });
                 }
             }
@@ -234,7 +236,7 @@ App.Controllers.HostsAddController = Frontend.AppController.extend({
 
         // Automatically host FQDN DNS lookup after a ip address was typed in
         $('#HostAddress').focusout(function(){
-            if ($('input[type="checkbox"]#autoDNSlookup').prop('checked')){
+            if($('input[type="checkbox"]#autoDNSlookup').prop('checked')){
                 $('.ajax_icon').remove();
                 var icon = '<i class="fa fa-warning fa-lg txt-color-redLight ajax_icon"></i> ';
                 $hostaddress = $('#HostAddress');
@@ -246,7 +248,7 @@ App.Controllers.HostsAddController = Frontend.AppController.extend({
                         this.Highlight.highlight($('#HostName').parent());
                     }else{
                         $label.html(icon + $label.html());
-                        $note.append('<span class="note ajax_icon">'+this.getVar('dns_ipaddress_lookup_failed')+'</span>');
+                        $note.append('<span class="note ajax_icon">' + this.getVar('dns_ipaddress_lookup_failed') + '</span>');
                     }
                     this.Ajaxloader.hide();
                 }.bind(this);
@@ -256,8 +258,9 @@ App.Controllers.HostsAddController = Frontend.AppController.extend({
                         url: "/Hosts/gethostbyaddr",
                         type: "POST",
                         cache: false,
-                        data: "address="+encodeURIComponent($hostaddress.val()),
-                        error: function(){},
+                        data: "address=" + encodeURIComponent($hostaddress.val()),
+                        error: function(){
+                        },
                         success: callback,
                         complete: callback
                     });
@@ -286,7 +289,7 @@ App.Controllers.HostsAddController = Frontend.AppController.extend({
         };
 
         var $slider = $('input.slider');
-        $slider.slider({ tooltip: 'hide' });
+        $slider.slider({tooltip: 'hide'});
         $slider.slider('on', 'slide', onSlideStop);
         $slider.slider('on', 'slideStop', onSlideStop);
 
@@ -317,14 +320,14 @@ App.Controllers.HostsAddController = Frontend.AppController.extend({
         /**
          * Mainly does two things:
          *
-         *	1.	Fills up the input fields of the form. The values are used from the chosen Hosttemplate.
-         *		This part was refactored.
+         *    1.    Fills up the input fields of the form. The values are used from the chosen Hosttemplate.
+         *        This part was refactored.
          *
-         *	2.	Allows to reset the values to their defaults. The defaults depend on the chosen Hosttemplate.
-         *		This part was newly created.
+         *    2.    Allows to reset the values to their defaults. The defaults depend on the chosen Hosttemplate.
+         *        This part was newly created.
          *
-         *	onChangeField()			- When a field gets changed, this method will be called.
-         *	onClickRestoreDefault()	- A click on the restore button.
+         *    onChangeField()            - When a field gets changed, this method will be called.
+         *    onClickRestoreDefault()    - A click on the restore button.
          */
         self.hosttemplateManager = {
             isRestoreFunctionalityInitialized: false,
@@ -389,9 +392,9 @@ App.Controllers.HostsAddController = Frontend.AppController.extend({
             _restoreHostMacrosFromTemplate: function(){
                 //Loading the macros of the hosttemplate
                 self.CustomVariables.loadMacroFromTemplate(
-                        self.hosttemplateManager.currentTemplate.id,
-                        self.hosttemplateManager._activateOrUpdateMacroRestore
-                    );
+                    self.hosttemplateManager.currentTemplate.id,
+                    self.hosttemplateManager._activateOrUpdateMacroRestore
+                );
             },
 
             _createOrUpdateMacroRestoreIcon: function(isIdenticalWithTemplate){
@@ -442,7 +445,7 @@ App.Controllers.HostsAddController = Frontend.AppController.extend({
                             .on('keyup', self.hosttemplateManager._onChangeMacro);
 
                         // self.hosttemplateManager._onChangeMacro.call($field);
-            // 			self.hosttemplateManager._onChangeMacro();
+                        // 			self.hosttemplateManager._onChangeMacro();
                     }
                 });
                 self.hosttemplateManager._onChangeMacro();
@@ -486,13 +489,19 @@ App.Controllers.HostsAddController = Frontend.AppController.extend({
                 if(in_array(keyName, ['contact', 'contactgroup', 'hostgroup'])){
                     switch(keyName){
                         case 'contact':
-                            templateDefaultValue = self.hosttemplateManager.currentContact.map(function(elem){ return elem.id });
+                            templateDefaultValue = self.hosttemplateManager.currentContact.map(function(elem){
+                                return elem.id
+                            });
                             break;
                         case 'contactgroup':
-                            templateDefaultValue = self.hosttemplateManager.currentContactGroup.map(function(elem){ return elem.id });
+                            templateDefaultValue = self.hosttemplateManager.currentContactGroup.map(function(elem){
+                                return elem.id
+                            });
                             break;
                         case 'hostgroup':
-                            templateDefaultValue = self.hosttemplateManager.currentHostGroup.map(function(elem){ return elem.id });
+                            templateDefaultValue = self.hosttemplateManager.currentHostGroup.map(function(elem){
+                                return elem.id
+                            });
                             break;
                     }
                 }
@@ -566,16 +575,28 @@ App.Controllers.HostsAddController = Frontend.AppController.extend({
                 if(in_array(keyName, ['contact', 'contactgroup', 'hostgroup'])){
                     switch(keyName){
                         case 'contact':
-                            templateDefaultValue = self.hosttemplateManager.currentContact.map(function(elem){ return elem.id });
-                            templateDefaultTitle = self.hosttemplateManager.currentContact.map(function(elem){ return elem.name });
+                            templateDefaultValue = self.hosttemplateManager.currentContact.map(function(elem){
+                                return elem.id
+                            });
+                            templateDefaultTitle = self.hosttemplateManager.currentContact.map(function(elem){
+                                return elem.name
+                            });
                             break;
                         case 'contactgroup':
-                            templateDefaultValue = self.hosttemplateManager.currentContactGroup.map(function(elem){ return elem.id });
-                            templateDefaultTitle = self.hosttemplateManager.currentContactGroup.map(function(elem){ return elem.Container.name });
+                            templateDefaultValue = self.hosttemplateManager.currentContactGroup.map(function(elem){
+                                return elem.id
+                            });
+                            templateDefaultTitle = self.hosttemplateManager.currentContactGroup.map(function(elem){
+                                return elem.Container.name
+                            });
                             break;
                         case 'hostgroup':
-                            templateDefaultValue = self.hosttemplateManager.currentHostGroup.map(function(elem){ return elem.id });
-                            templateDefaultTitle = self.hosttemplateManager.currentHostGroup.map(function(elem){ return elem.Container.name });
+                            templateDefaultValue = self.hosttemplateManager.currentHostGroup.map(function(elem){
+                                return elem.id
+                            });
+                            templateDefaultTitle = self.hosttemplateManager.currentHostGroup.map(function(elem){
+                                return elem.Container.name
+                            });
                             break;
                     }
                     templateDefaultTitle = templateDefaultTitle.join(', ');
@@ -727,7 +748,8 @@ App.Controllers.HostsAddController = Frontend.AppController.extend({
                         default:
                             break;
                     }
-                };
+                }
+                ;
                 self.hosttemplateManager.isRestoreFunctionalityInitialized = true;
                 self.hosttemplateManager.isInitializedOnce = true;
             },
@@ -773,7 +795,7 @@ App.Controllers.HostsAddController = Frontend.AppController.extend({
                                 $('#Hoststars-rating-' + templateDefaultValue)
                                     .prop('checked', true)
                                     .parents('.form-group').find('input[type=radio]') // All input fields get the data-template-default property
-                                        .prop('data-template-default', templateDefaultValue);
+                                    .prop('data-template-default', templateDefaultValue);
                             }else if(key == 'tags'){
                                 self.updateTags({tags: templateDefaultValue});
                             }else if(in_array(key, ['check_interval', 'retry_interval', 'notification_interval'])){
@@ -784,13 +806,13 @@ App.Controllers.HostsAddController = Frontend.AppController.extend({
                             }else if(in_array(key, ['notify_period_id', 'check_period_id', 'command_id'])){
                                 self.updateSelectbox({value: templateDefaultValue, selector: self.fieldMap[key]});
                             }else if(in_array(key, [
-                                    'notify_on_recovery','notify_on_down', 'notify_on_unreachable',
-                                    'notify_on_flapping', 'notify_on_downtime', 'flap_detection_enabled',
-                                    'flap_detection_on_unreachable', 'flap_detection_on_down', 'flap_detection_on_up',
-                                    'active_checks_enabled'
-                                ])){
-                                    //modifying value for fancy checkboxes
-                                    self.updateCheckbox({value: templateDefaultValue, selector: self.fieldMap[key]});
+                                'notify_on_recovery', 'notify_on_down', 'notify_on_unreachable',
+                                'notify_on_flapping', 'notify_on_downtime', 'flap_detection_enabled',
+                                'flap_detection_on_unreachable', 'flap_detection_on_down', 'flap_detection_on_up',
+                                'active_checks_enabled'
+                            ])){
+                                //modifying value for fancy checkboxes
+                                self.updateCheckbox({value: templateDefaultValue, selector: self.fieldMap[key]});
                             }else{
                                 //modifying value for default input this.fields
                                 $('#Host' + self.fieldMap[key]).val(templateDefaultValue);
@@ -810,21 +832,25 @@ App.Controllers.HostsAddController = Frontend.AppController.extend({
                         $(responseObject.hosttemplate.Contactgroup).each(function(intIndex, jsonContactgroup){
                             selectedContactgroups.push(jsonContactgroup.id);
                         });
-                        self.updateSelectbox({value: selectedContactgroups, selector: '#HostContactgroup', prefix: 'false'});
+                        self.updateSelectbox({
+                            value: selectedContactgroups,
+                            selector: '#HostContactgroup',
+                            prefix: 'false'
+                        });
 
                         //Hostgroups
                         var selectedHostgroups = [];
                         $(responseObject.hosttemplate.Hostgroup).each(function(intIndex, jsonHostgroup){
-                        	selectedHostgroups.push(jsonHostgroup.id);
+                            selectedHostgroups.push(jsonHostgroup.id);
                         });
                         self.updateSelectbox({value: selectedHostgroups, selector: '#HostHostgroup', prefix: 'false'});
                     }
 
                     //Loading the macros of the hosttemplate
                     self.CustomVariables.loadMacroFromTemplate(
-                            self.hosttemplateManager.currentTemplate.id,
-                            self.hosttemplateManager._activateOrUpdateMacroRestore
-                        );
+                        self.hosttemplateManager.currentTemplate.id,
+                        self.hosttemplateManager._activateOrUpdateMacroRestore
+                    );
 
                     //Loading command arguments of the template
                     self.loadParametersFromTemplate(self.hosttemplateManager.currentTemplate.id);
@@ -851,8 +877,10 @@ App.Controllers.HostsAddController = Frontend.AppController.extend({
                         type: "POST",
                         cache: false,
                         dataType: "json",
-                        error: function(){},
-                        success: function(){},
+                        error: function(){
+                        },
+                        success: function(){
+                        },
                         complete: ajaxCompleteCallback
                     });
                 };
@@ -918,7 +946,7 @@ App.Controllers.HostsAddController = Frontend.AppController.extend({
     buildList: function(data){
         var html = '';
         for(var i in data){
-            html += '<option value="' + data[i].key + '">'+htmlspecialchars(data[i].value)+'</option>';
+            html += '<option value="' + data[i].key + '">' + htmlspecialchars(data[i].value) + '</option>';
         }
         return html;
     },
@@ -932,14 +960,14 @@ App.Controllers.HostsAddController = Frontend.AppController.extend({
             return;
         }
 
-        if ($checkbox.prop('checked')){
+        if($checkbox.prop('checked')){
             $('#HostName').attr('placeholder', this.getVar('hostname_placeholder'));
             $('#HostAddress').attr('placeholder', this.getVar('address_placeholder'));
-            $.cookie('oitc_autoDNSlookup', 'true', { expires: 365 });
+            $.cookie('oitc_autoDNSlookup', 'true', {expires: 365});
         }else{
             $('#HostName').attr('placeholder', '');
             $('#HostAddress').attr('placeholder', '');
-            $.cookie('oitc_autoDNSlookup', 'false', { expires: 365 });
+            $.cookie('oitc_autoDNSlookup', 'false', {expires: 365});
         }
     },
 
@@ -968,12 +996,12 @@ App.Controllers.HostsAddController = Frontend.AppController.extend({
         var options = _options || {};
         options.value = parseInt(_options.value, 10) || 0;
         options.selector = _options.selector || null;
-        $('#Host'+options.selector).slider('setValue', options.value);
-        $('#_Host'+options.selector).val(options.value);
-        $('#Host'+options.selector).val(options.value);
-        $('_#Host'+options.selector).trigger('keyup');
+        $('#Host' + options.selector).slider('setValue', options.value);
+        $('#_Host' + options.selector).val(options.value);
+        $('#Host' + options.selector).val(options.value);
+        $('_#Host' + options.selector).trigger('keyup');
 
-        $helptext = $('#Host'+options.selector+'_human');
+        $helptext = $('#Host' + options.selector + '_human');
 
         min = parseInt(options.value / 60, 10);
         sec = parseInt(options.value % 60, 10);
@@ -986,12 +1014,12 @@ App.Controllers.HostsAddController = Frontend.AppController.extend({
         options.selector = _options.selector || '';
 
         if(options.value === null || options.value == 0 || options.value == false){
-            $('input[type="checkbox"]#Host'+options.selector).prop('checked', false).trigger('change');
+            $('input[type="checkbox"]#Host' + options.selector).prop('checked', false).trigger('change');
             this.checkFlapDetection();
             return false;
         }
 
-        $('input[type="checkbox"]#Host'+options.selector).prop('checked', true).trigger('change');
+        $('input[type="checkbox"]#Host' + options.selector).prop('checked', true).trigger('change');
 
         this.checkFlapDetection();
         return true;
@@ -1007,18 +1035,20 @@ App.Controllers.HostsAddController = Frontend.AppController.extend({
             options.prefix = '';
         }
 
-        $(options.prefix+options.selector).val(options.value);
-        $(options.prefix+options.selector).trigger("chosen:updated").change();
+        $(options.prefix + options.selector).val(options.value);
+        $(options.prefix + options.selector).trigger("chosen:updated").change();
     },
 
     loadParameters: function(command_id){
         this.Ajaxloader.show();
         $.ajax({
-            url: "/Hosts/loadArgumentsAdd/"+encodeURIComponent(command_id),
+            url: "/Hosts/loadArgumentsAdd/" + encodeURIComponent(command_id),
             type: "POST",
             cache: false,
-            error: function(){},
-            success: function(){},
+            error: function(){
+            },
+            success: function(){
+            },
             complete: function(response){
                 $('#CheckCommandArgs').html(response.responseText);
                 this.Ajaxloader.hide();
@@ -1028,11 +1058,13 @@ App.Controllers.HostsAddController = Frontend.AppController.extend({
 
     loadParametersFromTemplate: function(hosttemplate_id){
         $.ajax({
-            url: "/Hosts/loadHosttemplatesArguments/"+encodeURIComponent(hosttemplate_id),
+            url: "/Hosts/loadHosttemplatesArguments/" + encodeURIComponent(hosttemplate_id),
             type: "POST",
             cache: false,
-            error: function(){},
-            success: function(){},
+            error: function(){
+            },
+            success: function(){
+            },
             complete: function(response){
                 $('#CheckCommandArgs').html(response.responseText);
                 this.Ajaxloader.hide();

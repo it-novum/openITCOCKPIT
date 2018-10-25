@@ -28,16 +28,13 @@ namespace itnovum\openITCOCKPIT\Core;
 
 use itnovum\openITCOCKPIT\Core\ValueObjects\CustomVariable;
 
-class CustomVariableRepositoryTest extends \CakeTestCase
-{
-    public function testInstance()
-    {
+class CustomVariableRepositoryTest extends \CakeTestCase {
+    public function testInstance() {
         $CustomVariableRepository = new CustomVariablesRepository();
         $this->assertInstanceOf('\itnovum\openITCOCKPIT\Core\CustomVariablesRepository', $CustomVariableRepository);
     }
 
-    public function testAddAndGet()
-    {
+    public function testAddAndGet() {
         $CustomVariable1 = new CustomVariable('FOO', 'BAR', 1, 2048);
         $CustomVariable2 = new CustomVariable('BAR', 'FOO', 1, 2048);
         $CustomVariable3 = new CustomVariable('FOOBAR', 'BARFOO', 1, 2048);
@@ -56,8 +53,7 @@ class CustomVariableRepositoryTest extends \CakeTestCase
         $this->assertEquals($assert, $CustomVarialeRepository->getAllCustomVariables());
     }
 
-    public function testAddAndGetCustomVariableByName()
-    {
+    public function testAddAndGetCustomVariableByName() {
         $CustomVariable1 = new CustomVariable('FOO', 'BAR', 1, 2048);
         $CustomVariable2 = new CustomVariable('BAR', 'FOO', 1, 2048);
         $CustomVariable3 = new CustomVariable('FOOBAR', 'BARFOO', 1, 2048);
@@ -72,8 +68,7 @@ class CustomVariableRepositoryTest extends \CakeTestCase
         $this->assertEquals($assert, $CustomVarialeRepository->getByVariableName('BAR'));
     }
 
-    public function testAddAndGetSize()
-    {
+    public function testAddAndGetSize() {
         $CustomVariable1 = new CustomVariable('FOO', 'BAR', 1, 2048);
         $CustomVariable2 = new CustomVariable('BAR', 'FOO', 1, 2048);
         $CustomVariable3 = new CustomVariable('FOOBAR', 'BARFOO', 1, 2048);
@@ -86,8 +81,7 @@ class CustomVariableRepositoryTest extends \CakeTestCase
         $this->assertEquals(3, $CustomVarialeRepository->getSize());
     }
 
-    public function getAllCustomVariablesAsArray()
-    {
+    public function getAllCustomVariablesAsArray() {
         $CustomVariable1 = new CustomVariable('FOO', 'BAR', 1, 2048);
         $CustomVariable2 = new CustomVariable('BAR', 'FOO', 1, 2048);
         $CustomVariable3 = new CustomVariable('FOOBAR', 'BARFOO', 1, 2048);
@@ -121,8 +115,7 @@ class CustomVariableRepositoryTest extends \CakeTestCase
         $this->assertEquals($assert, $CustomVariableRepository->getAllCustomVariablesAsArray());
     }
 
-    public function testDeleteVariableByBVarName()
-    {
+    public function testDeleteVariableByBVarName() {
         $CustomVariable1 = new CustomVariable('FOO', 'BAR', 1, 2048);
         $CustomVariable2 = new CustomVariable('BAR', 'FOO', 1, 2048);
         $CustomVariable3 = new CustomVariable('FOOBAR', 'BARFOO', 1, 2048);

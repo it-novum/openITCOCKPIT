@@ -24,14 +24,14 @@
 
 App.Controllers.InstantreportsGenerateController = Frontend.AppController.extend({
 
-    _initialize: function() {
+    _initialize: function(){
         var self = this;
         $("#InstantreportStartDate").datepicker({
             changeMonth: true,
             numberOfMonths: 3,
-            todayHighlight:true,
-            weekStart:1,
-            calendarWeeks:true,
+            todayHighlight: true,
+            weekStart: 1,
+            calendarWeeks: true,
             autoclose: true,
             format: 'dd.mm.yyyy',
             prevText: '<i class="fa fa-chevron-left"></i>',
@@ -40,9 +40,9 @@ App.Controllers.InstantreportsGenerateController = Frontend.AppController.extend
         $("#InstantreportEndDate").datepicker({
             changeMonth: true,
             numberOfMonths: 3,
-            todayHighlight:true,
-            weekStart:1,
-            calendarWeeks:true,
+            todayHighlight: true,
+            weekStart: 1,
+            calendarWeeks: true,
             autoclose: true,
             format: 'dd.mm.yyyy',
             prevText: '<i class="fa fa-chevron-left"></i>',

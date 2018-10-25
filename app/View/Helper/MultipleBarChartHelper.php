@@ -112,8 +112,8 @@ class MultipleBarChartHelper extends AppHelper {
         for ($i = 0; $i <= 2; $i++) {
             $colors[$i] = [
                 'default' => imagecolorallocatealpha($this->img, $colorsHost[$i][0], $colorsHost[$i][1], $colorsHost[$i][2], $colorsHost[$i][3]),
-                'top3d' => imagecolorallocatealpha($this->img, $colorsHost[$i][0] * 0.75, $colorsHost[$i][1] * 0.75, $colorsHost[$i][2] * 0.75, $colorsHost[$i][3]),
-                'left3d' => imagecolorallocatealpha($this->img, $colorsHost[$i][0] * 0.65, $colorsHost[$i][1] * 0.65, $colorsHost[$i][2] * 0.65, $colorsHost[$i][3]),
+                'top3d'   => imagecolorallocatealpha($this->img, $colorsHost[$i][0] * 0.75, $colorsHost[$i][1] * 0.75, $colorsHost[$i][2] * 0.75, $colorsHost[$i][3]),
+                'left3d'  => imagecolorallocatealpha($this->img, $colorsHost[$i][0] * 0.65, $colorsHost[$i][1] * 0.65, $colorsHost[$i][2] * 0.65, $colorsHost[$i][3]),
             ];
 
         }

@@ -59,7 +59,8 @@
             ]);
 
             echo $this->Form->input('Container.name', [
-                    'label' => __('Contact group name')]
+                    'label' => __('Contact group name')
+                ]
             );
 
             echo $this->Form->input('Contactgroup.description', [

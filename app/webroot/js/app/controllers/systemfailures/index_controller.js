@@ -23,21 +23,20 @@
 //	confirmation.
 
 App.Controllers.SystemfailuresIndexController = Frontend.AppController.extend({
-	$table: null,
-	/**
-	 * @constructor
-	 * @return {void} 
-	 */
-	
-	//components: ['WebsocketSudo'],
-	
-	_initialize: function() {
-		var self = this;
+    $table: null,
+    /**
+     * @constructor
+     * @return {void}
+     */
 
-		
-		
-		//Checkboxen aktivieren
-		$('.select_datatable').find('input').prop('checked', true);
-		
-	}
+    //components: ['WebsocketSudo'],
+
+    _initialize: function(){
+        var self = this;
+
+
+        //Checkboxen aktivieren
+        $('.select_datatable').find('input').prop('checked', true);
+
+    }
 });

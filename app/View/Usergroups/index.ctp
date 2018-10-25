@@ -45,7 +45,7 @@
                         <?php
                         if ($this->Acl->hasPermission('add')):
                             echo $this->Html->link(__('New'),
-                                '/'.$this->params['controller'].'/add', [
+                                '/' . $this->params['controller'] . '/add', [
                                     'class' => 'btn btn-xs btn-success',
                                     'icon'  => 'fa fa-plus',
                                 ]);
@@ -60,7 +60,8 @@
                 <div>
                     <div class="widget-body no-padding">
                         <div class="mobile_table">
-                            <table id="timeperiod_list" class="table table-striped table-hover table-bordered smart-form" style="">
+                            <table id="timeperiod_list"
+                                   class="table table-striped table-hover table-bordered smart-form" style="">
                                 <thead>
                                 <tr>
                                     <?php $order = $this->Paginator->param('order'); ?>
@@ -100,7 +101,7 @@
                                                     <?php if ($this->Acl->hasPermission('delete')): ?>
                                                         <li class="divider"></li>
                                                         <li>
-                                                            <?php echo $this->Form->postLink('<i class="fa fa-trash-o"></i> '.__('Delete'), ['controller' => $this->params['controller'], 'action' => 'delete', $usergroup['Usergroup']['id']], ['class' => 'txt-color-red', 'escape' => false]); ?>
+                                                            <?php echo $this->Form->postLink('<i class="fa fa-trash-o"></i> ' . __('Delete'), ['controller' => $this->params['controller'], 'action' => 'delete', $usergroup['Usergroup']['id']], ['class' => 'txt-color-red', 'escape' => false]); ?>
                                                         </li>
                                                     <?php endif; ?>
                                                 </ul>
@@ -122,7 +123,7 @@
                             <div class="row">
                                 <div class="col-sm-6">
                                     <div class="dataTables_info" style="line-height: 32px;"
-                                         id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('Page').' {:page} '.__('of').' {:pages}, '.__('Total').' {:count} '.__('entries')); ?></div>
+                                         id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('Page') . ' {:page} ' . __('of') . ' {:pages}, ' . __('Total') . ' {:count} ' . __('entries')); ?></div>
                                 </div>
                                 <div class="col-sm-6 text-right">
                                     <div class="dataTables_paginate paging_bootstrap">

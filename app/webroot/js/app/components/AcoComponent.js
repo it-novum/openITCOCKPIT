@@ -24,64 +24,64 @@
 //	confirmation.
 
 App.Components.AcoComponent = Frontend.Component.extend({
-	setup: function(){
-		var self = this;
-		$('.tree > ul').attr('role', 'tree').find('ul').attr('role', 'group');
-		$('.tree').find('li:has(ul)').addClass('parent_li')
-			.attr('role', 'treeitem')
-			.find(' > span')
-			.attr('title', 'Collapse this branch').click(function(e) {
+    setup: function(){
+        var self = this;
+        $('.tree > ul').attr('role', 'tree').find('ul').attr('role', 'group');
+        $('.tree').find('li:has(ul)').addClass('parent_li')
+            .attr('role', 'treeitem')
+            .find(' > span')
+            .attr('title', 'Collapse this branch').click(function(e){
 
-			var children = $(this).parent('li.parent_li').find(' > ul > li' );
-			if(children.is(':visible')){
-				children.hide('fast');
-				$(this).attr('title', 'Expand this branch')
-					.find(' > i')
-					.toggleClass('fa-folder-open fa-folder');
-			}else{
-				children.show('fast');
-				$(this).attr('title', 'Collapse this branch')
-					.find(' > i')
-					.toggleClass('fa-folder fa-folder-open');
-			}
-		});
-		$('#expandAll').click(function(){
-			self.expandTree();
-		});
-		$('#collapseAll').click(function(){
-			self.collapseTree();
-		});
-		$("i[data-action]").each(function(){
-			$(this).click(function(){
-				var className = $(this).data('action');
-				if($(this).attr('click-action') === 'on'){
-					self.setChecked(className);
-				}else{
-					self.unsetChecked(className);
-				}
-			});
-		});
-	},
-	collapseTree: function(){
-		$('.tree li ul li ul> li').hide();
-		$('#tree .fa-folder-open').toggleClass('fa-folder-open fa-folder');
-	},
-	expandTree: function(){
-		$('.tree li ul > li').show();
-		$('#tree .fa-folder').toggleClass('fa-folder fa-folder-open');
-	},
-	setChecked: function(className){
-		var classNameFilter = '';
-		if(className !=='all'){
-			classNameFilter = '[class*='+className+']';
-		}
-		$('#tree input:checkbox'+classNameFilter+':not(:checked)').prop('checked', true);
-	},
-	unsetChecked: function(className){
-		var classNameFilter = '';
-		if(className !=='all'){
-			classNameFilter = '[class*='+className+']';
-		}
-		$('#tree input:checkbox'+classNameFilter+':checked').prop('checked', false);
-	}
+            var children = $(this).parent('li.parent_li').find(' > ul > li');
+            if(children.is(':visible')){
+                children.hide('fast');
+                $(this).attr('title', 'Expand this branch')
+                    .find(' > i')
+                    .toggleClass('fa-folder-open fa-folder');
+            }else{
+                children.show('fast');
+                $(this).attr('title', 'Collapse this branch')
+                    .find(' > i')
+                    .toggleClass('fa-folder fa-folder-open');
+            }
+        });
+        $('#expandAll').click(function(){
+            self.expandTree();
+        });
+        $('#collapseAll').click(function(){
+            self.collapseTree();
+        });
+        $("i[data-action]").each(function(){
+            $(this).click(function(){
+                var className = $(this).data('action');
+                if($(this).attr('click-action') === 'on'){
+                    self.setChecked(className);
+                }else{
+                    self.unsetChecked(className);
+                }
+            });
+        });
+    },
+    collapseTree: function(){
+        $('.tree li ul li ul> li').hide();
+        $('#tree .fa-folder-open').toggleClass('fa-folder-open fa-folder');
+    },
+    expandTree: function(){
+        $('.tree li ul > li').show();
+        $('#tree .fa-folder').toggleClass('fa-folder fa-folder-open');
+    },
+    setChecked: function(className){
+        var classNameFilter = '';
+        if(className !== 'all'){
+            classNameFilter = '[class*=' + className + ']';
+        }
+        $('#tree input:checkbox' + classNameFilter + ':not(:checked)').prop('checked', true);
+    },
+    unsetChecked: function(className){
+        var classNameFilter = '';
+        if(className !== 'all'){
+            classNameFilter = '[class*=' + className + ']';
+        }
+        $('#tree input:checkbox' + classNameFilter + ':checked').prop('checked', false);
+    }
 });

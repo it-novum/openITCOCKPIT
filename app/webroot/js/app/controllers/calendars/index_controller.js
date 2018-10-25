@@ -24,12 +24,12 @@
 //	confirmation.
 
 App.Controllers.CalendarsIndexController = Frontend.AppController.extend({
-	components: ['Masschange'],
+    components: ['Masschange'],
 
-	_initialize: function(){
-		this.Masschange.setup({
-			'controller': 'calendars',
-			'checkboxattr': 'calendarname'
-		});
-	}
+    _initialize: function(){
+        this.Masschange.setup({
+            'controller': 'calendars',
+            'checkboxattr': 'calendarname'
+        });
+    }
 });

@@ -23,34 +23,34 @@
 //	confirmation.
 
 App.Components.ImageChooserComponent = Frontend.Component.extend({
-	setup: function($dom) {
-		$dom.find('.image-chooser-input a.choose-image').click(this._onChooseImage.bind(this));
-		$dom.find('.image-chooser-input a.remove-image').click(this._onRemoveImage.bind(this));
-	},
-	_onChooseImage: function(e) {
-		var finder = new CKFinder();
-		finder.selectActionFunction = this._onSelectFile.bind(this);
-		finder.selectActionData = {
-			imageChooser: $(e.currentTarget).parents('.image-chooser-input'),
-			finder: finder
-		}
-		finder.popup(600, 400);
-	},
-	_onRemoveImage: function(e) {
-		$('.image-chooser-input .image-name').html(__('forms.no_image_chosen'));
-		$('.image-chooser-input .image-name-input').val('');
-		$('.image-chooser-input .image-name').html(__('none'));
-		$('.image-chooser-input .thumb img').hide();
-		$('.image-chooser-input a.remove-image').hide();
-	},
-	_onSelectFile: function(file, params, all) {
-		params.selectActionData.imageChooser.find('.image-name').html(urldecode(file));
-		params.selectActionData.imageChooser.find('.image-name-input').val(urldecode(file));
-		params.selectActionData.imageChooser.find('.thumb img').attr({
-			src: file
-		}).show();
-		params.selectActionData.finder.api.closePopup();
-		removeLink = '<a class="btn btn-xs btn-default remove-image">Remove Image</a>';
-		$(removeLink).insertAfter('.image-chooser-input a.choose-image').click(this._onRemoveImage.bind(this));
-	}
+    setup: function($dom){
+        $dom.find('.image-chooser-input a.choose-image').click(this._onChooseImage.bind(this));
+        $dom.find('.image-chooser-input a.remove-image').click(this._onRemoveImage.bind(this));
+    },
+    _onChooseImage: function(e){
+        var finder = new CKFinder();
+        finder.selectActionFunction = this._onSelectFile.bind(this);
+        finder.selectActionData = {
+            imageChooser: $(e.currentTarget).parents('.image-chooser-input'),
+            finder: finder
+        }
+        finder.popup(600, 400);
+    },
+    _onRemoveImage: function(e){
+        $('.image-chooser-input .image-name').html(__('forms.no_image_chosen'));
+        $('.image-chooser-input .image-name-input').val('');
+        $('.image-chooser-input .image-name').html(__('none'));
+        $('.image-chooser-input .thumb img').hide();
+        $('.image-chooser-input a.remove-image').hide();
+    },
+    _onSelectFile: function(file, params, all){
+        params.selectActionData.imageChooser.find('.image-name').html(urldecode(file));
+        params.selectActionData.imageChooser.find('.image-name-input').val(urldecode(file));
+        params.selectActionData.imageChooser.find('.thumb img').attr({
+            src: file
+        }).show();
+        params.selectActionData.finder.api.closePopup();
+        removeLink = '<a class="btn btn-xs btn-default remove-image">Remove Image</a>';
+        $(removeLink).insertAfter('.image-chooser-input a.choose-image').click(this._onRemoveImage.bind(this));
+    }
 });

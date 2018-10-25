@@ -40,7 +40,7 @@
         <span class="widget-icon hidden-mobile hidden-tablet"> <i class="fa fa-power-off"></i> </span>
         <h2 class="hidden-mobile hidden-tablet"><?php echo __('Create service downtime'); ?></h2>
         <div class="widget-toolbar" role="menu">
-            <?php echo $this->Utils->backButton(__('Back'),$back_url); ?>
+            <?php echo $this->Utils->backButton(__('Back'), $back_url); ?>
         </div>
     </header>
     <div>

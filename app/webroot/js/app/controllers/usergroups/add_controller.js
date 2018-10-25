@@ -23,11 +23,11 @@
 //	confirmation.
 
 App.Controllers.UsergroupsAddController = Frontend.AppController.extend({
-	components: ['Ajaxloader', 'Aco'],
-	_initialize: function() {
-		var self = this;
+    components: ['Ajaxloader', 'Aco'],
+    _initialize: function(){
+        var self = this;
 
-		this.Ajaxloader.setup();
-		this.Aco.setup();
-	},
+        this.Ajaxloader.setup();
+        this.Aco.setup();
+    },
 });

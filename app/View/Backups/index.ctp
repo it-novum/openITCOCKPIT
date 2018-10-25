@@ -62,11 +62,11 @@
             </div>
             <?php
             echo $this->Form->input('backupfile', [
-                    'options' => $backup_files,
-                    'multiple' => false,
-                    'class' => 'chosen',
-                    'style' => 'width: 80%',
-                    'label' => ['text' => __('Backupfile for Restore'), 'class' => 'col col-xs-2 col-md-2 col-lg-2'],
+                    'options'   => $backup_files,
+                    'multiple'  => false,
+                    'class'     => 'chosen',
+                    'style'     => 'width: 80%',
+                    'label'     => ['text' => __('Backupfile for Restore'), 'class' => 'col col-xs-2 col-md-2 col-lg-2'],
                     'wrapInput' => 'col col-xs-8 col-md-8 col-lg-8',
                 ]
             );
@@ -90,9 +90,9 @@
 <div class="widget-body">
     <?php
     echo $this->Form->input('filenameForBackup', [
-            'label' => ['text' => __('Filename for Backup'), 'class' => 'col col-xs-2 col-md-2 col-lg-2'],
-            'style' => 'width: 100%',
-            'value' => 'mysql_oitc_bkp',
+            'label'     => ['text' => __('Filename for Backup'), 'class' => 'col col-xs-2 col-md-2 col-lg-2'],
+            'style'     => 'width: 100%',
+            'value'     => 'mysql_oitc_bkp',
             'wrapInput' => 'col col-xs-8 col-md-8 col-lg-8',
         ]
     );

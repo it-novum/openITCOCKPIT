@@ -28,16 +28,13 @@ namespace itnovum\openITCOCKPIT\Core;
 
 use itnovum\openITCOCKPIT\Core\ValueObjects\CustomVariable;
 
-class CustomVariableDifferTest extends \CakeTestCase
-{
-    public function testInstance()
-    {
+class CustomVariableDifferTest extends \CakeTestCase {
+    public function testInstance() {
         $CustomVariableDiffer = new CustomVariableDiffer([], []);
         $this->assertInstanceOf('\itnovum\openITCOCKPIT\Core\CustomVariableDiffer', $CustomVariableDiffer);
     }
 
-    public function testConvertCustomVariablesToRepository()
-    {
+    public function testConvertCustomVariablesToRepository() {
         $CustomVariableDiffer = new CustomVariableDiffer([], []);
 
         $CustomVariablesRepository = new CustomVariablesRepository();
@@ -51,8 +48,7 @@ class CustomVariableDifferTest extends \CakeTestCase
     }
 
 
-    public function testGetCustomVariablesToSaveAsRepositoryByDifferentKeys()
-    {
+    public function testGetCustomVariablesToSaveAsRepositoryByDifferentKeys() {
         $hostMacros = $this->getHostWithDifferentMacros();
         $hosttemplateMacros = $this->getHosttemplateCustomVariables();
 
@@ -64,8 +60,7 @@ class CustomVariableDifferTest extends \CakeTestCase
         $this->assertEquals($CustomVariablesRepository, $CustomVariableDiffer->getCustomVariablesToSaveAsRepository());
     }
 
-    public function testGetCustomVariablesToSaveAsRepositoryByDifferentValues()
-    {
+    public function testGetCustomVariablesToSaveAsRepositoryByDifferentValues() {
         $hostMacros = $this->getHostWithDifferentMacrosValues();
         $hosttemplateMacros = $this->getHosttemplateCustomVariables();
 
@@ -78,8 +73,7 @@ class CustomVariableDifferTest extends \CakeTestCase
     }
 
 
-    public function testGetCustomVariablesToSaveAsRepositoryWithoutDifferences()
-    {
+    public function testGetCustomVariablesToSaveAsRepositoryWithoutDifferences() {
         $hostMacros = $this->getHostWithoutDifferences();
         $hosttemplateMacros = $this->getHosttemplateCustomVariables();
 
@@ -91,8 +85,7 @@ class CustomVariableDifferTest extends \CakeTestCase
         $this->assertEquals($CustomVariablesRepository, $CustomVariableDiffer->getCustomVariablesToSaveAsRepository());
     }
 
-    public function testGetCustomVariablesToSaveAsRepositoryFromHosttemplateWithoutVariables()
-    {
+    public function testGetCustomVariablesToSaveAsRepositoryFromHosttemplateWithoutVariables() {
         $hostMacros = $this->getHostWithDifferentMacros();
         $hosttemplateMacros = $this->getHosttemplateWhitoutCustomVariables();
 
@@ -106,13 +99,11 @@ class CustomVariableDifferTest extends \CakeTestCase
         $this->assertEquals($CustomVariablesRepository, $CustomVariableDiffer->getCustomVariablesToSaveAsRepository());
     }
 
-    private function getHosttemplateWhitoutCustomVariables()
-    {
+    private function getHosttemplateWhitoutCustomVariables() {
         return [];
     }
 
-    private function getHosttemplateCustomVariables()
-    {
+    private function getHosttemplateCustomVariables() {
         return [
             (int)0 => [
                 'name'  => 'EINSTEMPLATE',
@@ -129,8 +120,7 @@ class CustomVariableDifferTest extends \CakeTestCase
         ];
     }
 
-    private function getHostWithDifferentMacros()
-    {
+    private function getHostWithDifferentMacros() {
         return [
             (int)0 => [
                 'name'  => 'EINSTEMPLATE',
@@ -147,8 +137,7 @@ class CustomVariableDifferTest extends \CakeTestCase
         ];
     }
 
-    private function getHostWithDifferentMacrosValues()
-    {
+    private function getHostWithDifferentMacrosValues() {
         return [
             (int)0 => [
                 'name'  => 'EINSTEMPLATE',
@@ -165,8 +154,7 @@ class CustomVariableDifferTest extends \CakeTestCase
         ];
     }
 
-    private function getHostWithoutDifferences()
-    {
+    private function getHostWithoutDifferences() {
         return [
             (int)0 => [
                 'name'  => 'EINSTEMPLATE',

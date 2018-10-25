@@ -76,7 +76,7 @@
                                 }
 
                                 echo h($serviceName);
-                                echo $this->Form->input('Service.id.'.$serviceToAppend['Service']['id'], ['value' => $serviceToAppend['Service']['id'], 'type' => 'hidden']);
+                                echo $this->Form->input('Service.id.' . $serviceToAppend['Service']['id'], ['value' => $serviceToAppend['Service']['id'], 'type' => 'hidden']);
                                 ?>
                             </li>
                         <?php endforeach; ?>
