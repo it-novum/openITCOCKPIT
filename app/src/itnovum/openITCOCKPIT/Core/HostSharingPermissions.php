@@ -27,8 +27,7 @@
 namespace itnovum\openITCOCKPIT\Core;
 
 
-class HostSharingPermissions
-{
+class HostSharingPermissions {
 
     /**
      * @var int
@@ -53,14 +52,13 @@ class HostSharingPermissions
     /**
      * HostSharingPermissions constructor.
      *
-     * @param int     $hostContainerId
+     * @param int $hostContainerId
      * @param boolean $hasRootPrivileges
      *
      * @paran array $hostSharingContainerIds
      * @paran array $userContainerIds
      */
-    public function __construct($hostContainerId, $hasRootPrivileges, $hostSharingContainerIds, $userContainerIds)
-    {
+    public function __construct($hostContainerId, $hasRootPrivileges, $hostSharingContainerIds, $userContainerIds) {
         $this->hostContainerId = $hostContainerId;
         $this->hasRootPrivileges = $hasRootPrivileges;
         $this->hostSharingContainerIds = $this->cleanHostContainerArray($hostContainerId, $hostSharingContainerIds);
@@ -70,8 +68,7 @@ class HostSharingPermissions
     /**
      * @return bool
      */
-    public function allowSharing()
-    {
+    public function allowSharing() {
         if ($this->isRootHostAndRestrictedUser()) {
             return false;
         }
@@ -90,8 +87,7 @@ class HostSharingPermissions
     /**
      * @return bool
      */
-    public function isRootHostAndRestrictedUser()
-    {
+    public function isRootHostAndRestrictedUser() {
         if ($this->hostContainerId == ROOT_CONTAINER && $this->hasRootPrivileges === false) {
             return true;
         }
@@ -102,8 +98,7 @@ class HostSharingPermissions
     /**
      * @return bool
      */
-    public function isSharedToNotPermittedContainers()
-    {
+    public function isSharedToNotPermittedContainers() {
         foreach ($this->hostSharingContainerIds as $hostSharedContainerId) {
             if (in_array($hostSharedContainerId, $this->userContainerIds) === false) {
                 return true;
@@ -113,8 +108,7 @@ class HostSharingPermissions
         return false;
     }
 
-    public function hostPrimaryContaineIsNotPermitted()
-    {
+    public function hostPrimaryContaineIsNotPermitted() {
         if (!in_array($this->hostContainerId, $this->userContainerIds)) {
             return true;
         }
@@ -122,8 +116,7 @@ class HostSharingPermissions
         return false;
     }
 
-    public function cleanHostContainerArray($hostContainerId, $hostSharingContainerIds)
-    {
+    public function cleanHostContainerArray($hostContainerId, $hostSharingContainerIds) {
         $sharedContainerIds = [];
         foreach ($hostSharingContainerIds as $key => $hostSharingContainerId) {
             if ($hostSharingContainerId != $hostContainerId) {

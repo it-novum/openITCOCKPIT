@@ -1,10 +1,10 @@
-angular.module('openITCOCKPIT').directive('mapSummary', function ($http, $interval, $httpParamSerializer) {
+angular.module('openITCOCKPIT').directive('mapSummary', function($http, $interval, $httpParamSerializer){
     return {
         restrict: 'E',
         templateUrl: '/map_module/mapeditors/mapsummary.html',
 
-        controller: function ($scope) {
-            $scope.loadSumaryState = function (item, summary) {
+        controller: function($scope){
+            $scope.loadSumaryState = function(item, summary){
                 $http.get("/map_module/mapeditors/mapsummary/.json", {
                     params: {
                         'angular': true,
@@ -12,28 +12,28 @@ angular.module('openITCOCKPIT').directive('mapSummary', function ($http, $interv
                         'type': item.type,
                         'summary': summary
                     }
-                }).then(function (result) {
+                }).then(function(result){
                     $('.map-summary-state-popover').switchClass('slideOutRight', 'slideInRight');
                     $scope.summaryState = result.data.summary;
                     $scope.iconType = item.type;
                     $scope.startInterval();
                 });
             };
-            $scope.hideTooltip = function ($event) {
+            $scope.hideTooltip = function($event){
                 $($event.currentTarget).switchClass('slideInRight', 'slideOutRight');
                 $scope.stopInterval();
             };
 
-            $scope.startInterval = function () {
+            $scope.startInterval = function(){
                 var showFor = 5000;
                 var intervalSpeed = 10;
                 $scope.percentValue = 100;
 
                 $scope.stopInterval();
 
-                $scope.intervalRef = $interval(function () {
+                $scope.intervalRef = $interval(function(){
                     showFor = showFor - intervalSpeed;
-                    if (showFor === 0) {
+                    if(showFor === 0){
                         $scope.stopInterval();
                         $('.map-summary-state-popover').switchClass('slideInRight', 'slideOutRight');
                     }
@@ -42,36 +42,36 @@ angular.module('openITCOCKPIT').directive('mapSummary', function ($http, $interv
                 }, intervalSpeed);
             };
 
-            $scope.stopInterval = function () {
-                if (typeof $scope.intervalRef !== "undefined") {
+            $scope.stopInterval = function(){
+                if(typeof $scope.intervalRef !== "undefined"){
                     $interval.cancel($scope.intervalRef);
                 }
 
             };
 
-            $scope.getObjectHref = function (type, objectId) {
+            $scope.getObjectHref = function(type, objectId){
                 var url = 'javascript:void(0);';
-                switch (type) {
+                switch(type){
                     case 'host':
-                        if ($scope.acl.hosts.browser) {
+                        if($scope.acl.hosts.browser){
                             url = '/hosts/browser/' + objectId;
                         }
                         break;
 
                     case 'service':
-                        if ($scope.acl.services.browser) {
+                        if($scope.acl.services.browser){
                             url = '/services/browser/' + objectId;
                         }
                         break;
 
                     case 'hostgroup':
-                        if ($scope.acl.hostgroups.extended) {
+                        if($scope.acl.hostgroups.extended){
                             url = '/hostgroups/extended/' + objectId;
                         }
                         break;
 
                     case 'servicegroup':
-                        if ($scope.acl.servicegroups.extended) {
+                        if($scope.acl.servicegroups.extended){
                             url = '/servicegroups/extended/' + objectId;
                         }
                         break;
@@ -88,14 +88,14 @@ angular.module('openITCOCKPIT').directive('mapSummary', function ($http, $interv
                 return url;
             };
 
-            $scope.getObjectsHref = function (type, objectIds) {
+            $scope.getObjectsHref = function(type, objectIds){
                 var url = 'javascript:void(0);';
-                if (objectIds.length === 0) {
+                if(objectIds.length === 0){
                     return url;
                 }
-                switch (type) {
+                switch(type){
                     case 'host':
-                        if ($scope.acl.hosts.index) {
+                        if($scope.acl.hosts.index){
                             url = '/hosts/index?' + $httpParamSerializer({
                                 'angular': true,
                                 'filter[Host.id][]': objectIds
@@ -104,7 +104,7 @@ angular.module('openITCOCKPIT').directive('mapSummary', function ($http, $interv
                         break;
 
                     case 'service':
-                        if ($scope.acl.services.index) {
+                        if($scope.acl.services.index){
                             url = '/services/index?' + $httpParamSerializer({
                                 'angular': true,
                                 'filter[Service.id][]': objectIds
@@ -121,8 +121,8 @@ angular.module('openITCOCKPIT').directive('mapSummary', function ($http, $interv
 
         },
 
-        link: function (scope, element, attr) {
-            scope.showSummaryState = function (item, summary) { //--> is summary item (true / false)
+        link: function(scope, element, attr){
+            scope.showSummaryState = function(item, summary){ //--> is summary item (true / false)
                 scope.loadSumaryState(item, summary);
             };
         }

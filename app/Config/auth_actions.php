@@ -51,9 +51,9 @@ $config = [
         'exports'               => [
             '*' => '*',
         ],/*
-		'reports' => [
-			'*' => '*'
-		],*/
+        'reports' => [
+            '*' => '*'
+        ],*/
         'administrators'        => [
             '*' => '*',
         ],

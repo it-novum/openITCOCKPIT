@@ -51,23 +51,23 @@ class HostgroupConditions {
      * HostgroupConditions constructor.
      * @param array $conditions
      */
-    public function __construct($conditions = []){
+    public function __construct($conditions = []) {
         $this->conditions = $conditions;
     }
 
     /**
      * @return array
      */
-    public function getConditions(){
+    public function getConditions() {
         return $this->conditions;
     }
 
     /**
      * @return array
      */
-    public function getConditionsForFind(){
+    public function getConditionsForFind() {
         $conditions = $this->conditions;
-        if(!empty($this->containerIds)){
+        if (!empty($this->containerIds)) {
             $conditions['Container.parent_id'] = $this->containerIds;
         }
 
@@ -77,49 +77,49 @@ class HostgroupConditions {
     /**
      * @return boolean
      */
-    public function includeDisabled(){
+    public function includeDisabled() {
         return $this->includeDisabled;
     }
 
     /**
      * @param boolean $includeDisabled
      */
-    public function setIncludeDisabled($includeDisabled){
+    public function setIncludeDisabled($includeDisabled) {
         $this->includeDisabled = $includeDisabled;
     }
 
     /**
      * @return array
      */
-    public function getContainerIds(){
+    public function getContainerIds() {
         return $this->containerIds;
     }
 
     /**
      * @param array $containerIds
      */
-    public function setContainerIds($containerIds){
+    public function setContainerIds($containerIds) {
         $this->containerIds = $containerIds;
     }
 
     /**
      * @return bool
      */
-    public function hasContainer(){
+    public function hasContainer() {
         return !empty($this->containerIds);
     }
 
     /**
      * @param array $order
      */
-    public function setOrder($order = []){
+    public function setOrder($order = []) {
         $this->order = $order;
     }
 
     /**
      * @return array
      */
-    public function getOrder(){
+    public function getOrder() {
         return $this->order;
     }
 }

@@ -159,9 +159,9 @@
 
 
                 <script type="text/javascript">window.ATL_JQ_PAGE_PROPS = {
-                        "triggerFunction": function (showCollectorDialog) {
+                        "triggerFunction": function(showCollectorDialog){
                             //Requires that jQuery is available!
-                            jQuery("#JIRAIssue").click(function (e) {
+                            jQuery("#JIRAIssue").click(function(e){
                                 e.preventDefault();
                                 showCollectorDialog();
                             });

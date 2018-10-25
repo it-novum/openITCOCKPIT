@@ -196,15 +196,15 @@ class Rrd extends AppModel {
         $perfdata = rrd_fetch($rrd_path, $options);
 
 
-        if(empty($perfdata) || empty($perfdata['data'])){
+        if (empty($perfdata) || empty($perfdata['data'])) {
             return [];
         }
 
 
         $dataSources = array_keys($perfdata['data']); //save memory
-        foreach($dataSources as $dsIndex){
-            foreach(array_keys($perfdata['data'][$dsIndex]) as $timestamp){
-                if(is_nan($perfdata['data'][$dsIndex][$timestamp])){
+        foreach ($dataSources as $dsIndex) {
+            foreach (array_keys($perfdata['data'][$dsIndex]) as $timestamp) {
+                if (is_nan($perfdata['data'][$dsIndex][$timestamp])) {
                     $perfdata['data'][$dsIndex][$timestamp] = null;
                 }
             }
@@ -214,10 +214,9 @@ class Rrd extends AppModel {
 
     }
 
-    public function convert($size)
-    {
-        $unit=array('b','kb','mb','gb','tb','pb');
-        return @round($size/pow(1024,($i=floor(log($size,1024)))),2).' '.$unit[$i];
+    public function convert($size) {
+        $unit = ['b', 'kb', 'mb', 'gb', 'tb', 'pb'];
+        return @round($size / pow(1024, ($i = floor(log($size, 1024)))), 2) . ' ' . $unit[$i];
     }
 
     public function isValidHostUuid($host_uuid) {

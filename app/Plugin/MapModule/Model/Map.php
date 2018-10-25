@@ -1528,7 +1528,7 @@ class Map extends MapModuleAppModel {
             'group'      => [
                 'Map.id'
             ],
-            'fields' => [
+            'fields'     => [
                 'Map.id',
                 'Map.name'
             ],

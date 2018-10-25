@@ -23,20 +23,15 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-require APP.'/Vendor/Ratchet/vendor/autoload.php';
-use Ratchet\Server\IoServer;
-use Ratchet\WebSocket\WsServer;
-use Ratchet\Http\HttpServer;
+require APP . '/Vendor/Ratchet/vendor/autoload.php';
 
-require_once APP.'/Lib/ChatMessageInterface.php';
+require_once APP . '/Lib/ChatMessageInterface.php';
 
-class WebsocketServerShell extends AppShell
-{
+class WebsocketServerShell extends AppShell {
 
     public $uses = ['User'];
 
-    public function main()
-    {
+    public function main() {
         $this->out('Start Websocket Server');
         $chatInterface = new ChatMessageInterface($this);
 

@@ -44,39 +44,39 @@ class ContainerControllerTest extends ControllerTestCase {
         $expectedContainers = [
             [
                 'Container' => [
-                    'id' => 1,
+                    'id'               => 1,
                     'containertype_id' => CT_GLOBAL,
-                    'name' => 'ROOT',
-                    'parent_id' => NULL,
-                    'lft' => '1',
-                    'rght' => '6',
+                    'name'             => 'ROOT',
+                    'parent_id'        => null,
+                    'lft'              => '1',
+                    'rght'             => '6',
                 ]
             ],
             [
                 'Container' => [
-                    'id' => 2,
+                    'id'               => 2,
                     'containertype_id' => CT_TENANT,
-                    'name' => 'TenantA',
-                    'parent_id' => 1,
-                    'lft' => '2',
-                    'rght' => '3',
+                    'name'             => 'TenantA',
+                    'parent_id'        => 1,
+                    'lft'              => '2',
+                    'rght'             => '3',
                 ]
             ],
             [
                 'Container' => [
-                    'id' => 3,
+                    'id'               => 3,
                     'containertype_id' => CT_TENANT,
-                    'name' => 'TenantB',
-                    'parent_id' => 1,
-                    'lft' => '4',
-                    'rght' => '5',
+                    'name'             => 'TenantB',
+                    'parent_id'        => 1,
+                    'lft'              => '4',
+                    'rght'             => '5',
                 ]
             ]
         ];
         $this->assertEquals($expectedContainers, $this->vars['all_containers']);
     }
 
-    public function testDelete(){
+    public function testDelete() {
         $this->testAction('/containers/delete/3', ['method' => 'post']);
         $result = $this->Container->find('all', [
             'recursive' => -1
@@ -84,34 +84,34 @@ class ContainerControllerTest extends ControllerTestCase {
         $expectedContainers = [
             [
                 'Container' => [
-                    'id' => 1,
+                    'id'               => 1,
                     'containertype_id' => CT_GLOBAL,
-                    'name' => 'ROOT',
-                    'parent_id' => NULL,
-                    'lft' => '1',
-                    'rght' => '4',
+                    'name'             => 'ROOT',
+                    'parent_id'        => null,
+                    'lft'              => '1',
+                    'rght'             => '4',
                 ]
             ],
             [
                 'Container' => [
-                    'id' => 2,
+                    'id'               => 2,
                     'containertype_id' => CT_TENANT,
-                    'name' => 'TenantA',
-                    'parent_id' => 1,
-                    'lft' => '2',
-                    'rght' => '3',
+                    'name'             => 'TenantA',
+                    'parent_id'        => 1,
+                    'lft'              => '2',
+                    'rght'             => '3',
                 ]
             ],
         ];
         $this->assertEquals($expectedContainers, $result);
     }
 
-    public function testAdd(){
+    public function testAdd() {
         $this->testAction('/containers/add/', [
             'method' => 'post',
-            'data' => [
-                'name' => 'TenantC',
-                'parent_id' => 1,
+            'data'   => [
+                'name'             => 'TenantC',
+                'parent_id'        => 1,
                 'containertype_id' => CT_TENANT
             ]
         ]);
@@ -121,42 +121,42 @@ class ContainerControllerTest extends ControllerTestCase {
         $expectedContainers = [
             [
                 'Container' => [
-                    'id' => 1,
+                    'id'               => 1,
                     'containertype_id' => CT_GLOBAL,
-                    'name' => 'ROOT',
-                    'parent_id' => NULL,
-                    'lft' => '1',
-                    'rght' => '8',
+                    'name'             => 'ROOT',
+                    'parent_id'        => null,
+                    'lft'              => '1',
+                    'rght'             => '8',
                 ]
             ],
             [
                 'Container' => [
-                    'id' => 2,
+                    'id'               => 2,
                     'containertype_id' => CT_TENANT,
-                    'name' => 'TenantA',
-                    'parent_id' => 1,
-                    'lft' => '2',
-                    'rght' => '3',
+                    'name'             => 'TenantA',
+                    'parent_id'        => 1,
+                    'lft'              => '2',
+                    'rght'             => '3',
                 ]
             ],
             [
                 'Container' => [
-                    'id' => 3,
+                    'id'               => 3,
                     'containertype_id' => CT_TENANT,
-                    'name' => 'TenantB',
-                    'parent_id' => 1,
-                    'lft' => '4',
-                    'rght' => '5',
+                    'name'             => 'TenantB',
+                    'parent_id'        => 1,
+                    'lft'              => '4',
+                    'rght'             => '5',
                 ]
             ],
             [
                 'Container' => [
-                    'id' => 4,
+                    'id'               => 4,
                     'containertype_id' => CT_TENANT,
-                    'name' => 'TenantC',
-                    'parent_id' => 1,
-                    'lft' => '6',
-                    'rght' => '7',
+                    'name'             => 'TenantC',
+                    'parent_id'        => 1,
+                    'lft'              => '6',
+                    'rght'             => '7',
                 ]
             ]
         ];

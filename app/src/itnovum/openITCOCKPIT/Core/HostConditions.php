@@ -61,14 +61,14 @@ class HostConditions {
      * HostConditions constructor.
      * @param array $conditions
      */
-    public function __construct($conditions = []){
+    public function __construct($conditions = []) {
         $this->conditions = $conditions;
     }
 
     /**
      * @return array
      */
-    public function getConditions(){
+    public function getConditions() {
         return $this->conditions;
     }
 
@@ -83,7 +83,7 @@ class HostConditions {
      * @return array
      */
     public function getNotConditions() {
-        if($this->hasNotConditions()){
+        if ($this->hasNotConditions()) {
             return $this->notConditions;
         }
         return [];
@@ -92,20 +92,20 @@ class HostConditions {
     /**
      * @return boolean
      */
-    public function hasNotConditions(){
+    public function hasNotConditions() {
         return !empty($this->notConditions);
     }
 
     /**
      * @return array
      */
-    public function getConditionsForFind(){
+    public function getConditionsForFind() {
         $conditions = $this->conditions;
-        if(!empty($this->containerIds)){
+        if (!empty($this->containerIds)) {
             $conditions['HostsToContainers.container_id'] = $this->containerIds;
         }
 
-        if($this->includeDisabled() === false){
+        if ($this->includeDisabled() === false) {
             $conditions['Host.disabled'] = 0;
         }
 
@@ -115,49 +115,49 @@ class HostConditions {
     /**
      * @return boolean
      */
-    public function includeDisabled(){
+    public function includeDisabled() {
         return $this->includeDisabled;
     }
 
     /**
      * @param boolean $includeDisabled
      */
-    public function setIncludeDisabled($includeDisabled){
+    public function setIncludeDisabled($includeDisabled) {
         $this->includeDisabled = $includeDisabled;
     }
 
     /**
      * @return array
      */
-    public function getContainerIds(){
+    public function getContainerIds() {
         return $this->containerIds;
     }
 
     /**
      * @param array $containerIds
      */
-    public function setContainerIds($containerIds){
+    public function setContainerIds($containerIds) {
         $this->containerIds = $containerIds;
     }
 
     /**
      * @return bool
      */
-    public function hasContainer(){
+    public function hasContainer() {
         return !empty($this->containerIds);
     }
 
     /**
      * @param array $order
      */
-    public function setOrder($order = []){
+    public function setOrder($order = []) {
         $this->order = $order;
     }
 
     /**
      * @return array
      */
-    public function getOrder(){
+    public function getOrder() {
         return $this->order;
     }
 

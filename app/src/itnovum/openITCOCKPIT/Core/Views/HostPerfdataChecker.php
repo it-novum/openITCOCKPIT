@@ -53,7 +53,7 @@ class HostPerfdataChecker {
      * @return bool
      */
     public function hasPerfdata() {
-        if($this->PerfdataBackend->isRrdtool()) {
+        if ($this->PerfdataBackend->isRrdtool()) {
             return is_dir(sprintf('/opt/openitc/nagios/share/perfdata/%s', $this->hostUuid));
         }
         return true;

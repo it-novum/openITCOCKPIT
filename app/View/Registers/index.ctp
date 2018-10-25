@@ -58,7 +58,7 @@
                 'label' => __('License key'),
                 'value' => (isset($licence['Register']['license'])) ? $licence['Register']['license'] : '',
             ];
-            if(ENVIRONMENT === Environments::PRODUCTION){
+            if (ENVIRONMENT === Environments::PRODUCTION) {
                 $options['autocomplete'] = 'off';
             }
             ?>

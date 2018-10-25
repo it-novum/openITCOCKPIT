@@ -49,8 +49,8 @@
         <div class="widget-body">
             <?= $this->Form->create('service-form', [
                 'class' => 'form-horizontal clear',
-            ]).
-            $this->Form->input('Container.parent_id', ['type' => 'hidden', 'value' => $checkedContanerId]).
+            ]) .
+            $this->Form->input('Container.parent_id', ['type' => 'hidden', 'value' => $checkedContanerId]) .
             $this->Form->input('container-name', ['value' => $checkedContanerName, 'readonly' => 'readonly', 'type' => 'text', 'style' => 'width: 100%;', 'label' => __('Container')]);
             ?>
             <div class="form-group">

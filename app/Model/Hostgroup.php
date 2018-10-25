@@ -30,19 +30,18 @@
  */
 
 use itnovum\openITCOCKPIT\Core\HostgroupConditions;
-use itnovum\openITCOCKPIT\Filter\HostgroupFilter;
 
-class Hostgroup extends AppModel
-{
+class Hostgroup extends AppModel {
 
     public $belongsTo = [
         'Container' => [
             'foreignKey' => 'container_id',
             'className'  => 'Container',
-        ]];
+        ]
+    ];
 
     public $hasAndBelongsToMany = [
-        'Host' => [
+        'Host'         => [
             'joinTable'  => 'hosts_to_hostgroups',
             'foreignKey' => 'hostgroup_id',
             'unique'     => true,
@@ -65,14 +64,12 @@ class Hostgroup extends AppModel
         ],
     ];
 
-    public function __construct($id = false, $table = null, $ds = null)
-    {
+    public function __construct($id = false, $table = null, $ds = null) {
         parent::__construct($id, $table, $ds);
         $this->Host = ClassRegistry::init('Host');
     }
 
-    public function hostgroupsByContainerId($container_ids = [], $type = 'all', $index = 'container_id')
-    {
+    public function hostgroupsByContainerId($container_ids = [], $type = 'all', $index = 'container_id') {
         if (!is_array($container_ids)) {
             $container_ids = [$container_ids];
         }
@@ -131,7 +128,7 @@ class Hostgroup extends AppModel
             default:
                 if ($index == 'id') {
                     $result = $this->find('all', [
-                        'recursive' => -1,
+                        'recursive'  => -1,
                         'contain'    => [
                             'Container' => [
                                 'fields' => [
@@ -166,8 +163,7 @@ class Hostgroup extends AppModel
         return [];
     }
 
-    public function findHostgroups($type = 'all', $options = [], $index = 'id')
-    {
+    public function findHostgroups($type = 'all', $options = [], $index = 'id') {
         if ($type == 'all') {
             return $this->find('all', $options);
         }
@@ -183,15 +179,14 @@ class Hostgroup extends AppModel
         }
     }
 
-    public function findList($options = [], $index = 'id')
-    {
+    public function findList($options = [], $index = 'id') {
         return $this->findHostgroups('list', $options, $index);
     }
 
     public function getHostgroupsForAngular(HostgroupConditions $HostgroupConditions, $selected = []) {
         $query = [
             'recursive'  => -1,
-            'fields' => 'Container.name',
+            'fields'     => 'Container.name',
             'joins'      => [
                 [
                     'table'      => 'containers',
@@ -206,10 +201,10 @@ class Hostgroup extends AppModel
             'order'      => [
                 'Container.name' => 'ASC',
             ],
-            'group' => [
+            'group'      => [
                 'Container.id'
             ],
-            'limit' => self::ITN_AJAX_LIMIT
+            'limit'      => self::ITN_AJAX_LIMIT
         ];
         if (is_array($selected)) {
             $selected = array_filter($selected);
@@ -222,7 +217,7 @@ class Hostgroup extends AppModel
         if (!empty($selected)) {
             $query = [
                 'recursive'  => -1,
-                'fields' => 'Container.name',
+                'fields'     => 'Container.name',
                 'joins'      => [
                     [
                         'table'      => 'containers',

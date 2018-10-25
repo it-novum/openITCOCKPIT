@@ -23,9 +23,9 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-use itnovum\openITCOCKPIT\Core\Views\Service;
 use itnovum\openITCOCKPIT\Core\Servicestatus;
 use itnovum\openITCOCKPIT\Core\Views\Host;
+use itnovum\openITCOCKPIT\Core\Views\Service;
 
 $Service = new Service($service);
 $Host = new Host($service);
@@ -46,7 +46,7 @@ $Servicestatus = new Servicestatus($servicestatus['Servicestatus']);
                 <?php if ($this->Acl->hasPermission('browser', 'Hosts')): ?>
                     <a href="<?php echo Router::url([
                         'controller' => 'hosts',
-                        'action' => 'browser',
+                        'action'     => 'browser',
                         $Service->getHostId()
                     ]); ?>">
                     <?php printf('%s (%s)', h($Host->getHostname()), h($Host->getAddress())); ?>
@@ -70,130 +70,130 @@ $Servicestatus = new Servicestatus($servicestatus['Servicestatus']);
 </div>
 
 <article class="col-lg-9 col-md-9">
-<?php
+    <?php
 
-$graphs = [
-    [
-        'label' => __('4 Hours'),
-        'start' => strtotime('4 hours ago'),
-        'end'   => time(),
-    ],
-    [
-        'label' => __('25 Hours'),
-        'start' => strtotime('25 hours ago'),
-        'end'   => time(),
-    ],
-    [
-        'label' => __('One week'),
-        'start' => strtotime('1 week ago'),
-        'end'   => time(),
-    ],
-    [
-        'label' => __('One Month'),
-        'start' => strtotime('1 month ago'),
-        'end'   => time(),
-    ],
-    [
-        'label' => __('One Year'),
-        'start' => strtotime('1 year ago'),
-        'end'   => time(),
-    ],
-];
+    $graphs = [
+        [
+            'label' => __('4 Hours'),
+            'start' => strtotime('4 hours ago'),
+            'end'   => time(),
+        ],
+        [
+            'label' => __('25 Hours'),
+            'start' => strtotime('25 hours ago'),
+            'end'   => time(),
+        ],
+        [
+            'label' => __('One week'),
+            'start' => strtotime('1 week ago'),
+            'end'   => time(),
+        ],
+        [
+            'label' => __('One Month'),
+            'start' => strtotime('1 month ago'),
+            'end'   => time(),
+        ],
+        [
+            'label' => __('One Year'),
+            'start' => strtotime('1 year ago'),
+            'end'   => time(),
+        ],
+    ];
 
-$Rrd = ClassRegistry::init('Rrd');
+    $Rrd = ClassRegistry::init('Rrd');
 
-$rrd_path = Configure::read('rrd.path');
-$rrd_structure_datasources = $Rrd->getPerfDataStructure($rrd_path.$service['Host']['uuid'].DS.$service['Service']['uuid'].'.xml');
-if($rrd_structure_datasources):
-    foreach ($graphs as $graph):
-        foreach ($rrd_structure_datasources as $rrd_structure_datasource):
-            $critValue = isset($rrd_structure_datasource['crit']) ? $rrd_structure_datasource['crit'] : '';
-            $warnValue = isset($rrd_structure_datasource['warn']) ? $rrd_structure_datasource['warn'] : '';
-            $serviceName = ($service['Service']['name'])?$service['Service']['name']:$service['Servicetemplate']['name'];
-            if(!$showThresholds){
-                unset($rrd_structure_datasource['crit']);
-                unset($rrd_structure_datasource['warn']);
-            }
+    $rrd_path = Configure::read('rrd.path');
+    $rrd_structure_datasources = $Rrd->getPerfDataStructure($rrd_path . $service['Host']['uuid'] . DS . $service['Service']['uuid'] . '.xml');
+    if ($rrd_structure_datasources):
+        foreach ($graphs as $graph):
+            foreach ($rrd_structure_datasources as $rrd_structure_datasource):
+                $critValue = isset($rrd_structure_datasource['crit']) ? $rrd_structure_datasource['crit'] : '';
+                $warnValue = isset($rrd_structure_datasource['warn']) ? $rrd_structure_datasource['warn'] : '';
+                $serviceName = ($service['Service']['name']) ? $service['Service']['name'] : $service['Servicetemplate']['name'];
+                if (!$showThresholds) {
+                    unset($rrd_structure_datasource['crit']);
+                    unset($rrd_structure_datasource['warn']);
+                }
 
-            $imageUrl = $Rrd->createRrdGraph($rrd_structure_datasource, [
-                'host_uuid'    => $service['Host']['uuid'],
-                'service_uuid' => $service['Service']['uuid'],
-                'path'         => $rrd_path,
-                'start'        => $graph['start'],
-                'end'          => $graph['end'],
-                'label'        => $service['Host']['name'].' / '.$serviceName,
-            ], [], true);
-            $error = false;
-            if (!isset($imageUrl['webPath'])):
-                $errorImage = $this->Grapher->createGrapherErrorPng($imageUrl);
-                $error = true;
-            endif;
-            ?>
-            <div class="jarviswidget" id="wid-id-0">
-                <header>
-                    <span class="widget-icon"> <i class="fa fa-area-chart"></i> </span>
-                    <h2><?php echo $graph['label']; ?> <span
-                                class="text-muted padding-left-10 graphTime"><?php echo date('d.m.Y H:i', $graph['start']); ?>
-                            - <?php echo date('d.m.Y H:i', $graph['end']); ?></span></h2>
-                    <div class="widget-toolbar" role="menu" style="display:none">
-                        <a href="javascript:void(0);" class="btn btn-danger btn-xs resetZoom"
-                           start="<?php echo h($graph['start']); ?>" end="<?php echo h($graph['end']); ?>"
-                           ds="<?php echo h($rrd_structure_datasource['ds']); ?>"
-                           service_id="<?php echo h($service['Service']['id']); ?>"><i
-                                    class="fa fa-search-minus"></i> <?php echo __('Reset zoom'); ?></a>
-                    </div>
-                </header>
-                <div>
-                    <div class="widget-body">
-                        <div class="pull-left">
-                            <div class="graphContainer">
-                                <?php
-                                if ($error === true):
-                                    echo $this->html->image($errorImage['webPath'], ['class' => 'img-responsive']);
-                                else:
-                                    echo $this->html->image($imageUrl['webPath'], ['class' => 'zoomSelection img-responsive', 'start' => h($graph['start']), 'end' => h($graph['end']), 'service_id' => h($service['Service']['id']), 'ds' => h($rrd_structure_datasource['ds'])]);
-                                endif;
-                                ?>
+                $imageUrl = $Rrd->createRrdGraph($rrd_structure_datasource, [
+                    'host_uuid'    => $service['Host']['uuid'],
+                    'service_uuid' => $service['Service']['uuid'],
+                    'path'         => $rrd_path,
+                    'start'        => $graph['start'],
+                    'end'          => $graph['end'],
+                    'label'        => $service['Host']['name'] . ' / ' . $serviceName,
+                ], [], true);
+                $error = false;
+                if (!isset($imageUrl['webPath'])):
+                    $errorImage = $this->Grapher->createGrapherErrorPng($imageUrl);
+                    $error = true;
+                endif;
+                ?>
+                <div class="jarviswidget" id="wid-id-0">
+                    <header>
+                        <span class="widget-icon"> <i class="fa fa-area-chart"></i> </span>
+                        <h2><?php echo $graph['label']; ?> <span
+                                    class="text-muted padding-left-10 graphTime"><?php echo date('d.m.Y H:i', $graph['start']); ?>
+                                - <?php echo date('d.m.Y H:i', $graph['end']); ?></span></h2>
+                        <div class="widget-toolbar" role="menu" style="display:none">
+                            <a href="javascript:void(0);" class="btn btn-danger btn-xs resetZoom"
+                               start="<?php echo h($graph['start']); ?>" end="<?php echo h($graph['end']); ?>"
+                               ds="<?php echo h($rrd_structure_datasource['ds']); ?>"
+                               service_id="<?php echo h($service['Service']['id']); ?>"><i
+                                        class="fa fa-search-minus"></i> <?php echo __('Reset zoom'); ?></a>
+                        </div>
+                    </header>
+                    <div>
+                        <div class="widget-body">
+                            <div class="pull-left">
+                                <div class="graphContainer">
+                                    <?php
+                                    if ($error === true):
+                                        echo $this->html->image($errorImage['webPath'], ['class' => 'img-responsive']);
+                                    else:
+                                        echo $this->html->image($imageUrl['webPath'], ['class' => 'zoomSelection img-responsive', 'start' => h($graph['start']), 'end' => h($graph['end']), 'service_id' => h($service['Service']['id']), 'ds' => h($rrd_structure_datasource['ds'])]);
+                                    endif;
+                                    ?>
+                                </div>
+                                <div class="grapherLoader text-center" style="display:none;"><i
+                                            class="fa fa-spin fa-cog fa-5x"></i></div>
                             </div>
-                            <div class="grapherLoader text-center" style="display:none;"><i
-                                        class="fa fa-spin fa-cog fa-5x"></i></div>
-                        </div>
-                        <div class="pull-left margin-left-10">
-                            <table>
-                                <tr>
-                                    <td class="padding-right-10 bold"><?php echo __('Datasource'); ?></td>
-                                    <td><?php echo $rrd_structure_datasource['name']; ?></td>
-                                </tr>
-                                <tr>
-                                    <td class="padding-right-10 bold"><?php echo __('Unit'); ?></td>
-                                    <td><?php echo $rrd_structure_datasource['unit']; ?></td>
-                                </tr>
-                                <tr>
-                                    <td class="padding-right-10 bold"><?php echo __('Current value'); ?></td>
-                                    <td><?php echo $rrd_structure_datasource['act']; ?></td>
-                                </tr>
-                                <?php if ($warnValue != ''): ?>
+                            <div class="pull-left margin-left-10">
+                                <table>
                                     <tr>
-                                        <td class="padding-right-10 bold"><?php echo __('Warning'); ?></td>
-                                        <td><?php echo $warnValue; ?></td>
+                                        <td class="padding-right-10 bold"><?php echo __('Datasource'); ?></td>
+                                        <td><?php echo $rrd_structure_datasource['name']; ?></td>
                                     </tr>
-                                <?php endif; ?>
-                                <?php if ($critValue != ''): ?>
                                     <tr>
-                                        <td class="padding-right-10 bold"><?php echo __('Critical'); ?></td>
-                                        <td><?php echo $critValue; ?></td>
+                                        <td class="padding-right-10 bold"><?php echo __('Unit'); ?></td>
+                                        <td><?php echo $rrd_structure_datasource['unit']; ?></td>
                                     </tr>
-                                <?php endif; ?>
-                            </table>
+                                    <tr>
+                                        <td class="padding-right-10 bold"><?php echo __('Current value'); ?></td>
+                                        <td><?php echo $rrd_structure_datasource['act']; ?></td>
+                                    </tr>
+                                    <?php if ($warnValue != ''): ?>
+                                        <tr>
+                                            <td class="padding-right-10 bold"><?php echo __('Warning'); ?></td>
+                                            <td><?php echo $warnValue; ?></td>
+                                        </tr>
+                                    <?php endif; ?>
+                                    <?php if ($critValue != ''): ?>
+                                        <tr>
+                                            <td class="padding-right-10 bold"><?php echo __('Critical'); ?></td>
+                                            <td><?php echo $critValue; ?></td>
+                                        </tr>
+                                    <?php endif; ?>
+                                </table>
+                            </div>
+                            <div class="clearfix"></div>
+                            <div style="padding-bottom: 13px;"><!-- padding spacer --></div>
                         </div>
-                        <div class="clearfix"></div>
-                        <div style="padding-bottom: 13px;"><!-- padding spacer --></div>
                     </div>
                 </div>
-            </div>
+            <?php endforeach; ?>
         <?php endforeach; ?>
-    <?php endforeach; ?>
-<?php
+    <?php
     else:
         $errorImage = $this->Grapher->createGrapherErrorPng('Xml cannot be read');
         echo $this->html->image($errorImage['webPath'], ['class' => 'img-responsive']);
@@ -223,20 +223,20 @@ if($rrd_structure_datasources):
                     <li class="bold">
                         <i class="fa fa-cog"></i> Service
                     </li>
-                <?php
-                foreach ($services as $currentService): ?>
-                    <li>
-                        <a href="/services/grapherSwitch/<?php echo $currentService['Service']['id']; ?>"><?php echo h($currentService[0]['ServiceName']); ?></a>
-                    </li>
-                <?php
-                endforeach;
-                ?>
+                    <?php
+                    foreach ($services as $currentService): ?>
+                        <li>
+                            <a href="/services/grapherSwitch/<?php echo $currentService['Service']['id']; ?>"><?php echo h($currentService[0]['ServiceName']); ?></a>
+                        </li>
+                    <?php
+                    endforeach;
+                    ?>
                 </ul>
-                <hr />
+                <hr/>
                 <div class="row">
                     <?php echo $this->Form->fancyCheckbox('hide-show-thresholds', [
-                        'caption' => _('Display thresholds'),
-                        'checked' => $showThresholds,
+                        'caption'          => _('Display thresholds'),
+                        'checked'          => $showThresholds,
                         'captionGridClass' => 'col col-md-2 no-padding'
                     ]); ?>
                 </div>

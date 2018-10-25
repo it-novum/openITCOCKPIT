@@ -41,8 +41,7 @@ use itnovum\openITCOCKPIT\Exceptions\TimeoutException;
  *
  */
 
-class QueryHandler
-{
+class QueryHandler {
 
     /**
      * @var string
@@ -74,13 +73,11 @@ class QueryHandler
      *
      * @param string $queryHandler Path to QueryHandler.qh file
      */
-    public function __construct($queryHandler)
-    {
+    public function __construct($queryHandler) {
         $this->queryHandler = $queryHandler;
     }
 
-    public function connect()
-    {
+    public function connect() {
         $this->socket = socket_create(AF_UNIX, SOCK_STREAM, 0);
         $connectionResult = socket_connect($this->socket, $this->queryHandler);
 
@@ -98,24 +95,21 @@ class QueryHandler
     /**
      * @return bool
      */
-    public function exists()
-    {
+    public function exists() {
         return file_exists($this->queryHandler);
     }
 
     /**
      * @return string
      */
-    public function getPath()
-    {
+    public function getPath() {
         return $this->queryHandler;
     }
 
     /**
      * @return string
      */
-    public function getLastError()
-    {
+    public function getLastError() {
         $lastError = $this->lastError;
         $this->lastError = '';
 
@@ -126,8 +120,7 @@ class QueryHandler
     /**
      * @return int
      */
-    public function getLastErrorNo()
-    {
+    public function getLastErrorNo() {
         $lastErrorNo = $this->lastErrorNo;
         $this->lastErrorNo = null;
 
@@ -137,8 +130,7 @@ class QueryHandler
     /**
      * @return bool
      */
-    public function ping()
-    {
+    public function ping() {
         if ($this->exists()) {
             $query = '#echo Hi, are you still alive?';
             $assert = 'Hi, are you still alive?';
@@ -152,15 +144,14 @@ class QueryHandler
     }
 
     /**
-     * @param string $query      to send to Query Handler
-     * @param bool   $readResult read the result of the query handler
-     * @param int    $timeout    in seconds
+     * @param string $query to send to Query Handler
+     * @param bool $readResult read the result of the query handler
+     * @param int $timeout in seconds
      *
      * @return null|string
      * @throws TimeoutException
      */
-    public function send($query, $readResult = true, $timeout = 1)
-    {
+    public function send($query, $readResult = true, $timeout = 1) {
         $this->query = $query;
         $this->terminate();
 
@@ -195,8 +186,7 @@ class QueryHandler
         return $response;
     }
 
-    private function terminate()
-    {
+    private function terminate() {
         $this->query .= "\0";
     }
 

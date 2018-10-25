@@ -27,8 +27,7 @@
 namespace itnovum\openITCOCKPIT\SetupShell;
 
 
-class MailConfigurator
-{
+class MailConfigurator {
     /**
      * @var MailConfigValue
      */
@@ -52,13 +51,12 @@ class MailConfigurator
     /**
      * MailConfigurator constructor.
      *
-     * @param MailConfigValue    $host
+     * @param MailConfigValue $host
      * @param MailConfigValueInt $port
-     * @param MailConfigValue    $username
-     * @param MailConfigValue    $password
+     * @param MailConfigValue $username
+     * @param MailConfigValue $password
      */
-    public function __construct(MailConfigValue $host, MailConfigValueInt $port, MailConfigValue $username, MailConfigValue $password)
-    {
+    public function __construct(MailConfigValue $host, MailConfigValueInt $port, MailConfigValue $username, MailConfigValue $password) {
         $this->host = $host;
         $this->port = $port;
         $this->username = $username;
@@ -68,8 +66,7 @@ class MailConfigurator
     /**
      * @return string
      */
-    public function getConfig()
-    {
+    public function getConfig() {
         return sprintf(
             $this->getTemplate(),
             $this->host->getValueForConfig(),
@@ -82,8 +79,7 @@ class MailConfigurator
     /**
      * @return string
      */
-    public function getTemplate()
-    {
+    public function getTemplate() {
         $template = '<?php
 class EmailConfig {
     public $default = array(

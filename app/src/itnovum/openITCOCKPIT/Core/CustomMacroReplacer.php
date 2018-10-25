@@ -25,8 +25,7 @@
 namespace itnovum\openITCOCKPIT\Core;
 
 
-class CustomMacroReplacer
-{
+class CustomMacroReplacer {
 
     /**
      * @var array
@@ -58,8 +57,7 @@ class CustomMacroReplacer
      * @param $customvariables
      * @param $objecttype_id
      */
-    public function __construct($customvariables, $objecttype_id)
-    {
+    public function __construct($customvariables, $objecttype_id) {
         $this->customvariables = $customvariables;
         $this->objecttype_id = $objecttype_id;
         $this->buildMapping();
@@ -68,8 +66,7 @@ class CustomMacroReplacer
     /**
      * @return string
      */
-    public function getMacroPrefix()
-    {
+    public function getMacroPrefix() {
         switch ($this->objecttype_id) {
             case OBJECT_HOSTTEMPLATE:
             case OBJECT_HOST:
@@ -94,8 +91,7 @@ class CustomMacroReplacer
      *
      * @return string mixed
      */
-    public function replaceAllMacros($msg)
-    {
+    public function replaceAllMacros($msg) {
         if (empty($this->mapping['search']) || empty($this->mapping['replace'])) {
             return $msg;
         }
@@ -107,8 +103,7 @@ class CustomMacroReplacer
     /**
      * @return array
      */
-    public function buildMapping()
-    {
+    public function buildMapping() {
         $mapping = [
             'search'  => [],
             'replace' => [],

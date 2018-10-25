@@ -9,8 +9,7 @@
  * Httpful should make this easy.
  */
 
-function exit_unless($condition, $msg = null)
-{
+function exit_unless($condition, $msg = null) {
     if ($condition)
         return;
     echo "[FAIL]\n$msg\n";
@@ -20,8 +19,8 @@ function exit_unless($condition, $msg = null)
 // Create the Httpful Phar
 echo "Building Phar... ";
 $base_dir = dirname(__FILE__);
-$source_dir = $base_dir.'/src/Httpful/';
-$phar_path = $base_dir.'/downloads/httpful.phar';
+$source_dir = $base_dir . '/src/Httpful/';
+$phar_path = $base_dir . '/downloads/httpful.phar';
 $phar = new Phar($phar_path, 0, 'httpful.phar');
 $stub = <<<HEREDOC
 <?php

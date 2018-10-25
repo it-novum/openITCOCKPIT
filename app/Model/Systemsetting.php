@@ -23,11 +23,9 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class Systemsetting extends AppModel
-{
+class Systemsetting extends AppModel {
 
-    public function findNice()
-    {
+    public function findNice() {
         $systemsettings = $this->find('all');
         $all_systemsettings = [];
 
@@ -37,22 +35,22 @@ class Systemsetting extends AppModel
 
         // sort the list like it is in openITCOCKPIT\InitialDatabase\Systemsettings
         // it is just sorting, no deletions, no additions
-        require_once APP.'src'.DS.'itnovum'.DS.'openITCOCKPIT'.DS.'InitialDatabase'.DS.'Systemsetting.php';
+        require_once APP . 'src' . DS . 'itnovum' . DS . 'openITCOCKPIT' . DS . 'InitialDatabase' . DS . 'Systemsetting.php';
         $mySytemsettings = new itnovum\openITCOCKPIT\InitialDatabase\Systemsetting(new Model());
         $myData = $mySytemsettings->getData();
         $sortedSystemSettingsSchema = $sortedSystemSettings = [];
-        foreach ($myData as $singleSetting){
+        foreach ($myData as $singleSetting) {
             $sortedSystemSettingsSchema[$singleSetting['Systemsetting']['section']][] = $singleSetting['Systemsetting']['key'];
         }
 
-        foreach($sortedSystemSettingsSchema as $sSectionName => $sSection){
+        foreach ($sortedSystemSettingsSchema as $sSectionName => $sSection) {
             foreach ($sSection as $sSettingOptionKey) {
 
                 // looping through our Settings
-                foreach ($all_systemsettings as $nsSectionName => $nsSection){
-                    if($sSectionName === $nsSectionName){
-                        foreach ($nsSection as $nsSectionK => $nsSettingOption){
-                            if($sSettingOptionKey === $nsSettingOption['key']){
+                foreach ($all_systemsettings as $nsSectionName => $nsSection) {
+                    if ($sSectionName === $nsSectionName) {
+                        foreach ($nsSection as $nsSectionK => $nsSettingOption) {
+                            if ($sSettingOptionKey === $nsSettingOption['key']) {
                                 $sortedSystemSettings[$sSectionName][] = $nsSettingOption;
                                 unset($all_systemsettings[$nsSectionName][$nsSectionK]);
                                 break 2;
@@ -65,17 +63,16 @@ class Systemsetting extends AppModel
         }
 
         // if in DB there are some options, but not in Schema, we place them at the end
-        foreach ($all_systemsettings as $nsSectionName => $nsSection){
-            foreach ($nsSection as $nsSettingOption){
+        foreach ($all_systemsettings as $nsSectionName => $nsSection) {
+            foreach ($nsSection as $nsSettingOption) {
                 $sortedSystemSettings[$nsSectionName][] = $nsSettingOption;
             }
         }
-        
+
         return $sortedSystemSettings;
     }
 
-    public function findAsArray()
-    {
+    public function findAsArray() {
         $return = [];
         $systemsettings = $this->findNice();
 
@@ -89,13 +86,12 @@ class Systemsetting extends AppModel
         return $return;
     }
 
-    public function findAsArraySection($section = '')
-    {
+    public function findAsArraySection($section = '') {
         $return = [];
         $systemsettings = $this->findAllBySection($section);
 
         $all_systemsettings = [];
-        $all_systemsettings[$section] = Hash::extract($systemsettings, '{n}.Systemsetting[section='.$section.']');
+        $all_systemsettings[$section] = Hash::extract($systemsettings, '{n}.Systemsetting[section=' . $section . ']');
 
         foreach ($all_systemsettings as $key => $values) {
             $return[$key] = [];
@@ -109,8 +105,8 @@ class Systemsetting extends AppModel
     /**
      * @return mixed
      */
-    public function getMasterInstanceName(){
-        if(!Cache::read('systemsettings_master_instance', 'permissions')){
+    public function getMasterInstanceName() {
+        if (!Cache::read('systemsettings_master_instance', 'permissions')) {
             $name = $this->findAsArraySection('FRONTEND')['FRONTEND']['FRONTEND.MASTER_INSTANCE'];
             Cache::write('systemsettings_master_instance', $name, 'permissions');
         }
@@ -120,8 +116,8 @@ class Systemsetting extends AppModel
     /**
      * @return mixed
      */
-    public function getQueryHandlerPath(){
-        if(!Cache::read('systemsettings_qh_path', 'permissions')){
+    public function getQueryHandlerPath() {
+        if (!Cache::read('systemsettings_qh_path', 'permissions')) {
             $path = $this->findByKey('MONITORING.QUERY_HANDLER')['Systemsetting']['value'];
             Cache::write('systemsettings_qh_path', $path, 'permissions');
         }

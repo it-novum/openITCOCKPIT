@@ -33,7 +33,7 @@
 */
 if (!empty($commandarguments)):
     foreach ($commandarguments as $commandargument):
-        echo $this->Form->input('Servicecommandargumentvalue.'.$commandargument['Commandargument']['id'].'.value', [
+        echo $this->Form->input('Servicecommandargumentvalue.' . $commandargument['Commandargument']['id'] . '.value', [
             'label'     => [
                 'class' => 'col col-md-2 control-label text-primary',
                 'text'  => $commandargument['Commandargument']['human_name'],
@@ -45,12 +45,12 @@ if (!empty($commandarguments)):
             'wrapInput' => 'col col-md-8',
             'value'     => (isset($commandargument['Servicecommandargumentvalue']['value']) && $commandargument['Servicecommandargumentvalue']['value'] !== null) ? $commandargument['Servicecommandargumentvalue']['value'] : '',
         ]);
-        echo $this->Form->input('Servicecommandargumentvalue.'.$commandargument['Commandargument']['id'].'.commandargument_id', [
+        echo $this->Form->input('Servicecommandargumentvalue.' . $commandargument['Commandargument']['id'] . '.commandargument_id', [
             'type'  => 'hidden',
             'value' => $commandargument['Commandargument']['id'],
         ]);
         if (isset($commandargument['Servicecommandargumentvalue']['id']) && $commandargument['Servicecommandargumentvalue']['id'] !== null):
-            echo $this->Form->input('Servicecommandargumentvalue.'.$commandargument['Commandargument']['id'].'.id', [
+            echo $this->Form->input('Servicecommandargumentvalue.' . $commandargument['Commandargument']['id'] . '.id', [
                 'type'  => 'hidden',
                 'value' => $commandargument['Servicecommandargumentvalue']['id'],
             ]);
@@ -63,5 +63,5 @@ else:
         <label class="col col-md-8 col-xs-12 text-primary"><i
                     class="fa fa-info-circle"></i> <?php echo __('no parameters for this command defined'); ?></label>
     </div>
-    <?php
+<?php
 endif;

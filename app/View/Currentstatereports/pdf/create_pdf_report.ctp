@@ -42,8 +42,8 @@ $Logo = new Logo();
     ?>
     <?php
     foreach ($css as $cssFile): ?>
-        <link rel="stylesheet" type="text/css" href="<?php echo WWW_ROOT.$cssFile; ?>"/>
-        <?php
+        <link rel="stylesheet" type="text/css" href="<?php echo WWW_ROOT . $cssFile; ?>"/>
+    <?php
     endforeach; ?>
 </head>
 <body class="">
@@ -54,7 +54,7 @@ $Logo = new Logo();
                 <i class="fa fa-calendar txt-color-blueDark"></i>
                 <?php
                 echo __('Current state report ');
-                echo h('('.__('Date: ').$this->Time->format(time(), $this->Auth->user('dateformat'), false, $this->Auth->user('timezone')).')'); ?>
+                echo h('(' . __('Date: ') . $this->Time->format(time(), $this->Auth->user('dateformat'), false, $this->Auth->user('timezone')) . ')'); ?>
             </div>
             <div class="col-md-3 text-left">
                 <img src="<?php echo $Logo->getLogoPdfPath(); ?>" width="200"/>
@@ -136,22 +136,22 @@ $Logo = new Logo();
                                                         <div class="col-md-12 text-center bordered <?php echo $this->Status->ServiceStatusColorSimple($serviceData['Servicestatus']['current_state'])['class']; ?>">
                                                             <strong class=" txt-color-white">
                                                                 <?php
-                                                                echo $perfDataArray[0]['current_value'].' '.$perfDataArray[0]['unit'];
+                                                                echo $perfDataArray[0]['current_value'] . ' ' . $perfDataArray[0]['unit'];
                                                                 ?>
                                                             </strong>
                                                         </div>
-                                                        <?php
+                                                    <?php
                                                     endif;
                                                     ?>
                                                 </div>
                                             </div>
-                                            <?php
+                                        <?php
                                         endforeach; ?>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <?php
+                    <?php
                     endif;
                 endforeach;
                 ?>

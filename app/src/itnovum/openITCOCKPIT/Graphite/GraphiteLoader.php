@@ -245,7 +245,7 @@ class GraphiteLoader {
      */
     private function getBaseRequestOptions() {
         $options = [
-            'format' => 'json',
+            'format'        => 'json',
             'maxDataPoints' => $this->maxDataPoints
         ];
 

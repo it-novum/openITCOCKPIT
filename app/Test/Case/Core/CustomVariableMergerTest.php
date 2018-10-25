@@ -28,16 +28,13 @@ namespace itnovum\openITCOCKPIT\Core;
 
 use itnovum\openITCOCKPIT\Core\ValueObjects\CustomVariable;
 
-class CustomVariableMergerTest extends \CakeTestCase
-{
-    public function testInstance()
-    {
+class CustomVariableMergerTest extends \CakeTestCase {
+    public function testInstance() {
         $CustomVariableMerger = new CustomVariableMerger([], []);
         $this->assertInstanceOf('\itnovum\openITCOCKPIT\Core\CustomVariableMerger', $CustomVariableMerger);
     }
 
-    public function testMergeCustomVariablesOfHosttemplateAndHost()
-    {
+    public function testMergeCustomVariablesOfHosttemplateAndHost() {
         $CustomVariableMerger = new CustomVariableMerger($this->getHostWithDifferentMacros(), $this->getHosttemplateCustomVariables());
 
         $hosttemplateVariable1 = new CustomVariable('EINSTEMPLATE', '1', 0, OBJECT_HOSTTEMPLATE);
@@ -55,8 +52,7 @@ class CustomVariableMergerTest extends \CakeTestCase
         $this->assertEquals($AssertedRepository, $CustomVariableMerger->getCustomVariablesMergedAsRepository());
     }
 
-    public function testMergeCustomVariablesOfHosttemplateAndHost2()
-    {
+    public function testMergeCustomVariablesOfHosttemplateAndHost2() {
         $CustomVariableMerger = new CustomVariableMerger($this->getHostWithDifferentMacrosValues(), $this->getHosttemplateCustomVariables());
 
         $hosttemplateVariable3 = new CustomVariable('DREITEMPLATE', '3', 0, OBJECT_HOSTTEMPLATE);
@@ -74,8 +70,7 @@ class CustomVariableMergerTest extends \CakeTestCase
         $this->assertEquals($AssertedRepository, $CustomVariableMerger->getCustomVariablesMergedAsRepository());
     }
 
-    public function testMergeCustomVariablesOfHostWithEmptyHosttemplate()
-    {
+    public function testMergeCustomVariablesOfHostWithEmptyHosttemplate() {
         $CustomVariableMerger = new CustomVariableMerger($this->getHostWithDifferentMacrosValues(), $this->getHosttemplateWhitoutCustomVariables());
 
         $hostVariable1 = new CustomVariable('FOO', 'BAR', 0, OBJECT_HOST);
@@ -91,13 +86,11 @@ class CustomVariableMergerTest extends \CakeTestCase
     }
 
 
-    private function getHosttemplateWhitoutCustomVariables()
-    {
+    private function getHosttemplateWhitoutCustomVariables() {
         return [];
     }
 
-    private function getHosttemplateCustomVariables()
-    {
+    private function getHosttemplateCustomVariables() {
         return [
             (int)0 => [
                 'name'          => 'EINSTEMPLATE',
@@ -117,8 +110,7 @@ class CustomVariableMergerTest extends \CakeTestCase
         ];
     }
 
-    private function getHostWithDifferentMacros()
-    {
+    private function getHostWithDifferentMacros() {
         return [
             (int)2 => [
                 'name'          => 'FOO',
@@ -128,8 +120,7 @@ class CustomVariableMergerTest extends \CakeTestCase
         ];
     }
 
-    private function getHostWithDifferentMacrosValues()
-    {
+    private function getHostWithDifferentMacrosValues() {
         return [
             (int)0 => [
                 'name'          => 'FOO',

@@ -8,10 +8,8 @@
 
 namespace Httpful\Handlers;
 
-class MimeHandlerAdapter
-{
-    public function __construct(array $args = [])
-    {
+class MimeHandlerAdapter {
+    public function __construct(array $args = []) {
         $this->init($args);
     }
 
@@ -20,8 +18,7 @@ class MimeHandlerAdapter
      *
      * @param array $args
      */
-    public function init(array $args)
-    {
+    public function init(array $args) {
     }
 
     /**
@@ -29,8 +26,7 @@ class MimeHandlerAdapter
      *
      * @return mixed
      */
-    public function parse($body)
-    {
+    public function parse($body) {
         return $body;
     }
 
@@ -39,13 +35,11 @@ class MimeHandlerAdapter
      *
      * @return string
      */
-    function serialize($payload)
-    {
+    function serialize($payload) {
         return (string)$payload;
     }
 
-    protected function stripBom($body)
-    {
+    protected function stripBom($body) {
         if (substr($body, 0, 3) === "\xef\xbb\xbf")  // UTF-8
             $body = substr($body, 3);
         else if (substr($body, 0, 4) === "\xff\xfe\x00\x00" || substr($body, 0, 4) === "\x00\x00\xfe\xff")  // UTF-32

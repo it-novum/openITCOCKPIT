@@ -25,10 +25,7 @@
 namespace itnovum\openITCOCKPIT\InitialDatabase;
 
 
-use MatthiasMullie\Minify\Exception;
-
-class Timeperiod extends Importer
-{
+class Timeperiod extends Importer {
     /**
      * @property \Timeperiod $Model
      */
@@ -36,8 +33,7 @@ class Timeperiod extends Importer
     /**
      * @return bool
      */
-    public function import()
-    {
+    public function import() {
         if ($this->isTableEmpty()) {
             $data = $this->getData();
             foreach ($data as $record) {
@@ -52,8 +48,7 @@ class Timeperiod extends Importer
     /**
      * @return array
      */
-    public function getData()
-    {
+    public function getData() {
         $data = [
             0 =>
                 [

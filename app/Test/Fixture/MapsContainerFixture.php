@@ -1,5 +1,6 @@
 <?php
-class MapsContainerFixture extends CakeTestFixture{
+
+class MapsContainerFixture extends CakeTestFixture {
 
     public $table = 'maps_to_containers';
 

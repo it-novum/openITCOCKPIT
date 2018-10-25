@@ -108,9 +108,9 @@ $Logo = new Logo();
                     </tr>
                     <?php
                     $tmpHostName = null;
-                    if(!empty($servicegroup['Service'])):
+                    if (!empty($servicegroup['Service'])):
                         foreach ($servicegroup['Service'] as $service):
-                            $serviceName = ($service['name'])?$service['name']:$service['Servicetemplate']['name'];
+                            $serviceName = ($service['name']) ? $service['name'] : $service['Servicetemplate']['name'];
                             if ($tmpHostName !== $service['Host']['name']):
                                 $tmpHostName = $service['Host']['name']; ?>
                                 <!-- Host -->
@@ -195,7 +195,8 @@ $Logo = new Logo();
                         <?php endforeach;
                     else: ?>
                         <tr>
-                            <td class="text-center font-xs" colspan="8"><?php echo __('There are no services defined'); ?></td>
+                            <td class="text-center font-xs"
+                                colspan="8"><?php echo __('There are no services defined'); ?></td>
                         </tr>
                     <?php
                     endif;

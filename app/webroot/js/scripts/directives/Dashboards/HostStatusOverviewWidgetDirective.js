@@ -103,12 +103,12 @@ angular.module('openITCOCKPIT').directive('hostStatusOverviewWidget', function($
                 var options = {
                     'angular': true,
                     'filter[Host.name]': $scope.filter.Host.name,
-                    'has_not_been_acknowledged': ($scope.filter.Hoststatus.not_acknowledged)?'1':'0',
-                    'not_in_downtime': ($scope.filter.Hoststatus.not_in_downtime)?'1':'0'
+                    'has_not_been_acknowledged': ($scope.filter.Hoststatus.not_acknowledged) ? '1' : '0',
+                    'not_in_downtime': ($scope.filter.Hoststatus.not_in_downtime) ? '1' : '0'
                 };
-                var currentState = 'filter[Hoststatus.current_state]['+$scope.filter.Hoststatus.current_state+']';
+                var currentState = 'filter[Hoststatus.current_state][' + $scope.filter.Hoststatus.current_state + ']';
                 options[currentState] = 1;
-                return  '/hosts/index/?' + $httpParamSerializer(options);
+                return '/hosts/index/?' + $httpParamSerializer(options);
             };
 
         },

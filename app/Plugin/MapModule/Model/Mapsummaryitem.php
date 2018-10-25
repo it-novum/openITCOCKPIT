@@ -34,7 +34,7 @@ class Mapsummaryitem extends MapModuleAppModel {
 
 
     public $validate = [
-        'map_id'    => [
+        'map_id'          => [
             'notBlank' => [
                 'rule'     => 'notBlank',
                 'message'  => 'No Map selected',
@@ -50,7 +50,7 @@ class Mapsummaryitem extends MapModuleAppModel {
                 'required' => true,
             ],
         ],
-        'object_id' => [
+        'object_id'       => [
             'notBlank' => [
                 'rule'     => 'notBlank',
                 'message'  => 'This field cannot be left blank.',
@@ -66,7 +66,7 @@ class Mapsummaryitem extends MapModuleAppModel {
                 'required' => true,
             ],
         ],
-        'x'         => [
+        'x'               => [
             'notBlank' => [
                 'rule'     => 'notBlank',
                 'message'  => 'This field cannot be left blank.',
@@ -82,7 +82,7 @@ class Mapsummaryitem extends MapModuleAppModel {
                 'required' => true,
             ],
         ],
-        'y'         => [
+        'y'               => [
             'notBlank' => [
                 'rule'     => 'notBlank',
                 'message'  => 'This field cannot be left blank.',
@@ -98,7 +98,7 @@ class Mapsummaryitem extends MapModuleAppModel {
                 'required' => true,
             ],
         ],
-        'z_index'   => [
+        'z_index'         => [
             'notBlank' => [
                 'rule'     => 'notBlank',
                 'message'  => 'This field cannot be left blank.',
@@ -109,19 +109,19 @@ class Mapsummaryitem extends MapModuleAppModel {
                 'message' => 'This field needs to be numeric.',
             ]
         ],
-        'show_label'   => [
-            'numeric'  => [
+        'show_label'      => [
+            'numeric' => [
                 'rule'    => 'numeric',
                 'message' => 'This field needs to be numeric.',
             ]
         ],
-        'label_possition'   => [
-            'numeric'  => [
+        'label_possition' => [
+            'numeric' => [
                 'rule'    => 'numeric',
                 'message' => 'This field needs to be numeric.',
             ]
         ],
-        'type'      => [
+        'type'            => [
             'notBlank'       => [
                 'rule'     => 'notBlank',
                 'message'  => 'This field cannot be left blank.',

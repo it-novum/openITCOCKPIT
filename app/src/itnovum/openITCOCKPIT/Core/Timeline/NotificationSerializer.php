@@ -71,9 +71,9 @@ class NotificationSerializer {
         $size = sizeof($this->records);
 
         for ($i = 0; $i < $size; $i++) {
-            if($this->type === 'host'){
+            if ($this->type === 'host') {
                 $notificationTime = $this->records[$i]['NotificationHost']->getStartTime();
-            }else{
+            } else {
                 $notificationTime = $this->records[$i]['NotificationService']->getStartTime();
             }
             $title = sprintf(

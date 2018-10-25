@@ -23,12 +23,10 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class SetPermissionsShell extends AppShell
-{
+class SetPermissionsShell extends AppShell {
     public $uses = ['Usergroup', 'Aro', 'Tenant'];
 
-    public function main()
-    {
+    public function main() {
         $this->stdout->styles('green', ['text' => 'green']);
         $this->out('Set new user group permissions...    ', false);
         App::import('Component', 'Acl');
@@ -167,8 +165,7 @@ class SetPermissionsShell extends AppShell
         $this->out('<green>done</green>');
     }
 
-    public function _welcome()
-    {
+    public function _welcome() {
         //Disable CakePHP welcome messages
     }
 

@@ -44,7 +44,7 @@
                     <div class="widget-toolbar" role="menu">
                         <?php
                         if ($this->Acl->hasPermission('add')):
-                            echo $this->Html->link(__('New'), '/'.$this->params['controller'].'/add', ['class' => 'btn btn-xs btn-success', 'icon' => 'fa fa-plus']);
+                            echo $this->Html->link(__('New'), '/' . $this->params['controller'] . '/add', ['class' => 'btn btn-xs btn-success', 'icon' => 'fa fa-plus']);
                             echo " "; //Fix HTML
                         endif;
                         ?>
@@ -54,12 +54,12 @@
                     <ul class="nav nav-tabs pull-right" id="widget-tab-1">
                         <li>
                             <a href="/instantreports/index"><i class="fa fa-archive"></i> <span
-                                    class="hidden-mobile hidden-tablet"> <?php echo __('Saved'); ?> </span> </a>
+                                        class="hidden-mobile hidden-tablet"> <?php echo __('Saved'); ?> </span> </a>
                         </li>
                         <?php if ($this->Acl->hasPermission('sendEmailsList')): ?>
                             <li class="active">
                                 <a href="/instantreports/sendEmailsList"><i class="fa fa-paper-plane"></i> <span
-                                        class="hidden-mobile hidden-tablet"> <?php echo __('Send Emails'); ?> </span></a>
+                                            class="hidden-mobile hidden-tablet"> <?php echo __('Send Emails'); ?> </span></a>
                             </li>
                         <?php endif; ?>
 
@@ -68,7 +68,8 @@
                 <div>
                     <div class="widget-body no-padding">
                         <div class="mobile_table">
-                            <table id="timeperiod_list" class="table table-striped table-hover table-bordered smart-form" style="">
+                            <table id="timeperiod_list"
+                                   class="table table-striped table-hover table-bordered smart-form" style="">
                                 <thead>
                                 <tr>
                                     <?php $order = $this->Paginator->param('order'); ?>
@@ -94,15 +95,15 @@
                                     <?php
                                     $allowEdit = $this->Acl->isWritableContainer($instantReport['Instantreport']['container_id']);
                                     $usersText = '';
-                                    if(!empty($instantReport['User'])){
-                                        foreach($instantReport['User'] as $user){
-                                            $usersText .= '<div>'.$user['firstname'] . ' ' . $user['lastname'] . '</div>';
+                                    if (!empty($instantReport['User'])) {
+                                        foreach ($instantReport['User'] as $user) {
+                                            $usersText .= '<div>' . $user['firstname'] . ' ' . $user['lastname'] . '</div>';
                                         }
                                     }
                                     ?>
                                     <tr>
                                         <td><?= $instantReport['Instantreport']['name']; ?></td>
-                                        <td><?= '<i class="fa fa-'.$evaluations[$instantReport['Instantreport']['evaluation']]['icon'].'"></i> '.$evaluations[$instantReport['Instantreport']['evaluation']]['label']; ?></td>
+                                        <td><?= '<i class="fa fa-' . $evaluations[$instantReport['Instantreport']['evaluation']]['icon'] . '"></i> ' . $evaluations[$instantReport['Instantreport']['evaluation']]['label']; ?></td>
                                         <td><?= $types[$instantReport['Instantreport']['type']]; ?></td>
                                         <td><?= $instantReport['Timeperiod']['name']; ?></td>
                                         <td class="text-center"><?= $instantReport['Instantreport']['summary'] === '1' ?
@@ -117,30 +118,30 @@
                                                        class="btn btn-default">&nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
                                                 <?php else: ?>
                                                     <a href="javascript:void(0);" class="btn btn-default">&nbsp;<i
-                                                            class="fa fa-cog"></i>&nbsp;</a>
+                                                                class="fa fa-cog"></i>&nbsp;</a>
                                                 <?php endif; ?>
                                                 <a href="javascript:void(0);" data-toggle="dropdown"
                                                    class="btn btn-default dropdown-toggle"><span
-                                                        class="caret"></span></a>
+                                                            class="caret"></span></a>
                                                 <ul class="dropdown-menu pull-right">
                                                     <?php if ($this->Acl->hasPermission('edit') && $allowEdit): ?>
                                                         <li>
                                                             <a href="<?php echo Router::url(['action' => 'edit', $instantReport['Instantreport']['id']]); ?>"><i
-                                                                    class="fa fa-cog"></i> <?php echo __('Edit'); ?>
+                                                                        class="fa fa-cog"></i> <?php echo __('Edit'); ?>
                                                             </a>
                                                         </li>
                                                     <?php endif; ?>
                                                     <?php if ($this->Acl->hasPermission('generate')): ?>
                                                         <li>
                                                             <a href="<?php echo Router::url(['action' => 'generate', $instantReport['Instantreport']['id']]); ?>"><i
-                                                                    class="fa fa-file-image-o"></i> <?php echo __('Generate'); ?>
+                                                                        class="fa fa-file-image-o"></i> <?php echo __('Generate'); ?>
                                                             </a>
                                                         </li>
                                                     <?php endif; ?>
                                                     <?php if ($this->Acl->hasPermission('delete') && $allowEdit): ?>
                                                         <li class="divider"></li>
                                                         <li>
-                                                            <?php echo $this->Form->postLink('<i class="fa fa-trash-o"></i> '.__('Delete'), ['controller' => 'instantreports', 'action' => 'delete', $instantReport['Instantreport']['id']], ['class' => 'txt-color-red', 'escape' => false]); ?>
+                                                            <?php echo $this->Form->postLink('<i class="fa fa-trash-o"></i> ' . __('Delete'), ['controller' => 'instantreports', 'action' => 'delete', $instantReport['Instantreport']['id']], ['class' => 'txt-color-red', 'escape' => false]); ?>
                                                         </li>
                                                     <?php endif; ?>
                                                 </ul>
@@ -163,7 +164,7 @@
                             <div class="row">
                                 <div class="col-sm-6">
                                     <div class="dataTables_info" style="line-height: 32px;"
-                                         id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('Page').' {:page} '.__('of').' {:pages}, '.__('Total').' {:count} '.__('entries')); ?></div>
+                                         id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('Page') . ' {:page} ' . __('of') . ' {:pages}, ' . __('Total') . ' {:count} ' . __('entries')); ?></div>
                                 </div>
                                 <div class="col-sm-6 text-right">
                                     <div class="dataTables_paginate paging_bootstrap">

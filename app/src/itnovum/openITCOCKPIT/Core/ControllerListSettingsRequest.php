@@ -25,8 +25,8 @@
 namespace itnovum\openITCOCKPIT\Core;
 
 
-use itnovum\openITCOCKPIT\Core\ValueObjects\ListSettingsDefaults;
 use itnovum\openITCOCKPIT\Core\ValueObjects\HostStates;
+use itnovum\openITCOCKPIT\Core\ValueObjects\ListSettingsDefaults;
 
 abstract class ControllerListSettingsRequest {
 
@@ -51,7 +51,7 @@ abstract class ControllerListSettingsRequest {
      */
     protected $requestParameters = [];
 
-    public function __construct(\CakeRequest $request, HostStates $HostStates, $userLimit = 30){
+    public function __construct(\CakeRequest $request, HostStates $HostStates, $userLimit = 30) {
         $this->ListSettingsDefaults = new ListSettingsDefaults($userLimit);
 
         $this->HostStates = $HostStates;
@@ -70,7 +70,7 @@ abstract class ControllerListSettingsRequest {
     /**
      * @return int
      */
-    public function getLimit(){
+    public function getLimit() {
         if (isset($this->requestParameters['Listsettings']['limit'])) {
             return (int)$this->requestParameters['Listsettings']['limit'];
         }
@@ -81,7 +81,7 @@ abstract class ControllerListSettingsRequest {
      * @param array $defaultOrder
      * @return array
      */
-    public function getOrder($defaultOrder = []){
+    public function getOrder($defaultOrder = []) {
         if (isset($this->request['named']['sort']) && isset($this->request['named']['direction'])) {
             return [
                 $this->request['named']['sort'] => $this->request['named']['direction']
@@ -94,7 +94,7 @@ abstract class ControllerListSettingsRequest {
     /**
      * @return false|int
      */
-    public function getFrom(){
+    public function getFrom() {
         if (isset($this->requestParameters['Listsettings']['from'])) {
             return strtotime($this->requestParameters['Listsettings']['from']);
         }
@@ -104,7 +104,7 @@ abstract class ControllerListSettingsRequest {
     /**
      * @return false|int
      */
-    public function getTo(){
+    public function getTo() {
         if (isset($this->requestParameters['Listsettings']['to'])) {
             return strtotime($this->requestParameters['Listsettings']['to']);
         }
@@ -114,7 +114,7 @@ abstract class ControllerListSettingsRequest {
     /**
      * @return HostStates
      */
-    public function getHostStates(){
+    public function getHostStates() {
         $availableStates = $this->HostStates->getAvailableStateIds();
 
         if (isset($this->requestParameters['Listsettings']['state_types'])) {
@@ -130,7 +130,7 @@ abstract class ControllerListSettingsRequest {
     /**
      * @return array
      */
-    public function getRequestSettingsForListSettings(){
+    public function getRequestSettingsForListSettings() {
         //Overwirte me!
         return [];
     }

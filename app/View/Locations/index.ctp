@@ -45,7 +45,7 @@
                         <div class="widget-toolbar" role="menu">
                             <?php
                             if ($this->Acl->hasPermission('add')):
-                                echo $this->Html->link(__('New'), '/'.$this->params['controller'].'/add', ['class' => 'btn btn-xs btn-success', 'icon' => 'fa fa-plus']);
+                                echo $this->Html->link(__('New'), '/' . $this->params['controller'] . '/add', ['class' => 'btn btn-xs btn-success', 'icon' => 'fa fa-plus']);
                                 echo " "; //Fix HTML
                             endif;
                             echo $this->Html->link(__('Filter'), 'javascript:', ['class' => 'oitc-list-filter btn btn-xs btn-primary toggle', 'hide-on-render' => 'true', 'icon' => 'fa fa-filter']);
@@ -66,9 +66,10 @@
                     <div>
 
                         <div class="widget-body no-padding">
-                            <?php echo $this->ListFilter->renderFilterbox($filters, [], '<i class="fa fa-filter"></i> '.__('Filter'), false, false); ?>
+                            <?php echo $this->ListFilter->renderFilterbox($filters, [], '<i class="fa fa-filter"></i> ' . __('Filter'), false, false); ?>
                             <div class="mobile_table">
-                                <table id="location_list" class="table table-striped table-hover table-bordered smart-form"
+                                <table id="location_list"
+                                       class="table table-striped table-hover table-bordered smart-form"
                                        style="">
                                     <thead>
                                     <tr>
@@ -89,7 +90,7 @@
                                             <td><?php echo $location['Container']['name']; ?></td>
                                             <td><?php echo $location['Location']['description']; ?></td>
                                             <td><?php if ($location['Container']['parent_id'] == 1): echo __('/root/');
-                                                else: ?> <?php echo $container[$location['Container']['parent_id']]; ?><?php endif; ?>
+                                                else: ?><?php echo $container[$location['Container']['parent_id']]; ?><?php endif; ?>
                                             </td>
                                             <td>
                                                 <div class="btn-group">
@@ -115,9 +116,10 @@
                                                         <?php if ($this->Acl->hasPermission('showDetails', 'containers')): ?>
                                                             <li>
                                                                 <a href="<?php echo Router::url([
-                                                                    'action' => 'showDetails',
+                                                                    'action'     => 'showDetails',
                                                                     'controller' => 'containers',
-                                                                    $location['Location']['container_id']]); ?>">
+                                                                    $location['Location']['container_id']
+                                                                ]); ?>">
                                                                     <i class="fa fa-info-circle"></i> <?php echo __('Show details'); ?>
                                                                 </a>
                                                             </li>
@@ -152,7 +154,7 @@
                                 <div class="row">
                                     <div class="col-sm-6">
                                         <div class="dataTables_info" style="line-height: 32px;"
-                                             id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('Page').' {:page} '.__('of').' {:pages}, '.__('Total').' {:count} '.__('entries')); ?></div>
+                                             id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('Page') . ' {:page} ' . __('of') . ' {:pages}, ' . __('Total') . ' {:count} ' . __('entries')); ?></div>
                                     </div>
                                     <div class="col-sm-6 text-right">
                                         <div class="dataTables_paginate paging_bootstrap">

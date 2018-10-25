@@ -26,7 +26,6 @@
 
 App::uses('AppController', 'Controller');
 
-class AdminAppController extends AppController
-{
+class AdminAppController extends AppController {
 
 }

@@ -71,7 +71,8 @@
                             echo $this->ListFilter->renderFilterbox($filters, $options, '<i class="fa fa-filter"></i> ' . __('Filter'), false, false);
                             ?>
                             <div class="mobile_table">
-                                <table id="automaps_list" class="table table-striped table-hover table-bordered smart-form"
+                                <table id="automaps_list"
+                                       class="table table-striped table-hover table-bordered smart-form"
                                        style="">
                                     <?php $order = $this->Paginator->param('order'); ?>
                                     <thead>

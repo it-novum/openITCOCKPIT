@@ -46,7 +46,7 @@
                         <div class="widget-toolbar" role="menu">
                             <?php
                             if ($this->Acl->hasPermission('add')):
-                                echo $this->Html->link(__('New'), '/'.$this->params['controller'].'/add', ['class' => 'btn btn-xs btn-success', 'icon' => 'fa fa-plus']);
+                                echo $this->Html->link(__('New'), '/' . $this->params['controller'] . '/add', ['class' => 'btn btn-xs btn-success', 'icon' => 'fa fa-plus']);
                                 //echo " "; //Fix HTML if search is implemented
                             endif;
 
@@ -71,7 +71,8 @@
                         <!-- widget content -->
                         <div class="widget-body no-padding">
                             <div class="mobile_table">
-                                <table id="serviceescalation_list" class="table table-striped table-hover table-bordered smart-form"
+                                <table id="serviceescalation_list"
+                                       class="table table-striped table-hover table-bordered smart-form"
                                        style="">
                                     <thead>
                                     <tr>
@@ -112,8 +113,8 @@
                                                         else:
                                                             echo h($service['Service']['Host']['name']);
                                                         endif;
-                                                        echo ($service['Service']['Host']['disabled'])?
-                                                            ' <i class="fa fa-power-off text-danger" title="disabled" aria-hidden="true"></i> ':'';
+                                                        echo ($service['Service']['Host']['disabled']) ?
+                                                            ' <i class="fa fa-power-off text-danger" title="disabled" aria-hidden="true"></i> ' : '';
                                                         echo '/';
                                                         if ($this->Acl->hasPermission('edit', 'services')):
                                                             echo $this->Html->link(
@@ -128,8 +129,8 @@
                                                         else:
                                                             echo h(($service['Service']['name']) ? $service['Service']['name'] : $service['Service']['Servicetemplate']['name']);
                                                         endif;
-                                                        echo ($service['Service']['disabled'])?
-                                                            ' <i class="fa fa-plug text-danger" title="disabled" aria-hidden="true"></i>':'';
+                                                        echo ($service['Service']['disabled']) ?
+                                                            ' <i class="fa fa-plug text-danger" title="disabled" aria-hidden="true"></i>' : '';
                                                         echo '</li>';
                                                     endforeach;
                                                     ?>
@@ -153,8 +154,8 @@
                                                         else:
                                                             echo h($service_exclude['Service']['Host']['name']);
                                                         endif;
-                                                        echo ($service_exclude['Service']['Host']['disabled'])?
-                                                            ' <i class="fa fa-power-off text-danger" title="disabled" aria-hidden="true"></i> ':'';
+                                                        echo ($service_exclude['Service']['Host']['disabled']) ?
+                                                            ' <i class="fa fa-power-off text-danger" title="disabled" aria-hidden="true"></i> ' : '';
                                                         echo '/';
                                                         if ($this->Acl->hasPermission('edit', 'services')):
                                                             echo $this->Html->link(
@@ -169,8 +170,8 @@
                                                         else:
                                                             echo h(($service_exclude['Service']['name']) ? $service_exclude['Service']['name'] : $service_exclude['Service']['Servicetemplate']['name']);
                                                         endif;
-                                                        echo ($service_exclude['Service']['disabled'])?
-                                                            ' <i class="fa fa-plug text-danger" title="disabled" aria-hidden="true"></i>':'';
+                                                        echo ($service_exclude['Service']['disabled']) ?
+                                                            ' <i class="fa fa-plug text-danger" title="disabled" aria-hidden="true"></i>' : '';
                                                         echo '</li>';
                                                     endforeach;
                                                     ?>
@@ -299,7 +300,7 @@
                                 <div class="row">
                                     <div class="col-sm-6">
                                         <div class="dataTables_info" style="line-height: 32px;"
-                                             id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('Page').' {:page} '.__('of').' {:pages}, '.__('Total').' {:count} '.__('entries')); ?></div>
+                                             id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('Page') . ' {:page} ' . __('of') . ' {:pages}, ' . __('Total') . ' {:count} ' . __('entries')); ?></div>
                                     </div>
                                     <div class="col-sm-6 text-right">
                                         <div class="dataTables_paginate paging_bootstrap">
@@ -325,14 +326,13 @@
  * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
  * @since  3.0
  */
-function __viewServiceescalationOptions($serviceescalation = [])
-{
+function __viewServiceescalationOptions($serviceescalation = []) {
     $options = ['escalate_on_recovery' => 'txt-color-greenLight', 'escalate_on_warning' => 'txt-color-orange', 'escalate_on_critical' => 'txt-color-redLight', 'escalate_on_unknown' => 'txt-color-blueDark'];
     $class = 'fa fa-square ';
     $html = '';
     foreach ($options as $option => $color) {
         if (isset($serviceescalation['Serviceescalation'][$option]) && $serviceescalation['Serviceescalation'][$option] == 1) {
-            $html .= '<i class="'.$class.$color.'"></i>&nbsp';
+            $html .= '<i class="' . $class . $color . '"></i>&nbsp';
         }
     }
 

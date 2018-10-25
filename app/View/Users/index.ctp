@@ -45,10 +45,10 @@
                     <div class="widget-toolbar" role="menu">
                         <?php
                         if ($this->Acl->hasPermission('add')):
-                            echo $this->Html->link(__('Create local user'), '/'.$this->params['controller'].'/add', ['class' => 'btn btn-xs btn-success', 'icon' => 'fa fa-plus']);
+                            echo $this->Html->link(__('Create local user'), '/' . $this->params['controller'] . '/add', ['class' => 'btn btn-xs btn-success', 'icon' => 'fa fa-plus']);
                             echo " "; //Fix HTML
                             if ($systemsettings['FRONTEND']['FRONTEND.AUTH_METHOD'] == 'ldap'):
-                                echo $this->Html->link(__('Import from LDAP'), '/'.$this->params['controller'].'/addFromLdap', ['class' => 'btn btn-xs btn-warning', 'icon' => 'fa fa-plus']);
+                                echo $this->Html->link(__('Import from LDAP'), '/' . $this->params['controller'] . '/addFromLdap', ['class' => 'btn btn-xs btn-warning', 'icon' => 'fa fa-plus']);
                                 echo " "; //Fix HTML
                             endif;
                         endif;
@@ -67,7 +67,7 @@
                 <!-- widget div-->
                 <div>
                     <div class="widget-body no-padding">
-                        <?php echo $this->ListFilter->renderFilterbox($filters, [], '<i class="fa fa-filter"></i> '.__('Filter'), false, false); ?>
+                        <?php echo $this->ListFilter->renderFilterbox($filters, [], '<i class="fa fa-filter"></i> ' . __('Filter'), false, false); ?>
                         <div class="tab-content">
                             <!-- <form action="/nagios_module/commands/edit/" id="multiEditForm" method="post"> -->
                             <div class="mobile_table">
@@ -97,7 +97,7 @@
                                         <?php $allowEdit = $this->Acl->isWritableContainer($userContainerIds[$user['User']['id']]['Container']) ?>
                                         <tr>
                                             <td><?php echo h($user['User']['full_name']); ?></td>
-                                            <td><?php echo $this->Html->link(h($user['User']['email']), 'mailto:'.$user['User']['email']); ?></td>
+                                            <td><?php echo $this->Html->link(h($user['User']['email']), 'mailto:' . $user['User']['email']); ?></td>
                                             <td><?php echo h($user['User']['phone']); ?></td>
                                             <td><?php echo h($user['User']['company']); ?></td>
                                             <td><?php echo h($user['Usergroup']['name']); ?></td>
@@ -138,7 +138,7 @@
                                                         <?php if ($this->Acl->hasPermission('delete') && $allowEdit): ?>
                                                             <li class="divider"></li>
                                                             <li>
-                                                                <?php echo $this->Form->postLink('<i class="fa fa-trash-o"></i> '.__('Delete'), ['plugin' => '', 'controller' => 'users', 'action' => 'delete', $user['User']['id']], ['class' => 'txt-color-red', 'escape' => false]); ?>
+                                                                <?php echo $this->Form->postLink('<i class="fa fa-trash-o"></i> ' . __('Delete'), ['plugin' => '', 'controller' => 'users', 'action' => 'delete', $user['User']['id']], ['class' => 'txt-color-red', 'escape' => false]); ?>
                                                             </li>
                                                         <?php endif; ?>
                                                     </ul>
@@ -162,7 +162,7 @@
                             <div class="row">
                                 <div class="col-sm-6">
                                     <div class="dataTables_info" style="line-height: 32px;"
-                                         id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('Page').' {:page} '.__('of').' {:pages}, '.__('Total').' {:count} '.__('entries')); ?></div>
+                                         id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('Page') . ' {:page} ' . __('of') . ' {:pages}, ' . __('Total') . ' {:count} ' . __('entries')); ?></div>
                                 </div>
                                 <div class="col-sm-6 text-right">
                                     <div class="dataTables_paginate paging_bootstrap">

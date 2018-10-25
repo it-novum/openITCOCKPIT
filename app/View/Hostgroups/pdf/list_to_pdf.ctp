@@ -99,7 +99,7 @@ $Logo = new Logo();
                 <?php if (!empty($hostgroup['Host'])): ?>
                     <?php foreach ($hostgroup['Host'] as $key => $host): ?>
                         <?php
-                        if(isset($hostgroup['all_hoststatus'][$host['uuid']]['Hoststatus'])):
+                        if (isset($hostgroup['all_hoststatus'][$host['uuid']]['Hoststatus'])):
                             $Hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus(
                                 $hostgroup['all_hoststatus'][$host['uuid']]['Hoststatus']
                             );

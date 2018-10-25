@@ -23,9 +23,6 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-use itnovum\openITCOCKPIT\Core\Views\Host;
-use itnovum\openITCOCKPIT\Core\Views\Hosttemplate;
-
 ?>
 <div class="row">
     <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
@@ -74,24 +71,28 @@ use itnovum\openITCOCKPIT\Core\Views\Hosttemplate;
                     <ul class="nav nav-tabs pull-right" id="widget-tab-1">
                         <?php if ($this->Acl->hasPermission('index')): ?>
                             <li class="">
-                                <a href="<?php echo Router::url(array_merge(['controller' => 'hosts', 'action' => 'index'], $this->params['named'])); ?>"><i class="fa fa-stethoscope"></i> <span
+                                <a href="<?php echo Router::url(array_merge(['controller' => 'hosts', 'action' => 'index'], $this->params['named'])); ?>"><i
+                                            class="fa fa-stethoscope"></i> <span
                                             class="hidden-mobile hidden-tablet"> <?php echo __('Monitored'); ?> </span>
                                 </a>
                             </li>
                         <?php endif; ?>
                         <li class="active">
-                            <a href="<?php echo Router::url(array_merge(['controller' => 'hosts', 'action' => 'notMonitored'], $this->params['named'])); ?>"><i class="fa fa-user-md"></i> <span
+                            <a href="<?php echo Router::url(array_merge(['controller' => 'hosts', 'action' => 'notMonitored'], $this->params['named'])); ?>"><i
+                                        class="fa fa-user-md"></i> <span
                                         class="hidden-mobile hidden-tablet"> <?php echo __('Not monitored'); ?> </span></a>
                         </li>
                         <?php if ($this->Acl->hasPermission('disabled')): ?>
                             <li>
-                                <a href="<?php echo Router::url(array_merge(['controller' => 'hosts', 'action' => 'disabled'], $this->params['named'])); ?>"><i class="fa fa-power-off"></i> <span
+                                <a href="<?php echo Router::url(array_merge(['controller' => 'hosts', 'action' => 'disabled'], $this->params['named'])); ?>"><i
+                                            class="fa fa-power-off"></i> <span
                                             class="hidden-mobile hidden-tablet"> <?php echo __('Disabled'); ?> </span></a>
                             </li>
                         <?php endif; ?>
                         <?php if ($this->Acl->hasPermission('index', 'DeletedHosts')): ?>
                             <li>
-                                <a href="<?php echo Router::url(array_merge(['controller' => 'deleted_hosts', 'action' => 'index'], $this->params['named'])); ?>"><i class="fa fa-trash-o"></i> <span
+                                <a href="<?php echo Router::url(array_merge(['controller' => 'deleted_hosts', 'action' => 'index'], $this->params['named'])); ?>"><i
+                                            class="fa fa-trash-o"></i> <span
                                             class="hidden-mobile hidden-tablet"> <?php echo __('Deleted'); ?> </span></a>
                             </li>
                         <?php endif; ?>
@@ -364,7 +365,8 @@ use itnovum\openITCOCKPIT\Core\Views\Hosttemplate;
                                         <?php endif; ?>
                                         <?php if ($this->Acl->hasPermission('deactivate', 'Hosts', '')): ?>
                                             <li>
-                                                <a ng-click="confirmDeactivate(getObjectsForDelete())" class="a-clean pointer">
+                                                <a ng-click="confirmDeactivate(getObjectsForDelete())"
+                                                   class="a-clean pointer">
                                                     <i class="fa fa-plug"></i> <?php echo __('Disable'); ?>
                                                 </a>
                                             </li>

@@ -82,43 +82,43 @@ class DeletedService {
     private $UserTime;
 
     public function __construct($data, $UserTime = null) {
-        if (isset($data['DeletedService']['id'])){
+        if (isset($data['DeletedService']['id'])) {
             $this->id = $data['DeletedService']['id'];
         }
 
-        if (isset($data['DeletedService']['uuid'])){
+        if (isset($data['DeletedService']['uuid'])) {
             $this->uuid = $data['DeletedService']['uuid'];
         }
 
-        if (isset($data['DeletedService']['host_uuid'])){
+        if (isset($data['DeletedService']['host_uuid'])) {
             $this->hostUuid = $data['DeletedService']['uuid'];
         }
 
-        if (isset($data['DeletedService']['servicetemplate_id'])){
+        if (isset($data['DeletedService']['servicetemplate_id'])) {
             $this->servicetemplateId = (int)$data['DeletedService']['servicetemplate_id'];
         }
 
-        if (isset($data['DeletedService']['host_id'])){
+        if (isset($data['DeletedService']['host_id'])) {
             $this->hostId = (int)$data['DeletedService']['host_id'];
         }
 
-        if (isset($data['DeletedService']['name'])){
+        if (isset($data['DeletedService']['name'])) {
             $this->name = $data['DeletedService']['name'];
         }
 
-        if (isset($data['DeletedService']['description'])){
+        if (isset($data['DeletedService']['description'])) {
             $this->description = $data['DeletedService']['description'];
         }
 
-        if (isset($data['DeletedService']['deleted_perfdata'])){
+        if (isset($data['DeletedService']['deleted_perfdata'])) {
             $this->perfdataDeleted = (bool)$data['DeletedService']['deleted_perfdata'];
         }
 
-        if (isset($data['DeletedService']['created'])){
+        if (isset($data['DeletedService']['created'])) {
             $this->created = strtotime($data['DeletedService']['created']);
         }
 
-        if (isset($data['DeletedService']['modified'])){
+        if (isset($data['DeletedService']['modified'])) {
             $this->modified = strtotime($data['DeletedService']['modified']);
         }
 
@@ -128,13 +128,13 @@ class DeletedService {
     /**
      * @return array
      */
-    public function toArray(){
+    public function toArray() {
         $arr = get_object_vars($this);
-        if(isset($arr['UserTime'])){
+        if (isset($arr['UserTime'])) {
             unset($arr['UserTime']);
         }
 
-        if($this->UserTime !== null) {
+        if ($this->UserTime !== null) {
             $arr['created'] = $this->UserTime->format($this->created);
             $arr['modified'] = $this->UserTime->format($this->modified);
         }

@@ -25,10 +25,7 @@
 namespace itnovum\openITCOCKPIT\Core;
 
 
-use itnovum\openITCOCKPIT\Core\ValueObjects\CustomVariable;
-
-class CustomVariableDiffer extends CustomVariableHelper
-{
+class CustomVariableDiffer extends CustomVariableHelper {
 
     /**
      * @var CustomVariablesRepository
@@ -43,11 +40,10 @@ class CustomVariableDiffer extends CustomVariableHelper
     /**
      * CustomVariableDiffer constructor.
      *
-     * @param array $hostCustomVariables         from CakePHP's find
+     * @param array $hostCustomVariables from CakePHP's find
      * @param array $hosttemplateCustomVariables from CakePHP's find
      */
-    public function __construct($hostCustomVariables, $hosttemplateCustomVariables)
-    {
+    public function __construct($hostCustomVariables, $hosttemplateCustomVariables) {
         $this->hostCustomVariablesRepository = $this->convertCustomVariablesToRepository($hostCustomVariables);
         $this->hosttemplateCustomVariablesRepository = $this->convertCustomVariablesToRepository($hosttemplateCustomVariables);
     }
@@ -55,8 +51,7 @@ class CustomVariableDiffer extends CustomVariableHelper
     /**
      * @return CustomVariablesRepository
      */
-    public function getCustomVariablesToSaveAsRepository()
-    {
+    public function getCustomVariablesToSaveAsRepository() {
         $variablesToSaveAsRepository = new CustomVariablesRepository();
 
         foreach ($this->hostCustomVariablesRepository->getAllCustomVariables() as $hostCustomVariable) {

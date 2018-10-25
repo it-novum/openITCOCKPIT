@@ -24,8 +24,7 @@
 //	confirmation.
 
 
-class ValidationCollection
-{
+class ValidationCollection {
     public static $notBlank = [
         'notBlank' => [
             'rule'     => 'notBlank',
@@ -49,8 +48,7 @@ class ValidationCollection
         ],
     ];
 
-    public static function getIdRule()
-    {
+    public static function getIdRule() {
         return array_merge(
             self::$notBlank,
             self::$numeric,

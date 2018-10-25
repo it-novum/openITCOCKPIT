@@ -24,16 +24,14 @@
 
 namespace itnovum\openITCOCKPIT\ImportTemplates;
 
-class ImportTemplates
-{
+class ImportTemplates {
     public $mapping = [];
     //root path for json and check files
     public $path = '';
     public $contactId = [1];
     public $macroNames;
 
-    public function __construct(\Model $servicetemplate, \Model $servicetemplategroup, \Model $hosttemplate, \Model $contact, \Model $command, \Model $commandargument, \Model $macro)
-    {
+    public function __construct(\Model $servicetemplate, \Model $servicetemplategroup, \Model $hosttemplate, \Model $contact, \Model $command, \Model $commandargument, \Model $macro) {
         $this->Servicetemplate = $servicetemplate;
         $this->Servicetemplategroup = $servicetemplategroup;
         $this->Hosttemplate = $hosttemplate;
@@ -49,11 +47,11 @@ class ImportTemplates
      */
     public function checkDependencies() {
         $contact = $this->Contact->find('first', [
-            'recursive' => -1,
+            'recursive'  => -1,
             'conditions' => [
                 'Contact.name' => 'info'
             ],
-            'fields' => [
+            'fields'     => [
                 'Contact.id'
             ]
         ]);
@@ -64,9 +62,9 @@ class ImportTemplates
     }
 
     public function startInstall($files) {
-        foreach($files as $key => $file) {
+        foreach ($files as $key => $file) {
             $stData = $this->readJsonFile($file);
-            switch($key){
+            switch ($key) {
                 case 'Macro':
                     $dataToSave = $this->setMacroNames($stData);
                     break;
@@ -99,7 +97,7 @@ class ImportTemplates
                 //calling model->create() so we can use save in a loop
                 $this->{$model}->create();
                 //check if the record already exists
-                switch($model){
+                switch ($model) {
                     case 'Macro':
                         $field = 'description';
                         break;
@@ -112,9 +110,9 @@ class ImportTemplates
                 }
 
                 $existingData = $this->{$model}->find('first', [
-                    'recursive' => -1,
+                    'recursive'  => -1,
                     'conditions' => [
-                        $model . '.'.$field => $data[$model][$field]
+                        $model . '.' . $field => $data[$model][$field]
                     ]
                 ]);
 
@@ -223,13 +221,13 @@ class ImportTemplates
      */
     private function modifyServicetemplategroupdata($servicetemplategroupData) {
         foreach ($servicetemplategroupData as $keyGroup => $servicetemplate) {
-            foreach ($servicetemplate['Servicetemplate'] as $keyTemplate => $template){
+            foreach ($servicetemplate['Servicetemplate'] as $keyTemplate => $template) {
                 $templateId = $this->mapping['Template'][$template];
                 //replacing the servicetemplate uuid with the servicetemplate id
                 $servicetemplategroupData[$keyGroup]['Servicetemplate'][$keyTemplate] = $templateId;
             }
 
-            foreach($servicetemplate['Servicetemplategroup']['Servicetemplate'] as $key => $groupData) {
+            foreach ($servicetemplate['Servicetemplategroup']['Servicetemplate'] as $key => $groupData) {
                 $templateId = $this->mapping['Template'][$groupData];
                 $servicetemplategroupData[$keyGroup]['Servicetemplategroup']['Servicetemplate'][$key] = $templateId;
             }
@@ -255,20 +253,20 @@ class ImportTemplates
         $this->mapping['Commandarguments'][$commandId] = $commandargIds;
     }
 
-    private function setMacroNames($macros){
+    private function setMacroNames($macros) {
         $lastMacro = $this->Macro->find('first', [
             'order' => [
                 'Macro.id' => 'DESC'
             ],
         ]);
 
-        preg_match('/(\d+)/',$lastMacro['Macro']['name'], $erg);
+        preg_match('/(\d+)/', $lastMacro['Macro']['name'], $erg);
         $number = $erg[0] + 1;
         $macroNames = [];
 
-        foreach ($macros as $key=>$macro){
-            $macroNames[$macros[$key]['Macro']['name']] = '$USER'.$number.'$';
-            $macros[$key]['Macro']['name'] = '$USER'.$number.'$';
+        foreach ($macros as $key => $macro) {
+            $macroNames[$macros[$key]['Macro']['name']] = '$USER' . $number . '$';
+            $macros[$key]['Macro']['name'] = '$USER' . $number . '$';
             $number++;
         }
 
@@ -277,12 +275,12 @@ class ImportTemplates
     }
 
     private function replaceMacros($commands, $macros) {
-        if (empty($macros)){
+        if (empty($macros)) {
             return $commands;
         }
 
-        foreach($commands as $key=>$command) {
-            $commands[$key]['Command']['command_line'] = str_replace(array_keys($macros),array_values($macros),$commands[$key]['Command']['command_line']);
+        foreach ($commands as $key => $command) {
+            $commands[$key]['Command']['command_line'] = str_replace(array_keys($macros), array_values($macros), $commands[$key]['Command']['command_line']);
         }
         return $commands;
     }

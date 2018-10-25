@@ -35,7 +35,7 @@ class AcknowledgedServiceControllerRequest extends ControllerListSettingsRequest
      */
     protected $ServiceStates;
 
-    public function __construct(\CakeRequest $request, ServiceStates $ServiceStates, $userLimit = 25){
+    public function __construct(\CakeRequest $request, ServiceStates $ServiceStates, $userLimit = 25) {
         $this->ListSettingsDefaults = new ListSettingsDefaults($userLimit);
 
         $this->ServiceStates = $ServiceStates;
@@ -54,7 +54,7 @@ class AcknowledgedServiceControllerRequest extends ControllerListSettingsRequest
     /**
      * @return ServiceStates
      */
-    public function getServiceStates(){
+    public function getServiceStates() {
         $availableStates = $this->ServiceStates->getAvailableStateIds();
 
         if (isset($this->requestParameters['Listsettings']['state_types'])) {
@@ -70,26 +70,26 @@ class AcknowledgedServiceControllerRequest extends ControllerListSettingsRequest
     /**
      * @return array
      */
-    public function getRequestSettingsForListSettings(){
+    public function getRequestSettingsForListSettings() {
         $states = $this->ServiceStates->asArray();
-        if(
+        if (
             !$this->ServiceStates->hasOk() &&
             !$this->ServiceStates->hasWarning() &&
             !$this->ServiceStates->hasCritical() &&
             !$this->ServiceStates->hasUnknown()
-        ){
+        ) {
             //User disabled all check boxes or first page load
             //Enable all to avoid empty list
-            foreach($states as $key => $value){
+            foreach ($states as $key => $value) {
                 $states[$key] = true;
             }
         }
 
         return [
-            'limit' => $this->getLimit(),
+            'limit'       => $this->getLimit(),
             'state_types' => $states,
-            'from' => date('d.m.Y H:i', $this->getFrom()),
-            'to' => date('d.m.Y H:i', $this->getTo())
+            'from'        => date('d.m.Y H:i', $this->getFrom()),
+            'to'          => date('d.m.Y H:i', $this->getTo())
         ];
     }
 }

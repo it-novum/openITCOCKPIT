@@ -26,7 +26,6 @@
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
-use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Psr7\Request;
 use itnovum\openITCOCKPIT\Grafana\GrafanaApiConfiguration;
 

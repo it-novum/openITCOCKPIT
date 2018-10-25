@@ -55,7 +55,7 @@ $notification_settings = [
         <h2 class="hidden-mobile hidden-tablet"><?php echo __('Edit Hosttemplate'); ?></h2>
         <div class="widget-toolbar pull-right" role="menu">
             <?php if ($this->Acl->hasPermission('delete')): ?>
-                <?php echo $this->Utils->deleteButton(null, Hash::merge([$hosttemplate['Hosttemplate']['id']] ,$this->params['named'])); ?>
+                <?php echo $this->Utils->deleteButton(null, Hash::merge([$hosttemplate['Hosttemplate']['id']], $this->params['named'])); ?>
             <?php endif; ?>
             <?php echo $this->Utils->backButton(__('Back'), $back_url); ?>
         </div>
@@ -138,7 +138,7 @@ $notification_settings = [
                                 'label'            => ['text' => __('Hostgroups'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
                                 'selected'         => $this->request->data['Hostgroup'],
                                 'wrapInput'        => 'col col-xs-10 col-md-10 col-lg-10',
-                             ]);
+                            ]);
 
                             echo $this->Form->input('notes', [
                                 'value'     => $hosttemplate['Hosttemplate']['notes'],
@@ -230,7 +230,7 @@ $notification_settings = [
                                     <div>
                                         <?php echo $this->Form->fancyCheckbox($notification_setting, [
                                             'caption'          => ucfirst(preg_replace('/notify_on_/', '', $notification_setting)),
-                                            'icon'             => '<i class="fa '.$icon.'"></i> ',
+                                            'icon'             => '<i class="fa ' . $icon . '"></i> ',
                                             'checked'          => $this->request->data['Hosttemplate'][$notification_setting],
                                             'class'            => 'onoffswitch-checkbox notification_control',
                                             'captionGridClass' => 'col col-xs-2',
@@ -288,7 +288,7 @@ $notification_settings = [
                                 'class'     => 'chosen col col-xs-12',
                                 'label'     => ['text' => __('Check command'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
                                 'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
-                                'help'             => '<span class="text-danger">'.__('Warning: If you change the check command, all host custom arguments will be reset to host template default!').'</span>'
+                                'help'      => '<span class="text-danger">' . __('Warning: If you change the check command, all host custom arguments will be reset to host template default!') . '</span>'
                             ]);
                             ?>
                             <!-- Command arguments -->
@@ -297,7 +297,7 @@ $notification_settings = [
                                 if (!empty($commandarguments)):
                                     $hosttemplatecommandargumentvalues = Hash::combine($hosttemplate['Hosttemplatecommandargumentvalue'], '{n}.commandargument_id', '{n}');
                                     foreach ($commandarguments as $key => $commandargument):
-                                        echo $this->Form->input('Hosttemplatecommandargumentvalue.'.$commandargument['Commandargument']['id'].'.value', [
+                                        echo $this->Form->input('Hosttemplatecommandargumentvalue.' . $commandargument['Commandargument']['id'] . '.value', [
                                             'label'     => [
                                                 'class' => 'col col-md-2 control-label text-primary',
                                                 'text'  => $commandargument['Commandargument']['human_name'],
@@ -305,12 +305,12 @@ $notification_settings = [
                                             'value'     => (array_key_exists($commandargument['Commandargument']['id'], $hosttemplatecommandargumentvalues)) ? $hosttemplatecommandargumentvalues[$commandargument['Commandargument']['id']]['value'] : '',
                                             'wrapInput' => 'col col-xs-9 col-md-9 col-lg-9',
                                         ]);
-                                        echo $this->Form->input('Hosttemplatecommandargumentvalue.'.$commandargument['Commandargument']['id'].'.commandargument_id', [
+                                        echo $this->Form->input('Hosttemplatecommandargumentvalue.' . $commandargument['Commandargument']['id'] . '.commandargument_id', [
                                             'type'  => 'hidden',
                                             'value' => $commandargument['Commandargument']['id'],
                                         ]);
                                         if ($commandargument['Commandargument']['id'] !== null):
-                                            echo $this->Form->input('Hosttemplatecommandargumentvalue.'.$commandargument['Commandargument']['id'].'.id', [
+                                            echo $this->Form->input('Hosttemplatecommandargumentvalue.' . $commandargument['Commandargument']['id'] . '.id', [
                                                 'type'  => 'hidden',
                                                 'value' => (array_key_exists($commandargument['Commandargument']['id'], $hosttemplatecommandargumentvalues)) ? $hosttemplatecommandargumentvalues[$commandargument['Commandargument']['id']]['id'] : '',
                                             ]);
@@ -417,7 +417,7 @@ $notification_settings = [
                                     <div>
                                         <?php echo $this->Form->fancyCheckbox($flapDetection_setting, [
                                             'caption'          => ucfirst(preg_replace('/flap_detection_on_/', '', $flapDetection_setting)),
-                                            'icon'             => '<i class="fa '.$icon.'"></i> ',
+                                            'icon'             => '<i class="fa ' . $icon . '"></i> ',
                                             'checked'          => $this->request->data['Hosttemplate'][$flapDetection_setting],
                                             'class'            => 'onoffswitch-checkbox flapdetection_control',
                                             'captionGridClass' => 'col col-xs-2',

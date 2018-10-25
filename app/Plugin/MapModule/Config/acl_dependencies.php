@@ -62,7 +62,7 @@ $config = [
             'Mapviews'          => [
                 'refreshNagiosObjects',
             ],
-            'Rotations' => [
+            'Rotations'         => [
                 'loadMaps',
                 'loadContainers'
             ]
@@ -88,13 +88,13 @@ $config = [
                 ]
             ]
         ],
-        'roles_rights' => [
+        'roles_rights'   => [
             'Administrator' => ['*'],
-            'Viewer' => [
+            'Viewer'        => [
                 'Mapeditors' => ['index', 'view'],
-                'Maps' => ['index'],
-                'Mapviews' => ['index'],
-                'Rotations' => ['index'],
+                'Maps'       => ['index'],
+                'Mapviews'   => ['index'],
+                'Rotations'  => ['index'],
             ]
         ]
     ],

@@ -27,7 +27,6 @@
 namespace itnovum\openITCOCKPIT\Exceptions;
 
 
-class UnknownStateException extends \Exception
-{
+class UnknownStateException extends \Exception {
 
 }

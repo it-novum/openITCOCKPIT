@@ -23,8 +23,8 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-use itnovum\openITCOCKPIT\Core\Views\Host;
 use itnovum\openITCOCKPIT\Core\Hoststatus;
+use itnovum\openITCOCKPIT\Core\Views\Host;
 
 //Flapping Workaround while the status date is not loaded via Angular
 echo $this->Html->script('lib/FlappingWorkaround.js');
@@ -51,8 +51,9 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
             <div class="pull-right">
                 <a href="<?php echo Router::url([
                     'controller' => 'hosts',
-                    'action' => 'browser',
-                    $Host->getId()]); ?>"
+                    'action'     => 'browser',
+                    $Host->getId()
+                ]); ?>"
                    class="btn btn-primary btn-sm">
                     <i class="fa fa-arrow-circle-left"></i> <?php echo $this->Html->underline('b', __('Back to Host')); ?>
                 </a>
@@ -93,7 +94,8 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
                             <div class="row">
                                 <div class="col-xs-12 col-md-6">
                                     <div class="form-group smart-form">
-                                        <label class="input"> <i class="icon-prepend" style="padding-right:14px;"><?php echo __('From'); ?></i>
+                                        <label class="input"> <i class="icon-prepend"
+                                                                 style="padding-right:14px;"><?php echo __('From'); ?></i>
                                             <input type="text" class="input-sm" style="padding-left:50px;"
                                                    placeholder="<?php echo __('From Date'); ?>"
                                                    ng-model="filter.from"
@@ -114,7 +116,8 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
 
                                 <div class="col-xs-12 col-md-6">
                                     <div class="form-group smart-form">
-                                        <label class="input"> <i class="icon-prepend" style="padding-right:14px;"><?php echo __('To'); ?></i>
+                                        <label class="input"> <i class="icon-prepend"
+                                                                 style="padding-right:14px;"><?php echo __('To'); ?></i>
                                             <input type="text" class="input-sm" style="padding-left:50px;"
                                                    placeholder="<?php echo __('To Date'); ?>"
                                                    ng-model="filter.to"
@@ -233,7 +236,8 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
                                     {{ Hostcheck.Hostcheck.start_time }}
                                 </td>
                                 <td class="text-center">
-                                    {{ Hostcheck.Hostcheck.current_check_attempt }}/{{ Hostcheck.Hostcheck.max_check_attempts }}
+                                    {{ Hostcheck.Hostcheck.current_check_attempt }}/{{
+                                    Hostcheck.Hostcheck.max_check_attempts }}
                                 </td>
                                 <td class="text-center">
                                         <span ng-show="Hostcheck.Hostcheck.is_hardstate">
@@ -269,5 +273,5 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
                     </div>
                 </div>
             </div>
-        </div>
+    </div>
 </section>

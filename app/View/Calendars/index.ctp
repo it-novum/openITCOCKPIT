@@ -41,7 +41,7 @@
                     <div class="widget-toolbar" role="menu">
                         <?php
                         if ($this->Acl->hasPermission('edit')):
-                            echo $this->Html->link(__('New'), '/'.$this->params['controller'].'/add', [
+                            echo $this->Html->link(__('New'), '/' . $this->params['controller'] . '/add', [
                                 'class' => 'btn btn-xs btn-success',
                                 'icon'  => 'fa fa-plus',
                             ]);
@@ -108,7 +108,7 @@
                                                         <?php if ($this->Acl->hasPermission('delete') && $allowEdit): ?>
                                                             <li class="divider"></li>
                                                             <li>
-                                                                <?php echo $this->Form->postLink('<i class="fa fa-trash-o"></i> '.__('Delete'), ['controller' => $this->params['controller'], 'action' => 'delete', $calendar['Calendar']['id']], ['class' => 'txt-color-red', 'escape' => false]); ?>
+                                                                <?php echo $this->Form->postLink('<i class="fa fa-trash-o"></i> ' . __('Delete'), ['controller' => $this->params['controller'], 'action' => 'delete', $calendar['Calendar']['id']], ['class' => 'txt-color-red', 'escape' => false]); ?>
                                                             </li>
                                                         <?php endif; ?>
                                                     </ul>
@@ -132,7 +132,7 @@
                                 <div class="row">
                                     <div class="col-sm-6">
                                         <div class="dataTables_info" style="line-height: 32px;"
-                                             id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('Page').' {:page} '.__('of').' {:pages}, '.__('Total').' {:count} '.__('entries')); ?></div>
+                                             id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('Page') . ' {:page} ' . __('of') . ' {:pages}, ' . __('Total') . ' {:count} ' . __('entries')); ?></div>
                                     </div>
                                     <div class="col-sm-6 text-right">
                                         <div class="dataTables_paginate paging_bootstrap">

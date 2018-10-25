@@ -23,8 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class Customvariable extends AppModel
-{
+class Customvariable extends AppModel {
 
     var $validateNames = [];
 
@@ -51,8 +50,7 @@ class Customvariable extends AppModel
         ],
     ];
 
-    public function isUniqueInData($data)
-    {
+    public function isUniqueInData($data) {
         if (!in_array($data, $this->validateNames)) {
             $this->validateNames[] = $data;
 

@@ -73,57 +73,57 @@ class GrafanaPanel {
      * @var array
      */
     private $panel = [
-        "aliasColors" => [],
-        "bars" => false,
-        "datasource" => null,
-        "fill" => 1,
-        "id" => null,
-        "legend" => [
+        "aliasColors"     => [],
+        "bars"            => false,
+        "datasource"      => null,
+        "fill"            => 1,
+        "id"              => null,
+        "legend"          => [
             "alignAsTable" => true,
-            "avg" => true,
-            "current" => true,
-            "hideEmpty" => false,
-            "hideZero" => false,
-            "max" => true,
-            "min" => true,
-            "show" => true,
-            "total" => false,
-            "values" => true
+            "avg"          => true,
+            "current"      => true,
+            "hideEmpty"    => false,
+            "hideZero"     => false,
+            "max"          => true,
+            "min"          => true,
+            "show"         => true,
+            "total"        => false,
+            "values"       => true
         ],
-        "lines" => true,
-        "linewidth" => 1,
-        "links" => [],
-        "nullPointMode" => "connected",
-        "percentage" => false,
-        "pointradius" => 5,
-        "points" => false,
-        "renderer" => "flot",
+        "lines"           => true,
+        "linewidth"       => 1,
+        "links"           => [],
+        "nullPointMode"   => "connected",
+        "percentage"      => false,
+        "pointradius"     => 5,
+        "points"          => false,
+        "renderer"        => "flot",
         "seriesOverrides" => [],
-        "span" => 6,
-        "stack" => false,
-        "steppedLine" => false,
-        "targets" => [
+        "span"            => 6,
+        "stack"           => false,
+        "steppedLine"     => false,
+        "targets"         => [
             //Insert targets here
         ],
-        "thresholds" => [
+        "thresholds"      => [
             //Insert thresholds here
         ],
-        "timeFrom" => null,
-        "timeShift" => null,
-        "title" => "",
-        "tooltip" => [
-            "shared" => true,
-            "sort" => 0,
+        "timeFrom"        => null,
+        "timeShift"       => null,
+        "title"           => "",
+        "tooltip"         => [
+            "shared"     => true,
+            "sort"       => 0,
             "value_type" => "individual"
         ],
-        "type" => "graph",
-        "xaxis" => [
-            "mode" => "time",
-            "name" => null,
-            "show" => true,
+        "type"            => "graph",
+        "xaxis"           => [
+            "mode"   => "time",
+            "name"   => null,
+            "show"   => true,
             "values" => []
         ],
-        "yaxes" => [
+        "yaxes"           => [
             //Insert yaxes here
         ]
     ];
@@ -136,11 +136,11 @@ class GrafanaPanel {
     public function __construct($panelId, $span = 6) {
         $this->panelId = $panelId;
         $span = (int)$span;
-        if($span <= 0){
+        if ($span <= 0) {
             $span = 1;
         }
 
-        if($span > 12){
+        if ($span > 12) {
             $span = 12;
         }
 

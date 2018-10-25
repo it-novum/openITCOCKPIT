@@ -44,7 +44,7 @@
                         <div class="widget-toolbar" role="menu">
                             <?php
                             if ($this->Acl->hasPermission('add')):
-                                echo $this->Html->link(__('New'), '/'.$this->params['controller'].'/add', ['class' => 'btn btn-xs btn-success', 'icon' => 'fa fa-plus']);
+                                echo $this->Html->link(__('New'), '/' . $this->params['controller'] . '/add', ['class' => 'btn btn-xs btn-success', 'icon' => 'fa fa-plus']);
                                 echo " "; //Fix HTML
                             endif;
                             echo $this->Html->link(__('Filter'), 'javascript:', ['class' => 'oitc-list-filter btn btn-xs btn-primary toggle', 'hide-on-render' => 'true', 'icon' => 'fa fa-filter']);
@@ -62,9 +62,10 @@
                         <div class="jarviswidget-editbox">
                         </div>
                         <div class="widget-body no-padding">
-                            <?php echo $this->ListFilter->renderFilterbox($filters, [], '<i class="fa fa-filter"></i> '.__('Filter'), false, false); ?>
+                            <?php echo $this->ListFilter->renderFilterbox($filters, [], '<i class="fa fa-filter"></i> ' . __('Filter'), false, false); ?>
                             <div class="mobile_table">
-                                <table id="service_list" class="table table-striped table-hover table-bordered smart-form" style="">
+                                <table id="service_list"
+                                       class="table table-striped table-hover table-bordered smart-form" style="">
                                     <thead>
                                     <tr>
                                         <?php $order = $this->Paginator->param('order'); ?>
@@ -137,7 +138,7 @@
                                                         <?php if ($this->Acl->hasPermission('delete') && $allowEdit): ?>
                                                             <li class="divider"></li>
                                                             <li>
-                                                                <?php echo $this->Form->postLink('<i class="fa fa-trash-o"></i> '.__('Delete'), ['controller' => 'servicetemplates', 'action' => 'delete', $servicetemplate['Servicetemplate']['id']], ['class' => 'txt-color-red', 'escape' => false], __('Are you sure you want to delete? All attached services will be deleted too.')); ?>
+                                                                <?php echo $this->Form->postLink('<i class="fa fa-trash-o"></i> ' . __('Delete'), ['controller' => 'servicetemplates', 'action' => 'delete', $servicetemplate['Servicetemplate']['id']], ['class' => 'txt-color-red', 'escape' => false], __('Are you sure you want to delete? All attached services will be deleted too.')); ?>
                                                             </li>
                                                         <?php endif; ?>
                                                     </ul>
@@ -166,7 +167,7 @@
                                 <div class="row">
                                     <div class="col-sm-6">
                                         <div class="dataTables_info" style="line-height: 32px;"
-                                             id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('Page').' {:page} '.__('of').' {:pages}, '.__('Total').' {:count} '.__('entries')); ?></div>
+                                             id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('Page') . ' {:page} ' . __('of') . ' {:pages}, ' . __('Total') . ' {:count} ' . __('entries')); ?></div>
                                     </div>
                                     <div class="col-sm-6 text-right">
                                         <div class="dataTables_paginate paging_bootstrap">

@@ -161,7 +161,7 @@ angular.module('openITCOCKPIT').directive('hostsStatusWidget', function($http, $
             };
 
             $scope.pauseScroll = function(){
-                if (angular.isDefined(interval)) {
+                if(angular.isDefined(interval)){
                     $interval.cancel(interval);
                     interval = undefined;
                 }
@@ -229,7 +229,6 @@ angular.module('openITCOCKPIT').directive('hostsStatusWidget', function($http, $
                     save: true
                 });
             });
-
 
 
         },

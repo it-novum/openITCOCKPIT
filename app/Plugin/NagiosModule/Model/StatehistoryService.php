@@ -25,8 +25,7 @@
 
 use itnovum\openITCOCKPIT\Core\StatehistoryServiceConditions;
 
-class StatehistoryService extends NagiosModuleAppModel
-{
+class StatehistoryService extends NagiosModuleAppModel {
     public $useTable = 'statehistory';
     public $primaryKey = 'statehistory_id';
     public $tablePrefix = 'nagios_';
@@ -37,7 +36,7 @@ class StatehistoryService extends NagiosModuleAppModel
             'conditions' => [
                 'Objects.objecttype_id' => 2
             ],
-            'type' => 'INNER'
+            'type'       => 'INNER'
         ],
     ];
 
@@ -47,34 +46,34 @@ class StatehistoryService extends NagiosModuleAppModel
      * @param array $paginatorConditions
      * @return array
      */
-    public function getQuery(StatehistoryServiceConditions $StatehistoryServiceConditions, $paginatorConditions = []){
+    public function getQuery(StatehistoryServiceConditions $StatehistoryServiceConditions, $paginatorConditions = []) {
         $query = [
             'conditions' => [
-                'Objects.name2' => $StatehistoryServiceConditions->getServiceUuid(),
+                'Objects.name2'                    => $StatehistoryServiceConditions->getServiceUuid(),
                 'StatehistoryService.state_time >' => date('Y-m-d H:i:s', $StatehistoryServiceConditions->getFrom()),
                 'StatehistoryService.state_time <' => date('Y-m-d H:i:s', $StatehistoryServiceConditions->getTo())
             ],
-            'order' => $StatehistoryServiceConditions->getOrder()
+            'order'      => $StatehistoryServiceConditions->getOrder()
         ];
 
-        if($StatehistoryServiceConditions->getUseLimit()){
+        if ($StatehistoryServiceConditions->getUseLimit()) {
             $query['limit'] = $StatehistoryServiceConditions->getLimit();
         }
 
-        if(!empty($StatehistoryServiceConditions->getStates())){
+        if (!empty($StatehistoryServiceConditions->getStates())) {
             $query['conditions']['StatehistoryService.state'] = $StatehistoryServiceConditions->getStates();
         }
 
-        if(!empty($StatehistoryServiceConditions->getStateTypes())){
+        if (!empty($StatehistoryServiceConditions->getStateTypes())) {
             $query['conditions']['StatehistoryService.state_type'] = $StatehistoryServiceConditions->getStateTypes();
         }
 
         $query['conditions'] = Hash::merge($paginatorConditions, $query['conditions']);
 
-        if($StatehistoryServiceConditions->hardStateTypeAndUpState()){
+        if ($StatehistoryServiceConditions->hardStateTypeAndUpState()) {
             $query['conditions']['OR'] = [
                 'StatehistoryService.state_type' => 1,
-                'StatehistoryService.state' => 0
+                'StatehistoryService.state'      => 0
             ];
         }
 

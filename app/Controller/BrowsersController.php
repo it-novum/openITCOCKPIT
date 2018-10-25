@@ -112,7 +112,7 @@ class BrowsersController extends AppController {
             }
 
             $currentContainer = $this->Container->find('first', [
-                'recursive' => -1,
+                'recursive'  => -1,
                 'conditions' => [
                     'Container.id' => $containerId
                 ]

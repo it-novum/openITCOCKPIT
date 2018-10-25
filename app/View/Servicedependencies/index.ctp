@@ -45,7 +45,7 @@
                         <div class="widget-toolbar" role="menu">
                             <?php
                             if ($this->Acl->hasPermission('add')):
-                                echo $this->Html->link(__('New'), '/'.$this->params['controller'].'/add', ['class' => 'btn btn-xs btn-success', 'icon' => 'fa fa-plus']);
+                                echo $this->Html->link(__('New'), '/' . $this->params['controller'] . '/add', ['class' => 'btn btn-xs btn-success', 'icon' => 'fa fa-plus']);
                                 //echo " "; //Fix HTML if search is implemented
                             endif;
                             // TODO implement search
@@ -68,7 +68,8 @@
                         <!-- widget content -->
                         <div class="widget-body no-padding">
                             <div class="mobile_table">
-                                <table id="servicedependency_list" class="table table-striped table-hover table-bordered smart-form"
+                                <table id="servicedependency_list"
+                                       class="table table-striped table-hover table-bordered smart-form"
                                        style="">
                                     <thead>
                                     <tr>
@@ -105,8 +106,8 @@
                                                         else:
                                                             echo h($service['Service']['Host']['name']);
                                                         endif;
-                                                        echo ($service['Service']['Host']['disabled'])?
-                                                            ' <i class="fa fa-power-off text-danger" title="disabled" aria-hidden="true"></i> ':'';
+                                                        echo ($service['Service']['Host']['disabled']) ?
+                                                            ' <i class="fa fa-power-off text-danger" title="disabled" aria-hidden="true"></i> ' : '';
                                                         echo '/';
                                                         if ($this->Acl->hasPermission('edit', 'services')):
                                                             echo $this->Html->link(
@@ -121,8 +122,8 @@
                                                         else:
                                                             echo h(($service['Service']['name'] !== null && $service['Service']['name'] !== '') ? $service['Service']['name'] : $service['Service']['Servicetemplate']['name']);
                                                         endif;
-                                                        echo ($service['Service']['disabled'])?
-                                                            ' <i class="fa fa-plug text-danger" title="disabled" aria-hidden="true"></i>':'';
+                                                        echo ($service['Service']['disabled']) ?
+                                                            ' <i class="fa fa-plug text-danger" title="disabled" aria-hidden="true"></i>' : '';
                                                         echo '</li>';
                                                     endforeach;
                                                     ?>
@@ -146,8 +147,8 @@
                                                         else:
                                                             echo h($service_dependent['Service']['Host']['name']);
                                                         endif;
-                                                        echo ($service_dependent['Service']['Host']['disabled'])?
-                                                            ' <i class="fa fa-power-off text-danger" title="disabled" aria-hidden="true"></i>':'';
+                                                        echo ($service_dependent['Service']['Host']['disabled']) ?
+                                                            ' <i class="fa fa-power-off text-danger" title="disabled" aria-hidden="true"></i>' : '';
                                                         echo '</li>';
                                                         echo '/';
                                                         if ($this->Acl->hasPermission('edit', 'services')):
@@ -164,8 +165,8 @@
                                                             echo h(($service_dependent['Service']['name'] !== null && $service_dependent['Service']['name'] !== '') ? $service_dependent['Service']['name'] : $service_dependent['Service']['Servicetemplate']['name']
                                                             );
                                                         endif;
-                                                        echo ($service_dependent['Service']['disabled'])?
-                                                            ' <i class="fa fa-plug text-danger" title="disabled" aria-hidden="true"></i> ':'';
+                                                        echo ($service_dependent['Service']['disabled']) ?
+                                                            ' <i class="fa fa-plug text-danger" title="disabled" aria-hidden="true"></i> ' : '';
                                                         echo '</li>';
                                                         echo '</li>';
                                                     endforeach;
@@ -267,7 +268,7 @@
                                 <div class="row">
                                     <div class="col-sm-6">
                                         <div class="dataTables_info" style="line-height: 32px;"
-                                             id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('Page').' {:page} '.__('of').' {:pages}, '.__('Total').' {:count} '.__('entries')); ?></div>
+                                             id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('Page') . ' {:page} ' . __('of') . ' {:pages}, ' . __('Total') . ' {:count} ' . __('entries')); ?></div>
                                     </div>
                                     <div class="col-sm-6 text-right">
                                         <div class="dataTables_paginate paging_bootstrap">
@@ -293,30 +294,29 @@
  * @return string `<i />` HTML object with icons for each options
  * @since 3.0
  */
-function __viewDependencyOptions($servicedependency = [], $options_mode)
-{
+function __viewDependencyOptions($servicedependency = [], $options_mode) {
     $options = [
-        $options_mode.'_fail_on_ok'       => [
+        $options_mode . '_fail_on_ok'       => [
             'color' => 'txt-color-greenLight',
             'class' => 'fa fa-square',
         ],
-        $options_mode.'_fail_on_warning'  => [
+        $options_mode . '_fail_on_warning'  => [
             'color' => 'txt-color-orange',
             'class' => 'fa fa-square',
         ],
-        $options_mode.'_fail_on_critical' => [
+        $options_mode . '_fail_on_critical' => [
             'color' => 'txt-color-redLight',
             'class' => 'fa fa-square',
         ],
-        $options_mode.'_fail_on_unknown'  => [
+        $options_mode . '_fail_on_unknown'  => [
             'color' => 'txt-color-blueDark',
             'class' => 'fa fa-square',
         ],
-        $options_mode.'_fail_on_pending'  => [
+        $options_mode . '_fail_on_pending'  => [
             'color' => '',
             'class' => 'fa fa-square-o',
         ],
-        $options_mode.'_none'             => [
+        $options_mode . '_none'             => [
             'color' => '',
             'class' => 'fa fa-minus-square-o',
         ],
@@ -324,7 +324,7 @@ function __viewDependencyOptions($servicedependency = [], $options_mode)
     $html = '';
     foreach ($options as $option => $layout_sett) { //$layout_sett => color + icons for options
         if (isset($servicedependency['Servicedependency'][$option]) && $servicedependency['Servicedependency'][$option] == 1) {
-            $html .= '<i class="'.$layout_sett['class'].' '.$layout_sett['color'].'" title="'.preg_replace('/('.$options_mode.'_|fail_on_)/', '', $option).'"></i>&nbsp';
+            $html .= '<i class="' . $layout_sett['class'] . ' ' . $layout_sett['color'] . '" title="' . preg_replace('/(' . $options_mode . '_|fail_on_)/', '', $option) . '"></i>&nbsp';
         }
     }
 

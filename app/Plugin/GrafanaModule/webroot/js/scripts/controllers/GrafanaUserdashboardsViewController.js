@@ -8,7 +8,7 @@ angular.module('openITCOCKPIT')
         $scope.dashboardFoundInGrafana = false;
 
         $scope.loadIframeUrl = function(){
-            $http.get("/grafana_module/grafana_userdashboards/getViewIframeUrl/"+$scope.id+".json", {
+            $http.get("/grafana_module/grafana_userdashboards/getViewIframeUrl/" + $scope.id + ".json", {
                 params: {
                     'angular': true,
                     'from': $scope.selectedTimerange,

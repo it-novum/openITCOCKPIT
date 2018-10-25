@@ -23,49 +23,49 @@
 //	confirmation.
 
 App.Components.UtilsComponent = Frontend.Component.extend({
-	flappingIntervalObject: null,
-	flappingInterval: 750,
-	$flappingContainer: null,
+    flappingIntervalObject: null,
+    flappingInterval: 750,
+    $flappingContainer: null,
 
-	flapping: function(){
-		this.$flappingContainer = $('.flapping_airport');
+    flapping: function(){
+        this.$flappingContainer = $('.flapping_airport');
 
-		if(this.$flappingContainer.length > 0){
-			//var current_state_class = (this.$flappingContainer.parent().attr('class').split(' ').pop())?this.$flappingContainer.parent().attr('class').split(' ').pop():'';
-			var i = 0;
+        if(this.$flappingContainer.length > 0){
+            //var current_state_class = (this.$flappingContainer.parent().attr('class').split(' ').pop())?this.$flappingContainer.parent().attr('class').split(' ').pop():'';
+            var i = 0;
 
-			if(this.flappingIntervalObject != null){
-				//Stop the old interval
-				clearInterval(this.flappingIntervalObject);
-			}
+            if(this.flappingIntervalObject != null){
+                //Stop the old interval
+                clearInterval(this.flappingIntervalObject);
+            }
 
-			this.flappingIntervalObject = setInterval(function(){
-				if(i == 0){
-				//	this.$flappingContainer.html('<i class="fa fa-circle '+current_state_class+'"></i> <i class="fa fa-circle-o '+current_state_class+'"></i>');
-					this.$flappingContainer.html('<i class="fa fa-circle"></i> <i class="fa fa-circle-o"></i>');
+            this.flappingIntervalObject = setInterval(function(){
+                if(i == 0){
+                    //	this.$flappingContainer.html('<i class="fa fa-circle '+current_state_class+'"></i> <i class="fa fa-circle-o '+current_state_class+'"></i>');
+                    this.$flappingContainer.html('<i class="fa fa-circle"></i> <i class="fa fa-circle-o"></i>');
 
-					i = 1;
-				}else{
-				//	this.$flappingContainer.html('<i class="fa fa-circle-o '+current_state_class+'"></i> <i class="fa fa-circle '+current_state_class+'"></i>');
-					this.$flappingContainer.html('<i class="fa fa-circle-o"></i> <i class="fa fa-circle"></i>');
+                    i = 1;
+                }else{
+                    //	this.$flappingContainer.html('<i class="fa fa-circle-o '+current_state_class+'"></i> <i class="fa fa-circle '+current_state_class+'"></i>');
+                    this.$flappingContainer.html('<i class="fa fa-circle-o"></i> <i class="fa fa-circle"></i>');
 
-					i = 0;
-				}
-			}.bind(this), this.flappingInterval);
-		}
-	},
+                    i = 0;
+                }
+            }.bind(this), this.flappingInterval);
+        }
+    },
 
-	browserDatatables: function(){
-		$('#host-list-datatables').dataTable({
-			"bPaginate": false,
-			"bFilter": false,
-			"bInfo": false,
-			"bStateSave": true
-		});
+    browserDatatables: function(){
+        $('#host-list-datatables').dataTable({
+            "bPaginate": false,
+            "bFilter": false,
+            "bInfo": false,
+            "bStateSave": true
+        });
 
-		$('div.dataTables_filter')
-			.attr('style', 'width: 100% !important;padding-right: 20px;')
-			.children('.input-group')
-				.attr('style', 'width: 100% !important;');
-	}
+        $('div.dataTables_filter')
+            .attr('style', 'width: 100% !important;padding-right: 20px;')
+            .children('.input-group')
+            .attr('style', 'width: 100% !important;');
+    }
 });

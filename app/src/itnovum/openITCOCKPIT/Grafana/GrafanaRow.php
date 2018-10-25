@@ -34,8 +34,8 @@ class GrafanaRow {
      */
     private $row = [
         "collapse" => false,
-        "height" => "250px",
-        "panels" => []
+        "height"   => "250px",
+        "panels"   => []
     ];
 
     /**

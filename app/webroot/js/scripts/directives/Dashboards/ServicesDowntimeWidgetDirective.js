@@ -160,7 +160,7 @@ angular.module('openITCOCKPIT').directive('servicesDowntimeWidget', function($ht
             };
 
             $scope.pauseScroll = function(){
-                if (angular.isDefined(interval)) {
+                if(angular.isDefined(interval)){
                     $interval.cancel(interval);
                     interval = undefined;
                 }

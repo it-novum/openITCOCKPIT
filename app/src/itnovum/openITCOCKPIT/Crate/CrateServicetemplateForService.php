@@ -58,7 +58,7 @@ class CrateServicetemplateForService {
     /**
      * @param string $name
      */
-    public function setName($name){
+    public function setName($name) {
         $this->name = $name;
     }
 
@@ -99,7 +99,7 @@ class CrateServicetemplateForService {
                 'Servicetemplate.tags',
             ],
             'conditions' => [
-                'Servicetemplate.id'           => $this->servicetemplate_id
+                'Servicetemplate.id' => $this->servicetemplate_id
             ]
         ];
     }
@@ -126,7 +126,7 @@ class CrateServicetemplateForService {
     public function getConditionToUpdateActiveChecksEnabled() {
         return [
             'active_checks_enabled_from_template' => true,
-            'servicetemplate_id' => $this->servicetemplate_id
+            'servicetemplate_id'                  => $this->servicetemplate_id
         ];
     }
 

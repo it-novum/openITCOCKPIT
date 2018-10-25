@@ -10,7 +10,7 @@ angular.module('openITCOCKPIT')
                 'angular': true
             };
 
-            $http.get("/automaps/view/"+$scope.id+".json", {
+            $http.get("/automaps/view/" + $scope.id + ".json", {
                 params: params
             }).then(function(result){
                 $scope.automap = result.data.automap.Automap;

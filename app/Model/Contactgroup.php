@@ -29,8 +29,7 @@
  * a contact belongsTo a container (many to one)
  */
 
-class Contactgroup extends AppModel
-{
+class Contactgroup extends AppModel {
     //public $primaryKey = 'container_id';
 //	public $primaryKeyArray = array('id','container_id');
 
@@ -41,7 +40,8 @@ class Contactgroup extends AppModel
             'dependent'     => true,
             'foreignKey'    => 'container_id',
             'associatedKey' => 'id',
-        ]];
+        ]
+    ];
 
     public $hasAndBelongsToMany = [
         'Contact' => [
@@ -55,16 +55,17 @@ class Contactgroup extends AppModel
 
     public $validate = [
         'Contact' => [
-            'rule'     => ['multiple', [
-                'min' => 1,
-            ]],
+            'rule'     => [
+                'multiple', [
+                    'min' => 1,
+                ]
+            ],
             'message'  => 'Please select at least 1 contact',
             'required' => true,
         ],
     ];
 
-    public function __construct($id = false, $table = null, $ds = null)
-    {
+    public function __construct($id = false, $table = null, $ds = null) {
         parent::__construct($id, $table, $ds);
         $this->Contact = ClassRegistry::init('Contact');
         App::uses('UUID', 'Lib');
@@ -72,8 +73,7 @@ class Contactgroup extends AppModel
     }
 
 
-    public function saveContactgroup($data = [])
-    {
+    public function saveContactgroup($data = []) {
         debug($data);
         if ($this->saveAll($data)) {
             $contactgroup = $this->findById($this->id);
@@ -96,8 +96,7 @@ class Contactgroup extends AppModel
         }
     }
 
-    public function contactgroupsByContainerId($container_ids = [], $type = 'all', $index = 'id')
-    {
+    public function contactgroupsByContainerId($container_ids = [], $type = 'all', $index = 'id') {
         if (!is_array($container_ids)) {
             $container_ids = [$container_ids];
         }
@@ -112,7 +111,7 @@ class Contactgroup extends AppModel
 
                 // Get container id of the tenant container
                 // $container_id is may be a location, devicegroup or whatever, so we need to container id of the tenant container to load contactgroups and contacts
-                $path = Cache::remember('ContactGroupContactsByContainerId:'.$container_id, function () use ($container_id) {
+                $path = Cache::remember('ContactGroupContactsByContainerId:' . $container_id, function () use ($container_id) {
                     return $this->Container->getPath($container_id);
                 }, 'migration');
                 $tenantContainerIds[] = $path[1]['Container']['id'];
@@ -157,8 +156,7 @@ class Contactgroup extends AppModel
         return [];
     }
 
-    public function findList()
-    {
+    public function findList() {
         $return = [];
         $results = $this->find('all', [
             'conditions' => [

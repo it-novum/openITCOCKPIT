@@ -64,7 +64,7 @@
                             <?php foreach ($commandsToDelete as $key => $commandToDelete): ?>
                                 <li class="list-group-item list-group-item-danger">
                                     <?php echo h($commandToDelete['Command']['name']); ?>
-                                    <?php echo $this->Form->input('Command.delete.'.$key, ['value' => $commandToDelete['Command']['id'], 'type' => 'hidden']); ?>
+                                    <?php echo $this->Form->input('Command.delete.' . $key, ['value' => $commandToDelete['Command']['id'], 'type' => 'hidden']); ?>
                                 </li>
                             <?php endforeach; ?>
                         </ul>

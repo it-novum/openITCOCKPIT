@@ -26,11 +26,9 @@ namespace itnovum\openITCOCKPIT\Core;
 
 use itnovum\openITCOCKPIT\Core\ValueObjects\CustomVariable;
 
-class CustomVariableHelper
-{
+class CustomVariableHelper {
 
-    public function convertCustomVariablesToRepository($customVariables)
-    {
+    public function convertCustomVariablesToRepository($customVariables) {
         $repository = new CustomVariablesRepository();
         foreach ($customVariables as $customVariable) {
             $key = $customVariable['name'];

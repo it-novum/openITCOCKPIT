@@ -28,18 +28,20 @@
         <center><span id="selectionCount"></span></center>
     </div>
     <div class="col-xs-12 col-md-2 "><span id="selectAllDowntimes" class="pointer"><i
-                class="fa fa-lg fa-check-square-o"></i> <?php echo __('Select all'); ?></span></div>
+                    class="fa fa-lg fa-check-square-o"></i> <?php echo __('Select all'); ?></span></div>
     <div class="col-xs-12 col-md-2"><span id="untickAllDowntimes" class="pointer"><i
-                class="fa fa-lg fa-square-o"></i> <?php echo __('Undo selection'); ?></span></div>
+                    class="fa fa-lg fa-square-o"></i> <?php echo __('Undo selection'); ?></span></div>
     <div class="col-xs-12 col-md-2">
         <?php if ($this->Acl->hasPermission('delete', 'Hosts', '')): ?>
-            <a href="javascript:void(0);" id="deleteAllDowntimes" class="txt-color-red" style="text-decoration: none;"> <i
-                    class="fa fa-lg fa-trash-o"></i> <?php echo __('Delete'); ?></a>
+            <a href="javascript:void(0);" id="deleteAllDowntimes" class="txt-color-red" style="text-decoration: none;">
+                <i
+                        class="fa fa-lg fa-trash-o"></i> <?php echo __('Delete'); ?></a>
         <?php endif; ?>
     </div>
 
     <!-- hidden fields for multi language -->
-    <input type="hidden" id="delete_message_h1" value="<?php echo __('You are about to delete downtime for host:'); ?>"/>
+    <input type="hidden" id="delete_message_h1"
+           value="<?php echo __('You are about to delete downtime for host:'); ?>"/>
     <input type="hidden" id="delete_message_h2"
            value="<?php echo __('Do you want to delete service downtimes for this host too?'); ?>"/>
     <input type="hidden" id="message_yes" value="<?php echo __('Yes'); ?>"/>

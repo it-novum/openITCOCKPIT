@@ -23,11 +23,9 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class AclHelper extends AppHelper
-{
+class AclHelper extends AppHelper {
 
-    public function hasPermission($action = null, $controller = null, $plugin = null)
-    {
+    public function hasPermission($action = null, $controller = null, $plugin = null) {
         //return false;
         if ($action === null) {
             $action = $this->params['index'];
@@ -49,8 +47,7 @@ class AclHelper extends AppHelper
         return isset($this->_View->viewVars['aclPermissions'][$plugin][$controller][$action]);
     }
 
-    public function isWritableContainer($containerIds)
-    {
+    public function isWritableContainer($containerIds) {
         if (isset($this->_View->viewVars['hasRootPrivileges']) && $this->_View->viewVars['hasRootPrivileges'] === true) {
             return true;
         }

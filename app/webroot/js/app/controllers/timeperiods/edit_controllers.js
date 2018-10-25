@@ -23,48 +23,48 @@
 //	confirmation.
 
 App.Controllers.TimeperiodsEditController = Frontend.AppController.extend({
-	$table: null,
-	timeperiodRow: 1,
-	cloneCount: 1,
-	/**
-	 * @constructor
-	 * @return {void}
-	 */
+    $table: null,
+    timeperiodRow: 1,
+    cloneCount: 1,
+    /**
+     * @constructor
+     * @return {void}
+     */
 
-	_initialize: function() {
-		var self = this;
-		$('.addTimeRangeDivButton').click(function(){
-			self.addTimeRangeFields();
-			$this.parent().parent().trigger("liszt:updated");
-		});
-		this.bindEvents();
-	},
-	addTimeRangeFields: function(){
-		var regex = /^(.*)(\d)+$/i;
-		var index = $('.weekdays').length;
-		$('#timerange_template')
-			.clone(true, true)
-			.removeClass('invisible template')
-			.attr('id', 'id'+ index)
-			.attr('clone-number', index)
-			.insertBefore('#addTimerangeButton');
-		$('#id'+index).find('input:text, select').each(function() {
-			if(typeof $(this).attr('name') !== 'undefined'){
-				$(this).attr('name', $(this).attr('name').replace(/\[template]*[[\d]*\]/,'[Timerange]['+index+']'));
-				if(typeof $(this).prop("type") !== 'undefined'){
-					if($(this).prop("type")== 'select-one'){
-						$(this).chosen();
-					}
-				}
-			}
-		});
-	},
+    _initialize: function(){
+        var self = this;
+        $('.addTimeRangeDivButton').click(function(){
+            self.addTimeRangeFields();
+            $this.parent().parent().trigger("liszt:updated");
+        });
+        this.bindEvents();
+    },
+    addTimeRangeFields: function(){
+        var regex = /^(.*)(\d)+$/i;
+        var index = $('.weekdays').length;
+        $('#timerange_template')
+            .clone(true, true)
+            .removeClass('invisible template')
+            .attr('id', 'id' + index)
+            .attr('clone-number', index)
+            .insertBefore('#addTimerangeButton');
+        $('#id' + index).find('input:text, select').each(function(){
+            if(typeof $(this).attr('name') !== 'undefined'){
+                $(this).attr('name', $(this).attr('name').replace(/\[template]*[[\d]*\]/, '[Timerange][' + index + ']'));
+                if(typeof $(this).prop("type") !== 'undefined'){
+                    if($(this).prop("type") == 'select-one'){
+                        $(this).chosen();
+                    }
+                }
+            }
+        });
+    },
 
-	bindEvents: function(){
-		var self = this;
-		$('.removeTimeRangeDivButton').click(function(){
-			var $this = $(this);
-			$this.parent().parent().remove();
-		});
-	},
+    bindEvents: function(){
+        var self = this;
+        $('.removeTimeRangeDivButton').click(function(){
+            var $this = $(this);
+            $this.parent().parent().remove();
+        });
+    },
 });

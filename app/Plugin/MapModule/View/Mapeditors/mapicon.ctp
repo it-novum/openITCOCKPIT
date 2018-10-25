@@ -22,4 +22,4 @@
 //  License agreement and license key will be shipped with the order
 //  confirmation.
 ?>
-<img ng-src="/map_module/img/icons/{{item.icon}}"  />
+<img ng-src="/map_module/img/icons/{{item.icon}}"/>

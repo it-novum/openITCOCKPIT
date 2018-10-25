@@ -23,10 +23,8 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class Documentation extends AppModel
-{
-    public function existsForUuid($uuid = null)
-    {
+class Documentation extends AppModel {
+    public function existsForUuid($uuid = null) {
         return !empty($this->findByUuid($uuid));
     }
 }

@@ -24,8 +24,7 @@
 
 namespace itnovum\openITCOCKPIT\Core;
 
-class PackagemanagerRequestBuilder
-{
+class PackagemanagerRequestBuilder {
 
     /**
      * @var string
@@ -76,8 +75,7 @@ class PackagemanagerRequestBuilder
      * @param string $ENVIRONMENT
      * @param string $license
      */
-    public function __construct($ENVIRONMENT, $license = '')
-    {
+    public function __construct($ENVIRONMENT, $license = '') {
         $this->ENVIRONMENT = $ENVIRONMENT;
         $this->license = $license;
     }
@@ -85,8 +83,7 @@ class PackagemanagerRequestBuilder
     /**
      * @return string
      */
-    public function getUrl()
-    {
+    public function getUrl() {
 // ITC-1350
 //        if ($this->ENVIRONMENT === \Environments::DEVELOPMENT) {
 //            return sprintf($this->baseUrl, $this->internalAddress, $this->license);
@@ -98,8 +95,7 @@ class PackagemanagerRequestBuilder
     /**
      * @return string
      */
-    public function getUrlForLicenseCheck()
-    {
+    public function getUrlForLicenseCheck() {
 // ITC-1350
 //        if ($this->ENVIRONMENT === \Environments::DEVELOPMENT) {
 //            return sprintf($this->checkLicenseUrl, $this->internalAddress, $this->license);
@@ -111,8 +107,7 @@ class PackagemanagerRequestBuilder
     /**
      * @return array
      */
-    public function getOptions()
-    {
+    public function getOptions() {
 // ITC-1350
 //        if ($this->ENVIRONMENT === \Environments::DEVELOPMENT) {
 //            return $this->internalOptions;

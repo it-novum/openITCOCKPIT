@@ -25,51 +25,44 @@
 namespace itnovum\openITCOCKPIT\Core;
 
 
-class CustomMacroReplacerTest extends \PHPUnit_Framework_TestCase
-{
+class CustomMacroReplacerTest extends \PHPUnit_Framework_TestCase {
 
     //run test: oitc test app Core/CustomMacroReplacer
 
-    public function testInstance()
-    {
+    public function testInstance() {
         $customMacroReplacer = new CustomMacroReplacer([], OBJECT_SERVICE);
         $this->assertInstanceOf('\itnovum\openITCOCKPIT\Core\CustomMacroReplacer', $customMacroReplacer);
     }
 
-    public function testGetServicePrefix()
-    {
+    public function testGetServicePrefix() {
         $customMacroReplacer = new CustomMacroReplacer([], OBJECT_SERVICE);
         $assert = '$_SERVICE';
         $result = $customMacroReplacer->getMacroPrefix();
         $this->assertEquals($assert, $result);
     }
 
-    public function testGetServicePrefixByServicetemplate()
-    {
+    public function testGetServicePrefixByServicetemplate() {
         $customMacroReplacer = new CustomMacroReplacer([], OBJECT_SERVICETEMPLATE);
         $assert = '$_SERVICE';
         $result = $customMacroReplacer->getMacroPrefix();
         $this->assertEquals($assert, $result);
     }
 
-    public function testGetHostPrefix()
-    {
+    public function testGetHostPrefix() {
         $customMacroReplacer = new CustomMacroReplacer([], OBJECT_HOST);
         $assert = '$_HOST';
         $result = $customMacroReplacer->getMacroPrefix();
         $this->assertEquals($assert, $result);
     }
 
-    public function testGetHostPrefixByHosttemplate()
-    {
+    public function testGetHostPrefixByHosttemplate() {
         $customMacroReplacer = new CustomMacroReplacer([], OBJECT_HOSTTEMPLATE);
         $assert = '$_HOST';
         $result = $customMacroReplacer->getMacroPrefix();
         $this->assertEquals($assert, $result);
     }
 
-    public function testBuildMappingForServices()
-    {
+    public function testBuildMappingForServices() {
         $customMacroReplacer = new CustomMacroReplacer($this->getServiceMacros(), OBJECT_SERVICE);
         $result = $customMacroReplacer->buildMapping();
 
@@ -87,8 +80,7 @@ class CustomMacroReplacerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($assert, $result);
     }
 
-    public function testBuildMappingForHosts()
-    {
+    public function testBuildMappingForHosts() {
         $customMacroReplacer = new CustomMacroReplacer($this->getHostMacros(), OBJECT_HOST);
         $result = $customMacroReplacer->buildMapping();
 
@@ -104,8 +96,7 @@ class CustomMacroReplacerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($assert, $result);
     }
 
-    public function testReplaceForServices()
-    {
+    public function testReplaceForServices() {
         $customMacroReplacer = new CustomMacroReplacer($this->getServiceMacros(), OBJECT_SERVICE);
         $input = 'My SNMP Community is $_SERVICESNMP_COMMUNITY$ with the password $_SERVICESNMP_PASSWORD$';
         $assert = 'My SNMP Community is foobar with the password passw0rd';
@@ -113,8 +104,7 @@ class CustomMacroReplacerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($assert, $result);
     }
 
-    public function testReplaceForHosts()
-    {
+    public function testReplaceForHosts() {
         $customMacroReplacer = new CustomMacroReplacer($this->getHostMacros(), OBJECT_HOST);
         $input = 'Hello my name is host. $_HOSTFOO$ host';
         $assert = 'Hello my name is host. bar host';
@@ -122,8 +112,7 @@ class CustomMacroReplacerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($assert, $result);
     }
 
-    public function testReplaceOnlyKnownMacros()
-    {
+    public function testReplaceOnlyKnownMacros() {
         $customMacroReplacer = new CustomMacroReplacer($this->getHostMacros(), OBJECT_HOST);
         $input = 'Hello my name is $_HOST007$. $_HOSTFOO$ host';
         $assert = 'Hello my name is $_HOST007$. bar host';
@@ -134,8 +123,7 @@ class CustomMacroReplacerTest extends \PHPUnit_Framework_TestCase
     /**
      * @return array
      */
-    private function getServiceMacros()
-    {
+    private function getServiceMacros() {
         return [
             (int)0 => [
                 'id'            => '2',
@@ -157,8 +145,7 @@ class CustomMacroReplacerTest extends \PHPUnit_Framework_TestCase
     /**
      * @return array
      */
-    private function getHostMacros()
-    {
+    private function getHostMacros() {
         return [
             (int)0 => [
                 'id'            => '1',

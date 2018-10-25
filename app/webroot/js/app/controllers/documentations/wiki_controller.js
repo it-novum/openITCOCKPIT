@@ -25,47 +25,47 @@
 
 App.Controllers.DocumentationsWikiController = Frontend.AppController.extend({
 
-	_initialize: function() {
-		var self = this;
+    _initialize: function(){
+        var self = this;
 
-		//Start search if user is typing
-		$('#search-documentation').keyup(function(){
-			var searchKeyword = $.trim($(this).val()).toLowerCase();
-			self.search(searchKeyword);
-		});
+        //Start search if user is typing
+        $('#search-documentation').keyup(function(){
+            var searchKeyword = $.trim($(this).val()).toLowerCase();
+            self.search(searchKeyword);
+        });
 
-		//Search if the user pressed back and browser auto-fills the input field
-		var inputField = document.getElementById('search-documentation');
-		if(inputField !== null){
-			if(inputField.value.length > 0){
-				self.search(inputField.value.toLowerCase());
-			}
-		}
+        //Search if the user pressed back and browser auto-fills the input field
+        var inputField = document.getElementById('search-documentation');
+        if(inputField !== null){
+            if(inputField.value.length > 0){
+                self.search(inputField.value.toLowerCase());
+            }
+        }
 
-		//Use browser back that the browser auto fills the search field
-		$('#doku_back').click(function(){
-			window.history.back();
-		});
-	},
+        //Use browser back that the browser auto fills the search field
+        $('#doku_back').click(function(){
+            window.history.back();
+        });
+    },
 
-	search: function(searchKeyword){
-		var $target;
-		var $search = $('.docs-container');
-		var $results = $('.wiki-search-results');
+    search: function(searchKeyword){
+        var $target;
+        var $search = $('.docs-container');
+        var $results = $('.wiki-search-results');
 
-		if(searchKeyword !== ''){
-			$search.hide();
-			$results.html('');
-			$results.show();
-			$search.find('.search-results').each(function(){
-				$target = $(this).children('h4').children('a').html() + ' ' + $(this).children('div').children('.description').html();
-				if($target.toLowerCase().match(searchKeyword)){
-					$results.append($(this).clone());
-				}
-			});
-		}else{
-			$results.hide();
-			$search.show();
-		}
-	}
+        if(searchKeyword !== ''){
+            $search.hide();
+            $results.html('');
+            $results.show();
+            $search.find('.search-results').each(function(){
+                $target = $(this).children('h4').children('a').html() + ' ' + $(this).children('div').children('.description').html();
+                if($target.toLowerCase().match(searchKeyword)){
+                    $results.append($(this).clone());
+                }
+            });
+        }else{
+            $results.hide();
+            $search.show();
+        }
+    }
 });

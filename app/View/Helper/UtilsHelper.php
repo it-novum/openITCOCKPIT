@@ -23,8 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class UtilsHelper extends AppHelper
-{
+class UtilsHelper extends AppHelper {
     /**
      * Used helpers
      * @var string
@@ -38,8 +37,7 @@ class UtilsHelper extends AppHelper
      *
      * @return string
      */
-    public function niceDate($date)
-    {
+    public function niceDate($date) {
         return utf8_encode(strftime("%A, %e. %B %Y", strtotime($date)));
     }
 
@@ -50,8 +48,7 @@ class UtilsHelper extends AppHelper
      *
      * @return string
      */
-    public function niceDateAndTime($date)
-    {
+    public function niceDateAndTime($date) {
         return utf8_encode(strftime("%A, %e. %B %Y at %R", strtotime($date)));
     }
 
@@ -59,13 +56,12 @@ class UtilsHelper extends AppHelper
      * Formats a given number to a price, e.g. 5.000 €
      * @return void
      */
-    public function price($number, $decimals = 2, $suffix = ' &euro;')
-    {
+    public function price($number, $decimals = 2, $suffix = ' &euro;') {
         if (empty($number)) {
             $number = 0;
         }
 
-        return number_format($number, $decimals, ',', '.').$suffix;
+        return number_format($number, $decimals, ',', '.') . $suffix;
     }
 
     /**
@@ -75,8 +71,7 @@ class UtilsHelper extends AppHelper
      *
      * @return string
      */
-    public function date($date)
-    {
+    public function date($date) {
         if (empty($date)) {
             return '';
         } else {
@@ -91,8 +86,7 @@ class UtilsHelper extends AppHelper
      *
      * @return string
      */
-    public function dateAndTime($date)
-    {
+    public function dateAndTime($date) {
         if (empty($date)) {
             return '';
         } else {
@@ -109,8 +103,7 @@ class UtilsHelper extends AppHelper
      *
      * @return string
      */
-    public function formatDate($date = null, $format = 'd.m.Y H:i')
-    {
+    public function formatDate($date = null, $format = 'd.m.Y H:i') {
         if ($date) {
             $time = strtotime($date);
         } else {
@@ -132,8 +125,7 @@ class UtilsHelper extends AppHelper
      *
      * @return string
      */
-    public function graphicalCheckbox($value)
-    {
+    public function graphicalCheckbox($value) {
         return sprintf('<i class="glyphicon glyphicon-%s"></i>', ($value ? 'ok' : 'remove'));
     }
 
@@ -144,12 +136,11 @@ class UtilsHelper extends AppHelper
      *
      * @return string
      */
-    public function customerButtons($buttons = [])
-    {
+    public function customerButtons($buttons = []) {
         $return = '';
         for ($i = 1; $i < 4; $i++) {
             if (isset($buttons["homepage_button_{$i}_caption"], $buttons["homepage_button_{$i}_link"])) {
-                $return .= $this->button($buttons["homepage_button_{$i}_caption"], $buttons["homepage_button_{$i}_link"], ['target' => '_blank']).' ';
+                $return .= $this->button($buttons["homepage_button_{$i}_caption"], $buttons["homepage_button_{$i}_link"], ['target' => '_blank']) . ' ';
             }
         }
 
@@ -161,12 +152,11 @@ class UtilsHelper extends AppHelper
      *
      * @param string $title
      * @param string $url
-     * @param array  $options
+     * @param array $options
      *
      * @return void
      */
-    public function editButton($title = null, $url = null, $options = [])
-    {
+    public function editButton($title = null, $url = null, $options = []) {
         if (!$title) {
             $title = __('edit');
         }
@@ -177,7 +167,7 @@ class UtilsHelper extends AppHelper
             'class'  => 'btn btn-primary btn-xs',
             'escape' => false,
         ], $options);
-        $title = '<i class="fa fa-edit"></i> '.$title;
+        $title = '<i class="fa fa-edit"></i> ' . $title;
 
         return $this->Html->link($title, $url, $options);
     }
@@ -186,12 +176,11 @@ class UtilsHelper extends AppHelper
      * renders an add button
      *
      * @param string $title
-     * @param array  $options
+     * @param array $options
      *
      * @return string
      */
-    public function addButton($title = null, $options = [])
-    {
+    public function addButton($title = null, $options = []) {
         if (!$title) {
             $title = __('add');
         }
@@ -206,7 +195,7 @@ class UtilsHelper extends AppHelper
         }
         $url = $options['url'];
         unset($options['url']);
-        $title = '<i class="fa fa-plus"></i> '.$title;
+        $title = '<i class="fa fa-plus"></i> ' . $title;
 
         return $this->Html->link($title, $url, $options);
     }
@@ -221,8 +210,7 @@ class UtilsHelper extends AppHelper
      *
      * @return string
      */
-    public function emailLink($email = null, $subject = null, $body = null)
-    {
+    public function emailLink($email = null, $subject = null, $body = null) {
         $all = '';
         if (isset($email)) {
             $all .= $email;
@@ -232,30 +220,29 @@ class UtilsHelper extends AppHelper
         if ($_subject || $_body) {
             $all .= '?';
             if ($_subject && $_body) {
-                $all .= 'subject='.$subject.'&body='.$body;
+                $all .= 'subject=' . $subject . '&body=' . $body;
             } else {
                 if ($_body) {
-                    $all .= 'body='.$body;
+                    $all .= 'body=' . $body;
                 } else {
-                    $all .= 'subject='.$subject;
+                    $all .= 'subject=' . $subject;
                 }
             }
         }
 
-        return 'mailto:'.$all;
+        return 'mailto:' . $all;
     }
 
     /**
      * Renders a delete button
      *
      * @param string $title
-     * @param mixed  $url Either a string or array url, or an ID
-     * @param array  $options
+     * @param mixed $url Either a string or array url, or an ID
+     * @param array $options
      *
      * @return string
      */
-    public function deleteButton($title = null, $url = null, $options = [], $confirm = true, $postText = '')
-    {
+    public function deleteButton($title = null, $url = null, $options = [], $confirm = true, $postText = '') {
         $_options = ['icon' => 'fa fa-trash-o'];
         $options = Hash::merge($options, $_options);
         if (is_numeric($title)) {
@@ -266,9 +253,9 @@ class UtilsHelper extends AppHelper
             $title = __('Delete');
         }
         if (is_numeric($url) || is_string($url) || (is_array($url) && !isset($url['action']))) {
-            if(is_array($url)){
+            if (is_array($url)) {
                 $url = Hash::merge($url, ['action' => 'delete']);
-            }else{
+            } else {
                 $url = ['action' => 'delete', $url];
 
             }
@@ -278,9 +265,9 @@ class UtilsHelper extends AppHelper
             'class'  => 'btn btn-danger btn-xs',
             'escape' => false,
         ], $options);
-        $title = '<i class="'.$options['icon'].'"></i> '.$title;
+        $title = '<i class="' . $options['icon'] . '"></i> ' . $title;
         if ($confirm) {
-            return $this->Form->postLink($title, $url, $options, __('confirm_delete').' '.$postText);
+            return $this->Form->postLink($title, $url, $options, __('confirm_delete') . ' ' . $postText);
         }
 
         return $this->Form->postLink($title, $url, $options);
@@ -290,13 +277,12 @@ class UtilsHelper extends AppHelper
      * Renders a back button
      *
      * @param string $title
-     * @param mixed  $url Either a string or array url
-     * @param array  $options
+     * @param mixed $url Either a string or array url
+     * @param array $options
      *
      * @return string
      */
-    public function backButton($title = null, $url = null, $options = [])
-    {
+    public function backButton($title = null, $url = null, $options = []) {
         if (!$title) {
             $title = __('back_to_list');
         }
@@ -309,7 +295,7 @@ class UtilsHelper extends AppHelper
             'iconColor' => 'white',
         ], $options);
 
-        $title = '<i class="glyphicon glyphicon-'.$options['iconColor'].' glyphicon-arrow-left"></i> '.$title;
+        $title = '<i class="glyphicon glyphicon-' . $options['iconColor'] . ' glyphicon-arrow-left"></i> ' . $title;
 
         return $this->Html->link($title, $url, $options);
     }
@@ -322,8 +308,7 @@ class UtilsHelper extends AppHelper
      *
      * @return void
      */
-    public function formActions($saveText = null, array $options = [])
-    {
+    public function formActions($saveText = null, array $options = []) {
         if (!$saveText) {
             $saveText = __('formactions.save');
         }
@@ -338,7 +323,7 @@ class UtilsHelper extends AppHelper
         $out = '';
         $out .= '<div class="form-actions"><div class="pull-left">';
         if ($options['cancelButton']) {
-            $out .= $this->Html->link($options['cancelButton']['title'], $options['cancelButton']['url'], ['class' => 'btn btn-cancel']).'&nbsp;';
+            $out .= $this->Html->link($options['cancelButton']['title'], $options['cancelButton']['url'], ['class' => 'btn btn-cancel']) . '&nbsp;';
         }
         $out .= $this->Form->submit($saveText, ['div' => false, 'class' => 'btn btn-primary']);
         $out .= '</div>';
@@ -369,15 +354,14 @@ class UtilsHelper extends AppHelper
      *
      * @return void
      */
-    public function viewButton($title = null, $url = null)
-    {
+    public function viewButton($title = null, $url = null) {
         if (!$title) {
             $title = __('details');
         }
         if (is_numeric($url) || is_string($url)) {
             $url = ['action' => 'view', $url];
         }
-        $title = '<i class="glyphicon glyphicon-white glyphicon-search"></i> '.$title;
+        $title = '<i class="glyphicon glyphicon-white glyphicon-search"></i> ' . $title;
 
         return $this->Html->link($title, $url, ['class' => 'btn btn-default btn-xs', 'escape' => false]);
     }
@@ -389,15 +373,14 @@ class UtilsHelper extends AppHelper
      *
      * @return void
      */
-    public function printButton($mini = false)
-    {
+    public function printButton($mini = false) {
         $title = '<i class="glyphicon glyphicon-print"></i> ';
         $title .= __('print');
 
         return $this->Html->link(
             $title,
             'javascript:window.print()',
-            ['class' => 'btn print-button'.($mini ? ' btn-xs' : ''), 'escape' => false]
+            ['class' => 'btn print-button' . ($mini ? ' btn-xs' : ''), 'escape' => false]
         );
     }
 
@@ -405,13 +388,12 @@ class UtilsHelper extends AppHelper
      * Renders a standard button
      *
      * @param string $title
-     * @param array  $url
-     * @param array  $options
+     * @param array $url
+     * @param array $options
      *
      * @return void
      */
-    public function button($title, $url, $options = [])
-    {
+    public function button($title, $url, $options = []) {
         $options = Set::merge([
             'class' => 'btn btn-default',
         ], $options);
@@ -426,13 +408,11 @@ class UtilsHelper extends AppHelper
      *
      * @return string
      */
-    public function country($code)
-    {
-        return Configure::read('countries.'.$code);
+    public function country($code) {
+        return Configure::read('countries.' . $code);
     }
 
-    public function readableFilesize($size, $retstring = null, $round = true)
-    {
+    public function readableFilesize($size, $retstring = null, $round = true) {
         $sizes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
         if ($retstring === null) {
             $retstring = '%01.0f %s';
@@ -462,11 +442,10 @@ class UtilsHelper extends AppHelper
      *
      * @return string          'Sekunde x', 'Minute y:xx' or 'Stunde z:yy:xx'
      */
-    public function secToTime($seconds)
-    {
+    public function secToTime($seconds) {
         $seconds = str_replace(',', '.', $seconds);
         if ($seconds < 60) {
-            return 'Sekunde '.round($seconds, 0);
+            return 'Sekunde ' . round($seconds, 0);
         }
 
         $minutes = bcdiv($seconds, '60', 0);
@@ -474,17 +453,17 @@ class UtilsHelper extends AppHelper
 
         if ($minutes < 60) {
             if ($seconds < 10) {
-                $seconds = '0'.$seconds;
+                $seconds = '0' . $seconds;
             }
 
-            return 'Minute '.$minutes.':'.$seconds;
+            return 'Minute ' . $minutes . ':' . $seconds;
         }
 
         $hours = bcdiv($minutes, '60', 0);
         $minutes = bcmod($minutes, '60');
 
         //delete this line if you uncomment the end for transformation in days if needed
-        return 'Stunde '.$hours.':'.$minutes.':'.$seconds;
+        return 'Stunde ' . $hours . ':' . $minutes . ':' . $seconds;
         /*
                 if (!($hours >= 24)) {
                     return $hours . ' Stunden ' . $minutes . ' Minuten ' . $seconds . ' Sekunden';
@@ -504,11 +483,10 @@ class UtilsHelper extends AppHelper
      *
      * @return string          'Sekunde x', 'Minute y:xx' or 'Stunde z:yy:xx'
      */
-    public function secToTimestamp($seconds)
-    {
+    public function secToTimestamp($seconds) {
         $seconds = str_replace(',', '.', $seconds);
         if ($seconds < 60) {
-            return '00:00:'.str_pad(round($seconds, 0), 2, 0, STR_PAD_LEFT);
+            return '00:00:' . str_pad(round($seconds, 0), 2, 0, STR_PAD_LEFT);
         }
 
         $minutes = bcdiv($seconds, '60', 0);
@@ -517,7 +495,7 @@ class UtilsHelper extends AppHelper
         $seconds = str_pad($seconds, 2, 0, STR_PAD_LEFT);
 
         if ($minutes < 60) {
-            return '00:'.str_pad($minutes, 2, 0, STR_PAD_LEFT).':'.$seconds;
+            return '00:' . str_pad($minutes, 2, 0, STR_PAD_LEFT) . ':' . $seconds;
         }
 
         $hours = bcdiv($minutes, '60', 0);
@@ -526,7 +504,7 @@ class UtilsHelper extends AppHelper
         $minutes = str_pad($minutes, 2, 0, STR_PAD_LEFT);
 
         //delete this line if you uncomment the end for transformation in days if needed
-        return str_pad($hours, 2, 0, STR_PAD_LEFT).':'.$minutes.':'.$seconds;
+        return str_pad($hours, 2, 0, STR_PAD_LEFT) . ':' . $minutes . ':' . $seconds;
         /*
                 if (!($hours >= 24)) {
                     return $hours . ' Stunden ' . $minutes . ' Minuten ' . $seconds . ' Sekunden';
@@ -546,8 +524,7 @@ class UtilsHelper extends AppHelper
      *
      * @return string                  classes string
      */
-    public function getEpicBgClasses()
-    {
+    public function getEpicBgClasses() {
         if (isset($this->_View->viewVars['backgroundImage']) && is_numeric($this->_View->viewVars['backgroundImage'])) {
             $backgroundImage = $this->_View->viewVars['backgroundImage'];
         } else {
@@ -555,7 +532,7 @@ class UtilsHelper extends AppHelper
         }
         $BgClasses = 'epic-bg';
         if (isset($backgroundImage) && $backgroundImage >= 0 && $backgroundImage <= 8) {
-            $BgClasses .= ' epic-bg-'.$backgroundImage;
+            $BgClasses .= ' epic-bg-' . $backgroundImage;
         } else {
             $BgClasses .= ' epic-bg-1';
         }
@@ -566,23 +543,22 @@ class UtilsHelper extends AppHelper
     /**
      * returns user role dependet classes. It's also possible to only set one of both classes.
      *
-     * @param  string $userClass  class to be returned if user has user role
+     * @param  string $userClass class to be returned if user has user role
      * @param  string $adminClass class to be returned if user has admin role
      *
      * @return string             class string
      */
-    public function getRightAccessClass($userClass = '', $adminClass = '')
-    {
+    public function getRightAccessClass($userClass = '', $adminClass = '') {
         if (empty($userClass) && empty($adminClass)) {
             return '';
         }
         if ($this->Auth->isLoggedIn() && $this->Auth->hasRight('accessAdministration')) {
             if (!empty($adminClass)) {
-                $returnClass = ' '.$adminClass.' ';
+                $returnClass = ' ' . $adminClass . ' ';
             }
         } else {
             if (!empty($userClass)) {
-                $returnClass = ' '.$userClass.' ';
+                $returnClass = ' ' . $userClass . ' ';
             } else {
                 $returnClass = '';
             }
@@ -599,12 +575,11 @@ class UtilsHelper extends AppHelper
      *
      * @return string
      */
-    public function flag($countryCode, $class = 'flag-small')
-    {
+    public function flag($countryCode, $class = 'flag-small') {
         $countries = Configure::read('countries');
         $flag = '';
         if (in_array($countryCode, array_keys($countries))) {
-            $flag = $this->Html->image('/files/flags/'.$countryCode.'.png', [
+            $flag = $this->Html->image('/files/flags/' . $countryCode . '.png', [
                 'class' => $class,
             ]);
         }
@@ -619,11 +594,10 @@ class UtilsHelper extends AppHelper
      *
      * @return string        team_home_total : team_away_total
      */
-    public function getFinalScore($match)
-    {
+    public function getFinalScore($match) {
         $scores = Utils::calculateFinalScore($match);
 
-        return $scores['teamHomeTotal'].' : '.$scores['teamAwayTotal'];
+        return $scores['teamHomeTotal'] . ' : ' . $scores['teamAwayTotal'];
     }
 
     /**
@@ -633,29 +607,27 @@ class UtilsHelper extends AppHelper
      *
      * @return string
      */
-    public function appendEnglishOrdinalSuffix($n)
-    {
+    public function appendEnglishOrdinalSuffix($n) {
         if (!in_array(($n % 100), [11, 12, 13])) {
             switch ($n % 10) {
                 case 1:
-                    return $n.'st';
+                    return $n . 'st';
                 case 2:
-                    return $n.'nd';
+                    return $n . 'nd';
                 case 3:
-                    return $n.'rd';
+                    return $n . 'rd';
             }
         }
 
-        return $n.'th';
+        return $n . 'th';
     }
 
     /**
      * returns terms and conditions link
      * @return string
      */
-    public function termsAndConditionsLink()
-    {
-        return __('register.i_accept_the').' '.$this->Html->link(__('terms_and_conditions'),
+    public function termsAndConditionsLink() {
+        return __('register.i_accept_the') . ' ' . $this->Html->link(__('terms_and_conditions'),
                 [
                     'controller' => 'contents',
                     'action'     => 'content',
@@ -664,7 +636,7 @@ class UtilsHelper extends AppHelper
                 [
                     'target' => '_blank',
                 ]
-            ).'.';
+            ) . '.';
     }
 
     /**
@@ -675,8 +647,7 @@ class UtilsHelper extends AppHelper
      *
      * @return string
      */
-    public function captionTable($data, array $options = [])
-    {
+    public function captionTable($data, array $options = []) {
         $options = Set::merge([
             'additionalClasses' => '',
         ], $options);
@@ -687,8 +658,7 @@ class UtilsHelper extends AppHelper
         ]);
     }
 
-    public function getDirection($order, $key)
-    {
+    public function getDirection($order, $key) {
         if (!is_array($order))
             $order = [];
 
@@ -703,10 +673,9 @@ class UtilsHelper extends AppHelper
         return '<i class="fa fa-sort">&nbsp;</i>';
     }
 
-    public function formatExportCount($count)
-    {
+    public function formatExportCount($count) {
         if ($count <= 9) {
-            return "&nbsp".$count."&nbsp;";
+            return "&nbsp" . $count . "&nbsp;";
         }
 
         return $count;
@@ -725,8 +694,7 @@ class UtilsHelper extends AppHelper
      * @since      3.0
      * @deprecated This function is deprecated and will be removed in the next version!
      */
-    public function secondsInWords($seconds)
-    {
+    public function secondsInWords($seconds) {
         //$min = (int)($seconds / 60);
         //$sec = (int)($seconds % 60);
         //return $min.' '.__('minutes').' '.__('and').' '.$sec.' '.__('seconds');
@@ -744,8 +712,7 @@ class UtilsHelper extends AppHelper
      * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since  3.0
      */
-    public function secondsInHuman($duration)
-    {
+    public function secondsInHuman($duration) {
         if ($duration == '') {
             $duration = 0;
         }
@@ -756,22 +723,22 @@ class UtilsHelper extends AppHelper
             //Check how mutch "time" we need
             if ($duration >= 31536000) {
                 // 1 year or more
-                return '%y '.__('years').', %m '.__('months').', %d '.__('days').', %h '.__('hours').', %i '.__('minutes').' and %s '.__('seconds');
-            } elseif ($duration >= 2678400) {
+                return '%y ' . __('years') . ', %m ' . __('months') . ', %d ' . __('days') . ', %h ' . __('hours') . ', %i ' . __('minutes') . ' and %s ' . __('seconds');
+            } else if ($duration >= 2678400) {
                 // 1 month or more
-                return '%m '.__('months').', %d '.__('days').', %h '.__('hours').', %i '.__('minutes').' and %s '.__('seconds');
-            } elseif ($duration >= 86400) {
+                return '%m ' . __('months') . ', %d ' . __('days') . ', %h ' . __('hours') . ', %i ' . __('minutes') . ' and %s ' . __('seconds');
+            } else if ($duration >= 86400) {
                 // 1 day or more
-                return '%a '.__('days').', %h '.__('hours').', %i '.__('minutes').' and %s '.__('seconds');
-            } elseif ($duration >= 3600) {
+                return '%a ' . __('days') . ', %h ' . __('hours') . ', %i ' . __('minutes') . ' and %s ' . __('seconds');
+            } else if ($duration >= 3600) {
                 // 1 hour or more
-                return '%h '.__('hours').', %i '.__('minutes').' and %s '.__('seconds');
-            } elseif ($duration >= 60) {
+                return '%h ' . __('hours') . ', %i ' . __('minutes') . ' and %s ' . __('seconds');
+            } else if ($duration >= 60) {
                 // 1 minute or more
-                return '%i '.__('minutes').' and %s '.__('seconds');
-            } elseif ($duration >= 0) {
+                return '%i ' . __('minutes') . ' and %s ' . __('seconds');
+            } else if ($duration >= 0) {
                 // 0 second or more
-                return '%s '.__('seconds');
+                return '%s ' . __('seconds');
             }
         };
 
@@ -780,8 +747,7 @@ class UtilsHelper extends AppHelper
         return $zero->diff($seconds)->format($format);
     }
 
-    public function pluralize($items, $singular, $plural)
-    {
+    public function pluralize($items, $singular, $plural) {
         if (is_array($items)) {
             if (sizeof($items) > 1) {
                 return $plural;
@@ -811,8 +777,7 @@ class UtilsHelper extends AppHelper
      * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since  3.0
      */
-    public function secondsInHumanShort($duration)
-    {
+    public function secondsInHumanShort($duration) {
 
         if ($duration == '') {
             $duration = 0;
@@ -824,22 +789,22 @@ class UtilsHelper extends AppHelper
             //Check how much "time" we need
             if ($duration >= 31536000) {
                 // 1 year or more
-                return '%y'.__('Y').' %m'.__('M').' %d'.__('D').' %h'.__('h').' %i'.__('m').' %s'.__('s');
-            } elseif ($duration >= 2678400) {
+                return '%y' . __('Y') . ' %m' . __('M') . ' %d' . __('D') . ' %h' . __('h') . ' %i' . __('m') . ' %s' . __('s');
+            } else if ($duration >= 2678400) {
                 // 1 month or more
-                return '%m'.__('M').' %d'.__('D').' %h'.__('h').' %i'.__('m').' %s'.__('s');
-            } elseif ($duration >= 86400) {
+                return '%m' . __('M') . ' %d' . __('D') . ' %h' . __('h') . ' %i' . __('m') . ' %s' . __('s');
+            } else if ($duration >= 86400) {
                 // 1 day or more
-                return '%a'.__('D').' %h'.__('h').' %i'.__('m').' %s'.__('s');
-            } elseif ($duration >= 3600) {
+                return '%a' . __('D') . ' %h' . __('h') . ' %i' . __('m') . ' %s' . __('s');
+            } else if ($duration >= 3600) {
                 // 1 hour or more
-                return '%h'.__('h').' %i'.__('m').' %s'.__('s');
-            } elseif ($duration >= 60) {
+                return '%h' . __('h') . ' %i' . __('m') . ' %s' . __('s');
+            } else if ($duration >= 60) {
                 // 1 minute or more
-                return '%i'.__('m').' %s'.__('s');
-            } elseif ($duration >= 0) {
+                return '%i' . __('m') . ' %s' . __('s');
+            } else if ($duration >= 0) {
                 // 0 second or more
-                return '%s'.__('s');
+                return '%s' . __('s');
             }
         };
 

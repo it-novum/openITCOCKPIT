@@ -36,22 +36,22 @@ class CrateHost extends CrateModuleAppModel {
      * @param array $conditions
      * @return array
      */
-    public function getHostNotMonitoredQuery(HostConditions $HostConditions, $conditions = []){
+    public function getHostNotMonitoredQuery(HostConditions $HostConditions, $conditions = []) {
         $query = [
-            'joins' => [
+            'joins'            => [
                 [
-                    'table' => 'statusengine_hoststatus',
-                    'type' => 'LEFT',
-                    'alias' => 'Hoststatus',
+                    'table'      => 'statusengine_hoststatus',
+                    'type'       => 'LEFT',
+                    'alias'      => 'Hoststatus',
                     'conditions' => 'Host.uuid = Hoststatus.hostname',
                 ]
             ],
-            'conditions' => $conditions,
+            'conditions'       => $conditions,
             'array_difference' => [
                 'Host.container_ids' =>
                     $HostConditions->getContainerIds(),
             ],
-            'order' => $HostConditions->getOrder()
+            'order'            => $HostConditions->getOrder()
         ];
         $query['conditions']['Host.disabled'] = (bool)$HostConditions->includeDisabled();
         $query['conditions'][] = 'Hoststatus.hostname IS NULL';

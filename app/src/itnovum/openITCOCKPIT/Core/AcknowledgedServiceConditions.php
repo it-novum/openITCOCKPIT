@@ -53,36 +53,36 @@ class AcknowledgedServiceConditions extends ListSettingsConditions {
     /**
      * @param $serviceUuid
      */
-    public function setServiceUuid($serviceUuid){
+    public function setServiceUuid($serviceUuid) {
         $this->serviceUuid = $serviceUuid;
     }
 
     /**
      * @return string
      */
-    public function getServiceUuid(){
+    public function getServiceUuid() {
         return $this->serviceUuid;
     }
 
     /**
      * @param $value
      */
-    public function setUseLimit($value){
+    public function setUseLimit($value) {
         $this->useLimit = (bool)$value;
     }
 
     /**
      * @return bool
      */
-    public function getUseLimit(){
+    public function getUseLimit() {
         return $this->useLimit;
     }
 
     /**
      * @param ServiceStates $ServiceStates
      */
-    public function setStates(ServiceStates $ServiceStates){
-        if(sizeof($ServiceStates->asIntegerArray()) == 4){
+    public function setStates(ServiceStates $ServiceStates) {
+        if (sizeof($ServiceStates->asIntegerArray()) == 4) {
             $this->states = [];
             return;
         }

@@ -14,6 +14,7 @@
  * @since         CakePHP(tm) v 0.2.9
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
+
 /*
  *
  * Using the Schema command line utility
@@ -21,18 +22,15 @@
  *
  */
 
-class SessionsSchema extends CakeSchema
-{
+class SessionsSchema extends CakeSchema {
 
     public $name = 'Sessions';
 
-    public function before($event = [])
-    {
+    public function before($event = []) {
         return true;
     }
 
-    public function after($event = [])
-    {
+    public function after($event = []) {
     }
 
     public $cake_sessions = [

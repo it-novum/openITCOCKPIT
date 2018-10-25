@@ -27,8 +27,7 @@ namespace itnovum\openITCOCKPIT\ApiShell\Interfaces;
 
 use itnovum\openITCOCKPIT\ApiShell\OptionParser;
 
-interface ApiInterface
-{
+interface ApiInterface {
     /**
      * Set the optionParser for the API interface
      *

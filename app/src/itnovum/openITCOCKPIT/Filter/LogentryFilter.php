@@ -35,7 +35,7 @@ class LogentryFilter extends Filter {
             'equals' => [
                 'Logentry.logentry_type',
             ],
-            'like' => [
+            'like'   => [
                 'Logentry.logentry_data'
             ]
         ];

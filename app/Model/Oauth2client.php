@@ -30,13 +30,12 @@ App::uses('CakeSession', 'Model/Datasource');
 /**
  * Class Oauth2client
  */
-class Oauth2client
-{
+class Oauth2client {
 
     /**
      * @return array
      */
-    public function connectToSSO(){
+    public function connectToSSO() {
         $mySettings = ClassRegistry::init('Systemsetting');
         $systemsettings = $mySettings->findAsArraySection('FRONTEND');
         $clientId = isset($systemsettings['FRONTEND']['FRONTEND.SSO.CLIENT_ID']) ? trim($systemsettings['FRONTEND']['FRONTEND.SSO.CLIENT_ID']) : '';
@@ -45,12 +44,12 @@ class Oauth2client
         $tokenEndpoint = isset($systemsettings['FRONTEND']['FRONTEND.SSO.TOKEN_ENDPOINT']) ? trim($systemsettings['FRONTEND']['FRONTEND.SSO.TOKEN_ENDPOINT']) : '';
         $userEndpoint = isset($systemsettings['FRONTEND']['FRONTEND.SSO.USER_ENDPOINT']) ? trim($systemsettings['FRONTEND']['FRONTEND.SSO.USER_ENDPOINT']) : '';
 
-        if(empty($clientId) || empty($clientSecret) || empty($authEndpoint) || empty($tokenEndpoint) || empty($userEndpoint)){
+        if (empty($clientId) || empty($clientSecret) || empty($authEndpoint) || empty($tokenEndpoint) || empty($userEndpoint)) {
             return ['success' => false, 'message' => 'Configuration error: One or more SSO values are empty. The values can be now inserted only directly in db.'];
         }
 
 
-        $redirectUri  = $this->getReturnUrl();
+        $redirectUri = $this->getReturnUrl();
         $provider = new PingIdentity(compact('clientId', 'clientSecret', 'redirectUri', 'authEndpoint', 'tokenEndpoint', 'userEndpoint'));
 
         if (empty($_GET['code'])) {
@@ -58,7 +57,7 @@ class Oauth2client
             $authUrl = $provider->getAuthorizationUrl();
             CakeSession::write('oauth2state', $provider->getState());
             return ['redirect' => $authUrl];
-        } elseif (empty($_GET['state']) || ($_GET['state'] !== CakeSession::read('oauth2state'))) {
+        } else if (empty($_GET['state']) || ($_GET['state'] !== CakeSession::read('oauth2state'))) {
             // State is invalid, possible CSRF attack in progress
             CakeSession::write('oauth2state', '');
             return ['success' => false, 'message' => 'Connection to SSO server was not secure. State is not provided.'];
@@ -67,27 +66,27 @@ class Oauth2client
             $tokenArr = $provider->getAccessToken('authorization_code', [
                 'code' => $_GET['code'],
             ]);
-            if(!$tokenArr[0]){
-                return ['success' => false, 'message' => 'Can not get token. '.(ENVIRONMENT === 'production' ? '' : $tokenArr[1])];
+            if (!$tokenArr[0]) {
+                return ['success' => false, 'message' => 'Can not get token. ' . (ENVIRONMENT === 'production' ? '' : $tokenArr[1])];
             }
             $userDataArr = $provider->getResourceOwner($tokenArr[1]);
-            if(!$userDataArr[0]){
-                return ['success' => false, 'message' => 'Can not get user data: '.(ENVIRONMENT === 'production' ? '' : $userDataArr[1])];
+            if (!$userDataArr[0]) {
+                return ['success' => false, 'message' => 'Can not get user data: ' . (ENVIRONMENT === 'production' ? '' : $userDataArr[1])];
             }
             $userArray = $userDataArr[1]->toArray();
             return ['success' => true, 'email' => $userArray['mail']];
         }
     }
 
-    public function getReturnUrl(){
-        return Router::url(['controller' => 'login', 'action' => 'login'], true );
+    public function getReturnUrl() {
+        return Router::url(['controller' => 'login', 'action' => 'login'], true);
     }
-    
-    public function getPostErrorMessage($SsoLogOff){
+
+    public function getPostErrorMessage($SsoLogOff) {
         $preText = '<br />Please, ';
-        if(!empty($SsoLogOff)){
-            $preText = '<br />Please perform <a href="'.$SsoLogOff.'" target="_blank">log off from SSO Server</a>. And then ';
+        if (!empty($SsoLogOff)) {
+            $preText = '<br />Please perform <a href="' . $SsoLogOff . '" target="_blank">log off from SSO Server</a>. And then ';
         }
-        return $preText.'<a href="'.Router::url(['controller' => 'login', 'action' => 'login']).'">retry to login</a>.';
+        return $preText . '<a href="' . Router::url(['controller' => 'login', 'action' => 'login']) . '">retry to login</a>.';
     }
 }

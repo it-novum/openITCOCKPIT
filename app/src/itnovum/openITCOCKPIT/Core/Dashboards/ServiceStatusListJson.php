@@ -33,12 +33,12 @@ class ServiceStatusListJson extends DashboardJsonStandardizer {
      * oITC will take care of the rest of the work
      */
     protected $fields = [
-        'Servicestatus'      => [
+        'Servicestatus'   => [
             'current_state'    => [
-                'ok'          => false,
-                'warning'     => false,
-                'critical'    => false,
-                'unknown'     => false,
+                'ok'       => false,
+                'warning'  => false,
+                'critical' => false,
+                'unknown'  => false,
             ],
             'acknowledged'     => false,
             'not_acknowledged' => false,
@@ -49,7 +49,7 @@ class ServiceStatusListJson extends DashboardJsonStandardizer {
         'Host'            => [
             'name' => ''
         ],
-        'Service'            => [
+        'Service'         => [
             'name' => ''
         ],
         'sort'            => 'Servicestatus.current_state',

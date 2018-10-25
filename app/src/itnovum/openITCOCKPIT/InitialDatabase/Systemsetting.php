@@ -49,7 +49,7 @@ class Systemsetting extends Importer {
     }
 
     public function exists($key) {
-        $record = $this->Model->find('first',[
+        $record = $this->Model->find('first', [
             'conditions' => [
                 'Systemsetting.key' => $key,
             ],

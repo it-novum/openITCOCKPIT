@@ -29,7 +29,7 @@ class StatehistoryHost extends Statusengine3ModuleAppModel {
     public $useTable = 'host_statehistory';
     public $tablePrefix = 'statusengine_';
 
-    public function __construct($id = false, $table = null, $ds = null, $useDynamicAssociations = true){
+    public function __construct($id = false, $table = null, $ds = null, $useDynamicAssociations = true) {
         parent::__construct($id, $table, $ds, $useDynamicAssociations);
         $this->virtualFields['state_type'] = 'StatehistoryHost.is_hardstate';
     }
@@ -40,32 +40,32 @@ class StatehistoryHost extends Statusengine3ModuleAppModel {
      * @param array $paginatorConditions
      * @return array
      */
-    public function getQuery(StatehistoryHostConditions $StatehistoryHostConditions, $paginatorConditions = []){
+    public function getQuery(StatehistoryHostConditions $StatehistoryHostConditions, $paginatorConditions = []) {
         $query = [
             'conditions' => [
-                'hostname' => $StatehistoryHostConditions->getHostUuid(),
+                'hostname'     => $StatehistoryHostConditions->getHostUuid(),
                 'state_time >' => $StatehistoryHostConditions->getFrom(),
                 'state_time <' => $StatehistoryHostConditions->getTo()
             ],
-            'order' => $StatehistoryHostConditions->getOrder(),
+            'order'      => $StatehistoryHostConditions->getOrder(),
         ];
 
         if ($StatehistoryHostConditions->getUseLimit()) {
             $query['limit'] = $StatehistoryHostConditions->getLimit();
         }
 
-        if(!empty($StatehistoryHostConditions->getStates() && sizeof($StatehistoryHostConditions->getStates()) < 3)){
+        if (!empty($StatehistoryHostConditions->getStates() && sizeof($StatehistoryHostConditions->getStates()) < 3)) {
             $query['conditions']['state'] = $StatehistoryHostConditions->getStates();
         }
 
-        foreach($StatehistoryHostConditions->getStateTypes() as $stateType){
+        foreach ($StatehistoryHostConditions->getStateTypes() as $stateType) {
             $query['conditions']['is_hardstate'] = $stateType;
         }
 
-        if($StatehistoryHostConditions->hardStateTypeAndUpState()){
+        if ($StatehistoryHostConditions->hardStateTypeAndUpState()) {
             $query['conditions']['OR'] = [
                 'StatehistoryHost.is_hardstate' => 1,
-                'StatehistoryHost.state' => 0
+                'StatehistoryHost.state'        => 0
             ];
         }
 
@@ -82,7 +82,7 @@ class StatehistoryHost extends Statusengine3ModuleAppModel {
     public function getLastRecord(StatehistoryHostConditions $StatehistoryHostConditions) {
         $query = [
             'conditions' => [
-                'hostname' => $StatehistoryHostConditions->getHostUuid(),
+                'hostname'      => $StatehistoryHostConditions->getHostUuid(),
                 'state_time <=' => $StatehistoryHostConditions->getFrom(),
             ],
             'order'      => [

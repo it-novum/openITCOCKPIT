@@ -132,7 +132,7 @@ class Servicegroup extends AppModel {
     public function getServicegroupsForAngular(ServicegroupConditions $ServicegroupConditions, $selected = []) {
         $query = [
             'recursive'  => -1,
-            'fields' => 'Container.name',
+            'fields'     => 'Container.name',
             'joins'      => [
                 [
                     'table'      => 'containers',
@@ -147,10 +147,10 @@ class Servicegroup extends AppModel {
             'order'      => [
                 'Container.name' => 'ASC',
             ],
-            'group' => [
+            'group'      => [
                 'Container.id'
             ],
-            'limit' => self::ITN_AJAX_LIMIT
+            'limit'      => self::ITN_AJAX_LIMIT
         ];
         if (is_array($selected)) {
             $selected = array_filter($selected);
@@ -163,7 +163,7 @@ class Servicegroup extends AppModel {
         if (!empty($selected)) {
             $query = [
                 'recursive'  => -1,
-                'fields' => 'Container.name',
+                'fields'     => 'Container.name',
                 'joins'      => [
                     [
                         'table'      => 'containers',

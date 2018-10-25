@@ -22,7 +22,7 @@ angular.module('openITCOCKPIT')
 
         $scope.showFilter = false;
         $scope.load = function(){
-            $http.get('/map_module/rotations/index.json',{
+            $http.get('/map_module/rotations/index.json', {
                 params: {
                     'angular': true,
                     'sort': SortService.getSort(),

@@ -100,11 +100,11 @@
                 'escape'   => false,
                 'divClass' => 'col col-xs-10',
                 'selected' => (isset($this->request->data['Servicedependency']['Service'])) ? $this->request->data['Servicedependency']['Service'] : [],
-                'target'           => '#ServicedependencyServiceDependent',
+                'target'   => '#ServicedependencyServiceDependent',
             ]);
 
             echo $this->Form->hostAndServiceSelectOptiongroup('Servicedependency.ServiceDependent', [
-                'label'            => '<i class="fa fa-square class-info"></i> ' . __('Dependent services'),
+                'label'    => '<i class="fa fa-square class-info"></i> ' . __('Dependent services'),
                 'options'  => $services,
                 'required' => true,
                 'escape'   => false,
@@ -183,7 +183,7 @@
                     <div style="border-bottom:1px solid lightGray;">
                         <?php echo $this->Form->fancyCheckbox($dependency_option, [
                             'caption' => ucfirst(preg_replace('/execution_fail_on_/', '', $dependency_option)),
-                            'icon'    => '<i class="fa '.$icon.'"></i> ',
+                            'icon'    => '<i class="fa ' . $icon . '"></i> ',
                             'checked' => (boolean)$this->request->data['Servicedependency'][$dependency_option],
                         ]); ?>
                         <div class="clearfix"></div>
@@ -208,7 +208,7 @@
                     <div style="border-bottom:1px solid lightGray;">
                         <?php echo $this->Form->fancyCheckbox($dependency_option, [
                             'caption' => ucfirst(preg_replace('/notification_fail_on_/', '', $dependency_option)),
-                            'icon'    => '<i class="fa '.$icon.'"></i> ',
+                            'icon'    => '<i class="fa ' . $icon . '"></i> ',
                             'checked' => (boolean)$this->request->data['Servicedependency'][$dependency_option],
                         ]); ?>
                         <div class="clearfix"></div>

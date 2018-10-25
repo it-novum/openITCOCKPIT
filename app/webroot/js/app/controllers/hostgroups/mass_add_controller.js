@@ -24,19 +24,19 @@
 
 App.Controllers.HostgroupsMassAddController = Frontend.AppController.extend({
 
-	_initialize: function() {
-		/*
-		 * Bind change event on "Create hostgroup" checkbox
-		 */
-		$('#HostgroupCreate').change(function(){
-			if($(this).prop('checked') === true){
-				$('#createHostgroup').show();
-				$('#existingHostgroup').hide();
-			}else{
-				$('#createHostgroup').hide();
-				$('#existingHostgroup').show();
-			}
-		});
-	}
+    _initialize: function(){
+        /*
+         * Bind change event on "Create hostgroup" checkbox
+         */
+        $('#HostgroupCreate').change(function(){
+            if($(this).prop('checked') === true){
+                $('#createHostgroup').show();
+                $('#existingHostgroup').hide();
+            }else{
+                $('#createHostgroup').hide();
+                $('#existingHostgroup').show();
+            }
+        });
+    }
 
 });

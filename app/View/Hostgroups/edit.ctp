@@ -103,7 +103,7 @@
                     </div>
                 </div>
 
-                <div class="form-group"  ng-class="{'has-error': errors.hostgroup_url}">
+                <div class="form-group" ng-class="{'has-error': errors.hostgroup_url}">
                     <label class="col col-md-2 control-label">
                         <?php echo __('Host group URL'); ?>
                     </label>

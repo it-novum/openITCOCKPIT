@@ -37,7 +37,7 @@ if (!empty($commandarguments)) {
         if (isset($commandargument['Servicecommandargumentvalue']['value']) && $commandargument['Servicecommandargumentvalue']['value'] !== null) {
             $input_value = $commandargument['Servicecommandargumentvalue']['value'];
         }
-        echo $this->Form->input('Servicecommandargumentvalue.'.$commandargument['Commandargument']['id'].'.value', [
+        echo $this->Form->input('Servicecommandargumentvalue.' . $commandargument['Commandargument']['id'] . '.value', [
             'label'     => [
                 'class' => 'col col-md-2 control-label text-primary',
                 'text'  => $commandargument['Commandargument']['human_name'],
@@ -49,12 +49,12 @@ if (!empty($commandarguments)) {
             'wrapInput' => 'col col-md-8',
             'value'     => $input_value,
         ]);
-        echo $this->Form->input('Servicecommandargumentvalue.'.$commandargument['Commandargument']['id'].'.commandargument_id', [
+        echo $this->Form->input('Servicecommandargumentvalue.' . $commandargument['Commandargument']['id'] . '.commandargument_id', [
             'type'  => 'hidden',
             'value' => $commandargument['Commandargument']['id'],
         ]);
         if (isset($commandargument['Servicecommandargumentvalue']['id']) && $commandargument['Servicecommandargumentvalue']['id'] !== null) {
-            echo $this->Form->input('Servicecommandargumentvalue.'.$commandargument['Commandargument']['id'].'.id', [
+            echo $this->Form->input('Servicecommandargumentvalue.' . $commandargument['Commandargument']['id'] . '.id', [
                 'type'  => 'hidden',
                 'value' => $commandargument['Servicecommandargumentvalue']['id'],
             ]);

@@ -58,22 +58,22 @@ class StatehistoryHostConditions extends ListSettingsConditions {
     /**
      * @param string $hostUuid
      */
-    public function setHostUuid($hostUuid){
+    public function setHostUuid($hostUuid) {
         $this->hostUuid = $hostUuid;
     }
 
     /**
      * @return string
      */
-    public function getHostUuid(){
+    public function getHostUuid() {
         return $this->hostUuid;
     }
 
     /**
      * @param HostStates $HostStates
      */
-    public function setStates(HostStates $HostStates){
-        if(sizeof($HostStates->asIntegerArray()) == 3){
+    public function setStates(HostStates $HostStates) {
+        if (sizeof($HostStates->asIntegerArray()) == 3) {
             $this->states = [];
             return;
         }
@@ -84,28 +84,28 @@ class StatehistoryHostConditions extends ListSettingsConditions {
     /**
      * @param bool $value
      */
-    public function setUseLimit($value){
+    public function setUseLimit($value) {
         $this->useLimit = (bool)$value;
     }
 
     /**
      * @return bool
      */
-    public function getUseLimit(){
+    public function getUseLimit() {
         return $this->useLimit;
     }
 
     /**
      * @param $value
      */
-    public function setHardStateTypeAndUpState($value){
+    public function setHardStateTypeAndUpState($value) {
         $this->hardStateTypeAndUpState = (bool)$value;
     }
 
     /**
      * @return bool
      */
-    public function hardStateTypeAndUpState(){
+    public function hardStateTypeAndUpState() {
         return $this->hardStateTypeAndUpState;
     }
 }

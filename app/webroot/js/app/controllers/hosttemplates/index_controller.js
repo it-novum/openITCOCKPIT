@@ -23,19 +23,19 @@
 //	confirmation.
 
 App.Controllers.HosttemplatesIndexController = Frontend.AppController.extend({
-	$table: null,
-	/**
-	 * @constructor
-	 * @return {void} 
-	 */
-	
-	components: ['Masschange'],
-	
-	_initialize: function(){
-		var self = this;
-		this.Masschange.setup({
-			'controller': 'hosttemplates',
-			'group': 'hosttemplategroups'
-		});
-	}
+    $table: null,
+    /**
+     * @constructor
+     * @return {void}
+     */
+
+    components: ['Masschange'],
+
+    _initialize: function(){
+        var self = this;
+        this.Masschange.setup({
+            'controller': 'hosttemplates',
+            'group': 'hosttemplategroups'
+        });
+    }
 });

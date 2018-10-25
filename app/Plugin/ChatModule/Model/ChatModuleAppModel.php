@@ -25,7 +25,6 @@
 
 App::uses('AppModel', 'Model');
 
-class ChatModuleAppModel extends AppModel
-{
+class ChatModuleAppModel extends AppModel {
 
 }

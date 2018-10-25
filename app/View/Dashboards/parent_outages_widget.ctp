@@ -62,8 +62,8 @@
         </table>
 
 
-
-        <div class="col-xs-12 text-center txt-color-red italic" ng-show="parentOutages.length == 0 && filter.Host.name != ''">
+        <div class="col-xs-12 text-center txt-color-red italic"
+             ng-show="parentOutages.length == 0 && filter.Host.name != ''">
             <?php echo __('No entries match the selection'); ?>
         </div>
 

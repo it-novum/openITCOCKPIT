@@ -133,7 +133,7 @@ class DowntimeHost extends Statusengine3ModuleAppModel {
      */
     public function getQueryForReporting(DowntimeHostConditions $Conditions) {
         $query = [
-            'fields'     => [
+            'fields' => [
                 'DowntimeHost.author_name',
                 'DowntimeHost.comment_data',
                 'DowntimeHost.scheduled_start_time',
@@ -144,7 +144,7 @@ class DowntimeHost extends Statusengine3ModuleAppModel {
                 'DowntimeHost.was_cancelled',
                 'Host.uuid'
             ],
-            'joins'      => [
+            'joins'  => [
                 [
                     'table'      => 'hosts',
                     'type'       => 'INNER',
@@ -153,7 +153,7 @@ class DowntimeHost extends Statusengine3ModuleAppModel {
                         'Host.uuid = DowntimeHost.hostname',
                 ],
             ],
-            'order'      => $Conditions->getOrder(),
+            'order'  => $Conditions->getOrder(),
         ];
 
         if ($Conditions->hasHostUuids()) {

@@ -27,7 +27,6 @@
 use itnovum\openITCOCKPIT\Core\HoststatusFields;
 use itnovum\openITCOCKPIT\Core\ModuleManager;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
-use itnovum\openITCOCKPIT\Filter\HostFilter;
 use itnovum\openITCOCKPIT\Filter\StatusmapFilter;
 
 /**
@@ -58,13 +57,13 @@ class StatusmapsController extends AppController {
             if ($ModuleManager->moduleExists()) {
                 $SatelliteModel = $ModuleManager->loadModel('Satellite');
                 $satellites = $SatelliteModel->find('list', [
-                    'recursive' => -1,
-                    'fields' => [
+                    'recursive'              => -1,
+                    'fields'                 => [
                         'Satellite.id',
                         'Satellite.name'
                     ],
                     'Satellite.container_id' => $this->MY_RIGHTS,
-                    'order' => [
+                    'order'                  => [
                         'Satellite.name' => 'asc'
                     ]
                 ]);
@@ -84,25 +83,25 @@ class StatusmapsController extends AppController {
 
             $parentHostWithChildIds = $this->Parenthost->find('all', [
                 'recursive' => -1,
-                'joins' => [
+                'joins'     => [
                     [
-                        'table' => 'hosts_to_parenthosts',
-                        'alias' => 'HostToParenthost',
-                        'type' => 'INNER',
+                        'table'      => 'hosts_to_parenthosts',
+                        'alias'      => 'HostToParenthost',
+                        'type'       => 'INNER',
                         'conditions' => [
                             'HostToParenthost.parenthost_id = Parenthost.id',
                         ],
                     ],
                     [
-                        'table' => 'hosts',
-                        'alias' => 'Host',
-                        'type' => 'INNER',
+                        'table'      => 'hosts',
+                        'alias'      => 'Host',
+                        'type'       => 'INNER',
                         'conditions' => [
                             'HostToParenthost.host_id = Host.id',
                         ],
                     ]
                 ],
-                'fields' => [
+                'fields'    => [
                     'DISTINCT Parenthost.id',
                     'Host.id'
                 ],
@@ -134,15 +133,15 @@ class StatusmapsController extends AppController {
         $edges = [];
 
         $query = [
-            'recursive' => -1,
-            'contain' => [
+            'recursive'  => -1,
+            'contain'    => [
                 'Parenthost' => [
                     'fields' => [
                         'Parenthost.id'
                     ]
                 ]
             ],
-            'fields' => [
+            'fields'     => [
                 'Host.id',
                 'Host.uuid',
                 'Host.name',
@@ -158,16 +157,16 @@ class StatusmapsController extends AppController {
         if (!empty($containerIds)) {
             $query['joins'] = [
                 [
-                    'table' => 'hosts_to_containers',
-                    'alias' => 'HostsToContainers',
-                    'type' => 'LEFT',
+                    'table'      => 'hosts_to_containers',
+                    'alias'      => 'HostsToContainers',
+                    'type'       => 'LEFT',
                     'conditions' => [
                         'HostsToContainers.host_id = Host.id',
                     ],
                 ]
             ];
             $query['conditions']['HostsToContainers.container_id'] = $containerIds;
-            $query['group']=['Host.id'];
+            $query['group'] = ['Host.id'];
         }
         if (!empty($allHostIds)) {
             $query['conditions']['Host.id'] = $allHostIds;
@@ -204,19 +203,19 @@ class StatusmapsController extends AppController {
                 );
 
                 $nodes[] = [
-                    'id' => 'Host_' . $hostChunk['Host']['id'],
+                    'id'     => 'Host_' . $hostChunk['Host']['id'],
                     'hostId' => $hostChunk['Host']['id'],
-                    'label' => $hostChunk['Host']['name'],
-                    'title' => $hostChunk['Host']['name'] . ' (' . $hostChunk['Host']['address'] . ')',
-                    'uuid' => $hostChunk['Host']['uuid'],
-                    'group' => $this->StatusMap->getNodeGroupName($hostChunk['Host']['disabled'], $Hoststatus)
+                    'label'  => $hostChunk['Host']['name'],
+                    'title'  => $hostChunk['Host']['name'] . ' (' . $hostChunk['Host']['address'] . ')',
+                    'uuid'   => $hostChunk['Host']['uuid'],
+                    'group'  => $this->StatusMap->getNodeGroupName($hostChunk['Host']['disabled'], $Hoststatus)
                 ];
 
                 foreach ($hostChunk['Parenthost'] as $parentHost) {
                     $edges[] = [
-                        'from' => 'Host_' . $hostChunk['Host']['id'],
-                        'to' => 'Host_' . $parentHost['id'],
-                        'color' => [
+                        'from'   => 'Host_' . $hostChunk['Host']['id'],
+                        'to'     => 'Host_' . $parentHost['id'],
+                        'color'  => [
                             'inherit' => 'to',
                         ],
                         'arrows' => 'to'
@@ -248,8 +247,8 @@ class StatusmapsController extends AppController {
         }
         $serviceUuids = Hash::extract(
             $this->Service->find('all', [
-                    'recursive' => -1,
-                    'fields' => [
+                    'recursive'  => -1,
+                    'fields'     => [
                         'Service.uuid'
                     ],
                     'conditions' => [

@@ -44,21 +44,21 @@ class LsbRelease {
 
     public function __construct() {
 
-        if(file_exists('/etc/lsb-release')){
-            foreach(file('/etc/lsb-release') as $line){
+        if (file_exists('/etc/lsb-release')) {
+            foreach (file('/etc/lsb-release') as $line) {
                 $line = trim($line);
                 $res = explode('DISTRIB_ID=', $line);
-                if(isset($res[1])){
+                if (isset($res[1])) {
                     $this->vendor = $res[1];
                 }
 
                 $res = explode('DISTRIB_RELEASE=', $line);
-                if(isset($res[1])){
+                if (isset($res[1])) {
                     $this->version = $res[1];
                 }
 
                 $res = explode('DISTRIB_CODENAME=', $line);
-                if(isset($res[1])){
+                if (isset($res[1])) {
                     $this->codename = $res[1];
                 }
             }

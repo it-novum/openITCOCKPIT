@@ -122,7 +122,7 @@ class MapForAngular {
             $map['Container'] = $this->map['Container'];
         }
 
-        if(empty($this->layers)){
+        if (empty($this->layers)) {
             $this->layers[0] = sprintf('Layer %s', 0);
         }
 

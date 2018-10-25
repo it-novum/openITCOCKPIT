@@ -25,12 +25,10 @@
 namespace itnovum\openITCOCKPIT\ApiShell\Containers;
 
 use itnovum\openITCOCKPIT\ApiShell\CoreApi;
-use itnovum\openITCOCKPIT\ApiShell\Exceptions\RecordExistsExceptions;
 use itnovum\openITCOCKPIT\ApiShell\Interfaces\ApiInterface;
 use itnovum\openITCOCKPIT\ApiShell\OptionParser;
 
-class Api extends CoreApi implements ApiInterface
-{
+class Api extends CoreApi implements ApiInterface {
 
     /**
      * @var OptionParser
@@ -42,14 +40,12 @@ class Api extends CoreApi implements ApiInterface
      */
     private $data;
 
-    public function setOptionsFromOptionParser(OptionParser $optionParser)
-    {
+    public function setOptionsFromOptionParser(OptionParser $optionParser) {
         $this->optionParser = $optionParser;
         $this->data = $optionParser->getData();
     }
 
-    public function dispatchRequest()
-    {
+    public function dispatchRequest() {
         switch ($this->optionParser->getAction()) {
             case 'update_container_type':
                 $this->update_container_type();
@@ -60,8 +56,7 @@ class Api extends CoreApi implements ApiInterface
     /**
      * @throws \Exception
      */
-    public function update_container_type()
-    {
+    public function update_container_type() {
         $records = $this->getRecordsByTypeId();
         foreach ($records as $record) {
             $record['Containers']['containertype_id'] = CT_NODE;
@@ -72,8 +67,7 @@ class Api extends CoreApi implements ApiInterface
     }
 
 
-    public function getRecordsByTypeId()
-    {
+    public function getRecordsByTypeId() {
         return $this->Database->find('all', [
             'conditions' => [
                 'containertype_id' => CT_DEVICEGROUP,

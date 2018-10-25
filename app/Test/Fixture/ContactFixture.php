@@ -1,4 +1,5 @@
 <?php
+
 class ContactFixture extends CakeTestFixture {
     public $fields = [
         'id'                            => ['type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'],
@@ -30,36 +31,36 @@ class ContactFixture extends CakeTestFixture {
         'tableParameters'               => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB'],
     ];
 
-    public $records = array(
-            array(
-                'id' => 1,
-                'uuid' => 'f70418ac-d646-47b1-a037-7d5a66478421',
-                'name' => 'ContactA',
-                'description' => 'ContactA DESC',
-                'email' => 'contactA@localhost',
-                'phone' => '05647385634',
-                'host_timeperiod_id' => '1',
-                'service_timeperiod_id' => '1'
-            ),
-            array(
-                'id' => 2,
-                'uuid' => 'cbd04963-faaa-4448-87a0-da7abffd7207',
-                'name' => 'ContactB',
-                'description' => 'ContactB DESC',
-                'email' => 'contactB@localhost',
-                'phone' => '05647865948674967',
-                'host_timeperiod_id' => '1',
-                'service_timeperiod_id' => '1'
-            ),
-            array(
-                'id' => 3,
-                'uuid' => 'e3a314ff-81e8-4fb1-baa6-caa422892e2b',
-                'name' => 'ContactC',
-                'description' => 'ContactC DESC',
-                'email' => 'contactC@localhost',
-                'phone' => '032455948989',
-                'host_timeperiod_id' => '1',
-                'service_timeperiod_id' => '1'
-            )
-        );
+    public $records = [
+        [
+            'id'                    => 1,
+            'uuid'                  => 'f70418ac-d646-47b1-a037-7d5a66478421',
+            'name'                  => 'ContactA',
+            'description'           => 'ContactA DESC',
+            'email'                 => 'contactA@localhost',
+            'phone'                 => '05647385634',
+            'host_timeperiod_id'    => '1',
+            'service_timeperiod_id' => '1'
+        ],
+        [
+            'id'                    => 2,
+            'uuid'                  => 'cbd04963-faaa-4448-87a0-da7abffd7207',
+            'name'                  => 'ContactB',
+            'description'           => 'ContactB DESC',
+            'email'                 => 'contactB@localhost',
+            'phone'                 => '05647865948674967',
+            'host_timeperiod_id'    => '1',
+            'service_timeperiod_id' => '1'
+        ],
+        [
+            'id'                    => 3,
+            'uuid'                  => 'e3a314ff-81e8-4fb1-baa6-caa422892e2b',
+            'name'                  => 'ContactC',
+            'description'           => 'ContactC DESC',
+            'email'                 => 'contactC@localhost',
+            'phone'                 => '032455948989',
+            'host_timeperiod_id'    => '1',
+            'service_timeperiod_id' => '1'
+        ]
+    ];
 }

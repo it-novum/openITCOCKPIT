@@ -23,8 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class Coreconfig extends NagiosModuleAppModel
-{
+class Coreconfig extends NagiosModuleAppModel {
     public $useTable = false;
 
     /*
@@ -32,16 +31,14 @@ class Coreconfig extends NagiosModuleAppModel
      * You can use this Model, where you cant use the CoreConfigComponent, for example in a shell
      */
 
-    function __construct($id = false, $table = null, $ds = null)
-    {
+    function __construct($id = false, $table = null, $ds = null) {
         parent::__construct($id, $table, $ds);
         $this->Systemsetting = ClassRegistry::init('Systemsetting');
         $this->_systemsettings = $this->Systemsetting->findAsArray();
         $this->Config = [];
     }
 
-    public function _read($key = null)
-    { //sadly read() is used by cakePHP, we dont want to overright this!
+    public function _read($key = null) { //sadly read() is used by cakePHP, we dont want to overright this!
         if (empty($this->Config)) {
             $this->loadConfigAsArray();
         }
@@ -52,8 +49,7 @@ class Coreconfig extends NagiosModuleAppModel
         return flase;
     }
 
-    public function loadConfigAsArray()
-    {
+    public function loadConfigAsArray() {
         $config = $this->_systemsettings['MONITORING']['MONITORING.CORECONFIG'];
         $coreconfig = fopen($config, "r");
         while (!feof($coreconfig)) {

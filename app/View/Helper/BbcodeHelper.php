@@ -23,21 +23,19 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class BbcodeHelper extends AppHelper
-{
+class BbcodeHelper extends AppHelper {
 
     /**
      * Converts BB code to HTML
      *
      * @param string $bbcode The BB Code you want to convert to HTML
-     * @param bool   $nl2br  If you want to replace \n with <br>
+     * @param bool $nl2br If you want to replace \n with <br>
      *
      * @return string with HTML parts
      * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since  3.0
      */
-    public function asHtml($bbcode, $nl2br = true)
-    {
+    public function asHtml($bbcode, $nl2br = true) {
         if (!isset($this->_View->viewVars['bbparser'])) {
             throw new InternalErrorException(__('BB code parser not found! BbcodeComponent not loaded in Controller?'));
         }
@@ -60,8 +58,7 @@ class BbcodeHelper extends AppHelper
      * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since  3.0
      */
-    public function nagiosNl2br($string)
-    {
+    public function nagiosNl2br($string) {
         return str_replace(['\n', '\r\n', '\r'], '<br>', $string);
     }
 }

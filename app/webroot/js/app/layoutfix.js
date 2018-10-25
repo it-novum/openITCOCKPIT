@@ -1,10 +1,10 @@
-$(document).ready(function () {
+$(document).ready(function(){
     //Fix left-panel height
-    $('#left-panel').css('height', $(document).innerHeight()+ 'px');
+    $('#left-panel').css('height', $(document).innerHeight() + 'px');
 
     setTimeout(function(){
         var maxHeightBody = $('nav.ng-isolate-scope').height() > $(document).innerHeight() ? $('nav.ng-isolate-scope').height() : $(document).innerHeight();
-        $('#left-panel').css('height', maxHeightBody+ 'px');
+        $('#left-panel').css('height', maxHeightBody + 'px');
     }, 1000);
     //Fix drop down issue in mobile tables
     //$('.dropdown-toggle').off();
@@ -12,17 +12,17 @@ $(document).ready(function () {
     /*
      * Set an id for all the drop-down menus
      */
-    $('.dropdown-menu').each(function (key, object) {
+    $('.dropdown-menu').each(function(key, object){
         if(typeof $(object).attr('id') === 'undefined'){
             $(object).attr('id', (Math.floor(Math.random() * (100000000 - 1)) + 1));
         }
     });
 
     //$('table .dropdown-toggle').click(function (){
-    $(document).on('click', 'table .dropdown-toggle', function () {
+    $(document).on('click', 'table .dropdown-toggle', function(){
         //This is hacky shit and need to get frefactored ASAP!!
 
-        if ($('#uglyDropdownMenuHack').html() != '') {
+        if($('#uglyDropdownMenuHack').html() != ''){
             //Avoid that the menu destroy it self if the user press twice on the 'open menu' arrow
             return false;
         }
@@ -38,7 +38,7 @@ $(document).ready(function () {
         //Remove orginal element for postLinks (duplicate form is bad)
         $ul.html('');
 
-        if ($ul.hasClass("pull-right")) {
+        if($ul.hasClass("pull-right")){
             $('#uglyDropdownMenuHack')
                 .children('ul')
                 .addClass('animated flipInX')
@@ -50,7 +50,7 @@ $(document).ready(function () {
                     'right': right,
                     'animation-duration': '0.4s'
                 });
-        } else {
+        }else{
             $('#uglyDropdownMenuHack')
                 .children('ul')
                 .addClass('animated flipInX')
@@ -65,7 +65,7 @@ $(document).ready(function () {
     });
 
 
-    $(document).on('hidden.bs.dropdown', function () {
+    $(document).on('hidden.bs.dropdown', function(){
         //Restore orginal menu content
 
         if(typeof $('#uglyDropdownMenuHack').attr('sourceId') === 'undefined' || $('#uglyDropdownMenuHack').attr('sourceId') === ''){
@@ -80,21 +80,21 @@ $(document).ready(function () {
 
     //Scroll back to top
     var scrollTopVisable = false; //Avoid millions of fadeIn actions
-    $(window).scroll(function () {
-        if ($(document).scrollTop() > 150) {
-            if (scrollTopVisable === false) {
+    $(window).scroll(function(){
+        if($(document).scrollTop() > 150){
+            if(scrollTopVisable === false){
                 $('#scroll-top-container').fadeIn();
                 scrollTopVisable = true;
             }
-        } else {
-            if (scrollTopVisable === true) {
+        }else{
+            if(scrollTopVisable === true){
                 $('#scroll-top-container').fadeOut();
                 scrollTopVisable = false;
             }
         }
     });
 
-    $('#scroll-top-container').click(function () {
+    $('#scroll-top-container').click(function(){
         $('body,html').animate({
             scrollTop: 0
         }, 800);

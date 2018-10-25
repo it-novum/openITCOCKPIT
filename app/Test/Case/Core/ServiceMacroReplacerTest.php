@@ -25,19 +25,16 @@
 namespace itnovum\openITCOCKPIT\Core;
 
 
-class ServiceMacroReplacerTest extends \PHPUnit_Framework_TestCase
-{
+class ServiceMacroReplacerTest extends \PHPUnit_Framework_TestCase {
 
     //run test: oitc test app Core/ServiceMacroReplacer
 
-    public function testInstance()
-    {
+    public function testInstance() {
         $serviceMacroReplacer = new ServiceMacroReplacer([]);
         $this->assertInstanceOf('\itnovum\openITCOCKPIT\Core\ServiceMacroReplacer', $serviceMacroReplacer);
     }
 
-    public function testReplaceServiceId()
-    {
+    public function testReplaceServiceId() {
         $service = $this->getService();
         $serviceMacroReplacer = new ServiceMacroReplacer($service);
         $assert = 1;
@@ -45,8 +42,7 @@ class ServiceMacroReplacerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($assert, $result);
     }
 
-    public function testReplaceServicedesc()
-    {
+    public function testReplaceServicedesc() {
         $service = $this->getService();
         $serviceMacroReplacer = new ServiceMacroReplacer($service);
         $assert = 'c8e3785a-9872-4feb-b1f2-78b50af2fe90';
@@ -54,8 +50,7 @@ class ServiceMacroReplacerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($assert, $result);
     }
 
-    public function testReplaceServicedisplaynameFromService()
-    {
+    public function testReplaceServicedisplaynameFromService() {
         $service = $this->getService();
         $serviceMacroReplacer = new ServiceMacroReplacer($service);
         $assert = 'Ping';
@@ -63,8 +58,7 @@ class ServiceMacroReplacerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($assert, $result);
     }
 
-    public function testReplaceServicedisplaynameFromServicetemplate()
-    {
+    public function testReplaceServicedisplaynameFromServicetemplate() {
         $service = $this->getServiceWithServicetemplate();
         $serviceMacroReplacer = new ServiceMacroReplacer($service);
         $assert = 'Foobar';
@@ -72,8 +66,7 @@ class ServiceMacroReplacerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($assert, $result);
     }
 
-    public function testReplaceMultiMacros()
-    {
+    public function testReplaceMultiMacros() {
         $service = $this->getServiceWithServicetemplate();
         $serviceMacroReplacer = new ServiceMacroReplacer($service);
         $stringToReplace = 'Hello my name is $SERVICEDISPLAYNAME$ with the uuid $SERVICEDESC$ and the id $SERVICEID$';
@@ -82,8 +75,7 @@ class ServiceMacroReplacerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($assert, $result);
     }
 
-    public function testReplaceServicestateid()
-    {
+    public function testReplaceServicestateid() {
         $service = $this->getService();
         $servicestatus = $this->getServicestatus();
         $serviceMacroReplacer = new ServiceMacroReplacer($service, $servicestatus);
@@ -92,8 +84,7 @@ class ServiceMacroReplacerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($assert, $result);
     }
 
-    public function testReplaceLastservicestateid()
-    {
+    public function testReplaceLastservicestateid() {
         $service = $this->getService();
         $servicestatus = $this->getServicestatus();
         $serviceMacroReplacer = new ServiceMacroReplacer($service, $servicestatus);
@@ -102,8 +93,7 @@ class ServiceMacroReplacerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($assert, $result);
     }
 
-    public function testReplaceServiceoutput()
-    {
+    public function testReplaceServiceoutput() {
         $service = $this->getService();
         $servicestatus = $this->getServicestatus();
         $serviceMacroReplacer = new ServiceMacroReplacer($service, $servicestatus);
@@ -112,8 +102,7 @@ class ServiceMacroReplacerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($assert, $result);
     }
 
-    public function testCombineMacros()
-    {
+    public function testCombineMacros() {
         $service = $this->getServiceWithServicetemplate();
         $servicestatus = $this->getServicestatus();
         $serviceMacroReplacer = new ServiceMacroReplacer($service, $servicestatus);
@@ -123,8 +112,7 @@ class ServiceMacroReplacerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($assert, $result);
     }
 
-    public function testPrintMacroIfNotFoundInServiceOrServicestatus()
-    {
+    public function testPrintMacroIfNotFoundInServiceOrServicestatus() {
         $service = [];
         $servicestatus = [];
         $serviceMacroReplacer = new ServiceMacroReplacer($service, $servicestatus);
@@ -134,8 +122,7 @@ class ServiceMacroReplacerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($assert, $result);
     }
 
-    private function getService()
-    {
+    private function getService() {
         $service = [
             'Service' => [
                 'id'   => 1,
@@ -147,8 +134,7 @@ class ServiceMacroReplacerTest extends \PHPUnit_Framework_TestCase
         return $service;
     }
 
-    private function getServiceWithServicetemplate()
-    {
+    private function getServiceWithServicetemplate() {
         $service = [
             'Service'         => [
                 'id'                 => 1,
@@ -165,8 +151,7 @@ class ServiceMacroReplacerTest extends \PHPUnit_Framework_TestCase
         return $service;
     }
 
-    private function getServicestatus()
-    {
+    private function getServicestatus() {
         $servicestatus = [
             'Servicestatus' => [
                 'current_state'   => 0,

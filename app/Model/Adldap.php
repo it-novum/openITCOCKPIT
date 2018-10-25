@@ -27,24 +27,24 @@ namespace Model;
 
 use Adldap\Adldap as AdldapMain;
 
-class Adldap extends AdldapMain{
+class Adldap extends AdldapMain {
 
     protected $myPersonFilter = '(&(objectClass=user)(samaccounttype=805306368)(objectCategory=person)(cn=*))';
 
-    public function search(){
-        require_once APP.'Model'.DS.'AdldapSearch.php';
+    public function search() {
+        require_once APP . 'Model' . DS . 'AdldapSearch.php';
         return new AdldapSearch($this);
     }
 
-    public function setPersonFilter($personFilter){
+    public function setPersonFilter($personFilter) {
         $this->myPersonFilter = $personFilter;
     }
 
-    public function getMyPersonFilter(){
+    public function getMyPersonFilter() {
         return $this->myPersonFilter;
     }
 
-    public function connect(){
+    public function connect() {
         $this->ldapConnection->setOption(LDAP_OPT_TIMELIMIT, 1);
         $this->ldapConnection->setOption(LDAP_OPT_NETWORK_TIMEOUT, 5);
         return parent::connect();

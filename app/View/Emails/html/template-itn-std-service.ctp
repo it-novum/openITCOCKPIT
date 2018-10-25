@@ -599,7 +599,7 @@
                     <tr>
                         <td>
                             <?php if (!$parameters['no-attachments']): ?>
-                                <img src="cid:100"  width="120"/>
+                                <img src="cid:100" width="120"/>
                             <?php endif; ?>
                         </td>
                         <td align="right"><h6 class="collapse"><?php echo __('openITCOCKPIT Notification'); ?></h6></td>
@@ -695,7 +695,8 @@
                                     <?php foreach ($contentIDs as $contentID): ?>
                                         <tr>
                                             <td>
-                                                <img src="cid:<?php echo $contentID; ?>" alt='Chart' width="560" height="180" style="background:#fff;background-color:#fff;"/>
+                                                <img src="cid:<?php echo $contentID; ?>" alt='Chart' width="560"
+                                                     height="180" style="background:#fff;background-color:#fff;"/>
                                             </td>
                                         </tr>
                                     <?php endforeach; ?>
@@ -710,11 +711,11 @@
                                     $parameters['serviceUuid']
                                 );
                                 ?>
-                                <br />
+                                <br/>
                                 <p>
-                                <?php
-                                echo nl2br(h($parameters['servicestatus'][$parameters['serviceUuid']]['Servicestatus']['long_output']));
-                                ?>
+                                    <?php
+                                    echo nl2br(h($parameters['servicestatus'][$parameters['serviceUuid']]['Servicestatus']['long_output']));
+                                    ?>
                                 </p>
                             <?php
                             endif;

@@ -23,8 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class Cronjob extends AppModel
-{
+class Cronjob extends AppModel {
     public $hasOne = ['Cronschedule'];
 
     var $validate = [
@@ -60,8 +59,7 @@ class Cronjob extends AppModel
         ],
     ];
 
-    public function fetchPlugins()
-    {
+    public function fetchPlugins() {
         $plugins = [];
         $plugins['Core'] = 'Core';
         $modulePlugins = array_filter(CakePlugin::loaded(), function ($value) {
@@ -75,12 +73,11 @@ class Cronjob extends AppModel
         return $plugins;
     }
 
-    public function fetchTasks($pluginName)
-    {
+    public function fetchTasks($pluginName) {
         $return = [];
         if ($pluginName == 'Core') {
-            if (is_dir(APP.'Console/Command/Task/')) {
-                $result = scandir(APP.'Console/Command/Task/');
+            if (is_dir(APP . 'Console/Command/Task/')) {
+                $result = scandir(APP . 'Console/Command/Task/');
                 if (!empty($result) && is_array($result)) {
                     foreach ($result as $file) {
                         if ($file != '.' && $file != '..' && $file != 'empty') {
@@ -91,8 +88,8 @@ class Cronjob extends AppModel
                 }
             }
         } else {
-            if (is_dir(APP.'Plugin/'.$pluginName.'/Console/Command/Task/')) {
-                $result = scandir(APP.'Plugin/'.$pluginName.'/Console/Command/Task/');
+            if (is_dir(APP . 'Plugin/' . $pluginName . '/Console/Command/Task/')) {
+                $result = scandir(APP . 'Plugin/' . $pluginName . '/Console/Command/Task/');
                 if (!empty($result) && is_array($result)) {
                     foreach ($result as $file) {
                         if ($file != '.' && $file != '..' && $file != 'empty') {
@@ -107,8 +104,7 @@ class Cronjob extends AppModel
         return $return;
     }
 
-    public function checkForCronjob($task, $pluginName = 'Core')
-    {
+    public function checkForCronjob($task, $pluginName = 'Core') {
         $result = $this->find('first', [
             'conditions' => [
                 'plugin' => $pluginName,
@@ -119,8 +115,7 @@ class Cronjob extends AppModel
         return !empty($result);
     }
 
-    public function add($task, $pluginName = 'Core', $interval)
-    {
+    public function add($task, $pluginName = 'Core', $interval) {
         $this->create();
 
         return $this->save(

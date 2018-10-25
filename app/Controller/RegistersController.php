@@ -27,14 +27,12 @@ use itnovum\openITCOCKPIT\Core\Http;
 use itnovum\openITCOCKPIT\Core\PackagemanagerRequestBuilder;
 use itnovum\openITCOCKPIT\Core\ValueObjects\License;
 
-class RegistersController extends AppController
-{
+class RegistersController extends AppController {
     public $layout = 'Admin.register';
     public $components = ['GearmanClient'];
     public $uses = ['Register', 'Proxy'];
 
-    public function index()
-    {
+    public function index() {
         if ($this->request->is('post')) {
             $this->request->data['Register']['id'] = 1;
             if ($this->Register->save($this->request->data)) {
@@ -53,8 +51,7 @@ class RegistersController extends AppController
         $this->set('licence', $license);
     }
 
-    public function check()
-    {
+    public function check() {
         $license = $this->Register->find('first');
         if (empty($license)) {
             $this->setFlash('Please enter a license key', false);

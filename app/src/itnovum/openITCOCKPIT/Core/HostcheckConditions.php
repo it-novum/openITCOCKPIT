@@ -48,22 +48,22 @@ class HostcheckConditions extends ListSettingsConditions {
     /**
      * @param string $hostUuid
      */
-    public function setHostUuid($hostUuid){
+    public function setHostUuid($hostUuid) {
         $this->hostUuid = $hostUuid;
     }
 
     /**
      * @return string
      */
-    public function getHostUuid(){
+    public function getHostUuid() {
         return $this->hostUuid;
     }
 
     /**
      * @param HostStates $HostStates
      */
-    public function setStates(HostStates $HostStates){
-        if(sizeof($HostStates->asIntegerArray()) == 3){
+    public function setStates(HostStates $HostStates) {
+        if (sizeof($HostStates->asIntegerArray()) == 3) {
             $this->states = [];
             return;
         }

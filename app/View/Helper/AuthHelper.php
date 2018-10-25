@@ -23,15 +23,13 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class AuthHelper extends AppHelper
-{
+class AuthHelper extends AppHelper {
 
     /**
      * whether the user is logged in
      * @return bool
      */
-    public function isLoggedIn()
-    {
+    public function isLoggedIn() {
         $auth = ClassRegistry::getObject('AuthComponent');
 
         return $auth->loggedIn();
@@ -44,8 +42,7 @@ class AuthHelper extends AppHelper
      *
      * @return mixed
      */
-    public function user($key = null)
-    {
+    public function user($key = null) {
         $auth = ClassRegistry::getObject('AuthComponent');
 
         return $auth->user($key);
@@ -58,8 +55,7 @@ class AuthHelper extends AppHelper
      *
      * @return bool
      */
-    public function hasRight($right)
-    {
+    public function hasRight($right) {
         $auth = ClassRegistry::getObject('AuthComponent');
 
         return $auth->hasRight($right);

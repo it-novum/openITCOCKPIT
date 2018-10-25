@@ -23,32 +23,32 @@
 //	confirmation.
 
 App.Components.FileChooserComponent = Frontend.Component.extend({
-	setup: function($dom) {
-		$dom.find('.file-chooser-input a.choose-image').click(this._onChooseImage.bind(this));
-		$dom.find('.file-chooser-input a.remove-image').click(this._onRemoveImage.bind(this));
-	},
-	_onChooseImage: function(e) {
-		var finder = new CKFinder();
-		finder.selectActionFunction = this._onSelectFile.bind(this);
-		finder.selectActionData = {
-			imageChooser: $(e.currentTarget).parents('.file-chooser-input'),
-			finder: finder
-		}
-		finder.popup(600, 400);
-	},
-	_onRemoveImage: function(e) {
-		$('.file-chooser-input .image-name').html(__('forms.no_image_chosen'));
-		$('.file-chooser-input .image-name-input').val('');
-		$('.file-chooser-input .image-name').html(__('none'));
-		$('.file-chooser-input a.remove-image').hide();
-		$('.file-chooser-input .selected-file').text('');
-	},
-	_onSelectFile: function(file, params, all) {
-		params.selectActionData.imageChooser.find('.image-name').html(urldecode(file));
-		params.selectActionData.imageChooser.find('.image-name-input').val(urldecode(file));
-		params.selectActionData.imageChooser.find('.selected-file').text(file);
-		params.selectActionData.finder.api.closePopup();
-		removeLink = '<a class="btn btn-xs btn-default remove-image">Remove File</a>';
-		$(removeLink).insertAfter('.file-chooser-input a.choose-image').click(this._onRemoveImage.bind(this));
-	}
+    setup: function($dom){
+        $dom.find('.file-chooser-input a.choose-image').click(this._onChooseImage.bind(this));
+        $dom.find('.file-chooser-input a.remove-image').click(this._onRemoveImage.bind(this));
+    },
+    _onChooseImage: function(e){
+        var finder = new CKFinder();
+        finder.selectActionFunction = this._onSelectFile.bind(this);
+        finder.selectActionData = {
+            imageChooser: $(e.currentTarget).parents('.file-chooser-input'),
+            finder: finder
+        }
+        finder.popup(600, 400);
+    },
+    _onRemoveImage: function(e){
+        $('.file-chooser-input .image-name').html(__('forms.no_image_chosen'));
+        $('.file-chooser-input .image-name-input').val('');
+        $('.file-chooser-input .image-name').html(__('none'));
+        $('.file-chooser-input a.remove-image').hide();
+        $('.file-chooser-input .selected-file').text('');
+    },
+    _onSelectFile: function(file, params, all){
+        params.selectActionData.imageChooser.find('.image-name').html(urldecode(file));
+        params.selectActionData.imageChooser.find('.image-name-input').val(urldecode(file));
+        params.selectActionData.imageChooser.find('.selected-file').text(file);
+        params.selectActionData.finder.api.closePopup();
+        removeLink = '<a class="btn btn-xs btn-default remove-image">Remove File</a>';
+        $(removeLink).insertAfter('.file-chooser-input a.choose-image').click(this._onRemoveImage.bind(this));
+    }
 });

@@ -43,13 +43,13 @@ class AppModel extends Model {
     public function __construct($id = false, $table = null, $ds = null, $useDynamicAssociations = true) {
         parent::__construct($id, $table, $ds);
 
-        if(class_exists('\itnovum\openITCOCKPIT\Core\DbBackend')){
+        if (class_exists('\itnovum\openITCOCKPIT\Core\DbBackend')) {
             Configure::load('dbbackend');
             $this->DbBackend = new DbBackend(Configure::read('dbbackend'));
             $this->set('DbBackend', $this->DbBackend);
         }
 
-        if($useDynamicAssociations) {
+        if ($useDynamicAssociations) {
             if (is_object($this->Behaviors->DynamicAssociations)) {
 
                 $dynamicAssociations = $this->Behaviors->DynamicAssociations->dynamicAssociationsIgnoreCallback($this->alias);
@@ -88,7 +88,7 @@ class AppModel extends Model {
                 $active = $this->find('first', [
                     'conditions' => [
                         $this->alias . '.' . $field => $data[$field],
-                        $this->alias . '.status' => Status::ACTIVE,
+                        $this->alias . '.status'    => Status::ACTIVE,
                     ],
                 ]);
                 if (empty($active)) {
@@ -194,8 +194,8 @@ class AppModel extends Model {
     public function flashRedirect($params = [], $override = []) {
         $redirect = [
             'controller' => $params['controller'],
-            'action' => $params['action'],
-            'plugin' => $params['plugin'],
+            'action'     => $params['action'],
+            'plugin'     => $params['plugin'],
         ];
 
         if (isset($params['named']['_controller'])) {
@@ -245,7 +245,7 @@ class AppModel extends Model {
         $return = [];
         foreach ($findListResult as $key => $value) {
             $return[] = [
-                'key' => $key,
+                'key'   => $key,
                 'value' => $value,
             ];
         }

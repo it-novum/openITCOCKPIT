@@ -33,7 +33,7 @@ class Maptext extends MapModuleAppModel {
 
 
     public $validate = [
-        'map_id'          => [
+        'map_id'  => [
             'notBlank' => [
                 'rule'     => 'notBlank',
                 'message'  => 'No Map selected',
@@ -49,14 +49,14 @@ class Maptext extends MapModuleAppModel {
                 'required' => true,
             ],
         ],
-        'text'          => [
+        'text'    => [
             'notBlank' => [
                 'rule'     => 'notBlank',
                 'message'  => 'Please enter a text',
                 'required' => true,
             ]
         ],
-        'x'               => [
+        'x'       => [
             'notBlank' => [
                 'rule'     => 'notBlank',
                 'message'  => 'This field cannot be left blank.',
@@ -72,7 +72,7 @@ class Maptext extends MapModuleAppModel {
                 'required' => true,
             ],
         ],
-        'y'               => [
+        'y'       => [
             'notBlank' => [
                 'rule'     => 'notBlank',
                 'message'  => 'This field cannot be left blank.',
@@ -88,7 +88,7 @@ class Maptext extends MapModuleAppModel {
                 'required' => true,
             ],
         ],
-        'z_index'         => [
+        'z_index' => [
             'notBlank' => [
                 'rule'     => 'notBlank',
                 'message'  => 'This field cannot be left blank.',

@@ -3,13 +3,11 @@
 App::uses('AdditionalLinksComponent', 'Controller/Component');
 
 
-class AdditionalLinksComponentTest extends CakeTestCase
-{
+class AdditionalLinksComponentTest extends CakeTestCase {
     public static $additionalLinks = [];
     public static $additionalLinksComponent = null;
 
-    public function testFetchLinkDataOutput()
-    {
+    public function testFetchLinkDataOutput() {
         $actual = self::$additionalLinksComponent->fetchLinkData('hosts', 'index', 'top');
         $expected = [
             [
@@ -61,8 +59,7 @@ class AdditionalLinksComponentTest extends CakeTestCase
      * Is called once before the test methods in a case are started.
      * Must be static.
      */
-    public static function setupBeforeClass()
-    {
+    public static function setupBeforeClass() {
         $Collection = new ComponentCollection();
 
         self::$additionalLinksComponent = new AdditionalLinksComponent($Collection);
@@ -121,7 +118,7 @@ class AdditionalLinksComponentTest extends CakeTestCase
                     'sorting'      => 1000, // Sorting value
                 ],
                 'link'        => [
-                    'title'   => '<i class="fa fa-cog"></i> '.h(__('Custom Button')),
+                    'title'   => '<i class="fa fa-cog"></i> ' . h(__('Custom Button')),
                     'options' => [
                         'class'       => 'btn btn-xs btn-primary',
                         'target'      => '_blank',
@@ -136,16 +133,14 @@ class AdditionalLinksComponentTest extends CakeTestCase
     /**
      * Is called before _every_ test method.
      */
-    public function setUp()
-    {
+    public function setUp() {
         parent::setUp();
     }
 
     /**
      * Is called after _every_ test method.
      */
-    public function tearDown()
-    {
+    public function tearDown() {
         parent::tearDown();
     }
 
@@ -153,8 +148,7 @@ class AdditionalLinksComponentTest extends CakeTestCase
      * Is called once After the test methods in a case are started.
      * Must be static.
      */
-    public static function setupAfterClass()
-    {
+    public static function setupAfterClass() {
         parent::setupAfterClass();
     }
 }

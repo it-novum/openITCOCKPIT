@@ -74,7 +74,7 @@ class GrafanaUserdashboardPanel extends GrafanaModuleAppModel {
      * @param $dashboardId
      * @return int
      */
-    public function getNextRow($dashboardId){
+    public function getNextRow($dashboardId) {
         $result = $this->find('first', [
             'recursive'  => -1,
             'contain'    => [],

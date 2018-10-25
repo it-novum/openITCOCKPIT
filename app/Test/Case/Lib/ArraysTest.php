@@ -3,11 +3,9 @@
 App::uses('Arrays', 'Lib');
 
 
-class ArraysTest extends CakeTestCase
-{
+class ArraysTest extends CakeTestCase {
 
-    public function testEnsureArrayKeys()
-    {
+    public function testEnsureArrayKeys() {
         $src = [
             'cheese' => 'milk',
             'pizza'  => [

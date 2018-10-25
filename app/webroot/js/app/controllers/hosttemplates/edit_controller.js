@@ -28,7 +28,7 @@ App.Controllers.HosttemplatesEditController = Frontend.AppController.extend({
 
     components: ['Highlight', 'Ajaxloader', 'CustomVariables', 'ContainerSelectbox'],
 
-    _initialize: function() {
+    _initialize: function(){
         var self = this;
 
         this.Ajaxloader.setup();
@@ -88,7 +88,7 @@ App.Controllers.HosttemplatesEditController = Frontend.AppController.extend({
         };
 
         var $slider = $('input.slider');
-        $slider.slider({ tooltip: 'hide' });
+        $slider.slider({tooltip: 'hide'});
         $slider.slider('on', 'slide', onSlideStop);
         $slider.slider('on', 'slideStop', onSlideStop);
 
@@ -109,12 +109,12 @@ App.Controllers.HosttemplatesEditController = Frontend.AppController.extend({
             .on('change.slider', onChangeSliderInput)
             .on('keyup', function(){
                 var $this = $(this);
-                $('#'+$this.attr('slider-for')).slider('setValue', $this.val());
+                $('#' + $this.attr('slider-for')).slider('setValue', $this.val());
                 min = parseInt($this.val() / 60);
                 sec = parseInt($this.val() % 60);
                 $($this.attr('human')).html(min + " " + lang[1] + " " + lang[3] + " " + sec + " " + lang[2]);
             });
-            //.on('keyup', onChangeSliderInput);
+        //.on('keyup', onChangeSliderInput);
 
         // Render fancy tags input
         $('.tagsinput').tagsinput();
@@ -136,11 +136,13 @@ App.Controllers.HosttemplatesEditController = Frontend.AppController.extend({
     loadParameters: function(command_id){
         this.Ajaxloader.show();
         $.ajax({
-            url: "/Hosttemplates/loadArguments/"+encodeURIComponent(command_id)+"/"+this.getVar('hosttemplate_id'),
+            url: "/Hosttemplates/loadArguments/" + encodeURIComponent(command_id) + "/" + this.getVar('hosttemplate_id'),
             type: "POST",
             cache: false,
-            error: function(){},
-            success: function(){},
+            error: function(){
+            },
+            success: function(){
+            },
             complete: function(response){
                 $('#CheckCommandArgs').html(response.responseText);
                 this.Ajaxloader.hide();

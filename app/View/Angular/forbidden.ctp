@@ -25,35 +25,35 @@
 ?>
 
 
-            <div class="jumbotron text-center">
-                <div id="notFoundSvg">
-                    <svg class="scaling-svg">
-                        <symbol id="not-found-text">
-                            <text text-anchor="middle"
-                                  x="50%"
-                                  y="80%"
-                                  class="textline"
-                                  fill="none" stroke="#a94442">
-                                <?php echo __('403 Forbidden'); ?>
-                            </text>
-                        </symbol>
-                        <g class="g-ants">
-                            <use xlink:href="#not-found-text"
-                                 class="text-add"></use>
-                            <use xlink:href="#not-found-text"
-                                 class="text-add"></use>
-                            <use xlink:href="#not-found-text"
-                                 class="text-add"></use>
-                            <use xlink:href="#not-found-text"
-                                 class="text-add"></use>
-                            <use xlink:href="#not-found-text"
-                                 class="text-add"></use>
-                        </g>
-                    </svg>
-                </div>
-                <h1><?php //echo __('Forbidden...'); ?></h1>
-                <p>
-                    <?php echo __('You do not have the required permissions.'); ?>
-                </p>
-            </div>
+<div class="jumbotron text-center">
+    <div id="notFoundSvg">
+        <svg class="scaling-svg">
+            <symbol id="not-found-text">
+                <text text-anchor="middle"
+                      x="50%"
+                      y="80%"
+                      class="textline"
+                      fill="none" stroke="#a94442">
+                    <?php echo __('403 Forbidden'); ?>
+                </text>
+            </symbol>
+            <g class="g-ants">
+                <use xlink:href="#not-found-text"
+                     class="text-add"></use>
+                <use xlink:href="#not-found-text"
+                     class="text-add"></use>
+                <use xlink:href="#not-found-text"
+                     class="text-add"></use>
+                <use xlink:href="#not-found-text"
+                     class="text-add"></use>
+                <use xlink:href="#not-found-text"
+                     class="text-add"></use>
+            </g>
+        </svg>
+    </div>
+    <h1><?php //echo __('Forbidden...'); ?></h1>
+    <p>
+        <?php echo __('You do not have the required permissions.'); ?>
+    </p>
+</div>
 

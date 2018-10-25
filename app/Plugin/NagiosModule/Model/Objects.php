@@ -23,8 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class Objects extends NagiosModuleAppModel
-{
+class Objects extends NagiosModuleAppModel {
     //public $useDbConfig = 'nagios';
     public $useTable = 'objects';
     public $tablePrefix = 'nagios_';

@@ -23,14 +23,12 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class Logentry extends Statusengine3ModuleAppModel
-{
+class Logentry extends Statusengine3ModuleAppModel {
     public $useTable = 'logentries';
     public $tablePrefix = 'statusengine_';
 
 
-    public function types()
-    {
+    public function types() {
         $LogentryTypes = new \itnovum\openITCOCKPIT\Core\ValueObjects\LogentryTypes();
         return $LogentryTypes->getTypes();
     }
@@ -39,10 +37,10 @@ class Logentry extends Statusengine3ModuleAppModel
      * @param int $bitValue
      * @return array
      */
-    public function getTypesByBitValue($bitValue){
+    public function getTypesByBitValue($bitValue) {
         $types = [];
-        foreach($this->types() as $type => $typeName){
-            if($type & $bitValue){
+        foreach ($this->types() as $type => $typeName) {
+            if ($type & $bitValue) {
                 $types[] = $type;
             }
         }

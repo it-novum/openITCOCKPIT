@@ -220,7 +220,7 @@ class GrafanaApiConfiguration {
         );
     }
 
-    public function getUiUrl(){
+    public function getUiUrl() {
         return sprintf(
             '%s%s',
             $this->isUseHttps() ? 'https://' : 'http://',
@@ -254,7 +254,7 @@ class GrafanaApiConfiguration {
         //Also &kiosk=tv is not very helpful. So we implemented an datepicker for now.
 
         $autoRefreshUrlStr = '';
-        if($autorefresh !== 0 && $autorefresh !== '0'){
+        if ($autorefresh !== 0 && $autorefresh !== '0') {
             $autoRefreshUrlStr = sprintf('&refresh=%s', $autorefresh);
         }
 

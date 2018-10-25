@@ -1,10 +1,8 @@
 <?php
 
 
-class UUID
-{
-    public static function v4()
-    {
+class UUID {
+    public static function v4() {
         $data = openssl_random_pseudo_bytes(16);
         assert(strlen($data) == 16);
 
@@ -14,19 +12,16 @@ class UUID
         return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
     }
 
-    public static function is_valid($uuid)
-    {
-        return preg_match('/^\{?[0-9a-f]{8}\-?[0-9a-f]{4}\-?[0-9a-f]{4}\-?'.
+    public static function is_valid($uuid) {
+        return preg_match('/^\{?[0-9a-f]{8}\-?[0-9a-f]{4}\-?[0-9a-f]{4}\-?' .
                 '[0-9a-f]{4}\-?[0-9a-f]{12}\}?$/i', $uuid) === 1;
     }
 
-    public static function regex()
-    {
+    public static function regex() {
         return '/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/';
     }
 
-    public static function JSregex()
-    {
+    public static function JSregex() {
         return '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}';
     }
 }

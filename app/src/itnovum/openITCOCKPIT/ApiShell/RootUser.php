@@ -25,11 +25,9 @@
 namespace itnovum\openITCOCKPIT\ApiShell;
 
 
-class RootUser
-{
+class RootUser {
 
-    public function isRootUser()
-    {
+    public function isRootUser() {
         if (posix_getuid() == 0) {
             return true;
         }

@@ -23,9 +23,9 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-use itnovum\openITCOCKPIT\Core\Views\Service;
-use itnovum\openITCOCKPIT\Core\Views\Host;
 use itnovum\openITCOCKPIT\Core\Servicestatus;
+use itnovum\openITCOCKPIT\Core\Views\Host;
+use itnovum\openITCOCKPIT\Core\Views\Service;
 
 //Flapping Workaround while the status date is not loaded via Angular
 echo $this->Html->script('lib/FlappingWorkaround.js');
@@ -48,7 +48,7 @@ $Servicestatus = new Servicestatus($servicestatus['Servicestatus']);
                 <?php if ($this->Acl->hasPermission('browser', 'Hosts')): ?>
                     <a href="<?php echo Router::url([
                         'controller' => 'hosts',
-                        'action' => 'browser',
+                        'action'     => 'browser',
                         $Service->getHostId()
                     ]); ?>">
                     <?php printf('%s (%s)', h($Host->getHostname()), h($Host->getAddress())); ?>
@@ -105,7 +105,8 @@ $Servicestatus = new Servicestatus($servicestatus['Servicestatus']);
                             <div class="row">
                                 <div class="col-xs-12 col-md-6">
                                     <div class="form-group smart-form">
-                                        <label class="input"> <i class="icon-prepend" style="padding-right:14px;"><?php echo __('From'); ?></i>
+                                        <label class="input"> <i class="icon-prepend"
+                                                                 style="padding-right:14px;"><?php echo __('From'); ?></i>
                                             <input type="text" class="input-sm" style="padding-left:50px;"
                                                    placeholder="<?php echo __('From Date'); ?>"
                                                    ng-model="filter.from"
@@ -126,7 +127,8 @@ $Servicestatus = new Servicestatus($servicestatus['Servicestatus']);
 
                                 <div class="col-xs-12 col-md-6">
                                     <div class="form-group smart-form">
-                                        <label class="input"> <i class="icon-prepend" style="padding-right:14px;"><?php echo __('To'); ?></i>
+                                        <label class="input"> <i class="icon-prepend"
+                                                                 style="padding-right:14px;"><?php echo __('To'); ?></i>
                                             <input type="text" class="input-sm" style="padding-left:50px;"
                                                    placeholder="<?php echo __('To Date'); ?>"
                                                    ng-model="filter.to"
@@ -226,7 +228,8 @@ $Servicestatus = new Servicestatus($servicestatus['Servicestatus']);
                             <tr ng-repeat="Acknowledgement in acknowledgements">
 
                                 <td class="text-center">
-                                    <servicestatusicon state="Acknowledgement.AcknowledgedService.state"></servicestatusicon>
+                                    <servicestatusicon
+                                            state="Acknowledgement.AcknowledgedService.state"></servicestatusicon>
                                 </td>
                                 <td>
                                     {{ Acknowledgement.AcknowledgedService.entry_time }}

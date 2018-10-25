@@ -1,19 +1,17 @@
 <?php
 
-class BuildBootstrapTask extends AppShell
-{
+class BuildBootstrapTask extends AppShell {
     /**
      * Compiles bootstrap
      * @return void
      */
-    public function execute()
-    {
+    public function execute() {
         $this->out('Building Bootstrap from LESS files');
-        $bootstrapLessPath = APP.'Vendor/bootstrap/custom_bootstrap.less';
-        $targetPath = APP.'webroot/css/vendor/bootstrap/css/bootstrap.css';
-        $minTargetPath = APP.'webroot/css/vendor/bootstrap/css/bootstrap.min.css';
+        $bootstrapLessPath = APP . 'Vendor/bootstrap/custom_bootstrap.less';
+        $targetPath = APP . 'webroot/css/vendor/bootstrap/css/bootstrap.css';
+        $minTargetPath = APP . 'webroot/css/vendor/bootstrap/css/bootstrap.min.css';
 
-        $lesscPath = Configure::read('paths.lessc.'.ENVIRONMENT);
+        $lesscPath = Configure::read('paths.lessc.' . ENVIRONMENT);
 
         $command = sprintf('%s %s > %s', $lesscPath, $bootstrapLessPath, $targetPath);
 
@@ -30,13 +28,12 @@ class BuildBootstrapTask extends AppShell
      * Executes a shell command and writes output lines to $stdout and $stderr
      *
      * @param string $cmd
-     * @param array  $stdout
-     * @param array  $stderr
+     * @param array $stdout
+     * @param array $stderr
      *
      * @return int  Exit code
      */
-    protected function _exec($cmd, &$stdout, &$stderr)
-    {
+    protected function _exec($cmd, &$stdout, &$stderr) {
         $outfile = tempnam(".", "cmd");
         $errfile = tempnam(".", "cmd");
         $descriptorspec = [

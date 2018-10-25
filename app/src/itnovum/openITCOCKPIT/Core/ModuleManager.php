@@ -36,14 +36,14 @@ class ModuleManager {
      * ModuleManager constructor.
      * @param string $moduleName
      */
-    public function __construct($moduleName){
+    public function __construct($moduleName) {
         $this->moduleName = $moduleName;
     }
 
     /**
      * @return bool
      */
-    public function moduleExists(){
+    public function moduleExists() {
         return is_dir(APP . 'Plugin' . DS . $this->moduleName);
     }
 
@@ -51,7 +51,7 @@ class ModuleManager {
      * @param $modelName
      * @return bool|null|\Model
      */
-    public function loadModel($modelName){
+    public function loadModel($modelName) {
         $model = \ClassRegistry::init(sprintf('%s.%s', $this->moduleName, $modelName), 'Model');
         return $model;
     }

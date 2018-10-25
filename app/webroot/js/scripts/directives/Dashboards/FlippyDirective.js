@@ -1,4 +1,4 @@
-angular.module('openITCOCKPIT').directive('flippy', function ($http, $interval) {
+angular.module('openITCOCKPIT').directive('flippy', function($http, $interval){
 
     return {
         restrict: 'E',
@@ -8,7 +8,7 @@ angular.module('openITCOCKPIT').directive('flippy', function ($http, $interval) 
             duration: '@',
             timingFunction: '@'
         },
-        link: function ($scope, $elem, $attrs) {
+        link: function($scope, $elem, $attrs){
             const CUSTOM_PREFIX = 'custom:';
             const state = {
                 flipped: false
@@ -19,25 +19,25 @@ angular.module('openITCOCKPIT').directive('flippy', function ($http, $interval) 
             };
 
             // assign new options
-            angular.forEach(['duration', 'timingFunction'], function (item) {
+            angular.forEach(['duration', 'timingFunction'], function(item){
                 options[item] = ($scope[item]) ? $scope[item] : options[item];
             });
 
-            angular.forEach({flip: flip, flipBack: flipBack}, function (flipFunc, evt) {
-                angular.forEach($scope[evt], function (eventName) {
-                    if (eventName.indexOf(CUSTOM_PREFIX) === -1) {
+            angular.forEach({flip: flip, flipBack: flipBack}, function(flipFunc, evt){
+                angular.forEach($scope[evt], function(eventName){
+                    if(eventName.indexOf(CUSTOM_PREFIX) === -1){
                         // directly register event listener to avoid having to start off angular's digest cycle
                         angular.element($elem)[0].addEventListener(eventName, flipFunc);
-                    } else {
+                    }else{
                         $scope.$on(eventName.substr(CUSTOM_PREFIX.length), flipFunc);
                     }
                 });
             });
             // set flip duration
-            angular.forEach(['flippy-front', 'flippy-back'], function (name) {
+            angular.forEach(['flippy-front', 'flippy-back'], function(name){
                 const el = $elem.find(name);
-                if (el.length == 1) {
-                    angular.forEach(['', '-ms-', '-webkit-'], function (prefix) {
+                if(el.length == 1){
+                    angular.forEach(['', '-ms-', '-webkit-'], function(prefix){
                         angular.element(el[0]).css(prefix + 'transition', 'all ' + options.duration / 1000 + 's ' + options.timingFunction);
                     });
                 }
@@ -50,22 +50,22 @@ angular.module('openITCOCKPIT').directive('flippy', function ($http, $interval) 
              *
              * @param boolean isBack
              */
-            function _flip(isBack ) {
+            function _flip(isBack){
                 this.isBack = isBack || false;
-                if ((!this.isBack && !state.flipped) || (this.isBack && state.flipped)) {
+                if((!this.isBack && !state.flipped) || (this.isBack && state.flipped)){
                     // to avoid toggling it right back if flip-back is the same event
-                    setTimeout(function () {
+                    setTimeout(function(){
                         $elem.toggleClass('flipped');
                         state.flipped = !state.flipped;
                     }, 0);
                 }
             }
 
-            function flip() {
+            function flip(){
                 _flip();
             }
 
-            function flipBack() {
+            function flipBack(){
                 _flip(true);
             }
 

@@ -25,19 +25,16 @@
 namespace itnovum\openITCOCKPIT\Core;
 
 
-class HostMacroReplacerTest extends \PHPUnit_Framework_TestCase
-{
+class HostMacroReplacerTest extends \PHPUnit_Framework_TestCase {
 
     //run test: oitc test app Core/HostMacroReplacer
 
-    public function testInstance()
-    {
+    public function testInstance() {
         $hostMacroReplacer = new HostMacroReplacer([]);
         $this->assertInstanceOf('\itnovum\openITCOCKPIT\Core\HostMacroReplacer', $hostMacroReplacer);
     }
 
-    public function testReplaceHostId()
-    {
+    public function testReplaceHostId() {
         $host = $this->getHost();
         $hostMacroReplacer = new HostMacroReplacer($host);
         $assert = 1;
@@ -45,8 +42,7 @@ class HostMacroReplacerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($assert, $result);
     }
 
-    public function testReplaceHostname()
-    {
+    public function testReplaceHostname() {
         $host = $this->getHost();
         $hostMacroReplacer = new HostMacroReplacer($host);
         $assert = 'c8e3785a-9872-4feb-b1f2-78b50af2fe90';
@@ -54,8 +50,7 @@ class HostMacroReplacerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($assert, $result);
     }
 
-    public function testReplaceHostdisplayname()
-    {
+    public function testReplaceHostdisplayname() {
         $host = $this->getHost();
         $hostMacroReplacer = new HostMacroReplacer($host);
         $assert = 'my super duper test host';
@@ -63,8 +58,7 @@ class HostMacroReplacerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($assert, $result);
     }
 
-    public function testReplaceHostaddress()
-    {
+    public function testReplaceHostaddress() {
         $host = $this->getHost();
         $hostMacroReplacer = new HostMacroReplacer($host);
         $assert = '10.10.10.10';
@@ -72,8 +66,7 @@ class HostMacroReplacerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($assert, $result);
     }
 
-    public function testReplaceMultiMacros()
-    {
+    public function testReplaceMultiMacros() {
         $host = $this->getHost();
         $hostMacroReplacer = new HostMacroReplacer($host);
         $stringToReplace = 'Hello my name is $HOSTDISPLAYNAME$ i am reachable at $HOSTADDRESS$ and like my uuid $HOSTNAME$';
@@ -82,8 +75,7 @@ class HostMacroReplacerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($assert, $result);
     }
 
-    public function testReplaceHoststateid()
-    {
+    public function testReplaceHoststateid() {
         $host = $this->getHost();
         $hoststatus = $this->getHoststatus();
         $hostMacroReplacer = new HostMacroReplacer($host, $hoststatus);
@@ -92,8 +84,7 @@ class HostMacroReplacerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($assert, $result);
     }
 
-    public function testReplaceLasthoststateid()
-    {
+    public function testReplaceLasthoststateid() {
         $host = $this->getHost();
         $hoststatus = $this->getHoststatus();
         $hostMacroReplacer = new HostMacroReplacer($host, $hoststatus);
@@ -102,8 +93,7 @@ class HostMacroReplacerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($assert, $result);
     }
 
-    public function testReplaceHostoutput()
-    {
+    public function testReplaceHostoutput() {
         $host = $this->getHost();
         $hoststatus = $this->getHoststatus();
         $hostMacroReplacer = new HostMacroReplacer($host, $hoststatus);
@@ -112,8 +102,7 @@ class HostMacroReplacerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($assert, $result);
     }
 
-    public function testCombineMacros()
-    {
+    public function testCombineMacros() {
         $host = $this->getHost();
         $hoststatus = $this->getHoststatus();
         $hostMacroReplacer = new HostMacroReplacer($host, $hoststatus);
@@ -123,8 +112,7 @@ class HostMacroReplacerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($assert, $result);
     }
 
-    public function testPrintMacroIfNotFoundInHostOrHoststatus()
-    {
+    public function testPrintMacroIfNotFoundInHostOrHoststatus() {
         $host = [];
         $hoststatus = [];
         $hostMacroReplacer = new HostMacroReplacer($host, $hoststatus);
@@ -134,8 +122,7 @@ class HostMacroReplacerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($assert, $result);
     }
 
-    private function getHost()
-    {
+    private function getHost() {
         $host = [
             'Host' => [
                 'id'      => 1,
@@ -148,8 +135,7 @@ class HostMacroReplacerTest extends \PHPUnit_Framework_TestCase
         return $host;
     }
 
-    private function getHoststatus()
-    {
+    private function getHoststatus() {
         $hoststatus = [
             'Hoststatus' => [
                 'current_state'   => 0,

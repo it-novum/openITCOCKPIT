@@ -89,29 +89,29 @@ class Perfdata {
      * @param $perfdata
      * @return Perfdata
      */
-    public static function fromArray($label, $perfdata){
+    public static function fromArray($label, $perfdata) {
         $currentValue = null;
         $unit = null;
         $warning = null;
         $critical = null;
         $min = null;
         $max = null;
-        if(!empty($perfdata['current'])){
+        if (!empty($perfdata['current'])) {
             $currentValue = $perfdata['current'];
         }
-        if(!empty($perfdata['unit'])){
+        if (!empty($perfdata['unit'])) {
             $unit = $perfdata['unit'];
         }
-        if(!empty($perfdata['warn'])){
+        if (!empty($perfdata['warn'])) {
             $warning = $perfdata['warn'];
         }
-        if(!empty($perfdata['crit'])){
+        if (!empty($perfdata['crit'])) {
             $critical = $perfdata['crit'];
         }
-        if(!empty($perfdata['min'])){
+        if (!empty($perfdata['min'])) {
             $min = $perfdata['min'];
         }
-        if(!empty($perfdata['max'])){
+        if (!empty($perfdata['max'])) {
             $max = $perfdata['max'];
         }
 
@@ -126,7 +126,7 @@ class Perfdata {
         return $this->label;
     }
 
-    public function getReplacedLabel(){
+    public function getReplacedLabel() {
         $pattern = '/[^a-zA-Z^0-9\-\.]/';
         return preg_replace($pattern, '_', $this->label);
     }

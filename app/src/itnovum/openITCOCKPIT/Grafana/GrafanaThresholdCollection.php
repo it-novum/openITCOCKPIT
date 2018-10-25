@@ -119,20 +119,20 @@ class GrafanaThresholdCollection {
             if ($this->canDisplayWarningThreshold()) {
                 $thresholds[] = [
                     "colorMode" => "warning",
-                    "fill" => true,
-                    "line" => true,
-                    "op" => "gt",
-                    "value" => $this->warning
+                    "fill"      => true,
+                    "line"      => true,
+                    "op"        => "gt",
+                    "value"     => $this->warning
                 ];
             }
 
             if ($this->canDisplayCriticalThreshold()) {
                 $thresholds[] = [
                     "colorMode" => "critical",
-                    "fill" => true,
-                    "line" => true,
-                    "op" => "gt",
-                    "value" => $this->critical
+                    "fill"      => true,
+                    "line"      => true,
+                    "op"        => "gt",
+                    "value"     => $this->critical
                 ];
             }
         }
@@ -141,20 +141,20 @@ class GrafanaThresholdCollection {
             if ($this->canDisplayCriticalThreshold()) {
                 $thresholds[] = [
                     "colorMode" => "critical",
-                    "fill" => true,
-                    "line" => true,
-                    "op" => "lt",
-                    "value" => $this->critical
+                    "fill"      => true,
+                    "line"      => true,
+                    "op"        => "lt",
+                    "value"     => $this->critical
                 ];
             }
 
             if ($this->canDisplayWarningThreshold()) {
                 $thresholds[] = [
                     "colorMode" => "warning",
-                    "fill" => true,
-                    "line" => true,
-                    "op" => "lt",
-                    "value" => $this->warning
+                    "fill"      => true,
+                    "line"      => true,
+                    "op"        => "lt",
+                    "value"     => $this->warning
                 ];
             }
         }

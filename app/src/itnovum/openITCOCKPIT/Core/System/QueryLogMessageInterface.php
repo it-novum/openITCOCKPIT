@@ -110,7 +110,7 @@ class QueryLogMessageInterface implements MessageComponentInterface {
                 $queries = [];
                 foreach ($sourceQueries['queries'] as $query) {
 
-                    if($this->hidePermissionQueries) {
+                    if ($this->hidePermissionQueries) {
                         $acoQuery = 'SELECT `Aco`.`id`, `Aco`.`parent_id`';
                         $aroQuery = 'SELECT `Aro`.`id`, `Aro`.`parent_id`';
                         $permissionQuery = 'SELECT `Permission`.`id`, `Permission`.`aro_id`';
@@ -122,7 +122,7 @@ class QueryLogMessageInterface implements MessageComponentInterface {
 
                     if ($this->prettyPrint) {
                         $query['query'] = SqlFormatter::format($query['query'], true);
-                    }else{
+                    } else {
                         $query['query'] = SqlFormatter::highlight($query['query'], true);
                     }
                     $queries[] = $query;

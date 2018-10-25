@@ -33,9 +33,9 @@ class Environments {
     protected static function _detectCli() {
         $environment = self::DEVELOPMENT;
         $uname = php_uname('n');
-        if (strpos($uname,'master') !== false) {
+        if (strpos($uname, 'master') !== false) {
             $environment = self::PRODUCTION;
-        } else if (strpos($uname,'stage') !== false) {
+        } else if (strpos($uname, 'stage') !== false) {
             $environment = self::STAGING;
         }
 
@@ -49,11 +49,11 @@ class Environments {
     protected static function _detectHttp() {
         $host = env('HTTP_HOST');
 
-        if (substr($host,0,4) == 'dev.') {
+        if (substr($host, 0, 4) == 'dev.') {
             $environment = self::DEVELOPMENT;
-        } else if (substr($host,0,4) == 'dev-') {
+        } else if (substr($host, 0, 4) == 'dev-') {
             $environment = self::DEVELOPMENT;
-        } else if (substr($host,0,8) == 'staging.') {
+        } else if (substr($host, 0, 8) == 'staging.') {
             $environment = self::STAGING;
         } else {
             $environment = self::PRODUCTION;

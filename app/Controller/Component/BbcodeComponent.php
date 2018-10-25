@@ -23,8 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class BbcodeComponent extends Component
-{
+class BbcodeComponent extends Component {
 
     /**
      * initialize the BB Code Component
@@ -35,11 +34,10 @@ class BbcodeComponent extends Component
      * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since  3.0
      */
-    public function initialize(Controller $controller)
-    {
+    public function initialize(Controller $controller) {
         $this->Controller = $controller;
 
-        require_once APP."Lib/jbbcode-1.2.0/Parser.php";
+        require_once APP . "Lib/jbbcode-1.2.0/Parser.php";
         $bbparser = new JBBCode\Parser();
         $bbparser->addCodeDefinitionSet(new JBBCode\DefaultCodeDefinitionSet());
         $builder = new JBBCode\CodeDefinitionBuilder('left', '<p align="left">{param}</p>');
@@ -73,14 +71,13 @@ class BbcodeComponent extends Component
      * Converts BB code to HTML
      *
      * @param string $bbcode The BB Code you want to convert to HTML
-     * @param bool   $nl2br  If you want to replace \n with <br>
+     * @param bool $nl2br If you want to replace \n with <br>
      *
      * @return string with HTML parts
      * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since  3.0
      */
-    public function asHtml($bbcode, $nl2br = true)
-    {
+    public function asHtml($bbcode, $nl2br = true) {
         $this->bbparser->parse(htmlentities($bbcode));
         if ($nl2br === true) {
             return nl2br($this->bbparser->getAsHtml());
@@ -98,8 +95,7 @@ class BbcodeComponent extends Component
      * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since  3.0
      */
-    public function nagiosNl2br($string)
-    {
+    public function nagiosNl2br($string) {
         return str_replace(['\n', '\r\n', '\r'], '<br>', $string);
     }
 }

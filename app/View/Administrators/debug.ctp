@@ -31,15 +31,15 @@
         </h1>
     </div>
 
-    <?php if($isDebuggingMode): ?>
-    <div class="col-xs-12 col-lg-2">
-        <div class="pull-right">
-            <a href="/Administrators/querylog" class="btn btn-default btn-xl btn-block">
-                <i class="fa fa-database"></i>
-                <?php echo __('Show SQL query log'); ?>
-            </a>
+    <?php if ($isDebuggingMode): ?>
+        <div class="col-xs-12 col-lg-2">
+            <div class="pull-right">
+                <a href="/Administrators/querylog" class="btn btn-default btn-xl btn-block">
+                    <i class="fa fa-database"></i>
+                    <?php echo __('Show SQL query log'); ?>
+                </a>
+            </div>
         </div>
-    </div>
     <?php endif; ?>
 </div>
 
@@ -107,7 +107,7 @@
                 <dl class="dl-horizontal">
                     <dt><?php echo __('Monitoring engine'); ?>:</dt>
                     <dd>
-                        <?php echo ($backgroundProcessStatus['isNagiosRunning']) ? '<span class="text-success"><i class="fa fa-check"></i> '.__('Running').'</span>' : '<span class="text-danger"><i class="fa fa-close"></i> '.__('Not running!').'</span>'; ?>
+                        <?php echo ($backgroundProcessStatus['isNagiosRunning']) ? '<span class="text-success"><i class="fa fa-check"></i> ' . __('Running') . '</span>' : '<span class="text-danger"><i class="fa fa-close"></i> ' . __('Not running!') . '</span>'; ?>
                         <a data-original-title="<?php echo h($monitoring_engine); ?>" data-placement="right"
                            rel="tooltip" class="text-info" href="javascript:void(0);"><i class="fa fa-info-circle"></i></a>
                     </dd>
@@ -120,7 +120,7 @@
                             $dbConnector = __('Statusengine');
                         endif;
                         ?>
-                        <?php echo ($backgroundProcessStatus['isNdoRunning'] || $backgroundProcessStatus['isStatusengineRunning']) ? '<span class="text-success"><i class="fa fa-check"></i> '.__('Running').'</span>' : '<span class="text-danger"><i class="fa fa-close"></i> '.__('Not running!').'</span>'; ?>
+                        <?php echo ($backgroundProcessStatus['isNdoRunning'] || $backgroundProcessStatus['isStatusengineRunning']) ? '<span class="text-success"><i class="fa fa-check"></i> ' . __('Running') . '</span>' : '<span class="text-danger"><i class="fa fa-close"></i> ' . __('Not running!') . '</span>'; ?>
                         <a data-original-title="<?php echo $dbConnector; ?>" data-placement="right" rel="tooltip"
                            class="text-info" href="javascript:void(0);"><i class="fa fa-info-circle"></i></a>
                     </dd>
@@ -132,7 +132,7 @@
                             $perfdataProcessor = __('Statusengine');
                         endif;
                         ?>
-                        <?php echo ($backgroundProcessStatus['isNpcdRunning'] || ($isStatusenginePerfdataProcessor && $backgroundProcessStatus['isStatusengineRunning'])) ? '<span class="text-success"><i class="fa fa-check"></i> '.__('Running').'</span>' : '<span class="text-danger"><i class="fa fa-close"></i> '.__('Not running!').'</span>'; ?>
+                        <?php echo ($backgroundProcessStatus['isNpcdRunning'] || ($isStatusenginePerfdataProcessor && $backgroundProcessStatus['isStatusengineRunning'])) ? '<span class="text-success"><i class="fa fa-check"></i> ' . __('Running') . '</span>' : '<span class="text-danger"><i class="fa fa-close"></i> ' . __('Not running!') . '</span>'; ?>
                         <a data-original-title="<?php echo $perfdataProcessor; ?>" data-placement="right" rel="tooltip"
                            class="text-info" href="javascript:void(0);"><i class="fa fa-info-circle"></i></a>
                     </dd>
@@ -145,26 +145,26 @@
                     </dd>
                     <dt><?php echo __('Gearman Worker'); ?>:</dt>
                     <dd>
-                        <?php echo ($backgroundProcessStatus['isGearmanWorkerRunning']) ? '<span class="text-success"><i class="fa fa-check"></i> '.__('Running').'</span>' : '<span class="text-danger"><i class="fa fa-close"></i> '.__('Not running!').'</span>'; ?>
+                        <?php echo ($backgroundProcessStatus['isGearmanWorkerRunning']) ? '<span class="text-success"><i class="fa fa-check"></i> ' . __('Running') . '</span>' : '<span class="text-danger"><i class="fa fa-close"></i> ' . __('Not running!') . '</span>'; ?>
                         <a data-original-title="<?php echo __('Gearman Worker'); ?>" data-placement="right"
                            rel="tooltip" class="text-info" href="javascript:void(0);"><i class="fa fa-info-circle"></i></a>
                     </dd>
                     <dt><?php echo __('OITC Cmd'); ?>:</dt>
                     <dd>
-                        <?php echo ($backgroundProcessStatus['isOitcCmdRunning']) ? '<span class="text-success"><i class="fa fa-check"></i> '.__('Running').'</span>' : '<span class="text-danger"><i class="fa fa-close"></i> '.__('Not running!').'</span>'; ?>
+                        <?php echo ($backgroundProcessStatus['isOitcCmdRunning']) ? '<span class="text-success"><i class="fa fa-check"></i> ' . __('Running') . '</span>' : '<span class="text-danger"><i class="fa fa-close"></i> ' . __('Not running!') . '</span>'; ?>
                         <a data-original-title="<?php echo __('OITC Cmd'); ?>" data-placement="right" rel="tooltip"
                            class="text-info" href="javascript:void(0);"><i class="fa fa-info-circle"></i></a>
                     </dd>
                     <dt><?php echo __('phpNSTA'); ?>:</dt>
                     <dd>
-                        <?php echo ($backgroundProcessStatus['isPhpNstaRunning']) ? '<span class="text-success"><i class="fa fa-check"></i> '.__('Running').'</span>' : '<span class="text-danger"><i class="fa fa-close"></i> '.__('Not running!').'</span>'; ?>
+                        <?php echo ($backgroundProcessStatus['isPhpNstaRunning']) ? '<span class="text-success"><i class="fa fa-check"></i> ' . __('Running') . '</span>' : '<span class="text-danger"><i class="fa fa-close"></i> ' . __('Not running!') . '</span>'; ?>
                         <a data-original-title="<?php echo __('phpNSTA is only installed and running if you are using Distributed Monitoring'); ?>"
                            data-placement="right" rel="tooltip" class="text-info" href="javascript:void(0);"><i
                                     class="fa fa-info-circle"></i></a>
                     </dd>
                     <dt><?php echo __('Push notification service'); ?>:</dt>
                     <dd>
-                        <?php echo ($backgroundProcessStatus['isPushNotificationRunning']) ? '<span class="text-success"><i class="fa fa-check"></i> '.__('Running').'</span>' : '<span class="text-danger"><i class="fa fa-close"></i> '.__('Not running!').'</span>'; ?>
+                        <?php echo ($backgroundProcessStatus['isPushNotificationRunning']) ? '<span class="text-success"><i class="fa fa-check"></i> ' . __('Running') . '</span>' : '<span class="text-danger"><i class="fa fa-close"></i> ' . __('Not running!') . '</span>'; ?>
                         <a data-original-title="<?php echo __('Service required to send push notifications to your browser window.'); ?>"
                            data-placement="right" rel="tooltip" class="text-info" href="javascript:void(0);"><i
                                     class="fa fa-info-circle"></i></a>
@@ -172,7 +172,7 @@
 
                     <dt><?php echo __('NodeJS Server'); ?>:</dt>
                     <dd>
-                        <?php echo ($backgroundProcessStatus['isNodeJsServerRunning']) ? '<span class="text-success"><i class="fa fa-check"></i> '.__('Running').'</span>' : '<span class="text-danger"><i class="fa fa-close"></i> '.__('Not running!').'</span>'; ?>
+                        <?php echo ($backgroundProcessStatus['isNodeJsServerRunning']) ? '<span class="text-success"><i class="fa fa-check"></i> ' . __('Running') . '</span>' : '<span class="text-danger"><i class="fa fa-close"></i> ' . __('Not running!') . '</span>'; ?>
                         <a data-original-title="<?php echo __('Service required to run server side JavaScript.'); ?>"
                            data-placement="right" rel="tooltip" class="text-info" href="javascript:void(0);"><i
                                     class="fa fa-info-circle"></i></a>
@@ -463,40 +463,40 @@
         $agent = $_SERVER['HTTP_USER_AGENT'];
         $os = "unknown";
         if (strstr($agent, "Windows 98")) $os = "Windows 98";
-        elseif (strstr($agent, "NT 4.0")) $os = "Windows NT ";
-        elseif (strstr($agent, "NT 5.1")) $os = "Windows XP";
-        elseif (strstr($agent, "NT 6.0")) $os = "Windows Vista";
-        elseif (strstr($agent, "NT 6.1")) $os = "Windows 7";
-        elseif (strstr($agent, "NT 6.2")) $os = "Windows 8";
-        elseif (strstr($agent, "NT 6.3")) $os = "Windows 8.1";
-        elseif (strstr($agent, "NT 6.4")) $os = "Windows 10";
-        elseif (strstr($agent, "Win")) $os = "Windows";
+        else if (strstr($agent, "NT 4.0")) $os = "Windows NT ";
+        else if (strstr($agent, "NT 5.1")) $os = "Windows XP";
+        else if (strstr($agent, "NT 6.0")) $os = "Windows Vista";
+        else if (strstr($agent, "NT 6.1")) $os = "Windows 7";
+        else if (strstr($agent, "NT 6.2")) $os = "Windows 8";
+        else if (strstr($agent, "NT 6.3")) $os = "Windows 8.1";
+        else if (strstr($agent, "NT 6.4")) $os = "Windows 10";
+        else if (strstr($agent, "Win")) $os = "Windows";
         //Firefox
-        elseif (strstr($agent, "Mac OS X 10.5")) $os = "Mac OS X - Leopard";
-        elseif (strstr($agent, "Mac OS X 10.6")) $os = "Mac OS X - Snow Leopard";
-        elseif (strstr($agent, "Mac OS X 10.7")) $os = "Mac OS X - Lion";
-        elseif (strstr($agent, "Mac OS X 10.8")) $os = "Mac OS X - Mountain Lion";
-        elseif (strstr($agent, "Mac OS X 10.9")) $os = "Mac OS X - Mavericks";
-        elseif (strstr($agent, "Mac OS X 10.10")) $os = "Mac OS X - Yosemite";
-        elseif (strstr($agent, "Mac OS X 10.11")) $os = "Mac OS X - El Capitan";
+        else if (strstr($agent, "Mac OS X 10.5")) $os = "Mac OS X - Leopard";
+        else if (strstr($agent, "Mac OS X 10.6")) $os = "Mac OS X - Snow Leopard";
+        else if (strstr($agent, "Mac OS X 10.7")) $os = "Mac OS X - Lion";
+        else if (strstr($agent, "Mac OS X 10.8")) $os = "Mac OS X - Mountain Lion";
+        else if (strstr($agent, "Mac OS X 10.9")) $os = "Mac OS X - Mavericks";
+        else if (strstr($agent, "Mac OS X 10.10")) $os = "Mac OS X - Yosemite";
+        else if (strstr($agent, "Mac OS X 10.11")) $os = "Mac OS X - El Capitan";
 
-        elseif (strstr($agent, "Mac OS X 10.12")) $os = "macOS Sierra ";
+        else if (strstr($agent, "Mac OS X 10.12")) $os = "macOS Sierra ";
 
         //Chrome
-        elseif (strstr($agent, "Mac OS X 10_5")) $os = "Mac OS X - Leopard";
-        elseif (strstr($agent, "Mac OS X 10_6")) $os = "Mac OS X - Snow Leopard";
-        elseif (strstr($agent, "Mac OS X 10_7")) $os = "Mac OS X - Lion";
-        elseif (strstr($agent, "Mac OS X 10_8")) $os = "Mac OS X - Mountain Lion";
-        elseif (strstr($agent, "Mac OS X 10_9")) $os = "Mac OS X - Mavericks";
-        elseif (strstr($agent, "Mac OS X 10_10")) $os = "Mac OS X - Yosemite";
-        elseif (strstr($agent, "Mac OS X 10_11")) $os = "Mac OS X - El Capitan";
+        else if (strstr($agent, "Mac OS X 10_5")) $os = "Mac OS X - Leopard";
+        else if (strstr($agent, "Mac OS X 10_6")) $os = "Mac OS X - Snow Leopard";
+        else if (strstr($agent, "Mac OS X 10_7")) $os = "Mac OS X - Lion";
+        else if (strstr($agent, "Mac OS X 10_8")) $os = "Mac OS X - Mountain Lion";
+        else if (strstr($agent, "Mac OS X 10_9")) $os = "Mac OS X - Mavericks";
+        else if (strstr($agent, "Mac OS X 10_10")) $os = "Mac OS X - Yosemite";
+        else if (strstr($agent, "Mac OS X 10_11")) $os = "Mac OS X - El Capitan";
 
-        elseif (strstr($agent, "Mac OS X 10_12")) $os = "macOS Sierra ";
+        else if (strstr($agent, "Mac OS X 10_12")) $os = "macOS Sierra ";
 
-        elseif (strstr($agent, "Mac OS")) $os = "Mac OS X";
-        elseif (strstr($agent, "Linux")) $os = "Linux";
-        elseif (strstr($agent, "Unix")) $os = "Unix";
-        elseif (strstr($agent, "Ubuntu")) $os = "Ubuntu";
+        else if (strstr($agent, "Mac OS")) $os = "Mac OS X";
+        else if (strstr($agent, "Linux")) $os = "Linux";
+        else if (strstr($agent, "Unix")) $os = "Unix";
+        else if (strstr($agent, "Ubuntu")) $os = "Ubuntu";
         ?>
 
         <div class="widget-body padding-10">

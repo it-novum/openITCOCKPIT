@@ -91,7 +91,7 @@
                                         <td class="text-align-center">
                                             <?php if ($cronjob['Cronjob']['enabled']): ?>
                                                 <i class="fa fa-check text-success"></i>
-                                                <?php else: ?>
+                                            <?php else: ?>
                                                 <i class="fa fa-times text-danger"></i>
                                             <?php endif; ?>
                                         </td>

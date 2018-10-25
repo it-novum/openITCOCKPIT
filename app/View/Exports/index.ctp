@@ -72,8 +72,9 @@
                                             <input type="hidden" value="0" id="CreateBackup_"
                                                    name="data[Export][create_backup]">
                                                 <input type="checkbox" id="CreateBackup" showlabel="1" value="1"
-                                                   checked="checked" class="onoffswitch-checkbox notification_control"
-                                                   name="data[Export][create_backup]">
+                                                       checked="checked"
+                                                       class="onoffswitch-checkbox notification_control"
+                                                       name="data[Export][create_backup]">
                                                 <label class="onoffswitch-label" for="CreateBackup">
                                                     <span class="onoffswitch-inner"
                                                           data-swchon-text="<?php echo __('Yes'); ?>"

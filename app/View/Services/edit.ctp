@@ -671,7 +671,7 @@ $notification_settings = [
                     </div>
                 </div>
             </div>
-            
+
             <br/>
             <?php echo $this->Form->formActions(); ?>
 

@@ -78,7 +78,7 @@ class DowntimeServiceConditions extends ListSettingsConditions {
     /**
      * @return bool
      */
-    public function isRunning(){
+    public function isRunning() {
         return $this->isRunning;
     }
 
@@ -90,8 +90,8 @@ class DowntimeServiceConditions extends ListSettingsConditions {
     /**
      * @param array $uuids (for service)
      */
-    public function setServiceUuid($uuids = []){
-        if(!is_array($uuids)){
+    public function setServiceUuid($uuids = []) {
+        if (!is_array($uuids)) {
             $uuids = [$uuids];
         }
         $this->serviceUuids = $uuids;
@@ -100,7 +100,7 @@ class DowntimeServiceConditions extends ListSettingsConditions {
     /**
      * @return array
      */
-    public function getServiceUuids(){
+    public function getServiceUuids() {
         return $this->serviceUuids;
     }
 
@@ -115,8 +115,8 @@ class DowntimeServiceConditions extends ListSettingsConditions {
     /**
      * @param array $uuids (for host)
      */
-    public function setHostUuid($uuids = []){
-        if(!is_array($uuids)){
+    public function setHostUuid($uuids = []) {
+        if (!is_array($uuids)) {
             $uuids = [$uuids];
         }
         $this->hostUuids = $uuids;
@@ -125,7 +125,7 @@ class DowntimeServiceConditions extends ListSettingsConditions {
     /**
      * @return array
      */
-    public function getHostUuids(){
+    public function getHostUuids() {
         return $this->hostUuids;
     }
 

@@ -30,7 +30,7 @@ class StatehistoryHost extends CrateModuleAppModel {
     public $useTable = 'host_statehistory';
     public $tablePrefix = 'statusengine_';
 
-    public function __construct($id = false, $table = null, $ds = null, $useDynamicAssociations = true){
+    public function __construct($id = false, $table = null, $ds = null, $useDynamicAssociations = true) {
         parent::__construct($id, $table, $ds, $useDynamicAssociations);
         $this->virtualFields['state_type'] = 'StatehistoryHost.is_hardstate';
     }
@@ -41,36 +41,36 @@ class StatehistoryHost extends CrateModuleAppModel {
      * @param array $paginatorConditions
      * @return array
      */
-    public function getQuery(StatehistoryHostConditions $StatehistoryHostConditions, $paginatorConditions = []){
+    public function getQuery(StatehistoryHostConditions $StatehistoryHostConditions, $paginatorConditions = []) {
         $query = [
             'conditions' => [
-                'hostname' => $StatehistoryHostConditions->getHostUuid(),
+                'hostname'     => $StatehistoryHostConditions->getHostUuid(),
                 'state_time >' => $StatehistoryHostConditions->getFrom(),
                 'state_time <' => $StatehistoryHostConditions->getTo()
             ],
-            'order' => $StatehistoryHostConditions->getOrder(),
+            'order'      => $StatehistoryHostConditions->getOrder(),
         ];
 
         if ($StatehistoryHostConditions->getUseLimit()) {
             $query['limit'] = $StatehistoryHostConditions->getLimit();
         }
 
-        if(!empty($StatehistoryHostConditions->getStates() && sizeof($StatehistoryHostConditions->getStates()) < 3)){
+        if (!empty($StatehistoryHostConditions->getStates() && sizeof($StatehistoryHostConditions->getStates()) < 3)) {
             $query['conditions']['state'] = $StatehistoryHostConditions->getStates();
         }
 
-        foreach($StatehistoryHostConditions->getStateTypes() as $stateType){
-            if($stateType === 0){
+        foreach ($StatehistoryHostConditions->getStateTypes() as $stateType) {
+            if ($stateType === 0) {
                 $query['conditions']['is_hardstate'] = false;
             }
 
-            if($stateType === 1){
+            if ($stateType === 1) {
                 $query['conditions']['is_hardstate'] = true;
             }
         }
 
-        if($StatehistoryHostConditions->hardStateTypeAndUpState()){
-            $query['or'] =  [
+        if ($StatehistoryHostConditions->hardStateTypeAndUpState()) {
+            $query['or'] = [
                 ['StatehistoryHost.is_hardstate = ?' => [1]],
                 ['StatehistoryHost.state = ?' => [0]],
             ];
@@ -89,7 +89,7 @@ class StatehistoryHost extends CrateModuleAppModel {
     public function getLastRecord(StatehistoryHostConditions $StatehistoryHostConditions) {
         $query = [
             'conditions' => [
-                'hostname' => $StatehistoryHostConditions->getHostUuid(),
+                'hostname'      => $StatehistoryHostConditions->getHostUuid(),
                 'state_time <=' => $StatehistoryHostConditions->getFrom(),
             ],
             'order'      => [

@@ -23,8 +23,8 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-use itnovum\openITCOCKPIT\Core\Views\Host;
 use itnovum\openITCOCKPIT\Core\Hoststatus;
+use itnovum\openITCOCKPIT\Core\Views\Host;
 
 //Flapping Workaround while the status date is not loaded via Angular
 echo $this->Html->script('lib/FlappingWorkaround.js');
@@ -238,7 +238,8 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
                                     {{ StatehistoryHost.StatehistoryHost.state_time }}
                                 </td>
                                 <td class="text-center">
-                                    {{ StatehistoryHost.StatehistoryHost.current_check_attempt }}/{{ StatehistoryHost.StatehistoryHost.max_check_attempts }}
+                                    {{ StatehistoryHost.StatehistoryHost.current_check_attempt }}/{{
+                                    StatehistoryHost.StatehistoryHost.max_check_attempts }}
                                 </td>
                                 <td class="text-center">
                                         <span ng-show="StatehistoryHost.StatehistoryHost.is_hardstate">

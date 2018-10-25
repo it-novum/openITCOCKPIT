@@ -40,7 +40,7 @@ class StatehistoryServiceControllerRequest extends ControllerListSettingsRequest
      */
     protected $StateTypes;
 
-    public function __construct(\CakeRequest $request, ServiceStates $ServiceStates, StateTypes $StateTypes, $userLimit = 25){
+    public function __construct(\CakeRequest $request, ServiceStates $ServiceStates, StateTypes $StateTypes, $userLimit = 25) {
         $this->StateTypes = $StateTypes;
         $this->ListSettingsDefaults = new ListSettingsDefaults($userLimit);
 
@@ -60,7 +60,7 @@ class StatehistoryServiceControllerRequest extends ControllerListSettingsRequest
     /**
      * @return ServiceStates
      */
-    public function getServiceStates(){
+    public function getServiceStates() {
         $availableStates = $this->ServiceStates->getAvailableStateIds();
 
         if (isset($this->requestParameters['Listsettings']['state_types'])) {
@@ -76,7 +76,7 @@ class StatehistoryServiceControllerRequest extends ControllerListSettingsRequest
     /**
      * @return StateTypes
      */
-    public function getStateTypes(){
+    public function getStateTypes() {
         $availableStateTypes = $this->StateTypes->getAvailableStateTypeIds();
         if (isset($this->requestParameters['Listsettings']['nag_state_types'])) {
             foreach ($this->requestParameters['Listsettings']['nag_state_types'] as $stateTypeName => $value) {
@@ -91,36 +91,36 @@ class StatehistoryServiceControllerRequest extends ControllerListSettingsRequest
     /**
      * @return array
      */
-    public function getRequestSettingsForListSettings(){
+    public function getRequestSettingsForListSettings() {
         $states = $this->ServiceStates->asArray();
-        if(
+        if (
             !$this->ServiceStates->hasOk() &&
             !$this->ServiceStates->hasWarning() &&
             !$this->ServiceStates->hasCritical() &&
             !$this->ServiceStates->hasUnknown()
-        ){
+        ) {
             //User disabled all check boxes or first page load
             //Enable all to avoid empty list
-            foreach($states as $key => $value){
+            foreach ($states as $key => $value) {
                 $states[$key] = true;
             }
         }
 
         $stateTypes = $this->StateTypes->asArray();
-        if(!$this->StateTypes->hasSoft() && !$this->StateTypes->hasHard()){
+        if (!$this->StateTypes->hasSoft() && !$this->StateTypes->hasHard()) {
             //User disabled all check boxes or first page load
             //Enable all to avoid empty list
-            foreach($stateTypes as $key => $value){
+            foreach ($stateTypes as $key => $value) {
                 $stateTypes[$key] = true;
             }
         }
 
         return [
-            'limit' => $this->getLimit(),
-            'state_types' => $states,
+            'limit'           => $this->getLimit(),
+            'state_types'     => $states,
             'nag_state_types' => $stateTypes,
-            'from' => date('d.m.Y H:i', $this->getFrom()),
-            'to' => date('d.m.Y H:i', $this->getTo())
+            'from'            => date('d.m.Y H:i', $this->getFrom()),
+            'to'              => date('d.m.Y H:i', $this->getTo())
         ];
     }
 }

@@ -25,10 +25,7 @@
 namespace itnovum\openITCOCKPIT\Core;
 
 
-use itnovum\openITCOCKPIT\Core\ValueObjects\CustomVariable;
-
-class CustomVariableMerger extends CustomVariableHelper
-{
+class CustomVariableMerger extends CustomVariableHelper {
 
     /**
      * @var CustomVariablesRepository
@@ -43,11 +40,10 @@ class CustomVariableMerger extends CustomVariableHelper
     /**
      * CustomVariableDiffer constructor.
      *
-     * @param array $hostCustomVariables         from CakePHP's find
+     * @param array $hostCustomVariables from CakePHP's find
      * @param array $hosttemplateCustomVariables from CakePHP's find
      */
-    public function __construct($hostCustomVariables, $hosttemplateCustomVariables)
-    {
+    public function __construct($hostCustomVariables, $hosttemplateCustomVariables) {
         $this->hostCustomVariablesRepository = $this->convertCustomVariablesToRepository($hostCustomVariables);
         $this->hosttemplateCustomVariablesRepository = $this->convertCustomVariablesToRepository($hosttemplateCustomVariables);
     }
@@ -55,8 +51,7 @@ class CustomVariableMerger extends CustomVariableHelper
     /**
      * @return CustomVariablesRepository
      */
-    public function getCustomVariablesMergedAsRepository()
-    {
+    public function getCustomVariablesMergedAsRepository() {
         $hostCustomVariablesRepository = $this->hostCustomVariablesRepository;
         foreach ($hostCustomVariablesRepository->getAllCustomVariables() as $hostCustomVariable) {
             //Delete variables with the same name of the host template

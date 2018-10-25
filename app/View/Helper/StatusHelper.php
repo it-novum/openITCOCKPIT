@@ -23,8 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class StatusHelper extends AppHelper
-{
+class StatusHelper extends AppHelper {
 
     /**
      * Returns the complete status array of a host object:
@@ -32,49 +31,47 @@ class StatusHelper extends AppHelper
      * human_state == a text that humans can read
      * html == the hml code to create the icon for the status
      *
-     * @param string $uuid       of the object
-     * @param string $href       the url of the HTML link
-     * @param array  $hoststatus , if not given the $hoststatus array of the current view will be used (default)
+     * @param string $uuid of the object
+     * @param string $href the url of the HTML link
+     * @param array $hoststatus , if not given the $hoststatus array of the current view will be used (default)
      *
      * @return array with host status for humans and HTML code generation
      * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since  3.0
      */
-    public function humanHostStatus($uuid, $href = 'javascript:void(0)', $hoststatus = null, $style = '')
-    {
+    public function humanHostStatus($uuid, $href = 'javascript:void(0)', $hoststatus = null, $style = '') {
         if ($hoststatus === null) {
             $hoststatus = $this->_View->viewVars['hoststatus'];
         }
         if (isset($hoststatus[$uuid]) && $hoststatus[$uuid]['Hoststatus']['current_state'] !== null) {
             switch ($hoststatus[$uuid]['Hoststatus']['current_state']) {
                 case 0:
-                    return ['state' => 0, 'human_state' => __('Up'), 'html_icon' => '<a href="'.$href.'" class="btn btn-success status-circle" style="padding:0;'.$style.'"></a>', 'icon' => 'glyphicon glyphicon-ok'];
+                    return ['state' => 0, 'human_state' => __('Up'), 'html_icon' => '<a href="' . $href . '" class="btn btn-success status-circle" style="padding:0;' . $style . '"></a>', 'icon' => 'glyphicon glyphicon-ok'];
                     break;
 
                 case 1:
-                    return ['state' => 1, 'human_state' => __('Down'), 'html_icon' => '<a href="'.$href.'" class="btn btn-danger status-circle" style="padding:0;'.$style.'"></a>', 'icon' => 'fa fa-exclamation'];
+                    return ['state' => 1, 'human_state' => __('Down'), 'html_icon' => '<a href="' . $href . '" class="btn btn-danger status-circle" style="padding:0;' . $style . '"></a>', 'icon' => 'fa fa-exclamation'];
                     break;
 
                 default:
-                    return ['state' => 2, 'human_state' => __('Unreachable'), 'html_icon' => '<a href="'.$href.'" class="btn btn-default status-circle" style="padding:0;'.$style.'"></a>', 'icon' => 'fa fa-warning'];
+                    return ['state' => 2, 'human_state' => __('Unreachable'), 'html_icon' => '<a href="' . $href . '" class="btn btn-default status-circle" style="padding:0;' . $style . '"></a>', 'icon' => 'fa fa-warning'];
             }
         } else {
-            return ['state' => 2, 'human_state' => __('Not found in monitoring'), 'html_icon' => '<a href="'.$href.'" class="btn btn-primary status-circle" style="padding:0;'.$style.'"></a>', 'icon' => 'fa fa-question-circle'];
+            return ['state' => 2, 'human_state' => __('Not found in monitoring'), 'html_icon' => '<a href="' . $href . '" class="btn btn-primary status-circle" style="padding:0;' . $style . '"></a>', 'icon' => 'fa fa-question-circle'];
         }
     }
 
     /**
      * Returns the host output
      *
-     * @param string $uuid       of the object
-     * @param array  $hoststatus , if not given the $hoststatus array of the current view will be used (default)
+     * @param string $uuid of the object
+     * @param array $hoststatus , if not given the $hoststatus array of the current view will be used (default)
      *
      * @return string with the hostoutput or error message if host not found in monitoring $hoststatus
      * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since  3.0
      */
-    public function hostOutput($uuid, $hoststatus = null)
-    {
+    public function hostOutput($uuid, $hoststatus = null) {
 
         if ($hoststatus === null) {
             $hoststatus = $this->_View->viewVars['hoststatus'];
@@ -83,7 +80,7 @@ class StatusHelper extends AppHelper
             return $hoststatus[$uuid]['Hoststatus']['output'];
         }
 
-        return '<span class="text-primary italic">'.__('Not found in monitoring').'</span>';
+        return '<span class="text-primary italic">' . __('Not found in monitoring') . '</span>';
     }
 
     /**
@@ -92,36 +89,35 @@ class StatusHelper extends AppHelper
      * human_state == a text that humans can read
      * html == the hml code to create the icon for the status
      *
-     * @param string $uuid          of the object
-     * @param string $href          the url of the HTML link
-     * @param array  $servicestatus , if not given the $servicestatus array of the current view will be used (default)
+     * @param string $uuid of the object
+     * @param string $href the url of the HTML link
+     * @param array $servicestatus , if not given the $servicestatus array of the current view will be used (default)
      *
      * @return array with service status for humans and HTML code generation
      * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since  3.0
      */
-    public function humanServiceStatus($uuid, $href = 'javascript:void(0)', $servicestatus = null, $content = '', $style = '')
-    {
+    public function humanServiceStatus($uuid, $href = 'javascript:void(0)', $servicestatus = null, $content = '', $style = '') {
         if ($servicestatus === null) {
             $servicestatus = $this->_View->viewVars['servicestatus'];
         }
         if (isset($servicestatus[$uuid]['Servicestatus']['current_state']) && !in_array($servicestatus[$uuid]['Servicestatus']['current_state'], [null, 'null'], true)) {
             switch ($servicestatus[$uuid]['Servicestatus']['current_state']) {
                 case 0:
-                    return ['state' => 0, 'human_state' => __('Ok'), 'html_icon' => '<a href="'.$href.'" class="btn btn-success btn-xs status-circle" style="'.$style.'">'.$content.'</a>', 'icon' => 'glyphicon glyphicon-ok'];
+                    return ['state' => 0, 'human_state' => __('Ok'), 'html_icon' => '<a href="' . $href . '" class="btn btn-success btn-xs status-circle" style="' . $style . '">' . $content . '</a>', 'icon' => 'glyphicon glyphicon-ok'];
                     break;
 
                 case 1:
-                    return ['state' => 1, 'human_state' => __('Warning'), 'html_icon' => '<a href="'.$href.'" class="btn btn-warning btn-xs status-circle" style="'.$style.'">'.$content.'</a>', 'icon' => 'fa fa-exclamation'];
+                    return ['state' => 1, 'human_state' => __('Warning'), 'html_icon' => '<a href="' . $href . '" class="btn btn-warning btn-xs status-circle" style="' . $style . '">' . $content . '</a>', 'icon' => 'fa fa-exclamation'];
                     break;
                 case 2:
-                    return ['state' => 2, 'human_state' => __('Critical'), 'html_icon' => '<a href="'.$href.'" class="btn btn-danger btn-xs status-circle" style="'.$style.'">'.$content.'</a>', 'icon' => 'fa fa-exclamation'];
+                    return ['state' => 2, 'human_state' => __('Critical'), 'html_icon' => '<a href="' . $href . '" class="btn btn-danger btn-xs status-circle" style="' . $style . '">' . $content . '</a>', 'icon' => 'fa fa-exclamation'];
                     break;
                 default:
-                    return ['state' => 3, 'human_state' => __('Unknown'), 'html_icon' => '<a href="'.$href.'" class="btn btn-default btn-xs status-circle" style="'.$style.'">'.$content.'</a>', 'icon' => 'fa fa-warning'];
+                    return ['state' => 3, 'human_state' => __('Unknown'), 'html_icon' => '<a href="' . $href . '" class="btn btn-default btn-xs status-circle" style="' . $style . '">' . $content . '</a>', 'icon' => 'fa fa-warning'];
             }
         } else {
-            return ['state' => 3, 'human_state' => __('Not found in monitoring'), 'html_icon' => '<a href="'.$href.'" class="btn btn-primary btn-xs status-circle" style="'.$style.'">'.$content.'</a>', 'icon' => 'fa fa-question-circle'];
+            return ['state' => 3, 'human_state' => __('Not found in monitoring'), 'html_icon' => '<a href="' . $href . '" class="btn btn-primary btn-xs status-circle" style="' . $style . '">' . $content . '</a>', 'icon' => 'fa fa-question-circle'];
         }
     }
 
@@ -129,15 +125,14 @@ class StatusHelper extends AppHelper
      * Return the CSS class for the current host status
      * <span class="<?php echo $this->HostStatusColor($uuid); ?>"></span>
      *
-     * @param string $uuid       of the object
-     * @param array  $hoststatus , if not given the $hoststatus array of the current view will be used (default)
+     * @param string $uuid of the object
+     * @param array $hoststatus , if not given the $hoststatus array of the current view will be used (default)
      *
      * @return string CSS class of the color
      * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since  3.0
      */
-    function HostStatusColor($uuid, $hoststatus = null)
-    {
+    function HostStatusColor($uuid, $hoststatus = null) {
         if ($hoststatus === null) {
             $hoststatus = $this->_View->viewVars['hoststatus'];
         }
@@ -163,15 +158,14 @@ class StatusHelper extends AppHelper
      * Return the CSS class for the current service status
      * <span class="<?php echo $this->ServiceStatusColor($uuid); ?>"></span>
      *
-     * @param string $uuid          of the object
-     * @param array  $servicestauts , if not given the $servicestatus array of the current view will be used (default)
+     * @param string $uuid of the object
+     * @param array $servicestauts , if not given the $servicestatus array of the current view will be used (default)
      *
      * @return string CSS class of the color
      * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since  3.0
      */
-    function ServiceStatusColor($uuid, $servicestatus = null)
-    {
+    function ServiceStatusColor($uuid, $servicestatus = null) {
         if ($servicestatus === null) {
             $servicestatus = $this->_View->viewVars['servicestatus'];
         }
@@ -205,30 +199,39 @@ class StatusHelper extends AppHelper
      * @author Maximilian Pappert <maximilian.pappert@it-novum.com>
      * @since  3.0
      */
-    function ServiceStatusColorSimple($state)
-    {
+    function ServiceStatusColorSimple($state) {
         if (isset($state)) {
             switch ((int)$state) {
                 case 0:
-                    return ['human_state' => __('Ok'),
-                            'class'       => 'btn-success',
-                            'hexColor'    => '#5CB85C'];
+                    return [
+                        'human_state' => __('Ok'),
+                        'class'       => 'btn-success',
+                        'hexColor'    => '#5CB85C'
+                    ];
                 case 1:
-                    return ['human_state' => __('Warning'),
-                            'class'       => 'btn-warning',
-                            'hexColor'    => '#f0ad4e'];
+                    return [
+                        'human_state' => __('Warning'),
+                        'class'       => 'btn-warning',
+                        'hexColor'    => '#f0ad4e'
+                    ];
                 case 2:
-                    return ['human_state' => __('Critical'),
-                            'class'       => 'btn-danger',
-                            'hexColor'    => '#d9534f'];
+                    return [
+                        'human_state' => __('Critical'),
+                        'class'       => 'btn-danger',
+                        'hexColor'    => '#d9534f'
+                    ];
                 case 3:
-                    return ['human_state' => __('Unknown'),
-                            'class'       => 'btn-unknown',
-                            'hexColor'    => '#4C4F53'];
+                    return [
+                        'human_state' => __('Unknown'),
+                        'class'       => 'btn-unknown',
+                        'hexColor'    => '#4C4F53'
+                    ];
                 default:
-                    return ['human_state' => __('Not Found'),
-                            'class'       => 'btn-primary',
-                            'hexColor'    => '#337ab7'];
+                    return [
+                        'human_state' => __('Not Found'),
+                        'class'       => 'btn-primary',
+                        'hexColor'    => '#337ab7'
+                    ];
             }
         }
     }
@@ -240,8 +243,7 @@ class StatusHelper extends AppHelper
      *
      * @return array which contains the human state and the css class
      */
-    function HostStatusBackgroundColor($state = 2)
-    {
+    function HostStatusBackgroundColor($state = 2) {
         $state = ($state === null) ? 2 : $state;
         $background_color = [
             0 => 'bg-color-green',
@@ -259,8 +261,7 @@ class StatusHelper extends AppHelper
      *
      * @return array which contains the human state and the css class
      */
-    function ServiceStatusBackgroundColor($state = 2)
-    {
+    function ServiceStatusBackgroundColor($state = 2) {
         $state = ($state === null) ? 3 : $state;
         $background_color = [
             0 => 'bg-color-green',
@@ -281,26 +282,33 @@ class StatusHelper extends AppHelper
      * @author Maximilian Pappert <maximilian.pappert@it-novum.com>
      * @since  3.0
      */
-    function HostStatusColorSimple($state)
-    {
+    function HostStatusColorSimple($state) {
         if (isset($state)) {
             switch ((int)$state) {
                 case 0:
-                    return ['human_state' => __('Ok'),
-                            'class'       => 'btn-success',
-                            'hexColor'    => '#5CB85C'];
+                    return [
+                        'human_state' => __('Ok'),
+                        'class'       => 'btn-success',
+                        'hexColor'    => '#5CB85C'
+                    ];
                 case 1:
-                    return ['human_state' => __('Down'),
-                            'class'       => 'btn-danger',
-                            'hexColor'    => '#d9534f'];
+                    return [
+                        'human_state' => __('Down'),
+                        'class'       => 'btn-danger',
+                        'hexColor'    => '#d9534f'
+                    ];
                 case 2:
-                    return ['human_state' => __('Unreachable'),
-                            'class'       => 'btn-unknown',
-                            'hexColor'    => '#4C4F53'];
+                    return [
+                        'human_state' => __('Unreachable'),
+                        'class'       => 'btn-unknown',
+                        'hexColor'    => '#4C4F53'
+                    ];
                 default:
-                    return ['human_state' => __('Not Found'),
-                            'class'       => 'btn-primary',
-                            'hexColor'    => '#337ab7'];
+                    return [
+                        'human_state' => __('Not Found'),
+                        'class'       => 'btn-primary',
+                        'hexColor'    => '#337ab7'
+                    ];
             }
         }
     }
@@ -309,17 +317,16 @@ class StatusHelper extends AppHelper
      * Wrapper function of $this->get();
      * Returns the value of a database field from Hostatus model
      *
-     * @param string $uuid       of the object
-     * @param string $field      the database field of host/service status you want to get the value of
-     * @param mixed  $default    the default return value, if the requested field does not exists
-     * @param array  $hoststatus , if not given the $hoststatus array of the current view will be used (default)
+     * @param string $uuid of the object
+     * @param string $field the database field of host/service status you want to get the value of
+     * @param mixed $default the default return value, if the requested field does not exists
+     * @param array $hoststatus , if not given the $hoststatus array of the current view will be used (default)
      *
      * @return string the value of the given database field from model
      * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since  3.0
      */
-    public function hget($uuid, $field, $default = null, $hoststatus = null)
-    {
+    public function hget($uuid, $field, $default = null, $hoststatus = null) {
         return $this->get($uuid, $field, $default, 'Hoststatus', $hoststatus);
     }
 
@@ -327,36 +334,34 @@ class StatusHelper extends AppHelper
      * Wrapper function of $this->get();
      * Returns the value of a database field from Servicestatus model
      *
-     * @param string $uuid          of the object
-     * @param string $field         the database field of host/service status you want to get the value of
-     * @param mixed  $default       the default return value, if the requested field does not exists
-     * @param array  $servicestatus , if not given the $servicestatus array of the current view will be used (default)
+     * @param string $uuid of the object
+     * @param string $field the database field of host/service status you want to get the value of
+     * @param mixed $default the default return value, if the requested field does not exists
+     * @param array $servicestatus , if not given the $servicestatus array of the current view will be used (default)
      *
      * @return string the value of the given database field from model
      * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since  3.0
      */
-    public function sget($uuid, $field, $default = null, $servicestatus = null)
-    {
+    public function sget($uuid, $field, $default = null, $servicestatus = null) {
         return $this->get($uuid, $field, $default, 'Servicestatus', null, $servicestatus);
     }
 
     /**
      * Returns the value of a database field from Hostatus or Servicestatus model
      *
-     * @param string $uuid          of the object
-     * @param string $field         the database field of host/service status you want to get the value of
-     * @param mixed  $default       the default return value, if the requested field does not exists
-     * @param string $ModelName     the name of the host/service status model ('Hoststatus' or 'Servicestatus')
-     * @param array  $hoststatus    , if not given the $hoststatus array of the current view will be used (default)
-     * @param array  $servicestatus , if not given the $servicestatus array of the current view will be used (default)
+     * @param string $uuid of the object
+     * @param string $field the database field of host/service status you want to get the value of
+     * @param mixed $default the default return value, if the requested field does not exists
+     * @param string $ModelName the name of the host/service status model ('Hoststatus' or 'Servicestatus')
+     * @param array $hoststatus , if not given the $hoststatus array of the current view will be used (default)
+     * @param array $servicestatus , if not given the $servicestatus array of the current view will be used (default)
      *
      * @return string the value of the given database field from model
      * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since  3.0
      */
-    public function get($uuid, $field, $default = null, $ModelName = 'Hoststatus', $hoststatus = null, $servicestatus = null)
-    {
+    public function get($uuid, $field, $default = null, $ModelName = 'Hoststatus', $hoststatus = null, $servicestatus = null) {
         if ($ModelName == 'Hoststatus') {
             if ($hoststatus === null) {
                 $hoststatus = $this->_View->viewVars['hoststatus'];
@@ -386,8 +391,7 @@ class StatusHelper extends AppHelper
      * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since  3.0
      */
-    public function humanServiceStateType($state_type)
-    {
+    public function humanServiceStateType($state_type) {
         if ($state_type === 0 || $state_type === '0' || $state_type === false) {
             return __('soft');
         }
@@ -399,8 +403,7 @@ class StatusHelper extends AppHelper
         return '';
     }
 
-    function HostStatusTextColor($state = 2)
-    {
+    function HostStatusTextColor($state = 2) {
         if ($state === null) {
             return 'txt-primary';
         }
@@ -417,8 +420,7 @@ class StatusHelper extends AppHelper
         }
     }
 
-    function ServiceStatusTextColor($state = 2)
-    {
+    function ServiceStatusTextColor($state = 2) {
         if ($state === null) {
             return 'txt-primary';
         }
@@ -447,8 +449,7 @@ class StatusHelper extends AppHelper
      * @author Irina Bering <irina.bering@it-novum.com>
      * @since  3.0
      */
-    public function humanSimpleHostStatus($hoststatus = 0)
-    {
+    public function humanSimpleHostStatus($hoststatus = 0) {
         switch ($hoststatus) {
             case 0:
                 return __('Up');
@@ -468,8 +469,7 @@ class StatusHelper extends AppHelper
      * @author Irina Bering <irina.bering@it-novum.com>
      * @since  3.0
      */
-    public function humanSimpleServiceStatus($servicestatus = 0)
-    {
+    public function humanSimpleServiceStatus($servicestatus = 0) {
         switch ($servicestatus) {
             case 0:
                 return __('Ok');
@@ -482,8 +482,7 @@ class StatusHelper extends AppHelper
         }
     }
 
-    public function automapIcon($service, $addTooltip = true)
-    {
+    public function automapIcon($service, $addTooltip = true) {
         $stateClasses = [
             0 => 'ok',
             1 => 'warning',
@@ -498,17 +497,17 @@ class StatusHelper extends AppHelper
 
         $tooltip = '';
         if ($addTooltip) {
-            $tooltip = 'rel="tooltip" data-placement="bottom" data-original-title="'.$service['Host']['name'].'/'.$serviceName.'" data-html="true"';
+            $tooltip = 'rel="tooltip" data-placement="bottom" data-original-title="' . $service['Host']['name'] . '/' . $serviceName . '" data-html="true"';
         }
 
-        $html = '<i '.$tooltip.' class="fa fa-square '.$stateClasses[$service['Servicestatus']['current_state']].'"></i>';
+        $html = '<i ' . $tooltip . ' class="fa fa-square ' . $stateClasses[$service['Servicestatus']['current_state']] . '"></i>';
 
         if ($service['Servicestatus']['problem_has_been_acknowledged'] > 0) {
-            $html = '<i '.$tooltip.' class="fa fa-user '.$stateClasses[$service['Servicestatus']['current_state']].'"></i>';
+            $html = '<i ' . $tooltip . ' class="fa fa-user ' . $stateClasses[$service['Servicestatus']['current_state']] . '"></i>';
         }
 
         if ($service['Servicestatus']['scheduled_downtime_depth'] > 0) {
-            $html = '<i '.$tooltip.' class="fa fa-power-off '.$stateClasses[$service['Servicestatus']['current_state']].'"></i>';
+            $html = '<i ' . $tooltip . ' class="fa fa-power-off ' . $stateClasses[$service['Servicestatus']['current_state']] . '"></i>';
         }
 
         return $html;

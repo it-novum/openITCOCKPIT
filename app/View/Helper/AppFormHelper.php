@@ -26,22 +26,20 @@
 App::uses('BoostCakeFormHelper', 'BoostCake.View/Helper');
 App::uses('FormHelper', 'View/Helper');
 
-class AppFormHelper extends BoostCakeFormHelper
-{
+class AppFormHelper extends BoostCakeFormHelper {
 
     /**
      * overwrites create method to prevent the validation by Google Chrome to interfere
      *
      * @param  string $model
-     * @param  array  $options
+     * @param  array $options
      *
      * @return function          parent::create()
      */
     protected $_isHorizontal = false;
     protected $_disableFieldset = false;
 
-    public function create($model = null, $options = [])
-    {
+    public function create($model = null, $options = []) {
         $this->_isHorizontal = isset($options['class']) && (strpos($options['class'], 'form-horizontal') !== false);
 
         $defaultOptions = [
@@ -61,7 +59,7 @@ class AppFormHelper extends BoostCakeFormHelper
 
         if ($this->_isHorizontal && empty($options['wrapInput'])) {
             $defaultOptions['inputDefaults']['wrapInput'] = 'col col-xs-10';
-        } elseif (!empty($options['wrapInput'])) {
+        } else if (!empty($options['wrapInput'])) {
             $defaultOptions['inputDefaults']['wrapInput'] = $options['wrapInput'];
         }
 
@@ -74,12 +72,11 @@ class AppFormHelper extends BoostCakeFormHelper
      * Sets defaults for standard input controls, before passing them to BoostCake.
      *
      * @param string $fieldName
-     * @param array  $options
+     * @param array $options
      *
      * @return string
      */
-    public function input($fieldName, $options = [])
-    {
+    public function input($fieldName, $options = []) {
         $this->_storedInputDefaults = $this->_inputDefaults;
         $this->Html->disableFieldset = false;
         $this->setEntity($fieldName);
@@ -94,23 +91,23 @@ class AppFormHelper extends BoostCakeFormHelper
                 ],
             ];
             if (!empty($options['label']) && is_string($options['label'])) {
-                $options['before'] = '<label class="col col-md-2 control-label">'.$options['label'].'</label>';
+                $options['before'] = '<label class="col col-md-2 control-label">' . $options['label'] . '</label>';
             }
             $options = Hash::merge($baseOptions, $options);
         }
         if (isset($options['multiple']) && $options['multiple'] == 'checkbox') {
             if (isset($options['div']['class']) && is_string($options['div']['class'])) {
-                $options['div']['class'] = $options['div']['class'].' checkbox-group';
+                $options['div']['class'] = $options['div']['class'] . ' checkbox-group';
             } else if (isset($options['div']) && is_string($options['div'])) {
-                $options['div'] = $options['div'].' checkbox-group';
+                $options['div'] = $options['div'] . ' checkbox-group';
             }
         }
 
         if (isset($options['multiple']) && ($options['multiple'] === true || $options['multiple'] == 'multiple')) {
             if (isset($options['div']['class']) && is_string($options['div']['class'])) {
-                $options['div']['class'] = $options['div']['class'].' multiple-select';
+                $options['div']['class'] = $options['div']['class'] . ' multiple-select';
             } else if (isset($options['div']) && is_string($options['div'])) {
-                $options['div'] = $options['div'].' multiple-select';
+                $options['div'] = $options['div'] . ' multiple-select';
             }
         }
         if ($options['type'] == 'checkbox') {
@@ -126,13 +123,13 @@ class AppFormHelper extends BoostCakeFormHelper
 
         if (isset($options['prepend']) && isset($options['append'])) {
             $baseOptions = [
-                'beforeInput' => '<div class="input-group"><span class="input-group-addon">'.$options['prepend'].'</span>',
-                'afterInput'  => '<span class="input-group-addon">'.$options['append'].'</span></div>',
+                'beforeInput' => '<div class="input-group"><span class="input-group-addon">' . $options['prepend'] . '</span>',
+                'afterInput'  => '<span class="input-group-addon">' . $options['append'] . '</span></div>',
             ];
             $options = Hash::merge($baseOptions, $options);
         } else if (isset($options['prepend'])) {
             $baseOptions = [
-                'beforeInput' => '<div class="input-group"><span class="input-group-addon">'.$options['prepend'].'</span>',
+                'beforeInput' => '<div class="input-group"><span class="input-group-addon">' . $options['prepend'] . '</span>',
                 'afterInput'  => '</div>',
             ];
             unset($options['prepend']);
@@ -140,7 +137,7 @@ class AppFormHelper extends BoostCakeFormHelper
         } else if (isset($options['append'])) {
             $baseOptions = [
                 'beforeInput' => '<div class="input-group">',
-                'afterInput'  => '<span class="input-group-addon">'.$options['append'].'</span>',
+                'afterInput'  => '<span class="input-group-addon">' . $options['append'] . '</span>',
             ];
             if (isset($options['afterInputGroup'])) {
                 $baseOptions['afterInput'] .= $options['afterInputGroup'];
@@ -153,13 +150,13 @@ class AppFormHelper extends BoostCakeFormHelper
             if (!isset($options['afterInput'])) {
                 $options['afterInput'] = '';
             }
-            $options['afterInput'] .= '<span class="help-block">'.$options['help'].'</span>';
+            $options['afterInput'] .= '<span class="help-block">' . $options['help'] . '</span>';
         }
         if ($options['type'] == 'datetime') {
             if (isset($options['div']['class']) && is_string($options['div']['class'])) {
-                $options['div']['class'] = $options['div']['class'].' datetime';
+                $options['div']['class'] = $options['div']['class'] . ' datetime';
             } else if (isset($options['div']) && is_string($options['div'])) {
-                $options['div'] = $options['div'].' datetime';
+                $options['div'] = $options['div'] . ' datetime';
             }
         }
 
@@ -174,12 +171,11 @@ class AppFormHelper extends BoostCakeFormHelper
      * of the chosen image.
      *
      * @param string $field
-     * @param array  $options
+     * @param array $options
      *
      * @return string
      */
-    public function imageChooserInput($field, array $options = [])
-    {
+    public function imageChooserInput($field, array $options = []) {
         $options = Hash::merge([
             'label' => Inflector::humanize($field),
         ], $options);
@@ -212,9 +208,9 @@ class AppFormHelper extends BoostCakeFormHelper
 					<div class="thumb">
 						<img src=":imageName" style=":imageStyle"/>
 					</div>
-					'.$selectedImage.'
+					' . $selectedImage . '
 					:error
-					<a class="btn btn-xs btn-default choose-image">'.$buttonTitle.'</a>';
+					<a class="btn btn-xs btn-default choose-image">' . $buttonTitle . '</a>';
         if ($imageName != '') {
             $markup .= '<a class="btn btn-xs btn-default remove-image">Remove Image</a>';
         }
@@ -234,12 +230,11 @@ class AppFormHelper extends BoostCakeFormHelper
      * Returns an input field which can trigger the CKFinder with a button, and shows the path of the chosen file
      *
      * @param string $field
-     * @param array  $options
+     * @param array $options
      *
      * @return string
      */
-    public function fileChooserInput($field, array $options = [])
-    {
+    public function fileChooserInput($field, array $options = []) {
         $options = Hash::merge([
             'label' => Inflector::humanize($field),
         ], $options);
@@ -270,9 +265,9 @@ class AppFormHelper extends BoostCakeFormHelper
 				<label class="col col-md-2 control-label">:label</label>
 				<div class="col col-xs-10">
 					:hiddenInput
-					<span class="selected-file">'.$selectedImage.'</span>
+					<span class="selected-file">' . $selectedImage . '</span>
 					:error
-					<a class="btn btn-xs btn-default choose-image">'.$buttonTitle.'</a>';
+					<a class="btn btn-xs btn-default choose-image">' . $buttonTitle . '</a>';
         if ($imageName != '') {
             $markup .= '<a class="btn btn-xs btn-default remove-image">Remove File</a>';
         }
@@ -292,14 +287,13 @@ class AppFormHelper extends BoostCakeFormHelper
      * Returns a form action block
      *
      * @param string $saveText
-     * @param array  $options
+     * @param array $options
      *
      * @internal param string $cancelButton
      * @internal param string $delete
      * @return string
      */
-    public function formActions($saveText = null, array $options = [])
-    {
+    public function formActions($saveText = null, array $options = []) {
 
         if (empty($saveText)) {
             $saveText = __('formactions.submit');
@@ -313,7 +307,7 @@ class AppFormHelper extends BoostCakeFormHelper
         ], $options);
 
         $out = '';
-        $out .= '<div class="well formactions '.$options['class'].'"><div class="pull-right">';
+        $out .= '<div class="well formactions ' . $options['class'] . '"><div class="pull-right">';
         $out .= $this->submit($saveText, ['div' => false, 'class' => $options['saveClass']]);
         if ($options['cancelButton']) {
             if (!is_array($options['cancelButton'])) {
@@ -321,7 +315,7 @@ class AppFormHelper extends BoostCakeFormHelper
                 $options['cancelButton']['title'] = __('formactions.cancel');
                 $options['cancelButton']['url'] = ['action' => 'index'];
             }
-            $out .= '&nbsp;'.$this->Html->link($options['cancelButton']['title'], $options['cancelButton']['url'], ['class' => 'btn btn-default']);
+            $out .= '&nbsp;' . $this->Html->link($options['cancelButton']['title'], $options['cancelButton']['url'], ['class' => 'btn btn-default']);
         }
         $out .= '</div>';
 
@@ -346,8 +340,7 @@ class AppFormHelper extends BoostCakeFormHelper
         return $out;
     }
 
-    public function fancyCheckbox($fieldName, $options = [])
-    {
+    public function fancyCheckbox($fieldName, $options = []) {
         $this->_storedInputDefaults = $this->_inputDefaults;
         $this->Html->disableFieldset = false;
         $this->setEntity($fieldName);
@@ -372,8 +365,8 @@ class AppFormHelper extends BoostCakeFormHelper
             'checkboxDiv'      => false,
             'class'            => 'onoffswitch-checkbox',
             'before'           => '<span class="onoffswitch">',
-            'after'            => '<label for="'.$this->domId().'" class="onoffswitch-label">
-				<span data-swchoff-text="'.$__options['off'].'" data-swchon-text="'.$__options['on'].'" class="onoffswitch-inner"></span>
+            'after'            => '<label for="' . $this->domId() . '" class="onoffswitch-label">
+				<span data-swchoff-text="' . $__options['off'] . '" data-swchon-text="' . $__options['on'] . '" class="onoffswitch-inner"></span>
 				<span class="onoffswitch-switch"></span>
 			</label></span>',
             'checked'          => '',
@@ -385,9 +378,9 @@ class AppFormHelper extends BoostCakeFormHelper
             $options['checked'] = 'checked';
         }
         if ($options['showLabel'] === true) {
-            $html .= '<label for="'.$this->domId().'" class="'.$options['captionGridClass'].' '.$options['captionClass'].'">'.$options['icon'].$options['caption'].'</label>';
+            $html .= '<label for="' . $this->domId() . '" class="' . $options['captionGridClass'] . ' ' . $options['captionClass'] . '">' . $options['icon'] . $options['caption'] . '</label>';
         }
-        $html .= '<div class="'.$options['wrapGridClass'].' '.$options['wrapClass'].'">';
+        $html .= '<div class="' . $options['wrapGridClass'] . ' ' . $options['wrapClass'] . '">';
         if ($options['value'] == '') {
             //Cake >= 2.5 fix
             $options['value'] = 1;
@@ -400,12 +393,11 @@ class AppFormHelper extends BoostCakeFormHelper
 
     /**
      * @param string $fieldName
-     * @param array  $options
+     * @param array $options
      *
      * @return string
      */
-    public function fancyCheckboxWithValue($fieldName, $options = [])
-    {
+    public function fancyCheckboxWithValue($fieldName, $options = []) {
         $this->_storedInputDefaults = $this->_inputDefaults;
         $this->Html->disableFieldset = false;
         $this->setEntity($fieldName);
@@ -430,8 +422,8 @@ class AppFormHelper extends BoostCakeFormHelper
             'checkboxDiv'      => false,
             'class'            => 'onoffswitch-checkbox',
             'before'           => '<span class="onoffswitch">',
-            'after'            => '<label for="'.$this->domId().'" class="onoffswitch-label">
-				<span data-swchoff-text="'.$__options['off'].'" data-swchon-text="'.$__options['on'].'" class="onoffswitch-inner"></span>
+            'after'            => '<label for="' . $this->domId() . '" class="onoffswitch-label">
+				<span data-swchoff-text="' . $__options['off'] . '" data-swchon-text="' . $__options['on'] . '" class="onoffswitch-inner"></span>
 				<span class="onoffswitch-switch"></span>
 			</label></span>',
             'checked'          => '',
@@ -443,17 +435,16 @@ class AppFormHelper extends BoostCakeFormHelper
             $options['checked'] = 'checked';
         }
         if ($options['showLabel'] === true) {
-            $html .= '<label for="'.$this->domId().'" class="'.$options['captionGridClass'].' '.$options['captionClass'].'">'.$options['icon'].$options['caption'].'</label>';
+            $html .= '<label for="' . $this->domId() . '" class="' . $options['captionGridClass'] . ' ' . $options['captionClass'] . '">' . $options['icon'] . $options['caption'] . '</label>';
         }
-        $html .= '<div class="'.$options['wrapGridClass'].' '.$options['wrapClass'].'">';
+        $html .= '<div class="' . $options['wrapGridClass'] . ' ' . $options['wrapClass'] . '">';
         $html .= $this->input($fieldName, $options);
         $html .= '</div>';
 
         return $html;
     }
 
-    public function hostAndServiceSelectOptiongroup($fieldName, $options = [])
-    {
+    public function hostAndServiceSelectOptiongroup($fieldName, $options = []) {
         $_options = [
             'divClass'    => 'col col-xs-10',
             'label'       => $fieldName,
@@ -496,22 +487,22 @@ class AppFormHelper extends BoostCakeFormHelper
 
         $target = '';
         if (isset($options['target'])) {
-            $target = 'target="'.$options['target'].'"';
+            $target = 'target="' . $options['target'] . '"';
         }
 
         if ($options['escape'] == true) {
             $options['label'] = h($options['label']);
         }
 
-        $html .= '<div class="form-group '.($options['required'] ? 'required' : '').' '.($hasError ? 'has-error' : '').' ">';
-        $html .= '<label for="'.$this->domId().'" class="'.$options['labelClass'].'">'.$options['label'].'</label>';
-        $html .= '<div class="'.$options['divClass'].'">';
-        $html .= '<select name="data['.$model.']['.$field.'][]" class="'.$options['class'].' '.($hasError ? 'form-error' : '').'" multiple="multiple" style="width: 100%; display: none;" data-placeholder="'.__($options['placeholder']).'" id="'.$this->domId().'" '.($options['required'] ? 'required="required"' : '').' '.$target.' >';
+        $html .= '<div class="form-group ' . ($options['required'] ? 'required' : '') . ' ' . ($hasError ? 'has-error' : '') . ' ">';
+        $html .= '<label for="' . $this->domId() . '" class="' . $options['labelClass'] . '">' . $options['label'] . '</label>';
+        $html .= '<div class="' . $options['divClass'] . '">';
+        $html .= '<select name="data[' . $model . '][' . $field . '][]" class="' . $options['class'] . ' ' . ($hasError ? 'form-error' : '') . '" multiple="multiple" style="width: 100%; display: none;" data-placeholder="' . __($options['placeholder']) . '" id="' . $this->domId() . '" ' . ($options['required'] ? 'required="required"' : '') . ' ' . $target . ' >';
         foreach ($options['options'] as $host_id => $host):
             foreach ($host as $hostName => $hostServices):
-                $html .= '<optgroup label="'.h($hostName).'">';
+                $html .= '<optgroup label="' . h($hostName) . '">';
                 foreach ($hostServices as $service_id => $serviceName):
-                    $html .= '<option value="'.h($service_id).'" '.((in_array($service_id, $options['selected'])) ? 'selected="selected"' : '').'>'.h($serviceName).'</option>';
+                    $html .= '<option value="' . h($service_id) . '" ' . ((in_array($service_id, $options['selected'])) ? 'selected="selected"' : '') . '>' . h($serviceName) . '</option>';
                 endforeach;
                 $html .= '</optgroup>';
             endforeach;
@@ -519,7 +510,7 @@ class AppFormHelper extends BoostCakeFormHelper
         $html .= '</select>';
         if ($hasError):
             foreach ($validationError as $error):
-                $html .= '<span class="help-block text-danger">'.h($error).'</span>';
+                $html .= '<span class="help-block text-danger">' . h($error) . '</span>';
             endforeach;
         endif;
         $html .= '</div>';

@@ -31,7 +31,7 @@ class SatelliteFilter extends Filter {
     /**
      * @return array
      */
-    public function indexFilter(){
+    public function indexFilter() {
         $filters = [
             'like' => [
                 'Satellite.name',

@@ -24,9 +24,9 @@
 //	confirmation.
 
 use GuzzleHttp\Client;
+use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\Views\Host;
 use itnovum\openITCOCKPIT\Core\Views\Service;
-use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Database\ScrollIndex;
 use itnovum\openITCOCKPIT\Filter\GrafanaUserDashboardFilter;
 use itnovum\openITCOCKPIT\Grafana\GrafanaApiConfiguration;
@@ -337,7 +337,7 @@ class GrafanaUserdashboardsController extends GrafanaModuleAppController {
     }
 
     public function getViewIframeUrl($id) {
-        if(!$this->isAngularJsRequest()){
+        if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
 
@@ -380,11 +380,11 @@ class GrafanaUserdashboardsController extends GrafanaModuleAppController {
         }
 
         $from = $this->request->query('from');
-        if($from === null){
+        if ($from === null) {
             $from = 'now-3h';
         }
         $refresh = $this->request->query('refresh');
-        if($refresh === null){
+        if ($refresh === null) {
             $refresh = 0;
         }
         $iframeUrl = $GrafanaApiConfiguration->getIframeUrlForUserDashboard($dashboard['GrafanaUserdashboard']['grafana_url'], $from, $refresh);

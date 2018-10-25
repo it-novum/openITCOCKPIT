@@ -25,7 +25,6 @@ angular.module('openITCOCKPIT')
         $scope.showFilter = false;
 
 
-
         $scope.load = function(){
             var params = {
                 'angular': true,

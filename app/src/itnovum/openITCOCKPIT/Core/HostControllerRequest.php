@@ -39,7 +39,7 @@ class HostControllerRequest {
      */
     private $HostFilter;
 
-    public function __construct(\CakeRequest $request, HostFilter $HostFilter){
+    public function __construct(\CakeRequest $request, HostFilter $HostFilter) {
         $this->request = $request;
         $this->HostFilter = $HostFilter;
     }
@@ -47,8 +47,8 @@ class HostControllerRequest {
     /**
      * @return bool
      */
-    public function isRequestFromBrowser(){
-        if(isset($this->request->query['BrowserContainerId'])){
+    public function isRequestFromBrowser() {
+        if (isset($this->request->query['BrowserContainerId'])) {
             return true;
         }
         return isset($this->request->params['named']['BrowserContainerId']);
@@ -57,12 +57,12 @@ class HostControllerRequest {
     /**
      * @return array
      */
-    public function getBrowserContainerIdsByRequest(){
-        if(isset($this->request->params['named']['BrowserContainerId'])){
+    public function getBrowserContainerIdsByRequest() {
+        if (isset($this->request->params['named']['BrowserContainerId'])) {
             $containerIds = $this->request->params['named']['BrowserContainerId'];
         }
 
-        if(isset($this->request->query['BrowserContainerId'])){
+        if (isset($this->request->query['BrowserContainerId'])) {
             $containerIds = $this->request->query['BrowserContainerId'];
         }
 
@@ -78,7 +78,7 @@ class HostControllerRequest {
      * @param string $direction
      * @return array
      */
-    public function getOrder($sort = '', $direction = ''){
+    public function getOrder($sort = '', $direction = '') {
         return $this->HostFilter->getOrderForPaginator($sort, $direction);
     }
 

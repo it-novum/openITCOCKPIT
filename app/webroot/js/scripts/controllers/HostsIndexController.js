@@ -26,7 +26,7 @@ angular.module('openITCOCKPIT')
                     id: QueryStringService.getIds('filter[Host.id][]', []),
                     name: QueryStringService.getValue('filter[Host.name]', ''),
                     keywords: '',
-                    address:  QueryStringService.getValue('filter[Host.address]', ''),
+                    address: QueryStringService.getValue('filter[Host.address]', ''),
                     satellite_id: []
                 }
             };
@@ -39,7 +39,6 @@ angular.module('openITCOCKPIT')
 
         $scope.init = true;
         $scope.showFilter = false;
-
 
 
         $scope.load = function(){

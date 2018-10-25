@@ -49,4 +49,4 @@ Router::parseExtensions();
 //Router::setExtensions(['json', 'xml', 'pdf']);
 
 CakePlugin::routes();
-require CAKE.'Config'.DS.'routes.php';
+require CAKE . 'Config' . DS . 'routes.php';

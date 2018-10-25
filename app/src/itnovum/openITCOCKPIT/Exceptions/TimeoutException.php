@@ -27,7 +27,6 @@
 namespace itnovum\openITCOCKPIT\Exceptions;
 
 
-class TimeoutException extends \Exception
-{
+class TimeoutException extends \Exception {
 
 }

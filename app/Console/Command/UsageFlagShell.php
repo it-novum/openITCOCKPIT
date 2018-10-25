@@ -111,7 +111,7 @@ class UsageFlagShell extends AppShell {
         $this->getModuleHostAndServices($this->modules);
 
         $params = $this->params;
-        if(array_key_exists('fixAssigned', $params)){
+        if (array_key_exists('fixAssigned', $params)) {
             //fix the falsely assigned usage flags
             $this->fixAssignedUsageFlags();
         }
@@ -246,7 +246,7 @@ class UsageFlagShell extends AppShell {
                     $hosts = $currentModel->getHosts();
                     $services = $currentModel->getServices();
                     $this->moduleElements[$module] = [
-                        'Host' => $hosts,
+                        'Host'    => $hosts,
                         'Service' => $services
                     ];
                     $this->out('<success>done!</success>');
@@ -260,8 +260,8 @@ class UsageFlagShell extends AppShell {
         }
     }
 
-    protected function fixAssignedUsageFlags(){
-        if(empty($this->moduleElements)){
+    protected function fixAssignedUsageFlags() {
+        if (empty($this->moduleElements)) {
             $this->error('Got no IDs from modules');
             return;
         }
@@ -270,7 +270,7 @@ class UsageFlagShell extends AppShell {
         $allUsedServiceIds = $this->getAllUsedServiceIds();
 
         $allIds = [
-            'Host' => $allUsedHostIds,
+            'Host'    => $allUsedHostIds,
             'Service' => $allUsedServiceIds
         ];
 
@@ -279,15 +279,15 @@ class UsageFlagShell extends AppShell {
         $this->resetUsageFlag($IdsToReset);
     }
 
-    protected function resetUsageFlag($data = []){
-        try{
+    protected function resetUsageFlag($data = []) {
+        try {
 
-            foreach($data as $modelName => $elementData){
-                $this->out('<info>Reset usage flags for '.$modelName.'</info>');
+            foreach ($data as $modelName => $elementData) {
+                $this->out('<info>Reset usage flags for ' . $modelName . '</info>');
 
                 $datasource = $this->{$modelName}->getDatasource();
                 $datasource->begin();
-                foreach($elementData as $id => $element){
+                foreach ($elementData as $id => $element) {
                     $this->{$modelName}->id = $id;
 
                     if ($this->{$modelName}->exists($id)) {
@@ -308,10 +308,8 @@ class UsageFlagShell extends AppShell {
             }
 
 
-
-
-        }catch(Exception $e){
-            $this->out('<error>'.$e->getMessage().'</error>');
+        } catch (Exception $e) {
+            $this->out('<error>' . $e->getMessage() . '</error>');
             return;
         }
     }
@@ -323,11 +321,11 @@ class UsageFlagShell extends AppShell {
     protected function getAllUsedHostIds() {
         $this->out('<info>Retrieving all Host IDs</info>');
         $hosts = $this->Host->find('all', [
-            'recursive' => -1,
+            'recursive'  => -1,
             'conditions' => [
                 'Host.usage_flag >' => 0
             ],
-            'fields' => [
+            'fields'     => [
                 'Host.id',
                 'Host.usage_flag'
             ]
@@ -343,11 +341,11 @@ class UsageFlagShell extends AppShell {
     protected function getAllUsedServiceIds() {
         $this->out('<info>Retrieving all Service IDs</info>');
         $services = $this->Service->find('all', [
-            'recursive' => -1,
+            'recursive'  => -1,
             'conditions' => [
                 'Service.usage_flag >' => 0
             ],
-            'fields' => [
+            'fields'     => [
                 'Service.id',
                 'Service.usage_flag'
             ]
@@ -376,19 +374,19 @@ class UsageFlagShell extends AppShell {
              */
 
             $diff = [];
-            foreach ($allUsedIds as $currentModelName => $data){
-                foreach ($data as $elementData){
-                    foreach ($usedModuleIds as $moduleName => $moduleData){
+            foreach ($allUsedIds as $currentModelName => $data) {
+                foreach ($data as $elementData) {
+                    foreach ($usedModuleIds as $moduleName => $moduleData) {
                         $currentModelConstantValue = constant(strtoupper($moduleName) . '_MODULE');
                         $idIsInModule = in_array($elementData['id'], $moduleData[$currentModelName]);
 
                         //compare if the current element is in use by a module AND also compare Bitwise - eg. if the
                         //element has a usage flag of 3 but is just in use by one module
-                        if(!$idIsInModule && ((int)$currentModelConstantValue) & (int)$elementData['usage_flag']){
+                        if (!$idIsInModule && ((int)$currentModelConstantValue) & (int)$elementData['usage_flag']) {
                             //element is not in use by the current module
                             $diff[$moduleName][$currentModelName][$elementData['id']] = [
-                                'id' => $elementData['id'],
-                                'new_flag' => null,
+                                'id'           => $elementData['id'],
+                                'new_flag'     => null,
                                 'current_flag' => $elementData['usage_flag']
                             ];
                         }
@@ -397,27 +395,27 @@ class UsageFlagShell extends AppShell {
             }
 
             $mapping = [];
-            foreach ($diff as $moduleName => $data){
-                foreach ($data as $modelName => $elementData){
+            foreach ($diff as $moduleName => $data) {
+                foreach ($data as $modelName => $elementData) {
                     $currentModelConstantValue = constant(strtoupper($moduleName) . '_MODULE');
                     foreach ($elementData as $Id) {
-                        if(isset($mapping[$modelName][$Id['id']])){
+                        if (isset($mapping[$modelName][$Id['id']])) {
                             //sum
                             $mapping[$modelName][$Id['id']] = $mapping[$modelName][$Id['id']] + $currentModelConstantValue;
-                        }else{
+                        } else {
                             $mapping[$modelName][$Id['id']] = $currentModelConstantValue;
                         }
                     }
                 }
             }
 
-            $return  = [];
-            foreach ($diff as $data){
-                foreach ($data as $modelName => $elementData){
-                    foreach ($elementData as $elementKey => $elementProperties){
-                        if(!isset($return[$modelName][$elementKey])){
-                            if(!empty($mapping[$modelName][$elementKey])){
-                                $elementProperties['new_flag'] = ( $elementProperties['current_flag'] - $mapping[$modelName][$elementKey]);
+            $return = [];
+            foreach ($diff as $data) {
+                foreach ($data as $modelName => $elementData) {
+                    foreach ($elementData as $elementKey => $elementProperties) {
+                        if (!isset($return[$modelName][$elementKey])) {
+                            if (!empty($mapping[$modelName][$elementKey])) {
+                                $elementProperties['new_flag'] = ($elementProperties['current_flag'] - $mapping[$modelName][$elementKey]);
                             }
                             $return[$modelName][$elementKey] = $elementProperties;
                         }

@@ -23,8 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class GraphgenTmpl extends AppModel
-{
+class GraphgenTmpl extends AppModel {
     public $hasMany = ['GraphgenTmplConf'];
 
     public $hasAndBelongsToMany = [
@@ -36,8 +35,7 @@ class GraphgenTmpl extends AppModel
         ],
     ];
 
-    public function loadGraphConfiguration($id = 0)
-    {
+    public function loadGraphConfiguration($id = 0) {
         if (!is_numeric($id) || $id < 1) {
             return [];
         }
@@ -90,8 +88,7 @@ class GraphgenTmpl extends AppModel
      *
      * @return array
      */
-    public function addHostsAndServices(array $templates)
-    {
+    public function addHostsAndServices(array $templates) {
         foreach ($templates as $i => $template) {
             // Iterate and collect all hosts for one graph configuration.
             $host_and_services = [];

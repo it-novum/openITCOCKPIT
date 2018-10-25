@@ -28,16 +28,13 @@ namespace itnovum\openITCOCKPIT\Core;
 
 use itnovum\openITCOCKPIT\Core\ValueObjects\CustomVariable;
 
-class CustomVariableTest extends \CakeTestCase
-{
-    public function testInstance()
-    {
+class CustomVariableTest extends \CakeTestCase {
+    public function testInstance() {
         $CustomVariable = new CustomVariable('key', 'value');
         $this->assertInstanceOf('\itnovum\openITCOCKPIT\Core\ValueObjects\CustomVariable', $CustomVariable);
     }
 
-    public function testGetValuesBack()
-    {
+    public function testGetValuesBack() {
         $CustomVariable = new CustomVariable('key', 'value', 10, 2048);
         $this->assertEquals('key', $CustomVariable->getName());
         $this->assertEquals('value', $CustomVariable->getValue());
@@ -45,8 +42,7 @@ class CustomVariableTest extends \CakeTestCase
         $this->assertEquals(2048, $CustomVariable->getObjecttypeId());
     }
 
-    public function testGetCustomVariableAsArrayWithId()
-    {
+    public function testGetCustomVariableAsArrayWithId() {
         $CustomVariable = new CustomVariable('key', 'value', 10);
         $assert = [
             'name'  => 'key',
@@ -57,8 +53,7 @@ class CustomVariableTest extends \CakeTestCase
         $this->assertEquals($assert, $CustomVariable->asArray());
     }
 
-    public function testGetCustomVariableAsArrayWithObjecttypeId()
-    {
+    public function testGetCustomVariableAsArrayWithObjecttypeId() {
         $CustomVariable = new CustomVariable('key', 'value', 0, 2048);
         $assert = [
             'name'          => 'key',
@@ -69,8 +64,7 @@ class CustomVariableTest extends \CakeTestCase
         $this->assertEquals($assert, $CustomVariable->asArray());
     }
 
-    public function testGetCustomVariableAsArrayWithIdAndObjecttypeId()
-    {
+    public function testGetCustomVariableAsArrayWithIdAndObjecttypeId() {
         $CustomVariable = new CustomVariable('key', 'value', 10, 2048);
         $assert = [
             'name'          => 'key',

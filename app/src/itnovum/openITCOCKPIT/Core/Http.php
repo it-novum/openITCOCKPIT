@@ -25,11 +25,9 @@
 namespace itnovum\openITCOCKPIT\Core;
 
 
-class Http
-{
+class Http {
 
-    public function __construct($url = '', $settings = [], $proxy = [])
-    {
+    public function __construct($url = '', $settings = [], $proxy = []) {
         $_curlDefaults = [
             'CURLOPT_SSL_VERIFYPEER' => true,
             'CURLOPT_SSL_VERIFYHOST' => 2,
@@ -65,8 +63,7 @@ class Http
         }
     }
 
-    public function sendRequest()
-    {
+    public function sendRequest() {
         $this->init();
         $this->error = false;
         $this->lastError = false;
@@ -78,8 +75,7 @@ class Http
         $this->close();
     }
 
-    public function init()
-    {
+    public function init() {
         $this->ch = curl_init();
         curl_setopt($this->ch, CURLOPT_URL, $this->url);
 
@@ -97,13 +93,11 @@ class Http
         }
     }
 
-    public function close()
-    {
+    public function close() {
         curl_close($this->ch);
     }
 
-    public function setLastError()
-    {
+    public function setLastError() {
         if (!is_resource($this->ch)) {
             return false;
         }
@@ -124,8 +118,7 @@ class Http
     /**
      * @return array|bool
      */
-    public function getLastError()
-    {
+    public function getLastError() {
         return $this->lastError;
     }
 }

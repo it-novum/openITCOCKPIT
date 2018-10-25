@@ -24,15 +24,15 @@
 
 App.Controllers.CommandsHostchecksController = Frontend.AppController.extend({
 
-	components: ['Masschange'],
+    components: ['Masschange'],
 
-	_initialize: function() {
-		
-		this.Masschange.setup({
-			'controller': 'commands',
-			'checkboxattr': 'commandname',
-			'useDeleteMessage': 'false'
-		});
-	}
+    _initialize: function(){
+
+        this.Masschange.setup({
+            'controller': 'commands',
+            'checkboxattr': 'commandname',
+            'useDeleteMessage': 'false'
+        });
+    }
 
 });

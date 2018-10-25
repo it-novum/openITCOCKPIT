@@ -48,36 +48,36 @@ class HostNotificationConditions extends ListSettingsConditions {
     /**
      * @param string $hostUuid
      */
-    public function setHostUuid($hostUuid){
+    public function setHostUuid($hostUuid) {
         $this->hostUuid = $hostUuid;
     }
 
     /**
      * @return string
      */
-    public function getHostUuid(){
+    public function getHostUuid() {
         return $this->hostUuid;
     }
 
     /**
      * @param bool $value
      */
-    public function setUseLimit($value){
+    public function setUseLimit($value) {
         $this->useLimit = (bool)$value;
     }
 
     /**
      * @return bool
      */
-    public function getUseLimit(){
+    public function getUseLimit() {
         return $this->useLimit;
     }
 
     /**
      * @param HostStates $HostStates
      */
-    public function setStates(HostStates $HostStates){
-        if(sizeof($HostStates->asIntegerArray()) == 4){
+    public function setStates(HostStates $HostStates) {
+        if (sizeof($HostStates->asIntegerArray()) == 4) {
             $this->states = [];
             return;
         }

@@ -83,18 +83,18 @@ class StatisticsController extends AppController {
         }
 
 
-        if(!isset($this->request->data['statistics']['decision'])){
+        if (!isset($this->request->data['statistics']['decision'])) {
             throw new RuntimeException('Wrong POST request');
         }
 
 
         $record['Systemsetting']['value'] = (int)$this->request->data['statistics']['decision'];
 
-        if(isset($this->request->data['statistics']['cookie']) && $record['Systemsetting']['value'] === 2){
-            $this->Cookie->write('askAgainForHelp', 'Remind me later', false, (3600*16));
+        if (isset($this->request->data['statistics']['cookie']) && $record['Systemsetting']['value'] === 2) {
+            $this->Cookie->write('askAgainForHelp', 'Remind me later', false, (3600 * 16));
         }
 
-        if($this->Systemsetting->save($record)) {
+        if ($this->Systemsetting->save($record)) {
             $this->set('success', true);
             $this->set('message', __('Record successfully saved'));
             $this->set('_serialize', ['success', 'message']);

@@ -25,8 +25,7 @@
 namespace itnovum\openITCOCKPIT\Core;
 
 
-class UserDefinedMacroReplacer
-{
+class UserDefinedMacroReplacer {
 
     /**
      * @var array
@@ -44,8 +43,7 @@ class UserDefinedMacroReplacer
      * @param array $macros result of CakePHPs find()
      */
 
-    public function __construct($macros)
-    {
+    public function __construct($macros) {
         $this->macros = $macros;
         $this->buildMapping();
     }
@@ -57,13 +55,11 @@ class UserDefinedMacroReplacer
      *
      * @return string
      */
-    public function replaceMacros($msg)
-    {
+    public function replaceMacros($msg) {
         return str_replace(array_keys($this->mapping), array_values($this->mapping), $msg);
     }
 
-    private function buildMapping()
-    {
+    private function buildMapping() {
         $this->mapping = [];
         foreach ($this->macros as $macro) {
             $this->mapping[$macro['Macro']['name']] = $macro['Macro']['value'];

@@ -29,5 +29,4 @@ class Test extends CrateModuleAppModel {
     public $tablePrefix = 'statusengine_';
 
 
-
 }

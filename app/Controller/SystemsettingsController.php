@@ -23,14 +23,12 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class SystemsettingsController extends AppController
-{
+class SystemsettingsController extends AppController {
     public $layout = 'Admin.default';
     //public $components = ['Bbcode'];
     //public $helpers = ['Bbcode'];
 
-    public function index()
-    {
+    public function index() {
         $all_systemsettings = $this->Systemsetting->findNice();
         if ($this->request->is('post') || $this->request->is('put')) {
             if ($this->Systemsetting->saveAll($this->request->data)) {

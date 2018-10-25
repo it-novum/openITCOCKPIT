@@ -1,7 +1,6 @@
 <?php
 
-class AuthActions
-{
+class AuthActions {
 
     /**
      * Holds the rights config.
@@ -21,29 +20,27 @@ class AuthActions
      *
      * @param array $rightsConfig The controller-actions/rights configuration
      */
-    public function __construct(array $rightsConfig)
-    {
+    public function __construct(array $rightsConfig) {
         $this->_rightsConfig = $rightsConfig;
     }
 
     /**
      * Checks whether the user has access to certain controller action
      *
-     * @param array  $user
+     * @param array $user
      * @param string $controller
      * @param string $action
      *
      * @return bool
      */
-    public function isAuthorized(array $user, $plugin, $controller, $action)
-    {
+    public function isAuthorized(array $user, $plugin, $controller, $action) {
         $isAuthorized = false;
         if (isset($user['role']) && !empty($controller) && !empty($action)) {
             $controller = Inflector::underscore($controller);
 
             $key = $controller;
             if (!empty($plugin)) {
-                $key = $plugin.'.'.$key;
+                $key = $plugin . '.' . $key;
             }
 
             if (isset($this->_rightsConfig[$key]['*']) && $this->_rightsConfig[$key]['*'] == '*') {
@@ -68,14 +65,13 @@ class AuthActions
     /**
      * Checks whether the user is allowed to access a specific URL
      *
-     * @param array        $user
+     * @param array $user
      * @param array|string $url
      *
      * @return void
      * @author Robert Scherer
      */
-    public function urlAllowed(array $user, $url)
-    {
+    public function urlAllowed(array $user, $url) {
         if (empty($url)) {
             return false;
         }

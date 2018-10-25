@@ -25,8 +25,7 @@
 
 App::uses('Helper', 'View');
 
-class AppHelper extends Helper
-{
+class AppHelper extends Helper {
 
     /**
      * If we're in production mode, append the version to all assetes.
@@ -35,18 +34,17 @@ class AppHelper extends Helper
      *
      * @return string
      */
-    public function assetTimestamp($path)
-    {
+    public function assetTimestamp($path) {
         Configure::load('version');
         if (Configure::read('debug') === 0) {
-            $path .= '?v'.Configure::read('version');
+            $path .= '?v' . Configure::read('version');
 
             return $path;
         }
         // special case for module assets, which are routed through the CMS plugin
         // but Helper doesn't detect the absolute path to it correctly.
         else if (strpos($path, 'module_assets') !== false) {
-            $path .= '?'.time();
+            $path .= '?' . time();
 
             return $path;
         } else {
@@ -54,8 +52,7 @@ class AppHelper extends Helper
         }
     }
 
-    public function change($change)
-    {
+    public function change($change) {
         if ($change === false) {
             return __('false');
         }

@@ -23,7 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-use \itnovum\openITCOCKPIT\Core\Interfaces\CronjobInterface;
+use itnovum\openITCOCKPIT\Core\Interfaces\CronjobInterface;
 
 class RecurringDowntimesTask extends AppShell implements CronjobInterface {
     public $uses = [
@@ -87,11 +87,11 @@ class RecurringDowntimesTask extends AppShell implements CronjobInterface {
                             switch ($downtime['Systemdowntimes']['objecttype_id']) {
                                 case OBJECT_HOST:
                                     $host = $this->Host->find('first', [
-                                        'recursive' => -1,
+                                        'recursive'  => -1,
                                         'conditions' => [
                                             'Host.id' => $downtime['Systemdowntimes']['object_id']
                                         ],
-                                        'fields' => [
+                                        'fields'     => [
                                             'Host.id',
                                             'Host.uuid'
                                         ]
@@ -102,22 +102,22 @@ class RecurringDowntimesTask extends AppShell implements CronjobInterface {
                                         break;
                                     }
                                     $this->Externalcommand->setHostDowntime([
-                                        'hostUuid' => $host['Host']['uuid'],
+                                        'hostUuid'     => $host['Host']['uuid'],
                                         'downtimetype' => $downtime['Systemdowntimes']['downtimetype_id'],
-                                        'comment' => 'AUTO[' . $downtime['Systemdowntimes']['id'] . ']: ' . $downtime['Systemdowntimes']['comment'],
-                                        'author' => $downtime['Systemdowntimes']['author'],
-                                        'start' => strtotime($downtime['Systemdowntimes']['from_time']),
-                                        'end' => strtotime($downtime['Systemdowntimes']['from_time']) + intval($downtime['Systemdowntimes']['duration']) * 60,
+                                        'comment'      => 'AUTO[' . $downtime['Systemdowntimes']['id'] . ']: ' . $downtime['Systemdowntimes']['comment'],
+                                        'author'       => $downtime['Systemdowntimes']['author'],
+                                        'start'        => strtotime($downtime['Systemdowntimes']['from_time']),
+                                        'end'          => strtotime($downtime['Systemdowntimes']['from_time']) + intval($downtime['Systemdowntimes']['duration']) * 60,
                                     ]);
                                     break;
 
                                 case OBJECT_HOSTGROUP:
                                     $hostgroup = $this->Hostgroup->find('first', [
-                                        'recursive' => -1,
+                                        'recursive'  => -1,
                                         'conditions' => [
                                             'Hostgroup.id' => $downtime['Systemdowntimes']['object_id']
                                         ],
-                                        'fields' => [
+                                        'fields'     => [
                                             'Hostgroup.id',
                                             'Hostgroup.uuid'
                                         ]
@@ -129,18 +129,18 @@ class RecurringDowntimesTask extends AppShell implements CronjobInterface {
                                     }
                                     $this->Externalcommand->setHostgroupDowntime([
                                         'hostgroupUuid' => $hostgroup['Hostgroup']['uuid'],
-                                        'downtimetype' => $downtime['Systemdowntimes']['downtimetype_id'],
-                                        'comment' => 'AUTO[' . $downtime['Systemdowntimes']['id'] . ']: ' . $downtime['Systemdowntimes']['comment'],
-                                        'author' => $downtime['Systemdowntimes']['author'],
-                                        'start' => strtotime($downtime['Systemdowntimes']['from_time']),
-                                        'end' => strtotime($downtime['Systemdowntimes']['from_time']) + intval($downtime['Systemdowntimes']['duration']) * 60,
+                                        'downtimetype'  => $downtime['Systemdowntimes']['downtimetype_id'],
+                                        'comment'       => 'AUTO[' . $downtime['Systemdowntimes']['id'] . ']: ' . $downtime['Systemdowntimes']['comment'],
+                                        'author'        => $downtime['Systemdowntimes']['author'],
+                                        'start'         => strtotime($downtime['Systemdowntimes']['from_time']),
+                                        'end'           => strtotime($downtime['Systemdowntimes']['from_time']) + intval($downtime['Systemdowntimes']['duration']) * 60,
                                     ]);
                                     break;
 
                                 case OBJECT_SERVICE:
                                     $service = $this->Service->find('first', [
-                                        'recursive' => -1,
-                                        'contain' => [
+                                        'recursive'  => -1,
+                                        'contain'    => [
                                             'Host' => [
                                                 'fields' => [
                                                     'Host.id',
@@ -151,7 +151,7 @@ class RecurringDowntimesTask extends AppShell implements CronjobInterface {
                                         'conditions' => [
                                             'Service.id' => $downtime['Systemdowntimes']['object_id']
                                         ],
-                                        'fields' => [
+                                        'fields'     => [
                                             'Service.id',
                                             'Service.uuid'
                                         ]
@@ -162,12 +162,12 @@ class RecurringDowntimesTask extends AppShell implements CronjobInterface {
                                         break;
                                     }
                                     $this->Externalcommand->setServiceDowntime([
-                                        'hostUuid' => $service['Host']['uuid'],
+                                        'hostUuid'    => $service['Host']['uuid'],
                                         'serviceUuid' => $service['Service']['uuid'],
-                                        'start' => strtotime($downtime['Systemdowntimes']['from_time']),
-                                        'end' => strtotime($downtime['Systemdowntimes']['from_time']) + intval($downtime['Systemdowntimes']['duration']) * 60,
-                                        'author' => $downtime['Systemdowntimes']['author'],
-                                        'comment' => 'AUTO[' . $downtime['Systemdowntimes']['id'] . ']: ' . $downtime['Systemdowntimes']['comment'],
+                                        'start'       => strtotime($downtime['Systemdowntimes']['from_time']),
+                                        'end'         => strtotime($downtime['Systemdowntimes']['from_time']) + intval($downtime['Systemdowntimes']['duration']) * 60,
+                                        'author'      => $downtime['Systemdowntimes']['author'],
+                                        'comment'     => 'AUTO[' . $downtime['Systemdowntimes']['id'] . ']: ' . $downtime['Systemdowntimes']['comment'],
                                     ]);
                                     break;
 
@@ -178,8 +178,8 @@ class RecurringDowntimesTask extends AppShell implements CronjobInterface {
                                         break;
                                     }
                                     $hostUuids = $this->Host->find('list', [
-                                        'recursive' => -1,
-                                        'joins' => [
+                                        'recursive'  => -1,
+                                        'joins'      => [
                                             [
                                                 'table'      => 'hosts_to_containers',
                                                 'type'       => 'INNER',
@@ -187,22 +187,22 @@ class RecurringDowntimesTask extends AppShell implements CronjobInterface {
                                                 'conditions' => 'HostToContainers.host_id = Host.id',
                                             ]
                                         ],
-                                        'fields' => [
+                                        'fields'     => [
                                             'Host.uuid'
                                         ],
                                         'conditions' => [
                                             'HostToContainers.container_id' => $downtime['Systemdowntimes']['object_id'],
-                                            'Host.disabled' => 0
+                                            'Host.disabled'                 => 0
                                         ]
                                     ]);
 
                                     $this->Externalcommand->setContainerDowntime([
-                                        'hostUuids' => $hostUuids,
+                                        'hostUuids'    => $hostUuids,
                                         'downtimetype' => $downtime['Systemdowntimes']['downtimetype_id'],
-                                        'comment' => 'AUTO[' . $downtime['Systemdowntimes']['id'] . ']: ' . $downtime['Systemdowntimes']['comment'],
-                                        'author' => $downtime['Systemdowntimes']['author'],
-                                        'start' => strtotime($downtime['Systemdowntimes']['from_time']),
-                                        'end' => strtotime($downtime['Systemdowntimes']['from_time']) + intval($downtime['Systemdowntimes']['duration']) * 60,
+                                        'comment'      => 'AUTO[' . $downtime['Systemdowntimes']['id'] . ']: ' . $downtime['Systemdowntimes']['comment'],
+                                        'author'       => $downtime['Systemdowntimes']['author'],
+                                        'start'        => strtotime($downtime['Systemdowntimes']['from_time']),
+                                        'end'          => strtotime($downtime['Systemdowntimes']['from_time']) + intval($downtime['Systemdowntimes']['duration']) * 60,
                                     ]);
                                     break;
                             }
@@ -222,11 +222,11 @@ class RecurringDowntimesTask extends AppShell implements CronjobInterface {
                             switch ($downtime['Systemdowntimes']['objecttype_id']) {
                                 case OBJECT_HOST:
                                     $host = $this->Host->find('first', [
-                                        'recursive' => -1,
+                                        'recursive'  => -1,
                                         'conditions' => [
                                             'Host.id' => $downtime['Systemdowntimes']['object_id']
                                         ],
-                                        'fields' => [
+                                        'fields'     => [
                                             'Host.id',
                                             'Host.uuid'
                                         ]
@@ -237,22 +237,22 @@ class RecurringDowntimesTask extends AppShell implements CronjobInterface {
                                         break;
                                     }
                                     $this->Externalcommand->setHostDowntime([
-                                        'hostUuid' => $host['Host']['uuid'],
+                                        'hostUuid'     => $host['Host']['uuid'],
                                         'downtimetype' => $downtime['Systemdowntimes']['downtimetype_id'],
-                                        'comment' => 'AUTO[' . $downtime['Systemdowntimes']['id'] . ']: ' . $downtime['Systemdowntimes']['comment'],
-                                        'author' => $downtime['Systemdowntimes']['author'],
-                                        'start' => strtotime($downtime['Systemdowntimes']['from_time']),
-                                        'end' => strtotime($downtime['Systemdowntimes']['from_time']) + intval($downtime['Systemdowntimes']['duration']) * 60,
+                                        'comment'      => 'AUTO[' . $downtime['Systemdowntimes']['id'] . ']: ' . $downtime['Systemdowntimes']['comment'],
+                                        'author'       => $downtime['Systemdowntimes']['author'],
+                                        'start'        => strtotime($downtime['Systemdowntimes']['from_time']),
+                                        'end'          => strtotime($downtime['Systemdowntimes']['from_time']) + intval($downtime['Systemdowntimes']['duration']) * 60,
                                     ]);
                                     break;
 
                                 case OBJECT_HOSTGROUP:
                                     $hostgroup = $this->Hostgroup->find('first', [
-                                        'recursive' => -1,
+                                        'recursive'  => -1,
                                         'conditions' => [
                                             'Hostgroup.id' => $downtime['Systemdowntimes']['object_id']
                                         ],
-                                        'fields' => [
+                                        'fields'     => [
                                             'Hostgroup.id',
                                             'Hostgroup.uuid'
                                         ]
@@ -264,18 +264,18 @@ class RecurringDowntimesTask extends AppShell implements CronjobInterface {
                                     }
                                     $this->Externalcommand->setHostgroupDowntime([
                                         'hostgroupUuid' => $hostgroup['Hostgroup']['uuid'],
-                                        'downtimetype' => $downtime['Systemdowntimes']['downtimetype_id'],
-                                        'comment' => 'AUTO[' . $downtime['Systemdowntimes']['id'] . ']: ' . $downtime['Systemdowntimes']['comment'],
-                                        'author' => $downtime['Systemdowntimes']['author'],
-                                        'start' => strtotime($downtime['Systemdowntimes']['from_time']),
-                                        'end' => strtotime($downtime['Systemdowntimes']['from_time']) + intval($downtime['Systemdowntimes']['duration']) * 60,
+                                        'downtimetype'  => $downtime['Systemdowntimes']['downtimetype_id'],
+                                        'comment'       => 'AUTO[' . $downtime['Systemdowntimes']['id'] . ']: ' . $downtime['Systemdowntimes']['comment'],
+                                        'author'        => $downtime['Systemdowntimes']['author'],
+                                        'start'         => strtotime($downtime['Systemdowntimes']['from_time']),
+                                        'end'           => strtotime($downtime['Systemdowntimes']['from_time']) + intval($downtime['Systemdowntimes']['duration']) * 60,
                                     ]);
                                     break;
 
                                 case OBJECT_SERVICE:
                                     $service = $this->Service->find('first', [
-                                        'recursive' => -1,
-                                        'contain' => [
+                                        'recursive'  => -1,
+                                        'contain'    => [
                                             'Host' => [
                                                 'fields' => [
                                                     'Host.id',
@@ -286,7 +286,7 @@ class RecurringDowntimesTask extends AppShell implements CronjobInterface {
                                         'conditions' => [
                                             'Service.id' => $downtime['Systemdowntimes']['object_id']
                                         ],
-                                        'fields' => [
+                                        'fields'     => [
                                             'Service.id',
                                             'Service.uuid'
                                         ]
@@ -297,12 +297,12 @@ class RecurringDowntimesTask extends AppShell implements CronjobInterface {
                                         break;
                                     }
                                     $this->Externalcommand->setServiceDowntime([
-                                        'hostUuid' => $service['Host']['uuid'],
+                                        'hostUuid'    => $service['Host']['uuid'],
                                         'serviceUuid' => $service['Service']['uuid'],
-                                        'start' => strtotime($downtime['Systemdowntimes']['from_time']),
-                                        'end' => strtotime($downtime['Systemdowntimes']['from_time']) + intval($downtime['Systemdowntimes']['duration']) * 60,
-                                        'author' => $downtime['Systemdowntimes']['author'],
-                                        'comment' => 'AUTO[' . $downtime['Systemdowntimes']['id'] . ']: ' . $downtime['Systemdowntimes']['comment'],
+                                        'start'       => strtotime($downtime['Systemdowntimes']['from_time']),
+                                        'end'         => strtotime($downtime['Systemdowntimes']['from_time']) + intval($downtime['Systemdowntimes']['duration']) * 60,
+                                        'author'      => $downtime['Systemdowntimes']['author'],
+                                        'comment'     => 'AUTO[' . $downtime['Systemdowntimes']['id'] . ']: ' . $downtime['Systemdowntimes']['comment'],
                                     ]);
                                     break;
                                 case OBJECT_NODE: //Type 4 is Container, object Container does not exists
@@ -311,8 +311,8 @@ class RecurringDowntimesTask extends AppShell implements CronjobInterface {
                                         break;
                                     }
                                     $hostUuids = $this->Host->find('list', [
-                                        'recursive' => -1,
-                                        'joins' => [
+                                        'recursive'  => -1,
+                                        'joins'      => [
                                             [
                                                 'table'      => 'hosts_to_containers',
                                                 'type'       => 'INNER',
@@ -320,21 +320,21 @@ class RecurringDowntimesTask extends AppShell implements CronjobInterface {
                                                 'conditions' => 'HostToContainers.host_id = Host.id',
                                             ]
                                         ],
-                                        'fields' => [
+                                        'fields'     => [
                                             'Host.uuid'
                                         ],
                                         'conditions' => [
                                             'HostToContainers.container_id' => $downtime['Systemdowntimes']['object_id'],
-                                            'Host.disabled' => 0
+                                            'Host.disabled'                 => 0
                                         ]
                                     ]);
                                     $this->Externalcommand->setContainerDowntime([
-                                        'hostUuids' => $hostUuids,
+                                        'hostUuids'    => $hostUuids,
                                         'downtimetype' => $downtime['Systemdowntimes']['downtimetype_id'],
-                                        'comment' => 'AUTO[' . $downtime['Systemdowntimes']['id'] . ']: ' . $downtime['Systemdowntimes']['comment'],
-                                        'author' => $downtime['Systemdowntimes']['author'],
-                                        'start' => strtotime($downtime['Systemdowntimes']['from_time']),
-                                        'end' => strtotime($downtime['Systemdowntimes']['from_time']) + intval($downtime['Systemdowntimes']['duration']) * 60,
+                                        'comment'      => 'AUTO[' . $downtime['Systemdowntimes']['id'] . ']: ' . $downtime['Systemdowntimes']['comment'],
+                                        'author'       => $downtime['Systemdowntimes']['author'],
+                                        'start'        => strtotime($downtime['Systemdowntimes']['from_time']),
+                                        'end'          => strtotime($downtime['Systemdowntimes']['from_time']) + intval($downtime['Systemdowntimes']['duration']) * 60,
                                     ]);
                                     break;
                             }
@@ -355,11 +355,11 @@ class RecurringDowntimesTask extends AppShell implements CronjobInterface {
                             switch ($downtime['Systemdowntimes']['objecttype_id']) {
                                 case OBJECT_HOST:
                                     $host = $this->Host->find('first', [
-                                        'recursive' => -1,
+                                        'recursive'  => -1,
                                         'conditions' => [
                                             'Host.id' => $downtime['Systemdowntimes']['object_id']
                                         ],
-                                        'fields' => [
+                                        'fields'     => [
                                             'Host.id',
                                             'Host.uuid'
                                         ]
@@ -370,22 +370,22 @@ class RecurringDowntimesTask extends AppShell implements CronjobInterface {
                                         break;
                                     }
                                     $this->Externalcommand->setHostDowntime([
-                                        'hostUuid' => $host['Host']['uuid'],
+                                        'hostUuid'     => $host['Host']['uuid'],
                                         'downtimetype' => $downtime['Systemdowntimes']['downtimetype_id'],
-                                        'comment' => 'AUTO[' . $downtime['Systemdowntimes']['id'] . ']: ' . $downtime['Systemdowntimes']['comment'],
-                                        'author' => $downtime['Systemdowntimes']['author'],
-                                        'start' => strtotime($downtime['Systemdowntimes']['from_time']),
-                                        'end' => strtotime($downtime['Systemdowntimes']['from_time']) + intval($downtime['Systemdowntimes']['duration']) * 60,
+                                        'comment'      => 'AUTO[' . $downtime['Systemdowntimes']['id'] . ']: ' . $downtime['Systemdowntimes']['comment'],
+                                        'author'       => $downtime['Systemdowntimes']['author'],
+                                        'start'        => strtotime($downtime['Systemdowntimes']['from_time']),
+                                        'end'          => strtotime($downtime['Systemdowntimes']['from_time']) + intval($downtime['Systemdowntimes']['duration']) * 60,
                                     ]);
                                     break;
 
                                 case OBJECT_HOSTGROUP:
                                     $hostgroup = $this->Hostgroup->find('first', [
-                                        'recursive' => -1,
+                                        'recursive'  => -1,
                                         'conditions' => [
                                             'Hostgroup.id' => $downtime['Systemdowntimes']['object_id']
                                         ],
-                                        'fields' => [
+                                        'fields'     => [
                                             'Hostgroup.id',
                                             'Hostgroup.uuid'
                                         ]
@@ -397,18 +397,18 @@ class RecurringDowntimesTask extends AppShell implements CronjobInterface {
                                     }
                                     $this->Externalcommand->setHostgroupDowntime([
                                         'hostgroupUuid' => $hostgroup['Hostgroup']['uuid'],
-                                        'downtimetype' => $downtime['Systemdowntimes']['downtimetype_id'],
-                                        'comment' => 'AUTO[' . $downtime['Systemdowntimes']['id'] . ']: ' . $downtime['Systemdowntimes']['comment'],
-                                        'author' => $downtime['Systemdowntimes']['author'],
-                                        'start' => strtotime($downtime['Systemdowntimes']['from_time']),
-                                        'end' => strtotime($downtime['Systemdowntimes']['from_time']) + intval($downtime['Systemdowntimes']['duration']) * 60,
+                                        'downtimetype'  => $downtime['Systemdowntimes']['downtimetype_id'],
+                                        'comment'       => 'AUTO[' . $downtime['Systemdowntimes']['id'] . ']: ' . $downtime['Systemdowntimes']['comment'],
+                                        'author'        => $downtime['Systemdowntimes']['author'],
+                                        'start'         => strtotime($downtime['Systemdowntimes']['from_time']),
+                                        'end'           => strtotime($downtime['Systemdowntimes']['from_time']) + intval($downtime['Systemdowntimes']['duration']) * 60,
                                     ]);
                                     break;
 
                                 case OBJECT_SERVICE:
                                     $service = $this->Service->find('first', [
-                                        'recursive' => -1,
-                                        'contain' => [
+                                        'recursive'  => -1,
+                                        'contain'    => [
                                             'Host' => [
                                                 'fields' => [
                                                     'Host.id',
@@ -419,7 +419,7 @@ class RecurringDowntimesTask extends AppShell implements CronjobInterface {
                                         'conditions' => [
                                             'Service.id' => $downtime['Systemdowntimes']['object_id']
                                         ],
-                                        'fields' => [
+                                        'fields'     => [
                                             'Service.id',
                                             'Service.uuid'
                                         ]
@@ -430,12 +430,12 @@ class RecurringDowntimesTask extends AppShell implements CronjobInterface {
                                         break;
                                     }
                                     $this->Externalcommand->setServiceDowntime([
-                                        'hostUuid' => $service['Host']['uuid'],
+                                        'hostUuid'    => $service['Host']['uuid'],
                                         'serviceUuid' => $service['Service']['uuid'],
-                                        'start' => strtotime($downtime['Systemdowntimes']['from_time']),
-                                        'end' => strtotime($downtime['Systemdowntimes']['from_time']) + intval($downtime['Systemdowntimes']['duration']) * 60,
-                                        'author' => $downtime['Systemdowntimes']['author'],
-                                        'comment' => 'AUTO[' . $downtime['Systemdowntimes']['id'] . ']: ' . $downtime['Systemdowntimes']['comment'],
+                                        'start'       => strtotime($downtime['Systemdowntimes']['from_time']),
+                                        'end'         => strtotime($downtime['Systemdowntimes']['from_time']) + intval($downtime['Systemdowntimes']['duration']) * 60,
+                                        'author'      => $downtime['Systemdowntimes']['author'],
+                                        'comment'     => 'AUTO[' . $downtime['Systemdowntimes']['id'] . ']: ' . $downtime['Systemdowntimes']['comment'],
                                     ]);
                                     break;
 
@@ -445,8 +445,8 @@ class RecurringDowntimesTask extends AppShell implements CronjobInterface {
                                         break;
                                     }
                                     $hostUuids = $this->Host->find('list', [
-                                        'recursive' => -1,
-                                        'joins' => [
+                                        'recursive'  => -1,
+                                        'joins'      => [
                                             [
                                                 'table'      => 'hosts_to_containers',
                                                 'type'       => 'INNER',
@@ -454,22 +454,22 @@ class RecurringDowntimesTask extends AppShell implements CronjobInterface {
                                                 'conditions' => 'HostToContainers.host_id = Host.id',
                                             ]
                                         ],
-                                        'fields' => [
+                                        'fields'     => [
                                             'Host.uuid'
                                         ],
                                         'conditions' => [
                                             'HostToContainers.container_id' => $downtime['Systemdowntimes']['object_id'],
-                                            'Host.disabled' => 0
+                                            'Host.disabled'                 => 0
                                         ]
                                     ]);
 
                                     $this->Externalcommand->setContainerDowntime([
-                                        'hostUuids' => $hostUuids,
+                                        'hostUuids'    => $hostUuids,
                                         'downtimetype' => $downtime['Systemdowntimes']['downtimetype_id'],
-                                        'comment' => 'AUTO[' . $downtime['Systemdowntimes']['id'] . ']: ' . $downtime['Systemdowntimes']['comment'],
-                                        'author' => $downtime['Systemdowntimes']['author'],
-                                        'start' => strtotime($downtime['Systemdowntimes']['from_time']),
-                                        'end' => strtotime($downtime['Systemdowntimes']['from_time']) + intval($downtime['Systemdowntimes']['duration']) * 60,
+                                        'comment'      => 'AUTO[' . $downtime['Systemdowntimes']['id'] . ']: ' . $downtime['Systemdowntimes']['comment'],
+                                        'author'       => $downtime['Systemdowntimes']['author'],
+                                        'start'        => strtotime($downtime['Systemdowntimes']['from_time']),
+                                        'end'          => strtotime($downtime['Systemdowntimes']['from_time']) + intval($downtime['Systemdowntimes']['duration']) * 60,
                                     ]);
                                     break;
                             }

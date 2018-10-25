@@ -39,7 +39,7 @@ class NotificationHost extends Notification {
      * @param $data
      * @param null $UserTime
      */
-    public function __construct($data, $UserTime = null){
+    public function __construct($data, $UserTime = null) {
         parent::__construct($data, 'NotificationHost', $UserTime);
         if (isset($data['NotificationHost']['notification_type'])) {
             $this->is_host_notification = (int)$data['NotificationHost']['notification_type'] === 0;
@@ -49,7 +49,7 @@ class NotificationHost extends Notification {
     /**
      * @return boolean
      */
-    public function isHostNotification(){
+    public function isHostNotification() {
         return $this->is_host_notification;
     }
 

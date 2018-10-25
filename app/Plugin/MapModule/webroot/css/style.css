@@ -41,9 +41,9 @@
     text-overflow: ellipsis;
 }
 
-.popoverBreakWord{
+.popoverBreakWord {
     table-layout: fixed;
-    word-wrap:break-word;
+    word-wrap: break-word;
 }
 
 .popoverListTable > tbody > tr > td {
@@ -182,7 +182,7 @@
     color: grey;
 }
 
-.tooltipProgressBar{
+.tooltipProgressBar {
     height: 5px;
     width: 100%;
     background-color: #646464;

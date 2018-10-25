@@ -45,7 +45,6 @@ class PushNotificationsShell extends AppShell {
     }
 
 
-
     private function fireUpWebSocketServer() {
         $MessageInterface = new PushNotificationsMessageInterface($this);
 

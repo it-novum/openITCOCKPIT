@@ -60,7 +60,7 @@ class StatehistoryHost extends NagiosModuleAppModel {
             $query['limit'] = $StatehistoryHostConditions->getLimit();
         }
 
-        if(!empty($StatehistoryHostConditions->getStates() && sizeof($StatehistoryHostConditions->getStates()) < 3)){
+        if (!empty($StatehistoryHostConditions->getStates() && sizeof($StatehistoryHostConditions->getStates()) < 3)) {
             $query['conditions']['StatehistoryHost.state'] = $StatehistoryHostConditions->getStates();
         }
 
@@ -68,10 +68,10 @@ class StatehistoryHost extends NagiosModuleAppModel {
             $query['conditions']['StatehistoryHost.state_type'] = $StatehistoryHostConditions->getStateTypes();
         }
 
-        if($StatehistoryHostConditions->hardStateTypeAndUpState()){
+        if ($StatehistoryHostConditions->hardStateTypeAndUpState()) {
             $query['conditions']['OR'] = [
                 'StatehistoryHost.state_type' => 1,
-                'StatehistoryHost.state' => 0
+                'StatehistoryHost.state'      => 0
             ];
         }
 

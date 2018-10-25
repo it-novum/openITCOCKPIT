@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('StatusmapsIndexController', function ($scope, $q, $http, $timeout, QueryStringService) {
+    .controller('StatusmapsIndexController', function($scope, $q, $http, $timeout, QueryStringService){
         /*** Filter Settings ***/
         $scope.filter = {
             Host: {
@@ -31,7 +31,7 @@ angular.module('openITCOCKPIT')
             'height': height
         });
 
-        $scope.load = function () {
+        $scope.load = function(){
             $scope.mutex = true;
             $scope.isEmpty = false;
             var params = {
@@ -43,32 +43,32 @@ angular.module('openITCOCKPIT')
             };
             $http.get("/statusmaps/index.json", {
                 params: params
-            }).then(function (result) {
+            }).then(function(result){
                 var nodesData = result.data.statusMap.nodes;
                 var edgesData = result.data.statusMap.edges;
                 $scope.hasBrowserRight = result.data.hasBrowserRight;
                 $scope.init = false;
                 $scope.nodesCount = nodesData.length;
-                if (nodesData.length > 0) {
+                if(nodesData.length > 0){
                     $('#statusmap-progress-icon').show();
                     $scope.loadVisMap(nodesData, edgesData);
-                } else {
+                }else{
                     $scope.isEmpty = true;
                 }
                 $scope.mutex = false;
-            }, function errorCallback(result) {
+            }, function errorCallback(result){
                 console.log('Invalid JSON');
             });
         };
 
-        $scope.resetVis = function () {
-            if (!$scope.init) {
+        $scope.resetVis = function(){
+            if(!$scope.init){
                 $('#statusmap-progress-icon .progress:first').attr('data-progress', 0);
                 $($scope.container).html('');
             }
         };
 
-        $scope.loadVisMap = function (nodesData, edgesData) {
+        $scope.loadVisMap = function(nodesData, edgesData){
             $scope.nodes.clear();
             $scope.edges.clear();
             var network = null;
@@ -264,17 +264,17 @@ angular.module('openITCOCKPIT')
                     easingFunction: 'linear'
                 }
             });
-            network.on('stabilizationProgress', function (params) {
+            network.on('stabilizationProgress', function(params){
                 var currentPercentage = Math.round(params.iterations / params.total * 100);
                 $('#statusmap-progress-icon .progress:first').attr('data-progress', currentPercentage);
             });
-            network.once('stabilizationIterationsDone', function () {
+            network.once('stabilizationIterationsDone', function(){
                 $('#statusmap-progress-icon').hide();
                 network.setOptions({physics: false});
             });
 
-            network.on('click', function (properties) {
-                if (properties.nodes.length === 0) {
+            network.on('click', function(properties){
+                if(properties.nodes.length === 0){
                     network.fit({
                         locked: false,
                         animation: {
@@ -286,7 +286,7 @@ angular.module('openITCOCKPIT')
                 }
 
                 var nodeId = properties.nodes[0];
-                if (nodeId === 0) {
+                if(nodeId === 0){
                     return false;
                 }
                 var node = data.nodes.get(nodeId);
@@ -302,10 +302,10 @@ angular.module('openITCOCKPIT')
                             'angular': true
                         }
                     })
-                ]).then(function (results) {
+                ]).then(function(results){
                     var bigBoxIcon = $scope.getIconForHoststatus(results[0].data.hoststatus.Hoststatus);
                     var title = node.title;
-                    if ($scope.hasBrowserRight) {
+                    if($scope.hasBrowserRight){
                         title = '<a href="/hosts/browser/' + node.hostId
                             + '" target="_blank" class="txt-color-white">' + node.title + '</a>';
                     }
@@ -321,27 +321,27 @@ angular.module('openITCOCKPIT')
             });
         };
 
-        $scope.$watch('filter', function () {
-            if ($scope.mutex) {
+        $scope.$watch('filter', function(){
+            if($scope.mutex){
                 return;
             }
             $scope.resetVis();
             $scope.load();
         }, true);
 
-        $scope.getIconForHoststatus = function (hoststatus) {
+        $scope.getIconForHoststatus = function(hoststatus){
             var statusIcon = 'fa-check-circle';
-            if (typeof hoststatus.current_state === 'undefined') {
+            if(typeof hoststatus.current_state === 'undefined'){
                 return 'fa-eye-slash';
             }
-            if (hoststatus.current_state > 0) {
+            if(hoststatus.current_state > 0){
                 statusIcon = 'fa-exclamation-circle';
             }
-            if (hoststatus.scheduled_downtime_depth > 0) {
+            if(hoststatus.scheduled_downtime_depth > 0){
                 statusIcon = 'fa-power-off';
-            } else if (hoststatus.scheduled_downtime_depth > 0 && hoststatus.problem_has_been_acknowledged == 1) {
+            }else if(hoststatus.scheduled_downtime_depth > 0 && hoststatus.problem_has_been_acknowledged == 1){
                 statusIcon = 'fa-user-md';
-            } else if (hoststatus.scheduled_downtime_depth > 0 && hoststatus.problem_has_been_acknowledged == 0) {
+            }else if(hoststatus.scheduled_downtime_depth > 0 && hoststatus.problem_has_been_acknowledged == 0){
                 statusIcon = 'fa-user';
             }
             return statusIcon;

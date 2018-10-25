@@ -60,7 +60,7 @@
                                     class="form-control"
                                     chosen="containers"
                                     ng-options="container.key as container.value for container in containers"
-                                    ng-model="post.Container.parent_id" >
+                                    ng-model="post.Container.parent_id">
                             </select>
                             <div ng-repeat="error in errors.Container.parent_id">
                                 <div class="help-block text-danger">{{ error }}</div>
@@ -138,7 +138,7 @@
                                     chosen="servicetemplates"
                                     callback="loadServicetemplates"
                                     ng-options="servicetemplate.key as servicetemplate.value for servicetemplate in servicetemplates"
-                                    ng-model="post.Servicegroup.Servicetemplate" >
+                                    ng-model="post.Servicegroup.Servicetemplate">
                             </select>
                         </div>
                     </div>

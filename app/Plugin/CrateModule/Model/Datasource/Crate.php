@@ -784,13 +784,13 @@ class Crate extends DboSource {
             }
         }
 
-        if($conditions === null) {
+        if ($conditions === null) {
             //Add primary key condition
             $query->bindValue($i++, $data[$Model->primaryKey], PDO::PARAM_INT);
         }
-        if(is_array($conditions)){
+        if (is_array($conditions)) {
             //Add  multiple conditions
-            foreach($conditions as $field => $value){
+            foreach ($conditions as $field => $value) {
                 switch ($this->getColumnType($field)) {
                     case 'integer':
                         $query->bindValue($i++, $value, PDO::PARAM_INT);
@@ -809,7 +809,7 @@ class Crate extends DboSource {
                 }
             }
         }
-        if(is_string($conditions)){
+        if (is_string($conditions)) {
             throw new NotImplementedException('String conditions for UPDATE are not implemented yet!');
         }
 
@@ -1357,7 +1357,7 @@ class Crate extends DboSource {
      * @param Model $Model
      * @return mixed
      */
-    public function getPartitions(Model $Model){
+    public function getPartitions(Model $Model) {
         $sql = 'SELECT * FROM information_schema.table_partitions WHERE table_name=?';
         $query = $this->_connection->prepare($sql);
         $query->bindValue(1, $Model->tablePrefix . $Model->useTable);
@@ -1375,7 +1375,7 @@ class Crate extends DboSource {
      * @return bool
      * @throws Exception
      */
-    public function dropPartition(Model $Model, $condition){
+    public function dropPartition(Model $Model, $condition) {
 
         $queryTemplate = sprintf(
             'DELETE FROM %s WHERE DAY=?',

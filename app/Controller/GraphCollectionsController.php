@@ -27,13 +27,12 @@ App::uses('UUID', 'Lib');
 
 /**
  * Class GraphCollectionsController
- * @property GraphgenTmpl     GraphgenTmpl
+ * @property GraphgenTmpl GraphgenTmpl
  * @property GraphgenTmplConf GraphgenTmplConf
- * @property GraphCollection  GraphCollection
- * @property Rrd              Rrd
+ * @property GraphCollection GraphCollection
+ * @property Rrd Rrd
  */
-class GraphCollectionsController extends AppController
-{
+class GraphCollectionsController extends AppController {
     const REDUCE_METHOD_STEPS = 1;
     const REDUCE_METHOD_AVERAGE = 2;
     const MAX_RESPONSE_GRAPH_POINTS = 1000;
@@ -42,8 +41,7 @@ class GraphCollectionsController extends AppController
     public $uses = ['GraphgenTmpl', 'GraphCollection', 'GraphgenTmplConf', 'Rrd'];
     public $helpers = ['ListFilter.ListFilter'];
 
-    public function index()
-    {
+    public function index() {
         // Static conditions
         $conditions = [
 //			'Host.disabled' => 0,
@@ -61,8 +59,7 @@ class GraphCollectionsController extends AppController
         $this->set('_serialize', ['all_collections']);
     }
 
-    public function add()
-    {
+    public function add() {
         if ($this->request->is('post') || $this->request->is('put')) {
             //Fix HABTM validation
             $this->request->data['GraphCollection']['GraphgenTmpl'] = $this->request->data('GraphgenTmpl.GraphgenTmpl');
@@ -79,8 +76,7 @@ class GraphCollectionsController extends AppController
     }
 
 
-    public function edit($id = null)
-    {
+    public function edit($id = null) {
         if (!$this->GraphCollection->exists($id)) {
             throw new NotFoundException(__('Invalid Graph Collection'));
         }
@@ -102,8 +98,7 @@ class GraphCollectionsController extends AppController
         $this->request->data = Hash::merge($collection, $this->request->data);
     }
 
-    public function display($id = null)
-    {
+    public function display($id = null) {
         if (!$this->GraphCollection->exists($id)) {
             $this->Frontend->setJson('graphCollectionId', null);
             $id = null;
@@ -115,8 +110,7 @@ class GraphCollectionsController extends AppController
         $this->set(compact(['collections', 'id']));
     }
 
-    public function mass_delete()
-    {
+    public function mass_delete() {
         $args_are_valid = true;
         $args = func_get_args();
         foreach ($args as $i => $arg) {
@@ -127,7 +121,7 @@ class GraphCollectionsController extends AppController
         }
 
         if ($args_are_valid) {
-            $this->GraphCollection->deleteAll('GraphCollection.id IN ('.implode(',', $args).')');
+            $this->GraphCollection->deleteAll('GraphCollection.id IN (' . implode(',', $args) . ')');
             $this->setFlash(__('The Graph Collections have been deleted successfully.'));
         } else {
             $this->setFlash(__('Could not delete the graph configurations. The given arguments are invalid.'), false);
@@ -136,8 +130,7 @@ class GraphCollectionsController extends AppController
         $this->redirect(['action' => 'index']);
     }
 
-    public function loadCollectionGraphData($collection_id = 0)
-    {
+    public function loadCollectionGraphData($collection_id = 0) {
         $this->set('_serialize', ['collection']);
         $collection = $this->GraphCollection->loadCollection($collection_id);
         if (empty($collection)) {
@@ -153,8 +146,7 @@ class GraphCollectionsController extends AppController
         $this->set('collection', $collection);
     }
 
-    private function addServiceRules($collection)
-    {
+    private function addServiceRules($collection) {
         // Get an array of Hosts and Services
         foreach ($collection as $i => $template) {
             foreach ($template['HostAndServices'] as $host_id => $host_data) {
@@ -178,8 +170,7 @@ class GraphCollectionsController extends AppController
         return $collection;
     }
 
-    private function addHostAndServiceUuidsList($collection)
-    {
+    private function addHostAndServiceUuidsList($collection) {
         // Get an array of Hosts and Services
         foreach ($collection as $i => $template) {
             foreach ($template['HostAndServices'] as $host_id => $host_data) {

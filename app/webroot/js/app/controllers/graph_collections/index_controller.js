@@ -24,12 +24,12 @@
 //	confirmation.
 
 App.Controllers.GraphCollectionsIndexController = Frontend.AppController.extend({
-	components: ['Masschange'],
+    components: ['Masschange'],
 
-	_initialize: function(){
-		this.Masschange.setup({
-			'controller': 'graph_collections',
-			'checkboxattr': 'data-delete-display-text'
-		});
-	}
+    _initialize: function(){
+        this.Masschange.setup({
+            'controller': 'graph_collections',
+            'checkboxattr': 'data-delete-display-text'
+        });
+    }
 });

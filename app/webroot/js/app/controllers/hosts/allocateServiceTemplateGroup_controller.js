@@ -24,73 +24,75 @@
 
 App.Controllers.HostsAllocateServiceTemplateGroupController = Frontend.AppController.extend({
 
-	components: ['Ajaxloader'],
+    components: ['Ajaxloader'],
 
-	_initialize: function(){
-		this.Ajaxloader.setup();
+    _initialize: function(){
+        this.Ajaxloader.setup();
 
-		var self = this;
-		/*
-		 * Bind change event on servicetemplategroup selectbox
-		 */
-		var url = window.location.href;
-		var hostid = url.substring(url.lastIndexOf('/') + 1);
-		$('#ServicetemplategroupId').change(function(){
+        var self = this;
+        /*
+         * Bind change event on servicetemplategroup selectbox
+         */
+        var url = window.location.href;
+        var hostid = url.substring(url.lastIndexOf('/') + 1);
+        $('#ServicetemplategroupId').change(function(){
 
-			self.Ajaxloader.show();
-			$.ajax({
-				url: "/hosts/getServiceTemplatesfromGroup/"+encodeURIComponent($(this).val())+".json",
-				type: "POST",
-				cache: false,
-				data: ({host_id:hostid}),
-				error: function(){},
-				success: function(){},
-				complete: function(response){
-					self.Ajaxloader.hide();
-					var existantServiceIds = [];
-					$('#allServicesFromGroup').html('');
-					$(response.responseJSON.host.Service).each(function(intKey, service){
-						existantServiceIds.push(service.servicetemplate_id);
-					});
+            self.Ajaxloader.show();
+            $.ajax({
+                url: "/hosts/getServiceTemplatesfromGroup/" + encodeURIComponent($(this).val()) + ".json",
+                type: "POST",
+                cache: false,
+                data: ({host_id: hostid}),
+                error: function(){
+                },
+                success: function(){
+                },
+                complete: function(response){
+                    self.Ajaxloader.hide();
+                    var existantServiceIds = [];
+                    $('#allServicesFromGroup').html('');
+                    $(response.responseJSON.host.Service).each(function(intKey, service){
+                        existantServiceIds.push(service.servicetemplate_id);
+                    });
 
-					$(response.responseJSON.servicetemplategroup.Servicetemplate).each(function(intKey, id){
-						$('#allServicesFromGroup').append('<input type=\"checkbox\" class=\"createThisService\" id=\"servicetemplate_'+id.id+'\" value=\"'+id.id+'\" name=\"data[Service][ServicesToAdd][]\" />&nbsp;<label for=\"servicetemplate_'+id.id+'\">'+id.name+' <i class=\"text-info\">('+id.description+')</i></label><a style=\"display: none;\" class=\"createServiceDuplicate\" id=\"duplicate_'+id.id+'\" href=\"javascript:void(0);\" data-original-title=\"Service already exist on selected host. Tick the box to create duplicate.\" data-placement=\"right\" rel=\"tooltip\" data-container=\"body\"><i class=\"padding-left-5 fa fa-info-circle text-info\"></i></a><a style=\"display: none;\" class=\"txt-color-blueDark createServiceDuplicateDisabled\" id=\"duplicateDisabled_'+id.id+'\" href=\"javascript:void(0);\" data-original-title=\"Service already exist on selected host but is disabled. Tick the box to create duplicate.\" data-placement=\"right\" rel=\"tooltip\" data-container=\"body\"><i class=\"padding-left-5 fa fa-plug\"></i></a></br>');
+                    $(response.responseJSON.servicetemplategroup.Servicetemplate).each(function(intKey, id){
+                        $('#allServicesFromGroup').append('<input type=\"checkbox\" class=\"createThisService\" id=\"servicetemplate_' + id.id + '\" value=\"' + id.id + '\" name=\"data[Service][ServicesToAdd][]\" />&nbsp;<label for=\"servicetemplate_' + id.id + '\">' + id.name + ' <i class=\"text-info\">(' + id.description + ')</i></label><a style=\"display: none;\" class=\"createServiceDuplicate\" id=\"duplicate_' + id.id + '\" href=\"javascript:void(0);\" data-original-title=\"Service already exist on selected host. Tick the box to create duplicate.\" data-placement=\"right\" rel=\"tooltip\" data-container=\"body\"><i class=\"padding-left-5 fa fa-info-circle text-info\"></i></a><a style=\"display: none;\" class=\"txt-color-blueDark createServiceDuplicateDisabled\" id=\"duplicateDisabled_' + id.id + '\" href=\"javascript:void(0);\" data-original-title=\"Service already exist on selected host but is disabled. Tick the box to create duplicate.\" data-placement=\"right\" rel=\"tooltip\" data-container=\"body\"><i class=\"padding-left-5 fa fa-plug\"></i></a></br>');
 
-						//Disable checkbox, for services that already exist on the host
-						$('#servicetemplate_'+id.id).prop('checked', true);
+                        //Disable checkbox, for services that already exist on the host
+                        $('#servicetemplate_' + id.id).prop('checked', true);
 
-						if($.inArray(id.id,existantServiceIds) !== -1){
-							$('#servicetemplate_'+id.id).prop('checked', false);
-						}
+                        if($.inArray(id.id, existantServiceIds) !== -1){
+                            $('#servicetemplate_' + id.id).prop('checked', false);
+                        }
 
-						//If the service is disabled, display icon
-						if($('#servicetemplate_'+id.id).prop('checked') === false){
-							if(id.disabled == 1 || id.disabled == '1'){
-								$('#duplicateDisabled_'+id.id).show();
-							}
-							//The service exists on the host and is enabled
-							$('#duplicate_'+id.id).show();
-						}
-					});
-					$('[rel="tooltip"]').tooltip();
-				}.bind(self)
-			});
-		});
-	},
+                        //If the service is disabled, display icon
+                        if($('#servicetemplate_' + id.id).prop('checked') === false){
+                            if(id.disabled == 1 || id.disabled == '1'){
+                                $('#duplicateDisabled_' + id.id).show();
+                            }
+                            //The service exists on the host and is enabled
+                            $('#duplicate_' + id.id).show();
+                        }
+                    });
+                    $('[rel="tooltip"]').tooltip();
+                }.bind(self)
+            });
+        });
+    },
 
-	enableAll: function(){
-		$('.createThisService').prop('checked', true);
-	},
+    enableAll: function(){
+        $('.createThisService').prop('checked', true);
+    },
 
-	disableAll: function(){
-		$('.createThisService').prop('checked', null);
-	},
+    disableAll: function(){
+        $('.createThisService').prop('checked', null);
+    },
 
-	hideAllDuplicate: function(){
-		$('.createServiceDuplicate').hide();
-	},
+    hideAllDuplicate: function(){
+        $('.createServiceDuplicate').hide();
+    },
 
-	hideAllDuplicateDisabled: function(){
-		$('.createServiceDuplicateDisabled').hide();
-	}
+    hideAllDuplicateDisabled: function(){
+        $('.createServiceDuplicateDisabled').hide();
+    }
 });

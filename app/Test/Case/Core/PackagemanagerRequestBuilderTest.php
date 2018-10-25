@@ -25,36 +25,30 @@
 namespace itnovum\openITCOCKPIT\Core;
 
 
-class PackagemanagerRequestBuilderTest extends \PHPUnit_Framework_TestCase
-{
+class PackagemanagerRequestBuilderTest extends \PHPUnit_Framework_TestCase {
     //run test: oitc test app Core/PackagemanagerRequestBuilder
 
-    public function testInstance()
-    {
+    public function testInstance() {
         $packagemanagerRequestBuilder = new PackagemanagerRequestBuilder('development');
         $this->assertInstanceOf('\itnovum\openITCOCKPIT\Core\PackagemanagerRequestBuilder', $packagemanagerRequestBuilder);
     }
 
-    public function testGetInternalAddressWithoutLicense()
-    {
+    public function testGetInternalAddressWithoutLicense() {
         $packagemanagerRequestBuilder = new PackagemanagerRequestBuilder('development');
         $this->assertEquals('http://172.16.2.87/modules/fetch/.json', $packagemanagerRequestBuilder->getUrl());
     }
 
-    public function testGetExternalAddressWithoutLicense()
-    {
+    public function testGetExternalAddressWithoutLicense() {
         $packagemanagerRequestBuilder = new PackagemanagerRequestBuilder('production');
         $this->assertEquals('https://packagemanager.it-novum.com/modules/fetch/.json', $packagemanagerRequestBuilder->getUrl());
     }
 
-    public function testGetInternalAddressWitLicense()
-    {
+    public function testGetInternalAddressWitLicense() {
         $packagemanagerRequestBuilder = new PackagemanagerRequestBuilder('development', $this->getLicense());
         $this->assertEquals('http://172.16.2.87/modules/fetch/1234-5678-901234-567890.json', $packagemanagerRequestBuilder->getUrl());
     }
 
-    public function testGetExternalAddressWithLicense()
-    {
+    public function testGetExternalAddressWithLicense() {
         $packagemanagerRequestBuilder = new PackagemanagerRequestBuilder('production', $this->getLicense());
         $this->assertEquals('https://packagemanager.it-novum.com/modules/fetch/1234-5678-901234-567890.json', $packagemanagerRequestBuilder->getUrl());
     }
@@ -62,8 +56,7 @@ class PackagemanagerRequestBuilderTest extends \PHPUnit_Framework_TestCase
     /**
      * @return string
      */
-    private function getLicense()
-    {
+    private function getLicense() {
         return '1234-5678-901234-567890';
     }
 

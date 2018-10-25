@@ -45,7 +45,7 @@ $Logo = new Logo();
     <?php
     foreach ($css as $cssFile): ?>
         <link rel="stylesheet" type="text/css" href="<?php echo WWW_ROOT . $cssFile; ?>"/>
-        <?php
+    <?php
     endforeach; ?>
 </head>
 <body class="">
@@ -106,12 +106,12 @@ $Logo = new Logo();
                                                     ?>
                                                 </em>
 
-                                                <?php
+                                            <?php
                                             endfor;
                                             ?>
                                         </div>
                                     </div>
-                                    <?php
+                                <?php
                                 elseif (!$instantReportDetails['onlyServices'] && isset($hostData[0], $hostData[1], $hostData[2]) && array_sum(
                                         [$hostData[0], $hostData[1], $hostData[2]]
                                     ) === 0):?>
@@ -145,7 +145,7 @@ $Logo = new Logo();
                                                             ?>
                                                         </em>
 
-                                                        <?php
+                                                    <?php
                                                     endfor; ?>
                                                 </div>
                                             <?php endif;
@@ -159,7 +159,7 @@ $Logo = new Logo();
                     </article>
                 </div>
             </section>
-            <?php
+        <?php
         endforeach;
     elseif (!empty($instantReportData)):
         foreach ($instantReportData['Hosts'] as $hostUuid => $hostData) {
@@ -212,7 +212,7 @@ $Logo = new Logo();
                                             echo round($totalHostsData[$i] / $totalTimeHosts * 100, 2) . ' % (' . $this->Status->humanSimpleHostStatus($i) . ')';
                                             ?>
                                         </em>
-                                        <?php
+                                    <?php
                                     endfor;
                                     ?>
                                 </div>
@@ -222,7 +222,7 @@ $Logo = new Logo();
                 </article>
             </div>
         </section>
-        <?php
+    <?php
     elseif (!$instantReportDetails['onlyServices'] && $totalTimeHosts == 0):?>
         <h2 class="txt-color-blueDark" style="width:97%">
             <i class="fa fa-desktop txt-color-blueDark"></i> <?= __('Hosts summary') ?>
@@ -260,7 +260,7 @@ $Logo = new Logo();
                                             ?>
                                         </em>
 
-                                        <?php
+                                    <?php
                                     endfor;
                                     ?>
                                 </div>
@@ -270,7 +270,7 @@ $Logo = new Logo();
                 </article>
             </div>
         </section>
-        <?php
+    <?php
     elseif (!$instantReportDetails['onlyHosts'] && $totalTimeServices == 0):?>
         <section id="widget-grid" class="">
             <div class="row">
@@ -281,7 +281,7 @@ $Logo = new Logo();
                 </div>
             </div>
         </section>
-        <?php
+    <?php
     endif;
     endif;
 
@@ -305,7 +305,7 @@ $Logo = new Logo();
                                     <div class="txt-color-blueDark">
                                         <i class="fa fa-desktop txt-color-blueDark"></i> <?php echo h($hostName); ?>
                                     </div>
-                                    <?php
+                                <?php
                                 endforeach;
                             endif;
                             foreach ($servicesNotMonitored as $serviceId => $serviceArray):?>
@@ -316,7 +316,7 @@ $Logo = new Logo();
                                     echo h(' (' . $serviceArray['Host']['name'] . ')');
                                     ?>
                                 </div>
-                                <?php
+                            <?php
                             endforeach;
                             ?>
                         </div>
@@ -324,7 +324,7 @@ $Logo = new Logo();
                 </article>
             </div>
         </section>
-        <?php
+    <?php
     endif;
     if (empty($instantReportData)): ?>
         <div class="row margin-bottom-10">

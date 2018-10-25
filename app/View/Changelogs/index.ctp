@@ -72,7 +72,7 @@
                                         <?php $niceTime = true; ?>
                                         <?php
                                         $replacement_keys_for_objects = [
-                                            'Command' => [
+                                            'Command'    => [
                                                 'command_type' => [
                                                     1 => 'CHECK_COMMAND',
                                                     2 => 'HOSTCHECK_COMMAND',
@@ -91,7 +91,7 @@
                                                     7 => __('Sunday'),
                                                 ],
                                             ],
-                                            'Timerange' => [
+                                            'Timerange'  => [
                                                 'day' => [
                                                     1 => __('Monday'),
                                                     2 => __('Tuesday'),
@@ -139,7 +139,7 @@
                                                     if (array_key_exists($change['Changelog']['object_id'], $link_ids[$change['Changelog']['model']]) && $link_ids[$change['Changelog']['model']][$change['Changelog']['object_id']]):
                                                         echo $this->Html->link(h($change['Changelog']['name']), [
                                                             'controller' => $link_ids[$change['Changelog']['model']][$change['Changelog']['object_id']],
-                                                            'action' => 'edit',
+                                                            'action'     => 'edit',
                                                             $change['Changelog']['object_id'],
                                                         ],
                                                             ['class' => 'light_blue', 'escape' => false]);
@@ -149,14 +149,14 @@
                                                     <?php
                                                     echo h($change['Changelog']['name']); ?>
                                                     </span>
-                                                        <?php
+                                                    <?php
                                                     endif;
                                                     ?>
                                                 </strong>
-                                                <?php if($showUser): ?>
+                                                <?php if ($showUser): ?>
                                                     <?php if ($change['User']['lastname'] !== null && $change['User']['firstname'] !== null && $change['User']['id'] !== null): ?>
                                                         <?php echo __('by'); ?>
-                                                        <a href="/users/edit/<?php echo h($change['User']['id']); ?>"><?php echo h($change['User']['firstname']).' '.h($change['User']['lastname']); ?></a>
+                                                        <a href="/users/edit/<?php echo h($change['User']['id']); ?>"><?php echo h($change['User']['firstname']) . ' ' . h($change['User']['lastname']); ?></a>
                                                     <?php
                                                     else:
                                                         echo $change['Changelog']['user_id'] === '0' ? __('with Cron Job') : __('by deleted user');
@@ -191,7 +191,7 @@
                                                                                         echo h((isset($replacement_keys_for_objects[$change['Changelog']['model']]) && array_key_exists($field_name, $replacement_keys_for_objects[$change['Changelog']['model']])) ? $replacement_keys_for_objects[$change['Changelog']['model']][$field_name][$value['after'][$field_name]] : $value['after'][$field_name]); ?>
                                                                                     </span>
                                                                                             </small>
-                                                                                            <?php
+                                                                                        <?php
                                                                                         endif;
                                                                                     endforeach;
                                                                                 elseif ($after_data_dimension_counter === 2):
@@ -204,7 +204,7 @@
                                                                                                         ?>
                                                                                     </span>
                                                                                                 </small>
-                                                                                                <?php
+                                                                                            <?php
                                                                                             endif;
                                                                                         endforeach;
                                                                                     endforeach;
@@ -244,7 +244,7 @@
                                                                                         endswitch;
                                                                                         ?>
                                                                                     </small>
-                                                                                    <?php
+                                                                                <?php
                                                                                 endif;
                                                                             endforeach;
                                                                         elseif ($current_data_dimension_counter === 2):
@@ -263,7 +263,7 @@
                                                                                         $changelog_min_action = 'changelog_edit';
                                                                                     endif;
 
-                                                                                elseif(!isset($current_data_value['id']) && !$isCopied):
+                                                                                elseif (!isset($current_data_value['id']) && !$isCopied):
                                                                                     continue;
                                                                                 endif;
                                                                                 foreach (array_keys($current_data_value) as $field_identifier):
@@ -307,7 +307,7 @@
                                                                                             endswitch;
                                                                                             ?>
                                                                                         </small>
-                                                                                        <?php
+                                                                                    <?php
                                                                                     endif;
                                                                                 endforeach;
                                                                             endforeach;
@@ -329,7 +329,7 @@
                                                                                     ?>
                                                                                 </span>
                                                                                         </small>
-                                                                                        <?php
+                                                                                    <?php
                                                                                     endforeach;
                                                                                 endforeach;
                                                                             endif;
@@ -339,12 +339,12 @@
                                                             endforeach;
                                                             ?>
                                                         </blockquote>
-                                                        <?php
+                                                    <?php
                                                     endif;
                                                     ?>
                                                 </div>
                                             </li>
-                                            <?php
+                                        <?php
                                         endforeach; ?>
                                     </ul>
                                 </div>
@@ -376,12 +376,12 @@ function recordExists($model_name, $id) {
         return false;
     }
     $replacement_for_modelname = [
-        'HostCommands' => 'Command',
+        'HostCommands'    => 'Command',
         'ServiceCommands' => 'Command',
-        'CheckCommand' => 'Command',
-        'CheckPeriod' => 'Timeperiod',
-        'NotifyPeriod' => 'Timeperiod',
-        'Parenthost' => 'Host',
+        'CheckCommand'    => 'Command',
+        'CheckPeriod'     => 'Timeperiod',
+        'NotifyPeriod'    => 'Timeperiod',
+        'Parenthost'      => 'Host',
     ];
     if (array_key_exists($model_name, $replacement_for_modelname)) {
         $model_name = $replacement_for_modelname[$model_name];

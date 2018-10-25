@@ -26,35 +26,29 @@ use itnovum\openITCOCKPIT\ApiShell\ApiExtensionLoader;
 
 //run test with: oitc test app Shell/Api/ApiExtensionLoader
 
-class ApiExtensionLoaderTest extends CakeTestCase
-{
-    public function testInstance()
-    {
+class ApiExtensionLoaderTest extends CakeTestCase {
+    public function testInstance() {
         $apiExtensionLoader = new ApiExtensionLoader(null, $this->getOptionParser(''));
         $this->assertInstanceOf('\itnovum\openITCOCKPIT\ApiShell\ApiExtensionLoader', $apiExtensionLoader);
     }
 
-    public function testIsAvailable1()
-    {
+    public function testIsAvailable1() {
         $apiExtensionLoader = new ApiExtensionLoader(null, $this->getOptionParser('Systemsettings'));
         $this->assertTrue($apiExtensionLoader->isAvailable());
     }
 
-    public function testIsAvailable2()
-    {
+    public function testIsAvailable2() {
         $apiExtensionLoader = new ApiExtensionLoader(null, $this->getOptionParser('SomeNonExistingApiExtension'));
         $this->assertFalse($apiExtensionLoader->isAvailable());
     }
 
-    public function testGetApiForSystemsettings()
-    {
+    public function testGetApiForSystemsettings() {
         $apiExtensionLoader = new ApiExtensionLoader($this->getShell(), $this->getOptionParser('Systemsettings'), '');
         $api = $apiExtensionLoader->getApi();
         $this->assertInstanceOf('\itnovum\openITCOCKPIT\ApiShell\Systemsettings\Api', $api);
     }
 
-    private function getShell()
-    {
+    private function getShell() {
         $shell = $this->getMockBuilder('Shell')
             ->disableOriginalConstructor()
             ->getMock();
@@ -63,8 +57,7 @@ class ApiExtensionLoaderTest extends CakeTestCase
         return $shell;
     }
 
-    private function getOptionParser($modelName)
-    {
+    private function getOptionParser($modelName) {
         $check = $this->getMockBuilder('itnovum\openITCOCKPIT\ApiShell\OptionParser')
             ->disableOriginalConstructor()
             ->getMock();

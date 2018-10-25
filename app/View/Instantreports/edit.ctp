@@ -82,12 +82,13 @@
 
                 <div class="form-group required">
                     <label class="col col-md-2 control-label" for="InstantreportType">
-                        <?php echo __('Type');?>
+                        <?php echo __('Type'); ?>
                     </label>
                     <div class="col col-xs-10">
                         <select ng-model="post.Instantreport.type"
                                 chosen="types"
-                                id="InstantreportType" required="required" class="form-control chosen" ng-change="changeType()">
+                                id="InstantreportType" required="required" class="form-control chosen"
+                                ng-change="changeType()">
                             <option value="1"><?php echo __('Host groups'); ?></option>
                             <option value="2"><?php echo __('Hosts'); ?></option>
                             <option value="3"><?php echo __('Service groups'); ?></option>
@@ -188,7 +189,7 @@
 
                 <div class="form-group">
                     <label class="col col-md-2 control-label">
-                        <?php echo __('Evaluation');?>
+                        <?php echo __('Evaluation'); ?>
                     </label>
                     <div class="col col-xs-10">
                         <label class="padding-right-10" for="InstantreportEvaluation1">
@@ -255,33 +256,33 @@
                 <div class="form-group">
                     <?php
                     echo $this->Form->fancyCheckbox('Instantreport.downtimes', [
-                        'caption' => __('Consider downtimes'),
-                        'wrapGridClass' => 'col col-md-1',
+                        'caption'          => __('Consider downtimes'),
+                        'wrapGridClass'    => 'col col-md-1',
                         'captionGridClass' => 'col col-md-2',
-                        'captionClass' => 'control-label',
-                        'ng-model' => 'post.Instantreport.downtimes'
+                        'captionClass'     => 'control-label',
+                        'ng-model'         => 'post.Instantreport.downtimes'
                     ]);
                     ?>
                 </div>
                 <div class="form-group">
                     <?php
                     echo $this->Form->fancyCheckbox('Instantreport.summary', [
-                        'caption' => __('Summary display'),
-                        'wrapGridClass' => 'col col-md-1',
+                        'caption'          => __('Summary display'),
+                        'wrapGridClass'    => 'col col-md-1',
                         'captionGridClass' => 'col col-md-2',
-                        'captionClass' => 'control-label',
-                        'ng-model' => 'post.Instantreport.summary'
+                        'captionClass'     => 'control-label',
+                        'ng-model'         => 'post.Instantreport.summary'
                     ]);
                     ?>
                 </div>
                 <div class="form-group">
                     <?php
                     echo $this->Form->fancyCheckbox('Instantreport.send_email', [
-                        'caption' => __('Send email'),
-                        'wrapGridClass' => 'col col-md-1',
+                        'caption'          => __('Send email'),
+                        'wrapGridClass'    => 'col col-md-1',
                         'captionGridClass' => 'col col-md-2',
-                        'captionClass' => 'control-label',
-                        'ng-model' => 'post.Instantreport.send_email'
+                        'captionClass'     => 'control-label',
+                        'ng-model'         => 'post.Instantreport.send_email'
                     ]);
                     ?>
                 </div>

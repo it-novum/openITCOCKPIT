@@ -26,16 +26,13 @@ namespace itnovum\openITCOCKPIT\Core;
 
 //run test: oitc test app Core/ContainerRepository
 
-class ContainerRepositoryTest extends \CakeTestCase
-{
-    public function testInstance()
-    {
+class ContainerRepositoryTest extends \CakeTestCase {
+    public function testInstance() {
         $ContainerRepository = new ContainerRepository();
         $this->assertInstanceOf('\itnovum\openITCOCKPIT\Core\ContainerRepository', $ContainerRepository);
     }
 
-    public function testAddContainerWithInt()
-    {
+    public function testAddContainerWithInt() {
         $ContainerRepository = new ContainerRepository([1, 2]);
         $ContainerRepository->addContainer(3);
 
@@ -43,8 +40,7 @@ class ContainerRepositoryTest extends \CakeTestCase
         $this->assertEquals($assert, $ContainerRepository->getContainer());
     }
 
-    public function testAddContainerWithStrings()
-    {
+    public function testAddContainerWithStrings() {
         $ContainerRepository = new ContainerRepository(['1', 2]);
         $ContainerRepository->addContainer('3');
 
@@ -53,8 +49,7 @@ class ContainerRepositoryTest extends \CakeTestCase
     }
 
 
-    public function testAddContainerWithArray()
-    {
+    public function testAddContainerWithArray() {
         $ContainerRepository = new ContainerRepository([1, 2]);
         $ContainerRepository->addContainer([1, 3, 5, 10]);
 
@@ -62,8 +57,7 @@ class ContainerRepositoryTest extends \CakeTestCase
         $this->assertEquals($assert, $ContainerRepository->getContainer());
     }
 
-    public function testRemoveContainerInt()
-    {
+    public function testRemoveContainerInt() {
         $ContainerRepository = new ContainerRepository([1, 2, 3]);
         $ContainerRepository->removeContainerId(2);
 
@@ -71,8 +65,7 @@ class ContainerRepositoryTest extends \CakeTestCase
         $this->assertEquals($assert, $ContainerRepository->getContainer());
     }
 
-    public function testRemoveContainerArray()
-    {
+    public function testRemoveContainerArray() {
         $ContainerRepository = new ContainerRepository([1, 2, 3, 5, 6]);
         $ContainerRepository->removeContainerId([2, 5]);
 
@@ -80,16 +73,14 @@ class ContainerRepositoryTest extends \CakeTestCase
         $this->assertEquals($assert, $ContainerRepository->getContainer());
     }
 
-    public function testAddContainerExistsTrue()
-    {
+    public function testAddContainerExistsTrue() {
         $ContainerRepository = new ContainerRepository([1, 2]);
         $result = $ContainerRepository->exists(1);
 
         $this->assertTrue($result);
     }
 
-    public function testAddContainerExistsFalse()
-    {
+    public function testAddContainerExistsFalse() {
         $ContainerRepository = new ContainerRepository([]);
         $result = $ContainerRepository->exists(1);
 

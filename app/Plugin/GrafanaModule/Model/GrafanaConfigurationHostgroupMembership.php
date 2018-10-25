@@ -29,10 +29,10 @@ class GrafanaConfigurationHostgroupMembership extends GrafanaModuleAppModel {
     public $useTable = 'hostgroups_to_grafanaconfigurations';
     public $belongsTo = [
         'GrafanaConfiguration' => [
-            'className' => 'GrafanaModule.GrafanaConfiguration',
+            'className'  => 'GrafanaModule.GrafanaConfiguration',
             'foreignKey' => 'configuration_id'
         ],
-        'Hostgroup' => [
+        'Hostgroup'            => [
             'className'  => 'Hostgroup',
             'foreignKey' => 'hostgroup_id'
         ],

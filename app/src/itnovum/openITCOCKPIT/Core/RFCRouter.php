@@ -38,7 +38,7 @@ class RFCRouter extends \Router {
      * @param bool $escape Whether or not to use escaped &
      * @return array
      */
-    public static function queryString($q, $extra = array(), $escape = false) {
+    public static function queryString($q, $extra = [], $escape = false) {
         if (empty($q) && empty($extra)) {
             return null;
         }

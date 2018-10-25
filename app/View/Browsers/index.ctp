@@ -27,15 +27,13 @@
  * @property \itnovum\openITCOCKPIT\Monitoring\QueryHandler $QueryHandler
  */
 
-use itnovum\openITCOCKPIT\Core\Views\Host;
-use itnovum\openITCOCKPIT\Core\Hoststatus;
 use itnovum\openITCOCKPIT\Core\RFCRouter;
 
 
 ?>
 <ol class="breadcrumb">
     <li></li> <!-- leading / -->
-    <li ng-class="{active: container.key == containerId}" ng-repeat="container in breadcrumbs" >
+    <li ng-class="{active: container.key == containerId}" ng-repeat="container in breadcrumbs">
         <span ng-show="container.key == containerId">
             {{container.value}}
         </span>

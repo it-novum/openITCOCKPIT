@@ -27,76 +27,63 @@
 namespace itnovum\openITCOCKPIT\SetupShell;
 
 
-class MailConfigValueTest extends \PHPUnit_Framework_TestCase
-{
-    public function testGetEmptyValueForConfig()
-    {
+class MailConfigValueTest extends \PHPUnit_Framework_TestCase {
+    public function testGetEmptyValueForConfig() {
         $configValue = new MailConfigValue('');
         $this->assertEquals('null', $configValue->getValueForConfig());
     }
 
-    public function testGetStringValueForConfig()
-    {
+    public function testGetStringValueForConfig() {
         $configValue = new MailConfigValue('string');
         $this->assertEquals('"string"', $configValue->getValueForConfig());
     }
 
-    public function testGetZeroValueForConfig()
-    {
+    public function testGetZeroValueForConfig() {
         $configValue = new MailConfigValue(0);
         $this->assertEquals('null', $configValue->getValueForConfig());
     }
 
-    public function testGetFalseValueForConfig()
-    {
+    public function testGetFalseValueForConfig() {
         $configValue = new MailConfigValue(false);
         $this->assertEquals('null', $configValue->getValueForConfig());
     }
 
-    public function testGetEmptyValue()
-    {
+    public function testGetEmptyValue() {
         $configValue = new MailConfigValue('');
         $this->assertEquals('', $configValue->getValue());
     }
 
-    public function testGetStringValue()
-    {
+    public function testGetStringValue() {
         $configValue = new MailConfigValue('string');
         $this->assertEquals('string', $configValue->getValue());
     }
 
-    public function testGetZeroValue()
-    {
+    public function testGetZeroValue() {
         $configValue = new MailConfigValue(0);
         $this->assertEquals(0, $configValue->getValue());
     }
 
-    public function testGetFalseValue()
-    {
+    public function testGetFalseValue() {
         $configValue = new MailConfigValue(false);
         $this->assertEquals(false, $configValue->getValue());
     }
 
-    public function testIsEmptyValue()
-    {
+    public function testIsEmptyValue() {
         $configValue = new MailConfigValue('');
         $this->assertTrue($configValue->isEmpty());
     }
 
-    public function testIsEmptyStringValue()
-    {
+    public function testIsEmptyStringValue() {
         $configValue = new MailConfigValue('string');
         $this->assertFalse($configValue->isEmpty());
     }
 
-    public function testIsEmptyZeroValue()
-    {
+    public function testIsEmptyZeroValue() {
         $configValue = new MailConfigValue(0);
         $this->assertTrue($configValue->isEmpty());
     }
 
-    public function testisEmptyFalseValue()
-    {
+    public function testisEmptyFalseValue() {
         $configValue = new MailConfigValue(false);
         $this->assertTrue($configValue->isEmpty());
     }

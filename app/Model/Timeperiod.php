@@ -26,8 +26,7 @@
 
 App::uses('Timerange', 'Model');
 
-class Timeperiod extends AppModel
-{
+class Timeperiod extends AppModel {
 
     public $hasMany = [
         'Timerange' => [
@@ -49,7 +48,8 @@ class Timeperiod extends AppModel
         'container_id'    => [
             'multiple' => [
                 'rule'    => ['multiple', ['min' => 1]],
-                'message' => 'Please select at least 1 container you attend'],
+                'message' => 'Please select at least 1 container you attend'
+            ],
         ],
         'name'            => [
             'notBlank' => [
@@ -68,14 +68,12 @@ class Timeperiod extends AppModel
         ],
     ];
 
-    public function __construct($id = false, $table = null, $ds = null)
-    {
+    public function __construct($id = false, $table = null, $ds = null) {
         parent::__construct($id, $table, $ds);
         App::uses('UUID', 'Lib');
     }
 
-    public function checkTimerangeOvelapping()
-    {
+    public function checkTimerangeOvelapping() {
         $error_arr = [];
         if (isset($this->data['Timerange']) && sizeof($this->data['Timerange']) > 0) {
             foreach ($this->data['Timerange'] as $key => $row) {
@@ -106,7 +104,7 @@ class Timeperiod extends AppModel
                                 }
                                 $error_arr[$day][] = $intern_counter;
                                 //	$this->invalidate('Timeperiod.'.$day.'.'.$intern_counter, 'state-error');
-                                $this->invalidate('Timerange.'.$day.'.'.$intern_counter.'.start', 'state-error');
+                                $this->invalidate('Timerange.' . $day . '.' . $intern_counter . '.start', 'state-error');
 
                             } else {
                                 $tmp_start = $timerange_data[$intern_counter]['start'];
@@ -126,8 +124,7 @@ class Timeperiod extends AppModel
         return true;
     }
 
-    public function timeperiodsByContainerId($container_ids = [], $type = 'all')
-    {
+    public function timeperiodsByContainerId($container_ids = [], $type = 'all') {
         if (!is_array($container_ids)) {
             $container_ids = [$container_ids];
         }
@@ -145,7 +142,7 @@ class Timeperiod extends AppModel
                 // Get contaier id of the tenant container
                 // $container_id is may be a location, devicegroup or whatever, so we need to container id of the tenant container to load contactgroups and contacts
                 $path = $this->Container->getPath($container_id);
-                if(isset($path[1]['Container']['id'])) {
+                if (isset($path[1]['Container']['id'])) {
                     $tenantContainerIds[] = $path[1]['Container']['id'];
                 }
             } else {

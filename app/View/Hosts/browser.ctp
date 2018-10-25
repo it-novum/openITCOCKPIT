@@ -887,7 +887,7 @@ if (!$QueryHandler->exists()): ?>
                                                 <span ng-show="failureDurationInPercent">{{ (failureDurationInPercent) ? failureDurationInPercent+' %' :
                                                     '<?php echo __('No data available !'); ?>'}}
                                                 </span>
-                                            </h3>                                        </div>
+                                            </h3></div>
                                         <div class="col-xs-12 col-sm-12 col-md-12">
                                             <div id="visualization"></div>
                                         </div>

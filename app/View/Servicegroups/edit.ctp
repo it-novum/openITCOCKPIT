@@ -148,7 +148,7 @@
                                 chosen="servicetemplates"
                                 callback="loadServicetemplates"
                                 ng-options="servicetemplate.key as servicetemplate.value for servicetemplate in servicetemplates"
-                                ng-model="post.Servicegroup.Servicetemplate" >
+                                ng-model="post.Servicegroup.Servicetemplate">
                         </select>
                     </div>
                 </div>

@@ -49,36 +49,36 @@ class ServiceNotificationConditions extends ListSettingsConditions {
     /**
      * @param $uuid
      */
-    public function setServiceUuid($uuid){
+    public function setServiceUuid($uuid) {
         $this->serviceUuid = $uuid;
     }
 
     /**
      * @return string
      */
-    public function getServiceUuid(){
+    public function getServiceUuid() {
         return $this->serviceUuid;
     }
 
     /**
      * @param bool $value
      */
-    public function setUseLimit($value){
+    public function setUseLimit($value) {
         $this->useLimit = (bool)$value;
     }
 
     /**
      * @return bool
      */
-    public function getUseLimit(){
+    public function getUseLimit() {
         return $this->useLimit;
     }
 
     /**
      * @param ServiceStates $ServiceStates
      */
-    public function setStates(ServiceStates $ServiceStates){
-        if(sizeof($ServiceStates->asIntegerArray()) == 4){
+    public function setStates(ServiceStates $ServiceStates) {
+        if (sizeof($ServiceStates->asIntegerArray()) == 4) {
             $this->states = [];
             return;
         }

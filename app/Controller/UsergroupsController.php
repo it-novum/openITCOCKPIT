@@ -23,8 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class UsergroupsController extends AppController
-{
+class UsergroupsController extends AppController {
     public $layout = 'Admin.default';
     public $components = ['Acl'];
 
@@ -35,8 +34,7 @@ class UsergroupsController extends AppController
     //	parent::beforeFilter();
     //}
 
-    public function index()
-    {
+    public function index() {
         $options = [
             'recursive' => -1,
             'order'     => [
@@ -57,8 +55,7 @@ class UsergroupsController extends AppController
         $this->set(compact(['usergroups']));
     }
 
-    public function view($id = null)
-    {
+    public function view($id = null) {
         if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();
 
@@ -72,8 +69,7 @@ class UsergroupsController extends AppController
         $this->set('_serialize', ['usergroup']);
     }
 
-    public function edit($id = null)
-    {
+    public function edit($id = null) {
         $userId = $this->Auth->user('id');
         if (!$this->Usergroup->exists($id)) {
             throw new NotFoundException(__('Invalid user role'));
@@ -184,8 +180,7 @@ class UsergroupsController extends AppController
         ]));
     }
 
-    public function add()
-    {
+    public function add() {
         $acos = $this->Acl->Aco->find('threaded');
 
         $alwaysAllowedAcos = $this->Usergroup->getAlwaysAllowedAcos($acos);
@@ -277,8 +272,7 @@ class UsergroupsController extends AppController
         ]));
     }
 
-    public function delete($id = null)
-    {
+    public function delete($id = null) {
         if (!$this->request->is('post')) {
             throw new MethodNotAllowedException();
         }

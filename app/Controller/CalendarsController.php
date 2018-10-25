@@ -27,14 +27,13 @@ App::uses('CalendarHolidays', 'Vendor/Date');
 
 
 /**
- * @property Calendar                $Calendar
- * @property Tenant                  $Tenant
- * @property CalendarHoliday         $CalendarHoliday
+ * @property Calendar $Calendar
+ * @property Tenant $Tenant
+ * @property CalendarHoliday $CalendarHoliday
  * @property RequestHandlerComponent $RequestHandler
- * @property PaginatorComponent      $Paginator
+ * @property PaginatorComponent $Paginator
  */
-class CalendarsController extends AppController
-{
+class CalendarsController extends AppController {
     public $uses = [
         'Calendar',
         'Tenant',
@@ -49,8 +48,7 @@ class CalendarsController extends AppController
     /**
      * Lists the existing configurations to load and edit them.
      */
-    public function index()
-    {
+    public function index() {
         $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
         $query = [
             'recursive'  => -1,
@@ -76,8 +74,7 @@ class CalendarsController extends AppController
         $this->set('_serialize', ['calendars']);
     }
 
-    public function add()
-    {
+    public function add() {
         if ($this->hasRootPrivileges === true) {
             $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
             $tenants = $this->Tenant->tenantsByContainerId($containerIds, 'list', 'container_id');
@@ -111,8 +108,7 @@ class CalendarsController extends AppController
         }
     }
 
-    public function edit($id = null)
-    {
+    public function edit($id = null) {
         if (!$this->Calendar->exists($id)) {
             throw new NotFoundException(__('Invalid calendar'));
         }
@@ -142,7 +138,8 @@ class CalendarsController extends AppController
             if ($this->Calendar->validates()) {
                 //delete old entries for holidays
                 $this->CalendarHoliday->deleteAll([
-                    'CalendarHoliday.calendar_id' => $id],
+                    'CalendarHoliday.calendar_id' => $id
+                ],
                     false
                 );
             }
@@ -161,8 +158,7 @@ class CalendarsController extends AppController
         $this->set($data);
     }
 
-    public function delete($id = null)
-    {
+    public function delete($id = null) {
         if (!$this->request->is('post')) {
             throw new MethodNotAllowedException();
         }
@@ -181,12 +177,12 @@ class CalendarsController extends AppController
                 'conditions' => [
                     'Timeperiod.calendar_id' => $id
                 ],
-                'fields' => [
+                'fields'     => [
                     'Timeperiod.id'
                 ]
             ]);
 
-            foreach($timeperiods as $timeperiod){
+            foreach ($timeperiods as $timeperiod) {
                 $this->Timeperiod->id = $timeperiod['Timeperiod']['id'];
                 $this->Timeperiod->saveField('calendar_id', 0);
             }
@@ -198,8 +194,7 @@ class CalendarsController extends AppController
         $this->redirect(['action' => 'index']);
     }
 
-    public function loadHolidays($countryCode = 'de')
-    {
+    public function loadHolidays($countryCode = 'de') {
         if (!$this->request->is('ajax')) {
             throw new MethodNotAllowedException();
         }
@@ -209,8 +204,7 @@ class CalendarsController extends AppController
         $this->set('_serialize', ['holidays']);
     }
 
-    public function mass_delete()
-    {
+    public function mass_delete() {
         $args_are_valid = true;
         $args = func_get_args();
         foreach ($args as $arg) {
@@ -219,19 +213,19 @@ class CalendarsController extends AppController
             }
         }
         if ($args_are_valid) {
-            $this->Calendar->deleteAll('Calendar.id IN ('.implode(',', $args).')');
+            $this->Calendar->deleteAll('Calendar.id IN (' . implode(',', $args) . ')');
 
             $timeperiods = $this->Timeperiod->find('all', [
                 'recursive'  => -1,
                 'conditions' => [
                     'Timeperiod.calendar_id' => $args
                 ],
-                'fields' => [
+                'fields'     => [
                     'Timeperiod.id'
                 ]
             ]);
 
-            foreach($timeperiods as $timeperiod){
+            foreach ($timeperiods as $timeperiod) {
                 $this->Timeperiod->id = $timeperiod['Timeperiod']['id'];
                 $this->Timeperiod->saveField('calendar_id', 0);
             }

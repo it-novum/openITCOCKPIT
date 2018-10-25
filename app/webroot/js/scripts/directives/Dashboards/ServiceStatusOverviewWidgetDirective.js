@@ -111,12 +111,12 @@ angular.module('openITCOCKPIT').directive('serviceStatusOverviewWidget', functio
                     'angular': true,
                     'filter[Host.name]': $scope.filter.Host.name,
                     'filter[Service.servicename]': $scope.filter.Service.name,
-                    'has_not_been_acknowledged': ($scope.filter.Servicestatus.not_acknowledged)?'1':'0',
-                    'not_in_downtime': ($scope.filter.Servicestatus.not_in_downtime)?'1':'0'
+                    'has_not_been_acknowledged': ($scope.filter.Servicestatus.not_acknowledged) ? '1' : '0',
+                    'not_in_downtime': ($scope.filter.Servicestatus.not_in_downtime) ? '1' : '0'
                 };
-                var currentState = 'filter[Servicestatus.current_state]['+$scope.filter.Servicestatus.current_state+']';
+                var currentState = 'filter[Servicestatus.current_state][' + $scope.filter.Servicestatus.current_state + ']';
                 options[currentState] = 1;
-                return  '/services/index/?' + $httpParamSerializer(options);
+                return '/services/index/?' + $httpParamSerializer(options);
             };
         },
 

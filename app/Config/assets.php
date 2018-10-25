@@ -68,7 +68,7 @@ $config = [
             '/smartadmin/js/notification/SmartNotification.js',
             '/smartadmin/js/demo.js',
             '/smartadmin/js/app.js',
-#			'/smartadmin/js/smartwidgets/jarvis.widget.min.js',
+//          '/smartadmin/js/smartwidgets/jarvis.widget.min.js',
             '/smartadmin/js/smartwidgets/jarvis.widget.js',
             '/smartadmin/js/plugin/easy-pie-chart/jquery.easy-pie-chart.min.js',
             '/smartadmin/js/plugin/sparkline/jquery.sparkline.min.js',
@@ -83,7 +83,7 @@ $config = [
             '/smartadmin/js/plugin/flot/jquery.flot.threshold.js',
             '/smartadmin/js/plugin/flot/jquery.flot.selection.js',
 
-//			'/smartadmin/js/plugin/flot/jquery.flot.time.js', // timezones for jQuery flot
+//          '/smartadmin/js/plugin/flot/jquery.flot.time.js', // timezones for jQuery flot
             '/smartadmin/js/plugin/colorpicker/bootstrap-colorpicker.min.js',
 
             '/smartadmin/js/plugin/dropzone/dropzone.min.js',

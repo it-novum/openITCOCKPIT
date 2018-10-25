@@ -14,8 +14,7 @@
  * Helps clear content of CACHE subfolders as well as content in cache engines
  * @package       ClearCache.Lib
  */
-class ClearCache
-{
+class ClearCache {
 
     /**
      * Clears content of cache engines
@@ -24,8 +23,7 @@ class ClearCache
      *
      * @return array associative array with cleanup results
      */
-    public function engines()
-    {
+    public function engines() {
         if ($cacheDisabled = (bool)Configure::read('Cache.disable')) {
             Configure::write('Cache.disable', false);
         }
@@ -56,8 +54,7 @@ class ClearCache
      *
      * @return array associative array with cleanup results
      */
-    public function files()
-    {
+    public function files() {
         $deleted = $error = [];
 
         $folders = func_get_args();
@@ -66,9 +63,9 @@ class ClearCache
         }
 
         if (count($folders) > 1) {
-            $files = glob(CACHE.'{'.implode(',', $folders).'}'.DS.'*', GLOB_BRACE);
+            $files = glob(CACHE . '{' . implode(',', $folders) . '}' . DS . '*', GLOB_BRACE);
         } else {
-            $files = glob(CACHE.$folders[0].DS.'*');
+            $files = glob(CACHE . $folders[0] . DS . '*');
         }
 
         foreach ($files as $file) {
@@ -91,8 +88,7 @@ class ClearCache
      *
      * @return array associative array with cleanup results
      */
-    public function groups()
-    {
+    public function groups() {
         if ($cacheDisabled = (bool)Configure::read('Cache.disable')) {
             Configure::write('Cache.disable', false);
         }
@@ -124,8 +120,7 @@ class ClearCache
      * Clears content of CACHE subfolders and configured cache engines
      * @return array associative array with cleanup results
      */
-    public function run()
-    {
+    public function run() {
         $files = $this->files();
         $engines = $this->engines();
 
@@ -136,8 +131,7 @@ class ClearCache
      * Get list of groups with their associated cache configurations
      * @return array
      */
-    public static function getGroups()
-    {
+    public static function getGroups() {
         $groups = [];
         $keys = Cache::configured();
 

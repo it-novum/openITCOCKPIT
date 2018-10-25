@@ -7,8 +7,7 @@
 
 namespace Httpful\Handlers;
 
-class XmlHandler extends MimeHandlerAdapter
-{
+class XmlHandler extends MimeHandlerAdapter {
     /**
      * @var string $namespace xml namespace to use with simple_load_string
      */
@@ -22,8 +21,7 @@ class XmlHandler extends MimeHandlerAdapter
     /**
      * @param array $conf sets configuration options
      */
-    public function __construct(array $conf = [])
-    {
+    public function __construct(array $conf = []) {
         $this->namespace = isset($conf['namespace']) ? $conf['namespace'] : '';
         $this->libxml_opts = isset($conf['libxml_opts']) ? $conf['libxml_opts'] : 0;
     }
@@ -34,8 +32,7 @@ class XmlHandler extends MimeHandlerAdapter
      * @return mixed
      * @throws Exception if unable to parse
      */
-    public function parse($body)
-    {
+    public function parse($body) {
         $body = $this->stripBom($body);
         if (empty($body))
             return null;
@@ -52,8 +49,7 @@ class XmlHandler extends MimeHandlerAdapter
      * @return string
      * @throws Exception if unable to serialize
      */
-    public function serialize($payload)
-    {
+    public function serialize($payload) {
         list($_, $dom) = $this->_future_serializeAsXml($payload);
 
         return $dom->saveXml();
@@ -65,8 +61,7 @@ class XmlHandler extends MimeHandlerAdapter
      * @return string
      * @author Ted Zellers
      */
-    public function serialize_clean($payload)
-    {
+    public function serialize_clean($payload) {
         $xml = new \XMLWriter;
         $xml->openMemory();
         $xml->startDocument('1.0', 'ISO-8859-1');
@@ -77,12 +72,11 @@ class XmlHandler extends MimeHandlerAdapter
 
     /**
      * @param XMLWriter $xmlw
-     * @param mixed     $node to serialize
+     * @param mixed $node to serialize
      *
      * @author Ted Zellers
      */
-    public function serialize_node(&$xmlw, $node)
-    {
+    public function serialize_node(&$xmlw, $node) {
         if (!is_array($node)) {
             $xmlw->text($node);
         } else {
@@ -97,8 +91,7 @@ class XmlHandler extends MimeHandlerAdapter
     /**
      * @author Zack Douglas <zack@zackerydouglas.info>
      */
-    private function _future_serializeAsXml($value, $node = null, $dom = null)
-    {
+    private function _future_serializeAsXml($value, $node = null, $dom = null) {
         if (!$dom) {
             $dom = new \DOMDocument;
         }
@@ -130,8 +123,7 @@ class XmlHandler extends MimeHandlerAdapter
     /**
      * @author Zack Douglas <zack@zackerydouglas.info>
      */
-    private function _future_serializeArrayAsXml($value, &$parent, &$dom)
-    {
+    private function _future_serializeArrayAsXml($value, &$parent, &$dom) {
         foreach ($value as $k => &$v) {
             $n = $k;
             if (is_numeric($k)) {
@@ -148,8 +140,7 @@ class XmlHandler extends MimeHandlerAdapter
     /**
      * @author Zack Douglas <zack@zackerydouglas.info>
      */
-    private function _future_serializeObjectAsXml($value, &$parent, &$dom)
-    {
+    private function _future_serializeObjectAsXml($value, &$parent, &$dom) {
         $refl = new \ReflectionObject($value);
         foreach ($refl->getProperties() as $pr) {
             if (!$pr->isPrivate()) {

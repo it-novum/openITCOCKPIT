@@ -25,7 +25,7 @@
 <div class="btn-group">
     <button data-toggle="dropdown" class="btn dropdown-toggle btn-xs btn-success">
         <span><i class="fa fa-plus"></i> <?php echo __('Create downtime'); ?></span> <i
-            class="fa fa-caret-down"></i>
+                class="fa fa-caret-down"></i>
     </button>
     <ul class="dropdown-menu pull-right">
         <?php if ($this->Acl->hasPermission('addHostdowntime', 'systemdowntimes')): ?>

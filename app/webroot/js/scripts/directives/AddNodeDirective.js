@@ -18,7 +18,7 @@ angular.module('openITCOCKPIT').directive('addNode', function($http, $interval){
             };
 
             $scope.openModal = function(){
-                $('#angularAddNode-'+$scope.container.Container.id).modal('show');
+                $('#angularAddNode-' + $scope.container.Container.id).modal('show');
             };
 
             $scope.save = function(){
@@ -26,7 +26,7 @@ angular.module('openITCOCKPIT').directive('addNode', function($http, $interval){
                 $http.post("/containers/add.json?angular=true", $scope.post).then(
                     function(result){
                         $scope.callback();
-                        $('#angularAddNode-'+$scope.container.Container.id).modal('hide');
+                        $('#angularAddNode-' + $scope.container.Container.id).modal('hide');
                     }, function errorCallback(result){
                         if(result.data.hasOwnProperty('error')){
                             $scope.errors = result.data.error;

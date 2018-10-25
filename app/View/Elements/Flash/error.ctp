@@ -45,8 +45,8 @@
                 //hosts
                 $link = Router::url(array_merge([
                     'controller' => Inflector::pluralize(strtolower($moduleName)),
-                    'action' => 'hostUsedBy',
-                    'plugin' => strtolower($moduleName) . '_module',
+                    'action'     => 'hostUsedBy',
+                    'plugin'     => strtolower($moduleName) . '_module',
                 ],
                     $hosts
                 ));
@@ -56,7 +56,7 @@
                         <a href="<?php echo $link; ?>"><?php echo h($moduleName); ?></a>
                     </li>
                 </ul>
-                <?php
+            <?php
             endforeach;
         endif; ?>
 
@@ -67,8 +67,8 @@
                 //services
                 $link = Router::url(array_merge([
                     'controller' => Inflector::pluralize(strtolower($moduleName)),
-                    'action' => 'serviceUsedBy',
-                    'plugin' => strtolower($moduleName) . '_module',
+                    'action'     => 'serviceUsedBy',
+                    'plugin'     => strtolower($moduleName) . '_module',
                 ],
                     $services
                 ));
@@ -78,7 +78,7 @@
                         <a href="<?php echo $link; ?>"><?php echo h($moduleName); ?></a>
                     </li>
                 </ul>
-                <?php
+            <?php
             endforeach;
         endif;
     endif;

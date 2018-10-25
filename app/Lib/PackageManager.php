@@ -35,8 +35,7 @@ use itnovum\openITCOCKPIT\Core\Http;
  * @author Patrick Nawracay <patrick.nawracay@it-novum.com>
  * @since  3.0
  */
-class PackageManager
-{
+class PackageManager {
 
     /* @var $sudoServerInterface SudoMessageInterface */
     protected $sudoServerInterface = null;
@@ -47,8 +46,7 @@ class PackageManager
      * @param $sudoServerInterface SudoMessageInterface
      * @param $taskName            string
      */
-    public function __construct(SudoMessageInterface $sudoServerInterface, $taskName)
-    {
+    public function __construct(SudoMessageInterface $sudoServerInterface, $taskName) {
         $this->sudoServerInterface = $sudoServerInterface;
         $this->taskName = $taskName;
     }
@@ -62,8 +60,7 @@ class PackageManager
      *
      * @return boolean True if the package was installed successfully, false otherwise.
      */
-    public function install($url, $pluginName)
-    {
+    public function install($url, $pluginName) {
         if (empty($url) || empty($pluginName)) {
             $this->debugAndSend(sprintf('The given URL ("%s") or name ("%s") is not valid!', $url, $pluginName));
 
@@ -74,7 +71,7 @@ class PackageManager
         // Fetch the archive
         $zipFile = $this->fetchFile($url);
         if (!is_object($zipFile)) {
-            $this->debugAndSend('The file with URL "'.$url.'" couldn\'t get fetched!');
+            $this->debugAndSend('The file with URL "' . $url . '" couldn\'t get fetched!');
 
             return false;
         }
@@ -89,13 +86,13 @@ class PackageManager
         $this->send('Validated extraction path.');
 
         // Create temp directory
-        $tempDir = sys_get_temp_dir().DS.$pluginName;
+        $tempDir = sys_get_temp_dir() . DS . $pluginName;
         @mkdir($tempDir, 0777, true);
         $this->send('Temp directory created.');
 
         // Extract the archive
         if (!$this->extractZip($zipFile, $tempDir)) {
-            $this->debugAndSend('The file '.$zipFile->path.' couldn\'t get extracted!');
+            $this->debugAndSend('The file ' . $zipFile->path . ' couldn\'t get extracted!');
 
             return false;
         }
@@ -103,33 +100,33 @@ class PackageManager
 
         // Clean up - delete downloaded archive file
         if (!$zipFile->delete()) {
-            $this->debugAndSend('Cannot delete file "'.$zipFile->path.'".');
+            $this->debugAndSend('Cannot delete file "' . $zipFile->path . '".');
 
             return false;
         }
         $this->send('Cleaning up...');
 
         // Move the archive to the plugin directory
-        $pluginDir = new Folder(APP.'Plugin');
+        $pluginDir = new Folder(APP . 'Plugin');
         $tempDir = new Folder($tempDir);
-        if (!$tempDir->move($pluginDir->path.DS.$pluginName)) {
-            $msg = 'Moving archive to Plugin directory failed.'."\n";
-            $msg .= '$tempDir: '.$tempDir."\n";
-            $msg .= '$pluginDir: '.$pluginDir."\n";
+        if (!$tempDir->move($pluginDir->path . DS . $pluginName)) {
+            $msg = 'Moving archive to Plugin directory failed.' . "\n";
+            $msg .= '$tempDir: ' . $tempDir . "\n";
+            $msg .= '$pluginDir: ' . $pluginDir . "\n";
 
             //debug($msg);
 
             return false;
         }
-        $this->send('Installation of Plugin "'.$pluginName.'" was successful.');
+        $this->send('Installation of Plugin "' . $pluginName . '" was successful.');
 
         // Run the install.php file of the package, if it exists
         $acceptedFileNames = ['setup.php', 'install.php'];
         foreach ($acceptedFileNames as $installFileName) {
-            $fileName = APP.'Plugin'.DS.$pluginName.DS.$installFileName;
+            $fileName = APP . 'Plugin' . DS . $pluginName . DS . $installFileName;
             //debug($fileName);
             if (file_exists($fileName)) {
-                $this->debugAndSend('Additional installation file found. Executing "'.$fileName.'"');
+                $this->debugAndSend('Additional installation file found. Executing "' . $fileName . '"');
                 require $fileName;
             }
         }
@@ -140,15 +137,14 @@ class PackageManager
     /**
      * Alias for deletePackage until this feature may get implemented.
      */
-    public function uninstall($name)
-    {
+    public function uninstall($name) {
         // Run the install.php file of the package, if it exists
         $acceptedFileNames = ['uninstall.php', 'delete.php'];
         foreach ($acceptedFileNames as $installFileName) {
-            $fileName = APP.'Plugin'.DS.$name.DS.$installFileName;
+            $fileName = APP . 'Plugin' . DS . $name . DS . $installFileName;
             //debug($fileName);
             if (file_exists($fileName)) {
-                $this->debugAndSend('Additional uninstallation file found. Executing "'.$fileName.'"');
+                $this->debugAndSend('Additional uninstallation file found. Executing "' . $fileName . '"');
                 require $fileName;
             }
         }
@@ -164,8 +160,7 @@ class PackageManager
      *
      * @return boolean True on success, false otherwise.
      */
-    public function delete($name)
-    {
+    public function delete($name) {
         if (empty($name)) {
             $this->debugAndSend('The given package name is empty!');
 
@@ -185,7 +180,7 @@ class PackageManager
 
             return false;
         }
-        $this->send('Plugin "'.$name.'" deleted successfully.');
+        $this->send('Plugin "' . $name . '" deleted successfully.');
 
         return true;
     }
@@ -200,8 +195,7 @@ class PackageManager
      *
      * @return false|\Utility\File Returns false on failure. Otherwise an CakePHP file object.
      */
-    protected function fetchFile($url)
-    {
+    protected function fetchFile($url) {
         // Data validation
         if (!Validation::url($url, true)) {
             debug('The given URL is not valid!');
@@ -225,7 +219,7 @@ class PackageManager
         }
 
         $tempDirectory = sys_get_temp_dir(); // Use tempnam() here ?
-        $localFilePath = $tempDirectory.'/'.basename($url);
+        $localFilePath = $tempDirectory . '/' . basename($url);
         file_put_contents($localFilePath, $httpComponent->data);
 
         return new File($localFilePath);
@@ -239,8 +233,7 @@ class PackageManager
      *
      * @return boolean
      */
-    protected function extractZip($file, $destination)
-    {
+    protected function extractZip($file, $destination) {
         if (!$file->exists()) {
             return false;
         }
@@ -264,15 +257,13 @@ class PackageManager
      *
      * @return void
      */
-    protected function send($payload, $category = 'notification')
-    {
+    protected function send($payload, $category = 'notification') {
         $this->sudoServerInterface->send($payload, 'response', $this->taskName, $category);
     }
 
     /**
      */
-    protected function exec($command, $options = [])
-    {
+    protected function exec($command, $options = []) {
         $options = [
             'task' => $this->taskName,
         ];
@@ -285,8 +276,7 @@ class PackageManager
      *
      * @param $message string
      */
-    private function debugAndSend($message)
-    {
+    private function debugAndSend($message) {
         //debug($message);
         $this->send($message);
     }

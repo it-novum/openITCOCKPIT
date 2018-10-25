@@ -3,10 +3,8 @@ App::uses('SortableBehavior', 'Model/Behavior');
 
 /**
  * SortableBehavior Test Case
-
  */
-class SortableBehaviorTest extends CakeTestCase
-{
+class SortableBehaviorTest extends CakeTestCase {
 
     /**
      * @var array
@@ -18,8 +16,7 @@ class SortableBehaviorTest extends CakeTestCase
     /**
      * @return void
      */
-    public function setUp()
-    {
+    public function setUp() {
         parent::setUp();
         $this->SortingModel = ClassRegistry::init('Sorting');
     }
@@ -27,8 +24,7 @@ class SortableBehaviorTest extends CakeTestCase
     /**
      * @return void
      */
-    public function testInitialSort()
-    {
+    public function testInitialSort() {
         $this->SortingModel->Behaviors->attach('Sortable');
 
         $this->__createRecords(3);
@@ -46,8 +42,7 @@ class SortableBehaviorTest extends CakeTestCase
      * Tests inserting a record with an existing position
      * @return void
      */
-    public function testInsertRecordWithExistingPosition()
-    {
+    public function testInsertRecordWithExistingPosition() {
         $this->SortingModel->Behaviors->attach('Sortable');
 
         $this->__createRecords(3, true);
@@ -75,8 +70,7 @@ class SortableBehaviorTest extends CakeTestCase
      * Tests inserting a record with higher position
      * @return void
      */
-    public function testInsertRecordWithHigherPosition()
-    {
+    public function testInsertRecordWithHigherPosition() {
         $this->SortingModel->Behaviors->attach('Sortable');
 
         $this->__createRecords(3, true);
@@ -105,8 +99,7 @@ class SortableBehaviorTest extends CakeTestCase
      * it the highest sort position
      * @return void
      */
-    public function testInsertRecordWithoutPosition()
-    {
+    public function testInsertRecordWithoutPosition() {
         $this->SortingModel->Behaviors->attach('Sortable');
 
         $this->__createRecords(3, true);
@@ -134,17 +127,16 @@ class SortableBehaviorTest extends CakeTestCase
     /**
      * Creates $count records in the sorting table
      *
-     * @param int  $count
+     * @param int $count
      * @param bool $restore Whether to call restoreSorting() after creating the records
      *
      * @return void
      */
-    private function __createRecords($count, $restore = false)
-    {
+    private function __createRecords($count, $restore = false) {
         for ($i = 0; $i < $count; $i++) {
             $this->SortingModel->create();
             $this->SortingModel->save([
-                'name' => 'sorting '.$i,
+                'name' => 'sorting ' . $i,
             ], [
                 'callbacks' => false // prevent SortableBehavior 
             ]);
@@ -157,8 +149,7 @@ class SortableBehaviorTest extends CakeTestCase
     /**
      * @return void
      */
-    public function tearDown()
-    {
+    public function tearDown() {
         unset($this->SortingModel);
         parent::tearDown();
     }

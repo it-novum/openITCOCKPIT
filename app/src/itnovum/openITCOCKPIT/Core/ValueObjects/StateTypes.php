@@ -57,7 +57,7 @@ class StateTypes {
      * @param int $state
      * @param bool $value
      */
-    public function setStateType($stateType, $value){
+    public function setStateType($stateType, $value) {
         $key = $this->getStateTypeNameByStateType($stateType);
         $this->stateTypes[$key] = $value;
     }
@@ -65,28 +65,28 @@ class StateTypes {
     /**
      * @return bool
      */
-    public function hasSoft(){
+    public function hasSoft() {
         return $this->stateTypes['soft'];
     }
 
     /**
      * @return bool
      */
-    public function hasHard(){
+    public function hasHard() {
         return $this->stateTypes['hard'];
     }
 
     /**
      * @return array
      */
-    public function asArray(){
+    public function asArray() {
         return $this->stateTypes;
     }
 
     /**
      * @return array
      */
-    public function asIntegerArray(){
+    public function asIntegerArray() {
         $stateTypes = [];
         if ($this->hasSoft()) {
             $stateTypes[] = 0;
@@ -100,7 +100,7 @@ class StateTypes {
     /**
      * @return array
      */
-    public function getAvailableStateTypeIds(){
+    public function getAvailableStateTypeIds() {
         return $this->stateTypeIds;
     }
 
@@ -109,7 +109,7 @@ class StateTypes {
      * @return string
      * @throws UnknownStateException
      */
-    public function getStateTypeNameByStateType($stateType){
+    public function getStateTypeNameByStateType($stateType) {
         if (isset($this->stateTypeNames[$stateType])) {
             return $this->stateTypeNames[$stateType];
         }

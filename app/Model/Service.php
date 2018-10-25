@@ -1824,7 +1824,7 @@ class Service extends AppModel {
             $query['conditions']['OR'] = $ServiceConditions->getConditions();
         }
 
-        if($ServiceConditions->includeDisabled() === false){
+        if ($ServiceConditions->includeDisabled() === false) {
             $query['conditions']['Service.disabled'] = (int)$ServiceConditions->includeDisabled();
         }
 
@@ -1902,7 +1902,7 @@ class Service extends AppModel {
                 ]
             ];
 
-            if($ServiceConditions->includeDisabled() === false){
+            if ($ServiceConditions->includeDisabled() === false) {
                 $query['conditions']['Service.disabled'] = (int)$ServiceConditions->includeDisabled();
             }
 
@@ -2141,11 +2141,11 @@ class Service extends AppModel {
     public function getServicestatusCountBySelectedStatus($MY_RIGHTS, $conditions) {
         $this->virtualFields['servicename'] = 'IF((Service.name IS NULL OR Service.name=""), Servicetemplate.name, Service.name)';
         $query = [
-            'recursive' => -1,
-            'fields'    => [
+            'recursive'  => -1,
+            'fields'     => [
                 'COUNT(DISTINCT Servicestatus.service_object_id) AS count',
             ],
-            'joins'     => [
+            'joins'      => [
                 [
                     'table'      => 'servicetemplates',
                     'type'       => 'INNER',
@@ -2182,9 +2182,9 @@ class Service extends AppModel {
                 ],
             ],
             'conditions' => [
-                'ServiceObject.is_active'           => 1,
+                'ServiceObject.is_active'        => 1,
                 'HostsToContainers.container_id' => $MY_RIGHTS,
-                'Service.disabled'                  => 0
+                'Service.disabled'               => 0
             ]
         ];
 

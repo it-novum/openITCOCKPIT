@@ -42,8 +42,8 @@ class HostStates {
      * @var array
      */
     private $stateIds = [
-        'recovery' => 0,
-        'down' => 1,
+        'recovery'    => 0,
+        'down'        => 1,
         'unreachable' => 2
     ];
 
@@ -51,8 +51,8 @@ class HostStates {
      * @var array
      */
     private $states = [
-        'recovery' => false,
-        'down' => false,
+        'recovery'    => false,
+        'down'        => false,
         'unreachable' => false
     ];
 
@@ -60,7 +60,7 @@ class HostStates {
      * @param int $state
      * @param bool $value
      */
-    public function setState($state, $value){
+    public function setState($state, $value) {
         $key = $this->getStateNameByState($state);
         $this->states[$key] = $value;
     }
@@ -68,28 +68,28 @@ class HostStates {
     /**
      * @return bool
      */
-    public function hasRecovery(){
+    public function hasRecovery() {
         return $this->states['recovery'];
     }
 
     /**
      * @return bool
      */
-    public function hasDown(){
+    public function hasDown() {
         return $this->states['down'];
     }
 
     /**
      * @return bool
      */
-    public function hasUnreachable(){
+    public function hasUnreachable() {
         return $this->states['unreachable'];
     }
 
     /**
      * @return array
      */
-    public function asArray(){
+    public function asArray() {
         return $this->states;
     }
 
@@ -97,7 +97,7 @@ class HostStates {
     /**
      * @return array
      */
-    public function asIntegerArray(){
+    public function asIntegerArray() {
         $states = [];
         if ($this->hasRecovery()) {
             $states[] = 0;
@@ -114,7 +114,7 @@ class HostStates {
     /**
      * @return array
      */
-    public function getAvailableStateIds(){
+    public function getAvailableStateIds() {
         return $this->stateIds;
     }
 
@@ -123,7 +123,7 @@ class HostStates {
      * @return string
      * @throws UnknownStateException
      */
-    public function getStateNameByState($state){
+    public function getStateNameByState($state) {
         if (isset($this->stateNames[$state])) {
             return $this->stateNames[$state];
         }

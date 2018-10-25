@@ -23,51 +23,51 @@
 //	confirmation.
 
 App.Components.AttachmentsComponent = Frontend.Component.extend({
-	_element: null,
-	setup: function($element, options) {
-		this._element = $element;
-		options = options || {};
-		
-		var defaultOptions = {
-			model: this._element.data('model'),
-			foreignKey: this._element.data('foreign-key'),
-			endpoint: '/attachments/handle_upload'
-		};
-		this.options = $.extend({}, defaultOptions, options);
-		this.refreshList();
-		this._element.find('.uploader').fineUploader({
-			request: {
-				endpoint: this.options.endpoint,
-				params: {
-					model: this.options.model,
-					foreignKey: this.options.foreignKey
-				}
-			},
-			template: this._element.parent().find('#fine-uploader-template').html(),
-			failedUploadTextDisplay: {
-				mode: 'custom',
-				maxChars: 100,
-				responseProperty: 'error',
-				enableTooltip: true
-			}
-		})
-		.on('complete', this._onUploadCompleted.bind(this));
-	},
-	_onUploadCompleted: function() {
-		this.refreshList();
-	},
-	// @fixme: list new entry only if successful upload
-	refreshList: function() {
-		var url = {
-			controller: 'attachments',
-			action: 'get_list',
-			pass: [ this.options.model, this.options.foreignKey ]
-		};
-		App.Main.loadWidget(url, {
-			target: this._element.find('.list'),
-			onComplete: function() {
-				// TODO: highlight new row
-			}
-		});
-	}
+    _element: null,
+    setup: function($element, options){
+        this._element = $element;
+        options = options || {};
+
+        var defaultOptions = {
+            model: this._element.data('model'),
+            foreignKey: this._element.data('foreign-key'),
+            endpoint: '/attachments/handle_upload'
+        };
+        this.options = $.extend({}, defaultOptions, options);
+        this.refreshList();
+        this._element.find('.uploader').fineUploader({
+            request: {
+                endpoint: this.options.endpoint,
+                params: {
+                    model: this.options.model,
+                    foreignKey: this.options.foreignKey
+                }
+            },
+            template: this._element.parent().find('#fine-uploader-template').html(),
+            failedUploadTextDisplay: {
+                mode: 'custom',
+                maxChars: 100,
+                responseProperty: 'error',
+                enableTooltip: true
+            }
+        })
+            .on('complete', this._onUploadCompleted.bind(this));
+    },
+    _onUploadCompleted: function(){
+        this.refreshList();
+    },
+    // @fixme: list new entry only if successful upload
+    refreshList: function(){
+        var url = {
+            controller: 'attachments',
+            action: 'get_list',
+            pass: [this.options.model, this.options.foreignKey]
+        };
+        App.Main.loadWidget(url, {
+            target: this._element.find('.list'),
+            onComplete: function(){
+                // TODO: highlight new row
+            }
+        });
+    }
 });

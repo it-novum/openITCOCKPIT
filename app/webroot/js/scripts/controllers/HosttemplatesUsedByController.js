@@ -10,7 +10,7 @@ angular.module('openITCOCKPIT')
 
 
         $scope.load = function(){
-            $http.get("/hosttemplates/usedBy/"+$scope.id+".json", {
+            $http.get("/hosttemplates/usedBy/" + $scope.id + ".json", {
                 params: {
                     'angular': true
                 }

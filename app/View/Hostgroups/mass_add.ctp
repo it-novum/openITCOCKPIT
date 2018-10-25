@@ -105,7 +105,7 @@
                         <?php foreach ($hostsToAppend as $hostToAppend): ?>
                             <li>
                                 <?php echo h($hostToAppend['Host']['name']); ?>
-                                <?php echo $this->Form->input('Host.id.'.$hostToAppend['Host']['id'], ['value' => $hostToAppend['Host']['id'], 'type' => 'hidden']); ?>
+                                <?php echo $this->Form->input('Host.id.' . $hostToAppend['Host']['id'], ['value' => $hostToAppend['Host']['id'], 'type' => 'hidden']); ?>
                             </li>
                         <?php endforeach; ?>
                     </ul>

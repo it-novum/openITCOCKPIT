@@ -23,8 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class TestingShell extends AppShell
-{
+class TestingShell extends AppShell {
     /*
      * This is a test and debuging shell for development purposes
      */
@@ -54,8 +53,7 @@ class TestingShell extends AppShell
         'Calendar'
     ];
 
-    public function main()
-    {
+    public function main() {
         //debug($this->Aro->find('all'));
         //debug($this->Aco->find('all', ['recursive' => -1]));
         /*
@@ -63,8 +61,7 @@ class TestingShell extends AppShell
          */
     }
 
-    public function getOptionParser()
-    {
+    public function getOptionParser() {
         $parser = parent::getOptionParser();
         $parser->addOptions([
             'type'     => ['short' => 't', 'help' => __d('oitc_console', 'Type of the notification host or service')],

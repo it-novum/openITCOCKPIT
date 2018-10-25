@@ -25,7 +25,6 @@
 
 App::uses('AppModel', 'Model');
 
-class ExampleModuleAppModel extends AppModel
-{
+class ExampleModuleAppModel extends AppModel {
 
 }

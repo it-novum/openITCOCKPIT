@@ -40,35 +40,35 @@ class SystemdowntimesConditions {
     /**
      * @return array
      */
-    public function getContainerIds(){
+    public function getContainerIds() {
         return $this->containerIds;
     }
 
     /**
      * @param array $containerIds
      */
-    public function setContainerIds($containerIds){
+    public function setContainerIds($containerIds) {
         $this->containerIds = $containerIds;
     }
 
     /**
      * @return bool
      */
-    public function hasContainer(){
+    public function hasContainer() {
         return !empty($this->containerIds);
     }
 
     /**
      * @param array $order
      */
-    public function setOrder($order = []){
+    public function setOrder($order = []) {
         $this->order = $order;
     }
 
     /**
      * @return array
      */
-    public function getOrder(){
+    public function getOrder() {
         return $this->order;
     }
 

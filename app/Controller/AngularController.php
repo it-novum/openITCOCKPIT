@@ -22,7 +22,7 @@
 //  License agreement and license key will be shipped with the order
 //  confirmation.
 
-use \itnovum\openITCOCKPIT\Core\ValueObjects\User;
+use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Core\Views\HostAndServiceSummaryIcon;
 use itnovum\openITCOCKPIT\Core\Views\PieChart;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
@@ -206,7 +206,7 @@ class AngularController extends AppController {
 
         //We need integers for cratedb
         $containerIdsForQuery = [];
-        foreach($containerIds as $containerId){
+        foreach ($containerIds as $containerId) {
             $containerIdsForQuery[] = (int)$containerId;
         }
 
@@ -597,6 +597,7 @@ class AngularController extends AppController {
         //Only ship HTML template
         return;
     }
+
     /**
      * @param int $up up|ok
      * @param int $down down|warning

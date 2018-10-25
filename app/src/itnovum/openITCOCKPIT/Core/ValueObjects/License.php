@@ -25,8 +25,7 @@
 namespace itnovum\openITCOCKPIT\Core\ValueObjects;
 
 
-class License
-{
+class License {
 
     private $license = '';
 
@@ -35,8 +34,7 @@ class License
      *
      * @param array $license CakePHP's find result
      */
-    public function __construct($license)
-    {
+    public function __construct($license) {
         $this->license = '';
 
         if (!empty($license)) {
@@ -46,8 +44,7 @@ class License
         }
     }
 
-    public function getLicense()
-    {
+    public function getLicense() {
         return $this->license;
     }
 }

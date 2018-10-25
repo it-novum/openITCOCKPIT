@@ -23,8 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class Automap extends AppModel
-{
+class Automap extends AppModel {
 
     /*public $belongsTo = [
         'Container' => [
@@ -98,10 +97,9 @@ class Automap extends AppModel
 
     ];
 
-    public function isRegex($data, $key)
-    {
+    public function isRegex($data, $key) {
         if (isset($data[$key])) {
-            if (@preg_match('/'.$data[$key].'/', null) !== false) {
+            if (@preg_match('/' . $data[$key] . '/', null) !== false) {
                 return true;
             }
         }
@@ -109,8 +107,7 @@ class Automap extends AppModel
         return false;
     }
 
-    public function checkStateOptions($data)
-    {
+    public function checkStateOptions($data) {
         $needles = ['show_acknowledged', 'show_downtime', 'show_unknown', 'show_critical', 'show_warning', 'show_ok'];
         foreach ($needles as $needle) {
             if (isset($this->data['Automap'][$needle]) && $this->data['Automap'][$needle] == 1) {

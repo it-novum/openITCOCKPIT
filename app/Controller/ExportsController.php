@@ -73,21 +73,21 @@ class ExportsController extends AppController {
         $exportRecords = [];
 
         $exportFinished = [
-            'finished' => false,
+            'finished'     => false,
             'successfully' => false,
         ];
 
         foreach ($_exportRecords as $exportRecord) {
             $exportRecords[$exportRecord['Export']['id']] = [
-                'task' => $exportRecord['Export']['task'],
-                'text' => h($exportRecord['Export']['text']),
-                'finished' => $exportRecord['Export']['finished'],
+                'task'         => $exportRecord['Export']['task'],
+                'text'         => h($exportRecord['Export']['text']),
+                'finished'     => $exportRecord['Export']['finished'],
                 'successfully' => $exportRecord['Export']['successfully'],
             ];
 
             if ($exportRecord['Export']['task'] == 'export_finished' && $exportRecord['Export']['finished'] == 1) {
                 $exportFinished = [
-                    'finished' => true,
+                    'finished'     => true,
                     'successfully' => (bool)$exportRecord['Export']['successfully'],
                 ];
             }

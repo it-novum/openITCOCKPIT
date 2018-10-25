@@ -81,7 +81,7 @@
                 </div>
                 <div class="form-group required">
                     <label class="col col-md-2 control-label" for="InstantreportType">
-                        <?php echo __('Type');?>
+                        <?php echo __('Type'); ?>
                     </label>
                     <div class="col col-xs-10">
                         <select ng-model="post.Instantreport.type"
@@ -189,7 +189,7 @@
 
                 <div class="form-group">
                     <label class="col col-md-2 control-label">
-                        <?php echo __('Evaluation');?>
+                        <?php echo __('Evaluation'); ?>
                     </label>
                     <div class="col col-xs-10">
                         <label class="padding-right-10" for="InstantreportEvaluation1">
@@ -255,33 +255,33 @@
                 <div class="form-group">
                     <?php
                     echo $this->Form->fancyCheckbox('Instantreport.downtimes', [
-                        'caption' => __('Consider downtimes'),
-                        'wrapGridClass' => 'col col-md-1',
+                        'caption'          => __('Consider downtimes'),
+                        'wrapGridClass'    => 'col col-md-1',
                         'captionGridClass' => 'col col-md-2',
-                        'captionClass' => 'control-label',
-                        'ng-model' => 'post.Instantreport.downtimes'
+                        'captionClass'     => 'control-label',
+                        'ng-model'         => 'post.Instantreport.downtimes'
                     ]);
                     ?>
                 </div>
                 <div class="form-group">
                     <?php
                     echo $this->Form->fancyCheckbox('Instantreport.summary', [
-                        'caption' => __('Summary display'),
-                        'wrapGridClass' => 'col col-md-1',
+                        'caption'          => __('Summary display'),
+                        'wrapGridClass'    => 'col col-md-1',
                         'captionGridClass' => 'col col-md-2',
-                        'captionClass' => 'control-label',
-                        'ng-model' => 'post.Instantreport.summary'
+                        'captionClass'     => 'control-label',
+                        'ng-model'         => 'post.Instantreport.summary'
                     ]);
                     ?>
                 </div>
                 <div class="form-group">
                     <?php
                     echo $this->Form->fancyCheckbox('Instantreport.send_email', [
-                        'caption' => __('Send email'),
-                        'wrapGridClass' => 'col col-md-1',
+                        'caption'          => __('Send email'),
+                        'wrapGridClass'    => 'col col-md-1',
                         'captionGridClass' => 'col col-md-2',
-                        'captionClass' => 'control-label',
-                        'ng-model' => 'post.Instantreport.send_email'
+                        'captionClass'     => 'control-label',
+                        'ng-model'         => 'post.Instantreport.send_email'
                     ]);
                     ?>
                 </div>
@@ -292,11 +292,11 @@
                         </label>
                         <div class="col col-xs-10">
                             <select
-                                data-placeholder="<?php __('Please select...'); ?>"
-                                class="chosen form-control"
-                                id="InstantreportSendInterval"
-                                chosen="send_interval"
-                                ng-model="post.Instantreport.send_interval">
+                                    data-placeholder="<?php __('Please select...'); ?>"
+                                    class="chosen form-control"
+                                    id="InstantreportSendInterval"
+                                    chosen="send_interval"
+                                    ng-model="post.Instantreport.send_interval">
                                 <option value="1"><?php echo __('DAY'); ?></option>
                                 <option value="2"><?php echo __('WEEK'); ?></option>
                                 <option value="3"><?php echo __('MONTH'); ?></option>
@@ -310,12 +310,12 @@
                         </label>
                         <div class="col col-xs-10">
                             <select multiple
-                                id="UserId"
-                                data-placeholder="<?php echo __('Please choose'); ?>"
-                                class="form-control"
-                                chosen="users"
-                                ng-options="user.key as user.value for user in users"
-                                ng-model="post.Instantreport.User">
+                                    id="UserId"
+                                    data-placeholder="<?php echo __('Please choose'); ?>"
+                                    class="form-control"
+                                    chosen="users"
+                                    ng-options="user.key as user.value for user in users"
+                                    ng-model="post.Instantreport.User">
                             </select>
                             <div ng-repeat="error in errors.User">
                                 <div class="help-block text-danger">{{ error }}</div>

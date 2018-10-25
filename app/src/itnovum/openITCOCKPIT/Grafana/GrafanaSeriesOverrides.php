@@ -27,8 +27,6 @@
 namespace itnovum\openITCOCKPIT\Grafana;
 
 
-
-
 class GrafanaSeriesOverrides {
 
     /**

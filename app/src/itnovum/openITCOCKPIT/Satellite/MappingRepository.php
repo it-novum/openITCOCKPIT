@@ -37,14 +37,14 @@ class MappingRepository {
      * @param $name
      * @param $objectType
      */
-    public function addItem($uuid, $name, $objectType){
+    public function addItem($uuid, $name, $objectType) {
         $this->mapping[$objectType][$uuid] = $name;
     }
 
     /**
      * @param string $path
      */
-    public function toFile($path){
+    public function toFile($path) {
         $file = fopen($path, 'w+');
         fwrite($file, json_encode($this->mapping));
         fclose($file);

@@ -27,8 +27,7 @@
  * Class Statehistory
  * @deprecated Do not you this Model anymore
  */
-class Statehistory extends NagiosModuleAppModel
-{
+class Statehistory extends NagiosModuleAppModel {
     public $useTable = 'statehistory';
     public $primaryKey = 'statehistory_id';
     public $tablePrefix = 'nagios_';

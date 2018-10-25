@@ -23,16 +23,14 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class CustomValidationErrorsHelper extends AppHelper
-{
+class CustomValidationErrorsHelper extends AppHelper {
 
     /**
      * Initialize the Helper and set the needed variables
      *
      * @param string $viewFile
      */
-    public function beforeRender($viewFile)
-    {
+    public function beforeRender($viewFile) {
         $this->Controller = ucfirst($this->params->params['controller']);
         $this->Model = Inflector::singularize($this->Controller);
         $this->View = $this->_View->viewVars;
@@ -47,12 +45,11 @@ class CustomValidationErrorsHelper extends AppHelper
      * - `errorClass` The CSS class for validation errors
      *
      * @param string $fieldName of the input field we want to display the error
-     * @param array  $options   Array of options
+     * @param array $options Array of options
      *
      * @return string $ with the error message of validate function
      */
-    public function errorClass($fieldName, $options = [])
-    {
+    public function errorClass($fieldName, $options = []) {
         $_options = [
             'Model'      => $this->Model,
             'Controller' => $this->Controller,
@@ -78,12 +75,11 @@ class CustomValidationErrorsHelper extends AppHelper
      * - `style` Style atributes of the wrapper element
      *
      * @param string $fieldName of the input field we want to display the error
-     * @param array  $options   Array of options
+     * @param array $options Array of options
      *
      * @return string a `span` HTML object with the error message
      */
-    public function errorHTML($fieldName, $options = [])
-    {
+    public function errorHTML($fieldName, $options = []) {
         $_options = [
             'Model'      => $this->Model,
             'Controller' => $this->Controller,
@@ -94,7 +90,7 @@ class CustomValidationErrorsHelper extends AppHelper
         ];
         $options = Hash::merge($_options, $options);
         if ($this->hasError($fieldName, $options)) {
-            return '<'.$options['wrapper'].' class="'.$options['class'].'" style="'.$options['style'].'">'.$this->returnError($fieldName, $options).'</'.$options['wrapper'].'>';
+            return '<' . $options['wrapper'] . ' class="' . $options['class'] . '" style="' . $options['style'] . '">' . $this->returnError($fieldName, $options) . '</' . $options['wrapper'] . '>';
         }
 
         return '';
@@ -108,12 +104,11 @@ class CustomValidationErrorsHelper extends AppHelper
      * - `errorField` The name of the Variable with the error
      *
      * @param string $fieldName of the input field we want to display the error
-     * @param array  $options   Array of options
+     * @param array $options Array of options
      *
      * @return string with the error message of validate function
      */
-    public function returnError($fieldName, $options = [])
-    {
+    public function returnError($fieldName, $options = []) {
         $_options = [
             'Model'      => $this->Model,
             'Controller' => $this->Controller,
@@ -124,7 +119,7 @@ class CustomValidationErrorsHelper extends AppHelper
         if ($this->hasError($fieldName, $options)) {
             //$this->View[$options['Model'].$options['errorField'].$fieldName] will return a array
             //[0] => 'Error message' the current() convers this into a string
-            return current($this->View[$options['Model'].$options['errorField'].$fieldName]);
+            return current($this->View[$options['Model'] . $options['errorField'] . $fieldName]);
         }
 
         return '';
@@ -139,12 +134,11 @@ class CustomValidationErrorsHelper extends AppHelper
      * - `errorField` The name of the Variable with the error
      *
      * @param string $fieldName of the input field we want to display the error
-     * @param array  $options   Array of options
+     * @param array $options Array of options
      *
      * @return Boolean
      */
-    public function hasError($fieldName, $options = [])
-    {
+    public function hasError($fieldName, $options = []) {
         $_options = [
             'Model'      => $this->Model,
             'Controller' => $this->Controller,
@@ -152,7 +146,7 @@ class CustomValidationErrorsHelper extends AppHelper
         ];
 
         $options = Hash::merge($_options, $options);
-        if (isset($this->View[$options['Model'].$options['errorField'].$fieldName])) {
+        if (isset($this->View[$options['Model'] . $options['errorField'] . $fieldName])) {
             return true;
         }
 
@@ -165,13 +159,12 @@ class CustomValidationErrorsHelper extends AppHelper
      * - `Model`   The name of the Model
      *
      * @param string $fieldName of the input field we want to display the error
-     * @param string $default   a default value
-     * @param array  $options   Array of options
+     * @param string $default a default value
+     * @param array $options Array of options
      *
      * @return mixed value from Controller->request->data[$Model][$Field]
      */
-    public function refill($fieldName, $default = '', $options = [])
-    {
+    public function refill($fieldName, $default = '', $options = []) {
         $_options = [
             'Model' => $this->Model,
         ];

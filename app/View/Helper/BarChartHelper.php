@@ -24,18 +24,15 @@
 //	confirmation.
 
 
-class BarChartHelper extends AppHelper
-{
-    public function __construct(View $view, $settings = [])
-    {
+class BarChartHelper extends AppHelper {
+    public function __construct(View $view, $settings = []) {
         parent::__construct($view, $settings);
     }
 
-    public function createBarChart($chartData, $vertical = false)
-    {
+    public function createBarChart($chartData, $vertical = false) {
 
-        $filepath = WWW_ROOT.'img'.DS.'charts';
-        $filename = uniqid().'.png';
+        $filepath = WWW_ROOT . 'img' . DS . 'charts';
+        $filename = uniqid() . '.png';
         $tmp_dir = new Folder($filepath, true);
 
         $this->img = imagecreatetruecolor(260, 25);
@@ -49,21 +46,19 @@ class BarChartHelper extends AppHelper
 
         $this->setImageLayout(); //set transparence, colors, fonts, ...
         $this->create($chartData);
-        imagepng($this->img, $filepath.DS.$filename, 0);
+        imagepng($this->img, $filepath . DS . $filename, 0);
         imagedestroy($this->img);
 
         return $filename;
     }
 
-    public function setImageLayout()
-    {
+    public function setImageLayout() {
         imagesavealpha($this->img, true);
         $transparent = imagecolorallocatealpha($this->img, 0, 0, 0, 127);
         imagefill($this->img, 0, 0, $transparent);
     }
 
-    public function create($chartData)
-    {
+    public function create($chartData) {
         $alpha = 5;
         $colors_host = [
             [92, 184, 92, $alpha], [217, 83, 79, $alpha], [183, 183, 183, $alpha],
@@ -94,16 +89,14 @@ class BarChartHelper extends AppHelper
     }
 
 
-    function barHorizontal($chartDataArray)
-    {
+    function barHorizontal($chartDataArray) {
         foreach ($chartDataArray as $key => $dataArr) {
             $background = imagecolorallocatealpha($this->img, $dataArr['color'][0], $dataArr['color'][1], $dataArr['color'][2], $dataArr['color'][3]);
             imagefilledrectangle($this->img, $dataArr['start'], $this->y, $dataArr['end'], $this->y + $this->height, $background);
         }
     }
 
-    function bar3dHorizontal($chartDataArray)
-    {
+    function bar3dHorizontal($chartDataArray) {
 
         foreach ($chartDataArray as $key => $dataArr) {
             $background = imagecolorallocatealpha($this->img, $dataArr['color'][0] * 0.75, $dataArr['color'][1] * 0.75, $dataArr['color'][2] * 0.75, $dataArr['color'][3]);

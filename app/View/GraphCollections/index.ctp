@@ -60,7 +60,8 @@
                 <div>
                     <div class="widget-body no-padding">
                         <div class="mobile_table">
-                            <table id="graphcolections_list" class="table table-striped table-hover table-bordered smart-form"
+                            <table id="graphcolections_list"
+                                   class="table table-striped table-hover table-bordered smart-form"
                                    style="">
                                 <thead>
                                 <tr>
@@ -88,7 +89,7 @@
                                     <tr>
                                         <td class="text-center width-5">
                                             <input type="checkbox" class="massChange"
-                                                   data-delete-display-text="<?php echo $collection['GraphCollection']['name'].' (ID:'.$collection['GraphCollection']['id'].')'; ?>"
+                                                   data-delete-display-text="<?php echo $collection['GraphCollection']['name'] . ' (ID:' . $collection['GraphCollection']['id'] . ')'; ?>"
                                                    value="<?php echo $collection['GraphCollection']['id']; ?>">
                                         </td>
                                         <td>
@@ -138,7 +139,7 @@
                                                     <?php if ($this->Acl->hasPermission('mass_delete', 'graphcollections')): ?>
                                                         <li class="divider"></li>
                                                         <li>
-                                                            <?php echo $this->Form->postLink('<i class="fa fa-trash-o"></i> '.__('Delete'), ['controller' => 'GraphCollections', 'action' => 'mass_delete', $collection['GraphCollection']['id']], ['class' => 'txt-color-red', 'escape' => false]); ?>
+                                                            <?php echo $this->Form->postLink('<i class="fa fa-trash-o"></i> ' . __('Delete'), ['controller' => 'GraphCollections', 'action' => 'mass_delete', $collection['GraphCollection']['id']], ['class' => 'txt-color-red', 'escape' => false]); ?>
                                                         </li>
                                                     <?php endif; ?>
                                                 </ul>
@@ -182,7 +183,7 @@
                             <div class="row">
                                 <div class="col-sm-6">
                                     <div class="dataTables_info" style="line-height: 32px;"
-                                         id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('Page').' {:page} '.__('of').' {:pages}, '.__('Total').' {:count} '.__('entries')); ?></div>
+                                         id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('Page') . ' {:page} ' . __('of') . ' {:pages}, ' . __('Total') . ' {:count} ' . __('entries')); ?></div>
                                 </div>
                                 <div class="col-sm-6 text-right">
                                     <div class="dataTables_paginate paging_bootstrap">

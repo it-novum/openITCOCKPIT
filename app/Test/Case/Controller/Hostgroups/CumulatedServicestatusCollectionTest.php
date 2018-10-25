@@ -26,59 +26,50 @@ namespace itnovum\openITCOCKPIT\HostgroupsController;
 
 //run test with: oitc test app Controller/Hostgroups/CumulatedServicestatusCollection
 
-class CumulatedServicestatusCollectionTest extends \PHPUnit_Framework_TestCase
-{
+class CumulatedServicestatusCollectionTest extends \PHPUnit_Framework_TestCase {
 
-    public function testInstance()
-    {
+    public function testInstance() {
         $collection = new CumulatedServicestatusCollection($this->servicesExtendedLoaderFake());
         $this->assertInstanceOf('\itnovum\openITCOCKPIT\HostgroupsController\CumulatedServicestatusCollection', $collection);
     }
 
-    public function testExistsByExistingHostId()
-    {
+    public function testExistsByExistingHostId() {
         $collection = new CumulatedServicestatusCollection($this->servicesExtendedLoaderFake());
         $result = $collection->existsByHostId(6);
         $this->assertTrue($result);
     }
 
-    public function testNotExistsByNonExistingHostId()
-    {
+    public function testNotExistsByNonExistingHostId() {
         $collection = new CumulatedServicestatusCollection($this->servicesExtendedLoaderFake());
         $result = $collection->existsByHostId(12345678);
         $this->assertFalse($result);
     }
 
-    public function testGetStatusByHostId()
-    {
+    public function testGetStatusByHostId() {
         $collection = new CumulatedServicestatusCollection($this->servicesExtendedLoaderFake());
         $cumulatedServicestatus = $collection->getByHostId(6);
         $this->assertEquals(2, $cumulatedServicestatus);
     }
 
-    public function testAssertMissingRecord()
-    {
+    public function testAssertMissingRecord() {
         $collection = new CumulatedServicestatusCollection($this->servicesExtendedLoaderFake());
         $this->setExpectedException('\itnovum\openITCOCKPIT\HostgroupsController\Exceptions\RecordExistsException');
         $result = $collection->getByHostId(12345678);
     }
 
-    public function testEvenIfNotExistsOnExisting()
-    {
+    public function testEvenIfNotExistsOnExisting() {
         $collection = new CumulatedServicestatusCollection($this->servicesExtendedLoaderFake());
         $cumulatedServicestatus = $collection->getByHostIdEvenIfNotExists(6);
         $this->assertEquals(2, $cumulatedServicestatus);
     }
 
-    public function testEvenIfNotExistsOnNonExisting()
-    {
+    public function testEvenIfNotExistsOnNonExisting() {
         $collection = new CumulatedServicestatusCollection($this->servicesExtendedLoaderFake());
         $cumulatedServicestatus = $collection->getByHostIdEvenIfNotExists(12345678);
         $this->assertEquals(-1, $cumulatedServicestatus);
     }
 
-    public function testGetCollectionAsArray()
-    {
+    public function testGetCollectionAsArray() {
         $data = [
             [
                 'Host' => [
@@ -117,8 +108,7 @@ class CumulatedServicestatusCollectionTest extends \PHPUnit_Framework_TestCase
     /**
      * @return array
      */
-    private function servicesExtendedLoaderFake()
-    {
+    private function servicesExtendedLoaderFake() {
         return [
             (int)0 => [
                 'Host' => [

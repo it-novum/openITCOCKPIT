@@ -28,11 +28,9 @@ namespace itnovum\openITCOCKPIT\Core;
 //run test: oitc test app CakePHP/RequestParams
 \App::uses('AppController', 'Controller');
 
-class RequestParamsTest extends \ControllerTestCase
-{
+class RequestParamsTest extends \ControllerTestCase {
 
-    public function testEqualParams()
-    {
+    public function testEqualParams() {
         $this->testAction('/hosts/index/Filter.Hoststatus.current_state[0]:1/Filter.Hoststatus.current_state[2]:1/q:1');
         $expectedResult = [
             'Filter' => [
@@ -44,8 +42,7 @@ class RequestParamsTest extends \ControllerTestCase
         $this->assertEquals($expectedResult, $this->vars['myNamedFilters']);
     }
 
-    public function testNotEqualParams()
-    {
+    public function testNotEqualParams() {
         $this->testAction('/hosts/index/Filter.Hoststatus.current_state[0]:1/Filter.Hoststatus.current_state[2]:1/q:1');
         $expectedResult = [
             'Filter' => [

@@ -46,8 +46,8 @@ class ServicechecksController extends AppController {
     public $helpers = ['Status', 'Monitoring'];
     public $layout = 'Admin.default';
 
-    public function index($id = null){
-        $this->layout="angularjs";
+    public function index($id = null) {
+        $this->layout = "angularjs";
 
         if (!$this->Service->exists($id)) {
             throw new NotFoundException(__('Invalid service'));
@@ -56,16 +56,16 @@ class ServicechecksController extends AppController {
         if (!$this->isAngularJsRequest()) {
             //Service for .html requests
             $service = $this->Service->find('first', [
-                'recursive' => -1,
-                'fields' => [
+                'recursive'  => -1,
+                'fields'     => [
                     'Service.id',
                     'Service.uuid',
                     'Service.name',
                     'Service.service_type',
                     'Service.service_url'
                 ],
-                'contain' => [
-                    'Host' => [
+                'contain'    => [
+                    'Host'            => [
                         'fields' => [
                             'Host.id',
                             'Host.name',
@@ -112,15 +112,15 @@ class ServicechecksController extends AppController {
 
         //Service for .json requests
         $service = $this->Service->find('first', [
-            'recursive' => -1,
-            'fields' => [
+            'recursive'  => -1,
+            'fields'     => [
                 'Service.id',
                 'Service.uuid',
                 'Service.name',
                 'Service.service_type',
                 'Service.service_url'
             ],
-            'contain' => [
+            'contain'    => [
                 'Host' => [
                     'fields' => [
                         'Host.uuid'
@@ -152,11 +152,11 @@ class ServicechecksController extends AppController {
         $this->Paginator->settings['page'] = $AngularServicechecksControllerRequest->getPage();
 
         $ScrollIndex = new ScrollIndex($this->Paginator, $this);
-        if($this->isScrollRequest()) {
+        if ($this->isScrollRequest()) {
             $servicechecks = $this->Servicecheck->find('all', $this->Paginator->settings);
             $ScrollIndex->determineHasNextPage($servicechecks);
             $ScrollIndex->scroll();
-        }else {
+        } else {
             $servicechecks = $this->Paginator->paginate(
                 $this->Servicecheck->alias,
                 [],
@@ -175,7 +175,7 @@ class ServicechecksController extends AppController {
 
         $this->set(compact(['all_servicechecks']));
         $toJson = ['all_servicechecks', 'paging'];
-        if($this->isScrollRequest()){
+        if ($this->isScrollRequest()) {
             $toJson = ['all_servicechecks', 'scroll'];
         }
         $this->set('_serialize', $toJson);

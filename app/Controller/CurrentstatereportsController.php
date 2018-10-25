@@ -158,7 +158,7 @@ class CurrentstatereportsController extends AppController {
         if ($this->Session->check('currentStateData')) {
             $this->Session->delete('currentStateData');
             $this->render('/Elements/load_current_state_report_data');
-        }else{
+        } else {
             $this->redirect(['action' => 'index']);
         }
     }

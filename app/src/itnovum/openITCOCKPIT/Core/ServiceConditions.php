@@ -88,7 +88,7 @@ class ServiceConditions {
      * @return array
      */
     public function getNotConditions() {
-        if($this->hasNotConditions()){
+        if ($this->hasNotConditions()) {
             return $this->notConditions;
         }
         return [];
@@ -97,7 +97,7 @@ class ServiceConditions {
     /**
      * @return boolean
      */
-    public function hasNotConditions(){
+    public function hasNotConditions() {
         return !empty($this->notConditions);
     }
 

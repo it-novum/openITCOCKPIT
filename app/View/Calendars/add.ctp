@@ -38,7 +38,7 @@
         <div class="jarviswidget" id="wid-id-0">
             <header>
                 <span class="widget-icon"> <i class="fa fa-calendar"></i> </span>
-                <h2><?php echo __('Add').' '.__('Calendar'); ?></h2>
+                <h2><?php echo __('Add') . ' ' . __('Calendar'); ?></h2>
                 <div class="widget-toolbar" role="menu">
                     <?php echo $this->Utils->backButton(); ?>
                 </div>

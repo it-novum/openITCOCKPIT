@@ -46,10 +46,12 @@
                 'label' => 'Confirm your new password',
             ]) ?>
 
-            <?php echo $this->Form->formActions('Change your password', ['cancelButton' => [
-                'title' => 'Cancel',
-                'url'   => '/admin/dashboard',
-            ]]); ?>
+            <?php echo $this->Form->formActions('Change your password', [
+                'cancelButton' => [
+                    'title' => 'Cancel',
+                    'url'   => '/admin/dashboard',
+                ]
+            ]); ?>
         </div>
     </div>
 </div>

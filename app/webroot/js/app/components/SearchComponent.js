@@ -23,26 +23,26 @@
 //	confirmation.
 
 App.Components.SearchComponent = Frontend.Component.extend({
-	
-	$nodeListSearch: null,
-	
-	nodeSearch: function(){
-		var self = this;
-		this.$nodeListSearch = $('#node-list-search');
-		this.$nodeListSearch.on('keyup', function(e){
-			var value = self.$nodeListSearch.val();
-			if(value == ''){
-				$('.searchContainer').show();
-			}else{
-				$('.searchMe').each(function(intKey, object){
-					var $object = $(object);
-					if(!$object.html().toLowerCase().match(value)){
-						$object.parent().hide();
-					}
-				});
-			}
-		});
-	}
-	
+
+    $nodeListSearch: null,
+
+    nodeSearch: function(){
+        var self = this;
+        this.$nodeListSearch = $('#node-list-search');
+        this.$nodeListSearch.on('keyup', function(e){
+            var value = self.$nodeListSearch.val();
+            if(value == ''){
+                $('.searchContainer').show();
+            }else{
+                $('.searchMe').each(function(intKey, object){
+                    var $object = $(object);
+                    if(!$object.html().toLowerCase().match(value)){
+                        $object.parent().hide();
+                    }
+                });
+            }
+        });
+    }
+
 });
 

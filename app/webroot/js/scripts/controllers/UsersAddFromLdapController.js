@@ -38,7 +38,7 @@ angular.module('openITCOCKPIT')
                 return false;
             }
 
-            window.location.href = '/users/add/ldap:1/samaccountname:'+encodeURI($scope.selectedSamAccountName)+'/fix:1';
+            window.location.href = '/users/add/ldap:1/samaccountname:' + encodeURI($scope.selectedSamAccountName) + '/fix:1';
         };
 
         $scope.loadUsers();

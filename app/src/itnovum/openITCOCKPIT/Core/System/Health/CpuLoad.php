@@ -64,19 +64,19 @@ class CpuLoad {
      * @return int|null
      */
     public function getNumberOfCores() {
-        if($this->cores > 0){
+        if ($this->cores > 0) {
             return $this->cores;
         }
 
         if (file_exists('/proc/cpuinfo')) {
-            foreach(file('/proc/cpuinfo') as $line){
-                if(preg_match('/^processor/m', $line)){
+            foreach (file('/proc/cpuinfo') as $line) {
+                if (preg_match('/^processor/m', $line)) {
                     $this->cores++;
                 }
 
-                if(preg_match('/^model name/m', $line)){
+                if (preg_match('/^model name/m', $line)) {
                     $model = explode("model name\t: ", $line);
-                    if(isset($model[1])){
+                    if (isset($model[1])) {
                         $this->model = trim($model[1]);
                     }
                 }
@@ -86,8 +86,8 @@ class CpuLoad {
         return $this->cores;
     }
 
-    public function getModel(){
-        if($this->model === 'Unknown'){
+    public function getModel() {
+        if ($this->model === 'Unknown') {
             $this->getNumberOfCores();
         }
         return $this->model;

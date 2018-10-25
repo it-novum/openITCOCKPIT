@@ -116,9 +116,9 @@ use itnovum\openITCOCKPIT\Core\RFCRouter;
 
         $additionalFilters = [
             'acknowledged' => ['has_been_acknowledged' => 1],
-            'in_downtime' => ['in_downtime' => 1],
-            'not_handled' => ['has_not_been_acknowledged' => 1],
-            'passive' => ['passive' => 1]
+            'in_downtime'  => ['in_downtime' => 1],
+            'not_handled'  => ['has_not_been_acknowledged' => 1],
+            'passive'      => ['passive' => 1]
         ];
         foreach ([0, 1, 2, 3] as $serviceState):?>
             <th class="text-center font-xs">
@@ -154,14 +154,15 @@ use itnovum\openITCOCKPIT\Core\RFCRouter;
                             ];
                             $routerParam['filter'] = $filterArray;
                             $routerParam['sort'] = 'Servicestatus.last_state_change';
-                            $routerParam['direction']  = 'desc';
-                            if($additionalFilter !== null):
-                                foreach($additionalFilter as $filterKey => $filterValue):
+                            $routerParam['direction'] = 'desc';
+                            if ($additionalFilter !== null):
+                                foreach ($additionalFilter as $filterKey => $filterValue):
                                     $routerParam[$filterKey] = $filterValue;
                                 endforeach;
                             endif;
                             if ($this->Acl->hasPermission('index', 'services')): ?>
-                                <a href="/services/index<?php echo RFCRouter::queryString($routerParam); ?>" target="_blank">
+                                <a href="/services/index<?php echo RFCRouter::queryString($routerParam); ?>"
+                                   target="_blank">
                                     <?php
                                     printf(
                                         '%s (%.0f%%)',

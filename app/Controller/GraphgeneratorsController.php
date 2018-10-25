@@ -25,13 +25,7 @@
 
 use itnovum\openITCOCKPIT\Core\DbBackend;
 use itnovum\openITCOCKPIT\Core\PerfdataBackend;
-use itnovum\openITCOCKPIT\Core\ServicestatusFields;
-use itnovum\openITCOCKPIT\Core\ValueObjects\Perfdata;
-use itnovum\openITCOCKPIT\Graphite\GraphiteConfig;
-use itnovum\openITCOCKPIT\Graphite\GraphiteLoader;
-use itnovum\openITCOCKPIT\Graphite\GraphiteMetric;
 use itnovum\openITCOCKPIT\Perfdata\PerfdataLoader;
-use Statusengine\PerfdataParser;
 
 App::uses('UUID', 'Lib');
 App::uses('Graphgenerator', 'Model');

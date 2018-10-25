@@ -30,7 +30,7 @@ class LogentryTypes {
     /**
      * @return array
      */
-    public function getTypes(){
+    public function getTypes() {
         return [
             1 => __('Runtime error'),
             2 => __('Runtime warning'),

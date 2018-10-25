@@ -59,7 +59,7 @@ $echo = [
 
 foreach ($minMax as $key) {
     for ($i = 0; $i < 3; $i++) {
-        $echo[] = $values[$i].$key;
+        $echo[] = $values[$i] . $key;
     }
 }
 
@@ -89,7 +89,7 @@ $values = [
 
 foreach ($numeric as $key) {
     for ($i = 0; $i < 3; $i++) {
-        $echo[] = $key.$values[$i].'M';
+        $echo[] = $key . $values[$i] . 'M';
     }
 }
 
@@ -113,7 +113,7 @@ $values = [
 
 foreach ($numeric as $key) {
     for ($i = 0; $i < 4; $i++) {
-        $echo[] = $key.$values[$i].'M';
+        $echo[] = $key . $values[$i] . 'M';
     }
 }
 

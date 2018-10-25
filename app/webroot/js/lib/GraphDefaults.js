@@ -50,8 +50,8 @@ var GraphDefaults = (function(){
             }
         }else{
             for(var i = 1; i < amount; i++){
-                colors.fill.push(this.defaultColors[(i-1)][0]);
-                colors.border.push(this.defaultColors[(i-1)][1]);
+                colors.fill.push(this.defaultColors[(i - 1)][0]);
+                colors.border.push(this.defaultColors[(i - 1)][1]);
             }
         }
 
@@ -89,7 +89,7 @@ var GraphDefaults = (function(){
                 lineWidth: 1,
                 fill: true,
                 fillColor: {
-                    colors: [{ opacity: 0.1 }, { brightness: 1, opacity: 0.2 } ]
+                    colors: [{opacity: 0.1}, {brightness: 1, opacity: 0.2}]
                 },
                 steps: false //if true its more rrdtool like
             },

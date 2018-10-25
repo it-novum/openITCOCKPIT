@@ -43,14 +43,14 @@ class CalendarsControllerTest extends ControllerTestCase {
         $this->Calendar = ClassRegistry::init('Calendar');
     }
 
-    public function testIndex(){
+    public function testIndex() {
         $this->testAction('/calendars/index', ['method' => 'get']);
         $expectedCalendars = [
             [
-                'Calendar' => [
-                    'id' => '1',
-                    'name' => 'My first calendar',
-                    'description' => 'My first calendar description',
+                'Calendar'  => [
+                    'id'           => '1',
+                    'name'         => 'My first calendar',
+                    'description'  => 'My first calendar description',
                     'container_id' => '1'
                 ],
                 'Container' => [
@@ -58,10 +58,10 @@ class CalendarsControllerTest extends ControllerTestCase {
                 ]
             ],
             [
-                'Calendar' => [
-                    'id' => '2',
-                    'name' => 'My second calendar',
-                    'description' => 'My second calendar description',
+                'Calendar'  => [
+                    'id'           => '2',
+                    'name'         => 'My second calendar',
+                    'description'  => 'My second calendar description',
                     'container_id' => '1'
                 ],
                 'Container' => [
@@ -72,13 +72,13 @@ class CalendarsControllerTest extends ControllerTestCase {
         $this->assertEquals($expectedCalendars, $this->vars['calendars']);
     }
 
-    public function testAdd(){
+    public function testAdd() {
         $data = [
             [
-                'Calendar' => [
-                    'id' => '3',
-                    'name' => 'My third calendar',
-                    'description' => 'My third calendar description',
+                'Calendar'  => [
+                    'id'           => '3',
+                    'name'         => 'My third calendar',
+                    'description'  => 'My third calendar description',
                     'container_id' => '1'
                 ],
                 'Container' => [
@@ -89,24 +89,24 @@ class CalendarsControllerTest extends ControllerTestCase {
         $this->testAction('/calendars/add', ['data' => $data, 'method' => 'post']);
 
         $myCalendar = $this->Calendar->find('first', [
-            'fields'     => [
+            'fields' => [
                 'Calendar.id',
                 'Calendar.name',
                 'Calendar.description',
                 'Calendar.container_id',
                 'Container.id',
             ],
-            'order' => ['Calendar.id' => 'desc']
+            'order'  => ['Calendar.id' => 'desc']
         ]);
 
         $expectedCalendar = [
-            'Calendar' => [
-                'id' => '3',
-                'name' => 'My third calendar',
-                'description' => 'My third calendar description',
+            'Calendar'        => [
+                'id'           => '3',
+                'name'         => 'My third calendar',
+                'description'  => 'My third calendar description',
                 'container_id' => '1'
             ],
-            'Container' => [
+            'Container'       => [
                 'id' => '1'
             ],
             'CalendarHoliday' => [
@@ -119,21 +119,21 @@ class CalendarsControllerTest extends ControllerTestCase {
     public function testGetEdit() {
         $this->testAction('/calendars/edit/1', ['method' => 'get']);
         $expectedCalendar = [
-            'Calendar' => [
-                'id' => '1',
-                'name' => 'My first calendar',
-                'description' => 'My first calendar description',
+            'Calendar'        => [
+                'id'           => '1',
+                'name'         => 'My first calendar',
+                'description'  => 'My first calendar description',
                 'container_id' => '1',
-                'created' => '2017-01-26 16:19:36',
-                'modified' => '2017-01-26 16:19:36'
+                'created'      => '2017-01-26 16:19:36',
+                'modified'     => '2017-01-26 16:19:36'
             ],
-            'Container' => [
-                'id' => '1',
+            'Container'       => [
+                'id'               => '1',
                 'containertype_id' => '1',
-                'name' => 'ROOT',
-                'parent_id' => null,
-                'lft' => '1',
-                'rght' => '12'
+                'name'             => 'ROOT',
+                'parent_id'        => null,
+                'lft'              => '1',
+                'rght'             => '12'
             ],
             'CalendarHoliday' => [
 
@@ -145,28 +145,28 @@ class CalendarsControllerTest extends ControllerTestCase {
     public function testPostEdit() {
         $data = [
             'Calendar' => [
-                'id' => '1',
-                'name' => 'Changed My first calendar',
-                'description' => 'Changed My first calendar decription',
+                'id'           => '1',
+                'name'         => 'Changed My first calendar',
+                'description'  => 'Changed My first calendar decription',
                 'container_id' => '1'
             ]
         ];
         $this->testAction('/calendars/edit/1', ['data' => $data, 'method' => 'post']);
 
         $expectedCalendar = [
-            'Calendar' => [
-                'id' => '1',
-                'name' => 'Changed My first calendar',
-                'description' => 'Changed My first calendar decription',
+            'Calendar'        => [
+                'id'           => '1',
+                'name'         => 'Changed My first calendar',
+                'description'  => 'Changed My first calendar decription',
                 'container_id' => '1'
             ],
-            'Container' => [
-                'id' => '1',
+            'Container'       => [
+                'id'               => '1',
                 'containertype_id' => '1',
-                'name' => 'ROOT',
-                'parent_id' => null,
-                'lft' => '1',
-                'rght' => '12'
+                'name'             => 'ROOT',
+                'parent_id'        => null,
+                'lft'              => '1',
+                'rght'             => '12'
             ],
             'CalendarHoliday' => [
 

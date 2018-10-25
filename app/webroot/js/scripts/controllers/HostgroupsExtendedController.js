@@ -48,14 +48,14 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.loadHostsWithStatus = function(){
-            if($scope.post.Hostgroup.id) {
-                $http.get("/hostgroups/loadHostgroupWithHostsById/" + $scope.post.Hostgroup.id +".json", {
+            if($scope.post.Hostgroup.id){
+                $http.get("/hostgroups/loadHostgroupWithHostsById/" + $scope.post.Hostgroup.id + ".json", {
                     params: {
                         'angular': true,
                         'selected': $scope.post.Hostgroup.id,
                         'filter[Host.name]': $scope.filter.Host.name
                     }
-                }).then(function (result) {
+                }).then(function(result){
                     $scope.hostgroup = result.data.hostgroup;
 
                     for(var host in $scope.hostgroup.Hosts){
@@ -63,9 +63,9 @@ angular.module('openITCOCKPIT')
                     }
 
                     $scope.hostgroupsStateFilter = {
-                        0 : true,
-                        1 : true,
-                        2 : true
+                        0: true,
+                        1: true,
+                        2: true
                     };
                 });
             }

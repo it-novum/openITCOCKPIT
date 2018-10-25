@@ -23,8 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class Servicedependency extends AppModel
-{
+class Servicedependency extends AppModel {
 
     public $belongsTo = [
         'Timeperiod' => [
@@ -78,8 +77,7 @@ class Servicedependency extends AppModel
     * @param Array Dependent-Servoce-Ids
     * @return filtered array in format ['servoce_id' => 1..n, 'dependent' => 0/1]
     */
-    public function parseServiceMembershipData($services = [], $dependent_services = [])
-    {
+    public function parseServiceMembershipData($services = [], $dependent_services = []) {
         $service_memberships_for_servicedependency = [];
         foreach ($services as $service_id) {
             $service_memberships_for_servicedependency[] = ['service_id' => $service_id, 'dependent' => '0'];
@@ -97,8 +95,7 @@ class Servicedependency extends AppModel
     * @param Array Dependent-Servicegroup-Ids
     * @return filtered array in format ['servicegroup_id' => 1..n, 'dependent' => 0/1]
     */
-    public function parseServicegroupMembershipData($servicegroups = [], $dependent_servicegroups = [])
-    {
+    public function parseServicegroupMembershipData($servicegroups = [], $dependent_servicegroups = []) {
         $servicegroup_memberships_for_servicedependency = [];
         foreach ($servicegroups as $servicegroup_id) {
             $servicegroup_memberships_for_servicedependency[] = ['servicegroup_id' => $servicegroup_id, 'dependent' => '0'];

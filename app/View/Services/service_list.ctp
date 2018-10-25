@@ -63,7 +63,8 @@
                 <div class="col col-xs-4" style="padding-left:0;">
                     <div class="btn-group pull-left" style="padding-top: 2px;">
                         <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
-                            <a href="/hosts/edit/{{ host.Host.id }}/_controller:services/_action:serviceList/_id:{{ host.Host.id }}/" ng-show="host.Host.allow_edit"
+                            <a href="/hosts/edit/{{ host.Host.id }}/_controller:services/_action:serviceList/_id:{{ host.Host.id }}/"
+                               ng-show="host.Host.allow_edit"
                                class="btn btn-default">
                                 &nbsp;<i class="fa fa-cog"></i>&nbsp;
                             </a>
@@ -84,7 +85,8 @@
                             <?php endif; ?>
                             <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
                                 <li>
-                                    <a href="/hosts/edit/{{ host.Host.id }}/_controller:services/_action:serviceList/_id:{{ host.Host.id }}/" ng-show="host.Host.allow_edit">
+                                    <a href="/hosts/edit/{{ host.Host.id }}/_controller:services/_action:serviceList/_id:{{ host.Host.id }}/"
+                                       ng-show="host.Host.allow_edit">
                                         <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
                                     </a>
                                 </li>
@@ -123,7 +125,8 @@
                             </button>
 
                             <?php if ($this->Acl->hasPermission('add', 'services')): ?>
-                                <a href="/services/add/{{ host.Host.id }}/_controller:services/_action:serviceList/_id:{{ host.Host.id }}/" class="btn btn-xs btn-success">
+                                <a href="/services/add/{{ host.Host.id }}/_controller:services/_action:serviceList/_id:{{ host.Host.id }}/"
+                                   class="btn btn-xs btn-success">
                                     <i class="fa fa-plus"></i>
                                     <?php echo __('Add'); ?>
                                 </a>
@@ -285,7 +288,8 @@
 
                                                 <td class="text-center">
                                                     <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
-                                                        <a href="/services/browser/{{ service.Service.id }}" class="txt-color-blueDark">
+                                                        <a href="/services/browser/{{ service.Service.id }}"
+                                                           class="txt-color-blueDark">
                                                             <i class="fa fa-lg fa-area-chart"
                                                                ng-mouseenter="mouseenter($event, host, service)"
                                                                ng-mouseleave="mouseleave()"
