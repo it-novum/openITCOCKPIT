@@ -70,12 +70,12 @@ class DowntimesController extends AppController {
         $this->Paginator->settings = $this->DowntimeHost->getQuery($DowntimeHostConditions, $AngularHostDowntimesControllerRequest->getIndexFilters());
         $this->Paginator->settings['page'] = $AngularHostDowntimesControllerRequest->getPage();
 
-        if($this->isScrollRequest()){
+        if ($this->isScrollRequest()) {
             $ScrollIndex = new ScrollIndex($this->Paginator, $this);
             $hostDowntimes = $this->DowntimeHost->find('all', $this->Paginator->settings);
             $ScrollIndex->determineHasNextPage($hostDowntimes);
             $ScrollIndex->scroll();
-        }else {
+        } else {
             $hostDowntimes = $this->Paginator->paginate(
                 $this->DowntimeHost->alias,
                 [],
@@ -132,7 +132,7 @@ class DowntimesController extends AppController {
 
         $this->set('all_host_downtimes', $all_host_downtimes);
         $toJson = ['all_host_downtimes', 'paging'];
-        if($this->isScrollRequest()){
+        if ($this->isScrollRequest()) {
             $toJson = ['all_host_downtimes', 'scroll'];
         }
         $this->set('_serialize', $toJson);
@@ -161,12 +161,12 @@ class DowntimesController extends AppController {
         $this->Paginator->settings = $this->DowntimeService->getQuery($DowntimeServiceConditions, $AngularServiceDowntimesControllerRequest->getIndexFilters());
         $this->Paginator->settings['page'] = $AngularServiceDowntimesControllerRequest->getPage();
 
-        if($this->isScrollRequest()){
+        if ($this->isScrollRequest()) {
             $ScrollIndex = new ScrollIndex($this->Paginator, $this);
             $serviceDowntimes = $this->DowntimeService->find('all', $this->Paginator->settings);
             $ScrollIndex->determineHasNextPage($serviceDowntimes);
             $ScrollIndex->scroll();
-        }else {
+        } else {
             $serviceDowntimes = $this->Paginator->paginate(
                 $this->DowntimeService->alias,
                 [],
@@ -224,7 +224,7 @@ class DowntimesController extends AppController {
 
         $this->set('all_service_downtimes', $all_service_downtimes);
         $toJson = ['all_service_downtimes', 'paging'];
-        if($this->isScrollRequest()){
+        if ($this->isScrollRequest()) {
             $toJson = ['all_service_downtimes', 'scroll'];
         }
         $this->set('_serialize', $toJson);

@@ -31,11 +31,7 @@ use itnovum\openITCOCKPIT\Core\Dashboards\ServiceStatusListJson;
 use itnovum\openITCOCKPIT\Core\Dashboards\ServiceStatusOverviewJson;
 use itnovum\openITCOCKPIT\Core\Dashboards\TachoJson;
 use itnovum\openITCOCKPIT\Core\Dashboards\TrafficlightJson;
-use itnovum\openITCOCKPIT\Core\HostConditions;
-use itnovum\openITCOCKPIT\Core\HostControllerRequest;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
-use itnovum\openITCOCKPIT\Filter\HostFilter;
-use itnovum\openITCOCKPIT\Core\ValueObjects\Perfdata;
 use Statusengine\PerfdataParser;
 
 /**
@@ -793,7 +789,7 @@ class DashboardsController extends AppController {
             ];
             $query['conditions']['HostsToContainers.container_id'] = $containerIds;
         }
-        
+
         $parentHosts = $this->Parenthost->find('all', $query);
         $hostUuids = Hash::extract($parentHosts, '{n}.Host.uuid');
         $HoststatusFields = new \itnovum\openITCOCKPIT\Core\HoststatusFields($this->DbBackend);

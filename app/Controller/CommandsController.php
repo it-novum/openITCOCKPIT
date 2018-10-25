@@ -24,8 +24,7 @@
 //	confirmation.
 
 
-class CommandsController extends AppController
-{
+class CommandsController extends AppController {
     public $uses = ['Command', 'Commandargument', 'Macro', 'UUID'];
     public $layout = 'Admin.default';
     public $components = ['ListFilter.ListFilter', 'RequestHandler'];
@@ -57,8 +56,7 @@ class CommandsController extends AppController
         ],
     ];
 
-    public function index()
-    {
+    public function index() {
         $query = [
             'recursive'  => -1,
             'order'      => [
@@ -81,8 +79,7 @@ class CommandsController extends AppController
         $this->set(compact(['all_commands']));
     }
 
-    public function hostchecks()
-    {
+    public function hostchecks() {
         $query = [
             'recursive'  => -1,
             'order'      => [
@@ -103,8 +100,7 @@ class CommandsController extends AppController
         $this->set(compact(['all_commands']));
     }
 
-    public function notifications()
-    {
+    public function notifications() {
         $query = [
             'recursive'  => -1,
             'order'      => [
@@ -125,8 +121,7 @@ class CommandsController extends AppController
         $this->set(compact(['all_commands']));
     }
 
-    public function handler()
-    {
+    public function handler() {
         $query = [
             'recursive'  => -1,
             'order'      => [
@@ -147,8 +142,7 @@ class CommandsController extends AppController
         $this->set(compact(['all_commands']));
     }
 
-    public function view($id = null)
-    {
+    public function view($id = null) {
         if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();
 
@@ -161,8 +155,7 @@ class CommandsController extends AppController
         $this->set('_serialize', ['command']);
     }
 
-    public function add()
-    {
+    public function add() {
         $userId = $this->Auth->user('id');
         $this->Frontend->setJson('console_welcome', $this->Command->getConsoleWelcome($this->systemname));
         $this->set('command_types', $this->getCommandTypes());
@@ -207,8 +200,7 @@ class CommandsController extends AppController
         }
     }
 
-    public function edit($id = null)
-    {
+    public function edit($id = null) {
         $userId = $this->Auth->user('id');
         //Checking if the id/ids are ture ids
         if ($this->Command->exists(['Command.id' => $id])) {
@@ -231,7 +223,7 @@ class CommandsController extends AppController
                     foreach ($argumentsToDelete as $argumentToDelete) {
                         $this->Commandargument->delete($argumentToDelete);
                     }
-                } elseif (empty($this->request->data('Commandargument'))) {
+                } else if (empty($this->request->data('Commandargument'))) {
                     $this->Commandargument->deleteAll([
                         'Commandargument.command_id' => $id,
                     ]);
@@ -264,8 +256,7 @@ class CommandsController extends AppController
         }
     }
 
-    public function delete($id = null)
-    {
+    public function delete($id = null) {
         $userId = $this->Auth->user('id');
         if (!$this->request->is('post') && !$this->request->is('delete')) {
             throw new MethodNotAllowedException();
@@ -309,8 +300,7 @@ class CommandsController extends AppController
 
     }
 
-    public function mass_delete($id = null)
-    {
+    public function mass_delete($id = null) {
         if ($this->request->is('post') || $this->request->is('put')) {
             //Delete the commands and forward to index
             foreach ($this->request->data('Command.delete') as $command_id) {
@@ -343,8 +333,7 @@ class CommandsController extends AppController
         $this->set('back_url', $this->referer());
     }
 
-    protected function __delete($command)
-    {
+    protected function __delete($command) {
         $userId = $this->Auth->user('id');
         $this->Command->id = $command['Command']['id'];
         if ($this->Command->delete()) {
@@ -368,12 +357,11 @@ class CommandsController extends AppController
         return false;
     }
 
-    protected function __allowDelete($command)
-    {
+    protected function __allowDelete($command) {
         //Check if the command is used somewere, if yes we can not delete it!
         $this->loadModel('__ContactsToServicecommands');
         $contactCount = $this->__ContactsToServicecommands->find('count', [
-            'recursive' => -1,
+            'recursive'  => -1,
             'conditions' => [
                 '__ContactsToServicecommands.command_id' => $command['Command']['id'],
             ],
@@ -384,7 +372,7 @@ class CommandsController extends AppController
 
         $this->loadModel('__ContactsToHostcommands');
         $contactCount = $this->__ContactsToHostcommands->find('count', [
-            'recursive' => -1,
+            'recursive'  => -1,
             'conditions' => [
                 '__ContactsToHostcommands.command_id' => $command['Command']['id'],
             ],
@@ -395,7 +383,7 @@ class CommandsController extends AppController
 
         $this->loadModel('Hosttemplate');
         $hostCount = $this->Hosttemplate->find('count', [
-            'recursive' => -1,
+            'recursive'  => -1,
             'conditions' => [
                 'Hosttemplate.command_id' => $command['Command']['id'],
             ],
@@ -406,7 +394,7 @@ class CommandsController extends AppController
 
         $this->loadModel('Servicetemplate');
         $serviceCount = $this->Servicetemplate->find('count', [
-            'recursive' => -1,
+            'recursive'  => -1,
             'conditions' => [
                 'Servicetemplate.command_id' => $command['Command']['id'],
             ],
@@ -417,7 +405,7 @@ class CommandsController extends AppController
 
         $this->loadModel('Host');
         $hostCount = $this->Host->find('count', [
-            'recursive' => -1,
+            'recursive'  => -1,
             'conditions' => [
                 'Host.command_id' => $command['Command']['id'],
             ],
@@ -428,7 +416,7 @@ class CommandsController extends AppController
 
         $this->loadModel('Service');
         $serviceCount = $this->Service->find('count', [
-            'recursive' => -1,
+            'recursive'  => -1,
             'conditions' => [
                 'Service.command_id' => $command['Command']['id'],
             ],
@@ -440,14 +428,13 @@ class CommandsController extends AppController
         return true;
     }
 
-    public function addCommandArg($id = null)
-    {
+    public function addCommandArg($id = null) {
         $this->allowOnlyAjaxRequests();
 
         //Fetching arguments out of $_POST or the database
         if (!empty($this->request->data)) {
             $all_arguments = $this->request->data;
-        } elseif ($id !== null) {
+        } else if ($id !== null) {
             $all_arguments = $this->Commandargument->find('list', [
                 'conditions' => [
                     'command_id' => $this->Command->findById($id)['Command']['id'],
@@ -459,16 +446,15 @@ class CommandsController extends AppController
 
         $argumentsCount = 1;
 
-        while (in_array('$ARG'.$argumentsCount.'$', $all_arguments)) {
+        while (in_array('$ARG' . $argumentsCount . '$', $all_arguments)) {
             $argumentsCount++;
         }
 
-        $newArgument = '$ARG'.$argumentsCount.'$';
+        $newArgument = '$ARG' . $argumentsCount . '$';
         $this->set(compact(['newArgument', 'argumentsCount', 'id']));
     }
 
-    public function loadMacros()
-    {
+    public function loadMacros() {
         $all_macros = $this->Macro->find('all');
 
         //Sorting the SQL result in a human frindly way. Will sort $USER10$ below $USER2$
@@ -477,8 +463,7 @@ class CommandsController extends AppController
         $this->set('all_macros', $all_macros);
     }
 
-    private function getCommandTypes()
-    {
+    private function getCommandTypes() {
         return [
             CHECK_COMMAND        => __('Service check command'),
             HOSTCHECK_COMMAND    => __('Host check command'),
@@ -487,8 +472,7 @@ class CommandsController extends AppController
         ];
     }
 
-    private function rewritePostData()
-    {
+    private function rewritePostData() {
         $requestData = $this->request->data;
         // See MacrosController.php function _rewritePostData() for more information about this
         $Commandarguments = [];
@@ -514,8 +498,7 @@ class CommandsController extends AppController
      * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since  3.0
      */
-    protected function resetAllUUID()
-    {
+    protected function resetAllUUID() {
         throw new BadRequestException('To call this function is a really bad idea, because all your UUIDs get lost and generated new. So this function is disabled by default!');
 
         return false;
@@ -526,21 +509,18 @@ class CommandsController extends AppController
         }
     }
 
-    private function getConsoleWelcome()
-    {
-        return "This is a terminal connected to your ".$this->systemname." ".
-            "Server, this is very powerful to test and debug plugins.\n".
+    private function getConsoleWelcome() {
+        return "This is a terminal connected to your " . $this->systemname . " " .
+            "Server, this is very powerful to test and debug plugins.\n" .
             "User: \033[31mnagios\033[0m\nPWD: \033[35m/opt/openitc/nagios/libexec/\033[0m\n\n";
     }
 
     //ALC permission
-    public function terminal()
-    {
+    public function terminal() {
         return null;
     }
 
-    public function usedBy($id = null)
-    {
+    public function usedBy($id = null) {
         if (!$this->Command->exists($id)) {
             throw new NotFoundException(__('Invalid servicetemplate'));
         }
@@ -572,12 +552,11 @@ class CommandsController extends AppController
         $this->set('back_url', $this->referer());
     }
 
-    public function copy($id = null)
-    {
+    public function copy($id = null) {
         $userId = $this->Auth->user('id');
         $commands = $this->Command->find('all', [
-            'resursive' => -1,
-            'contain' =>[
+            'resursive'  => -1,
+            'contain'    => [
                 'Commandargument' => [
                     'fields' => [
                         'Commandargument.name',
@@ -588,7 +567,7 @@ class CommandsController extends AppController
             'conditions' => [
                 'Command.id' => func_get_args(),
             ],
-            'fields' => [
+            'fields'     => [
                 'Command.name',
                 'Command.command_line',
                 'Command.description',
@@ -603,7 +582,7 @@ class CommandsController extends AppController
                 $datasource->begin();
                 foreach ($this->request->data['Command'] as $sourceCommandId => $newCommand) {
                     $newCommandArgs = [];
-                    if(!empty($commands[$sourceCommandId]['Commandargument'])){
+                    if (!empty($commands[$sourceCommandId]['Commandargument'])) {
                         $newCommandArgs = $commands[$sourceCommandId]['Commandargument'];
                     }
                     $newCommandData = [

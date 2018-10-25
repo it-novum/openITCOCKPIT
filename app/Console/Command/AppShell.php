@@ -31,7 +31,6 @@ App::uses('Shell', 'Console');
  * will inherit them.
  * @package       app.Console.Command
  */
-class AppShell extends Shell
-{
+class AppShell extends Shell {
 
 }

@@ -28,18 +28,15 @@ App::uses('File', 'Utility');
 App::import('Utility', 'Xml');
 
 
-class RrdsController extends AppController
-{
+class RrdsController extends AppController {
 
     var $uses = ['Rrd'];
 
-    function index()
-    {
+    function index() {
 
     }
 
-    public function ajax()
-    {
+    public function ajax() {
         //Do some AJAX Requesthandling...
         if ($this->request->is('ajax')) {
             if (isset($this->request->data['host_uuid']) && isset($this->request->data['service_uuid'])) {

@@ -66,15 +66,15 @@ class TenantsController extends AppController {
         $this->Tenant->virtualFields['name'] = 'Container.name';
 
         $query = [
-            'recursive' => -1,
-            'contain' => [
+            'recursive'  => -1,
+            'contain'    => [
                 'Container'
             ],
             'order'      => [
                 $TenantFilter->getOrderForPaginator('Container.name', 'asc'),
             ],
             'conditions' => $TenantFilter->indexFilter(),
-            'limit' => $this->Paginator->settings['limit']
+            'limit'      => $this->Paginator->settings['limit']
         ];
 
         if (!$this->hasRootPrivileges) {

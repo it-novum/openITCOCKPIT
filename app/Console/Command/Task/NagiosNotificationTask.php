@@ -273,7 +273,7 @@ class NagiosNotificationTask extends AppShell {
         $Email->template('template-itn-std-service', 'template-itn-std-service')->viewVars([
             'parameters'      => $parameters,
             '_systemsettings' => $this->_systemsettings,
-            'contentIDs' => $contentIDs
+            'contentIDs'      => $contentIDs
         ]);
 
         //send template to mail address

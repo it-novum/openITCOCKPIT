@@ -173,7 +173,7 @@ class ContactsController extends AppController {
             'conditions' => [
                 'Command.uuid' => 'cd13d22e-acd4-4a67-997b-6e120e0d3153'
             ],
-            'fields' => [
+            'fields'     => [
                 'Command.id'
             ]
         ])['Command']['id'];
@@ -183,7 +183,7 @@ class ContactsController extends AppController {
             'conditions' => [
                 'Command.uuid' => 'c23255b7-5b1a-40b4-b614-17837dc376af'
             ],
-            'fields' => [
+            'fields'     => [
                 'Command.id'
             ]
         ])['Command']['id'];
@@ -334,7 +334,7 @@ class ContactsController extends AppController {
             'conditions' => [
                 'Command.uuid' => 'cd13d22e-acd4-4a67-997b-6e120e0d3153'
             ],
-            'fields' => [
+            'fields'     => [
                 'Command.id'
             ]
         ])['Command']['id'];
@@ -344,14 +344,13 @@ class ContactsController extends AppController {
             'conditions' => [
                 'Command.uuid' => 'c23255b7-5b1a-40b4-b614-17837dc376af'
             ],
-            'fields' => [
+            'fields'     => [
                 'Command.id'
             ]
         ])['Command']['id'];
 
         $this->Frontend->setJson('hostPushComamndId', $hostPushComamndId);
         $this->Frontend->setJson('servicePushComamndId', $servicePushComamndId);
-
 
 
         $customFieldsToRefill = [

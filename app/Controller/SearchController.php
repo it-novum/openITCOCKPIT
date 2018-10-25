@@ -26,13 +26,11 @@
 
 use itnovum\openITCOCKPIT\Core\RFCRouter;
 
-class SearchController extends AppController
-{
+class SearchController extends AppController {
     public $layout = 'Admin.default';
     public $uses = ['Host', 'Service', 'Customvariable'];
 
-    public function index()
-    {
+    public function index() {
 
         if ($this->request->is('post') || $this->request->is('put')) {
             //Default search
@@ -40,60 +38,60 @@ class SearchController extends AppController
                 if (empty($this->request->data['SearchDefault']['Servicename']) && !empty($this->request->data['SearchDefault']['Hostname'])) {
                     // The user is searching for a host, because no service name is given ;-)
                     $hoststatus = [];
-                    foreach($this->request->data['Hoststatus'] as $stateId => $value){
-                        if($value === '1'){
+                    foreach ($this->request->data['Hoststatus'] as $stateId => $value) {
+                        if ($value === '1') {
                             $hoststatus[$stateId] = 1;
                         }
                     }
 
                     $url = RFCRouter::queryString([
-                        'filter' => [
+                        'filter'    => [
                             'Hoststatus.current_state' => $hoststatus,
-                            'Host.name' => $this->request->data['SearchDefault']['Hostname'],
+                            'Host.name'                => $this->request->data['SearchDefault']['Hostname'],
                         ],
-                        'sort' => 'Hoststatus.last_state_change',
+                        'sort'      => 'Hoststatus.last_state_change',
                         'direction' => 'desc'
                     ]);
 
                     return $this->redirect(sprintf('/hosts/index%s', $url));
 
 
-                } elseif (!empty($this->request->data['SearchDefault']['Servicename']) && empty($this->request->data['SearchDefault']['Hostname'])) {
+                } else if (!empty($this->request->data['SearchDefault']['Servicename']) && empty($this->request->data['SearchDefault']['Hostname'])) {
                     // The user typed in a service name but not a host name, so we need to search for the service
 
                     $servicestatus = [];
-                    foreach($this->request->data['Servicestatus'] as $stateId => $value){
-                        if($value === '1'){
+                    foreach ($this->request->data['Servicestatus'] as $stateId => $value) {
+                        if ($value === '1') {
                             $servicestatus[$stateId] = 1;
                         }
                     }
 
                     $url = RFCRouter::queryString([
-                        'filter' => [
+                        'filter'    => [
                             'Servicestatus.current_state' => $servicestatus,
-                            'Service.servicename' => $this->request->data['SearchDefault']['Servicename']
+                            'Service.servicename'         => $this->request->data['SearchDefault']['Servicename']
                         ],
-                        'sort' => 'Servicestatus.last_state_change',
+                        'sort'      => 'Servicestatus.last_state_change',
                         'direction' => 'desc'
                     ]);
 
                     return $this->redirect(sprintf('/services/index%s', $url));
-                } elseif (!empty($this->request->data['SearchDefault']['Servicename']) && !empty($this->request->data['SearchDefault']['Hostname'])) {
+                } else if (!empty($this->request->data['SearchDefault']['Servicename']) && !empty($this->request->data['SearchDefault']['Hostname'])) {
                     // The user entered a service and a host name, so we need to search for host and service
                     $servicestatus = [];
-                    foreach($this->request->data['Servicestatus'] as $stateId => $value){
-                        if($value === '1'){
+                    foreach ($this->request->data['Servicestatus'] as $stateId => $value) {
+                        if ($value === '1') {
                             $servicestatus[$stateId] = 1;
                         }
                     }
 
                     $url = RFCRouter::queryString([
-                        'filter' => [
+                        'filter'    => [
                             'Servicestatus.current_state' => $servicestatus,
-                            'Service.servicename' => $this->request->data['SearchDefault']['Servicename'],
-                            'Host.name' => $this->request->data['SearchDefault']['Hostname'],
+                            'Service.servicename'         => $this->request->data['SearchDefault']['Servicename'],
+                            'Host.name'                   => $this->request->data['SearchDefault']['Hostname'],
                         ],
-                        'sort' => 'Servicestatus.last_state_change',
+                        'sort'      => 'Servicestatus.last_state_change',
                         'direction' => 'desc'
                     ]);
 
@@ -110,7 +108,7 @@ class SearchController extends AppController
                     $hostKeywords = explode(',', $this->request->data['SearchKeywords']['Hostkeywords']);
                     $url = ['controller' => 'hosts', 'action' => 'index'];
                     foreach ($hostKeywords as $key => $keyword) {
-                        $url['Filter.Host.keywords['.$key.']'] = $keyword;
+                        $url['Filter.Host.keywords[' . $key . ']'] = $keyword;
                     }
                     $url['q'] = 1; //Fix for .exe .png and so on
                     return $this->redirect($url);
@@ -121,7 +119,7 @@ class SearchController extends AppController
                     $hostKeywords = explode(',', $this->request->data['SearchKeywords']['Servicekeywords']);
                     $url = ['controller' => 'services', 'action' => 'index'];
                     foreach ($hostKeywords as $key => $keyword) {
-                        $url['Filter.Service.keywords['.$key.']'] = $keyword;
+                        $url['Filter.Service.keywords[' . $key . ']'] = $keyword;
                     }
                     $url['q'] = 1; //Fix for .exe .png and so on
                     return $this->redirect($url);
@@ -145,10 +143,10 @@ class SearchController extends AppController
             //Search for host address
             if (isset($this->request->data['SearchAddress']['Hostaddress'])) {
                 $url = RFCRouter::queryString([
-                    'filter' => [
+                    'filter'    => [
                         'Host.address' => $this->request->data['SearchAddress']['Hostaddress'],
                     ],
-                    'sort' => 'Hoststatus.last_state_change',
+                    'sort'      => 'Hoststatus.last_state_change',
                     'direction' => 'desc'
                 ]);
 
@@ -175,12 +173,11 @@ class SearchController extends AppController
         $this->set(compact(['backUrl']));
     }
 
-    public function hostMacro($macroname = '')
-    {
+    public function hostMacro($macroname = '') {
         $result = $this->Customvariable->find('all', [
             'conditions' => [
                 'Customvariable.objecttype_id' => OBJECT_HOST,
-                'Customvariable.name LIKE'     => '%'.$macroname.'%',
+                'Customvariable.name LIKE'     => '%' . $macroname . '%',
             ],
         ]);
         $hostIds = Hash::extract($result, '{n}.Customvariable.object_id');
@@ -195,12 +192,11 @@ class SearchController extends AppController
 
     }
 
-    public function serviceMacro($macroname = '')
-    {
+    public function serviceMacro($macroname = '') {
         $result = $this->Customvariable->find('all', [
             'conditions' => [
                 'Customvariable.objecttype_id' => OBJECT_SERVICE,
-                'Customvariable.name LIKE'     => '%'.$macroname.'%',
+                'Customvariable.name LIKE'     => '%' . $macroname . '%',
             ],
         ]);
         $serviceIds = Hash::extract($result, '{n}.Customvariable.object_id');

@@ -24,7 +24,7 @@
 //	confirmation.
 
 use itnovum\openITCOCKPIT\Core\DbBackend;
-use \itnovum\openITCOCKPIT\Core\Interfaces\CronjobInterface;
+use itnovum\openITCOCKPIT\Core\Interfaces\CronjobInterface;
 
 class DatabaseCleanupTask extends AppShell implements CronjobInterface {
     public $uses = [

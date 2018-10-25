@@ -30,11 +30,11 @@ class SupportsController extends AppController {
         'Register'
     ];
 
-    public function index(){
+    public function index() {
 
     }
 
-    public function issue(){
+    public function issue() {
 
         $hasLicense = $this->Register->find('count');
 

@@ -23,23 +23,20 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class BackupsController extends AppController
-{
+class BackupsController extends AppController {
     public $layout = 'Admin.default';
     public $components = ['GearmanClient'];
     public $uses = ['Proxy'];
 
-    public function index()
-    {
+    public function index() {
         $backup_files = $this->getBackupFiles();
 
         $this->set(compact('backup_files'));
         $this->set('_serialize', ['backup_files']);
     }
 
-    public function backup()
-    {
-        $filenameForBackup = $this->request->query['filename']."_".date("Y-m-d_His").".sql";
+    public function backup() {
+        $filenameForBackup = $this->request->query['filename'] . "_" . date("Y-m-d_His") . ".sql";
         if (preg_match('/^[a-zA-Z0-9_\-]*$/', $this->request->query['filename'])) {
             $error = false;
             $backupRunning = true;
@@ -63,8 +60,7 @@ class BackupsController extends AppController
         $this->set('_serialize', ['backup']);
     }
 
-    public function restore()
-    {
+    public function restore() {
         $pathForRestore = $this->request->query['backupfile'];
         Configure::load('gearman');
         $this->Config = Configure::read('gearman');
@@ -84,12 +80,12 @@ class BackupsController extends AppController
         $error = false;
         $fileBackup = "/opt/openitc/nagios/backup/finishBackup.txt";
         $fileRestore = "/opt/openitc/nagios/backup/finishRestore.txt";
-        if (file_exists($fileBackup)){
+        if (file_exists($fileBackup)) {
             $finished = true;
             $error = false;
             $this->Config = Configure::read('gearman');
             $this->GearmanClient->client->doNormal("oitc_gearman", Security::cipher(serialize(['task' => 'delete_sql_backup', 'path' => $fileBackup]), $this->Config['password']));
-        } elseif (file_exists($fileRestore)) {
+        } else if (file_exists($fileRestore)) {
             $finished = true;
             $error = false;
             $this->Config = Configure::read('gearman');
@@ -100,8 +96,8 @@ class BackupsController extends AppController
         }
 
         $backupFinished = [
-            'finished' => $finished,
-            'error' => $error,
+            'finished'     => $finished,
+            'error'        => $error,
             'backup_files' => $backup_files,
         ];
 
@@ -119,7 +115,7 @@ class BackupsController extends AppController
         $backup_files = $this->getBackupFiles();
 
         $success = [
-            'result' => $result,
+            'result'       => $result,
             'backup_files' => $backup_files,
         ];
 
@@ -128,12 +124,12 @@ class BackupsController extends AppController
         $this->set('_serialize', ['success']);
     }
 
-    private function getBackupFiles(){
+    private function getBackupFiles() {
         $backup_files = [];
         $files = scandir("/opt/openitc/nagios/backup/");
         foreach ($files as $file) {
             if (strstr($file, ".sql")) {
-                $backup_files["/opt/openitc/nagios/backup/".$file] = $file;
+                $backup_files["/opt/openitc/nagios/backup/" . $file] = $file;
             }
         }
         return $backup_files;

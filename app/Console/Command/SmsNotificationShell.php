@@ -42,8 +42,7 @@ use itnovum\openITCOCKPIT\Core\DbBackend;
 use itnovum\openITCOCKPIT\Core\HoststatusFields;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 
-class SmsNotificationShell extends AppShell
-{
+class SmsNotificationShell extends AppShell {
     public $uses = [
         'Host',
         'Service',
@@ -52,8 +51,7 @@ class SmsNotificationShell extends AppShell
         MONITORING_SERVICESTATUS,
     ];
 
-    public function main()
-    {
+    public function main() {
         $this->config = [
             'nrpe' => [
                 'port'                     => 5666,
@@ -95,7 +93,7 @@ class SmsNotificationShell extends AppShell
                             escapeshellarg($hostname),
                         ]);
 
-                        $command = $this->config['nrpe']['check_nrpe'].$args;
+                        $command = $this->config['nrpe']['check_nrpe'] . $args;
                         //debug($command);
                         exec($command);
                         break;
@@ -118,14 +116,14 @@ class SmsNotificationShell extends AppShell
                             escapeshellarg($this->config['nrpe']['timeout']),
                             escapeshellarg($this->params['contactpager']),
                             escapeshellarg($this->params['notificationtype']),
-                            escapeshellarg($hostname.'/'.$servicename),
+                            escapeshellarg($hostname . '/' . $servicename),
                             escapeshellarg($servicestatus['Servicestatus']['output']),
                             escapeshellarg(date($this->config['nrpe']['date_format'])),
                             escapeshellarg($hostname),
                             escapeshellarg($servicename),
                         ]);
 
-                        $command = $this->config['nrpe']['check_nrpe'].$args;
+                        $command = $this->config['nrpe']['check_nrpe'] . $args;
                         //debug($command);
                         exec($command);
                         break;
@@ -134,8 +132,7 @@ class SmsNotificationShell extends AppShell
         }
     }
 
-    public function getOptionParser()
-    {
+    public function getOptionParser() {
         $parser = parent::getOptionParser();
         $parser->addOptions([
             'address'          => ['help' => __d('oitc_console', 'IP address of the SMS gateway')],
@@ -150,8 +147,7 @@ class SmsNotificationShell extends AppShell
         return $parser;
     }
 
-    public function getHostname($hostUuid)
-    {
+    public function getHostname($hostUuid) {
         //$host = $this->Host->findByUuid($hostUuid);
         $host = $this->Host->find('first', [
             'recurisve'  => -1,
@@ -169,8 +165,7 @@ class SmsNotificationShell extends AppShell
         return $host['Host']['name'];
     }
 
-    public function getServicename($serviceUuid)
-    {
+    public function getServicename($serviceUuid) {
         $service = $this->Service->find('first', [
             'recurisve'  => -1,
             'conditions' => [
@@ -198,8 +193,7 @@ class SmsNotificationShell extends AppShell
         return $serviceName;
     }
 
-    public function _welcome()
-    {
+    public function _welcome() {
         //Disable CakePHP welcome messages
     }
 }

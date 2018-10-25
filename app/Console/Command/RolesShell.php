@@ -24,7 +24,7 @@ class RolesShell extends AppShell {
         $inserted = 0;
 
         $userGroups = [];
-        if($this->onlyAdminGroup === false) {
+        if ($this->onlyAdminGroup === false) {
             $userGroups = $this->Usergroup->find('all', [
                 'recurisve' => -1,
 
@@ -35,7 +35,7 @@ class RolesShell extends AppShell {
             ]);
         }
 
-        if($this->onlyAdminGroup === true) {
+        if ($this->onlyAdminGroup === true) {
             $userGroups = $this->Usergroup->find('all', [
                 'recurisve' => -1,
 

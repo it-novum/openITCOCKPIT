@@ -23,20 +23,19 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-use \itnovum\openITCOCKPIT\Core\Interfaces\CronjobInterface;
-class CpuLoadTask extends AppShell implements CronjobInterface
-{
+use itnovum\openITCOCKPIT\Core\Interfaces\CronjobInterface;
 
-    function execute($quiet = false)
-    {
+class CpuLoadTask extends AppShell implements CronjobInterface {
+
+    function execute($quiet = false) {
         $this->params['quiet'] = $quiet;
         if (file_exists('/proc/loadavg')) {
             $this->stdout->styles('green', ['text' => 'green']);
             $this->out('Fetch current CPU load...', false);
             $load = file('/proc/loadavg');
             $records = [];
-            if (file_exists(TMP.'loadavg')) {
-                $records = file(TMP.'loadavg');
+            if (file_exists(TMP . 'loadavg')) {
+                $records = file(TMP . 'loadavg');
             }
 
             $newLoad = [];
@@ -51,10 +50,10 @@ class CpuLoadTask extends AppShell implements CronjobInterface
                 $newLoad = $records;
             }
 
-            $newLoad[] = time().' '.$load[0];
+            $newLoad[] = time() . ' ' . $load[0];
 
             unset($records);
-            $file = fopen(TMP.'loadavg', 'w+');
+            $file = fopen(TMP . 'loadavg', 'w+');
             foreach ($newLoad as $line) {
                 fwrite($file, $line);
             }

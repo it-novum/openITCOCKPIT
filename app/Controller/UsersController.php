@@ -52,9 +52,9 @@ class UsersController extends AppController {
         'index' => [
             'fields' => [
                 'User.full_name' => ['label' => 'Name', 'searchType' => 'wildcard'],
-                'User.email' => ['label' => 'Email', 'searchType' => 'wildcard'],
-                'User.company' => ['label' => 'Company', 'searchType' => 'wildcard'],
-                'User.phone' => ['label' => 'Phone', 'searchType' => 'wildcard'],
+                'User.email'     => ['label' => 'Email', 'searchType' => 'wildcard'],
+                'User.company'   => ['label' => 'Company', 'searchType' => 'wildcard'],
+                'User.phone'     => ['label' => 'Phone', 'searchType' => 'wildcard'],
             ]
         ]
     ];
@@ -65,28 +65,28 @@ class UsersController extends AppController {
 
         $this->loadModel('Container');
         $options = [
-            'recursive' => -1,
-            'order' => [
+            'recursive'  => -1,
+            'order'      => [
                 'User.full_name' => 'asc',
             ],
-            'joins' => [
+            'joins'      => [
                 [
-                    'table' => 'users_to_containers',
-                    'type' => 'LEFT',
-                    'alias' => 'UsersToContainer',
+                    'table'      => 'users_to_containers',
+                    'type'       => 'LEFT',
+                    'alias'      => 'UsersToContainer',
                     'conditions' => 'UsersToContainer.user_id = User.id',
                 ],
                 [
-                    'table' => 'usergroups',
-                    'type' => 'LEFT',
-                    'alias' => 'Usergroup',
+                    'table'      => 'usergroups',
+                    'type'       => 'LEFT',
+                    'alias'      => 'Usergroup',
                     'conditions' => 'Usergroup.id = User.usergroup_id',
                 ],
             ],
             'conditions' => [
                 'UsersToContainer.container_id' => $this->MY_RIGHTS,
             ],
-            'fields' => [
+            'fields'     => [
                 'User.id',
                 'User.email',
                 'User.company',
@@ -98,7 +98,7 @@ class UsersController extends AppController {
                 'Usergroup.name',
                 'UsersToContainer.container_id',
             ],
-            'group' => [
+            'group'      => [
                 'User.id',
             ],
         ];
@@ -138,19 +138,19 @@ class UsersController extends AppController {
         }
         $user = $this->User->findById($id);
         $permissionsUser = $this->User->find('first', [
-            'joins' => [
+            'joins'      => [
                 [
-                    'table' => 'users_to_containers',
-                    'type' => 'LEFT',
-                    'alias' => 'UsersToContainer',
+                    'table'      => 'users_to_containers',
+                    'type'       => 'LEFT',
+                    'alias'      => 'UsersToContainer',
                     'conditions' => 'UsersToContainer.user_id = User.id',
                 ],
             ],
             'conditions' => [
-                'User.id' => $id,
+                'User.id'                       => $id,
                 'UsersToContainer.container_id' => $this->MY_RIGHTS,
             ],
-            'fields' => [
+            'fields'     => [
                 'User.id',
                 'User.email',
                 'User.company',
@@ -158,7 +158,7 @@ class UsersController extends AppController {
                 'User.full_name',
                 'User.samaccountname',
             ],
-            'group' => [
+            'group'      => [
                 'User.id',
             ],
         ]);
@@ -237,7 +237,7 @@ class UsersController extends AppController {
             $this->request->data['ContainerUserMembership'] = array_map(
                 function ($container_id, $permission_level) {
                     return [
-                        'container_id' => $container_id,
+                        'container_id'     => $container_id,
                         'permission_level' => $permission_level,
                     ];
                 },
@@ -253,12 +253,12 @@ class UsersController extends AppController {
                 require_once APP . 'vendor_freedsx_ldap' . DS . 'autoload.php';
 
                 $ldap = new \FreeDSx\Ldap\LdapClient([
-                    'servers' => [$systemsettings['FRONTEND']['FRONTEND.LDAP.ADDRESS']],
-                    'port' => (int)$systemsettings['FRONTEND']['FRONTEND.LDAP.PORT'],
+                    'servers'               => [$systemsettings['FRONTEND']['FRONTEND.LDAP.ADDRESS']],
+                    'port'                  => (int)$systemsettings['FRONTEND']['FRONTEND.LDAP.PORT'],
                     'ssl_allow_self_signed' => true,
-                    'ssl_validate_cert' => false,
-                    'use_tls' => (bool)$systemsettings['FRONTEND']['FRONTEND.LDAP.USE_TLS'],
-                    'base_dn' => $systemsettings['FRONTEND']['FRONTEND.LDAP.BASEDN'],
+                    'ssl_validate_cert'     => false,
+                    'use_tls'               => (bool)$systemsettings['FRONTEND']['FRONTEND.LDAP.USE_TLS'],
+                    'base_dn'               => $systemsettings['FRONTEND']['FRONTEND.LDAP.BASEDN'],
                 ]);
                 if ((bool)$systemsettings['FRONTEND']['FRONTEND.LDAP.USE_TLS']) {
                     $ldap->startTls();
@@ -296,11 +296,11 @@ class UsersController extends AppController {
                     }
 
                     $ldapUser = [
-                        'mail' => $entry['mail'][0],
-                        'givenname' => $entry['givenname'][0],
-                        'sn' => $entry['sn'][0],
+                        'mail'           => $entry['mail'][0],
+                        'givenname'      => $entry['givenname'][0],
+                        'sn'             => $entry['sn'][0],
                         'samaccountname' => $entry['samaccountname'][0],
-                        'dn' => $userDn
+                        'dn'             => $userDn
                     ];
                 }
 
@@ -348,19 +348,19 @@ class UsersController extends AppController {
             throw new NotFoundException(__('Invalide user'));
         }
         $permissionsUser = $this->User->find('first', [
-            'joins' => [
+            'joins'      => [
                 [
-                    'table' => 'users_to_containers',
-                    'type' => 'LEFT',
-                    'alias' => 'UsersToContainer',
+                    'table'      => 'users_to_containers',
+                    'type'       => 'LEFT',
+                    'alias'      => 'UsersToContainer',
                     'conditions' => 'UsersToContainer.user_id = User.id',
                 ],
             ],
             'conditions' => [
-                'User.id' => $id,
+                'User.id'                       => $id,
                 'UsersToContainer.container_id' => $this->MY_RIGHTS,
             ],
-            'fields' => [
+            'fields'     => [
                 'User.id',
                 'User.email',
                 'User.company',
@@ -368,7 +368,7 @@ class UsersController extends AppController {
                 'User.full_name',
                 'User.samaccountname',
             ],
-            'group' => [
+            'group'      => [
                 'User.id',
             ],
         ]);
@@ -395,7 +395,7 @@ class UsersController extends AppController {
                 $this->request->data['ContainerUserMembership'] = array_map(
                     function ($container_id, $permission_level) {
                         return [
-                            'container_id' => $container_id,
+                            'container_id'     => $container_id,
                             'permission_level' => $permission_level,
                         ];
                     },
@@ -441,12 +441,12 @@ class UsersController extends AppController {
 
         if ($this->request->is('post') || $this->request->is('put')) {
             $this->redirect([
-                'controller' => 'users',
-                'action' => 'add',
-                'ldap' => 1,
+                'controller'     => 'users',
+                'action'         => 'add',
+                'ldap'           => 1,
                 'samaccountname' => $this->request->data('Ldap.samaccountname'),
                 //Fixing usernames like jon.doe
-                'fix' => 1 // we need an / behind the username parameter otherwise cakePHP will make strange stuff with a jon.doe username (username with dot ".")
+                'fix'            => 1 // we need an / behind the username parameter otherwise cakePHP will make strange stuff with a jon.doe username (username with dot ".")
             ]);
         }
 
@@ -456,12 +456,12 @@ class UsersController extends AppController {
             require_once APP . 'vendor_freedsx_ldap' . DS . 'autoload.php';
 
             $ldap = new \FreeDSx\Ldap\LdapClient([
-                'servers' => [$systemsettings['FRONTEND']['FRONTEND.LDAP.ADDRESS']],
-                'port' => (int)$systemsettings['FRONTEND']['FRONTEND.LDAP.PORT'],
+                'servers'               => [$systemsettings['FRONTEND']['FRONTEND.LDAP.ADDRESS']],
+                'port'                  => (int)$systemsettings['FRONTEND']['FRONTEND.LDAP.PORT'],
                 'ssl_allow_self_signed' => true,
-                'ssl_validate_cert' => false,
-                'use_tls' => (bool)$systemsettings['FRONTEND']['FRONTEND.LDAP.USE_TLS'],
-                'base_dn' => $systemsettings['FRONTEND']['FRONTEND.LDAP.BASEDN'],
+                'ssl_validate_cert'     => false,
+                'use_tls'               => (bool)$systemsettings['FRONTEND']['FRONTEND.LDAP.USE_TLS'],
+                'base_dn'               => $systemsettings['FRONTEND']['FRONTEND.LDAP.BASEDN'],
             ]);
             if ((bool)$systemsettings['FRONTEND']['FRONTEND.LDAP.USE_TLS']) {
                 $ldap->startTls();
@@ -545,12 +545,12 @@ class UsersController extends AppController {
             require_once APP . 'vendor_freedsx_ldap' . DS . 'autoload.php';
 
             $ldap = new \FreeDSx\Ldap\LdapClient([
-                'servers' => [$systemsettings['FRONTEND']['FRONTEND.LDAP.ADDRESS']],
-                'port' => (int)$systemsettings['FRONTEND']['FRONTEND.LDAP.PORT'],
+                'servers'               => [$systemsettings['FRONTEND']['FRONTEND.LDAP.ADDRESS']],
+                'port'                  => (int)$systemsettings['FRONTEND']['FRONTEND.LDAP.PORT'],
                 'ssl_allow_self_signed' => true,
-                'ssl_validate_cert' => false,
-                'use_tls' => (bool)$systemsettings['FRONTEND']['FRONTEND.LDAP.USE_TLS'],
-                'base_dn' => $systemsettings['FRONTEND']['FRONTEND.LDAP.BASEDN'],
+                'ssl_validate_cert'     => false,
+                'use_tls'               => (bool)$systemsettings['FRONTEND']['FRONTEND.LDAP.USE_TLS'],
+                'base_dn'               => $systemsettings['FRONTEND']['FRONTEND.LDAP.BASEDN'],
             ]);
             if ((bool)$systemsettings['FRONTEND']['FRONTEND.LDAP.USE_TLS']) {
                 $ldap->startTls();
@@ -630,7 +630,7 @@ class UsersController extends AppController {
         }
 
         $user = $this->User->find('first', [
-            'recursive' => -1,
+            'recursive'  => -1,
             'conditions' => [
                 'User.id' => $id
             ]
@@ -663,8 +663,8 @@ class UsersController extends AppController {
         $Logo = new Logo();
         $Email->attachments([
             'logo.png' => [
-                'file' => $Logo->getSmallLogoDiskPath(),
-                'mimetype' => 'image/png',
+                'file'      => $Logo->getSmallLogoDiskPath(),
+                'mimetype'  => 'image/png',
                 'contentId' => '100',
             ],
         ]);
@@ -693,19 +693,19 @@ class UsersController extends AppController {
             $containers[] = $containerId;
         }
         $users = $this->User->find('list', [
-            'recursive' => -1,
-            'joins' => [
+            'recursive'  => -1,
+            'joins'      => [
                 [
-                    'table' => 'users_to_containers',
-                    'type' => 'INNER',
-                    'alias' => 'UsersToContainer',
+                    'table'      => 'users_to_containers',
+                    'type'       => 'INNER',
+                    'alias'      => 'UsersToContainer',
                     'conditions' => 'UsersToContainer.user_id = User.id',
                 ],
             ],
             'conditions' => [
                 'UsersToContainer.container_id' => $containers
             ],
-            'group' => 'User.id'
+            'group'      => 'User.id'
         ]);
         $users = $this->User->makeItJavaScriptAble(
             $users

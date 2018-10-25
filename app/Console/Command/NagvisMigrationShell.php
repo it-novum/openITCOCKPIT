@@ -523,7 +523,7 @@ class NagvisMigrationShell extends AppShell {
                         break;
                     case 'service':
                         //skip commented definitions
-                        if(isset($item['#host_name']) || isset($item['#service_description'])){
+                        if (isset($item['#host_name']) || isset($item['#service_description'])) {
                             continue;
                         }
 
@@ -1062,9 +1062,9 @@ class NagvisMigrationShell extends AppShell {
             $fileExtension = pathinfo($fullFilePath, PATHINFO_EXTENSION);
             $filename = preg_replace('/(\..*)/', '', $image);
             $data = [
-                'fullPath'       => $fullFilePath,
-                'uuidFilename'   => $filename,
-                'fileExtension'  => $fileExtension
+                'fullPath'      => $fullFilePath,
+                'uuidFilename'  => $filename,
+                'fileExtension' => $fileExtension
             ];
             $this->MapUpload->createThumbnailsFromBackgrounds($data, $folderInstance);
         }

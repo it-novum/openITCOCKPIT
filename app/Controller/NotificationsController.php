@@ -50,8 +50,8 @@ class NotificationsController extends AppController {
     public $helpers = ['Status', 'Monitoring', 'CustomValidationErrors', 'Uuid', 'Acl'];
     public $layout = 'Admin.default';
 
-    public function index(){
-        $this->layout="angularjs";
+    public function index() {
+        $this->layout = "angularjs";
 
         if (!isset($this->Paginator->settings['conditions'])) {
             $this->Paginator->settings['conditions'] = [];
@@ -80,11 +80,11 @@ class NotificationsController extends AppController {
 
 
         $ScrollIndex = new ScrollIndex($this->Paginator, $this);
-        if($this->isScrollRequest()){
+        if ($this->isScrollRequest()) {
             $notifications = $this->NotificationHost->find('all', $this->Paginator->settings);
             $ScrollIndex->determineHasNextPage($notifications);
             $ScrollIndex->scroll();
-        }else{
+        } else {
             $notifications = $this->Paginator->paginate(
                 $this->NotificationHost->alias,
                 [],
@@ -101,23 +101,23 @@ class NotificationsController extends AppController {
             $Contact = new itnovum\openITCOCKPIT\Core\Views\Contact($notification['Contact']);
             $all_notifications[] = [
                 'NotificationHost' => $NotificationHost->toArray(),
-                'Host' => $Host->toArray(),
-                'Command' => $Command->toArray(),
-                'Contact' => $Contact->toArray()
+                'Host'             => $Host->toArray(),
+                'Command'          => $Command->toArray(),
+                'Contact'          => $Contact->toArray()
             ];
         }
 
         $this->set(compact(['all_notifications']));
 
         $toJson = ['all_notifications', 'paging'];
-        if($this->isScrollRequest()){
+        if ($this->isScrollRequest()) {
             $toJson = ['all_notifications', 'scroll'];
         }
         $this->set('_serialize', $toJson);
     }
 
-    public function services(){
-        $this->layout="angularjs";
+    public function services() {
+        $this->layout = "angularjs";
 
         if (!isset($this->Paginator->settings['conditions'])) {
             $this->Paginator->settings['conditions'] = [];
@@ -145,11 +145,11 @@ class NotificationsController extends AppController {
         $this->Paginator->settings['page'] = $AngularNotificationsOverviewControllerRequest->getPage();
 
         $ScrollIndex = new ScrollIndex($this->Paginator, $this);
-        if($this->isScrollRequest()) {
+        if ($this->isScrollRequest()) {
             $notifications = $this->NotificationService->find('all', $this->Paginator->settings);
             $ScrollIndex->determineHasNextPage($notifications);
             $ScrollIndex->scroll();
-        }else {
+        } else {
             $notifications = $this->Paginator->paginate(
                 $this->NotificationService->alias,
                 [],
@@ -167,23 +167,23 @@ class NotificationsController extends AppController {
             $Contact = new itnovum\openITCOCKPIT\Core\Views\Contact($notification['Contact']);
             $all_notifications[] = [
                 'NotificationService' => $NotificationService->toArray(),
-                'Service' => $Service->toArray(),
-                'Host' => $Host->toArray(),
-                'Command' => $Command->toArray(),
-                'Contact' => $Contact->toArray()
+                'Service'             => $Service->toArray(),
+                'Host'                => $Host->toArray(),
+                'Command'             => $Command->toArray(),
+                'Contact'             => $Contact->toArray()
             ];
         }
 
         $this->set(compact(['all_notifications']));
         $toJson = ['all_notifications', 'paging'];
-        if($this->isScrollRequest()){
+        if ($this->isScrollRequest()) {
             $toJson = ['all_notifications', 'scroll'];
         }
         $this->set('_serialize', $toJson);
     }
 
-    public function hostNotification($host_id){
-        $this->layout="angularjs";
+    public function hostNotification($host_id) {
+        $this->layout = "angularjs";
 
         if (!$this->Host->exists($host_id)) {
             throw new NotFoundException(__('invalid host'));
@@ -192,7 +192,7 @@ class NotificationsController extends AppController {
         if (!$this->isAngularJsRequest()) {
             //Host for .html requests
             $host = $this->Host->find('first', [
-                'fields' => [
+                'fields'     => [
                     'Host.id',
                     'Host.uuid',
                     'Host.name',
@@ -204,7 +204,7 @@ class NotificationsController extends AppController {
                 'conditions' => [
                     'Host.id' => $host_id,
                 ],
-                'contain' => [
+                'contain'    => [
                     'Container',
                 ],
             ]);
@@ -228,7 +228,7 @@ class NotificationsController extends AppController {
 
         //Host for .json requests
         $host = $this->Host->find('first', [
-            'fields' => [
+            'fields'     => [
                 'Host.id',
                 'Host.uuid',
                 'Host.name',
@@ -261,11 +261,11 @@ class NotificationsController extends AppController {
 
 
         $ScrollIndex = new ScrollIndex($this->Paginator, $this);
-        if($this->isScrollRequest()) {
+        if ($this->isScrollRequest()) {
             $notifications = $this->NotificationHost->find('all', $this->Paginator->settings);
             $ScrollIndex->determineHasNextPage($notifications);
             $ScrollIndex->scroll();
-        }else {
+        } else {
             $notifications = $this->Paginator->paginate(
                 $this->NotificationHost->alias,
                 [],
@@ -283,22 +283,22 @@ class NotificationsController extends AppController {
             $Contact = new itnovum\openITCOCKPIT\Core\Views\Contact($notification['Contact']);
             $all_notifications[] = [
                 'NotificationHost' => $NotificationHost->toArray(),
-                'Host' => $Host->toArray(),
-                'Command' => $Command->toArray(),
-                'Contact' => $Contact->toArray()
+                'Host'             => $Host->toArray(),
+                'Command'          => $Command->toArray(),
+                'Contact'          => $Contact->toArray()
             ];
         }
 
         $this->set(compact(['all_notifications']));
         $toJson = ['all_notifications', 'paging'];
-        if($this->isScrollRequest()){
+        if ($this->isScrollRequest()) {
             $toJson = ['all_notifications', 'scroll'];
         }
         $this->set('_serialize', $toJson);
     }
 
-    public function serviceNotification($service_id){
-        $this->layout="angularjs";
+    public function serviceNotification($service_id) {
+        $this->layout = "angularjs";
 
         if (!$this->Service->exists($service_id)) {
             throw new NotFoundException(__('Invalid service'));
@@ -307,16 +307,16 @@ class NotificationsController extends AppController {
         if (!$this->isAngularJsRequest()) {
             //Service for .html requests
             $service = $this->Service->find('first', [
-                'recursive' => -1,
-                'fields' => [
+                'recursive'  => -1,
+                'fields'     => [
                     'Service.id',
                     'Service.uuid',
                     'Service.name',
                     'Service.service_type',
                     'Service.service_url'
                 ],
-                'contain' => [
-                    'Host' => [
+                'contain'    => [
+                    'Host'            => [
                         'fields' => [
                             'Host.id',
                             'Host.name',
@@ -357,8 +357,8 @@ class NotificationsController extends AppController {
 
         //Service for .json requests
         $service = $this->Service->find('first', [
-            'recursive' => -1,
-            'fields' => [
+            'recursive'  => -1,
+            'fields'     => [
                 'Service.id',
                 'Service.uuid',
                 'Service.name',
@@ -389,11 +389,11 @@ class NotificationsController extends AppController {
         $this->Paginator->settings['page'] = $AngularNotificationsControllerRequest->getPage();
 
         $ScrollIndex = new ScrollIndex($this->Paginator, $this);
-        if($this->isScrollRequest()) {
+        if ($this->isScrollRequest()) {
             $notifications = $this->NotificationService->find('all', $this->Paginator->settings);
             $ScrollIndex->determineHasNextPage($notifications);
             $ScrollIndex->scroll();
-        }else {
+        } else {
             $notifications = $this->Paginator->paginate(
                 $this->NotificationService->alias,
                 [],
@@ -411,16 +411,16 @@ class NotificationsController extends AppController {
             $Contact = new itnovum\openITCOCKPIT\Core\Views\Contact($notification['Contact']);
             $all_notifications[] = [
                 'NotificationService' => $NotificationService->toArray(),
-                'Service' => $Service->toArray(),
-                'Host' => $Host->toArray(),
-                'Command' => $Command->toArray(),
-                'Contact' => $Contact->toArray()
+                'Service'             => $Service->toArray(),
+                'Host'                => $Host->toArray(),
+                'Command'             => $Command->toArray(),
+                'Contact'             => $Contact->toArray()
             ];
         }
 
         $this->set(compact(['all_notifications']));
         $toJson = ['all_notifications', 'paging'];
-        if($this->isScrollRequest()){
+        if ($this->isScrollRequest()) {
             $toJson = ['all_notifications', 'scroll'];
         }
         $this->set('_serialize', $toJson);

@@ -23,21 +23,15 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-use itnovum\openITCOCKPIT\Core\HostConditions;
-use itnovum\openITCOCKPIT\Core\HostControllerRequest;
 use itnovum\openITCOCKPIT\Core\HoststatusFields;
 use itnovum\openITCOCKPIT\Core\ServicegroupConditions;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
-use itnovum\openITCOCKPIT\Core\Views\PerfdataChecker;
-use itnovum\openITCOCKPIT\Filter\HostFilter;
-use itnovum\openITCOCKPIT\Filter\ServicegroupFilter;
-use itnovum\openITCOCKPIT\Monitoring\QueryHandler;
-use itnovum\openITCOCKPIT\Core\ServiceConditions;
-use itnovum\openITCOCKPIT\Core\ServiceControllerRequest;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Core\Views\ContainerPermissions;
+use itnovum\openITCOCKPIT\Core\Views\PerfdataChecker;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
-use itnovum\openITCOCKPIT\Filter\ServiceFilter;
+use itnovum\openITCOCKPIT\Filter\ServicegroupFilter;
+use itnovum\openITCOCKPIT\Monitoring\QueryHandler;
 
 
 /**
@@ -152,11 +146,11 @@ class ServicegroupsController extends AppController {
                         'Service.id',
                         'Service.name'
                     ],
-                    'conditions' => [
+                    'conditions'      => [
                         'Service.disabled' => 0
                     ],
                     'Host'            => [
-                        'fields' => [
+                        'fields'     => [
                             'Host.id',
                             'Host.name'
                         ],

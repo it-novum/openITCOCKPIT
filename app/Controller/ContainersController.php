@@ -23,9 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-use itnovum\openITCOCKPIT\Core\ContainerConditions;
 use itnovum\openITCOCKPIT\Core\ModuleManager;
-use itnovum\openITCOCKPIT\Filter\ContainerFilter;
 
 
 /**
@@ -159,7 +157,7 @@ class ContainersController extends AppController {
             throw new NotFoundException(__('tenant.notfound'));
         }
         $parent = $this->Container->find('all', [
-            'recursive' => -1,
+            'recursive'  => -1,
             'conditions' => [
                 'id' => $id,
             ],
@@ -224,18 +222,18 @@ class ContainersController extends AppController {
         });
 
         $rootContainer = $this->Container->find('first', [
-            'recursive' => -1,
+            'recursive'  => -1,
             'conditions' => [
                 'Container.id' => $id,
             ],
         ]);
         $childElements = $this->Container->find('all', [
-            'recursive' => -1,
+            'recursive'  => -1,
             'conditions' => [
                 'AND' => [
-                    'Container.lft BETWEEN ? AND ?' => [$rootContainer['Container']['lft'], $rootContainer['Container']['rght']],
+                    'Container.lft BETWEEN ? AND ?'  => [$rootContainer['Container']['lft'], $rootContainer['Container']['rght']],
                     'Container.rght BETWEEN ? AND ?' => [$rootContainer['Container']['lft'], $rootContainer['Container']['rght']],
-                    'Container.containertype_id' => [
+                    'Container.containertype_id'     => [
                         CT_LOCATION,
                         CT_NODE,
                         CT_HOSTGROUP,
@@ -255,7 +253,7 @@ class ContainersController extends AppController {
                         //Check hosts to delete
                         $Host = ClassRegistry::init('Host');
                         $hostsToDelete = $Host->find('all', [
-                            'recursive' => -1,
+                            'recursive'  => -1,
                             'conditions' => [
                                 'Host.container_id' => $containerIds
                             ]
@@ -270,11 +268,11 @@ class ContainersController extends AppController {
                         $usersByContainerId = $this->User->usersByContainerId($containerIds, 'list');
                         if (!empty($usersByContainerId)) {
                             $usersToDelete = $this->User->find('all', [
-                                'recursive' => -1,
+                                'recursive'  => -1,
                                 'conditions' => [
                                     'User.id' => array_keys($usersByContainerId)
                                 ],
-                                'contain' => [
+                                'contain'    => [
                                     'ContainerUserMembership' => [
                                         'conditions' => [
                                             'NOT' => [
@@ -283,7 +281,7 @@ class ContainersController extends AppController {
                                         ]
                                     ]
                                 ],
-                                'fields' => [
+                                'fields'     => [
                                     'User.id'
                                 ]
                             ]);
@@ -302,12 +300,12 @@ class ContainersController extends AppController {
                         if (in_array('DistributeModule', $modulePlugins)) {
                             $Satellite = ClassRegistry::init('DistributeModule.Satellite');
                             $satellitesToDelete = $Satellite->find('all', [
-                                'recursive' => -1,
-                                'joins' => [
+                                'recursive'  => -1,
+                                'joins'      => [
                                     [
-                                        'table' => 'containers',
-                                        'alias' => 'Container',
-                                        'type' => 'INNER',
+                                        'table'      => 'containers',
+                                        'alias'      => 'Container',
+                                        'type'       => 'INNER',
                                         'conditions' => [
                                             'Container.id = Satellite.container_id',
                                         ],
@@ -339,12 +337,12 @@ class ContainersController extends AppController {
                         //Check locations to delete
                         $Location = ClassRegistry::init('Location');
                         $locationsToDelete = $Location->find('all', [
-                            'recursive' => -1,
-                            'joins' => [
+                            'recursive'  => -1,
+                            'joins'      => [
                                 [
-                                    'table' => 'containers',
-                                    'alias' => 'Container',
-                                    'type' => 'INNER',
+                                    'table'      => 'containers',
+                                    'alias'      => 'Container',
+                                    'type'       => 'INNER',
                                     'conditions' => [
                                         'Container.id = Location.container_id',
                                     ],
@@ -353,7 +351,7 @@ class ContainersController extends AppController {
                             'conditions' => [
                                 'Location.container_id' => $containerIds,
                             ],
-                            'fields' => [
+                            'fields'     => [
                                 'Location.id',
                                 'Container.id',
                             ],
@@ -366,8 +364,8 @@ class ContainersController extends AppController {
                         //Check host groups to delete
                         $Hostgroup = ClassRegistry::init('Hostgroup');
                         $hostgroupsToDelete = $Hostgroup->find('all', [
-                            'recursive' => -1,
-                            'contain' => [
+                            'recursive'  => -1,
+                            'contain'    => [
                                 'Container' => [
                                     'fields' => [
                                         'Container.id',
@@ -377,7 +375,7 @@ class ContainersController extends AppController {
                             'conditions' => [
                                 'Hostgroup.container_id' => $containerIds,
                             ],
-                            'fields' => [
+                            'fields'     => [
                                 'Hostgroup.id',
                             ],
                         ]);
@@ -389,8 +387,8 @@ class ContainersController extends AppController {
                         //Check service groups to delete
                         $Servicegroup = ClassRegistry::init('Servicegroup');
                         $servicegroupsToDelete = $Servicegroup->find('all', [
-                            'recursive' => -1,
-                            'contain' => [
+                            'recursive'  => -1,
+                            'contain'    => [
                                 'Container' => [
                                     'fields' => [
                                         'Container.id',
@@ -400,7 +398,7 @@ class ContainersController extends AppController {
                             'conditions' => [
                                 'Servicegroup.container_id' => $containerIds,
                             ],
-                            'fields' => [
+                            'fields'     => [
                                 'Servicegroup.id',
                             ],
                         ]);
@@ -412,8 +410,8 @@ class ContainersController extends AppController {
                         //Check contact groups to delete
                         $Contactgroup = ClassRegistry::init('Contactgroup');
                         $contactgroupsToDelete = $Contactgroup->find('all', [
-                            'recursive' => -1,
-                            'contain' => [
+                            'recursive'  => -1,
+                            'contain'    => [
                                 'Container' => [
                                     'fields' => [
                                         'Container.id',
@@ -423,7 +421,7 @@ class ContainersController extends AppController {
                             'conditions' => [
                                 'Contactgroup.container_id' => $containerIds,
                             ],
-                            'fields' => [
+                            'fields'     => [
                                 'Contactgroup.id',
                             ],
                         ]);
@@ -493,43 +491,43 @@ class ContainersController extends AppController {
                     'Servicedependency',
                     'Hostescalation',
                     'Serviceescalation',
-                    'ContainerNode' => [
-                        'className' => 'Container',
+                    'ContainerNode'                 => [
+                        'className'  => 'Container',
                         'foreignKey' => 'parent_id',
                         'conditions' => [
                             'ContainerNode.containertype_id' => CT_NODE
                         ]
                     ],
-                    'ContainerLocation' => [
-                        'className' => 'Container',
+                    'ContainerLocation'             => [
+                        'className'  => 'Container',
                         'foreignKey' => 'parent_id',
                         'conditions' => [
                             'ContainerLocation.containertype_id' => CT_LOCATION
                         ]
                     ],
-                    'ContainerHostgroup' => [
-                        'className' => 'Container',
+                    'ContainerHostgroup'            => [
+                        'className'  => 'Container',
                         'foreignKey' => 'parent_id',
                         'conditions' => [
                             'ContainerHostgroup.containertype_id' => CT_HOSTGROUP
                         ]
                     ],
-                    'ContainerServicegroup' => [
-                        'className' => 'Container',
+                    'ContainerServicegroup'         => [
+                        'className'  => 'Container',
                         'foreignKey' => 'parent_id',
                         'conditions' => [
                             'ContainerServicegroup.containertype_id' => CT_SERVICEGROUP
                         ]
                     ],
                     'ContainerServicetemplategroup' => [
-                        'className' => 'Container',
+                        'className'  => 'Container',
                         'foreignKey' => 'parent_id',
                         'conditions' => [
                             'ContainerServicetemplategroup.containertype_id' => CT_SERVICETEMPLATEGROUP
                         ]
                     ],
-                    'ContainerContactgroup' => [
-                        'className' => 'Container',
+                    'ContainerContactgroup'         => [
+                        'className'  => 'Container',
                         'foreignKey' => 'parent_id',
                         'conditions' => [
                             'ContainerContactgroup.containertype_id' => CT_CONTACTGROUP
@@ -540,10 +538,10 @@ class ContainersController extends AppController {
         );
 
         $containerDetails = $this->Container->find('first', [
-            'recursive' => -1,
-            'contain' => [
-                'ContainerLocation' => [
-                    'fields' => [
+            'recursive'  => -1,
+            'contain'    => [
+                'ContainerLocation'             => [
+                    'fields'   => [
                         'ContainerLocation.id',
                         'ContainerLocation.name'
                     ],
@@ -553,90 +551,90 @@ class ContainersController extends AppController {
                             'Location.description'
                         ]
                     ],
-                    'order' => [
+                    'order'    => [
                         'ContainerLocation.name' => 'asc'
                     ]
                 ],
-                'ContainerNode' => [
+                'ContainerNode'                 => [
                     'fields' => [
                         'ContainerNode.id',
                         'ContainerNode.name'
                     ],
-                    'order' => [
+                    'order'  => [
                         'ContainerNode.name' => 'asc'
                     ]
                 ],
-                'Host' => [
+                'Host'                          => [
                     'fields' => [
                         'Host.id',
                         'Host.name',
                         'Host.description'
                     ],
-                    'order' => [
+                    'order'  => [
                         'Host.name' => 'asc'
                     ]
                 ],
-                'Hosttemplate' => [
+                'Hosttemplate'                  => [
                     'fields' => [
                         'Hosttemplate.id',
                         'Hosttemplate.name',
                         'Hosttemplate.description'
                     ],
-                    'order' => [
+                    'order'  => [
                         'Hosttemplate.name' => 'asc'
                     ]
                 ],
-                'Servicetemplate' => [
+                'Servicetemplate'               => [
                     'fields' => [
                         'Servicetemplate.id',
                         'Servicetemplate.template_name',
                         'Servicetemplate.name'
                     ],
-                    'order' => [
+                    'order'  => [
                         'Servicetemplate.name' => 'asc'
                     ]
                 ],
-                'Timeperiod' => [
+                'Timeperiod'                    => [
                     'fields' => [
                         'Timeperiod.id',
                         'Timeperiod.name'
                     ],
-                    'order' => [
+                    'order'  => [
                         'Timeperiod.name' => 'asc'
                     ]
                 ],
-                'Hostdependency' => [
+                'Hostdependency'                => [
                     'fields' => [
                         'Hostdependency.id'
                     ]
                 ],
-                'Servicedependency' => [
+                'Servicedependency'             => [
                     'fields' => [
                         'Servicedependency.id'
                     ]
                 ],
-                'Hostescalation' => [
+                'Hostescalation'                => [
                     'fields' => [
                         'Hostescalation.id'
                     ]
                 ],
-                'Serviceescalation' => [
+                'Serviceescalation'             => [
                     'fields' => [
                         'Serviceescalation.id'
                     ]
                 ],
-                'Contact' => [
+                'Contact'                       => [
                     'fields' => [
                         'Contact.id',
                         'Contact.name',
                         'Contact.description'
                     ],
-                    'order' => [
+                    'order'  => [
                         'Contact.name' => 'asc'
                     ]
                 ],
-                'ContainerContactgroup' => [
-                    'fields' => [
+                'ContainerContactgroup'         => [
+                    'fields'       => [
                         'ContainerContactgroup.id',
                         'ContainerContactgroup.name'
                     ],
@@ -646,12 +644,12 @@ class ContainersController extends AppController {
                             'Contactgroup.description'
                         ]
                     ],
-                    'order' => [
+                    'order'        => [
                         'ContainerContactgroup.name' => 'asc'
                     ]
                 ],
-                'ContainerHostgroup' => [
-                    'fields' => [
+                'ContainerHostgroup'            => [
+                    'fields'    => [
                         'ContainerHostgroup.id',
                         'ContainerHostgroup.name'
                     ],
@@ -661,12 +659,12 @@ class ContainersController extends AppController {
                             'Hostgroup.description'
                         ]
                     ],
-                    'order' => [
+                    'order'     => [
                         'ContainerHostgroup.name' => 'asc'
                     ]
                 ],
-                'ContainerServicegroup' => [
-                    'fields' => [
+                'ContainerServicegroup'         => [
+                    'fields'       => [
                         'ContainerServicegroup.id',
                         'ContainerServicegroup.name'
                     ],
@@ -676,12 +674,12 @@ class ContainersController extends AppController {
                             'Servicegroup.description'
                         ]
                     ],
-                    'order' => [
+                    'order'        => [
                         'ContainerServicegroup.name' => 'asc'
                     ]
                 ],
                 'ContainerServicetemplategroup' => [
-                    'fields' => [
+                    'fields'               => [
                         'ContainerServicetemplategroup.id',
                         'ContainerServicetemplategroup.name'
                     ],
@@ -690,7 +688,7 @@ class ContainersController extends AppController {
                             'Servicetemplategroup.id'
                         ]
                     ],
-                    'order' => [
+                    'order'                => [
                         'ContainerServicetemplategroup.name' => 'asc'
                     ]
                 ]
@@ -703,15 +701,15 @@ class ContainersController extends AppController {
         if ($ModuleManager->moduleExists()) {
             $SatelliteModel = $ModuleManager->loadModel('Satellite');
             $satellites = $SatelliteModel->find('all', [
-                'recursive' => -1,
-                'fields' => [
+                'recursive'  => -1,
+                'fields'     => [
                     'Satellite.id',
                     'Satellite.name'
                 ],
                 'conditions' => [
                     'Satellite.container_id' => $id
                 ],
-                'order' => [
+                'order'      => [
                     'Satellite.name' => 'asc'
                 ]
             ]);

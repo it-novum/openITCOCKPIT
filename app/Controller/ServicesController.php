@@ -209,14 +209,14 @@ class ServicesController extends AppController {
             $this->set('_serialize', ['all_services']);
             return;
         } else {
-            if($this->isScrollRequest()){
+            if ($this->isScrollRequest()) {
                 $this->Paginator->settings['page'] = $ServiceFilter->getPage();
                 $this->Paginator->settings = array_merge($this->Paginator->settings, $query);
                 $ScrollIndex = new ScrollIndex($this->Paginator, $this);
                 $services = $this->{$modelName}->find('all', array_merge($this->Paginator->settings, $query));
                 $ScrollIndex->determineHasNextPage($services);
                 $ScrollIndex->scroll();
-            }else{
+            } else {
                 $this->Paginator->settings['page'] = $ServiceFilter->getPage();
                 $this->Paginator->settings = array_merge($this->Paginator->settings, $query);
                 $services = $this->Paginator->paginate($modelName, [], [key($this->Paginator->settings['order'])]);
@@ -276,7 +276,7 @@ class ServicesController extends AppController {
 
         $this->set('all_services', $all_services);
         $toJson = ['all_services', 'paging'];
-        if($this->isScrollRequest()){
+        if ($this->isScrollRequest()) {
             $toJson = ['all_services', 'scroll'];
         }
         $this->set('_serialize', $toJson);
@@ -2915,7 +2915,7 @@ class ServicesController extends AppController {
                 'Service.id' => $id,
             ],
             'contain'    => [
-                'Host' => [
+                'Host'            => [
                     'Container'
                 ],
                 'Servicetemplate' => [
@@ -3050,7 +3050,6 @@ class ServicesController extends AppController {
         }
 
 
-
         $StatehistorySerializer = new StatehistorySerializer($statehistoryServiceRecords, $UserTime, $end, 'service');
         $this->set('servicestatehistory', $StatehistorySerializer->serialize());
         unset($StatehistorySerializer, $statehistoryServiceRecords);
@@ -3088,8 +3087,8 @@ class ServicesController extends AppController {
         foreach ($this->NotificationService->find('all', $query) as $notification) {
             $notificationRecords[] = [
                 'NotificationService' => new \itnovum\openITCOCKPIT\Core\Views\NotificationService($notification),
-                'Command'          => new \itnovum\openITCOCKPIT\Core\Views\Command($notification['Command']),
-                'Contact'          => new \itnovum\openITCOCKPIT\Core\Views\Contact($notification['Contact'])
+                'Command'             => new \itnovum\openITCOCKPIT\Core\Views\Command($notification['Command']),
+                'Contact'             => new \itnovum\openITCOCKPIT\Core\Views\Contact($notification['Contact'])
             ];
         }
 

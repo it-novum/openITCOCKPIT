@@ -23,11 +23,9 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class WriteConfigurationTask extends AppShell
-{
+class WriteConfigurationTask extends AppShell {
 
-    public function execute()
-    {
+    public function execute() {
         //Do some cool stuff
         $this->monitoringSystem = $this->_monitoringSystem();
     }
@@ -35,8 +33,7 @@ class WriteConfigurationTask extends AppShell
     /*
      * this function fetches the used monitoring system (nagios, icinga or naemon)
      */
-    protected function _monitoringSystem()
-    {
+    protected function _monitoringSystem() {
         return 'nagios-4x';
     }
 }

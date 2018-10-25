@@ -21,11 +21,11 @@
 // THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
-use itnovum\openITCOCKPIT\Core\Views\Host;
-use itnovum\openITCOCKPIT\Core\Views\Service;
-use itnovum\openITCOCKPIT\Core\Views\HoststatusIcon;
-use itnovum\openITCOCKPIT\Core\Views\ServicestatusIcon;
 use GuzzleHttp\Client;
+use itnovum\openITCOCKPIT\Core\Views\Host;
+use itnovum\openITCOCKPIT\Core\Views\HoststatusIcon;
+use itnovum\openITCOCKPIT\Core\Views\Service;
+use itnovum\openITCOCKPIT\Core\Views\ServicestatusIcon;
 
 /**
  * Class PushoverNotificationShell

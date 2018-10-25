@@ -23,21 +23,18 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class DebugConfigNagiosTask extends AppShell
-{
+class DebugConfigNagiosTask extends AppShell {
 
     public $uses = ['Host', 'Hosttemplate', 'Timeperiod', 'Command', 'Contact', 'Contactgroup', 'Container', 'Customvariable', 'Hostescalation', 'Hostgroup', 'Service', 'Servicetemplate', 'Serviceescalations', 'Servicegroup', 'Hostdependency', 'Servicedependency'];
 
-    public function execute()
-    {
+    public function execute() {
         //Do some cool stuff
         debug($this->Hosttemplate->find('all'));
     }
 
-    public function setup($conf = [])
-    {
+    public function setup($conf = []) {
         $this->conf = $conf;
-        $this->monitoringLog = Configure::read('nagios.logfilepath').Configure::read('nagios.logfilename');
+        $this->monitoringLog = Configure::read('nagios.logfilepath') . Configure::read('nagios.logfilename');
         App::uses('UUID', 'Lib');
         App::uses('Folder', 'Utility');
         //Loading components
@@ -48,8 +45,7 @@ class DebugConfigNagiosTask extends AppShell
         $this->searchUuids();
     }
 
-    private function _buildUuidCache()
-    {
+    private function _buildUuidCache() {
         $this->uuidCache = [];
         $Models = ['Host', 'Hosttemplate', 'Timeperiod', 'Command', 'Contact', 'Contactgroup', 'Hostgroup', 'Servicegroup', 'Service', 'Servicetemplate'];
         $options = [
@@ -163,23 +159,22 @@ class DebugConfigNagiosTask extends AppShell
         }
     }
 
-    public function debug($ModelName = null, $confName)
-    {
+    public function debug($ModelName = null, $confName) {
         if ($ModelName !== null && is_array($this->uses)) {
             $ModelSchema = $this->{$ModelName}->schema();
             if (in_array('name', array_keys($ModelSchema))) {
-                $input = $this->in(__d('oitc_console', 'Please enter the name of the '.$ModelName.'! This is a wildcard search, for example type "default host" or just "def". Hit return to see all '.Inflector::pluralize($ModelName)));
+                $input = $this->in(__d('oitc_console', 'Please enter the name of the ' . $ModelName . '! This is a wildcard search, for example type "default host" or just "def". Hit return to see all ' . Inflector::pluralize($ModelName)));
                 $result = $this->{$ModelName}->find('all', [
                     'conditions' => [
-                        $ModelName.'.name LIKE' => '%'.$input.'%',
+                        $ModelName . '.name LIKE' => '%' . $input . '%',
                     ],
                     'contain'    => [],
                 ]);
-            } elseif (in_array('container_id', array_keys($ModelSchema))) {
-                $input = $this->in(__d('oitc_console', 'Please enter the name of the '.$ModelName.'! This is a wildcard search, for example type "default host" or just "def". Hit return to see all '.Inflector::pluralize($ModelName)));
+            } else if (in_array('container_id', array_keys($ModelSchema))) {
+                $input = $this->in(__d('oitc_console', 'Please enter the name of the ' . $ModelName . '! This is a wildcard search, for example type "default host" or just "def". Hit return to see all ' . Inflector::pluralize($ModelName)));
                 $result = $this->{$ModelName}->find('all', [
                     'conditions' => [
-                        'Container.name LIKE'        => '%'.$input.'%',
+                        'Container.name LIKE'        => '%' . $input . '%',
                         'Container.containertype_id' => $this->Constants->containertypeByModelName($ModelName),
                     ],
                     ['contain']  => [
@@ -187,23 +182,23 @@ class DebugConfigNagiosTask extends AppShell
                     ],
                 ]);
             } else {
-                $this->out('<error>'.__d('oitc_console', 'No name field for '.$ModelName.' found in database!').'</error>');
+                $this->out('<error>' . __d('oitc_console', 'No name field for ' . $ModelName . ' found in database!') . '</error>');
                 $result = $this->{$ModelName}->find('all');
             }
 
             if (sizeof($result) > 1) {
                 if (isset($input)) {
-                    $this->out(__d('oitc_console', 'I found '.sizeof($result).' results matching to "'.$input.'". Please select one '.$ModelName.' by typing the number in square brackets'));
+                    $this->out(__d('oitc_console', 'I found ' . sizeof($result) . ' results matching to "' . $input . '". Please select one ' . $ModelName . ' by typing the number in square brackets'));
                 } else {
-                    $this->out(__d('oitc_console', 'Please select one '.$ModelName.' by typing the number in square brackets'));
+                    $this->out(__d('oitc_console', 'Please select one ' . $ModelName . ' by typing the number in square brackets'));
                 }
                 foreach ($result as $r) {
                     if (isset($r[$ModelName]['name'])) {
-                        $this->out('['.$r[$ModelName]['id'].'] '.$r[$ModelName]['name']);
-                    } elseif (isset($r['Container']['name'])) {
-                        $this->out('['.$r[$ModelName]['id'].'] '.$r['Container']['name']);
+                        $this->out('[' . $r[$ModelName]['id'] . '] ' . $r[$ModelName]['name']);
+                    } else if (isset($r['Container']['name'])) {
+                        $this->out('[' . $r[$ModelName]['id'] . '] ' . $r['Container']['name']);
                     } else {
-                        $this->out('['.$r[$ModelName]['id'].'] '.$r[$ModelName]['uuid']);
+                        $this->out('[' . $r[$ModelName]['id'] . '] ' . $r[$ModelName]['uuid']);
                     }
                 }
                 $input = $this->in(__d('oitc_console', 'Your choice please'));
@@ -212,7 +207,7 @@ class DebugConfigNagiosTask extends AppShell
                     $result[0] = $this->{$ModelName}->findById($input);
                     $this->_outFile($result[0][$ModelName]['uuid'], $ModelName, $confName);
                 } else {
-                    $this->out('<error>'.$ModelName.__d('oitc_console', ' not found').'</error>');
+                    $this->out('<error>' . $ModelName . __d('oitc_console', ' not found') . '</error>');
                 }
             } else {
                 if (sizeof($result) == 1) {
@@ -228,8 +223,7 @@ class DebugConfigNagiosTask extends AppShell
         }
     }
 
-    public function debugByUuid($uuid = null)
-    {
+    public function debugByUuid($uuid = null) {
         if ($uuid !== null) {
 
         } else {
@@ -238,26 +232,24 @@ class DebugConfigNagiosTask extends AppShell
             if (!empty($result)) {
                 $this->_outFile($input, $result['ModelName'], strtolower(Inflector::pluralize($result['ModelName'])));
             } else {
-                $this->out('<error>'.__d('oitc_console', 'No result for given UUID').'</error>');
+                $this->out('<error>' . __d('oitc_console', 'No result for given UUID') . '</error>');
             }
         }
     }
 
-    public function parseMonitoringLogfile()
-    {
+    public function parseMonitoringLogfile() {
         foreach ($this->tail() as $line) {
             $timestamp = null;
             preg_match('#\d{10,11}#', $line, $timestamp);
             if (isset($timestamp[0]) && is_numeric($timestamp[0])) {
-                $this->out(preg_replace('#\d{10,11}#', '<comment>'.date('d.m.Y - H:i:s', $timestamp[0]).'</comment>', $line));
+                $this->out(preg_replace('#\d{10,11}#', '<comment>' . date('d.m.Y - H:i:s', $timestamp[0]) . '</comment>', $line));
             } else {
                 $this->out($line);
             }
         }
     }
 
-    private function tail($lines = 100)
-    {
+    private function tail($lines = 100) {
         $return = [];
         $file = fopen($this->monitoringLog, "r");
         $flen = filesize($this->monitoringLog);
@@ -296,10 +288,9 @@ class DebugConfigNagiosTask extends AppShell
         return $ret;
     }
 
-    public function tailf()
-    {
+    public function tailf() {
         $callback = function ($timestamp) {
-            return '<comment>'.date('d.m.Y - H:i:s', $timestamp[0]).'</comment>';
+            return '<comment>' . date('d.m.Y - H:i:s', $timestamp[0]) . '</comment>';
         };
 
         $options = [
@@ -308,7 +299,8 @@ class DebugConfigNagiosTask extends AppShell
                 'LANG'     => 'C',
                 'LANGUAGE' => 'en_US.UTF-8',
                 'LC_ALL'   => 'C',
-                'PATH'     => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'],
+                'PATH'     => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
+            ],
         ];
 
         $descriptorspec = [
@@ -317,7 +309,7 @@ class DebugConfigNagiosTask extends AppShell
             2 => ["pipe", "r"],
         ];
 
-        $process = proc_open('/usr/bin/tail -f -n 100 '.Configure::read('nagios.logfilename'), $descriptorspec, $pipes, $options['cwd'], $options['env']);
+        $process = proc_open('/usr/bin/tail -f -n 100 ' . Configure::read('nagios.logfilename'), $descriptorspec, $pipes, $options['cwd'], $options['env']);
         while (true) {
             $status = proc_get_status($process);
             if ($status['running'] != 1) {
@@ -335,30 +327,29 @@ class DebugConfigNagiosTask extends AppShell
         }
     }
 
-    private function _outFile($uuid, $ModelName, $confName)
-    {
+    private function _outFile($uuid, $ModelName, $confName) {
         if (!$this->conf['minified'] || in_array($ModelName, ['Hostdependency', 'Hostescalation', 'Servicedependency', 'Serviceescalation', 'Servicegroup'])) {
             // Model that are not saved as minified config files or minified configs asre tournd off
-            $file = new File($this->conf['path'].$this->conf[$confName].$uuid.$this->conf['suffix']);
+            $file = new File($this->conf['path'] . $this->conf[$confName] . $uuid . $this->conf['suffix']);
             if ($file->exists()) {
                 $this->hr();
-                $this->out('<warning>File: '.$this->conf['path'].$this->conf[$confName].$uuid.$this->conf['suffix'].'</warning>');
-                $this->out('<info>'.__d('oitc_console', 'Notice: This is not the real nagios configuration file. This is a human readable version of the config.').'</info>');
+                $this->out('<warning>File: ' . $this->conf['path'] . $this->conf[$confName] . $uuid . $this->conf['suffix'] . '</warning>');
+                $this->out('<info>' . __d('oitc_console', 'Notice: This is not the real nagios configuration file. This is a human readable version of the config.') . '</info>');
                 $this->hr();
                 $this->out($this->nl());
                 $this->out($this->searchUuids($file->read()));
                 $file->close();
             } else {
-                $this->out(__d('oitc_console', '<error>File not found! ('.$this->conf['path'].$this->conf[$confName].$uuid.$this->conf['suffix'].')</error>'));
+                $this->out(__d('oitc_console', '<error>File not found! (' . $this->conf['path'] . $this->conf[$confName] . $uuid . $this->conf['suffix'] . ')</error>'));
             }
         } else {
-            $configFolder = new Folder($this->conf['path'].$this->conf[$confName]);
+            $configFolder = new Folder($this->conf['path'] . $this->conf[$confName]);
             $configFiles = $configFolder->find();
 
             // User want the file of an object, that is inside of an minified file, so we need to parse the minified config
             if (!empty($configFiles)) {
                 foreach ($configFiles as $configFile) {
-                    $fileAsArray = file($configFolder->pwd().$configFile);
+                    $fileAsArray = file($configFolder->pwd() . $configFile);
 
                     $content = [];
                     $startParsing = false;
@@ -392,7 +383,7 @@ class DebugConfigNagiosTask extends AppShell
                                 break;
 
                             case 'SEARCH_FOR_OBJECT_NAME': //host_name, command_name, contacnt_name, etc
-                                if (preg_match('/'.$needel.'/', $line)) {
+                                if (preg_match('/' . $needel . '/', $line)) {
                                     $check = explode($needel, $line);
                                     if (sizeof($check) == 2) {
                                         if (trim($check[1]) == $uuid) {
@@ -430,8 +421,8 @@ class DebugConfigNagiosTask extends AppShell
 
                     if (!empty($configContent)) {
                         $this->hr();
-                        $this->out(__('<warning>File: %s</warning>', $configFolder->pwd().$configFile));
-                        $this->out('<info>'.__d('oitc_console', 'Notice: This is not the real nagios configuration file. This is a human readable version of the config.').'</info>');
+                        $this->out(__('<warning>File: %s</warning>', $configFolder->pwd() . $configFile));
+                        $this->out('<info>' . __d('oitc_console', 'Notice: This is not the real nagios configuration file. This is a human readable version of the config.') . '</info>');
                         $this->hr();
                         foreach ($configContent as $line) {
                             $this->out($this->searchUuids($line), false);
@@ -448,8 +439,7 @@ class DebugConfigNagiosTask extends AppShell
         }
     }
 
-    public function searchUuids($string = '')
-    {
+    public function searchUuids($string = '') {
         if (!isset($this->uuidCache) || empty($this->uuidCache) || !is_array($this->uuidCache)) {
             App::uses('UUID', 'Lib');
             $this->_buildUuidCache();
@@ -460,8 +450,7 @@ class DebugConfigNagiosTask extends AppShell
         return $string;
     }
 
-    public function searchByUuid($uuid = null)
-    {
+    public function searchByUuid($uuid = null) {
         if (isset($this->uuidCache[$uuid])) {
             return $this->uuidCache[$uuid];
         }
@@ -469,27 +458,25 @@ class DebugConfigNagiosTask extends AppShell
         return [];
     }
 
-    private function _replaceUuid($matches)
-    {
+    private function _replaceUuid($matches) {
         foreach ($matches as $match) {
             if (isset($this->uuidCache[$match])) {
                 //Checking if name exists or if we need to use the container:
                 if (isset($this->uuidCache[$match]['name'])) {
-                    return '<red_bold>'.$this->uuidCache[$match]['name']."</red_bold><comment>[".$match."]</comment>";
-                } elseif (isset($this->uuidCache[$match]['container_name'])) {
-                    return '<red_bold>'.$this->uuidCache[$match]['container_name']."</red_bold><comment>[".$match."]</comment>";
+                    return '<red_bold>' . $this->uuidCache[$match]['name'] . "</red_bold><comment>[" . $match . "]</comment>";
+                } else if (isset($this->uuidCache[$match]['container_name'])) {
+                    return '<red_bold>' . $this->uuidCache[$match]['container_name'] . "</red_bold><comment>[" . $match . "]</comment>";
                 } else {
-                    return "<error>name not found in DB</error><comment>[".$match."]</comment>";
+                    return "<error>name not found in DB</error><comment>[" . $match . "]</comment>";
                 }
 
             }
 
-            return "<error>object not found in UUID cache</error><comment>[".$match."]</comment>";
+            return "<error>object not found in UUID cache</error><comment>[" . $match . "]</comment>";
         }
     }
 
-    public function translateStdin()
-    {
+    public function translateStdin() {
         $result = null;
         do {
             $result = $this->stdin->read();
@@ -502,8 +489,7 @@ class DebugConfigNagiosTask extends AppShell
      * @return void
      * @since 3.0
      */
-    private function _unbindAssociations()
-    {
+    private function _unbindAssociations() {
         $excludeAccociations = ['Container', 'Servicetemplate'];
         $excludeModels = ['Container'];
         foreach ($this->uses as $ModelName) {

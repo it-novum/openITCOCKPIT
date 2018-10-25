@@ -98,7 +98,6 @@ class CompressShell extends AppShell {
     }
 
 
-
     public function fetchAllAngularControllers() {
         $core = new Folder(WWW_ROOT . 'js' . DS . 'scripts' . DS . 'controllers');
         $angularControllers = $core->findRecursive('.*\.js');
@@ -172,7 +171,7 @@ class CompressShell extends AppShell {
      * @param array $arr
      * @return array
      */
-    public function removeDotFiles($items = []){
+    public function removeDotFiles($items = []) {
         $_items = [];
         foreach ($items as $item) {
             if (!strpos($item, '._')) {

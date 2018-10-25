@@ -57,7 +57,7 @@ class DeletedHostsController extends AppController {
         $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
 
         $deletedHosts = [];
-        foreach($hosts as $host){
+        foreach ($hosts as $host) {
             $DeletedHost = new \itnovum\openITCOCKPIT\Core\Views\DeletedHost($host, $UserTime);
             $deletedHosts[] = [
                 'DeletedHost' => $DeletedHost->toArray()

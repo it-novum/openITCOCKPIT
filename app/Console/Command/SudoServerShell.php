@@ -27,8 +27,6 @@
 use itnovum\openITCOCKPIT\Ratchet\Overwrites\HttpServerSize;
 use Ratchet\Server\IoServer;
 use Ratchet\WebSocket\WsServer;
-use Ratchet\Http\HttpServer;
-use React\Socket\Server;
 use React\Socket\Server as Reactor;
 
 require_once APP . '/Lib/SudoMessageInterface.php';

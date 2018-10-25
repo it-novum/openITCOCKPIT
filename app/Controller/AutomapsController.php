@@ -28,7 +28,6 @@ use itnovum\openITCOCKPIT\Core\DbBackend;
 use itnovum\openITCOCKPIT\Core\ServicestatusConditions;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
-use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 
 /**
  * Class AutomapsController
@@ -273,19 +272,19 @@ class AutomapsController extends AppController {
         foreach ($serviceRecords as $serviceRecord) {
             $serviceUuid = $serviceRecord['Service']['uuid'];
             //Has Service a service status record?
-            if(!isset($servicestatusRecords[$serviceUuid])){
+            if (!isset($servicestatusRecords[$serviceUuid])) {
                 continue;
             }
 
             $hostId = $serviceRecord['Service']['host_id'];
-            if($serviceRecord['Service']['name'] === '' || $serviceRecord['Service']['name'] === null){
+            if ($serviceRecord['Service']['name'] === '' || $serviceRecord['Service']['name'] === null) {
                 $serviceRecord['Service']['name'] = $serviceRecord['Servicetemplate']['name'];
             }
 
-            if(!isset($hostAndServices[$hostId])){
+            if (!isset($hostAndServices[$hostId])) {
                 $hostAndServices[$hostId] = [
-                    'Host' => [
-                        'id' => $hostId,
+                    'Host'     => [
+                        'id'   => $hostId,
                         'name' => $hosts[$hostId]
                     ],
                     'Services' => []
@@ -293,11 +292,11 @@ class AutomapsController extends AppController {
             }
 
             $hostAndServices[$hostId]['Services'][] = [
-                'Service' => $serviceRecord['Service'],
+                'Service'       => $serviceRecord['Service'],
                 'Servicestatus' => [
-                    'currentState' => (int)$servicestatusRecords[$serviceUuid]['Servicestatus']['current_state'],
+                    'currentState'               => (int)$servicestatusRecords[$serviceUuid]['Servicestatus']['current_state'],
                     'problemHasBeenAcknowledged' => (bool)$servicestatusRecords[$serviceUuid]['Servicestatus']['problem_has_been_acknowledged'],
-                    'scheduledDowntimeDepth' => (int)$servicestatusRecords[$serviceUuid]['Servicestatus']['scheduled_downtime_depth']
+                    'scheduledDowntimeDepth'     => (int)$servicestatusRecords[$serviceUuid]['Servicestatus']['scheduled_downtime_depth']
                 ]
             ];
         }

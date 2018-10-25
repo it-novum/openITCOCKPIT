@@ -23,11 +23,9 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class AfterExportShell extends AppShell
-{
+class AfterExportShell extends AppShell {
 
-    public function main()
-    {
+    public function main() {
         $parameter = false;
         $this->stdout->styles('red', ['text' => 'red']);
 
@@ -54,13 +52,12 @@ class AfterExportShell extends AppShell
         }
 
         if ($parameter === false) {
-            $this->out('<red>'.__('Usage error: Call with --help to get more information ').'</red>');
+            $this->out('<red>' . __('Usage error: Call with --help to get more information ') . '</red>');
         }
 
     }
 
-    public function getOptionParser()
-    {
+    public function getOptionParser() {
         $parser = parent::getOptionParser();
         $parser->addOptions([
             'single' => ['help' => 'Run after export command single threaded', 'boolean' => false],

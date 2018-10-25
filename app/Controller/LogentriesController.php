@@ -66,9 +66,9 @@ class LogentriesController extends AppController {
                     'Host.id' => $this->request->query['filter']['Host.id']
                 ]
             ]);
-            if(!empty($hosts)) {
+            if (!empty($hosts)) {
                 $orConditions = [];
-                foreach($hosts as $host){
+                foreach ($hosts as $host) {
                     $orConditions[] = $host['Host']['uuid'];
                 }
                 $this->Paginator->settings['conditions']['Logentry.logentry_data rlike'] = sprintf('.*(%s).*', implode('|', $orConditions));
@@ -76,11 +76,11 @@ class LogentriesController extends AppController {
         }
 
         $ScrollIndex = new ScrollIndex($this->Paginator, $this);
-        if($this->isScrollRequest()){
+        if ($this->isScrollRequest()) {
             $logentries = $this->Logentry->find('all', $this->Paginator->settings);
             $ScrollIndex->determineHasNextPage($logentries);
             $ScrollIndex->scroll();
-        }else{
+        } else {
             $logentries = $this->Paginator->paginate();
         }
 
@@ -122,7 +122,7 @@ class LogentriesController extends AppController {
         $this->set('all_logentries', $all_logentries);
 
         $toJson = ['all_logentries', 'paging'];
-        if($this->isScrollRequest()){
+        if ($this->isScrollRequest()) {
             $toJson = ['all_logentries', 'scroll'];
         }
         $this->set('_serialize', $toJson);

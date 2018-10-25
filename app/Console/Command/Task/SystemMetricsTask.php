@@ -24,7 +24,7 @@
 //	confirmation.
 
 use GuzzleHttp\Client;
-use \itnovum\openITCOCKPIT\Core\Interfaces\CronjobInterface;
+use itnovum\openITCOCKPIT\Core\Interfaces\CronjobInterface;
 use itnovum\openITCOCKPIT\Core\System\Health\StatisticsCollector;
 
 /**

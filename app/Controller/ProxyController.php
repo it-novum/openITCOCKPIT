@@ -24,21 +24,18 @@
 //	confirmation.
 
 
-class ProxyController extends AppController
-{
+class ProxyController extends AppController {
     public $layout = 'Admin.default';
     public $components = ['RequestHandler'];
 
-    function index()
-    {
+    function index() {
         $proxy = $this->Proxy->find('all');
         $this->set('proxy', $proxy);
         //_serialize wird fir das json und XML randering benötigt
         $this->set('_serialize', ['proxy']);
     }
 
-    function edit()
-    {
+    function edit() {
         $proxy = $this->Proxy->find('all');
         $this->set('proxy', $proxy);
         if ($this->request->is('post') || $this->request->is('put')) {
@@ -55,8 +52,7 @@ class ProxyController extends AppController
         }
     }
 
-    function getSettings()
-    {
+    function getSettings() {
         $proxy = $this->Proxy->find('first');
         $settings = ['ipaddress' => '', 'port' => 0, 'enabled' => false];
         if (!empty($proxy)) {

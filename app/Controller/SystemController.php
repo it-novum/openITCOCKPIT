@@ -23,12 +23,10 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class SystemController extends AppController
-{
+class SystemController extends AppController {
     public $layout = 'Admin.default';
 
-    function changelog()
-    {
+    function changelog() {
         //Rander the Changelog
     }
 }
