@@ -6,7 +6,7 @@
 [//]: # (Content)
 
 ## What do I find in the packet manager?
-In [this section][Packet manager] you can see the available packages for openITCOCKPIT v3 and the changes that came with the new version of openITCOCKPIT v3.
+In [this section][Packet manager] you can see the available packages for openITCOCKPIT and the changes that came with the new version of openITCOCKPIT v3.
 To see the changes click on
 <a class="btn btn-xs btn-default"><strong>What's new?</strong></a>.
 
