@@ -161,8 +161,8 @@ class MenuComponent extends Component {
             if (!empty($_childNodes) && !empty($_parentNode)) {
                 $_parentNode['children'] = $_childNodes;
                 $_menu[$parentKey] = $_parentNode;
-                if($realUrl){
-                    if(is_array($_menu[$parentKey]['url'])){
+                if ($realUrl) {
+                    if (is_array($_menu[$parentKey]['url'])) {
                         $_menu[$parentKey]['url_array'] = $_menu[$parentKey]['url'];
                         $_menu[$parentKey]['url'] = Router::url($_menu[$parentKey]['url']);
                     }

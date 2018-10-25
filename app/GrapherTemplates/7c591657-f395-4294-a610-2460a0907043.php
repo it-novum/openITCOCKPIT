@@ -37,8 +37,8 @@ $templateSettings = [
     [
         '--vertical-label=Traffic bits per sec',
         '--title=Traffic bits per sec',
-        'DEF:var1='.$rrd_path.$service['Host']['uuid'].DS.$service['Service']['uuid'].'.rrd:1:AVERAGE',
-        'DEF:var2='.$rrd_path.$service['Host']['uuid'].DS.$service['Service']['uuid'].'.rrd:2:AVERAGE',
+        'DEF:var1=' . $rrd_path . $service['Host']['uuid'] . DS . $service['Service']['uuid'] . '.rrd:1:AVERAGE',
+        'DEF:var2=' . $rrd_path . $service['Host']['uuid'] . DS . $service['Service']['uuid'] . '.rrd:2:AVERAGE',
         'CDEF:var3=var2,-1,*',
         'AREA:var1#FF000055:',
         'LINE1:var1#FF0000FF:in',
@@ -53,8 +53,8 @@ $templateSettings = [
     ],
     [
         '--vertical-label=Utilisation %',
-        '--title=Utilisation % ('.$serviceName.')',
-        'DEF:var1='.$rrd_path.$service['Host']['uuid'].DS.$service['Service']['uuid'].'.rrd:3:AVERAGE',
+        '--title=Utilisation % (' . $serviceName . ')',
+        'DEF:var1=' . $rrd_path . $service['Host']['uuid'] . DS . $service['Service']['uuid'] . '.rrd:3:AVERAGE',
         'AREA:var1#0000FF55:',
         'LINE1:var1#0000FFFF:Utilisation',
         'GPRINT:var1:LAST:%7.2lf %% last',

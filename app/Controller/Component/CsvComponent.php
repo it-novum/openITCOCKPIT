@@ -1,7 +1,6 @@
 <?php
 
-class CsvComponent extends Component
-{
+class CsvComponent extends Component {
     var $delimiter = ';';
     var $enclosure = ' ';
     var $filename = 'Export.csv';
@@ -9,23 +8,19 @@ class CsvComponent extends Component
     var $buffer;
     var $error;
 
-    function CsvComponent()
-    {
+    function CsvComponent() {
         $this->clear();
     }
 
-    function setPath($path)
-    {
+    function setPath($path) {
         $this->buffer = fopen($path, 'w');
     }
 
-    function saveFile()
-    {
+    function saveFile() {
         fclose($this->buffer);
     }
 
-    function readZip($zipPath, $files, $render)
-    {
+    function readZip($zipPath, $files, $render) {
         if (file_exists($zipPath)) {
             unlink($zipPath);
         }
@@ -44,46 +39,40 @@ class CsvComponent extends Component
         if ($render) {
 
             $basename = basename($zipPath, '.zip');
-            $zipName = preg_replace("/[^a-zA-Z0-9_]+/", "", $basename).'.zip';
+            $zipName = preg_replace("/[^a-zA-Z0-9_]+/", "", $basename) . '.zip';
             header("Content-Type: application/zip");
             header("Content-Disposition: attachment; filename=$zipName");
-            header("Content-Length: ".filesize($zipPath));
+            header("Content-Length: " . filesize($zipPath));
 
             readfile($zipPath);
         }
     }
 
-    function clear()
-    {
+    function clear() {
         $this->line = [];
-        $this->buffer = fopen('php://temp/maxmemory:'.(5 * 1024 * 1024), 'r+');
+        $this->buffer = fopen('php://temp/maxmemory:' . (5 * 1024 * 1024), 'r+');
     }
 
-    function addField($value)
-    {
+    function addField($value) {
         $this->line[] = $value;
     }
 
-    function endRow()
-    {
+    function endRow() {
         $this->addRow($this->line);
         $this->line = [];
     }
 
-    function addRow($row)
-    {
+    function addRow($row) {
         fputcsv($this->buffer, $row, $this->delimiter, $this->enclosure);
     }
 
-    function renderHeaders()
-    {
+    function renderHeaders() {
         header('Content-Type: text/csv');
         header("Content-type:application/vnd.ms-excel");
-        header("Content-disposition:attachment;filename=".$this->filename);
+        header("Content-disposition:attachment;filename=" . $this->filename);
     }
 
-    function setFilename($filename)
-    {
+    function setFilename($filename) {
         $this->filename = $filename;
         if (strtolower(substr($this->filename, -4)) != '.csv') {
             $this->filename .= '.csv';

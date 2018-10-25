@@ -40,9 +40,9 @@ class StatusMapComponent extends Component {
         }
         if ($Hoststatus->isInDowntime() && $Hoststatus->isAcknowledged()) {
             $nodeGroupName = 'isAcknowledgedAndIsInDowntime';
-        } elseif ($Hoststatus->isInDowntime()) {
+        } else if ($Hoststatus->isInDowntime()) {
             $nodeGroupName = 'isInDowntime';
-        } elseif ($Hoststatus->isAcknowledged()) {
+        } else if ($Hoststatus->isAcknowledged()) {
             $nodeGroupName = 'isAcknowledged';
         } else {
             $nodeGroupName = 'host'; // --> simple state group

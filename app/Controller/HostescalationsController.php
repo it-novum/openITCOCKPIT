@@ -25,18 +25,17 @@
 
 
 /**
- * @property Hostescalation                    $Hostescalation
- * @property Timeperiod                        $Timeperiod
- * @property Host                              $Host
- * @property Hostgroup                         $Hostgroup
- * @property Contact                           $Contact
- * @property Contactgroup                      $Contactgroup
- * @property HostescalationHostMembership      $HostescalationHostMembership
+ * @property Hostescalation $Hostescalation
+ * @property Timeperiod $Timeperiod
+ * @property Host $Host
+ * @property Hostgroup $Hostgroup
+ * @property Contact $Contact
+ * @property Contactgroup $Contactgroup
+ * @property HostescalationHostMembership $HostescalationHostMembership
  * @property HostescalationHostgroupMembership $HostescalationHostgroupMembership
- * @property Container                         $Container
+ * @property Container $Container
  */
-class HostescalationsController extends AppController
-{
+class HostescalationsController extends AppController {
     public $uses = [
         'Hostescalation',
         'Timeperiod',
@@ -55,8 +54,7 @@ class HostescalationsController extends AppController
     ];
     public $helpers = ['ListFilter.ListFilter'];
 
-    public function index()
-    {
+    public function index() {
         $options = [
             'recursive'  => -1,
             'conditions' => [
@@ -118,8 +116,7 @@ class HostescalationsController extends AppController
         $this->set('_serialize', ['all_hostescalations']);
     }
 
-    public function view($id = null)
-    {
+    public function view($id = null) {
         if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();
 
@@ -155,8 +152,7 @@ class HostescalationsController extends AppController
         $this->set('_serialize', ['hostescalation']);
     }
 
-    public function edit($id = null)
-    {
+    public function edit($id = null) {
         if (!$this->Hostescalation->exists($id)) {
             throw new NotFoundException(__('Invalid hostescalation'));
         }
@@ -209,7 +205,8 @@ class HostescalationsController extends AppController
                 $this->Hostescalation->id = $id;
                 $old_membership_hosts = $this->HostescalationHostMembership->find('all', [
                     'conditions' => [
-                        'HostescalationHostMembership.hostescalation_id' => $id],
+                        'HostescalationHostMembership.hostescalation_id' => $id
+                    ],
                 ]);
                 /* Delete old host associations */
                 foreach ($old_membership_hosts as $old_membership_host) {
@@ -218,7 +215,8 @@ class HostescalationsController extends AppController
                 }
                 $old_membership_hostgroups = $this->HostescalationHostgroupMembership->find('all', [
                     'conditions' => [
-                        'HostescalationHostgroupMembership.hostescalation_id' => $id],
+                        'HostescalationHostgroupMembership.hostescalation_id' => $id
+                    ],
                 ]);
                 /* Delete old hostgroup associations */
                 foreach ($old_membership_hostgroups as $old_membership_hostgroup) {
@@ -245,8 +243,7 @@ class HostescalationsController extends AppController
         $this->set(compact(['hostescalation', 'hosts', 'hostgroups', 'timeperiods', 'contactgroups', 'contacts', 'containers']));
     }
 
-    public function add()
-    {
+    public function add() {
         $containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_HOSTESCALATION, [], $this->hasRootPrivileges);
 
         $hosts = [];
@@ -320,8 +317,7 @@ class HostescalationsController extends AppController
         $this->set(compact(['containers', 'hosts', 'hostgroups', 'timeperiods', 'contactgroups', 'contacts']));
     }
 
-    public function delete($id = null)
-    {
+    public function delete($id = null) {
         if (!$this->Hostescalation->exists($id)) {
             throw new NotFoundException(__('Invalid hostescalation'));
         }
@@ -340,8 +336,7 @@ class HostescalationsController extends AppController
         $this->redirect(['action' => 'index']);
     }
 
-    public function loadElementsByContainerId($containerId = null)
-    {
+    public function loadElementsByContainerId($containerId = null) {
         $this->allowOnlyAjaxRequests();
         if (!$this->Container->exists($containerId)) {
             throw new NotFoundException(__('Invalid hosttemplate'));

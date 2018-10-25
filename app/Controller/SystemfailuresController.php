@@ -23,8 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class SystemfailuresController extends AppController
-{
+class SystemfailuresController extends AppController {
     public $layout = 'Admin.default';
 
     public $components = [
@@ -49,15 +48,13 @@ class SystemfailuresController extends AppController
         ],
     ];
 
-    public function index()
-    {
+    public function index() {
         $all_systemfailures = $this->Paginator->paginate();
 
         $this->set(compact(['all_systemfailures']));
     }
 
-    public function add()
-    {
+    public function add() {
         $this->Frontend->setJson('dateformat', MY_DATEFORMAT);
 
         $customFildsToRefill = [
@@ -78,9 +75,9 @@ class SystemfailuresController extends AppController
             if ($this->Systemfailure->validates()) {
                 // Data is valide and ready to save
                 // Merging from_date and from_time to start_time
-                $this->request->data['Systemfailure']['start_time'] = date('Y-m-d H:i:s', strtotime(trim($this->request->data['Systemfailure']['from_date']).' '.trim($this->request->data['Systemfailure']['from_time'])));
+                $this->request->data['Systemfailure']['start_time'] = date('Y-m-d H:i:s', strtotime(trim($this->request->data['Systemfailure']['from_date']) . ' ' . trim($this->request->data['Systemfailure']['from_time'])));
                 // Merging to_date and to_time to end_time
-                $this->request->data['Systemfailure']['end_time'] = date('Y-m-d H:i:s', strtotime(trim($this->request->data['Systemfailure']['to_date']).' '.trim($this->request->data['Systemfailure']['to_time'])));
+                $this->request->data['Systemfailure']['end_time'] = date('Y-m-d H:i:s', strtotime(trim($this->request->data['Systemfailure']['to_date']) . ' ' . trim($this->request->data['Systemfailure']['to_time'])));
                 if ($this->Systemfailure->save($this->request->data)) {
                     $this->setFlash(__('Systemfailure successfully saved'));
 
@@ -94,8 +91,7 @@ class SystemfailuresController extends AppController
         }
     }
 
-    public function delete($id = null)
-    {
+    public function delete($id = null) {
         if (!$this->request->is('post')) {
             throw new MethodNotAllowedException();
         }

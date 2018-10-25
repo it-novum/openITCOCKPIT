@@ -29,18 +29,16 @@ use Model\Adldap;
  * Class LdapComponent
  * @property \Adldap\Adldap $adldap
  */
-class LdapComponent extends Component
-{
+class LdapComponent extends Component {
 
     public $components = ['Flash'];
 
 
-    public function __construct(ComponentCollection $collection, $settings = [])
-    {
+    public function __construct(ComponentCollection $collection, $settings = []) {
         parent::__construct($collection, $settings);
 
         //Load external lib
-        require_once APP.'Model'.DS.'Adldap.php';
+        require_once APP . 'Model' . DS . 'Adldap.php';
 
         //Load Systemsettings
         $this->Systemsetting = ClassRegistry::init('Systemsetting');
@@ -55,8 +53,7 @@ class LdapComponent extends Component
     }
 
 
-    public function connect()
-    {
+    public function connect() {
 
         $useTls = false;
 
@@ -87,9 +84,8 @@ class LdapComponent extends Component
         }
     }
 
-    public function login($username, $password)
-    {
-        if(empty($username) || empty($password)){
+    public function login($username, $password) {
+        if (empty($username) || empty($password)) {
             return false;
         }
 
@@ -100,14 +96,12 @@ class LdapComponent extends Component
         return $this->adldap->authenticate($username, $password);
     }
 
-    public function userInfo($username)
-    {
+    public function userInfo($username) {
         $allUsers = $this->findAllUser(true);
         return isset($allUsers[$username]) ? $allUsers[$username] : null;
     }
 
-    public function userExists($username)
-    {
+    public function userExists($username) {
         $result = $this->userInfo($username);
         if (!empty($result)) {
             return true;
@@ -116,30 +110,28 @@ class LdapComponent extends Component
         return false;
     }
 
-    public function findUser($username)
-    {
+    public function findUser($username) {
         $result = $this->userInfo($username);
 
         return $result;
     }
 
-    public function findAllUser($allData = false)
-    {
+    public function findAllUser($allData = false) {
         $ldapType = isset($this->_systemsettings['FRONTEND']['FRONTEND.LDAP.TYPE']) ? $this->_systemsettings['FRONTEND']['FRONTEND.LDAP.TYPE'] : 'adldap';
         $returnUsers = [];
-        if($ldapType === 'openldap'){
+        if ($ldapType === 'openldap') {
             $requiredFields = ['uid', 'mail', 'sn', 'givenname'];
             $selectFields = ['uid', 'mail', 'sn', 'givenname', 'displayname', 'dn'];
-        }else{
+        } else {
             $requiredFields = ['samaccountname', 'mail', 'sn', 'givenname'];
             $selectFields = ['samaccountname', 'mail', 'sn', 'givenname', 'displayname', 'dn'];
         }
         $perPage = 500;
         $currentPage = 0;
         $makeRequest = true;
-        while($makeRequest){
+        while ($makeRequest) {
             $ldapUsers = $this->adldap->search()->select($selectFields)->paginate($perPage, $currentPage);
-            if(empty($ldapUsers)) break;
+            if (empty($ldapUsers)) break;
             foreach ($ldapUsers[1] as $ldapUser) {
                 $ableToImport = true;
                 foreach ($requiredFields as $requiredField) {
@@ -149,19 +141,19 @@ class LdapComponent extends Component
                 }
 
                 if ($ableToImport) {
-                    if($ldapType === 'openldap'){
+                    if ($ldapType === 'openldap') {
                         $ldapUser['samaccountname'] = $ldapUser['uid'];
                     }
 
-                    if($allData){
+                    if ($allData) {
                         $returnUsers[$ldapUser['samaccountname']] = $ldapUser;
-                    }else {
+                    } else {
                         $returnUsers[$ldapUser['samaccountname']] = (isset($ldapUser['displayname']) ? $ldapUser['displayname'] : '') . ' (' . $ldapUser['samaccountname'] . ')';
                     }
                 }
             }
             $currentPage++;
-            if($currentPage >= $ldapUsers[0])
+            if ($currentPage >= $ldapUsers[0])
                 break;
         }
 

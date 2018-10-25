@@ -570,10 +570,10 @@ class SystemdowntimesController extends AppController {
             if ($this->request->data('Systemdowntime.inherit_downtime') == 1) {
                 $childrenContainers = [];
 
-                foreach($this->request->data('Systemdowntime.object_id') as $containerId){
-                    if($containerId == ROOT_CONTAINER) {
+                foreach ($this->request->data('Systemdowntime.object_id') as $containerId) {
+                    if ($containerId == ROOT_CONTAINER) {
                         $childrenContainers = $this->Tree->resolveChildrenOfContainerIds(ROOT_CONTAINER, true);
-                    }else{
+                    } else {
                         $childrenContainers = $this->Tree->resolveChildrenOfContainerIds($this->request->data('Systemdowntime.object_id'));
                         $childrenContainers = $this->Tree->removeRootContainer($childrenContainers);
                     }
