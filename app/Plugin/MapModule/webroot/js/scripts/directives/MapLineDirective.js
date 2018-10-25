@@ -17,6 +17,7 @@ angular.module('openITCOCKPIT').directive('mapLine', function($http, $interval){
                 $scope.item.endY = parseInt($scope.item.endY, 10);
 
                 $scope.z_index = parseInt($scope.item.z_index, 10);
+                console.log($scope.z_index);
 
                 var distance = Math.sqrt(
                     Math.pow(($scope.item.endX - $scope.item.startX), 2) + Math.pow(($scope.item.endY - $scope.item.startY), 2)
@@ -112,15 +113,17 @@ angular.module('openITCOCKPIT').directive('mapLine', function($http, $interval){
 
             //Disable status update interval, if the object gets removed from DOM.
             //E.g in Map rotations
-            $scope.$on('$destroy', function() {
+            $scope.$on('$destroy', function(){
                 $scope.stop();
             });
 
 
             $scope.$watch('item', function(){
                 if($scope.init || $scope.item.object_id === null){
-                    //Avoid ajax error if user search a object in line config modal
-                    return;
+                    if($scope.item.type !== 'stateless'){
+                        //Avoid ajax error if user search a object in line config modal
+                        return;
+                    }
                 }
 
                 $scope.initLine();

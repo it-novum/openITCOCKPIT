@@ -654,6 +654,7 @@ angular.module('openITCOCKPIT')
                     }
 
                     $scope.map.Mapline.push(result.data.Mapline.Mapline);
+                    setTimeout(makeDraggable, 250);
                 }
 
                 $('#addEditMapLineModal').modal('hide');
@@ -1323,6 +1324,7 @@ angular.module('openITCOCKPIT')
 
             var objectsToHide = [
                 'Mapitem',
+                'Mapline',
                 'Mapgadget',
                 'Mapicon',
                 'Maptext',
@@ -1347,6 +1349,7 @@ angular.module('openITCOCKPIT')
 
             var objectsToHide = [
                 'Mapitem',
+                'Mapline',
                 'Mapgadget',
                 'Mapicon',
                 'Maptext',
