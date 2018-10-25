@@ -507,7 +507,7 @@ class Systemsetting extends Importer {
                 'Systemsetting' => [
                     'key'     => 'CHECK_MK.ETC',
                     'value'   => '/opt/openitc/nagios/3rd/check_mk/etc/',
-                    'info'    => 'Path to Check_MK confi files',
+                    'info'    => 'Path to Check_MK config files',
                     'section' => 'CHECK_MK'
                 ],
             ],
