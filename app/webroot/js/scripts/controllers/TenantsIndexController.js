@@ -12,7 +12,7 @@ angular.module('openITCOCKPIT')
                 },
                 tenant: {
                     description: '',
-                    is_active:''
+                    is_active: ''
                 }
             };
         };
@@ -82,7 +82,6 @@ angular.module('openITCOCKPIT')
             }
             return objects;
         };
-
 
 
         //Fire on page load

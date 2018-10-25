@@ -121,5 +121,4 @@ angular.module('openITCOCKPIT')
         }, true);
 
 
-
     });

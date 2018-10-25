@@ -17,12 +17,12 @@ angular.module('openITCOCKPIT')
 
         $scope.id = QueryStringService.getCakeId();
 
-        $scope.deleteUrl = "/hostgroups/delete/"+$scope.id+".json?angular=true";
+        $scope.deleteUrl = "/hostgroups/delete/" + $scope.id + ".json?angular=true";
         $scope.sucessUrl = '/hostgroups/index';
 
         $scope.init = true;
         $scope.load = function(){
-            $http.get("/hostgroups/edit/"+$scope.id+".json", {
+            $http.get("/hostgroups/edit/" + $scope.id + ".json", {
                 params: {
                     'angular': true
                 }
@@ -91,7 +91,7 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.submit = function(){
-            $http.post("/hostgroups/edit/"+$scope.id+".json?angular=true",
+            $http.post("/hostgroups/edit/" + $scope.id + ".json?angular=true",
                 $scope.post
             ).then(function(result){
                 console.log('Data saved successfully');
@@ -103,8 +103,6 @@ angular.module('openITCOCKPIT')
             });
 
         };
-
-
 
 
         $scope.$watch('post.Container.parent_id', function(){

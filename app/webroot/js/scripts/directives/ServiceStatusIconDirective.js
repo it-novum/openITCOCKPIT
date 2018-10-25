@@ -33,7 +33,7 @@ angular.module('openITCOCKPIT').directive('servicestatusicon', function($interva
 
                 switch(currentstate){
                     case 0:
-                        $scope.btnColor =  'success';
+                        $scope.btnColor = 'success';
                         $scope.flappingColor = 'txt-color-green';
                         return;
                     case 1:
@@ -41,7 +41,7 @@ angular.module('openITCOCKPIT').directive('servicestatusicon', function($interva
                         $scope.flappingColor = 'warning';
                         return;
                     case 2:
-                        $scope.btnColor =  'danger';
+                        $scope.btnColor = 'danger';
                         $scope.flappingColor = 'txt-color-red';
                         return;
                     case 3:

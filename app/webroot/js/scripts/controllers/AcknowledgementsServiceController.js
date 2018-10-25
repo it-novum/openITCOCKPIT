@@ -27,8 +27,8 @@ angular.module('openITCOCKPIT')
                     comment: '',
                     author: ''
                 },
-                from: date('d.m.Y H:i', now.getTime()/1000 - (3600 * 24 * 30)),
-                to: date('d.m.Y H:i', now.getTime()/1000 + (3600 * 24 * 30 * 2))
+                from: date('d.m.Y H:i', now.getTime() / 1000 - (3600 * 24 * 30)),
+                to: date('d.m.Y H:i', now.getTime() / 1000 + (3600 * 24 * 30 * 2))
             };
         };
         /*** Filter end ***/
@@ -39,7 +39,7 @@ angular.module('openITCOCKPIT')
 
         $scope.load = function(){
 
-            $http.get("/acknowledgements/service/"+$scope.id+".json", {
+            $http.get("/acknowledgements/service/" + $scope.id + ".json", {
                 params: {
                     'angular': true,
                     'scroll': $scope.useScroll,

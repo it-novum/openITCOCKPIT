@@ -27,8 +27,8 @@ angular.module('openITCOCKPIT')
                     output: '',
                     perfdata: ''
                 },
-                from: date('d.m.Y H:i', now.getTime()/1000 - (3600 * 24 * 30)),
-                to: date('d.m.Y H:i', now.getTime()/1000 + (3600 * 24 * 30 * 2))
+                from: date('d.m.Y H:i', now.getTime() / 1000 - (3600 * 24 * 30)),
+                to: date('d.m.Y H:i', now.getTime() / 1000 + (3600 * 24 * 30 * 2))
             };
         };
         /*** Filter end ***/
@@ -47,7 +47,7 @@ angular.module('openITCOCKPIT')
                 }
             }
 
-            $http.get("/servicechecks/index/"+$scope.id+".json", {
+            $http.get("/servicechecks/index/" + $scope.id + ".json", {
                 params: {
                     'angular': true,
                     'scroll': $scope.useScroll,

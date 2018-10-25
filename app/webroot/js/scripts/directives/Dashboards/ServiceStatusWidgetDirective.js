@@ -167,7 +167,7 @@ angular.module('openITCOCKPIT').directive('servicesStatusWidget', function($http
             };
 
             $scope.pauseScroll = function(){
-                if (angular.isDefined(interval)) {
+                if(angular.isDefined(interval)){
                     $interval.cancel(interval);
                     interval = undefined;
                 }

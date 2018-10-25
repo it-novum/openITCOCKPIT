@@ -31,7 +31,7 @@ angular.module('openITCOCKPIT').directive('noticeWidget', function($http){
                 }).then(function(result){
                     resizeTextarea();
                     $scope.widget.WidgetNotice = {
-                        note :  result.data.config.note,
+                        note: result.data.config.note,
                         htmlContent: result.data.htmlContent
                     };
 
@@ -44,10 +44,10 @@ angular.module('openITCOCKPIT').directive('noticeWidget', function($http){
 
             $scope.load();
 
-            $scope.showConfig = function() {
+            $scope.showConfig = function(){
                 $scope.$broadcast('FLIP_EVENT_IN');
             };
-            $scope.hideConfig = function() {
+            $scope.hideConfig = function(){
                 $scope.$broadcast('FLIP_EVENT_OUT');
             };
 
@@ -78,13 +78,13 @@ angular.module('openITCOCKPIT').directive('noticeWidget', function($http){
             };
 
             var resizeTextarea = function(){
-                var height = $widget.height() -34 - 13 - 26 - 13 - 10; //Unit: px
+                var height = $widget.height() - 34 - 13 - 26 - 13 - 10; //Unit: px
                 //                              ^ widget Header
                 //                                  ^ content padding top
                 //                                       ^ button height
                 //                                           ^ fancy flip padding top
                 //                                                  ^ fancy flip padding bottom
-                $widget.find('textarea').css({height: height+'px'});
+                $widget.find('textarea').css({height: height + 'px'});
             }
         },
 

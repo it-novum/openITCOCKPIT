@@ -6,7 +6,6 @@ angular.module('openITCOCKPIT')
         $scope.currentPage = 1;
 
 
-
         /*** Filter Settings ***/
         var defaultFilter = function(){
             $scope.filter = {

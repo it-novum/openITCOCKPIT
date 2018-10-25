@@ -75,16 +75,16 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.loadServices = function(searchString){
-                $http.get("/services/loadServicesByString.json", {
-                    params: {
-                        'angular': true,
-                        'filter[Host.name]': searchString,
-                        'filter[Service.servicename]': searchString,
-                        'selected[]': $scope.post.Currentstatereport.Service
-                    }
-                }).then(function (result) {
-                    $scope.services = result.data.services;
-                });
+            $http.get("/services/loadServicesByString.json", {
+                params: {
+                    'angular': true,
+                    'filter[Host.name]': searchString,
+                    'filter[Service.servicename]': searchString,
+                    'selected[]': $scope.post.Currentstatereport.Service
+                }
+            }).then(function(result){
+                $scope.services = result.data.services;
+            });
 
         };
 

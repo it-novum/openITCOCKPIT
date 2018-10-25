@@ -32,7 +32,7 @@ angular.module('openITCOCKPIT').directive('hoststatusicon', function($interval){
 
                 switch(currentstate){
                     case 0:
-                        $scope.btnColor =  'success';
+                        $scope.btnColor = 'success';
                         $scope.flappingColor = 'txt-color-green';
                         return;
                     case 1:

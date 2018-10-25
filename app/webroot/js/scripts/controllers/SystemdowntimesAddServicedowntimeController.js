@@ -86,7 +86,7 @@ angular.module('openITCOCKPIT')
                     'filter[Service.servicename]': searchString,
                     'selected[]': $scope.serviceIds
                 }
-            }).then(function (result) {
+            }).then(function(result){
                 $scope.services = [];
                 result.data.services.forEach(function(obj, index){
                     var serviceName = obj.value.Service.name;
