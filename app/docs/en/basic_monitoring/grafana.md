@@ -30,7 +30,11 @@ You can get them from your account on grafana.net or an own grafana server.
 
 We recommend using https for a secure network connection.
 
-To bring hosts into grafana, add hosts to a hostgroup and add these in the [grafana configuration][configuration].
+To bring all hosts into grafana, you have to do nothing.
+
+If you want to add only specific hosts, add them to a hostgroup and add these in the [grafana configuration][configuration].
+
+You can also exclude hostgroups in the grafana configuration.
 
 ![Grafana hostgroups]
 
