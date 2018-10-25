@@ -29,25 +29,25 @@ class TestsController extends CrateModuleAppController {
         'CrateModule.CrateHost'
     ];
 
-    public function index(){
+    public function index() {
 
 
         debug($this->CrateHost->find('all', [
-            'joins' => [
+            'joins'            => [
                 [
-                    'table' => 'statusengine_hoststatus',
-                    'type' => 'INNER',
-                    'alias' => 'Hoststatus',
+                    'table'      => 'statusengine_hoststatus',
+                    'type'       => 'INNER',
+                    'alias'      => 'Hoststatus',
                     'conditions' => 'CrateHost.uuid = Hoststatus.hostname',
                 ]
             ],
-            'conditions' => [
+            'conditions'       => [
                 'Hoststatus.current_state' => 1,
             ],
             'array_difference' => [
                 'CrateHost.container_ids' => [1, 2]
             ],
-            'order' => [
+            'order'            => [
                 'Hoststatus.last_check' => 'desc'
             ]
         ]));
@@ -55,20 +55,20 @@ class TestsController extends CrateModuleAppController {
         return;
 
         debug($this->Test->find('all', [
-            'fields' => [
+            'fields'     => [
                 '*'
             ],
             'conditions' => [
                 //'Test.node_version' => ['3.0.0', '3.0.1'],
                 'Test.node_version' => '3.0.0'
             ],
-            'order' => [
+            'order'      => [
                 'node_start_time' => 'asc'
             ],
-            'limit' => 50,
-            'offset' => 0,
-            'order' => [
-                'Test.node_name' => 'asc',
+            'limit'      => 50,
+            'offset'     => 0,
+            'order'      => [
+                'Test.node_name'  => 'asc',
                 'node_start_time' => 'desc'
             ],
             //'group' => [
@@ -84,13 +84,13 @@ class TestsController extends CrateModuleAppController {
                 //'Test.node_version' => ['3.0.0', '3.0.1'],
                 'Test.node_version' => '3.0.0'
             ],
-            'order' => [
+            'order'      => [
                 'node_start_time' => 'asc'
             ],
-            'limit' => 50,
-            'offset' => 0,
-            'order' => [
-                'Test.node_name' => 'asc',
+            'limit'      => 50,
+            'offset'     => 0,
+            'order'      => [
+                'Test.node_name'  => 'asc',
                 'node_start_time' => 'desc'
             ],
             //'group' => [

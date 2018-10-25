@@ -181,7 +181,7 @@ class DowntimeService extends CrateModuleAppModel {
      */
     public function getServiceDowntimesByHostAndDowntime($hostId, Downtime $Downtime) {
         $query = [
-            'joins'     => [
+            'joins'      => [
                 [
                     'table'      => 'openitcockpit_services',
                     'type'       => 'INNER',

@@ -270,7 +270,7 @@ class Servicestatus {
      * @return state as string (up, down, unreachable)
      */
     function ServiceStatusAsString() {
-        if($this->currentState === null){
+        if ($this->currentState === null) {
             return 'not in monitoring';
         }
         $human_state = [

@@ -26,8 +26,7 @@
 use itnovum\openITCOCKPIT\Core\ServicestatusConditions;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 
-class Servicestatus extends NagiosModuleAppModel
-{
+class Servicestatus extends NagiosModuleAppModel {
     //public $useDbConfig = 'nagios';
     public $useTable = 'servicestatus';
     public $primaryKey = 'servicestatus_id';
@@ -45,9 +44,8 @@ class Servicestatus extends NagiosModuleAppModel
      * @param null|ServicestatusConditions $ServicestatusConditions
      * @return array|bool
      */
-    private function byUuidMagic($uuid = null, ServicestatusFields $ServicestatusFields, $ServicestatusConditions = null)
-    {
-        if($uuid === null || empty($uuid)){
+    private function byUuidMagic($uuid = null, ServicestatusFields $ServicestatusFields, $ServicestatusConditions = null) {
+        if ($uuid === null || empty($uuid)) {
             return [];
         }
         $return = [];
@@ -74,8 +72,8 @@ class Servicestatus extends NagiosModuleAppModel
 
         $dbresult = $this->find($findType, $options);
 
-        if($findType === 'first'){
-            if(empty($dbresult)){
+        if ($findType === 'first') {
+            if (empty($dbresult)) {
                 return [];
             }
             return [
@@ -84,7 +82,7 @@ class Servicestatus extends NagiosModuleAppModel
         }
 
         $result = [];
-        foreach($dbresult as $record){
+        foreach ($dbresult as $record) {
             $result[$record['Objects']['name2']] = [
                 'Servicestatus' => $record['Servicestatus'],
             ];
@@ -99,7 +97,7 @@ class Servicestatus extends NagiosModuleAppModel
      * @param null|ServicestatusConditions $ServicestatusConditions
      * @return array|bool
      */
-    public function byUuid($uuid, ServicestatusFields $ServicestatusFields, $ServicestatusConditions = null){
+    public function byUuid($uuid, ServicestatusFields $ServicestatusFields, $ServicestatusConditions = null) {
         return $this->byUuidMagic($uuid, $ServicestatusFields, $ServicestatusConditions);
     }
 
@@ -109,8 +107,8 @@ class Servicestatus extends NagiosModuleAppModel
      * @param null|ServicestatusConditions $ServicestatusConditions
      * @return array|bool
      */
-    public function byUuids($uuids, ServicestatusFields $ServicestatusFields, $ServicestatusConditions = null){
-        if(!is_array($uuids)){
+    public function byUuids($uuids, ServicestatusFields $ServicestatusFields, $ServicestatusConditions = null) {
+        if (!is_array($uuids)) {
             throw new InvalidArgumentException('$uuids need to be an array!');
         }
         return $this->byUuidMagic($uuids, $ServicestatusFields, $ServicestatusConditions);

@@ -38,7 +38,7 @@ angular.module('openITCOCKPIT')
                 $scope.layers = result.data.layers;
 
                 for(var k in $scope.layers){
-                    $scope.visableLayers['layer_'+k] = true;
+                    $scope.visableLayers['layer_' + k] = true;
                 }
 
                 $scope.currentBackground = $scope.map.Map.background;
@@ -1320,7 +1320,7 @@ angular.module('openITCOCKPIT')
 
         $scope.hideLayer = function(key){
             key = key.toString();
-            $scope.visableLayers['layer_'+key] = false;
+            $scope.visableLayers['layer_' + key] = false;
 
             var objectsToHide = [
                 'Mapitem',
@@ -1345,7 +1345,7 @@ angular.module('openITCOCKPIT')
 
         $scope.showLayer = function(key){
             key = key.toString();
-            $scope.visableLayers['layer_'+key] = true;
+            $scope.visableLayers['layer_' + key] = true;
 
             var objectsToHide = [
                 'Mapitem',

@@ -113,9 +113,9 @@ class Logentry {
     /**
      * @return array
      */
-    public function toArray(){
+    public function toArray() {
         $arr = get_object_vars($this);
-        if(isset($arr['UserTime'])){
+        if (isset($arr['UserTime'])) {
             unset($arr['UserTime']);
         }
 
@@ -126,7 +126,7 @@ class Logentry {
 
         $arr['logentry_type_string'] = $typesArray[$this->getLogentryType()];
 
-        if($this->UserTime !== null) {
+        if ($this->UserTime !== null) {
             $arr['entry_time'] = $this->UserTime->format($this->getEntryTime());
             $arr['logentry_time'] = $this->UserTime->format($this->getLogentryTime());
         }

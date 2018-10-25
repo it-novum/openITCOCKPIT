@@ -54,7 +54,7 @@ class UserTime {
      * @param int $t_time
      * @return string
      */
-    public function format($t_time){
+    public function format($t_time) {
         return CakeTime::format($t_time, $this->format, false, $this->timezone);
     }
 
@@ -63,7 +63,7 @@ class UserTime {
      * @param $t_time
      * @return string
      */
-    public function customFormat($format, $t_time){
+    public function customFormat($format, $t_time) {
         return CakeTime::format($t_time, $format, false, $this->timezone);
     }
 
@@ -78,8 +78,7 @@ class UserTime {
      * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since  3.0
      */
-    public function secondsInHumanShort($duration)
-    {
+    public function secondsInHumanShort($duration) {
 
         if ($duration == '') {
             $duration = 0;
@@ -91,22 +90,22 @@ class UserTime {
             //Check how much "time" we need
             if ($duration >= 31536000) {
                 // 1 year or more
-                return '%y'.__('Y').' %m'.__('M').' %d'.__('D').' %h'.__('h').' %i'.__('m').' %s'.__('s');
-            } elseif ($duration >= 2678400) {
+                return '%y' . __('Y') . ' %m' . __('M') . ' %d' . __('D') . ' %h' . __('h') . ' %i' . __('m') . ' %s' . __('s');
+            } else if ($duration >= 2678400) {
                 // 1 month or more
-                return '%m'.__('M').' %d'.__('D').' %h'.__('h').' %i'.__('m').' %s'.__('s');
-            } elseif ($duration >= 86400) {
+                return '%m' . __('M') . ' %d' . __('D') . ' %h' . __('h') . ' %i' . __('m') . ' %s' . __('s');
+            } else if ($duration >= 86400) {
                 // 1 day or more
-                return '%a'.__('D').' %h'.__('h').' %i'.__('m').' %s'.__('s');
-            } elseif ($duration >= 3600) {
+                return '%a' . __('D') . ' %h' . __('h') . ' %i' . __('m') . ' %s' . __('s');
+            } else if ($duration >= 3600) {
                 // 1 hour or more
-                return '%h'.__('h').' %i'.__('m').' %s'.__('s');
-            } elseif ($duration >= 60) {
+                return '%h' . __('h') . ' %i' . __('m') . ' %s' . __('s');
+            } else if ($duration >= 60) {
                 // 1 minute or more
-                return '%i'.__('m').' %s'.__('s');
-            } elseif ($duration >= 0) {
+                return '%i' . __('m') . ' %s' . __('s');
+            } else if ($duration >= 0) {
                 // 0 second or more
-                return '%s'.__('s');
+                return '%s' . __('s');
             }
         };
 

@@ -34,7 +34,7 @@ class Apikey extends AppModel {
                 'required' => true,
             ]
         ],
-        'user_id' => [
+        'user_id'     => [
             'notBlank' => [
                 'rule'     => 'notBlank',
                 'message'  => 'This field cannot be left blank.',

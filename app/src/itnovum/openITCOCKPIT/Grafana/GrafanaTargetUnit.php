@@ -63,7 +63,7 @@ class GrafanaTargetUnit {
 
         //For units that are not suported by this class.
         //This class was build to convert Nagios/rrdtool units to Grafana...
-        if($this->isStatic){
+        if ($this->isStatic) {
             return $this->unit;
         }
 

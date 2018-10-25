@@ -41,7 +41,7 @@ class Hosttemplate {
      * @var string
      */
     private $name;
-    
+
     /**
      * @var string
      */
@@ -63,7 +63,7 @@ class Hosttemplate {
     private $tags;
 
 
-    public function __construct($hosttemplate){
+    public function __construct($hosttemplate) {
         if (isset($hosttemplate['Hosttemplate']['id'])) {
             $this->id = $hosttemplate['Hosttemplate']['id'];
         }
@@ -99,21 +99,21 @@ class Hosttemplate {
     /**
      * @return string
      */
-    public function getId(){
+    public function getId() {
         return $this->id;
     }
 
     /**
      * @return string
      */
-    public function getUuid(){
+    public function getUuid() {
         return $this->uuid;
     }
 
     /**
      * @return string
      */
-    public function getName(){
+    public function getName() {
         return $this->name;
     }
 
@@ -121,14 +121,14 @@ class Hosttemplate {
     /**
      * @return string
      */
-    public function getDescription(){
+    public function getDescription() {
         return $this->description;
     }
 
     /**
      * @return bool|int
      */
-    public function isActiveChecksEnabled(){
+    public function isActiveChecksEnabled() {
         return $this->active_checks_enabled;
     }
 
@@ -136,21 +136,21 @@ class Hosttemplate {
     /**
      * @return int
      */
-    public function getContainerId(){
+    public function getContainerId() {
         return $this->containerId;
     }
 
     /**
      * @return string
      */
-    public function getTags(){
+    public function getTags() {
         return $this->tags;
     }
 
     /**
      * @return array
      */
-    public function toArray(){
+    public function toArray() {
         $arr = get_object_vars($this);
         return $arr;
     }

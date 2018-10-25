@@ -39,7 +39,7 @@ class ServiceControllerRequest {
      */
     private $ServiceFilter;
 
-    public function __construct(\CakeRequest $request, ServiceFilter $ServiceFilter){
+    public function __construct(\CakeRequest $request, ServiceFilter $ServiceFilter) {
         $this->request = $request;
         $this->ServiceFilter = $ServiceFilter;
     }
@@ -47,8 +47,8 @@ class ServiceControllerRequest {
     /**
      * @return bool
      */
-    public function isRequestFromBrowser(){
-        if(isset($this->request->query['BrowserContainerId'])){
+    public function isRequestFromBrowser() {
+        if (isset($this->request->query['BrowserContainerId'])) {
             return true;
         }
         return isset($this->request->params['named']['BrowserContainerId']);
@@ -57,12 +57,12 @@ class ServiceControllerRequest {
     /**
      * @return array
      */
-    public function getBrowserContainerIdsByRequest(){
-        if(isset($this->request->params['named']['BrowserContainerId'])){
+    public function getBrowserContainerIdsByRequest() {
+        if (isset($this->request->params['named']['BrowserContainerId'])) {
             $containerIds = $this->request->params['named']['BrowserContainerId'];
         }
 
-        if(isset($this->request->query['BrowserContainerId'])){
+        if (isset($this->request->query['BrowserContainerId'])) {
             $containerIds = $this->request->query['BrowserContainerId'];
         }
 
@@ -77,7 +77,7 @@ class ServiceControllerRequest {
      * @param string $direction
      * @return array
      */
-    public function getOrder($sort = '', $direction = ''){
+    public function getOrder($sort = '', $direction = '') {
         return $this->ServiceFilter->getOrderForPaginator($sort, $direction);
     }
 

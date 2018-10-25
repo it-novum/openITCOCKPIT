@@ -31,28 +31,28 @@ class DbBackend {
      * DbBackend constructor.
      * @param string $backend
      */
-    public function __construct($backend){
+    public function __construct($backend) {
         $this->backend = $backend;
     }
 
     /**
      * @return bool
      */
-    public function isNdoUtils(){
+    public function isNdoUtils() {
         return $this->backend === 'Nagios';
     }
 
     /**
      * @return bool
      */
-    public function isCrateDb(){
+    public function isCrateDb() {
         return $this->backend === 'Crate';
     }
 
     /**
      * @return bool
      */
-    public function isStatusengine3(){
+    public function isStatusengine3() {
         return $this->backend === 'Statusengine3';
     }
 

@@ -145,24 +145,28 @@ $this->Paginator->options(['url' => $this->params['named']]);
                     <h2 class="hidden-mobile"><?php echo __('Hosts'); ?></h2>
                     <ul class="nav nav-tabs pull-right" id="widget-tab-1">
                         <li class="active">
-                            <a href="<?php echo Router::url(array_merge(['controller' => 'hosts', 'action' => 'index'], $this->params['named'])); ?>"><i class="fa fa-stethoscope"></i> <span
+                            <a href="<?php echo Router::url(array_merge(['controller' => 'hosts', 'action' => 'index'], $this->params['named'])); ?>"><i
+                                        class="fa fa-stethoscope"></i> <span
                                         class="hidden-mobile hidden-tablet"> <?php echo __('Monitored'); ?> </span> </a>
                         </li>
                         <?php if ($this->Acl->hasPermission('notMonitored', 'hosts', '')): ?>
                             <li class="">
-                                <a href="<?php echo Router::url(array_merge(['controller' => 'hosts', 'action' => 'notMonitored'], $this->params['named'])); ?>"><i class="fa fa-user-md"></i> <span
+                                <a href="<?php echo Router::url(array_merge(['controller' => 'hosts', 'action' => 'notMonitored'], $this->params['named'])); ?>"><i
+                                            class="fa fa-user-md"></i> <span
                                             class="hidden-mobile hidden-tablet"> <?php echo __('Not monitored'); ?> </span></a>
                             </li>
                         <?php endif; ?>
                         <?php if ($this->Acl->hasPermission('disabled', 'hosts', '')): ?>
                             <li>
-                                <a href="<?php echo Router::url(array_merge(['controller' => 'hosts', 'action' => 'disabled'], $this->params['named'])); ?>"><i class="fa fa-power-off"></i> <span
+                                <a href="<?php echo Router::url(array_merge(['controller' => 'hosts', 'action' => 'disabled'], $this->params['named'])); ?>"><i
+                                            class="fa fa-power-off"></i> <span
                                             class="hidden-mobile hidden-tablet"> <?php echo __('Disabled'); ?> </span></a>
                             </li>
                         <?php endif; ?>
                         <?php if ($this->Acl->hasPermission('index', 'DeletedHosts', '')): ?>
                             <li>
-                                <a href="<?php echo Router::url(array_merge(['controller' => 'deleted_hosts', 'action' => 'index'], $this->params['named'])); ?>"><i class="fa fa-trash-o"></i> <span
+                                <a href="<?php echo Router::url(array_merge(['controller' => 'deleted_hosts', 'action' => 'index'], $this->params['named'])); ?>"><i
+                                            class="fa fa-trash-o"></i> <span
                                             class="hidden-mobile hidden-tablet"> <?php echo __('Deleted'); ?> </span></a>
                             </li>
                         <?php endif; ?>
@@ -292,11 +296,11 @@ $this->Paginator->options(['url' => $this->params['named']]);
                                                     <a class="txt-color-blueDark" title="<?php echo __('Shared'); ?>"
                                                        href="/<?php echo $this->params['controller']; ?>/sharing/<?php echo $host['Host']['id']; ?>"><i
                                                                 class="fa fa-sitemap fa-lg "></i></a>
-                                                    <?php
+                                                <?php
                                                 else:?>
                                                     <i class="fa fa-low-vision fa-lg txt-color-blueLight"
                                                        title="<?php echo __('Restricted view'); ?>"></i>
-                                                    <?php
+                                                <?php
                                                 endif;
                                             endif; ?>
                                         </td>
@@ -338,8 +342,8 @@ $this->Paginator->options(['url' => $this->params['named']]);
                                                 <?php if ($this->Acl->hasPermission('edit', 'Hosts', '') && $hasEditPermission): ?>
                                                     <a href="<?php echo Router::url([
                                                         'controller' => 'Hosts',
-                                                        'action' => 'edit',
-                                                        'plugin' => '',
+                                                        'action'     => 'edit',
+                                                        'plugin'     => '',
                                                         $host['Host']['id']
                                                     ]); ?>"
                                                        class="btn btn-default">&nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
@@ -355,8 +359,8 @@ $this->Paginator->options(['url' => $this->params['named']]);
                                                         <li>
                                                             <a href="<?php echo Router::url([
                                                                 'controller' => 'Hosts',
-                                                                'action' => 'edit',
-                                                                'plugin' => '',
+                                                                'action'     => 'edit',
+                                                                'plugin'     => '',
                                                                 $host['Host']['id'],
                                                             ]); ?>">
                                                                 <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
@@ -367,8 +371,8 @@ $this->Paginator->options(['url' => $this->params['named']]);
                                                         <li>
                                                             <a href="<?php echo Router::url([
                                                                 'controller' => 'Hosts',
-                                                                'action' => 'sharing',
-                                                                'plugin' => '',
+                                                                'action'     => 'sharing',
+                                                                'plugin'     => '',
                                                                 $host['Host']['id']
                                                             ]); ?>">
                                                                 <i class="fa fa-sitemap fa-rotate-270"></i> <?php echo __('Sharing'); ?>
@@ -379,8 +383,8 @@ $this->Paginator->options(['url' => $this->params['named']]);
                                                         <li>
                                                             <a href="<?php echo Router::url([
                                                                 'controller' => 'Hosts',
-                                                                'action' => 'deactivate',
-                                                                'plugin' => '',
+                                                                'action'     => 'deactivate',
+                                                                'plugin'     => '',
                                                                 $host['Host']['id']
                                                             ]); ?>
                                                             ">
@@ -392,12 +396,12 @@ $this->Paginator->options(['url' => $this->params['named']]);
                                                         <li>
                                                             <a href="<?php echo Router::url([
                                                                 'controller' => 'services',
-                                                                'action' => 'serviceList',
-                                                                'plugin' => '',
+                                                                'action'     => 'serviceList',
+                                                                'plugin'     => '',
                                                                 $host['Host']['id']
                                                             ]); ?>
                                                             ">
-                                                            <i class="fa fa-list"></i> <?php echo __('Service List'); ?>
+                                                                <i class="fa fa-list"></i> <?php echo __('Service List'); ?>
                                                             </a>
                                                         </li>
                                                     <?php endif; ?>
@@ -405,8 +409,8 @@ $this->Paginator->options(['url' => $this->params['named']]);
                                                         <li>
                                                             <a href="<?php echo Router::url([
                                                                 'controller' => 'Hosts',
-                                                                'action' => 'allocateServiceTemplateGroup',
-                                                                'plugin' => '',
+                                                                'action'     => 'allocateServiceTemplateGroup',
+                                                                'plugin'     => '',
                                                                 $host['Host']['id']
                                                             ]); ?>"
                                                             >

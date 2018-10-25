@@ -23,8 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class ServicedependencyServiceMembership extends AppModel
-{
+class ServicedependencyServiceMembership extends AppModel {
     public $useTable = 'services_to_servicedependencies';
     public $belongsTo = [
         'Servicedependency' => [

@@ -168,7 +168,7 @@ class MapeditorsController extends MapModuleAppController {
                         'Host.disabled'
                     ],
                     'conditions' => [
-                        'Host.id'       => $objectId
+                        'Host.id' => $objectId
                     ]
                 ]);
                 if (!empty($host)) {
@@ -215,7 +215,7 @@ class MapeditorsController extends MapModuleAppController {
                         ]
                     ],
                     'conditions' => [
-                        'Service.id'       => $objectId
+                        'Service.id' => $objectId
                     ],
                 ]);
 
@@ -357,7 +357,7 @@ class MapeditorsController extends MapModuleAppController {
                         ],
                     ],
                     'conditions' => [
-                        'Map.id'            => $objectId,
+                        'Map.id'         => $objectId,
                         'Mapitem.map_id' => $mapId
                     ]
                 ]);
@@ -373,8 +373,8 @@ class MapeditorsController extends MapModuleAppController {
                         'recursive'  => -1,
                         'conditions' => [
                             'Mapitem.object_id' => $map['Map']['id'],
-                            'Mapitem.type'   => 'map',
-                            'Mapitem.map_id'   => $mapId
+                            'Mapitem.type'      => 'map',
+                            'Mapitem.map_id'    => $mapId
                         ],
                         'fields'     => [
                             'Mapitem.object_id'
@@ -602,7 +602,7 @@ class MapeditorsController extends MapModuleAppController {
                         'Host.disabled'
                     ],
                     'conditions' => [
-                        'Host.id'       => $objectId
+                        'Host.id' => $objectId
                     ]
                 ]);
                 if (!empty($host)) {
@@ -648,7 +648,7 @@ class MapeditorsController extends MapModuleAppController {
                         ]
                     ],
                     'conditions' => [
-                        'Service.id'       => $objectId
+                        'Service.id' => $objectId
                     ],
                 ]);
 
@@ -1073,7 +1073,7 @@ class MapeditorsController extends MapModuleAppController {
                 ]
             ],
             'conditions' => [
-                'Service.id'       => $serviceId
+                'Service.id' => $serviceId
             ],
         ]);
         if (empty($service)) {
@@ -1142,7 +1142,7 @@ class MapeditorsController extends MapModuleAppController {
                         'Host.disabled'
                     ],
                     'conditions' => [
-                        'Host.id'       => $objectId
+                        'Host.id' => $objectId
                     ]
                 ]);
                 if (!empty($host)) {
@@ -1194,7 +1194,7 @@ class MapeditorsController extends MapModuleAppController {
                         ]
                     ],
                     'conditions' => [
-                        'Service.id'       => $objectId
+                        'Service.id' => $objectId
                     ],
                 ]);
 
@@ -2376,7 +2376,7 @@ class MapeditorsController extends MapModuleAppController {
         $this->set('_serialize', ['success']);
     }
 
-    public function mapDetails($id){
+    public function mapDetails($id) {
         $id = (int)$id;
         if (!$this->Map->exists($id)) {
             throw new NotFoundException();
@@ -2402,7 +2402,7 @@ class MapeditorsController extends MapModuleAppController {
         $this->set('_serialize', ['map']);
     }
 
-    public function viewDirective(){
+    public function viewDirective() {
         $this->layout = 'blank';
         //Ship template of Mapeditors view directive.
         //It is a directive be able to also use the maps as an widget

@@ -162,13 +162,13 @@ class DeletedHost {
     /**
      * @return array
      */
-    public function toArray(){
+    public function toArray() {
         $arr = get_object_vars($this);
-        if(isset($arr['UserTime'])){
+        if (isset($arr['UserTime'])) {
             unset($arr['UserTime']);
         }
 
-        if($this->UserTime !== null) {
+        if ($this->UserTime !== null) {
             $arr['created'] = $this->UserTime->format($this->getCreated());
             $arr['modified'] = $this->UserTime->format($this->getModified());
         }

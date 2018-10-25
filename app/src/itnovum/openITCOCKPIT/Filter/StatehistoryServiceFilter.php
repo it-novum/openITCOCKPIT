@@ -30,12 +30,12 @@ class StatehistoryServiceFilter extends Filter {
     /**
      * @return array
      */
-    public function indexFilter(){
+    public function indexFilter() {
         $filters = [
-            'like' => [
+            'like'   => [
                 'StatehistoryService.output'
             ],
-            'state' => [
+            'state'  => [
                 'StatehistoryService.state'
             ],
             'equals' => [

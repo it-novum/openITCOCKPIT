@@ -38,7 +38,7 @@ class NotificationHost extends NagiosModuleAppModel {
      * @param array $paginatorConditions
      * @return array
      */
-    public function getQuery(HostNotificationConditions $HostNotificationConditions, $paginatorConditions = []){
+    public function getQuery(HostNotificationConditions $HostNotificationConditions, $paginatorConditions = []) {
 
         $fields = [
             'NotificationHost.object_id',
@@ -67,67 +67,67 @@ class NotificationHost extends NagiosModuleAppModel {
 
         $query = [
             'recursive' => -1,
-            'fields' => $fields,
-            'joins' => [
+            'fields'    => $fields,
+            'joins'     => [
                 [
-                    'table' => 'nagios_objects',
-                    'type' => 'INNER',
-                    'alias' => 'Objects',
+                    'table'      => 'nagios_objects',
+                    'type'       => 'INNER',
+                    'alias'      => 'Objects',
                     'conditions' => 'Objects.object_id = NotificationHost.object_id',
                 ],
 
                 [
-                    'table' => 'hosts',
-                    'type' => 'INNER',
-                    'alias' => 'Host',
+                    'table'      => 'hosts',
+                    'type'       => 'INNER',
+                    'alias'      => 'Host',
                     'conditions' => 'Objects.name1 = Host.uuid',
                 ],
 
                 [
-                    'table' => 'nagios_contactnotifications',
-                    'type' => 'INNER',
-                    'alias' => 'Contactnotification',
+                    'table'      => 'nagios_contactnotifications',
+                    'type'       => 'INNER',
+                    'alias'      => 'Contactnotification',
                     'conditions' => 'NotificationHost.notification_id = Contactnotification.notification_id',
                 ],
 
                 [
-                    'table' => 'nagios_objects',
-                    'type' => 'INNER',
-                    'alias' => 'ContactObject',
+                    'table'      => 'nagios_objects',
+                    'type'       => 'INNER',
+                    'alias'      => 'ContactObject',
                     'conditions' => 'Contactnotification.contact_object_id = ContactObject.object_id',
                 ],
 
                 [
-                    'table' => 'contacts',
-                    'type' => 'INNER',
-                    'alias' => 'Contact',
+                    'table'      => 'contacts',
+                    'type'       => 'INNER',
+                    'alias'      => 'Contact',
                     'conditions' => 'ContactObject.name1 = Contact.uuid',
                 ],
 
                 [
-                    'table' => 'nagios_contactnotificationmethods',
-                    'type' => 'INNER',
-                    'alias' => 'Contactnotificationmethod',
+                    'table'      => 'nagios_contactnotificationmethods',
+                    'type'       => 'INNER',
+                    'alias'      => 'Contactnotificationmethod',
                     'conditions' => 'Contactnotificationmethod.contactnotification_id = Contactnotification.contactnotification_id',
                 ],
 
                 [
-                    'table' => 'nagios_objects',
-                    'type' => 'INNER',
-                    'alias' => 'CommandObject',
+                    'table'      => 'nagios_objects',
+                    'type'       => 'INNER',
+                    'alias'      => 'CommandObject',
                     'conditions' => 'Contactnotificationmethod.command_object_id = CommandObject.object_id',
                 ],
 
                 [
-                    'table' => 'commands',
-                    'type' => 'INNER',
-                    'alias' => 'Command',
+                    'table'      => 'commands',
+                    'type'       => 'INNER',
+                    'alias'      => 'Command',
                     'conditions' => 'CommandObject.name1 = Command.uuid',
                 ],
                 [
-                    'table' => 'hosts_to_containers',
-                    'alias' => 'HostsToContainers',
-                    'type' => 'LEFT',
+                    'table'      => 'hosts_to_containers',
+                    'alias'      => 'HostsToContainers',
+                    'type'       => 'LEFT',
                     'conditions' => [
                         'HostsToContainers.host_id = Host.id',
                     ],
@@ -136,8 +136,8 @@ class NotificationHost extends NagiosModuleAppModel {
             ],
 
             'conditions' => [
-                'NotificationHost.start_time >' => date('Y-m-d H:i:s', $HostNotificationConditions->getFrom()),
-                'NotificationHost.start_time <' => date('Y-m-d H:i:s', $HostNotificationConditions->getTo()),
+                'NotificationHost.start_time >'      => date('Y-m-d H:i:s', $HostNotificationConditions->getFrom()),
+                'NotificationHost.start_time <'      => date('Y-m-d H:i:s', $HostNotificationConditions->getTo()),
                 'NotificationHost.notification_type' => 0
             ],
 
@@ -148,7 +148,7 @@ class NotificationHost extends NagiosModuleAppModel {
             'order' => $HostNotificationConditions->getOrder()
         ];
 
-        if($HostNotificationConditions->getUseLimit()){
+        if ($HostNotificationConditions->getUseLimit()) {
             $query['limit'] = $HostNotificationConditions->getLimit();
         }
 
@@ -160,7 +160,7 @@ class NotificationHost extends NagiosModuleAppModel {
             $query['conditions']['HostsToContainers.container_id'] = $HostNotificationConditions->getContainerIds();
         }
 
-        if(!empty($HostNotificationConditions->getStates())){
+        if (!empty($HostNotificationConditions->getStates())) {
             $query['conditions']['state'] = $HostNotificationConditions->getStates();
         }
 

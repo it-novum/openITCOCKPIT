@@ -23,7 +23,6 @@
 //  confirmation.
 
 
-
 class CrateContact extends CrateModuleAppModel {
 
     public $useDbConfig = 'Crate';

@@ -58,7 +58,7 @@ class Command {
      * Command constructor.
      * @param array $data
      */
-    public function __construct($data){
+    public function __construct($data) {
         if (isset($data['id'])) {
             $this->id = (int)$data['id'];
         }
@@ -83,42 +83,42 @@ class Command {
     /**
      * @return int
      */
-    public function getId(){
+    public function getId() {
         return $this->id;
     }
 
     /**
      * @return string
      */
-    public function getName(){
+    public function getName() {
         return $this->name;
     }
 
     /**
      * @return string
      */
-    public function getCommandLine(){
+    public function getCommandLine() {
         return $this->command_line;
     }
 
     /**
      * @return int
      */
-    public function getCommandType(){
+    public function getCommandType() {
         return $this->command_type;
     }
 
     /**
      * @return string
      */
-    public function getDescription(){
+    public function getDescription() {
         return $this->description;
     }
 
     /**
      * @return array
      */
-    public function toArray(){
+    public function toArray() {
         $arr = get_object_vars($this);
         return $arr;
     }

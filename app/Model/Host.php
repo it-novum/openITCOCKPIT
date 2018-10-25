@@ -28,7 +28,6 @@ App::uses('ValidationCollection', 'Lib');
 use itnovum\openITCOCKPIT\Core\DbBackend;
 use itnovum\openITCOCKPIT\Core\HostConditions;
 use itnovum\openITCOCKPIT\Core\ValueObjects\LastDeletedId;
-use itnovum\openITCOCKPIT\Filter\HostFilter;
 
 /**
  * @property ParentHost $ParentHost
@@ -2159,11 +2158,11 @@ class Host extends AppModel {
      */
     public function getHoststatusCountBySelectedStatus($MY_RIGHTS, $conditions) {
         $query = [
-            'recursive' => -1,
-            'fields'    => [
+            'recursive'  => -1,
+            'fields'     => [
                 'COUNT(DISTINCT Hoststatus.host_object_id) AS count',
             ],
-            'joins'     => [
+            'joins'      => [
                 [
                     'table'      => 'nagios_objects',
                     'type'       => 'INNER',

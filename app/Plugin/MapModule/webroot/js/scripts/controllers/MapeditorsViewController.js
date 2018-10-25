@@ -30,7 +30,7 @@ angular.module('openITCOCKPIT')
 
         if($scope.rotate !== null && $scope.rotationInterval > 0){
             $scope.rotate = $scope.rotate.split(',');
-            
+
             $interval(function(){
                 $scope.rotationPossition++;
                 if($scope.rotationPossition > $scope.rotate.length){

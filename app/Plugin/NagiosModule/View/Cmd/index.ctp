@@ -83,11 +83,11 @@
                                             <?php
                                             if ($paramName === 'internalMethod') continue;
                                             if ($paramValue === null):
-                                                echo '<dt class="hintmark_red col col-md-2">'.$paramName.'</dt>';
-                                                echo '<dd><i>'.__('required').'</i></dd>';
+                                                echo '<dt class="hintmark_red col col-md-2">' . $paramName . '</dt>';
+                                                echo '<dd><i>' . __('required') . '</i></dd>';
                                             else:
-                                                echo '<dt class="col col-md-2">'.$paramName.'</dt>';
-                                                echo '<dd>'.$paramValue.'</dd>';
+                                                echo '<dt class="col col-md-2">' . $paramName . '</dt>';
+                                                echo '<dd>' . $paramValue . '</dd>';
                                             endif; ?>
                                         <?php endforeach; ?>
                                     </dl>
@@ -115,14 +115,15 @@
                                         continue;
                                     }
                                     if ($paramValue === null):
-                                        $html .= '<span class="text-primary">'.$paramName.'</span>:<span class="txt-color-magenta">$required</span>/';
+                                        $html .= '<span class="text-primary">' . $paramName . '</span>:<span class="txt-color-magenta">$required</span>/';
                                     endif;
-                                    $html2 .= '<span class="text-primary">'.$paramName.'</span>:<span class="txt-color-magenta">'.(is_null($paramValue) ? '$required' : $paramValue).'</span>/';
+                                    $html2 .= '<span class="text-primary">' . $paramName . '</span>:<span class="txt-color-magenta">' . (is_null($paramValue) ? '$required' : $paramValue) . '</span>/';
                                 endforeach;
-                                $prehtml = 'https://'.h($_SERVER['SERVER_ADDR']).'/nagios_module/cmd/'.$internalMethod.'/<span class="text-primary">'.$commandKey.'</span>:<span class="txt-color-magenta">'.$commandValue.'</span>/';
+                                $prehtml = 'https://' . h($_SERVER['SERVER_ADDR']) . '/nagios_module/cmd/' . $internalMethod . '/<span class="text-primary">' . $commandKey . '</span>:<span class="txt-color-magenta">' . $commandValue . '</span>/';
                                 ?>
                                 <code>
-                                    <span class="txt-color-blueDark"><?php echo $prehtml.$html ?></span>.json?<span class="text-primary">apikey=</span><span class="txt-color-orange">USER_API_KEY</span>
+                                    <span class="txt-color-blueDark"><?php echo $prehtml . $html ?></span>.json?<span
+                                            class="text-primary">apikey=</span><span class="txt-color-orange">USER_API_KEY</span>
                                 </code>
                             </div>
                             <br/>
@@ -130,13 +131,14 @@
                             <div class="well">
                                 <!-- Stupid HTML added strang withspaces :/ So we do the php -force way -->
                                 <code>
-                                    <span class="txt-color-blueDark"><?php echo $prehtml.$html2 ?></span>.json?<span class="text-primary">apikey=</span><span class="txt-color-orange">USER_API_KEY</span>
+                                    <span class="txt-color-blueDark"><?php echo $prehtml . $html2 ?></span>.json?<span
+                                            class="text-primary">apikey=</span><span class="txt-color-orange">USER_API_KEY</span>
                                 </code>
                             </div>
                         </div>
                     <?php endforeach; ?>
 
-                    <br />
+                    <br/>
                     <div class="row">
                         <div class="col-xs-12">
                             <i class="fa fa-info-circle text-info"></i>

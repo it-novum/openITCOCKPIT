@@ -30,21 +30,21 @@ class HostFilter extends Filter {
     /**
      * @return array
      */
-    public function indexFilter(){
+    public function indexFilter() {
         $filters = [
-            'bool' => [
+            'bool'     => [
                 'Hoststatus.problem_has_been_acknowledged',
                 'Hoststatus.active_checks_enabled'
             ],
-            'like' => [
+            'like'     => [
                 'Host.name',
                 'Hoststatus.output',
                 'Host.address'
             ],
-            'rlike' => [
+            'rlike'    => [
                 'Host.keywords'
             ],
-            'equals' => [
+            'equals'   => [
                 'Host.id',
                 'Host.uuid',
                 'Host.disabled',
@@ -53,7 +53,7 @@ class HostFilter extends Filter {
             'downtime' => [
                 'Hoststatus.scheduled_downtime_depth',
             ],
-            'state' => [
+            'state'    => [
                 'Hoststatus.current_state'
             ]
         ];
@@ -64,9 +64,9 @@ class HostFilter extends Filter {
     /**
      * @return array
      */
-    public function notMonitoredFilter(){
+    public function notMonitoredFilter() {
         $filters = [
-            'like' => [
+            'like'   => [
                 'Host.name',
                 'Host.address'
             ],
@@ -82,7 +82,7 @@ class HostFilter extends Filter {
     /**
      * @return array
      */
-    public function deletedFilter(){
+    public function deletedFilter() {
         $filters = [
             'like' => [
                 'DeletedHost.name'
@@ -95,7 +95,7 @@ class HostFilter extends Filter {
     /**
      * @return array
      */
-    public function disabledFilter(){
+    public function disabledFilter() {
         return $this->notMonitoredFilter();
     }
 
@@ -103,9 +103,9 @@ class HostFilter extends Filter {
     /**
      * @return array
      */
-    public function ajaxFilter(){
+    public function ajaxFilter() {
         $filters = [
-            'like' => [
+            'like'   => [
                 'Host.name',
             ],
             'equals' => [

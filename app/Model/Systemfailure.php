@@ -23,14 +23,14 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class Systemfailure extends AppModel
-{
+class Systemfailure extends AppModel {
     public $belongsTo = [
         'User' => [
             'dependent'  => false,
             'foreignKey' => 'user_id',
             'className'  => 'User',
-        ]];
+        ]
+    ];
 
 
     public $validate = [

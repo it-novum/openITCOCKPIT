@@ -22,7 +22,7 @@ angular.module('openITCOCKPIT').directive('grafanaTimepicker', function($http){
                     params: {
                         'angular': true
                     }
-                }).then(function (result) {
+                }).then(function(result){
                     $scope.timeranges = result.data.timeranges;
                     $scope.init = false;
                 });

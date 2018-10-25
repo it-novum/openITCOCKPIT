@@ -38,8 +38,8 @@ class Logo {
     /**
      * @return string
      */
-    public function getLogoName(){
-        if($this->isCustomLogo()){
+    public function getLogoName() {
+        if ($this->isCustomLogo()) {
             return $this->customLogoName;
         }
 
@@ -49,8 +49,8 @@ class Logo {
     /**
      * @return string
      */
-    public function getSmallLogoName(){
-        if($this->isCustomSmallLogo()){
+    public function getSmallLogoName() {
+        if ($this->isCustomSmallLogo()) {
             return $this->customSmallLogoName;
         }
 
@@ -60,21 +60,21 @@ class Logo {
     /**
      * @return string
      */
-    public function getLogoForHtmlHelper(){
+    public function getLogoForHtmlHelper() {
         return $this->getLogoName();
     }
 
     /**
      * @return string
      */
-    public function getSmallLogoForHtmlHelper(){
+    public function getSmallLogoForHtmlHelper() {
         return $this->getSmallLogoName();
     }
 
     /**
      * @return bool
      */
-    public function isCustomLogo(){
+    public function isCustomLogo() {
         $file = sprintf($this->logoBasePath, APP, $this->customLogoName);
         return file_exists($file);
     }
@@ -82,7 +82,7 @@ class Logo {
     /**
      * @return bool
      */
-    public function isCustomSmallLogo(){
+    public function isCustomSmallLogo() {
         $file = sprintf($this->logoBasePath, APP, $this->customSmallLogoName);
         return file_exists($file);
     }
@@ -90,41 +90,42 @@ class Logo {
     /**
      * @return string
      */
-    public function getLogoDiskPath(){
+    public function getLogoDiskPath() {
         return sprintf($this->logoBasePath, APP, $this->getLogoName());
     }
 
     /**
      * @return string
      */
-    public function getSmallLogoDiskPath(){
+    public function getSmallLogoDiskPath() {
         return sprintf($this->logoBasePath, APP, $this->getSmallLogoName());
     }
 
     /**
      * @return string
      */
-    public function getDefaultLogoDiskPath(){
+    public function getDefaultLogoDiskPath() {
         return sprintf($this->logoBasePath, APP, $this->logoName);
     }
 
     /**
      * @return string
      */
-    public function getDefaultSmallLogoDiskPath(){
+    public function getDefaultSmallLogoDiskPath() {
         return sprintf($this->logoBasePath, APP, $this->smallLogoName);
     }
+
     /**
      * @return string
      */
-    public function getCustomLogoDiskPath(){
+    public function getCustomLogoDiskPath() {
         return sprintf($this->logoBasePath, APP, $this->customLogoName);
     }
 
     /**
      * @return string
      */
-    public function getCustomSmallLogoDiskPath(){
+    public function getCustomSmallLogoDiskPath() {
         return sprintf($this->logoBasePath, APP, $this->customSmallLogoName);
     }
 
@@ -132,14 +133,14 @@ class Logo {
     /**
      * @return string
      */
-    public function getLogoPdfPath(){
+    public function getLogoPdfPath() {
         return sprintf('%s/img/%s', WWW_ROOT, $this->getLogoName());
     }
 
     /**
      * @return string
      */
-    public function getSmallLogoPdfPath(){
+    public function getSmallLogoPdfPath() {
         return sprintf('%s/img/%s', WWW_ROOT, $this->getSmallLogoName());
     }
 

@@ -32,7 +32,7 @@ class NotificationsControllerRequest extends ControllerListSettingsRequest {
     /**
      * @return bool
      */
-    public function showHostNotifications(){
+    public function showHostNotifications() {
         if (isset($this->requestParameters['Listsettings']['view'])) {
             return $this->requestParameters['Listsettings']['view'] == 'hostOnly';
         }
@@ -42,12 +42,12 @@ class NotificationsControllerRequest extends ControllerListSettingsRequest {
     /**
      * @return bool
      */
-    public function showServiceNotifications(){
+    public function showServiceNotifications() {
         if (isset($this->requestParameters['Listsettings']['view']) && $this->showServiceNotifications === null) {
             return $this->requestParameters['Listsettings']['view'] == 'serviceOnly';
         }
 
-        if($this->showServiceNotifications !== null){
+        if ($this->showServiceNotifications !== null) {
             return $this->showServiceNotifications;
         }
 
@@ -57,14 +57,14 @@ class NotificationsControllerRequest extends ControllerListSettingsRequest {
     /**
      * @param bool $value
      */
-    public function setShowServiceNotifications($value){
+    public function setShowServiceNotifications($value) {
         $this->showServiceNotifications = $value;
     }
 
     /**
      * @return array
      */
-    public function getRequestSettingsForListSettings(){
+    public function getRequestSettingsForListSettings() {
         $view = 'hostOnly';
         if ($this->showServiceNotifications()) {
             $view = 'serviceOnly';
@@ -72,9 +72,9 @@ class NotificationsControllerRequest extends ControllerListSettingsRequest {
 
         return [
             'limit' => $this->getLimit(),
-            'from' => date('d.m.Y H:i', $this->getFrom()),
-            'to' => date('d.m.Y H:i', $this->getTo()),
-            'view' => $view
+            'from'  => date('d.m.Y H:i', $this->getFrom()),
+            'to'    => date('d.m.Y H:i', $this->getTo()),
+            'view'  => $view
         ];
     }
 }

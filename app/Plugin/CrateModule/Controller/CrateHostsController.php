@@ -44,78 +44,81 @@ class CrateHostsController extends CrateModuleAppController {
 
 
     public $listFilters = [
-        'index' => [
+        'index'        => [
             'fields' => [
-                'Host.name' => ['label' => 'Hostname', 'searchType' => 'wildcard'],
-                'Host.address' => ['label' => 'IP-Address', 'searchType' => 'wildcard'],
+                'Host.name'         => ['label' => 'Hostname', 'searchType' => 'wildcard'],
+                'Host.address'      => ['label' => 'IP-Address', 'searchType' => 'wildcard'],
                 'Hoststatus.output' => ['label' => 'Output', 'searchType' => 'wildcard'],
-                'Host.keywords' => ['label' => 'Tag', 'searchType' => 'wildcardMulti', 'hidden' => true],
+                'Host.keywords'     => ['label' => 'Tag', 'searchType' => 'wildcardMulti', 'hidden' => true],
 
-                'Hoststatus.current_state' => ['label' => 'Current state', 'type' => 'checkbox', 'searchType' => 'nix', 'options' =>
-                    [
-                        '0' => [
-                            'name' => 'Hoststatus.up',
-                            'value' => 1,
-                            'label' => 'Up',
-                            'data' => 'Filter.Hoststatus.current_state',
+                'Hoststatus.current_state'                 => [
+                    'label' => 'Current state', 'type' => 'checkbox', 'searchType' => 'nix', 'options' =>
+                        [
+                            '0' => [
+                                'name'  => 'Hoststatus.up',
+                                'value' => 1,
+                                'label' => 'Up',
+                                'data'  => 'Filter.Hoststatus.current_state',
+                            ],
+                            '1' => [
+                                'name'  => 'Hoststatus.down',
+                                'value' => 1,
+                                'label' => 'Down',
+                                'data'  => 'Filter.Hoststatus.current_state',
+                            ],
+                            '2' => [
+                                'name'  => 'Hoststatus.unreachable',
+                                'value' => 1,
+                                'label' => 'Unreachable',
+                                'data'  => 'Filter.Hoststatus.current_state',
+                            ],
                         ],
-                        '1' => [
-                            'name' => 'Hoststatus.down',
-                            'value' => 1,
-                            'label' => 'Down',
-                            'data' => 'Filter.Hoststatus.current_state',
-                        ],
-                        '2' => [
-                            'name' => 'Hoststatus.unreachable',
-                            'value' => 1,
-                            'label' => 'Unreachable',
-                            'data' => 'Filter.Hoststatus.current_state',
-                        ],
-                    ],
                 ],
-                'Hoststatus.problem_has_been_acknowledged' => ['label' => 'Acknowledged', 'type' => 'checkbox', 'searchType' => 'nix', 'options' =>
-                    [
-                        '1' => [
-                            'name' => 'Acknowledged',
-                            'value' => 1,
-                            'label' => 'Acknowledged',
-                            'data' => 'Filter.Hoststatus.problem_has_been_acknowledged',
+                'Hoststatus.problem_has_been_acknowledged' => [
+                    'label' => 'Acknowledged', 'type' => 'checkbox', 'searchType' => 'nix', 'options' =>
+                        [
+                            '1' => [
+                                'name'  => 'Acknowledged',
+                                'value' => 1,
+                                'label' => 'Acknowledged',
+                                'data'  => 'Filter.Hoststatus.problem_has_been_acknowledged',
+                            ],
                         ],
-                    ],
                 ],
-                'Hoststatus.scheduled_downtime_depth' => ['label' => 'In Downtime', 'type' => 'checkbox', 'searchType' => 'greater', 'options' =>
-                    [
-                        '0' => [
-                            'name' => 'Downtime',
-                            'value' => 0,
-                            'label' => 'In Downtime',
-                            'data' => 'Filter.Hoststatus.scheduled_downtime_depth',
+                'Hoststatus.scheduled_downtime_depth'      => [
+                    'label' => 'In Downtime', 'type' => 'checkbox', 'searchType' => 'greater', 'options' =>
+                        [
+                            '0' => [
+                                'name'  => 'Downtime',
+                                'value' => 0,
+                                'label' => 'In Downtime',
+                                'data'  => 'Filter.Hoststatus.scheduled_downtime_depth',
+                            ],
                         ],
-                    ],
                 ],
             ],
         ],
         'notMonitored' => [
             'fields' => [
-                'Host.name' => ['label' => 'Hostname', 'searchType' => 'wildcard'],
+                'Host.name'    => ['label' => 'Hostname', 'searchType' => 'wildcard'],
                 'Host.address' => ['label' => 'IP-Address', 'searchType' => 'wildcard'],
-                'Host.tags' => ['label' => 'Tag', 'searchType' => 'wildcard', 'hidden' => true],
+                'Host.tags'    => ['label' => 'Tag', 'searchType' => 'wildcard', 'hidden' => true],
             ],
         ],
-        'disabled' => [
+        'disabled'     => [
             'fields' => [
-                'Host.name' => ['label' => 'Hostname', 'searchType' => 'wildcard'],
+                'Host.name'    => ['label' => 'Hostname', 'searchType' => 'wildcard'],
                 'Host.address' => ['label' => 'IP-Address', 'searchType' => 'wildcard'],
-                'Host.tags' => ['label' => 'Tag', 'searchType' => 'wildcard', 'hidden' => true],
+                'Host.tags'    => ['label' => 'Tag', 'searchType' => 'wildcard', 'hidden' => true],
             ],
         ],
     ];
 
-    public function index(){
+    public function index() {
         $conditions = [];
         if (!isset($this->request->params['named']['BrowserContainerId'])) {
             $conditions = [
-                'Host.disabled' => 0,
+                'Host.disabled'                  => 0,
                 'HostsToContainers.container_id' => $this->MY_RIGHTS,
             ];
         }

@@ -23,10 +23,11 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class Hosttemplatecommandargumentvalue extends AppModel
-{
-    public $belongsTo = ['Commandargument' => [
-        'className' => 'Commandargument',
-        'dependert' => true,
-    ]];
+class Hosttemplatecommandargumentvalue extends AppModel {
+    public $belongsTo = [
+        'Commandargument' => [
+            'className' => 'Commandargument',
+            'dependert' => true,
+        ]
+    ];
 }

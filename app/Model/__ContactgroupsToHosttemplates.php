@@ -23,8 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class __ContactgroupsToHosttemplates extends AppModel
-{
+class __ContactgroupsToHosttemplates extends AppModel {
     /* This is a model for an linking table!
      * We only use this model, to delete elements (__allowDelete()), never use this Model for some else than $this->find('count')!
      */

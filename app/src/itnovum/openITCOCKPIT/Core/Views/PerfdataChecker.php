@@ -55,7 +55,7 @@ class PerfdataChecker {
      * @param Host $Host
      * @param Service $Service
      * @param PerfdataBackend $PerfdataBackend
-     * @param Servicestatus $Servicestatus#
+     * @param Servicestatus $Servicestatus #
      */
     public function __construct(Host $Host, Service $Service, PerfdataBackend $PerfdataBackend, Servicestatus $Servicestatus) {
         $this->hostUuid = $Host->getUuid();
@@ -68,7 +68,7 @@ class PerfdataChecker {
      * @return bool
      */
     public function hasPerfdata() {
-        if($this->PerfdataBackend->isRrdtool()){
+        if ($this->PerfdataBackend->isRrdtool()) {
             return file_exists(sprintf('/opt/openitc/nagios/share/perfdata/%s/%s.rrd', $this->hostUuid, $this->serviceUuid));
         }
 

@@ -39,7 +39,8 @@
     <map-text item="textItem"></map-text>
 </div>
 
-<div ng-repeat="lineItem in map.Mapline" style="position: absolute; top: {{lineItem.startY}}px; left: {{lineItem.startX}}px;">
+<div ng-repeat="lineItem in map.Mapline"
+     style="position: absolute; top: {{lineItem.startY}}px; left: {{lineItem.startX}}px;">
     <a ng-show="lineItem.type != 'stateless'"
        ng-href="{{ getHref(lineItem) }}"
        ng-mouseenter="showSummaryStateDelayed(lineItem, false)"

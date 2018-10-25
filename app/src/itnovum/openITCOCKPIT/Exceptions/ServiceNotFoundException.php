@@ -27,7 +27,6 @@
 namespace itnovum\openITCOCKPIT\Exceptions;
 
 
-class ServiceNotFoundException extends \Exception
-{
+class ServiceNotFoundException extends \Exception {
 
 }

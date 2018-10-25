@@ -30,7 +30,7 @@ class Hostcheck extends CrateModuleAppModel {
     public $useTable = 'hostchecks';
     public $tablePrefix = 'statusengine_';
 
-    public function __construct($id = false, $table = null, $ds = null, $useDynamicAssociations = true){
+    public function __construct($id = false, $table = null, $ds = null, $useDynamicAssociations = true) {
         parent::__construct($id, $table, $ds, $useDynamicAssociations);
         $this->virtualFields['state_type'] = 'Hostcheck.is_hardstate';
     }
@@ -40,22 +40,22 @@ class Hostcheck extends CrateModuleAppModel {
      * @param array $paginatorConditions
      * @return array
      */
-    public function getQuery(HostcheckConditions $HostcheckConditions, $paginatorConditions = []){
+    public function getQuery(HostcheckConditions $HostcheckConditions, $paginatorConditions = []) {
         $query = [
             'conditions' => [
-                'hostname' => $HostcheckConditions->getHostUuid(),
+                'hostname'     => $HostcheckConditions->getHostUuid(),
                 'start_time >' => $HostcheckConditions->getFrom(),
                 'start_time <' => $HostcheckConditions->getTo()
             ],
-            'order' => $HostcheckConditions->getOrder(),
-            'limit' => $HostcheckConditions->getLimit(),
+            'order'      => $HostcheckConditions->getOrder(),
+            'limit'      => $HostcheckConditions->getLimit(),
         ];
 
-        if(!empty($HostcheckConditions->getStates())){
+        if (!empty($HostcheckConditions->getStates())) {
             $query['conditions']['state'] = $HostcheckConditions->getStates();
         }
 
-        if(!empty($HostcheckConditions->getStateTypes())){
+        if (!empty($HostcheckConditions->getStateTypes())) {
             $query['conditions']['is_hardstate'] = (bool)$HostcheckConditions->getStateTypes()[0];
         }
 

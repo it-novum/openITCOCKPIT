@@ -24,14 +24,12 @@
 //	confirmation.
 
 use itnovum\openITCOCKPIT\Core\DowntimeHostConditions;
-use itnovum\openITCOCKPIT\Core\Views\Downtime;
 
 class DowntimeHost extends NagiosModuleAppModel {
     public $useTable = 'downtimehistory';
     public $primaryKey = 'downtimehistory_id';
     public $tablePrefix = 'nagios_';
     public $recursive = 2;
-
 
 
     /**
@@ -102,7 +100,7 @@ class DowntimeHost extends NagiosModuleAppModel {
         }
         $query['conditions'] = Hash::merge($query['conditions'], $filterConditions);
 
-        if($Conditions->isRunning()){
+        if ($Conditions->isRunning()) {
             $query['conditions']['DowntimeHost.scheduled_end_time >'] = date('Y-m-d H:i:s', time());
             $query['conditions']['DowntimeHost.was_started'] = 1;
             $query['conditions']['DowntimeHost.was_cancelled'] = 0;
@@ -196,13 +194,13 @@ class DowntimeHost extends NagiosModuleAppModel {
         ];
 
         $result = $this->find('first', $query);
-        if(empty($result)){
+        if (empty($result)) {
             return [];
         }
 
         return [
             'DowntimeHost' => $result['DowntimeHost'],
-            'Host' => [
+            'Host'         => [
                 'uuid' => $result['Objects']['name1']
             ]
         ];
@@ -214,8 +212,7 @@ class DowntimeHost extends NagiosModuleAppModel {
      * @param bool $isRunning
      * @return array|null
      */
-    public function byHostUuid($uuid = null, $isRunning = false)
-    {
+    public function byHostUuid($uuid = null, $isRunning = false) {
         if ($uuid !== null) {
 
             $query = [
@@ -237,7 +234,7 @@ class DowntimeHost extends NagiosModuleAppModel {
                 ]
             ];
 
-            if($isRunning){
+            if ($isRunning) {
                 $query['conditions']['DowntimeHost.scheduled_end_time >'] = date('Y-m-d H:i:s', time());
                 $query['conditions']['DowntimeHost.was_started'] = 1;
                 $query['conditions']['DowntimeHost.was_cancelled'] = 0;

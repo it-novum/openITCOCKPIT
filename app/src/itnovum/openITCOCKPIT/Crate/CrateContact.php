@@ -77,11 +77,11 @@ class CrateContact implements CrateValueObject {
      */
     public function getFindQuery() {
         return [
-            'recursive' => -1,
+            'recursive'  => -1,
             'conditions' => [
                 'Contact.id' => $this->id
             ],
-            'fields' => [
+            'fields'     => [
                 'Contact.id',
                 'Contact.uuid',
                 'Contact.name'
@@ -95,7 +95,7 @@ class CrateContact implements CrateValueObject {
     public function getDataForSave() {
         return [
             'CrateContact' => [
-                'id' => $this->id,
+                'id'   => $this->id,
                 'uuid' => $this->uuid,
                 'name' => $this->name
             ]

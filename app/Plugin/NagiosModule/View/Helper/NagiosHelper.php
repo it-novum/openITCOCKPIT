@@ -23,16 +23,14 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class NagiosHelper extends AppHelper
-{
+class NagiosHelper extends AppHelper {
 
-    public function checkFlapDetection($value = 0)
-    {
+    public function checkFlapDetection($value = 0) {
         if ($value == 1) {
-            return ['string' => __('On'), 'html' => '<span class="label bg-color-green">'.__('On').'</span>'];
+            return ['string' => __('On'), 'html' => '<span class="label bg-color-green">' . __('On') . '</span>'];
         }
 
-        return ['string' => __('Off'), 'html' => '<span class="label bg-color-red">'.__('Off').'</span>'];
+        return ['string' => __('Off'), 'html' => '<span class="label bg-color-red">' . __('Off') . '</span>'];
     }
 
     /**
@@ -40,8 +38,7 @@ class NagiosHelper extends AppHelper
      * @return string
      * @deprecated
      */
-    public function formatNotifyOnHost($notifications)
-    {
+    public function formatNotifyOnHost($notifications) {
         $_options = [
             'notify_on_down'        => 1,
             'notify_on_unreachable' => 0,
@@ -55,9 +52,9 @@ class NagiosHelper extends AppHelper
         foreach ($notifications as $key => $value) {
             $html .= '<dd>';
             if ($value == 1) {
-                $html .= '<i class="fa fa-check txt-color-green"></i> '.__($key);
+                $html .= '<i class="fa fa-check txt-color-green"></i> ' . __($key);
             } else {
-                $html .= '<i class="fa fa-times txt-color-red"></i> '.__($key);
+                $html .= '<i class="fa fa-times txt-color-red"></i> ' . __($key);
             }
             $html .= '</dd>';
         }
@@ -65,8 +62,7 @@ class NagiosHelper extends AppHelper
         return $html;
     }
 
-    public function formatNotifyOnService($notifications)
-    {
+    public function formatNotifyOnService($notifications) {
         $_options = [
             'notify_on_warning'  => 1,
             'notify_on_critical' => 0,
@@ -81,9 +77,9 @@ class NagiosHelper extends AppHelper
         foreach ($notifications as $key => $value) {
             $html .= '<dd>';
             if ($value == 1) {
-                $html .= '<i class="fa fa-check txt-color-green"></i> '.__($key);
+                $html .= '<i class="fa fa-check txt-color-green"></i> ' . __($key);
             } else {
-                $html .= '<i class="fa fa-times txt-color-red"></i> '.__($key);
+                $html .= '<i class="fa fa-times txt-color-red"></i> ' . __($key);
             }
             $html .= '</dd>';
         }
@@ -91,8 +87,7 @@ class NagiosHelper extends AppHelper
         return $html;
     }
 
-    public function colorHostOutput($status = 2)
-    {
+    public function colorHostOutput($status = 2) {
         switch ($status) {
             case 0:
                 return 'txt-color-greenDark';
@@ -103,8 +98,7 @@ class NagiosHelper extends AppHelper
         }
     }
 
-    public function colorServiceOutput($status = 3)
-    {
+    public function colorServiceOutput($status = 3) {
         switch ($status) {
             case 0:
                 return 'txt-color-greenDark';

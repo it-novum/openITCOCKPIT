@@ -25,8 +25,7 @@
 namespace itnovum\openITCOCKPIT\InitialDatabase;
 
 
-class Skeleton extends Importer
-{
+class Skeleton extends Importer {
     /**
      * @property \Command $Model
      */
@@ -34,8 +33,7 @@ class Skeleton extends Importer
     /**
      * @return bool
      */
-    public function import()
-    {
+    public function import() {
         $data = $this->getData();
         foreach ($data as $record) {
             if (!$this->Model->exists($record['foo']['id'])) {
@@ -50,8 +48,7 @@ class Skeleton extends Importer
     /**
      * @return array
      */
-    public function getData()
-    {
+    public function getData() {
         $data = [];
 
         return $data;

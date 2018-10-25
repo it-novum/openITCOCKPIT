@@ -36,7 +36,7 @@ class NotificationService extends CrateModuleAppModel {
      * @param array $paginatorConditions
      * @return array
      */
-    public function getQuery(ServiceNotificationConditions $ServiceNotificationConditions, $paginatorConditions = []){
+    public function getQuery(ServiceNotificationConditions $ServiceNotificationConditions, $paginatorConditions = []) {
 
         $fields = [
             'NotificationService.start_time',
@@ -59,33 +59,33 @@ class NotificationService extends CrateModuleAppModel {
         //https://github.com/crate/crate/issues/5747
         $query = [
             'recursive' => -1,
-            'fields' => $fields,
-            'joins' => [
+            'fields'    => $fields,
+            'joins'     => [
                 [
-                    'table' => 'openitcockpit_hosts',
-                    'type' => 'LEFT',
-                    'alias' => 'Host',
+                    'table'      => 'openitcockpit_hosts',
+                    'type'       => 'LEFT',
+                    'alias'      => 'Host',
                     'conditions' =>
                         'Host.uuid = NotificationService.hostname',
                 ],
                 [
-                    'table' => 'openitcockpit_services',
-                    'type' => 'INNER',
-                    'alias' => 'Service',
+                    'table'      => 'openitcockpit_services',
+                    'type'       => 'INNER',
+                    'alias'      => 'Service',
                     'conditions' =>
                         'Service.uuid = NotificationService.service_description',
                 ],
                 [
-                    'table' => 'openitcockpit_contacts',
-                    'type' => 'INNER',
-                    'alias' => 'Contact',
+                    'table'      => 'openitcockpit_contacts',
+                    'type'       => 'INNER',
+                    'alias'      => 'Contact',
                     'conditions' =>
                         'Contact.uuid = NotificationService.contact_name'
                 ],
                 [
-                    'table' => 'openitcockpit_commands',
-                    'type' => 'INNER',
-                    'alias' => 'Command',
+                    'table'      => 'openitcockpit_commands',
+                    'type'       => 'INNER',
+                    'alias'      => 'Command',
                     'conditions' =>
                         'Command.uuid = NotificationService.command_name'
                 ]
@@ -99,11 +99,11 @@ class NotificationService extends CrateModuleAppModel {
             'order' => $ServiceNotificationConditions->getOrder(),
         ];
 
-        if($ServiceNotificationConditions->getUseLimit()){
+        if ($ServiceNotificationConditions->getUseLimit()) {
             $query['limit'] = $ServiceNotificationConditions->getLimit();
         }
 
-        if($ServiceNotificationConditions->getServiceUuid()){
+        if ($ServiceNotificationConditions->getServiceUuid()) {
             $query['conditions']['NotificationService.service_description'] = $ServiceNotificationConditions->getServiceUuid();
         }
 
@@ -114,7 +114,7 @@ class NotificationService extends CrateModuleAppModel {
             ];
         }
 
-        if(!empty($ServiceNotificationConditions->getStates())){
+        if (!empty($ServiceNotificationConditions->getStates())) {
             $query['conditions']['state'] = $ServiceNotificationConditions->getStates();
         }
 

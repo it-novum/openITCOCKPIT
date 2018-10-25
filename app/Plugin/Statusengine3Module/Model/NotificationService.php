@@ -97,7 +97,7 @@ class NotificationService extends Statusengine3ModuleAppModel {
             'order' => $ServiceNotificationConditions->getOrder()
         ];
 
-        if($ServiceNotificationConditions->getUseLimit()){
+        if ($ServiceNotificationConditions->getUseLimit()) {
             $query['limit'] = $ServiceNotificationConditions->getLimit();
         }
 

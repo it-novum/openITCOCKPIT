@@ -42,12 +42,12 @@ class ListSettingsRenderer {
      */
     private $paginatorHelper = null;
 
-    public function __construct($Listsettings = []){
+    public function __construct($Listsettings = []) {
         $this->Listsettings = $Listsettings;
     }
 
 
-    public function setPaginator(\PaginatorHelper $paginatorHelper){
+    public function setPaginator(\PaginatorHelper $paginatorHelper) {
         $this->paginatorHelper = $paginatorHelper;
         $paging = $this->paginatorHelper->params();
         if (isset($paging['limit'])) {
@@ -58,10 +58,10 @@ class ListSettingsRenderer {
     /**
      * @return string
      */
-    public function getLimitSelect(){
+    public function getLimitSelect() {
         $limits = [
-            30 => 30,
-            50 => 50,
+            30  => 30,
+            50  => 50,
             100 => 100,
             300 => 300
         ];
@@ -103,7 +103,7 @@ class ListSettingsRenderer {
      * @param null $label
      * @return string
      */
-    public function getApply($label = null){
+    public function getApply($label = null) {
         if ($label === null) {
             $label = __('Apply');
         }
@@ -115,7 +115,7 @@ class ListSettingsRenderer {
     /**
      * @return string
      */
-    public function getFromInput(){
+    public function getFromInput() {
         $html = '<div class="widget-toolbar pull-left" role="menu">';
         $html .= '<span style="line-height: 32px;" class="pull-left">' . __('From:') . '</span>';
         $html .= '<input class="form-control text-center pull-left margin-left-10" style="width: 78%;"';
@@ -130,7 +130,7 @@ class ListSettingsRenderer {
     /**
      * @return string
      */
-    public function getToInput(){
+    public function getToInput() {
         $html = '<div class="widget-toolbar pull-left" role="menu">';
         $html .= '<span style="line-height: 32px;" class="pull-left">' . __('To:') . '</span>';
         $html .= '<input class="form-control text-center pull-left margin-left-10" style="width: 85%;"';

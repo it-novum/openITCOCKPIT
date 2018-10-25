@@ -23,8 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class Register extends AppModel
-{
+class Register extends AppModel {
     public $validate = [
         'license' => [
             'notBlank' => [
@@ -40,8 +39,7 @@ class Register extends AppModel
         //]
     ];
 
-    public function isEnabled()
-    {
+    public function isEnabled() {
         if ($this->data['Register']['accepted'] == 1) {
             return true;
         }

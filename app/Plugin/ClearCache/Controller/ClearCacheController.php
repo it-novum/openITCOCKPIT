@@ -17,8 +17,7 @@ App::uses('ClearCache', 'ClearCache.Lib');
  * ClearCache Controller
  * @package       ClearCache.Controller
  */
-class ClearCacheController extends ClearCacheAppController
-{
+class ClearCacheController extends ClearCacheAppController {
 
     /**
      * Controller name
@@ -53,11 +52,10 @@ class ClearCacheController extends ClearCacheAppController
     /**
      * Disables cache and then constructs controller instance.
      *
-     * @param CakeRequest  $request
+     * @param CakeRequest $request
      * @param CakeResponse $response
      */
-    public function __construct($request = null, $response = null)
-    {
+    public function __construct($request = null, $response = null) {
         Configure::write('Cache.disable', true);
         parent::__construct($request, $response);
     }
@@ -67,8 +65,7 @@ class ClearCacheController extends ClearCacheAppController
      * @return void
      * @throws NotFoundException when request is not allowed
      */
-    public function beforeFilter()
-    {
+    public function beforeFilter() {
         parent::beforeFilter();
 
         if (!$this->_isAllowed()) {
@@ -85,8 +82,7 @@ class ClearCacheController extends ClearCacheAppController
      *
      * @return void
      */
-    public function files()
-    {
+    public function files() {
         $output = call_user_func_array([$this->_Cleaner, 'files'], $this->params['pass']);
         $files = [];
         $start = strlen(CACHE);
@@ -105,8 +101,7 @@ class ClearCacheController extends ClearCacheAppController
      *
      * @return void
      */
-    public function engines()
-    {
+    public function engines() {
         $output = call_user_func_array([$this->_Cleaner, 'engines'], $this->params['pass']);
         $engines = [];
         foreach ($output as $engine => $result) {
@@ -122,8 +117,7 @@ class ClearCacheController extends ClearCacheAppController
      *
      * @return void
      */
-    public function groups()
-    {
+    public function groups() {
         $output = call_user_func_array([$this->_Cleaner, 'groups'], $this->params['pass']);
         $groups = [];
         foreach ($output as $group => $engines) {
@@ -144,8 +138,7 @@ class ClearCacheController extends ClearCacheAppController
      * Checks if clear cache request is allowed
      * @return boolean
      */
-    protected function _isAllowed()
-    {
+    protected function _isAllowed() {
         return CakePlugin::loaded('DebugKit')
             && (Configure::read('debug') > 0
                 || (isset($this->Toolbar)

@@ -24,8 +24,6 @@
 
 namespace itnovum\openITCOCKPIT\Core\Views;
 
-use itnovum\openITCOCKPIT\Core\Views\UserTime;
-
 abstract class Notification {
 
     /**
@@ -52,7 +50,7 @@ abstract class Notification {
      * Notification constructor.
      * @param array $data
      */
-    public function __construct($data, $key, $UserTime = null){
+    public function __construct($data, $key, $UserTime = null) {
 
         if (isset($data[$key]['state'])) {
             $this->state = (int)$data[$key]['state'];
@@ -76,36 +74,36 @@ abstract class Notification {
     /**
      * @return int
      */
-    public function getState(){
+    public function getState() {
         return $this->state;
     }
 
     /**
      * @return string
      */
-    public function getOutput(){
+    public function getOutput() {
         return $this->output;
     }
 
     /**
      * @return int|string
      */
-    public function getStartTime(){
+    public function getStartTime() {
         return $this->start_time;
     }
 
     /**
      * @return array
      */
-    public function toArray(){
+    public function toArray() {
         $arr = get_object_vars($this);
-        if(isset($arr['UserTime'])){
+        if (isset($arr['UserTime'])) {
             unset($arr['UserTime']);
         }
 
-        if($this->UserTime !== null) {
+        if ($this->UserTime !== null) {
             $arr['start_time'] = $this->UserTime->format($this->getStartTime());
-        }else{
+        } else {
             $arr['start_time'] = $this->getStartTime();
         }
 

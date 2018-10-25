@@ -48,11 +48,11 @@ abstract class Filter {
                     switch ($operator) {
                         case 'bool':
                             $value = $this->getQueryFieldValue($field);
-                            if($value === '1' || $value === 1 || $value === 'true'){
+                            if ($value === '1' || $value === 1 || $value === 'true') {
                                 $conditions[$field] = 1;
                             }
 
-                            if($value === '0' || $value === 0 || $value === 'false'){
+                            if ($value === '0' || $value === 0 || $value === 'false') {
                                 $conditions[$field] = 0;
                             }
                             break;
@@ -130,10 +130,10 @@ abstract class Filter {
 
                         case 'downtime':
                             $value = $this->getQueryFieldValue($field);
-                            if($value === '1' || $value === 1 || $value === 'true'){
+                            if ($value === '1' || $value === 1 || $value === 'true') {
                                 $conditions[sprintf('%s >=', $field)] = 1;
                             }
-                            if($value === '0' || $value === 0 || $value === 'false'){
+                            if ($value === '0' || $value === 0 || $value === 'false') {
                                 $conditions[sprintf('%s =', $field)] = 0;
                             }
                             break;
@@ -160,21 +160,21 @@ abstract class Filter {
      */
     public function getQueryFieldValue($field, $strict = false) {
         if ($this->queryHasField($field)) {
-            if($strict === false) {
+            if ($strict === false) {
                 return $this->Request->query['filter'][$field];
             }
 
-            if($strict === true){
+            if ($strict === true) {
                 $value = $this->Request->query['filter'][$field];
-                if(is_array($value)){
-                    $value = array_filter($value, function($val){
-                        if($val === null || $val === ''){
+                if (is_array($value)) {
+                    $value = array_filter($value, function ($val) {
+                        if ($val === null || $val === '') {
                             return false;
                         }
                         return true;
                     });
                 }
-                if(!empty($value)){
+                if (!empty($value)) {
                     return $value;
                 }
             }
@@ -229,7 +229,7 @@ abstract class Filter {
      */
     public function getDirection($default = '') {
         if (isset($this->Request->query['direction'])) {
-            if($this->Request->query['direction'] === 'desc'){
+            if ($this->Request->query['direction'] === 'desc') {
                 return 'desc';
             }
             return 'asc';
@@ -241,10 +241,10 @@ abstract class Filter {
      * @param array $sortAsArray
      * return array
      */
-    public function validateArrayDirection($sortAsArray = []){
+    public function validateArrayDirection($sortAsArray = []) {
         $validatedSort = [];
-        foreach($sortAsArray as $sortField => $sortDirection){
-            $validatedSort[$sortField] = ($sortDirection === 'desc')?'desc':'asc';
+        foreach ($sortAsArray as $sortField => $sortDirection) {
+            $validatedSort[$sortField] = ($sortDirection === 'desc') ? 'desc' : 'asc';
         }
         return $validatedSort;
     }
@@ -255,7 +255,7 @@ abstract class Filter {
      * @return array
      */
     public function getOrderForPaginator($defaultSort = '', $defaultDirection = '') {
-        if(is_array($this->getSort($defaultSort))){
+        if (is_array($this->getSort($defaultSort))) {
             return $this->validateArrayDirection($this->getSort($defaultSort));
         }
 

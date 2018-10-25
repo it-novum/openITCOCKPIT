@@ -101,7 +101,7 @@ class GraphiteConfig {
     }
 
 
-    public function getBaseUrl(){
+    public function getBaseUrl() {
         return sprintf(
             '%s%s:%s',
             $this->isUseHttps() ? 'https://' : 'http://',

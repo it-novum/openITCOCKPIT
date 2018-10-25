@@ -98,7 +98,7 @@ angular.module('openITCOCKPIT').directive('mapItem', function($http, $interval){
 
             //Disable status update interval, if the object gets removed from DOM.
             //E.g in Map rotations
-            $scope.$on('$destroy', function() {
+            $scope.$on('$destroy', function(){
                 $scope.stop();
             });
 

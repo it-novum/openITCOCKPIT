@@ -74,7 +74,7 @@ angular.module('openITCOCKPIT')
                     $scope.hasError = true;
                     $scope.grafanaErrors = {
                         status: 400,
-                        statusText:  'Bad Request',
+                        statusText: 'Bad Request',
                         message: result.data.status.msg.message
                     };
                 }

@@ -159,12 +159,12 @@ class Hoststatus extends CrateModuleAppModel {
      * @param bool $includeOkState
      * @return array
      */
-    public function getHoststatusCount($MY_RIGHTS, $includeOkState = false){
+    public function getHoststatusCount($MY_RIGHTS, $includeOkState = false) {
         $hoststatusCount = [
             '1' => 0,
             '2' => 0,
         ];
-        if($includeOkState === true){
+        if ($includeOkState === true) {
             $hoststatusCount['0'] = 0;
         }
 
@@ -172,31 +172,31 @@ class Hoststatus extends CrateModuleAppModel {
             'count' => 'COUNT(DISTINCT Hoststatus.hostname)'
         ];
         $query = [
-            'fields' => [
+            'fields'     => [
                 'Hoststatus.current_state',
             ],
-            'joins' => [
+            'joins'      => [
                 [
-                    'table' => 'openitcockpit_hosts',
-                    'type' => 'INNER',
-                    'alias' => 'Host',
+                    'table'      => 'openitcockpit_hosts',
+                    'type'       => 'INNER',
+                    'alias'      => 'Host',
                     'conditions' => 'Host.uuid = Hoststatus.hostname',
                 ]
             ],
             'conditions' => [
-                'Host.disabled'                  => false
+                'Host.disabled' => false
             ],
 
             'array_difference' => [
                 'Host.container_ids' =>
                     $MY_RIGHTS,
             ],
-            'group'      => [
+            'group'            => [
                 'Hoststatus.current_state',
             ],
         ];
 
-        if($includeOkState === false){
+        if ($includeOkState === false) {
             $query['conditions']['Hoststatus.current_state >'] = 0;
         }
 
@@ -218,19 +218,19 @@ class Hoststatus extends CrateModuleAppModel {
             'count' => 'COUNT(DISTINCT Hoststatus.hostname)'
         ];
         $query = [
-            'fields' => [
+            'fields'     => [
                 'Hoststatus.current_state',
             ],
-            'joins' => [
+            'joins'      => [
                 [
-                    'table' => 'openitcockpit_hosts',
-                    'type' => 'INNER',
-                    'alias' => 'Host',
+                    'table'      => 'openitcockpit_hosts',
+                    'type'       => 'INNER',
+                    'alias'      => 'Host',
                     'conditions' => 'Host.uuid = Hoststatus.hostname',
                 ]
             ],
             'conditions' => [
-                'Host.disabled'                  => false
+                'Host.disabled' => false
             ],
 
             'array_difference' => [

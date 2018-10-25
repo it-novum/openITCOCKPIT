@@ -27,8 +27,7 @@ namespace itnovum\openITCOCKPIT\ApiShell;
 
 use itnovum\openITCOCKPIT\ApiShell\Exceptions\MissingParameterExceptions;
 
-class OptionParser
-{
+class OptionParser {
 
     /**
      * @var string
@@ -61,8 +60,7 @@ class OptionParser
      *
      * @throws MissingParameterExceptions
      */
-    public function parse($parameters, $args = [])
-    {
+    public function parse($parameters, $args = []) {
         if (!array_key_exists('model', $parameters)) {
             throw new MissingParameterExceptions('Paremter --model is missing');
         }
@@ -90,8 +88,7 @@ class OptionParser
     /**
      * @return string
      */
-    public function getModel()
-    {
+    public function getModel() {
         return $this->model;
     }
 
@@ -99,32 +96,28 @@ class OptionParser
      * @return string
      * action is always strtolower!
      */
-    public function getAction()
-    {
+    public function getAction() {
         return $this->action;
     }
 
     /**
      * @return array
      */
-    public function getData()
-    {
+    public function getData() {
         return $this->data;
     }
 
     /**
      * @return string
      */
-    public function getPlugin()
-    {
+    public function getPlugin() {
         return $this->plugin;
     }
 
     /**
      * @return bool
      */
-    public function getIgnoreErrors()
-    {
+    public function getIgnoreErrors() {
         return $this->ignoreErrors;
     }
 

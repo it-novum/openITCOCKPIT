@@ -25,8 +25,7 @@
 
 use itnovum\openITCOCKPIT\Core\ServicechecksConditions;
 
-class Servicecheck extends NagiosModuleAppModel
-{
+class Servicecheck extends NagiosModuleAppModel {
     //public $useDbConfig = 'nagios';
     public $useTable = 'servicechecks';
     public $primaryKey = 'servicecheck_id';
@@ -35,7 +34,7 @@ class Servicecheck extends NagiosModuleAppModel
         'Objects' => [
             'className'  => 'NagiosModule.Objects',
             'foreignKey' => 'service_object_id',
-            'type' => 'INNER'
+            'type'       => 'INNER'
         ],
     ];
 
@@ -44,14 +43,14 @@ class Servicecheck extends NagiosModuleAppModel
      * @param array $paginatorConditions
      * @return array
      */
-    public function getQuery(ServicechecksConditions $ServicecheckConditions, $paginatorConditions = []){
+    public function getQuery(ServicechecksConditions $ServicecheckConditions, $paginatorConditions = []) {
         $query = [
             'conditions' => [
                 'Objects.name2' => $ServicecheckConditions->getServiceUuid(),
-                'start_time >' => date('Y-m-d H:i:s', $ServicecheckConditions->getFrom()),
-                'start_time <' => date('Y-m-d H:i:s', $ServicecheckConditions->getTo())
+                'start_time >'  => date('Y-m-d H:i:s', $ServicecheckConditions->getFrom()),
+                'start_time <'  => date('Y-m-d H:i:s', $ServicecheckConditions->getTo())
             ],
-            'fields' => [
+            'fields'     => [
                 'Servicecheck.state',
                 'Servicecheck.start_time',
                 'Servicecheck.current_check_attempt',
@@ -60,15 +59,15 @@ class Servicecheck extends NagiosModuleAppModel
                 'Servicecheck.output',
                 'Servicecheck.perfdata'
             ],
-            'order' => $ServicecheckConditions->getOrder(),
-            'limit' => $ServicecheckConditions->getLimit(),
+            'order'      => $ServicecheckConditions->getOrder(),
+            'limit'      => $ServicecheckConditions->getLimit(),
         ];
 
-        if(!empty($ServicecheckConditions->getStates())){
+        if (!empty($ServicecheckConditions->getStates())) {
             $query['conditions']['state'] = $ServicecheckConditions->getStates();
         }
 
-        if(!empty($ServicecheckConditions->getStateTypes())){
+        if (!empty($ServicecheckConditions->getStateTypes())) {
             $query['conditions']['state_type'] = $ServicecheckConditions->getStateTypes();
         }
 

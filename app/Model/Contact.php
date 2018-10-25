@@ -26,18 +26,17 @@
 
 use itnovum\openITCOCKPIT\Core\ValueObjects\LastDeletedId;
 
-class Contact extends AppModel
-{
+class Contact extends AppModel {
     public $hasAndBelongsToMany = [
         'Container'       => [
-            'className'             => 'Container',
-            'joinTable'             => 'contacts_to_containers',
+            'className' => 'Container',
+            'joinTable' => 'contacts_to_containers',
             //		'conditions' => ['Container.containertype_id' => [CT_TENANT, CT_GLOBAL]]
         ],
         'HostCommands'    => [
-            'className'             => 'Command',
-            'joinTable'             => 'contacts_to_hostcommands',
-            'fields' => [
+            'className' => 'Command',
+            'joinTable' => 'contacts_to_hostcommands',
+            'fields'    => [
                 'id',
                 'uuid',
                 'name',
@@ -46,9 +45,9 @@ class Contact extends AppModel
             ]
         ],
         'ServiceCommands' => [
-            'className'             => 'Command',
-            'joinTable'             => 'contacts_to_servicecommands',
-            'fields' => [
+            'className' => 'Command',
+            'joinTable' => 'contacts_to_servicecommands',
+            'fields'    => [
                 'id',
                 'uuid',
                 'name',
@@ -69,20 +68,20 @@ class Contact extends AppModel
             'foreignKey' => 'service_timeperiod_id',
             'className'  => 'Timeperiod',
         ],
-        'User' => [
-            'className'  => 'User',
-            'dependent'  => false
+        'User'              => [
+            'className' => 'User',
+            'dependent' => false
         ]
     ];
 
     public $hasMany = [
         'Customvariable' => [
-            'className' => 'Customvariable',
+            'className'  => 'Customvariable',
             'foreignKey' => 'object_id',
             'conditions' => [
                 'objecttype_id' => OBJECT_CONTACT,
             ],
-            'dependent' => true,
+            'dependent'  => true,
         ],
     ];
 
@@ -145,9 +144,11 @@ class Contact extends AppModel
         'HostCommands'          => [
             'notBlank' => [
                 'allowEmpty' => false,
-                'rule'       => ['multiple', [
-                    'min' => 1,
-                ]],
+                'rule'       => [
+                    'multiple', [
+                        'min' => 1,
+                    ]
+                ],
                 'message'    => 'You have to choose at least one command.',
                 'required'   => true,
             ],
@@ -169,9 +170,11 @@ class Contact extends AppModel
         'ServiceCommands'         => [
             'notBlank' => [
                 //'allowEmpty' => false,
-                'rule'     => ['multiple', [
-                    'min' => 1,
-                ]],
+                'rule'     => [
+                    'multiple', [
+                        'min' => 1,
+                    ]
+                ],
                 'message'  => 'You have to choose at least one command.',
                 'required' => true,
             ],
@@ -199,8 +202,7 @@ class Contact extends AppModel
      */
     private $LastDeletedId = null;
 
-    public function __construct($id = false, $table = null, $ds = null)
-    {
+    public function __construct($id = false, $table = null, $ds = null) {
         parent::__construct($id, $table, $ds);
         $this->notification_options = [
             'host'    => [
@@ -223,8 +225,7 @@ class Contact extends AppModel
     }
 
 
-    function checkNotificationOptions($data, $notification_type)
-    {
+    function checkNotificationOptions($data, $notification_type) {
         foreach ($this->data as $request) {
             foreach ($request as $request_key => $request_value) {
                 if (in_array($request_key, $this->notification_options[$notification_type]) && $request_value == 1) {
@@ -236,8 +237,7 @@ class Contact extends AppModel
         return false;
     }
 
-    public function filterZero($var)
-    {
+    public function filterZero($var) {
         if ($var == 0) {
             return false;
         }
@@ -245,8 +245,7 @@ class Contact extends AppModel
         return true;
     }
 
-    public function beforeValidate($options = [])
-    {
+    public function beforeValidate($options = []) {
         foreach ($this->hasAndBelongsToMany as $k => $v) {
             if (isset($this->data[$k][$k])) {
                 $this->data[$this->alias][$k] = $this->data[$k][$k];
@@ -254,8 +253,7 @@ class Contact extends AppModel
         }
     }
 
-    public function beforeSave($options = [])
-    {
+    public function beforeSave($options = []) {
         foreach (array_keys($this->hasAndBelongsToMany) as $model) {
             if (isset($this->data[$this->name][$model])) {
                 $this->data[$model][$model] = $this->data[$this->name][$model];
@@ -271,8 +269,7 @@ class Contact extends AppModel
      * @param array $options
      * @return bool|void
      */
-    public function afterSave($created, $options = [])
-    {
+    public function afterSave($created, $options = []) {
         if ($this->DbBackend->isCrateDb() && isset($this->data['Contact']['id'])) {
             //Save data also to CrateDB
             $CrateContact = new \itnovum\openITCOCKPIT\Crate\CrateContact($this->data['Contact']['id']);
@@ -285,13 +282,13 @@ class Contact extends AppModel
         parent::afterSave($created, $options);
     }
 
-    public function beforeDelete($cascade = true){
+    public function beforeDelete($cascade = true) {
         $this->LastDeletedId = new LastDeletedId($this->id);
         return parent::beforeDelete($cascade);
     }
 
-    public function afterDelete(){
-        if($this->LastDeletedId !== null) {
+    public function afterDelete() {
+        if ($this->LastDeletedId !== null) {
             if ($this->DbBackend->isCrateDb() && $this->LastDeletedId->hasId()) {
                 $CrateContactModel = ClassRegistry::init('CrateModule.CrateContact');
                 $CrateContactModel->delete($this->LastDeletedId->getId());
@@ -302,8 +299,7 @@ class Contact extends AppModel
         parent::afterDelete();
     }
 
-    public function contactsByContainerId($container_ids = [], $type = 'all')
-    {
+    public function contactsByContainerId($container_ids = [], $type = 'all') {
         if (!is_array($container_ids)) {
             $container_ids = [$container_ids];
         }
@@ -320,10 +316,10 @@ class Contact extends AppModel
 
                 // Get container id of the tenant container
                 // $container_id is may be a location, devicegroup or whatever, so we need to container id of the tenant container to load contactgroups and contacts
-                $path = Cache::remember('ContactContactsByContainerId:'.$container_id, function () use ($container_id) {
+                $path = Cache::remember('ContactContactsByContainerId:' . $container_id, function () use ($container_id) {
                     return $this->Container->getPath($container_id);
                 }, 'migration');
-                if(isset($path[1])){
+                if (isset($path[1])) {
                     $tenantContainerIds[] = $path[1]['Container']['id'];
                 }
             } else {
@@ -336,12 +332,13 @@ class Contact extends AppModel
 
         return $this->find($type, [
             'joins'      => [
-                ['table'      => 'contacts_to_containers',
-                 'alias'      => 'ContactsToContainers',
-                 'type'       => 'LEFT',
-                 'conditions' => [
-                     'ContactsToContainers.contact_id = Contact.id',
-                 ],
+                [
+                    'table'      => 'contacts_to_containers',
+                    'alias'      => 'ContactsToContainers',
+                    'type'       => 'LEFT',
+                    'conditions' => [
+                        'ContactsToContainers.contact_id = Contact.id',
+                    ],
                 ],
             ],
             'conditions' => [
@@ -356,8 +353,7 @@ class Contact extends AppModel
     /*
      * Custom validation rule for email and/or phone fields.
     */
-    public function atLeastOne($data)
-    {
+    public function atLeastOne($data) {
         $result = !empty($this->data[$this->name]['email']) || !empty($this->data[$this->name]['phone']);
 
         return $result;

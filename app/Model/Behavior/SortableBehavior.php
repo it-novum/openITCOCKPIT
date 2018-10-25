@@ -5,8 +5,7 @@ App::uses('ModelBehavior', 'Model');
  * Handles sorting for a model. Can be scoped via setting.
  * @package default
  */
-class SortableBehavior extends ModelBehavior
-{
+class SortableBehavior extends ModelBehavior {
 
     /**
      * Default behavior settings
@@ -26,8 +25,7 @@ class SortableBehavior extends ModelBehavior
      *
      * @return void
      */
-    public function setup(Model $model, $settings = [])
-    {
+    public function setup(Model $model, $settings = []) {
         if (!isset($this->settings[$model->alias])) {
             $this->settings[$model->alias] = $this->_defaultSettings;
         }
@@ -37,18 +35,17 @@ class SortableBehavior extends ModelBehavior
     /**
      * Restores sorting across a model.
      *
-     * @param Model  $model
-     * @param string $order       The order for retrieving all records,
+     * @param Model $model
+     * @param string $order The order for retrieving all records,
      *                            to base the new sorting on. sortField ASC will be used if no $order is given
-     * @param array  $scope       Conditions for retrieving the records. settings.scope will be used if no $scope is
+     * @param array $scope Conditions for retrieving the records. settings.scope will be used if no $scope is
      *                            given
      *
      * @return array            An array containing all records which have been updated.
      */
-    public function restoreSorting(Model $model, $order = null, $scope = null)
-    {
+    public function restoreSorting(Model $model, $order = null, $scope = null) {
         if (!$order) {
-            $order = $model->alias.'.'.$this->settings[$model->alias]['sortField'].' ASC';
+            $order = $model->alias . '.' . $this->settings[$model->alias]['sortField'] . ' ASC';
         }
         if (!$scope) {
             $scope = $this->settings[$model->alias]['scope'];
@@ -58,16 +55,16 @@ class SortableBehavior extends ModelBehavior
             'order'      => $order,
             'contain'    => false,
             'fields'     => [
-                $model->alias.'.'.$model->primaryKey,
+                $model->alias . '.' . $model->primaryKey,
             ],
         ]);
 
         foreach ($records as $n => $record) {
             $sort = ($n + 1);
             $model->updateAll([
-                $model->alias.'.'.$this->settings[$model->alias]['sortField'] => $sort,
+                $model->alias . '.' . $this->settings[$model->alias]['sortField'] => $sort,
             ], [
-                $model->alias.'.'.$model->primaryKey => $record[$model->alias]['id'],
+                $model->alias . '.' . $model->primaryKey => $record[$model->alias]['id'],
             ]);
         }
 
@@ -78,25 +75,24 @@ class SortableBehavior extends ModelBehavior
      * Hook to manage sorting afterSave()
      *
      * @param Model $model
-     * @param bool  $created
+     * @param bool $created
      * @param array $options
      *
      * @return bool
      */
-    public function afterSave(Model $model, $created, $options = [])
-    {
+    public function afterSave(Model $model, $created, $options = []) {
         $record = $model->find('first', [
             'conditions' => [
-                $model->alias.'.'.$model->primaryKey => $model->id,
+                $model->alias . '.' . $model->primaryKey => $model->id,
             ],
             'fields'     => [
-                $model->alias.'.'.$model->primaryKey,
-                $model->alias.'.'.$this->settings[$model->alias]['sortField'],
+                $model->alias . '.' . $model->primaryKey,
+                $model->alias . '.' . $this->settings[$model->alias]['sortField'],
             ],
         ]);
-        $sortKey = $model->alias.'.'.$this->settings[$model->alias]['sortField'];
+        $sortKey = $model->alias . '.' . $this->settings[$model->alias]['sortField'];
         $sortPosition = $record[$model->alias][$this->settings[$model->alias]['sortField']];
-        $primaryKey = $model->alias.'.'.$model->primaryKey;
+        $primaryKey = $model->alias . '.' . $model->primaryKey;
 
         if (!empty($sortPosition)) {
             $conditions = Hash::merge([
@@ -111,16 +107,16 @@ class SortableBehavior extends ModelBehavior
 
             if (!empty($overlappingRow)) {
                 $model->updateAll([
-                    $sortKey => $sortKey.' + 1',
+                    $sortKey => $sortKey . ' + 1',
                 ], Hash::merge([
-                    $sortKey.' >=' => $sortPosition,
-                    $primaryKey.' != '.$model->id,
+                    $sortKey . ' >=' => $sortPosition,
+                    $primaryKey . ' != ' . $model->id,
                 ], $this->settings[$model->alias]['scope']));
             }
         } else {
             $newPosition = 1;
             $highestRecord = $model->find('first', [
-                'order'      => $sortKey.' DESC',
+                'order'      => $sortKey . ' DESC',
                 'conditions' => $this->settings[$model->alias]['scope'],
                 'fields'     => [
                     $sortKey,

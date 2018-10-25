@@ -53,11 +53,11 @@ class HoststatusConditions {
     /**
      * @return bool
      */
-    public function hasConditions(){
+    public function hasConditions() {
         return !empty($this->conditions);
     }
 
-    public function hostsDownAndUnreachable(){
+    public function hostsDownAndUnreachable() {
         $this->addCondition('Hoststatus.current_state > 0');
         return $this;
     }

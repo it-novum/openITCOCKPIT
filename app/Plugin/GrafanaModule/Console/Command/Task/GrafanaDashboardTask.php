@@ -1,25 +1,25 @@
 <?php
 
 use GuzzleHttp\Client;
-use itnovum\openITCOCKPIT\Core\DbBackend;
-use \itnovum\openITCOCKPIT\Core\Interfaces\CronjobInterface;
-use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Exception\BadResponseException;
+use GuzzleHttp\Psr7\Request;
+use itnovum\openITCOCKPIT\Core\DbBackend;
+use itnovum\openITCOCKPIT\Core\Interfaces\CronjobInterface;
 use itnovum\openITCOCKPIT\Core\ServicestatusConditions;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\ValueObjects\Perfdata;
+use itnovum\openITCOCKPIT\Grafana\GrafanaApiConfiguration;
 use itnovum\openITCOCKPIT\Grafana\GrafanaDashboard;
 use itnovum\openITCOCKPIT\Grafana\GrafanaPanel;
 use itnovum\openITCOCKPIT\Grafana\GrafanaRow;
 use itnovum\openITCOCKPIT\Grafana\GrafanaSeriesOverrides;
+use itnovum\openITCOCKPIT\Grafana\GrafanaTag;
 use itnovum\openITCOCKPIT\Grafana\GrafanaTarget;
 use itnovum\openITCOCKPIT\Grafana\GrafanaTargetCollection;
 use itnovum\openITCOCKPIT\Grafana\GrafanaTargetUnit;
 use itnovum\openITCOCKPIT\Grafana\GrafanaThresholdCollection;
 use itnovum\openITCOCKPIT\Grafana\GrafanaThresholds;
 use itnovum\openITCOCKPIT\Grafana\GrafanaYAxes;
-use \itnovum\openITCOCKPIT\Grafana\GrafanaApiConfiguration;
-use itnovum\openITCOCKPIT\Grafana\GrafanaTag;
 
 /**
  * Class GrafanaDashboardTask
@@ -294,7 +294,7 @@ class GrafanaDashboardTask extends AppShell implements CronjobInterface {
             //Only delete auto generated dashboards
             $dashboards = $this->GrafanaDashboard->find('all', [
                 'recursive' => -1,
-                'fields' => [
+                'fields'    => [
                     'GrafanaDashboard.host_uuid'
                 ]
             ]);

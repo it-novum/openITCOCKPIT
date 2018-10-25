@@ -25,8 +25,7 @@
 namespace itnovum\openITCOCKPIT\Core;
 
 
-class HostMacroReplacer
-{
+class HostMacroReplacer {
 
     /**
      * @var array
@@ -58,12 +57,11 @@ class HostMacroReplacer
     /**
      * HostMacroReplacer constructor.
      *
-     * @param array $host       result of CakePHPs find()
+     * @param array $host result of CakePHPs find()
      * @param array $hoststatus result of CakePHPs find()
      */
 
-    public function __construct($host, $hoststatus = [])
-    {
+    public function __construct($host, $hoststatus = []) {
         $this->host = $host;
         $this->hoststatus = $hoststatus;
     }
@@ -77,8 +75,7 @@ class HostMacroReplacer
      *
      * @param string $msg
      */
-    public function replaceBasicMacros($msg)
-    {
+    public function replaceBasicMacros($msg) {
         $mapping = $this->buildMapping('basic');
 
         return str_replace($mapping['search'], $mapping['replace'], $msg);
@@ -92,8 +89,7 @@ class HostMacroReplacer
      *
      * @param string $msg
      */
-    public function replaceStatusMacros($msg)
-    {
+    public function replaceStatusMacros($msg) {
         $mapping = $this->buildMapping('status');
 
         return str_replace($mapping['search'], $mapping['replace'], $msg);
@@ -106,8 +102,7 @@ class HostMacroReplacer
      *
      * @return string mixed
      */
-    public function replaceAllMacros($msg)
-    {
+    public function replaceAllMacros($msg) {
         $msg = $this->replaceBasicMacros($msg);
         $msg = $this->replaceStatusMacros($msg);
 
@@ -117,8 +112,7 @@ class HostMacroReplacer
     /**
      * @param string $type a key of $this->mapping
      */
-    private function buildMapping($type)
-    {
+    private function buildMapping($type) {
         $recordsToMap = $this->mapping[$type];
         $mapping = [
             'search'  => [],

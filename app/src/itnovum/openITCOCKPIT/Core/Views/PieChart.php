@@ -200,9 +200,9 @@ class PieChart {
             $state_data_per['size'] = number_format($state_count / $state_total * 100, 4);
             if ($state_data_per['size'] === 0) {
                 $chart_data_array[$state] = [
-                    'color' => $colors[$state],
-                    'startAngle' => $startAngle,
-                    'endAngle' => $endAngle,
+                    'color'              => $colors[$state],
+                    'startAngle'         => $startAngle,
+                    'endAngle'           => $endAngle,
                     'show_percent_value' => $state_data_per['size'],
                 ];
                 continue;
@@ -227,9 +227,9 @@ class PieChart {
                 }
 
             $chart_data_array[$state] = [
-                'color' => $colors[$state],
-                'startAngle' => $startAngle,
-                'endAngle' => $endAngle,
+                'color'              => $colors[$state],
+                'startAngle'         => $startAngle,
+                'endAngle'           => $endAngle,
                 'show_percent_value' => $state_data_per['size'],
             ];
         }

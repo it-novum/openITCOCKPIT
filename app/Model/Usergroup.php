@@ -24,8 +24,7 @@
 //	confirmation.
 
 
-class Usergroup extends AppModel
-{
+class Usergroup extends AppModel {
     public $name = 'Usergroup';
     public $actsAs = [
         'Acl' => [
@@ -52,14 +51,12 @@ class Usergroup extends AppModel
         ],
     ];
 
-    public function parentNode()
-    {
+    public function parentNode() {
         return 'Usergroups';
     }
 
     //Return a array of aco ids that needs to enabled for every user! (for ajax requests etc..)
-    public function getAlwaysAllowedAcos($acosAsNest)
-    {
+    public function getAlwaysAllowedAcos($acosAsNest) {
         Configure::load('acl_dependencies');
 
         //Load Plugin configuration files
@@ -67,9 +64,9 @@ class Usergroup extends AppModel
             return strpos($value, 'Module') !== false;
         });
         foreach ($modulePlugins as $moduleName) {
-            $pluginAclConfigFile = APP.'Plugin'.DS.$moduleName.DS.'Config'.DS.'acl_dependencies.php';
+            $pluginAclConfigFile = APP . 'Plugin' . DS . $moduleName . DS . 'Config' . DS . 'acl_dependencies.php';
             if (file_exists($pluginAclConfigFile)) {
-                Configure::load($moduleName.'.acl_dependencies');
+                Configure::load($moduleName . '.acl_dependencies');
             }
         }
 
@@ -99,7 +96,7 @@ class Usergroup extends AppModel
                             }
 
                             if ($permitRight === true) {
-                                $result[$acoId] = $controllerName.DS.$actionName;
+                                $result[$acoId] = $controllerName . DS . $actionName;
                             }
                         }
                     }
@@ -123,7 +120,7 @@ class Usergroup extends AppModel
                                 }
 
                                 if ($permitRight === true) {
-                                    $result[$acoId] = $pluginName.DS.$controllerName.DS.$actionName;
+                                    $result[$acoId] = $pluginName . DS . $controllerName . DS . $actionName;
                                 }
                             }
                         }
@@ -136,8 +133,7 @@ class Usergroup extends AppModel
     }
 
     //Return an array of aco ids + dependenc aco ids
-    public function getAcoDependencies($acosAsNest)
-    {
+    public function getAcoDependencies($acosAsNest) {
         Configure::load('acl_dependencies');
 
         //Load Plugin configuration files
@@ -146,9 +142,9 @@ class Usergroup extends AppModel
         });
 
         foreach ($modulePlugins as $moduleName) {
-            $pluginAclConfigFile = APP.'Plugin'.DS.$moduleName.DS.'Config'.DS.'acl_dependencies.php';
+            $pluginAclConfigFile = APP . 'Plugin' . DS . $moduleName . DS . 'Config' . DS . 'acl_dependencies.php';
             if (file_exists($pluginAclConfigFile)) {
-                Configure::load($moduleName.'.acl_dependencies');
+                Configure::load($moduleName . '.acl_dependencies');
             }
         }
 
@@ -173,7 +169,7 @@ class Usergroup extends AppModel
                                 if (isset($acos[$action])) {
                                     foreach ($dependenActions as $dependendAction) {
                                         if (isset($acos[$dependendAction])) {
-                                            $result[$acos[$action]][$acos[$dependendAction]] = $controllerName.DS.$action.DS.$dependendAction;
+                                            $result[$acos[$action]][$acos[$dependendAction]] = $controllerName . DS . $action . DS . $dependendAction;
                                         }
                                     }
                                 }
@@ -197,7 +193,7 @@ class Usergroup extends AppModel
                                     if (isset($acos[$action])) {
                                         foreach ($dependenActions as $dependendAction) {
                                             if (isset($acos[$dependendAction])) {
-                                                $result[$acos[$action]][$acos[$dependendAction]] = $pluginName.DS.$controllerName.DS.$action.DS.$dependendAction;
+                                                $result[$acos[$action]][$acos[$dependendAction]] = $pluginName . DS . $controllerName . DS . $action . DS . $dependendAction;
                                             }
                                         }
                                     }
@@ -213,8 +209,7 @@ class Usergroup extends AppModel
     }
 
     //Return a array of aco ids that needs to enabled for specific usergroup!
-    public function getUsergroupAcos($acosAsNest, $userGroupName)
-    {
+    public function getUsergroupAcos($acosAsNest, $userGroupName) {
         Configure::load('acl_dependencies');
 
         //Load Plugin configuration files
@@ -222,15 +217,15 @@ class Usergroup extends AppModel
             return strpos($value, 'Module') !== false;
         });
         foreach ($modulePlugins as $moduleName) {
-            $pluginAclConfigFile = APP.'Plugin'.DS.$moduleName.DS.'Config'.DS.'acl_dependencies.php';
+            $pluginAclConfigFile = APP . 'Plugin' . DS . $moduleName . DS . 'Config' . DS . 'acl_dependencies.php';
             if (file_exists($pluginAclConfigFile)) {
-                Configure::load($moduleName.'.acl_dependencies');
+                Configure::load($moduleName . '.acl_dependencies');
             }
         }
 
         $config = Configure::read('acl_dependencies');
         $appControllerAcoNames = $config['AppController'];
-        if(!isset($config['roles_rights'][$userGroupName]))
+        if (!isset($config['roles_rights'][$userGroupName]))
             return [];
         $thisUsergroupAcos = $config['roles_rights'][$userGroupName];
 
@@ -249,13 +244,13 @@ class Usergroup extends AppModel
 
                         if (isset($result[$acoId])) continue;
 
-                        if(in_array('*', $thisUsergroupAcos)){
-                            $result[$acoId] = $controllerName.DS.$actionName;
+                        if (in_array('*', $thisUsergroupAcos)) {
+                            $result[$acoId] = $controllerName . DS . $actionName;
                             continue;
                         }
 
                         if (isset($thisUsergroupAcos[$controllerName]) && in_array($actionName, $thisUsergroupAcos[$controllerName])) {
-                            $result[$acoId] = $controllerName.DS.$actionName;
+                            $result[$acoId] = $controllerName . DS . $actionName;
                         }
                     }
                 } else {
@@ -270,13 +265,13 @@ class Usergroup extends AppModel
 
                             if (isset($result[$acoId])) continue;
 
-                            if(in_array('*', $thisUsergroupAcos)){
-                                $result[$acoId] = $controllerName.DS.$actionName;
+                            if (in_array('*', $thisUsergroupAcos)) {
+                                $result[$acoId] = $controllerName . DS . $actionName;
                                 continue;
                             }
 
                             if (isset($thisUsergroupAcos[$controllerName]) && in_array($actionName, $thisUsergroupAcos[$controllerName])) {
-                                $result[$acoId] = $pluginName.DS.$controllerName.DS.$actionName;
+                                $result[$acoId] = $pluginName . DS . $controllerName . DS . $actionName;
                             }
 
                         }
@@ -289,8 +284,7 @@ class Usergroup extends AppModel
     }
 
     //Return an array with all aco ids that depend to an other aco, to remove them from the interface
-    public function getAcoDependencyIds($acoDependencies)
-    {
+    public function getAcoDependencyIds($acoDependencies) {
         $result = [];
         foreach ($acoDependencies as $dependency) {
             foreach (array_keys($dependency) as $acoId) {

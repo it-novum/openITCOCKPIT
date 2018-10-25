@@ -23,7 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-use \itnovum\openITCOCKPIT\Core\AcknowledgedHostConditions;
+use itnovum\openITCOCKPIT\Core\AcknowledgedHostConditions;
 
 class AcknowledgedHost extends Statusengine3ModuleAppModel {
     public $useTable = 'host_acknowledgements';

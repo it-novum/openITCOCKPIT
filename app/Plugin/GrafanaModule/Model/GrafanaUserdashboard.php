@@ -83,9 +83,9 @@ class GrafanaUserdashboard extends GrafanaModuleAppModel {
                 'message'  => 'This field cannot be left blank.',
                 'required' => true,
             ],
-            'unique' => [
-                'rule' => 'isUnique',
-                'message' => 'This user dashboard name has already been taken.',
+            'unique'   => [
+                'rule'     => 'isUnique',
+                'message'  => 'This user dashboard name has already been taken.',
                 'required' => true,
             ],
         ],
@@ -143,7 +143,7 @@ class GrafanaUserdashboard extends GrafanaModuleAppModel {
                 'userdashboard_id' => $panel['userdashboard_id'],
                 'row'              => $panel['row'],
                 'unit'             => $panel['unit'],
-                'title'             => $panel['title'],
+                'title'            => $panel['title'],
                 'metrics'          => []
             ];
             foreach ($panel['GrafanaUserdashboardMetric'] as $metric) {

@@ -30,7 +30,7 @@ class ServicetemplateFilter extends Filter {
     /**
      * @return array
      */
-    public function ajaxFilter(){
+    public function ajaxFilter() {
         $filters = [
             'like' => [
                 'Servicetemplate.name',

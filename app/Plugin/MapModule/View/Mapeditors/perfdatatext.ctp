@@ -27,6 +27,6 @@
     <text x="0" y="15" fill="{{color}}">
         {{text}}
     </text>
-<svg>
+    <svg>
 
 

@@ -76,7 +76,7 @@ class SessionCache {
     public function isEmpty() {
         $data = $this->Session->read($this->name);
 
-        if($data === null){
+        if ($data === null) {
             return true;
         }
 
@@ -91,7 +91,7 @@ class SessionCache {
      * @return bool
      */
     public function has($key = '') {
-        if($this->isEmpty() === true){
+        if ($this->isEmpty() === true) {
             return false;
         }
         return $this->Session->check($this->getKey($key));

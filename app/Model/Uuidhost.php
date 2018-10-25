@@ -25,8 +25,7 @@
 
 App::uses('Host', 'Model');
 
-class Uuidhost extends Host
-{
+class Uuidhost extends Host {
     //HostModel with UUID as primaryKey
     public $useTable = 'hosts';
     public $primaryKey = 'uuid';

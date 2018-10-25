@@ -24,23 +24,20 @@
 
 namespace itnovum\openITCOCKPIT\InitialDatabase;
 
-class Importer implements ImporterInterface
-{
+class Importer implements ImporterInterface {
     /**
      * @var \Model
      */
     protected $Model;
 
-    public function __construct(\Model $Model)
-    {
+    public function __construct(\Model $Model) {
         $this->Model = $Model;
     }
 
     /**
      * @return bool
      */
-    public function isTableEmpty()
-    {
+    public function isTableEmpty() {
         $this->unbindAllAssociations();
         $result = $this->Model->find('all', [
             'recursive' => -1
@@ -53,13 +50,11 @@ class Importer implements ImporterInterface
     /**
      * @return array
      */
-    public function getData()
-    {
+    public function getData() {
         return [];
     }
 
-    public function unbindAllAssociations()
-    {
+    public function unbindAllAssociations() {
         foreach (['hasOne', 'hasMany', 'belongsTo', 'hasAndBelongsToMany'] as $association) {
             if (!empty($this->Model->{$association})) {
                 foreach ($this->Model->{$association} as $accociatedModel) {

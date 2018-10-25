@@ -25,9 +25,7 @@
 namespace itnovum\openITCOCKPIT\Database;
 
 use AppPaginatorComponent;
-use CakeRequest;
 use Controller;
-use Request;
 
 class ScrollIndex {
 
@@ -75,8 +73,8 @@ class ScrollIndex {
         }
     }
 
-    public function determineHasNextPage($dbResults){
-        if(is_array($dbResults)){
+    public function determineHasNextPage($dbResults) {
+        if (is_array($dbResults)) {
             $this->hasNextPage = sizeof($dbResults) === $this->limit;
             return;
         }
@@ -97,7 +95,7 @@ class ScrollIndex {
     }
 
     public function scroll() {
-        $this->Controller->request['scroll'] =  $this->getScroll();
+        $this->Controller->request['scroll'] = $this->getScroll();
     }
 
 }

@@ -15,6 +15,5 @@ App::uses('AppController', 'Controller');
  * ClearCache Plugin Controller
  * @package       ClearCache.Controller
  */
-class ClearCacheAppController extends AppController
-{
+class ClearCacheAppController extends AppController {
 }

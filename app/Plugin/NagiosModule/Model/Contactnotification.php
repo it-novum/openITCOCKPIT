@@ -23,8 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class Contactnotification extends NagiosModuleAppModel
-{
+class Contactnotification extends NagiosModuleAppModel {
     //public $useDbConfig = 'default';
     public $useTable = 'contactnotifications';
     public $primaryKey = 'contactnotification_id';

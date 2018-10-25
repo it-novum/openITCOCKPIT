@@ -43,7 +43,7 @@ class Contact {
      * Command constructor.
      * @param array $data
      */
-    public function __construct($data){
+    public function __construct($data) {
         if (isset($data['id'])) {
             $this->id = (int)$data['id'];
         }
@@ -57,21 +57,21 @@ class Contact {
     /**
      * @return int
      */
-    public function getId(){
+    public function getId() {
         return $this->id;
     }
 
     /**
      * @return string
      */
-    public function getName(){
+    public function getName() {
         return $this->name;
     }
 
     /**
      * @return array
      */
-    public function toArray(){
+    public function toArray() {
         $arr = get_object_vars($this);
         return $arr;
     }

@@ -3,22 +3,22 @@ angular.module('openITCOCKPIT')
 
         $scope.id =
 
-        $scope.post = {
-            GrafanaUserdashboard: {
-                id: null,
-                container_id: null,
-                name: '',
-                configuration_id: null
-            }
-        };
+            $scope.post = {
+                GrafanaUserdashboard: {
+                    id: null,
+                    container_id: null,
+                    name: '',
+                    configuration_id: null
+                }
+            };
 
         $scope.id = QueryStringService.getCakeId();
 
-        $scope.deleteUrl = "/grafana_module/grafana_userdashboards/delete/"+$scope.id+".json?angular=true";
+        $scope.deleteUrl = "/grafana_module/grafana_userdashboards/delete/" + $scope.id + ".json?angular=true";
         $scope.sucessUrl = '/grafana_module/grafana_userdashboards/index';
 
         $scope.load = function(){
-            $http.get("/grafana_module/grafana_userdashboards/edit/"+$scope.id+".json", {
+            $http.get("/grafana_module/grafana_userdashboards/edit/" + $scope.id + ".json", {
                 params: {
                     'angular': true
                 }
@@ -54,7 +54,7 @@ angular.module('openITCOCKPIT')
 
 
         $scope.submit = function(){
-            $http.post("/grafana_module/grafana_userdashboards/edit/"+$scope.id+".json?angular=true",
+            $http.post("/grafana_module/grafana_userdashboards/edit/" + $scope.id + ".json?angular=true",
                 $scope.post
             ).then(function(result){
                 console.log('Data saved successfully');

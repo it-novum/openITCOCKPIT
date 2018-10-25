@@ -36,15 +36,15 @@ class GrafanaTargetUnits {
         $jsCategoriesAndUnits = [];
         foreach ($this->getUnits() as $category => $units) {
             $jsUnits = [];
-            foreach($units as $key => $unit){
+            foreach ($units as $key => $unit) {
                 $jsUnits[] = [
-                    'key' => $key,
+                    'key'  => $key,
                     'unit' => $unit
                 ];
             }
 
             $jsCategoriesAndUnits[] = [
-                'key' => $category,
+                'key'    => $category,
                 'values' => $jsUnits
             ];
         }

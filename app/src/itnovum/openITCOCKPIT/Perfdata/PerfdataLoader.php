@@ -28,7 +28,6 @@ namespace itnovum\openITCOCKPIT\Perfdata;
 use itnovum\openITCOCKPIT\Core\DbBackend;
 use itnovum\openITCOCKPIT\Core\PerfdataBackend;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
-use itnovum\openITCOCKPIT\Core\Views\PerfdataChecker;
 use itnovum\openITCOCKPIT\Graphite\GraphiteConfig;
 use itnovum\openITCOCKPIT\Graphite\GraphiteLoader;
 use itnovum\openITCOCKPIT\Graphite\GraphiteMetric;
@@ -92,8 +91,8 @@ class PerfdataLoader {
      * @return array
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function getPerfdataByUuid($hostUuid, $serviceUuid, $start, $end, $jsTimestamp = false, $type = 'avg', $gauge = null){
-        if($gauge === ''){
+    public function getPerfdataByUuid($hostUuid, $serviceUuid, $start, $end, $jsTimestamp = false, $type = 'avg', $gauge = null) {
+        if ($gauge === '') {
             $gauge = null;
         }
 
@@ -113,8 +112,8 @@ class PerfdataLoader {
                 $GraphiteLoader->setAbsoluteDate($start, $end);
 
                 foreach ($perfdataMetadata as $metricName => $metric) {
-                    if($gauge !== null){
-                        if($gauge !== $metricName){
+                    if ($gauge !== null) {
+                        if ($gauge !== $metricName) {
                             continue;
                         }
                     }
@@ -137,25 +136,25 @@ class PerfdataLoader {
                         'max'   => $metric['max'],
                     ];
 
-                    switch($type){
+                    switch ($type) {
                         case 'min':
                             $performance_data[] = [
                                 'datasource' => $datasource,
-                                'data' => $GraphiteLoader->getSeriesMin($GraphiteMetric)
+                                'data'       => $GraphiteLoader->getSeriesMin($GraphiteMetric)
                             ];
                             break;
 
                         case 'max':
                             $performance_data[] = [
                                 'datasource' => $datasource,
-                                'data' => $GraphiteLoader->getSeriesMax($GraphiteMetric)
+                                'data'       => $GraphiteLoader->getSeriesMax($GraphiteMetric)
                             ];
                             break;
 
                         default:
                             $performance_data[] = [
                                 'datasource' => $datasource,
-                                'data' => $GraphiteLoader->getSeriesAvg($GraphiteMetric)
+                                'data'       => $GraphiteLoader->getSeriesAvg($GraphiteMetric)
                             ];
                             break;
                     }
@@ -165,7 +164,7 @@ class PerfdataLoader {
         }
 
         if ($this->PerfdataBackend->isRrdtool()) {
-            if(file_exists(sprintf('/opt/openitc/nagios/share/perfdata/%s/%s.rrd', $hostUuid, $serviceUuid))){
+            if (file_exists(sprintf('/opt/openitc/nagios/share/perfdata/%s/%s.rrd', $hostUuid, $serviceUuid))) {
                 $options = [
                     'start' => $start,
                     'end'   => $end
@@ -175,8 +174,8 @@ class PerfdataLoader {
 
                 $limit = (int)self::MAX_RESPONSE_GRAPH_POINTS / sizeof($rrd_data['data']);
                 foreach ($rrd_data['xml_data'] as $dataSource) {
-                    if($gauge !== null){
-                        if($gauge !== $dataSource['name']){
+                    if ($gauge !== null) {
+                        if ($gauge !== $dataSource['name']) {
                             continue;
                         }
                     }

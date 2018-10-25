@@ -312,7 +312,7 @@ class Instantreport extends AppModel {
                     break;
                 }
                 if ($stateTimeTimestamp <= $timeSlice['start']) {
-                    if($stateHistory['state'] == 0 || !$checkHardState || ($checkHardState && ($checkHardState && $stateHistory['is_hardstate']))){
+                    if ($stateHistory['state'] == 0 || !$checkHardState || ($checkHardState && ($checkHardState && $stateHistory['is_hardstate']))) {
                         $currentState = $stateHistory['state'];
                     }
                     //unset($stateHistoryArray[$key]);
@@ -473,7 +473,7 @@ class Instantreport extends AppModel {
 
         //If downtimes are empty set $useTimetamp = true, systemfailures (start_time and end_time) are always in mysql datetime format
         $useTimetamp = true;
-        if(!empty($downtimes)){
+        if (!empty($downtimes)) {
             $useTimetamp = is_numeric($downtimes[0][$key]['scheduled_start_time']);
 
         }
@@ -481,12 +481,12 @@ class Instantreport extends AppModel {
             $start = strtotime($systemfailure['start_time']);
             $end = strtotime($systemfailure['end_time']);
 
-            if($useTimetamp === true) {
+            if ($useTimetamp === true) {
                 $scheduled_start_time = $start;
                 $scheduled_end_time = $end;
             }
 
-            if($useTimetamp === false) {
+            if ($useTimetamp === false) {
                 $scheduled_start_time = date('Y-m-d H:i:s', $start);
                 $scheduled_end_time = date('Y-m-d H:i:s', $end);
             }

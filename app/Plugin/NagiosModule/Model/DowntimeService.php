@@ -197,7 +197,7 @@ class DowntimeService extends NagiosModuleAppModel {
                 ],
             ],
             'conditions' => [
-                'OR'                            => [
+                'OR' => [
                     '"' . date('Y-m-d H:i:s', $Conditions->getFrom()) . '"
                                         BETWEEN DowntimeService.scheduled_start_time
                                         AND DowntimeService.scheduled_end_time',

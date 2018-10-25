@@ -103,7 +103,7 @@
                             <span ng-show="userdashboard.GrafanaUserdashboard.grafana_url == ''">{{ userdashboard.GrafanaUserdashboard.name }}
                             </span>
                             <span ng-show="userdashboard.GrafanaUserdashboard.grafana_url == ''"
-                                class="label label-primary font-xs">
+                                  class="label label-primary font-xs">
                                 <?php echo __('Not synchronized'); ?>
                             </span>
                         <?php else: ?>

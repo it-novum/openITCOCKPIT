@@ -60,14 +60,14 @@ class Systemdowntime {
         $this->downtimeTypeId = (int)$systemdowntime['Systemdowntime']['downtimetype_id'];
 
         $this->weekdays = explode(',', $systemdowntime['Systemdowntime']['weekdays']);
-        if(empty($systemdowntime['Systemdowntime']['weekdays'])){
+        if (empty($systemdowntime['Systemdowntime']['weekdays'])) {
             $this->weekdays = [];
         }
 
         $this->weekdaysHuman = $this->getHumanWeekDays();
 
         $this->dayOfMonth = explode(',', $systemdowntime['Systemdowntime']['day_of_month']);
-        if(empty($systemdowntime['Systemdowntime']['day_of_month'])){
+        if (empty($systemdowntime['Systemdowntime']['day_of_month'])) {
             $this->dayOfMonth = [];
         }
         $this->startTime = $systemdowntime['Systemdowntime']['from_time'];
@@ -149,7 +149,7 @@ class Systemdowntime {
     /**
      * @return array
      */
-    private function getHumanWeekDays(){
+    private function getHumanWeekDays() {
         $weekdays = [
             1 => __('Monday'),
             2 => __('Tuesday'),
@@ -161,13 +161,13 @@ class Systemdowntime {
         ];
 
         $result = [];
-        foreach($this->weekdays as $day){
+        foreach ($this->weekdays as $day) {
             $result[] = $weekdays[$day];
         }
         return $result;
     }
 
-    public function toArray(){
+    public function toArray() {
         return get_object_vars($this);
     }
 }

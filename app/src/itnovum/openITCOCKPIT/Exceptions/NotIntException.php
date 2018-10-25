@@ -27,7 +27,6 @@
 namespace itnovum\openITCOCKPIT\Exceptions;
 
 
-class NotIntException extends \Exception
-{
+class NotIntException extends \Exception {
 
 }
