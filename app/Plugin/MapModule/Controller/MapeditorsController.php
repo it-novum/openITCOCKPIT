@@ -1886,6 +1886,7 @@ class MapeditorsController extends MapModuleAppController {
         $line = $this->request->data;
         $line['Mapline']['show_label'] = (int)$this->request->data('Mapline.show_label');
         if ($this->Mapline->save($line)) {
+            $line['Mapline']['id'] = (int)$this->Mapline->id;
             $Mapline = new \itnovum\openITCOCKPIT\Maps\ValueObjects\Mapline($line['Mapline']);
             $this->set('Mapline', [
                 'Mapline' => $Mapline->toArray()
@@ -1901,7 +1902,7 @@ class MapeditorsController extends MapModuleAppController {
             throw new MethodNotAllowedException();
         }
 
-        $id = $this->request->data('Mapgadget.id');
+        $id = $this->request->data('Mapline.id');
 
 
         if (!$this->Mapline->exists($id)) {
@@ -1996,7 +1997,7 @@ class MapeditorsController extends MapModuleAppController {
         $gadget['Mapgadget']['size_y'] = (int)$this->request->data('Mapgadget.size_y');
 
         if ($this->Mapgadget->save($gadget)) {
-            $gadget['Mapgadget']['id'] = $this->Mapgadget->id;
+            $gadget['Mapgadget']['id'] = (int)$this->Mapgadget->id;
             $Mapgadget = new \itnovum\openITCOCKPIT\Maps\ValueObjects\Mapgadget($gadget['Mapgadget']);
             $this->set('Mapgadget', [
                 'Mapgadget' => $Mapgadget->toArray()
@@ -2111,7 +2112,7 @@ class MapeditorsController extends MapModuleAppController {
         $text['Maptext']['y'] = (int)$this->request->data('Maptext.y');
         $maptext['Maptext']['font_size'] = 11;
         if ($this->Maptext->save($text)) {
-            $text['Maptext']['id'] = $this->Maptext->id;
+            $text['Maptext']['id'] = (int)$this->Maptext->id;
             $Maptext = new \itnovum\openITCOCKPIT\Maps\ValueObjects\Maptext($text['Maptext']);
             $this->set('Maptext', [
                 'Maptext' => $Maptext->toArray()
@@ -2189,7 +2190,7 @@ class MapeditorsController extends MapModuleAppController {
         $icon['Mapicon']['x'] = (int)$this->request->data('Mapicon.x');
         $icon['Mapicon']['y'] = (int)$this->request->data('Mapicon.y');
         if ($this->Mapicon->save($icon)) {
-            $icon['Mapicon']['id'] = $this->Mapicon->id;
+            $icon['Mapicon']['id'] = (int)$this->Mapicon->id;
             $Mapicon = new \itnovum\openITCOCKPIT\Maps\ValueObjects\Mapicon($icon['Mapicon']);
             $this->set('Mapicon', [
                 'Mapicon' => $Mapicon->toArray()
