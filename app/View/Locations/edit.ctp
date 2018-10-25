@@ -77,11 +77,23 @@
             echo $this->Form->input('Container.name', ['value' => $location['Container']['name'], 'label' => __('Name')]);
             echo $this->Form->input('description', ['value' => $location['Location']['description'], 'label' => __('Description')]);
             echo $this->Form->input('timezone', ['options' => CakeTime::listTimezones(), 'class' => 'chosen', 'style' => 'width: 100%;', 'selected' => $location['Location']['timezone'], 'label' => __('Timezone')]);
-            echo $this->Form->input('latitude', ['value' => $location['Location']['latitude'], 'label' => __('Latitude')]);
-            echo $this->Form->input('longitude', ['value' => $location['Location']['longitude'], 'label' => __('Longitude')]);
             ?>
+            <div id="locationPonts">
+                <?php
+                echo $this->Form->input('latitude', [
+                    'value' => $location['Location']['latitude'],
+                    'label' => __('Latitude'),
+                    'type'  => 'text'
+                ]);
+                echo $this->Form->input('longitude', [
+                    'value' => $location['Location']['longitude'],
+                    'label' => __('Longitude'),
+                    'type'  => 'text'
+                ]);
+                ?>
+            </div>
             <div class="form-group has-error" id="LatitudeRangeError" style="display:none;">
-                <div class="col col-xs-12 required">
+                <div class="col col-xs-10 col-xs-offset-2 required">
                     <span class="help-block text-danger"><?php echo __('Latitude or Longitude is out of range'); ?></span>
                 </div>
             </div>
