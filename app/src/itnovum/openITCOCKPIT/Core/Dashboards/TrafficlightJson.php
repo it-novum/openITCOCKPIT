@@ -33,7 +33,7 @@ class TrafficlightJson extends DashboardJsonStandardizer {
      * oITC will take care of the rest of the work
      */
     protected $fields = [
-        'show_label'       => false
+        'show_label' => false
     ];
 
 }

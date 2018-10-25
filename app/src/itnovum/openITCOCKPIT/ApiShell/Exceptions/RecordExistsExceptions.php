@@ -25,7 +25,6 @@
 namespace itnovum\openITCOCKPIT\ApiShell\Exceptions;
 
 
-class RecordExistsExceptions extends \Exception
-{
+class RecordExistsExceptions extends \Exception {
 
 }

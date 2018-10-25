@@ -249,11 +249,11 @@ class HostAndServiceSummaryIcon {
 
     private function getDefaultColors() {
         return [
-            'success' => [2, 184, 92, 1],
-            'warning' => [240, 173, 78, 1],
-            'danger' => [217, 83, 79, 1],
-            'default' => [183, 183, 183, 1],
-            'primary' => [66, 139, 202, 1],
+            'success'   => [2, 184, 92, 1],
+            'warning'   => [240, 173, 78, 1],
+            'danger'    => [217, 83, 79, 1],
+            'default'   => [183, 183, 183, 1],
+            'primary'   => [66, 139, 202, 1],
             'lightgray' => [220, 220, 220, 1] //for circle border
 
         ];

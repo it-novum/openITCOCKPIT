@@ -32,7 +32,7 @@ class MonitoringEngine {
     public function __construct() {
 
         \Configure::load('nagios');
-        exec(\Configure::read('nagios.basepath').\Configure::read('nagios.bin').\Configure::read('nagios.nagios_bin').' --version | head -n 2', $output);
+        exec(\Configure::read('nagios.basepath') . \Configure::read('nagios.bin') . \Configure::read('nagios.nagios_bin') . ' --version | head -n 2', $output);
         $this->monitoringEngine = $output[1];
     }
 

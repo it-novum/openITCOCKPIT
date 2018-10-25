@@ -43,7 +43,7 @@ class ServicechecksControllerRequest extends AngularRequest {
 
     protected $ServiceStateTypeField = 'Servicecheck.state_type';
 
-    public function getIndexFilters(){
+    public function getIndexFilters() {
         $Filter = new BaseFilter($this->getRequest());
         return $Filter->getConditionsByFilters($this->filters['index']);
     }

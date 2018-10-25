@@ -28,7 +28,6 @@ namespace itnovum\openITCOCKPIT\Core\NodeJS;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ConnectException;
-use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\RequestOptions;
 
 class ChartRenderClient {

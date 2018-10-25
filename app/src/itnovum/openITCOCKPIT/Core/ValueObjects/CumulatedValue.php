@@ -45,12 +45,12 @@ class CumulatedValue {
      * @return null|int|string
      */
     public function getKeyFromCumulatedValue() {
-        if(empty($this->valueArray)){
+        if (empty($this->valueArray)) {
             return null;
         }
         krsort($this->valueArray);
         foreach ($this->valueArray as $key => $value) {
-            if($value > 0){
+            if ($value > 0) {
                 return $key;
             }
         }

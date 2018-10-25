@@ -33,7 +33,7 @@ class AcknowledgementsControllerRequest extends AngularRequest {
      * @var array
      */
     protected $filters = [
-        'host' => [
+        'host'    => [
             'like' => [
                 'AcknowledgedHost.comment_data',
                 'AcknowledgedHost.author_name'
@@ -51,12 +51,12 @@ class AcknowledgementsControllerRequest extends AngularRequest {
 
     protected $HostStateField = 'AcknowledgedHost.state';
 
-    public function getServiceFilters(){
+    public function getServiceFilters() {
         $Filter = new BaseFilter($this->getRequest());
         return $Filter->getConditionsByFilters($this->filters['service']);
     }
 
-    public function getHostFilters(){
+    public function getHostFilters() {
         $Filter = new BaseFilter($this->getRequest());
         return $Filter->getConditionsByFilters($this->filters['host']);
     }

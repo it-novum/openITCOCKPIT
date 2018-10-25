@@ -33,15 +33,15 @@ class DowntimeHostListJson extends DashboardJsonStandardizer {
      * oITC will take care of the rest of the work
      */
     protected $fields = [
-        'DowntimeHost'      => [
-            'comment'           => '',
+        'DowntimeHost'    => [
+            'comment'       => '',
             'was_cancelled' => false
         ],
         'Host'            => [
             'name' => ''
         ],
-        'isRunning' => true,
-        'hideExpired' => true,
+        'isRunning'       => true,
+        'hideExpired'     => true,
         'sort'            => 'DowntimeHost.scheduled_start_time',
         'direction'       => 'desc',
         'useScroll'       => true,

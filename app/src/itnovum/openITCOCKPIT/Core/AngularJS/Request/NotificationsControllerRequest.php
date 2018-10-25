@@ -33,7 +33,7 @@ class NotificationsControllerRequest extends AngularRequest {
      * @var array
      */
     protected $filters = [
-        'host' => [
+        'host'    => [
             'like' => [
                 'NotificationHost.output'
             ]
@@ -49,12 +49,12 @@ class NotificationsControllerRequest extends AngularRequest {
 
     protected $HostStateField = 'NotificationHost.state';
 
-    public function getServiceFilters(){
+    public function getServiceFilters() {
         $Filter = new BaseFilter($this->getRequest());
         return $Filter->getConditionsByFilters($this->filters['service']);
     }
 
-    public function getHostFilters(){
+    public function getHostFilters() {
         $Filter = new BaseFilter($this->getRequest());
         return $Filter->getConditionsByFilters($this->filters['host']);
     }

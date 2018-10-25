@@ -76,7 +76,7 @@ class AngularAssets implements AngularAssetsInterface {
     /**
      * @return array
      */
-    public function getJsFiles(){
+    public function getJsFiles() {
         $jsFiles = $this->jsFiles;
         //Load Plugin configuration files
         $loadedModules = array_filter(\CakePlugin::loaded(), function ($value) {

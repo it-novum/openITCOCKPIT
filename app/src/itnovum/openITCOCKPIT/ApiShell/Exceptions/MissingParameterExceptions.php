@@ -25,7 +25,6 @@
 namespace itnovum\openITCOCKPIT\ApiShell\Exceptions;
 
 
-class MissingParameterExceptions extends \Exception
-{
+class MissingParameterExceptions extends \Exception {
 
 }

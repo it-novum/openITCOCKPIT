@@ -22,16 +22,14 @@
 //  License agreement and license key will be shipped with the order
 //  confirmation.
 
-class AllTestsTest extends PHPUnit_Framework_TestSuite
-{
+class AllTestsTest extends PHPUnit_Framework_TestSuite {
 
-    public static function suite()
-    {
+    public static function suite() {
         $directories = self::getTestDirectories();
 
         $suite = new CakeTestSuite('All tests');
         foreach ($directories as $directory) {
-            $suite->addTestDirectory($directory.DS);
+            $suite->addTestDirectory($directory . DS);
         }
 
         return $suite;
@@ -40,9 +38,8 @@ class AllTestsTest extends PHPUnit_Framework_TestSuite
     /**
      * @return array
      */
-    private static function getTestDirectories()
-    {
-        $baseTestsPath = APP.'Test'.DS.'Case'.DS;
+    private static function getTestDirectories() {
+        $baseTestsPath = APP . 'Test' . DS . 'Case' . DS;
 
         $iterator = new RecursiveIteratorIterator(
             new RecursiveDirectoryIterator(
