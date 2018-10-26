@@ -177,7 +177,15 @@ $config = [
             ],
             'Statistics'       => [
                 'ask_anonymous_statistics'
-            ]
+            ],
+            'Login'            => [
+                'index',
+                'login',
+                'onetimetoken',
+                'logout',
+                'auth_required',
+                'lock'
+            ],
         ],
         'dependencies'   => [
             'Automaps'              => [
