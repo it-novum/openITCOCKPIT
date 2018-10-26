@@ -207,12 +207,11 @@ class MapsController extends MapModuleAppController {
             }
 
             if ($this->Map->saveAll($this->request->data)) {
-                if ($this->isJsonRequest()) {
-                    $this->serializeId();
-                    return;
+                if ($this->isAngularJsRequest()) {
+                    $this->setFlash(__('<a href="/map_module/maps/edit/%s">Map</a> successfully saved', $this->Map->id));
                 }
-                $this->setFlash(__('<a href="/map_module/maps/edit/%s">Map</a> successfully saved', $this->Map->id));
-
+                $this->serializeId();
+                return;
             } else {
                 if ($this->request->ext === 'json') {
                     $this->serializeErrorMessage();
