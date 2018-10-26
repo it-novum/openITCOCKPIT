@@ -19,7 +19,9 @@ You have the following options:
 
 * **AUTOREPORTS_SHOW_DOWNTIMES** - Shows all downtimes
 
-* **AUTOREPORTS_USE_YEAR_IN_FILENAME** - Use Year in filename. Format: Filename "Reportname_+/- (_Y)..."
+* **AUTOREPORTS_USE_CREATE_DATE_IN_FILENAME** - Use create date in filename. Format: Filename "Reportname_+/- (dmY)..."
+
+* **AUTOREPORTS_USE_YEAR_IN_FILENAME** - Use Year in filename. Format: Filename "Reportname_+/- (Y)..."
 
 * **AUTOREPORTS_SHOW_SLA_GRAPH** - Displays SLA graph
 
