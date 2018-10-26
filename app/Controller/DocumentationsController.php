@@ -23,6 +23,10 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+/**
+ * Class DocumentationsController
+ * @property Documentation $Documentation
+ */
 class DocumentationsController extends AppController {
     public $layout = 'Admin.default';
     public $components = ['Bbcode'];
@@ -37,15 +41,28 @@ class DocumentationsController extends AppController {
     public function view($uuid = null, $type = 'host') {
         if ($this->request->is('post') || $this->request->is('put')) {
             if ($this->Documentation->save($this->request->data)) {
+                if ($this->request->ext == 'json') {
+                    $this->serializeId(); // REST API ID serialization
+                    return;
+                }
                 $this->setFlash(__('Page successfully saved'));
                 $this->redirect(Hash::merge(['action' => 'view'], $this->request->params['pass']));
             } else {
+                if ($this->request->ext == 'json') {
+                    $this->serializeErrorMessage();
+                    return;
+                }
                 $this->setFlash(__('Could not save data'), false);
             }
         }
 
         $this->set('back_url', $this->referer());
-        $post = $this->Documentation->findByUuid($uuid);
+        $post = $this->Documentation->find('first', [
+            'recursive'  => -1,
+            'conditions' => [
+                'Documentation.uuid' => $uuid
+            ]
+        ]);
 
         if ($type === 'host') {
             $host = $this->Host->find('first', [
@@ -128,6 +145,7 @@ class DocumentationsController extends AppController {
         $docuExists = !empty($post);
 
         $this->set(compact(['post', 'uuid', 'docuExists', 'type']));
+        $this->set('_serialize', ['post']);
     }
 
     public function index() {
@@ -316,7 +334,7 @@ class DocumentationsController extends AppController {
                         'file'        => 'locations',
                         'icon'        => 'fa fa-location-arrow',
                     ],
-                    'grafana'        => [
+                    'grafana'               => [
                         'name'        => __('Grafana'),
                         'description' => 'You can generate graphs with data from different services.',
                         'file'        => 'grafana',
@@ -679,19 +697,19 @@ class DocumentationsController extends AppController {
                 'name'      => ('Additional Help'),
                 'directory' => 'additional_help',
                 'children'  => [
-                    'markdown'            => [
+                    'markdown'                   => [
                         'name'        => __('Markdown'),
                         'description' => 'A cheatsheet to help writing markdown formatted texts. ',
                         'file'        => 'markdown',
                         'icon'        => 'fa fa-pencil',
                     ],
-                    'mysql_performance'   => [
+                    'mysql_performance'          => [
                         'name'        => __('MySQL performance'),
                         'description' => 'A few tips to optimize your MySQL performance.',
                         'file'        => 'mysql_performance',
                         'icon'        => 'fa fa-database',
                     ],
-                    'manual_installation' => [
+                    'manual_installation'        => [
                         'name'        => __('Manual installation'),
                         'description' => 'Describes how to install openITCOCKPIT on a different distribution',
                         'file'        => 'manual_installation',
