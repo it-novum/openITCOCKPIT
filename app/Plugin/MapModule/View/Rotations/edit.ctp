@@ -30,7 +30,7 @@
             <?php echo __('Map'); ?>
             <span>>
                 <?php echo __('Rotation'); ?>
-			</span>
+            </span>
             <div class="third_level"> <?php echo ucfirst($this->params['action']); ?></div>
         </h1>
     </div>
@@ -92,13 +92,16 @@
                         </div>
                     </div>
 
-                    <div class="form-group">
+                    <div class="form-group required" ng-class="{'has-error': errors.interval}">
                         <label class="col col-md-2 control-label">
                             <?php echo __('Rotation interval'); ?>
                         </label>
                         <div class="col col-xs-10">
                             <input class="form-control" type="number" ng-model="post.Rotation.interval" min="10"
                                    step="5">
+                            <div ng-repeat="error in errors.interval">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
                         </div>
                     </div>
 

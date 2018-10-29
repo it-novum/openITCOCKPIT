@@ -64,8 +64,8 @@ class Rotation extends MapModuleAppModel {
                 'message' => 'This field needs to be numeric.',
             ],
             'notZero'  => [
-                'rule'     => ['comparison', '>', 10],
-                'message'  => 'Please enter a number > 10.',
+                'rule'     => ['comparison', '>', 9],
+                'message'  => 'Please enter a number > 9.',
                 'required' => true,
             ],
         ],
