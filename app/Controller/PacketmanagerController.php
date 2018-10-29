@@ -26,6 +26,7 @@
 use itnovum\openITCOCKPIT\Core\Http;
 use itnovum\openITCOCKPIT\Core\PackagemanagerRequestBuilder;
 use itnovum\openITCOCKPIT\Core\RepositoryChecker;
+use itnovum\openITCOCKPIT\Core\System\Health\LsbRelease;
 use itnovum\openITCOCKPIT\Core\ValueObjects\License;
 
 class PacketmanagerController extends AppController {
@@ -58,6 +59,8 @@ class PacketmanagerController extends AppController {
         );
 
         $this->set('RepositoryChecker', new RepositoryChecker());
+        $this->set('LsbRelease', new LsbRelease());
+
 
         $http->sendRequest();
         if (!$http->error) {
