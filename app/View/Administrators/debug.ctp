@@ -22,6 +22,13 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+
+use itnovum\openITCOCKPIT\Core\RepositoryChecker;
+use itnovum\openITCOCKPIT\Core\System\Health\LsbRelease;
+
+/** @var RepositoryChecker $RepositoryChecker */
+/** @var LsbRelease $LsbRelease */
+
 ?>
 <div class="row">
     <div class="col-xs-12 col-lg-10">
@@ -54,6 +61,20 @@
 <?php endif; ?>
 
 <?php echo $this->element('repository_checker'); ?>
+
+<?php if ($LsbRelease->getCodename() === 'trusty'): ?>
+    <div class="alert alert-danger alert-block">
+        <a class="close" data-dismiss="alert" href="#">×</a>
+        <h4 class="alert-heading">
+            <i class="fa fa-warning"></i>
+            <?php echo __('Ubuntu Trusty 14.04 end of life!'); ?>
+        </h4>
+        <?php echo __('Official end of life of Ubuntu Trusty scheduled for April 2019.'); ?>
+        <?php echo __('Therefore openITCOCKPIT 3.5 will be the last release for Ubuntu Trusty. Please update to Ubuntu Xenial to receive further updates.'); ?>
+        <br />
+        <?php echo __('Need help updating your system? Please don\'t hesitate to contact our enterprise support %s', '<a class="txt-color-darken" href="mailto:support@itsm.it-novum.com">support@itsm.it-novum.com</a>'); ?>
+    </div>
+<?php endif; ?>
 
 <div id="error_msg"></div>
 

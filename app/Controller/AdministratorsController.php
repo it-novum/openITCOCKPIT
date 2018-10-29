@@ -24,6 +24,7 @@
 //	confirmation.
 
 use itnovum\openITCOCKPIT\Core\RepositoryChecker;
+use itnovum\openITCOCKPIT\Core\System\Health\LsbRelease;
 
 /**
  * @property Systemsetting Systemsetting
@@ -268,6 +269,7 @@ class AdministratorsController extends AppController {
 
 
         $RepositoryChecker = new RepositoryChecker();
+        $LsbRelease = new LsbRelease();
 
         $this->set('isDebuggingMode', Configure::read('debug') == 2);
         $this->set(compact([
@@ -279,7 +281,8 @@ class AdministratorsController extends AppController {
             'mailConfig',
             'gearmanStatus',
             'recipientAddress',
-            'RepositoryChecker'
+            'RepositoryChecker',
+            'LsbRelease'
         ]));
     }
 
