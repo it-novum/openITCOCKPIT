@@ -182,13 +182,17 @@ class PerfdataLoader {
 
                     $tmpData = $this->Rrd->reduceData($rrd_data['data'][$dataSource['ds']], $limit, self::REDUCE_METHOD_AVERAGE);
                     $data = [];
-                    if ($jsTimestamp) {
-                        foreach ($tmpData as $timestamp => $value) {
-                            $data[($timestamp * 1000)] = $value;
+
+                    foreach ($tmpData as $timestamp => $value) {
+                        if ($value !== null) {
+                            if ($jsTimestamp) {
+                                $data[($timestamp * 1000)] = $value;
+                            } else {
+                                $data[] = $value;
+                            }
                         }
-                    } else {
-                        $data = $tmpData;
                     }
+
                     $performance_data[] = [
                         'datasource' => $dataSource,
                         'data'       => $data
