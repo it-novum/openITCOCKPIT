@@ -1,7 +1,6 @@
 <?php
 
-class NagiosModuleSchema extends CakeSchema
-{
+class NagiosModuleSchema extends CakeSchema {
 
     //Command to create this file:
     //oitc schema generate -f --plugin NagiosModule --file ndo.php --connection default
@@ -9,13 +8,11 @@ class NagiosModuleSchema extends CakeSchema
     //Command to import to db
     //oitc schema update --plugin NagiosModule --file ndo.php --connection default
 
-    public function before($event = [])
-    {
+    public function before($event = []) {
         return true;
     }
 
-    public function after($event = [])
-    {
+    public function after($event = []) {
     }
 
     public $nagios_acknowledgements = [

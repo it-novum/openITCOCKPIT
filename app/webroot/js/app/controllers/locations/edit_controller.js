@@ -23,82 +23,92 @@
 //	confirmation.
 
 App.Controllers.LocationsEditController = Frontend.AppController.extend({
-	latitude: null,
-	longitude: null,
-	$map: null,
-	$mapDiv: null,
-	/**
-	 * @constructor
-	 * @return {void}
-	 */
+    latitude: null,
+    longitude: null,
+    $map: null,
+    $mapDiv: null,
+    /**
+     * @constructor
+     * @return {void}
+     */
 
-	//components: ['WebsocketSudo'],
+    //components: ['WebsocketSudo'],
 
-	_initialize: function() {
-		this.$mapDiv = $('#mapDiv');
-		/*
-		 * Binding events
-		 */
-		$('#LocationLatitude').change(function(){
-			this.setMarker();
-		}.bind(this));
-		
-		$('#LocationLongitude').change(function(){
-			this.setMarker();
-		}.bind(this));
-		
-		this.$mapDiv.vectorMap({
-			map: 'world_mill_en',
-			backgroundColor: '#fff',
-			regionStyle: {
-				initial: {
-					fill: '#c4c4c4'
-				},
-				hover: {
-					'hoverColor': '#4C4C4C'
-				}
-			},
-			markers: [
-				{latLng: [this.getVar('latitude'), this.getVar('longitude')]},
-			],
+    _initialize: function(){
+        this.$mapDiv = $('#mapDiv');
+        /*
+         * Binding events
+         */
+        $('#LocationLatitude').keyup(function(){
+            var locationLatitudeValue = $(this).val().replace(/,/gi, '.').replace(/[^\d.-]/g, '');
+            $(this).val(locationLatitudeValue);
+        });
 
-			markerStyle: {
-				initial: {
-					fill: '#800000',
-					stroke: '#383f47'
-				}
-			},
-		});
-		this.$map = this.$mapDiv.vectorMap('get', 'mapObject');
-		this.setFocus(this.getVar('latitude'), this.getVar('longitude'));
-	},
-	
-	setMarker: function(){
-		this.latitude = $('#LocationLatitude').val();
-		this.latitude = parseFloat(this.latitude.replace(",", "."));
-		this.longitude = $('#LocationLongitude').val();
-		this.longitude = parseFloat(this.longitude.replace(",", "."));
-		
-		$('#LocationLatitude').val(this.latitude);
-		$('#LocationLongitude').val(this.longitude);
-		
-		if((this.latitude > -505 && this.latitude < 533) && (this.longitude > - 168 && this.longitude < 191)){
-			$('#LatitudeRangeError').hide();
-			
-			this.$map.removeAllMarkers();
-			this.$map.reset();
-			this.$map.addMarker('markerIndex', {latLng: [this.latitude, this.longitude]});
-			this.setFocus(this.latitude, this.longitude);
-		}else{
-			$('#LatitudeRangeError').show();
-		}
-	},
-	
-	setFocus: function(latitude, longitude){
-		this.$map.reset();
-		var points = this.$map.latLngToPoint(latitude, longitude);
-		var map_x = points.x / this.$mapDiv.width();
-		var map_y = points.y / this.$mapDiv.height();
-		this.$map.setFocus(10, map_x, map_y);
-	}
+        $('#LocationLongitude').keyup(function(){
+            var locationLongitudeValue = $(this).val().replace(/,/gi, '.').replace(/[^\d.-]/g, '');
+            $(this).val(locationLongitudeValue);
+        });
+
+        $('#LocationLatitude').change(function(){
+            this.setMarker();
+        }.bind(this));
+
+        $('#LocationLongitude').change(function(){
+            this.setMarker();
+        }.bind(this));
+
+        this.$mapDiv.vectorMap({
+            map: 'world_mill_en',
+            backgroundColor: '#fff',
+            regionStyle: {
+                initial: {
+                    fill: '#c4c4c4'
+                },
+                hover: {
+                    'hoverColor': '#4C4C4C'
+                }
+            },
+            markers: [
+                {latLng: [this.getVar('latitude'), this.getVar('longitude')]},
+            ],
+
+            markerStyle: {
+                initial: {
+                    fill: '#800000',
+                    stroke: '#383f47'
+                }
+            },
+        });
+        this.$map = this.$mapDiv.vectorMap('get', 'mapObject');
+        this.setFocus(this.getVar('latitude'), this.getVar('longitude'));
+    },
+
+    setMarker: function(){
+        this.latitude = $('#LocationLatitude').val();
+        this.latitude = parseFloat(this.latitude.replace(",", "."));
+        this.longitude = $('#LocationLongitude').val();
+        this.longitude = parseFloat(this.longitude.replace(",", "."));
+
+        $('#LocationLatitude').val(this.latitude);
+        $('#LocationLongitude').val(this.longitude);
+
+        if((this.latitude > -505 && this.latitude < 533) && (this.longitude > -168 && this.longitude < 191)){
+            $('#LatitudeRangeError').hide();
+
+            this.$map.removeAllMarkers();
+            this.$map.reset();
+            this.$map.addMarker('markerIndex', {latLng: [this.latitude, this.longitude]});
+            this.setFocus(this.latitude, this.longitude);
+        }else{
+            $('#LatitudeRangeError').show();
+        }
+    },
+
+    setFocus: function(latitude, longitude){
+        this.$map.reset();
+        var points = this.$map.latLngToPoint(latitude, longitude);
+        var map_x = points.x / this.$mapDiv.width();
+        var map_y = points.y / this.$mapDiv.height();
+        this.$map.setFocus(10, map_x, map_y);
+    }
 });

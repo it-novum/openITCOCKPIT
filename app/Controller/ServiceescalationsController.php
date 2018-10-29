@@ -25,19 +25,18 @@
 
 
 /**
- * @property Serviceescalation                       $Serviceescalation
- * @property Timeperiod                              $Timeperiod
- * @property Service                                 $Service
- * @property Servicegroup                            $Servicegroup
- * @property Contact                                 $Contact
- * @property Contactgroup                            $Contactgroup
- * @property ServiceescalationServiceMembership      $ServiceescalationServiceMembership
+ * @property Serviceescalation $Serviceescalation
+ * @property Timeperiod $Timeperiod
+ * @property Service $Service
+ * @property Servicegroup $Servicegroup
+ * @property Contact $Contact
+ * @property Contactgroup $Contactgroup
+ * @property ServiceescalationServiceMembership $ServiceescalationServiceMembership
  * @property ServiceescalationServicegroupMembership $ServiceescalationServicegroupMembership
- * @property Container                               $Container
- * @property Host                                    $Host
+ * @property Container $Container
+ * @property Host $Host
  */
-class ServiceescalationsController extends AppController
-{
+class ServiceescalationsController extends AppController {
     public $uses = [
         'Serviceescalation',
         'Timeperiod',
@@ -58,8 +57,7 @@ class ServiceescalationsController extends AppController
     ];
     public $helpers = ['ListFilter.ListFilter', 'CustomValidationErrors'];
 
-    public function index()
-    {
+    public function index() {
 
         $options = [
             'recursive'  => -1,
@@ -124,8 +122,7 @@ class ServiceescalationsController extends AppController
         $this->set('_serialize', ['all_serviceescalations']);
     }
 
-    public function view($id = null)
-    {
+    public function view($id = null) {
         if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();
 
@@ -176,8 +173,7 @@ class ServiceescalationsController extends AppController
         $this->set('_serialize', ['serviceescalation']);
     }
 
-    public function edit($id = null)
-    {
+    public function edit($id = null) {
         if (!$this->Serviceescalation->exists($id)) {
             throw new NotFoundException(__('Invalid serviceescalation'));
         }
@@ -193,7 +189,7 @@ class ServiceescalationsController extends AppController
         }
 
         $containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_SERVICEESCALATION, [], $this->hasRootPrivileges);
-        list($servicegroups, $services, $timeperiods, $contacts, $contactgroups) =$this->getAvailableDataByContainerId($serviceescalation['Serviceescalation']['container_id']);
+        list($servicegroups, $services, $timeperiods, $contacts, $contactgroups) = $this->getAvailableDataByContainerId($serviceescalation['Serviceescalation']['container_id']);
 
         if ($this->request->is('post') || $this->request->is('put')) {
             $containerIds = $this->request->data('Serviceescalation.container_id');
@@ -222,7 +218,7 @@ class ServiceescalationsController extends AppController
                     'conditions' => [
                         'ServiceescalationServiceMembership.serviceescalation_id' => $id,
                     ],
-                    'recursive' => -1
+                    'recursive'  => -1
                 ]);
                 /* Delete old service associations */
                 foreach ($old_membership_services as $old_membership_service) {
@@ -231,7 +227,8 @@ class ServiceescalationsController extends AppController
                 }
                 $old_membership_servicegroups = $this->ServiceescalationServicegroupMembership->find('all', [
                     'conditions' => [
-                        'ServiceescalationServicegroupMembership.serviceescalation_id' => $id],
+                        'ServiceescalationServicegroupMembership.serviceescalation_id' => $id
+                    ],
                 ]);
                 /* Delete old servicegroup associations */
                 foreach ($old_membership_servicegroups as $old_membership_servicegroup) {
@@ -266,8 +263,7 @@ class ServiceescalationsController extends AppController
         ]);
     }
 
-    public function add()
-    {
+    public function add() {
         $services = [];
         $servicegroups = [];
         $contacts = [];
@@ -349,8 +345,7 @@ class ServiceescalationsController extends AppController
         ]);
     }
 
-    public function delete($id = null)
-    {
+    public function delete($id = null) {
         if (!$this->request->is('post')) {
             throw new MethodNotAllowedException();
         }
@@ -373,8 +368,7 @@ class ServiceescalationsController extends AppController
         $this->redirect(['action' => 'index']);
     }
 
-    public function loadElementsByContainerId($containerId = null)
-    {
+    public function loadElementsByContainerId($containerId = null) {
         if (!$this->request->is('ajax')) {
             throw new MethodNotAllowedException();
         }
@@ -412,8 +406,7 @@ class ServiceescalationsController extends AppController
      *
      * @return array
      */
-    protected function getAvailableDataByContainerId($containerIds)
-    {
+    protected function getAvailableDataByContainerId($containerIds) {
         $containerIds = $this->Tree->resolveChildrenOfContainerIds($containerIds);
 
         $servicegroups = $this->Servicegroup->servicegroupsByContainerId($containerIds, 'list', 'id');

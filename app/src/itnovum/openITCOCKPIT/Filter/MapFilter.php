@@ -30,7 +30,7 @@ class MapFilter extends Filter {
     /**
      * @return array
      */
-    public function indexFilter(){
+    public function indexFilter() {
         $filters = [
             'like' => [
                 'Map.name',

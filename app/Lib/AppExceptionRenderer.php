@@ -25,14 +25,12 @@
 
 App::uses('ExceptionRenderer', 'Error');
 
-class AppExceptionRenderer extends ExceptionRenderer
-{
+class AppExceptionRenderer extends ExceptionRenderer {
     /**
      * Handling special cases
      * @return void
      */
-    public function render()
-    {
+    public function render() {
         if ($this->controller->request->is('ajax')) {
             $this->method = 'renderAjaxError';
         }
@@ -49,8 +47,7 @@ class AppExceptionRenderer extends ExceptionRenderer
      *
      * @return void
      */
-    public function renderAjaxError($error)
-    {
+    public function renderAjaxError($error) {
         $message = $error->getMessage();
         if (!Configure::read('debug') && $error instanceof CakeException) {
             $message = __d('cake', 'Not Found');

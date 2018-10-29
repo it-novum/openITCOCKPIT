@@ -53,8 +53,16 @@
             ]);
             ?>
 
-
-            <?php echo $this->Form->input('license', ['label' => __('License key'), 'value' => (isset($licence['Register']['license'])) ? $licence['Register']['license'] : '']); ?>
+            <?php
+            $options = [
+                'label' => __('License key'),
+                'value' => (isset($licence['Register']['license'])) ? $licence['Register']['license'] : '',
+            ];
+            if (ENVIRONMENT === Environments::PRODUCTION) {
+                $options['autocomplete'] = 'off';
+            }
+            ?>
+            <?php echo $this->Form->input('license', $options); ?>
             <div class="form-group text-muted">
                 <span class="col col-md-2 hidden-tablet hidden-mobile"><!-- spacer for nice layout --></span>
                 <div class="col col-xs-10"><?php echo __('No license key?'); ?>

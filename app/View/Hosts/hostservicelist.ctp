@@ -105,7 +105,7 @@
         </td>
         <td class="text-center">
             <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
-                <a href="/services/grapherSwitch/{{ service.Service.id }}" class="txt-color-blueDark">
+                <a href="/services/browser/{{ service.Service.id }}" class="txt-color-blueDark">
                     <i class="fa fa-lg fa-area-chart"
                        ng-mouseenter="mouseenter($event, service.Host, service)"
                        ng-mouseleave="mouseleave()"
@@ -213,9 +213,4 @@
         </td>
     </tr>
 </table>
-<div id="serviceGraphContainer" class="popup-graph-container">
-    <div class="text-center padding-top-20 padding-bottom-20" style="width:100%;" ng-show="isLoadingGraph">
-        <i class="fa fa-refresh fa-4x fa-spin"></i>
-    </div>
-    <div id="serviceGraphFlot"></div>
-</div>
+

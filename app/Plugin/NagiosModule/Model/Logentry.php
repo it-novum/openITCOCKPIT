@@ -23,16 +23,14 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class Logentry extends NagiosModuleAppModel
-{
+class Logentry extends NagiosModuleAppModel {
     //public $useDbConfig = 'nagios';
     public $useTable = 'logentries';
     public $primaryKey = 'logentry_id';
     public $tablePrefix = 'nagios_';
 
 
-    public function types()
-    {
+    public function types() {
         $LogentryTypes = new \itnovum\openITCOCKPIT\Core\ValueObjects\LogentryTypes();
         return $LogentryTypes->getTypes();
     }
@@ -41,10 +39,10 @@ class Logentry extends NagiosModuleAppModel
      * @param int $bitValue
      * @return array
      */
-    public function getTypesByBitValue($bitValue){
+    public function getTypesByBitValue($bitValue) {
         $types = [];
-        foreach($this->types() as $type => $typeName){
-            if($type & $bitValue){
+        foreach ($this->types() as $type => $typeName) {
+            if ($type & $bitValue) {
                 $types[] = $type;
             }
         }

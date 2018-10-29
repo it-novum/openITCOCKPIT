@@ -23,8 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class Location extends AppModel
-{
+class Location extends AppModel {
     var $belongsTo = [
         'Container' => [
             'className'  => 'Container',
@@ -46,8 +45,7 @@ class Location extends AppModel
         ],
     ];
 
-    public function __delete($location, $userId)
-    {
+    public function __delete($location, $userId) {
         if (is_numeric($location)) {
             $locationId = $location;
             $location = $this->findById($location);
@@ -90,8 +88,7 @@ class Location extends AppModel
         return false;
     }
 
-    public function __allowDelete($hostIds)
-    {
+    public function __allowDelete($hostIds) {
         //check if the hosts are used somwhere
         if (CakePlugin::loaded('EventcorrelationModule')) {
             $notInUse = true;

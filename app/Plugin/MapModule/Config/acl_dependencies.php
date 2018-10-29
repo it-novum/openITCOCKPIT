@@ -29,19 +29,31 @@ $config = [
         'always_allowed' => [
             'BackgroundUploads' => [
                 'upload',
-                'createThumbnailsFromBackgrounds',
+                'icon',
+                'deleteIcon',
+                'iconset'
             ],
             'Mapeditors'        => [
-                'hostUuidFromServiceUuid',
-                'fullscreen',
-                'popoverHostStatus',
-                'popoverServicegroupStatus',
-                'popoverHostgroupStatus',
-                'popoverServiceStatus',
-                'popoverMapStatus',
-                'servicesForWizard',
-                'hostFromSerice',
-                'hostFromService',
+                'mapitem',
+                'getDependendMaps',
+                'mapline',
+                'mapicon',
+                'maptext',
+                'perfdatatext',
+                'mapsummaryitem',
+                'graph',
+                'tacho',
+                'cylinder',
+                'trafficlight',
+                'temperature',
+                'mapsummary',
+                'backgroundImages',
+                'getIconsets',
+                'loadMapsByString',
+                'getPerformanceDataMetrics',
+                'mapWidget',
+                'viewDirective',
+                'mapDetails'
             ],
             'Maps'              => [
                 'loadUsersForTenant',
@@ -50,20 +62,39 @@ $config = [
             'Mapviews'          => [
                 'refreshNagiosObjects',
             ],
-            'Rotations' => [
+            'Rotations'         => [
                 'loadMaps',
                 'loadContainers'
             ]
         ],
         'dependencies'   => [
+            'Mapeditors' => [
+                'edit' => [
+                    'saveItem',
+                    'deleteItem',
+                    'saveLine',
+                    'deleteLine',
+                    'saveGadget',
+                    'deleteGadget',
+                    'saveText',
+                    'deleteText',
+                    'saveIcon',
+                    'deleteIcon',
+                    'saveBackground',
+                    'getIcons',
+                    'saveSummaryitem',
+                    'deleteSummaryitem',
+
+                ]
+            ]
         ],
-        'roles_rights' => [
+        'roles_rights'   => [
             'Administrator' => ['*'],
-            'Viewer' => [
+            'Viewer'        => [
                 'Mapeditors' => ['index', 'view'],
-                'Maps' => ['index'],
-                'Mapviews' => ['index'],
-                'Rotations' => ['index'],
+                'Maps'       => ['index'],
+                'Mapviews'   => ['index'],
+                'Rotations'  => ['index'],
             ]
         ]
     ],

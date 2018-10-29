@@ -7,7 +7,7 @@ class CrateModuleAppModel extends AppModel {
     /**
      * @return mixed
      */
-    public function getPartitions(){
+    public function getPartitions() {
         return $this->getDataSource()->getPartitions($this);
     }
 
@@ -15,7 +15,7 @@ class CrateModuleAppModel extends AppModel {
      * @param int $key
      * @return mixed
      */
-    public function dropPartition($key){
+    public function dropPartition($key) {
         return $this->getDataSource()->dropPartition($this, $key);
     }
 

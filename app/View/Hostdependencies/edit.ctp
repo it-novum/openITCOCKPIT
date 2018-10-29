@@ -190,7 +190,7 @@
                     <div style="border-bottom:1px solid lightGray;">
                         <?php echo $this->Form->fancyCheckbox($dependency_option, [
                             'caption' => ucfirst(preg_replace('/(execution_|fail_on_)/', '', $dependency_option)),
-                            'icon'    => '<i class="fa '.$icon.'"></i> ',
+                            'icon'    => '<i class="fa ' . $icon . '"></i> ',
                             'checked' => (boolean)$this->request->data['Hostdependency'][$dependency_option],
                         ]); ?>
                         <div class="clearfix"></div>
@@ -217,7 +217,7 @@
                     <div style="border-bottom:1px solid lightGray;">
                         <?php echo $this->Form->fancyCheckbox($dependency_option, [
                             'caption' => ucfirst(preg_replace('/(notification_|fail_on_)/', '', $dependency_option)),
-                            'icon'    => '<i class="fa '.$icon.'"></i> ',
+                            'icon'    => '<i class="fa ' . $icon . '"></i> ',
                             'checked' => (boolean)$this->request->data['Hostdependency'][$dependency_option],
                         ]); ?>
                         <div class="clearfix"></div>

@@ -24,6 +24,7 @@ angular.module('openITCOCKPIT')
                     output: ''
                 },
                 Service: {
+                    id: QueryStringService.getIds('filter[Service.id][]', []),
                     name: QueryStringService.getValue('filter[Service.servicename]', ''),
                     keywords: ''
                 },
@@ -56,6 +57,8 @@ angular.module('openITCOCKPIT')
             var result = [];
             var lastendhost = "";
             var tmp_hostservicegroup = null;
+            var graphStart = 0;
+            var graphEnd = 0;
 
             serverResponse.forEach(function(record){
                 services.push(record.Service);
@@ -157,6 +160,7 @@ angular.module('openITCOCKPIT')
                 'direction': SortService.getDirection(),
                 'filter[Host.id]': $scope.filter.Host.id,
                 'filter[Host.name]': $scope.filter.Host.name,
+                'filter[Service.id][]': $scope.filter.Service.id,
                 'filter[Service.servicename]': $scope.filter.Service.name,
                 'filter[Servicestatus.output]': $scope.filter.Servicestatus.output,
                 'filter[Servicestatus.current_state][]': $rootScope.currentStateForApi($scope.filter.Servicestatus.current_state),
@@ -286,6 +290,7 @@ angular.module('openITCOCKPIT')
                 'direction': SortService.getDirection(),
                 'filter[Host.id]': $scope.filter.Host.id,
                 'filter[Host.name]': $scope.filter.Host.name,
+                'filter[Service.id]': $scope.filter.Service.id,
                 'filter[Service.servicename]': $scope.filter.Service.name,
                 'filter[Servicestatus.output]': $scope.filter.Servicestatus.output,
                 'filter[Servicestatus.current_state][]': $rootScope.currentStateForApi($scope.filter.Servicestatus.current_state),
@@ -345,13 +350,31 @@ angular.module('openITCOCKPIT')
             $('#serviceGraphFlot').html('');
         };
 
+        $scope.problemsOnly = function(){
+            defaultFilter();
+            $scope.filter.Servicestatus.not_in_downtime = true;
+            $scope.filter.Servicestatus.not_acknowledged = true;
+            $scope.filter.Servicestatus.current_state = {
+                ok: false,
+                warning: true,
+                critical: true,
+                unknown: true
+            };
+            SortService.setSort('Servicestatus.last_state_change');
+            SortService.setDirection('desc');
+        };
+
         var loadGraph = function(host, service){
+            graphEnd = Math.floor(Date.now() / 1000);
+            graphStart = graphEnd - (3600 * 4);
+
             $http.get('/Graphgenerators/getPerfdataByUuid.json', {
                 params: {
                     angular: true,
                     host_uuid: host.Host.uuid,
                     service_uuid: service.Service.uuid,
-                    hours: 4,
+                    start: graphStart,
+                    end: graphEnd,
                     jsTimestamp: 1
                 }
             }).then(function(result){
@@ -370,69 +393,27 @@ angular.module('openITCOCKPIT')
                 //graph_data.push(performance_data[key].data);
             }
             var color_amount = performance_data.length < 3 ? 3 : performance_data.length;
-            var color_generator = new ColorGenerator();
-            var options = {
-                width: '100%',
-                height: '500px',
-                colors: color_generator.generate(color_amount, 90, 120),
-                legend: false,
-                grid: {
-                    hoverable: true,
-                    markings: [],
-                    borderWidth: {
-                        top: 1,
-                        right: 1,
-                        bottom: 1,
-                        left: 1
-                    },
-                    borderColor: {
-                        top: '#CCCCCC'
+
+            var GraphDefaultsObj = new GraphDefaults();
+
+            var colors = GraphDefaultsObj.getColors(color_amount);
+
+            var options = GraphDefaultsObj.getDefaultOptions();
+            options.height = '500px';
+            options.colors = colors.border;
+            options.xaxis.tickFormatter = function(val, axis){
+                var fooJS = new Date(val + ($scope.timezone.server_timezone_offset * 1000));
+                var fixTime = function(value){
+                    if(value < 10){
+                        return '0' + value;
                     }
-                },
-                tooltip: false,
-                xaxis: {
-                    mode: 'time',
-                    timeformat: '%d.%m.%y %H:%M:%S', // This is handled by a plugin, if it is used -> jquery.flot.time.js
-                    tickFormatter: function(val, axis){
-                        var fooJS = new Date(val + ($scope.timezone.server_timezone_offset * 1000));
-                        var fixTime = function(value){
-                            if(value < 10){
-                                return '0' + value;
-                            }
-                            return value;
-                        };
-                        return fixTime(fooJS.getUTCDate()) + '.' + fixTime(fooJS.getUTCMonth() + 1) + '.' + fooJS.getUTCFullYear() + ' ' + fixTime(fooJS.getUTCHours()) + ':' + fixTime(fooJS.getUTCMinutes());
-                    }
-                },
-                lines: {
-                    show: true,
-                    lineWidth: 1,
-                    fill: true,
-                    steps: 0,
-                    fillColor: {
-                        colors: [{
-                            opacity: 0.5
-                        },
-                            {
-                                opacity: 0.3
-                            }]
-                    }
-                },
-                points: {
-                    show: false,
-                    radius: 1
-                },
-                series: {
-                    show: true,
-                    labelFormatter: function(label, series){
-                        // series is the series object for the label
-                        return '<a href="#' + label + '">' + label + '</a>';
-                    }
-                },
-                selection: {
-                    mode: "x"
-                }
+                    return value;
+                };
+                return fixTime(fooJS.getUTCDate()) + '.' + fixTime(fooJS.getUTCMonth() + 1) + '.' + fooJS.getUTCFullYear() + ' ' + fixTime(fooJS.getUTCHours()) + ':' + fixTime(fooJS.getUTCMinutes());
             };
+            options.xaxis.min = graphStart * 1000;
+            options.xaxis.max = graphEnd * 1000;
+
 
             self.plot = $.plot('#serviceGraphFlot', graph_data, options);
         };

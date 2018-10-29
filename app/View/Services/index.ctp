@@ -79,6 +79,11 @@
                             <i class="fa fa-filter"></i>
                             <?php echo __('Filter'); ?>
                         </button>
+
+                        <button type="button" class="btn btn-xs btn-danger" ng-click="problemsOnly()">
+                            <i class="fa fa-exclamation-triangle"></i>
+                            <?php echo __('Unhandled only'); ?>
+                        </button>
                     </div>
                     <div class="jarviswidget-ctrls" role="menu">
                     </div>
@@ -400,7 +405,8 @@
 
                                     <td class="text-center">
                                         <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
-                                            <a href="/services/grapherSwitch/{{ service.Service.id }}" class="txt-color-blueDark">
+                                            <a href="/services/browser/{{ service.Service.id }}"
+                                               class="txt-color-blueDark">
                                                 <i class="fa fa-lg fa-area-chart"
                                                    ng-mouseenter="mouseenter($event, host, service)"
                                                    ng-mouseleave="mouseleave()"

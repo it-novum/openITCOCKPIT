@@ -23,8 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class Hostescalation extends AppModel
-{
+class Hostescalation extends AppModel {
 
     //var $recursive = 2;
 
@@ -151,16 +150,14 @@ class Hostescalation extends AppModel
     /*
     Custom validation rule for contact and/or contactgroup fields
     */
-    public function atLeastOne($data)
-    {
+    public function atLeastOne($data) {
         return !empty($this->data[$this->name]['Contact']) || !empty($this->data[$this->name]['Contactgroup']);
     }
 
     /*
     Custom validation rule first_notification
     */
-    public function firstNotificationBeforeLastNotification($field = [], $compare_field = null)
-    {
+    public function firstNotificationBeforeLastNotification($field = [], $compare_field = null) {
         foreach ($field as $key => $value) {
             $v1 = $value;
             $v2 = $this->data[$this->name][$compare_field];
@@ -181,8 +178,7 @@ class Hostescalation extends AppModel
     * @param Array Host-Ids exluded
     * @return filtered array in format ['host_id' => 1..n, 'exluded' => 0/1]
     */
-    public function parseHostMembershipData($hosts = [], $hosts_exluded = [])
-    {
+    public function parseHostMembershipData($hosts = [], $hosts_exluded = []) {
         $host_memberships_for_hostescalation = [];
         foreach ($hosts as $host_id) {
             $host_memberships_for_hostescalation[] = ['host_id' => $host_id, 'excluded' => '0'];
@@ -200,8 +196,7 @@ class Hostescalation extends AppModel
     * @param Array Hostgroup-Ids exluded
     * @return filtered array in format ['hostgroup_id' => 1..n, 'exluded' => 0/1]
     */
-    public function parseHostgroupMembershipData($hostgroups = [], $hostgroups_exluded = [])
-    {
+    public function parseHostgroupMembershipData($hostgroups = [], $hostgroups_exluded = []) {
         $hostgroup_memberships_for_hostescalation = [];
         foreach ($hostgroups as $hostgroup_id) {
             $hostgroup_memberships_for_hostescalation[] = ['hostgroup_id' => $hostgroup_id, 'excluded' => '0'];

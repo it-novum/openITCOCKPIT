@@ -23,20 +23,17 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class CronjobsController extends AppController
-{
+class CronjobsController extends AppController {
     public $layout = 'Admin.default';
 
-    public function index()
-    {
+    public function index() {
         //$cronjobs = $this->Cronjob->find('all');
         $cronjobs = $this->Paginator->paginate();
         $this->set(compact('cronjobs'));
         $this->set('_serialize', ['cronjobs']);
     }
 
-    public function add()
-    {
+    public function add() {
         if ($this->request->is('post') || $this->request->is('put')) {
             if ($this->Cronjob->save($this->request->data)) {
                 $this->setFlash(__('Cronjob added successfully'));
@@ -51,8 +48,7 @@ class CronjobsController extends AppController
         $this->set(compact('coreTasks', 'plugins'));
     }
 
-    public function edit($id)
-    {
+    public function edit($id) {
         if (!$this->Cronjob->exists($id)) {
             throw new NotFoundException(__('Invalid cronjob'));
         }
@@ -73,8 +69,7 @@ class CronjobsController extends AppController
         $this->set(compact('pluginTasks', 'plugins', 'cronjob'));
     }
 
-    public function delete($id = null)
-    {
+    public function delete($id = null) {
         if (!$this->request->is('post')) {
             throw new MethodNotAllowedException();
         }
@@ -95,8 +90,7 @@ class CronjobsController extends AppController
         $this->redirect(['action' => 'index']);
     }
 
-    public function loadTasksByPlugin($pluginName)
-    {
+    public function loadTasksByPlugin($pluginName) {
         if (!$this->request->is('ajax')) {
             throw new MethodNotAllowedException();
         }

@@ -31,7 +31,7 @@ class Servicecheck extends CrateModuleAppModel {
     public $tablePrefix = 'statusengine_';
 
 
-    public function __construct($id = false, $table = null, $ds = null, $useDynamicAssociations = true){
+    public function __construct($id = false, $table = null, $ds = null, $useDynamicAssociations = true) {
         parent::__construct($id, $table, $ds, $useDynamicAssociations);
         $this->virtualFields['state_type'] = 'Servicecheck.is_hardstate';
     }
@@ -41,22 +41,22 @@ class Servicecheck extends CrateModuleAppModel {
      * @param array $paginatorConditions
      * @return array
      */
-    public function getQuery(ServicechecksConditions $ServicecheckConditions, $paginatorConditions = []){
+    public function getQuery(ServicechecksConditions $ServicecheckConditions, $paginatorConditions = []) {
         $query = [
             'conditions' => [
                 'service_description' => $ServicecheckConditions->getServiceUuid(),
-                'start_time >' => $ServicecheckConditions->getFrom(),
-                'start_time <' => $ServicecheckConditions->getTo()
+                'start_time >'        => $ServicecheckConditions->getFrom(),
+                'start_time <'        => $ServicecheckConditions->getTo()
             ],
-            'order' => $ServicecheckConditions->getOrder(),
-            'limit' => $ServicecheckConditions->getLimit(),
+            'order'      => $ServicecheckConditions->getOrder(),
+            'limit'      => $ServicecheckConditions->getLimit(),
         ];
 
-        if(!empty($ServicecheckConditions->getStates())){
+        if (!empty($ServicecheckConditions->getStates())) {
             $query['conditions']['state'] = $ServicecheckConditions->getStates();
         }
 
-        if(!empty($ServicecheckConditions->getStateTypes())){
+        if (!empty($ServicecheckConditions->getStateTypes())) {
             $query['conditions']['is_hardstate'] = (bool)$ServicecheckConditions->getStateTypes()[0];
         }
 

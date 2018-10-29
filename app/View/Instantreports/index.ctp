@@ -53,7 +53,7 @@
                                 __('New'),
                                 '/' . $this->params['controller'] . '/add', [
                                     'class' => 'btn btn-xs btn-success',
-                                    'icon' => 'fa fa-plus'
+                                    'icon'  => 'fa fa-plus'
                                 ]
                             );
                             echo " "; //Fix HTML
@@ -212,8 +212,8 @@
                                 <tr ng-repeat="instantreport in instantreports">
                                     <td class="text-center" class="width-15">
                                         <?php if ($this->Acl->hasPermission('delete')): ?>
-                                        <input type="checkbox"
-                                               ng-model="massChange[instantreport.Instantreport.id]">
+                                            <input type="checkbox"
+                                                   ng-model="massChange[instantreport.Instantreport.id]">
                                         <?php endif; ?>
                                     </td>
                                     <td>

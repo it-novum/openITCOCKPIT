@@ -25,8 +25,7 @@
 namespace itnovum\openITCOCKPIT\ApiShell;
 
 
-class ApiExtensionLoader
-{
+class ApiExtensionLoader {
 
     /**
      * @var array
@@ -53,8 +52,7 @@ class ApiExtensionLoader
      */
     private $pluginName;
 
-    public function __construct($cake, OptionParser $optionParser)
-    {
+    public function __construct($cake, OptionParser $optionParser) {
         $this->modelName = $optionParser->getModel();
         $this->pluginName = $optionParser->getPlugin();
         $this->Cake = $cake;
@@ -66,17 +64,15 @@ class ApiExtensionLoader
      *
      * @return bool
      */
-    public function isAvailable()
-    {
+    public function isAvailable() {
         if (strlen($this->pluginName) > 0) {
-            return in_array($this->pluginName.'.'.$this->modelName, $this->availableModels);
+            return in_array($this->pluginName . '.' . $this->modelName, $this->availableModels);
         }
 
         return in_array($this->modelName, $this->availableModels);
     }
 
-    public function getApi()
-    {
+    public function getApi() {
         $namespace = sprintf('itnovum\openITCOCKPIT\ApiShell\%s\Api', $this->modelName);
         $this->Cake->loadModel($this->modelName);
 

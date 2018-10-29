@@ -459,7 +459,7 @@ class Externalcommand extends NagiosModuleAppModel {
             if (isset($hostAndServices['Service']) && !empty($hostAndServices['Service'])) {
                 $serviceUuids = Hash::extract($hostAndServices['Service'], '{n}.uuid');
 
-                if($this->DbBackend === null) {
+                if ($this->DbBackend === null) {
                     Configure::load('dbbackend');
                     $this->DbBackend = new DbBackend(Configure::read('dbbackend'));
                 }
@@ -503,7 +503,7 @@ class Externalcommand extends NagiosModuleAppModel {
 
         $options = Hash::merge($_options, $options);
 
-        if($this->DbBackend === null) {
+        if ($this->DbBackend === null) {
             Configure::load('dbbackend');
             $this->DbBackend = new DbBackend(Configure::read('dbbackend'));
         }
@@ -544,7 +544,7 @@ class Externalcommand extends NagiosModuleAppModel {
             if (isset($hostAndServices['Service']) && !empty($hostAndServices['Service'])) {
                 $serviceUuids = Hash::extract($hostAndServices['Service'], '{n}.uuid');
 
-                if($this->DbBackend === null) {
+                if ($this->DbBackend === null) {
                     Configure::load('dbbackend');
                     $this->DbBackend = new DbBackend(Configure::read('dbbackend'));
                 }
@@ -601,7 +601,7 @@ class Externalcommand extends NagiosModuleAppModel {
         if (isset($hostgroup['Host']) && !empty($hostgroup['Host'])) {
             $hostUuids = Hash::extract($hostgroup, 'Host.{n}.uuid');
 
-            if($this->DbBackend === null) {
+            if ($this->DbBackend === null) {
                 Configure::load('dbbackend');
                 $this->DbBackend = new DbBackend(Configure::read('dbbackend'));
             }
@@ -660,7 +660,7 @@ class Externalcommand extends NagiosModuleAppModel {
     public function setServiceAckWithQuery($options) {
         $this->Servicestatus = ClassRegistry::init(MONITORING_SERVICESTATUS);
 
-        if($this->DbBackend === null) {
+        if ($this->DbBackend === null) {
             Configure::load('dbbackend');
             $this->DbBackend = new DbBackend(Configure::read('dbbackend'));
         }
@@ -758,7 +758,7 @@ class Externalcommand extends NagiosModuleAppModel {
             'recursive'  => -1,
             'contain'    => [
                 'Host'         => [
-                    'fields' => [
+                    'fields'     => [
                         'Host.id',
                         'Host.uuid',
                     ],
@@ -798,7 +798,7 @@ class Externalcommand extends NagiosModuleAppModel {
                 'NOT'                  => [
                     'Host.id' => $hostIds
                 ],
-                'Host.disabled' => 0
+                'Host.disabled'        => 0
             ],
             'fields'     => [
                 'Host.uuid'

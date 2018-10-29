@@ -66,7 +66,7 @@
                                     <tr>
                                         <td>
                                             <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
-                                            <a href="/hosts/browser/<?php echo $host['Host']['id']; ?>"><?php echo h($host['Host']['name']); ?></a>
+                                                <a href="/hosts/browser/<?php echo $host['Host']['id']; ?>"><?php echo h($host['Host']['name']); ?></a>
                                             <?php else: ?>
                                                 <?php echo h($host['Host']['name']); ?>
                                             <?php endif; ?>
@@ -75,9 +75,9 @@
                                         <td class="width-160">
                                             <div class="btn-group">
                                                 <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
-                                                <a href="/hosts/edit/<?php echo $host['Host']['id']; ?>"
-                                                   class="btn btn-default">&nbsp;<i class="fa fa-cog"></i>&nbsp;
-                                                </a>
+                                                    <a href="/hosts/edit/<?php echo $host['Host']['id']; ?>"
+                                                       class="btn btn-default">&nbsp;<i class="fa fa-cog"></i>&nbsp;
+                                                    </a>
                                                 <?php else: ?>
                                                     <a href="javascript:void(0);"
                                                        class="btn btn-default">&nbsp;<i class="fa fa-cog"></i>&nbsp;
@@ -87,18 +87,18 @@
                                                             class="caret"></span></a>
                                                 <ul class="dropdown-menu">
                                                     <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
-                                                    <li>
-                                                        <a href="/hosts/edit/<?php echo $host['Host']['id']; ?>">
-                                                            <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
-                                                        </a>
-                                                    </li>
+                                                        <li>
+                                                            <a href="/hosts/edit/<?php echo $host['Host']['id']; ?>">
+                                                                <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
+                                                            </a>
+                                                        </li>
                                                     <?php endif; ?>
                                                     <?php if ($this->Acl->hasPermission('serviceList', 'services')): ?>
-                                                    <li>
-                                                        <a href="/services/serviceList/<?php echo $host['Host']['id']; ?>">
-                                                            <i class="fa fa-list"></i> <?php echo __('Service list'); ?>
-                                                        </a>
-                                                    </li>
+                                                        <li>
+                                                            <a href="/services/serviceList/<?php echo $host['Host']['id']; ?>">
+                                                                <i class="fa fa-list"></i> <?php echo __('Service list'); ?>
+                                                            </a>
+                                                        </li>
                                                     <?php endif; ?>
                                                     <?php echo $this->AdditionalLinks->renderAsListItems($additionalLinksList, $host['Host']['id']); ?>
                                                 </ul>

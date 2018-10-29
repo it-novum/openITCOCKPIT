@@ -24,7 +24,6 @@
 //	confirmation.
 
 
-
 //run test: oitc test app Core/Contact
 
 App::uses('Contact', 'Model');
@@ -47,7 +46,7 @@ class ContactTest extends CakeTestCase {
     public function testContactsByContainerId() {
         $this->Contact->unbindModel([
 
-            'belongsTo' => [
+            'belongsTo'           => [
                 'HostTimeperiod',
                 'ServiceTimeperiod'
             ],
@@ -57,62 +56,62 @@ class ContactTest extends CakeTestCase {
             ]
         ], true);
         $result = $this->Contact->contactsByContainerId([1]);
-        $expected = array(
-            array(
-                'Contact' => array(
-                    'id' => '1',
-                    'uuid' => 'f70418ac-d646-47b1-a037-7d5a66478421',
-                    'name' => 'ContactA',
-                    'description' => 'ContactA DESC',
-                    'email' => 'contactA@localhost',
-                    'phone' => '05647385634',
-                    'host_timeperiod_id' => '1',
-                    'service_timeperiod_id' => '1',
-                    'host_notifications_enabled' => '0',
+        $expected = [
+            [
+                'Contact'   => [
+                    'id'                            => '1',
+                    'uuid'                          => 'f70418ac-d646-47b1-a037-7d5a66478421',
+                    'name'                          => 'ContactA',
+                    'description'                   => 'ContactA DESC',
+                    'email'                         => 'contactA@localhost',
+                    'phone'                         => '05647385634',
+                    'host_timeperiod_id'            => '1',
+                    'service_timeperiod_id'         => '1',
+                    'host_notifications_enabled'    => '0',
                     'service_notifications_enabled' => '0',
-                    'notify_service_recovery' => '0',
-                    'notify_service_warning' => '0',
-                    'notify_service_unknown' => '0',
-                    'notify_service_critical' => '0',
-                    'notify_service_flapping' => '0',
-                    'notify_service_downtime' => '0',
-                    'notify_host_recovery' => '0',
-                    'notify_host_down' => '0',
-                    'notify_host_unreachable' => '0',
-                    'notify_host_flapping' => '0',
-                    'notify_host_downtime' => '0',
-                    'can_submit_commands' => '0'
-                ),
-                'Container' => array(
-                    0 => array(
-                        'id' => '1',
-                        'containertype_id' => '1',
-                        'name' => 'ROOT',
-                        'parent_id' => null,
-                        'lft' => '1',
-                        'rght' => '6',
-                        'ContactsToContainer' => array(
-                            'id' => '1',
-                            'contact_id' => '1',
+                    'notify_service_recovery'       => '0',
+                    'notify_service_warning'        => '0',
+                    'notify_service_unknown'        => '0',
+                    'notify_service_critical'       => '0',
+                    'notify_service_flapping'       => '0',
+                    'notify_service_downtime'       => '0',
+                    'notify_host_recovery'          => '0',
+                    'notify_host_down'              => '0',
+                    'notify_host_unreachable'       => '0',
+                    'notify_host_flapping'          => '0',
+                    'notify_host_downtime'          => '0',
+                    'can_submit_commands'           => '0'
+                ],
+                'Container' => [
+                    0 => [
+                        'id'                  => '1',
+                        'containertype_id'    => '1',
+                        'name'                => 'ROOT',
+                        'parent_id'           => null,
+                        'lft'                 => '1',
+                        'rght'                => '6',
+                        'ContactsToContainer' => [
+                            'id'           => '1',
+                            'contact_id'   => '1',
                             'container_id' => '1'
-                        )
-                    ),
-                    1 => array(
-                        'id' => '3',
-                        'containertype_id' => '2',
-                        'name' => 'TenantB',
-                        'parent_id' => '1',
-                        'lft' => '4',
-                        'rght' => '5',
-                        'ContactsToContainer' => array(
-                            'id' => '3',
-                            'contact_id' => '1',
+                        ]
+                    ],
+                    1 => [
+                        'id'                  => '3',
+                        'containertype_id'    => '2',
+                        'name'                => 'TenantB',
+                        'parent_id'           => '1',
+                        'lft'                 => '4',
+                        'rght'                => '5',
+                        'ContactsToContainer' => [
+                            'id'           => '3',
+                            'contact_id'   => '1',
                             'container_id' => '3'
-                        )
-                    )
-                )
-            )
-        );
+                        ]
+                    ]
+                ]
+            ]
+        ];
         $this->assertEquals($expected, $result);
     }
 }

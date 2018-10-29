@@ -23,8 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class ServiceescalationServicegroupMembership extends AppModel
-{
+class ServiceescalationServicegroupMembership extends AppModel {
     public $useTable = 'servicegroups_to_serviceescalations';
     public $belongsTo = [
         'Serviceescalation' => [

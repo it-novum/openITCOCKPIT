@@ -24,36 +24,38 @@
 
 App.Controllers.CronjobsEditController = Frontend.AppController.extend({
 
-	components: ['Ajaxloader'],
+    components: ['Ajaxloader'],
 
 
-	_initialize: function() {
-		this.Ajaxloader.setup();
-		var self = this;
-		
-		/*
-		 * Bind change event on Plugin selectbox
-		 */
-		
-		$('#CronjobPlugin').change(function(){
-			var $this = $(this);
-			var $taskSelect = $('#CronjobTask');
-			self.Ajaxloader.show();
-			var _this = self;
-			$.ajax({
-				url: "/cronjobs/loadTasksByPlugin/"+encodeURIComponent($this.val())+'.json',
-				type: "GET",
-				cache: false,
-				error: function(){},
-				success: function(){},
-				complete: function(response){
-					$taskSelect.html('');
-					for(var key in response.responseJSON.tasks){
-						$taskSelect.append('<option value="'+response.responseJSON.tasks[key]+'">'+response.responseJSON.tasks[key]+'</option>');
-					}
-					_this.Ajaxloader.hide();
-				}
-			});
-		});
-	}
+    _initialize: function(){
+        this.Ajaxloader.setup();
+        var self = this;
+
+        /*
+         * Bind change event on Plugin selectbox
+         */
+
+        $('#CronjobPlugin').change(function(){
+            var $this = $(this);
+            var $taskSelect = $('#CronjobTask');
+            self.Ajaxloader.show();
+            var _this = self;
+            $.ajax({
+                url: "/cronjobs/loadTasksByPlugin/" + encodeURIComponent($this.val()) + '.json',
+                type: "GET",
+                cache: false,
+                error: function(){
+                },
+                success: function(){
+                },
+                complete: function(response){
+                    $taskSelect.html('');
+                    for(var key in response.responseJSON.tasks){
+                        $taskSelect.append('<option value="' + response.responseJSON.tasks[key] + '">' + response.responseJSON.tasks[key] + '</option>');
+                    }
+                    _this.Ajaxloader.hide();
+                }
+            });
+        });
+    }
 });

@@ -40,7 +40,7 @@ class Servicestatus extends CrateModuleAppModel {
      * @return array|bool
      */
     private function byUuidMagic($uuid = null, ServicestatusFields $ServicestatusFields, $ServicestatusConditions = null) {
-        if($uuid === null || empty($uuid)){
+        if ($uuid === null || empty($uuid)) {
             return [];
         }
 
@@ -143,7 +143,7 @@ class Servicestatus extends CrateModuleAppModel {
         //todo CrateDB bug, check if LEFT join can be refactored with INNER join
         //https://github.com/crate/crate/issues/5747
         $query = [
-            'fields' => [
+            'fields'           => [
                 'Service.id',
                 'Service.uuid',
                 'Service.name',
@@ -162,6 +162,7 @@ class Servicestatus extends CrateModuleAppModel {
                 'Servicestatus.problem_has_been_acknowledged',
                 'Servicestatus.acknowledgement_type',
                 'Servicestatus.is_flapping',
+                'Servicestatus.perfdata',
 
 
                 'Host.name',
@@ -175,32 +176,32 @@ class Servicestatus extends CrateModuleAppModel {
                 'Hoststatus.last_hard_state_change'
 
             ],
-            'joins' => [
+            'joins'            => [
                 [
-                    'table' => 'openitcockpit_hosts',
-                    'type' => 'INNER',
-                    'alias' => 'Host',
+                    'table'      => 'openitcockpit_hosts',
+                    'type'       => 'INNER',
+                    'alias'      => 'Host',
                     'conditions' => 'Host.uuid = Servicestatus.hostname',
                 ],
                 [
-                    'table' => 'openitcockpit_services',
-                    'type' => 'INNER',
-                    'alias' => 'Service',
+                    'table'      => 'openitcockpit_services',
+                    'type'       => 'INNER',
+                    'alias'      => 'Service',
                     'conditions' => 'Service.uuid = Servicestatus.service_description',
                 ],
                 [
-                    'table' => 'statusengine_hoststatus',
-                    'type' => 'INNER',
-                    'alias' => 'Hoststatus',
+                    'table'      => 'statusengine_hoststatus',
+                    'type'       => 'INNER',
+                    'alias'      => 'Hoststatus',
                     'conditions' => 'Hoststatus.hostname = Host.uuid',
                 ]
             ],
-            'conditions' => $conditions,
+            'conditions'       => $conditions,
             'array_difference' => [
                 'Host.container_ids' =>
                     $ServiceConditions->getContainerIds(),
             ],
-            'order' => $ServiceConditions->getOrder()
+            'order'            => $ServiceConditions->getOrder()
         ];
 
         if ($ServiceConditions->getHostId()) {
@@ -215,13 +216,13 @@ class Servicestatus extends CrateModuleAppModel {
      * @param bool $includeOkState
      * @return array
      */
-    public function getServicestatusCount($MY_RIGHTS, $includeOkState = false){
+    public function getServicestatusCount($MY_RIGHTS, $includeOkState = false) {
         $servicestatusCount = [
             '1' => 0,
             '2' => 0,
             '3' => 0,
         ];
-        if($includeOkState === true){
+        if ($includeOkState === true) {
             $servicestatusCount['0'] = 0;
         }
 
@@ -229,30 +230,30 @@ class Servicestatus extends CrateModuleAppModel {
             'count' => 'COUNT(DISTINCT Servicestatus.service_description)'
         ];
         $query = [
-            'fields' => [
+            'fields'           => [
                 'Servicestatus.current_state',
             ],
-            'joins' => [
+            'joins'            => [
                 [
-                    'table' => 'openitcockpit_hosts',
-                    'type' => 'INNER',
-                    'alias' => 'Host',
+                    'table'      => 'openitcockpit_hosts',
+                    'type'       => 'INNER',
+                    'alias'      => 'Host',
                     'conditions' => 'Host.uuid = Servicestatus.hostname',
                 ]
             ],
-            'conditions' => [
-                'Service.disabled'                  => false
+            'conditions'       => [
+                'Service.disabled' => false
             ],
             'array_difference' => [
                 'Host.container_ids' =>
                     $MY_RIGHTS
             ],
-            'group'      => [
+            'group'            => [
                 'Servicestatus.current_state',
             ],
         ];
 
-        if($includeOkState === false){
+        if ($includeOkState === false) {
             $query['conditions']['Servicestatus.current_state >'] = 0;
         }
 
@@ -264,4 +265,59 @@ class Servicestatus extends CrateModuleAppModel {
         return $servicestatusCount;
     }
 
+    /**
+     * @param $MY_RIGHTS
+     * @param $conditions
+     * @return array
+     */
+    public function getServicestatusCountBySelectedStatus($MY_RIGHTS, $conditions) {
+        $this->virtualFields = [
+            'count' => 'COUNT(DISTINCT Servicestatus.service_description)'
+        ];
+        $query = [
+            'fields'     => [
+                'Servicestatus.current_state',
+            ],
+            'joins'      => [
+                [
+                    'table'      => 'openitcockpit_services',
+                    'type'       => 'INNER',
+                    'alias'      => 'Service',
+                    'conditions' => 'Service.uuid = Servicestatus.service_description',
+                ],
+                [
+                    'table'      => 'openitcockpit_hosts',
+                    'type'       => 'INNER',
+                    'alias'      => 'Host',
+                    'conditions' => 'Host.uuid = Servicestatus.hostname',
+                ]
+            ],
+            'conditions' => [
+                'Service.disabled' => false
+            ],
+
+            'array_difference' => [
+                'Host.container_ids' =>
+                    $MY_RIGHTS,
+            ]
+        ];
+        $query['conditions']['Servicestatus.current_state'] = $conditions['Servicestatus']['current_state'];
+        if ($conditions['Servicestatus']['current_state'] > 0) {
+            if ($conditions['Servicestatus']['problem_has_been_acknowledged'] === false) {
+                $query['conditions']['Servicestatus.problem_has_been_acknowledged'] = false;
+            }
+            if ($conditions['Servicestatus']['scheduled_downtime_depth'] === false) {
+                $query['conditions']['Servicestatus.scheduled_downtime_depth'] = 0;
+            }
+        }
+        if (!empty($conditions['Host']['name'])) {
+            $query['conditions']['Host.name LIKE'] = sprintf('%%%s%%', $conditions['Host']['name']);
+        }
+
+        if (!empty($conditions['Service']['name'])) {
+            $query['conditions']['Service.name LIKE'] = sprintf('%%%s%%', $conditions['Service']['name']);
+        }
+        return $query;
+    }
 }
+

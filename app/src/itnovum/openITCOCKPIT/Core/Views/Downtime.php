@@ -271,26 +271,26 @@ class Downtime {
     /**
      * @return bool
      */
-    public function allowEdit(){
+    public function allowEdit() {
         return $this->allowEdit;
     }
 
     /**
      * @return array
      */
-    public function toArray(){
+    public function toArray() {
         $arr = get_object_vars($this);
-        if(isset($arr['UserTime'])){
+        if (isset($arr['UserTime'])) {
             unset($arr['UserTime']);
         }
 
-        if($this->UserTime !== null) {
+        if ($this->UserTime !== null) {
             $arr['scheduledStartTime'] = $this->UserTime->format($this->getScheduledStartTime());
             $arr['scheduledEndTime'] = $this->UserTime->format($this->getScheduledEndTime());
             $arr['actualEndTime'] = $this->UserTime->format($this->getActualEndTime());
             $arr['entryTime'] = $this->UserTime->format($this->getEntryTime());
             $arr['durationHuman'] = $this->UserTime->secondsInHumanShort($this->getDuration());
-        }else{
+        } else {
             $arr['scheduledStartTime'] = $this->getScheduledStartTime();
             $arr['scheduledEndTime'] = $this->getScheduledEndTime();
             $arr['actualEndTime'] = $this->getActualEndTime();

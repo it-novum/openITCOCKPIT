@@ -28,18 +28,15 @@ use itnovum\openITCOCKPIT\Core\RepositoryChecker;
 /**
  * @property Systemsetting Systemsetting
  */
-class AdministratorsController extends AppController
-{
+class AdministratorsController extends AppController {
     public $components = ['GearmanClient'];
     public $uses = ['Proxy'];
     public $layout = 'Admin.default';
 
-    function index()
-    {
+    function index() {
     }
 
-    function debug()
-    {
+    function debug() {
         $this->loadModel('Systemsetting');
         $this->loadModel('Cronjob');
         $this->loadModel('Register');
@@ -79,9 +76,9 @@ class AdministratorsController extends AppController
 
         $load = null;
 
-        if (file_exists(TMP.'loadavg')) {
+        if (file_exists(TMP . 'loadavg')) {
             $this->Frontend->setJson('renderGraph', true);
-            $load = file(TMP.'loadavg');
+            $load = file(TMP . 'loadavg');
             if (sizeof($load) >= 3) {
                 $graphData = [
                     1  => [],
@@ -165,11 +162,11 @@ class AdministratorsController extends AppController
         */
 
         $data = explode("\n", file_get_contents("/proc/meminfo"));
-        $meminfo = array();
+        $meminfo = [];
         foreach ($data as $line) {
             $temp = explode(":", $line);
             if (isset($temp[1])) {
-                $meminfo[$temp[0]] = intval(trim(intval(substr($temp[1],0, strpos($temp[1], "kB"))))/1000);
+                $meminfo[$temp[0]] = intval(trim(intval(substr($temp[1], 0, strpos($temp[1], "kB")))) / 1000);
             }
         }
 
@@ -259,7 +256,7 @@ class AdministratorsController extends AppController
         //Get Monitoring engine + version
         $output = null;
         Configure::load('nagios');
-        exec(Configure::read('nagios.basepath').Configure::read('nagios.bin').Configure::read('nagios.nagios_bin').' --version | head -n 2', $output);
+        exec(Configure::read('nagios.basepath') . Configure::read('nagios.bin') . Configure::read('nagios.nagios_bin') . ' --version | head -n 2', $output);
         $monitoring_engine = $output[1];
 
         App::uses('CakeEmail', 'Network/Email');
@@ -286,8 +283,7 @@ class AdministratorsController extends AppController
         ]));
     }
 
-    public function testMail()
-    {
+    public function testMail() {
         try {
             $this->loadModel('Systemsetting');
             $recipientAddress = $this->Auth->user('email');
@@ -312,23 +308,20 @@ class AdministratorsController extends AppController
         }
     }
 
-    public function querylog(){
+    public function querylog() {
         $this->layout = 'angularjs';
     }
 }
 
 App::uses('CakeEmail', 'Network/Email');
 
-class ItcMail extends CakeEmail
-{
+class ItcMail extends CakeEmail {
 
-    public function __construct($config = null)
-    {
+    public function __construct($config = null) {
         parent::__construct($config);
     }
 
-    public function getConfig($removePassword = true)
-    {
+    public function getConfig($removePassword = true) {
         if ($removePassword === true) {
             $config = $this->_config;
             unset($config['password']);

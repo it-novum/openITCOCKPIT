@@ -27,25 +27,22 @@ App::uses('Folder', 'Utility');
 App::uses('File', 'Utility');
 App::uses('UUID', 'Lib');
 
-class UploadComponent extends Component
-{
+class UploadComponent extends Component {
 
     public $path = null;
     public $userWidth = 250;
     public $userHeight = 150;
 
-    public function setPath($path)
-    {
+    public function setPath($path) {
         $this->path = $path; // Example /usr/share/openitcockpit/webroot/images/
     }
 
-    public function uploadUserimage($fileFromUpload)
-    {
+    public function uploadUserimage($fileFromUpload) {
         if (is_dir($this->path)) {
             $fileExtension = pathinfo($fileFromUpload['name'], PATHINFO_EXTENSION);
             $tmpName = $newFilename = UUID::v4();
-            if (move_uploaded_file($fileFromUpload['tmp_name'], $this->path.$tmpName)) {
-                $newFilename = UUID::v4().'.png';
+            if (move_uploaded_file($fileFromUpload['tmp_name'], $this->path . $tmpName)) {
+                $newFilename = UUID::v4() . '.png';
                 if ($this->createUserImage($tmpName, $newFilename)) {
                     return $newFilename;
                 }
@@ -53,15 +50,14 @@ class UploadComponent extends Component
                 return false;
             }
         } else {
-            throw new InternalErrorException('Folder '.$this->path.' does not exists');
+            throw new InternalErrorException('Folder ' . $this->path . ' does not exists');
         }
     }
 
-    public function createUserImage($tmpFilename, $newFilename)
-    {
-        if (file_exists($this->path.$tmpFilename)) {
-            $file = $this->path.$tmpFilename;
-            $newFile = $this->path.$newFilename;
+    public function createUserImage($tmpFilename, $newFilename) {
+        if (file_exists($this->path . $tmpFilename)) {
+            $file = $this->path . $tmpFilename;
+            $newFile = $this->path . $newFilename;
 
             $imgsize = getimagesize($file);
             $width = $imgsize[0];
@@ -93,7 +89,7 @@ class UploadComponent extends Component
 
             if ($width > $height && $newWidth < $newHeight) {
                 $newHeight = $height / ($width / $newWidth);
-            } elseif ($width < $height && $newHeight < $width) {
+            } else if ($width < $height && $newHeight < $width) {
                 $newWidth = $width / ($height / $newHeight);
             } else {
                 $newHeight = $height;

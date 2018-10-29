@@ -1,7 +1,6 @@
 <?php
 
-class Status
-{
+class Status {
     const ACTIVE = 1;
     const INACTIVE = 2;
     const DELETED = 3;
@@ -20,8 +19,7 @@ class Status
         self::CANCELLED          => 'cancelled',
     ];
 
-    public static function getMap($states = null)
-    {
+    public static function getMap($states = null) {
         if (!is_array($states)) {
             $states = func_get_args();
         }
@@ -34,8 +32,7 @@ class Status
         return $group;
     }
 
-    public static function getDescription($status)
-    {
+    public static function getDescription($status) {
         if (isset(self::$description[$status])) {
             return self::$description[$status];
         }

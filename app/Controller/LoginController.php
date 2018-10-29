@@ -28,54 +28,53 @@ use itnovum\openITCOCKPIT\Core\Views\Logo;
 App::uses('Validation', 'Utility');
 
 
-class LoginController extends AppController
-{
+class LoginController extends AppController {
 
     public $uses = ['User', 'SystemContent', 'Systemsetting', 'Container', 'Oauth2client'];
     public $components = ['Ldap'];
 
     public $layout = 'login';
 
-    public function beforeFilter()
-    {
+    public function beforeFilter() {
         $this->Auth->allow();
     }
 
-    public function index()
-    {
+    public function index() {
         $this->redirect('/login/login');
     }
 
-    public function login($redirectBack = 0)
-    {
+    public function login($redirectBack = 0) {
         $systemsettings = $this->Systemsetting->findAsArraySection('FRONTEND');
 
         $disableLoginAnimation = false;
-        if(isset($systemsettings['FRONTEND']['FRONTEND.DISABLE_LOGIN_ANIMATION'])){
+        if (isset($systemsettings['FRONTEND']['FRONTEND.DISABLE_LOGIN_ANIMATION'])) {
             $disableLoginAnimation = (bool)$systemsettings['FRONTEND']['FRONTEND.DISABLE_LOGIN_ANIMATION'];
         }
         $this->set('disableLoginAnimation', $disableLoginAnimation);
 
-        if($systemsettings['FRONTEND']['FRONTEND.AUTH_METHOD'] === 'sso' && !$this->isApiRequest()){
+        if ($systemsettings['FRONTEND']['FRONTEND.AUTH_METHOD'] === 'sso' && !$this->isApiRequest()) {
             $result = $this->Oauth2client->connectToSSO();
             $errorPostMess = $this->Oauth2client->getPostErrorMessage($systemsettings['FRONTEND']['FRONTEND.SSO.LOG_OFF_LINK']);
-            if(isset($result['redirect'])){
+            if (isset($result['redirect'])) {
                 $this->redirect($result['redirect']);
             }
-            if(($result['success'])) {
+            if (($result['success'])) {
                 $user = $this->User->find('first', ['conditions' => ['email' => $result['email'], 'status' => 1]]);
-                if(empty($user)){
-                    echo $systemsettings['FRONTEND']['FRONTEND.SSO.NO_EMAIL_MESSAGE'].$errorPostMess;exit;
+                if (empty($user)) {
+                    echo $systemsettings['FRONTEND']['FRONTEND.SSO.NO_EMAIL_MESSAGE'] . $errorPostMess;
+                    exit;
                 }
                 if (!$this->Auth->login($user)) {
-                    echo 'Cannot log in user: '.$result['email'].$errorPostMess;exit;
+                    echo 'Cannot log in user: ' . $result['email'] . $errorPostMess;
+                    exit;
                 }
 
                 $this->Session->delete('Message.auth');
                 $this->setFlash(__('login.automatically_logged_in'));
                 $this->redirect($this->Auth->loginRedirect);
-            }else{
-                echo $result['message'].$errorPostMess;exit;
+            } else {
+                echo $result['message'] . $errorPostMess;
+                exit;
             }
         }
 
@@ -124,7 +123,7 @@ class LoginController extends AppController
                 if (empty($SSLVar)) continue;
                 if (isset($SSLVar[0]) && $SSLVar[0] === 'CN' && isset($SSLVar[1])) {
                     $CN = trim($SSLVar[1]);
-                } elseif (isset($SSLVar[0]) && $SSLVar[0] === 'OU' && isset($SSLVar[1]) && $SSLVar[1] !== 'People') {
+                } else if (isset($SSLVar[0]) && $SSLVar[0] === 'OU' && isset($SSLVar[1]) && $SSLVar[1] !== 'People') {
                     $OU = strtolower(trim($SSLVar[1]));
                 }
             }
@@ -137,7 +136,7 @@ class LoginController extends AppController
                     ['firstname' => $firstName, 'lastname' => $lastName, 'status' => 1],
                 ];
                 if ($OU !== '') {
-                    $conditions[0]['email LIKE'] = '%@'.$OU.'.%';
+                    $conditions[0]['User.email LIKE'] = '%@' . $OU . '.%';
                 }
             }
 
@@ -146,7 +145,7 @@ class LoginController extends AppController
                 if (empty($user)) {
                     $viewerEmail = isset($systemsettings['FRONTEND']['FRONTEND.CERT.DEFAULT_USER_EMAIL']) ? $systemsettings['FRONTEND']['FRONTEND.CERT.DEFAULT_USER_EMAIL'] : '';
                     if (!empty($viewerEmail)) {
-                        $user = $this->User->find('first', ['conditions' => ['email' => $viewerEmail, 'status' => 1]]);
+                        $user = $this->User->find('first', ['conditions' => ['User.email' => $viewerEmail, 'status' => 1]]);
                     }
                 }
                 if (!empty($user) && $this->Auth->login($user)) {
@@ -159,6 +158,17 @@ class LoginController extends AppController
         }
 
         if ($this->request->is('post') || $this->request->is('put')) {
+            //ITC-1901 workaround
+            if (isset($this->request->data['LoginUser']['username'])) {
+                $this->request->data['LoginUser']['email'] = $this->request->data['LoginUser']['username'];
+            }
+
+            if (isset($this->request->data['LoginUser']['auth_method']) && $this->request->data['LoginUser']['auth_method'] === 'ldap') {
+                $this->request->data['LoginUser']['samaccountname'] = $this->request->data['LoginUser']['email'];
+                unset($this->request->data['email']);
+            }
+
+
             $this->Auth->logout();
             $this->request->data = ['User' => $this->data['LoginUser']];
 
@@ -211,7 +221,7 @@ class LoginController extends AppController
 
 
                 if ($systemsettings['FRONTEND']['FRONTEND.AUTH_METHOD'] == 'twofactor') {
-                    $this->redirect('/login/onetimetoken/'.$this->Auth->user('id').'/'.$this->data['User']['remember_me']);
+                    $this->redirect('/login/onetimetoken/' . $this->Auth->user('id') . '/' . $this->data['User']['remember_me']);
 
                     return;
                 } else {
@@ -237,9 +247,9 @@ class LoginController extends AppController
                 } else {
                     if ($systemsettings['FRONTEND']['FRONTEND.AUTH_METHOD'] == 'ldap') {
                         $sessionMessage = $this->Session->read();
-                        if(isset($sessionMessage['Message']['flash']['message'])){
+                        if (isset($sessionMessage['Message']['flash']['message'])) {
                             $this->setFlash($sessionMessage['Message']['flash']['message'], false);
-                        }else{
+                        } else {
                             $this->setFlash(__('Bad username or password'), false);
                         }
                     } else {
@@ -254,8 +264,7 @@ class LoginController extends AppController
         $this->set('_serialize', ['message']);
     }
 
-    public function onetimetoken($id = null, $rememberMe = false)
-    {
+    public function onetimetoken($id = null, $rememberMe = false) {
         if (!$this->User->exists($id)) {
             throw new NotFoundException(__('User not found'));
         }
@@ -339,13 +348,12 @@ class LoginController extends AppController
      * Logs the user out of the system
      * @return void
      */
-    public function logout()
-    {
+    public function logout() {
         $systemsettings = $this->Systemsetting->findAsArraySection('FRONTEND');
         $this->Auth->logout();
-        if($systemsettings['FRONTEND']['FRONTEND.AUTH_METHOD'] === 'sso' && !empty($systemsettings['FRONTEND']['FRONTEND.SSO.LOG_OFF_LINK'])){
+        if ($systemsettings['FRONTEND']['FRONTEND.AUTH_METHOD'] === 'sso' && !empty($systemsettings['FRONTEND']['FRONTEND.SSO.LOG_OFF_LINK'])) {
             $this->redirect($systemsettings['FRONTEND']['FRONTEND.SSO.LOG_OFF_LINK']);
-        }else{
+        } else {
             $this->setFlash(__('login.logout_successfull'));
         }
         $this->redirect([
@@ -359,14 +367,12 @@ class LoginController extends AppController
      * Dialog for auth-required actions
      * @return void
      */
-    public function auth_required()
-    {
+    public function auth_required() {
         $redirectUrl = isset($this->params['url']['redirectUrl']) ? $this->params['url']['redirectUrl'] : null;
         $this->set(compact('redirectUrl'));
     }
 
-    public function lock()
-    {
+    public function lock() {
 
         if (!$this->Auth->loggedIn()) {
             $this->redirect($this->Auth->loginRedirect);

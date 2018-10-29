@@ -25,12 +25,11 @@
 
 /**
  * Class NagiosExportShell
- * @property Systemsetting           $Systemsetting
+ * @property Systemsetting $Systemsetting
  * @property DefaultNagiosConfigTask $DefaultNagiosConfig
- * @property NagiosExportTask        $NagiosExport
+ * @property NagiosExportTask $NagiosExport
  */
-class NagiosExportShell extends AppShell
-{
+class NagiosExportShell extends AppShell {
     /**
      * @var array
      */
@@ -44,8 +43,7 @@ class NagiosExportShell extends AppShell
     /**
      * NagiosExportShell constructor.
      */
-    public function __construct()
-    {
+    public function __construct() {
         parent::__construct();
         //Loading components
         App::uses('Component', 'Controller');
@@ -53,14 +51,13 @@ class NagiosExportShell extends AppShell
         $this->Constants = new ConstantsComponent();
     }
 
-    public function main()
-    {
+    public function main() {
         Configure::load('nagios');
         $this->conf = Configure::read('nagios.export');
         $this->_systemsettings = $this->Systemsetting->findAsArray();
 
-        if (!is_dir($this->conf['path'].$this->conf['config'])) {
-            mkdir($this->conf['path'].$this->conf['config']);
+        if (!is_dir($this->conf['path'] . $this->conf['config'])) {
+            mkdir($this->conf['path'] . $this->conf['config']);
         }
 
         $this->parser = $this->getOptionParser();
@@ -178,8 +175,7 @@ class NagiosExportShell extends AppShell
     /**
      * @return ConsoleOptionParser
      */
-    public function getOptionParser()
-    {
+    public function getOptionParser() {
         $parser = parent::getOptionParser();
         $parser->addOptions([
             'recursive'           => ['short' => 'h', 'help' => 'Searching for files recursive', 'boolean' => true],

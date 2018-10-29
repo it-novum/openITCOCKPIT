@@ -220,7 +220,7 @@ class GrafanaApiConfiguration {
         );
     }
 
-    public function getUiUrl(){
+    public function getUiUrl() {
         return sprintf(
             '%s%s',
             $this->isUseHttps() ? 'https://' : 'http://',
@@ -244,6 +244,27 @@ class GrafanaApiConfiguration {
             $this->getUiUrl(),
             $this->hostUuid,
             $this->dashboardStyle
+        );
+    }
+
+    public function getIframeUrlForUserDashboard($url, $timerange = 'now-3h', $autorefresh = '0') {
+        //&kiosk=tv require Grafana 5.3+ to work
+        //https://github.com/grafana/grafana/issues/13493
+        //Since Grafana 5.3, users can escape the &kiosk mode by pressing esc key.
+        //Also &kiosk=tv is not very helpful. So we implemented an datepicker for now.
+
+        $autoRefreshUrlStr = '';
+        if ($autorefresh !== 0 && $autorefresh !== '0') {
+            $autoRefreshUrlStr = sprintf('&refresh=%s', $autorefresh);
+        }
+
+        return sprintf(
+            '%s%s?theme=%s%s&from=%s&to=now&kiosk',
+            $this->getUiUrl(),
+            $url,
+            $this->dashboardStyle,
+            $autoRefreshUrlStr,
+            $timerange
         );
     }
 }

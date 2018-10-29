@@ -23,8 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class Statusmap extends AppModel
-{
+class Statusmap extends AppModel {
 
     public $useTable = false;
 

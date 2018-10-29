@@ -77,23 +77,23 @@ class DowntimeSerializer {
                     $this->UserTime->format($this->records[$i]->getActualEndTime())
                 );
                 $records[] = [
-                    'start' => $this->UserTime->customFormat('%Y-%m-%d %H:%M:%S', $this->records[$i]->getScheduledStartTime()),
-                    'end' => $this->UserTime->customFormat('%Y-%m-%d %H:%M:%S', $this->records[$i]->getActualEndTime()),
-                    'type' => 'range',
+                    'start'     => $this->UserTime->customFormat('%Y-%m-%d %H:%M:%S', $this->records[$i]->getScheduledStartTime()),
+                    'end'       => $this->UserTime->customFormat('%Y-%m-%d %H:%M:%S', $this->records[$i]->getActualEndTime()),
+                    'type'      => 'range',
                     'className' => 'bg-downtime-cancelled',
-                    'content' => $title,
-                    'title' => $title,
-                    'group' => $this->groupId
+                    'content'   => $title,
+                    'title'     => $title,
+                    'group'     => $this->groupId
                 ];
             } else {
                 $records[] = [
-                    'start' => $this->UserTime->customFormat('%Y-%m-%d %H:%M:%S', $this->records[$i]->getScheduledStartTime()),
-                    'end' => $this->UserTime->customFormat('%Y-%m-%d %H:%M:%S', $this->records[$i]->getScheduledEndTime()),
-                    'type' => 'range',
+                    'start'     => $this->UserTime->customFormat('%Y-%m-%d %H:%M:%S', $this->records[$i]->getScheduledStartTime()),
+                    'end'       => $this->UserTime->customFormat('%Y-%m-%d %H:%M:%S', $this->records[$i]->getScheduledEndTime()),
+                    'type'      => 'range',
                     'className' => 'bg-downtime',
-                    'content' => $title,
-                    'title' => $title,
-                    'group' => $this->groupId
+                    'content'   => $title,
+                    'title'     => $title,
+                    'group'     => $this->groupId
                 ];
             }
 

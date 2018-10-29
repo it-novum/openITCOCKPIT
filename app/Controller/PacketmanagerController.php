@@ -23,21 +23,19 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-use itnovum\openITCOCKPIT\Core\PackagemanagerRequestBuilder;
 use itnovum\openITCOCKPIT\Core\Http;
-use itnovum\openITCOCKPIT\Core\ValueObjects\License;
+use itnovum\openITCOCKPIT\Core\PackagemanagerRequestBuilder;
 use itnovum\openITCOCKPIT\Core\RepositoryChecker;
+use itnovum\openITCOCKPIT\Core\ValueObjects\License;
 
-class PacketmanagerController extends AppController
-{
+class PacketmanagerController extends AppController {
     public $layout = 'Admin.default';
     public $components = ['Session'];
     public $uses = ['Proxy', 'Register'];
 
     //public $controllers = array('Proxy');
 
-    public function index()
-    {
+    public function index() {
         $this->Frontend->setJson('username', $this->Auth->user('full_name'));
 
         Configure::load('version');
@@ -45,7 +43,7 @@ class PacketmanagerController extends AppController
         $openITCVersion = Configure::read('version');
         $this->set('openITCVersion', $openITCVersion);
 
-        $installedModules = glob(APP.'Plugin/*', GLOB_ONLYDIR);
+        $installedModules = glob(APP . 'Plugin/*', GLOB_ONLYDIR);
         $installedModules = array_map(function ($file) {
             return basename($file);
         }, $installedModules);
@@ -59,7 +57,7 @@ class PacketmanagerController extends AppController
             $this->Proxy->getSettings()
         );
 
-         $this->set('RepositoryChecker', new RepositoryChecker());
+        $this->set('RepositoryChecker', new RepositoryChecker());
 
         $http->sendRequest();
         if (!$http->error) {
@@ -69,15 +67,14 @@ class PacketmanagerController extends AppController
                 $this->set('data', $data);
             }
         } else {
-            $this->setFlash('Error: '.$http->getLastError()['error'], false);
+            $this->setFlash('Error: ' . $http->getLastError()['error'], false);
         }
     }
 
     /**
      * Fake repository for the packages. The purpose of this action is development and/or testing.
      */
-    public function getPackets()
-    {
+    public function getPackets() {
         $this->layout = 'json';
         $this->response->type('json');
         $fixedContent =

@@ -23,6 +23,10 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+/**
+ * Class DocumentationsController
+ * @property Documentation $Documentation
+ */
 class DocumentationsController extends AppController {
     public $layout = 'Admin.default';
     public $components = ['Bbcode'];
@@ -37,15 +41,28 @@ class DocumentationsController extends AppController {
     public function view($uuid = null, $type = 'host') {
         if ($this->request->is('post') || $this->request->is('put')) {
             if ($this->Documentation->save($this->request->data)) {
+                if ($this->request->ext == 'json') {
+                    $this->serializeId(); // REST API ID serialization
+                    return;
+                }
                 $this->setFlash(__('Page successfully saved'));
                 $this->redirect(Hash::merge(['action' => 'view'], $this->request->params['pass']));
             } else {
+                if ($this->request->ext == 'json') {
+                    $this->serializeErrorMessage();
+                    return;
+                }
                 $this->setFlash(__('Could not save data'), false);
             }
         }
 
         $this->set('back_url', $this->referer());
-        $post = $this->Documentation->findByUuid($uuid);
+        $post = $this->Documentation->find('first', [
+            'recursive'  => -1,
+            'conditions' => [
+                'Documentation.uuid' => $uuid
+            ]
+        ]);
 
         if ($type === 'host') {
             $host = $this->Host->find('first', [
@@ -128,6 +145,7 @@ class DocumentationsController extends AppController {
         $docuExists = !empty($post);
 
         $this->set(compact(['post', 'uuid', 'docuExists', 'type']));
+        $this->set('_serialize', ['post']);
     }
 
     public function index() {
@@ -316,18 +334,11 @@ class DocumentationsController extends AppController {
                         'file'        => 'locations',
                         'icon'        => 'fa fa-location-arrow',
                     ],
-                    'graphgenerator'        => [
-                        'name'        => __('Graphgenerator'),
-                        'description' => 'You can generate graphs with data from diffrent services.',
-                        'file'        => 'graphgenerator',
+                    'grafana'               => [
+                        'name'        => __('Grafana'),
+                        'description' => 'You can generate graphs with data from different services.',
+                        'file'        => 'grafana',
                         'icon'        => 'fa fa-area-chart',
-                    ],
-                    'graph_collections'     => [
-                        'name'        => __('Graph Collections'),
-                        'description' => 'A graph collection will display you all graphs at once ' .
-                            'by overlaying them in a smart way.',
-                        'file'        => 'graph_collections',
-                        'icon'        => 'fa fa-list-alt',
                     ],
                     'downtimes'             => [
                         'name'        => __('Downtimes'),
@@ -473,10 +484,10 @@ class DocumentationsController extends AppController {
                         'name' => __('check_by_ssh [Linux]'),
                         'file' => 'check_by_ssh',
                     ],
-                    'check_wmi'          => [
+                    /*'check_wmi'          => [
                         'name' => __('Windows Management Instrumentation - WMI [Windows]'),
                         'file' => 'check_wmi',
-                    ],
+                    ],*/
                     'check_mysql_health' => [
                         'name' => __('check_mysql_health'),
                         'file' => 'check_mysql_health',
@@ -686,19 +697,19 @@ class DocumentationsController extends AppController {
                 'name'      => ('Additional Help'),
                 'directory' => 'additional_help',
                 'children'  => [
-                    'markdown'            => [
+                    'markdown'                   => [
                         'name'        => __('Markdown'),
                         'description' => 'A cheatsheet to help writing markdown formatted texts. ',
                         'file'        => 'markdown',
                         'icon'        => 'fa fa-pencil',
                     ],
-                    'mysql_performance'   => [
+                    'mysql_performance'          => [
                         'name'        => __('MySQL performance'),
                         'description' => 'A few tips to optimize your MySQL performance.',
                         'file'        => 'mysql_performance',
                         'icon'        => 'fa fa-database',
                     ],
-                    'manual_installation' => [
+                    'manual_installation'        => [
                         'name'        => __('Manual installation'),
                         'description' => 'Describes how to install openITCOCKPIT on a different distribution',
                         'file'        => 'manual_installation',
@@ -709,193 +720,6 @@ class DocumentationsController extends AppController {
                         'description' => 'How to setup openITCOCKPIT browser push notifications',
                         'file'        => 'browser_push_notifications',
                         'icon'        => 'fa fa-bell-o',
-                    ],
-                ],
-            ],
-
-            'api' => [
-                'name'      => ('REST API (read-only)'),
-                'directory' => 'api',
-                'children'  => [
-                    'methods'               => [
-                        'name'        => __('HTTP Request Methods'),
-                        'description' => 'Which HTTP request method will call which action',
-                        'file'        => 'methods',
-                        'icon'        => 'fa fa-bolt',
-                    ],
-                    'login'                 => [
-                        'name'        => __('Login'),
-                        'description' => 'How to login to the REST API',
-                        'file'        => 'login',
-                        'icon'        => 'fa fa-sign-in',
-                    ],
-                    'automaps'              => [
-                        'name'        => __('Automaps'),
-                        'description' => 'How to query automap objects the REST API',
-                        'file'        => 'automaps',
-                        'icon'        => 'fa fa-magic',
-                    ],
-                    'macros'                => [
-                        'name'        => __('User defined macros'),
-                        'description' => 'How to query user defined macros using the REST API',
-                        'file'        => 'macros',
-                        'icon'        => 'fa fa-usd',
-                    ],
-                    'commands'              => [
-                        'name'        => __('Commands'),
-                        'description' => 'How to query command objects using the REST API',
-                        'file'        => 'commands',
-                        'icon'        => 'fa fa-terminal',
-                    ],
-                    'timeperiods'           => [
-                        'name'        => __('Timeperiods'),
-                        'description' => 'How to query timeperiod objects using the REST API',
-                        'file'        => 'timeperiods',
-                        'icon'        => 'fa fa-clock-o',
-                    ],
-                    'hosttemplates'         => [
-                        'name'        => __('Hosttemplates'),
-                        'description' => 'How to query host template objects using the REST API',
-                        'file'        => 'hosttemplates',
-                        'icon'        => 'fa fa-pencil-square-o',
-                    ],
-                    'hosts'                 => [
-                        'name'        => __('Hosts'),
-                        'description' => 'How to query host objects using the REST API',
-                        'file'        => 'hosts',
-                        'icon'        => 'fa fa-desktop',
-                    ],
-                    'servicetemplates'      => [
-                        'name'        => __('Servicetemplates'),
-                        'description' => 'How to query service template objects using the REST API',
-                        'file'        => 'servicetemplates',
-                        'icon'        => 'fa fa-pencil-square-o',
-                    ],
-                    'services'              => [
-                        'name'        => __('Services'),
-                        'description' => 'How to query service objects using the REST API',
-                        'file'        => 'services',
-                        'icon'        => 'fa fa-cogs',
-                    ],
-                    'servicetemplategroups' => [
-                        'name'        => __('Servicetemplategroups'),
-                        'description' => 'How to query service template group objects using the REST API',
-                        'file'        => 'servicetemplategroups',
-                        'icon'        => 'fa fa-pencil-square-o',
-                    ],
-                    'hostgroups'            => [
-                        'name'        => __('Hostgroups'),
-                        'description' => 'How to query host group objects using the REST API',
-                        'file'        => 'hostgroups',
-                        'icon'        => 'fa fa-sitemap',
-                    ],
-                    'servicegroups'         => [
-                        'name'        => __('Servicegroups'),
-                        'description' => 'How to query service group objects using the REST API',
-                        'file'        => 'servicegroups',
-                        'icon'        => 'fa fa-cogs',
-                    ],
-                    'contacts'              => [
-                        'name'        => __('Contacts'),
-                        'description' => 'How to query contact objects using the REST API',
-                        'file'        => 'contacts',
-                        'icon'        => 'fa fa-user',
-                    ],
-                    'contactgroups'         => [
-                        'name'        => __('Contactgroups'),
-                        'description' => 'How to query contact group objects using the REST API',
-                        'file'        => 'contactgroups',
-                        'icon'        => 'fa fa-users',
-                    ],
-                    'tenants'               => [
-                        'name'        => __('Tenants'),
-                        'description' => 'How to query tenant objects using the REST API',
-                        'file'        => 'tenants',
-                        'icon'        => 'fa fa-home',
-                    ],
-                    'containers'            => [
-                        'name'        => __('Container'),
-                        'description' => 'How to query container objects using the REST API',
-                        'file'        => 'containers',
-                        'icon'        => 'fa fa-cube',
-                    ],
-                    'locations'             => [
-                        'name'        => __('Locations'),
-                        'description' => 'How to query location objects using the REST API',
-                        'file'        => 'locations',
-                        'icon'        => 'fa fa-location-arrow',
-                    ],
-                    /*'devicegroups' => [
-                        'name' => __('Devicegroups'),
-                        'description' => 'How to query device group objects using the REST API',
-                        'file' => 'devicegroups',
-                        'icon' => 'fa fa-cloud',
-                    ],*/
-                    'hostescalations'       => [
-                        'name'        => __('Hostescalations'),
-                        'description' => 'How to query host escalations objects using the REST API',
-                        'file'        => 'hostescalations',
-                        'icon'        => 'fa fa-bomb',
-                    ],
-                    'serviceescalations'    => [
-                        'name'        => __('Serviceescalations'),
-                        'description' => 'How to query service ecalations objects using the REST API',
-                        'file'        => 'serviceescalations',
-                        'icon'        => 'fa fa-bomb',
-                    ],
-                    'hostdependencies'      => [
-                        'name'        => __('Hostdependencies'),
-                        'description' => 'How to query host dependency objects using the REST API',
-                        'file'        => 'hostdependencies',
-                        'icon'        => 'fa fa-sitemap',
-                    ],
-                    'servicedependencies'   => [
-                        'name'        => __('Servicedependencies'),
-                        'description' => 'How to query service dependency objects using the REST API',
-                        'file'        => 'servicedependencies',
-                        'icon'        => 'fa fa-sitemap',
-                    ],
-                    'changelog'             => [
-                        'name'        => __('Changelog'),
-                        'description' => 'How to query changelog objects using the REST API',
-                        'file'        => 'changelog',
-                        'icon'        => 'fa fa-code-fork',
-                    ],
-                    'proxy'                 => [
-                        'name'        => __('Proxy'),
-                        'description' => 'How to query proxy configuration using the REST API',
-                        'file'        => 'proxy',
-                        'icon'        => 'fa fa-bolt',
-                    ],
-                    'users'                 => [
-                        'name'        => __('Users'),
-                        'description' => 'How to query user objects the REST API',
-                        'file'        => 'users',
-                        'icon'        => 'fa fa-user',
-                    ],
-                    'usergroups'            => [
-                        'name'        => __('Usergroups'),
-                        'description' => 'How to query user group objects the REST API',
-                        'file'        => 'usergroups',
-                        'icon'        => 'fa fa-users',
-                    ],
-                    'systemsettings'        => [
-                        'name'        => __('Systemsettings'),
-                        'description' => 'How to query system settings the REST API',
-                        'file'        => 'systemsettings',
-                        'icon'        => 'fa fa-wrench',
-                    ],
-                    'cronjobs'              => [
-                        'name'        => __('Cronjobs'),
-                        'description' => 'How to query cronjob settings the REST API',
-                        'file'        => 'cronjobs',
-                        'icon'        => 'fa fa-clock-o',
-                    ],
-                    'satellites'            => [
-                        'name'        => __('Satellites'),
-                        'description' => 'How to query satellite objects the REST API',
-                        'file'        => 'satellites',
-                        'icon'        => 'fa fa-globe',
                     ],
                 ],
             ],

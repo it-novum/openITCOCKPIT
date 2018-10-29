@@ -57,10 +57,10 @@
                         <fieldset>
                             <legend><?php echo $servicetemplate['Servicetemplate']['name'] ?></legend>
                             <?php
-                            echo $this->Form->input('Servicetemplate.'.$key.'.template_name', ['value' => $servicetemplate['Servicetemplate']['template_name'], 'label' => __('Template name'), 'required' => true, 'help' => __('Servicetemplate name')]);
-                            echo $this->Form->input('Servicetemplate.'.$key.'.name', ['value' => $servicetemplate['Servicetemplate']['name'], 'label' => __('Service name'), 'required' => true, 'help' => __('This is the default name for the service if you create it out of the template')]);
-                            echo $this->Form->input('Servicetemplate.'.$key.'.description', ['value' => $servicetemplate['Servicetemplate']['description'], 'label' => __('Description'), 'required' => false]);
-                            echo $this->Form->input('Servicetemplate.'.$key.'.source', ['value' => $servicetemplate['Servicetemplate']['id'], 'type' => 'hidden']);
+                            echo $this->Form->input('Servicetemplate.' . $key . '.template_name', ['value' => $servicetemplate['Servicetemplate']['template_name'], 'label' => __('Template name'), 'required' => true, 'help' => __('Servicetemplate name')]);
+                            echo $this->Form->input('Servicetemplate.' . $key . '.name', ['value' => $servicetemplate['Servicetemplate']['name'], 'label' => __('Service name'), 'required' => true, 'help' => __('This is the default name for the service if you create it out of the template')]);
+                            echo $this->Form->input('Servicetemplate.' . $key . '.description', ['value' => $servicetemplate['Servicetemplate']['description'], 'label' => __('Description'), 'required' => false]);
+                            echo $this->Form->input('Servicetemplate.' . $key . '.source', ['value' => $servicetemplate['Servicetemplate']['id'], 'type' => 'hidden']);
                             ?>
                         </fieldset>
                     </div> <!-- close col -->

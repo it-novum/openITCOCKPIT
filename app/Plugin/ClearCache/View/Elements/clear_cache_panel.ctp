@@ -14,9 +14,9 @@
 <div class="debug-info clear-cache-links"><?php
     $linkUrl = ['plugin' => 'clear_cache', 'controller' => 'clear_cache', 'prefix' => false];
     if (empty($content['folders'])):
-        echo '<p class="info">'.__d('clear_cache', 'No configured/allowed folder names.').'</p>';
+        echo '<p class="info">' . __d('clear_cache', 'No configured/allowed folder names.') . '</p>';
     else:
-        echo __d('clear_cache', 'Files').': ';
+        echo __d('clear_cache', 'Files') . ': ';
         $linkUrl['action'] = 'files';
         $last = count($content['folders']) - 1;
         foreach ($content['folders'] as $key => $fileMask):
@@ -33,9 +33,9 @@
     ?></div>
 <div class="debug-info clear-cache-links"><?php
     if (empty($content['engines'])):
-        echo '<p class="info">'.__d('clear_cache', 'No configured/allowed cache engines.').'</p>';
+        echo '<p class="info">' . __d('clear_cache', 'No configured/allowed cache engines.') . '</p>';
     else:
-        echo __d('clear_cache', 'Engines').': ';
+        echo __d('clear_cache', 'Engines') . ': ';
         $linkUrl['action'] = 'engines';
         $last = count($content['engines']) - 1;
         foreach ($content['engines'] as $key => $engine):
@@ -52,9 +52,9 @@
     ?></div>
 <div class="debug-info clear-cache-links"><?php
     if (empty($content['groups'])):
-        echo '<p class="info">'.__d('clear_cache', 'No configured/allowed cache groups.').'</p>';
+        echo '<p class="info">' . __d('clear_cache', 'No configured/allowed cache groups.') . '</p>';
     else:
-        echo __d('clear_cache', 'Groups').': ';
+        echo __d('clear_cache', 'Groups') . ': ';
         $linkUrl['action'] = 'groups';
         $last = count($content['groups']) - 1;
         foreach ($content['groups'] as $key => $group):
@@ -77,21 +77,21 @@
 <script type="text/javascript">
     //<![CDATA[
     DEBUGKIT.module('clearCache');
-    DEBUGKIT.clearCache = function () {
+    DEBUGKIT.clearCache = function(){
         var $ = DEBUGKIT.$;
         return {
-            init: function () {
+            init: function(){
                 var cacheLinks = $('div.clear-cache-links').find('a');
                 var cacheOutput = $('#clear-cache-output');
-                var clearCache = function (event) {
+                var clearCache = function(event){
                     event.preventDefault();
                     var request = $.ajax({
                         url: this.href,
                         cache: false,
-                        success: function (response) {
+                        success: function(response){
                             cacheOutput.html(response);
                         },
-                        error: function () {
+                        error: function(){
                             cacheOutput.html('<p class="info"><?php echo __d('clear_cache', 'Could not fetch ClearCache output.'); ?></p>');
                         }
                     });

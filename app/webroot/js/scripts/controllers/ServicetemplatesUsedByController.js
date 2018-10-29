@@ -61,13 +61,13 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.load = function(){
-            $http.get("/servicetemplates/usedBy/"+$scope.id+".json", {
+            $http.get("/servicetemplates/usedBy/" + $scope.id + ".json", {
                 params: {
                     'angular': true
                 }
             }).then(function(result){
                 $scope.serverResult = result.data.all_services;
-                if($scope.serverResult) {
+                if($scope.serverResult){
                     $scope.services = forTemplate(result.data.all_services);
                     $scope.total = result.data.all_services.length;
                 }
@@ -96,12 +96,12 @@ angular.module('openITCOCKPIT')
             $scope.selectedElements = MassChangeService.getCount();
         };
 
-      /*  $scope.getObjectForDelete = function(host, service){
-            var object = {};
-            object[service.Service.id] = host.Host.hostname + '/' + service.Service.servicename;
-            return object;
-        };
-*/
+        /*  $scope.getObjectForDelete = function(host, service){
+              var object = {};
+              object[service.Service.id] = host.Host.hostname + '/' + service.Service.servicename;
+              return object;
+          };
+  */
         $scope.getObjectsForDelete = function(){
             var objects = {};
             var selectedObjects = MassChangeService.getSelected();

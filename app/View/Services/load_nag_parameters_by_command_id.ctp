@@ -34,7 +34,7 @@
 
 if (!empty($commandarguments)):
     foreach ($commandarguments as $commandargument):
-        echo $this->Form->input('Serviceeventcommandargumentvalue.'.$commandargument['Commandargument']['id'].'.value', [
+        echo $this->Form->input('Serviceeventcommandargumentvalue.' . $commandargument['Commandargument']['id'] . '.value', [
             'label'     => [
                 'class' => 'col col-md-2 control-label text-primary',
                 'text'  => $commandargument['Commandargument']['human_name'],
@@ -46,12 +46,12 @@ if (!empty($commandarguments)):
             'wrapInput' => 'col col-md-8',
             'value'     => (isset($commandargument['Servicetemplateeventcommandargumentvalue']['value']) && $commandargument['Servicetemplateeventcommandargumentvalue']['value'] !== null) ? $commandargument['Servicetemplateeventcommandargumentvalue']['value'] : '',
         ]);
-        echo $this->Form->input('Serviceeventcommandargumentvalue.'.$commandargument['Commandargument']['id'].'.commandargument_id', [
+        echo $this->Form->input('Serviceeventcommandargumentvalue.' . $commandargument['Commandargument']['id'] . '.commandargument_id', [
             'type'  => 'hidden',
             'value' => $commandargument['Commandargument']['id'],
         ]);
         if (isset($commandargument['Servicetemplateeventcommandargumentvalue']['id']) && $commandargument['Servicetemplateeventcommandargumentvalue']['id'] !== null):
-            echo $this->Form->input('Serviceeventcommandargumentvalue.'.$commandargument['Commandargument']['id'].'.id', [
+            echo $this->Form->input('Serviceeventcommandargumentvalue.' . $commandargument['Commandargument']['id'] . '.id', [
                 'type'  => 'hidden',
                 'value' => $commandargument['Servicetemplateeventcommandargumentvalue']['id'],
             ]);
@@ -64,5 +64,5 @@ else:
         <label class="col col-md-8 col-xs-12 text-primary"><i
                     class="fa fa-info-circle"></i> <?php echo __('no parameters for this command defined'); ?></label>
     </div>
-    <?php
+<?php
 endif;

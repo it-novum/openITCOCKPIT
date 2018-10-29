@@ -17,8 +17,7 @@ App::uses('ClearCache', 'ClearCache.Lib');
  * Provides cache information and possibility to clear it/them
  * @package       ClearCache.Lib.Panel
  */
-class ClearCachePanel extends DebugPanel
-{
+class ClearCachePanel extends DebugPanel {
 
     /**
      * Plugin name
@@ -57,13 +56,12 @@ class ClearCachePanel extends DebugPanel
      *
      * @return void
      */
-    public function __construct($settings)
-    {
+    public function __construct($settings) {
         parent::__construct();
 
         $this->title = __d('clear_cache', 'Clear Cache');
 
-        foreach (glob(CACHE.'*', GLOB_ONLYDIR) as $folder) {
+        foreach (glob(CACHE . '*', GLOB_ONLYDIR) as $folder) {
             $length = strrpos($folder, DS) + 1;
             $this->folders[] = substr($folder, $length);
         }
@@ -85,8 +83,7 @@ class ClearCachePanel extends DebugPanel
      * beforeRender callback function
      * @return array contents for panel
      */
-    public function beforeRender(Controller $controller)
-    {
+    public function beforeRender(Controller $controller) {
         return [
             'folders' => $this->folders,
             'engines' => $this->engines,

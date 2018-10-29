@@ -25,8 +25,7 @@
 namespace itnovum\openITCOCKPIT\ApiShell;
 
 
-class CoreApi
-{
+class CoreApi {
 
     /**
      * @var mixed
@@ -43,8 +42,7 @@ class CoreApi
      */
     protected $Database;
 
-    public function __construct($cake, $modelName)
-    {
+    public function __construct($cake, $modelName) {
         $this->Cake = $cake;
         $this->modelName = $modelName;
         $this->Database = $this->Cake->{$this->modelName};

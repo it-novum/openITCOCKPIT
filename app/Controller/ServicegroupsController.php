@@ -23,20 +23,15 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-use itnovum\openITCOCKPIT\Core\HostConditions;
-use itnovum\openITCOCKPIT\Core\HostControllerRequest;
 use itnovum\openITCOCKPIT\Core\HoststatusFields;
+use itnovum\openITCOCKPIT\Core\ServicegroupConditions;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
-use itnovum\openITCOCKPIT\Core\Views\PerfdataChecker;
-use itnovum\openITCOCKPIT\Filter\HostFilter;
-use itnovum\openITCOCKPIT\Filter\ServicegroupFilter;
-use itnovum\openITCOCKPIT\Monitoring\QueryHandler;
-use itnovum\openITCOCKPIT\Core\ServiceConditions;
-use itnovum\openITCOCKPIT\Core\ServiceControllerRequest;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Core\Views\ContainerPermissions;
+use itnovum\openITCOCKPIT\Core\Views\PerfdataChecker;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
-use itnovum\openITCOCKPIT\Filter\ServiceFilter;
+use itnovum\openITCOCKPIT\Filter\ServicegroupFilter;
+use itnovum\openITCOCKPIT\Monitoring\QueryHandler;
 
 
 /**
@@ -75,13 +70,13 @@ class ServicegroupsController extends AppController {
         }
         $ServicegroupFilter = new ServicegroupFilter($this->request);
         $query = [
-            'recursive' => -1,
-            'contain' => [
+            'recursive'  => -1,
+            'contain'    => [
                 'Container'
             ],
             'conditions' => $ServicegroupFilter->indexFilter(),
-            'order' => $ServicegroupFilter->getOrderForPaginator('Container.name', 'asc'),
-            'limit' => $this->Paginator->settings['limit']
+            'order'      => $ServicegroupFilter->getOrderForPaginator('Container.name', 'asc'),
+            'limit'      => $this->Paginator->settings['limit']
         ];
         if (!$this->hasRootPrivileges) {
             $query['conditions']['Container.parent_id'] = $this->MY_RIGHTS;
@@ -106,7 +101,7 @@ class ServicegroupsController extends AppController {
 
             $all_servicegroups[] = [
                 'Servicegroup' => $servicegroup['Servicegroup'],
-                'Container' => $servicegroup['Container']
+                'Container'    => $servicegroup['Container']
             ];
 
         }
@@ -144,17 +139,23 @@ class ServicegroupsController extends AppController {
         }
 
         $servicegroup = $this->Servicegroup->find('first', [
-            'recursive' => -1,
-            'contain' => [
-                'Service' => [
-                    'fields' => [
+            'recursive'  => -1,
+            'contain'    => [
+                'Service'         => [
+                    'fields'          => [
                         'Service.id',
                         'Service.name'
                     ],
-                    'Host' => [
-                        'fields' => [
+                    'conditions'      => [
+                        'Service.disabled' => 0
+                    ],
+                    'Host'            => [
+                        'fields'     => [
                             'Host.id',
                             'Host.name'
+                        ],
+                        'conditions' => [
+                            'Host.disabled' => 0
                         ]
                     ],
                     'Servicetemplate' => [
@@ -188,11 +189,11 @@ class ServicegroupsController extends AppController {
             if ($this->request->data('Servicegroup.Service')) {
                 foreach ($this->request->data['Servicegroup']['Service'] as $service_id) {
                     $service = $this->Service->find('first', [
-                        'contain' => [
+                        'contain'    => [
                             'Host.name',
                             'Servicetemplate.name'
                         ],
-                        'fields' => [
+                        'fields'     => [
                             'Service.id',
                             'Service.name',
                         ],
@@ -201,7 +202,7 @@ class ServicegroupsController extends AppController {
                         ],
                     ]);
                     $ext_data_for_changelog['Service'][] = [
-                        'id' => $service_id,
+                        'id'   => $service_id,
                         'name' => sprintf(
                             '%s | %s',
                             $service['Host']['name'],
@@ -213,8 +214,8 @@ class ServicegroupsController extends AppController {
             if ($this->request->data('Servicegroup.Servicetemplate')) {
                 foreach ($this->request->data['Servicegroup']['Servicetemplate'] as $servicetemplate_id) {
                     $servicetemplate = $this->Servicetemplate->find('first', [
-                        'recursive' => -1,
-                        'fields' => [
+                        'recursive'  => -1,
+                        'fields'     => [
                             'Servicetemplate.id',
                             'Servicetemplate.name',
                         ],
@@ -223,7 +224,7 @@ class ServicegroupsController extends AppController {
                         ],
                     ]);
                     $ext_data_for_changelog['Servicetemplate'][] = [
-                        'id' => $servicetemplate_id,
+                        'id'   => $servicetemplate_id,
                         'name' => $servicetemplate['Servicetemplate']['name'],
                     ];
                 }
@@ -277,11 +278,11 @@ class ServicegroupsController extends AppController {
             if ($this->request->data('Servicegroup.Service')) {
                 foreach ($this->request->data['Servicegroup']['Service'] as $service_id) {
                     $service = $this->Service->find('first', [
-                        'contain' => [
+                        'contain'    => [
                             'Host.name',
                             'Servicetemplate.name'
                         ],
-                        'fields' => [
+                        'fields'     => [
                             'Service.id',
                             'Service.name',
                         ],
@@ -290,7 +291,7 @@ class ServicegroupsController extends AppController {
                         ],
                     ]);
                     $ext_data_for_changelog['Service'][] = [
-                        'id' => $service_id,
+                        'id'   => $service_id,
                         'name' => sprintf(
                             '%s | %s',
                             $service['Host']['name'],
@@ -302,8 +303,8 @@ class ServicegroupsController extends AppController {
             if ($this->request->data('Servicegroup.Servicetemplate')) {
                 foreach ($this->request->data['Servicegroup']['Servicetemplate'] as $servicetemplate_id) {
                     $servicetemplate = $this->Servicetemplate->find('first', [
-                        'recursive' => -1,
-                        'fields' => [
+                        'recursive'  => -1,
+                        'fields'     => [
                             'Servicetemplate.id',
                             'Servicetemplate.name',
                         ],
@@ -312,7 +313,7 @@ class ServicegroupsController extends AppController {
                         ],
                     ]);
                     $ext_data_for_changelog['Servicetemplate'][] = [
-                        'id' => $servicetemplate_id,
+                        'id'   => $servicetemplate_id,
                         'name' => $servicetemplate['Servicetemplate']['name'],
                     ];
                 }
@@ -403,11 +404,11 @@ class ServicegroupsController extends AppController {
         $services = [];
 
         $query = [
-            'recursive' => -1,
-            'contain' => [
+            'recursive'  => -1,
+            'contain'    => [
                 'Container',
                 'Service' => [
-                    'fields' => [
+                    'fields'          => [
                         'Service.id',
                         'Service.uuid',
                         'Service.name',
@@ -420,7 +421,7 @@ class ServicegroupsController extends AppController {
                             'Servicetemplate.active_checks_enabled'
                         ]
                     ],
-                    'Host' => [
+                    'Host'            => [
                         'Container',
                         'fields' => [
                             'Host.id',
@@ -462,7 +463,8 @@ class ServicegroupsController extends AppController {
             ->problemHasBeenAcknowledged()
             ->acknowledgementType()
             ->scheduledDowntimeDepth()
-            ->notificationsEnabled();
+            ->notificationsEnabled()
+            ->perfdata();
         $hoststatus = $this->Hoststatus->byUuid($hosts, $HoststatusFields);
         $servicestatus = $this->Servicestatus->byUuid($services, $ServicestatusFields);
 
@@ -486,9 +488,9 @@ class ServicegroupsController extends AppController {
             $service['Servicestatus'] = (!empty($servicestatus[$service['uuid']])) ? $servicestatus[$service['uuid']]['Servicestatus'] : [];
 
             $Service = new \itnovum\openITCOCKPIT\Core\Views\Service([
-                'Service' => $service,
+                'Service'         => $service,
                 'Servicetemplate' => $service['Servicetemplate'],
-                'Host' => $service['Host']
+                'Host'            => $service['Host']
             ],
                 null,
                 $allowEdit
@@ -497,15 +499,15 @@ class ServicegroupsController extends AppController {
             $Host = new \itnovum\openITCOCKPIT\Core\Views\Host($service, $allowEdit);
             $Hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus($service['Hoststatus'], $UserTime);
             $Servicestatus = new \itnovum\openITCOCKPIT\Core\Servicestatus($service['Servicestatus'], $UserTime);
-            $PerfdataChecker = new PerfdataChecker($Host, $Service);
+            $PerfdataChecker = new PerfdataChecker($Host, $Service, $this->PerfdataBackend, $Servicestatus);
 
             $tmpRecord = [
-                'Service' => $Service->toArray(),
-                'Host' => $Host->toArray(),
+                'Service'       => $Service->toArray(),
+                'Host'          => $Host->toArray(),
                 'Servicestatus' => $Servicestatus->toArray(),
-                'Hoststatus' => $Hoststatus->toArray()
+                'Hoststatus'    => $Hoststatus->toArray()
             ];
-            $tmpRecord['Service']['has_graph'] = $PerfdataChecker->hasRrdFile();
+            $tmpRecord['Service']['has_graph'] = $PerfdataChecker->hasPerfdata();
             $all_services[] = $tmpRecord;
         }
 
@@ -523,7 +525,8 @@ class ServicegroupsController extends AppController {
             __('ok'),
             __('warning'),
             __('critical'),
-            __('unknown')], $statusOverview
+            __('unknown')
+        ], $statusOverview
         );
 
         # get a list of sort columns and their data to pass to array_multisort
@@ -539,9 +542,9 @@ class ServicegroupsController extends AppController {
         }
 
         $selectedServiceGroup = [
-            'Servicegroup' => $servicegroup['Servicegroup'],
-            'Container' => $servicegroup['Container'],
-            'Services' => $all_services,
+            'Servicegroup'  => $servicegroup['Servicegroup'],
+            'Container'     => $servicegroup['Container'],
+            'Services'      => $all_services,
             'StatusSummary' => $statusOverview
         ];
 
@@ -606,7 +609,7 @@ class ServicegroupsController extends AppController {
         foreach (func_get_args() as $servicegroupId) {
             if ($this->Servicegroup->exists($servicegroupId)) {
                 $servicegroup = $this->Servicegroup->find('first', [
-                    'contain' => [
+                    'contain'    => [
                         'Container',
                         'Service',
                     ],
@@ -682,16 +685,16 @@ class ServicegroupsController extends AppController {
 
         $ServicegroupFilter = new ServicegroupFilter($this->request);
         $query = [
-            'recursive' => -1,
-            'contain' => [
+            'recursive'  => -1,
+            'contain'    => [
                 'Container',
                 'Service' => [
-                    'fields' => [
+                    'fields'          => [
                         'Service.id',
                         'Service.name',
                         'Service.uuid'
                     ],
-                    'Host' => [
+                    'Host'            => [
                         'fields' => [
                             'Host.id',
                             'Host.name'
@@ -706,7 +709,7 @@ class ServicegroupsController extends AppController {
                 'Servicetemplate'
 
             ],
-            'order' => $ServicegroupFilter->getOrderForPaginator('Container.name', 'asc'),
+            'order'      => $ServicegroupFilter->getOrderForPaginator('Container.name', 'asc'),
             'conditions' => $ServicegroupFilter->indexFilter(),
         ];
 
@@ -747,22 +750,22 @@ class ServicegroupsController extends AppController {
             $binary_path = '/usr/local/bin/wkhtmltopdf';
         }
         $this->pdfConfig = [
-            'engine' => 'CakePdf.WkHtmlToPdf',
-            'margin' => [
+            'engine'             => 'CakePdf.WkHtmlToPdf',
+            'margin'             => [
                 'bottom' => 15,
-                'left' => 0,
-                'right' => 0,
-                'top' => 15,
+                'left'   => 0,
+                'right'  => 0,
+                'top'    => 15,
             ],
-            'encoding' => 'UTF-8',
-            'download' => true,
-            'binary' => $binary_path,
-            'orientation' => 'portrait',
-            'filename' => $filename,
+            'encoding'           => 'UTF-8',
+            'download'           => true,
+            'binary'             => $binary_path,
+            'orientation'        => 'portrait',
+            'filename'           => $filename,
             'no-pdf-compression' => '*',
-            'image-dpi' => '900',
-            'background' => true,
-            'no-background' => false,
+            'image-dpi'          => '900',
+            'background'         => true,
+            'no-background'      => false,
         ];
     }
 
@@ -782,13 +785,13 @@ class ServicegroupsController extends AppController {
         }
 
         $query = [
-            'recursive' => -1,
-            'contain' => [
+            'recursive'  => -1,
+            'contain'    => [
                 'Container'
             ],
-            'order' => $ServicegroupFilter->getOrderForPaginator('Container.name', 'asc'),
+            'order'      => $ServicegroupFilter->getOrderForPaginator('Container.name', 'asc'),
             'conditions' => $ServicegroupFilter->indexFilter(),
-            'limit' => $this->Paginator->settings['limit']
+            'limit'      => $this->Paginator->settings['limit']
         ];
 
         if ($this->isApiRequest() && !$this->isAngularJsRequest()) {
@@ -825,13 +828,13 @@ class ServicegroupsController extends AppController {
 
         $ServicegroupFilter = new ServicegroupFilter($this->request);
         $query = [
-            'recursive' => -1,
-            'contain' => [
+            'recursive'  => -1,
+            'contain'    => [
                 'Container',
             ],
             'conditions' => $ServicegroupFilter->indexFilter(),
-            'order' => $ServicegroupFilter->getOrderForPaginator('Container.name', 'asc'),
-            'limit' => $this->Paginator->settings['limit']
+            'order'      => $ServicegroupFilter->getOrderForPaginator('Container.name', 'asc'),
+            'limit'      => $this->Paginator->settings['limit']
         ];
         if (!$this->hasRootPrivileges) {
             $query['conditions']['Container.parent_id'] = $this->MY_RIGHTS;
@@ -848,5 +851,25 @@ class ServicegroupsController extends AppController {
 
         $this->set('servicegroups', $servicegroups);
         $this->set('_serialize', ['servicegroups', 'username']);
+    }
+
+    public function loadServicegroupsByString() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        $selected = $this->request->query('selected');
+
+        $ServicegroupFilter = new ServicegroupFilter($this->request);
+
+        $ServicegroupConditions = new ServicegroupConditions($ServicegroupFilter->indexFilter());
+        $ServicegroupConditions->setContainerIds($this->MY_RIGHTS);
+
+        $servicegroups = $this->Servicegroup->makeItJavaScriptAble(
+            $this->Servicegroup->getServicegroupsForAngular($ServicegroupConditions, $selected)
+        );
+
+        $this->set(compact(['servicegroups']));
+        $this->set('_serialize', ['servicegroups']);
     }
 }

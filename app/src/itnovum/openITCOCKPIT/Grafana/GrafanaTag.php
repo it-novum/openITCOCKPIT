@@ -32,35 +32,35 @@ class GrafanaTag {
     private $tagfilePath = '/etc/openitcockpit/app/Config/';
     private $tagfileName = 'openitcGrafanaTag.php';
 
-    private function generateTag(){
+    private function generateTag() {
         return uniqid('oitc');
     }
 
-    public function writeTagfile(){
-        $fullTagfilePath = $this->tagfilePath.$this->tagfileName;
+    public function writeTagfile() {
+        $fullTagfilePath = $this->tagfilePath . $this->tagfileName;
         $tagfile = new File($fullTagfilePath);
-        if($tagfile->exists()){
+        if ($tagfile->exists()) {
             $tagfile->delete();
         }
         $tagfile = new File($fullTagfilePath, true, 0644);
 
-        try{
+        try {
             $tagfile->write($this->generateTag());
-        }catch(Exception $e){
+        } catch (Exception $e) {
             echo $e->getMessage();
         }
 
     }
 
-    private function readTagFile(){
-        $fullTagfilePath = $this->tagfilePath.$this->tagfileName;
+    private function readTagFile() {
+        $fullTagfilePath = $this->tagfilePath . $this->tagfileName;
         $tagfile = new File($fullTagfilePath);
-        try{
-            if(!$tagfile->exists()){
+        try {
+            if (!$tagfile->exists()) {
                 //throw new Exception('Tag File could not be found in '. $this->tagfilePath);
                 $this->writeTagfile();
             }
-        }catch(Exception $e){
+        } catch (Exception $e) {
             echo $e->getMessage();
         }
         return $tagfile->read();
@@ -69,7 +69,7 @@ class GrafanaTag {
     /**
      * Wrapper for readTagFile()
      */
-    public function getTag(){
+    public function getTag() {
         return $this->readTagFile();
     }
 }

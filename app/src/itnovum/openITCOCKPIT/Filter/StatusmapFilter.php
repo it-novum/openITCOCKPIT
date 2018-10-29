@@ -30,7 +30,7 @@ class StatusmapFilter extends Filter {
     /**
      * @return array
      */
-    public function indexFilter(){
+    public function indexFilter() {
         $filters = [
             'like' => [
                 'Host.name',

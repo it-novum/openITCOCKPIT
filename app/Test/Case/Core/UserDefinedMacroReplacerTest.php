@@ -25,19 +25,16 @@
 namespace itnovum\openITCOCKPIT\Core;
 
 
-class UserDefinedMacroReplacerTest extends \PHPUnit_Framework_TestCase
-{
+class UserDefinedMacroReplacerTest extends \PHPUnit_Framework_TestCase {
 
     //run test: oitc test app Core/UserDefinedMacroReplacer
 
-    public function testInstance()
-    {
+    public function testInstance() {
         $userDefinedMacroReplacer = new UserDefinedMacroReplacer([]);
         $this->assertInstanceOf('\itnovum\openITCOCKPIT\Core\UserDefinedMacroReplacer', $userDefinedMacroReplacer);
     }
 
-    public function testReplaceSimpleMacro()
-    {
+    public function testReplaceSimpleMacro() {
         $macros = $this->getMacros();
         $userDefinedMacroReplacer = new UserDefinedMacroReplacer($macros);
         $assert = '/opt/openitc/nagios/libexec';
@@ -45,8 +42,7 @@ class UserDefinedMacroReplacerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($assert, $result);
     }
 
-    public function testReplaceMultiMacro()
-    {
+    public function testReplaceMultiMacro() {
         $macros = $this->getMacros();
         $userDefinedMacroReplacer = new UserDefinedMacroReplacer($macros);
         $assert = '/opt/openitc/nagios/libexec public security';
@@ -54,8 +50,7 @@ class UserDefinedMacroReplacerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($assert, $result);
     }
 
-    public function testReplaceMacroInCommand()
-    {
+    public function testReplaceMacroInCommand() {
         $macros = $this->getMacros();
         $userDefinedMacroReplacer = new UserDefinedMacroReplacer($macros);
         $assert = '/opt/openitc/nagios/libexec/check_snmp -H 127.0.0.1 -c public';
@@ -63,8 +58,7 @@ class UserDefinedMacroReplacerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($assert, $result);
     }
 
-    public function testPrintMacroIfNotFoundInMacrosArray()
-    {
+    public function testPrintMacroIfNotFoundInMacrosArray() {
         $macros = $this->getMacros();
         $userDefinedMacroReplacer = new UserDefinedMacroReplacer($macros);
         $assert = '/opt/openitc/nagios/libexec $USER5$ $USER100$';
@@ -72,8 +66,7 @@ class UserDefinedMacroReplacerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($assert, $result);
     }
 
-    private function getMacros()
-    {
+    private function getMacros() {
         $macros = [
             [
                 'Macro' => [

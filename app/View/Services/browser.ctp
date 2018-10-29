@@ -148,7 +148,12 @@ if (!$QueryHandler->exists()): ?>
                                             <?php echo __(' Next check'); ?>
                                         </div>
                                         <div class="col-xs-6">
-                                            {{ servicestatus.nextCheck }}
+                                            <span ng-if="mergedService.Service.active_checks_enabled && host.Host.is_satellite_host === false">
+                                                {{ servicestatus.nextCheck }}
+                                            </span>
+                                            <span ng-if="mergedService.Service.active_checks_enabled === false || host.Host.is_satellite_host === true">
+                                            <?php echo __('n/a'); ?>
+                                        </span>
                                         </div>
                                     </div>
                                     <div class="row" ng-show="servicestatus.isHardstate">
@@ -346,7 +351,7 @@ if (!$QueryHandler->exists()): ?>
 
                                     <div class="row" ng-show="hoststatus.currentState > 0">
                                         <div class="col-xs-12 margin-bottom-10">
-                                            <div class="browser-border padding-10" style="width: 100%;">
+                                            <div class="browser-border padding-10 bg-info" style="width: 100%;">
                                                 <div>
                                                     <h4 class="no-padding text-info">
                                                         <i class="fa fa-exclamation-triangle"></i>
@@ -736,11 +741,16 @@ if (!$QueryHandler->exists()): ?>
                                         <div class="text-center txt-color-white">
                                             <div><?php echo __('Next check'); ?></div>
                                             <h3 class="margin-top-0">
-                                                {{ servicestatus.nextCheck }}
-                                                <small style="color: #333;"
-                                                       ng-show="servicestatus.latency > 1">
-                                                    (+ {{ servicestatus.latency }})
-                                                </small>
+                                                <span ng-if="mergedService.Service.active_checks_enabled && host.Host.is_satellite_host === false">
+                                                    {{ servicestatus.nextCheck }}
+                                                    <small style="color: #333;" ng-show="servicestatus.latency > 1">
+                                                        (+ {{ servicestatus.latency }})
+                                                    </small>
+                                                </span>
+                                                <span ng-if="mergedService.Service.active_checks_enabled === false || host.Host.is_satellite_host === true">
+                                            <?php echo __('n/a'); ?>
+
+
                                             </h3>
                                         </div>
 
@@ -1077,6 +1087,31 @@ if (!$QueryHandler->exists()): ?>
                                     <?php echo __('5 days'); ?>
                                 </a>
                             </li>
+                            <li>
+                                <a href="javascript:void(0);" ng-click="changeGraphTimespan(24*7)">
+                                    <?php echo __('7 days'); ?>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="javascript:void(0);" ng-click="changeGraphTimespan(24*30)">
+                                    <?php echo __('30 days'); ?>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="javascript:void(0);" ng-click="changeGraphTimespan(24*90)">
+                                    <?php echo __('90 days'); ?>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="javascript:void(0);" ng-click="changeGraphTimespan(24*31*6)">
+                                    <?php echo __('6 months'); ?>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="javascript:void(0);" ng-click="changeGraphTimespan(24*365)">
+                                    <?php echo __('1 year'); ?>
+                                </a>
+                            </li>
                         </ul>
                     </div>
                 </div>
@@ -1088,13 +1123,31 @@ if (!$QueryHandler->exists()): ?>
                             <span class="caret"></span>
                         </button>
                         <ul class="dropdown-menu pull-right">
-                            <li ng-repeat="(dsId, dsName) in dataSources">
-                                <a href="javascript:void(0);" ng-click="changeDataSource(dsId)">
+                            <li ng-repeat="dsName in dataSources">
+                                <a href="javascript:void(0);" ng-click="changeDataSource(dsName)">
                                     {{dsName}}
                                 </a>
                             </li>
                         </ul>
                     </div>
+                </div>
+
+                <div class="widget-toolbar form-group smart-form" role="menu">
+                    <label class="checkbox small-checkbox-label display-inline margin-right-5">
+                        <input type="checkbox" name="checkbox" checked="checked"
+                               ng-model="graphAutoRefresh">
+                        <i class="checkbox-primary"></i>
+                        <?php echo __('Auto refresh'); ?>
+                    </label>
+                </div>
+
+                <div class="widget-toolbar form-group smart-form" role="menu">
+                    <label class="checkbox small-checkbox-label display-inline margin-right-5">
+                        <input type="checkbox" name="checkbox" checked="checked"
+                               ng-model="showDatapoints">
+                        <i class="checkbox-primary"></i>
+                        <?php echo __('Show data points'); ?>
+                    </label>
                 </div>
 
 
@@ -1106,7 +1159,7 @@ if (!$QueryHandler->exists()): ?>
                 <div class="widget-body">
 
                     <div id="graph_data_tooltip"></div>
-                    <div id="graphCanvas" style="height: 500px;"></div>
+                    <div id="graphCanvas" style="height: 300px;"></div>
 
                 </div>
             </div>

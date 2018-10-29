@@ -25,8 +25,7 @@
 
 App::import('Model', 'Changelog');
 
-class Proxy extends AppModel
-{
+class Proxy extends AppModel {
 
     public $validate = [
         'port' => [
@@ -42,8 +41,7 @@ class Proxy extends AppModel
         ],
     ];
 
-    function getSettings()
-    {
+    function getSettings() {
         $proxy = $this->find('first');
 
         $settings = ['ipaddress' => '', 'port' => 0, 'enabled' => false];

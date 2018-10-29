@@ -23,8 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class Timerange extends AppModel
-{
+class Timerange extends AppModel {
     public $tablePrefix = 'timeperiod_';
 
     public $validate = [
@@ -72,8 +71,7 @@ class Timerange extends AppModel
         ],
     ];
 
-    public function startBeforeEnd($field = [], $compare_field = null)
-    {
+    public function startBeforeEnd($field = [], $compare_field = null) {
         foreach ($field as $key => $value) {
             $v1 = $value;
             $v2 = $this->data[$this->name][$compare_field];

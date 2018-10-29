@@ -3,7 +3,7 @@ angular.module('openITCOCKPIT')
         $scope.id = QueryStringService.getCakeId();
         $scope.total = 0;
         $scope.load = function(){
-            $http.get("/contactgroups/usedBy/"+$scope.id+".json", {
+            $http.get("/contactgroups/usedBy/" + $scope.id + ".json", {
                 params: {
                     'angular': true
                 }
@@ -19,12 +19,12 @@ angular.module('openITCOCKPIT')
 
         $scope.getTotal = function(){
             var total = 0;
-            total +=$scope.contactgroupWithRelations.Hosttemplate.length;
-            total +=$scope.contactgroupWithRelations.Host.length;
-            total +=$scope.contactgroupWithRelations.Servicetemplate.length;
-            total +=$scope.contactgroupWithRelations.Service.length;
-            total +=$scope.contactgroupWithRelations.Hostescalation.length;
-            total +=$scope.contactgroupWithRelations.Serviceescalation.length;
+            total += $scope.contactgroupWithRelations.Hosttemplate.length;
+            total += $scope.contactgroupWithRelations.Host.length;
+            total += $scope.contactgroupWithRelations.Servicetemplate.length;
+            total += $scope.contactgroupWithRelations.Service.length;
+            total += $scope.contactgroupWithRelations.Hostescalation.length;
+            total += $scope.contactgroupWithRelations.Serviceescalation.length;
 
             return total;
         };

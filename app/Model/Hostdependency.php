@@ -23,8 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class Hostdependency extends AppModel
-{
+class Hostdependency extends AppModel {
 
     public $belongsTo = [
         'Timeperiod' => [
@@ -78,8 +77,7 @@ class Hostdependency extends AppModel
     * @param Array Dependent-Host-Ids
     * @return filtered array in format ['host_id' => 1..n, 'dependent' => 0/1]
     */
-    public function parseHostMembershipData($hosts = [], $dependent_hosts = [])
-    {
+    public function parseHostMembershipData($hosts = [], $dependent_hosts = []) {
         $host_memberships_for_hostdependency = [];
         foreach ($hosts as $host_id) {
             $host_memberships_for_hostdependency[] = ['host_id' => $host_id, 'dependent' => '0'];
@@ -97,8 +95,7 @@ class Hostdependency extends AppModel
     * @param Array Dependent-Hostgroup-Ids
     * @return filtered array in format ['hostgroup_id' => 1..n, 'dependent' => 0/1]
     */
-    public function parseHostgroupMembershipData($hostgroups = [], $dependent_hostgroups = [])
-    {
+    public function parseHostgroupMembershipData($hostgroups = [], $dependent_hostgroups = []) {
         $hostgroup_memberships_for_hostdependency = [];
         foreach ($hostgroups as $hostgroup_id) {
             $hostgroup_memberships_for_hostdependency[] = ['hostgroup_id' => $hostgroup_id, 'dependent' => '0'];

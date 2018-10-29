@@ -27,7 +27,6 @@ namespace itnovum\openITCOCKPIT\Core\AngularJS\Request;
 use itnovum\openITCOCKPIT\Core\ValueObjects\HostStates;
 use itnovum\openITCOCKPIT\Core\ValueObjects\ServiceStates;
 use itnovum\openITCOCKPIT\Core\ValueObjects\StateTypes;
-use NotImplementedException;
 
 class AngularRequest {
 
@@ -79,14 +78,14 @@ class AngularRequest {
     /**
      * @return ServiceStates
      */
-    public function getServiceStates(){
+    public function getServiceStates() {
         $field = $this->ServiceStateField;
         $ServiceStates = new ServiceStates();
 
-        if($this->queryHasField($field)){
+        if ($this->queryHasField($field)) {
             $requestValues = $this->getQueryFieldValue($field);
-            foreach($ServiceStates->getAvailableStateIds() as $stateName => $stateId){
-                if(in_array($stateName, $requestValues, true)){
+            foreach ($ServiceStates->getAvailableStateIds() as $stateName => $stateId) {
+                if (in_array($stateName, $requestValues, true)) {
                     $ServiceStates->setState($stateId, true);
                 }
             }
@@ -98,13 +97,13 @@ class AngularRequest {
     /**
      * @return StateTypes
      */
-    public function getServiceStateTypes(){
+    public function getServiceStateTypes() {
         $field = $this->ServiceStateTypeField;
         $ServiceStateTypes = new StateTypes();
 
-        if($this->queryHasField($field)){
+        if ($this->queryHasField($field)) {
             $requestValues = $this->getQueryFieldValue($field);
-            if($requestValues !== '') {
+            if ($requestValues !== '') {
                 $ServiceStateTypes->setStateType((int)$requestValues, true);
             }
         }
@@ -115,14 +114,14 @@ class AngularRequest {
     /**
      * @return HostStates
      */
-    public function getHostStates(){
+    public function getHostStates() {
         $field = $this->HostStateField;
         $HostStates = new HostStates();
 
-        if($this->queryHasField($field)){
+        if ($this->queryHasField($field)) {
             $requestValues = $this->getQueryFieldValue($field);
-            foreach($HostStates->getAvailableStateIds() as $stateName => $stateId){
-                if(in_array($stateName, $requestValues, true)){
+            foreach ($HostStates->getAvailableStateIds() as $stateName => $stateId) {
+                if (in_array($stateName, $requestValues, true)) {
                     $HostStates->setState($stateId, true);
                 }
             }
@@ -134,13 +133,13 @@ class AngularRequest {
     /**
      * @return StateTypes
      */
-    public function getHostStateTypes(){
+    public function getHostStateTypes() {
         $field = $this->HostStateTypeField;
         $HostStateTypes = new StateTypes();
 
-        if($this->queryHasField($field)){
+        if ($this->queryHasField($field)) {
             $requestValues = $this->getQueryFieldValue($field);
-            if($requestValues !== '') {
+            if ($requestValues !== '') {
                 $HostStateTypes->setStateType((int)$requestValues, true);
             }
         }
@@ -151,10 +150,10 @@ class AngularRequest {
     /**
      * @return false|float|int
      */
-    public function getFrom(){
-        if($this->queryHasField('from')){
+    public function getFrom() {
+        if ($this->queryHasField('from')) {
             $value = strtotime($this->getQueryFieldValue('from'));
-            if($value){
+            if ($value) {
                 return $value;
             }
         }
@@ -164,10 +163,10 @@ class AngularRequest {
     /**
      * @return false|float|int
      */
-    public function getTo(){
-        if($this->queryHasField('to')){
+    public function getTo() {
+        if ($this->queryHasField('to')) {
             $value = strtotime($this->getQueryFieldValue('to'));
-            if($value){
+            if ($value) {
                 return $value;
             }
         }
@@ -178,7 +177,7 @@ class AngularRequest {
     /**
      * @return \CakeRequest
      */
-    public function getRequest(){
+    public function getRequest() {
         return $this->Request;
     }
 

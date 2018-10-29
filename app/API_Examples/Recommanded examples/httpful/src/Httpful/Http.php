@@ -5,8 +5,7 @@ namespace Httpful;
 /**
  * @author Nate Good <me@nategood.com>
  */
-class Http
-{
+class Http {
     const HEAD = 'HEAD';
     const GET = 'GET';
     const POST = 'POST';
@@ -19,8 +18,7 @@ class Http
     /**
      * @return array of HTTP method strings
      */
-    public static function safeMethods()
-    {
+    public static function safeMethods() {
         return [self::HEAD, self::GET, self::OPTIONS, self::TRACE];
     }
 
@@ -29,8 +27,7 @@ class Http
      *
      * @param string HTTP method
      */
-    public static function isSafeMethod($method)
-    {
+    public static function isSafeMethod($method) {
         return in_array($method, self::safeMethods());
     }
 
@@ -39,16 +36,14 @@ class Http
      *
      * @param string HTTP method
      */
-    public static function isUnsafeMethod($method)
-    {
+    public static function isUnsafeMethod($method) {
         return !in_array($method, self::safeMethods());
     }
 
     /**
      * @return array list of (always) idempotent HTTP methods
      */
-    public static function idempotentMethods()
-    {
+    public static function idempotentMethods() {
         // Though it is possible to be idempotent, POST
         // is not guarunteed to be, and more often than
         // not, it is not.
@@ -60,8 +55,7 @@ class Http
      *
      * @param string HTTP method
      */
-    public static function isIdempotent($method)
-    {
+    public static function isIdempotent($method) {
         return in_array($method, self::safeidempotentMethodsMethods());
     }
 
@@ -70,8 +64,7 @@ class Http
      *
      * @param string HTTP method
      */
-    public static function isNotIdempotent($method)
-    {
+    public static function isNotIdempotent($method) {
         return !in_array($method, self::idempotentMethods());
     }
 
@@ -81,8 +74,7 @@ class Http
      * http://tech.groups.yahoo.com/group/rest-discuss/message/9962
      * @return array of HTTP method strings
      */
-    public static function canHaveBody()
-    {
+    public static function canHaveBody() {
         return [self::POST, self::PUT, self::PATCH, self::OPTIONS];
     }
 

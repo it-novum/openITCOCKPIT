@@ -46,7 +46,7 @@
     <div>
         <div class="widget-body">
             <?php
-            echo $this->Form->create('Currentstatereport',[
+            echo $this->Form->create('Currentstatereport', [
                 'class' => 'form-horizontal clear',
             ]);
             ?>

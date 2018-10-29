@@ -24,16 +24,16 @@
 
 App.Controllers.SystemfailuresAddController = Frontend.AppController.extend({
 
-	
-	_initialize: function() {
-		/*
-		 * Render Datepickers
-		 */
-		$('#SystemdowntimeFromDate').datepicker({
-			format: this.getVar('dateformat')
-		});
-		$('#SystemdowntimeToDate').datepicker({
-			format: this.getVar('dateformat')
-		});
-	}
+
+    _initialize: function(){
+        /*
+         * Render Datepickers
+         */
+        $('#SystemdowntimeFromDate').datepicker({
+            format: this.getVar('dateformat')
+        });
+        $('#SystemdowntimeToDate').datepicker({
+            format: this.getVar('dateformat')
+        });
+    }
 });

@@ -25,8 +25,7 @@
 
 use itnovum\openITCOCKPIT\Core\ValueObjects\LastDeletedId;
 
-class Command extends AppModel
-{
+class Command extends AppModel {
     public $hasMany = [
         'Commandargument' => [
             'className'  => 'Commandargument',
@@ -36,7 +35,7 @@ class Command extends AppModel
     ];
 
     public $validate = [
-        'name' => [
+        'name'         => [
             'notBlank' => [
                 'rule'     => 'notBlank',
                 'message'  => 'This field cannot be left blank.',
@@ -49,7 +48,14 @@ class Command extends AppModel
                 'message' => 'This command name has already been taken.',
             ],
         ],
-        'uuid' => [
+        'command_line' => [
+            'notBlank' => [
+                'rule'     => 'notBlank',
+                'message'  => 'This field cannot be left blank.',
+                'required' => true,
+            ],
+        ],
+        'uuid'         => [
             'notBlank' => [
                 'rule'     => 'notBlank',
                 'message'  => 'This field cannot be left blank.',
@@ -64,8 +70,7 @@ class Command extends AppModel
      */
     private $LastDeletedId = null;
 
-    public function __construct($id = false, $table = null, $ds = null)
-    {
+    public function __construct($id = false, $table = null, $ds = null) {
         parent::__construct($id, $table, $ds);
         App::uses('UUID', 'Lib');
     }
@@ -73,15 +78,14 @@ class Command extends AppModel
     /**
      * Return all CHECK_COMMAND Objects
      *
-     * @param string $type    for tha CakePHP find function (all, list, first, ...)
-     * @param array  $options Options for find()
+     * @param string $type for tha CakePHP find function (all, list, first, ...)
+     * @param array $options Options for find()
      *
      * @return array $ find result
      * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since  3.0
      */
-    public function checkCommands($type = 'all', $options = [])
-    {
+    public function checkCommands($type = 'all', $options = []) {
         $_options = [
             'conditions' => [
                 'command_type' => CHECK_COMMAND,
@@ -94,15 +98,14 @@ class Command extends AppModel
     /**
      * Return all HOSTCHECK_COMMAND Objects
      *
-     * @param string $type    for tha CakePHP find function (all, list, first, ...)
-     * @param array  $options Options for find()
+     * @param string $type for tha CakePHP find function (all, list, first, ...)
+     * @param array $options Options for find()
      *
      * @return array $ find result
      * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since  3.0
      */
-    public function hostCommands($type = 'all', $options = [])
-    {
+    public function hostCommands($type = 'all', $options = []) {
         $_options = [
             'conditions' => [
                 'command_type' => HOSTCHECK_COMMAND,
@@ -115,15 +118,14 @@ class Command extends AppModel
     /**
      * Return all SERVICECHECK_COMMAND Objects
      *
-     * @param string $type    for tha CakePHP find function (all, list, first, ...)
-     * @param array  $options Options for find()
+     * @param string $type for tha CakePHP find function (all, list, first, ...)
+     * @param array $options Options for find()
      *
      * @return array $ find result
      * @author Maximilian Pappert <maximilian.pappert@it-novum.com>
      * @since  3.0
      */
-    public function serviceCommands($type = 'all', $options = [])
-    {
+    public function serviceCommands($type = 'all', $options = []) {
         $_options = [
             'conditions' => [
                 'command_type' => CHECK_COMMAND,
@@ -136,15 +138,14 @@ class Command extends AppModel
     /**
      * Return all NOTIFICATION_COMMAND Objects
      *
-     * @param string $type    for tha CakePHP find function (all, list, first, ...)
-     * @param array  $options Options for find()
+     * @param string $type for tha CakePHP find function (all, list, first, ...)
+     * @param array $options Options for find()
      *
      * @return array $ find result
      * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since  3.0
      */
-    public function notificationCommands($type = 'all', $options = [])
-    {
+    public function notificationCommands($type = 'all', $options = []) {
         $_options = [
             'conditions' => [
                 'command_type' => NOTIFICATION_COMMAND,
@@ -157,13 +158,12 @@ class Command extends AppModel
     /**
      * Return all EVENTHANDLER_COMMAND Objects
      *
-     * @param string $type    for tha CakePHP find function (all, list, first, ...)
-     * @param array  $options Options for find()
+     * @param string $type for tha CakePHP find function (all, list, first, ...)
+     * @param array $options Options for find()
      *
      * @return array $ find result
      */
-    public function eventhandlerCommands($type = 'all', $options = [])
-    {
+    public function eventhandlerCommands($type = 'all', $options = []) {
         $_options = [
             'conditions' => [
                 'command_type' => EVENTHANDLER_COMMAND,
@@ -178,8 +178,7 @@ class Command extends AppModel
      * @param array $options
      * @return bool|void
      */
-    public function afterSave($created, $options = [])
-    {
+    public function afterSave($created, $options = []) {
         parent::afterSave($created, $options);
         if ($created) {
             $this->lastInsertedData = array_map(function ($element) {
@@ -193,7 +192,7 @@ class Command extends AppModel
 
 
         if ($this->DbBackend->isCrateDb() && isset($this->data['Command']['id'])) {
-            if(isset($this->data['Command']['command_type']) && $this->data['Command']['command_type'] == NOTIFICATION_COMMAND) {
+            if (isset($this->data['Command']['command_type']) && $this->data['Command']['command_type'] == NOTIFICATION_COMMAND) {
                 //Save data also to CrateDB
                 $CrateCommand = new \itnovum\openITCOCKPIT\Crate\CrateCommand($this->data['Command']['id']);
                 $command = $this->find('first', $CrateCommand->getFindQuery());
@@ -207,20 +206,19 @@ class Command extends AppModel
 
     }
 
-    public function getConsoleWelcome($systemname)
-    {
-        return "This is a terminal connected to your ".$systemname." ".
-            "Server, this is very powerful to test and debug plugins.\n".
+    public function getConsoleWelcome($systemname) {
+        return "This is a terminal connected to your " . $systemname . " " .
+            "Server, this is very powerful to test and debug plugins.\n" .
             "User: \033[31mnagios\033[0m\nPWD: \033[35m/opt/openitc/nagios/libexec/\033[0m\n\n";
     }
 
-    public function beforeDelete($cascade = true){
+    public function beforeDelete($cascade = true) {
         $this->LastDeletedId = new LastDeletedId($this->id);
         return parent::beforeDelete($cascade);
     }
 
-    public function afterDelete(){
-        if($this->LastDeletedId !== null) {
+    public function afterDelete() {
+        if ($this->LastDeletedId !== null) {
             if ($this->DbBackend->isCrateDb() && $this->LastDeletedId->hasId()) {
                 $CrateCommandModel = ClassRegistry::init('CrateModule.CrateCommand');
                 $CrateCommandModel->delete($this->LastDeletedId->getId());

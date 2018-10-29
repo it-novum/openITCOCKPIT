@@ -60,57 +60,14 @@ echo $this->Html->css('vendor/css3-percentage-loader/circle.css', ['inline' => f
 <div class="jarviswidget" id="wid-id-0">
     <header>
         <h2>
-            <span class="no-padding">
-                <i class="fa fa-check-circle no-padding up"></i>
-                <em class="padding-right-10">
-                    <?php
-                    echo __('Up');
-                    ?>
-                </em>
-                <i class="fa fa-exclamation-circle no-padding down"></i>
-                <em class="padding-right-10">
-                    <?php
-                    echo __('Down');
-                    ?>
-                </em>
-                <i class="fa fa-question-circle no-padding unreachable"></i>
-                <em class="padding-right-10">
-                    <?php
-                    echo __('Unreachable');
-                    ?>
-                </em>
-                <i class="fa fa-eye-slash no-padding text-primary"></i>
-                <em class="padding-right-10">
-                    <?php
-                    echo __('Not monitored');
-                    ?>
-                </em>
-                <i class="fa fa-plug no-padding text-primary"></i>
-                <em class="padding-right-10">
-                    <?php
-                    echo __('Disabled');
-                    ?>
-                </em>
-                |
-                 <i class="fa fa-power-off no-padding txt-color-blueDark"></i>
-                <em class="padding-right-10">
-                    <?php
-                    echo __('In downtime');
-                    ?>
-                </em>
-                 <i class="fa fa-user no-padding txt-color-blueDark"></i>
-                <em class="padding-right-10">
-                    <?php
-                    echo __('Acknowledged');
-                    ?>
-                </em>
-                <i class="fa fa-user-md no-padding txt-color-blueDark"></i>
-                <em class="padding-right-10">
-                    <?php
-                    echo __('Acknowledged and in downtime');
-                    ?>
-                </em>
-            </span>
+            <?php echo __('Status Map'); ?>
+        </h2>
+
+        <div class="widget-toolbar" role="menu">
+            <?php echo $this->Utils->backButton(); ?>
+        </div>
+
+        <div class="widget-toolbar">
             <div class="pull-right padding-left-10">
                 <div class="form-group smart-form no-padding">
                     <label class="checkbox small-checkbox-label">
@@ -146,10 +103,8 @@ echo $this->Html->css('vendor/css3-percentage-loader/circle.css', ['inline' => f
                     </label>
                 </div>
             </div>
-        </h2>
-        <div class="widget-toolbar" role="menu">
-            <?php echo $this->Utils->backButton(); ?>
         </div>
+
     </header>
     <div ng-if="isEmpty">
         <center>
@@ -177,4 +132,63 @@ echo $this->Html->css('vendor/css3-percentage-loader/circle.css', ['inline' => f
             <div class="progress_fill"></div>
         </div>
     </div>
+</div>
+
+
+<div class="jarviswidget">
+    <header>
+        <h2>
+            <span class="no-padding">
+                    <i class="fa fa-check-circle no-padding up"></i>
+                    <em class="padding-right-10">
+                        <?php
+                        echo __('Up');
+                        ?>
+                    </em>
+                    <i class="fa fa-exclamation-circle no-padding down"></i>
+                    <em class="padding-right-10">
+                        <?php
+                        echo __('Down');
+                        ?>
+                    </em>
+                    <i class="fa fa-question-circle no-padding unreachable"></i>
+                    <em class="padding-right-10">
+                        <?php
+                        echo __('Unreachable');
+                        ?>
+                    </em>
+                    <i class="fa fa-eye-slash no-padding text-primary"></i>
+                    <em class="padding-right-10">
+                        <?php
+                        echo __('Not monitored');
+                        ?>
+                    </em>
+                    <i class="fa fa-plug no-padding text-primary"></i>
+                    <em class="padding-right-10">
+                        <?php
+                        echo __('Disabled');
+                        ?>
+                    </em>
+                    |
+                     <i class="fa fa-power-off no-padding txt-color-blueDark"></i>
+                    <em class="padding-right-10">
+                        <?php
+                        echo __('In downtime');
+                        ?>
+                    </em>
+                     <i class="fa fa-user no-padding txt-color-blueDark"></i>
+                    <em class="padding-right-10">
+                        <?php
+                        echo __('Acknowledged');
+                        ?>
+                    </em>
+                    <i class="fa fa-user-md no-padding txt-color-blueDark"></i>
+                    <em class="padding-right-10">
+                        <?php
+                        echo __('Acknowledged and in downtime');
+                        ?>
+                    </em>
+                </span>
+        </h2>
+    </header>
 </div>

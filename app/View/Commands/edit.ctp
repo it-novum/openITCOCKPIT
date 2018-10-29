@@ -67,9 +67,21 @@
                 echo $this->Form->input('name', ['value' => $command['Command']['name'], 'label' => __('Name')]);
                 echo $this->Form->input('command_line', ['value' => $command['Command']['command_line'], 'label' => __('Command line')]);
                 ?>
-                <span class="col col-md-2 hidden-mobile hidden-tablet"><!-- space for nice layout --></span>
-                <span class="col col-md-10 col-xs-12 text-info"><i
-                            class="fa fa-info-circle"></i> <?php echo __('Nagios supports up to 32 $ARGx$ macros ($ARG1$ through $ARG32$)'); ?></span>
+                <div class="col col-md-2 hidden-mobile hidden-tablet"><!-- space for nice layout --></div>
+                <div class="col col-md-10 col-xs-12 text-info">
+                    <i class="fa fa-info-circle"></i>
+
+                    <?php
+                    $link = __('user defined macro');
+                    if ($this->Acl->hasPermission('index', 'macros')):
+                        $link = sprintf('<a href="/macros">%s</a>', $link);
+                    endif;
+                    ?>
+
+                    <?php echo __('A $-sign needs to be escaped manually (\$). Semicolons (;) needs to be defined as %s.', $link); ?>
+                    <br/>
+                    <?php echo __('Nagios supports up to 32 $ARGx$ macros ($ARG1$ through $ARG32$)'); ?>
+                </div>
                 <br/><br/>
                 <?php echo $this->Form->input('description', ['value' => $command['Command']['description'], 'label' => __('Description')]); ?>
 

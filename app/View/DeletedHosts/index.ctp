@@ -169,8 +169,10 @@
                                     </td>
 
                                     <td class="text-center">
-                                        <i class="fa fa-check text-success" ng-show="host.DeletedHost.perfdataDeleted"></i>
-                                        <i class="fa fa-times txt-color-red" ng-show="!host.DeletedHost.perfdataDeleted"></i>
+                                        <i class="fa fa-check text-success"
+                                           ng-show="host.DeletedHost.perfdataDeleted"></i>
+                                        <i class="fa fa-times txt-color-red"
+                                           ng-show="!host.DeletedHost.perfdataDeleted"></i>
                                     </td>
                                 </tbody>
                             </table>

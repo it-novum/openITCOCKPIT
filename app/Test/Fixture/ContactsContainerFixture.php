@@ -1,4 +1,5 @@
 <?php
+
 class ContactsContainerFixture extends CakeTestFixture {
 
     public $table = 'contacts_to_containers';
@@ -16,23 +17,23 @@ class ContactsContainerFixture extends CakeTestFixture {
     ];
 
     public function init() {
-        $this->records = array(
-            array(
-                'id' => 1,
-                'contact_id' => '1',
+        $this->records = [
+            [
+                'id'           => 1,
+                'contact_id'   => '1',
                 'container_id' => '1'
-            ),
-            array(
-                'id' => 2,
-                'contact_id' => '2',
+            ],
+            [
+                'id'           => 2,
+                'contact_id'   => '2',
                 'container_id' => '2'
-            ),
-            array(
-                'id' => 3,
-                'contact_id' => '1',
+            ],
+            [
+                'id'           => 3,
+                'contact_id'   => '1',
                 'container_id' => '3'
-            )
-        );
+            ]
+        ];
         parent::init();
     }
 }

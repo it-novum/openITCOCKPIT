@@ -27,7 +27,7 @@ namespace itnovum\openITCOCKPIT\Filter;
 
 class BaseFilter extends Filter {
 
-    public function getConditionsByFilters($filters){
+    public function getConditionsByFilters($filters) {
         return parent::getConditionsByFilters($filters);
     }
 

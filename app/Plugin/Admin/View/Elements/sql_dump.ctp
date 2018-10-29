@@ -60,12 +60,12 @@ if ($noLogs || isset($_forced_from_dbo_)):
                 }
                 foreach ($i['params'] as $bindKey => $bindVal) {
                     if ($bindType === true) {
-                        $bindParam .= h($bindKey)." => ".h($bindVal).", ";
+                        $bindParam .= h($bindKey) . " => " . h($bindVal) . ", ";
                     } else {
-                        $bindParam .= h($bindVal).", ";
+                        $bindParam .= h($bindVal) . ", ";
                     }
                 }
-                $i['query'] .= " , params[ ".rtrim($bindParam, ', ')." ]";
+                $i['query'] .= " , params[ " . rtrim($bindParam, ', ') . " ]";
             }
 
             if (strlen($i['query']) > 250) {
@@ -86,7 +86,7 @@ if ($noLogs || isset($_forced_from_dbo_)):
         endforeach;
         ?>
         </tbody></table>
-        <?php
+    <?php
     endforeach;
 else:
     printf('<p>%s</p>', __d('cake_dev', 'Encountered unexpected %s. Cannot generate SQL log.', '$sqlLogs'));

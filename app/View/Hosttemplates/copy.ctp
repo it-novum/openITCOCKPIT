@@ -57,9 +57,9 @@
                         <fieldset>
                             <legend><?php echo $hosttemplate['Hosttemplate']['name'] ?></legend>
                             <?php
-                            echo $this->Form->input('Hosttemplate.'.$key.'.name', ['value' => $hosttemplate['Hosttemplate']['name'], 'label' => __('Templatename'), 'required' => true]);
-                            echo $this->Form->input('Hosttemplate.'.$key.'.description', ['value' => $hosttemplate['Hosttemplate']['description'], 'label' => __('Description'), 'required' => false]);
-                            echo $this->Form->input('Hosttemplate.'.$key.'.source', ['value' => $hosttemplate['Hosttemplate']['id'], 'type' => 'hidden']);
+                            echo $this->Form->input('Hosttemplate.' . $key . '.name', ['value' => $hosttemplate['Hosttemplate']['name'], 'label' => __('Templatename'), 'required' => true]);
+                            echo $this->Form->input('Hosttemplate.' . $key . '.description', ['value' => $hosttemplate['Hosttemplate']['description'], 'label' => __('Description'), 'required' => false]);
+                            echo $this->Form->input('Hosttemplate.' . $key . '.source', ['value' => $hosttemplate['Hosttemplate']['id'], 'type' => 'hidden']);
                             ?>
                         </fieldset>
                     </div> <!-- close col -->

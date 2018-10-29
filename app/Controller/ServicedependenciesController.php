@@ -25,21 +25,20 @@
 
 
 /**
- * @property Servicedependency                       $Servicedependency
- * @property Timeperiod                              $Timeperiod
- * @property Service                                 $Service
- * @property Servicegroup                            $Servicegroup
- * @property ServicedependencyServiceMembership      $ServicedependencyServiceMembership
+ * @property Servicedependency $Servicedependency
+ * @property Timeperiod $Timeperiod
+ * @property Service $Service
+ * @property Servicegroup $Servicegroup
+ * @property ServicedependencyServiceMembership $ServicedependencyServiceMembership
  * @property ServicedependencyServicegroupMembership $ServicedependencyServicegroupMembership
- * @property Host                                    $Host
- * @property Container                               $Container
- * @property PaginatorComponent                      $Paginator
- * @property ListFilterComponent                     $ListFilter
- * @property RequestHandlerComponent                 $RequestHandler
- * @property CustomValidationErrorsComponent         $CustomValidationErrors
+ * @property Host $Host
+ * @property Container $Container
+ * @property PaginatorComponent $Paginator
+ * @property ListFilterComponent $ListFilter
+ * @property RequestHandlerComponent $RequestHandler
+ * @property CustomValidationErrorsComponent $CustomValidationErrors
  */
-class ServicedependenciesController extends AppController
-{
+class ServicedependenciesController extends AppController {
 
     public $uses = [
         'Servicedependency',
@@ -95,7 +94,7 @@ class ServicedependenciesController extends AppController
                         ],
                     ],
                 ],
-                'Timeperiod' => [
+                'Timeperiod'                              => [
                     'fields' => 'name',
                 ],
             ],
@@ -116,8 +115,7 @@ class ServicedependenciesController extends AppController
         $this->set('_serialize', ['all_servicedependencies']);
     }
 
-    public function view($id = null)
-    {
+    public function view($id = null) {
         if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();
 
@@ -137,8 +135,7 @@ class ServicedependenciesController extends AppController
         $this->set('_serialize', ['servicedependency']);
     }
 
-    public function edit($id = null)
-    {
+    public function edit($id = null) {
         if (!$this->Servicedependency->exists($id)) {
             throw new NotFoundException(__('Invalid servicedependency'));
         }
@@ -197,7 +194,8 @@ class ServicedependenciesController extends AppController
             if ($this->Servicedependency->validates()) {
                 $old_membership_services = $this->ServicedependencyServiceMembership->find('all', [
                     'conditions' => [
-                        'ServicedependencyServiceMembership.servicedependency_id' => $id],
+                        'ServicedependencyServiceMembership.servicedependency_id' => $id
+                    ],
                 ]);
                 /* Delete old service associations */
                 foreach ($old_membership_services as $old_membership_service) {
@@ -205,7 +203,8 @@ class ServicedependenciesController extends AppController
                 }
                 $old_membership_servicegroups = $this->ServicedependencyServicegroupMembership->find('all', [
                     'conditions' => [
-                        'ServicedependencyServicegroupMembership.servicedependency_id' => $id],
+                        'ServicedependencyServicegroupMembership.servicedependency_id' => $id
+                    ],
                 ]);
                 /* Delete old servicegroup associations */
                 foreach ($old_membership_servicegroups as $old_membership_servicegroup) {
@@ -230,8 +229,7 @@ class ServicedependenciesController extends AppController
         $this->set(compact(['servicedependency', 'services', 'servicegroups', 'timeperiods', 'containers']));
     }
 
-    public function add()
-    {
+    public function add() {
         $customFieldsToRefill = [
             'Servicedependency' => [
                 'execution_fail_on_ok',
@@ -305,8 +303,7 @@ class ServicedependenciesController extends AppController
         ]);
     }
 
-    public function delete($id = null)
-    {
+    public function delete($id = null) {
         if (!$this->request->is('post')) {
             throw new MethodNotAllowedException();
         }
@@ -329,8 +326,7 @@ class ServicedependenciesController extends AppController
         $this->redirect(['action' => 'index']);
     }
 
-    public function loadElementsByContainerId($containerId = null)
-    {
+    public function loadElementsByContainerId($containerId = null) {
         $this->allowOnlyAjaxRequests();
 
         if (!$this->Container->exists($containerId)) {

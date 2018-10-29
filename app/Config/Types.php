@@ -1,7 +1,6 @@
 <?php
 
-class Types
-{
+class Types {
     const CODE_SUCCESS = 'success';
     const CODE_ERROR = 'error';
     const CODE_EXCEPTION = 'exception';
@@ -21,8 +20,7 @@ class Types
         self::ROLE_EMPLOYEE => 'Employee',
     ];
 
-    public static function getMap($types = null)
-    {
+    public static function getMap($types = null) {
         if (!is_array($types)) {
             $types = func_get_args();
         }
@@ -35,8 +33,7 @@ class Types
         return $map;
     }
 
-    public static function getDescription($type)
-    {
+    public static function getDescription($type) {
         if (isset(self::$description[$type])) {
             return __(self::$description[$type]);
         }

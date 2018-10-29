@@ -25,8 +25,7 @@
 namespace itnovum\openITCOCKPIT\InitialDatabase;
 
 
-class Hosttemplate extends Importer
-{
+class Hosttemplate extends Importer {
     /**
      * @property \Hosttemplate $Model
      */
@@ -34,8 +33,7 @@ class Hosttemplate extends Importer
     /**
      * @return bool
      */
-    public function import()
-    {
+    public function import() {
         if ($this->isTableEmpty()) {
             $data = $this->getData();
             foreach ($data as $record) {
@@ -54,8 +52,7 @@ class Hosttemplate extends Importer
     /**
      * @return array
      */
-    public function getData()
-    {
+    public function getData() {
         $data = [
             0 =>
                 [

@@ -44,21 +44,21 @@ class HostDowntimesControllerRequest extends AngularRequest {
         ]
     ];
 
-    public function getIndexFilters(){
+    public function getIndexFilters() {
         $Filter = new BaseFilter($this->getRequest());
         return $Filter->getConditionsByFilters($this->filters['index']);
     }
 
 
-    public function hideExpired(){
-        if($this->queryHasField('hideExpired')){
+    public function hideExpired() {
+        if ($this->queryHasField('hideExpired')) {
             return $this->getQueryFieldValue('hideExpired') === 'true';
         }
         return true;
     }
 
-    public function isRunning(){
-        if($this->queryHasField('isRunning')){
+    public function isRunning() {
+        if ($this->queryHasField('isRunning')) {
             return $this->getQueryFieldValue('isRunning') === 'true';
         }
         return false;

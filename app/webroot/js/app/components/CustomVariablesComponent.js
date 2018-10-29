@@ -23,109 +23,115 @@
 //	confirmation.
 
 App.Components.CustomVariablesComponent = Frontend.Component.extend({
-	$customVariablesContainer: null,
-	$ajaxloader:null,
+    $customVariablesContainer: null,
+    $ajaxloader: null,
 
-	setup: function(conf){
-		conf = conf || {};
-		this.ajaxUrl = conf.ajaxUrl || '/Hosttemplates/addCustomMacro';
-		this.controller = conf.controller || 'Hosttemplates';
-		this.macrotype = conf.macrotype || 'HOST';
-		this.macroPrefix = conf.macroPrefix || '$_';
-		this.macroSuffix = conf.macroSuffix || '$';
-		this.illegalCharacters = conf.illegalCharacters || /[^\d\w\_]/g;
-		this.onClick = conf.onClick || function(){};
-		this.ajaxUrl = '/' + this.controller + '/addCustomMacro';
+    setup: function(conf){
+        conf = conf || {};
+        this.ajaxUrl = conf.ajaxUrl || '/Hosttemplates/addCustomMacro';
+        this.controller = conf.controller || 'Hosttemplates';
+        this.macrotype = conf.macrotype || 'HOST';
+        this.macroPrefix = conf.macroPrefix || '$_';
+        this.macroSuffix = conf.macroSuffix || '$';
+        this.illegalCharacters = conf.illegalCharacters || /[^\d\w\_]/g;
+        this.onClick = conf.onClick || function(){
+        };
+        this.ajaxUrl = '/' + this.controller + '/addCustomMacro';
 
-		$customVariablesContainer = $('#customVariablesContainer');
-		this.$ajaxloader = $('#global_ajax_loader');
+        $customVariablesContainer = $('#customVariablesContainer');
+        this.$ajaxloader = $('#global_ajax_loader');
 
-		var self = this;
+        var self = this;
 
-		/*
-		 * Bind the click event to the trash icon and remove the macro from DOM
-		 */
-		$(document).on("click",".deleteMacro",function(e){
-			$this = $(this);
-			$this.parent().parent().remove();
-		});
+        /*
+         * Bind the click event to the trash icon and remove the macro from DOM
+         */
+        $(document).on("click", ".deleteMacro", function(e){
+            $this = $(this);
+            $this.parent().parent().remove();
+        });
 
-		/*
-		 * Bind the change event to the maco name input
-		 */
-		$(document).on("change", ".macroName", function(e){
-			$this = $(this);
-			var clearName = $this.val().toUpperCase().replace(self.illegalCharacters, '');
-			$this.parent().parent().find('span').html(self.macroPrefix+self.macrotype+clearName+self.macroSuffix);
-			$this.val(clearName);
-		});
+        /*
+         * Bind the change event to the maco name input
+         */
+        $(document).on("change", ".macroName", function(e){
+            $this = $(this);
+            var clearName = $this.val().toUpperCase().replace(self.illegalCharacters, '');
+            $this.parent().parent().find('span').html(self.macroPrefix + self.macrotype + clearName + self.macroSuffix);
+            $this.val(clearName);
+        });
 
-		$('.addCustomMacro').on('click', function(){
-			self.addCustomMacroSkeleton(self.onClick);
-		});
+        $('.addCustomMacro').on('click', function(){
+            self.addCustomMacroSkeleton(self.onClick);
+        });
 
     },
 
-	addCustomMacroSkeleton: function(onSuccess){
-		this.$button = $(this);
-		this.$button.prop('disabled', true);
-		this.$ajaxloader.show();
-		ret = $.ajax({
-			url: this.ajaxUrl+"/"+this.getNextId(),
-			type: "GET",
-			error: function(){},
-			success: function(){},
-			complete: function(response){
+    addCustomMacroSkeleton: function(onSuccess){
+        this.$button = $(this);
+        this.$button.prop('disabled', true);
+        this.$ajaxloader.show();
+        ret = $.ajax({
+            url: this.ajaxUrl + "/" + this.getNextId(),
+            type: "GET",
+            error: function(){
+            },
+            success: function(){
+            },
+            complete: function(response){
 
 
-				$customVariablesContainer.append(response.responseText);
+                $customVariablesContainer.append(response.responseText);
 
-				this.$ajaxloader.fadeOut('slow');
-				this.$button.prop('disabled', null);
-				onSuccess();
-			}.bind(this)
-		});
-	},
+                this.$ajaxloader.fadeOut('slow');
+                this.$button.prop('disabled', null);
+                onSuccess();
+            }.bind(this)
+        });
+    },
 
-	getNextId: function(){
-		var currentHighestValue = 1;
-		var $custmVariableInputs = $('#customVariablesContainer').find('.macroName');
+    getNextId: function(){
+        var currentHighestValue = 1;
+        var $custmVariableInputs = $('#customVariablesContainer').find('.macroName');
 
-		$custmVariableInputs.each(function(key, currentInputField){
-			var $currentInputField = $(currentInputField);
+        $custmVariableInputs.each(function(key, currentInputField){
+            var $currentInputField = $(currentInputField);
 
-			var counterAttr = $currentInputField.attr('counter');
-			if (typeof counterAttr !== typeof undefined && counterAttr !== false) {
-				var currentValue = parseInt(counterAttr, 10);
-				if(currentValue > currentHighestValue){
-					currentHighestValue = currentValue;
-				}
-			}
-		});
+            var counterAttr = $currentInputField.attr('counter');
+            if(typeof counterAttr !== typeof undefined && counterAttr !== false){
+                var currentValue = parseInt(counterAttr, 10);
+                if(currentValue > currentHighestValue){
+                    currentHighestValue = currentValue;
+                }
+            }
+        });
 
-		console.log(currentHighestValue+1);
-		return currentHighestValue + 1;
-	},
+        console.log(currentHighestValue + 1);
+        return currentHighestValue + 1;
+    },
 
-	loadMacroFromTemplate: function(template_id, onComplete){
-		onComplete = typeof onComplete === 'function' ? onComplete : function(){};
-		this.$button = $('.addCustomMacro');
-		this.$button.prop('disabled', true);
-		this.$ajaxloader.show();
-		ret = $.ajax({
-			url: "/"+this.controller+"/loadTemplateMacros/"+encodeURIComponent(template_id),
-			type: "GET",
-			dataType: "json",
-			error: function(){},
-			success: function(){},
-			complete: function(response){
-				//if(response.responseJSON.count > 0){ // what for???
-				// }
-				$customVariablesContainer.html(response.responseJSON.html);
-				onComplete.call($customVariablesContainer, response);
-				this.$ajaxloader.fadeOut('slow');
-				this.$button.prop('disabled', null);
-			}.bind(this)
-		});
-	}
+    loadMacroFromTemplate: function(template_id, onComplete){
+        onComplete = typeof onComplete === 'function' ? onComplete : function(){
+        };
+        this.$button = $('.addCustomMacro');
+        this.$button.prop('disabled', true);
+        this.$ajaxloader.show();
+        ret = $.ajax({
+            url: "/" + this.controller + "/loadTemplateMacros/" + encodeURIComponent(template_id),
+            type: "GET",
+            dataType: "json",
+            error: function(){
+            },
+            success: function(){
+            },
+            complete: function(response){
+                //if(response.responseJSON.count > 0){ // what for???
+                // }
+                $customVariablesContainer.html(response.responseJSON.html);
+                onComplete.call($customVariablesContainer, response);
+                this.$ajaxloader.fadeOut('slow');
+                this.$button.prop('disabled', null);
+            }.bind(this)
+        });
+    }
 });

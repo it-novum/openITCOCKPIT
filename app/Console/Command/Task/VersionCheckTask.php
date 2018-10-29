@@ -22,16 +22,14 @@
 //  License agreement and license key will be shipped with the order
 //  confirmation.
 
-use \itnovum\openITCOCKPIT\Core\Http;
+use itnovum\openITCOCKPIT\Core\Http;
+use itnovum\openITCOCKPIT\Core\Interfaces\CronjobInterface;
 use itnovum\openITCOCKPIT\Core\PackagemanagerRequestBuilder;
 use itnovum\openITCOCKPIT\Core\ValueObjects\License;
-use \itnovum\openITCOCKPIT\Core\Interfaces\CronjobInterface;
 
-class VersionCheckTask extends AppShell implements CronjobInterface
-{
+class VersionCheckTask extends AppShell implements CronjobInterface {
 
-    public function execute($quiet = false)
-    {
+    public function execute($quiet = false) {
         $this->params['quiet'] = $quiet;
         $this->stdout->styles('green', ['text' => 'green']);
         $this->stdout->styles('red', ['text' => 'red']);
@@ -48,8 +46,7 @@ class VersionCheckTask extends AppShell implements CronjobInterface
     /**
      * @return string new Version as string or null
      */
-    public function getNewVersion()
-    {
+    public function getNewVersion() {
         $this->loadModel('Register');
         $this->loadModel('Proxy');
 
@@ -74,7 +71,7 @@ class VersionCheckTask extends AppShell implements CronjobInterface
         } else {
             //Force new line
             $this->out();
-            $this->out('<red>'.$http->getLastError()['error'].'</red>');
+            $this->out('<red>' . $http->getLastError()['error'] . '</red>');
         }
 
         return $availableVersion;
@@ -83,19 +80,17 @@ class VersionCheckTask extends AppShell implements CronjobInterface
     /**
      * @param string $availableVersion
      */
-    public function saveNewVersion($availableVersion)
-    {
+    public function saveNewVersion($availableVersion) {
         $newConfig = sprintf($this->getConfigTemplate(), $availableVersion);
-        $fileName = APP.'Lib'.DS.'AvailableVersion.php';
+        $fileName = APP . 'Lib' . DS . 'AvailableVersion.php';
         file_put_contents($fileName, $newConfig);
     }
 
     /**
      * @return string
      */
-    public function getConfigTemplate()
-    {
-        $fileName = APP.'src'.DS.'itnovum'.DS.'openITCOCKPIT'.DS.'Core'.DS.'AvailableVersionTemplate.txt';
+    public function getConfigTemplate() {
+        $fileName = APP . 'src' . DS . 'itnovum' . DS . 'openITCOCKPIT' . DS . 'Core' . DS . 'AvailableVersionTemplate.txt';
 
         return file_get_contents($fileName);
     }

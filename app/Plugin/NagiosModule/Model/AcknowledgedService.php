@@ -26,8 +26,7 @@
 use itnovum\openITCOCKPIT\Core\AcknowledgedServiceConditions;
 
 
-class AcknowledgedService extends NagiosModuleAppModel
-{
+class AcknowledgedService extends NagiosModuleAppModel {
 
     public $useTable = 'acknowledgements';
     public $primaryKey = 'acknowledgement_id';
@@ -43,7 +42,7 @@ class AcknowledgedService extends NagiosModuleAppModel
      * @param null $uuid
      * @return array|null
      */
-    public function byServiceUuid($uuid = null){
+    public function byServiceUuid($uuid = null) {
         return $this->byUuid($uuid);
     }
 
@@ -51,8 +50,7 @@ class AcknowledgedService extends NagiosModuleAppModel
      * @param string $uuid
      * @return array|null
      */
-    public function byUuid($uuid = null)
-    {
+    public function byUuid($uuid = null) {
         $return = [];
         if ($uuid !== null) {
             $acknowledged = $this->find('first', [
@@ -78,21 +76,21 @@ class AcknowledgedService extends NagiosModuleAppModel
      * @param array $paginatorConditions
      * @return array
      */
-    public function getQuery(AcknowledgedServiceConditions $AcknowledgedServiceConditions, $paginatorConditions = []){
+    public function getQuery(AcknowledgedServiceConditions $AcknowledgedServiceConditions, $paginatorConditions = []) {
         $query = [
             'conditions' => [
-                'Objects.name2' => $AcknowledgedServiceConditions->getServiceUuid(),
+                'Objects.name2'                    => $AcknowledgedServiceConditions->getServiceUuid(),
                 'AcknowledgedService.entry_time >' => date('Y-m-d H:i:s', $AcknowledgedServiceConditions->getFrom()),
                 'AcknowledgedService.entry_time <' => date('Y-m-d H:i:s', $AcknowledgedServiceConditions->getTo())
             ],
-            'order' => $AcknowledgedServiceConditions->getOrder()
+            'order'      => $AcknowledgedServiceConditions->getOrder()
         ];
 
         if ($AcknowledgedServiceConditions->getUseLimit()) {
             $query['limit'] = $AcknowledgedServiceConditions->getLimit();
         }
 
-        if(!empty($AcknowledgedServiceConditions->getStates())){
+        if (!empty($AcknowledgedServiceConditions->getStates())) {
             $query['conditions']['AcknowledgedService.state'] = $AcknowledgedServiceConditions->getStates();
         }
 

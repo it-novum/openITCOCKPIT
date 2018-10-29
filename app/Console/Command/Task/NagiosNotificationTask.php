@@ -24,18 +24,28 @@
 //	confirmation.
 
 use itnovum\openITCOCKPIT\Core\DbBackend;
+use itnovum\openITCOCKPIT\Core\NodeJS\ChartRenderClient;
+use itnovum\openITCOCKPIT\Core\PerfdataBackend;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\Views\Logo;
+use itnovum\openITCOCKPIT\Perfdata\PerfdataLoader;
 
+/**
+ * Class NagiosNotificationTask
+ * @property Rrd $Rrd
+ * @property Systemsetting $Systemsetting
+ * @property Servicestatus $Servicestatus
+ */
 class NagiosNotificationTask extends AppShell {
 
     public $uses = ['Rrd', 'Systemsetting', MONITORING_SERVICESTATUS];
+
     public function construct() {
         $this->_systemsettings = $this->Systemsetting->findAsArray();
 
         //Loading Cake libs
-        App::uses('CakeEmail','Network/Email');
-        App::uses('Folder','Utility');
+        App::uses('CakeEmail', 'Network/Email');
+        App::uses('Folder', 'Utility');
     }
 
     /*
@@ -157,7 +167,7 @@ class NagiosNotificationTask extends AppShell {
             Configure::load('dbbackend');
             $DbBackend = new DbBackend(Configure::read('dbbackend'));
             $ServicestatusFields = new ServicestatusFields($DbBackend);
-            $ServicestatusFields->currentState();
+            $ServicestatusFields->currentState()->longOutput();
 
             $evcTree = $this->Eventcorrelation->getEvcTreeData($parameters['hostId'], []);
             $servicestatus = $this->Servicestatus->byUuid(Hash::extract($evcTree, '{n}.{*}.{n}.Service.uuid'), $ServicestatusFields);
@@ -191,57 +201,64 @@ class NagiosNotificationTask extends AppShell {
          */
 
         $contentIDs = [];
+        $GraphImageBlobs = [];
+        $attachments['logo.png'] = [
+            'file'      => $Logo->getSmallLogoDiskPath(),
+            'mimetype'  => 'image/png',
+            'contentId' => '100'
+        ];
 
         if (!$parameters['no-attachments']) {
-            if (file_exists(Configure::read('rrd.path') . $parameters['hostUuid'] . '/' . $parameters['serviceUuid'] . '.rrd') && (Configure::read('rrd.path') . $parameters['hostUuid'] . '/' . $parameters['serviceUuid'] . '.xml')) {
+            Configure::load('dbbackend');
+            Configure::load('perfdatabackend');
 
-                // declare rrd ds graph files array
-                $parameters['graph_path'] = [];
+            $DbBackend = new DbBackend(Configure::read('dbbackend'));
+            $PerfdataBackend = new PerfdataBackend(Configure::read('perfdatabackend'));
+            $PerfdataLoader = new PerfdataLoader($DbBackend, $PerfdataBackend, $this->Servicestatus, $this->Rrd);
 
-                // get datasource count
-                $rrdds = $this->Rrd->getPerfDataStructure(Configure::read('rrd.path') . $parameters['hostUuid'] . '/' . $parameters['serviceUuid'] . '.xml');
+            try {
+                $graphStart = (time() - (4 * 3600));
+                $graphData = $PerfdataLoader->getPerfdataByUuid(
+                    $parameters['hostUuid'],
+                    $parameters['serviceUuid'],
+                    $graphStart,
+                    time(),
+                    false,
+                    'avg'
+                );
 
-                // create temp path with hostUuid if not exists
-                $hosttmpdir_path = '/tmp/' . $parameters['hostUuid'];
-                $hosttmpdir = new Folder($hosttmpdir_path, true, 0777);
+                if (!empty($graphData)) {
+                    //Render graph data to png image blobs for pdf
+                    $NodeJsChartRenderClient = new ChartRenderClient();
+                    $NodeJsChartRenderClient->setGraphStartTimestamp($graphStart);
+                    $NodeJsChartRenderClient->setGraphEndTimestamp(time());
+                    $NodeJsChartRenderClient->setHeight(180);
+                    $NodeJsChartRenderClient->setWidth(560);
+                    $NodeJsChartRenderClient->setTitle(
+                        sprintf(
+                            '%s - %s',
+                            $parameters['hostname'],
+                            $parameters['servicedesc']
+                        ));
 
-                $attachments['logo.png'] = [
-                    'file'      => $Logo->getSmallLogoDiskPath(),
-                    'mimetype'  => 'image/png',
-                    'contentId' => '100'
-                ];
-
-                // draw graph for every datasource of the service
-                foreach ($rrdds as $ds) {
-                    //print_r('DS: '.$ds['ds'].' - Label: '.$ds['label'].' - Unit: '.$ds['unit'].' # ');
-
-                    // generate and save filename to array
-                    $dscount = $ds['ds'];
-
-                    $parameters['graph_path'][$dscount] = '' . $hosttmpdir_path . '/mailgraph_' . $ds['ds'] . '_' . rand(1, 999999) . '.png';
-
-                    // create graph
-                    $this->create_graph($parameters['graph_path'][$dscount], "-8h", $parameters['hostname'] . " / " . $parameters['servicedesc'] . " - " . $ds['label'], $parameters, $ds);
-
-                    $attachments['mailgraph_' . $dscount . '.png'] = ['file' => $parameters['graph_path'][$dscount], 'mimetype' => 'image/png', 'contentId' => '10' . $dscount];
-
-
-                    $contentIDs[] = '10' . $dscount;
-
+                    //render two gauges per chart
+                    $id = 200;
+                    foreach (array_chunk($graphData, 2) as $graphDataChunk) {
+                        $fileName = sprintf('Chart_%s.png', $id);
+                        $attachments[$fileName] = [
+                            'data'      => $NodeJsChartRenderClient->getAreaChartAsPngStream($graphDataChunk),
+                            'mimetype'  => 'image/png',
+                            'contentId' => $id
+                        ];
+                        $contentIDs[] = $id;
+                        $id++;
+                    }
                 }
-
-                // read dir with graph files
-                $mailgraph_files = $hosttmpdir->find('.*\.png', true);
-
-                //print_r($mailgraph_files);
-
-            } else {
-                $attachments['logo.png'] = [
-                    'file'      => $Logo->getSmallLogoDiskPath(),
-                    'mimetype'  => 'image/png',
-                    'contentId' => '100'
-                ];
+            } catch (\Exception $e) {
+                $this->out('Error while creating graph');
+                $this->out($e->getMessage());
             }
+
 
             // debug($attachments);
             // send attachments
@@ -253,55 +270,16 @@ class NagiosNotificationTask extends AppShell {
 
         }
 
-        $Email->template('template-itn-std-service','template-itn-std-service')->viewVars(['parameters' => $parameters,'_systemsettings' => $this->_systemsettings,'contentIDs' => $contentIDs]);
+        $Email->template('template-itn-std-service', 'template-itn-std-service')->viewVars([
+            'parameters'      => $parameters,
+            '_systemsettings' => $this->_systemsettings,
+            'contentIDs'      => $contentIDs
+        ]);
 
         //send template to mail address
         $Email->send();
-
-
-        //delete graph-files ! not the folder! 
-        //in case of parallel notifications it will delete png files of other notifications
-        if (!$parameters['no-attachments']) {
-            foreach ($mailgraph_files as $graphfile) {
-                unlink($hosttmpdir_path . '/' . $graphfile);
-            }
-        }
     }
 
-
-    /*
-     *create graph function
-     */
-
-    public function create_graph($output, $start, $title, $parameters, $ds) {
-
-        $parameters['hostname'] = $this->replaceChars($parameters['hostname']);
-        $parameters['servicedesc'] = $this->replaceChars($parameters['servicedesc']);
-        $ds['label'] = $this->replaceChars($ds['label']);
-
-        $options = [
-            "--slope-mode",
-            "-l0",
-            "-u1",
-            "--start=" . $start,
-            "--title=" . $title,
-            "--lower=0",
-            "--vertical-label=" . $ds['unit'],
-            "DEF:var0=" . Configure::read('rrd.path') . $parameters['hostUuid'] . "/" . $parameters['serviceUuid'] . ".rrd:" . $ds['ds'] . ":AVERAGE",
-            "AREA:var0#00FF00:",
-            "LINE1:var0#1aa8e4:" . $parameters['hostname'] . "/" . $parameters['servicedesc'] . " - " . $ds['label'],
-        ];
-
-        try {
-            $ret = rrd_graph($output, $options);
-            if (!$ret) {
-                echo "<b>Graph error: </b>" . rrd_error() . "\n";
-            }
-        } catch (Exception $e) {
-            $this->out($e->getMessage());
-
-        }
-    }
 
     private function replaceChars($str, $replacement = ' ') {
         return preg_replace('/[^a-zA-Z^0-9\-\.]/', $replacement, $str);

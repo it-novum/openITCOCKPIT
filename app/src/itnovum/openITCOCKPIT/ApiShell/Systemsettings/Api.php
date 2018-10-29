@@ -29,8 +29,7 @@ use itnovum\openITCOCKPIT\ApiShell\Exceptions\RecordExistsExceptions;
 use itnovum\openITCOCKPIT\ApiShell\Interfaces\ApiInterface;
 use itnovum\openITCOCKPIT\ApiShell\OptionParser;
 
-class Api extends CoreApi implements ApiInterface
-{
+class Api extends CoreApi implements ApiInterface {
 
     /**
      * @var OptionParser
@@ -42,14 +41,12 @@ class Api extends CoreApi implements ApiInterface
      */
     private $data;
 
-    public function setOptionsFromOptionParser(OptionParser $optionParser)
-    {
+    public function setOptionsFromOptionParser(OptionParser $optionParser) {
         $this->optionParser = $optionParser;
         $this->data = $optionParser->getData();
     }
 
-    public function dispatchRequest()
-    {
+    public function dispatchRequest() {
         switch ($this->optionParser->getAction()) {
             case 'add':
                 $this->add();
@@ -67,8 +64,7 @@ class Api extends CoreApi implements ApiInterface
      * @throws RecordExistsExceptions
      * @throws \Exception
      */
-    public function add()
-    {
+    public function add() {
         if (!$this->exists()) {
             $data = [
                 'key'     => $this->getKeyOfData(),
@@ -87,8 +83,7 @@ class Api extends CoreApi implements ApiInterface
     /**
      * @throws \Exception
      */
-    public function update()
-    {
+    public function update() {
         if (!$this->exists()) {
             $this->add();
         }
@@ -108,8 +103,7 @@ class Api extends CoreApi implements ApiInterface
      * @throws RecordExistsExceptions
      * @throws \Exception
      */
-    public function delete()
-    {
+    public function delete() {
         if (!$this->exists()) {
             throw new RecordExistsExceptions('Record does not exists!');
         }
@@ -124,8 +118,7 @@ class Api extends CoreApi implements ApiInterface
      * Checks if a record for given key exists
      * @return bool
      */
-    public function exists()
-    {
+    public function exists() {
         $result = $this->getRecordByKey();
 
         return !empty($result);
@@ -134,16 +127,14 @@ class Api extends CoreApi implements ApiInterface
     /**
      * @return string
      */
-    public function getKeyOfData()
-    {
+    public function getKeyOfData() {
         $data = $this->data;
         $key = array_shift($data);
 
         return $key;
     }
 
-    public function getRecordByKey()
-    {
+    public function getRecordByKey() {
         $key = $this->getKeyOfData();
 
         return $this->Database->find('first', [

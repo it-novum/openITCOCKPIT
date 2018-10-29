@@ -43,27 +43,27 @@ class ServiceStates {
      * @var array
      */
     private $stateIds = [
-        'ok' => 0,
-        'warning' => 1,
+        'ok'       => 0,
+        'warning'  => 1,
         'critical' => 2,
-        'unknown' => 3
+        'unknown'  => 3
     ];
 
     /**
      * @var array
      */
     private $states = [
-        'ok' => false,
-        'warning' => false,
+        'ok'       => false,
+        'warning'  => false,
         'critical' => false,
-        'unknown' => false
+        'unknown'  => false
     ];
 
     /**
      * @param int $state
      * @param bool $value
      */
-    public function setState($state, $value){
+    public function setState($state, $value) {
         $key = $this->getStateNameByState($state);
         $this->states[$key] = $value;
     }
@@ -71,28 +71,28 @@ class ServiceStates {
     /**
      * @return bool
      */
-    public function hasOk(){
+    public function hasOk() {
         return $this->states['ok'];
     }
 
     /**
      * @return bool
      */
-    public function hasWarning(){
+    public function hasWarning() {
         return $this->states['warning'];
     }
 
     /**
      * @return bool
      */
-    public function hasCritical(){
+    public function hasCritical() {
         return $this->states['critical'];
     }
 
     /**
      * @return bool
      */
-    public function hasUnknown(){
+    public function hasUnknown() {
         return $this->states['unknown'];
     }
 
@@ -100,7 +100,7 @@ class ServiceStates {
     /**
      * @return array
      */
-    public function asArray(){
+    public function asArray() {
         return $this->states;
     }
 
@@ -108,7 +108,7 @@ class ServiceStates {
     /**
      * @return array
      */
-    public function asIntegerArray(){
+    public function asIntegerArray() {
         $states = [];
         if ($this->hasOk()) {
             $states[] = 0;
@@ -128,7 +128,7 @@ class ServiceStates {
     /**
      * @return array
      */
-    public function getAvailableStateIds(){
+    public function getAvailableStateIds() {
         return $this->stateIds;
     }
 
@@ -137,7 +137,7 @@ class ServiceStates {
      * @return string
      * @throws UnknownStateException
      */
-    public function getStateNameByState($state){
+    public function getStateNameByState($state) {
         if (isset($this->stateNames[$state])) {
             return $this->stateNames[$state];
         }

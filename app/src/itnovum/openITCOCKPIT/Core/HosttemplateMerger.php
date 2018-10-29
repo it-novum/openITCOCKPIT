@@ -100,7 +100,7 @@ class HosttemplateMerger {
             'active_checks_enabled',
             'notifications_enabled',
         ];
-        foreach($bools as $boolField){
+        foreach ($bools as $boolField) {
             $mergedHost[$boolField] = (bool)$mergedHost[$boolField];
         }
 

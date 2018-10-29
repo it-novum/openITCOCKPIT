@@ -30,7 +30,7 @@ class StatehistoryService extends CrateModuleAppModel {
     public $useTable = 'service_statehistory';
     public $tablePrefix = 'statusengine_';
 
-    public function __construct($id = false, $table = null, $ds = null, $useDynamicAssociations = true){
+    public function __construct($id = false, $table = null, $ds = null, $useDynamicAssociations = true) {
         parent::__construct($id, $table, $ds, $useDynamicAssociations);
         $this->virtualFields['state_type'] = 'StatehistoryService.is_hardstate';
     }
@@ -41,38 +41,38 @@ class StatehistoryService extends CrateModuleAppModel {
      * @param array $paginatorConditions
      * @return array
      */
-    public function getQuery(StatehistoryServiceConditions $StatehistoryServiceConditions, $paginatorConditions = []){
+    public function getQuery(StatehistoryServiceConditions $StatehistoryServiceConditions, $paginatorConditions = []) {
         $query = [
             'conditions' => [
                 'service_description' => $StatehistoryServiceConditions->getServiceUuid(),
-                'state_time >' => $StatehistoryServiceConditions->getFrom(),
-                'state_time <' => $StatehistoryServiceConditions->getTo()
+                'state_time >'        => $StatehistoryServiceConditions->getFrom(),
+                'state_time <'        => $StatehistoryServiceConditions->getTo()
             ],
-            'order' => $StatehistoryServiceConditions->getOrder(),
+            'order'      => $StatehistoryServiceConditions->getOrder(),
         ];
 
-        if($StatehistoryServiceConditions->getUseLimit()){
+        if ($StatehistoryServiceConditions->getUseLimit()) {
             $query['limit'] = $StatehistoryServiceConditions->getLimit();
         }
 
-        if(!empty($StatehistoryServiceConditions->getStates()) && sizeof($StatehistoryServiceConditions->getStates()) < 4){
+        if (!empty($StatehistoryServiceConditions->getStates()) && sizeof($StatehistoryServiceConditions->getStates()) < 4) {
             $query['conditions']['state'] = $StatehistoryServiceConditions->getStates();
         }
 
-        foreach($StatehistoryServiceConditions->getStateTypes() as $stateType){
-            if($stateType === 0){
+        foreach ($StatehistoryServiceConditions->getStateTypes() as $stateType) {
+            if ($stateType === 0) {
                 $query['conditions']['is_hardstate'] = false;
             }
 
-            if($stateType === 1){
+            if ($stateType === 1) {
                 $query['conditions']['is_hardstate'] = true;
             }
         }
 
         $query['conditions'] = Hash::merge($paginatorConditions, $query['conditions']);
 
-        if($StatehistoryServiceConditions->hardStateTypeAndUpState()){
-            $query['or'] =  [
+        if ($StatehistoryServiceConditions->hardStateTypeAndUpState()) {
+            $query['or'] = [
                 ['StatehistoryService.is_hardstate = ?' => [1]],
                 ['StatehistoryService.state = ?' => [0]],
             ];
@@ -89,7 +89,7 @@ class StatehistoryService extends CrateModuleAppModel {
         $query = [
             'conditions' => [
                 'service_description' => $StatehistoryServiceConditions->getServiceUuid(),
-                'state_time <=' => $StatehistoryServiceConditions->getFrom(),
+                'state_time <='       => $StatehistoryServiceConditions->getFrom(),
             ],
             'order'      => [
                 'state_time' => 'DESC'

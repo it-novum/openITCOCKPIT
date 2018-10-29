@@ -37,12 +37,18 @@ class PieChart {
     /**
      * @var int
      */
-    private $width = 240;
+    private $width;
 
     /**
      * @var int
      */
-    private $height = 80;
+    private $height;
+
+    /**
+     * @var int
+     */
+    private $padding = 10;
+
 
     /**
      * @var float|int
@@ -73,12 +79,13 @@ class PieChart {
     private $CHART_END;
 
 
-    public function __construct() {
+    public function __construct($width = 240, $height = 160) {
+        $this->width = $width;
+        $this->height = $height;
         $this->DEF_CHART_START = deg2rad(90); //90°    Radians 1.58
         $this->CHART_END = deg2rad(360);      //360°   Radians 6.38
-
-        $this->x = $this->width / 2;
-        $this->y = 82;
+        $this->x = ($this->width + ($this->padding * 2)) / 2;
+        $this->y = $this->height / 2;
         $this->offset_3d = $this->y + 13;
     }
 
@@ -86,7 +93,8 @@ class PieChart {
      * @param array $chart_data [0 => 10, 1 => 5, 2 => 15]
      */
     public function createPieChart($chart_data) {
-        $this->image = imagecreatetruecolor(242, 160);
+        $this->image = imagecreatetruecolor($this->width + ($this->padding * 2), $this->height + ($this->padding * 2));
+        $this->height = ($this->height * 0.8);
         $this->setImageLayout(); //set transparence, colors, fonts, ...
         $this->create($chart_data);
     }
@@ -95,11 +103,11 @@ class PieChart {
      * @param array $chart_data [0 => 10, 1 => 5, 2 => 15]
      */
     public function createHalfPieChart($chart_data) {
-        $this->image = imagecreatetruecolor(242, 140);
-        $this->height = 160;
+        $this->image = imagecreatetruecolor($this->width + ($this->padding * 2), $this->height + ($this->padding * 2));
+        $this->x = ($this->width + $this->padding) / 2;
+        $this->y = ($this->height - $this->padding);
+        $this->height = ($this->height * 0.7) * 2;
 
-        $this->x = $this->width / 2;
-        $this->y = 120;
         $this->offset_3d = $this->y + 7;
 
         $this->setImageLayout(); //set transparence, colors, fonts, ...
@@ -126,8 +134,6 @@ class PieChart {
     private function create($chart_data) {
         $startAngle = 0.0; //Start
         $endAngle = 0.0; //End
-        $angleDiff = 0.0; //If angleDiff > 0 -> Rotate to 90°
-        $temp_start = 0.0;
         $set_start = false;
         $alpha = 30;
         $colors_host = [
@@ -157,7 +163,6 @@ class PieChart {
                 $angleDiff = $this->DEF_CHART_START - $startAngle;
                 $startAngle += $angleDiff;
                 $endAngle += $angleDiff;
-                $temp_start = $startAngle;
             }
             if ($endAngle > $this->CHART_END) {
                 $endAngle = ($this->CHART_END - $endAngle) * (-1);
@@ -176,8 +181,7 @@ class PieChart {
     private function createHalf($chart_data) {
         $startAngle = 0.0; //Start
         $endAngle = 0.0; //End
-        $angleDiff = 0.0; //If angleDiff > 0 -> Rotate to 90°
-        $temp_start = 0.0;
+
         $set_start = false;
         $alpha = 30;
         $colors_host = [
@@ -206,7 +210,6 @@ class PieChart {
             $startAngle = $endAngle;
             $degree = 180 * $state_data_per['size'] / 100;
             $radian = round($degree) * M_PI / 180;
-            //$endAngle = $startAngle + deg2rad(180*$state_data_per['size']/100);
             $endAngle = $startAngle + $radian;
 
             if ($startAngle < 0 && !$set_start) {
@@ -214,16 +217,14 @@ class PieChart {
                 $angleDiff = 0 - $startAngle;
                 $startAngle += $angleDiff;
                 $endAngle += $angleDiff;
-                $temp_start = $startAngle;
             }
             if ($endAngle > 180) {
                 $endAngle = (180 - $endAngle) * (-1);
             }
             if ($startAngle === $endAngle)
-                $endAngle -= 0.00000001;
-            if ($startAngle < 0 && $set_start) {
-                $startAngle = 0.0;
-            }
+                if ($startAngle < 0 && $set_start) {
+                    $startAngle = 0.0;
+                }
 
             $chart_data_array[$state] = [
                 'color'              => $colors[$state],
@@ -240,7 +241,6 @@ class PieChart {
 
     private function circle($chart_data_array) {
         foreach ($chart_data_array as $key => $data_arr) {
-            $background = imagecolorallocate($this->image, $data_arr['color'][0], $data_arr['color'][1], $data_arr['color'][2]);
             if ($data_arr['show_percent_value'] > 0) {
                 imageSmoothArc($this->image, $this->x, $this->y, $this->width, $this->height, $data_arr['color'], $data_arr['startAngle'], $data_arr['endAngle']);
             }
@@ -256,6 +256,4 @@ class PieChart {
             }
         }
     }
-
-
 }

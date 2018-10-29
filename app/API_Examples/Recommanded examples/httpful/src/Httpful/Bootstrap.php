@@ -7,8 +7,7 @@ namespace Httpful;
  * PSR-0 autoloader.
  * @author Nate Good <me@nategood.com>
  */
-class Bootstrap
-{
+class Bootstrap {
 
     const DIR_GLUE = DIRECTORY_SEPARATOR;
     const NS_GLUE = '\\';
@@ -18,8 +17,7 @@ class Bootstrap
     /**
      * Register the autoloader and any other setup needed
      */
-    public static function init()
-    {
+    public static function init() {
         spl_autoload_register(['\Httpful\Bootstrap', 'autoload']);
         self::registerHandlers();
     }
@@ -29,16 +27,14 @@ class Bootstrap
      *
      * @param string $classname
      */
-    public static function autoload($classname)
-    {
+    public static function autoload($classname) {
         self::_autoload(dirname(dirname(__FILE__)), $classname);
     }
 
     /**
      * Register the autoloader and any other setup needed
      */
-    public static function pharInit()
-    {
+    public static function pharInit() {
         spl_autoload_register(['\Httpful\Bootstrap', 'pharAutoload']);
         self::registerHandlers();
     }
@@ -48,8 +44,7 @@ class Bootstrap
      *
      * @param string $classname
      */
-    public static function pharAutoload($classname)
-    {
+    public static function pharAutoload($classname) {
         self::_autoload('phar://httpful.phar', $classname);
     }
 
@@ -57,10 +52,9 @@ class Bootstrap
      * @param string base
      * @param string classname
      */
-    private static function _autoload($base, $classname)
-    {
+    private static function _autoload($base, $classname) {
         $parts = explode(self::NS_GLUE, $classname);
-        $path = $base.self::DIR_GLUE.implode(self::DIR_GLUE, $parts).'.php';
+        $path = $base . self::DIR_GLUE . implode(self::DIR_GLUE, $parts) . '.php';
 
         if (file_exists($path)) {
             require_once($path);
@@ -70,8 +64,7 @@ class Bootstrap
     /**
      * Register default mime handlers.  Is idempotent.
      */
-    public static function registerHandlers()
-    {
+    public static function registerHandlers() {
         if (self::$registered === true) {
             return;
         }

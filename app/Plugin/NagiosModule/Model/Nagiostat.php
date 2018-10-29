@@ -23,8 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class Nagiostat extends NagiosModuleAppModel
-{
+class Nagiostat extends NagiosModuleAppModel {
     public $useTable = false;
     public $MRTG = [
         'NAGIOSVERSION',
@@ -132,8 +131,7 @@ class Nagiostat extends NagiosModuleAppModel
 
     public $delimiter = '|';
 
-    public function command()
-    {
+    public function command() {
         Configure::load('nagios');
         return sprintf(
             '%s%s%s -c %s -D "%s" -m -d %s',
@@ -146,8 +144,7 @@ class Nagiostat extends NagiosModuleAppModel
         );
     }
 
-    public function mergeResult($result)
-    {
+    public function mergeResult($result) {
 
         /*
          * Nagios add the delimiter also the the end of the string

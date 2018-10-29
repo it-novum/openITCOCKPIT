@@ -23,8 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class Serviceescalation extends AppModel
-{
+class Serviceescalation extends AppModel {
     var $hasAndBelongsToMany = [
         'Contactgroup' => [
             'className'             => 'Contactgroup',
@@ -151,16 +150,14 @@ class Serviceescalation extends AppModel
     /*
     Custom validation rule for contact and/or contactgroup fields
     */
-    public function atLeastOne($data)
-    {
+    public function atLeastOne($data) {
         return !empty($this->data[$this->name]['Contact']) || !empty($this->data[$this->name]['Contactgroup']);
     }
 
     /*
     Custom validation rule first_notification
     */
-    public function firstNotificationBeforeLastNotification($field = [], $compare_field = null)
-    {
+    public function firstNotificationBeforeLastNotification($field = [], $compare_field = null) {
         foreach ($field as $key => $value) {
             $v1 = $value;
             $v2 = $this->data[$this->name][$compare_field];
@@ -180,8 +177,7 @@ class Serviceescalation extends AppModel
     * @param Array Service-Ids exluded
     * @return filtered array in format ['service_id' => 1..n, 'exluded' => 0/1]
     */
-    public function parseServiceMembershipData($services = [], $services_exluded = [])
-    {
+    public function parseServiceMembershipData($services = [], $services_exluded = []) {
         $service_memberships_for_serviceescalation = [];
         foreach ($services as $service_id) {
             $service_memberships_for_serviceescalation[] = ['service_id' => $service_id, 'excluded' => '0'];
@@ -199,8 +195,7 @@ class Serviceescalation extends AppModel
     * @param Array Servicegroup-Ids exluded
     * @return filtered array in format ['servicegroup_id' => 1..n, 'exluded' => 0/1]
     */
-    public function parseServicegroupMembershipData($servicegroups = [], $servicegroups_exluded = [])
-    {
+    public function parseServicegroupMembershipData($servicegroups = [], $servicegroups_exluded = []) {
         $servicegroup_memberships_for_serviceescalation = [];
         foreach ($servicegroups as $servicegroup_id) {
             $servicegroup_memberships_for_serviceescalation[] = ['servicegroup_id' => $servicegroup_id, 'excluded' => '0'];

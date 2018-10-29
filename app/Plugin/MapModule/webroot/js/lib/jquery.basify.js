@@ -1,4 +1,4 @@
-$.fn.basify = function (opts) {
+$.fn.basify = function(opts){
     var $text = this,
         $parent = this.parent();
 

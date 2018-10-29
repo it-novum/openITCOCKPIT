@@ -28,8 +28,7 @@
  * Class TreeComponent
  * @property Container Container
  */
-class TreeComponent extends Component
-{
+class TreeComponent extends Component {
 
     /**
      * Creates the TreeComponent class
@@ -37,8 +36,7 @@ class TreeComponent extends Component
      * Container Model => $this->Container
      * Constants Component => $this->Constants
      */
-    function __construct()
-    {
+    function __construct() {
         //Loading the Container model
         $this->Container = ClassRegistry::init('Container');
         App::import('Component', 'Constants');
@@ -61,15 +59,14 @@ class TreeComponent extends Component
      * - `delimiter`   The delimiter for the path (default /)
      * - `order` of the retun array asc|desc (default asc)
      *
-     * @param integer $id      of the parent container (normaly root or a tenant) you would get all child containers
+     * @param integer $id of the parent container (normaly root or a tenant) you would get all child containers
      *                         with path
-     * @param array   $options Array of options
-     * @param array   $options with container type constants that should be considered
+     * @param array $options Array of options
+     * @param array $options with container type constants that should be considered
      *
      * @return array with all path [$id] => $path
      */
-    function path($id = null, $options = [], $valide_types = [CT_GLOBAL, CT_TENANT, CT_LOCATION, CT_NODE])
-    {
+    function path($id = null, $options = [], $valide_types = [CT_GLOBAL, CT_TENANT, CT_LOCATION, CT_NODE]) {
         $_options = [
             'delimiter'    => '/',
             'valide_types' => $valide_types,
@@ -92,7 +89,7 @@ class TreeComponent extends Component
             $paths = [];
             foreach ($parent as $container) {
                 if (in_array($container['Container']['containertype_id'], $options['valide_types'])) {
-                    $paths[$container['Container']['id']] = '/'.$this->treePath($container['Container']['id'], $options);
+                    $paths[$container['Container']['id']] = '/' . $this->treePath($container['Container']['id'], $options);
                 }
             }
 
@@ -116,13 +113,12 @@ class TreeComponent extends Component
      * - `delimiter`   The delimiter for the path (default /)
      * - `order` of the retun array asc|desc (default asc)
      *
-     * @param integer $id      of the container
-     * @param array   $options Array of options
+     * @param integer $id of the container
+     * @param array $options Array of options
      *
      * @return string with the path to the container
      */
-    public function treePath($id = null, $options = [])
-    {
+    public function treePath($id = null, $options = []) {
         $tree = $this->Container->getPath($id);
         $path = '';
         $ContainerNames = [];
@@ -140,17 +136,16 @@ class TreeComponent extends Component
      * ### Options
      * please check the wrapped function $this->path
      *
-     * @param integer $id               of the parent container (normaly root or a tenant) you would get all child
+     * @param integer $id of the parent container (normaly root or a tenant) you would get all child
      *                                  containers with path
-     * @param array   $options          with container type constants that should be considered
-     * @param array   $options          Array of options
-     * @param bool    $hasRootPrivilges of the user session
+     * @param array $options with container type constants that should be considered
+     * @param array $options Array of options
+     * @param bool $hasRootPrivilges of the user session
      * @param         int               /array a list or id of Container Types you want to explude from result
      *
      * @return array with all path [$id] => $path
      */
-    public function easyPath($id = null, $ObjectsByConstancName = [], $options = [], $hasRootPrivileges = false, $exclude = [])
-    {
+    public function easyPath($id = null, $ObjectsByConstancName = [], $options = [], $hasRootPrivileges = false, $exclude = []) {
         if ($hasRootPrivileges == false) {
             if (is_array($id)) {
                 // User has no root privileges so we need to delete the root container if it $id array
@@ -174,12 +169,11 @@ class TreeComponent extends Component
 
     /**
      * @param int|int[] $containerIds
-     * @param bool      $resolveRoot
+     * @param bool $resolveRoot
      *
      * @return int[]
      */
-    public function resolveChildrenOfContainerIds($containerIds, $resolveRoot = false, $includeContainerTypes = [])
-    {
+    public function resolveChildrenOfContainerIds($containerIds, $resolveRoot = false, $includeContainerTypes = []) {
         if (!is_array($containerIds)) {
             $containerIds = [$containerIds];
         }
@@ -191,11 +185,11 @@ class TreeComponent extends Component
             if ($containerId === ROOT_CONTAINER && $resolveRoot === false) {
                 continue;
             }
-            $tmpResult = Cache::remember('TreeComponentResolveChildrenOfContainerIds:'.$containerId, function () use ($containerId) {
+            $tmpResult = Cache::remember('TreeComponentResolveChildrenOfContainerIds:' . $containerId, function () use ($containerId) {
                 return $this->Container->children($containerId, false, ['id', 'containertype_id']);
             }, 'migration');
             if (!empty($includeContainerTypes)) {
-                $tmpResult = Hash::extract($tmpResult, '{n}.Container[containertype_id=/^('.implode('|', $includeContainerTypes).')$/].id');
+                $tmpResult = Hash::extract($tmpResult, '{n}.Container[containertype_id=/^(' . implode('|', $includeContainerTypes) . ')$/].id');
             } else {
                 $tmpResult = Hash::extract($tmpResult, '{n}.Container.id');
             }
@@ -213,8 +207,7 @@ class TreeComponent extends Component
      *
      * @return array
      */
-    public function removeRootContainer($containerIds)
-    {
+    public function removeRootContainer($containerIds) {
         $result = [];
         foreach ($containerIds as $containerId) {
             $containerId = (int)$containerId;

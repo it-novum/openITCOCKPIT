@@ -25,12 +25,15 @@
 namespace itnovum\openITCOCKPIT\ApiShell\Cronjob;
 
 use itnovum\openITCOCKPIT\ApiShell\CoreApi;
-use itnovum\openITCOCKPIT\ApiShell\Exceptions\RecordExistsExceptions;
 use itnovum\openITCOCKPIT\ApiShell\Interfaces\ApiInterface;
 use itnovum\openITCOCKPIT\ApiShell\OptionParser;
 
-class Api extends CoreApi implements ApiInterface
-{
+/**
+ * Class Api
+ * @package itnovum\openITCOCKPIT\ApiShell\Cronjob
+ * @property \Cronjob $Database
+ */
+class Api extends CoreApi implements ApiInterface {
 
     /**
      * @var OptionParser
@@ -42,14 +45,12 @@ class Api extends CoreApi implements ApiInterface
      */
     private $data;
 
-    public function setOptionsFromOptionParser(OptionParser $optionParser)
-    {
+    public function setOptionsFromOptionParser(OptionParser $optionParser) {
         $this->optionParser = $optionParser;
         $this->data = $optionParser->getData();
     }
 
-    public function dispatchRequest()
-    {
+    public function dispatchRequest() {
         switch ($this->optionParser->getAction()) {
             case 'create_missing_cronjobs':
                 $this->create_missing_cronjobs();
@@ -60,8 +61,7 @@ class Api extends CoreApi implements ApiInterface
     /**
      * @throws \Exception
      */
-    public function create_missing_cronjobs()
-    {
+    public function create_missing_cronjobs() {
         //Check if load cronjob exists
         if (!$this->Database->checkForCronjob('CpuLoad', 'Core')) {
             //Cron does not exists, so we create it
@@ -84,6 +84,12 @@ class Api extends CoreApi implements ApiInterface
         if (!$this->Database->checkForCronjob('SystemHealth', 'Core')) {
             //Cron does not exists, so we create it
             $this->Database->add('SystemHealth', 'Core', 1);
+        }
+
+        //Check if SystemMetrics cronjob exists
+        if (!$this->Database->checkForCronjob('SystemMetrics', 'Core')) {
+            //Cron does not exists, so we create it
+            $this->Database->add('SystemMetrics', 'Core', 240);
         }
     }
 

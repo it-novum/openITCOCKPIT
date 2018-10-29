@@ -44,8 +44,8 @@ class HostchecksController extends AppController {
     public $helpers = ['Status', 'Monitoring'];
     public $layout = 'Admin.default';
 
-    public function index($id = null){
-        $this->layout="angularjs";
+    public function index($id = null) {
+        $this->layout = "angularjs";
 
         if (!$this->Host->exists($id)) {
             throw new NotFoundException(__('invalid host'));
@@ -54,7 +54,7 @@ class HostchecksController extends AppController {
         if (!$this->isAngularJsRequest()) {
             //Host for .html requests
             $host = $this->Host->find('first', [
-                'fields' => [
+                'fields'     => [
                     'Host.id',
                     'Host.uuid',
                     'Host.name',
@@ -66,7 +66,7 @@ class HostchecksController extends AppController {
                 'conditions' => [
                     'Host.id' => $id,
                 ],
-                'contain' => [
+                'contain'    => [
                     'Container',
                 ],
             ]);
@@ -92,7 +92,7 @@ class HostchecksController extends AppController {
 
         //Host for .json requests
         $host = $this->Host->find('first', [
-            'fields' => [
+            'fields'     => [
                 'Host.id',
                 'Host.uuid',
                 'Host.name',
@@ -125,11 +125,11 @@ class HostchecksController extends AppController {
         $this->Paginator->settings['page'] = $AngularHostchecksControllerRequest->getPage();
 
         $ScrollIndex = new ScrollIndex($this->Paginator, $this);
-        if($this->isScrollRequest()) {
+        if ($this->isScrollRequest()) {
             $hostchecks = $this->Hostcheck->find('all', $this->Paginator->settings);
             $ScrollIndex->determineHasNextPage($hostchecks);
             $ScrollIndex->scroll();
-        }else {
+        } else {
             $hostchecks = $this->Paginator->paginate(
                 $this->Hostcheck->alias,
                 [],
@@ -148,7 +148,7 @@ class HostchecksController extends AppController {
 
         $this->set(compact(['all_hostchecks']));
         $toJson = ['all_hostchecks', 'paging'];
-        if($this->isScrollRequest()){
+        if ($this->isScrollRequest()) {
             $toJson = ['all_hostchecks', 'scroll'];
         }
         $this->set('_serialize', $toJson);

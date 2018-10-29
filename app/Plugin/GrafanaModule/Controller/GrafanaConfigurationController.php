@@ -27,6 +27,15 @@
 use GuzzleHttp\Client;
 use itnovum\openITCOCKPIT\Grafana\GrafanaApiConfiguration;
 
+/**
+ * Class GrafanaConfigurationController
+ * @property GrafanaConfiguration $GrafanaConfiguration
+ * @property GrafanaConfigurationHostgroupMembership $GrafanaConfigurationHostgroupMembership
+ * @property Hostgroup $Hostgroup
+ * @property Container $Container
+ * @property Proxy $Proxy
+ * @property GrafanaDashboard $GrafanaDashboard
+ */
 class GrafanaConfigurationController extends GrafanaModuleAppController {
 
     public $layout = 'angularjs';
@@ -36,7 +45,8 @@ class GrafanaConfigurationController extends GrafanaModuleAppController {
         'Container',
         'GrafanaModule.GrafanaConfiguration',
         'GrafanaModule.GrafanaConfigurationHostgroupMembership',
-        'Proxy'
+        'Proxy',
+        'GrafanaModule.GrafanaDashboard'
     ];
 
     public $components = [
@@ -70,7 +80,7 @@ class GrafanaConfigurationController extends GrafanaModuleAppController {
                     $this->serializeId();
                     return;
                 }
-            }else{
+            } else {
                 $this->serializeErrorMessage();
                 return;
             }
@@ -188,5 +198,171 @@ class GrafanaConfigurationController extends GrafanaModuleAppController {
             $this->set('status', $status);
             $this->set('_serialize', ['status']);
         }
+    }
+
+    public function grafanaWidget() {
+        $this->layout = 'blank';
+
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template
+            return;
+        }
+
+        $this->loadModel('Widget');
+        $this->loadModel('Host');
+
+        if ($this->request->is('get')) {
+            $widgetId = (int)$this->request->query('widgetId');
+            if (!$this->Widget->exists($widgetId)) {
+                throw new RuntimeException('Invalid widget id');
+            }
+
+            $widget = $this->Widget->find('first', [
+                'recursive'  => -1,
+                'conditions' => [
+                    'Widget.id' => $widgetId
+                ],
+                'fields'     => [
+                    'Widget.host_id'
+                ]
+            ]);
+
+            //Check host permissions
+            $host = $this->Host->find('first', [
+                'recursive'  => -1,
+                'contain'    => [
+                    'Container'
+                ],
+                'fields'     => [
+                    'Host.id',
+                    'Host.uuid',
+                    'Host.name'
+                ],
+                'conditions' => [
+                    'Host.id'       => $widget['Widget']['host_id'],
+                    'Host.disabled' => 0
+                ]
+            ]);
+
+            $hostId = null;
+            $iframeUrl = '';
+            if (!empty($host)) {
+                $hostId = (int)$widget['Widget']['host_id'];
+                if ($this->hasRootPrivileges === false) {
+                    if (!$this->allowedByContainerId(Hash::extract($host, 'Container.{n}.HostsToContainer.container_id'))) {
+                        $hostId = null;
+                    }
+                }
+
+
+                $grafanaConfiguration = $this->GrafanaConfiguration->find('first');
+                if (!empty($grafanaConfiguration) && $this->GrafanaDashboard->existsForUuid($host['Host']['uuid'])) {
+                    $GrafanaConfiguration = GrafanaApiConfiguration::fromArray($grafanaConfiguration);
+                    $GrafanaConfiguration->setHostUuid($host['Host']['uuid']);
+                    $iframeUrl = $GrafanaConfiguration->getIframeUrl();
+                } else {
+                    $hostId = null;
+                    $iframeUrl = '';
+                }
+            }
+
+
+            $this->set('host_id', $hostId);
+            $this->set('iframe_url', $iframeUrl);
+            $this->set('_serialize', ['host_id', 'iframe_url']);
+            return;
+        }
+
+
+        if ($this->request->is('post')) {
+            $hostId = (int)$this->request->data('host_id');
+            if ($hostId === 0) {
+                $hostId = null;
+            }
+
+            $widgetId = (int)$this->request->data('Widget.id');
+
+            if (!$this->Widget->exists($widgetId)) {
+                throw new RuntimeException('Invalid widget id');
+            }
+            $widget = $this->Widget->find('first', [
+                'recursive'  => -1,
+                'conditions' => [
+                    'Widget.id' => $widgetId
+                ],
+            ]);
+
+            $widget['Widget']['host_id'] = $hostId;
+
+            if ($this->Widget->save($widget)) {
+                $this->set('host_id', $hostId);
+                $this->set('_serialize', ['host_id']);
+                return;
+            }
+
+            $this->serializeErrorMessageFromModel('Widget');
+            return;
+        }
+        throw new MethodNotAllowedException();
+    }
+
+    public function getGrafanaDashboards() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        $grafanaDashboards = [];
+        $rawGrafanaDashboards = $this->GrafanaDashboard->find('all', [
+            'fields'     => [
+                'GrafanaDashboard.id',
+                'GrafanaDashboard.host_id',
+                'GrafanaDashboard.host_uuid',
+                'Host.name'
+            ],
+            'joins'      => [
+                [
+                    'table'      => 'hosts',
+                    'alias'      => 'Host',
+                    'type'       => 'LEFT',
+                    'conditions' => [
+                        'Host.id = GrafanaDashboard.host_id',
+                    ],
+                ],
+                [
+                    'table'      => 'hosts_to_containers',
+                    'alias'      => 'HostsToContainers',
+                    'type'       => 'INNER',
+                    'conditions' => [
+                        'HostsToContainers.host_id = Host.id',
+                    ],
+                ]
+            ],
+            'conditions' => [
+                'HostsToContainers.container_id' => $this->MY_RIGHTS
+            ],
+            'group'      => [
+                'Host.id',
+            ],
+            'order'      => [
+                'Host.name' => 'ASC'
+            ]
+        ]);
+
+        foreach ($rawGrafanaDashboards as $rawGrafanaDashboard) {
+            $grafanaDashboards[] = [
+                'GrafanaDashboard' => [
+                    'id'        => (int)$rawGrafanaDashboard['GrafanaDashboard']['id'],
+                    'host_id'   => (int)$rawGrafanaDashboard['GrafanaDashboard']['host_id'],
+                    'host_uuid' => $rawGrafanaDashboard['GrafanaDashboard']['host_uuid']
+                ],
+                'Host'             => [
+                    'name' => $rawGrafanaDashboard['Host']['name']
+                ]
+            ];
+        }
+
+        $this->set('grafana_dashboards', $grafanaDashboards);
+        $this->set('_serialize', ['grafana_dashboards']);
+
     }
 }

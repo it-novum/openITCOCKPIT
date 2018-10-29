@@ -49,7 +49,7 @@ class Systemsetting extends Importer {
     }
 
     public function exists($key) {
-        $record = $this->Model->find('first',[
+        $record = $this->Model->find('first', [
             'conditions' => [
                 'Systemsetting.key' => $key,
             ],
@@ -289,6 +289,14 @@ class Systemsetting extends Importer {
             ],
             [
                 'Systemsetting' => [
+                    'key'     => 'SYSTEM.ANONYMOUS_STATISTICS',
+                    'value'   => '2',
+                    'info'    => 'Determines if you want to support the developers of openITCOCKPIT by providing anonymous statistical data or not.',
+                    'section' => 'SYSTEM'
+                ],
+            ],
+            [
+                'Systemsetting' => [
                     'key'     => 'FRONTEND.SYSTEMNAME',
                     'value'   => 'openITCOCKPIT',
                     'info'    => 'The name of your system',
@@ -499,7 +507,7 @@ class Systemsetting extends Importer {
                 'Systemsetting' => [
                     'key'     => 'CHECK_MK.ETC',
                     'value'   => '/opt/openitc/nagios/3rd/check_mk/etc/',
-                    'info'    => 'Path to Check_MK confi files',
+                    'info'    => 'Path to Check_MK config files',
                     'section' => 'CHECK_MK'
                 ],
             ],
@@ -644,6 +652,14 @@ class Systemsetting extends Importer {
                     'key'     => 'INIT.PUSH_NOTIFICATION',
                     'value'   => 'service push_notification status',
                     'info'    => 'Command to query the status of openITCOCKPITs push notification service',
+                    'section' => 'INIT'
+                ],
+            ],
+            [
+                'Systemsetting' => [
+                    'key'     => 'INIT.NODEJS_SERVER',
+                    'value'   => 'service nodejs_server status',
+                    'info'    => 'Command to query the status of openITCOCKPITs NodeJS Server backend',
                     'section' => 'INIT'
                 ],
             ],

@@ -39,7 +39,7 @@ class Servicestatus extends Statusengine3ModuleAppModel {
      * @return array|bool
      */
     private function byUuidMagic($uuid = null, ServicestatusFields $ServicestatusFields, $ServicestatusConditions = null) {
-        if($uuid === null || empty($uuid)){
+        if ($uuid === null || empty($uuid)) {
             return [];
         }
 
@@ -142,7 +142,7 @@ class Servicestatus extends Statusengine3ModuleAppModel {
         //todo CrateDB bug, check if LEFT join can be refactored with INNER join
         //https://github.com/crate/crate/issues/5747
         $query = [
-            'fields' => [
+            'fields'           => [
                 'Service.id',
                 'Service.uuid',
                 'Service.name',
@@ -174,36 +174,40 @@ class Servicestatus extends Statusengine3ModuleAppModel {
                 'Hoststatus.last_hard_state_change'
 
             ],
-            'joins' => [
+            'joins'            => [
                 [
-                    'table' => 'openitcockpit_hosts',
-                    'type' => 'INNER',
-                    'alias' => 'Host',
+                    'table'      => 'openitcockpit_hosts',
+                    'type'       => 'INNER',
+                    'alias'      => 'Host',
                     'conditions' => 'Host.uuid = Servicestatus.hostname',
                 ],
                 [
-                    'table' => 'openitcockpit_services',
-                    'type' => 'INNER',
-                    'alias' => 'Service',
+                    'table'      => 'openitcockpit_services',
+                    'type'       => 'INNER',
+                    'alias'      => 'Service',
                     'conditions' => 'Service.uuid = Servicestatus.service_description',
                 ],
                 [
-                    'table' => 'statusengine_hoststatus',
-                    'type' => 'INNER',
-                    'alias' => 'Hoststatus',
+                    'table'      => 'statusengine_hoststatus',
+                    'type'       => 'INNER',
+                    'alias'      => 'Hoststatus',
                     'conditions' => 'Hoststatus.hostname = Host.uuid',
                 ]
             ],
-            'conditions' => $conditions,
+            'conditions'       => $conditions,
             'array_difference' => [
                 'Host.container_ids' =>
                     $ServiceConditions->getContainerIds(),
             ],
-            'order' => $ServiceConditions->getOrder()
+            'order'            => $ServiceConditions->getOrder()
         ];
 
         if ($ServiceConditions->getHostId()) {
             $query['conditions']['Service.host_id'] = $ServiceConditions->getHostId();
+        }
+
+        if ($ServiceConditions->getServiceIds()) {
+            $query['conditions']['Service.id'] = $ServiceConditions->getServiceIds();
         }
 
         return $query;
@@ -214,13 +218,13 @@ class Servicestatus extends Statusengine3ModuleAppModel {
      * @param bool $includeOkState
      * @return array
      */
-    public function getServicestatusCount($MY_RIGHTS, $includeOkState = false){
+    public function getServicestatusCount($MY_RIGHTS, $includeOkState = false) {
         $servicestatusCount = [
             '1' => 0,
             '2' => 0,
             '3' => 0,
         ];
-        if($includeOkState === true){
+        if ($includeOkState === true) {
             $servicestatusCount['0'] = 0;
         }
 
@@ -228,30 +232,30 @@ class Servicestatus extends Statusengine3ModuleAppModel {
             'count' => 'COUNT(DISTINCT Servicestatus.service_description)'
         ];
         $query = [
-            'fields' => [
+            'fields'           => [
                 'Servicestatus.current_state',
             ],
-            'joins' => [
+            'joins'            => [
                 [
-                    'table' => 'openitcockpit_hosts',
-                    'type' => 'INNER',
-                    'alias' => 'Host',
+                    'table'      => 'openitcockpit_hosts',
+                    'type'       => 'INNER',
+                    'alias'      => 'Host',
                     'conditions' => 'Host.uuid = Servicestatus.hostname',
                 ]
             ],
-            'conditions' => [
-                'Service.disabled'                  => false
+            'conditions'       => [
+                'Service.disabled' => false
             ],
             'array_difference' => [
                 'Host.container_ids' =>
                     $MY_RIGHTS
             ],
-            'group'      => [
+            'group'            => [
                 'Servicestatus.current_state',
             ],
         ];
 
-        if($includeOkState === false){
+        if ($includeOkState === false) {
             $query['conditions']['Servicestatus.current_state >'] = 0;
         }
 

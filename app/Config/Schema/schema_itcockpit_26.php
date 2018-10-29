@@ -968,7 +968,7 @@ class AppSchema extends CakeSchema {
         'check_command_args'           => ['type' => 'string', 'null' => false, 'default' => null, 'length' => 1000, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
         'checkcommand_info'            => ['type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
         'eventhandler_command_id'      => ['type' => 'integer', 'null' => false, 'default' => '0'],
-        'timeperiod_id'                => ['type' => 'integer', 'null' => false, 'default' => null],
+        'timeperiod_id'                => ['type' => 'integer', 'null' => true, 'default' => null],
         'check_interval'               => ['type' => 'integer', 'null' => false, 'default' => '1', 'length' => 5],
         'retry_interval'               => ['type' => 'integer', 'null' => false, 'default' => '3', 'length' => 5],
         'max_check_attempts'           => ['type' => 'integer', 'null' => false, 'default' => '1', 'length' => 3],
@@ -1390,102 +1390,6 @@ class AppSchema extends CakeSchema {
         'tableParameters'     => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB'],
     ];
 
-    public $widgets = [
-        'id'               => ['type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'],
-        'dashboard_tab_id' => ['type' => 'integer', 'null' => false],
-        'type_id'          => ['type' => 'integer', 'null' => false],
-        'service_id'       => ['type' => 'integer', 'null' => true],
-        'host_id'          => ['type' => 'integer', 'null' => true],
-        'map_id'           => ['type' => 'integer', 'null' => true],
-        'graph_id'         => ['type' => 'integer', 'null' => true],
-        'row'              => ['type' => 'integer', 'null' => false],
-        'col'              => ['type' => 'integer', 'null' => false],
-        'width'            => ['type' => 'integer', 'null' => false],
-        'height'           => ['type' => 'integer', 'null' => false],
-        'title'            => ['type' => 'string', 'null' => false], // The title of the widget.
-        'color'            => ['type' => 'string', 'null' => false], // Color of the widgetbar.
-        'created'          => ['type' => 'datetime', 'null' => false, 'default' => null],
-        'modified'         => ['type' => 'datetime', 'null' => false, 'default' => null],
-        'indexes'          => [
-            'PRIMARY' => ['column' => 'id', 'unique' => 1],
-        ],
-    ];
-
-    public $dashboard_tabs = [
-        'id'                   => ['type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'],
-        'user_id'              => ['type' => 'integer', 'null' => false], // ID from the user.
-        'position'             => ['type' => 'integer', 'null' => false], //Position
-        'name'                 => ['type' => 'string', 'null' => false], // The name of the tab.
-        'shared'               => ['type' => 'boolean', 'null' => false, 'default' => '0'], // The name of the tab.
-        'source_tab_id'        => ['type' => 'integer', 'null' => true], // The name of the tab.
-        'check_for_updates'    => ['type' => 'integer', 'null' => true, 'default' => null],
-        'source_last_modified' => ['type' => 'datetime', 'null' => true, 'default' => null],
-        'created'              => ['type' => 'datetime', 'null' => false, 'default' => null],
-        'modified'             => ['type' => 'datetime', 'null' => false, 'default' => null],
-        'indexes'              => [
-            'PRIMARY' => ['column' => 'id', 'unique' => 1],
-        ],
-    ];
-
-    public $widget_tachos = [
-        'id'          => ['type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'],
-        'widget_id'   => ['type' => 'integer', 'null' => false],
-        'min'         => ['type' => 'integer', 'null' => false],
-        'max'         => ['type' => 'integer', 'null' => false],
-        'warn'        => ['type' => 'integer', 'null' => false],
-        'crit'        => ['type' => 'integer', 'null' => false],
-        'data_source' => ['type' => 'string', 'null' => false],
-        'indexes'     => [
-            'PRIMARY' => ['column' => 'id', 'unique' => 1],
-            'KEY'     => ['column' => 'widget_id', 'unique' => 1],
-        ],
-    ];
-
-    public $widget_service_status_lists = [
-        'id'                 => ['type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'],
-        'widget_id'          => ['type' => 'integer', 'null' => false],
-        'animation'          => ['type' => 'string', 'null' => false],
-        'animation_interval' => ['type' => 'integer', 'null' => false],
-        'show_ok'            => ['type' => 'boolean', 'null' => false, 'default' => '1'],
-        'show_warning'       => ['type' => 'boolean', 'null' => false, 'default' => '1'],
-        'show_critical'      => ['type' => 'boolean', 'null' => false, 'default' => '1'],
-        'show_unknown'       => ['type' => 'boolean', 'null' => false, 'default' => '1'],
-        'show_acknowledged'  => ['type' => 'boolean', 'null' => false, 'default' => '0'],
-        'show_downtime'      => ['type' => 'boolean', 'null' => false, 'default' => '0'],
-        'show_filter_search' => ['type' => 'text', 'null' => false, 'default' => ''],
-        'indexes'            => [
-            'PRIMARY' => ['column' => 'id', 'unique' => 1],
-            'KEY'     => ['column' => 'widget_id', 'unique' => 1],
-        ],
-    ];
-
-    public $widget_host_status_lists = [
-        'id'                 => ['type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'],
-        'widget_id'          => ['type' => 'integer', 'null' => false],
-        'animation'          => ['type' => 'string', 'null' => false],
-        'animation_interval' => ['type' => 'integer', 'null' => false],
-        'show_up'            => ['type' => 'boolean', 'null' => false, 'default' => '1'],
-        'show_down'          => ['type' => 'boolean', 'null' => false, 'default' => '1'],
-        'show_unreachable'   => ['type' => 'boolean', 'null' => false, 'default' => '1'],
-        'show_acknowledged'  => ['type' => 'boolean', 'null' => false, 'default' => '0'],
-        'show_downtime'      => ['type' => 'boolean', 'null' => false, 'default' => '0'],
-        'show_filter_search' => ['type' => 'text', 'null' => false, 'default' => ''],
-        'indexes'            => [
-            'PRIMARY' => ['column' => 'id', 'unique' => 1],
-            'KEY'     => ['column' => 'widget_id', 'unique' => 1],
-        ],
-    ];
-
-    public $widget_notices = [
-        'id'        => ['type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'],
-        'widget_id' => ['type' => 'integer', 'null' => false],
-        'note'      => ['type' => 'text', 'null' => false],
-        'indexes'   => [
-            'PRIMARY' => ['column' => 'id', 'unique' => 1],
-            'KEY'     => ['column' => 'widget_id', 'unique' => 1],
-        ],
-    ];
-
     public $automaps = [
         'id'                => ['type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'],
         'name'              => ['type' => 'string', 'null' => false, 'default' => null, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
@@ -1657,6 +1561,47 @@ class AppSchema extends CakeSchema {
             'apikey'  => ['column' => ['apikey', 'user_id'], 'unique' => 0]
         ],
         'tableParameters' => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB'],
+    ];
+
+    public $dashboard_tabs = [
+        'id'                => ['type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'],
+        'user_id'           => ['type' => 'integer', 'null' => false],
+        'position'          => ['type' => 'integer', 'null' => false],
+        'name'              => ['type' => 'string', 'null' => false],
+        'shared'            => ['type' => 'boolean', 'null' => false, 'default' => '0'],
+        'source_tab_id'     => ['type' => 'integer', 'null' => true],
+        'check_for_updates' => ['type' => 'integer', 'null' => true, 'default' => null],
+        'last_update'       => ['type' => 'integer', 'null' => true, 'default' => '0'],
+        'locked'            => ['type' => 'boolean', 'null' => false, 'default' => '0'],
+        'created'           => ['type' => 'datetime', 'null' => false, 'default' => null],
+        'modified'          => ['type' => 'datetime', 'null' => false, 'default' => null],
+        'indexes'           => [
+            'PRIMARY' => ['column' => 'id', 'unique' => 1],
+        ],
+        'tableParameters'   => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB'],
+    ];
+
+    public $widgets = [
+        'id'               => ['type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'],
+        'dashboard_tab_id' => ['type' => 'integer', 'null' => false],
+        'type_id'          => ['type' => 'integer', 'null' => false],
+        'host_id'          => ['type' => 'integer', 'null' => true],
+        'service_id'       => ['type' => 'integer', 'null' => true],
+        'row'              => ['type' => 'integer', 'null' => false],
+        'col'              => ['type' => 'integer', 'null' => false],
+        'width'            => ['type' => 'integer', 'null' => false],
+        'height'           => ['type' => 'integer', 'null' => false],
+        'title'            => ['type' => 'string', 'null' => false], // The title of the widget.
+        'color'            => ['type' => 'string', 'null' => false], // Color of the widgetbar.
+        'directive'        => ['type' => 'string', 'null' => false], // Angular directive of the widget.
+        'icon'             => ['type' => 'string', 'null' => false],
+        'json_data'        => ['type' => 'string', 'null' => true, 'default' => null, 'length' => 2000, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
+        'created'          => ['type' => 'datetime', 'null' => false, 'default' => null],
+        'modified'         => ['type' => 'datetime', 'null' => false, 'default' => null],
+        'indexes'          => [
+            'PRIMARY' => ['column' => 'id', 'unique' => 1],
+        ],
+        'tableParameters'  => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB'],
     ];
 
     /*public $devicegroups = array(

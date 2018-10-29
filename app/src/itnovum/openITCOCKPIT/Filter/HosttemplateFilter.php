@@ -30,7 +30,7 @@ class HosttemplateFilter extends Filter {
     /**
      * @return array
      */
-    public function ajaxFilter(){
+    public function ajaxFilter() {
         $filters = [
             'like' => [
                 'Hosttemplate.name',

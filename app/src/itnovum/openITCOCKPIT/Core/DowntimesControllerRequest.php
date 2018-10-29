@@ -25,8 +25,6 @@
 namespace itnovum\openITCOCKPIT\Core;
 
 
-use itnovum\openITCOCKPIT\Core\ValueObjects\HostStates;
-
 class DowntimesControllerRequest extends ControllerListSettingsRequest {
 
     public function hideExpired() {

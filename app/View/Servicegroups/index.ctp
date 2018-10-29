@@ -112,7 +112,8 @@
                         </div>
 
                         <div class="mobile_table">
-                            <table id="servicegroup_list" class="table table-striped table-hover table-bordered smart-form"
+                            <table id="servicegroup_list"
+                                   class="table table-striped table-hover table-bordered smart-form"
                                    style="">
                                 <thead>
                                 <tr>

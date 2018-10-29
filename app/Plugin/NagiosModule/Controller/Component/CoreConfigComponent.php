@@ -1,22 +1,19 @@
 <?php
 
-Class CoreConfigComponent extends Component
-{
+Class CoreConfigComponent extends Component {
 
     /*
      * NOTICE:
      * There is also a Model/Coreconfig.php, for parts where you cant use this component! For example in shell tasks!
      */
 
-    public function initialize(Controller $controller)
-    {
+    public function initialize(Controller $controller) {
         $this->Systemsetting = ClassRegistry::init('Systemsetting');
         $this->_systemsettings = $this->Systemsetting->findAsArray();
         $this->Config = [];
     }
 
-    public function read($key = null)
-    {
+    public function read($key = null) {
         if (empty($this->Config)) {
             $this->loadConfigAsArray();
         }
@@ -27,13 +24,11 @@ Class CoreConfigComponent extends Component
         return flase;
     }
 
-    public function _read($key = null)
-    {
+    public function _read($key = null) {
         return $this->read($key);
     }
 
-    public function loadConfigAsArray()
-    {
+    public function loadConfigAsArray() {
         $config = $this->_systemsettings['MONITORING']['MONITORING.CORECONFIG'];
         $coreconfig = fopen($config, "r");
         while (!feof($coreconfig)) {

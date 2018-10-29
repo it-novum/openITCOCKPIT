@@ -22,26 +22,25 @@
 //  License agreement and license key will be shipped with the order
 //  confirmation.
 
-use \itnovum\openITCOCKPIT\Core\Interfaces\CronjobInterface;
+use itnovum\openITCOCKPIT\Core\Interfaces\CronjobInterface;
 
-class InstantReportTask extends AppShell implements CronjobInterface
-{
+class InstantReportTask extends AppShell implements CronjobInterface {
     public $uses = [
         'Instantreport',
         'Systemsetting'
     ];
     public $_systemsettings;
 
-    public function execute($quiet = false){
+    public function execute($quiet = false) {
         App::uses('Folder', 'Utility');
-        App::uses('CakeEmail','Network/Email');
+        App::uses('CakeEmail', 'Network/Email');
         $this->_systemsettings = $this->Systemsetting->findAsArraySection('MONITORING');
         $this->params['quiet'] = $quiet;
         $this->stdout->styles('green', ['text' => 'green']);
         $this->stdout->styles('red', ['text' => 'red']);
         $this->out('Sending Instant Reports...');
         $allInstantReports = $this->Instantreport->find('all', [
-            'recursive' => -1,
+            'recursive'  => -1,
             'conditions' => [
                 'Instantreport.send_email' => '1',
             ],
@@ -50,28 +49,28 @@ class InstantReportTask extends AppShell implements CronjobInterface
             ],
         ]);
         $toSend = false;
-        foreach($allInstantReports as $mInstantReport){
+        foreach ($allInstantReports as $mInstantReport) {
             $hasToBeSend = $this->Instantreport->hasToBeSend($mInstantReport['Instantreport']['last_send_date'], $mInstantReport['Instantreport']['send_interval']);
-            if($hasToBeSend === false) continue;
-            if(empty($mInstantReport['User'])) continue;
+            if ($hasToBeSend === false) continue;
+            if (empty($mInstantReport['User'])) continue;
             $emailsToSend = [];
-            foreach ($mInstantReport['User'] as $userToSend){
+            foreach ($mInstantReport['User'] as $userToSend) {
                 $emailsToSend[] = $userToSend['email'];
             }
-            if(empty($emailsToSend)) continue;
+            if (empty($emailsToSend)) continue;
             App::uses('CakePdf', 'CakePdf.Pdf');
             App::import('Controller', 'Instantreports');
             $InstantreportsController = new InstantreportsController();
             $InstantreportsController->cronFromDate = $this->Instantreport->reportStartTime($mInstantReport['Instantreport']['send_interval']);
             $InstantreportsController->cronToDate = $this->Instantreport->reportEndTime($mInstantReport['Instantreport']['send_interval']);
-            $InstantreportsController->cronPdfName = APP.'tmp/InstantReport_'.$mInstantReport['Instantreport']['id'].'.pdf';
+            $InstantreportsController->cronPdfName = APP . 'tmp/InstantReport_' . $mInstantReport['Instantreport']['id'] . '.pdf';
             $InstantreportsController->generate($mInstantReport['Instantreport']['id']);
-            $attachmentArray[preg_replace('[^0-9a-zA-Z_\s]', '_', $mInstantReport['Instantreport']['name']).'.pdf'] = [
+            $attachmentArray[preg_replace('[^0-9a-zA-Z_\s]', '_', $mInstantReport['Instantreport']['name']) . '.pdf'] = [
                 'file'     => $InstantreportsController->cronPdfName,
                 'mimetype' => 'application/pdf'
             ];
             $sendIntervals = $this->Instantreport->getSendIntervals();
-            $subject = $sendIntervals[$mInstantReport['Instantreport']['send_interval']].' Instant Report '.$mInstantReport['Instantreport']['name'];
+            $subject = $sendIntervals[$mInstantReport['Instantreport']['send_interval']] . ' Instant Report ' . $mInstantReport['Instantreport']['name'];
             $Email = new CakeEmail();
             $Email->config('default');
             $Email->from([$this->_systemsettings['MONITORING']['MONITORING.FROM_ADDRESS'] => $this->_systemsettings['MONITORING']['MONITORING.FROM_NAME']]);
@@ -81,16 +80,16 @@ class InstantReportTask extends AppShell implements CronjobInterface
             $toSend = true;
 
             if ($Email->send('Attached you find the automatically generated Instant Report!')) {
-                $this->out('Report "'.$mInstantReport['Instantreport']['id'].'" sent to mail address "'.implode(', ', $emailsToSend).'"', false);
+                $this->out('Report "' . $mInstantReport['Instantreport']['id'] . '" sent to mail address "' . implode(', ', $emailsToSend) . '"', false);
                 $this->Instantreport->id = $mInstantReport['Instantreport']['id'];
                 $this->Instantreport->saveField('last_send_date', date('Y-m-d H:i:s'));
                 $this->out('<green>   Ok</green>');
             } else {
-                $this->out('ERROR sending report  "'.$mInstantReport['Instantreport']['id'].'" to mail address "'.implode(', ', $emailsToSend).'" !', false);
+                $this->out('ERROR sending report  "' . $mInstantReport['Instantreport']['id'] . '" to mail address "' . implode(', ', $emailsToSend) . '" !', false);
                 $this->out('<red>   Error</red>');
             }
         }
-        if(!$toSend){
+        if (!$toSend) {
             $this->out('<green>No emails to send</green>');
         }
         $this->hr();

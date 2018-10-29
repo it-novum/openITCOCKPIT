@@ -23,8 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class Commenthistory extends NagiosModuleAppModel
-{
+class Commenthistory extends NagiosModuleAppModel {
 
     public $useTable = 'commenthistory';
     public $primaryKey = 'commenthistory_id';

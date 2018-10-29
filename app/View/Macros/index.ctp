@@ -31,7 +31,7 @@
             <?php echo __('Monitoring'); ?>
             <span>>
                 <?php echo __('User defined macros'); ?>
-			</span>
+            </span>
         </h1>
     </div>
 </div>
@@ -65,7 +65,8 @@
                         ]);
                         ?>
                         <div class="mobile_table">
-                            <table id="macrosTable" class="table table-striped table-hover table-bordered smart-form" style="">
+                            <table id="macrosTable" class="table table-striped table-hover table-bordered smart-form"
+                                   style="">
                                 <thead>
                                 <tr>
                                     <?php $order = $this->Paginator->param('order'); ?>
@@ -97,11 +98,11 @@
                                                 <?php endif; ?>
                                                 <input class="form-control" type="hidden" macro="name"
                                                        uuid="<?php echo $uuid; ?>"
-                                                       value="<?php echo $macro['Macro']['name']; ?>"
+                                                       value="<?php echo h($macro['Macro']['name']); ?>"
                                                        name="data[<?php echo $i; ?>][Macro][name]">
                                                 <input class="form-control systemsetting-input <?php echo ($macro['Macro']['password']) ? 'macroPassword' : ''; ?>"
                                                        type="text" maxlength="255"
-                                                       value="<?php echo $macro['Macro']['value']; ?>"
+                                                       value="<?php echo h($macro['Macro']['value']); ?>"
                                                        name="data[<?php echo $i; ?>][Macro][value]">
                                             </div>
                                         </td>
@@ -109,7 +110,7 @@
                                             <?php if (isset($macro['Macro']['id'])): ?>
                                                 <input class="form-control systemsetting-input" type="text"
                                                        maxlength="255"
-                                                       value="<?php echo $macro['Macro']['description']; ?>"
+                                                       value="<?php echo h($macro['Macro']['description']); ?>"
                                                        name="data[<?php echo $i; ?>][Macro][description]">
                                                 <input class="form-control" type="hidden"
                                                        value="<?php echo (int)$macro['Macro']['password']; ?>"

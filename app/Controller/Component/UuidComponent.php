@@ -278,7 +278,7 @@ class UuidComponent extends Component {
             }
         }
 
-        if($fillNull) {
+        if ($fillNull) {
             foreach ($unknownUuids as $uuid) {
                 $knownUuids[$uuid] = null;
             }

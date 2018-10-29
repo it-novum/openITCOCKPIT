@@ -24,8 +24,6 @@
 
 namespace itnovum\openITCOCKPIT\Core\Views;
 
-use itnovum\openITCOCKPIT\Core\Views\UserTime;
-
 abstract class Acknowledgement {
 
 
@@ -79,7 +77,7 @@ abstract class Acknowledgement {
      * StatehistoryHost constructor.
      * @param array $data
      */
-    public function __construct($data, $UserTime = null){
+    public function __construct($data, $UserTime = null) {
         if (isset($data['acknowledgement_type'])) {
             $this->acknowledgement_type = (int)$data['acknowledgement_type'];
         }
@@ -118,71 +116,71 @@ abstract class Acknowledgement {
     /**
      * @return int
      */
-    public function getAcknowledgementType(){
+    public function getAcknowledgementType() {
         return $this->acknowledgement_type;
     }
 
     /**
      * @return string
      */
-    public function getAuthorName(){
+    public function getAuthorName() {
         return $this->author_name;
     }
 
     /**
      * @return string
      */
-    public function getCommentData(){
+    public function getCommentData() {
         return $this->comment_data;
     }
 
     /**
      * @return int|string
      */
-    public function getEntryTime(){
+    public function getEntryTime() {
         return $this->entry_time;
     }
 
     /**
      * @return boolean
      */
-    public function isSticky(){
+    public function isSticky() {
         return $this->is_sticky;
     }
 
     /**
      * @return boolean
      */
-    public function hasNotifyContacts(){
+    public function hasNotifyContacts() {
         return $this->notify_contacts;
     }
 
     /**
      * @return boolean
      */
-    public function isPersistentComment(){
+    public function isPersistentComment() {
         return $this->persistent_comment;
     }
 
     /**
      * @return int
      */
-    public function getState(){
+    public function getState() {
         return $this->state;
     }
 
     /**
      * @return array
      */
-    public function toArray(){
+    public function toArray() {
         $arr = get_object_vars($this);
-        if(isset($arr['UserTime'])){
+        if (isset($arr['UserTime'])) {
             unset($arr['UserTime']);
         }
 
-        if($this->UserTime !== null) {
+        if ($this->UserTime !== null) {
             $arr['entry_time'] = $this->UserTime->format($this->getEntryTime());
-        }else{
+        } else {
             $arr['entry_time'] = $this->getEntryTime();
         }
 

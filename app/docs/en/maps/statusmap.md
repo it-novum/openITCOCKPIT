@@ -1,4 +1,4 @@
-## What is the statusmap in openITCOCKPIT v3?
+## What is the statusmap in openITCOCKPIT?
 
 The statusmap is meant to show a visual overview over all hosts monitored by the system.
 

@@ -29,8 +29,7 @@ class GrafanaDashboard extends GrafanaModuleAppModel {
      * @param null $uuid
      * @return bool
      */
-    public function existsForUuid($uuid = null)
-    {
+    public function existsForUuid($uuid = null) {
         return !empty($this->find('first', [
             'conditions' => [
                 'GrafanaDashboard.host_uuid' => $uuid

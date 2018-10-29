@@ -7,8 +7,7 @@
 
 namespace Httpful\Handlers;
 
-class XHtmlHandler extends MimeHandlerAdapter
-{
+class XHtmlHandler extends MimeHandlerAdapter {
     // @todo add html specific parsing
     // see DomDocument::load http://docs.php.net/manual/en/domdocument.loadhtml.php
 }

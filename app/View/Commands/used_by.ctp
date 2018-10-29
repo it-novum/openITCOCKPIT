@@ -58,7 +58,8 @@
                 <div>
 
                     <div class="widget-body no-padding">
-                        <table id="host_list" class="table table-striped table-hover table-bordered smart-form" style="">
+                        <table id="host_list" class="table table-striped table-hover table-bordered smart-form"
+                               style="">
                             <thead>
                             <tr>
                                 <?php $order = $this->Paginator->param('order'); ?>

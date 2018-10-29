@@ -23,8 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class NagiostatsController extends AppController
-{
+class NagiostatsController extends AppController {
     /*
      * Attention! In this case we load an external Model from the monitoring plugin! The Controller
      * use this external model to fetch the required data out of the database
@@ -35,8 +34,7 @@ class NagiostatsController extends AppController
     public $helpers = ['ListFilter.ListFilter', 'Status', 'Monitoring', 'CustomValidationErrors', 'Uuid'];
     public $layout = 'Admin.default';
 
-    public function index()
-    {
+    public function index() {
 
     }
 }

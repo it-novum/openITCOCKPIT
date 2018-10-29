@@ -61,7 +61,7 @@
                                     class="form-control"
                                     chosen="containers"
                                     ng-options="container.key as container.value for container in containers"
-                                    ng-model="post.Container.parent_id" >
+                                    ng-model="post.Container.parent_id">
                             </select>
                             <div ng-repeat="error in errors.Container.parent_id">
                                 <div class="help-block text-danger">{{ error }}</div>
@@ -93,7 +93,7 @@
                         </div>
                     </div>
 
-                    <div class="form-group"  ng-class="{'has-error': errors.hostgroup_url}">
+                    <div class="form-group" ng-class="{'has-error': errors.hostgroup_url}">
                         <label class="col col-md-2 control-label">
                             <?php echo __('Host group URL'); ?>
                         </label>
@@ -118,7 +118,7 @@
                                     chosen="hosts"
                                     callback="loadHosts"
                                     ng-options="host.key as host.value for host in hosts"
-                                    ng-model="post.Hostgroup.Host" >
+                                    ng-model="post.Hostgroup.Host">
                             </select>
                         </div>
                     </div>
@@ -136,7 +136,7 @@
                                     chosen="hosttemplates"
                                     callback="loadHosttemplates"
                                     ng-options="hosttemplate.key as hosttemplate.value for hosttemplate in hosttemplates"
-                                    ng-model="post.Hostgroup.Hosttemplate" >
+                                    ng-model="post.Hostgroup.Hosttemplate">
                             </select>
                         </div>
                     </div>

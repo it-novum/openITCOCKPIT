@@ -23,18 +23,6 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-use itnovum\openITCOCKPIT\Core\ValueObjects\Perfdata;
-use itnovum\openITCOCKPIT\Grafana\GrafanaDashboard;
-use itnovum\openITCOCKPIT\Grafana\GrafanaPanel;
-use itnovum\openITCOCKPIT\Grafana\GrafanaRow;
-use itnovum\openITCOCKPIT\Grafana\GrafanaSeriesOverrides;
-use itnovum\openITCOCKPIT\Grafana\GrafanaTarget;
-use itnovum\openITCOCKPIT\Grafana\GrafanaTargetCollection;
-use itnovum\openITCOCKPIT\Grafana\GrafanaTargetUnit;
-use itnovum\openITCOCKPIT\Grafana\GrafanaThresholdCollection;
-use itnovum\openITCOCKPIT\Grafana\GrafanaThresholds;
-use itnovum\openITCOCKPIT\Grafana\GrafanaYAxes;
-
 class TestShell extends AppShell {
     /*
      * This is a test and debuging shell for development purposes
@@ -73,106 +61,106 @@ class TestShell extends AppShell {
         /*
          * Lof of space for your experimental code :)
          */
-  /*      $host = $this->Host->find('first', [
-            'conditions' => [
-                'Host.id' => 1,
-            ],
-            'fields' => [
-                'Host.id',
-                'Host.name',
-                'Host.uuid',
-                'Host.address'
-            ],
-            'contain' => [
-                'Service' => [
-
-                    'fields' => [
-                        'Service.id',
-                        'Service.name',
-                        'Service.uuid',
-                        'Service.servicetemplate_id',
-                        'Service.process_performance_data'
-
-                    ],
-
-                    'Servicetemplate' => [
-                        'fields' => [
-                            'Servicetemplate.id',
-                            'Servicetemplate.name',
-                            'Servicetemplate.process_performance_data'
-                        ]
-                    ]
-                ]
-            ]
-        ]);
-
-        $servicestatus = $this->Servicestatus->byUuid(Hash::extract($host, 'Service.{n}.uuid'));
-
-        $grafanaDashboard = new GrafanaDashboard();
-        $grafanaDashboard->setTitle($host['Host']['uuid']);
-        $grafanaDashboard->setEditable(true);
-        $grafanaDashboard->setHideControls(false);
-
-        $panelId = 1;
-        $grafanaRow = new GrafanaRow();
-        foreach ($host['Service'] as $service) {
-            $isRowFull = false;
-            $serviceName = $service['name'];
-            if ($serviceName === null || $serviceName === '') {
-                $serviceName = $service['Servicetemplate']['name'];
-            }
-            if (!isset($servicestatus[$service['uuid']]['Servicestatus']['perfdata'])) {
-                $panelId++;
-                continue;
-            }
-
-            $perfdata = $this->Rrd->parsePerfData($servicestatus[$service['uuid']]['Servicestatus']['perfdata']);
-
-            $grafanaPanel = new GrafanaPanel($panelId);
-            $grafanaPanel->setTitle(sprintf('%s - %s', $host['Host']['name'], $serviceName));
-
-            $grafanaTargetCollection = new GrafanaTargetCollection();
-            foreach ($perfdata as $label => $gauge) {
-
-                $Perfdata = Perfdata::fromArray($label, $gauge);
-                $grafanaTargetCollection->addTarget(
-                    new GrafanaTarget(
-                        sprintf(
-                            '%s.%s.%s.%s',
-                            'mp_grafana',
-                            $host['Host']['uuid'],
-                            $service['uuid'],
-                            $Perfdata->getReplacedLabel()
-                        ),
-                        new GrafanaTargetUnit($Perfdata->getUnit()),
-                        new GrafanaThresholds($Perfdata->getWarning(), $Perfdata->getCritical()),
-                        $Perfdata->getLabel()
-                    )
-                );
-
-            }
-
-            $grafanaPanel->addTargets(
-                $grafanaTargetCollection,
-                new GrafanaSeriesOverrides($grafanaTargetCollection),
-                new GrafanaYAxes($grafanaTargetCollection),
-                new GrafanaThresholdCollection($grafanaTargetCollection)
-            );
-            if($grafanaRow->getNumberOfPanels() === 2 && ($panelId % 2 === 0)){
-                //Row is full, create a new one
-                $grafanaRow = new GrafanaRow();
-                $grafanaRow->addPanel($grafanaPanel);
-                $isRowFull=true;
-            }else{
-                $grafanaRow->addPanel($grafanaPanel);
-            }
-
-            if((sizeof($host['Service']) == $panelId && $isRowFull === false)){
-                $grafanaDashboard->addRow($grafanaRow);
-            }
-            $panelId++;
-        }
-*/
+        /*      $host = $this->Host->find('first', [
+                  'conditions' => [
+                      'Host.id' => 1,
+                  ],
+                  'fields' => [
+                      'Host.id',
+                      'Host.name',
+                      'Host.uuid',
+                      'Host.address'
+                  ],
+                  'contain' => [
+                      'Service' => [
+      
+                          'fields' => [
+                              'Service.id',
+                              'Service.name',
+                              'Service.uuid',
+                              'Service.servicetemplate_id',
+                              'Service.process_performance_data'
+      
+                          ],
+      
+                          'Servicetemplate' => [
+                              'fields' => [
+                                  'Servicetemplate.id',
+                                  'Servicetemplate.name',
+                                  'Servicetemplate.process_performance_data'
+                              ]
+                          ]
+                      ]
+                  ]
+              ]);
+      
+              $servicestatus = $this->Servicestatus->byUuid(Hash::extract($host, 'Service.{n}.uuid'));
+      
+              $grafanaDashboard = new GrafanaDashboard();
+              $grafanaDashboard->setTitle($host['Host']['uuid']);
+              $grafanaDashboard->setEditable(true);
+              $grafanaDashboard->setHideControls(false);
+      
+              $panelId = 1;
+              $grafanaRow = new GrafanaRow();
+              foreach ($host['Service'] as $service) {
+                  $isRowFull = false;
+                  $serviceName = $service['name'];
+                  if ($serviceName === null || $serviceName === '') {
+                      $serviceName = $service['Servicetemplate']['name'];
+                  }
+                  if (!isset($servicestatus[$service['uuid']]['Servicestatus']['perfdata'])) {
+                      $panelId++;
+                      continue;
+                  }
+      
+                  $perfdata = $this->Rrd->parsePerfData($servicestatus[$service['uuid']]['Servicestatus']['perfdata']);
+      
+                  $grafanaPanel = new GrafanaPanel($panelId);
+                  $grafanaPanel->setTitle(sprintf('%s - %s', $host['Host']['name'], $serviceName));
+      
+                  $grafanaTargetCollection = new GrafanaTargetCollection();
+                  foreach ($perfdata as $label => $gauge) {
+      
+                      $Perfdata = Perfdata::fromArray($label, $gauge);
+                      $grafanaTargetCollection->addTarget(
+                          new GrafanaTarget(
+                              sprintf(
+                                  '%s.%s.%s.%s',
+                                  'mp_grafana',
+                                  $host['Host']['uuid'],
+                                  $service['uuid'],
+                                  $Perfdata->getReplacedLabel()
+                              ),
+                              new GrafanaTargetUnit($Perfdata->getUnit()),
+                              new GrafanaThresholds($Perfdata->getWarning(), $Perfdata->getCritical()),
+                              $Perfdata->getLabel()
+                          )
+                      );
+      
+                  }
+      
+                  $grafanaPanel->addTargets(
+                      $grafanaTargetCollection,
+                      new GrafanaSeriesOverrides($grafanaTargetCollection),
+                      new GrafanaYAxes($grafanaTargetCollection),
+                      new GrafanaThresholdCollection($grafanaTargetCollection)
+                  );
+                  if($grafanaRow->getNumberOfPanels() === 2 && ($panelId % 2 === 0)){
+                      //Row is full, create a new one
+                      $grafanaRow = new GrafanaRow();
+                      $grafanaRow->addPanel($grafanaPanel);
+                      $isRowFull=true;
+                  }else{
+                      $grafanaRow->addPanel($grafanaPanel);
+                  }
+      
+                  if((sizeof($host['Service']) == $panelId && $isRowFull === false)){
+                      $grafanaDashboard->addRow($grafanaRow);
+                  }
+                  $panelId++;
+              }
+      */
 
         //debug($grafanaDashboard->getGrafanaDashboardJson());
 
@@ -183,7 +171,7 @@ class TestShell extends AppShell {
     public function getOptionParser() {
         $parser = parent::getOptionParser();
         $parser->addOptions([
-            'type' => ['short' => 't', 'help' => __d('oitc_console', 'Type of the notification host or service')],
+            'type'     => ['short' => 't', 'help' => __d('oitc_console', 'Type of the notification host or service')],
             'hostname' => ['help' => __d('oitc_console', 'The uuid of the host')],
         ]);
 

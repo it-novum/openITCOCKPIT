@@ -103,7 +103,7 @@ class CustomVariable {
      */
     public function asArray() {
         $customVariable = [
-            'name' => $this->name,
+            'name'  => $this->name,
             'value' => $this->value,
         ];
 

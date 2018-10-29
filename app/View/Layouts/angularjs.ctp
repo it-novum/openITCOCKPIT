@@ -28,36 +28,9 @@ if ($sideMenuClosed) {
     $bodyClass = 'minified';
 }
 
-$scripts = [
-    'vendor/jquery/dist/jquery.min.js',
-    'vendor/jqueryui/jquery-ui.min.js',
-    'vendor/bootstrap/dist/js/bootstrap.min.js',
-    'vendor/angular/angular.min.js',
-    //'vendor/angular-ui-router/release/angular-ui-router.min.js',
-    'js/lib/jquery-cookie.js',
-    'js/vendor/chosen.jquery.min.js',
-    'js/plugin/bootstrap-tags/bootstrap-tagsinput.min.js',
-    //'vendor/angular-bootstrap/ui-bootstrap-tpls.min.js',
-    'js/app/layoutfix.js',
-    'js/lib/ColorGenerator.js',
-    'js/lib/colr.js',
-    'js/lib/php.js',
-    'smartadmin/js/plugin/flot/jquery.flot.cust.js',
-    'smartadmin/js/plugin/flot/jquery.flot.time.js',
-    //'smartadmin/js/plugin/jquery-validate/jquery.validate.min.js', //
-    //'smartadmin/js/plugin/flot/jquery.flot.orderBar.js', //
-    'smartadmin/js/plugin/flot/jquery.flot.fillbetween.js',
-    //'smartadmin/js/plugin/flot/jquery.flot.pie.min.js', //
-    //'smartadmin/js/plugin/flot/jquery.flot.resize.js',
-    //'smartadmin/js/plugin/flot/jquery.flot.navigate.js', //
-    'smartadmin/js/plugin/flot/jquery.flot.threshold.js',
-    //'smartadmin/js/plugin/flot/jquery.flot.selection.js', //
-    'js/lib/jquery.nestable.js',
-    'js/lib/parseuri.js',
-    'js/vendor/vis-4.21.0/dist/vis.js',
-    'js/scripts/ng.app.js',
-    'js/vendor/UUID.js-4.0.3/dist/uuid.core.js',
-];
+
+$AngularAssets = new \itnovum\openITCOCKPIT\Core\AngularJS\AngularAssets();
+$scripts = $AngularAssets->getJsFiles();
 
 if ($this->request->params['controller'] === 'statusmaps') {
     $scripts[] = 'smartadmin/js/notification/SmartNotification.js';
@@ -124,7 +97,11 @@ if (ENVIRONMENT === Environments::PRODUCTION) {
     endforeach;
     ?>
 </head>
-<body class="<?= $bodyClass ?>">
+<body ng-cloak class="<?= $bodyClass ?> ng-cloak">
+<script>
+    Dropzone.autoDiscover = false;
+</script>
+
 <div id="global-loading">
     <i class="fa fa-refresh fa-spin"></i>
 </div>
@@ -143,8 +120,6 @@ if (ENVIRONMENT === Environments::PRODUCTION) {
                 <?php echo $this->Html->link($title_for_layout, ['action' => 'index'], ['icon' => 'fa fa-cube']); ?>
             </li>
         </ol>
-
-
         <?php if ($loggedIn && $this->Auth->user('showstatsinmenu')): ?>
             <menustats></menustats>
         <?php endif; ?>
@@ -183,7 +158,7 @@ if (ENVIRONMENT === Environments::PRODUCTION) {
 
 <?php printf('<script src="/%s"></script>', 'smartadmin/js/app.js'); ?>
 <script>
-    $(document).ready(function () {
+    $(document).ready(function(){
         //pageSetUp();
 
     });

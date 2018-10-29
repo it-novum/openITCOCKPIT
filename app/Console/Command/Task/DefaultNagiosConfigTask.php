@@ -23,13 +23,11 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class DefaultNagiosConfigTask extends AppShell
-{
-    public function execute()
-    {
+class DefaultNagiosConfigTask extends AppShell {
+    public function execute() {
         Configure::load('nagios');
         $this->conf = [
-            'path'     => Configure::read('nagios.basepath').Configure::read('nagios.etc').Configure::read('nagios.export.config'),
+            'path'     => Configure::read('nagios.basepath') . Configure::read('nagios.etc') . Configure::read('nagios.export.config'),
             'suffix'   => Configure::read('nagios.export.suffix'),
             'defaults' => 'defaults/',
         ];
@@ -48,12 +46,12 @@ class DefaultNagiosConfigTask extends AppShell
             '89fdde0b28373dc4f361cfb810b35342cc2c3232' => 'defaultContactgroup',
         ];
 
-        if (!is_dir($this->conf['path'].$this->conf['defaults'])) {
-            mkdir($this->conf['path'].$this->conf['defaults']);
+        if (!is_dir($this->conf['path'] . $this->conf['defaults'])) {
+            mkdir($this->conf['path'] . $this->conf['defaults']);
         }
 
         foreach ($this->defaultFiles as $defaultFile => $functionName) {
-            $file = new File($this->conf['path'].$this->conf['defaults'].$defaultFile.$this->conf['suffix']);
+            $file = new File($this->conf['path'] . $this->conf['defaults'] . $defaultFile . $this->conf['suffix']);
             if (!$file->exists()) {
                 $file->create();
                 $content = $this->fileHeader();
@@ -64,15 +62,13 @@ class DefaultNagiosConfigTask extends AppShell
         }
     }
 
-    public function fileHeader()
-    {
+    public function fileHeader() {
         return "    ; ! DO NOT DELETE OR MODIFY THIS FILE                         !
     ; ! THIS DEFINITION IS A TEMPLATE FOR ALL HOSTS AND SERVICES  !
     ; ! DO NOT DELETE OR MODIFY THIS FILE                         !\n\n\n";
     }
 
-    public function defaultHost()
-    {
+    public function defaultHost() {
         return "
 define host{
     name                               8147201e91c4dcf7c016ba2ddeac3fd7e72edacc ;generic-host
@@ -97,8 +93,7 @@ define host{
 }";
     }
 
-    public function defaultService()
-    {
+    public function defaultService() {
         return "
 define service{
     name                               689bfdd01af8a21c4a4706c5117849c2fc2c3f38 ;generic-service
@@ -127,8 +122,7 @@ define service{
 }";
     }
 
-    public function default24x7()
-    {
+    public function default24x7() {
         return "
 define timeperiod{
     timeperiod_name                    59132ffe6197bee769d97779a14140cfb890fd7b
@@ -143,8 +137,7 @@ define timeperiod{
 }";
     }
 
-    public function defaultHostcheck()
-    {
+    public function defaultHostcheck() {
         return "
 define command{
     command_name                       b6f6cd2bf046d23cc2a49fd2e7fb82251d8fdb75
@@ -153,8 +146,7 @@ define command{
 ";
     }
 
-    public function defaultNone()
-    {
+    public function defaultNone() {
         return "
 define timeperiod{
     timeperiod_name                    69077998d62c4da5de0af5212a1c1df3c2a6e5fb
@@ -162,8 +154,7 @@ define timeperiod{
 }";
     }
 
-    public function defaultContact()
-    {
+    public function defaultContact() {
         return "
 define contact{
     contact_name                       12f498cb0b48930be9bdfd598de58974f3f062d5
@@ -178,8 +169,7 @@ define contact{
 }";
     }
 
-    public function defaultNotificationCommand()
-    {
+    public function defaultNotificationCommand() {
         return "
 define command{
     command_name                       358db775dc4b1ecbc4e02a3d448d2f119f515269
@@ -187,35 +177,31 @@ define command{
 }";
     }
 
-    public function service_perfdata_file_processing_command()
-    {
+    public function service_perfdata_file_processing_command() {
         return "
 define command{
     command_name                       474d000935152d9c5a49ff5f2f998c5ce925b1ca
-    command_line                       ".Configure::read('nagios.export.service_perfdata_file_processing_command')."
+    command_line                       " . Configure::read('nagios.export.service_perfdata_file_processing_command') . "
 }";
     }
 
-    public function service_perfdata_command()
-    {
+    public function service_perfdata_command() {
         return "
 define command{
     command_name                       46c47b8b8836cfdb948dbb8c34bebb647b8ec0c8
-    command_line                       ".Configure::read('nagios.export.service_perfdata_command')."
+    command_line                       " . Configure::read('nagios.export.service_perfdata_command') . "
 }";
     }
 
-    public function check_fresh()
-    {
+    public function check_fresh() {
         return "
 define command{
     command_name                       2106cf0bf26a82af262c4078e6d9f94eded84d2a
-    command_line                       ".Configure::read('nagios.export.check_fresh')."
+    command_line                       " . Configure::read('nagios.export.check_fresh') . "
 	}";
     }
 
-    public function defaultContactgroup()
-    {
+    public function defaultContactgroup() {
         return "
 define contactgroup{
     contactgroup_name                 89fdde0b28373dc4f361cfb810b35342cc2c3232

@@ -1,14 +1,12 @@
 <?php
 
-use itnovum\openITCOCKPIT\ApiShell\OptionParser;
 use itnovum\openITCOCKPIT\ApiShell\ApiExtensionLoader;
+use itnovum\openITCOCKPIT\ApiShell\OptionParser;
 use itnovum\openITCOCKPIT\ApiShell\RootUser;
 
-class ApiShell extends AppShell
-{
+class ApiShell extends AppShell {
 
-    public function main()
-    {
+    public function main() {
         $rootUser = new RootUser();
         if ($rootUser->isRootUser() === false) {
             $this->err('This shell only can be used by root user');
@@ -28,21 +26,20 @@ class ApiShell extends AppShell
         $api = $apiExtensionLoader->getApi();
         $api->setOptionsFromOptionParser($optionParser);
 
-        if($optionParser->getIgnoreErrors() === true){
-            try{
+        if ($optionParser->getIgnoreErrors() === true) {
+            try {
                 $api->dispatchRequest($optionParser);
-            }catch (\Exception $e){
+            } catch (\Exception $e) {
                 echo $e->getMessage();
                 echo PHP_EOL;
             }
-        }else {
+        } else {
             $api->dispatchRequest($optionParser);
         }
 
     }
 
-    public function getOptionParser()
-    {
+    public function getOptionParser() {
         $parser = parent::getOptionParser();
         $parser->addOptions([
             'plugin'        => ['short' => 'p', 'help' => 'Name of the plugin to modify. If empty the request gets routet to the core'],
@@ -56,8 +53,7 @@ class ApiShell extends AppShell
         return $parser;
     }
 
-    public function _welcome()
-    {
+    public function _welcome() {
 
     }
 

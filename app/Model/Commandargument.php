@@ -24,8 +24,7 @@
 //	confirmation.
 
 
-class Commandargument extends AppModel
-{
+class Commandargument extends AppModel {
     public $belongsTo = [
         'Command' => [
             'className'  => 'Command',

@@ -1,10 +1,8 @@
 <?php
 
 
-class Arrays
-{
-    public static function ensureArrayKeys($src, $target)
-    {
+class Arrays {
+    public static function ensureArrayKeys($src, $target) {
         foreach ($target as $key => $value) {
             if (!array_key_exists($key, $src)) {
                 $src[$key] = $value;

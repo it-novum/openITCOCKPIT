@@ -23,8 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class ChangelogsController extends AppController
-{
+class ChangelogsController extends AppController {
     public $layout = 'Admin.default';
     public $helpers = [
         'Form',
@@ -42,62 +41,62 @@ class ChangelogsController extends AppController
     public $listFilters = [
         'index' => [
             'fields' => [
-                'Changelog.name' => [
-                    'label' => 'Name',
-                    'searchType' => 'wildcard',
+                'Changelog.name'   => [
+                    'label'        => 'Name',
+                    'searchType'   => 'wildcard',
                     'inputOptions' => [
                         'class' => 'form-control',
                         'style' => 'width:80%;'
                     ]
                 ],
-                'Changelog.model' => [
-                    'label' => 'Object type',
-                    'type' => 'checkbox',
+                'Changelog.model'  => [
+                    'label'      => 'Object type',
+                    'type'       => 'checkbox',
                     'searchType' => 'nix',
-                    'options' => [
-                        'Command' => [
+                    'options'    => [
+                        'Command'         => [
                             'name'  => 'Command',
                             'value' => 1,
                             'label' => 'Command',
                             'data'  => 'Filter.Changelog.model',
                         ],
-                        'Contact' => [
+                        'Contact'         => [
                             'name'  => 'Contact',
                             'value' => 1,
                             'label' => 'Contact',
                             'data'  => 'Filter.Changelog.model',
                         ],
-                        'Contactgroup' => [
+                        'Contactgroup'    => [
                             'name'  => 'Contactgroup',
                             'value' => 1,
                             'label' => 'Contactgroup',
                             'data'  => 'Filter.Changelog.model',
                         ],
-                        'Host' => [
+                        'Host'            => [
                             'name'  => 'Host',
                             'value' => 1,
                             'label' => 'Host',
                             'data'  => 'Filter.Changelog.model',
                         ],
-                        'Hostgroup' => [
+                        'Hostgroup'       => [
                             'name'  => 'Hostgroup',
                             'value' => 1,
                             'label' => 'Hostgroup',
                             'data'  => 'Filter.Changelog.model',
                         ],
-                        'Hosttemplate' => [
+                        'Hosttemplate'    => [
                             'name'  => 'Hosttemplate',
                             'value' => 1,
                             'label' => 'Hosttemplate',
                             'data'  => 'Filter.Changelog.model',
                         ],
-                        'Service' => [
+                        'Service'         => [
                             'name'  => 'Service',
                             'value' => 1,
                             'label' => 'Service',
                             'data'  => 'Filter.Changelog.model',
                         ],
-                        'Servicegroup' => [
+                        'Servicegroup'    => [
                             'name'  => 'Servicegroup',
                             'value' => 1,
                             'label' => 'Servicegroup',
@@ -109,7 +108,7 @@ class ChangelogsController extends AppController
                             'label' => 'Servicetemplate',
                             'data'  => 'Filter.Changelog.model',
                         ],
-                        'Timeperiod' => [
+                        'Timeperiod'      => [
                             'name'  => 'Timeperiod',
                             'value' => 1,
                             'label' => 'Timeperiod',
@@ -118,17 +117,17 @@ class ChangelogsController extends AppController
                     ],
                 ],
                 'Changelog.action' => [
-                    'label' => 'Object type',
-                    'type' => 'checkbox',
+                    'label'      => 'Object type',
+                    'type'       => 'checkbox',
                     'searchType' => 'nix',
-                    'options' => [
-                        'add' => [
+                    'options'    => [
+                        'add'    => [
                             'name'  => 'add',
                             'value' => 1,
                             'label' => '<i class="fa fa-plus txt-color-greenLight"></i> add',
                             'data'  => 'Filter.Changelog.action',
                         ],
-                        'copy' => [
+                        'copy'   => [
                             'name'  => 'copy',
                             'value' => 1,
                             'label' => '<i class="fa fa-copy txt-color-blue"></i> copy',
@@ -140,7 +139,7 @@ class ChangelogsController extends AppController
                             'label' => '<i class="fa fa-trash-o txt-color-red"></i> delete',
                             'data'  => 'Filter.Changelog.action',
                         ],
-                        'edit' => [
+                        'edit'   => [
                             'name'  => 'edit',
                             'value' => 1,
                             'label' => '<i class="fa fa-pencil txt-color-blue"></i> edit',
@@ -152,8 +151,7 @@ class ChangelogsController extends AppController
         ],
     ];
 
-    public function index()
-    {
+    public function index() {
         $conditions = [
             'ChangelogsToContainers.container_id' => $this->MY_RIGHTS,
         ];
@@ -200,7 +198,7 @@ class ChangelogsController extends AppController
         } else {
             $all_changes = $this->Paginator->paginate();
         }
-        
+
         $this->set('_serialize', ['all_changes']);
 
         $this->set(compact(['all_changes']));

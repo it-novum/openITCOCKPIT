@@ -49,7 +49,7 @@ $config = [
         'Host'         => [ // In wich model do we need the association
             'callbacks' => ['beforeDelete'], // in wich AppModel callback we want to set our binding
             'hasMany'   => [ // Type of the association (this is cake default syntax for Model::bindModel())
-                'Mapline'   => [
+                'Mapline'        => [
                     'className'    => 'MapModule.Mapline',
                     'foreignKey'   => 'object_id',
                     'dependent'    => true,
@@ -62,7 +62,7 @@ $config = [
                     'finderQuery'  => '',
                     'counterQuery' => '',
                 ],
-                'Mapgadget' => [
+                'Mapgadget'      => [
                     'className'    => 'MapModule.Mapgadget',
                     'foreignKey'   => 'object_id',
                     'dependent'    => true,
@@ -75,11 +75,24 @@ $config = [
                     'finderQuery'  => '',
                     'counterQuery' => '',
                 ],
-                'Mapitem'   => [
+                'Mapitem'        => [
                     'className'    => 'MapModule.Mapitem',
                     'foreignKey'   => 'object_id',
                     'dependent'    => true,
                     'conditions'   => ['Mapitem.type' => 'host'],
+                    'fields'       => '',
+                    'order'        => '',
+                    'limit'        => '',
+                    'offset'       => '',
+                    'exclusive'    => '',
+                    'finderQuery'  => '',
+                    'counterQuery' => '',
+                ],
+                'Mapsummaryitem' => [
+                    'className'    => 'MapModule.Mapsummaryitem',
+                    'foreignKey'   => 'object_id',
+                    'dependent'    => true,
+                    'conditions'   => ['Mapsummaryitem.type' => 'host'],
                     'fields'       => '',
                     'order'        => '',
                     'limit'        => '',
@@ -93,7 +106,7 @@ $config = [
         'Service'      => [ // In wich model do we need the association
             'callbacks' => ['beforeDelete'], // in wich AppModel callback we want to set our binding
             'hasMany'   => [ // Type of the association (this is cake default syntax for Model::bindModel())
-                'Mapline'   => [
+                'Mapline'        => [
                     'className'    => 'MapModule.Mapline',
                     'foreignKey'   => 'object_id',
                     'dependent'    => true,
@@ -106,7 +119,7 @@ $config = [
                     'finderQuery'  => '',
                     'counterQuery' => '',
                 ],
-                'Mapgadget' => [
+                'Mapgadget'      => [
                     'className'    => 'MapModule.Mapgadget',
                     'foreignKey'   => 'object_id',
                     'dependent'    => true,
@@ -119,11 +132,24 @@ $config = [
                     'finderQuery'  => '',
                     'counterQuery' => '',
                 ],
-                'Mapitem'   => [
+                'Mapitem'        => [
                     'className'    => 'MapModule.Mapitem',
                     'foreignKey'   => 'object_id',
                     'dependent'    => true,
                     'conditions'   => ['Mapitem.type' => 'service'],
+                    'fields'       => '',
+                    'order'        => '',
+                    'limit'        => '',
+                    'offset'       => '',
+                    'exclusive'    => '',
+                    'finderQuery'  => '',
+                    'counterQuery' => '',
+                ],
+                'Mapsummaryitem' => [
+                    'className'    => 'MapModule.Mapsummaryitem',
+                    'foreignKey'   => 'object_id',
+                    'dependent'    => true,
+                    'conditions'   => ['Mapsummaryitem.type' => 'service'],
                     'fields'       => '',
                     'order'        => '',
                     'limit'        => '',
@@ -137,7 +163,7 @@ $config = [
         'Servicegroup' => [ // In wich model do we need the association
             'callbacks' => ['beforeDelete'], // in wich AppModel callback we want to set our binding
             'hasMany'   => [ // Type of the association (this is cake default syntax for Model::bindModel())
-                'Mapline'   => [
+                'Mapline'        => [
                     'className'    => 'MapModule.Mapline',
                     'foreignKey'   => 'object_id',
                     'dependent'    => true,
@@ -150,7 +176,7 @@ $config = [
                     'finderQuery'  => '',
                     'counterQuery' => '',
                 ],
-                'Mapgadget' => [
+                'Mapgadget'      => [
                     'className'    => 'MapModule.Mapgadget',
                     'foreignKey'   => 'object_id',
                     'dependent'    => true,
@@ -163,11 +189,24 @@ $config = [
                     'finderQuery'  => '',
                     'counterQuery' => '',
                 ],
-                'Mapitem'   => [
+                'Mapitem'        => [
                     'className'    => 'MapModule.Mapitem',
                     'foreignKey'   => 'object_id',
                     'dependent'    => true,
                     'conditions'   => ['Mapitem.type' => 'servicegroup'],
+                    'fields'       => '',
+                    'order'        => '',
+                    'limit'        => '',
+                    'offset'       => '',
+                    'exclusive'    => '',
+                    'finderQuery'  => '',
+                    'counterQuery' => '',
+                ],
+                'Mapsummaryitem' => [
+                    'className'    => 'MapModule.Mapsummaryitem',
+                    'foreignKey'   => 'object_id',
+                    'dependent'    => true,
+                    'conditions'   => ['Mapsummaryitem.type' => 'servicegroup'],
                     'fields'       => '',
                     'order'        => '',
                     'limit'        => '',
@@ -181,7 +220,7 @@ $config = [
         'Hostgroup'    => [ // In wich model do we need the association
             'callbacks' => ['beforeDelete'], // in wich AppModel callback we want to set our binding
             'hasMany'   => [ // Type of the association (this is cake default syntax for Model::bindModel())
-                'Mapline'   => [
+                'Mapline'        => [
                     'className'    => 'MapModule.Mapline',
                     'foreignKey'   => 'object_id',
                     'dependent'    => true,
@@ -194,7 +233,7 @@ $config = [
                     'finderQuery'  => '',
                     'counterQuery' => '',
                 ],
-                'Mapgadget' => [
+                'Mapgadget'      => [
                     'className'    => 'MapModule.Mapgadget',
                     'foreignKey'   => 'object_id',
                     'dependent'    => true,
@@ -207,11 +246,24 @@ $config = [
                     'finderQuery'  => '',
                     'counterQuery' => '',
                 ],
-                'Mapitem'   => [
+                'Mapitem'        => [
                     'className'    => 'MapModule.Mapitem',
                     'foreignKey'   => 'object_id',
                     'dependent'    => true,
                     'conditions'   => ['Mapitem.type' => 'hostgroup'],
+                    'fields'       => '',
+                    'order'        => '',
+                    'limit'        => '',
+                    'offset'       => '',
+                    'exclusive'    => '',
+                    'finderQuery'  => '',
+                    'counterQuery' => '',
+                ],
+                'Mapsummaryitem' => [
+                    'className'    => 'MapModule.Mapsummaryitem',
+                    'foreignKey'   => 'object_id',
+                    'dependent'    => true,
+                    'conditions'   => ['Mapsummaryitem.type' => 'hostgroup'],
                     'fields'       => '',
                     'order'        => '',
                     'limit'        => '',

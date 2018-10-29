@@ -11,7 +11,7 @@ angular.module('openITCOCKPIT')
         };
         $scope.id = QueryStringService.getCakeId();
 
-        $scope.deleteUrl = "/map_module/maps/delete/"+$scope.id+".json?angular=true";
+        $scope.deleteUrl = "/map_module/maps/delete/" + $scope.id + ".json?angular=true";
         $scope.sucessUrl = '/map_module/maps/index';
 
         $scope.load = function(){
@@ -30,7 +30,7 @@ angular.module('openITCOCKPIT')
                 $scope.post.Map.container_id = selectedContainer;
                 $scope.post.Map.name = $scope.map.Map.name;
                 $scope.post.Map.title = $scope.map.Map.title;
-                $scope.post.Map.refresh_interval = (parseInt($scope.map.Map.refresh_interval, 10)/1000);
+                $scope.post.Map.refresh_interval = (parseInt($scope.map.Map.refresh_interval, 10) / 1000);
                 $scope.init = false;
             }, function errorCallback(result){
                 if(result.status === 404){
@@ -51,7 +51,7 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.submit = function(){
-            $http.post("/map_module/maps/edit/"+$scope.id+".json?angular=true",
+            $http.post("/map_module/maps/edit/" + $scope.id + ".json?angular=true",
                 $scope.post
             ).then(function(result){
                 console.log('Data saved successfully');
@@ -65,7 +65,7 @@ angular.module('openITCOCKPIT')
 
         $scope.$watch('post', function(){
             console.log($scope.post);
-        },true);
+        }, true);
 
         $scope.loadContainers();
         $scope.load();

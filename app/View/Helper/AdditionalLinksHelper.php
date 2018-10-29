@@ -143,9 +143,9 @@ class AdditionalLinksHelper extends AppHelper {
         $htmlLink = [];
         foreach ($additionalElements as $element) {
             if (!is_null($ngClick)) {
-                $ngClick = ' ng-click="'.$ngClick.'"';
+                $ngClick = ' ng-click="' . $ngClick . '"';
             }
-            $html = '<li class=""><a href="#tab' . $element['uuid'] . '" data-toggle="tab" '.$ngClick.'>';
+            $html = '<li class=""><a href="#tab' . $element['uuid'] . '" data-toggle="tab" ' . $ngClick . '>';
             $html .= '<span class="hidden-mobile hidden-tablet">' . __($element['title']) . '</span></a>';
             $html .= '</li>';
             $htmlLink[] = $html;

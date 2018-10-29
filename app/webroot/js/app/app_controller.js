@@ -48,16 +48,16 @@ Frontend.AppController = Frontend.Controller.extend({
      *
      * @return void
      */
-    _init: function () {
+    _init: function(){
         this._dom = $('div.controller.' + this._frontendData.controller + '_' + this._frontendData.action);
         this.$ = this._dom.find.bind(this._dom);
 
 
         var selectBoxes = $('.chosen');
-        for (var i in selectBoxes) {
-            if (typeof selectBoxes[i].attributes !== 'undefined' && selectBoxes[i].attributes !== null) {
+        for(var i in selectBoxes){
+            if(typeof selectBoxes[i].attributes !== 'undefined' && selectBoxes[i].attributes !== null){
                 var selectType = typeof selectBoxes[i].attributes['multiple'] !== 'undefined' ? 'multiple' : 'single';
-                if (selectType === 'multiple') {
+                if(selectType === 'multiple'){
                     $(selectBoxes[i]).chosen({
                         placeholder_text_single: 'Please choose',
                         placeholder_text_multiple: 'Please choose',
@@ -67,7 +67,7 @@ Frontend.AppController = Frontend.Controller.extend({
                         select_all_buttons: true,
                         width: '100%' // Makes the graph responsive.
                     });
-                } else {
+                }else{
                     $(selectBoxes[i]).chosen({
                         placeholder_text_single: 'Please choose',
                         placeholder_text_multiple: 'Please choose',
@@ -87,12 +87,12 @@ Frontend.AppController = Frontend.Controller.extend({
         this._initUiLibrary(); // Should not be overwritten.
 
         /* After you click a value, it prevents the closure of drop-down */
-        $('.stayOpenOnClick').click(function (event) {
+        $('.stayOpenOnClick').click(function(event){
             event.stopPropagation();
         });
     },
 
-    _initUiLibrary: function () {
+    _initUiLibrary: function(){
         moment().locale('de').format(); // moment.js initialization is required for the datetimepicker.
 
         $('.datetimepicker input.form-control').datetimepicker({
@@ -103,7 +103,7 @@ Frontend.AppController = Frontend.Controller.extend({
             .css({
                 cursor: 'pointer'
             })
-            .click(function () {
+            .click(function(){
                 $(this).parent().find('input').focus();
             });
     },
@@ -114,7 +114,7 @@ Frontend.AppController = Frontend.Controller.extend({
      *
      * @return void
      */
-    _initialize: function () {
+    _initialize: function(){
 
     },
 
@@ -123,7 +123,7 @@ Frontend.AppController = Frontend.Controller.extend({
      *
      * @return void
      */
-    _initComponents: function () {
+    _initComponents: function(){
         var self = this;
         /*
          if (typeof $().chosen === 'function') {
@@ -146,13 +146,13 @@ Frontend.AppController = Frontend.Controller.extend({
         //this.CkEditor.setupEditors();
         App.Main.UIBlocker = new App.Helpers.UIBlocker();
         this.ListFilter.render();
-        this._dom.find('.js-tabs a').click(function (e) {
+        this._dom.find('.js-tabs a').click(function(e){
             e.preventDefault();
             $(this).tab('show');
         });
 
         // automatic AJAX posts and loadWidget rendering
-        this._dom.find('.dialog-ajax-form').each(function (i, el) {
+        this._dom.find('.dialog-ajax-form').each(function(i, el){
             self._ajaxDialogFormSetup($(el));
         });
     },
@@ -161,7 +161,7 @@ Frontend.AppController = Frontend.Controller.extend({
      *
      * @return DOMElement
      */
-    getDomElement: function () {
+    getDomElement: function(){
         return this._dom;
     },
     /**
@@ -169,7 +169,7 @@ Frontend.AppController = Frontend.Controller.extend({
      *
      * @return {boolean}
      */
-    isMobile: function () {
+    isMobile: function(){
         return this.getVar('isMobile');
     },
     /**
@@ -178,10 +178,10 @@ Frontend.AppController = Frontend.Controller.extend({
      * TODO: make URL and loadWidget options configurable
      * @return {void}
      */
-    _ajaxDialogFormSetup: function ($form, callback) {
+    _ajaxDialogFormSetup: function($form, callback){
         var self = this;
 
-        if (!this.isAjax()) {
+        if(!this.isAjax()){
             return;
         }
 
@@ -192,16 +192,16 @@ Frontend.AppController = Frontend.Controller.extend({
             plugin: this._frontendData.params.plugin,
             named: this._frontendData.params.named
         };
-        $form.submit(function (e) {
+        $form.submit(function(e){
             e.preventDefault();
             App.Main.UIBlocker.blockElement(this._dom);
             App.Main.loadWidget(urlObject, {
                 target: self._dom.parent(),
                 data: $form.serialize(),
                 parentController: self.parentController,
-                onComplete: function (controller, response) {
+                onComplete: function(controller, response){
                     App.Main.UIBlocker.unblockElement(self._dom);
-                    if (typeof callback === 'function') {
+                    if(typeof callback === 'function'){
                         callback(controller, response);
                     }
                 }
@@ -215,7 +215,7 @@ Frontend.AppController = Frontend.Controller.extend({
      * TODO: make this more configurable
      * @return {void}
      */
-    openDialog: function (url, onClose) {
+    openDialog: function(url, onClose){
         var self = this;
 
         self._dialog = new App.Dialog({
@@ -225,7 +225,7 @@ Frontend.AppController = Frontend.Controller.extend({
         App.Main.loadWidget(url, {
             parentController: self,
             target: self._dialog.getContent(),
-            onComplete: function () {
+            onComplete: function(){
                 self._dialog.show();
                 self._dialog.unblockUi();
             }

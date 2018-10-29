@@ -31,8 +31,7 @@
  * @property Systemsetting Systemsetting
  * @property Apikey Apikey
  */
-class ProfileController extends AppController
-{
+class ProfileController extends AppController {
     public $layout = 'angularjs';
     public $uses = [
         'User',
@@ -52,8 +51,7 @@ class ProfileController extends AppController
         }
     }*/
 
-    public function edit()
-    {
+    public function edit() {
         $user = $this->User->find('first', [
             'conditions' => [
                 'User.id' => $this->Auth->user('id'),
@@ -102,10 +100,10 @@ class ProfileController extends AppController
                 $this->request->data['User']['Container'] = Hash::extract($user['ContainerUserMembership'], '{n}.id');
                 $this->request->data['User']['usergroup_id'] = $user['User']['usergroup_id'];
 
-                if($this->request->data['User']['paginatorlength'] < '0'){
+                if ($this->request->data['User']['paginatorlength'] < '0') {
                     $this->request->data['User']['paginatorlength'] = '1';
                 }
-                if($this->request->data['User']['paginatorlength'] > '1000'){
+                if ($this->request->data['User']['paginatorlength'] > '1000') {
                     $this->request->data['User']['paginatorlength'] = '1000';
                 }
                 if ($this->User->save($this->request->data)) {
@@ -124,10 +122,10 @@ class ProfileController extends AppController
 
             /***** Change users profile image *****/
             if (isset($this->request->data['Picture']) && !empty($this->request->data['Picture'])) {
-                if (!file_exists(WWW_ROOT.'userimages')) {
-                    mkdir(WWW_ROOT.'userimages');
+                if (!file_exists(WWW_ROOT . 'userimages')) {
+                    mkdir(WWW_ROOT . 'userimages');
                 }
-                $this->Upload->setPath(WWW_ROOT.'userimages'.DS);
+                $this->Upload->setPath(WWW_ROOT . 'userimages' . DS);
                 if (isset($this->request->data['Picture']['Image']) && isset($this->request->data['Picture']['Image']['tmp_name']) && isset($this->request->data['Picture']['Image']['name'])) {
                     $filename = $this->Upload->uploadUserimage($this->request->data['Picture']['Image']);
                     if ($filename) {
@@ -137,8 +135,8 @@ class ProfileController extends AppController
                             $this->Session->write('Auth.User.image', $filename);
 
                             //Delete old image
-                            if (file_exists(WWW_ROOT.'userimages'.DS.$user['User']['image']) && !is_dir(WWW_ROOT.'userimages'.DS.$user['User']['image'])) {
-                                unlink(WWW_ROOT.'userimages'.DS.$user['User']['image']);
+                            if (file_exists(WWW_ROOT . 'userimages' . DS . $user['User']['image']) && !is_dir(WWW_ROOT . 'userimages' . DS . $user['User']['image'])) {
+                                unlink(WWW_ROOT . 'userimages' . DS . $user['User']['image']);
                             }
                             $this->setFlash(__('Image uploaded successfully'));
 
@@ -187,25 +185,25 @@ class ProfileController extends AppController
         $this->set(compact('user', 'systemsettings', 'dateformats', 'selectedUserTime', 'paginatorLength'));
     }
 
-    public function apikey(){
-        if(!$this->isApiRequest()){
+    public function apikey() {
+        if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException('Only API requests.');
         }
 
         $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
 
-        if($this->request->is('get')){
+        if ($this->request->is('get')) {
             $id = $this->request->query('id');
-            if(is_numeric($id)){
+            if (is_numeric($id)) {
                 //Get an api key by id and user_id
-                if(!$this->Apikey->exists($id)){
+                if (!$this->Apikey->exists($id)) {
                     throw new NotFoundException(__('Invalid API key'));
                 }
                 $apikey = $this->Apikey->find('first', [
-                    'recursive' => -1,
+                    'recursive'  => -1,
                     'conditions' => [
                         'Apikey.user_id' => $User->getId(),
-                        'Apikey.id' => $id
+                        'Apikey.id'      => $id
                     ]
                 ]);
                 $Apikey = new \itnovum\openITCOCKPIT\Core\Views\Apikey($apikey);
@@ -216,14 +214,14 @@ class ProfileController extends AppController
 
             //Return all api keys of the user
             $apikeysResult = $this->Apikey->find('all', [
-                'recursive' => -1,
+                'recursive'  => -1,
                 'conditions' => [
                     'Apikey.user_id' => $User->getId()
                 ]
             ]);
 
             $apikeys = [];
-            foreach($apikeysResult as $apikey){
+            foreach ($apikeysResult as $apikey) {
                 $Apikey = new \itnovum\openITCOCKPIT\Core\Views\Apikey($apikey);
                 $apikeys[] = $Apikey->toArray();
             }
@@ -233,23 +231,23 @@ class ProfileController extends AppController
             return;
         }
 
-        if($this->request->is('post')){
+        if ($this->request->is('post')) {
             //Update an api key by id
-            if(isset($this->request->data['Apikey']['id'])){
+            if (isset($this->request->data['Apikey']['id'])) {
                 $id = $this->request->data['Apikey']['id'];
                 $apiKey = $this->Apikey->find('first', [
-                    'recursive' => -1,
+                    'recursive'  => -1,
                     'conditions' => [
-                        'Apikey.id' => $id,
+                        'Apikey.id'      => $id,
                         'Apikey.user_id' => $User->getId()
                     ]
                 ]);
 
-                if(empty($apiKey)){
+                if (empty($apiKey)) {
                     throw new NotFoundException('Invalide API key');
                 }
 
-                if(!$this->Apikey->save($this->request->data)){
+                if (!$this->Apikey->save($this->request->data)) {
                     $this->serializeErrorMessageFromModel('Apikey');
                     return;
                 }
@@ -261,30 +259,30 @@ class ProfileController extends AppController
         }
     }
 
-    public function create_apikey(){
+    public function create_apikey() {
         $this->layout = 'blank';
-        if(!$this->isAngularJsRequest()){
+        if (!$this->isAngularJsRequest()) {
             //Only ship template
             return;
         }
 
-        if($this->request->is('get')){
+        if ($this->request->is('get')) {
             //Generate new API key
             $bytes = openssl_random_pseudo_bytes(80, $cstrong);
-            $apikey   = bin2hex($bytes);
+            $apikey = bin2hex($bytes);
             $this->set('apikey', $apikey);
             $this->set('_serialize', ['apikey']);
             return;
         }
 
-        if($this->request->is('post')){
+        if ($this->request->is('post')) {
             $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
             //Save new API key
             $apikey = $this->request->data;
             $apikey['Apikey']['user_id'] = $User->getId();
 
             $this->Apikey->create();
-            if(!$this->Apikey->save($apikey)){
+            if (!$this->Apikey->save($apikey)) {
                 $this->serializeErrorMessageFromModel('Apikey');
                 return;
             }
@@ -294,21 +292,21 @@ class ProfileController extends AppController
         }
     }
 
-    public function delete_apikey($id = null){
+    public function delete_apikey($id = null) {
         $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
         $apiKey = $this->Apikey->find('first', [
-            'recursive' => -1,
+            'recursive'  => -1,
             'conditions' => [
-                'Apikey.id' => $id,
+                'Apikey.id'      => $id,
                 'Apikey.user_id' => $User->getId()
             ]
         ]);
 
-        if(empty($apiKey)){
+        if (empty($apiKey)) {
             throw new NotFoundException('Invalide API key');
         }
 
-        if($this->Apikey->delete($id)){
+        if ($this->Apikey->delete($id)) {
             $this->set('message', __('Api key deleted successfully'));
             $this->set('_serialize', ['message']);
             return;
@@ -320,19 +318,18 @@ class ProfileController extends AppController
 
     }
 
-    public function deleteImage()
-    {
+    public function deleteImage() {
         $user = $this->User->findById($this->Auth->user('id'));
 
         if ($user['User']['image'] != null && $user['User']['image'] != '') {
-            if (file_exists(WWW_ROOT.'userimages'.DS.$user['User']['image'])) {
-                unlink(WWW_ROOT.'userimages'.DS.$user['User']['image']);
+            if (file_exists(WWW_ROOT . 'userimages' . DS . $user['User']['image'])) {
+                unlink(WWW_ROOT . 'userimages' . DS . $user['User']['image']);
             }
         }
         $this->redirect(['action' => 'edit']);
     }
 
-    public function edit_apikey(){
+    public function edit_apikey() {
         $this->layout = 'blank';
         //Only ship HTML template
         return;

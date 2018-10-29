@@ -28,8 +28,8 @@
     <div class="login-info">
         <?php
         if ($this->Auth->user('image') != null && $this->Auth->user('image') != ''):
-            if (file_exists(WWW_ROOT.'userimages'.DS.$this->Auth->user('image'))):
-                $img = '/userimages'.DS.$this->Auth->user('image');
+            if (file_exists(WWW_ROOT . 'userimages' . DS . $this->Auth->user('image'))):
+                $img = '/userimages' . DS . $this->Auth->user('image');
             else:
                 $img = '/img/fallback_user.png';
             endif;

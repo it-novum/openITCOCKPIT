@@ -23,8 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class UuidHelper extends AppHelper
-{
+class UuidHelper extends AppHelper {
 
     /**
      * Initialize the Helper and set the needed variables
@@ -35,8 +34,7 @@ class UuidHelper extends AppHelper
      * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since  3.0
      */
-    public function beforeRender($viewFile)
-    {
+    public function beforeRender($viewFile) {
         if (isset($this->_View->viewVars['hostUuids'])) {
             $this->hostUuids = $this->_View->viewVars['hostUuids'];
         }
@@ -49,8 +47,7 @@ class UuidHelper extends AppHelper
         }
     }
 
-    public function findHostname($uuid)
-    {
+    public function findHostname($uuid) {
         if (isset($this->hostUuids[$uuid])) {
             return $this->hostUuids[$uuid]['name'];
         }
@@ -58,8 +55,7 @@ class UuidHelper extends AppHelper
         return __('Could not found hostname');
     }
 
-    public function findServicename($uuid)
-    {
+    public function findServicename($uuid) {
         if (isset($this->serviceUuids[$uuid])) {
             return $this->serviceUuids[$uuid]['name'];
         }
@@ -67,24 +63,23 @@ class UuidHelper extends AppHelper
         return __('Could not found servicename');
     }
 
-    public function replaceUuids($string)
-    {
+    public function replaceUuids($string) {
         App::uses('UUID', 'Lib');
         $string = preg_replace_callback(UUID::regex(), function ($matches) {
             foreach ($matches as $match) {
                 if (isset($this->uuidCache[$match])) {
                     //Checking if name exists or if we need to use the container:
                     if (isset($this->uuidCache[$match]['name'])) {
-                        return '<strong class="text-primary">'.$this->uuidCache[$match]['name'].'</strong>';
-                    } elseif (isset($this->uuidCache[$match]['container_name'])) {
-                        return $this->uuidCache[$match]['container_name'].'<strong class="text-primary">'.$match.'</strong>';
+                        return '<strong class="text-primary">' . $this->uuidCache[$match]['name'] . '</strong>';
+                    } else if (isset($this->uuidCache[$match]['container_name'])) {
+                        return $this->uuidCache[$match]['container_name'] . '<strong class="text-primary">' . $match . '</strong>';
                     } else {
-                        return '<strong class="txt-color-red">'.__('Name not found in database').'['.$match.']</strong>';
+                        return '<strong class="txt-color-red">' . __('Name not found in database') . '[' . $match . ']</strong>';
                     }
 
                 }
 
-                return '<strong class="txt-color-red">'.__('Object not found in UUID cache').'['.$match.']</strong>';
+                return '<strong class="txt-color-red">' . __('Object not found in UUID cache') . '[' . $match . ']</strong>';
             }
         }, $string);
 

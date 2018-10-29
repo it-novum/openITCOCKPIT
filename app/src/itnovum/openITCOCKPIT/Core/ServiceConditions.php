@@ -50,6 +50,11 @@ class ServiceConditions {
     /**
      * @var array
      */
+    private $serviceIds = [];
+
+    /**
+     * @var array
+     */
     private $order = [];
 
     /**
@@ -83,7 +88,7 @@ class ServiceConditions {
      * @return array
      */
     public function getNotConditions() {
-        if($this->hasNotConditions()){
+        if ($this->hasNotConditions()) {
             return $this->notConditions;
         }
         return [];
@@ -92,7 +97,7 @@ class ServiceConditions {
     /**
      * @return boolean
      */
-    public function hasNotConditions(){
+    public function hasNotConditions() {
         return !empty($this->notConditions);
     }
 
@@ -152,5 +157,17 @@ class ServiceConditions {
         $this->hostId = $hostId;
     }
 
+    /**
+     * @return array
+     */
+    public function getServiceIds() {
+        return $this->serviceIds;
+    }
 
+    /**
+     * @param array $serviceIds
+     */
+    public function setServiceIds($serviceIds) {
+        $this->serviceIds = $serviceIds;
+    }
 }

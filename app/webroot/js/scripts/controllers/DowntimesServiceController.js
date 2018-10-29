@@ -24,8 +24,8 @@ angular.module('openITCOCKPIT')
                 Service: {
                     name: ''
                 },
-                from: date('d.m.Y H:i', now.getTime()/1000 - (3600 * 24 * 30)),
-                to: date('d.m.Y H:i', now.getTime()/1000 + (3600 * 24 * 30 * 2)),
+                from: date('d.m.Y H:i', now.getTime() / 1000 - (3600 * 24 * 30)),
+                to: date('d.m.Y H:i', now.getTime() / 1000 + (3600 * 24 * 30 * 2)),
                 isRunning: false,
                 hideExpired: true
             };

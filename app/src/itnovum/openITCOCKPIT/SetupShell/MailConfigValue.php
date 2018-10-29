@@ -27,8 +27,7 @@
 namespace itnovum\openITCOCKPIT\SetupShell;
 
 
-class MailConfigValue
-{
+class MailConfigValue {
     /**
      * @var String
      */
@@ -39,24 +38,21 @@ class MailConfigValue
      *
      * @param String $value
      */
-    function __construct($value)
-    {
+    function __construct($value) {
         $this->value = $value;
     }
 
     /**
      * @return String
      */
-    public function getValue()
-    {
+    public function getValue() {
         return $this->value;
     }
 
     /**
      * @return string
      */
-    public function getValueForConfig()
-    {
+    public function getValueForConfig() {
         if ($this->isEmpty()) {
             return 'null';
         }
@@ -67,8 +63,7 @@ class MailConfigValue
     /**
      * @return bool
      */
-    public function isEmpty()
-    {
+    public function isEmpty() {
         return empty($this->value);
     }
 }

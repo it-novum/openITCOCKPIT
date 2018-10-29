@@ -1,7 +1,6 @@
 <?php
 
-class UserRights
-{
+class UserRights {
 
     /**
      * Holds the rights config.
@@ -21,22 +20,20 @@ class UserRights
      *
      * @param array $rightsConfig The rights configuration
      */
-    public function __construct(array $rightsConfig)
-    {
+    public function __construct(array $rightsConfig) {
         $this->_rightsConfig = $rightsConfig;
     }
 
     /**
      * Checks if the given user has a right
      *
-     * @param array  $user
+     * @param array $user
      * @param string $right
      *
      * @return bool
      * @author Robert Scherer
      */
-    public function userHasRight(array $user, $right)
-    {
+    public function userHasRight(array $user, $right) {
         $hasRight = false;
         if (isset($user['role']) && !empty($right) && isset($this->_rightsConfig[$right])) {
             if (in_array($user['role'], $this->_rightsConfig[$right])) {

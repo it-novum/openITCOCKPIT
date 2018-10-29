@@ -27,8 +27,7 @@
  * Class Notification
  * @deprecated Do not you this Model anymore
  */
-class Notification extends NagiosModuleAppModel
-{
+class Notification extends NagiosModuleAppModel {
     //public $useDbConfig = 'default';
     public $useTable = 'notifications';
     public $primaryKey = 'notification_id';

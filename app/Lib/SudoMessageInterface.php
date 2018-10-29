@@ -23,17 +23,15 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-use Ratchet\MessageComponentInterface;
 use Ratchet\ConnectionInterface;
+use Ratchet\MessageComponentInterface;
 
 App::uses('PackageManager', 'Lib');
 
-class SudoMessageInterface implements MessageComponentInterface
-{
+class SudoMessageInterface implements MessageComponentInterface {
     protected $clients;
 
-    public function __construct($cakeThis)
-    {
+    public function __construct($cakeThis) {
         $this->Cake = $cakeThis;
         $this->clients = new \SplObjectStorage;
         $this->process = null;
@@ -46,8 +44,7 @@ class SudoMessageInterface implements MessageComponentInterface
         $this->lastExportCheck = time();
     }
 
-    public function onOpen(ConnectionInterface $conn)
-    {
+    public function onOpen(ConnectionInterface $conn) {
         $uniqid = uniqid("", true);
         $this->clients->attach($conn);
         $conn->send(json_encode($this->merge([
@@ -57,15 +54,13 @@ class SudoMessageInterface implements MessageComponentInterface
         ])));
     }
 
-    public function merge($msg = [])
-    {
+    public function merge($msg = []) {
         $default = ['payload' => '', 'type' => '', 'task' => ''];
 
         return Hash::merge($default, $msg);
     }
 
-    public function send($payload, $type = 'response', $task = '', $category = 'notification')
-    {
+    public function send($payload, $type = 'response', $task = '', $category = 'notification') {
         if ($this->requestor !== null) {
             if ($payload == false) {
                 $payload = '';
@@ -82,8 +77,7 @@ class SudoMessageInterface implements MessageComponentInterface
         }
     }
 
-    public function eventLoop()
-    {
+    public function eventLoop() {
         $this->isExportRunning();
 
 
@@ -118,8 +112,7 @@ class SudoMessageInterface implements MessageComponentInterface
         }
     }
 
-    public function onMessage(ConnectionInterface $from, $msg)
-    {
+    public function onMessage(ConnectionInterface $from, $msg) {
         $msg = json_decode($msg);
         //Reset MySQL connection to avoid "MySQL hase von away"
         if ($msg->key != $this->Cake->_systemsettings['SUDO_SERVER']['SUDO_SERVER.API_KEY']) {
@@ -159,13 +152,13 @@ class SudoMessageInterface implements MessageComponentInterface
                 break;
 
             case '5238f8e57e72e81d44119a8ffc3f98ea':
-                $this->exec(escapeshellcmd('apt-get purge -y openitcockpit-module-'.base64_decode($msg->data->name)).';/bin/echo -e "\n\nDone - Please run openitcockpit-update\n"', [
+                $this->exec(escapeshellcmd('apt-get purge -y openitcockpit-module-' . base64_decode($msg->data->name)) . ';/bin/echo -e "\n\nDone - Please run openitcockpit-update\n"', [
                     'task' => '5238f8e57e72e81d44119a8ffc3f98ea',
                 ]);
                 break;
 
             case 'd41d8cd98f00b204e9800998ecf8427e':
-                $this->exec(escapeshellcmd('apt-get install -y openitcockpit-module-'.base64_decode($msg->data->name)).';/bin/echo -e "\n\nDone - Please check your User Roles for possible new settings.\n"', [
+                $this->exec(escapeshellcmd('apt-get install -y openitcockpit-module-' . base64_decode($msg->data->name)) . ';/bin/echo -e "\n\nDone - Please check your User Roles for possible new settings.\n"', [
                     'task' => 'd41d8cd98f00b204e9800998ecf8427e',
                 ]);
                 break;
@@ -289,10 +282,10 @@ class SudoMessageInterface implements MessageComponentInterface
 
             case 'submitDeleteHostDowntime':
                 $this->Cake->Externalcommand->deleteHostDowntime($msg->data[0]);
-                if(isset($msg->data[1])){ // deleting service downtimes too
+                if (isset($msg->data[1])) { // deleting service downtimes too
                     $servicesArr = explode(',', $msg->data[1]);
-                    foreach($servicesArr as $serviceDowntimeId){
-                        if($serviceDowntimeId === '0' || empty($serviceDowntimeId)) continue;
+                    foreach ($servicesArr as $serviceDowntimeId) {
+                        if ($serviceDowntimeId === '0' || empty($serviceDowntimeId)) continue;
                         $this->Cake->Externalcommand->deleteServiceDowntime($serviceDowntimeId);
                     }
                 }
@@ -304,23 +297,20 @@ class SudoMessageInterface implements MessageComponentInterface
         }
     }
 
-    public function onClose(ConnectionInterface $conn)
-    {
+    public function onClose(ConnectionInterface $conn) {
         $this->clients->detach($conn);
     }
 
-    public function onError(ConnectionInterface $conn, \Exception $e)
-    {
+    public function onError(ConnectionInterface $conn, \Exception $e) {
         echo "An error has occurred: {$e->getMessage()}\n";
 
         $conn->close();
         $this->clients->detach($conn);
     }
 
-    public function execNagiosPlugin($command)
-    {
+    public function execNagiosPlugin($command) {
 
-        $folder = new Folder(Configure::read('nagios.basepath').Configure::read('nagios.libexec'));
+        $folder = new Folder(Configure::read('nagios.basepath') . Configure::read('nagios.libexec'));
         $plugins = $folder->find();
         $plugins[] = 'ls';
         $plugins[] = 'ls -la';
@@ -350,13 +340,12 @@ class SudoMessageInterface implements MessageComponentInterface
             }
         }
 
-        $this->exec(escapeshellcmd("su ".Configure::read('nagios.user')." -c '".$command."'"), [
-            'cwd' => Configure::read('nagios.basepath').Configure::read('nagios.libexec'),
+        $this->exec(escapeshellcmd("su " . Configure::read('nagios.user') . " -c '" . $command . "'"), [
+            'cwd' => Configure::read('nagios.basepath') . Configure::read('nagios.libexec'),
         ]);
     }
 
-    public function exec($command, $options = [])
-    {
+    public function exec($command, $options = []) {
         // Exec normaly workd async wich is bad if we try to run to commands or tow users run a command
         $_options = [
             'cwd' => '/tmp/',
@@ -388,8 +377,8 @@ class SudoMessageInterface implements MessageComponentInterface
         //$this->taskName = isset($options['task']) ? $options['task'] : '';
     }
 
-    private function isExportRunning(){
-        if((time() - $this->lastExportCheck) > 3){
+    private function isExportRunning() {
+        if ((time() - $this->lastExportCheck) > 3) {
             $exportRunning = true;
             $result = $this->Cake->Export->findByTask('export_started');
             if (empty($result)) {
@@ -399,7 +388,7 @@ class SudoMessageInterface implements MessageComponentInterface
                     $exportRunning = false;
                 }
             }
-            foreach($this->clients as $client){
+            foreach ($this->clients as $client) {
                 $client->send(json_encode([
                     'type'    => 'dispatcher',
                     'running' => $exportRunning,
@@ -410,8 +399,7 @@ class SudoMessageInterface implements MessageComponentInterface
     }
 
 
-    public function fileHeader($file)
-    {
+    public function fileHeader($file) {
         if (is_resource($file)) {
             fwrite($file,
                 "    #########################################################################
@@ -419,7 +407,7 @@ class SudoMessageInterface implements MessageComponentInterface
     #                                                                       #
     #                   File generated by openITCOCKPIT                     #
     #                                                                       #
-    #                        Created: ".date('d.m.Y H:i')."                      #
+    #                        Created: " . date('d.m.Y H:i') . "                      #
     #########################################################################\n\n\n");
         }
     }

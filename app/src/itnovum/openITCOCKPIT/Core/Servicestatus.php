@@ -266,6 +266,24 @@ class Servicestatus {
     }
 
     /**
+     * Return the host state as string
+     * @return state as string (up, down, unreachable)
+     */
+    function ServiceStatusAsString() {
+        if ($this->currentState === null) {
+            return 'not in monitoring';
+        }
+        $human_state = [
+            0 => 'ok',
+            1 => 'warning',
+            2 => 'critical',
+            3 => 'unknown'
+        ];
+
+        return $human_state[$this->currentState];
+    }
+
+    /**
      * Check if there is a difference between monitoring hoststatus flap_detection_ebabled and the itcockpit database
      * configuration If yes it will return the current setting from $hostatus This can happen, if a user disable the
      * flap detection with an external command, but not in the host configuration
@@ -438,6 +456,7 @@ class Servicestatus {
         $arr['isHardstate'] = $this->isHardState();
         $arr['problemHasBeenAcknowledged'] = $this->isAcknowledged();
         $arr['isInMonitoring'] = $this->isInMonitoring();
+        $arr['humanState'] = $this->ServiceStatusAsString();
         return $arr;
     }
 

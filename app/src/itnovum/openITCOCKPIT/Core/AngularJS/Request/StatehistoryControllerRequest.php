@@ -33,7 +33,7 @@ class StatehistoryControllerRequest extends AngularRequest {
      * @var array
      */
     protected $filters = [
-        'host' => [
+        'host'    => [
             'like' => [
                 'StatehistoryHost.output'
             ]
@@ -53,12 +53,12 @@ class StatehistoryControllerRequest extends AngularRequest {
 
     protected $HostStateTypeField = 'StatehistoryHost.state_type';
 
-    public function getServiceFilters(){
+    public function getServiceFilters() {
         $Filter = new BaseFilter($this->getRequest());
         return $Filter->getConditionsByFilters($this->filters['service']);
     }
 
-    public function getHostFilters(){
+    public function getHostFilters() {
         $Filter = new BaseFilter($this->getRequest());
         return $Filter->getConditionsByFilters($this->filters['host']);
     }

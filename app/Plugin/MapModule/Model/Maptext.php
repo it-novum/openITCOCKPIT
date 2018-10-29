@@ -23,12 +23,82 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class Maptext extends MapModuleAppModel
-{
+class Maptext extends MapModuleAppModel {
     public $belongsTo = [
         'Map' => [
             'className' => 'MapModule.Map',
             'dependent' => true,
         ],
     ];
+
+
+    public $validate = [
+        'map_id'  => [
+            'notBlank' => [
+                'rule'     => 'notBlank',
+                'message'  => 'No Map selected',
+                'required' => true,
+            ],
+            'numeric'  => [
+                'rule'    => 'numeric',
+                'message' => 'No Map selected',
+            ],
+            'notZero'  => [
+                'rule'     => ['comparison', '>', 0],
+                'message'  => 'No Map selected',
+                'required' => true,
+            ],
+        ],
+        'text'    => [
+            'notBlank' => [
+                'rule'     => 'notBlank',
+                'message'  => 'Please enter a text',
+                'required' => true,
+            ]
+        ],
+        'x'       => [
+            'notBlank' => [
+                'rule'     => 'notBlank',
+                'message'  => 'This field cannot be left blank.',
+                'required' => true,
+            ],
+            'numeric'  => [
+                'rule'    => 'numeric',
+                'message' => 'This field needs to be numeric.',
+            ],
+            'notZero'  => [
+                'rule'     => ['comparison', '>', 0],
+                'message'  => 'This field needs to be > 0',
+                'required' => true,
+            ],
+        ],
+        'y'       => [
+            'notBlank' => [
+                'rule'     => 'notBlank',
+                'message'  => 'This field cannot be left blank.',
+                'required' => true,
+            ],
+            'numeric'  => [
+                'rule'    => 'numeric',
+                'message' => 'This field needs to be numeric.',
+            ],
+            'notZero'  => [
+                'rule'     => ['comparison', '>', 0],
+                'message'  => 'This field needs to be > 0',
+                'required' => true,
+            ],
+        ],
+        'z_index' => [
+            'notBlank' => [
+                'rule'     => 'notBlank',
+                'message'  => 'This field cannot be left blank.',
+                'required' => true,
+            ],
+            'numeric'  => [
+                'rule'    => 'numeric',
+                'message' => 'This field needs to be numeric.',
+            ]
+        ]
+    ];
+
 }

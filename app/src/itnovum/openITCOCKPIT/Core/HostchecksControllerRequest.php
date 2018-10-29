@@ -25,29 +25,26 @@
 namespace itnovum\openITCOCKPIT\Core;
 
 
-use itnovum\openITCOCKPIT\Core\ValueObjects\ListSettingsDefaults;
-use itnovum\openITCOCKPIT\Core\ValueObjects\HostStates;
-
 class HostchecksControllerRequest extends ControllerListSettingsRequest {
 
     /**
      * @return array
      */
-    public function getRequestSettingsForListSettings(){
+    public function getRequestSettingsForListSettings() {
         $states = $this->HostStates->asArray();
-        if(!$this->HostStates->hasRecovery() && !$this->HostStates->hasDown() && !$this->HostStates->hasUnreachable()){
+        if (!$this->HostStates->hasRecovery() && !$this->HostStates->hasDown() && !$this->HostStates->hasUnreachable()) {
             //User disabled all check boxes or first page load
             //Enable all to avoid empty list
-            foreach($states as $key => $value){
+            foreach ($states as $key => $value) {
                 $states[$key] = true;
             }
         }
 
         return [
-            'limit' => $this->getLimit(),
+            'limit'       => $this->getLimit(),
             'state_types' => $states,
-            'from' => date('d.m.Y H:i', $this->getFrom()),
-            'to' => date('d.m.Y H:i', $this->getTo())
+            'from'        => date('d.m.Y H:i', $this->getFrom()),
+            'to'          => date('d.m.Y H:i', $this->getTo())
         ];
     }
 }

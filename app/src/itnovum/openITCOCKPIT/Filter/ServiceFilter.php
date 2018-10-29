@@ -30,29 +30,30 @@ class ServiceFilter extends Filter {
     /**
      * @return array
      */
-    public function indexFilter(){
+    public function indexFilter() {
         $filters = [
-            'bool' => [
+            'bool'     => [
                 'Servicestatus.problem_has_been_acknowledged',
                 'Servicestatus.active_checks_enabled'
             ],
-            'like' => [
+            'like'     => [
                 'Host.name',
                 'Service.servicename',
                 'Servicestatus.output'
             ],
-            'rlike' => [
+            'rlike'    => [
                 'Service.keywords'
             ],
-            'equals' => [
+            'equals'   => [
                 'Host.id',
+                'Service.id',
                 'Service.uuid',
                 'Service.disabled',
             ],
             'downtime' => [
                 'Servicestatus.scheduled_downtime_depth',
             ],
-            'state' => [
+            'state'    => [
                 'Servicestatus.current_state'
             ]
         ];
@@ -63,9 +64,9 @@ class ServiceFilter extends Filter {
     /**
      * @return array
      */
-    public function notMonitoredFilter(){
+    public function notMonitoredFilter() {
         $filters = [
-            'like' => [
+            'like'   => [
                 'Host.name',
                 'Service.servicename',
             ],
@@ -81,14 +82,14 @@ class ServiceFilter extends Filter {
     /**
      * @return array
      */
-    public function disabledFilter(){
+    public function disabledFilter() {
         return $this->notMonitoredFilter();
     }
 
     /**
      * @return array
      */
-    public function deletedFilter(){
+    public function deletedFilter() {
         $filters = [
             'equals' => [
                 'DeletedService.host_id',

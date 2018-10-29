@@ -39,7 +39,8 @@
 
 
         <h1>Special Thanks</h1>
-        <p>Stephan Kraus, Oliver Müller, Laziz Karimov, Robert Braun, René Kleffel, Michael Ziegler, Jonas Rottmann, Johannes Drummer, Jens Michelsons, Jeremy Eder and more...</p>
+        <p>Stephan Kraus, Oliver Müller, Laziz Karimov, Robert Braun, René Kleffel, Michael Ziegler, Jonas Rottmann,
+            Johannes Drummer, Jens Michelsons, Jeremy Eder and more...</p>
         <div class="clearfix"></div>
 
         <h1>Special Thanks</h1>
@@ -52,6 +53,7 @@
         <p><?php echo $this->html->image('logos/jquery.png'); ?></p>
         <p><?php echo $this->html->image('logos/jquery_ui.png'); ?></p>
         <p><?php echo $this->html->image('logos/AngularJS-medium.png'); ?></p>
+        <p class="padding-top-80"><?php echo $this->html->image('logos/Statusengine_dark.png'); ?></p>
         <div class="clearfix"></div>
 
         <div class="fineprint">All trademarks are the property of the trademark owners.</div>
@@ -63,7 +65,7 @@
         <br/>
         <br/>
         <br/>
-        <p><?php echo $this->html->image('logos/openITCOCKPIT.png', ['width' => '500']); ?></p>
+        <p><?php echo $this->html->image('logos/openITCOCKPIT_dark.png', ['width' => '500']); ?></p>
 
     </div>
     <div class="clearfix"></div>

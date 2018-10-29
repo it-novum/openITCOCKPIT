@@ -6,12 +6,10 @@
 
 namespace Httpful\Handlers;
 
-class JsonHandler extends MimeHandlerAdapter
-{
+class JsonHandler extends MimeHandlerAdapter {
     private $decode_as_array = false;
 
-    public function init(array $args)
-    {
+    public function init(array $args) {
         $this->decode_as_array = !!(array_key_exists('decode_as_array', $args) ? $args['decode_as_array'] : false);
     }
 
@@ -20,8 +18,7 @@ class JsonHandler extends MimeHandlerAdapter
      *
      * @return mixed
      */
-    public function parse($body)
-    {
+    public function parse($body) {
         $body = $this->stripBom($body);
         if (empty($body))
             return null;
@@ -37,8 +34,7 @@ class JsonHandler extends MimeHandlerAdapter
      *
      * @return string
      */
-    public function serialize($payload)
-    {
+    public function serialize($payload) {
         return json_encode($payload);
     }
 }

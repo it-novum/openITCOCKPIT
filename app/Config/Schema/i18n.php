@@ -20,18 +20,15 @@
  * Use it to configure database for i18n
  * cake schema run create i18n
  */
-class I18nSchema extends CakeSchema
-{
+class I18nSchema extends CakeSchema {
 
     public $name = 'i18n';
 
-    public function before($event = [])
-    {
+    public function before($event = []) {
         return true;
     }
 
-    public function after($event = [])
-    {
+    public function after($event = []) {
     }
 
     public $i18n = [

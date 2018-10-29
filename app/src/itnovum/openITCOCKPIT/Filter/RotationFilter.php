@@ -30,7 +30,7 @@ class RotationFilter extends Filter {
     /**
      * @return array
      */
-    public function indexFilter(){
+    public function indexFilter() {
         $filters = [
             'like' => [
                 'Rotation.name',

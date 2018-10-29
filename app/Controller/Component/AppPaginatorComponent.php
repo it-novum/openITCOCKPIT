@@ -30,20 +30,20 @@ class AppPaginatorComponent extends PaginatorComponent {
     public function validateSort(Model $object, array $options, array $whitelist = []) {
         $options = parent::validateSort($object, $options, $whitelist);
 
-        if(!isset($options['order'])){
+        if (!isset($options['order'])) {
             return $options;
         }
 
         $unescaped = $options['order'];
         unset($options['order']);
-        if(!is_array($unescaped)){
+        if (!is_array($unescaped)) {
             $unescaped = [$unescaped];
         }
-        foreach($unescaped as $column => $value){
+        foreach ($unescaped as $column => $value) {
             //CakePHP's order validation is a joke. This as well but, what sould we do...
             $matches = null;
-            if(preg_match('/^([a-zA-Z\.\_]+)$/', $column, $matches) === 1){
-                if(!isset($options['order'])){
+            if (preg_match('/^([a-zA-Z\.\_]+)$/', $column, $matches) === 1) {
+                if (!isset($options['order'])) {
                     $options['order'] = [];
                 }
                 $options['order'][$column] = $value;

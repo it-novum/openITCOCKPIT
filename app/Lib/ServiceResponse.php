@@ -28,16 +28,14 @@
  * Custom CakeResponse for Service calls
  * @package default
  */
-class ServiceResponse extends CakeResponse
-{
+class ServiceResponse extends CakeResponse {
     /**
      * Constructor
      *
      * @param string $code One of Types::CODE_*, or an array containing 'code' and 'data' keys
-     * @param array  $data data to return
+     * @param array $data data to return
      */
-    public function __construct($code, array $data = [])
-    {
+    public function __construct($code, array $data = []) {
         if (is_array($code)) {
             $body = Set::merge([
                 'code' => Types::CODE_SUCCESS,

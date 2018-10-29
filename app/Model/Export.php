@@ -21,5 +21,5 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
-class Export extends AppModel{
+class Export extends AppModel {
 }

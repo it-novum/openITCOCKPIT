@@ -229,12 +229,12 @@
                 </div>
                 <?php
                 echo $this->Form->input('Timeperiod.calendar_id', [
-                    'options' => Hash::merge([0 => __('None')], $calendars),
-                    'class'   => 'chosen',
-                    'style'   => 'width: 100%',
-                    'label'   => __('Calendar'),
+                    'options'  => Hash::merge([0 => __('None')], $calendars),
+                    'class'    => 'chosen',
+                    'style'    => 'width: 100%',
+                    'label'    => __('Calendar'),
                     'selected' => 0,
-                    'help' => __('In addition to the interval defined by the given time ranges, you are able to add 24x7 days using a calendar. This will only affect the monitoring engine.')
+                    'help'     => __('In addition to the interval defined by the given time ranges, you are able to add 24x7 days using a calendar. This will only affect the monitoring engine.')
                 ]); ?>
             </div>
             <?php echo $this->Form->formActions(); ?>

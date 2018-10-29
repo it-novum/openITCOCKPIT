@@ -38,12 +38,12 @@ class GrafanaYAxes {
      * @var array
      */
     private $defaultAxe = [
-        "format" => "short",
-        "label" => null,
+        "format"  => "short",
+        "label"   => null,
         "logBase" => 1,
-        "max" => null,
-        "min" => null,
-        "show" => true
+        "max"     => null,
+        "min"     => null,
+        "show"    => true
     ];
 
     /**
@@ -62,12 +62,12 @@ class GrafanaYAxes {
                 }
 
                 $this->axes[] = [
-                    "format" => $unit,
-                    "label" => null,
+                    "format"  => $unit,
+                    "label"   => null,
                     "logBase" => 1,
-                    "max" => $max,
-                    "min" => $min,
-                    "show" => true
+                    "max"     => $max,
+                    "min"     => $min,
+                    "show"    => true
                 ];
             }
         }

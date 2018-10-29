@@ -147,6 +147,10 @@ class Hoststatus extends CrateModuleAppModel {
 
         $query['conditions']['Host.disabled'] = (bool)$HostConditions->includeDisabled();
 
+        if ($HostConditions->getHostIds()) {
+            $query['conditions']['Host.id'] = $HostConditions->getHostIds();
+        }
+
         return $query;
     }
 
@@ -155,12 +159,12 @@ class Hoststatus extends CrateModuleAppModel {
      * @param bool $includeOkState
      * @return array
      */
-    public function getHoststatusCount($MY_RIGHTS, $includeOkState = false){
+    public function getHoststatusCount($MY_RIGHTS, $includeOkState = false) {
         $hoststatusCount = [
             '1' => 0,
             '2' => 0,
         ];
-        if($includeOkState === true){
+        if ($includeOkState === true) {
             $hoststatusCount['0'] = 0;
         }
 
@@ -168,31 +172,31 @@ class Hoststatus extends CrateModuleAppModel {
             'count' => 'COUNT(DISTINCT Hoststatus.hostname)'
         ];
         $query = [
-            'fields' => [
+            'fields'     => [
                 'Hoststatus.current_state',
             ],
-            'joins' => [
+            'joins'      => [
                 [
-                    'table' => 'openitcockpit_hosts',
-                    'type' => 'INNER',
-                    'alias' => 'Host',
+                    'table'      => 'openitcockpit_hosts',
+                    'type'       => 'INNER',
+                    'alias'      => 'Host',
                     'conditions' => 'Host.uuid = Hoststatus.hostname',
                 ]
             ],
             'conditions' => [
-                'Host.disabled'                  => false
+                'Host.disabled' => false
             ],
 
             'array_difference' => [
                 'Host.container_ids' =>
                     $MY_RIGHTS,
             ],
-            'group'      => [
+            'group'            => [
                 'Hoststatus.current_state',
             ],
         ];
 
-        if($includeOkState === false){
+        if ($includeOkState === false) {
             $query['conditions']['Hoststatus.current_state >'] = 0;
         }
 
@@ -201,5 +205,53 @@ class Hoststatus extends CrateModuleAppModel {
             $hoststatusCount[$hoststatus['Hoststatus']['current_state']] = (int)$hoststatus[0]['count'];
         }
         return $hoststatusCount;
+    }
+
+
+    /**
+     * @param $MY_RIGHTS
+     * @param $conditions
+     * @return array
+     */
+    public function getHoststatusCountBySelectedStatus($MY_RIGHTS, $conditions) {
+        $this->virtualFields = [
+            'count' => 'COUNT(DISTINCT Hoststatus.hostname)'
+        ];
+        $query = [
+            'fields'     => [
+                'Hoststatus.current_state',
+            ],
+            'joins'      => [
+                [
+                    'table'      => 'openitcockpit_hosts',
+                    'type'       => 'INNER',
+                    'alias'      => 'Host',
+                    'conditions' => 'Host.uuid = Hoststatus.hostname',
+                ]
+            ],
+            'conditions' => [
+                'Host.disabled' => false
+            ],
+
+            'array_difference' => [
+                'Host.container_ids' =>
+                    $MY_RIGHTS,
+            ]
+        ];
+
+        $query['conditions']['Hoststatus.current_state'] = $conditions['Hoststatus']['current_state'];
+        if ($conditions['Hoststatus']['current_state'] > 0) {
+            if ($conditions['Hoststatus']['problem_has_been_acknowledged'] === false) {
+                $query['conditions']['Hoststatus.problem_has_been_acknowledged'] = false;
+            }
+            if ($conditions['Hoststatus']['scheduled_downtime_depth'] === false) {
+                $query['conditions']['Hoststatus.scheduled_downtime_depth'] = 0;
+            }
+        }
+        if (!empty($conditions['Host']['name'])) {
+            $query['conditions']['Host.name LIKE'] = sprintf('%%%s%%', $conditions['Host']['name']);
+        }
+
+        return $query;
     }
 }

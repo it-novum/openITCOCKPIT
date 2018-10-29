@@ -41,7 +41,7 @@ class PieChartHelper extends AppHelper {
         $PieChart->createPieChart($chart_data);
 
 
-        if(!is_dir(WWW_ROOT . 'img' . DS . 'charts')){
+        if (!is_dir(WWW_ROOT . 'img' . DS . 'charts')) {
             $fs = new Filesystem();
             $fs->mkdir(WWW_ROOT . 'img' . DS . 'charts');
         }
@@ -65,7 +65,7 @@ class PieChartHelper extends AppHelper {
 
         $filepath = WWW_ROOT . 'img' . DS . 'charts';
 
-        if(!is_dir(WWW_ROOT . 'img' . DS . 'charts')){
+        if (!is_dir(WWW_ROOT . 'img' . DS . 'charts')) {
             $fs = new Filesystem();
             $fs->mkdir(WWW_ROOT . 'img' . DS . 'charts');
         }

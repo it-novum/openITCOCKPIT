@@ -23,8 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class Downtimereport extends AppModel
-{
+class Downtimereport extends AppModel {
 
     public $name = 'Downtimereport';
     public $useTable = false;
@@ -79,18 +78,15 @@ class Downtimereport extends AppModel
         ],
     ];
 
-    public function validateDates()
-    {
+    public function validateDates() {
         return (strtotime($this->data['Downtimereport']['start_date']) <= strtotime($this->data['Downtimereport']['end_date']));
     }
 
-    public function notZero($fieldName)
-    {
+    public function notZero($fieldName) {
         return !($this->data[$this->name][key($fieldName)] == '0');
     }
 
-    public function timeRanges($data)
-    {
+    public function timeRanges($data) {
         $timeperiod = ClassRegistry::init('Timeperiod', false);
         $selectedTimeperiod = $timeperiod->findById($data['timeperiod_id']);
 
@@ -100,24 +96,23 @@ class Downtimereport extends AppModel
     /**
      * Generate date for host/service objects
      *
-     * @param array   $timeSlices             => Time ranges for evaluation period
-     * @param array   $stateHistoryWithObject => Array with object data and state history array
-     * @param boolean $checkHard_state        use hard and soft state or only hard state for evaluation
-     * @param boolean $objectHost             , if object host => 1, else service => 0
+     * @param array $timeSlices => Time ranges for evaluation period
+     * @param array $stateHistoryWithObject => Array with object data and state history array
+     * @param boolean $checkHard_state use hard and soft state or only hard state for evaluation
+     * @param boolean $objectHost , if object host => 1, else service => 0
      * @param         array                   downtimes array, use downtimes array if report setting
      *                                                  "consider_downtimes" => true
      *
      * @return array $downtimereportData for host/service object
      */
-    public function generateDowntimereportData($timeSlices, $stateHistoryWithObject, $checkHardState, $objectHost = false)
-    {
+    public function generateDowntimereportData($timeSlices, $stateHistoryWithObject, $checkHardState, $objectHost = false) {
         $stateArray = array_fill(0, ($objectHost) ? 3 : 4, 0); // host states => 0,1,2; service statea => 0,1,2,3
         $stateUnknown = ($objectHost) ? 2 : 3;//if the end of date in the future
         $evaluationData = $stateArray;
 
-        if($objectHost === true){
+        if ($objectHost === true) {
             $stateHistoryArray = Hash::extract($stateHistoryWithObject, '{n}.StatehistoryHost');
-        }else{
+        } else {
             $stateHistoryArray = Hash::extract($stateHistoryWithObject, '{n}.StatehistoryService');
         }
 
@@ -161,8 +156,7 @@ class Downtimereport extends AppModel
         return $evaluationData;
     }
 
-    public static function calculateTotalTime($timeSlice)
-    {
+    public static function calculateTotalTime($timeSlice) {
         return $timeSlice['end'] - $timeSlice['start'];
     }
 }

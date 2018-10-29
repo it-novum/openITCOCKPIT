@@ -28,7 +28,7 @@ App.Controllers.ContactsAddController = Frontend.AppController.extend({
     _initialize: function(){
         var self = this;
 
-        this.Ajaxloader.setup();
+        self.Ajaxloader.setup();
         self.CustomVariables.setup({
             controller: 'Contacts',
             ajaxUrl: 'Contacts/addCustomMacro',
@@ -130,10 +130,8 @@ App.Controllers.ContactsAddController = Frontend.AppController.extend({
                             }
                             $timeperiodSelectbox.trigger("chosen:updated");
                         }
-                        self.Ajaxloader.hide()
                     }
                 });
-
                 $.ajax({
                     url: '/Contacts/loadUsersByContainerId/.json',
                     type: 'post',
@@ -163,9 +161,9 @@ App.Controllers.ContactsAddController = Frontend.AppController.extend({
                             }
                         }
                         $userSelectbox.trigger("chosen:updated");
-                        self.Ajaxloader.hide()
                     }
                 });
+                self.Ajaxloader.hide();
             }
         });
     }

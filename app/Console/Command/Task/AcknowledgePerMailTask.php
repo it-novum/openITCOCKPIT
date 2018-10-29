@@ -25,7 +25,7 @@
 App::import('Vendor', 'ddeboer/imap/src/Server');
 
 use Ddeboer\Imap\Server;
-use \itnovum\openITCOCKPIT\Core\Interfaces\CronjobInterface;
+use itnovum\openITCOCKPIT\Core\Interfaces\CronjobInterface;
 
 class AcknowledgePerMailTask extends AppShell implements CronjobInterface {
     public $uses = ['NagiosModule.Externalcommand', 'Systemsetting'];

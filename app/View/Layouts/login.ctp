@@ -12,11 +12,14 @@
     <?php
     echo $this->Html->meta('icon');
     ?>
-    <link rel="stylesheet" type="text/css" href="/css/vendor/bootstrap/css/bootstrap.min.css?v<?php echo Configure::read('version'); ?>"/>
-    <link rel="stylesheet" type="text/css" href="/smartadmin/css/font-awesome.min.css?v<?php echo Configure::read('version'); ?>"/>
+    <link rel="stylesheet" type="text/css"
+          href="/css/vendor/bootstrap/css/bootstrap.min.css?v<?php echo Configure::read('version'); ?>"/>
+    <link rel="stylesheet" type="text/css"
+          href="/smartadmin/css/font-awesome.min.css?v<?php echo Configure::read('version'); ?>"/>
     <link rel="stylesheet" type="text/css" href="/css/login.css?<?php echo time(); ?>"/>
 
-    <script type="text/javascript" src="/frontend/js/lib/jquery.min.js?v<?php echo Configure::read('version'); ?>"></script>
+    <script type="text/javascript"
+            src="/frontend/js/lib/jquery.min.js?v<?php echo Configure::read('version'); ?>"></script>
     <script type="text/javascript" src="/js/lib/particles.min.js?v<?php echo Configure::read('version'); ?>"></script>
     <script type="text/javascript" src="/js/login.js?<?php echo time(); ?>"></script>
 

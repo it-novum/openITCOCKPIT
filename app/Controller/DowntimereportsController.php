@@ -63,7 +63,7 @@ class DowntimereportsController extends AppController {
                 $endDate = $this->request->data('Downtimereport.end_date') . ' 23:59:59';
                 $downtimeReportDetails = [
                     'startDate' => $startDate,
-                    'endDate' => $endDate,
+                    'endDate'   => $endDate,
                 ];
 
                 $startTimeStamp = strtotime($startDate);
@@ -71,7 +71,7 @@ class DowntimereportsController extends AppController {
 
                 $downtimeReportDetails = [
                     'startDate' => $startDate,
-                    'endDate' => $endDate,
+                    'endDate'   => $endDate,
                 ];
                 $timeperiod = $this->Timeperiod->find('first', [
                     'conditions' => [
@@ -118,18 +118,18 @@ class DowntimereportsController extends AppController {
                     }
                     foreach ($hostUuids as $hostUuid) {
                         $host = $this->Host->find('first', [
-                            'recursive' => -1,
+                            'recursive'  => -1,
                             'conditions' => [
                                 'Host.uuid' => $hostUuid,
                             ],
-                            'fields' => [
+                            'fields'     => [
                                 'Host.id',
                                 'Host.uuid',
                                 'Host.name',
                                 'Host.description',
                                 'Host.address'
                             ],
-                            'condition' => [
+                            'condition'  => [
                                 'Host.uuid' => $hostUuid
                             ]
                         ]);
@@ -171,10 +171,10 @@ class DowntimereportsController extends AppController {
                                     $downtimeReportData['Hosts'][$hostUuid],
                                     'Host',
                                     [
-                                        'id' => $host['Host']['id'],
-                                        'name' => $host['Host']['name'],
+                                        'id'          => $host['Host']['id'],
+                                        'name'        => $host['Host']['name'],
                                         'description' => $host['Host']['description'],
-                                        'address' => $host['Host']['address'],
+                                        'address'     => $host['Host']['address'],
                                     ]
                                 );
                                 //add host name to downtime array
@@ -188,7 +188,7 @@ class DowntimereportsController extends AppController {
                                 }
                                 unset($stateHistoryWithObject);
 
-                            }else {
+                            } else {
                                 $downtimeReportData['Hosts'][$hostUuid]['HostsNotMonitored'] = $host;
                                 unset($downtimeHosts[$hostUuid]);
                             }
@@ -230,22 +230,22 @@ class DowntimereportsController extends AppController {
 
                         if (!empty($stateHistoryWithObject)) {
                             $service = $this->Service->find('first', [
-                                'recursive' => -1,
-                                'contain' => [
+                                'recursive'  => -1,
+                                'contain'    => [
                                     'Servicetemplate' => [
                                         'fields' => [
                                             'Servicetemplate.id',
                                             'Servicetemplate.name'
                                         ]
                                     ],
-                                    'Host' => [
+                                    'Host'            => [
                                         'fields' => [
                                             'Host.uuid',
                                             'Host.name'
                                         ]
                                     ]
                                 ],
-                                'fields' => [
+                                'fields'     => [
                                     'Service.id',
                                     'Service.name'
                                 ],
@@ -258,7 +258,7 @@ class DowntimereportsController extends AppController {
                                     $downtimeServices = Hash::insert($downtimeServices,
                                         $serviceUuid . '.{n}.data',
                                         [
-                                            'host' => $service['Host']['name'],
+                                            'host'    => $service['Host']['name'],
                                             'service' => ($service['Service']['name']) ? $service['Service']['name'] : $service['Servicetemplate']['name'],
                                         ]
                                     );
@@ -273,10 +273,10 @@ class DowntimereportsController extends AppController {
                                     $downtimeReportData['Hosts'][$service['Host']['uuid']]['Services'][$serviceUuid],
                                     'Service',
                                     [
-                                        'id' => $service['Service']['id'],
-                                        'name' => ($service['Service']['name']) ? $service['Service']['name'] : $service['Servicetemplate']['name'],
+                                        'id'              => $service['Service']['id'],
+                                        'name'            => ($service['Service']['name']) ? $service['Service']['name'] : $service['Servicetemplate']['name'],
                                         'Servicetemplate' => [
-                                            'id' => $service['Servicetemplate']['id'],
+                                            'id'   => $service['Servicetemplate']['id'],
                                             'name' => $service['Servicetemplate']['name'],
                                         ],
                                     ]
@@ -292,7 +292,7 @@ class DowntimereportsController extends AppController {
                         $this->Session->write('downtimeReportDetails', $downtimeReportDetails);
                         $this->redirect([
                             'action' => 'createPdfReport',
-                            'ext' => 'pdf',
+                            'ext'    => 'pdf',
                         ]);
                     } else {
                         //remove uuid as key from downtime array
@@ -303,20 +303,20 @@ class DowntimereportsController extends AppController {
                             'startDate' => CakeTime::format(
                                 $downtimeReportDetails['startDate'], '%Y, %m, %d', false, $this->Auth->user('timezone')
                             ),
-                            'endDate' => CakeTime::format(
+                            'endDate'   => CakeTime::format(
                                 $downtimeReportDetails['endDate'], '%Y, %m, %d', false, $this->Auth->user('timezone')
                             ),
                         ]);
                         $this->Frontend->setJson('hostDowntimes', array_map(
                                 function ($filteredHostsDowntimes) {
                                     return [
-                                        'author_name' => $filteredHostsDowntimes['author_name'],
-                                        'comment_data' => $filteredHostsDowntimes['comment_data'],
-                                        'host' => $filteredHostsDowntimes['data']['host'],
+                                        'author_name'          => $filteredHostsDowntimes['author_name'],
+                                        'comment_data'         => $filteredHostsDowntimes['comment_data'],
+                                        'host'                 => $filteredHostsDowntimes['data']['host'],
                                         'scheduled_start_time' => CakeTime::format(
                                             $filteredHostsDowntimes['scheduled_start_time'], '%Y %m %d %H:%M', false, $this->Auth->user('timezone')
                                         ),
-                                        'scheduled_end_time' => CakeTime::format(
+                                        'scheduled_end_time'   => CakeTime::format(
                                             $filteredHostsDowntimes['scheduled_end_time'], '%Y %m %d %H:%M', false, $this->Auth->user('timezone')
                                         ),
                                     ];
@@ -328,14 +328,14 @@ class DowntimereportsController extends AppController {
                         $this->Frontend->setJson('serviceDowntimes', array_map(
                                 function ($filteredServicesDowntimes) {
                                     return [
-                                        'author_name' => $filteredServicesDowntimes['author_name'],
-                                        'comment_data' => $filteredServicesDowntimes['comment_data'],
-                                        'host' => $filteredServicesDowntimes['data']['host'],
-                                        'service' => $filteredServicesDowntimes['data']['service'],
+                                        'author_name'          => $filteredServicesDowntimes['author_name'],
+                                        'comment_data'         => $filteredServicesDowntimes['comment_data'],
+                                        'host'                 => $filteredServicesDowntimes['data']['host'],
+                                        'service'              => $filteredServicesDowntimes['data']['service'],
                                         'scheduled_start_time' => CakeTime::format(
                                             $filteredServicesDowntimes['scheduled_start_time'], '%Y %m %d %H:%M', false, $this->Auth->user('timezone')
                                         ),
-                                        'scheduled_end_time' => CakeTime::format(
+                                        'scheduled_end_time'   => CakeTime::format(
                                             $filteredServicesDowntimes['scheduled_end_time'], '%Y %m %d %H:%M', false, $this->Auth->user('timezone')
                                         ),
                                     ];
@@ -372,22 +372,22 @@ class DowntimereportsController extends AppController {
             $binary_path = '/usr/local/bin/wkhtmltopdf';
         }
         $this->pdfConfig = [
-            'engine' => 'CakePdf.WkHtmlToPdf',
-            'margin' => [
+            'engine'             => 'CakePdf.WkHtmlToPdf',
+            'margin'             => [
                 'bottom' => 15,
-                'left' => 0,
-                'right' => 0,
-                'top' => 15,
+                'left'   => 0,
+                'right'  => 0,
+                'top'    => 15,
             ],
-            'encoding' => 'UTF-8',
-            'download' => true,
-            'binary' => $binary_path,
-            'orientation' => 'portrait',
-            'filename' => 'Downtimereport.pdf',
+            'encoding'           => 'UTF-8',
+            'download'           => true,
+            'binary'             => $binary_path,
+            'orientation'        => 'portrait',
+            'filename'           => 'Downtimereport.pdf',
             'no-pdf-compression' => '*',
-            'image-dpi' => '900',
-            'background' => true,
-            'no-background' => false,
+            'image-dpi'          => '900',
+            'background'         => true,
+            'no-background'      => false,
         ];
     }
 }

@@ -22,21 +22,18 @@
 //  License agreement and license key will be shipped with the order
 //  confirmation.
 
-use itnovum\openITCOCKPIT\ApiShell\Systemsettings\Api;
 use itnovum\openITCOCKPIT\ApiShell\OptionParser;
+use itnovum\openITCOCKPIT\ApiShell\Systemsettings\Api;
 
 //run with: oitc test app Shell/Api/Systemsettings/Api
 
-class ApiTest extends CakeTestCase
-{
-    public function testInstanceOfApi()
-    {
+class ApiTest extends CakeTestCase {
+    public function testInstanceOfApi() {
         $api = new Api($this->getShell(), 'Systemsettings');
         $this->assertInstanceOf('\itnovum\openITCOCKPIT\ApiShell\Systemsettings\Api', $api);
     }
 
-    public function testIfRecordExists()
-    {
+    public function testIfRecordExists() {
         $api = new Api($this->getRealShell(), 'Systemsettings');
         $api->setOptionsFromOptionParser($this->getOptionParser(
             null,
@@ -47,8 +44,7 @@ class ApiTest extends CakeTestCase
         $this->assertTrue($api->exists());
     }
 
-    public function testAddAndUpdateAndDeleteRecord()
-    {
+    public function testAddAndUpdateAndDeleteRecord() {
         $api = new Api($this->getRealShell(), 'Systemsettings');
         $api->setOptionsFromOptionParser($this->getOptionParser(
             'add',
@@ -98,16 +94,14 @@ class ApiTest extends CakeTestCase
         $this->assertTrue($api->delete());
     }
 
-    private function getRealShell()
-    {
+    private function getRealShell() {
         $shell = new Shell();
         $shell->loadModel('Systemsettings');
 
         return $shell;
     }
 
-    public function getShell()
-    {
+    public function getShell() {
         $shell = $this->getMockBuilder('Shell')
             ->disableOriginalConstructor()
             ->getMock();
@@ -116,8 +110,7 @@ class ApiTest extends CakeTestCase
         return $shell;
     }
 
-    public function getOptionParser($action, $data, $args)
-    {
+    public function getOptionParser($action, $data, $args) {
         $parameters = [
             'plugin' => '',
             'model'  => 'systemsettings',

@@ -23,12 +23,154 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class Mapline extends MapModuleAppModel
-{
+class Mapline extends MapModuleAppModel {
     public $belongsTo = [
         'Map' => [
             'className' => 'MapModule.Map',
             'dependent' => true,
         ],
     ];
+
+    public $validate = [
+        'map_id'     => [
+            'notBlank' => [
+                'rule'     => 'notBlank',
+                'message'  => 'No Map selected',
+                'required' => true,
+            ],
+            'numeric'  => [
+                'rule'    => 'numeric',
+                'message' => 'No Map selected',
+            ],
+            'notZero'  => [
+                'rule'     => ['comparison', '>', 0],
+                'message'  => 'No Map selected',
+                'required' => true,
+            ],
+        ],
+        'object_id'  => [
+            'valObjectTypes' => [
+                'rule'     => ['isNullOrNumericGtZero'],
+                'message'  => 'This field needs to be numeric or null',
+                'required' => true,
+            ]
+        ],
+        'startX'     => [
+            'notBlank' => [
+                'rule'     => 'notBlank',
+                'message'  => 'This field cannot be left blank.',
+                'required' => true,
+            ],
+            'numeric'  => [
+                'rule'    => 'numeric',
+                'message' => 'This field needs to be numeric.',
+            ],
+            'notZero'  => [
+                'rule'     => ['comparison', '>', 0],
+                'message'  => 'This field needs to be > 0',
+                'required' => true,
+            ],
+        ],
+        'startY'     => [
+            'notBlank' => [
+                'rule'     => 'notBlank',
+                'message'  => 'This field cannot be left blank.',
+                'required' => true,
+            ],
+            'numeric'  => [
+                'rule'    => 'numeric',
+                'message' => 'This field needs to be numeric.',
+            ],
+            'notZero'  => [
+                'rule'     => ['comparison', '>', 0],
+                'message'  => 'This field needs to be > 0',
+                'required' => true,
+            ],
+        ],
+        'endX'       => [
+            'notBlank' => [
+                'rule'     => 'notBlank',
+                'message'  => 'This field cannot be left blank.',
+                'required' => true,
+            ],
+            'numeric'  => [
+                'rule'    => 'numeric',
+                'message' => 'This field needs to be numeric.',
+            ],
+            'notZero'  => [
+                'rule'     => ['comparison', '>', 0],
+                'message'  => 'This field needs to be > 0',
+                'required' => true,
+            ],
+        ],
+        'endY'       => [
+            'notBlank' => [
+                'rule'     => 'notBlank',
+                'message'  => 'This field cannot be left blank.',
+                'required' => true,
+            ],
+            'numeric'  => [
+                'rule'    => 'numeric',
+                'message' => 'This field needs to be numeric.',
+            ],
+            'notZero'  => [
+                'rule'     => ['comparison', '>', 0],
+                'message'  => 'This field needs to be > 0',
+                'required' => true,
+            ],
+        ],
+        'z_index'    => [
+            'notBlank' => [
+                'rule'     => 'notBlank',
+                'message'  => 'This field cannot be left blank.',
+                'required' => true,
+            ],
+            'numeric'  => [
+                'rule'    => 'numeric',
+                'message' => 'This field needs to be numeric.',
+            ]
+        ],
+        'show_label' => [
+            'numeric' => [
+                'rule'    => 'numeric',
+                'message' => 'This field needs to be numeric.',
+            ]
+        ],
+        'type'       => [
+            'notBlank'       => [
+                'rule'     => 'notBlank',
+                'message'  => 'This field cannot be left blank.',
+                'required' => true,
+            ],
+            'valObjectTypes' => [
+                'rule'    => ['valObjectTypes'],
+                'message' => 'Unsupported object type',
+            ],
+
+        ],
+    ];
+
+    public function valObjectTypes($data) {
+        if (isset($data['type'])) {
+            return in_array($data['type'], ['host', 'service', 'hostgroup', 'servicegroup', 'map', 'stateless'], true);
+        }
+        return false;
+    }
+
+    public function isNullOrNumericGtZero($data) {
+        if (array_key_exists('object_id', $data)) { //isset() can not handle null values
+            if ($data['object_id'] === null) {
+                //Stateless line
+                return true;
+            }
+
+            //Normal line
+            if (is_numeric($data['object_id'])) {
+                if ($data['object_id'] > 0) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 }

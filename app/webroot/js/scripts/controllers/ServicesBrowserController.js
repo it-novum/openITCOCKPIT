@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('ServicesBrowserController', function ($scope, $http, QueryStringService, $interval) {
+    .controller('ServicesBrowserController', function($scope, $http, QueryStringService, $interval){
 
         $scope.id = QueryStringService.getCakeId();
 
@@ -13,11 +13,10 @@ angular.module('openITCOCKPIT')
 
         $scope.serviceStatusTextClass = 'txt-primary';
 
-        $scope.selectedGraphdataSource = null;
-
         $scope.isLoadingGraph = false;
 
         $scope.dataSources = [];
+        $scope.currentDataSource = null;
 
         $scope.visTimeline = null;
         $scope.visTimelineInit = true;
@@ -29,17 +28,23 @@ angular.module('openITCOCKPIT')
         $scope.timelineIsLoading = false;
         $scope.failureDurationInPercent = null;
 
-
-        var graphTimeSpan = 4;
+        $scope.graphAutoRefresh = true;
+        $scope.graphAutoRefreshInterval = 0;
+        $scope.showDatapoints = false;
 
         var flappingInterval;
+        var zoomCallbackWasBind = false;
+        var graphAutoRefreshIntervalId = null;
+        var lastGraphStart = 0;
+        var lastGraphEnd = 0;
+        var graphRenderEnd = 0;
 
-        $scope.showFlashMsg = function () {
+        $scope.showFlashMsg = function(){
             $scope.showFlashSuccess = true;
             $scope.autoRefreshCounter = 5;
-            var interval = $interval(function () {
+            var interval = $interval(function(){
                 $scope.autoRefreshCounter--;
-                if ($scope.autoRefreshCounter === 0) {
+                if($scope.autoRefreshCounter === 0){
                     $scope.load();
                     $interval.cancel(interval);
                     $scope.showFlashSuccess = false;
@@ -47,12 +52,12 @@ angular.module('openITCOCKPIT')
             }, 1000);
         };
 
-        $scope.load = function () {
+        $scope.load = function(){
             $http.get("/services/browser/" + $scope.id + ".json", {
                 params: {
                     'angular': true
                 }
-            }).then(function (result) {
+            }).then(function(result){
                 $scope.mergedService = result.data.mergedService;
                 $scope.mergedService.Service.disabled = parseInt($scope.mergedService.Service.disabled, 10);
                 $scope.contacts = result.data.contacts;
@@ -83,42 +88,55 @@ angular.module('openITCOCKPIT')
                     5: false
                 };
                 var priority = parseInt($scope.mergedService.Service.priority, 10);
-                for (var i = 1; i <= priority; i++) {
+                for(var i = 1; i <= priority; i++){
                     $scope.priorities[i] = true;
                 }
 
-                if ($scope.mergedService.Service.has_graph) {
-                    loadGraph($scope.host.Host.uuid, $scope.mergedService.Service.uuid);
+                $scope.graphAutoRefreshInterval = parseInt($scope.mergedService.Service.check_interval, 10) * 1000;
+
+                var graphStart = (parseInt(new Date().getTime() / 1000, 10) - (3 * 3600));
+                var graphEnd = parseInt(new Date().getTime() / 1000, 10);
+                $scope.dataSources = [];
+                for(var dsName in result.data.mergedService.Perfdata){
+                    $scope.dataSources.push(dsName);
+                }
+                if($scope.dataSources.length > 0){
+                    $scope.currentDataSource = $scope.dataSources[0];
+                }
+
+
+                if($scope.mergedService.Service.has_graph){
+                    loadGraph($scope.host.Host.uuid, $scope.mergedService.Service.uuid, false, graphStart, graphEnd, true);
                 }
 
                 $scope.init = false;
             });
         };
 
-        $scope.loadTimezone = function () {
+        $scope.loadTimezone = function(){
             $http.get("/angular/user_timezone.json", {
                 params: {
                     'angular': true
                 }
-            }).then(function (result) {
+            }).then(function(result){
                 $scope.timezone = result.data.timezone;
             });
         };
 
 
-        $scope.getObjectForDowntimeDelete = function () {
+        $scope.getObjectForDowntimeDelete = function(){
             var object = {};
             object[$scope.downtime.internalDowntimeId] = $scope.host.Host.name + ' / ' + $scope.mergedService.Service.name;
             return object;
         };
 
-        $scope.getObjectForHostDowntimeDelete = function () {
+        $scope.getObjectForHostDowntimeDelete = function(){
             var object = {};
             object[$scope.hostDowntime.internalDowntimeId] = $scope.host.Host.name;
             return object;
         };
 
-        $scope.getObjectsForExternalCommand = function () {
+        $scope.getObjectsForExternalCommand = function(){
             return [{
                 Service: {
                     id: $scope.mergedService.Service.id,
@@ -135,56 +153,58 @@ angular.module('openITCOCKPIT')
         };
 
 
-        $scope.stateIsOk = function () {
+        $scope.stateIsOk = function(){
             return parseInt($scope.servicestatus.currentState, 10) === 0;
         };
 
-        $scope.stateIsWarning = function () {
+        $scope.stateIsWarning = function(){
             return parseInt($scope.servicestatus.currentState, 10) === 1;
         };
 
-        $scope.stateIsCritical = function () {
+        $scope.stateIsCritical = function(){
             return parseInt($scope.servicestatus.currentState, 10) === 2;
         };
 
-        $scope.stateIsUnknown = function () {
+        $scope.stateIsUnknown = function(){
             return parseInt($scope.servicestatus.currentState, 10) === 3;
         };
 
-        $scope.stateIsNotInMonitoring = function () {
+        $scope.stateIsNotInMonitoring = function(){
             return !$scope.servicestatus.isInMonitoring;
         };
 
-        $scope.startFlapping = function () {
+        $scope.startFlapping = function(){
             $scope.stopFlapping();
-            flappingInterval = $interval(function () {
-                if ($scope.flappingState === 0) {
+            flappingInterval = $interval(function(){
+                if($scope.flappingState === 0){
                     $scope.flappingState = 1;
-                } else {
+                }else{
                     $scope.flappingState = 0;
                 }
             }, 750);
         };
 
-        $scope.stopFlapping = function () {
-            if (flappingInterval) {
+        $scope.stopFlapping = function(){
+            if(flappingInterval){
                 $interval.cancel(flappingInterval);
             }
             flappingInterval = null;
         };
 
-        $scope.changeGraphTimespan = function (timespan) {
-            graphTimeSpan = timespan;
-            loadGraph($scope.host.Host.uuid, $scope.mergedService.Service.uuid);
+        $scope.changeGraphTimespan = function(timespan){
+            var start = (parseInt(new Date().getTime() / 1000, 10) - (timespan * 3600));
+            var end = parseInt(new Date().getTime() / 1000, 10);
+            //graphTimeSpan = timespan;
+            loadGraph($scope.host.Host.uuid, $scope.mergedService.Service.uuid, false, start, end, true);
         };
 
-        $scope.changeDataSource = function (dsId) {
-            $scope.selectedGraphdataSource = dsId;
-            renderGraph($scope.perfdata)
+        $scope.changeDataSource = function(gaugeName){
+            $scope.currentDataSource = gaugeName;
+            loadGraph($scope.host.Host.uuid, $scope.mergedService.Service.uuid, false, lastGraphStart, lastGraphEnd, false);
         };
 
-        var getServicestatusTextColor = function () {
-            switch ($scope.servicestatus.currentState) {
+        var getServicestatusTextColor = function(){
+            switch($scope.servicestatus.currentState){
                 case 0:
                 case '0':
                     return 'txt-color-green';
@@ -205,28 +225,74 @@ angular.module('openITCOCKPIT')
         };
 
 
-        var loadGraph = function (hostUuid, serviceuuid) {
-            $scope.isLoadingGraph = true;
-            $http.get('/Graphgenerators/getPerfdataByUuid.json', {
-                params: {
-                    angular: true,
-                    host_uuid: hostUuid,
-                    service_uuid: serviceuuid,
-                    hours: graphTimeSpan,
-                    jsTimestamp: 1
-                }
-            }).then(function (result) {
-                $scope.isLoadingGraph = false;
-                $scope.dataSources = [];
-                $scope.perfdata = result.data.performance_data;
-                for (var dsKey in  $scope.perfdata) {
-                    $scope.dataSources.push($scope.perfdata[dsKey].datasource.label);
-                }
-                renderGraph($scope.perfdata);
-            });
+        var loadGraph = function(hostUuid, serviceuuid, appendData, start, end, saveStartAndEnd){
+
+            if(saveStartAndEnd){
+                lastGraphStart = start;
+                lastGraphEnd = end;
+            }
+
+            //The last timestamp in the y-axe
+            graphRenderEnd = end;
+
+            if($scope.dataSources.length > 0){
+                $scope.isLoadingGraph = true;
+                $http.get('/Graphgenerators/getPerfdataByUuid.json', {
+                    params: {
+                        angular: true,
+                        host_uuid: hostUuid,
+                        service_uuid: serviceuuid,
+                        //hours: graphTimeSpan,
+                        start: start,
+                        end: end,
+                        jsTimestamp: 1,
+                        gauge: $scope.currentDataSource
+                    }
+                }).then(function(result){
+                    $scope.isLoadingGraph = false;
+                    if(appendData === false){
+                        //Did we got date from Server?
+                        if(result.data.performance_data.length > 0){
+                            //Use the first metrics the server gave us.
+                            $scope.perfdata = result.data.performance_data[0];
+                        }else{
+                            $scope.perfdata = {
+                                data: {},
+                                datasource: {
+                                    ds: null,
+                                    name: null,
+                                    label: null,
+                                    unit: null,
+                                    act: null,
+                                    warn: null,
+                                    crit: null,
+                                    min: null,
+                                    max: null
+                                }
+                            };
+                        }
+                    }
+
+                    if(appendData === true){
+                        if(result.data.performance_data.length > 0){
+                            //Append new data to current graph
+                            for(var timestamp in result.data.performance_data[0].data){
+                                $scope.perfdata.data[timestamp] = result.data.performance_data[0].data[timestamp];
+                            }
+                        }
+                    }
+
+
+                    if($scope.graphAutoRefresh === true && $scope.graphAutoRefreshInterval > 1000){
+                        enableGraphAutorefresh();
+                    }
+
+                    renderGraph($scope.perfdata);
+                });
+            }
         };
 
-        var initTooltip = function () {
+        var initTooltip = function(){
             var previousPoint = null;
             var $graph_data_tooltip = $('#graph_data_tooltip');
 
@@ -246,41 +312,41 @@ angular.module('openITCOCKPIT')
                 transition: 'all 1s'
             });
 
-            $('#graphCanvas').bind('plothover', function (event, pos, item) {
+            $('#graphCanvas').bind('plothover', function(event, pos, item){
                 $('#x').text(pos.pageX.toFixed(2));
                 $('#y').text(pos.pageY.toFixed(2));
 
-                if (item) {
-                    if (previousPoint != item.dataIndex) {
+                if(item){
+                    if(previousPoint != item.dataIndex){
                         previousPoint = item.dataIndex;
 
                         $('#graph_data_tooltip').hide();
 
                         var value = item.datapoint[1];
-                        if (!isNaN(value) && isFinite(value)) {
+                        if(!isNaN(value) && isFinite(value)){
                             value = value.toFixed(4);
                         }
                         var tooltip_text = value;
-                        if (item.series['unit']) {
+                        if(item.series['unit']){
                             tooltip_text += ' ' + item.series.unit;
                         }
 
                         showTooltip(item.pageX, item.pageY, tooltip_text, item.datapoint[0]);
                     }
-                } else {
+                }else{
                     $("#graph_data_tooltip").hide();
                     previousPoint = null;
                 }
             });
         };
 
-        var showTooltip = function (x, y, contents, timestamp) {
+        var showTooltip = function(x, y, contents, timestamp){
             var self = this;
             var $graph_data_tooltip = $('#graph_data_tooltip');
 
             var fooJS = new Date(timestamp + ($scope.timezone.server_timezone_offset * 1000));
-            var fixTime = function (value) {
-                if (value < 10) {
+            var fixTime = function(value){
+                if(value < 10){
                     return '0' + value;
                 }
                 return value;
@@ -298,24 +364,27 @@ angular.module('openITCOCKPIT')
                 .fadeIn(200);
         };
 
-        var renderGraph = function (performance_data) {
+        var renderGraph = function(performance_data){
             initTooltip();
 
             var thresholdLines = [];
             var thresholdAreas = [];
-            if ($scope.selectedGraphdataSource === null) {
-                $scope.selectedGraphdataSource = 0;
-            }
 
-            var defaultColor = 'green';
+            var GraphDefaultsObj = new GraphDefaults();
 
-            if (performance_data[$scope.selectedGraphdataSource].datasource.warn !== "" && performance_data[$scope.selectedGraphdataSource].datasource.crit !== "") {
-                var warn = parseFloat(performance_data[$scope.selectedGraphdataSource].datasource.warn);
-                var crit = parseFloat(performance_data[$scope.selectedGraphdataSource].datasource.crit);
+            var defaultColor = GraphDefaultsObj.defaultFillColor;
+
+            if(performance_data.datasource.warn !== "" &&
+                performance_data.datasource.crit !== "" &&
+                performance_data.datasource.warn !== null &&
+                performance_data.datasource.crit !== null){
+
+                var warn = parseFloat(performance_data.datasource.warn);
+                var crit = parseFloat(performance_data.datasource.crit);
 
                 //Add warning and critical line to chart
                 thresholdLines.push({
-                    color: '#FFFF00',
+                    color: GraphDefaultsObj.warningBorderColor,
                     yaxis: {
                         from: warn,
                         to: warn
@@ -323,7 +392,7 @@ angular.module('openITCOCKPIT')
                 });
 
                 thresholdLines.push({
-                    color: '#FF0000',
+                    color: GraphDefaultsObj.criticalBorderColor,
                     yaxis: {
                         from: crit,
                         to: crit
@@ -331,119 +400,103 @@ angular.module('openITCOCKPIT')
                 });
 
                 //Change color of the area chart for warning and critical
-                if (warn > crit) {
+                if(warn > crit){
                     thresholdAreas.push({
                         below: warn,
-                        color: '#FFFF00'
+                        color: GraphDefaultsObj.warningFillColor
                     });
                     thresholdAreas.push({
                         below: crit,
-                        color: '#FF0000'
+                        color: GraphDefaultsObj.criticalFillColor
                     });
-                } else {
-
-                    defaultColor = '#FF0000';
+                }else{
+                    defaultColor = GraphDefaultsObj.criticalFillColor;
                     thresholdAreas.push({
                         below: crit,
-                        color: '#FFFF00'
+                        color: GraphDefaultsObj.warningFillColor
                     });
                     thresholdAreas.push({
                         below: warn,
-                        color: 'green'
+                        color: GraphDefaultsObj.okFillColor
                     });
                 }
             }
 
             var graph_data = [];
-            for (var timestamp in performance_data[$scope.selectedGraphdataSource].data) {
-                graph_data.push([timestamp, performance_data[$scope.selectedGraphdataSource].data[timestamp]]);
+            for(var timestamp in performance_data.data){
+                graph_data.push([timestamp, performance_data.data[timestamp]]);
             }
 
-            var color_amount = 1;
-            var color_generator = new ColorGenerator();
-            var options = {
-                width: '100%',
-                height: '500px',
-                colors: color_generator.generate(color_amount, 90, 120),
-                legend: false,
-                grid: {
-                    hoverable: true,
-                    markings: thresholdLines,
-                    borderWidth: {
-                        top: 1,
-                        right: 1,
-                        bottom: 1,
-                        left: 1
-                    },
-                    borderColor: {
-                        top: '#CCCCCC'
+            var options = GraphDefaultsObj.getDefaultOptions();
+
+            options.height = '300';
+            options.colors = defaultColor;
+            options.tooltip = true;
+            options.tooltipOpts = {
+                defaultTheme: false
+            };
+            options.xaxis.tickFormatter = function(val, axis){
+                var fooJS = new Date(val + ($scope.timezone.server_timezone_offset * 1000));
+                var fixTime = function(value){
+                    if(value < 10){
+                        return '0' + value;
                     }
-                },
-                tooltip: true,
-                tooltipOpts: {
-                    defaultTheme: false
-                },
-                xaxis: {
-                    mode: 'time',
-                    timeformat: '%d.%m.%y %H:%M:%S', // This is handled by a plugin, if it is used -> jquery.flot.time.js
-                    tickFormatter: function (val, axis) {
-                        var fooJS = new Date(val + ($scope.timezone.server_timezone_offset * 1000));
-                        var fixTime = function (value) {
-                            if (value < 10) {
-                                return '0' + value;
-                            }
-                            return value;
-                        };
-                        return fixTime(fooJS.getUTCDate()) + '.' + fixTime(fooJS.getUTCMonth() + 1) + '.' + fooJS.getUTCFullYear() + ' ' + fixTime(fooJS.getUTCHours()) + ':' + fixTime(fooJS.getUTCMinutes());
-                    }
-                },
-                lines: {
-                    show: true,
-                    lineWidth: 1,
-                    fill: true,
-                    steps: 0,
-                    fillColor: {
-                        colors: [{
-                            opacity: 0.4
-                        },
-                            {
-                                opacity: 0.3
-                            },
-                            {
-                                opacity: 0.9
-                            }]
-                    }
-                },
-                points: {
-                    show: false,
-                    radius: 1
-                },
-                series: {
-                    show: true,
-                    labelFormatter: function (label, series) {
-                        // series is the series object for the label
-                        return '<a href="#' + label + '">' + label + '</a>';
-                    },
-                    color: defaultColor,
-                    threshold: thresholdAreas
-                },
-                selection: {
-                    mode: "x"
-                }
+                    return value;
+                };
+                return fixTime(fooJS.getUTCDate()) + '.' + fixTime(fooJS.getUTCMonth() + 1) + '.' + fooJS.getUTCFullYear() + ' ' + fixTime(fooJS.getUTCHours()) + ':' + fixTime(fooJS.getUTCMinutes());
+            };
+            options.series.color = defaultColor;
+            options.series.threshold = thresholdAreas;
+            options.lines.fillColor.colors = [{opacity: 0.3}, {brightness: 1, opacity: 0.6}];
+
+            options.points = {
+                show: $scope.showDatapoints,
+                radius: 1
             };
 
+            options.xaxis.min = lastGraphStart * 1000;
+            options.xaxis.max = graphRenderEnd * 1000;
 
-            self.plot = $.plot('#graphCanvas', [graph_data], options);
+
+            plot = $.plot('#graphCanvas', [graph_data], options);
+
+            if(zoomCallbackWasBind === false){
+                $("#graphCanvas").bind("plotselected", function(event, ranges){
+                    var start = parseInt(ranges.xaxis.from / 1000, 10);
+                    var end = parseInt(ranges.xaxis.to / 1000);
+
+
+                    //Zoomed from right to left?
+                    if(start > end){
+                        var tmpStart = end;
+                        end = start;
+                        start = tmpStart;
+                    }
+
+                    var currentTimestamp = Math.floor(Date.now() / 1000);
+                    var graphAutoRefreshIntervalInSeconds = $scope.graphAutoRefreshInterval / 1000;
+
+                    //Only enable autorefresh, if graphEnd timestamp is near to now
+                    //We dont need to autorefresh data from yesterday
+                    if((end + graphAutoRefreshIntervalInSeconds + 120) < currentTimestamp){
+                        disableGraphAutorefresh();
+                    }
+
+                    loadGraph($scope.host.Host.uuid, $scope.mergedService.Service.uuid, false, start, end, true);
+                });
+            }
+
+            zoomCallbackWasBind = true;
         };
 
-        $scope.loadTimelineData = function (_properties) {
+        $scope.loadTimelineData = function(_properties){
             var properties = _properties || {};
             var start = properties.start || -1;
             var end = properties.end || -1;
 
             $scope.timelineIsLoading = true;
 
-            if (start > $scope.visTimelineStart && end < $scope.visTimelineEnd) {
+            if(start > $scope.visTimelineStart && end < $scope.visTimelineEnd){
                 $scope.timelineIsLoading = false;
                 //Zoom in data we already have
                 return;
@@ -455,7 +508,7 @@ angular.module('openITCOCKPIT')
                     start: start,
                     end: end
                 }
-            }).then(function (result) {
+            }).then(function(result){
                 var timelinedata = {
                     items: new vis.DataSet(result.data.servicestatehistory),
                     groups: new vis.DataSet(result.data.groups)
@@ -507,24 +560,24 @@ angular.module('openITCOCKPIT')
             });
         };
 
-        var renderTimeline = function (timelinedata, options) {
+        var renderTimeline = function(timelinedata, options){
             var container = document.getElementById('visualization');
-            if ($scope.visTimeline === null) {
+            if($scope.visTimeline === null){
                 $scope.visTimeline = new vis.Timeline(container, timelinedata.items, timelinedata.groups, options);
-                $scope.visTimeline.on('rangechanged', function (properties) {
-                    if ($scope.visTimelineInit) {
+                $scope.visTimeline.on('rangechanged', function(properties){
+                    if($scope.visTimelineInit){
                         $scope.visTimelineInit = false;
                         return;
                     }
 
-                    if ($scope.timelineIsLoading) {
+                    if($scope.timelineIsLoading){
                         return;
                     }
 
-                    if ($scope.visTimeout) {
+                    if($scope.visTimeout){
                         clearTimeout($scope.visTimeout);
                     }
-                    $scope.visTimeout = setTimeout(function () {
+                    $scope.visTimeout = setTimeout(function(){
                         $scope.visTimeout = null;
                         $scope.loadTimelineData({
                             start: parseInt(properties.start.getTime() / 1000, 10),
@@ -532,18 +585,18 @@ angular.module('openITCOCKPIT')
                         });
                     }, 500);
                 });
-            } else {
+            }else{
                 $scope.visTimeline.setItems(timelinedata.items);
             }
 
-            $scope.visTimeline.on('changed', function () {
-                if ($scope.visTimelineInit) {
+            $scope.visTimeline.on('changed', function(){
+                if($scope.visTimelineInit){
                     return;
                 }
-                if ($scope.visChangeTimeout) {
+                if($scope.visChangeTimeout){
                     clearTimeout($scope.visChangeTimeout);
                 }
-                $scope.visChangeTimeout = setTimeout(function () {
+                $scope.visChangeTimeout = setTimeout(function(){
                     $scope.visChangeTimeout = null;
                     var timeRange = $scope.visTimeline.getWindow();
                     var visTimelineStartAsTimestamp = new Date(timeRange.start).getTime();
@@ -554,7 +607,7 @@ angular.module('openITCOCKPIT')
                             start: 'Date',
                             end: 'Date'
                         },
-                        filter: function (item) {
+                        filter: function(item){
                             return (item.group == 4 &&
                                 (item.className === 'bg-critical' || item.className === 'bg-critical-soft') &&
                                 $scope.CheckIfItemInRange(
@@ -578,43 +631,43 @@ angular.module('openITCOCKPIT')
             });
         };
 
-        $scope.showTimeline = function () {
+        $scope.showTimeline = function(){
             $scope.showTimelineTab = true;
             $scope.loadTimelineData();
         };
 
-        $scope.hideTimeline = function () {
+        $scope.hideTimeline = function(){
             $scope.showTimelineTab = false;
         };
 
-        $scope.CheckIfItemInRange = function (start, end, item) {
+        $scope.CheckIfItemInRange = function(start, end, item){
             var itemStart = item.start.getTime();
             var itemEnd = item.end.getTime();
-            if (itemEnd < start) {
+            if(itemEnd < start){
                 return false;
             }
-            else if (itemStart > end) {
+            else if(itemStart > end){
                 return false;
             }
-            else if (itemStart >= start && itemEnd <= end) {
+            else if(itemStart >= start && itemEnd <= end){
                 return true;
             }
-            else if (itemStart >= start && itemEnd > end) { //item started behind the start and ended behind the end
+            else if(itemStart >= start && itemEnd > end){ //item started behind the start and ended behind the end
                 return true;
             }
-            else if (itemStart < start && itemEnd > start && itemEnd < end) { //item started before the start and ended behind the end
+            else if(itemStart < start && itemEnd > start && itemEnd < end){ //item started before the start and ended behind the end
                 return true;
             }
-            else if (itemStart < start && itemEnd >= end) { // item startet before the start and enden before the end
+            else if(itemStart < start && itemEnd >= end){ // item startet before the start and enden before the end
                 return true;
             }
             return false;
-        }
+        };
 
-        $scope.calculateFailures = function (totalTime, criticalItems, start, end) {
+        $scope.calculateFailures = function(totalTime, criticalItems, start, end){
             var failuresDuration = 0;
 
-            criticalItems.forEach(function (criticalItem) {
+            criticalItems.forEach(function(criticalItem){
                 var itemStart = criticalItem.start.getTime();
                 var itemEnd = criticalItem.end.getTime();
                 failuresDuration += ((itemEnd > end) ? end : itemEnd) - ((itemStart < start) ? start : itemStart);
@@ -622,22 +675,75 @@ angular.module('openITCOCKPIT')
             return (failuresDuration / totalTime * 100).toFixed(3);
         };
 
+        var enableGraphAutorefresh = function(){
+            $scope.graphAutoRefresh = true;
+
+            if(graphAutoRefreshIntervalId === null){
+                graphAutoRefreshIntervalId = $interval(function(){
+                    //Find last timestamp to only load new data and keep the existing
+                    var lastTimestampInCurrentData = 0;
+                    for(var timestamp in $scope.perfdata.data){
+                        timestamp = parseInt(timestamp, 10);
+                        if(timestamp > lastTimestampInCurrentData){
+                            lastTimestampInCurrentData = timestamp;
+                        }
+                    }
+
+                    lastTimestampInCurrentData = lastTimestampInCurrentData / 1000;
+
+                    var start = lastTimestampInCurrentData;
+                    var end = Math.floor(Date.now() / 1000);
+                    if(start > 0){
+                        loadGraph($scope.host.Host.uuid, $scope.mergedService.Service.uuid, true, start, end, false);
+                    }
+                }, $scope.graphAutoRefreshInterval);
+            }
+        };
+
+        var disableGraphAutorefresh = function(){
+            $scope.graphAutoRefresh = false;
+
+            if(graphAutoRefreshIntervalId !== null){
+                $interval.cancel(graphAutoRefreshIntervalId);
+            }
+            graphAutoRefreshIntervalId = null;
+        };
+
         $scope.load();
         $scope.loadTimezone();
 
-        $scope.$watch('servicestatus.isFlapping', function () {
-            if ($scope.servicestatus) {
-                if ($scope.servicestatus.hasOwnProperty('isFlapping')) {
-                    if ($scope.servicestatus.isFlapping === true) {
+        $scope.$watch('servicestatus.isFlapping', function(){
+            if($scope.servicestatus){
+                if($scope.servicestatus.hasOwnProperty('isFlapping')){
+                    if($scope.servicestatus.isFlapping === true){
                         $scope.startFlapping();
                     }
 
-                    if ($scope.servicestatus.isFlapping === false) {
+                    if($scope.servicestatus.isFlapping === false){
                         $scope.stopFlapping();
                     }
 
                 }
             }
+        });
+
+        $scope.$watch('graphAutoRefresh', function(){
+            if($scope.init){
+                return;
+            }
+
+            if($scope.graphAutoRefresh === true){
+                enableGraphAutorefresh();
+            }else{
+                disableGraphAutorefresh();
+            }
+        });
+
+        $scope.$watch('showDatapoints', function(){
+            if($scope.init){
+                return;
+            }
+            loadGraph($scope.host.Host.uuid, $scope.mergedService.Service.uuid, true, lastGraphStart, lastGraphEnd, false);
         });
 
     });

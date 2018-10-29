@@ -28,13 +28,15 @@ use itnovum\openITCOCKPIT\Core\AcknowledgedHostConditions;
 use itnovum\openITCOCKPIT\Core\CustomMacroReplacer;
 use itnovum\openITCOCKPIT\Core\CustomVariableDiffer;
 use itnovum\openITCOCKPIT\Core\DowntimeHostConditions;
-use \itnovum\openITCOCKPIT\Core\HostControllerRequest;
-use \itnovum\openITCOCKPIT\Core\HostConditions;
+use itnovum\openITCOCKPIT\Core\HostConditions;
+use itnovum\openITCOCKPIT\Core\HostControllerRequest;
 use itnovum\openITCOCKPIT\Core\HostMacroReplacer;
 use itnovum\openITCOCKPIT\Core\HostNotificationConditions;
+use itnovum\openITCOCKPIT\Core\HostSharingPermissions;
 use itnovum\openITCOCKPIT\Core\HoststatusConditions;
 use itnovum\openITCOCKPIT\Core\HoststatusFields;
 use itnovum\openITCOCKPIT\Core\HosttemplateMerger;
+use itnovum\openITCOCKPIT\Core\ModuleManager;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\StatehistoryHostConditions;
 use itnovum\openITCOCKPIT\Core\Timeline\AcknowledgementSerializer;
@@ -44,15 +46,13 @@ use itnovum\openITCOCKPIT\Core\Timeline\NotificationSerializer;
 use itnovum\openITCOCKPIT\Core\Timeline\StatehistorySerializer;
 use itnovum\openITCOCKPIT\Core\Timeline\TimeRangeSerializer;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
-use itnovum\openITCOCKPIT\Core\ModuleManager;
 use itnovum\openITCOCKPIT\Core\Views\AcknowledgementHost;
 use itnovum\openITCOCKPIT\Core\Views\ContainerPermissions;
 use itnovum\openITCOCKPIT\Core\Views\HostPerfdataChecker;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
 use itnovum\openITCOCKPIT\Database\ScrollIndex;
 use itnovum\openITCOCKPIT\Filter\HostFilter;
-use \itnovum\openITCOCKPIT\Monitoring\QueryHandler;
-use itnovum\openITCOCKPIT\Core\HostSharingPermissions;
+use itnovum\openITCOCKPIT\Monitoring\QueryHandler;
 
 /**
  * @property Host $Host
@@ -228,13 +228,13 @@ class HostsController extends AppController {
         $ServicestatusFields->currentState();
 
         foreach ($hosts as $host) {
-            $serviceUuids = $this->Service->find('list',[
-               'fields' => [
-                   'Service.uuid'
-               ],
-               'conditions' => [
-                   'Service.host_id' => $host['Host']['id']
-               ]
+            $serviceUuids = $this->Service->find('list', [
+                'fields'     => [
+                    'Service.uuid'
+                ],
+                'conditions' => [
+                    'Service.host_id' => $host['Host']['id']
+                ]
             ]);
             $servicestatus = $this->Servicestatus->byUuid($serviceUuids, $ServicestatusFields);
             $serviceStateSummary = $this->Service->getServiceStateSummary($servicestatus, false);
@@ -248,7 +248,7 @@ class HostsController extends AppController {
             );
             $Host = new \itnovum\openITCOCKPIT\Core\Views\Host($host);
             $Hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus($host['Hoststatus'], $UserTime);
-            $PerfdataChecker = new HostPerfdataChecker($Host);
+            $PerfdataChecker = new HostPerfdataChecker($Host, $this->PerfdataBackend);
 
             $hostSharingPermissions = new HostSharingPermissions(
                 $Host->getContainerId(), $this->hasRootPrivileges, $Host->getContainerIds(), $this->MY_RIGHTS
@@ -270,11 +270,11 @@ class HostsController extends AppController {
             }
 
             $tmpRecord = [
-                'Host'       => $Host->toArray(),
-                'Hoststatus' => $Hoststatus->toArray(),
+                'Host'                 => $Host->toArray(),
+                'Hoststatus'           => $Hoststatus->toArray(),
                 'ServicestatusSummary' => $serviceStateSummary
             ];
-            $tmpRecord['Host']['has_graphs'] = $PerfdataChecker->hasRrdFolder();
+            $tmpRecord['Host']['has_graphs'] = $PerfdataChecker->hasPerfdata();
             $tmpRecord['Host']['allow_sharing'] = $allowSharing;
             $tmpRecord['Host']['satelliteName'] = $satelliteName;
             $tmpRecord['Host']['satelliteId'] = $satellite_id;
@@ -3327,11 +3327,13 @@ class HostsController extends AppController {
         }
 
         $selected = $this->request->query('selected');
+        $includeDisabled = $this->request->query('includeDisabled') === 'true';
 
         $HostFilter = new HostFilter($this->request);
 
 
         $HostCondition = new HostConditions($HostFilter->ajaxFilter());
+        $HostCondition->setIncludeDisabled($includeDisabled);
         $HostCondition->setContainerIds($this->MY_RIGHTS);
         if ($onlyHostsWithWritePermission) {
             $writeContainers = [];
@@ -3353,26 +3355,31 @@ class HostsController extends AppController {
     }
 
 
-    public function loadParentHostsByString($containerId = 0, $host_id = 0) {
+    public function loadParentHostsByString() {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
-
         $selected = $this->request->query('selected');
-
+        $hostId = $this->request->query('hostId');
+        $containerId = $this->request->query('containerId');
+        $containerIds = [ROOT_CONTAINER, $containerId];
+        if ($containerId == ROOT_CONTAINER) {
+            //Don't panic! Only root users can edit /root objects ;)
+            //So no loss of selected hosts/host templates
+            $containerIds = $this->Tree->resolveChildrenOfContainerIds(ROOT_CONTAINER, true);
+        }
         $HostFilter = new HostFilter($this->request);
-
         $HostCondition = new HostConditions($HostFilter->ajaxFilter());
-        $HostCondition->setContainerIds($containerId);
 
+        $HostCondition->setContainerIds($containerIds);
+        if ($hostId) {
+            $HostCondition->setNotConditions([
+                'Host.id' => $hostId
+            ]);
+        }
         $hosts = $this->Host->makeItJavaScriptAble(
             $this->Host->getHostsForAngular($HostCondition, $selected)
-
         );
-
-        if ($host_id != 0 && isset($hosts[$host_id])) {
-            unset($hosts[$host_id]);
-        }
 
         $this->set(compact(['hosts']));
         $this->set('_serialize', ['hosts']);

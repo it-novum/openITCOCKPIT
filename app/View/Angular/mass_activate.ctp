@@ -28,7 +28,7 @@
                     </div>
                     <div class="col-xs-12 margin-top-10" ng-show="isActivating">
                         <div class="progress progress-striped active">
-                            <div class="progress-bar bg-primary"  style="width: {{percentage}}%"></div>
+                            <div class="progress-bar bg-primary" style="width: {{percentage}}%"></div>
                         </div>
                     </div>
 

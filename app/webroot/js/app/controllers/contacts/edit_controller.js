@@ -25,7 +25,7 @@
 App.Controllers.ContactsEditController = Frontend.AppController.extend({
     components: ['Ajaxloader', 'CustomVariables'],
 
-    _initialize: function() {
+    _initialize: function(){
         var self = this;
 
         this.Ajaxloader.setup();
@@ -106,8 +106,10 @@ App.Controllers.ContactsEditController = Frontend.AppController.extend({
                         container_ids: containerIds
                     },
                     dataType: 'json',
-                    error: function(){},
-                    success: function(){},
+                    error: function(){
+                    },
+                    success: function(){
+                    },
                     complete: function(response){
                         for(var selectId in timeperiodSelectors){
                             var $timeperiodSelectbox = $(timeperiodSelectors[selectId]);
@@ -126,7 +128,6 @@ App.Controllers.ContactsEditController = Frontend.AppController.extend({
                             }
                             $timeperiodSelectbox.trigger("chosen:updated");
                         }
-                        self.Ajaxloader.hide()
                     }
                 });
                 $.ajax({
@@ -158,9 +159,9 @@ App.Controllers.ContactsEditController = Frontend.AppController.extend({
                             }
                         }
                         $userSelectbox.trigger("chosen:updated");
-                        self.Ajaxloader.hide()
                     }
                 });
+                self.Ajaxloader.hide()
             }
         });
     }

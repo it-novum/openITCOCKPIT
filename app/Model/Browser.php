@@ -23,12 +23,10 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class Browser extends AppModel
-{
+class Browser extends AppModel {
     var $useTable = false;
 
-    public function hostsQuery($containerIds = [])
-    {
+    public function hostsQuery($containerIds = []) {
         return [
             'recursive'  => -1,
             'contain'    => [],
@@ -79,8 +77,7 @@ class Browser extends AppModel
         ];
     }
 
-    public function serviceQuery($containerIds = [])
-    {
+    public function serviceQuery($containerIds = []) {
         return [
             'recursive'  => -1,
             'conditions' => [
@@ -94,39 +91,40 @@ class Browser extends AppModel
                 'Service.uuid',
                 'Servicestatus.current_state',
             ],
-            'joins'      => [[
-                'table'      => 'hosts',
-                'type'       => 'INNER',
-                'alias'      => 'Host',
-                'conditions' => 'Service.host_id = Host.id',
-            ], [
-                'table'      => 'nagios_objects',
-                'type'       => 'INNER',
-                'alias'      => 'HostObject',
-                'conditions' => 'Host.uuid = HostObject.name1 AND HostObject.objecttype_id = 1',
-            ], [
-                'table'      => 'nagios_hoststatus',
-                'type'       => 'INNER',
-                'alias'      => 'Hoststatus',
-                'conditions' => 'Hoststatus.host_object_id = HostObject.object_id',
-            ], [
-                'table'      => 'nagios_objects',
-                'type'       => 'INNER',
-                'alias'      => 'ServiceObject',
-                'conditions' => 'ServiceObject.name1 = Host.uuid AND Service.uuid = ServiceObject.name2 AND ServiceObject.objecttype_id = 2',
-            ], [
-                'table'      => 'nagios_servicestatus',
-                'type'       => 'INNER',
-                'alias'      => 'Servicestatus',
-                'conditions' => 'Servicestatus.service_object_id = ServiceObject.object_id',
-            ], [
-                'table'      => 'hosts_to_containers',
-                'alias'      => 'HostsToContainers',
-                'type'       => 'LEFT',
-                'conditions' => [
-                    'HostsToContainers.host_id = Host.id',
+            'joins'      => [
+                [
+                    'table'      => 'hosts',
+                    'type'       => 'INNER',
+                    'alias'      => 'Host',
+                    'conditions' => 'Service.host_id = Host.id',
+                ], [
+                    'table'      => 'nagios_objects',
+                    'type'       => 'INNER',
+                    'alias'      => 'HostObject',
+                    'conditions' => 'Host.uuid = HostObject.name1 AND HostObject.objecttype_id = 1',
+                ], [
+                    'table'      => 'nagios_hoststatus',
+                    'type'       => 'INNER',
+                    'alias'      => 'Hoststatus',
+                    'conditions' => 'Hoststatus.host_object_id = HostObject.object_id',
+                ], [
+                    'table'      => 'nagios_objects',
+                    'type'       => 'INNER',
+                    'alias'      => 'ServiceObject',
+                    'conditions' => 'ServiceObject.name1 = Host.uuid AND Service.uuid = ServiceObject.name2 AND ServiceObject.objecttype_id = 2',
+                ], [
+                    'table'      => 'nagios_servicestatus',
+                    'type'       => 'INNER',
+                    'alias'      => 'Servicestatus',
+                    'conditions' => 'Servicestatus.service_object_id = ServiceObject.object_id',
+                ], [
+                    'table'      => 'hosts_to_containers',
+                    'alias'      => 'HostsToContainers',
+                    'type'       => 'LEFT',
+                    'conditions' => [
+                        'HostsToContainers.host_id = Host.id',
+                    ],
                 ],
-            ],
             ],
             'group'      => [
                 'Service.id',
@@ -134,8 +132,7 @@ class Browser extends AppModel
         ];
     }
 
-    public function countHoststate($hosts = [])
-    {
+    public function countHoststate($hosts = []) {
         $state_array_host = [
             0 => 0,
             1 => 0,
@@ -148,8 +145,7 @@ class Browser extends AppModel
         return $state_array_host;
     }
 
-    public function countServicestate($services = [])
-    {
+    public function countServicestate($services = []) {
         $state_array_service = [
             0 => 0,
             1 => 0,
@@ -163,8 +159,7 @@ class Browser extends AppModel
         return $state_array_service;
     }
 
-    public function getFirstContainers($browserAsNest, $MY_RIGHTS, $containerTypes)
-    {
+    public function getFirstContainers($browserAsNest, $MY_RIGHTS, $containerTypes) {
         $containers = [];
         foreach ($browserAsNest as $container) {
             if (in_array($container['Container']['id'], $MY_RIGHTS) && in_array($container['Container']['containertype_id'], $containerTypes)) {

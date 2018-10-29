@@ -23,45 +23,47 @@
 //	confirmation.
 
 App.Controllers.ContactsAddContactgroupController = Frontend.AppController.extend({
-	$table: null,
-	$contacts: null,
+    $table: null,
+    $contacts: null,
 
-	components: ['Ajaxloader'],
+    components: ['Ajaxloader'],
 
-	_initialize: function() {
-		this.Ajaxloader.setup();
-		this.$contacts = $('#ContactId');
-		var self = this;
-		$('#ContainerParentId').change(function(){
-			$this = $(this);
-			self.loadContacts($this.val());
-		});
-	},
-	
-	loadContacts: function(container_id){
-		this.Ajaxloader.show();
-		$.ajax({
-			url: "/contactgroups/loadContacts/"+encodeURIComponent(container_id)+'.json',
-			type: "POST",
-			cache: false,
-			dataType: "json",
-			error: function(){},
-			success: function(){},
-			complete: function(response){
-				//empty the selectbox for the new results
-				this.$contacts.html('');
-				if(response.responseJSON.sizeof > 0){
-					this.$contacts.attr('data-placeholder', this.getVar('data_placeholder'));
-					for(var key in response.responseJSON.contacts){
-						this.$contacts.append('<option value="'+key+'">'+response.responseJSON.contacts[key]+'</option>');
-					}
-				}else{
-					this.$contacts.attr('data-placeholder', this.getVar('data_placeholder_empty'));
-				}
-				//Rerender the chosen selectbox
-				this.$contacts.trigger("chosen:updated");
-				this.Ajaxloader.hide();
-			}.bind(this)
-		});
-	}
+    _initialize: function(){
+        this.Ajaxloader.setup();
+        this.$contacts = $('#ContactId');
+        var self = this;
+        $('#ContainerParentId').change(function(){
+            $this = $(this);
+            self.loadContacts($this.val());
+        });
+    },
+
+    loadContacts: function(container_id){
+        this.Ajaxloader.show();
+        $.ajax({
+            url: "/contactgroups/loadContacts/" + encodeURIComponent(container_id) + '.json',
+            type: "POST",
+            cache: false,
+            dataType: "json",
+            error: function(){
+            },
+            success: function(){
+            },
+            complete: function(response){
+                //empty the selectbox for the new results
+                this.$contacts.html('');
+                if(response.responseJSON.sizeof > 0){
+                    this.$contacts.attr('data-placeholder', this.getVar('data_placeholder'));
+                    for(var key in response.responseJSON.contacts){
+                        this.$contacts.append('<option value="' + key + '">' + response.responseJSON.contacts[key] + '</option>');
+                    }
+                }else{
+                    this.$contacts.attr('data-placeholder', this.getVar('data_placeholder_empty'));
+                }
+                //Rerender the chosen selectbox
+                this.$contacts.trigger("chosen:updated");
+                this.Ajaxloader.hide();
+            }.bind(this)
+        });
+    }
 });

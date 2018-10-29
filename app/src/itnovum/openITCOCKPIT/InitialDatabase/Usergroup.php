@@ -25,8 +25,7 @@
 namespace itnovum\openITCOCKPIT\InitialDatabase;
 
 
-class Usergroup extends Importer
-{
+class Usergroup extends Importer {
     /**
      * @property \Usergroup $Model
      */
@@ -34,8 +33,7 @@ class Usergroup extends Importer
     /**
      * @return bool
      */
-    public function import()
-    {
+    public function import() {
         if ($this->isTableEmpty()) {
             $data = $this->getData();
             foreach ($data as $record) {
@@ -50,8 +48,7 @@ class Usergroup extends Importer
     /**
      * @return array
      */
-    public function getData()
-    {
+    public function getData() {
         $data = [
             0 =>
                 [

@@ -23,8 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class PerfdataHelper extends AppHelper
-{
+class PerfdataHelper extends AppHelper {
     /**
      * Parst Perfdata-String und gibt Ergebnis als Array zurueck
      *
@@ -32,13 +31,12 @@ class PerfdataHelper extends AppHelper
      *
      * @return array $perfdata_array formatierstes Array als Performance-Infos
      */
-    public function parsePerfData($perfdata_string)
-    {
+    public function parsePerfData($perfdata_string) {
         $perfdata = [];
         $perf_data_structure = ['label', 'current_value', 'unit', 'warning', 'critical', 'min', 'max'];
         $i = 0;
 
-        preg_match_all('/ ([^=]*=[^ ]*)/', ' '.$perfdata_string, $matches);
+        preg_match_all('/ ([^=]*=[^ ]*)/', ' ' . $perfdata_string, $matches);
         foreach ($matches[0] as $data_set) {
             foreach (explode(';', trim($data_set)) as $value) {
                 if (preg_match('/=/', $value)) {

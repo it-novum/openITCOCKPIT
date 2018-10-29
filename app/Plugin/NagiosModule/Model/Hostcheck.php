@@ -25,8 +25,7 @@
 
 use itnovum\openITCOCKPIT\Core\HostcheckConditions;
 
-class Hostcheck extends NagiosModuleAppModel
-{
+class Hostcheck extends NagiosModuleAppModel {
     //public $useDbConfig = 'nagios';
     public $useTable = 'hostchecks';
     public $primaryKey = 'hostcheck_id';
@@ -35,7 +34,7 @@ class Hostcheck extends NagiosModuleAppModel
         'Objects' => [
             'className'  => 'NagiosModule.Objects',
             'foreignKey' => 'host_object_id',
-            'type' => 'INNER'
+            'type'       => 'INNER'
         ],
     ];
 
@@ -44,14 +43,14 @@ class Hostcheck extends NagiosModuleAppModel
      * @param array $paginatorConditions
      * @return array
      */
-    public function getQuery(HostcheckConditions $HostcheckConditions, $paginatorConditions = []){
+    public function getQuery(HostcheckConditions $HostcheckConditions, $paginatorConditions = []) {
         $query = [
             'conditions' => [
                 'Objects.name1' => $HostcheckConditions->getHostUuid(),
-                'start_time >' => date('Y-m-d H:i:s', $HostcheckConditions->getFrom()),
-                'start_time <' => date('Y-m-d H:i:s', $HostcheckConditions->getTo())
+                'start_time >'  => date('Y-m-d H:i:s', $HostcheckConditions->getFrom()),
+                'start_time <'  => date('Y-m-d H:i:s', $HostcheckConditions->getTo())
             ],
-            'fields' => [
+            'fields'     => [
                 'Hostcheck.state',
                 'Hostcheck.start_time',
                 'Hostcheck.current_check_attempt',
@@ -59,15 +58,15 @@ class Hostcheck extends NagiosModuleAppModel
                 'Hostcheck.state_type',
                 'Hostcheck.output',
             ],
-            'order' => $HostcheckConditions->getOrder(),
-            'limit' => $HostcheckConditions->getLimit(),
+            'order'      => $HostcheckConditions->getOrder(),
+            'limit'      => $HostcheckConditions->getLimit(),
         ];
 
-        if(!empty($HostcheckConditions->getStates())){
+        if (!empty($HostcheckConditions->getStates())) {
             $query['conditions']['state'] = $HostcheckConditions->getStates();
         }
 
-        if(!empty($HostcheckConditions->getStateTypes())){
+        if (!empty($HostcheckConditions->getStateTypes())) {
             $query['conditions']['state_type'] = $HostcheckConditions->getStateTypes();
         }
 

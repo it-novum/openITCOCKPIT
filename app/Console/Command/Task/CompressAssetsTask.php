@@ -1,14 +1,12 @@
 <?php
 
-class CompressAssetsTask extends AppShell
-{
+class CompressAssetsTask extends AppShell {
 
     /**
      * Main Action
      * @return void
      */
-    public function execute()
-    {
+    public function execute() {
         $this->out('Combining and compressing assets');
         $this->_compileFrontendDependencies();
     }
@@ -17,16 +15,15 @@ class CompressAssetsTask extends AppShell
      * Collects, combines and compresses all JS and CSS dependencies.
      * @return void
      */
-    protected function _compileFrontendDependencies()
-    {
+    protected function _compileFrontendDependencies() {
         if (!is_writable(TMP)) {
-            return $this->error(TMP.' is not writeable, cannot compile.');
+            return $this->error(TMP . ' is not writeable, cannot compile.');
         }
         if (!is_writable(JS)) {
-            return $this->error(JS.' is not writeable, cannot compile.');
+            return $this->error(JS . ' is not writeable, cannot compile.');
         }
         if (!is_writable(CSS)) {
-            return $this->error(CSS.' is not writeable, cannot compile.');
+            return $this->error(CSS . ' is not writeable, cannot compile.');
         }
 
         Configure::load('assets');
@@ -44,8 +41,7 @@ class CompressAssetsTask extends AppShell
      * Compiles an array of the absolute paths to all JS files.
      * @return array
      */
-    protected function _getJsFiles()
-    {
+    protected function _getJsFiles() {
         App::uses('View', 'View');
         App::import('Helper', 'Frontend.Frontend');
         $frontendHelper = new FrontendHelper(new View(null));
@@ -69,10 +65,10 @@ class CompressAssetsTask extends AppShell
 
                 unset($parts[0], $parts[1]);
                 $relPath = implode('/', $parts);
-                $path = $pluginPath.'webroot/'.$relPath;
+                $path = $pluginPath . 'webroot/' . $relPath;
                 $jsFiles[] = $path;
             } else {
-                $jsFiles[] = JS.$jsFile;
+                $jsFiles[] = JS . $jsFile;
             }
         }
 
@@ -83,17 +79,16 @@ class CompressAssetsTask extends AppShell
      * Returns an array with the absolute paths of all CSS files to include.
      * @return array
      */
-    protected function _getCssFiles()
-    {
+    protected function _getCssFiles() {
         $cssFiles = [];
         foreach (Configure::read('assets.css') as $cssFile) {
             if (substr($cssFile, -4) !== '.css') {
                 $cssFile .= '.css';
             }
             if (substr($cssFile, 0, 1) == '/') {
-                $cssFiles[] = WWW_ROOT.$cssFile;
+                $cssFiles[] = WWW_ROOT . $cssFile;
             } else {
-                $cssFiles[] = CSS.$cssFile;
+                $cssFiles[] = CSS . $cssFile;
             }
         }
 
@@ -107,20 +102,19 @@ class CompressAssetsTask extends AppShell
      *
      * @return string            The full output file path.
      */
-    protected function _compressJs(array $jsFiles)
-    {
+    protected function _compressJs(array $jsFiles) {
         $string = '';
         foreach ($jsFiles as $jsFile) {
             if (file_exists($jsFile)) {
                 #$string.= "/* {$jsFile} */\n";
                 $content = file_get_contents($jsFile);
-                $string .= $content."\n";
+                $string .= $content . "\n";
             } else {
                 $this->error("JS dependency {$jsFile} doesn't exist!");
             }
         }
-        $jsTmpFile = TMP.'uncompressed_js.tmp.js';
-        $outputFile = JS.'app_build.js';
+        $jsTmpFile = TMP . 'uncompressed_js.tmp.js';
+        $outputFile = JS . 'app_build.js';
 
         if (file_put_contents($jsTmpFile, $string) !== false) {
             $this->out('Compressing JavaScript');
@@ -141,20 +135,19 @@ class CompressAssetsTask extends AppShell
      *
      * @return string            The full output file path.
      */
-    protected function _compressCss(array $cssFiles)
-    {
+    protected function _compressCss(array $cssFiles) {
         $string = '';
         foreach ($cssFiles as $cssFile) {
             if (file_exists($cssFile)) {
                 #$string.= "/* {$cssFile} */\n";
                 $content = file_get_contents($cssFile);
-                $string .= $content."\n";
+                $string .= $content . "\n";
             } else {
                 $this->error("CSS dependency {$cssFile} doesn't exist!");
             }
         }
-        $cssTmpFile = TMP.'uncompressed_css.tmp.css';
-        $outputFile = CSS.'app_build.css';
+        $cssTmpFile = TMP . 'uncompressed_css.tmp.css';
+        $outputFile = CSS . 'app_build.css';
 
         if (file_put_contents($cssTmpFile, $string) !== false) {
             $this->out('Compressing CSS');
@@ -172,15 +165,14 @@ class CompressAssetsTask extends AppShell
      * Runs the YUI compressor on the given $inputFile of type $assetType and
      * writes the output to $outputFile
      *
-     * @param string $inputFile  The input file name
+     * @param string $inputFile The input file name
      * @param string $outputFile The output file name
-     * @param string $assetType  'css' or 'js'
+     * @param string $assetType 'css' or 'js'
      *
      * @return void
      */
-    protected function _runCompressor($inputFile, $outputFile, $assetType)
-    {
-        $compressorPath = APP.'Vendor/';
+    protected function _runCompressor($inputFile, $outputFile, $assetType) {
+        $compressorPath = APP . 'Vendor/';
         echo system("java -jar {$compressorPath}yuicompressor-2.4.7.jar --type={$assetType} -o {$outputFile} {$inputFile}");
         #file_put_contents($outputFile, file_get_contents($inputFile));
     }

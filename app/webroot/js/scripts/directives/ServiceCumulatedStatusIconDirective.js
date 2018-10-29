@@ -18,7 +18,7 @@ angular.module('openITCOCKPIT').directive('servicecumulatedstatusicon', function
 
                 switch(currentServiceCumulatedState){
                     case 0:
-                        $scope.iconColor =  'text-success';
+                        $scope.iconColor = 'text-success';
                         return;
                     case 1:
                         $scope.iconColor = 'text-warning';

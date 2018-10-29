@@ -23,13 +23,11 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class GearmanClientComponent extends Component
-{
+class GearmanClientComponent extends Component {
 
     public $client = null;
 
-    public function initialize(Controller $controller)
-    {
+    public function initialize(Controller $controller) {
         $this->Controller = $controller;
         Configure::load('gearman');
         $this->Config = Configure::read('gearman');
@@ -38,8 +36,7 @@ class GearmanClientComponent extends Component
         $this->client->addServer($this->Config['address'], $this->Config['port']);
     }
 
-    public function send($task, $payload = [])
-    {
+    public function send($task, $payload = []) {
         $payload['task'] = $task;
         $payload = serialize($payload);
 
@@ -57,8 +54,7 @@ class GearmanClientComponent extends Component
         return $result;
     }
 
-    public function sendBackground($task, $payload = [])
-    {
+    public function sendBackground($task, $payload = []) {
         $payload['task'] = $task;
         $payload = serialize($payload);
 

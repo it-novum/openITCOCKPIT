@@ -25,16 +25,15 @@
 
 
 /**
- * @property Hostdependency                    $Hostdependency
- * @property Timeperiod                        $Timeperiod
- * @property Host                              $Host
- * @property Hostgroup                         $Hostgroup
- * @property HostdependencyHostMembership      $HostdependencyHostMembership
+ * @property Hostdependency $Hostdependency
+ * @property Timeperiod $Timeperiod
+ * @property Host $Host
+ * @property Hostgroup $Hostgroup
+ * @property HostdependencyHostMembership $HostdependencyHostMembership
  * @property HostdependencyHostgroupMembership $HostdependencyHostgroupMembership
- * @property Container                         $Container
+ * @property Container $Container
  */
-class HostdependenciesController extends AppController
-{
+class HostdependenciesController extends AppController {
     public $uses = [
         'Hostdependency',
         'Timeperiod',
@@ -55,8 +54,7 @@ class HostdependenciesController extends AppController
         'CustomValidationErrors',
     ];
 
-    public function index()
-    {
+    public function index() {
         $options = [
             'conditions' => [
                 'Hostdependency.container_id' => $this->MY_RIGHTS,
@@ -99,8 +97,7 @@ class HostdependenciesController extends AppController
         $this->set('_serialize', ['all_hostdependencies']);
     }
 
-    public function view($id = null)
-    {
+    public function view($id = null) {
         if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();
 
@@ -119,8 +116,7 @@ class HostdependenciesController extends AppController
         $this->set('_serialize', ['hostdependency']);
     }
 
-    public function edit($id = null)
-    {
+    public function edit($id = null) {
         if (!$this->Hostdependency->exists($id)) {
             throw new NotFoundException(__('Invalid hostdependency'));
         }
@@ -168,7 +164,8 @@ class HostdependenciesController extends AppController
             if ($this->Hostdependency->validates()) {
                 $old_membership_hosts = $this->HostdependencyHostMembership->find('all', [
                     'conditions' => [
-                        'HostdependencyHostMembership.hostdependency_id' => $id],
+                        'HostdependencyHostMembership.hostdependency_id' => $id
+                    ],
                 ]);
                 /* Delete old host associations */
                 foreach ($old_membership_hosts as $old_membership_host) {
@@ -177,7 +174,8 @@ class HostdependenciesController extends AppController
                 }
                 $old_membership_hostgroups = $this->HostdependencyHostgroupMembership->find('all', [
                     'conditions' => [
-                        'HostdependencyHostgroupMembership.hostdependency_id' => $id],
+                        'HostdependencyHostgroupMembership.hostdependency_id' => $id
+                    ],
                 ]);
                 /* Delete old hostgroup associations */
                 foreach ($old_membership_hostgroups as $old_membership_hostgroup) {
@@ -204,8 +202,7 @@ class HostdependenciesController extends AppController
         $this->set(compact(['hostdependency', 'hosts', 'hostgroups', 'timeperiods', 'containers']));
     }
 
-    public function add()
-    {
+    public function add() {
 
         $hosts = [];
         $hostgroups = [];
@@ -266,8 +263,7 @@ class HostdependenciesController extends AppController
         $this->set(compact(['hosts', 'hostgroups', 'timeperiods', 'containers']));
     }
 
-    public function delete($id = null)
-    {
+    public function delete($id = null) {
         if (!$this->request->is('post')) {
             throw new MethodNotAllowedException();
         }
@@ -292,8 +288,7 @@ class HostdependenciesController extends AppController
         $this->redirect(['action' => 'index']);
     }
 
-    public function loadElementsByContainerId($containerId = null)
-    {
+    public function loadElementsByContainerId($containerId = null) {
         if (!$this->request->is('ajax')) {
             throw new MethodNotAllowedException();
         }

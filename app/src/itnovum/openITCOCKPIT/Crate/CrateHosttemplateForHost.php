@@ -85,7 +85,7 @@ class CrateHosttemplateForHost {
                 'Hosttemplate.tags',
             ],
             'conditions' => [
-                'Hosttemplate.id'           => $this->hosttemplate_id
+                'Hosttemplate.id' => $this->hosttemplate_id
             ]
         ];
     }
@@ -99,7 +99,7 @@ class CrateHosttemplateForHost {
     public function getConditionToUpdateActiveChecksEnabled() {
         return [
             'active_checks_enabled_from_template' => true,
-            'hosttemplate_id' => $this->hosttemplate_id
+            'hosttemplate_id'                     => $this->hosttemplate_id
         ];
     }
 
@@ -112,7 +112,7 @@ class CrateHosttemplateForHost {
     public function getConditionToUpdateTags() {
         return [
             'tags_from_template' => true,
-            'hosttemplate_id' => $this->hosttemplate_id
+            'hosttemplate_id'    => $this->hosttemplate_id
         ];
     }
 

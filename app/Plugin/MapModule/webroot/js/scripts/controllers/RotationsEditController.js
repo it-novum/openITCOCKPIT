@@ -11,7 +11,7 @@ angular.module('openITCOCKPIT')
         };
         $scope.id = QueryStringService.getCakeId();
 
-        $scope.deleteUrl = "/map_module/rotations/delete/"+$scope.id+".json?angular=true";
+        $scope.deleteUrl = "/map_module/rotations/delete/" + $scope.id + ".json?angular=true";
         $scope.sucessUrl = '/map_module/rotations/index';
 
         $scope.load = function(){
@@ -66,7 +66,7 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.submit = function(){
-            $http.post("/map_module/rotations/edit/"+$scope.id+".json?angular=true",
+            $http.post("/map_module/rotations/edit/" + $scope.id + ".json?angular=true",
                 $scope.post
             ).then(function(result){
                 console.log('Data saved successfully');

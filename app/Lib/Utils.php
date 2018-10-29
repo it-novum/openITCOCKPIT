@@ -1,7 +1,6 @@
 <?php
 
-class Utils
-{
+class Utils {
     /**
      * ciphering input string w/ Security.salt as key, base64-encoded
      * and / are replaced by _ and + by - .
@@ -10,8 +9,7 @@ class Utils
      *
      * @return string
      */
-    public static function tokenize($string)
-    {
+    public static function tokenize($string) {
         return str_replace(['/', '+', '='], ['_', '-', '~'], base64_encode(Security::cipher($string, Configure::read('Security.salt'))));
     }
 
@@ -22,8 +20,7 @@ class Utils
      *
      * @return string
      */
-    public static function detokenize($string)
-    {
+    public static function detokenize($string) {
         return Security::cipher(base64_decode(str_replace(['_', '-', '~'], ['/', '+', '='], $string)), Configure::read('Security.salt'));
     }
 
@@ -36,8 +33,7 @@ class Utils
      *
      * @return string
      */
-    public static function htmlToXls($worksheetName, $tableMarkup)
-    {
+    public static function htmlToXls($worksheetName, $tableMarkup) {
         $data = '<html xmlns:x="urn:schemas-microsoft-com:office:excel">
 		<head>
 		    <!--[if gte mso 9]>
@@ -77,8 +73,7 @@ class Utils
      *
      * @return mixed
      */
-    public static function findCorrectFilename($path, $filename)
-    {
+    public static function findCorrectFilename($path, $filename) {
         App::uses('Folder', 'Utility');
         $f = new Folder($path);
         $list = $f->find();
@@ -99,8 +94,7 @@ class Utils
      *
      * @return array
      */
-    public static function calculateFinalScore($match)
-    {
+    public static function calculateFinalScore($match) {
         if (isset($match['Match'])) {
             $match = $match['Match'];
         }
@@ -113,8 +107,8 @@ class Utils
         }
         $teamHomeTotal = $teamAwayTotal = 0;
         for ($i = 1; $i < 6; $i++) {
-            $teamHomeTotal += $match['team_home_score'.$i];
-            $teamAwayTotal += $match['team_away_score'.$i];
+            $teamHomeTotal += $match['team_home_score' . $i];
+            $teamAwayTotal += $match['team_away_score' . $i];
         }
         $scores = [
             'teamHomeTotal' => $teamHomeTotal,
@@ -123,7 +117,7 @@ class Utils
         if ($teamHomeTotal > $teamAwayTotal) {
             $scores['winner'] = $match['team_home_id'];
             $scores['looser'] = $match['team_away_id'];
-        } elseif ($teamHomeTotal < $teamAwayTotal) {
+        } else if ($teamHomeTotal < $teamAwayTotal) {
             $scores['winner'] = $match['team_away_id'];
             $scores['looser'] = $match['team_home_id'];
         } else {

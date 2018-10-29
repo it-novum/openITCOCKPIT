@@ -51,7 +51,7 @@ class RepositoryChecker {
      * @return bool
      * @throws \Exception
      */
-    public function isReadable(){
+    public function isReadable() {
         if (!is_readable($this->sourcesList)) {
             throw new \Exception(sprintf('File %s not readable', $this->sourcesList));
         }
@@ -62,7 +62,7 @@ class RepositoryChecker {
      * @return bool
      * @throws \Exception
      */
-    public function exists(){
+    public function exists() {
         if (!file_exists($this->sourcesList)) {
             throw new \Exception(sprintf('File %s not found', $this->sourcesList));
         }
@@ -73,7 +73,7 @@ class RepositoryChecker {
      * @return bool
      * @throws \Exception
      */
-    public function isOldRepositoryInUse(){
+    public function isOldRepositoryInUse() {
         try {
             $this->exists();
         } catch (\Exception $e) {
@@ -97,14 +97,14 @@ class RepositoryChecker {
     /**
      * @return string
      */
-    public function getSourcesList(){
+    public function getSourcesList() {
         return $this->sourcesList;
     }
 
     /**
      * @return string
      */
-    public function getRepoKey(){
+    public function getRepoKey() {
         return $this->newAptKey;
     }
 }

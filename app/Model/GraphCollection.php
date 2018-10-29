@@ -23,8 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class GraphCollection extends AppModel
-{
+class GraphCollection extends AppModel {
 
     public $hasAndBelongsToMany = [
         'GraphgenTmpl' => [
@@ -60,8 +59,7 @@ class GraphCollection extends AppModel
      *
      * @return array
      */
-    public function loadCollection($id)
-    {
+    public function loadCollection($id) {
         $collection = $this->find('first', [
             'conditions' => [
                 'GraphCollection.id' => (int)$id,

@@ -69,7 +69,7 @@ foreach (['belongsTo', 'hasAndBelongsToMany'] as $assoc):
     endforeach;
 endforeach;
 if (!empty($compact)):
-    echo "\t\t\$this->set(compact(".join(', ', $compact)."));\n";
+    echo "\t\t\$this->set(compact(" . join(', ', $compact) . "));\n";
 endif;
 ?>
 }
@@ -112,7 +112,7 @@ foreach (['belongsTo', 'hasAndBelongsToMany'] as $assoc):
     endforeach;
 endforeach;
 if (!empty($compact)):
-    echo "\t\t\$this->set(compact(".join(', ', $compact)."));\n";
+    echo "\t\t\$this->set(compact(" . join(', ', $compact) . "));\n";
 endif;
 ?>
 }

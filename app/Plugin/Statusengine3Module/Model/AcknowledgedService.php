@@ -23,7 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-use \itnovum\openITCOCKPIT\Core\AcknowledgedServiceConditions;
+use itnovum\openITCOCKPIT\Core\AcknowledgedServiceConditions;
 
 class AcknowledgedService extends Statusengine3ModuleAppModel {
     public $useTable = 'service_acknowledgements';
@@ -33,21 +33,22 @@ class AcknowledgedService extends Statusengine3ModuleAppModel {
      * @param null $uuid
      * @return array|null
      */
-    public function byUuid($uuid = null){
+    public function byUuid($uuid = null) {
         return $this->byServiceUuid($uuid);
     }
+
     /**
      * @param string $uuid
      * @return array|null
      */
-    public function byServiceUuid($uuid = null){
+    public function byServiceUuid($uuid = null) {
         $return = [];
         if ($uuid !== null) {
             $acknowledged = $this->find('first', [
                 'conditions' => [
                     'service_description' => $uuid,
                 ],
-                'order' => [
+                'order'      => [
                     'AcknowledgedService.entry_time' => 'DESC',
                 ],
             ]);
@@ -64,14 +65,14 @@ class AcknowledgedService extends Statusengine3ModuleAppModel {
      * @param array $paginatorConditions
      * @return array
      */
-    public function getQuery(AcknowledgedServiceConditions $AcknowledgedServiceConditions, $paginatorConditions = []){
+    public function getQuery(AcknowledgedServiceConditions $AcknowledgedServiceConditions, $paginatorConditions = []) {
         $query = [
             'conditions' => [
                 'service_description' => $AcknowledgedServiceConditions->getServiceUuid(),
-                'entry_time >' => $AcknowledgedServiceConditions->getFrom(),
-                'entry_time <' => $AcknowledgedServiceConditions->getTo()
+                'entry_time >'        => $AcknowledgedServiceConditions->getFrom(),
+                'entry_time <'        => $AcknowledgedServiceConditions->getTo()
             ],
-            'order' => $AcknowledgedServiceConditions->getOrder()
+            'order'      => $AcknowledgedServiceConditions->getOrder()
         ];
 
         if ($AcknowledgedServiceConditions->getUseLimit()) {

@@ -884,11 +884,11 @@ App.Controllers.HostsEditController = Frontend.AppController.extend({
                             }else if(in_array(key, ['notify_period_id', 'check_period_id', 'command_id'])){
                                 self.updateSelectbox({value: templateDefaultValue, selector: self.fieldMap[key]});
                             }else if(in_array(key, [
-                                    'notify_on_recovery', 'notify_on_down', 'notify_on_unreachable',
-                                    'notify_on_flapping', 'notify_on_downtime', 'flap_detection_enabled',
-                                    'flap_detection_on_unreachable', 'flap_detection_on_down', 'flap_detection_on_up',
-                                    'active_checks_enabled'
-                                ])){
+                                'notify_on_recovery', 'notify_on_down', 'notify_on_unreachable',
+                                'notify_on_flapping', 'notify_on_downtime', 'flap_detection_enabled',
+                                'flap_detection_on_unreachable', 'flap_detection_on_down', 'flap_detection_on_up',
+                                'active_checks_enabled'
+                            ])){
                                 //modifying value for fancy checkboxes
                                 self.updateCheckbox({value: templateDefaultValue, selector: self.fieldMap[key]});
                             }else{

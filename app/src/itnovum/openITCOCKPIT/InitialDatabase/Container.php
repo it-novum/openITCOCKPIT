@@ -25,15 +25,13 @@
 namespace itnovum\openITCOCKPIT\InitialDatabase;
 
 
-class Container extends Importer
-{
+class Container extends Importer {
     /**
      * @property \Container $Model
      * /**
      * @return mixed
      */
-    public function import()
-    {
+    public function import() {
         if ($this->isTableEmpty()) {
             $data = $this->getData();
             foreach ($data as $record) {
@@ -50,8 +48,7 @@ class Container extends Importer
     /**
      * @return array
      */
-    public function getData()
-    {
+    public function getData() {
         $data =
             [
                 0 =>

@@ -23,21 +23,19 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class CustomVariablesHelper extends AppHelper
-{
+class CustomVariablesHelper extends AppHelper {
 
     /**
      * Initialize the Helper and set the needed variables
      *
-     * @param string $macrotype    (host or service)
-     * @param array  $customMacros an array of existing custom macros (if there are any)
+     * @param string $macrotype (host or service)
+     * @param array $customMacros an array of existing custom macros (if there are any)
      *
      * @return void
      * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since  3.0
      */
-    public function setup($macrotype = 'HOST', $objecttype_id = null, $customMacros = [])
-    {
+    public function setup($macrotype = 'HOST', $objecttype_id = null, $customMacros = []) {
         $this->macrotype = $macrotype;
         $this->customMacros = $customMacros;
         $this->macroPrefix = '$_';
@@ -58,8 +56,7 @@ class CustomVariablesHelper extends AppHelper
      * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since  3.0
      */
-    public function prepare($macrotype = 'HOST', $options = [])
-    {
+    public function prepare($macrotype = 'HOST', $options = []) {
         $html = $this->__startWrap();
         $html .= $this->fetchHtml();
         $html .= $this->__endWrap();
@@ -84,19 +81,18 @@ class CustomVariablesHelper extends AppHelper
      * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since  3.0
      */
-    public function addButton($options = [])
-    {
+    public function addButton($options = []) {
         $_options = [
             'class'      => 'btn btn-success btn-xs pull-right margin-top-10',
             'href'       => 'javascript:void(0);',
             'style'      => '',
-            'label'      => '<i class="fa fa-plus"></i> '.__('Add new macro'),
+            'label'      => '<i class="fa fa-plus"></i> ' . __('Add new macro'),
             'jsSelector' => 'addCustomMacro',
         ];
         $options = Hash::merge($_options, $options);
 
         //return '<a href="'.$options['href'].'" class="'.$options['class'].' '.$options['jsSelector'].'" style="'.$options['style'].'">'.$options['label'].'</a>';
-        return '<button type="button" class="'.$options['class'].' '.$options['jsSelector'].'" style="'.$options['style'].'">'.$options['label'].'</button>';
+        return '<button type="button" class="' . $options['class'] . ' ' . $options['jsSelector'] . '" style="' . $options['style'] . '">' . $options['label'] . '</button>';
     }
 
     /**
@@ -112,8 +108,7 @@ class CustomVariablesHelper extends AppHelper
      * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since  3.0
      */
-    public function html($counter = 0, $options = [])
-    {
+    public function html($counter = 0, $options = []) {
 
         $_options = [
             'name'                => '',
@@ -125,23 +120,23 @@ class CustomVariablesHelper extends AppHelper
         ];
         $options = Hash::merge($_options, $options);
         $html = '<div class="col-xs-12">
-            <div class="col-md-3 hidden-mobile '.$this->getColor($options['macro_objecttype_id'], $options).'">
+            <div class="col-md-3 hidden-mobile ' . $this->getColor($options['macro_objecttype_id'], $options) . '">
                 <div style="padding-top: 29px; width: 100%;"><!-- spacer for nice layout --></div>
-                <span>'.$this->macroPrefix.$options['macrotype'].$options['name'].$this->macroSuffix.'</span>
+                <span>' . $this->macroPrefix . $options['macrotype'] . $options['name'] . $this->macroSuffix . '</span>
             </div>
             <div class="col-md-4 col-xs-5">
-                <label class="control-label">'.__('Name').'</label>
-                <input class="form-control macroName" style="width:100%; text-transform: uppercase;" type="text" name="data[Customvariable]['.$counter.'][name]" value="'.$options['name'].'" counter="'.$counter.'" />
+                <label class="control-label">' . __('Name') . '</label>
+                <input class="form-control macroName" style="width:100%; text-transform: uppercase;" type="text" name="data[Customvariable][' . $counter . '][name]" value="' . h($options['name']) . '" counter="' . $counter . '" />
             </div>
             <div class="col-md-4 col-xs-4">
-                <label class="control-label">'.__('Value').'</label>
-                <input class="form-control macroValue" style="width:100%" type="text" name="data[Customvariable]['.$counter.'][value]" value="'.$options['value'].'" />
+                <label class="control-label">' . __('Value') . '</label>
+                <input class="form-control macroValue" style="width:100%" type="text" name="data[Customvariable][' . $counter . '][value]" value="' . h($options['value']) . '" />
             </div>';
         if ($options['id'] !== null) {
-            $html .= '<input type="hidden" name="data[Customvariable]['.$counter.'][id]" value="'.$options['id'].'" />';
+            $html .= '<input type="hidden" name="data[Customvariable][' . $counter . '][id]" value="' . $options['id'] . '" />';
         }
         if ($options['objecttype_id'] !== null) {
-            $html .= '<input type="hidden" name="data[Customvariable]['.$counter.'][objecttype_id]" value="'.$options['objecttype_id'].'" />';
+            $html .= '<input type="hidden" name="data[Customvariable][' . $counter . '][objecttype_id]" value="' . $options['objecttype_id'] . '" />';
         }
         $html .= '<div class="col-md-1 col-xs-1">
                 <label><!-- just a spacer for a nice layout --> &nbsp;</label>
@@ -155,8 +150,7 @@ class CustomVariablesHelper extends AppHelper
         return $html;
     }
 
-    public function getColor($objecttype_id, $options)
-    {
+    public function getColor($objecttype_id, $options) {
         if ($objecttype_id === null) {
             $objecttype_id = $options['objecttype_id'];
         }
@@ -178,8 +172,7 @@ class CustomVariablesHelper extends AppHelper
      * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since  3.0
      */
-    public function __startWrap()
-    {
+    public function __startWrap() {
         return '<div id="customVariablesContainer">';
     }
 
@@ -189,8 +182,7 @@ class CustomVariablesHelper extends AppHelper
      * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since  3.0
      */
-    public function __endWrap()
-    {
+    public function __endWrap() {
         return '</div>';
     }
 
@@ -200,8 +192,7 @@ class CustomVariablesHelper extends AppHelper
      * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since  3.0
      */
-    public function fetchHtml($_customvariables = [])
-    {
+    public function fetchHtml($_customvariables = []) {
         $html = '';
         $customvariables = $this->customMacros;
         if (!empty($_customvariables)) {
@@ -216,7 +207,7 @@ class CustomVariablesHelper extends AppHelper
                 $html .= $this->html($i, [
                     'name'                => $macro['name'],
                     'value'               => $macro['value'],
-                    'id' => $macro['id'],
+                    'id'                  => $macro['id'],
                     'objecttype_id'       => $this->objecttype_id,
                     'macro_objecttype_id' => $macro['objecttype_id'],
                 ]);

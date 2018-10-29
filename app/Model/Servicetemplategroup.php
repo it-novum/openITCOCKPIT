@@ -23,8 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class Servicetemplategroup extends AppModel
-{
+class Servicetemplategroup extends AppModel {
 
     public $belongsTo = [
         'Container' => [
@@ -32,7 +31,8 @@ class Servicetemplategroup extends AppModel
             'foreignKey' => 'container_id',
             'className'  => 'Container',
             'dependent'  => true,
-        ]];
+        ]
+    ];
 
     public $hasAndBelongsToMany = [
         'Servicetemplate' => [
@@ -45,16 +45,17 @@ class Servicetemplategroup extends AppModel
 
     public $validate = [
         'Servicetemplate' => [
-            'rule'     => ['multiple', [
-                'min' => 1,
-            ]],
+            'rule'     => [
+                'multiple', [
+                    'min' => 1,
+                ]
+            ],
             'message'  => 'Please select at least 1 servicetemplate',
             'required' => true,
         ],
     ];
 
-    public function byContainerId($containerIds = ROOT_CONTAINER, $type = 'all', $options = [], $id = 'id')
-    {
+    public function byContainerId($containerIds = ROOT_CONTAINER, $type = 'all', $options = [], $id = 'id') {
         if (!is_array($containerIds)) {
             $containerIds = [$containerIds];
         }
@@ -67,7 +68,7 @@ class Servicetemplategroup extends AppModel
 
         $conditions = [];
         if ($options['hasRootPrivileges'] === false) {
-            $conditions['Container.'.$id] = $containerIds;
+            $conditions['Container.' . $id] = $containerIds;
         }
 
         switch ($type) {

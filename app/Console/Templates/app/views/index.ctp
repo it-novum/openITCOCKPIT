@@ -1,7 +1,7 @@
 <h2 class="pull-left"><?php echo $pluralHumanName ?></h2>
 
 <div class="list-actions pull-right">
-    <?php echo "<?php echo \$this->Utils->addButton(__('".Inflector::underscore($modelClass).".add')); ?>"; ?>
+    <?php echo "<?php echo \$this->Utils->addButton(__('" . Inflector::underscore($modelClass) . ".add')); ?>"; ?>
 
 </div>
 

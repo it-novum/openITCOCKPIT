@@ -23,9 +23,9 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-use itnovum\openITCOCKPIT\Core\Views\Service;
 use itnovum\openITCOCKPIT\Core\Servicestatus;
 use itnovum\openITCOCKPIT\Core\Views\Host;
+use itnovum\openITCOCKPIT\Core\Views\Service;
 
 $Service = new Service($service);
 $Host = new Host($service);
@@ -46,7 +46,7 @@ $Servicestatus = new Servicestatus($servicestatus['Servicestatus']);
                 <?php if ($this->Acl->hasPermission('browser', 'Hosts')): ?>
                     <a href="<?php echo Router::url([
                         'controller' => 'hosts',
-                        'action' => 'browser',
+                        'action'     => 'browser',
                         $Service->getHostId()
                     ]); ?>">
                     <?php printf('%s (%s)', h($Host->getHostname()), h($Host->getAddress())); ?>
@@ -71,106 +71,106 @@ $Servicestatus = new Servicestatus($servicestatus['Servicestatus']);
 
 <article class="col-lg-9 col-md-9">
 
-<?php
+    <?php
 
-$graphs = [
-    [
-        'label' => __('4 Hours'),
-        'start' => strtotime('4 hours ago'),
-        'end'   => time(),
-    ],
-    [
-        'label' => __('25 Hours'),
-        'start' => strtotime('25 hours ago'),
-        'end'   => time(),
-    ],
-    [
-        'label' => __('One week'),
-        'start' => strtotime('1 week ago'),
-        'end'   => time(),
-    ],
-    [
-        'label' => __('One Month'),
-        'start' => strtotime('1 month ago'),
-        'end'   => time(),
-    ],
-    [
-        'label' => __('One Year'),
-        'start' => strtotime('1 year ago'),
-        'end'   => time(),
-    ],
-];
+    $graphs = [
+        [
+            'label' => __('4 Hours'),
+            'start' => strtotime('4 hours ago'),
+            'end'   => time(),
+        ],
+        [
+            'label' => __('25 Hours'),
+            'start' => strtotime('25 hours ago'),
+            'end'   => time(),
+        ],
+        [
+            'label' => __('One week'),
+            'start' => strtotime('1 week ago'),
+            'end'   => time(),
+        ],
+        [
+            'label' => __('One Month'),
+            'start' => strtotime('1 month ago'),
+            'end'   => time(),
+        ],
+        [
+            'label' => __('One Year'),
+            'start' => strtotime('1 year ago'),
+            'end'   => time(),
+        ],
+    ];
 
 
-$Rrd = ClassRegistry::init('Rrd');
+    $Rrd = ClassRegistry::init('Rrd');
 
-$rrd_path = Configure::read('rrd.path');
+    $rrd_path = Configure::read('rrd.path');
 
-require_once APP.'GrapherTemplates'.DS.$commandUuid.'.php';
+    require_once APP . 'GrapherTemplates' . DS . $commandUuid . '.php';
 
-foreach ($graphs as $graph):
-    foreach ($templateSettings as $key => $templateSetting):
-        $rrdOptions = [
-            '--slope-mode',
-            '--start', $graph['start'],
-            '--end', $graph['end'],
-            '--width', 850,
-            '--color', 'BACK#FFFFFF',
-            '--border', 1,
-            '--imgformat', 'PNG',
-        ];
+    foreach ($graphs as $graph):
+        foreach ($templateSettings as $key => $templateSetting):
+            $rrdOptions = [
+                '--slope-mode',
+                '--start', $graph['start'],
+                '--end', $graph['end'],
+                '--width', 850,
+                '--color', 'BACK#FFFFFF',
+                '--border', 1,
+                '--imgformat', 'PNG',
+            ];
 
-        //Merging template settings to our default settings
-        $rrdOptions = Hash::merge($rrdOptions, $templateSetting);
+            //Merging template settings to our default settings
+            $rrdOptions = Hash::merge($rrdOptions, $templateSetting);
 
-        $imageUrl = $Rrd->createRrdGraphFromTemplate($rrdOptions);
+            $imageUrl = $Rrd->createRrdGraphFromTemplate($rrdOptions);
 
-        $error = false;
+            $error = false;
 
-        if (!isset($imageUrl['webPath'])):
-            $errorImage = $this->Grapher->createGrapherErrorPng($imageUrl);
-            $error = true;
-        endif;
-        ?>
-        <div class="jarviswidget" id="wid-id-0">
-            <header>
-                <span class="widget-icon"> <i class="fa fa-area-chart"></i> </span>
-                <h2><?php echo $graph['label']; ?> <span
-                            class="text-muted padding-left-10 graphTime"><?php echo date('d.m.Y H:i', $graph['start']); ?>
-                        - <?php echo date('d.m.Y H:i', $graph['end']); ?></span></h2>
-                <div class="widget-toolbar" role="menu" style="display:none">
-                    <a href="javascript:void(0);" class="btn btn-danger btn-xs resetZoom"
-                       start="<?php echo h($graph['start']); ?>" end="<?php echo h($graph['end']); ?>"
-                       ds="<?php echo h($key); ?>" service_id="<?php echo h($service['Service']['id']); ?>"
-                       commandUuid="<?php echo h($commandUuid); ?>"><i
-                                class="fa fa-search-minus"></i> <?php echo __('Reset zoom'); ?></a>
-                </div>
-            </header>
-            <div>
-                <div class="widget-body">
-                    <div class="pull-left">
-                        <div class="graphContainer">
-                            <?php
-                            if ($error === true):
-                                echo $this->html->image($errorImage['webPath'], ['class' => 'img-responsive']);
-                            else:
-                                echo $this->html->image($imageUrl['webPath'], ['class' => 'zoomSelection img-responsive', 'start' => h($graph['start']), 'end' => h($graph['end']), 'service_id' => h($service['Service']['id']), 'ds' => h($key), 'commandUuid' => h($commandUuid)]);
-                            endif;
-                            ?>
+            if (!isset($imageUrl['webPath'])):
+                $errorImage = $this->Grapher->createGrapherErrorPng($imageUrl);
+                $error = true;
+            endif;
+            ?>
+            <div class="jarviswidget" id="wid-id-0">
+                <header>
+                    <span class="widget-icon"> <i class="fa fa-area-chart"></i> </span>
+                    <h2><?php echo $graph['label']; ?> <span
+                                class="text-muted padding-left-10 graphTime"><?php echo date('d.m.Y H:i', $graph['start']); ?>
+                            - <?php echo date('d.m.Y H:i', $graph['end']); ?></span></h2>
+                    <div class="widget-toolbar" role="menu" style="display:none">
+                        <a href="javascript:void(0);" class="btn btn-danger btn-xs resetZoom"
+                           start="<?php echo h($graph['start']); ?>" end="<?php echo h($graph['end']); ?>"
+                           ds="<?php echo h($key); ?>" service_id="<?php echo h($service['Service']['id']); ?>"
+                           commandUuid="<?php echo h($commandUuid); ?>"><i
+                                    class="fa fa-search-minus"></i> <?php echo __('Reset zoom'); ?></a>
+                    </div>
+                </header>
+                <div>
+                    <div class="widget-body">
+                        <div class="pull-left">
+                            <div class="graphContainer">
+                                <?php
+                                if ($error === true):
+                                    echo $this->html->image($errorImage['webPath'], ['class' => 'img-responsive']);
+                                else:
+                                    echo $this->html->image($imageUrl['webPath'], ['class' => 'zoomSelection img-responsive', 'start' => h($graph['start']), 'end' => h($graph['end']), 'service_id' => h($service['Service']['id']), 'ds' => h($key), 'commandUuid' => h($commandUuid)]);
+                                endif;
+                                ?>
+                            </div>
+                            <div class="grapherLoader text-center" style="display:none;"><i
+                                        class="fa fa-spin fa-cog fa-5x"></i></div>
                         </div>
-                        <div class="grapherLoader text-center" style="display:none;"><i
-                                    class="fa fa-spin fa-cog fa-5x"></i></div>
-                    </div>
-                    <div class="pull-left margin-left-10">
+                        <div class="pull-left margin-left-10">
 
+                        </div>
+                        <div class="clearfix"></div>
+                        <div stlye="padding-bottom: 13px;"><!-- padding spacer --></div>
                     </div>
-                    <div class="clearfix"></div>
-                    <div stlye="padding-bottom: 13px;"><!-- padding spacer --></div>
                 </div>
             </div>
-        </div>
+        <?php endforeach; ?>
     <?php endforeach; ?>
-<?php endforeach; ?>
 </article>
 
 <article class="col-lg-3 col-md-3">
@@ -201,7 +201,7 @@ foreach ($graphs as $graph):
                         <li>
                             <a href="/services/grapherSwitch/<?php echo $currentService['Service']['id']; ?>"><?php echo h($currentService[0]['ServiceName']); ?></a>
                         </li>
-                        <?php
+                    <?php
                     endforeach;
                     ?>
                 </ul>

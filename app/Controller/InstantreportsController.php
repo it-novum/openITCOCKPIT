@@ -622,7 +622,7 @@ class InstantreportsController extends AppController {
                 $containArray = [
                     Instantreport::EVALUATION_HOSTS          => [
                         'Host' => [
-                            'fields' => [
+                            'fields'     => [
                                 'Host.uuid',
                                 'Host.name'
                             ],
@@ -633,11 +633,11 @@ class InstantreportsController extends AppController {
                     ],
                     Instantreport::EVALUATION_HOSTS_SERVICES => [
                         'Host' => [
-                            'fields'  => [
+                            'fields'     => [
                                 'Host.uuid',
                                 'Host.name'
                             ],
-                            'Service' => [
+                            'Service'    => [
                                 'fields'          => [
                                     'Service.uuid',
                                     'Service.name'
@@ -647,7 +647,7 @@ class InstantreportsController extends AppController {
                                         'Servicetemplate.name'
                                     ]
                                 ],
-                                'conditions' => [
+                                'conditions'      => [
                                     'Service.disabled' => 0
                                 ]
                             ],
@@ -658,19 +658,19 @@ class InstantreportsController extends AppController {
                     ],
                     Instantreport::EVALUATION_SERVICES       => [
                         'Host' => [
-                            'fields'  => [
+                            'fields'     => [
                                 'Host.uuid',
                                 'Host.name'
                             ],
                             'conditions' => [
                                 'Host.disabled' => 0
                             ],
-                            'Service' => [
+                            'Service'    => [
                                 'fields'          => [
                                     'Service.uuid',
                                     'Service.name'
                                 ],
-                                'conditions' => [
+                                'conditions'      => [
                                     'Service.disabled' => 0
                                 ],
                                 'Servicetemplate' => [
@@ -717,7 +717,7 @@ class InstantreportsController extends AppController {
                 $containArray = [
                     Instantreport::EVALUATION_HOSTS          => [
                         'Host' => [
-                            'fields' => [
+                            'fields'     => [
                                 'Host.name',
                                 'Host.uuid'
                             ],
@@ -728,14 +728,14 @@ class InstantreportsController extends AppController {
                     ],
                     Instantreport::EVALUATION_HOSTS_SERVICES => [
                         'Host' => [
-                            'fields'  => [
+                            'fields'     => [
                                 'Host.name',
                                 'Host.uuid'
                             ],
                             'conditions' => [
                                 'Host.disabled' => 0
                             ],
-                            'Service' => [
+                            'Service'    => [
                                 'fields'          => [
                                     'Service.uuid',
                                     'Service.name'
@@ -745,7 +745,7 @@ class InstantreportsController extends AppController {
                                         'Servicetemplate.name'
                                     ]
                                 ],
-                                'conditions' => [
+                                'conditions'      => [
                                     'Service.disabled' => 0
                                 ]
                             ]
@@ -792,7 +792,7 @@ class InstantreportsController extends AppController {
                                     'Service.uuid',
                                     'Service.name'
                                 ],
-                                'conditions' => [
+                                'conditions'      => [
                                     'Service.disabled' => 0
                                 ],
                                 'Servicetemplate' => [
@@ -801,7 +801,7 @@ class InstantreportsController extends AppController {
                                     ]
                                 ],
                                 'Host'            => [
-                                    'fields' => [
+                                    'fields'     => [
                                         'Host.name',
                                         'Host.uuid'
                                     ],
@@ -847,7 +847,7 @@ class InstantreportsController extends AppController {
                                 ]
                             ],
                             'Host'            => [
-                                'fields' => [
+                                'fields'     => [
                                     'Host.uuid',
                                     'Host.name'
                                 ],
@@ -859,7 +859,7 @@ class InstantreportsController extends AppController {
                                 'Service.name',
                                 'Service.uuid'
                             ],
-                            'conditions' => [
+                            'conditions'      => [
                                 'Service.disabled' => 0
                             ]
                         ]

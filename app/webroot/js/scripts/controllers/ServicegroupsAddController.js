@@ -28,7 +28,7 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.loadServices = function(searchString){
-            if($scope.post.Container.parent_id) {
+            if($scope.post.Container.parent_id){
                 $http.get("/services/loadServicesByContainerId.json", {
                     params: {
                         'angular': true,
@@ -37,7 +37,7 @@ angular.module('openITCOCKPIT')
                         'filter[Service.servicename]': searchString,
                         'selected[]': $scope.post.Servicegroup.Service
                     }
-                }).then(function (result) {
+                }).then(function(result){
                     $scope.services = result.data.services;
                 });
             }

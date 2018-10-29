@@ -52,7 +52,8 @@
                     </div>
                     <span class="widget-icon"> <i class="fa fa-code-fork"></i> </span>
                     <h2><?php echo __('Hosttemplate'); ?>
-                        <strong>{{ hosttemplate.Hosttemplate.name }}</strong> <?php echo __('is used by the following'); ?> <?php echo _('hosts'); ?>
+                        <strong>{{ hosttemplate.Hosttemplate.name
+                            }}</strong> <?php echo __('is used by the following'); ?> <?php echo _('hosts'); ?>
                         ({{ total }}):</h2>
 
                 </header>
@@ -73,9 +74,9 @@
 
                                 <td class="text-center" class="width-15">
                                     <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
-                                    <input type="checkbox"
-                                           ng-if="host.Host.allow_edit"
-                                           ng-model="massChange[host.Host.id]">
+                                        <input type="checkbox"
+                                               ng-if="host.Host.allow_edit"
+                                               ng-model="massChange[host.Host.id]">
                                     <?php endif; ?>
                                 </td>
                                 <td class="">

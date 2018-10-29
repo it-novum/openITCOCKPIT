@@ -29,118 +29,120 @@
  * @deprecated
  */
 App.Components.TimeComponent = Frontend.Component.extend({
-	serverRenderTime: null,
-	serverDate: {},
-	serverOffset: 0,
-	displayClientTime: false,
-	initialized: false,
-	serverUTC: 0,
-	timezoneOffset: 0,
+    serverRenderTime: null,
+    serverDate: {},
+    serverOffset: 0,
+    displayClientTime: false,
+    initialized: false,
+    serverUTC: 0,
+    timezoneOffset: 0,
     server_time_utc: 0,
 
-	setup: function(){
-		$.ajax({
-			url: '/angular/user_timezone.json',
-			type: 'GET',
-			cache: false,
+    setup: function(){
+        $.ajax({
+            url: '/angular/user_timezone.json',
+            type: 'GET',
+            cache: false,
             //async: false,
-			error: function(){},
-			success: function(response){
+            error: function(){
+            },
+            success: function(response){
                 this.timezoneOffset = response.timezone.user_offset;
                 this.serverOffset = response.timezone.server_timezone_offset;
                 this.server_time_utc = response.timezone.server_time_utc;
             }.bind(this),
-			complete: function(response){}
-		});
+            complete: function(response){
+            }
+        });
 
-		this.pageLoaded = new Date().getTime();
+        this.pageLoaded = new Date().getTime();
 
-		if(this.timezoneOffset != this.serverOffset){
-			//Display the clock for users time
-			this.displayClientTime = true;
-		}
+        if(this.timezoneOffset != this.serverOffset){
+            //Display the clock for users time
+            this.displayClientTime = true;
+        }
 
-		this.initialized = true;
-	},
+        this.initialized = true;
+    },
 
-	/**
-	 * @param {Number} number
-	 * @returns {String}
-	 * @private
-	 */
-	_prependNumber: function(number){
-		if(number < 10){
-			return '0' + number;
-		}
-		return number.toString();
-	},
+    /**
+     * @param {Number} number
+     * @returns {String}
+     * @private
+     */
+    _prependNumber: function(number){
+        if(number < 10){
+            return '0' + number;
+        }
+        return number.toString();
+    },
 
-	_isInitialized: function(){
-		if(!this.initialized){
-			if(typeof console.warn === 'function'){
-				console.warn('TimeComponent isn\'t initialized. Please call the setup() method first, ' +
-					'before using this functions.');
-			}
-			return false;
-		}
-		return true;
-	},
+    _isInitialized: function(){
+        if(!this.initialized){
+            if(typeof console.warn === 'function'){
+                console.warn('TimeComponent isn\'t initialized. Please call the setup() method first, ' +
+                    'before using this functions.');
+            }
+            return false;
+        }
+        return true;
+    },
 
-	getCurrentTimeWithOffset: function(offset){
-		if(typeof(this.pageLoaded) === 'undefined'){
-			this.pageLoaded = new Date().getTime();
-		}
-		return new Date((this.getServerUTC() + (offset || 0)) * 1000 + (new Date().getTime() - this.pageLoaded));
-	},
+    getCurrentTimeWithOffset: function(offset){
+        if(typeof(this.pageLoaded) === 'undefined'){
+            this.pageLoaded = new Date().getTime();
+        }
+        return new Date((this.getServerUTC() + (offset || 0)) * 1000 + (new Date().getTime() - this.pageLoaded));
+    },
 
-	/**
-	 * @returns {Date}
-	 */
-	getServerTime: function(){
-		this._isInitialized();
-		return this.getCurrentTimeWithOffset(this.serverOffset);
-		//new Date((new Date).getTime() + this.serverOffset);
-	},
+    /**
+     * @returns {Date}
+     */
+    getServerTime: function(){
+        this._isInitialized();
+        return this.getCurrentTimeWithOffset(this.serverOffset);
+        //new Date((new Date).getTime() + this.serverOffset);
+    },
 
-	/**
-	 * Returns the server time in a hh:mm format.
-	 * @returns {string}
-	 */
-	getServerTimeAsText: function(){
-		return this.formatTimeAsText(this.getServerTime());
-	},
+    /**
+     * Returns the server time in a hh:mm format.
+     * @returns {string}
+     */
+    getServerTimeAsText: function(){
+        return this.formatTimeAsText(this.getServerTime());
+    },
 
-	/**
-	 * @returns {Date}
-	 */
-	getClientTime: function(){
-		this._isInitialized();
-		return this.getCurrentTimeWithOffset(this.timezoneOffset);
-	},
+    /**
+     * @returns {Date}
+     */
+    getClientTime: function(){
+        this._isInitialized();
+        return this.getCurrentTimeWithOffset(this.timezoneOffset);
+    },
 
 
-	/**
-	 * @returns {Date}
-	 */
-	getServerUTC: function(){
-		return this.server_time_utc;
+    /**
+     * @returns {Date}
+     */
+    getServerUTC: function(){
+        return this.server_time_utc;
 
-	},
+    },
 
-	/**
-	 * Returns the client time in a hh:mm format.
-	 * @returns {string}
-	 */
-	getClientTimeAsText: function(){
-		return this.formatTimeAsText(this.getClientTime());
-	},
+    /**
+     * Returns the client time in a hh:mm format.
+     * @returns {string}
+     */
+    getClientTimeAsText: function(){
+        return this.formatTimeAsText(this.getClientTime());
+    },
 
-	/**
-	 * Format a given date object and returns the formatted hours and minutes.
-	 * @param {Date} time
-	 * @returns {string}
-	 */
-	formatTimeAsText: function(time){
-		return this._prependNumber(time.getUTCHours()) + ':' + this._prependNumber(time.getUTCMinutes());
-	}
+    /**
+     * Format a given date object and returns the formatted hours and minutes.
+     * @param {Date} time
+     * @returns {string}
+     */
+    formatTimeAsText: function(time){
+        return this._prependNumber(time.getUTCHours()) + ':' + this._prependNumber(time.getUTCMinutes());
+    }
 });

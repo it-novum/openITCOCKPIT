@@ -24,105 +24,105 @@
 
 App.Controllers.HostescalationsAddController = Frontend.AppController.extend({
 
-	components: ['Ajaxloader', 'ContainerSelectbox'],
+    components: ['Ajaxloader', 'ContainerSelectbox'],
 
-	_initialize: function() {
-		this.Ajaxloader.setup();
-		var self = this;
+    _initialize: function(){
+        this.Ajaxloader.setup();
+        var self = this;
 
-		this.ContainerSelectbox.setup(this.Ajaxloader);
+        this.ContainerSelectbox.setup(this.Ajaxloader);
 
-		// Bind change event for Container Selectbox
-		this.ContainerSelectbox.addContainerEventListener({
-			selectBoxSelector: '#HostescalationContainerId',
-			event: 'change.hostContainer',
-			ajaxUrl: '/Hostescalations/loadElementsByContainerId/:selectBoxValue:.json',
-			fieldTypes: {
-				hosts: '#HostescalationHost',
-				hostsExcluded: '#HostescalationHostExcluded',
-				hostgroups: '#HostescalationHostgroup',
-				hostgroupsExcluded: '#HostescalationHostgroupExcluded',
-				timeperiods: '#HostescalationTimeperiodId',
-				contacts: '#HostescalationContact',
-				contactgroups: '#HostescalationContactgroup'
-			},
-			dataPlaceholderEmpty: self.getVar('data_placeholder_empty'),
-			dataPlaceholder: self.getVar('data_placeholder')
-		});
+        // Bind change event for Container Selectbox
+        this.ContainerSelectbox.addContainerEventListener({
+            selectBoxSelector: '#HostescalationContainerId',
+            event: 'change.hostContainer',
+            ajaxUrl: '/Hostescalations/loadElementsByContainerId/:selectBoxValue:.json',
+            fieldTypes: {
+                hosts: '#HostescalationHost',
+                hostsExcluded: '#HostescalationHostExcluded',
+                hostgroups: '#HostescalationHostgroup',
+                hostgroupsExcluded: '#HostescalationHostgroupExcluded',
+                timeperiods: '#HostescalationTimeperiodId',
+                contacts: '#HostescalationContact',
+                contactgroups: '#HostescalationContactgroup'
+            },
+            dataPlaceholderEmpty: self.getVar('data_placeholder_empty'),
+            dataPlaceholder: self.getVar('data_placeholder')
+        });
 
-		$('[id^=HostescalationHost]').change(function(){
-			$this = $(this);
-			self.refreshHosts($this.val(), $this, $this.attr('target'));
-		});
-		if($('#HostescalationHost').val() !== null || $('#HostescalationHostExcluded').val() !== null){
-			$('#HostescalationHost').children().each(function(intKey, OptionObject){
-				if(in_array(OptionObject.value, $('#HostescalationHostExcluded').val())){
-					$OptionObject = $(OptionObject);
-					$OptionObject.prop('disabled', true);
-				}
-			});
-			$('#HostescalationHostExcluded').children().each(function(intKey, OptionObject){
-				if(in_array(OptionObject.value, $('#HostescalationHost').val())){
-					$OptionObject = $(OptionObject);
-					$OptionObject.prop('disabled', true);
-				}
-			});
-			$('#HostescalationHost').trigger("chosen:updated");
-			$('#HostescalationHostExcluded').trigger("chosen:updated");
-		}
-		if($('#HostescalationHostgroup').val() !== null || $('#HostescalationHostgroupExcluded').val() !== null){
-			$('#HostescalationHostgroup').children().each(function(intKey, OptionObject){
-				if(in_array(OptionObject.value, $('#HostescalationHostgroupExclude').val())){
-					$OptionObject = $(OptionObject);
-					$OptionObject.prop('disabled', true);
-				}
-			});
-			$('#HostescalationHostgroupExcluded').children().each(function(intKey, OptionObject){
-				if(in_array(OptionObject.value, $('#HostescalationHostgroup').val())){
-					$OptionObject = $(OptionObject);
-					$OptionObject.prop('disabled', true);
-				}
-			});
-			$('#HostescalationHostgroup').trigger("chosen:updated");
-			$('#HostescalationHostgroupExcluded').trigger("chosen:updated");
-		}
-	},
+        $('[id^=HostescalationHost]').change(function(){
+            $this = $(this);
+            self.refreshHosts($this.val(), $this, $this.attr('target'));
+        });
+        if($('#HostescalationHost').val() !== null || $('#HostescalationHostExcluded').val() !== null){
+            $('#HostescalationHost').children().each(function(intKey, OptionObject){
+                if(in_array(OptionObject.value, $('#HostescalationHostExcluded').val())){
+                    $OptionObject = $(OptionObject);
+                    $OptionObject.prop('disabled', true);
+                }
+            });
+            $('#HostescalationHostExcluded').children().each(function(intKey, OptionObject){
+                if(in_array(OptionObject.value, $('#HostescalationHost').val())){
+                    $OptionObject = $(OptionObject);
+                    $OptionObject.prop('disabled', true);
+                }
+            });
+            $('#HostescalationHost').trigger("chosen:updated");
+            $('#HostescalationHostExcluded').trigger("chosen:updated");
+        }
+        if($('#HostescalationHostgroup').val() !== null || $('#HostescalationHostgroupExcluded').val() !== null){
+            $('#HostescalationHostgroup').children().each(function(intKey, OptionObject){
+                if(in_array(OptionObject.value, $('#HostescalationHostgroupExclude').val())){
+                    $OptionObject = $(OptionObject);
+                    $OptionObject.prop('disabled', true);
+                }
+            });
+            $('#HostescalationHostgroupExcluded').children().each(function(intKey, OptionObject){
+                if(in_array(OptionObject.value, $('#HostescalationHostgroup').val())){
+                    $OptionObject = $(OptionObject);
+                    $OptionObject.prop('disabled', true);
+                }
+            });
+            $('#HostescalationHostgroup').trigger("chosen:updated");
+            $('#HostescalationHostgroupExcluded').trigger("chosen:updated");
+        }
+    },
 
-	refreshHosts: function(selected_hosts, selectboxObject, target){
-		//Disable the selected option in $target selectbox, to avoid duplicate selections
-		for (var key in selected_hosts){
-			$(target).children().each(function(intKey, OptionObject){
-				$OptionObject = $(OptionObject);
-				if($OptionObject.val() == selected_hosts[key]){
-					//This is the option we need to disable
-					if(!$OptionObject.prop('disabled')){
-						$OptionObject.prop('disabled', true);
-					}
-				}
-			});
-		}
+    refreshHosts: function(selected_hosts, selectboxObject, target){
+        //Disable the selected option in $target selectbox, to avoid duplicate selections
+        for(var key in selected_hosts){
+            $(target).children().each(function(intKey, OptionObject){
+                $OptionObject = $(OptionObject);
+                if($OptionObject.val() == selected_hosts[key]){
+                    //This is the option we need to disable
+                    if(!$OptionObject.prop('disabled')){
+                        $OptionObject.prop('disabled', true);
+                    }
+                }
+            });
+        }
 
-		//Check if we need to re-enable something
-		var targetValue = $(target).val();
-		$(target).children().each(function(intKey, OptionObject){
-			$OptionObject = $(OptionObject);
-			if(targetValue == null){
-				targetValue = [];
-			}
-			if(selected_hosts == null){
-				selected_hosts = [];
-			}
+        //Check if we need to re-enable something
+        var targetValue = $(target).val();
+        $(target).children().each(function(intKey, OptionObject){
+            $OptionObject = $(OptionObject);
+            if(targetValue == null){
+                targetValue = [];
+            }
+            if(selected_hosts == null){
+                selected_hosts = [];
+            }
 
-			if(!in_array($OptionObject.val(), selected_hosts) && !in_array($OptionObject.val(), targetValue)){
-				//This is the option we need to enable
-				if($OptionObject.prop('disabled')){
-					$OptionObject.prop('disabled', null);
-				}
-			}
+            if(!in_array($OptionObject.val(), selected_hosts) && !in_array($OptionObject.val(), targetValue)){
+                //This is the option we need to enable
+                if($OptionObject.prop('disabled')){
+                    $OptionObject.prop('disabled', null);
+                }
+            }
 
-		});
+        });
 
-		//Update chosen
-		$(target).trigger("chosen:updated");
-	}
+        //Update chosen
+        $(target).trigger("chosen:updated");
+    }
 });

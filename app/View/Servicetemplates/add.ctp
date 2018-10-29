@@ -192,7 +192,7 @@ $notification_settings = [
                                     <div style="border-bottom:1px solid lightGray;">
                                         <?php echo $this->Form->fancyCheckbox($notification_setting, [
                                             'caption'          => ucfirst(preg_replace('/notify_on_/', '', $notification_setting)),
-                                            'icon'             => '<i class="fa '.$icon.'"></i> ',
+                                            'icon'             => '<i class="fa ' . $icon . '"></i> ',
                                             'class'            => 'onoffswitch-checkbox notification_control',
                                             'checked'          => $this->CustomValidationErrors->refill($notification_setting, false),
                                             'captionGridClass' => 'col col-xs-2',
@@ -349,7 +349,7 @@ $notification_settings = [
                                     <div style="border-bottom:1px solid lightGray;">
                                         <?php echo $this->Form->fancyCheckbox($flapDetection_setting, [
                                             'caption'          => ucfirst(preg_replace('/flap_detection_on_/', '', $flapDetection_setting)),
-                                            'icon'             => '<i class="fa '.$icon.'"></i> ',
+                                            'icon'             => '<i class="fa ' . $icon . '"></i> ',
                                             'class'            => 'onoffswitch-checkbox flapdetection_control',
                                             'checked'          => $this->CustomValidationErrors->refill($flapDetection_setting, false),
                                             'wrapGridClass'    => 'col col-xs-1',

@@ -93,10 +93,10 @@ $defaultActions = [
                             <?php
                             foreach ($defaultActions as $action => $actionDetails):?>
                                 <div class="col-xs-1 col-md-1 col-lg-1 text-center">
-                                    <i class="fa fa-<?php echo $actionDetails['icon'].' '.$actionDetails['class']; ?> "
+                                    <i class="fa fa-<?php echo $actionDetails['icon'] . ' ' . $actionDetails['class']; ?> "
                                        title="<?php echo ucfirst(__($action)); ?>"></i>
                                 </div>
-                                <?php
+                            <?php
                             endforeach;
                             ?>
                         </div>
@@ -111,7 +111,7 @@ $defaultActions = [
                                        title="<?php echo __('Deselect all'); ?>" data-action="<?php echo $action; ?>"
                                        click-action="off"></i>
                                 </div>
-                                <?php
+                            <?php
                             endforeach;
                             ?>
                         </div>
@@ -151,23 +151,23 @@ $defaultActions = [
                                                                 if (!isset($alwaysAllowedAcos[$action['Aco']['id']]) && !isset($dependenAcoIds[$action['Aco']['id']])): ?>
                                                                     <li>
                                                                         <?php
-                                                                        echo $this->Form->input('Usergroup.Aco.'.$action['Aco']['id'], [
+                                                                        echo $this->Form->input('Usergroup.Aco.' . $action['Aco']['id'], [
                                                                                 'type'      => 'checkbox',
                                                                                 'label'     => [
                                                                                     'text'  => $action['Aco']['alias'],
-                                                                                    'class' => 'aco-'.$action['Aco']['alias'],
+                                                                                    'class' => 'aco-' . $action['Aco']['alias'],
                                                                                 ],
                                                                                 'wrapInput' => false,
                                                                                 'div'       => [
                                                                                     'class' => 'padding-right-5',
                                                                                 ],
                                                                                 'value'     => 1,
-                                                                                'class'     => '_'.$action['Aco']['alias'],
+                                                                                'class'     => '_' . $action['Aco']['alias'],
                                                                             ]
                                                                         );
                                                                         ?>
                                                                     </li>
-                                                                    <?php
+                                                                <?php
                                                                 endif;
                                                             else:
                                                                 if (!empty($action['children'])):?>
@@ -183,41 +183,41 @@ $defaultActions = [
                                                                                 if (!isset($alwaysAllowedAcos[$moduleAction['Aco']['id']]) && !isset($dependenAcoIds[$moduleAction['Aco']['id']])): ?>
                                                                                     <li>
                                                                                         <?php
-                                                                                        echo $this->Form->input('Usergroup.Aco.'.$moduleAction['Aco']['id'], [
+                                                                                        echo $this->Form->input('Usergroup.Aco.' . $moduleAction['Aco']['id'], [
                                                                                                 'type'      => 'checkbox',
                                                                                                 'label'     => [
                                                                                                     'text'  => $moduleAction['Aco']['alias'],
-                                                                                                    'class' => 'aco-'.$moduleAction['Aco']['alias'],
+                                                                                                    'class' => 'aco-' . $moduleAction['Aco']['alias'],
                                                                                                 ],
                                                                                                 'wrapInput' => false,
                                                                                                 'div'       => [
                                                                                                     'class' => 'padding-right-5',
                                                                                                 ],
                                                                                                 'value'     => 1,
-                                                                                                'class'     => '_'.$moduleAction['Aco']['alias'],
+                                                                                                'class'     => '_' . $moduleAction['Aco']['alias'],
                                                                                             ]
                                                                                         );
                                                                                         ?>
                                                                                     </li>
-                                                                                    <?php
+                                                                                <?php
                                                                                 endif;
                                                                             endforeach;
                                                                             ?>
                                                                         </ul>
                                                                     </li>
-                                                                    <?php
+                                                                <?php
                                                                 endif;
                                                             endif;
                                                         endforeach;
                                                         ?>
                                                     </ul>
                                                 </li>
-                                                <?php
+                                            <?php
                                             endif;
                                         endforeach; ?>
                                     </ul>
                                 </li>
-                                <?php
+                            <?php
                             endforeach;
                             ?>
                         </ul>

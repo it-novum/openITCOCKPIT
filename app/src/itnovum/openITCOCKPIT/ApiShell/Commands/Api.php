@@ -29,8 +29,7 @@ use itnovum\openITCOCKPIT\ApiShell\Exceptions\RecordExistsExceptions;
 use itnovum\openITCOCKPIT\ApiShell\Interfaces\ApiInterface;
 use itnovum\openITCOCKPIT\ApiShell\OptionParser;
 
-class Api extends CoreApi implements ApiInterface
-{
+class Api extends CoreApi implements ApiInterface {
 
     /**
      * @var OptionParser
@@ -47,14 +46,12 @@ class Api extends CoreApi implements ApiInterface
         parent::__construct($cake, $modelName);
     }
 
-    public function setOptionsFromOptionParser(OptionParser $optionParser)
-    {
+    public function setOptionsFromOptionParser(OptionParser $optionParser) {
         $this->optionParser = $optionParser;
         $this->data = $optionParser->getData();
     }
 
-    public function dispatchRequest()
-    {
+    public function dispatchRequest() {
         switch ($this->optionParser->getAction()) {
             case 'add':
                 $this->add();
@@ -74,15 +71,14 @@ class Api extends CoreApi implements ApiInterface
      * @throws RecordExistsExceptions
      * @throws \Exception
      */
-    public function add()
-    {
+    public function add() {
         if (!$this->exists()) {
             $data = [
-                'name'     => $this->getNameOfData(),
-                'command_line'   => $this->data[1],
-                'command_type'    => $this->data[2],
-                'uuid' => \UUID::v4(),
-                'description' => $this->data[3],
+                'name'         => $this->getNameOfData(),
+                'command_line' => $this->data[1],
+                'command_type' => $this->data[2],
+                'uuid'         => \UUID::v4(),
+                'description'  => $this->data[3],
             ];
             if ($this->Database->save($data)) {
                 return true;
@@ -95,8 +91,7 @@ class Api extends CoreApi implements ApiInterface
     /**
      * @throws \Exception
      */
-    public function update()
-    {
+    public function update() {
         if (!$this->exists()) {
             $this->add();
         }
@@ -117,8 +112,7 @@ class Api extends CoreApi implements ApiInterface
      * @throws RecordExistsExceptions
      * @throws \Exception
      */
-    public function delete()
-    {
+    public function delete() {
         if (!$this->exists()) {
             throw new RecordExistsExceptions('Record does not exists!');
         }
@@ -133,15 +127,14 @@ class Api extends CoreApi implements ApiInterface
      * @throws RecordExistsExceptions
      * @throws \Exception
      */
-    public function addByUuid()
-    {
+    public function addByUuid() {
         if (!$this->existsByUuid()) {
             $data = [
-                'name'            => $this->getNameOfData(),
-                'command_line'    => $this->data[1],
-                'command_type'    => $this->data[2],
-                'uuid'            => $this->data[3],
-                'description'     => $this->data[4],
+                'name'         => $this->getNameOfData(),
+                'command_line' => $this->data[1],
+                'command_type' => $this->data[2],
+                'uuid'         => $this->data[3],
+                'description'  => $this->data[4],
             ];
             if ($this->Database->save($data)) {
                 return true;
@@ -155,8 +148,7 @@ class Api extends CoreApi implements ApiInterface
      * Checks if a record for given key exists
      * @return bool
      */
-    public function exists()
-    {
+    public function exists() {
         $result = $this->getRecordByName();
 
         return !empty($result);
@@ -167,8 +159,7 @@ class Api extends CoreApi implements ApiInterface
      * Checks if a record for given uuid exists
      * @return bool
      */
-    public function existsByUuid()
-    {
+    public function existsByUuid() {
         $result = $this->getRecordByUuid();
 
         return !empty($result);
@@ -177,16 +168,14 @@ class Api extends CoreApi implements ApiInterface
     /**
      * @return string
      */
-    public function getNameOfData()
-    {
+    public function getNameOfData() {
         $data = $this->data;
         $name = array_shift($data);
 
         return $name;
     }
 
-    public function getRecordByName()
-    {
+    public function getRecordByName() {
         $name = $this->getNameOfData();
 
         return $this->Database->find('first', [
@@ -196,8 +185,7 @@ class Api extends CoreApi implements ApiInterface
         ]);
     }
 
-    public function getRecordByUuid()
-    {
+    public function getRecordByUuid() {
         $uuid = $this->data[3];
 
         return $this->Database->find('first', [

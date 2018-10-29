@@ -23,10 +23,8 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class WipeShell extends AppShell
-{
-    public function main()
-    {
+class WipeShell extends AppShell {
+    public function main() {
         $this->parser = $this->getOptionParser();
         $this->out('<info>openITCOCKPIT file wiping shell</info>');
         if (isset($this->params['file'])) {
@@ -38,8 +36,7 @@ class WipeShell extends AppShell
         }
     }
 
-    public function getOptionParser()
-    {
+    public function getOptionParser() {
         $parser = parent::getOptionParser();
         $parser->addOptions([
             'recursive' => ['short' => 'r', 'help' => 'Searching for files recursive', 'boolean' => true],
@@ -50,8 +47,7 @@ class WipeShell extends AppShell
         return $parser;
     }
 
-    private function wipeFile($file)
-    {
+    private function wipeFile($file) {
         if (!file_exists($file)) {
             $this->out('<error>File does not exists</error>');
 
@@ -59,13 +55,12 @@ class WipeShell extends AppShell
         }
 
         if ($this->params['verbose']) {
-            $this->out('<comment>Wiping file: '.$file.'</comment>');
+            $this->out('<comment>Wiping file: ' . $file . '</comment>');
         }
         fclose(fopen($file, 'w+'));
     }
 
-    private function wipeDir()
-    {
+    private function wipeDir() {
         if (!is_dir($this->params['dir'])) {
             $this->out('<error>Directory does not exists</error>');
 
@@ -78,7 +73,7 @@ class WipeShell extends AppShell
         if (!isset($this->params['recursive'])) {
             $files = $dir->find();
             foreach ($files as $file) {
-                $this->wipeFile($dir->pwd().$file);
+                $this->wipeFile($dir->pwd() . $file);
             }
         } else {
             // I want to wipe recursive

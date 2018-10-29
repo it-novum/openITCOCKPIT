@@ -206,7 +206,7 @@ class Systemdowntime extends AppModel {
     /**
      * @return array
      */
-    public function getValidationRulesForRecurringDowntimes(){
+    public function getValidationRulesForRecurringDowntimes() {
         $validate = Hash::merge(
             $this->validate,
             [

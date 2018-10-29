@@ -103,7 +103,7 @@ class ServicetemplateMerger {
             'active_checks_enabled',
             'notifications_enabled',
         ];
-        foreach($bools as $boolField){
+        foreach ($bools as $boolField) {
             $mergedService[$boolField] = (bool)$mergedService[$boolField];
         }
 

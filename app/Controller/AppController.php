@@ -36,6 +36,7 @@ App::uses('User', 'Model');
 App::uses('UUID', 'Lib');
 
 use itnovum\openITCOCKPIT\Core\DbBackend;
+use itnovum\openITCOCKPIT\Core\PerfdataBackend;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 
 /**
@@ -105,7 +106,7 @@ class AppController extends Controller {
         'Session',
         'Flash',
         'Frontend.Frontend',
-        'Auth' => ['className' => 'AppAuth'],
+        'Auth'      => ['className' => 'AppAuth'],
         'Acl',
         'Cookie',
         'RequestHandler',
@@ -145,6 +146,11 @@ class AppController extends Controller {
     protected $DbBackend;
 
     /**
+     * @var PerfdataBackend
+     */
+    protected $PerfdataBackend;
+
+    /**
      * Called before every controller actions. Should not be overridden.
      * @return void
      */
@@ -156,7 +162,7 @@ class AppController extends Controller {
         if (($headerContent && strpos($headerContent, 'X-OITC-API') === 0) || strlen($queryContent) > 10) {
             AppAuthComponent::$sessionKey = false;
             $user = $this->Auth->tryToGetUser($this->request);
-            if($user) {
+            if ($user) {
                 $this->Auth->login($user, 'session');
             }
         }
@@ -165,8 +171,11 @@ class AppController extends Controller {
         //$this->Auth->allow();
 
         Configure::load('dbbackend');
+        Configure::load('perfdatabackend');
         $this->DbBackend = new DbBackend(Configure::read('dbbackend'));
+        $this->PerfdataBackend = new PerfdataBackend(Configure::read('perfdatabackend'));
         $this->set('DbBackend', $this->DbBackend);
+        $this->set('PerfdataBackend', $this->PerfdataBackend);
 
         $this->Auth->authorize = 'Actions';
         //$this->Auth->authorize = 'Controller';
@@ -286,6 +295,14 @@ class AppController extends Controller {
             }
         } else {
             $this->Paginator->settings['limit'] = 25;
+        }
+
+        if (is_numeric($this->request->query('limit'))) {
+            $queryStringLimit = (int)$this->request->query('limit');
+            if ($queryStringLimit > 1000) {
+                $queryStringLimit = 1000;
+            }
+            $this->Paginator->settings['limit'] = $queryStringLimit;
         }
 
         $permissionsFromCache = Cache::read($cacheKey, 'permissions');
@@ -423,9 +440,9 @@ class AppController extends Controller {
 
                 $queriesAsJson = [
                     'datasource' => $datasource,
-                    'count' => $log['count'],
-                    'time' => $log['time'],
-                    'queries' => []
+                    'count'      => $log['count'],
+                    'time'       => $log['time'],
+                    'queries'    => []
                 ];
 
                 foreach ($log['log'] as $query) {
@@ -433,7 +450,7 @@ class AppController extends Controller {
                 }
             }
 
-            fwrite($logfile, json_encode($queriesAsJson).PHP_EOL);
+            fwrite($logfile, json_encode($queriesAsJson) . PHP_EOL);
             fclose($logfile);
         }
 
@@ -812,11 +829,11 @@ class AppController extends Controller {
      * @param $containerId
      * @return bool
      */
-    protected function isWritableContainer($containerId){
-        if($this->hasRootPrivileges === true){
+    protected function isWritableContainer($containerId) {
+        if ($this->hasRootPrivileges === true) {
             return true;
         }
-        if(isset($this->MY_RIGHTS_LEVEL[$containerId])){
+        if (isset($this->MY_RIGHTS_LEVEL[$containerId])) {
             return (int)$this->MY_RIGHTS_LEVEL[$containerId] === WRITE_RIGHT;
         }
         return false;
@@ -835,7 +852,7 @@ class AppController extends Controller {
         $this->set('options', $options);
         $this->response->statusCode(403);
 
-        if($this->isAngularJsRequest()){
+        if ($this->isAngularJsRequest()) {
             //Angular wants json response
             $this->set('status', 403);
             $this->set('statusText', 'Forbidden');
@@ -870,8 +887,8 @@ class AppController extends Controller {
     }
 
     protected function isScrollRequest() {
-        if($this->isApiRequest()){
-            if(isset($this->request->query['scroll']) && $this->request->query['scroll'] !== 'false'){
+        if ($this->isApiRequest()) {
+            if (isset($this->request->query['scroll']) && $this->request->query['scroll'] !== 'false') {
                 return true;
             }
         }

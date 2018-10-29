@@ -22,7 +22,6 @@
 //  License agreement and license key will be shipped with the order
 //  confirmation.
 
-use itnovum\openITCOCKPIT\Core\HostConditions;
 use itnovum\openITCOCKPIT\Core\HoststatusConditions;
 use itnovum\openITCOCKPIT\Core\HoststatusFields;
 

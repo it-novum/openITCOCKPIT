@@ -20,13 +20,13 @@ angular.module('openITCOCKPIT').directive('servicestatusiconAutomap', function($
 
                 switch(currentstate){
                     case 0:
-                        $scope.iconColor =  'ok';
+                        $scope.iconColor = 'ok';
                         return;
                     case 1:
                         $scope.iconColor = 'warning';
                         return;
                     case 2:
-                        $scope.iconColor =  'critical';
+                        $scope.iconColor = 'critical';
                         return;
                     case 3:
                         $scope.iconColor = 'unknown';

@@ -23,8 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class ContainerUserMembership extends AppModel
-{
+class ContainerUserMembership extends AppModel {
     public $useTable = 'users_to_containers';
     public $belongsTo = [
         'Container' => [

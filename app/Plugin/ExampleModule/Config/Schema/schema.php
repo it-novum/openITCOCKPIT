@@ -1,15 +1,12 @@
 <?php
 
-class ExampleModuleSchema extends CakeSchema
-{
+class ExampleModuleSchema extends CakeSchema {
 
-    public function before($event = [])
-    {
+    public function before($event = []) {
         return true;
     }
 
-    public function after($event = [])
-    {
+    public function after($event = []) {
     }
 
 }

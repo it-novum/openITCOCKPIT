@@ -24,8 +24,6 @@
 
 namespace itnovum\openITCOCKPIT\Core\Views;
 
-use itnovum\openITCOCKPIT\Core\Views\UserTime;
-
 class Hostcheck {
 
     /**
@@ -107,7 +105,7 @@ class Hostcheck {
      * StatehistoryHost constructor.
      * @param array $data
      */
-    public function __construct($data, $UserTime = null){
+    public function __construct($data, $UserTime = null) {
         if (isset($data['command'])) {
             $this->command = $data['command'];
         }
@@ -174,113 +172,113 @@ class Hostcheck {
     /**
      * @return boolean
      */
-    public function isHardstate(){
+    public function isHardstate() {
         return $this->is_hardstate;
     }
 
     /**
      * @return string
      */
-    public function getCommand(){
+    public function getCommand() {
         return $this->command;
     }
 
     /**
      * @return int
      */
-    public function getCurrentCheckAttempt(){
+    public function getCurrentCheckAttempt() {
         return $this->current_check_attempt;
     }
 
     /**
      * @return boolean
      */
-    public function isEarlyTimeout(){
+    public function isEarlyTimeout() {
         return $this->early_timeout;
     }
 
     /**
      * @return int|string
      */
-    public function getEndTime(){
+    public function getEndTime() {
         return $this->end_time;
     }
 
     /**
      * @return float
      */
-    public function getExecutionTime(){
+    public function getExecutionTime() {
         return $this->execution_time;
     }
 
     /**
      * @return float
      */
-    public function getLatency(){
+    public function getLatency() {
         return $this->latency;
     }
 
     /**
      * @return string
      */
-    public function getLongOutput(){
+    public function getLongOutput() {
         return $this->long_output;
     }
 
     /**
      * @return int
      */
-    public function getMaxCheckAttempts(){
+    public function getMaxCheckAttempts() {
         return $this->max_check_attempts;
     }
 
     /**
      * @return string
      */
-    public function getOutput(){
+    public function getOutput() {
         return $this->output;
     }
 
     /**
      * @return string
      */
-    public function getPerfdata(){
+    public function getPerfdata() {
         return $this->perfdata;
     }
 
     /**
      * @return int|string
      */
-    public function getStartTime(){
+    public function getStartTime() {
         return $this->start_time;
     }
 
     /**
      * @return int
      */
-    public function getState(){
+    public function getState() {
         return $this->state;
     }
 
     /**
      * @return int
      */
-    public function getTimeout(){
+    public function getTimeout() {
         return $this->timeout;
     }
 
     /**
      * @return array
      */
-    public function toArray(){
+    public function toArray() {
         $arr = get_object_vars($this);
-        if(isset($arr['UserTime'])){
+        if (isset($arr['UserTime'])) {
             unset($arr['UserTime']);
         }
 
-        if($this->UserTime !== null) {
+        if ($this->UserTime !== null) {
             $arr['start_time'] = $this->UserTime->format($this->getStartTime());
-        }else{
+        } else {
             $arr['start_time'] = $this->getStartTime();
         }
 

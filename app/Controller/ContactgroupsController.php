@@ -49,12 +49,12 @@ class ContactgroupsController extends AppController {
     public $listFilters = [
         'index' => [
             'fields' => [
-                'Container.name' => [
-                    'label' => 'Name',
+                'Container.name'           => [
+                    'label'      => 'Name',
                     'searchType' => 'wildcard',
                 ],
                 'Contactgroup.description' => [
-                    'label' => 'Alias',
+                    'label'      => 'Alias',
                     'searchType' => 'wildcard',
                 ],
             ],
@@ -63,7 +63,7 @@ class ContactgroupsController extends AppController {
 
     public function index() {
         $options = [
-            'order' => [
+            'order'      => [
                 'Container.name' => 'asc',
             ],
             'conditions' => [
@@ -138,8 +138,8 @@ class ContactgroupsController extends AppController {
             if (isset($this->request->data['Contactgroup']['Contact']) && is_array($this->request->data['Contactgroup']['Contact'])) {
                 foreach ($this->request->data['Contactgroup']['Contact'] as $contact_id) {
                     $_contact = $this->Contact->find('first', [
-                        'recursive' => -1,
-                        'fields' => [
+                        'recursive'  => -1,
+                        'fields'     => [
                             'Contact.id',
                             'Contact.name',
                         ],
@@ -148,7 +148,7 @@ class ContactgroupsController extends AppController {
                         ],
                     ]);
                     $ext_data_for_changelog['Contact'][] = [
-                        'id' => $contact_id,
+                        'id'   => $contact_id,
                         'name' => $_contact['Contact']['name'],
                     ];
                 }
@@ -191,8 +191,8 @@ class ContactgroupsController extends AppController {
         $this->request->data = Hash::merge($contactgroup, $this->request->data); // Is used in the template file
         $data = [
             'contactgroup' => $contactgroup,
-            'containers' => $containers,
-            'contacts' => $contacts,
+            'containers'   => $containers,
+            'contacts'     => $contacts,
         ];
         $this->set($data);
         $this->set('_serialize', array_keys($data));
@@ -223,8 +223,8 @@ class ContactgroupsController extends AppController {
             if (isset($this->request->data['Contactgroup']['Contact']) && is_array($this->request->data['Contactgroup']['Contact'])) {
                 foreach ($this->request->data['Contactgroup']['Contact'] as $contact_id) {
                     $_contact = $this->Contact->find('first', [
-                        'recursive' => -1,
-                        'fields' => [
+                        'recursive'  => -1,
+                        'fields'     => [
                             'Contact.id',
                             'Contact.name',
                         ],
@@ -233,7 +233,7 @@ class ContactgroupsController extends AppController {
                         ],
                     ]);
                     $ext_data_for_changelog['Contact'][] = [
-                        'id' => $contact_id,
+                        'id'   => $contact_id,
                         'name' => $_contact['Contact']['name'],
                     ];
                     unset($_contact);
@@ -337,8 +337,8 @@ class ContactgroupsController extends AppController {
         $userId = $this->Auth->user('id');
 
         $contactgroup = $this->Contactgroup->find('first', [
-            'recursive' => -1,
-            'contain' => [
+            'recursive'  => -1,
+            'contain'    => [
                 'Container'
             ],
             'conditions' => [
@@ -386,8 +386,8 @@ class ContactgroupsController extends AppController {
             foreach ($this->request->data('Contactgroup.delete') as $contactgroupId) {
                 if ($this->Contactgroup->exists($contactgroupId)) {
                     $contactgroup = $this->Contactgroup->find('first', [
-                        'recursive' => -1,
-                        'contain' => [
+                        'recursive'  => -1,
+                        'contain'    => [
                             'Container'
                         ],
                         'conditions' => [
@@ -417,12 +417,13 @@ class ContactgroupsController extends AppController {
             $this->setFlash(__('Contact groups deleted'));
             $this->redirect(['action' => 'index']);
         }
-
+        $contactgroupsToDelete = [];
+        $contactgroupsCanotDelete = [];
         foreach (func_get_args() as $contactgroupId) {
             if ($this->Contactgroup->exists($contactgroupId)) {
                 $contactgroup = $this->Contactgroup->find('first', [
-                    'recursive' => -1,
-                    'contain' => [
+                    'recursive'  => -1,
+                    'contain'    => [
                         'Container'
                     ],
                     'conditions' => [
@@ -433,7 +434,6 @@ class ContactgroupsController extends AppController {
                     if ($this->__allowDelete($contactgroupId)) {
                         $contactgroupsToDelete[$contactgroupId] = $contactgroup;
                     } else {
-                        debug($contactgroup['Container']['name']);
                         $contactgroupsCanotDelete[$contactgroupId] = $contactgroup['Container']['name'];
                     }
                 }
@@ -448,8 +448,8 @@ class ContactgroupsController extends AppController {
     public function copy($id = null) {
         $userId = $this->Auth->user('id');
         $contactgroups = $this->Contactgroup->find('all', [
-            'recursive' => -1,
-            'contain' => [
+            'recursive'  => -1,
+            'contain'    => [
                 'Container' => [
                     'fields' => [
                         'Container.name',
@@ -457,14 +457,14 @@ class ContactgroupsController extends AppController {
                         'Container.containertype_id',
                     ]
                 ],
-                'Contact' => [
+                'Contact'   => [
                     'fields' => [
                         'Contact.id',
                         'Contact.name'
                     ]
                 ]
             ],
-            'fields' => [
+            'fields'     => [
                 'Contactgroup.description'
             ],
             'conditions' => [
@@ -479,17 +479,17 @@ class ContactgroupsController extends AppController {
                 $datasource->begin();
                 foreach ($this->request->data['Contactgroup'] as $sourceContactGroupId => $newContactGroup) {
                     $newContactGroupData = [
-                        'Container' => [
-                            'parent_id' => $contactgroups[$sourceContactGroupId]['Container']['parent_id'],
-                            'name' => $newContactGroup['name'],
+                        'Container'    => [
+                            'parent_id'        => $contactgroups[$sourceContactGroupId]['Container']['parent_id'],
+                            'name'             => $newContactGroup['name'],
                             'containertype_id' => $contactgroups[$sourceContactGroupId]['Container']['containertype_id'],
                         ],
                         'Contactgroup' => [
                             'description' => $newContactGroup['description'],
-                            'uuid' => UUID::v4(),
-                            'Contact' => Hash::extract($contactgroups[$sourceContactGroupId]['Contact'], '{n}.id'),
+                            'uuid'        => UUID::v4(),
+                            'Contact'     => Hash::extract($contactgroups[$sourceContactGroupId]['Contact'], '{n}.id'),
                         ],
-                        'Contact' => Hash::extract($contactgroups[$sourceContactGroupId]['Contact'], '{n}.id')
+                        'Contact'      => Hash::extract($contactgroups[$sourceContactGroupId]['Contact'], '{n}.id')
                     ];
                     $this->Contactgroup->create();
                     if (!$this->Contactgroup->saveAll($newContactGroupData)) {
@@ -507,7 +507,7 @@ class ContactgroupsController extends AppController {
                             'Contactgroup' => [
                                 'description' => $newContactGroup['description']
                             ],
-                            'Container' => [
+                            'Container'    => [
                                 'name' => $newContactGroup['name']
                             ]
                         ])
@@ -543,50 +543,50 @@ class ContactgroupsController extends AppController {
 
         $this->Contactgroup->bindModel([
             'hasAndBelongsToMany' => [
-                'Hosttemplate' => [
+                'Hosttemplate'      => [
                     'className' => 'Hosttemplate',
                     'joinTable' => 'contactgroups_to_hosttemplates',
-                    'type' => 'INNER'
+                    'type'      => 'INNER'
                 ],
-                'Host' => [
+                'Host'              => [
                     'className' => 'Host',
                     'joinTable' => 'contactgroups_to_hosts',
-                    'type' => 'INNER'
+                    'type'      => 'INNER'
                 ],
-                'Servicetemplate' => [
+                'Servicetemplate'   => [
                     'className' => 'Servicetemplate',
                     'joinTable' => 'contactgroups_to_servicetemplates',
-                    'type' => 'INNER'
+                    'type'      => 'INNER'
                 ],
-                'Service' => [
+                'Service'           => [
                     'className' => 'Service',
                     'joinTable' => 'contactgroups_to_services',
-                    'type' => 'INNER'
+                    'type'      => 'INNER'
                 ],
-                'Hostescalation' => [
+                'Hostescalation'    => [
                     'className' => 'Hostescalation',
                     'joinTable' => 'contactgroups_to_hostescalations',
-                    'type' => 'INNER'
+                    'type'      => 'INNER'
                 ],
                 'Serviceescalation' => [
                     'className' => 'Serviceescalation',
                     'joinTable' => 'contactgroups_to_serviceescalations',
-                    'type' => 'INNER'
+                    'type'      => 'INNER'
                 ],
             ]
         ]);
 
         $contactgroupWithRelations = $this->Contactgroup->find('first', [
-            'recursive' => -1,
-            'contain' => [
+            'recursive'  => -1,
+            'contain'    => [
                 'Container',
-                'Hosttemplate' => [
+                'Hosttemplate'    => [
                     'fields' => [
                         'Hosttemplate.id',
                         'Hosttemplate.name'
                     ]
                 ],
-                'Host' => [
+                'Host'            => [
                     'fields' => [
                         'Host.id',
                         'Host.name',
@@ -599,12 +599,12 @@ class ContactgroupsController extends AppController {
                         'Servicetemplate.name'
                     ]
                 ],
-                'Service' => [
-                    'fields' => [
+                'Service'         => [
+                    'fields'          => [
                         'Service.id',
                         'Service.name'
                     ],
-                    'Host' => [
+                    'Host'            => [
                         'fields' => [
                             'Host.name'
                         ]
@@ -624,18 +624,18 @@ class ContactgroupsController extends AppController {
         ]);
 
         /* Format service name for api "hostname|Service oder Service template name" */
-        array_walk($contactgroupWithRelations['Service'],function(&$service){
+        array_walk($contactgroupWithRelations['Service'], function (&$service) {
             $serviceName = $service['name'];
-            if(empty($service['name'])) {
+            if (empty($service['name'])) {
                 $serviceName = $service['Servicetemplate']['name'];
             }
             $service['name'] = sprintf('%s|%s', $service['Host']['name'], $serviceName);
         });
 
         //Sort host template, host, service template and service by name
-        foreach(['Hosttemplate', 'Host', 'Servicetemplate', 'Service'] as $modelName){
+        foreach (['Hosttemplate', 'Host', 'Servicetemplate', 'Service'] as $modelName) {
             $contactgroupWithRelations[$modelName] = Hash::sort($contactgroupWithRelations[$modelName], '{n}.name', 'asc', [
-                    'type' => 'natural',
+                    'type'       => 'natural',
                     'ignoreCase' => true
                 ]
             );

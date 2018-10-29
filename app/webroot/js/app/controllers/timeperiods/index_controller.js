@@ -31,7 +31,7 @@ App.Controllers.TimeperiodsIndexController = Frontend.AppController.extend({
 
     components: ['Masschange'],
 
-    _initialize: function () {
+    _initialize: function(){
         var self = this;
         this.Masschange.setup({
             'controller': 'timeperiods',

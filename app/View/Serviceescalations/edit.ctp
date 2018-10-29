@@ -95,7 +95,7 @@
 
             echo $this->Form->hostAndServiceSelectOptiongroup('Serviceescalation.Service', [
                 'label'    => __('<i class="fa fa-plus-square text-success"></i> Services'),
-                'options'          => $services,
+                'options'  => $services,
                 'required' => true,
                 'escape'   => false,
                 'divClass' => 'col col-xs-10 success',
@@ -210,7 +210,7 @@
                     <div style="border-bottom:1px solid lightGray;">
                         <?php echo $this->Form->fancyCheckbox($escalation_option, [
                             'caption' => ucfirst(preg_replace('/escalate_on_/', '', $escalation_option)),
-                            'icon'    => '<i class="fa '.$icon.'"></i> ',
+                            'icon'    => '<i class="fa ' . $icon . '"></i> ',
                             'checked' => (boolean)$this->request->data['Serviceescalation'][$escalation_option],
                         ]); ?>
                         <div class="clearfix"></div>

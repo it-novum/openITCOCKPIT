@@ -57,9 +57,9 @@
                         <fieldset>
                             <legend><?php echo $command['Command']['name'] ?></legend>
                             <?php
-                            echo $this->Form->input('Command.'.$key.'.name', ['value' => $command['Command']['name'], 'label' => __('Templatename'), 'required' => true, 'help' => __('This is the default name for the command')]);
-                            echo $this->Form->input('Command.'.$key.'.command_line', ['value' => $command['Command']['command_line'], 'label' => __('Command line'), 'required' => false]);
-                            echo $this->Form->input('Command.'.$key.'.description', ['value' => $command['Command']['description'], 'label' => __('Description'), 'required' => false]);
+                            echo $this->Form->input('Command.' . $key . '.name', ['value' => $command['Command']['name'], 'label' => __('Templatename'), 'required' => true, 'help' => __('This is the default name for the command')]);
+                            echo $this->Form->input('Command.' . $key . '.command_line', ['value' => $command['Command']['command_line'], 'label' => __('Command line'), 'required' => false]);
+                            echo $this->Form->input('Command.' . $key . '.description', ['value' => $command['Command']['description'], 'label' => __('Description'), 'required' => false]);
                             ?>
                         </fieldset>
                     </div> <!-- close col -->

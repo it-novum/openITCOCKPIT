@@ -24,8 +24,7 @@
 //	confirmation.
 
 
-class LocationsController extends AppController
-{
+class LocationsController extends AppController {
     public $uses = ['Location', 'Container'];
     public $layout = 'Admin.default';
     public $components = ['ListFilter.ListFilter', 'RequestHandler'];
@@ -39,8 +38,7 @@ class LocationsController extends AppController
         ],
     ];
 
-    public function index()
-    {
+    public function index() {
 
         if ($this->hasRootPrivileges === true) {
             $container = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_LOCATION, [], $this->hasRootPrivileges);
@@ -69,8 +67,7 @@ class LocationsController extends AppController
         $this->set('_serialize', ['all_locations']);
     }
 
-    public function view($id = null)
-    {
+    public function view($id = null) {
         if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();
 
@@ -89,12 +86,11 @@ class LocationsController extends AppController
         $this->set('_serialize', ['location']);
     }
 
-    public function add()
-    {
+    public function add() {
         if ($this->hasRootPrivileges === true) {
-            $container = $this->Tree->easyPath($this->MY_RIGHTS, CT_LOCATION, [], $this->hasRootPrivileges);
+            $container = $this->Tree->easyPath($this->MY_RIGHTS, CT_LOCATION, [], $this->hasRootPrivileges, [CT_GLOBAL]);
         } else {
-            $container = $this->Tree->easyPath($this->getWriteContainers(), CT_LOCATION, [], $this->hasRootPrivileges);
+            $container = $this->Tree->easyPath($this->getWriteContainers(), CT_LOCATION, [], $this->hasRootPrivileges, [CT_GLOBAL]);
         }
 
         if ($this->request->is('post') || $this->request->is('put')) {
@@ -126,8 +122,7 @@ class LocationsController extends AppController
         $this->set(compact(['container']));
     }
 
-    public function edit($id = null)
-    {
+    public function edit($id = null) {
         if (!$this->Location->exists($id)) {
             throw new NotFoundException(__('Invalid location'));
         }
@@ -141,9 +136,9 @@ class LocationsController extends AppController
         }
 
         if ($this->hasRootPrivileges === true) {
-            $container = $this->Tree->easyPath($this->MY_RIGHTS, CT_LOCATION, [], $this->hasRootPrivileges);
+            $container = $this->Tree->easyPath($this->MY_RIGHTS, CT_LOCATION, [], $this->hasRootPrivileges, [CT_GLOBAL]);
         } else {
-            $container = $this->Tree->easyPath($this->getWriteContainers(), CT_LOCATION, [], $this->hasRootPrivileges);
+            $container = $this->Tree->easyPath($this->getWriteContainers(), CT_LOCATION, [], $this->hasRootPrivileges, [CT_GLOBAL]);
         }
         if ($this->request->is('post') || $this->request->is('put')) {
             $this->request->data['Location']['id'] = $id;
@@ -162,8 +157,7 @@ class LocationsController extends AppController
         $this->set(compact(['location', 'container']));
     }
 
-    public function delete($id = null)
-    {
+    public function delete($id = null) {
         if (!$this->Location->exists($id)) {
             throw new NotFoundException(__('Invalid location'));
         }

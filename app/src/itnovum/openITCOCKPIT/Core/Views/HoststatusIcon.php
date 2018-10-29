@@ -74,7 +74,7 @@ class HoststatusIcon {
      * @param string $href
      * @param string $style
      */
-    public function __construct($state = null, $href = 'javascript:void(0)', $style = ''){
+    public function __construct($state = null, $href = 'javascript:void(0)', $style = '') {
         $this->state = $state;
         $this->href = $href;
         $this->style = $style;
@@ -88,7 +88,7 @@ class HoststatusIcon {
 
     }
 
-    public function getTextColor(){
+    public function getTextColor() {
         if ($this->state === null) {
             return 'txt-primary';
         }
@@ -108,7 +108,7 @@ class HoststatusIcon {
     /**
      * @return string
      */
-    public function getHumanState(){
+    public function getHumanState() {
         if ($this->state === null) {
             return __('Not found in monitoring');
         }
@@ -119,7 +119,7 @@ class HoststatusIcon {
     /**
      * @return string
      */
-    public function getHtmlIcon(){
+    public function getHtmlIcon() {
         $template = '<a href="%s" class="btn btn-%s status-circle" style="padding:0;%s"></a>';
 
         $state = $this->state;
@@ -132,7 +132,7 @@ class HoststatusIcon {
     /**
      * @return string
      */
-    public function getPdfIcon(){
+    public function getPdfIcon() {
         $template = '<i class="fa fa-square %s"></i>';
         return sprintf($template, $this->getTextColor());
     }
@@ -140,7 +140,7 @@ class HoststatusIcon {
     /**
      * @return string
      */
-    public function getIcon(){
+    public function getIcon() {
         $state = $this->state;
         if ($state === null) {
             $state = 3;
@@ -164,12 +164,12 @@ class HoststatusIcon {
         );
     }
 
-    public function asArray(){
+    public function asArray() {
         return [
-            'state' => $this->state,
+            'state'       => $this->state,
             'human_state' => $this->getHumanState(),
-            'html_icon' => $this->getHtmlIcon(),
-            'icon' => $this->getIcon()
+            'html_icon'   => $this->getHtmlIcon(),
+            'icon'        => $this->getIcon()
         ];
     }
 

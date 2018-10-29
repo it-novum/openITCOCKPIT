@@ -23,14 +23,12 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class MacrosController extends AppController
-{
+class MacrosController extends AppController {
     public $layout = 'Admin.default';
     public $components = ['RequestHandler'];
 
 
-    public function index()
-    {
+    public function index() {
 
         $this->Paginator->settings['limit'] = 500;
         $this->Paginator->settings['order'] = ['Macro.name' => 'asc'];
@@ -75,8 +73,7 @@ class MacrosController extends AppController
         }
     }
 
-    public function addMacro()
-    {
+    public function addMacro() {
 
         if (!empty($this->request->data)) {
             $all_macros = $this->request->data;
@@ -89,18 +86,17 @@ class MacrosController extends AppController
 
         $macroCount = 1;
 
-        while (in_array('$USER'.$macroCount.'$', $all_macros)) {
+        while (in_array('$USER' . $macroCount . '$', $all_macros)) {
             $macroCount++;
         }
 
-        $newMacro = '$USER'.$macroCount.'$';
+        $newMacro = '$USER' . $macroCount . '$';
         $this->set('newMacro', $newMacro);
         $this->set('macroCount', $macroCount);
 
     }
 
-    private function _rewritePostData($request = [])
-    {
+    private function _rewritePostData($request = []) {
         /*
         If the user press on save we get an array like this:
         (int) 0 => array( <-- Data out of DB

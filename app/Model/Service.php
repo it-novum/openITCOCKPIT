@@ -1364,6 +1364,7 @@ class Service extends AppModel {
                 'Servicestatus.problem_has_been_acknowledged',
                 'Servicestatus.acknowledgement_type',
                 'Servicestatus.is_flapping',
+                'Servicestatus.perfdata',
 
                 'Servicetemplate.id',
                 'Servicetemplate.uuid',
@@ -1433,6 +1434,10 @@ class Service extends AppModel {
             $query['conditions']['Service.host_id'] = $ServiceConditions->getHostId();
         }
 
+        if ($ServiceConditions->getServiceIds()) {
+            $query['conditions']['Service.id'] = $ServiceConditions->getServiceIds();
+        }
+
         return $query;
 
     }
@@ -1475,6 +1480,7 @@ class Service extends AppModel {
                 'Servicetemplate.description',
                 'Servicetemplate.active_checks_enabled',
                 'Servicetemplate.tags',
+                'Servicestatus.perfdata',
 
                 'Host.name',
                 'Host.id',
@@ -1543,6 +1549,10 @@ class Service extends AppModel {
 
         if ($ServiceConditions->getHostId()) {
             $query['conditions']['Service.host_id'] = $ServiceConditions->getHostId();
+        }
+
+        if ($ServiceConditions->getServiceIds()) {
+            $query['conditions']['Service.id'] = $ServiceConditions->getServiceIds();
         }
 
         return $query;
@@ -1814,6 +1824,10 @@ class Service extends AppModel {
             $query['conditions']['OR'] = $ServiceConditions->getConditions();
         }
 
+        if ($ServiceConditions->includeDisabled() === false) {
+            $query['conditions']['Service.disabled'] = (int)$ServiceConditions->includeDisabled();
+        }
+
         if (is_array($selected)) {
             $selected = array_filter($selected);
         }
@@ -1887,6 +1901,11 @@ class Service extends AppModel {
                     'Service.id'
                 ]
             ];
+
+            if ($ServiceConditions->includeDisabled() === false) {
+                $query['conditions']['Service.disabled'] = (int)$ServiceConditions->includeDisabled();
+            }
+
             $query['conditions']['HostsToContainers.container_id'] = $ServiceConditions->getContainerIds();
             $selectedServices = $this->find('all', $query);
             $selectedServices = Hash::combine($selectedServices, '{n}.Service.id', '{n}');
@@ -2111,5 +2130,159 @@ class Service extends AppModel {
             $serviceStateSummary['total']++;
         }
         return $serviceStateSummary;
+    }
+
+
+    /**
+     * @param $MY_RIGHTS
+     * @param $conditions
+     * @return array
+     */
+    public function getServicestatusCountBySelectedStatus($MY_RIGHTS, $conditions) {
+        $this->virtualFields['servicename'] = 'IF((Service.name IS NULL OR Service.name=""), Servicetemplate.name, Service.name)';
+        $query = [
+            'recursive'  => -1,
+            'fields'     => [
+                'COUNT(DISTINCT Servicestatus.service_object_id) AS count',
+            ],
+            'joins'      => [
+                [
+                    'table'      => 'servicetemplates',
+                    'type'       => 'INNER',
+                    'alias'      => 'Servicetemplate',
+                    'conditions' => 'Servicetemplate.id = Service.servicetemplate_id',
+                ],
+                [
+                    'table'      => 'hosts',
+                    'type'       => 'INNER',
+                    'alias'      => 'Host',
+                    'conditions' => 'Host.id = Service.host_id',
+                ],
+                [
+                    'table'      => 'nagios_objects',
+                    'type'       => 'INNER',
+                    'alias'      => 'ServiceObject',
+                    'conditions' => 'Service.uuid = ServiceObject.name2 AND ServiceObject.objecttype_id = 2',
+                ],
+
+                [
+                    'table'      => 'nagios_servicestatus',
+                    'type'       => 'INNER',
+                    'alias'      => 'Servicestatus',
+                    'conditions' => 'Servicestatus.service_object_id = ServiceObject.object_id',
+                ],
+
+                [
+                    'table'      => 'hosts_to_containers',
+                    'alias'      => 'HostsToContainers',
+                    'type'       => 'INNER',
+                    'conditions' => [
+                        'HostsToContainers.host_id = Host.id',
+                    ],
+                ],
+            ],
+            'conditions' => [
+                'ServiceObject.is_active'        => 1,
+                'HostsToContainers.container_id' => $MY_RIGHTS,
+                'Service.disabled'               => 0
+            ]
+        ];
+
+        if (!empty($conditions['Host']['name'])) {
+            $query['conditions']['Host.name LIKE'] = sprintf('%%%s%%', $conditions['Host']['name']);
+        }
+
+        if (!empty($conditions['Service']['name'])) {
+            $query['conditions']['Service.servicename LIKE'] = sprintf('%%%s%%', $conditions['Service']['name']);
+        }
+
+        $query['conditions']['Servicestatus.current_state'] = $conditions['Servicestatus']['current_state'];
+        if ($conditions['Servicestatus']['current_state'] > 0) {
+            if ($conditions['Servicestatus']['problem_has_been_acknowledged'] === false) {
+                $query['conditions']['Servicestatus.problem_has_been_acknowledged'] = false;
+            }
+            if ($conditions['Servicestatus']['scheduled_downtime_depth'] === false) {
+                $query['conditions']['Servicestatus.scheduled_downtime_depth'] = false;
+            }
+        }
+        return $query;
+    }
+
+    /**
+     * @param $MY_RIGHTS
+     * @param $conditions
+     * @return array
+     */
+    public function getServicestatusBySelectedStatusStatusengine3($MY_RIGHTS, $conditions) {
+        $query = [
+            'conditions' => [
+                'Service.disabled' => 0
+            ],
+            'contain'    => [],
+            'fields'     => [
+                'COUNT(Servicestatus.service_description) AS count',
+            ],
+            'joins'      => [
+                [
+                    'table'      => 'statusengine_servicestatus',
+                    'type'       => 'INNER',
+                    'alias'      => 'Servicestatus',
+                    'conditions' => 'Servicestatus.service_description = Service.uuid',
+                ],
+            ],
+        ];
+
+        $query['conditions']['Servicestatus.current_state'] = $conditions['Servicestatus']['current_state'];
+        if ($conditions['Servicestatus']['current_state'] > 0) {
+            if ($conditions['Servicestatus']['problem_has_been_acknowledged'] === false) {
+                $query['conditions']['Servicestatus.problem_has_been_acknowledged'] = false;
+            }
+            if ($conditions['Servicestatus']['scheduled_downtime_depth'] === false) {
+                $query['conditions']['Servicestatus.scheduled_downtime_depth'] = false;
+            }
+        }
+
+        $db = $this->getDataSource();
+        $subQuery = $db->buildStatement([
+            'fields'     => ['Service.uuid'],
+            'table'      => 'services',
+            'alias'      => 'Service',
+            'limit'      => null,
+            'offset'     => null,
+            'joins'      => [
+                [
+                    'table'      => 'hosts',
+                    'alias'      => 'Host',
+                    'type'       => 'INNER',
+                    'conditions' => [
+                        'Service.host_id = Host.id',
+                    ],
+                ],
+                [
+                    'table'      => 'hosts_to_containers',
+                    'alias'      => 'HostsToContainers',
+                    'type'       => 'INNER',
+                    'conditions' => [
+                        'HostsToContainers.host_id = Host.id',
+                    ],
+                ]
+            ],
+            'conditions' => [
+                'HostsToContainers.container_id' => $MY_RIGHTS
+            ],
+            'order'      => null,
+            'group'      => null
+        ], $this);
+        $subQuery = 'Servicestatus.service_description IN (' . $subQuery . ') ';
+        if (!empty($conditions['Host']['name'])) {
+            $query['conditions']['Host.name LIKE'] = sprintf('%%%s%%', $conditions['Host']['name']);
+        }
+        if (!empty($conditions['Service']['name'])) {
+            $query['conditions']['Service.name LIKE'] = sprintf('%%%s%%', $conditions['Service']['name']);
+        }
+        $subQueryExpression = $db->expression($subQuery);
+        $query['conditions'][] = $subQueryExpression->value;
+
+        return $query;
     }
 }

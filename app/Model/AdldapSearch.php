@@ -27,9 +27,9 @@ namespace Model;
 
 use Adldap\Classes\AdldapSearch as AdldapSearchMain;
 
-class AdldapSearch extends AdldapSearchMain{
+class AdldapSearch extends AdldapSearchMain {
 
-    public function paginate($perPage = 50, $currentPage = 0, $isCritical = true){
+    public function paginate($perPage = 50, $currentPage = 0, $isCritical = true) {
         // Stores all LDAP entries in a page array
         $pages = [];
         $cookie = '';
@@ -47,14 +47,14 @@ class AdldapSearch extends AdldapSearchMain{
         return false;
     }
 
-    private function processPaginatedResults($pages, $perPage = 50, $currentPage = 0){
+    private function processPaginatedResults($pages, $perPage = 50, $currentPage = 0) {
         if (count($pages) > 0) {
             $objects = [];
             $entries = $this->connection->getEntries($pages[$currentPage]);
 
             if (is_array($entries) && array_key_exists('count', $entries)) {
                 for ($i = 0; $i < $entries['count']; $i++) {
-                    if(isset($entries[$i]['dn'])){
+                    if (isset($entries[$i]['dn'])) {
                         $entries[$i]['dn'] = [$entries[$i]['dn']];
                     }
                     $entry = $this->newLdapEntry($entries[$i], $this->connection);

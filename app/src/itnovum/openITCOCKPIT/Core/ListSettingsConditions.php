@@ -67,7 +67,7 @@ abstract class ListSettingsConditions {
     /**
      * @param int $limit
      */
-    public function setLimit($limit = null){
+    public function setLimit($limit = null) {
         if ($this->limit !== null) {
             $this->limit = $limit;
         }
@@ -76,7 +76,7 @@ abstract class ListSettingsConditions {
     /**
      * @return int
      */
-    public function getLimit(){
+    public function getLimit() {
         return $this->limit;
     }
 
@@ -84,14 +84,14 @@ abstract class ListSettingsConditions {
     /**
      * @return array
      */
-    public function getStateTypes(){
+    public function getStateTypes() {
         return $this->stateTypes;
     }
 
     /**
      * @param StateTypes $StateTypes
      */
-    public function setStateTypes(StateTypes $StateTypes){
+    public function setStateTypes(StateTypes $StateTypes) {
         if (sizeof($StateTypes->asIntegerArray()) == 2) {
             $this->stateTypes = [];
             return;
@@ -102,21 +102,21 @@ abstract class ListSettingsConditions {
     /**
      * @return array
      */
-    public function getStates(){
+    public function getStates() {
         return $this->states;
     }
 
     /**
      * @return array
      */
-    public function getOrder(){
+    public function getOrder() {
         return $this->order;
     }
 
     /**
      * @param array $order
      */
-    public function setOrder($order = []){
+    public function setOrder($order = []) {
         if (!empty($order)) {
             $this->order = $order;
         }
@@ -125,49 +125,49 @@ abstract class ListSettingsConditions {
     /**
      * @return int
      */
-    public function getFrom(){
+    public function getFrom() {
         return $this->from;
     }
 
     /**
      * @param int $from
      */
-    public function setFrom($from){
+    public function setFrom($from) {
         $this->from = $from;
     }
 
     /**
      * @return int
      */
-    public function getTo(){
+    public function getTo() {
         return $this->to;
     }
 
     /**
      * @param int $to
      */
-    public function setTo($to){
+    public function setTo($to) {
         $this->to = $to;
     }
 
     /**
      * @return array
      */
-    public function getContainerIds(){
+    public function getContainerIds() {
         return $this->containerIds;
     }
 
     /**
      * @param array $containerIds
      */
-    public function setContainerIds($containerIds){
+    public function setContainerIds($containerIds) {
         $this->containerIds = $containerIds;
     }
 
     /**
      * @return bool
      */
-    public function hasContainerIds(){
+    public function hasContainerIds() {
         return !empty($this->containerIds);
     }
 

@@ -24,7 +24,7 @@
 ?>
 <ul class="nav nav-tabs pull-right" id="widget-tab-1">
     <?php if ($this->Acl->hasPermission('host', 'systemdowntimes')): ?>
-        <li class="<?php echo ($this->action === 'host')?'active':''; ?>">
+        <li class="<?php echo ($this->action === 'host') ? 'active' : ''; ?>">
             <a href="<?php echo Router::url(['controller' => 'systemdowntimes', 'action' => 'host']); ?>">
                 <i class="fa fa-desktop"></i>
                 <span class="hidden-mobile hidden-tablet"> <?php echo __('Host'); ?></span>
@@ -32,7 +32,7 @@
         </li>
     <?php endif; ?>
     <?php if ($this->Acl->hasPermission('service', 'systemdowntimes')): ?>
-        <li class="<?php echo ($this->action === 'service')?'active':''; ?>">
+        <li class="<?php echo ($this->action === 'service') ? 'active' : ''; ?>">
             <a href="<?php echo Router::url(['controller' => 'systemdowntimes', 'action' => 'service']); ?>">
                 <i class="fa fa-cog"></i>
                 <span class="hidden-mobile hidden-tablet"> <?php echo __('Service'); ?></span>
@@ -40,7 +40,7 @@
         </li>
     <?php endif; ?>
     <?php if ($this->Acl->hasPermission('hostgroup', 'systemdowntimes')): ?>
-        <li class="<?php echo ($this->action === 'hostgroup')?'active':''; ?>">
+        <li class="<?php echo ($this->action === 'hostgroup') ? 'active' : ''; ?>">
             <a href="<?php echo Router::url(['controller' => 'systemdowntimes', 'action' => 'hostgroup']); ?>">
                 <i class="fa fa-sitemap"></i>
                 <span class="hidden-mobile hidden-tablet"> <?php echo __('Hostgroup'); ?></span>
@@ -48,7 +48,7 @@
         </li>
     <?php endif; ?>
     <?php if ($this->Acl->hasPermission('node', 'systemdowntimes')): ?>
-        <li class="<?php echo ($this->action === 'node')?'active':''; ?>">
+        <li class="<?php echo ($this->action === 'node') ? 'active' : ''; ?>">
             <a href="<?php echo Router::url(['controller' => 'systemdowntimes', 'action' => 'node']); ?>">
                 <i class="fa fa-chain"></i>
                 <span class="hidden-mobile hidden-tablet"> <?php echo __('Container'); ?></span>

@@ -1,26 +1,39 @@
 <?php
 
 use GuzzleHttp\Client;
-use itnovum\openITCOCKPIT\Core\DbBackend;
-use \itnovum\openITCOCKPIT\Core\Interfaces\CronjobInterface;
-use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Exception\BadResponseException;
+use GuzzleHttp\Psr7\Request;
+use itnovum\openITCOCKPIT\Core\DbBackend;
+use itnovum\openITCOCKPIT\Core\Interfaces\CronjobInterface;
 use itnovum\openITCOCKPIT\Core\ServicestatusConditions;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\ValueObjects\Perfdata;
+use itnovum\openITCOCKPIT\Grafana\GrafanaApiConfiguration;
 use itnovum\openITCOCKPIT\Grafana\GrafanaDashboard;
 use itnovum\openITCOCKPIT\Grafana\GrafanaPanel;
 use itnovum\openITCOCKPIT\Grafana\GrafanaRow;
 use itnovum\openITCOCKPIT\Grafana\GrafanaSeriesOverrides;
+use itnovum\openITCOCKPIT\Grafana\GrafanaTag;
 use itnovum\openITCOCKPIT\Grafana\GrafanaTarget;
 use itnovum\openITCOCKPIT\Grafana\GrafanaTargetCollection;
 use itnovum\openITCOCKPIT\Grafana\GrafanaTargetUnit;
 use itnovum\openITCOCKPIT\Grafana\GrafanaThresholdCollection;
 use itnovum\openITCOCKPIT\Grafana\GrafanaThresholds;
 use itnovum\openITCOCKPIT\Grafana\GrafanaYAxes;
-use \itnovum\openITCOCKPIT\Grafana\GrafanaApiConfiguration;
-use itnovum\openITCOCKPIT\Grafana\GrafanaTag;
 
+/**
+ * Class GrafanaDashboardTask
+ * @property Host $Host
+ * @property Servicetemplate $Servicetemplate
+ * @property Service $Service
+ * @property Hoststatus $Hoststatus
+ * @property Servicestatus $Servicestatus
+ * @property Rrd $Rrd
+ * @property GrafanaConfiguration $GrafanaConfiguration
+ * @property GrafanaConfigurationHostgroupMembership $GrafanaConfigurationHostgroupMembership
+ * @property GrafanaDashboard $GrafanaDashboard
+ * @property Proxy $Proxy
+ */
 class GrafanaDashboardTask extends AppShell implements CronjobInterface {
 
     public $uses = [
@@ -278,17 +291,24 @@ class GrafanaDashboardTask extends AppShell implements CronjobInterface {
                 throw new Exception('No Tag given');
             }
 
-            $json = $this->getGrafanaDashboardsByTag($tag);
-            $dashboardsToDelete = Hash::extract($json, '{n}.title');
+            //Only delete auto generated dashboards
+            $dashboards = $this->GrafanaDashboard->find('all', [
+                'recursive' => -1,
+                'fields'    => [
+                    'GrafanaDashboard.host_uuid'
+                ]
+            ]);
 
-            foreach ($dashboardsToDelete as $dashboardSlug) {
-                $request = new Request('DELETE', $this->GrafanaApiConfiguration->getApiUrl() . '/dashboards/db/' . $dashboardSlug);
+
+            foreach ($dashboards as $dashboard) {
+                $hostUuid = $dashboard['GrafanaDashboard']['host_uuid'];
+                $request = new Request('DELETE', $this->GrafanaApiConfiguration->getApiUrl() . '/dashboards/db/' . $hostUuid);
                 $response = $this->client->send($request);
 
                 if ($response->getStatusCode() == 200) {
                     $body = $response->getBody();
                     $response = json_decode($body->getContents());
-                    $this->out('<success>Dashboard ' . $dashboardSlug . ' deleted!</success>');
+                    $this->out('<success>Dashboard ' . $hostUuid . ' deleted!</success>');
                 }
             }
         } catch (Exception $e) {

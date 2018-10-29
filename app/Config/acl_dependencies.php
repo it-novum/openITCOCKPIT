@@ -68,7 +68,10 @@ $config = [
                 'send_service_notification',
                 'enable_service_notifications',
                 'disable_service_notifications',
-                'getPieChart'
+                'getPieChart',
+                'getHalfPieChart',
+                'getCumulatedHostAndServiceStateIcon',
+                'getHostAndServiceStateSummaryIcon'
             ],
             'Automaps'         => [
                 'icon'
@@ -114,12 +117,6 @@ $config = [
                 'serviceMacro',
             ],
             'Services'         => [
-                'grapherSwitch',
-                'grapher',
-                'grapherTemplate',
-                'grapherZoom',
-                'grapherZoomTemplate',
-                'createGrapherErrorPng',
                 'icon',
                 'servicecumulatedstatusicon',
                 'details'
@@ -133,32 +130,42 @@ $config = [
             ],
             'Dashboards'       => [
                 'index',
-                'next',
-                'add',
-                'createTab',
-                'createTabFromSharing',
-                'updateSharedTab',
-                'disableUpdate',
-                'renameTab',
-                'deleteTab',
-                'restoreDefault',
-                'updateTitle',
-                'updateColor',
-                'updatePosition',
-                'deleteWidget',
-                'updateTabPosition',
-                'saveTabRotationInterval',
+                'getWidgetsForTab',
+                'dynamicDirective',
+                'welcomeWidget',
+                'saveGrid',
+                'addWidgetToTab',
+                'removeWidgetFromTab',
+                'saveTabOrder',
+                'addNewTab',
+                'renameDashboardTab',
+                'deleteDashboardTab',
                 'startSharing',
                 'stopSharing',
-                'refresh',
-                'saveStatuslistSettings',
-                'saveTrafficLightService',
-                'getTachoPerfdata',
-                'saveTachoConfig',
-                'saveMapId',
-                'saveGraphId',
-                'saveNotice',
-                'saveMap',
+                'getSharedTabs',
+                'createFromSharedTab',
+                'checkForUpdates',
+                'neverPerformUpdates',
+                'updateSharedTab',
+                'renameWidget',
+                'lockOrUnlockTab',
+                'restoreDefault',
+                'hostsPiechartWidget',
+                'hostsPiechart180Widget',
+                'servicesPiechartWidget',
+                'servicesPiechart180Widget',
+                'hostsStatusListWidget',
+                'servicesStatusListWidget',
+                'saveTabRotateInterval',
+                'parentOutagesWidget',
+                'hostsDowntimeWidget',
+                'servicesDowntimeWidget',
+                'noticeWidget',
+                'trafficLightWidget',
+                'getServiceWithStateById',
+                'hostStatusOverviewWidget',
+                'tachoWidget',
+                'serviceStatusOverviewWidget'
             ],
             'Hosts'            => [
                 'view',
@@ -167,7 +174,18 @@ $config = [
                 'loadParentHostsByString',
                 'loadParentHostsById',
                 'hoststatus'
-            ]
+            ],
+            'Statistics'       => [
+                'ask_anonymous_statistics'
+            ],
+            'Login'            => [
+                'index',
+                'login',
+                'onetimetoken',
+                'logout',
+                'auth_required',
+                'lock'
+            ],
         ],
         'dependencies'   => [
             'Automaps'              => [
@@ -268,16 +286,16 @@ $config = [
                 'add'   => ['loadElementsByContainerId'],
                 'edit'  => ['loadElementsByContainerId'],
             ],
-            'Servicegroups' => [
-                'index'  =>     ['listToPdf', 'view', 'loadServicegroupsByContainerId'],
-                'add'    =>     ['loadServices', 'mass_add', 'loadServicetemplates', 'loadContainers'],
-                'edit'   =>     ['loadServices', 'loadServicetemplates'],
-                'delete' =>     ['mass_delete'],
-                'extended' =>   ['loadServicegroupWithServicesById']
+            'Servicegroups'         => [
+                'index'    => ['listToPdf', 'view', 'loadServicegroupsByContainerId', 'loadServicegroupsByString'],
+                'add'      => ['loadServices', 'mass_add', 'loadServicetemplates', 'loadContainers'],
+                'edit'     => ['loadServices', 'loadServicetemplates'],
+                'delete'   => ['mass_delete'],
+                'extended' => ['loadServicegroupWithServicesById']
             ],
             'Services'              => [
                 'deactivate'  => ['mass_deactivate'],
-                'index'       => ['serviceByHostId', 'listToPdf', 'loadServices', 'view', 'loadServicesByContainerId', 'loadServicesByString','getSelectedServices'],
+                'index'       => ['serviceByHostId', 'listToPdf', 'loadServices', 'view', 'loadServicesByContainerId', 'loadServicesByString', 'getSelectedServices'],
                 'browser'     => ['servicesByHostId', 'longOutputByUuid'],
                 'add'         => ['loadContactsAndContactgroups', 'loadParametersByCommandId', 'loadNagParametersByCommandId', 'loadArgumentsAdd', 'loadServicetemplatesArguments', 'loadTemplateData', 'addCustomMacro', 'loadTemplateMacros'],
                 'edit'        => ['loadContactsAndContactgroups', 'loadParametersByCommandId', 'loadNagParametersByCommandId', 'loadArgumentsAdd', 'loadServicetemplatesArguments', 'loadTemplateData', 'addCustomMacro', 'loadTemplateMacros'],
@@ -331,9 +349,13 @@ $config = [
             'Notifications'         => [
                 'index' => ['services'],
             ],
-            'Statusmaps' => [
-                'index' => ['hostAndServicesSummaryStatus'
+            'Statusmaps'            => [
+                'index' => [
+                    'hostAndServicesSummaryStatus'
                 ]
+            ],
+            'Statistics'            => [
+                'index' => ['saveStatisticDecision']
             ],
         ],
         'roles_rights'   => [

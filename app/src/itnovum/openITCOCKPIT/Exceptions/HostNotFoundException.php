@@ -27,7 +27,6 @@
 namespace itnovum\openITCOCKPIT\Exceptions;
 
 
-class HostNotFoundException extends \Exception
-{
+class HostNotFoundException extends \Exception {
 
 }

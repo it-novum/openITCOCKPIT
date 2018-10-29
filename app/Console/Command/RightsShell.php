@@ -23,14 +23,14 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
+use Symfony\Component\Filesystem\Filesystem;
 
 class RightsShell extends AppShell {
 
     public $uses = ['Systemsetting'];
 
-    public function main(){
+    public function main() {
         $directories = [
             '/usr/share/openitcockpit/',
             '/usr/share/openitcockpit-modules/',
@@ -39,24 +39,24 @@ class RightsShell extends AppShell {
         $this->setRights($directories);
     }
 
-    private function setRights($dirs = []){
-        try{
+    private function setRights($dirs = []) {
+        try {
             $systemsettings = $this->Systemsetting->findAsArray();
             $user = $systemsettings['WEBSERVER']['WEBSERVER.USER'];
             $group = $systemsettings['WEBSERVER']['WEBSERVER.GROUP'];
 
             $fs = new Filesystem();
-            foreach ($dirs as $dir){
-                if($fs->exists($dir)){
-                    $this->out('<info>set user permissions for '.$dir.'</info>');
+            foreach ($dirs as $dir) {
+                if ($fs->exists($dir)) {
+                    $this->out('<info>set user permissions for ' . $dir . '</info>');
                     $fs->chown($dir, $user, true);
                     $fs->chgrp($dir, $group, true);
                     $this->out('<success>done!</success>');
                 }
 
             }
-        }catch(IOExceptionInterface $e){
-            $this->out('<error>an error occurred at '.$e->getPath().' </error>');
+        } catch (IOExceptionInterface $e) {
+            $this->out('<error>an error occurred at ' . $e->getPath() . ' </error>');
         }
     }
 }

@@ -205,7 +205,7 @@ class DowntimeService extends Statusengine3ModuleAppModel {
      */
     public function getServiceDowntimesByHostAndDowntime($hostId, Downtime $Downtime) {
         $query = [
-            'joins'  => [
+            'joins'      => [
                 [
                     'table'      => 'services',
                     'type'       => 'INNER',

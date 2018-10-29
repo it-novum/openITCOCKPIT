@@ -43,6 +43,11 @@ class Service {
     private $servicename = null;
 
     /**
+     * @var string|null
+     */
+    private $hostname = null;
+
+    /**
      * @var string
      */
     private $description;
@@ -78,8 +83,8 @@ class Service {
      * @param null $servicename
      * @param bool $allowEdit
      */
-    public function __construct($service, $servicename = null, $allowEdit = false){
-        if(isset($service['CrateService'])){
+    public function __construct($service, $servicename = null, $allowEdit = false) {
+        if (isset($service['CrateService'])) {
             $service['Service'] = $service['CrateService'];
         }
         $this->allow_edit = $allowEdit;
@@ -96,13 +101,13 @@ class Service {
             $this->servicename = $service['Service']['name'];
         }
 
-        if($this->servicename === null || $this->servicename === ''){
-            if(isset($service['Servicetemplate']['name'])){
+        if ($this->servicename === null || $this->servicename === '') {
+            if (isset($service['Servicetemplate']['name'])) {
                 $this->servicename = $service['Servicetemplate']['name'];
             }
         }
 
-        if($servicename !== null){
+        if ($servicename !== null) {
             $this->servicename = $servicename;
         }
 
@@ -114,7 +119,7 @@ class Service {
             $this->active_checks_enabled = (bool)$service['Service']['active_checks_enabled'];
         }
 
-        if($this->active_checks_enabled === null && isset($service['Servicetemplate']['active_checks_enabled'])){
+        if ($this->active_checks_enabled === null && isset($service['Servicetemplate']['active_checks_enabled'])) {
             $this->active_checks_enabled = (bool)$service['Servicetemplate']['active_checks_enabled'];
         }
 
@@ -126,13 +131,17 @@ class Service {
             $this->host_id = (int)$service['Host']['id'];
         }
 
+        if (isset($service['Host']['name'])) {
+            $this->hostname = $service['Host']['name'];
+        }
+
         if (isset($service['Service']['disabled'])) {
             $this->disabled = (bool)$service['Service']['disabled'];
         }
 
     }
 
-    public static function fromServiceNotification($serviceNotification){
+    public static function fromServiceNotification($serviceNotification) {
         $servicename = null;
         if (isset($serviceNotification['NotificationService']['servicename'])) {
             $servicename = $serviceNotification['NotificationService']['servicename'];
@@ -144,56 +153,70 @@ class Service {
     /**
      * @return string
      */
-    public function getId(){
+    public function getId() {
         return $this->id;
     }
 
     /**
      * @return string
      */
-    public function getUuid(){
+    public function getUuid() {
         return $this->uuid;
     }
 
     /**
      * @return string
      */
-    public function getServicename(){
+    public function getServicename() {
         return $this->servicename;
     }
 
     /**
      * @return string
      */
-    public function getDescription(){
+    public function getHostname() {
+        return $this->hostname;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDescription() {
         return $this->description;
     }
 
     /**
      * @return bool|int
      */
-    public function isActiveChecksEnabled(){
+    public function isActiveChecksEnabled() {
         return $this->active_checks_enabled;
     }
 
     /**
      * @return string
      */
-    public function getTags(){
+    public function getTags() {
         return $this->tags;
     }
 
     /**
      * @return int
      */
-    public function getHostId(){
+    public function getHostId() {
         return $this->host_id;
+    }
+
+    /**
+     * @return bool|int
+     */
+    public function isDisabled() {
+        return $this->disabled;
     }
 
     /**
      * @return array
      */
-    public function toArray(){
+    public function toArray() {
         return get_object_vars($this);
     }
 

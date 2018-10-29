@@ -33,7 +33,9 @@ class CpuLoad {
 
     private $load15 = null;
 
-    private $cores = null;
+    private $cores = 0;
+
+    private $model = 'Unknown';
 
     public function __construct() {
     }
@@ -62,13 +64,33 @@ class CpuLoad {
      * @return int|null
      */
     public function getNumberOfCores() {
+        if ($this->cores > 0) {
+            return $this->cores;
+        }
+
         if (file_exists('/proc/cpuinfo')) {
-            $cpuinfo = file_get_contents('/proc/cpuinfo');
-            preg_match_all('/^processor/m', $cpuinfo, $matches);
-            $this->cores = sizeof($matches[0]);
+            foreach (file('/proc/cpuinfo') as $line) {
+                if (preg_match('/^processor/m', $line)) {
+                    $this->cores++;
+                }
+
+                if (preg_match('/^model name/m', $line)) {
+                    $model = explode("model name\t: ", $line);
+                    if (isset($model[1])) {
+                        $this->model = trim($model[1]);
+                    }
+                }
+            }
         }
 
         return $this->cores;
+    }
+
+    public function getModel() {
+        if ($this->model === 'Unknown') {
+            $this->getNumberOfCores();
+        }
+        return $this->model;
     }
 
     /**

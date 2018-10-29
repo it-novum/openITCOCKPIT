@@ -24,12 +24,12 @@
 //	confirmation.
 
 App.Controllers.GraphgeneratorsListingController = Frontend.AppController.extend({
-	components: ['Masschange'],
+    components: ['Masschange'],
 
-	_initialize: function(){
-		this.Masschange.setup({
-			'controller': 'graphgenerators',
-			'checkboxattr': 'data-delete-display-text'
-		});
-	}
+    _initialize: function(){
+        this.Masschange.setup({
+            'controller': 'graphgenerators',
+            'checkboxattr': 'data-delete-display-text'
+        });
+    }
 });

@@ -23,8 +23,8 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-use itnovum\openITCOCKPIT\Core\Views\Host;
 use itnovum\openITCOCKPIT\Core\Hoststatus;
+use itnovum\openITCOCKPIT\Core\Views\Host;
 
 //Flapping Workaround while the status date is not loaded via Angular
 echo $this->Html->script('lib/FlappingWorkaround.js');
@@ -56,8 +56,9 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
             <div class="pull-right">
                 <a href="<?php echo Router::url([
                     'controller' => 'hosts',
-                    'action' => 'browser',
-                    $Host->getId()]); ?>" class="btn btn-primary btn-sm">
+                    'action'     => 'browser',
+                    $Host->getId()
+                ]); ?>" class="btn btn-primary btn-sm">
                     <i class="fa fa-arrow-circle-left"></i> <?php echo $this->Html->underline('b', __('Back to Host')); ?>
                 </a>
                 <?php echo $this->element('host_browser_menu'); ?>
@@ -100,7 +101,8 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
                             <div class="row">
                                 <div class="col-xs-12 col-md-6">
                                     <div class="form-group smart-form">
-                                        <label class="input"> <i class="icon-prepend" style="padding-right:14px;"><?php echo __('From'); ?></i>
+                                        <label class="input"> <i class="icon-prepend"
+                                                                 style="padding-right:14px;"><?php echo __('From'); ?></i>
                                             <input type="text" class="input-sm" style="padding-left:50px;"
                                                    placeholder="<?php echo __('From Date'); ?>"
                                                    ng-model="filter.from"
@@ -121,7 +123,8 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
 
                                 <div class="col-xs-12 col-md-6">
                                     <div class="form-group smart-form">
-                                        <label class="input"> <i class="icon-prepend" style="padding-right:14px;"><?php echo __('To'); ?></i>
+                                        <label class="input"> <i class="icon-prepend"
+                                                                 style="padding-right:14px;"><?php echo __('To'); ?></i>
                                             <input type="text" class="input-sm" style="padding-left:50px;"
                                                    placeholder="<?php echo __('To Date'); ?>"
                                                    ng-model="filter.to"
@@ -217,16 +220,19 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
                                     <hoststatusicon state="Notification.NotificationHost.state"></hoststatusicon>
                                 </td>
                                 <td>
-                                    <a href="/hosts/browser/{{ Notification.Host.id }}">{{ Notification.Host.hostname }}</a>
+                                    <a href="/hosts/browser/{{ Notification.Host.id }}">{{ Notification.Host.hostname
+                                        }}</a>
                                 </td>
                                 <td>
                                     {{ Notification.NotificationHost.start_time }}
                                 </td>
                                 <td>
-                                    <a href="/contacts/edit/{{ Notification.Contact.id }}">{{ Notification.Contact.name }}</a>
+                                    <a href="/contacts/edit/{{ Notification.Contact.id }}">{{ Notification.Contact.name
+                                        }}</a>
                                 </td>
                                 <td>
-                                    <a href="/commands/edit/{{ Notification.Command.id }}">{{ Notification.Command.name }}</a>
+                                    <a href="/commands/edit/{{ Notification.Command.id }}">{{ Notification.Command.name
+                                        }}</a>
                                 </td>
                                 <td>
                                     {{ Notification.NotificationHost.output }}

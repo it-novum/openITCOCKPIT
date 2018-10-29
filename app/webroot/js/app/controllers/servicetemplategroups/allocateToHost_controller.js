@@ -24,58 +24,60 @@
 
 App.Controllers.ServicetemplategroupsAllocateToHostController = Frontend.AppController.extend({
 
-	components: ['Ajaxloader'],
+    components: ['Ajaxloader'],
 
-	_initialize: function(){
-		this.Ajaxloader.setup();
+    _initialize: function(){
+        this.Ajaxloader.setup();
 
-		var self = this;
-		/*
-		 * Bind change event on host selectbox
-		 */
-		$('#ServiceHostId').change(function(){
-			self.enableAll();
-			self.hideAllDuplicate();
-			self.hideAllDuplicateDisabled();
-			self.Ajaxloader.show();
-			$.ajax({
-				url: "/hosts/getHostByAjax/"+encodeURIComponent($(this).val())+".json",
-				type: "POST",
-				cache: false,
-				error: function(){},
-				success: function(){},
-				complete: function(response){
-					self.Ajaxloader.hide();
-					$(response.responseJSON.host.Service).each(function(intKey, serviceObject){
-						//Disable checkbox, for services that already exist on the host
-						$('#servicetemplate_'+serviceObject.servicetemplate_id).prop('checked', null);
-						//If the service is disabled, display icon
-						if($('#servicetemplate_'+serviceObject.servicetemplate_id).prop('checked') === false){
-							if(serviceObject.disabled == 1 || serviceObject.disabled == '1'){
-								$('#duplicateDisabled_'+serviceObject.servicetemplate_id).show();
-							}
-							//The service exists on the host and is enabled
-							$('#duplicate_'+serviceObject.servicetemplate_id).show();
-						}
-					});
-				}.bind(self)
-			});
-		});
-	},
+        var self = this;
+        /*
+         * Bind change event on host selectbox
+         */
+        $('#ServiceHostId').change(function(){
+            self.enableAll();
+            self.hideAllDuplicate();
+            self.hideAllDuplicateDisabled();
+            self.Ajaxloader.show();
+            $.ajax({
+                url: "/hosts/getHostByAjax/" + encodeURIComponent($(this).val()) + ".json",
+                type: "POST",
+                cache: false,
+                error: function(){
+                },
+                success: function(){
+                },
+                complete: function(response){
+                    self.Ajaxloader.hide();
+                    $(response.responseJSON.host.Service).each(function(intKey, serviceObject){
+                        //Disable checkbox, for services that already exist on the host
+                        $('#servicetemplate_' + serviceObject.servicetemplate_id).prop('checked', null);
+                        //If the service is disabled, display icon
+                        if($('#servicetemplate_' + serviceObject.servicetemplate_id).prop('checked') === false){
+                            if(serviceObject.disabled == 1 || serviceObject.disabled == '1'){
+                                $('#duplicateDisabled_' + serviceObject.servicetemplate_id).show();
+                            }
+                            //The service exists on the host and is enabled
+                            $('#duplicate_' + serviceObject.servicetemplate_id).show();
+                        }
+                    });
+                }.bind(self)
+            });
+        });
+    },
 
-	enableAll: function(){
-		$('.createThisService').prop('checked', true);
-	},
+    enableAll: function(){
+        $('.createThisService').prop('checked', true);
+    },
 
-	disableAll: function(){
-		$('.createThisService').prop('checked', null);
-	},
+    disableAll: function(){
+        $('.createThisService').prop('checked', null);
+    },
 
-	hideAllDuplicate: function(){
-		$('.createServiceDuplicate').hide();
-	},
+    hideAllDuplicate: function(){
+        $('.createServiceDuplicate').hide();
+    },
 
-	hideAllDuplicateDisabled: function(){
-		$('.createServiceDuplicateDisabled').hide();
-	}
+    hideAllDuplicateDisabled: function(){
+        $('.createServiceDuplicateDisabled').hide();
+    }
 });

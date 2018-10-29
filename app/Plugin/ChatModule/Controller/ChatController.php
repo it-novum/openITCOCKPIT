@@ -23,12 +23,10 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class ChatController extends ChatModuleAppController
-{
+class ChatController extends ChatModuleAppController {
     public $layout = 'Admin.default';
 
-    public function index()
-    {
+    public function index() {
         $this->Frontend->setJson('username', $this->Auth->user('full_name'));
         $this->Frontend->setJson('user_id', $this->Auth->user('id'));
         $this->Frontend->setJson('new_message', __('New message!'));

@@ -23,18 +23,15 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class CustomValidationErrorsComponent extends Component
-{
+class CustomValidationErrorsComponent extends Component {
     public $customFields = [];
     public $Model = null;
 
-    public function initialize(Controller $controller)
-    {
+    public function initialize(Controller $controller) {
         $this->Controller = $controller;
     }
 
-    public function loadModel(Model $model)
-    {
+    public function loadModel(Model $model) {
         $this->Model = $model;
     }
 
@@ -43,28 +40,25 @@ class CustomValidationErrorsComponent extends Component
      *
      * @param array $fields
      */
-    public function customFields($fields = [])
-    {
+    public function customFields($fields = []) {
         $this->customFields = $fields;
     }
 
     /**
      * Checks for validation errors on fields, that are not generated with $this->Form
      */
-    public function fetchErrors()
-    {
+    public function fetchErrors() {
         foreach ($this->customFields as $fieldName) {
             if (isset($this->Model->validationErrors[$fieldName])) {
-                $this->Controller->set($this->Model->name.'.validationError_'.$fieldName, $this->Model->validationErrors[$fieldName]);
+                $this->Controller->set($this->Model->name . '.validationError_' . $fieldName, $this->Model->validationErrors[$fieldName]);
             }
         }
     }
 
-    public function fetchErrorsFromArray()
-    {
+    public function fetchErrorsFromArray() {
         foreach ($this->customFields as $fieldName) {
             if (isset($this->Model->validationErrors[0][$fieldName])) {
-                $this->Controller->set($this->Model->name.'.validationError_'.$fieldName, $this->Model->validationErrors[0][$fieldName]);
+                $this->Controller->set($this->Model->name . '.validationError_' . $fieldName, $this->Model->validationErrors[0][$fieldName]);
             }
         }
     }
@@ -77,8 +71,7 @@ class CustomValidationErrorsComponent extends Component
      *
      * @return void
      */
-    public function checkForRefill($customFildsToRefill = [])
-    {
+    public function checkForRefill($customFildsToRefill = []) {
         $refill = [];
         foreach ($customFildsToRefill as $modelName => $fieldsArray) {
             foreach ($fieldsArray as $field) {

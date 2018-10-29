@@ -39,7 +39,7 @@ $Logo = new Logo();
                 <i class="fa fa-calendar txt-color-blueDark"></i>
                 <?php
                 echo __('Current state report ');
-                echo h('('.__('Date: ').$this->Time->format(time(), $this->Auth->user('dateformat'), false, $this->Auth->user('timezone')).')'); ?>
+                echo h('(' . __('Date: ') . $this->Time->format(time(), $this->Auth->user('dateformat'), false, $this->Auth->user('timezone')) . ')'); ?>
             </div>
             <div class="col-md-3 text-left">
                 <?php
@@ -154,14 +154,14 @@ $Logo = new Logo();
                                                             ?>
                                                         >
                                                             <?php
-                                                            echo $perfDataArray[0]['current_value'].' '.$perfDataArray[0]['unit'];
+                                                            echo $perfDataArray[0]['current_value'] . ' ' . $perfDataArray[0]['unit'];
                                                             ?>
                                                         </div>
                                                         <div class="col-md-2 no-padding text-right">
                                                             <i class="fa fa-plus-square-o font-md pointer perfdataContainerShowDetails"
                                                                uuid="<?php echo $serviceData['Service']['uuid']; ?>"></i>
                                                         </div>
-                                                        <?php
+                                                    <?php
                                                     endif;
                                                     ?>
                                                 </div>
@@ -184,15 +184,15 @@ $Logo = new Logo();
                                                                 );
                                                                 ?>
                                                             >
-                                                                <?php echo $perfData['current_value'].' '.$perfData['unit']; ?>
+                                                                <?php echo $perfData['current_value'] . ' ' . $perfData['unit']; ?>
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <?php
+                                                <?php
                                                 endforeach;
                                             endif;
                                             ?>
-                                            <?php
+                                        <?php
                                         endforeach; ?>
                                     </div>
                                 </div>
@@ -223,15 +223,15 @@ $Logo = new Logo();
                                                         ?>
                                                     </div>
                                                 </div>
-                                                <?php
+                                            <?php
                                             endforeach; ?>
                                         </div>
                                     </div>
-                                    <?php
+                                <?php
                                 endif; ?>
                             </div>
                         </div>
-                        <?php
+                    <?php
                     endif;
                 endforeach;
                 ?>

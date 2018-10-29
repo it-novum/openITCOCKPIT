@@ -25,8 +25,7 @@
 namespace itnovum\openITCOCKPIT\Core;
 
 
-class ContainerRepository
-{
+class ContainerRepository {
 
     /**
      * @var array
@@ -38,8 +37,7 @@ class ContainerRepository
      *
      * @param int|array $containerIds
      */
-    public function __construct($containerIds = [])
-    {
+    public function __construct($containerIds = []) {
         if (!is_array($containerIds)) {
             $containerIds = [$containerIds];
         }
@@ -47,16 +45,14 @@ class ContainerRepository
         $this->toInt();
     }
 
-    public function getContainer()
-    {
+    public function getContainer() {
         return $this->containerIds;
     }
 
     /**
      * @param int|array $containerIds
      */
-    public function addContainer($containerIds)
-    {
+    public function addContainer($containerIds) {
         if (!is_array($containerIds)) {
             $containerIds = [$containerIds];
         }
@@ -73,8 +69,7 @@ class ContainerRepository
      *
      * @return bool
      */
-    public function exists($containerId)
-    {
+    public function exists($containerId) {
         $containerId = (int)$containerId;
 
         return in_array($containerId, $this->containerIds);
@@ -85,8 +80,7 @@ class ContainerRepository
      *
      * @param int|array $containerId
      */
-    public function removeContainerId($containerIdsToRemove)
-    {
+    public function removeContainerId($containerIdsToRemove) {
         if (!is_array($containerIdsToRemove)) {
             $containerIdsToRemove = [$containerIdsToRemove];
         }
@@ -99,8 +93,7 @@ class ContainerRepository
         $this->containerIds = $_containerIdsToKeep;
     }
 
-    private function toInt()
-    {
+    private function toInt() {
         $containerIds = [];
         foreach ($this->containerIds as $containerId) {
             $containerIds[] = (int)$containerId;

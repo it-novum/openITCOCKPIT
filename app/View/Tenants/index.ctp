@@ -155,7 +155,8 @@
                                                     &nbsp;<i class="fa fa-cog"></i>&nbsp;
                                                 </a>
                                             <?php else: ?>
-                                                <a href="javascript:void(0);" class="btn btn-default" ng-hide="tenant.Tenant.allowEdit">
+                                                <a href="javascript:void(0);" class="btn btn-default"
+                                                   ng-hide="tenant.Tenant.allowEdit">
                                                     &nbsp;<i class="fa fa-cog"></i>&nbsp;</a>
                                             <?php endif; ?>
                                             <a href="javascript:void(0);" data-toggle="dropdown"
@@ -165,7 +166,8 @@
                                                 id="menuHack-{{tenant.Tenant.id}}">
                                                 <?php if ($this->Acl->hasPermission('edit')): ?>
                                                     <li>
-                                                        <a href="/tenants/edit/{{tenant.Tenant.id}}" ng-if="tenant.Tenant.allowEdit">
+                                                        <a href="/tenants/edit/{{tenant.Tenant.id}}"
+                                                           ng-if="tenant.Tenant.allowEdit">
                                                             <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
                                                         </a>
                                                     </li>

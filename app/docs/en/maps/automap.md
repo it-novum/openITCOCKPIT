@@ -1,7 +1,7 @@
 [adding]: /automaps/add (add a new automap)
 [configure]: #configure "Configure your automaps"
 
-## What are automaps in openITCOCKPIT v3?
+## What are automaps in openITCOCKPIT?
 
 You can use regular expressions for hosts and services to create a map of the matching objects with their current status.
 

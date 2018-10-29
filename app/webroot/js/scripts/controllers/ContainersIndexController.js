@@ -27,7 +27,7 @@ angular.module('openITCOCKPIT')
                 $scope.load();
                 $timeout(function(){
                     $('#nodeCreatedFlashMessage').hide();
-                },3000);
+                }, 3000);
                 $scope.errors = null;
             }, function errorCallback(result){
                 if(result.data.hasOwnProperty('error')){

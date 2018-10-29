@@ -23,8 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class ForwardController extends AppController
-{
+class ForwardController extends AppController {
     public $layout = 'Admin.default';
 
     public $uses = [
@@ -48,8 +47,7 @@ class ForwardController extends AppController
 
     public $components = ['Uuid'];
 
-    public function index()
-    {
+    public function index() {
 
         $_options = [
             'uuid'   => null,
@@ -64,7 +62,7 @@ class ForwardController extends AppController
             $this->uuidCache = $this->Uuid->getCache();
             if (isset($this->uuidCache[$options['uuid']])) {
                 //Redirect to to object
-                $this->redirect('/'.strtolower(Inflector::pluralize($this->uuidCache[$options['uuid']]['ModelName'])).'/'.$options['action'].'/'.$this->uuidCache[$options['uuid']]['id']);
+                $this->redirect('/' . strtolower(Inflector::pluralize($this->uuidCache[$options['uuid']]['ModelName'])) . '/' . $options['action'] . '/' . $this->uuidCache[$options['uuid']]['id']);
             } else {
                 if (isset($this->request->params['named']['exception']) && $this->request->params['named']['exception'] == 'false') {
                     $this->setFlash(__('No entry found'), false);
@@ -81,7 +79,7 @@ class ForwardController extends AppController
                     $this->redirect($this->referer());
                 }
 
-                $this->redirect('/'.strtolower(Inflector::pluralize($options['model'])).'/'.$options['action'].'/'.$object[$options['model']]['id']);
+                $this->redirect('/' . strtolower(Inflector::pluralize($options['model'])) . '/' . $options['action'] . '/' . $object[$options['model']]['id']);
             } else {
                 throw new NotFoundException(__('Object not found'));
             }

@@ -23,8 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class TimeperiodsController extends AppController
-{
+class TimeperiodsController extends AppController {
     public $layout = 'Admin.default';
     public $components = [
         'ListFilter.ListFilter',
@@ -41,18 +40,17 @@ class TimeperiodsController extends AppController
     public $listFilters = [
         'index' => [
             'fields' => [
-                'Timeperiod.name' => ['label' => 'Name', 'searchType' => 'wildcard'],
+                'Timeperiod.name'        => ['label' => 'Name', 'searchType' => 'wildcard'],
                 'Timeperiod.description' => ['label' => 'Description', 'searchType' => 'wildcard'],
             ],
         ],
     ];
 
 
-    function index()
-    {
+    function index() {
         $options = [
-            'recursive' => -1,
-            'order' => [
+            'recursive'  => -1,
+            'order'      => [
                 'Timeperiod.name' => 'asc',
             ],
             'conditions' => [
@@ -70,8 +68,7 @@ class TimeperiodsController extends AppController
         $this->set('_serialize', ['all_timeperiods']);
     }
 
-    public function view($id)
-    {
+    public function view($id) {
         if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();
 
@@ -89,8 +86,7 @@ class TimeperiodsController extends AppController
         $this->set('_serialize', ['timeperiod']);
     }
 
-    public function edit($id = null)
-    {
+    public function edit($id = null) {
         $userId = $this->Auth->user('id');
         if (!$this->Timeperiod->exists($id)) {
             throw new NotFoundException(__('Invalid timeperiod'));
@@ -190,8 +186,7 @@ class TimeperiodsController extends AppController
         }
     }
 
-    public function add()
-    {
+    public function add() {
         $userId = $this->Auth->user('id');
         if ($this->hasRootPrivileges === true) {
             $containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_TIMEPERIOD, [], $this->hasRootPrivileges);
@@ -275,8 +270,7 @@ class TimeperiodsController extends AppController
         $this->set('calendars', $calendars);
     }
 
-    protected function __allowDelete($timeperiod)
-    {
+    protected function __allowDelete($timeperiod) {
         if (is_numeric($timeperiod)) {
             $timeperiodId = $timeperiod;
         } else {
@@ -286,10 +280,10 @@ class TimeperiodsController extends AppController
         //Check contacts
         $this->loadModel('Contact');
         $contactCount = $this->Contact->find('count', [
-            'recursive' => -1,
+            'recursive'  => -1,
             'conditions' => [
                 'or' => [
-                    'host_timeperiod_id' => $timeperiodId,
+                    'host_timeperiod_id'    => $timeperiodId,
                     'service_timeperiod_id' => $timeperiodId,
                 ],
             ],
@@ -301,10 +295,10 @@ class TimeperiodsController extends AppController
         //Check service templates
         $this->loadModel('Servicetemplate');
         $servicetemplateCount = $this->Servicetemplate->find('count', [
-            'recursive' => -1,
+            'recursive'  => -1,
             'conditions' => [
                 'or' => [
-                    'check_period_id' => $timeperiodId,
+                    'check_period_id'  => $timeperiodId,
                     'notify_period_id' => $timeperiodId,
                 ],
             ],
@@ -316,10 +310,10 @@ class TimeperiodsController extends AppController
         //Check services
         $this->loadModel('Service');
         $serviceCount = $this->Service->find('count', [
-            'recursive' => -1,
+            'recursive'  => -1,
             'conditions' => [
                 'or' => [
-                    'check_period_id' => $timeperiodId,
+                    'check_period_id'  => $timeperiodId,
                     'notify_period_id' => $timeperiodId,
                 ],
             ],
@@ -331,10 +325,10 @@ class TimeperiodsController extends AppController
         //Check host templates
         $this->loadModel('Hosttemplate');
         $hosttemplateCount = $this->Hosttemplate->find('count', [
-            'recursive' => -1,
+            'recursive'  => -1,
             'conditions' => [
                 'or' => [
-                    'check_period_id' => $timeperiodId,
+                    'check_period_id'  => $timeperiodId,
                     'notify_period_id' => $timeperiodId,
                 ],
             ],
@@ -346,10 +340,10 @@ class TimeperiodsController extends AppController
         //Check hosts
         $this->loadModel('Host');
         $hostCount = $this->Host->find('count', [
-            'recursive' => -1,
+            'recursive'  => -1,
             'conditions' => [
                 'or' => [
-                    'check_period_id' => $timeperiodId,
+                    'check_period_id'  => $timeperiodId,
                     'notify_period_id' => $timeperiodId,
                 ],
             ],
@@ -361,7 +355,7 @@ class TimeperiodsController extends AppController
         //Check host escalations
         $this->loadModel('Hostescalation');
         $hostescalationCount = $this->Hostescalation->find('count', [
-            'recursive' => -1,
+            'recursive'  => -1,
             'conditions' => [
                 'timeperiod_id' => $timeperiodId,
             ],
@@ -373,7 +367,7 @@ class TimeperiodsController extends AppController
         //Check service escalations
         $this->loadModel('Serviceescalation');
         $serviceescalationCount = $this->Serviceescalation->find('count', [
-            'recursive' => -1,
+            'recursive'  => -1,
             'conditions' => [
                 'timeperiod_id' => $timeperiodId,
             ],
@@ -386,7 +380,7 @@ class TimeperiodsController extends AppController
         if (in_array('AutoreportModule', CakePlugin::loaded())) {
             $this->loadModel('AutoreportModule.Autoreport');
             $autoreportCount = $this->Autoreport->find('count', [
-                'recursive' => -1,
+                'recursive'  => -1,
                 'conditions' => [
                     'timeperiod_id' => $timeperiodId,
                 ],
@@ -399,8 +393,7 @@ class TimeperiodsController extends AppController
         return true;
     }
 
-    public function delete($id = null)
-    {
+    public function delete($id = null) {
         $userId = $this->Auth->user('id');
         if (!$this->request->is('post')) {
             throw new MethodNotAllowedException();
@@ -445,8 +438,7 @@ class TimeperiodsController extends AppController
         }
     }
 
-    public function mass_delete($id = null)
-    {
+    public function mass_delete($id = null) {
         $userId = $this->Auth->user('id');
         //PUT/POST request (form submit)
         if ($this->request->is('post') || $this->request->is('put')) {
@@ -495,20 +487,17 @@ class TimeperiodsController extends AppController
         $this->set(compact(['timeperiodsToDelete', 'timeperiodsCanotDelete', 'count']));
     }
 
-    function browser($id = null)
-    {
+    function browser($id = null) {
     }
 
-    function controller()
-    {
+    function controller() {
         return 'TimeperiodsController';
     }
 
-    public function copy($id = null)
-    {
+    public function copy($id = null) {
         $userId = $this->Auth->user('id');
         $timeperiods = $this->Timeperiod->find('all', [
-            'contain' => [
+            'contain'    => [
                 'Timerange' => [
                     'fields' => [
                         'Timerange.day',
@@ -520,7 +509,7 @@ class TimeperiodsController extends AppController
             'conditions' => [
                 'Timeperiod.id' => func_get_args(),
             ],
-            'fields' => [
+            'fields'     => [
                 'Timeperiod.name',
                 'Timeperiod.container_id',
                 'Timeperiod.description',
@@ -536,17 +525,17 @@ class TimeperiodsController extends AppController
                 $datasource->begin();
                 foreach ($this->request->data['Timeperiod'] as $sourcePeriodId => $timeperiodData) {
                     $timeRanges = [];
-                    if(!empty($timeperiods[$sourcePeriodId]['Timerange'])){
+                    if (!empty($timeperiods[$sourcePeriodId]['Timerange'])) {
                         $timeRanges = $timeperiods[$sourcePeriodId]['Timerange'];
                     }
                     $newTimeperiodData = [
                         'Timeperiod' => [
-                            'uuid' => UUID::v4(),
-                            'name' => $timeperiodData['name'],
+                            'uuid'         => UUID::v4(),
+                            'name'         => $timeperiodData['name'],
                             'container_id' => $timeperiodData['container_id'],
-                            'description' => $timeperiodData['description'],
+                            'description'  => $timeperiodData['description'],
                         ],
-                        'Timerange' => $timeRanges,
+                        'Timerange'  => $timeRanges,
                     ];
                     $this->Timeperiod->create();
                     if (!$this->Timeperiod->saveAll($newTimeperiodData)) {

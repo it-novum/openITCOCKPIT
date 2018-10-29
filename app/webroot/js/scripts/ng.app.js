@@ -1,4 +1,4 @@
-angular.module('openITCOCKPIT', [])
+angular.module('openITCOCKPIT', ['gridster'])
 
     .factory("httpInterceptor", function($q, $rootScope, $timeout){
         return {
@@ -7,6 +7,13 @@ angular.module('openITCOCKPIT', [])
                 if(url === '/angular/system_health.json' || url === '/angular/menustats.json'){
                     return result || $.then(result);
                 }
+
+                //If we want to hide all loaders one day
+                /*if(result.config.hasOwnProperty('params')){
+                    if(result.config.params.hasOwnProperty('disableGlobalLoader')){
+                        return result || $.then(result);
+                    }
+                }*/
 
                 $rootScope.runningAjaxCalls--;
 
@@ -23,12 +30,27 @@ angular.module('openITCOCKPIT', [])
                     return response || $q.when(response);
                 }
 
+                //If we want to hide all loaders one day
+                /*if(response.hasOwnProperty('params')){
+                    if(response.params.hasOwnProperty('disableGlobalLoader')){
+                        return response || $q.when(response);
+                    }
+                }*/
+
                 //Reference Counting Basics Garbage Collection
                 $rootScope.runningAjaxCalls++;
 
 
+                var onlyShowMenuLoader = false;
+                if(response.hasOwnProperty('params')){
+                    if(response.params.hasOwnProperty('disableGlobalLoader')){
+                        onlyShowMenuLoader = true;
+                    }
+                }
                 $('#global_ajax_loader').show();
-                $('#global-loading').show();
+                if(onlyShowMenuLoader === false){
+                    $('#global-loading').show();
+                }
                 return response || $q.when(response);
             },
             responseError: function(rejection){
@@ -36,6 +58,13 @@ angular.module('openITCOCKPIT', [])
                 if(url === '/angular/system_health.json' || url === '/angular/menustats.json'){
                     return $q.reject(rejection);
                 }
+
+                //If we want to hide all loaders one day
+                /*if(rejection.config.hasOwnProperty('params')){
+                    if(rejection.config.params.hasOwnProperty('disableGlobalLoader')){
+                        return $q.reject(rejection);
+                    }
+                }*/
 
                 $rootScope.runningAjaxCalls--;
                 if($rootScope.runningAjaxCalls === 0){

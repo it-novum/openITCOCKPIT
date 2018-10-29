@@ -33,10 +33,10 @@ $config = [
                 'submit' => ['ack'],
             ],
         ],
-        'roles_rights' => [
+        'roles_rights'   => [
             'Administrator' => ['*'],
-            'Viewer' => [
-                'Cmd' => ['index'],
+            'Viewer'        => [
+                'Cmd'    => ['index'],
                 'Nagios' => ['index'],
             ]
         ]

@@ -3,8 +3,7 @@
 /**
  * Dev Helper Shell
  */
-class UtilsShell extends AppShell
-{
+class UtilsShell extends AppShell {
     public $tasks = [
         'BuildBootstrap',
         'CompressAssets',
@@ -13,8 +12,7 @@ class UtilsShell extends AppShell
         'AppBake',
     ];
 
-    public function main()
-    {
+    public function main() {
         if (isset($this->args[0]) && $this->args[0] == 'deploy') {
             $this->out('Running complete deployment preparation process');
             $this->BuildBootstrap->execute();

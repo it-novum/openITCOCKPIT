@@ -30,7 +30,7 @@ class SystemdowntimesFilter extends Filter {
     /**
      * @return array
      */
-    public function hostFilter(){
+    public function hostFilter() {
         $filters = [
             'like' => [
                 'Host.name',
@@ -45,7 +45,7 @@ class SystemdowntimesFilter extends Filter {
     /**
      * @return array
      */
-    public function serviceFilter(){
+    public function serviceFilter() {
         $filters = [
             'like' => [
                 'Host.name',
@@ -61,7 +61,7 @@ class SystemdowntimesFilter extends Filter {
     /**
      * @return array
      */
-    public function hostgroupFilter(){
+    public function hostgroupFilter() {
         $filters = [
             'like' => [
                 'Container.name',
@@ -73,7 +73,7 @@ class SystemdowntimesFilter extends Filter {
         return $this->getConditionsByFilters($filters);
     }
 
-    public function nodeFilter(){
+    public function nodeFilter() {
         return $this->hostgroupFilter();
     }
 }

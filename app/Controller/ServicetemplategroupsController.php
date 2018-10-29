@@ -26,13 +26,12 @@
 
 /**
  * @property Servicetemplategroup $Servicetemplategroup
- * @property Servicetemplate      $Servicetemplate
- * @property Container            $Container
- * @property Host                 $Host
- * @property Hostgroup            $Hostgroup
+ * @property Servicetemplate $Servicetemplate
+ * @property Container $Container
+ * @property Host $Host
+ * @property Hostgroup $Hostgroup
  */
-class ServicetemplategroupsController extends AppController
-{
+class ServicetemplategroupsController extends AppController {
     public $layout = 'Admin.default';
 
     public $components = [
@@ -55,8 +54,7 @@ class ServicetemplategroupsController extends AppController
         ],
     ];
 
-    public function index()
-    {
+    public function index() {
         $options = [
             'order'      => [
                 'Container.name' => 'asc',
@@ -82,8 +80,7 @@ class ServicetemplategroupsController extends AppController
         $this->set('_serialize', ['all_servicetemplategroups']);
     }
 
-    public function view($id = null)
-    {
+    public function view($id = null) {
         if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();
         }
@@ -102,8 +99,7 @@ class ServicetemplategroupsController extends AppController
         $this->set('_serialize', ['servicetemplategroup']);
     }
 
-    public function add()
-    {
+    public function add() {
         $userId = $this->Auth->user('id');
         if ($this->hasRootPrivileges === true) {
             $containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_SERVICETEMPLATEGROUP, [], $this->hasRootPrivileges);
@@ -118,7 +114,7 @@ class ServicetemplategroupsController extends AppController
             if ($this->request->data('Servicetemplategroup.Servicetemplate')) {
                 foreach ($this->request->data['Servicetemplategroup']['Servicetemplate'] as $servicetemplate_id) {
                     $servicetemplate = $this->Servicetemplate->find('first', [
-                        'recursive'    => -1,
+                        'recursive'  => -1,
                         'fields'     => [
                             'Servicetemplate.id',
                             'Servicetemplate.template_name',
@@ -128,7 +124,7 @@ class ServicetemplategroupsController extends AppController
                         ],
                     ]);
                     $ext_data_for_changelog['Servicetemplate'][] = [
-                        'id'   => $servicetemplate_id,
+                        'id'            => $servicetemplate_id,
                         'template_name' => $servicetemplate['Servicetemplate']['template_name'],
                     ];
                 }
@@ -174,15 +170,14 @@ class ServicetemplategroupsController extends AppController
         $this->set(compact(['containers', 'servicetemplates']));
     }
 
-    public function edit($id = null)
-    {
+    public function edit($id = null) {
         if (!$this->Servicetemplategroup->exists($id)) {
             throw new NotFoundException(__('Invalid servicetemplategroup'));
         }
         $userId = $this->Auth->user('id');
         $servicetemplategroup = $this->Servicetemplategroup->find('first', [
-            'recursive' => -1,
-            'contain' => [
+            'recursive'  => -1,
+            'contain'    => [
                 'Servicetemplate' => [
                     'fields' => [
                         'Servicetemplate.id',
@@ -216,7 +211,7 @@ class ServicetemplategroupsController extends AppController
                         ],
                     ]);
                     $ext_data_for_changelog['Servicetemplate'][] = [
-                        'id'   => $servicetemplate_id,
+                        'id'            => $servicetemplate_id,
                         'template_name' => $servicetemplate['Servicetemplate']['template_name'],
                     ];
                 }
@@ -266,8 +261,7 @@ class ServicetemplategroupsController extends AppController
         $this->set(compact(['containers', 'servicetemplates', 'servicetemplategroup']));
     }
 
-    public function allocateToHost($id = null)
-    {
+    public function allocateToHost($id = null) {
         if (!$this->Servicetemplategroup->exists($id)) {
             throw new NotFoundException(__('Invalid servicetemplategroup'));
         }
@@ -314,7 +308,7 @@ class ServicetemplategroupsController extends AppController
                             OBJECT_SERVICE,
                             $host['Host']['container_id'], // use host container_id for user permissions
                             $userId,
-                            $host['Host']['name'].'/'.$servicetemplate['Servicetemplate']['name'],
+                            $host['Host']['name'] . '/' . $servicetemplate['Servicetemplate']['name'],
                             $service
                         );
                         if ($changelog_data) {
@@ -339,8 +333,7 @@ class ServicetemplategroupsController extends AppController
         $this->set('back_url', $this->referer());
     }
 
-    public function allocateToHostgroup($id = null)
-    {
+    public function allocateToHostgroup($id = null) {
         $this->loadModel('Hostgroup');
         if ($this->request->is('post') || $this->request->is('put')) {
             $userId = $this->Auth->user('id');
@@ -383,7 +376,7 @@ class ServicetemplategroupsController extends AppController
                                     OBJECT_SERVICE,
                                     $host['Host']['container_id'], // use host container_id for user permissions
                                     $userId,
-                                    $host['Host']['name'].'/'.$servicetemplate['Servicetemplate']['name'],
+                                    $host['Host']['name'] . '/' . $servicetemplate['Servicetemplate']['name'],
                                     $service
                                 );
                                 if ($changelog_data) {
@@ -415,8 +408,7 @@ class ServicetemplategroupsController extends AppController
     }
 
 
-    public function allocateToMatchingHostgroup($servicetemplategroup_id)
-    {
+    public function allocateToMatchingHostgroup($servicetemplategroup_id) {
         if (!$this->Servicetemplategroup->exists($servicetemplategroup_id)) {
             throw new NotFoundException(__('Invalid service template group'));
         }
@@ -444,7 +436,7 @@ class ServicetemplategroupsController extends AppController
         $query = [
             'contain'    => [
                 'Container',
-                'Host' => [
+                'Host'         => [
                     'fields' => [
                         'Host.id',
                     ],
@@ -482,14 +474,14 @@ class ServicetemplategroupsController extends AppController
             $this->redirect(['action' => 'index']);
         }
 
-        if(!empty($hostgroup['Host'])){
+        if (!empty($hostgroup['Host'])) {
             $hostIds = Hash::Extract($hostgroup['Host'], '{n}.id');
         }
         $hostTemlateIds = Hash::extract($hostgroup, 'Hosttemplate.{n}.id');
-        if(!empty($hostTemlateIds)){
+        if (!empty($hostTemlateIds)) {
             $hostsByHosttemplateIds = $this->Host->find('all', [
-                'recursive' => -1,
-                'contain' => [
+                'recursive'  => -1,
+                'contain'    => [
                     'Hostgroup',
                     'Hosttemplate' => [
                         'Hostgroup' => [
@@ -501,13 +493,13 @@ class ServicetemplategroupsController extends AppController
                 ],
                 'conditions' => [
                     'Host.hosttemplate_id' => $hostTemlateIds,
-                    'NOT' => [
+                    'NOT'                  => [
                         'Host.id' => $hostIds
                     ]
                 ]
             ]);
-            foreach($hostsByHosttemplateIds as $host){
-                if(empty($host['Hostgroup']) && !empty($host['Hosttemplate']['Hostgroup']) && !in_array($host['Host']['id'], $hostIds, true)){
+            foreach ($hostsByHosttemplateIds as $host) {
+                if (empty($host['Hostgroup']) && !empty($host['Hosttemplate']['Hostgroup']) && !in_array($host['Host']['id'], $hostIds, true)) {
                     $hostIds[] = $host['Host']['id'];
                 }
             }
@@ -573,7 +565,7 @@ class ServicetemplategroupsController extends AppController
                             OBJECT_SERVICE,
                             $host['Host']['container_id'], // use host container_id for user permissions
                             $userId,
-                            $host['Host']['name'].'/'.$servicetemplate['Servicetemplate']['name'],
+                            $host['Host']['name'] . '/' . $servicetemplate['Servicetemplate']['name'],
                             $service
                         );
                         if ($changelog_data) {
@@ -588,8 +580,7 @@ class ServicetemplategroupsController extends AppController
         $this->redirect(['action' => 'index']);
     }
 
-    public function getHostsByHostgroupByAjax($id_hostgroup, $servicetemplategroup_id)
-    {
+    public function getHostsByHostgroupByAjax($id_hostgroup, $servicetemplategroup_id) {
         $this->loadModel('Hostgroup');
         $this->loadModel('Host');
         $excludeHostIds = [];
@@ -605,13 +596,13 @@ class ServicetemplategroupsController extends AppController
         $servicetemplategroup['Servicetemplate'] = Hash::sort($servicetemplategroup['Servicetemplate'], '{n}.name', 'asc');
 
         $hostgroup = $this->Hostgroup->find('first', [
-            'recursive' => -1,
-            'contain' => [
+            'recursive'  => -1,
+            'contain'    => [
                 'Container',
                 'Host'
             ],
             'conditions' => [
-                'Hostgroup.id' => $id_hostgroup,
+                'Hostgroup.id'        => $id_hostgroup,
                 'Container.parent_id' => $this->MY_RIGHTS
             ]
         ]);
@@ -620,9 +611,9 @@ class ServicetemplategroupsController extends AppController
         $hosts = [];
         foreach ($hostgroup['Host'] as $host) {
             //Find host + Services
-            $hosts[] = $this->Host->find('first',[
-                'recursive' => -1,
-                'contain' => [
+            $hosts[] = $this->Host->find('first', [
+                'recursive'  => -1,
+                'contain'    => [
                     'Service' => [
                         'Servicetemplate'
                     ]
@@ -634,11 +625,11 @@ class ServicetemplategroupsController extends AppController
             $excludeHostIds[] = $host['id'];
         }
         $hostTemlateIds = Hash::extract($hostgroup, 'Hosttemplate.{n}.id');
-        if(!empty($hostTemlateIds)){
+        if (!empty($hostTemlateIds)) {
             $hostsByHosttemplateIds = $this->Host->find('all', [
-                'recursive' => -1,
-                'contain' => [
-                    'Service' => [
+                'recursive'  => -1,
+                'contain'    => [
+                    'Service'      => [
                         'Servicetemplate'
                     ],
                     'Hostgroup',
@@ -652,13 +643,13 @@ class ServicetemplategroupsController extends AppController
                 ],
                 'conditions' => [
                     'Host.hosttemplate_id' => $hostTemlateIds,
-                    'NOT' => [
+                    'NOT'                  => [
                         'Host.id' => $excludeHostIds
                     ]
                 ]
             ]);
-            foreach($hostsByHosttemplateIds as $host){
-                if(empty($host['Hostgroup']) && !empty($host['Hosttemplate']['Hostgroup'])){
+            foreach ($hostsByHosttemplateIds as $host) {
+                if (empty($host['Hostgroup']) && !empty($host['Hosttemplate']['Hostgroup'])) {
                     $hosts[] = $host;
                 }
             }
@@ -667,8 +658,7 @@ class ServicetemplategroupsController extends AppController
         $this->set('_serialize', ['servicetemplategroup', 'hosts']);
     }
 
-    public function delete($id = null)
-    {
+    public function delete($id = null) {
         $userId = $this->Auth->user('id');
         if (!$this->Servicetemplategroup->exists($id)) {
             throw new NotFoundException(__('Invalid servicetemplategroup'));
@@ -707,8 +697,7 @@ class ServicetemplategroupsController extends AppController
         $this->redirect(['action' => 'index']);
     }
 
-    public function loadServicetemplatesByContainerId($containerId = null)
-    {
+    public function loadServicetemplatesByContainerId($containerId = null) {
         $this->allowOnlyAjaxRequests();
         if (!$this->Container->exists($containerId)) {
             throw new NotFoundException(__('Invalid hosttemplate'));

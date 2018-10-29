@@ -23,10 +23,30 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class Documentation extends AppModel
-{
-    public function existsForUuid($uuid = null)
-    {
-        return !empty($this->findByUuid($uuid));
+class Documentation extends AppModel {
+    public $validate = [
+        'uuid' => [
+            'notBlank' => [
+                'rule'     => 'notBlank',
+                'message'  => 'This field cannot be left blank.',
+                'required' => true,
+            ],
+            'isUnique' => [
+                'rule'    => 'isUnique',
+                // The migration scripts needs to be adapted if this message is changed.
+                // Otherwise the migration script won't work properly anymore!
+                'message' => 'This uuid already exists.',
+            ],
+        ],
+    ];
+
+    public function existsForUuid($uuid = null) {
+        $result = $this->find('first', [
+            'recursive'  => -1,
+            'conditions' => [
+                'Documentation.uuid' => $uuid
+            ]
+        ]);
+        return !empty($result);
     }
 }

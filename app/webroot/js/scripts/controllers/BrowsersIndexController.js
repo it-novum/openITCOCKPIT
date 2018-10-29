@@ -24,7 +24,7 @@ angular.module('openITCOCKPIT')
                 Host: {
                     name: QueryStringService.getValue('filter[Host.name]', ''),
                     keywords: '',
-                    address:  QueryStringService.getValue('filter[Host.address]', ''),
+                    address: QueryStringService.getValue('filter[Host.address]', ''),
                     satellite_id: []
                 }
             };
@@ -39,7 +39,7 @@ angular.module('openITCOCKPIT')
         $scope.showFilter = false;
 
         $scope.load = function(){
-            $http.get("/browsers/index/"+$scope.containerId+".json", {
+            $http.get("/browsers/index/" + $scope.containerId + ".json", {
                 params: {
                     angular: true
                 }

@@ -238,7 +238,8 @@
                                         <?php echo __('Created'); ?>
                                     </th>
                                     <th class="no-sort" ng-click="orderBy('DowntimeService.scheduled_start_time')">
-                                        <i class="fa" ng-class="getSortClass('DowntimeService.scheduled_start_time')"></i>
+                                        <i class="fa"
+                                           ng-class="getSortClass('DowntimeService.scheduled_start_time')"></i>
                                         <?php echo __('Start'); ?>
                                     </th>
                                     <th class="no-sort" ng-click="orderBy('DowntimeService.scheduled_end_time')">

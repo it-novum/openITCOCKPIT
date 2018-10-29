@@ -23,8 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class User extends AppModel
-{
+class User extends AppModel {
 
     //public $actsAs = [
     //	'Acl' => [
@@ -38,7 +37,7 @@ class User extends AppModel
             'foreignKey' => 'user_id',
             'dependent'  => true,
         ],
-        'Apikey' => [
+        'Apikey'                  => [
             'className'  => 'Apikey',
             'foreignKey' => 'user_id',
             'dependent'  => true,
@@ -49,8 +48,8 @@ class User extends AppModel
 
     public $hasOne = [
         'Contact' => [
-            'className'  => 'Contact',
-            'dependent'  => false
+            'className' => 'Contact',
+            'dependent' => false
         ]
     ];
 
@@ -65,12 +64,11 @@ class User extends AppModel
     public $displayField = 'full_name';
 
     /**
-     * @param mixed      $id
-     * @param string     $table
+     * @param mixed $id
+     * @param string $table
      * @param DataSource $ds
      */
-    public function __construct($id = false, $table = null, $ds = null)
-    {
+    public function __construct($id = false, $table = null, $ds = null) {
         parent::__construct($id, $table, $ds);
         $this->virtualFields['full_name'] = sprintf('CONCAT(%s.firstname, " ", %s.lastname)', $this->alias, $this->alias);
     }
@@ -137,8 +135,7 @@ class User extends AppModel
     ];
 
 
-    public function bindNode($user)
-    {
+    public function bindNode($user) {
         return [
             'model'       => 'Usergroup',
             'foreign_key' => $user['User']['usergroup_id'],
@@ -172,8 +169,7 @@ class User extends AppModel
      *
      * @return bool
      */
-    public function checkCurrentPassword($data)
-    {
+    public function checkCurrentPassword($data) {
         $this->id = AuthComponent::user('id');
         $password = $this->field('password');
         if (empty($data['current_password'])) {
@@ -186,13 +182,12 @@ class User extends AppModel
     /**
      * Used for changing the password of a user. Will validate the input fields.
      *
-     * @param int   $userId
+     * @param int $userId
      * @param array $data
      *
      * @return bool
      */
-    public function changePassword($userId, array $data)
-    {
+    public function changePassword($userId, array $data) {
         if (!$this->checkCurrentPassword($data['User'])) {
             $this->invalidate('current_password', 'The current password is not correct.');
         }
@@ -216,8 +211,7 @@ class User extends AppModel
      * Returns a map of the available admin user statuses
      * @return void
      */
-    public static function getStates()
-    {
+    public static function getStates() {
         return Status::getMap(Status::ACTIVE, Status::SUSPENDED, Status::DELETED);
     }
 
@@ -225,8 +219,7 @@ class User extends AppModel
      * Returns a map of the available admin user statuses
      * @return void
      */
-    public static function getRoles()
-    {
+    public static function getRoles() {
         return Types::getMap(
             Types::ROLE_ADMIN,
             Types::ROLE_EMPLOYEE
@@ -237,8 +230,7 @@ class User extends AppModel
      * called before validating
      * @return bool
      */
-    public function beforeValidate($options = [])
-    {
+    public function beforeValidate($options = []) {
         if (!empty($this->id) && empty($this->data['User']['new_password'])) {
             unset($this->data['User']['new_password'], $this->data['User']['confirm_new_password']);
         }
@@ -250,8 +242,7 @@ class User extends AppModel
      * called before saving
      * @return true
      */
-    public function beforeSave($options = [])
-    {
+    public function beforeSave($options = []) {
         if (!empty($this->data['User']['new_password'])) {
             $this->data['User']['password'] = AuthComponent::password($this->data['User']['new_password']);
         }
@@ -266,8 +257,7 @@ class User extends AppModel
      *
      * @return bool
      */
-    public function softDeleted($id = null)
-    {
+    public function softDeleted($id = null) {
         if (empty($id)) {
             return false;
         }
@@ -284,8 +274,7 @@ class User extends AppModel
         }
     }
 
-    public function usersByContainerId($container_ids, $type = 'all')
-    {
+    public function usersByContainerId($container_ids, $type = 'all') {
         if (!is_array($container_ids)) {
             $container_ids = [$container_ids];
         }
@@ -358,7 +347,7 @@ class User extends AppModel
 
                 $return = [];
                 foreach ($results as $result) {
-                    $return[$result['User']['id']] = $result['User']['lastname'].', '.$result['User']['firstname'];
+                    $return[$result['User']['id']] = $result['User']['lastname'] . ', ' . $result['User']['firstname'];
                 }
 
                 return $return;
@@ -367,8 +356,7 @@ class User extends AppModel
     }
 
     //A user can have >= 1 tenants, due to multiple containers
-    public function getTenantIds($id = null, $index = 'id')
-    {
+    public function getTenantIds($id = null, $index = 'id') {
         if ($id === null) {
             $id = $this->id;
         }
@@ -386,8 +374,7 @@ class User extends AppModel
         return $tenants;
     }
 
-    public function __delete($user, $userId)
-    {
+    public function __delete($user, $userId) {
         if (is_numeric($user)) {
             $userId = $user;
             $user = $this->findById($userId);

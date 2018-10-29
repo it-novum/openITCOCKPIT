@@ -23,7 +23,6 @@
 //  confirmation.
 
 
-
 class CrateCommand extends CrateModuleAppModel {
 
     public $useDbConfig = 'Crate';

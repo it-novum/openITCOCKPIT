@@ -77,7 +77,7 @@ endif;
                             <?php foreach ($timeperiodsToDelete as $key => $timeperiodToDelete): ?>
                                 <li class="list-group-item list-group-item-danger">
                                     <?php echo h($timeperiodToDelete['Timeperiod']['name']); ?>
-                                    <?php echo $this->Form->input('Timeperiod.delete.'.$key, ['value' => $timeperiodToDelete['Timeperiod']['id'], 'type' => 'hidden']); ?>
+                                    <?php echo $this->Form->input('Timeperiod.delete.' . $key, ['value' => $timeperiodToDelete['Timeperiod']['id'], 'type' => 'hidden']); ?>
                                 </li>
                             <?php endforeach; ?>
                         </ul>

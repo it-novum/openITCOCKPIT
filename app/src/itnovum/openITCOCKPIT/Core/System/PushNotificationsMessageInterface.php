@@ -31,7 +31,6 @@ use itnovum\openITCOCKPIT\Core\PushNotificationClientRepository;
 use Ratchet\ConnectionInterface;
 use Ratchet\MessageComponentInterface;
 use Shell;
-use Systemsetting;
 use UUID;
 
 App::uses('UUID', 'Lib');

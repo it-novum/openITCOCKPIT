@@ -8,8 +8,7 @@ require_once 'httpful/bootstrap.php';
 
 //use Httpful\Request;
 login();
-function createCommand()
-{
+function createCommand() {
     $url = "https://172.16.2.44/commands.json";
     $data = [
         'Command' => [
@@ -30,8 +29,7 @@ function createCommand()
     print_r($response);
 }
 
-function login()
-{
+function login() {
     $url = "https://172.16.2.44/login/login.json";
     $data = [
         'LoginUser' => [

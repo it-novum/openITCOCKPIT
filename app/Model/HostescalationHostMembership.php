@@ -23,8 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class HostescalationHostMembership extends AppModel
-{
+class HostescalationHostMembership extends AppModel {
     public $useTable = 'hosts_to_hostescalations';
     public $belongsTo = [
         'Hostescalation' => [

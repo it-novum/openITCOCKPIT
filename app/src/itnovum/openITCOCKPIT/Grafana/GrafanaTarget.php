@@ -88,7 +88,7 @@ class GrafanaTarget {
     /**
      * @return string
      */
-    public function getUnit(){
+    public function getUnit() {
         return $this->unit->getUnit();
     }
 

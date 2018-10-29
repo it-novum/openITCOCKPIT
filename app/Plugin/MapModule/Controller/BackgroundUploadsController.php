@@ -23,335 +23,437 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Finder\Finder;
+
 App::uses('Folder', 'Utility');
 App::uses('File', 'Utility');
 App::uses('UUID', 'Lib');
 
-class BackgroundUploadsController extends MapModuleAppController
-{
+/**
+ * Class BackgroundUploadsController
+ * @property MapUpload $MapUpload
+ * @property Mapicon $Mapicon
+ */
+class BackgroundUploadsController extends MapModuleAppController {
 
     public $layout = 'Admin.default';
     public $uses = [
         'MapModule.MapUpload',
+        'MapModule.Mapicon',
     ];
-    //prevent asking for a view
-    public $autoRender = false;
 
-    //public $backgroundFolder = new Folder(APP .'Plugin'. DS .'MapModule'. DS .'Upload');
 
-    public function upload()
-    {
+    public function upload() {
         if (empty($_FILES)) {
-            throw new ForbiddenException(__('There is no file to store'));
+            $response = [
+                'success' => false,
+                'message' => __('There is no file to store')
+            ];
+            $this->set('response', $response);
+            $this->set('_serialize', ['response']);
+            return;
         }
 
-        //define background image directory
-        $backgroundImgDirectory = APP.'Plugin'.DS.'MapModule'.DS.'webroot'.DS.'img'.DS.'backgrounds';
-        $backgroundFolder = new Folder($backgroundImgDirectory);
-        $fileExtension = pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION);
-        $uploadFilename = str_replace('.'.$fileExtension, '', pathinfo($_FILES['file']['name'], PATHINFO_BASENAME));
-        $saveFilename = UUID::v4();
-        $fullFilePath = $backgroundFolder->path.DS.$saveFilename.'.'.$fileExtension;
-        try{
+        $response = $this->MapUpload->getUploadResponse($_FILES['file']['error']);
+        if ($_FILES['file']['error'] === UPLOAD_ERR_OK) {
+            $backgroundImgDirectory = APP . 'Plugin' . DS . 'MapModule' . DS . 'webroot' . DS . 'img' . DS . 'backgrounds';
+
             //check if upload folder exist
             if (!is_dir($backgroundImgDirectory)) {
                 mkdir($backgroundImgDirectory);
             }
-            
-            if (!move_uploaded_file($_FILES['file']['tmp_name'], $fullFilePath)) {
-                throw new Exception(__('Cannot move uploaded file'));
+
+            $backgroundFolder = new Folder($backgroundImgDirectory);
+            $fileExtension = pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION);
+
+            if (!$this->MapUpload->isFileExtensionSupported($fileExtension)) {
+                $response = [
+                    'success' => false,
+                    'message' => __('File extension ".%s" not supported!', $fileExtension)
+                ];
+                $this->set('response', $response);
+                $this->set('_serialize', ['response']);
+                return;
             }
 
-            $obj = [
-                'fullPath'       => $fullFilePath,
-                'uuidFilename'   => $saveFilename,
-                'fileExtension'  => $fileExtension,
-                'folderInstance' => $backgroundFolder,
-            ];
-            $this->createThumbnailsFromBackgrounds($obj);
-            $this->MapUpload->save([
-                'upload_type'  => MapUpload::TYPE_BACKGROUND,
-                'upload_name'  => $uploadFilename.'.'.$fileExtension,
-                'saved_name'   => $saveFilename.'.'.$fileExtension,
-                'user_id'      => $this->Auth->user('id'),
-                'container_id' => '1',
-            ]);
-            echo 'Upload successful';
-        } catch (Exception $e) {
-            throw new ForbiddenException($uploadFilename.'.'.$fileExtension.': '.$e->getMessage());
-        }
-    }
-
-    public function uploadIconsSet()
-    {
-        if (empty($_FILES)) {
-            throw new ForbiddenException(__('There is no file to store'));
-        }
-
-        $itemsImgDirectory = APP.'Plugin'.DS.'MapModule'.DS.'webroot'.DS.'img'.DS.'items';
-        $tempZipsDirectory = APP.'Plugin'.DS.'MapModule'.DS.'webroot'.DS.'img'.DS.'temp';
-
-        //check if upload folder exist
-        if (!is_dir($itemsImgDirectory)) {
-            mkdir($itemsImgDirectory);
-            chmod($itemsImgDirectory, 0777);
-        }
-        if (!is_dir($tempZipsDirectory)) {
-            mkdir($tempZipsDirectory);
-            chmod($tempZipsDirectory, 0777);
-        }
-
-        $fileExtension = pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION);
-        $uploadFilename = str_replace('.'.$fileExtension, '', pathinfo($_FILES['file']['name'], PATHINFO_BASENAME));
-        $saveFilename = preg_replace("/[^a-zA-Z0-9]+/", "", $uploadFilename);
-
-        $zipTempFolder = new Folder($tempZipsDirectory);
-        $fullZipTempPath = $zipTempFolder->path.DS.$saveFilename.'.zip';
-        $fullFolderTempPath = $zipTempFolder->path.DS.$saveFilename;
-
-        try {
-            if ($fileExtension !== 'zip') {
-                throw new Exception(__('Only zip files are accepted'));
-            }
-
-            if ($_FILES['file']['error'] === 1) {
-                throw new Exception('The uploaded file exceeds the upload_max_filesize directive in php.ini');
-            }
-
-            if (is_dir($itemsImgDirectory.DS.$saveFilename)) {
-                throw new Exception(__('Icons set already exists'), 13);
-            }
-
-            mkdir($fullFolderTempPath);
-            chmod($fullFolderTempPath, 0777);
-
-            if (!move_uploaded_file($_FILES['file']['tmp_name'], $fullZipTempPath)) {
-                throw new Exception(__('Cannot upload zip'));
-            }
-
-            $myZip = new ZipArchive;
-            $openZip = $myZip->open($fullZipTempPath);
-            if (!$openZip) {
-                throw new Exception(__('Cannot unzip file'));
-            }
-            $myZip->extractTo($fullFolderTempPath);
-            $myZip->close();
-
-            $iconsNames = $this->MapUpload->getIconsNames();
-            $iconsDir = $this->getIconsSubDirectory($fullFolderTempPath, $iconsNames);
-
-            if (is_null($iconsDir)) {
-                throw new Exception(__('Please check the zip file. It must contain all icons: '.implode(', ', $iconsNames)));
-            }
-
-            mkdir($itemsImgDirectory.DS.$saveFilename);
-            foreach (scandir($iconsDir) as $object) {
-                if ($object != "." && $object != ".." && in_array($object, $iconsNames))
-                    copy($iconsDir.DS.$object, $itemsImgDirectory.DS.$saveFilename.DS.$object);
-            }
-
-            $this->MapUpload->save([
-                'upload_type'  => MapUpload::TYPE_ICON_SET,
-                'upload_name'  => $uploadFilename,
-                'saved_name'   => $saveFilename,
-                'user_id'      => $this->Auth->user('id'),
-                'container_id' => '1',
-            ]);
-            echo 'Upload successful';
-        } catch (Exception $e) {
-            if (is_dir($itemsImgDirectory.DS.$saveFilename) && $e->getCode() !== 13) {
-                $this->removeDirectory($itemsImgDirectory.DS.$saveFilename);
-            }
-            throw new ForbiddenException($uploadFilename.'.'.$fileExtension.': '.$e->getMessage());
-
-        } finally {
-            if (is_file($fullZipTempPath)) {
-                unlink($fullZipTempPath);
-            }
-            if (is_dir($fullFolderTempPath)) {
-                $this->removeDirectory($fullFolderTempPath);
-            }
-        }
-
-
-    }
-
-    private function getIconsSubDirectory($startDir, $iconsNames)
-    {
-        $iconDir = null;
-        foreach (scandir($startDir) as $object) {
-            if ($object != "." && $object != "..") {
-                if (is_dir($startDir.DS.$object)) {
-                    $iconDir = $this->getIconsSubDirectory($startDir.DS.$object, $iconsNames);
-                    if (!is_null($iconDir))
-                        return $iconDir;
-                } elseif (($keyO = array_search($object, $iconsNames)) !== false) {
-                    unset($iconsNames[$keyO]);
+            $uploadFilename = str_replace('.' . $fileExtension, '', pathinfo($_FILES['file']['name'], PATHINFO_BASENAME));
+            $saveFilename = UUID::v4();
+            $fullFilePath = $backgroundFolder->path . DS . $saveFilename . '.' . $fileExtension;
+            try {
+                if (!move_uploaded_file($_FILES['file']['tmp_name'], $fullFilePath)) {
+                    throw new Exception(__('Cannot move uploaded file'));
                 }
+
+                $imageConfig = [
+                    'fullPath'      => $fullFilePath,
+                    'uuidFilename'  => $saveFilename,
+                    'fileExtension' => $fileExtension
+                ];
+                $this->MapUpload->createThumbnailsFromBackgrounds($imageConfig, $backgroundFolder);
+                $this->MapUpload->save([
+                    'upload_type'  => MapUpload::TYPE_BACKGROUND,
+                    'upload_name'  => $uploadFilename . '.' . $fileExtension,
+                    'saved_name'   => $saveFilename . '.' . $fileExtension,
+                    'user_id'      => $this->Auth->user('id'),
+                    'container_id' => '1',
+                ]);
+
+                $response = [
+                    'success'  => true,
+                    'message'  => __('File uploaded successfully'),
+                    'filename' => $saveFilename . '.' . $fileExtension
+                ];
+            } catch (Exception $e) {
+                $response = [
+                    'success' => false,
+                    'message' => __('Upload failed: %s', $e->getMessage())
+                ];
             }
         }
 
-        if (empty($iconsNames)) { // array contains the rest of icons we didn't find
-            return $startDir;
-        }
 
-        return $iconDir;
+        $this->response->statusCode(200);
+        if (!$response['success']) {
+            $this->response->statusCode(500);
+        }
+        $this->set('response', $response);
+        $this->set('_serialize', ['response']);
     }
 
-    private function removeDirectory($dir)
-    {
-        foreach (scandir($dir) as $object) {
-            if ($object != "." && $object != "..") {
-                if (is_dir($dir."/".$object))
-                    $this->removeDirectory($dir."/".$object);
-                else
-                    unlink($dir."/".$object);
-            }
-        }
-        rmdir($dir);
-    }
-
-    public function createThumbnailsFromBackgrounds($obj, $isShell = false)
-    {
-        $file = $obj['fullPath'];
-        $folderInstance = $obj['folderInstance'];
-
-        //check if thumb folder exist
-        if (!is_dir($folderInstance->path.DS.'thumb')) {
-            mkdir($folderInstance->path.DS.'thumb');
+    public function delete() {
+        if (!$this->request->is('post')) {
+            throw new MethodNotAllowedException();
         }
 
-        $imgsize = getimagesize($file);
-        $width = $imgsize[0];
-        $height = $imgsize[1];
-        $imgtype = $imgsize[2];
-        $aspectRatio = $width / $height;
+        $filename = $this->request->data('filename');
 
-        $thumbnailWidth = 150;
-        $thumbnailHeight = 150;
-
-
-        switch ($imgtype) {
-            // 1 = GIF, 2 = JPG, 3 = PNG, 4 = SWF, 5 = PSD, 6 = BMP, 7 = TIFF(intel byte order), 8 = TIFF(motorola byte order), 9 = JPC, 10 = JP2, 11 = JPX, 12 = JB2, 13 = SWC, 14 = IFF, 15 = WBMP, 16 = XBM
-            case 1:
-                $srcImg = imagecreatefromgif($file);
-                break;
-            case 2:
-                $srcImg = imagecreatefromjpeg($file);
-                break;
-            case 3:
-                $srcImg = imagecreatefrompng($file);
-                break;
-            default:
-                echo __('Filetype not supported!');
-                break;
-        }
-
-        //calculate the new height or width and keep the aspect ration
-        if ($aspectRatio == 1) {
-            //source image X = Y
-            $newWidth = $thumbnailWidth;
-            $newHeight = $thumbnailHeight;
-        } elseif ($aspectRatio > 1) {
-            //source image X > Y
-            $newWidth = $thumbnailWidth;
-            $newHeight = ($thumbnailHeight / $aspectRatio);
-        } else {
-            //source image X < Y
-            $newWidth = ($thumbnailWidth * $aspectRatio);
-            $newHeight = $thumbnailHeight;
-        }
-
-        $destImg = imagecreatetruecolor($newWidth, $newHeight);
-        $transparent = imagecolorallocatealpha($destImg, 0, 0, 0, 127);
-        imagefill($destImg, 0, 0, $transparent);
-        imageCopyResized($destImg, $srcImg, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
-        imagealphablending($destImg, false);
-        imagesavealpha($destImg, true);
-
-        if (!$isShell) {
-            header('Content-Type: image/'.$obj['fileExtension']);
-        }
-        switch ($imgtype) {
-            // 1 = GIF, 2 = JPG, 3 = PNG, 4 = SWF, 5 = PSD, 6 = BMP, 7 = TIFF(intel byte order), 8 = TIFF(motorola byte order), 9 = JPC, 10 = JP2, 11 = JPX, 12 = JB2, 13 = SWC, 14 = IFF, 15 = WBMP, 16 = XBM
-            case 1:
-                imagegif($destImg, $folderInstance->path.DS.'thumb'.DS.'thumb_'.$obj['uuidFilename'].'.'.$obj['fileExtension']);
-                break;
-            case 2:
-                imagejpeg($destImg, $folderInstance->path.DS.'thumb'.DS.'thumb_'.$obj['uuidFilename'].'.'.$obj['fileExtension']);
-                break;
-            case 3:
-                imagepng($destImg, $folderInstance->path.DS.'thumb'.DS.'thumb_'.$obj['uuidFilename'].'.'.$obj['fileExtension']);
-                break;
-            default:
-                echo __('Filetype not supported!');
-                break;
-        }
-        imagedestroy($destImg);
-    }
-
-    /**
-     * delete Background image
-     * base64 encoded due to a encoding issue
-     *
-     * @param $filename the uuid filename with file extension
-     */
-    public function delete($backgroundId)
-    {
-        //delete a background including its thumbnail
-        try {
-            $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
-            $mapUpload = $this->MapUpload->find('first', [
-                'conditions' => [
-                    'MapUpload.id'           => $backgroundId,
-                    'MapUpload.container_id' => $containerIds,
-                ],
-            ]);
-            if (empty($mapUpload)) {
-                throw new Exception('Background cannot be found');
-            }
-            $backgroundName = $mapUpload['MapUpload']['saved_name'];
-            if (!$this->MapUpload->delete($backgroundId)) {
-                throw new Exception('Backgound cannot be found');
-            }
-            //define background image directory
-            $backgroundImgDirectory = APP.'Plugin'.DS.'MapModule'.DS.'webroot'.DS.'img'.DS.'backgrounds';
-
-            if (file_exists($backgroundImgDirectory.DS.$backgroundName)) {
-                unlink($backgroundImgDirectory.DS.$backgroundName);
-            }
-
-            if (file_exists($backgroundImgDirectory.DS.'thumb'.DS.'thumb_'.$backgroundName)) {
-                unlink($backgroundImgDirectory.DS.'thumb'.DS.'thumb_'.$backgroundName);
-            }
-
-            echo 'Background successfully deleted!';
-        } catch (Exception $e) {
-            echo $e->getMessage();
-        }
-    }
-
-    public function deleteIconsSet($setId)
-    {
-        $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
-        $mapUpload = $this->MapUpload->find('first', [
+        $background = $this->MapUpload->find('first', [
+            'recursive'  => -1,
             'conditions' => [
-                'MapUpload.id'           => $setId,
-                'MapUpload.container_id' => $containerIds,
+                'MapUpload.saved_name'   => $filename,
+                'MapUpload.container_id' => $this->MY_RIGHTS,
             ],
         ]);
-        if (empty($mapUpload)) {
-            return false;
+        if (empty($background)) {
+            throw new NotFoundException();
         }
-        $iconSetName = $mapUpload['MapUpload']['saved_name'];
-        if (!$this->MapUpload->delete($setId)) {
-            return false;
-        }
-        $itemsImgDirectory = APP.'Plugin'.DS.'MapModule'.DS.'webroot'.DS.'img'.DS.'items'.DS.$iconSetName;
 
-        if (is_dir($itemsImgDirectory)) {
-            $this->removeDirectory($itemsImgDirectory);
+        if ($this->MapUpload->delete($background['MapUpload']['id'])) {
+            $backgroundImgDirectory = APP . 'Plugin' . DS . 'MapModule' . DS . 'webroot' . DS . 'img' . DS . 'backgrounds';
+
+            if (file_exists($backgroundImgDirectory . DS . $filename)) {
+                unlink($backgroundImgDirectory . DS . $filename);
+            }
+
+            if (file_exists($backgroundImgDirectory . DS . 'thumb' . DS . 'thumb_' . $filename)) {
+                unlink($backgroundImgDirectory . DS . 'thumb' . DS . 'thumb_' . $filename);
+            }
+
+            $response = [
+                'success' => true,
+                'message' => __('Background deleted successfully.')
+            ];
+            $this->set('response', $response);
+            $this->set('_serialize', ['response']);
+            return;
         }
+
+        $this->response->statusCode(500);
+        $response = [
+            'success' => false,
+            'message' => __('Error while deleting background.')
+        ];
+        $this->set('response', $response);
+        $this->set('_serialize', ['response']);
     }
 
+    public function icon() {
+        if (empty($_FILES)) {
+            $response = [
+                'success' => false,
+                'message' => __('There is no file to store')
+            ];
+            $this->set('response', $response);
+            $this->set('_serialize', ['response']);
+            return;
+        }
+
+        $response = $this->MapUpload->getUploadResponse($_FILES['file']['error']);
+        if ($_FILES['file']['error'] === UPLOAD_ERR_OK) {
+            $iconImgDirectory = APP . 'Plugin' . DS . 'MapModule' . DS . 'webroot' . DS . 'img' . DS . 'icons';
+
+            //$iconFolder = new Folder($iconImgDirectory);
+            $fileExtension = pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION);
+
+            if (!$this->MapUpload->isFileExtensionSupported($fileExtension)) {
+                $response = [
+                    'success' => false,
+                    'message' => __('File extension ".%s" not supported!', $fileExtension)
+                ];
+                $this->set('response', $response);
+                $this->set('_serialize', ['response']);
+                return;
+            }
+
+            $fileName = preg_replace('/[^a-zA-Z0-9\.]+/', '', $_FILES['file']['name']);
+
+            try {
+                //check if icon folder exist
+                if (!is_dir($iconImgDirectory)) {
+                    mkdir($iconImgDirectory);
+                }
+
+                if (!move_uploaded_file($_FILES['file']['tmp_name'], $iconImgDirectory . DS . $fileName)) {
+                    throw new Exception(__('Cannot move uploaded file'));
+                }
+
+                $response = [
+                    'success'  => true,
+                    'message'  => __('File uploaded successfully'),
+                    'filename' => $fileName
+                ];
+            } catch (Exception $e) {
+                $response = [
+                    'success' => false,
+                    'message' => __('Upload failed: %s', $e->getMessage())
+                ];
+            }
+        }
+
+        $this->response->statusCode(200);
+        if (!$response['success']) {
+            $this->response->statusCode(500);
+        }
+        $this->set('response', $response);
+        $this->set('_serialize', ['response']);
+    }
+
+    public function deleteIcon() {
+        $iconImgDirectory = APP . 'Plugin' . DS . 'MapModule' . DS . 'webroot' . DS . 'img' . DS . 'icons';
+        if (!$this->request->is('post')) {
+            throw new MethodNotAllowedException();
+        }
+
+        $filename = $this->request->data('filename');
+        $fullFilePath = $iconImgDirectory . DS . $filename;
+
+        if (!file_exists($fullFilePath) || is_dir($fullFilePath)) {
+            throw new NotFoundException();
+        }
+
+        unlink($fullFilePath);
+        if ($this->Mapicon->deleteAll(['Mapicon.icon' => $filename])) {
+            $response = [
+                'success' => true,
+                'message' => __('Icon deleted successfully.')
+            ];
+            $this->set('response', $response);
+            $this->set('_serialize', ['response']);
+            return;
+        }
+
+        $this->response->statusCode(500);
+        $response = [
+            'success' => false,
+            'message' => __('Error while deleting icon.')
+        ];
+        $this->set('response', $response);
+        $this->set('_serialize', ['response']);
+    }
+
+    public function iconset() {
+        if (empty($_FILES)) {
+            $response = [
+                'success' => false,
+                'message' => __('There is no file to store')
+            ];
+            $this->set('response', $response);
+            $this->set('_serialize', ['response']);
+            return;
+        }
+
+        $response = $this->MapUpload->getUploadResponse($_FILES['file']['error']);
+        if ($_FILES['file']['error'] === UPLOAD_ERR_OK) {
+            $iconsetImgDirectory = APP . 'Plugin' . DS . 'MapModule' . DS . 'webroot' . DS . 'img' . DS . 'items';
+            $tempZipsDirectory = APP . 'Plugin' . DS . 'MapModule' . DS . 'webroot' . DS . 'img' . DS . 'temp';
+
+            if (!is_dir($tempZipsDirectory)) {
+                mkdir($tempZipsDirectory);
+            }
+
+            //$iconFolder = new Folder($iconImgDirectory);
+            $fileExtension = pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION);
+
+            if ($fileExtension !== 'zip') {
+                $response = [
+                    'success' => false,
+                    'message' => __('Iconsets needs to be packed as an .zip file.', $fileExtension)
+                ];
+                $this->set('response', $response);
+                $this->set('_serialize', ['response']);
+                return;
+            }
+
+            $fileName = preg_replace('/[^a-zA-Z0-9\.\_]+/', '', $_FILES['file']['name']);
+
+            try {
+                //check if iconset folder exist
+                if (!is_dir($iconsetImgDirectory)) {
+                    mkdir($iconsetImgDirectory);
+                }
+
+                if (!move_uploaded_file($_FILES['file']['tmp_name'], $tempZipsDirectory . DS . $fileName)) {
+                    throw new Exception(__('Cannot move uploaded file'));
+                }
+
+                $zipFile = new ZipArchive();
+                $openZip = $zipFile->open($tempZipsDirectory . DS . $fileName);
+                if (!$openZip) {
+                    throw new Exception(__('Could not open uploaded zip file.'));
+                }
+
+                $unzipDirectory = $tempZipsDirectory . DS . 'uploaded_' . str_replace('.zip', '', $fileName);
+
+                if (!is_dir($unzipDirectory)) {
+                    mkdir($unzipDirectory);
+                }
+                $zipFile->extractTo($unzipDirectory);
+                $zipFile->close();
+
+                //Remove upoaded zip file
+                unlink($tempZipsDirectory . DS . $fileName);
+
+                $finder = new Finder();
+                $finder->directories()->in($unzipDirectory);
+
+                $hasDirectory = false;
+                $iconsetName = null;
+                $iconsetIcons = [];
+                $uploadedIconsetDirectoryName = null;
+
+                /** @var \Symfony\Component\Finder\SplFileInfo $folder */
+                foreach ($finder as $folder) {
+                    //In the folder was a zip with the icons
+                    $hasDirectory = true;
+                    $uploadedIconsetDirectoryName = $folder->getFilename();
+                    $iconsetName = preg_replace('/[^a-zA-Z0-9\.\_]+/', '', $uploadedIconsetDirectoryName);
+
+                    /** @var \Symfony\Component\Finder\SplFileInfo $image */
+                    foreach ($finder->files()->in($unzipDirectory . DS . $uploadedIconsetDirectoryName) as $image) {
+                        $iconsetIcons[$image->getFilename()] = [
+                            'filename' => $image->getFilename(),
+                            'path'     => $image->getPath(),
+                            'full'     => $image->getPath() . DS . $image->getFilename()
+                        ];
+                    }
+                    break; //Only one loop to get to the directory name
+                }
+
+
+                if ($hasDirectory === false) {
+                    $iconsetName = preg_replace('/[^a-zA-Z0-9\.\_]+/', '', str_replace('.zip', '', $fileName));
+                    //May be inside of the zip are only icons. (Not folder with icons)
+                    /** @var \Symfony\Component\Finder\SplFileInfo $image */
+                    foreach ($finder->files()->in($unzipDirectory) as $image) {
+                        $iconsetIcons[$image->getFilename()] = [
+                            'filename' => $image->getFilename(),
+                            'path'     => $image->getPath(),
+                            'full'     => $image->getPath() . DS . $image->getFilename()
+                        ];
+                    }
+                }
+
+                if ($iconsetName === null || $iconsetName === '') {
+                    //Remove tmp directory
+                    $fs = new Filesystem();
+                    $fs->remove($unzipDirectory);
+
+                    throw new Exception('Iconset name is empty');
+                }
+
+                //Check if all required icons exists and make sure the images are PNGs
+                $missingIcons = [];
+                $notAPng = [];
+                foreach ($this->MapUpload->getIconsNames() as $iconsName) {
+                    if (!isset($iconsetIcons[$iconsName])) {
+                        $missingIcons[] = $iconsName;
+                    } else {
+                        //Make sure we have a png
+                        if (exif_imagetype($iconsetIcons[$iconsName]['full']) !== IMAGETYPE_PNG) {
+                            $notAPng[] = $iconsName;
+                        }
+                    }
+                }
+
+                if (!empty($missingIcons) || !empty($notAPng)) {
+                    $error = '';
+                    if (!empty($missingIcons)) {
+                        $error .= __(sprintf(
+                            'Thow following icons are missing in uploaded zip archive: %s',
+                            implode(', ', $missingIcons)
+                        ));
+                    }
+
+                    if (!empty($notAPng)) {
+                        $error .= __(sprintf(
+                            'The following icons are not a PNG image: %s',
+                            implode(', ', $notAPng)
+                        ));
+                    }
+
+                    //Remove tmp directory
+                    $fs = new Filesystem();
+                    $fs->remove($unzipDirectory);
+
+                    throw new Exception($error);
+
+                }
+
+                //Copy new icons into iconsets directory
+                $destinationDirectory = $iconsetImgDirectory . DS . $iconsetName;
+                if (is_dir($destinationDirectory)) {
+                    throw new Exception(sprintf(
+                        'Iconset "%s" already exists',
+                        $iconsetName
+                    ));
+                }
+
+                mkdir($destinationDirectory);
+                if (!is_dir($destinationDirectory)) {
+
+                    //Remove tmp directory
+                    $fs = new Filesystem();
+                    $fs->remove($unzipDirectory);
+                    throw new Exception('Could not create directory: ' . $destinationDirectory);
+                }
+
+                foreach ($iconsetIcons as $icon) {
+                    copy($icon['full'], $destinationDirectory . DS . $icon['filename']);
+                }
+
+                //Remove tmp directory
+                $fs = new Filesystem();
+                $fs->remove($unzipDirectory);
+
+                $response = [
+                    'success'     => true,
+                    'message'     => __('File uploaded successfully'),
+                    'iconsetname' => $iconsetName
+                ];
+            } catch (Exception $e) {
+                $response = [
+                    'success' => false,
+                    'message' => __('Upload failed: %s', $e->getMessage())
+                ];
+            }
+        }
+
+        $this->response->statusCode(200);
+        if (!$response['success']) {
+            $this->response->statusCode(500);
+        }
+        $this->set('response', $response);
+        $this->set('_serialize', ['response']);
+    }
 }

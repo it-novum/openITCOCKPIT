@@ -25,27 +25,16 @@
 
 use itnovum\openITCOCKPIT\Filter\MapFilter;
 
+/**
+ * Class MapsController
+ * @property Map $Map
+ */
 class MapsController extends MapModuleAppController {
 
     public $layout = 'angularjs';
-    public $components = [
-        'ListFilter.ListFilter',
-        'RequestHandler',
-        'CustomValidationErrors'
-    ];
 
-    public $helpers = [
-        'CustomValidationErrors',
-        'ListFilter.ListFilter'
-    ];
-
-    public $listFilters = [
-        'index' => [
-            'fields' => [
-                'Map.name'  => ['label' => 'Name', 'searchType' => 'wildcard'],
-                'Map.title' => ['label' => 'Title', 'searchType' => 'wildcard'],
-            ],
-        ]
+    public $uses = [
+        'MapModule.Map'
     ];
 
     public function index() {
@@ -123,7 +112,7 @@ class MapsController extends MapModuleAppController {
             return;
         }
 
-        if ($this->request->is('post') || $this->request->is('put')) {
+        if (($this->request->is('post') || $this->request->is('put')) && isset($this->request->data['Map'])) {
             $this->request->data['Container'] = $this->request->data['Map']['container_id'];
 
             if (empty($this->request->data['Map']['refresh_interval'])) {
@@ -218,12 +207,11 @@ class MapsController extends MapModuleAppController {
             }
 
             if ($this->Map->saveAll($this->request->data)) {
-                if ($this->isJsonRequest()) {
-                    $this->serializeId();
-                    return;
+                if ($this->isAngularJsRequest()) {
+                    $this->setFlash(__('<a href="/map_module/maps/edit/%s">Map</a> successfully saved', $this->Map->id));
                 }
-                $this->setFlash(__('<a href="/map_module/maps/edit/%s">Map</a> successfully saved', $this->Map->id));
-
+                $this->serializeId();
+                return;
             } else {
                 if ($this->request->ext === 'json') {
                     $this->serializeErrorMessage();
@@ -267,64 +255,73 @@ class MapsController extends MapModuleAppController {
             //Only ship HTML template for angular
             return;
         }
+        if ($this->request->is('get')) {
+            $map = $this->Map->find('first', [
+                //'recursive' => -1,
+                'conditions' => [
+                    'Map.id' => $id
+                ],
+            ]);
+            if (empty($map)) {
+                throw new NotFoundException();
+            }
+            $this->set('map', $map);
+            $this->set('_serialize', ['map']);
+            return;
+        }
 
-        $sourceMap = $this->Map->find('first', [
-            //'recursive' => -1,
-            'conditions' => [
-                'Map.id' => $id
-            ],
-        ]);
-
-
-        $this->set('sourceMap', $sourceMap);
-        $this->set('_serialize', ['sourceMap']);
 
         if ($this->request->is('post') || $this->request->is('put')) {
 
-            $newMapData = $this->request->data;
+            $map = $this->Map->find('first', [
+                //'recursive' => -1,
+                'conditions' => [
+                    'Map.id' => $id
+                ],
+            ]);
 
-            if (empty($newMapData['Map']['refresh_interval'])) {
-                $newMapData['Map']['refresh_interval'] = 90000;
-            } else {
-                if ($newMapData['Map']['refresh_interval'] < 10) {
-                    $newMapData['Map']['refresh_interval'] = 10;
-                }
-                $newMapData['Map']['refresh_interval'] = ((int)$newMapData['Map']['refresh_interval'] * 1000);
+            if (empty($map)) {
+                throw new NotFoundException();
             }
 
-            $sourceMapContainer = Hash::extract($sourceMap['Container'], '{n}.id');
-            $newMap = [];
-            $newMap['Map'] = [
-                'name'             => $newMapData['Map']['name'],
-                'title'            => $newMapData['Map']['title'],
-                'background'       => $sourceMap['Map']['background'],
-                'refresh_interval' => $newMapData['Map']['refresh_interval'],
-                'container_id'     => $sourceMapContainer
+            //Try to save new map
+            $newMap = [
+                'Map'       => $this->request->data('Map'),
+                'Container' => Hash::extract($map, 'Container.{n}.id')
             ];
-            $newMap['Container'] = $sourceMapContainer;
+            $newMap['Map']['background'] = $map['Map']['background'];
+            $newMap['Map']['refresh_interval'] = $newMap['Map']['refresh_interval'] * 1000; // in milliseconds
 
             $this->Map->create();
-            $newMapId = $this->Map->id;
-            $newMapElements = $this->Map->transformForCopy($sourceMap, $newMapId);
-            $newMap = array_merge($newMap, $newMapElements);
+            if ($this->Map->save($newMap)) {
+                $newMapId = $this->Map->id;
+                $newMap['Map']['id'] = $newMapId;
+                $modelsToIgnore = [
+                    'Map',
+                    'Container',
+                    'Rotation'
+                ];
+                //Add objects to new map
+                foreach ($map as $modelName => $records) {
+                    if (!in_array($modelName, $modelsToIgnore, true)) {
+                        foreach ($records as $record) {
+                            unset($record['id']);
+                            $record['map_id'] = $newMapId;
+                            $newMap[$modelName][] = $record;
+                        }
 
-            if ($this->Map->saveAll($newMap)) {
-                if ($this->request->ext === 'json') {
-                    if ($this->isAngularJsRequest()) {
-                        $this->setFlash(__('<a href="/map_module/maps/edit/%s">Map</a> successfully copied', $this->Map->id));
                     }
-                    $this->serializeId();
+                }
+                if ($this->Map->saveAll($newMap)) {
+                    $this->set('success', true);
+                    $this->set('_serialize', ['success']);
                     return;
                 }
-            } else {
-                if ($this->request->ext === 'json') {
-                    $this->serializeErrorMessage();
-                    return;
-                }
-                $this->setFlash(__('could not save data'), false);
             }
-        }
 
+            $this->serializeErrorMessageFromModel('Map');
+
+        }
 
     }
 }

@@ -23,13 +23,11 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class DebugShell extends AppShell
-{
+class DebugShell extends AppShell {
 
     public $tasks = ['DebugConfigNagios'];
 
-    public function main()
-    {
+    public function main() {
         $this->stdout->styles('red_bold', ['text' => 'red', 'bold' => true]);
         Configure::load('nagios');
 
@@ -79,8 +77,7 @@ class DebugShell extends AppShell
 
     }
 
-    public function getOptionParser()
-    {
+    public function getOptionParser() {
         $parser = parent::getOptionParser();
         $parser->addOptions([
             'tail'  => ['help' => __d('oitc_console', 'Tail and parse monitoring logfile')],
@@ -92,8 +89,7 @@ class DebugShell extends AppShell
         return $parser;
     }
 
-    private function monitoringMenu()
-    {
+    private function monitoringMenu() {
         $this->out(__d('oitc_console', '[T]ail and parse monitoring log file'));
         $this->out(__d('oitc_console', '[TF] Tail -f and parse monitoring log file'));
         $this->out(__d('oitc_console', '[H] Debug host configuratgion files'));
@@ -158,8 +154,7 @@ class DebugShell extends AppShell
     }
 
 
-    private function _exit()
-    {
+    private function _exit() {
         $this->out(__d('oitc_console', 'Hopefully i was helpful'));
         $this->out(__d('oitc_console', 'Thanks for using me, bye'));
         exit();

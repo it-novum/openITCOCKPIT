@@ -27,35 +27,30 @@ namespace itnovum\openITCOCKPIT\Core;
 
 use itnovum\openITCOCKPIT\Core\ValueObjects\CustomVariable;
 
-class CustomVariablesRepository
-{
+class CustomVariablesRepository {
     /**
      * @var array
      */
     private $customvariables = [];
 
-    public function __construct()
-    {
+    public function __construct() {
     }
 
-    public function addCustomVariable(CustomVariable $CustomVariable)
-    {
+    public function addCustomVariable(CustomVariable $CustomVariable) {
         $this->customvariables[] = $CustomVariable;
     }
 
     /**
      * @return array
      */
-    public function getAllCustomVariables()
-    {
+    public function getAllCustomVariables() {
         return $this->customvariables;
     }
 
     /**
      * @return array
      */
-    public function getAllCustomVariablesAsArray()
-    {
+    public function getAllCustomVariablesAsArray() {
         $customVariables = [];
         foreach ($this->customvariables as $customvariable) {
             $customVariables[] = $customvariable->asArray();
@@ -69,8 +64,7 @@ class CustomVariablesRepository
      *
      * @return CustomVariable|false
      */
-    public function getByVariableName($name)
-    {
+    public function getByVariableName($name) {
         foreach ($this->customvariables as $customvariable) {
             if ($customvariable->getName() == $name) {
                 return $customvariable;
@@ -85,8 +79,7 @@ class CustomVariablesRepository
      *
      * @return void
      */
-    public function deleteByVariableName($name)
-    {
+    public function deleteByVariableName($name) {
         $customvariables = [];
         foreach ($this->customvariables as $customvariable) {
             if ($customvariable->getName() != $name) {
@@ -99,8 +92,7 @@ class CustomVariablesRepository
     /**
      * @return int
      */
-    public function getSize()
-    {
+    public function getSize() {
         return sizeof($this->customvariables);
     }
 

@@ -23,27 +23,25 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class MonitoringHelper extends AppHelper
-{
+class MonitoringHelper extends AppHelper {
 
     /**
      * Returns usefull HTML code of the flap detection. Only out of configurationd atabase
      * Does not use $hostatus!
      *
-     * @param array $host       from find('first')
+     * @param array $host from find('first')
      * @param array $hoststatus , if not given the $hoststatus array of the current view will be used (default)
      *
      * @return array with the flap detection settings. Array keys: 'string', 'html' and 'value'
      * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since  3.0
      */
-    public function checkFlapDetection($value = 0)
-    {
+    public function checkFlapDetection($value = 0) {
         if ($value == 1) {
-            return ['string' => __('On'), 'html' => '<span class="label bg-color-green">'.__('On').'</span>', 'value' => $value];
+            return ['string' => __('On'), 'html' => '<span class="label bg-color-green">' . __('On') . '</span>', 'value' => $value];
         }
 
-        return ['string' => __('Off'), 'html' => '<span class="label bg-color-red">'.__('Off').'</span>', 'value' => $value];
+        return ['string' => __('Off'), 'html' => '<span class="label bg-color-red">' . __('Off') . '</span>', 'value' => $value];
     }
 
 
@@ -52,15 +50,14 @@ class MonitoringHelper extends AppHelper
      * configuration If yes it will return the current setting from $hostatus This can hapen, if a user disable the
      * flep detection with an external command, but not in the host configuration
      *
-     * @param array $host       from find('first')
+     * @param array $host from find('first')
      * @param array $hoststatus , if not given the $hoststatus array of the current view will be used (default)
      *
      * @return array with the flap detection settings. Array keys: 'string', 'html' and 'value'
      * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since  3.0
      */
-    public function compareHostFlapDetectionWithMonitoring($host, $hoststatus = null)
-    {
+    public function compareHostFlapDetectionWithMonitoring($host, $hoststatus = null) {
         if ($hoststatus === null) {
             $hoststatus = $this->_View->viewVars['hoststatus'];
         }
@@ -74,17 +71,17 @@ class MonitoringHelper extends AppHelper
         if ($flapDetectionEnabledFromConfig != $flapDetectionEnabledFromMonitoring) {
             //Flapdetection was temporary en- or disabled by an external command
             if ($flapDetectionEnabledFromMonitoring == 1) {
-                return ['string' => __('Temporary on'), 'html' => '<a data-original-title="'.__('Difference to configuration detected').'" data-placement="bottom" rel="tooltip" href="javascript:void(0);"><i class="fa fa-exclamation-triangle txt-color-orange"></i></a> <span class="label bg-color-greenLight">'.__('Temporary on').'</span>', 'value' => $flapDetectionEnabledFromMonitoring];
+                return ['string' => __('Temporary on'), 'html' => '<a data-original-title="' . __('Difference to configuration detected') . '" data-placement="bottom" rel="tooltip" href="javascript:void(0);"><i class="fa fa-exclamation-triangle txt-color-orange"></i></a> <span class="label bg-color-greenLight">' . __('Temporary on') . '</span>', 'value' => $flapDetectionEnabledFromMonitoring];
             }
 
-            return ['string' => __('Temporary off'), 'html' => '<a data-original-title="'.__('Difference to configuration detected').'" data-placement="bottom" rel="tooltip" href="javascript:void(0);"><i class="fa fa-exclamation-triangle txt-color-orange"></i></a> <span class="label bg-color-redLight">'.__('Temporary off').'</span>', 'value' => $flapDetectionEnabledFromMonitoring];
+            return ['string' => __('Temporary off'), 'html' => '<a data-original-title="' . __('Difference to configuration detected') . '" data-placement="bottom" rel="tooltip" href="javascript:void(0);"><i class="fa fa-exclamation-triangle txt-color-orange"></i></a> <span class="label bg-color-redLight">' . __('Temporary off') . '</span>', 'value' => $flapDetectionEnabledFromMonitoring];
         }
 
         if ($flapDetectionEnabledFromConfig == 1) {
-            return ['string' => __('On'), 'html' => '<span class="label bg-color-green">'.__('On').'</span>', 'value' => $flapDetectionEnabledFromConfig];
+            return ['string' => __('On'), 'html' => '<span class="label bg-color-green">' . __('On') . '</span>', 'value' => $flapDetectionEnabledFromConfig];
         }
 
-        return ['string' => __('Off'), 'html' => '<span class="label bg-color-red">'.__('Off').'</span>', 'value' => $flapDetectionEnabledFromConfig];
+        return ['string' => __('Off'), 'html' => '<span class="label bg-color-red">' . __('Off') . '</span>', 'value' => $flapDetectionEnabledFromConfig];
     }
 
     /**
@@ -92,15 +89,14 @@ class MonitoringHelper extends AppHelper
      * configuration If yes it will return the current setting from $servicestatus This can hapen, if a user disable
      * the flep detection with an external command, but not in the host configuration
      *
-     * @param array $service       from find('first')
+     * @param array $service from find('first')
      * @param array $servicestatus , if not given the $servicestatus array of the current view will be used (default)
      *
      * @return array with the flap detection settings. Array keys: 'string', 'html' and 'value'
      * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since  3.0
      */
-    public function compareServiceFlapDetectionWithMonitoring($service, $servicestatus = null)
-    {
+    public function compareServiceFlapDetectionWithMonitoring($service, $servicestatus = null) {
         if ($servicestatus === null) {
             $servicestatus = $this->_View->viewVars['servicestatus'];
         }
@@ -114,17 +110,17 @@ class MonitoringHelper extends AppHelper
         if ($flapDetectionEnabledFromConfig != $flapDetectionEnabledFromMonitoring) {
             //Flapdetection was temporary en- or disabled by an external command
             if ($flapDetectionEnabledFromMonitoring == 1) {
-                return ['string' => __('Temporary on'), 'html' => '<a data-original-title="'.__('Difference to configuration detected').'" data-placement="bottom" rel="tooltip" href="javascript:void(0);"><i class="fa fa-exclamation-triangle txt-color-orange"></i></a> <span class="label bg-color-greenLight">'.__('Temporary on').'</span>', 'value' => $flapDetectionEnabledFromMonitoring];
+                return ['string' => __('Temporary on'), 'html' => '<a data-original-title="' . __('Difference to configuration detected') . '" data-placement="bottom" rel="tooltip" href="javascript:void(0);"><i class="fa fa-exclamation-triangle txt-color-orange"></i></a> <span class="label bg-color-greenLight">' . __('Temporary on') . '</span>', 'value' => $flapDetectionEnabledFromMonitoring];
             }
 
-            return ['string' => __('Temporary off'), 'html' => '<a data-original-title="'.__('Difference to configuration detected').'" data-placement="bottom" rel="tooltip" href="javascript:void(0);"><i class="fa fa-exclamation-triangle txt-color-orange"></i></a> <span class="label bg-color-redLight">'.__('Temporary off').'</span>', 'value' => $flapDetectionEnabledFromMonitoring];
+            return ['string' => __('Temporary off'), 'html' => '<a data-original-title="' . __('Difference to configuration detected') . '" data-placement="bottom" rel="tooltip" href="javascript:void(0);"><i class="fa fa-exclamation-triangle txt-color-orange"></i></a> <span class="label bg-color-redLight">' . __('Temporary off') . '</span>', 'value' => $flapDetectionEnabledFromMonitoring];
         }
 
         if ($flapDetectionEnabledFromConfig == 1) {
-            return ['string' => __('On'), 'html' => '<span class="label bg-color-green">'.__('On').'</span>', 'value' => $flapDetectionEnabledFromConfig];
+            return ['string' => __('On'), 'html' => '<span class="label bg-color-green">' . __('On') . '</span>', 'value' => $flapDetectionEnabledFromConfig];
         }
 
-        return ['string' => __('Off'), 'html' => '<span class="label bg-color-red">'.__('Off').'</span>', 'value' => $flapDetectionEnabledFromConfig];
+        return ['string' => __('Off'), 'html' => '<span class="label bg-color-red">' . __('Off') . '</span>', 'value' => $flapDetectionEnabledFromConfig];
     }
 
     /**
@@ -132,8 +128,7 @@ class MonitoringHelper extends AppHelper
      * @return string
      * @deprecated
      */
-    public function formatNotifyOnHost($notifications)
-    {
+    public function formatNotifyOnHost($notifications) {
         $_options = [
             'notify_on_down'        => 1,
             'notify_on_unreachable' => 0,
@@ -147,9 +142,9 @@ class MonitoringHelper extends AppHelper
         foreach ($notifications as $key => $value) {
             $html .= '<dd>';
             if ($value == 1) {
-                $html .= '<i class="fa fa-check txt-color-green"></i> '.__($key);
+                $html .= '<i class="fa fa-check txt-color-green"></i> ' . __($key);
             } else {
-                $html .= '<i class="fa fa-times txt-color-red"></i> '.__($key);
+                $html .= '<i class="fa fa-times txt-color-red"></i> ' . __($key);
             }
             $html .= '</dd>';
         }
@@ -157,8 +152,7 @@ class MonitoringHelper extends AppHelper
         return $html;
     }
 
-    public function formatNotifyOnService($notifications)
-    {
+    public function formatNotifyOnService($notifications) {
         $_options = [
             'notify_on_warning'  => 1,
             'notify_on_critical' => 0,
@@ -173,9 +167,9 @@ class MonitoringHelper extends AppHelper
         foreach ($notifications as $key => $value) {
             $html .= '<dd>';
             if ($value == 1) {
-                $html .= '<i class="fa fa-check txt-color-green"></i> '.__($key);
+                $html .= '<i class="fa fa-check txt-color-green"></i> ' . __($key);
             } else {
-                $html .= '<i class="fa fa-times txt-color-red"></i> '.__($key);
+                $html .= '<i class="fa fa-times txt-color-red"></i> ' . __($key);
             }
             $html .= '</dd>';
         }
@@ -192,13 +186,12 @@ class MonitoringHelper extends AppHelper
      * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since  3.0
      */
-    public function checkForHostGraph($hostUuid)
-    {
+    public function checkForHostGraph($hostUuid) {
         if (!isset($this->RRDPath)) {
             $this->RRDPath = Configure::read('rrd.path');
         }
 
-        if (is_dir($this->RRDPath.$hostUuid)) {
+        if (is_dir($this->RRDPath . $hostUuid)) {
             return true;
         }
 
@@ -208,20 +201,19 @@ class MonitoringHelper extends AppHelper
     /**
      * Check if ther is a file with graphs for this servic
      *
-     * @param string $hostUuid    , the UUID of the host you want to check
+     * @param string $hostUuid , the UUID of the host you want to check
      * @param string $serviceUuid , the UUID of the host you want to check
      *
      * @return bool true if exits or false if not
      * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since  3.0
      */
-    public function checkForServiceGraph($hostUuid, $serviceUuid)
-    {
+    public function checkForServiceGraph($hostUuid, $serviceUuid) {
         if (!isset($this->RRDPath)) {
             $this->RRDPath = Configure::read('rrd.path');
         }
 
-        if (file_exists($this->RRDPath.$hostUuid.'/'.$serviceUuid.'.rrd')) {
+        if (file_exists($this->RRDPath . $hostUuid . '/' . $serviceUuid . '.rrd')) {
             return true;
         }
 
@@ -232,49 +224,47 @@ class MonitoringHelper extends AppHelper
     /**
      * Return an `<a />` with the status icon of a notification
      *
-     * @param integer $status            , from notifications table
+     * @param integer $status , from notifications table
      * @param integer $notification_type from notifications (0 = host, 1 = service) [yes, nagios change this on EVERY
      *                                   table -.-]
-     * @param string  $href              href of the <a> tag
+     * @param string $href href of the <a> tag
      *
      * @return string status 'icon' as HTML for host and service notifications
      * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since  3.0
      */
-    public function NotificationStatusIcon($status = 3, $notification_type = 1, $href = 'javascript:void(0)')
-    {
+    public function NotificationStatusIcon($status = 3, $notification_type = 1, $href = 'javascript:void(0)') {
         if ($notification_type == 1) {
             //Service
             switch ($status) {
                 case 0:
-                    return '<a href="'.$href.'" class="btn btn-success status-circle"></a>';
+                    return '<a href="' . $href . '" class="btn btn-success status-circle"></a>';
                     break;
                 case 1:
-                    return '<a href="'.$href.'" class="btn btn-warning status-circle" ></a>';
+                    return '<a href="' . $href . '" class="btn btn-warning status-circle" ></a>';
                     break;
                 case 2:
-                    return '<a href="'.$href.'" class="btn btn-danger status-circle" ></a>';
+                    return '<a href="' . $href . '" class="btn btn-danger status-circle" ></a>';
                     break;
                 default:
-                    return '<a href="'.$href.'" class="btn btn-default status-circle" ></a>';
+                    return '<a href="' . $href . '" class="btn btn-default status-circle" ></a>';
             }
         } else {
             //Host
             switch ($status) {
                 case 0:
-                    return '<a href="'.$href.'" class="btn btn-success status-circle"></a>';
+                    return '<a href="' . $href . '" class="btn btn-success status-circle"></a>';
                     break;
                 case 1:
-                    return '<a href="'.$href.'" class="btn btn-danger status-circle" ></a>';
+                    return '<a href="' . $href . '" class="btn btn-danger status-circle" ></a>';
                     break;
                 default:
-                    return '<a href="'.$href.'" class="btn btn-default status-circle" ></a>';
+                    return '<a href="' . $href . '" class="btn btn-default status-circle" ></a>';
             }
         }
     }
 
-    public function hostFlappingIconColored($is_flapping = 0, $class = '', $state = null)
-    {
+    public function hostFlappingIconColored($is_flapping = 0, $class = '', $state = null) {
 
         $stateColors = [
             0 => 'ok',
@@ -284,17 +274,16 @@ class MonitoringHelper extends AppHelper
 
         if ($is_flapping == 1) {
             if ($state !== null) {
-                return '<span class="flapping_airport '.$class.' '.$stateColors[$state].'"><i class="fa fa-circle '.$stateColors[$state].'"></i> <i class="fa fa-circle-o '.$stateColors[$state].'"></i></span>';
+                return '<span class="flapping_airport ' . $class . ' ' . $stateColors[$state] . '"><i class="fa fa-circle ' . $stateColors[$state] . '"></i> <i class="fa fa-circle-o ' . $stateColors[$state] . '"></i></span>';
             }
 
-            return '<span class="flapping_airport text-primary '.$class.'"><i class="fa fa-circle '.$stateColors[$state].'"></i> <i class="fa fa-circle-o '.$stateColors[$state].'"></i></span>';
+            return '<span class="flapping_airport text-primary ' . $class . '"><i class="fa fa-circle ' . $stateColors[$state] . '"></i> <i class="fa fa-circle-o ' . $stateColors[$state] . '"></i></span>';
         }
 
         return '';
     }
 
-    public function serviceFlappingIconColored($is_flapping = 0, $class = '', $state = null)
-    {
+    public function serviceFlappingIconColored($is_flapping = 0, $class = '', $state = null) {
 
         $stateColors = [
             0 => 'txt-color-green',
@@ -305,31 +294,28 @@ class MonitoringHelper extends AppHelper
 
         if ($is_flapping == 1) {
             if ($state !== null) {
-                return '<span class="'.$stateColors[$state].'"><span class="flapping_airport '.$class.' '.$stateColors[$state].'"><i class="fa fa-circle '.$stateColors[$state].'"></i> <i class="fa fa-circle-o '.$stateColors[$state].'"></i></span></span>';
+                return '<span class="' . $stateColors[$state] . '"><span class="flapping_airport ' . $class . ' ' . $stateColors[$state] . '"><i class="fa fa-circle ' . $stateColors[$state] . '"></i> <i class="fa fa-circle-o ' . $stateColors[$state] . '"></i></span></span>';
             }
 
-            return '<span class="'.$stateColors[$state].'"><span class="flapping_airport text-primary '.$class.'"><i class="fa fa-circle '.$stateColors[$state].'"></i> <i class="fa fa-circle-o '.$stateColors[$state].'"></i></span></span>';
+            return '<span class="' . $stateColors[$state] . '"><span class="flapping_airport text-primary ' . $class . '"><i class="fa fa-circle ' . $stateColors[$state] . '"></i> <i class="fa fa-circle-o ' . $stateColors[$state] . '"></i></span></span>';
         }
 
         return '';
     }
 
-    public function serviceFlappingIcon($is_flapping = 0, $class = '')
-    {
+    public function serviceFlappingIcon($is_flapping = 0, $class = '') {
         if ($is_flapping == 1) {
-            return '<span class="flapping_airport '.$class.'"><i class="fa fa-circle"></i> <i class="fa fa-circle-o"></i></span>';
+            return '<span class="flapping_airport ' . $class . '"><i class="fa fa-circle"></i> <i class="fa fa-circle-o"></i></span>';
         }
 
         return '';
     }
 
-    public function hostFlappingIcon($is_flapping = 0, $class = '')
-    {
+    public function hostFlappingIcon($is_flapping = 0, $class = '') {
         return $this->serviceFlappingIcon($is_flapping, $class);
     }
 
-    public function checkForDowntime($downtime_deep)
-    {
+    public function checkForDowntime($downtime_deep) {
         if ($downtime_deep > 0) {
             return true;
         }
@@ -337,8 +323,7 @@ class MonitoringHelper extends AppHelper
         return false;
     }
 
-    public function checkForAck($ack)
-    {
+    public function checkForAck($ack) {
         if ($ack == 1) {
             return true;
         }
@@ -346,14 +331,12 @@ class MonitoringHelper extends AppHelper
         return false;
     }
 
-    public function replaceCommandArguments($commandarguments, $command_line)
-    {
+    public function replaceCommandArguments($commandarguments, $command_line) {
         return str_replace(array_keys($commandarguments), array_values($commandarguments), $command_line);
     }
 
-    public function checkForGrapherTemplate($commandUuid)
-    {
-        if (file_exists(APP.'GrapherTemplates'.DS.$commandUuid.'.php')) {
+    public function checkForGrapherTemplate($commandUuid) {
+        if (file_exists(APP . 'GrapherTemplates' . DS . $commandUuid . '.php')) {
             return true;
         }
 

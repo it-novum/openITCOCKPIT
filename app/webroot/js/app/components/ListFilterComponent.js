@@ -23,37 +23,37 @@
 //	confirmation.
 
 App.Components.ListFilterComponent = Frontend.Component.extend({
-	render: function() {
-		$('.list-filter a.toggle').click(this._onToggleClick.bind(this));
-		$('.oitc-list-filter').click(this._onOitcToggleClick.bind(this));
-		if($('.oitc-list-filter').attr('hide-on-render') == 'true'){
-			$('.list-filter').removeClass('opened').hide();
-		}
-	},
-	_onToggleClick: function(e) {
-		var $a = $(e.currentTarget);
-		var $filter = $a.parent().parent();
-		var $content = $filter.find('> .content');
-	
-		if($filter.hasClass('opened')) {
-			$a.text('open');
-			$content.hide();
-			$filter.removeClass('opened').addClass('closed');
-		} else {
-			$content.show();
-			$filter.addClass('opened').removeClass('closed');
-			$a.text('close');
-		}
-	},
-	
-	_onOitcToggleClick: function(event){
-		var $filter = $('.list-filter');
-		if($filter.hasClass('opened')){
-			$filter.removeClass('opened').addClass('closed');
-			$filter.hide();
-		}else{
-			$filter.addClass('opened').removeClass('closed');
-			$filter.show();
-		}
-	}
+    render: function(){
+        $('.list-filter a.toggle').click(this._onToggleClick.bind(this));
+        $('.oitc-list-filter').click(this._onOitcToggleClick.bind(this));
+        if($('.oitc-list-filter').attr('hide-on-render') == 'true'){
+            $('.list-filter').removeClass('opened').hide();
+        }
+    },
+    _onToggleClick: function(e){
+        var $a = $(e.currentTarget);
+        var $filter = $a.parent().parent();
+        var $content = $filter.find('> .content');
+
+        if($filter.hasClass('opened')){
+            $a.text('open');
+            $content.hide();
+            $filter.removeClass('opened').addClass('closed');
+        }else{
+            $content.show();
+            $filter.addClass('opened').removeClass('closed');
+            $a.text('close');
+        }
+    },
+
+    _onOitcToggleClick: function(event){
+        var $filter = $('.list-filter');
+        if($filter.hasClass('opened')){
+            $filter.removeClass('opened').addClass('closed');
+            $filter.hide();
+        }else{
+            $filter.addClass('opened').removeClass('closed');
+            $filter.show();
+        }
+    }
 });

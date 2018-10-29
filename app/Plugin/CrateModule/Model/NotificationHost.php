@@ -36,7 +36,7 @@ class NotificationHost extends CrateModuleAppModel {
      * @param array $paginatorConditions
      * @return array
      */
-    public function getQuery(HostNotificationConditions $HostNotificationConditions, $paginatorConditions = []){
+    public function getQuery(HostNotificationConditions $HostNotificationConditions, $paginatorConditions = []) {
 
         $fields = [
             'NotificationHost.start_time',
@@ -52,26 +52,26 @@ class NotificationHost extends CrateModuleAppModel {
 
         $query = [
             'recursive' => -1,
-            'fields' => $fields,
-            'joins' => [
+            'fields'    => $fields,
+            'joins'     => [
                 [
-                    'table' => 'openitcockpit_hosts',
-                    'type' => 'INNER',
-                    'alias' => 'Host',
+                    'table'      => 'openitcockpit_hosts',
+                    'type'       => 'INNER',
+                    'alias'      => 'Host',
                     'conditions' =>
                         'Host.uuid = NotificationHost.hostname',
                 ],
                 [
-                    'table' => 'openitcockpit_contacts',
-                    'type' => 'INNER',
-                    'alias' => 'Contact',
+                    'table'      => 'openitcockpit_contacts',
+                    'type'       => 'INNER',
+                    'alias'      => 'Contact',
                     'conditions' =>
                         'Contact.uuid = NotificationHost.contact_name'
                 ],
                 [
-                    'table' => 'openitcockpit_commands',
-                    'type' => 'INNER',
-                    'alias' => 'Command',
+                    'table'      => 'openitcockpit_commands',
+                    'type'       => 'INNER',
+                    'alias'      => 'Command',
                     'conditions' =>
                         'Command.uuid = NotificationHost.command_name'
                 ]
@@ -85,11 +85,11 @@ class NotificationHost extends CrateModuleAppModel {
             'order' => $HostNotificationConditions->getOrder()
         ];
 
-        if($HostNotificationConditions->getUseLimit()){
+        if ($HostNotificationConditions->getUseLimit()) {
             $query['limit'] = $HostNotificationConditions->getLimit();
         }
 
-        if($HostNotificationConditions->getHostUuid()){
+        if ($HostNotificationConditions->getHostUuid()) {
             $query['conditions']['NotificationHost.hostname'] = $HostNotificationConditions->getHostUuid();
         }
 
@@ -100,7 +100,7 @@ class NotificationHost extends CrateModuleAppModel {
             ];
         }
 
-        if(!empty($HostNotificationConditions->getStates())){
+        if (!empty($HostNotificationConditions->getStates())) {
             $query['conditions']['state'] = $HostNotificationConditions->getStates();
         }
 

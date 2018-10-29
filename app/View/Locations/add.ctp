@@ -29,8 +29,8 @@
             <i class="fa fa-location-arrow fa-fw "></i>
             <?php echo __('Monitoring'); ?>
             <span>>
-                <?php echo __('Locations'); ?> 
-			</span>
+                <?php echo __('Locations'); ?>
+            </span>
             <div class="third_level"> <?php echo ucfirst($this->params['action']); ?></div>
         </h1>
     </div>
@@ -51,16 +51,25 @@
             echo $this->Form->create('Location', [
                 'class' => 'form-horizontal clear',
             ]);
-            //debug(DateTimeZone::listAbbreviations());
             echo $this->Form->input('Container.parent_id', ['options' => $container, 'class' => 'chosen', 'style' => 'width: 100%', 'label' => __('Container')]);
             echo $this->Form->input('Container.name', ['label' => __('Name')]);
             echo $this->Form->input('description', ['label' => __('Description')]);
             echo $this->Form->input('timezone', ['options' => CakeTime::listTimezones(), 'class' => 'chosen', 'style' => 'width: 100%;', 'label' => __('Timezone')]);
-            echo $this->Form->input('latitude', ['label' => __('Latitude')]);
-            echo $this->Form->input('longitude', ['label' => __('Longitude')]);
             ?>
+            <div id="locationPonts">
+                <?php
+                echo $this->Form->input('latitude', [
+                    'label' => __('Latitude'),
+                    'type'  => 'text'
+                ]);
+                echo $this->Form->input('longitude', [
+                    'label' => __('Longitude'),
+                    'type'  => 'text'
+                ]);
+                ?>
+            </div>
             <div class="form-group has-error" id="LatitudeRangeError" style="display:none;">
-                <div class="col col-xs-12 required">
+                <div class="col col-xs-10 col-xs-offset-2 required">
                     <span class="help-block text-danger"><?php echo __('Latitude or Longitude is out of range'); ?></span>
                 </div>
             </div>

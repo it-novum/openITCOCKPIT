@@ -99,13 +99,11 @@ Configure::write('App.encoding', 'UTF-8');
  * Enables:
  *    `admin_index()` and `/admin/controller/index`
  *    `manager_index()` and `/manager/controller/index`
-
  */
 //Configure::write('Routing.prefixes', array('admin'));
 
 /**
  * Turn off all caching application-wide.
-
  */
 //Configure::write('Cache.disable', true);
 
@@ -115,7 +113,6 @@ Configure::write('App.encoding', 'UTF-8');
  * public $cacheAction inside your controllers to define caching settings.
  * You can either set it controller-wide by setting public $cacheAction = true,
  * or in each action using $this->cacheAction = true.
-
  */
 //Configure::write('Cache.check', true);
 
@@ -156,7 +153,6 @@ Configure::write('App.encoding', 'UTF-8');
  * Make sure the class implements `CakeSessionHandlerInterface` and set Session.handler to <name>
  * To use database sessions, run the app/Config/Schema/sessions.php schema using
  * the cake shell command: cake schema create Sessions
-
  */
 // Warning: If you change the session name here, you also need to change it in the CKFinder config.php
 Configure::write('Session', [
@@ -287,8 +283,8 @@ $prefix = 'app_';
 if (php_sapi_name() != 'cli') {
     Cache::config('_cake_core_', [
         'engine'    => $engine,
-        'prefix'    => $prefix.'cake_core_',
-        'path'      => CACHE.'persistent'.DS,
+        'prefix'    => $prefix . 'cake_core_',
+        'path'      => CACHE . 'persistent' . DS,
         'serialize' => ($engine === 'File'),
         'duration'  => $duration,
     ]);
@@ -300,8 +296,8 @@ if (php_sapi_name() != 'cli') {
      */
     Cache::config('_cake_model_', [
         'engine'    => $engine,
-        'prefix'    => $prefix.'cake_model_',
-        'path'      => CACHE.'models'.DS,
+        'prefix'    => $prefix . 'cake_model_',
+        'path'      => CACHE . 'models' . DS,
         'serialize' => ($engine === 'File'),
         'duration'  => $duration,
     ]);

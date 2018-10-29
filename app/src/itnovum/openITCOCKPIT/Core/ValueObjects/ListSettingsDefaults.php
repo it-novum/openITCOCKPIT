@@ -32,28 +32,28 @@ class ListSettingsDefaults {
      */
     private $limit = 30;
 
-    public function __construct($limit = 30){
+    public function __construct($limit = 30) {
         $this->limit = $limit;
     }
 
     /**
      * @return int
      */
-    public function getDefaultFrom(){
+    public function getDefaultFrom() {
         return time() - (3600 * 24 * 30);
     }
 
     /**
      * @return int
      */
-    public function getDefaultTo(){
+    public function getDefaultTo() {
         return time() + (3600 * 24 * 30 * 2);
     }
 
     /**
      * @return int
      */
-    public function getDefaultLimit(){
+    public function getDefaultLimit() {
         return $this->limit;
     }
 

@@ -37,20 +37,20 @@ class Acknowledged extends NagiosModuleAppModel {
     public $tablePrefix = 'nagios_';
     public $belongsTo = [
         'Objects' => [
-            'className' => 'NagiosModule.Objects',
+            'className'  => 'NagiosModule.Objects',
             'foreignKey' => 'object_id',
         ],
     ];
 
-    public function byUuid($uuid = null){
+    public function byUuid($uuid = null) {
         $return = [];
         if ($uuid !== null) {
             $acknowledged = $this->find('all', [
                 'conditions' => [
-                    'Objects.name2' => $uuid,
+                    'Objects.name2'         => $uuid,
                     'Objects.objecttype_id' => 2,
                 ],
-                'order' => [
+                'order'      => [
                     'Acknowledged.entry_time' => 'DESC',
                 ],
             ]);
@@ -62,15 +62,15 @@ class Acknowledged extends NagiosModuleAppModel {
         return $return;
     }
 
-    public function byHostUuid($uuid = null){
+    public function byHostUuid($uuid = null) {
         $return = [];
         if ($uuid !== null) {
             $acknowledged = $this->find('first', [
                 'conditions' => [
-                    'Objects.name1' => $uuid,
+                    'Objects.name1'         => $uuid,
                     'Objects.objecttype_id' => 1,
                 ],
-                'order' => [
+                'order'      => [
                     'Acknowledged.entry_time' => 'DESC',
                 ],
             ]);

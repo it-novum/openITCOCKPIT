@@ -45,7 +45,7 @@
                         <div class="widget-toolbar" role="menu">
                             <?php
                             if ($this->Acl->hasPermission('add')):
-                                echo $this->Html->link(__('New'), '/'.$this->params['controller'].'/add', ['class' => 'btn btn-xs btn-success', 'icon' => 'fa fa-plus']);
+                                echo $this->Html->link(__('New'), '/' . $this->params['controller'] . '/add', ['class' => 'btn btn-xs btn-success', 'icon' => 'fa fa-plus']);
                                 //echo " "; //Fix HTML if search is implemented
                             endif;
                             // TODO: search functionallity
@@ -69,7 +69,8 @@
                         <!-- widget content -->
                         <div class="widget-body no-padding">
                             <div class="mobile_table">
-                                <table id="hostescalation_list" class="table table-striped table-hover table-bordered smart-form"
+                                <table id="hostescalation_list"
+                                       class="table table-striped table-hover table-bordered smart-form"
                                        style="">
                                     <thead>
                                     <tr>
@@ -114,8 +115,8 @@
                                                         else:
                                                             echo h($host['Host']['name']);
                                                         endif;
-                                                        echo ($host['Host']['disabled'])?
-                                                            ' <i class="fa fa-power-off text-danger" title="disabled" aria-hidden="true"></i>':'';
+                                                        echo ($host['Host']['disabled']) ?
+                                                            ' <i class="fa fa-power-off text-danger" title="disabled" aria-hidden="true"></i>' : '';
                                                         echo '</li>';
                                                     endforeach;
                                                     ?>
@@ -142,8 +143,8 @@
                                                         else:
                                                             echo h($host_excluded['Host']['name']);
                                                         endif;
-                                                        echo ($host_excluded['Host']['disabled'])?
-                                                            ' <i class="fa fa-power-off text-danger" title="disabled" aria-hidden="true"></i>':'';
+                                                        echo ($host_excluded['Host']['disabled']) ?
+                                                            ' <i class="fa fa-power-off text-danger" title="disabled" aria-hidden="true"></i>' : '';
                                                         echo '</li>';
                                                     endforeach;
                                                     ?>
@@ -295,7 +296,7 @@
                                 <div class="row">
                                     <div class="col-sm-6">
                                         <div class="dataTables_info" style="line-height: 32px;"
-                                             id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('Page').' {:page} '.__('of').' {:pages}, '.__('Total').' {:count} '.__('entries')); ?></div>
+                                             id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('Page') . ' {:page} ' . __('of') . ' {:pages}, ' . __('Total') . ' {:count} ' . __('entries')); ?></div>
                                     </div>
                                     <div class="col-sm-6 text-right">
                                         <div class="dataTables_paginate paging_bootstrap">
@@ -321,14 +322,13 @@
  * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
  * @since  3.0
  */
-function __viewHostescalationOptions($hostescalation = [])
-{
+function __viewHostescalationOptions($hostescalation = []) {
     $options = ['escalate_on_recovery' => 'txt-color-greenLight', 'escalate_on_down' => 'txt-color-redLight', 'escalate_on_unreachable' => 'txt-color-blueDark'];
     $class = 'fa fa-square ';
     $html = '';
     foreach ($options as $option => $color) {
         if (isset($hostescalation['Hostescalation'][$option]) && $hostescalation['Hostescalation'][$option] == 1) {
-            $html .= '<i class="'.$class.$color.'"></i>&nbsp';
+            $html .= '<i class="' . $class . $color . '"></i>&nbsp';
         }
     }
 

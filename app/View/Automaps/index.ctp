@@ -71,7 +71,8 @@
                             echo $this->ListFilter->renderFilterbox($filters, $options, '<i class="fa fa-filter"></i> ' . __('Filter'), false, false);
                             ?>
                             <div class="mobile_table">
-                                <table id="automaps_list" class="table table-striped table-hover table-bordered smart-form"
+                                <table id="automaps_list"
+                                       class="table table-striped table-hover table-bordered smart-form"
                                        style="">
                                     <?php $order = $this->Paginator->param('order'); ?>
                                     <thead>
@@ -228,7 +229,7 @@
  * @since  3.0.1
  */
 function __viewAutomapOptions($automap = []) {
-    $options = ['show_ok' => 'txt-color-greenLight', 'show_warning' => 'txt-color-orange', 'show_critical' => 'txt-color-redLight', 'show_unknown' => 'txt-color-blueDark'];
+    $options = ['show_ok' => 'ok', 'show_warning' => 'warning', 'show_critical' => 'critical', 'show_unknown' => 'unknown'];
     $class = 'fa fa-square ';
     $html = [];
     foreach ($options as $option => $color) {

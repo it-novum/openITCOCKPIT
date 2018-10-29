@@ -25,18 +25,16 @@
 
 App::uses('SchemaShell', 'Console/Command');
 
-class AppSchemaShell extends SchemaShell
-{
+class AppSchemaShell extends SchemaShell {
     /**
      * Overriding update to have non-interactive schema updates
      *
      * @param CakeSchema $Schema
-     * @param string     $table
+     * @param string $table
      *
      * @return void
      */
-    protected function _update(&$Schema, $table = null)
-    {
+    protected function _update(&$Schema, $table = null) {
         $db = ConnectionManager::getDataSource($this->Schema->connection);
 
         $this->out(__d('cake_console', 'Comparing Database to Schema...'));
@@ -57,7 +55,7 @@ class AppSchemaShell extends SchemaShell
                     $contents[$table] = $db->alterSchema([$table => $compare[$table]], $table);
                 }
             }
-        } elseif (isset($compare[$table])) {
+        } else if (isset($compare[$table])) {
             if (isset($compare[$table]['create'])) {
                 $contents[$table] = $db->createSchema($Schema, $table);
             } else {
@@ -71,7 +69,7 @@ class AppSchemaShell extends SchemaShell
             return $this->_stop();
         }
 
-        $this->out("\n".__d('cake_console', 'The following statements will run.'));
+        $this->out("\n" . __d('cake_console', 'The following statements will run.'));
         $this->out(array_map('trim', $contents));
 
         $this->out(__d('cake_console', 'Updating Database...'));
