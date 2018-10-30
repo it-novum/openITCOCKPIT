@@ -49,19 +49,52 @@ class LsbRelease {
                 $line = trim($line);
                 $res = explode('DISTRIB_ID=', $line);
                 if (isset($res[1])) {
-                    $this->vendor = $res[1];
+                    $this->vendor = $res[1]; //Ubuntu
                 }
 
                 $res = explode('DISTRIB_RELEASE=', $line);
                 if (isset($res[1])) {
-                    $this->version = $res[1];
+                    $this->version = $res[1]; //18.04
                 }
 
                 $res = explode('DISTRIB_CODENAME=', $line);
                 if (isset($res[1])) {
-                    $this->codename = $res[1];
+                    $this->codename = $res[1]; //bionic
                 }
             }
+            return;
+        }
+
+        if (file_exists('/etc/os-release')) {
+            foreach (file('/etc/os-release') as $line) {
+                $line = trim($line);
+                $res = explode('ID=', $line);
+                if (isset($res[1])) {
+                    $this->vendor = ucfirst($res[1]); //Debian
+                }
+
+                $res = explode('VERSION_ID=', $line);
+                if (isset($res[1])) {
+                    $this->version = $res[1]; //9
+                }
+
+                $res = explode('VERSION=', $line);
+                if (isset($res[1])) {
+                    $codename = '';
+                    foreach (str_split($res[1], 1) as $char) {
+                        if (preg_match('/[a-zA-Z]/', $char) == 1) {
+                            $codename .= $char;
+                        }
+                    }
+
+                    if ($codename === '') {
+                        $codename = null;
+                    }
+
+                    $this->codename = $codename; //stretch
+                }
+            }
+            return;
         }
     }
 
