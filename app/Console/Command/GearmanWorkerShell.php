@@ -310,7 +310,12 @@ class GearmanWorkerShell extends AppShell {
                     $output = null;
                     exec($this->_systemsettings['CHECK_MK']['CHECK_MK.BIN'] . ' -D ' . escapeshellarg($payload['hostuuid']), $output, $returncode);
                     $this->deleteMkAutochecks();
-                }
+                    exec(sprintf(
+                        'chown %s:%s %s -R',
+                        escapeshellarg($this->_systemsettings['MONITORING']['MONITORING.USER']),
+                        escapeshellarg($this->_systemsettings['MONITORING']['MONITORING.GROUP']),
+                        escapeshellarg($this->_systemsettings['CHECK_MK']['CHECK_MK.VAR'])
+                    ));                }
 
                 $return = $output;
                 break;
@@ -353,6 +358,12 @@ class GearmanWorkerShell extends AppShell {
 
                 } else {
                     exec($this->_systemsettings['CHECK_MK']['CHECK_MK.BIN'] . ' -L', $output);
+                    exec(sprintf(
+                        'chown %s:%s %s -R',
+                        escapeshellarg($this->_systemsettings['MONITORING']['MONITORING.USER']),
+                        escapeshellarg($this->_systemsettings['MONITORING']['MONITORING.GROUP']),
+                        escapeshellarg($this->_systemsettings['CHECK_MK']['CHECK_MK.VAR'])
+                    ));
                 }
                 $return = $output;
                 unset($output);
@@ -409,6 +420,12 @@ class GearmanWorkerShell extends AppShell {
                     $output = null;
                     exec($this->_systemsettings['CHECK_MK']['CHECK_MK.BIN'] . ' -D ' . escapeshellarg($payload['hostUuid']), $output, $returncode);
                     $this->deleteMkAutochecks();
+                    exec(sprintf(
+                        'chown %s:%s %s -R',
+                        escapeshellarg($this->_systemsettings['MONITORING']['MONITORING.USER']),
+                        escapeshellarg($this->_systemsettings['MONITORING']['MONITORING.GROUP']),
+                        escapeshellarg($this->_systemsettings['CHECK_MK']['CHECK_MK.VAR'])
+                    ));
                 }
 
                 $return = $output;
@@ -454,6 +471,12 @@ class GearmanWorkerShell extends AppShell {
 
                 } else {
                     exec($this->_systemsettings['CHECK_MK']['CHECK_MK.BIN'] . ' -d ' . escapeshellarg($payload['hostUuid']), $output);
+                    exec(sprintf(
+                        'chown %s:%s %s -R',
+                        escapeshellarg($this->_systemsettings['MONITORING']['MONITORING.USER']),
+                        escapeshellarg($this->_systemsettings['MONITORING']['MONITORING.GROUP']),
+                        escapeshellarg($this->_systemsettings['CHECK_MK']['CHECK_MK.VAR'])
+                    ));
                 }
 
                 $return = $output;
