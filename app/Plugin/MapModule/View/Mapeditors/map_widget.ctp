@@ -38,6 +38,7 @@
             <?php echo __('No element selected'); ?>
         </span>
             <div
+                    style="position: absolute;"
                     class="no-padding"
                     mapeditor-view=""
                     map-id="map.map_id"
