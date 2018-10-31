@@ -75,6 +75,7 @@ class LsbRelease {
 
                 $res = explode('VERSION_ID=', $line);
                 if (isset($res[1])) {
+                    $res[1] = str_replace(['"', "'"], '', $res[1]);
                     $this->version = $res[1]; //9
                 }
 
