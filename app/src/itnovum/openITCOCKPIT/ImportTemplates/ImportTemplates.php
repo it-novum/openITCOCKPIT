@@ -80,8 +80,8 @@ class ImportTemplates {
             }
             $this->saveData($dataToSave);
         }
-
     }
+
 
     /**
      * saves the Template Data into the Database
@@ -116,6 +116,7 @@ class ImportTemplates {
                     ]
                 ]);
 
+
                 if (!empty($existingData)) {
                     //the data already exists. Skip the loop for this record
                     switch ($model) {
@@ -138,7 +139,6 @@ class ImportTemplates {
                 if ($this->{$model}->saveAll($data)) {
                     switch ($model) {
                         case 'Command':
-                            //$this->out('<info>Add Command ' . $data['Command']['name'] . ' to Mapping</info>');
                             $this->mapping['Command'][$data['Command']['uuid']] = $this->{$model}->id;
                             $this->mapCommandArgs($this->{$model}->id);
                             break;
@@ -221,20 +221,13 @@ class ImportTemplates {
      */
     private function modifyServicetemplategroupdata($servicetemplategroupData) {
         foreach ($servicetemplategroupData as $keyGroup => $servicetemplate) {
-            foreach ($servicetemplate['Servicetemplate'] as $keyTemplate => $template) {
-                $templateId = $this->mapping['Template'][$template];
-                //replacing the servicetemplate uuid with the servicetemplate id
-                $servicetemplategroupData[$keyGroup]['Servicetemplate'][$keyTemplate] = $templateId;
-            }
-
-            foreach ($servicetemplate['Servicetemplategroup']['Servicetemplate'] as $key => $groupData) {
-                $templateId = $this->mapping['Template'][$groupData];
-                $servicetemplategroupData[$keyGroup]['Servicetemplategroup']['Servicetemplate'][$key] = $templateId;
-            }
+            $templateIds = array_values($this->mapping['Template']);
+            $servicetemplategroupData[$keyGroup]['Servicetemplate'] = $templateIds;
+            $servicetemplategroupData[$keyGroup]['Servicetemplategroup']['Servicetemplate'] = $templateIds;
         }
-
         return $servicetemplategroupData;
     }
+
 
     /**
      * maps the command ids with the commandargument ids
