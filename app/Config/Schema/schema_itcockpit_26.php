@@ -1035,7 +1035,7 @@ class AppSchema extends CakeSchema {
         'notify_on_recovery'         => ['type' => 'integer', 'null' => true, 'default' => null, 'length' => 1],
         'notify_on_flapping'         => ['type' => 'integer', 'null' => true, 'default' => null, 'length' => 1],
         'notify_on_downtime'         => ['type' => 'integer', 'null' => true, 'default' => null, 'length' => 1],
-        'is_volatile'                => ['type' => 'integer', 'null' => true, 'length' => 1],
+        'is_volatile'                  => ['type' => 'boolean', 'null' => false, 'default' => '0'],
         'flap_detection_enabled'     => ['type' => 'integer', 'null' => true, 'default' => null, 'length' => 1],
         'flap_detection_on_ok'       => ['type' => 'integer', 'null' => true, 'default' => null, 'length' => 1],
         'flap_detection_on_warning'  => ['type' => 'integer', 'null' => true, 'default' => null, 'length' => 1],

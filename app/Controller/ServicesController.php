@@ -819,6 +819,7 @@ class ServicesController extends AppController {
                 'priority',
                 'active_checks_enabled',
                 'process_performance_data',
+                'is_volatile'
             ],
             'Contact'      => [
                 'Contact',
