@@ -31,7 +31,7 @@ class ConfigValidator {
      * @param $value
      * @return bool
      */
-    public function assertString($value){
+    public function assertString($value) {
         return is_string($value);
     }
 
@@ -39,8 +39,52 @@ class ConfigValidator {
      * @param $value
      * @return bool
      */
-    public function assertNumeric($value){
+    public function assertNumeric($value) {
         return is_numeric($value);
+    }
+
+    /**
+     * @param $value
+     * @param bool $strict
+     * @return bool
+     */
+    public function assertFloat($value, $strict = false) {
+        if($strict === true) {
+            return is_float($value);
+        }
+
+        if(is_float($value) || is_int($value)){
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * @param $value
+     * @return bool
+     */
+    public function assertInt($value) {
+        return is_int($value);
+    }
+
+    /**
+     * @param $value
+     * @return bool
+     */
+    public function assertBool($value, $strict = false) {
+        if ($strict === true) {
+            return is_bool($value);
+        }
+
+        if ($value === true || $value === 1 || $value === '1' || $value === 'true') {
+            return true;
+        }
+
+        if ($value === false || $value === 0 || $value === '0' || $value === 'false') {
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -49,8 +93,8 @@ class ConfigValidator {
      * @param bool $strict
      * @return bool
      */
-    public function assertEq($value, $assertion, $strict = true){
-        if($strict === true) {
+    public function assertEq($value, $assertion, $strict = true) {
+        if ($strict === true) {
             return $value === $assertion;
         }
 
@@ -61,7 +105,7 @@ class ConfigValidator {
      * @param $value
      * @return bool
      */
-    public function assertNull($value){
+    public function assertNull($value) {
         return $value === null;
     }
 
@@ -69,7 +113,7 @@ class ConfigValidator {
      * @param $value
      * @return bool
      */
-    public function assetArray($value){
+    public function assetArray($value) {
         return is_array($value);
     }
 
@@ -78,7 +122,7 @@ class ConfigValidator {
      * @param $arr
      * @return bool
      */
-    public function assertArrayKeyExists($key, $arr){
+    public function assertArrayKeyExists($key, $arr) {
         return isset($arr[$key]);
     }
 

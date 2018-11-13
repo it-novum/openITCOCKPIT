@@ -1604,6 +1604,20 @@ class AppSchema extends CakeSchema {
         'tableParameters'  => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB'],
     ];
 
+    public $configuration_files = [
+        'id'              => ['type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'],
+        'config_file'     => ['type' => 'string', 'null' => false, 'length' => 255, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
+        'key'             => ['type' => 'string', 'null' => false, 'length' => 2000, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
+        'value'           => ['type' => 'string', 'null' => false, 'length' => 2000, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
+        'created'         => ['type' => 'datetime', 'null' => false, 'default' => null],
+        'modified'        => ['type' => 'datetime', 'null' => false, 'default' => null],
+        'indexes'         => [
+            'PRIMARY' => ['column' => 'id', 'unique' => 1],
+        ],
+        'tableParameters' => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB'],
+    ];
+
+
     /*public $devicegroups = array(
         'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'),
         'container_id' => array('type' => 'integer', 'null' => false, 'default' => null),

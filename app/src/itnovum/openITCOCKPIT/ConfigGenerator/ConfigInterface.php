@@ -27,4 +27,20 @@ namespace itnovum\openITCOCKPIT\ConfigGenerator;
 
 interface ConfigInterface {
 
+    /**
+     * @return string
+     */
+    public function getFilePath();
+
+    /**
+     * @param $data
+     * @return true|array
+     */
+    public function customValidationRules($data);
+
+    /**
+     * @return string
+     */
+    public function getAngularDirective();
+
 }
