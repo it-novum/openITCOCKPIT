@@ -21,6 +21,10 @@
 //  under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //  License agreement and license key will be shipped with the order
 //  confirmation.
+
+use itnovum\openITCOCKPIT\ConfigGenerator\ConfigInterface;
+use itnovum\openITCOCKPIT\ConfigGenerator\GeneratorRegistry;
+
 ?>
 
 <div class="row">
@@ -71,33 +75,27 @@
                                 </tr>
                                 </thead>
                                 <tbody>
+                                <?php
+                                $GeneratorRegistry = new GeneratorRegistry();
+                                foreach ($GeneratorRegistry->getAllConfigFilesWithCategory() as $category => $ConfigFileObjects): ?>
+                                    <tr>
+                                        <td class="service_table_host_header" colspan="2">
+                                            <?php echo h($category); ?>
+                                        </td>
+                                    </tr>
 
-                                <tr>
-                                    <td class="service_table_host_header" colspan="2">
-                                        <?php echo __('openITCOCKPIT Interface configuration files'); ?>
-                                    </td>
-                                </tr>
-
-
-                                <tr>
-                                    <td class="service_table_host_header" colspan="2">
-                                        <?php echo __('Monitoring engine'); ?>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>/etc/openitcockpit/nagios.cfg</td>
-                                    <td class="text-center">
-                                        <a href="/ConfigurationFiles/edit/NagiosCfg">
-                                            <i class="fa fa-cog fa-lg txt-color-teal"></i>
-                                        </a>
-                                    </td>
-                                </tr>
-
-                                <tr>
-                                    <td class="service_table_host_header" colspan="2">
-                                        <?php echo __('phpNSTA'); ?>
-                                    </td>
-                                </tr>
+                                    <?php foreach ($ConfigFileObjects as $ConfigFileObject):
+                                        /** @var ConfigInterface $ConfigFileObject */ ?>
+                                        <tr>
+                                            <td><?php echo h($ConfigFileObject->getOutfile()); ?></td>
+                                            <td class="text-center">
+                                                <a href="/ConfigurationFiles/edit/<?php echo h($ConfigFileObject->getDbKey()); ?>">
+                                                    <i class="fa fa-cog fa-lg txt-color-teal"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                <?php endforeach; ?>
                                 </tbody>
                             </table>
                         </div>

@@ -25,44 +25,29 @@
 namespace itnovum\openITCOCKPIT\ConfigGenerator;
 
 
-interface ConfigInterface {
+class GeneratorRegistry {
 
     /**
-     * @return string
+     * @return array
      */
-    public function getTemplatePath();
+    public function getAllConfigFiles() {
+        return [
+            new NagiosCfg()
+        ];
+    }
 
     /**
-     * @return string
+     * @return array
      */
-    public function getTemplateName();
+    public function getAllConfigFilesWithCategory() {
+        return [
+            __('openITCOCKPIT Interface configuration files') => [],
+            __('Monitoring engine')                           => [
+                new NagiosCfg()
+            ],
+            __('phpNSTA')                                     => [],
 
-    /**
-     * @return string
-     */
-    public function getTemplateNameWithPath();
-
-    /**
-     * @param $data
-     * @return true|array
-     */
-    public function customValidationRules($data);
-
-    /**
-     * @return string
-     */
-    public function getAngularDirective();
-
-    /**
-     * Save the configuration as text file on disk
-     *
-     * @param array $dbRecords from CakePHP find
-     */
-    public function writeToFile($dbRecords);
-
-    /**
-     * @return string
-     */
-    public function getDbKey();
+        ];
+    }
 
 }

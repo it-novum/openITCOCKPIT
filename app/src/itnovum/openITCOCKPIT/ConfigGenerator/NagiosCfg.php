@@ -27,10 +27,17 @@ namespace itnovum\openITCOCKPIT\ConfigGenerator;
 
 class NagiosCfg extends ConfigGenerator implements ConfigInterface {
 
-    protected $template = 'nagios/nagios.cfg';
+    protected $templateDir = 'nagios';
+
+    protected $template = 'nagios.cfg';
 
     //protected $outfile = '/etc/openitcockpit/nagios.cfg';
     protected $outfile = '/tmp/nagios.cfg';
+
+    /**
+     * @var string
+     */
+    protected $commentChar = '#';
 
     protected $defaults = [
         'bool' => [
@@ -80,6 +87,10 @@ class NagiosCfg extends ConfigGenerator implements ConfigInterface {
 
     protected $dbKey = 'NagiosCfg';
 
+    /**
+     * @param array $data
+     * @return array|bool|true
+     */
     public function customValidationRules($data) {
         $error = [];
         $fakeModelName = 'Configfile';
@@ -100,6 +111,9 @@ class NagiosCfg extends ConfigGenerator implements ConfigInterface {
         return true;
     }
 
+    /**
+     * @return string
+     */
     public function getAngularDirective() {
         return 'nagios-cfg';
     }
@@ -156,6 +170,27 @@ class NagiosCfg extends ConfigGenerator implements ConfigInterface {
         }
 
         return '';
+    }
+
+    /**
+     * Save the configuration as text file on disk
+     *
+     * @param array $dbRecords
+     * @return bool|int
+     * @throws \Twig_Error_Loader
+     * @throws \Twig_Error_Runtime
+     * @throws \Twig_Error_Syntax
+     */
+    public function writeToFile($dbRecords) {
+        $config = $this->mergeDbResultWithDefaultConfiguration($dbRecords);
+        $configToExport = [];
+        foreach ($config as $type => $fields) {
+            foreach ($fields as $key => $value) {
+                $configToExport[$key] = $value;
+            }
+        }
+
+        return $this->saveConfigFile($configToExport);
     }
 
 }

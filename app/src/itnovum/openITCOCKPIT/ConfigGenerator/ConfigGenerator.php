@@ -27,10 +27,19 @@ namespace itnovum\openITCOCKPIT\ConfigGenerator;
 
 class ConfigGenerator {
 
-    protected $basePath = APP . DS . 'config_templates' . DS;
+    protected $basePath = APP . 'config_templates' . DS;
 
     /**
-     * Relative template path. Overwrite in Child-Class!
+     * Folder where Twig should search for the template.
+     * Overwrite in Child-Class!
+     * $basePath + $templateDir
+     * @var string
+     */
+    protected $templateDir = '';
+
+    /**
+     * Name of the Template
+     * Overwrite in Child-Class!
      * @var string
      */
     protected $template = '';
@@ -59,13 +68,32 @@ class ConfigGenerator {
     public $validationErrors = [];
 
     /**
+     * @var string
+     */
+    protected $commentChar = '#';
+
+    /**
      * @return string
      */
-    public function getFilePath() {
-        return $this->basePath . $this->template;
+    public function getTemplatePath() {
+        return $this->basePath . $this->templateDir;
     }
 
-    public function getOutfile(){
+    /**
+     * @return string
+     */
+    public function getTemplateName() {
+        return $this->template;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTemplateNameWithPath() {
+        return $this->getTemplatePath() . DS . $this->getTemplateName();
+    }
+
+    public function getOutfile() {
         return $this->outfile;
     }
 
@@ -110,7 +138,7 @@ class ConfigGenerator {
     /**
      * @return array
      */
-    public function getDefaults(){
+    public function getDefaults() {
         return $this->defaults;
     }
 
@@ -158,7 +186,7 @@ class ConfigGenerator {
         }
 
         $customResult = $this->customValidationRules($data);
-        if(is_array($customResult) && !empty($customResult)){
+        if (is_array($customResult) && !empty($customResult)) {
             $error = \Hash::merge($error, $customResult);
         }
 
@@ -172,7 +200,7 @@ class ConfigGenerator {
     /**
      * @return string
      */
-    public function getDbKey(){
+    public function getDbKey() {
         return $this->dbKey;
     }
 
@@ -180,15 +208,15 @@ class ConfigGenerator {
      * @param array $dbRecords from CakePHP find
      * @return array
      */
-    public function mergeDbResultWithDefaultConfiguration($dbRecords){
+    public function mergeDbResultWithDefaultConfiguration($dbRecords) {
         $mergedConfiguration = [];
         $dbRecords = $this->flatDbResult($dbRecords);
 
         foreach ($this->defaults as $type => $fields) {
-            foreach($fields as $key => $defaultValue){
+            foreach ($fields as $key => $defaultValue) {
 
                 //Check for missing keys in database
-                if(!isset($dbRecords[$key])){
+                if (!isset($dbRecords[$key])) {
                     //Set default value for missing keys
                     $mergedConfiguration[$type][$key] = $defaultValue;
                     continue;
@@ -223,9 +251,9 @@ class ConfigGenerator {
      * @param array $dbRecords from CakePHP find
      * @return array
      */
-    private function flatDbResult($dbResult){
+    private function flatDbResult($dbResult) {
         $result = [];
-        foreach($dbResult as $record){
+        foreach ($dbResult as $record) {
             $result[$record['ConfigurationFile']['key']] = $record['ConfigurationFile']['value'];
         }
         return $result;
@@ -235,20 +263,42 @@ class ConfigGenerator {
      * @param \CakeRequest $Request
      * @return array
      */
-    public function convertRequestForSaveAll(\CakeRequest $Request){
+    public function convertRequestForSaveAll(\CakeRequest $Request) {
         $records = [];
 
-        foreach($Request->data as $type => $fields){
-            foreach($fields as $key => $value){
+        foreach ($Request->data as $type => $fields) {
+            foreach ($fields as $key => $value) {
                 $records[] = [
                     'ConfigurationFile' => [
                         'config_file' => $this->getDbKey(),
-                        'key' => $key,
-                        'value' => $value
+                        'key'         => $key,
+                        'value'       => $value
                     ]
                 ];
             }
         }
         return $records;
+    }
+
+
+    /**
+     * @param $configToExport
+     * @return bool|int
+     * @throws \Twig_Error_Loader
+     * @throws \Twig_Error_Runtime
+     * @throws \Twig_Error_Syntax
+     */
+    protected function saveConfigFile($configToExport) {
+        //Do not call this method direct!
+        //Call it from self::writeToFile() and use writeToFile to format $configToExport as required.
+        //For example rewrite "1" to "yes" for yml or so
+
+        $loader = new \Twig_Loader_Filesystem($this->getTemplatePath());
+        $twig = new \Twig_Environment($loader, ['debug' => true]);
+
+        $FileHeader = new FileHeader();
+        $configToExport['STATIC_FILE_HEADER'] = $FileHeader->getHeader($this->commentChar);
+
+        return file_put_contents($this->outfile, $twig->render($this->getTemplateName(), $configToExport));
     }
 }
