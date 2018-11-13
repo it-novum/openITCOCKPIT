@@ -24,7 +24,6 @@
 //	confirmation.
 use itnovum\openITCOCKPIT\ConfigGenerator\ConfigInterface;
 use itnovum\openITCOCKPIT\ConfigGenerator\GeneratorRegistry;
-use itnovum\openITCOCKPIT\ConfigGenerator\NagiosCfg;
 
 /**
  * Class ConfigurationFilesController
@@ -48,9 +47,9 @@ class ConfigurationFilesController extends AppController {
     public function edit($configFile) {
 
         $GeneratorRegistry = new GeneratorRegistry();
-        foreach($GeneratorRegistry->getAllConfigFiles() as $ConfigFileObject){
+        foreach ($GeneratorRegistry->getAllConfigFiles() as $ConfigFileObject) {
             /** @var ConfigInterface $ConfigFileObject */
-            if($ConfigFileObject->getDbKey() === $configFile){
+            if ($ConfigFileObject->getDbKey() === $configFile) {
                 $this->set('ConfigFileObject', $ConfigFileObject);
                 return;
             }
@@ -66,22 +65,43 @@ class ConfigurationFilesController extends AppController {
 
     public function NagiosCfg() {
         $this->layout = 'blank';
-        $NagiosCfg = new NagiosCfg();
-        $this->set('NagiosCfg', $NagiosCfg);
+
+        $this->__sharedControllerAction('itnovum\openITCOCKPIT\ConfigGenerator\NagiosCfg', 'NagiosCfg');
+    }
+
+    public function AfterExport() {
+        $this->layout = 'blank';
+
+        $this->__sharedControllerAction('itnovum\openITCOCKPIT\ConfigGenerator\AfterExport', 'AfterExport');
+    }
+
+    public function NagiosModuleConfig() {
+        $this->layout = 'blank';
+
+        $this->__sharedControllerAction('itnovum\openITCOCKPIT\ConfigGenerator\NagiosModuleConfig', 'NagiosModuleConfig');
+    }
+
+    /**
+     * @param $ConfigurationObjectClassName
+     */
+    private function __sharedControllerAction($ConfigurationObjectClassName, $ShortClassName) {
+        $this->layout = 'blank';
+        $ConfigurationObjectClassName = new $ConfigurationObjectClassName();
+        $this->set($ShortClassName, $ConfigurationObjectClassName);
 
         if ($this->request->is('get') && $this->isAngularJsRequest()) {
-            $dbConfig = $this->ConfigurationFile->getConfigValuesByConfigFile($NagiosCfg->getDbKey());
-            $config = $NagiosCfg->mergeDbResultWithDefaultConfiguration($dbConfig);
+            $dbConfig = $this->ConfigurationFile->getConfigValuesByConfigFile($ConfigurationObjectClassName->getDbKey());
+            $config = $ConfigurationObjectClassName->mergeDbResultWithDefaultConfiguration($dbConfig);
 
             $this->set('config', $config);
             $this->set('_serialize', ['config']);
         }
 
         if ($this->request->is('post')) {
-            if ($NagiosCfg->validate($this->request->data)) {
+            if ($ConfigurationObjectClassName->validate($this->request->data)) {
                 //Save new config to database
-                $configFileForDatabase = $NagiosCfg->convertRequestForSaveAll($this->request);
-                if ($this->ConfigurationFile->saveConfigurationValuesForConfigFile($NagiosCfg->getDbKey(), $configFileForDatabase)) {
+                $configFileForDatabase = $ConfigurationObjectClassName->convertRequestForSaveAll($this->request);
+                if ($this->ConfigurationFile->saveConfigurationValuesForConfigFile($ConfigurationObjectClassName->getDbKey(), $configFileForDatabase)) {
                     $this->setFlash(_('Config saved successfully'));
                     $this->set('success', true);
                     $this->set('_serialize', ['success']);
@@ -95,12 +115,11 @@ class ConfigurationFilesController extends AppController {
 
             } else {
                 $this->response->statusCode(400);
-                $error = $NagiosCfg->validationErrors;
+                $error = $ConfigurationObjectClassName->validationErrors;
                 $this->set('error', $error);
                 $this->set('_serialize', ['error']);
                 return;
             }
         }
-
     }
 }

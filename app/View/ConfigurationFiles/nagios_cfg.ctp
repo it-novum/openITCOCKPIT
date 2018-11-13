@@ -125,6 +125,9 @@ use itnovum\openITCOCKPIT\ConfigGenerator\NagiosCfg;
                             <div class="help-block text-danger">{{ error }}</div>
                         </div>
                     </div>
+                    <div class="helpText text-muted col-md-offset-2 col-md-6">
+                        <?php echo h($NagiosCfg->getHelpText($key)); ?>
+                    </div>
                 </div>
 
             <?php else: ?>

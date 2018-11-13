@@ -32,7 +32,9 @@ class GeneratorRegistry {
      */
     public function getAllConfigFiles() {
         return [
-            new NagiosCfg()
+            new NagiosCfg(),
+            new AfterExport(),
+            new NagiosModuleConfig()
         ];
     }
 
@@ -41,7 +43,10 @@ class GeneratorRegistry {
      */
     public function getAllConfigFilesWithCategory() {
         return [
-            __('openITCOCKPIT Interface configuration files') => [],
+            __('openITCOCKPIT Interface configuration files') => [
+                new AfterExport(),
+                new NagiosModuleConfig()
+            ],
             __('Monitoring engine')                           => [
                 new NagiosCfg()
             ],

@@ -131,10 +131,10 @@ class NagiosCfg extends ConfigGenerator implements ConfigInterface {
             'log_event_handlers'    => 'If you don\'t want host and service event handlers to be logged, set this value to 0.  If event handlers should be logged, set the value to 1.',
             'log_initial_states'    => 'If you want Naemon/Nagios to log all initial host and service states to the main log file (the first time the service or host is checked) you can enable this option by setting this value to 1.  If you are not using an external application that does long term state statistics reporting, you do not need to enable this option.  In this case, set the value to 0.',
             'log_current_states'    => 'If you don\'t want Naemon/Nagios to log all current host and service states after log has been rotated to the main log file, you can disable this option by setting this value to 0. Default value is 1.',
-            'log_external_commands' => 'If you don\'t want Naemon/Nagios to log external commands, set this value to 0.  If external commands should be logged, set this value to 1. Note: This option does not include logging of passive service checks - see the option below for controlling whether or not passive checks are logged.',
-            'log_passive_checks'    => 'If you don\'t want Naemon/Nagios to log passive host and service checks, set this value to 0.  If passive checks should be logged, set this value to 1.',
+            'log_external_commands' => 'If you don\'t want Naemon/Nagios to log external commands, set this value to 0.  If external commands should be logged, set this value to 1. Note: This option does not include logging of passive service checks - see the option below for controlling whether or not passive checks are logged. Enabling this feature could has a HIGH PERFORMANCE IMPACT!',
+            'log_passive_checks'    => 'If you don\'t want Naemon/Nagios to log passive host and service checks, set this value to 0.  If passive checks should be logged, set this value to 1. Enabling this feature could has a HIGH PERFORMANCE IMPACT!',
 
-            'max_concurrent_checks' => 'This option allows you to specify the maximum number of service checks that can be run in parallel at any given time. Specifying a value of 1 for this variable essentially prevents any service checks from being parallelized.  A value of 0 will not restrict the number of concurrent checks that are being executed.',
+            'max_concurrent_checks' => 'This option allows you to specify the maximum number of service checks that can be run in parallel at any given time. Specifying a value of 1 for this variable essentially prevents any service checks from being parallelized.  A value of 0 will not restrict the number of concurrent checks that are being executed. Changing this value could has a HIGH PERFORMANCE IMPACT!',
 
             'enable_notifications'    => 'This determines whether or not Naemon/Nagios will sent out any host or service notifications when it is initially (re)started. Values: 1 = enable notifications, 0 = disable notifications',
             'enable_event_handlers'   => 'This determines whether or not Naemon/Nagios will run any host or service event handlers when it is initially (re)started.  Unless you\'re implementing redundant hosts, leave this option enabled. Values: 1 = enable event handlers, 0 = disable event handlers',
@@ -151,7 +151,7 @@ class NagiosCfg extends ConfigGenerator implements ConfigInterface {
             'service_freshness_check_interval' => 'This setting determines how often (in seconds) Naemon/Nagios will check the "freshness" of service check results.  If you have disabled service freshness checking, this option has no effect.',
             'additional_freshness_latency'     => 'This setting determines the number of seconds that Naemon/Nagios will add to any host and service freshness thresholds that it calculates (those not explicitly specified by the user).',
 
-            'debug_level'     => 'This option determines how much (if any) debugging information will be written to the debug file. Values: -1 = Everything, 0 = Nothing',
+            'debug_level'     => 'This option determines how much (if any) debugging information will be written to the debug file. Values: -1 = Everything, 0 = Nothing Enabling this feature could has a HIGH PERFORMANCE IMPACT!',
             'debug_verbosity' => 'This option determines how verbose the debug log out will be. Values: 0 = Brief output, 1 = More detailed, 2 = Very detailed',
 
 
