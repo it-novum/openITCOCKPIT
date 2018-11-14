@@ -31,8 +31,7 @@ class NagiosCfg extends ConfigGenerator implements ConfigInterface {
 
     protected $template = 'nagios.cfg';
 
-    //protected $outfile = '/etc/openitcockpit/nagios.cfg';
-    protected $outfile = '/tmp/nagios.cfg';
+    protected $outfile = '/etc/openitcockpit/nagios.cfg';
 
     /**
      * @var string

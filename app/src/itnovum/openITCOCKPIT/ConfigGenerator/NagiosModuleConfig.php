@@ -31,8 +31,7 @@ class NagiosModuleConfig extends ConfigGenerator implements ConfigInterface {
 
     protected $template = 'nagios_module_config.php.tpl';
 
-    //protected $outfile = '/etc/openitcockpit/app/Plugin/NagiosModule/Config/config.php';
-    protected $outfile = '/tmp/config.php';
+    protected $outfile = '/etc/openitcockpit/app/Plugin/NagiosModule/Config/config.php';
 
     /**
      * @var string

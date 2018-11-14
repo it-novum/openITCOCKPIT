@@ -34,7 +34,8 @@ class GeneratorRegistry {
         return [
             new NagiosCfg(),
             new AfterExport(),
-            new NagiosModuleConfig()
+            new NagiosModuleConfig(),
+            new phpNstaMaster()
         ];
     }
 
@@ -50,7 +51,9 @@ class GeneratorRegistry {
             __('Monitoring engine')                           => [
                 new NagiosCfg()
             ],
-            __('phpNSTA')                                     => [],
+            __('phpNSTA')                                     => [
+                new phpNstaMaster()
+            ],
 
         ];
     }

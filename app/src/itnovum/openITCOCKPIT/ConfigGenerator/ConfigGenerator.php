@@ -131,6 +131,20 @@ class ConfigGenerator {
      * @param $value
      * @return string
      */
+    public function asBoolString($value) {
+        $value = (bool)$value;
+
+        if ($value === true) {
+            return 'true';
+        }
+
+        return 'false';
+    }
+
+    /**
+     * @param $value
+     * @return string
+     */
     public function asString($value) {
         return (string)$value;
     }
@@ -176,6 +190,12 @@ class ConfigGenerator {
                     case 'bool':
                         if (!$Validator->assertBool($value)) {
                             $error[$fakeModelName][$field][] = __('This field needs to be a boolean.');
+                        }
+                        break;
+
+                    case 'string':
+                        if (!$Validator->assertStringNotEmpty($value)) {
+                            $error[$fakeModelName][$field][] = __('This field can not left be blank.');
                         }
                         break;
 
@@ -298,6 +318,11 @@ class ConfigGenerator {
 
         $FileHeader = new FileHeader();
         $configToExport['STATIC_FILE_HEADER'] = $FileHeader->getHeader($this->commentChar);
+
+        $configDir = dirname($this->outfile);
+        if(!is_dir($configDir)){
+            return false;
+        }
 
         return file_put_contents($this->outfile, $twig->render($this->getTemplateName(), $configToExport));
     }

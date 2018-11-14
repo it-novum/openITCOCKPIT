@@ -31,8 +31,7 @@ class AfterExport extends ConfigGenerator implements ConfigInterface {
 
     protected $template = 'after_export.php.tpl';
 
-    //protected $outfile = '/etc/openitcockpit/app/Config/after_export.php';
-    protected $outfile = '/tmp/after_export.php';
+    protected $outfile = '/etc/openitcockpit/app/Config/after_export.php';
 
     /**
      * @var string

@@ -24,6 +24,7 @@
 //	confirmation.
 use itnovum\openITCOCKPIT\ConfigGenerator\ConfigInterface;
 use itnovum\openITCOCKPIT\ConfigGenerator\GeneratorRegistry;
+use itnovum\openITCOCKPIT\ConfigGenerator\phpNstaMaster;
 
 /**
  * Class ConfigurationFilesController
@@ -79,6 +80,12 @@ class ConfigurationFilesController extends AppController {
         $this->layout = 'blank';
 
         $this->__sharedControllerAction('itnovum\openITCOCKPIT\ConfigGenerator\NagiosModuleConfig', 'NagiosModuleConfig');
+    }
+
+    public function phpNSTAMaster(){
+        $this->layout = 'blank';
+
+        $this->__sharedControllerAction('itnovum\openITCOCKPIT\ConfigGenerator\phpNstaMaster', 'phpNstaMaster');
     }
 
     /**

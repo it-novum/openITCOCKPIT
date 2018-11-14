@@ -39,6 +39,14 @@ class ConfigValidator {
      * @param $value
      * @return bool
      */
+    public function assertStringNotEmpty($value) {
+        return (strlen($value) > 0);
+    }
+
+    /**
+     * @param $value
+     * @return bool
+     */
     public function assertNumeric($value) {
         return is_numeric($value);
     }
