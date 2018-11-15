@@ -53,6 +53,10 @@ class ConfigGeneratorShell extends AppShell {
         if (array_key_exists('migrate', $this->params)) {
             $this->migrate();
         }
+
+        if (array_key_exists('generate', $this->params)) {
+            $this->generate();
+        }
     }
 
     public function generate() {

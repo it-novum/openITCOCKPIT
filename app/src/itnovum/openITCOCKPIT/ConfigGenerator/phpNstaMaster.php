@@ -31,7 +31,8 @@ class phpNstaMaster extends ConfigGenerator implements ConfigInterface {
 
     protected $template = 'config.php.tpl';
 
-    protected $outfile = '/etc/phpnsta/config.php';
+    //protected $outfile = '/etc/phpnsta/config.php';
+    protected $outfile = '/tmp/config.php';
 
     /**
      * @var string
@@ -165,6 +166,70 @@ class phpNstaMaster extends ConfigGenerator implements ConfigInterface {
         }
 
         return $this->saveConfigFile($configToExport);
+    }
+
+    /**
+     * @param array $dbRecords
+     * @return bool|array
+     */
+    public function migrate($dbRecords) {
+        if (!file_exists($this->outfile)) {
+            return false;
+        }
+
+        require_once $this->outfile;
+        $configFromFile = $config; //$config gets defined in required file
+
+        $config = $this->mergeDbResultWithDefaultConfiguration($dbRecords);
+
+        debug($config);
+        debug($configFromFile);
+        die();
+
+
+
+        $defaults = [
+            'string' => [
+                'use_spooldir'          => '3',
+                'logrotate_date_format' => 'd_m_Y_H_i',
+                'date_format'           => 'd.m.Y H:i:s',
+                'ssh_username'          => 'nagios',
+                'private_path'          => '/var/lib/nagios/.ssh/id_rsa',
+                'public_path'           => '/var/lib/nagios/.ssh/id_rsa.pub',
+                'port_range'            => '55000-55500',
+                'supervisor_username'   => 'phpNSTA',
+                'supervisor_password'   => 'phpNSTAsSecretPassword',
+                'tsync_every'           => 'hour',
+                'loglevel'              => '12',
+            ],
+            'int'    => [
+                'cleanup_fileage' => 15,
+                'max_checks'      => 200,
+                'max_threads'     => 20,
+                'ssh_port'        => 22,
+            ],
+            'bool'   => [
+                'use_ssh_tunnel'   => 1,
+                'synchronize_time' => 1
+            ]
+        ];
+
+
+        foreach ($config['string'] as $field => $value) {
+            if (isset($configFromFile['SSH'][$field])) {
+                if ($config['string'][$field] != $configFromFile['SSH'][$field]) {
+                    $config['string'][$field] = $configFromFile['SSH'][$field];
+                }
+            }
+        }
+
+        if (isset($configFromFile['SSH']['port'])) {
+            if ($config['int']['remote_port'] != $configFromFile['SSH']['port']) {
+                $config['int']['remote_port'] = $configFromFile['SSH']['port'];
+            }
+        }
+
+        return $config;
     }
 
 }
