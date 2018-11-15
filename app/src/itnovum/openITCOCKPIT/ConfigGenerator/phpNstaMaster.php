@@ -31,8 +31,7 @@ class phpNstaMaster extends ConfigGenerator implements ConfigInterface {
 
     protected $template = 'config.php.tpl';
 
-    //protected $outfile = '/etc/phpnsta/config.php';
-    protected $outfile = '/tmp/config.php';
+    protected $outfile = '/etc/phpnsta/config.php';
 
     /**
      * @var string
