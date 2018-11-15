@@ -23,6 +23,7 @@
 //  confirmation.
 
 use itnovum\openITCOCKPIT\Core\Interfaces\CronjobInterface;
+use Symfony\Component\Filesystem\Filesystem;
 
 class InstantReportTask extends AppShell implements CronjobInterface {
     public $uses = [
@@ -92,6 +93,27 @@ class InstantReportTask extends AppShell implements CronjobInterface {
         if (!$toSend) {
             $this->out('<green>No emails to send</green>');
         }
+        $this->cleanUp();
         $this->hr();
+    }
+
+    public function cleanUp() {
+        $savePath = APP . '/webroot/img/charts/';
+        if (!is_dir($savePath)) {
+            return false;
+        }
+
+        $files = [];
+        foreach (new DirectoryIterator($savePath) as $fileInfo) {
+            if (!$fileInfo->isDot()) {
+                $files[] = $fileInfo->getRealPath();
+            }
+        }
+        if (empty($files)) {
+            return true;
+        }
+
+        $Filesystem =new Filesystem();
+        $Filesystem->remove($files);
     }
 }
