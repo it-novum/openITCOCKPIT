@@ -249,10 +249,10 @@ class NagiosCfg extends ConfigGenerator implements ConfigInterface {
             }
         }
 
-        foreach($config as $type => $fields){
-            foreach($fields as $key => $value){
-                if(isset($nagiosCfgConfigFromFile[$key])){
-                    if($value != $nagiosCfgConfigFromFile[$key]){
+        foreach ($config as $type => $fields) {
+            foreach ($fields as $key => $value) {
+                if (isset($nagiosCfgConfigFromFile[$key])) {
+                    if ($value != $nagiosCfgConfigFromFile[$key]) {
                         //Change in nagios.cfg on disk. Use value from text file
                         $config[$type][$key] = $nagiosCfgConfigFromFile[$key];
                     }

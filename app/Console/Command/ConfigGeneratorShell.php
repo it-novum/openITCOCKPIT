@@ -43,8 +43,6 @@ class ConfigGeneratorShell extends AppShell {
 
         $this->parser = $this->getOptionParser();
 
-        debug($this->params);
-
         if (count($this->params) <= 3) {
             $this->out('No option given. Try --help');
             exit(1);

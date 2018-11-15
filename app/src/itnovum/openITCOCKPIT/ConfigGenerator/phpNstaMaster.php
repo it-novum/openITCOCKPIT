@@ -182,51 +182,72 @@ class phpNstaMaster extends ConfigGenerator implements ConfigInterface {
 
         $config = $this->mergeDbResultWithDefaultConfiguration($dbRecords);
 
-        debug($config);
-        debug($configFromFile);
-        die();
-
-
-
-        $defaults = [
-            'string' => [
-                'use_spooldir'          => '3',
-                'logrotate_date_format' => 'd_m_Y_H_i',
-                'date_format'           => 'd.m.Y H:i:s',
-                'ssh_username'          => 'nagios',
-                'private_path'          => '/var/lib/nagios/.ssh/id_rsa',
-                'public_path'           => '/var/lib/nagios/.ssh/id_rsa.pub',
-                'port_range'            => '55000-55500',
-                'supervisor_username'   => 'phpNSTA',
-                'supervisor_password'   => 'phpNSTAsSecretPassword',
-                'tsync_every'           => 'hour',
-                'loglevel'              => '12',
-            ],
-            'int'    => [
-                'cleanup_fileage' => 15,
-                'max_checks'      => 200,
-                'max_threads'     => 20,
-                'ssh_port'        => 22,
-            ],
-            'bool'   => [
-                'use_ssh_tunnel'   => 1,
-                'synchronize_time' => 1
-            ]
-        ];
-
-
-        foreach ($config['string'] as $field => $value) {
-            if (isset($configFromFile['SSH'][$field])) {
-                if ($config['string'][$field] != $configFromFile['SSH'][$field]) {
-                    $config['string'][$field] = $configFromFile['SSH'][$field];
-                }
-            }
+        if ($config['string']['loglevel'] != $configFromFile['LOG']['loglevel']) {
+            $config['string']['loglevel'] = $configFromFile['LOG']['loglevel'];
         }
 
-        if (isset($configFromFile['SSH']['port'])) {
-            if ($config['int']['remote_port'] != $configFromFile['SSH']['port']) {
-                $config['int']['remote_port'] = $configFromFile['SSH']['port'];
-            }
+        if ($config['string']['logrotate_date_format'] != $configFromFile['LOG']['logrotate_date_format']) {
+            $config['string']['logrotate_date_format'] = $configFromFile['LOG']['logrotate_date_format'];
+        }
+
+        if ($config['string']['date_format'] != $configFromFile['LOG']['date_format']) {
+            $config['string']['date_format'] = $configFromFile['LOG']['date_format'];
+        }
+
+        if ($config['int']['cleanup_fileage'] != $configFromFile['LOG']['cleanup_fileage']) {
+            $config['int']['cleanup_fileage'] = $configFromFile['LOG']['cleanup_fileage'];
+        }
+
+        if ($config['string']['use_spooldir'] != $configFromFile['NAGIOS']['use_spooldir']) {
+            $config['string']['use_spooldir'] = $configFromFile['NAGIOS']['use_spooldir'];
+        }
+
+        if ($config['int']['max_checks'] != $configFromFile['NAGIOS']['max_checks']) {
+            $config['int']['max_checks'] = $configFromFile['NAGIOS']['max_checks'];
+        }
+
+        if ($config['int']['max_threads'] != $configFromFile['CPU']['max_threads']) {
+            $config['int']['max_threads'] = $configFromFile['CPU']['max_threads'];
+        }
+
+        if ($config['string']['ssh_username'] != $configFromFile['SSH']['username']) {
+            $config['string']['ssh_username'] = $configFromFile['SSH']['username'];
+        }
+
+        if ($config['string']['private_path'] != $configFromFile['SSH']['private_path']) {
+            $config['string']['private_path'] = $configFromFile['SSH']['private_path'];
+        }
+
+        if ($config['string']['public_path'] != $configFromFile['SSH']['public_path']) {
+            $config['string']['public_path'] = $configFromFile['SSH']['public_path'];
+        }
+
+        if ($config['string']['port_range'] != $configFromFile['SSH']['port_range']) {
+            $config['string']['port_range'] = $configFromFile['SSH']['port_range'];
+        }
+
+        if ($config['int']['ssh_port'] != $configFromFile['SSH']['port']) {
+            $config['int']['ssh_port'] = $configFromFile['SSH']['port'];
+        }
+
+        if ($config['bool']['use_ssh_tunnel'] != $configFromFile['SSH']['use_ssh_tunnel']) {
+            $config['bool']['use_ssh_tunnel'] = $configFromFile['SSH']['use_ssh_tunnel'];
+        }
+
+        if ($config['string']['supervisor_username'] != $configFromFile['SUPERVISOR']['username']) {
+            $config['string']['supervisor_username'] = $configFromFile['SUPERVISOR']['username'];
+        }
+
+        if ($config['string']['supervisor_password'] != $configFromFile['SUPERVISOR']['password']) {
+            $config['string']['supervisor_password'] = $configFromFile['SUPERVISOR']['password'];
+        }
+
+        if ($config['bool']['synchronize_time'] != $configFromFile['TSYNC']['synchronize_time']) {
+            $config['bool']['synchronize_time'] = $configFromFile['TSYNC']['synchronize_time'];
+        }
+
+        if ($config['string']['tsync_every'] != $configFromFile['TSYNC']['every']) {
+            $config['string']['tsync_every'] = $configFromFile['TSYNC']['every'];
         }
 
         return $config;

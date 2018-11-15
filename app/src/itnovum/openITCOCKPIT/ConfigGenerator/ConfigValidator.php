@@ -57,11 +57,11 @@ class ConfigValidator {
      * @return bool
      */
     public function assertFloat($value, $strict = false) {
-        if($strict === true) {
+        if ($strict === true) {
             return is_float($value);
         }
 
-        if(is_float($value) || is_int($value)){
+        if (is_float($value) || is_int($value)) {
             return true;
         }
         return false;
