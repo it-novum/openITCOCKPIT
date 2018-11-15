@@ -177,6 +177,9 @@ class phpNstaMaster extends ConfigGenerator implements ConfigInterface {
         }
 
         require_once $this->outfile;
+        if(!isset($config)){
+            return false;
+        }
         $configFromFile = $config; //$config gets defined in required file
 
         $config = $this->mergeDbResultWithDefaultConfiguration($dbRecords);
