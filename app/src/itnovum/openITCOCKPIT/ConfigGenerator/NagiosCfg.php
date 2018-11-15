@@ -54,6 +54,11 @@ class NagiosCfg extends ConfigGenerator implements ConfigInterface {
             'enable_event_handlers'   => 1,
             'check_host_freshness'    => 1,
             'check_service_freshness' => 1,
+
+            'statusengine_use_log_data' => 1,
+            'statusengine_enable_ochp'  => 0,
+            'statusengine_enable_ocsp'  => 0,
+
         ],
 
         'int' => [
@@ -162,6 +167,10 @@ class NagiosCfg extends ConfigGenerator implements ConfigInterface {
             'low_service_flap_threshold'  => 'FLAP DETECTION THRESHOLDS FOR HOSTS AND SERVICES Read the HTML documentation on flap detection for an explanation of what this option does.  This option has no effect if flap detection is disabled.',
             'high_service_flap_threshold' => 'FLAP DETECTION THRESHOLDS FOR HOSTS AND SERVICES Read the HTML documentation on flap detection for an explanation of what this option does.  This option has no effect if flap detection is disabled.',
 
+            'statusengine_use_log_data' => 'Determines if Statusengine Event Broker export log data. Enabling this feature could has a HIGH PERFORMANCE IMPACT!',
+            'statusengine_enable_ochp'  => 'Enables/Disabled Statusengine implementation of OCHP.',
+            'statusengine_enable_ocsp'  => 'Enables/Disabled Statusengine implementation of OCSP.',
+
         ];
 
         if (isset($help[$key])) {
@@ -190,6 +199,68 @@ class NagiosCfg extends ConfigGenerator implements ConfigInterface {
         }
 
         return $this->saveConfigFile($configToExport);
+    }
+
+    /**
+     * @param array $dbRecords
+     * @return bool|array
+     */
+    public function migrate($dbRecords) {
+        if (!file_exists($this->outfile)) {
+            return false;
+        }
+
+        $config = $this->mergeDbResultWithDefaultConfiguration($dbRecords);
+
+        //Parse nagios.cfg
+        $nagiosCfgConfigFromFile = [];
+        foreach (file($this->outfile) as $line) {
+            $line = trim($line);
+            //Skip comments
+            if ($line === '' || substr($line, 0, 1) === '#') {
+                continue;
+            }
+
+            $keyValue = explode('=', $line, 2);
+            if (count($keyValue) === 2) {
+                $nagiosCfgConfigFromFile[$keyValue[0]] = $keyValue[1];
+            }
+        }
+
+        if (isset($nagiosCfgConfigFromFile['broker_module']) && preg_match('/statusengine\.o/', $nagiosCfgConfigFromFile['broker_module'])) {
+            //Parse broker_module line for Statusengine Broker
+            $brokerModuleConfig = explode(' ', $nagiosCfgConfigFromFile['broker_module']);
+            unset($brokerModuleConfig[0]); //Remove /opt/statusengine/naemon/statusengine.o
+
+            $keysToMigrate = [
+                'use_log_data' => 'statusengine_use_log_data',
+                'enable_ochp'  => 'statusengine_enable_ochp',
+                'enable_ocsp'  => 'statusengine_enable_ocsp'
+            ];
+            foreach ($brokerModuleConfig as $StatusengineKeyValue) {
+                $StatusengineKeyValueArr = explode('=', $StatusengineKeyValue, 2);
+                if (count($StatusengineKeyValueArr) === 2) {
+                    if (isset($keysToMigrate[$StatusengineKeyValueArr[0]])) {
+                        $nagiosCfgConfigFromFile[$keysToMigrate[$StatusengineKeyValueArr[0]]] = $StatusengineKeyValueArr[1];
+                    }
+                }
+
+
+            }
+        }
+
+        foreach($config as $type => $fields){
+            foreach($fields as $key => $value){
+                if(isset($nagiosCfgConfigFromFile[$key])){
+                    if($value != $nagiosCfgConfigFromFile[$key]){
+                        //Change in nagios.cfg on disk. Use value from text file
+                        $config[$type][$key] = $nagiosCfgConfigFromFile[$key];
+                    }
+                }
+            }
+        }
+
+        return $config;
     }
 
 }

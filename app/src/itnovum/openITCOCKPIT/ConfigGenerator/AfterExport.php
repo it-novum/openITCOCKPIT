@@ -108,4 +108,34 @@ class AfterExport extends ConfigGenerator implements ConfigInterface {
         return $this->saveConfigFile($configToExport);
     }
 
+    /**
+     * @param array $dbRecords
+     * @return bool|array
+     */
+    public function migrate($dbRecords) {
+        if (!file_exists($this->outfile)) {
+            return false;
+        }
+        $config = $this->mergeDbResultWithDefaultConfiguration($dbRecords);
+
+        \Configure::load('after_export');
+        $configFromFile = \Configure::read('after_export');
+
+        foreach ($config['string'] as $field => $value) {
+            if (isset($configFromFile['SSH'][$field])) {
+                if ($config['string'][$field] != $configFromFile['SSH'][$field]) {
+                    $config['string'][$field] = $configFromFile['SSH'][$field];
+                }
+            }
+        }
+
+        if (isset($configFromFile['SSH']['port'])) {
+            if ($config['int']['remote_port'] != $configFromFile['SSH']['port']) {
+                $config['int']['remote_port'] = $configFromFile['SSH']['port'];
+            }
+        }
+
+        return $config;
+    }
+
 }

@@ -23,9 +23,6 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-//require_once APP.'Vendor'.DS.'minify'.DS.'src'.DS.'Minify.php';
-//require_once APP.'Vendor'.DS.'minify'.DS.'src'.DS.'JS.php';
-
 
 use itnovum\openITCOCKPIT\ConfigGenerator\ConfigInterface;
 use itnovum\openITCOCKPIT\ConfigGenerator\GeneratorRegistry;
@@ -42,22 +39,67 @@ class ConfigGeneratorShell extends AppShell {
 
     public function main() {
         $this->stdout->styles('green', ['text' => 'green']);
+        $this->stdout->styles('blue', ['text' => 'blue']);
 
-        //javascript components
+        $this->parser = $this->getOptionParser();
+
+        debug($this->params);
+
+        if (count($this->params) <= 3) {
+            $this->out('No option given. Try --help');
+            exit(1);
+        }
+
+        if (array_key_exists('migrate', $this->params)) {
+            $this->migrate();
+        }
+    }
+
+    public function generate() {
         $this->out('Generate all configuration files...    ');
 
         $GeneratorRegistry = new GeneratorRegistry();
 
         foreach ($GeneratorRegistry->getAllConfigFiles() as $ConfigFileObject) {
             /** @var ConfigInterface $ConfigFileObject */
-
             $this->out(sprintf('Generate %s   ', $ConfigFileObject->getOutfile()), false);
             $ConfigFileObject->writeToFile($this->ConfigurationFile->getConfigValuesByConfigFile($ConfigFileObject->getDbKey()));
             $this->out('<green>Ok</green>');
         }
-
     }
 
+    public function migrate() {
+        $this->out('Migrate existing configuration files to database...    ');
+
+        $GeneratorRegistry = new GeneratorRegistry();
+        foreach ($GeneratorRegistry->getAllConfigFiles() as $ConfigFileObject) {
+            /** @var ConfigInterface $ConfigFileObject */
+            $this->out(sprintf('Processing %s   ', $ConfigFileObject->getOutfile()), false);
+
+            $dbConfig = $this->ConfigurationFile->getConfigValuesByConfigFile($ConfigFileObject->getDbKey());
+            $config = $ConfigFileObject->migrate($dbConfig);
+            if (is_array($config)) {
+                $configFileForDatabase = $ConfigFileObject->convertRequestForSaveAll($config);
+                $this->ConfigurationFile->saveConfigurationValuesForConfigFile($ConfigFileObject->getDbKey(), $configFileForDatabase);
+                $this->out('<green>Ok</green>');
+            } else {
+                $this->out('<blue>Skipping</blue>');
+            }
+        }
+    }
+
+    /**
+     * @return ConsoleOptionParser
+     */
+    public function getOptionParser() {
+        $parser = parent::getOptionParser();
+        $parser->addOptions([
+            'generate' => ['help' => "Will generate all configuration files from database"],
+            'migrate'  => ['help' => 'Will migrate existing configuration files to database']
+        ]);
+
+        return $parser;
+    }
 
     public function _welcome() {
         //Disable CakePHP welcome messages

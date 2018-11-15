@@ -107,7 +107,7 @@ class ConfigurationFilesController extends AppController {
         if ($this->request->is('post')) {
             if ($ConfigurationObjectClassName->validate($this->request->data)) {
                 //Save new config to database
-                $configFileForDatabase = $ConfigurationObjectClassName->convertRequestForSaveAll($this->request);
+                $configFileForDatabase = $ConfigurationObjectClassName->convertRequestForSaveAll($this->request->data);
                 if ($this->ConfigurationFile->saveConfigurationValuesForConfigFile($ConfigurationObjectClassName->getDbKey(), $configFileForDatabase)) {
                     $this->setFlash(_('Config saved successfully'));
                     $this->set('success', true);

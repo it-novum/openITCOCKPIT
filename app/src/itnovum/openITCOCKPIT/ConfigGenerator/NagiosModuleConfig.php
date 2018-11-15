@@ -31,7 +31,9 @@ class NagiosModuleConfig extends ConfigGenerator implements ConfigInterface {
 
     protected $template = 'nagios_module_config.php.tpl';
 
-    protected $outfile = '/etc/openitcockpit/app/Plugin/NagiosModule/Config/config.php';
+    //protected $outfile = '/etc/openitcockpit/app/Plugin/NagiosModule/Config/config.php';
+    protected $outfile = '/tmp/config.php';
+
 
     /**
      * @var string
@@ -100,6 +102,30 @@ class NagiosModuleConfig extends ConfigGenerator implements ConfigInterface {
         }
 
         return $this->saveConfigFile($configToExport);
+    }
+
+    /**
+     * @param array $dbRecords
+     * @return bool|array
+     */
+    public function migrate($dbRecords) {
+        if (!file_exists($this->outfile)) {
+            return false;
+        }
+        $config = $this->mergeDbResultWithDefaultConfiguration($dbRecords);
+
+        \Configure::load('NagiosModule.config');
+        $configFromFile = \Configure::read('NagiosModule');
+
+        foreach ($config['int'] as $field => $value) {
+            if (isset($configFromFile[$field])) {
+                if ($config['int'][$field] != $configFromFile[$field]) {
+                    $config['int'][$field] = $configFromFile[$field];
+                }
+            }
+        }
+
+        return $config;
     }
 
 }

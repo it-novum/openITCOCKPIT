@@ -280,13 +280,13 @@ class ConfigGenerator {
     }
 
     /**
-     * @param \CakeRequest $Request
+     * @param $requestData
      * @return array
      */
-    public function convertRequestForSaveAll(\CakeRequest $Request) {
+    public function convertRequestForSaveAll($requestData) {
         $records = [];
 
-        foreach ($Request->data as $type => $fields) {
+        foreach ($requestData as $type => $fields) {
             foreach ($fields as $key => $value) {
                 $records[] = [
                     'ConfigurationFile' => [
@@ -320,7 +320,7 @@ class ConfigGenerator {
         $configToExport['STATIC_FILE_HEADER'] = $FileHeader->getHeader($this->commentChar);
 
         $configDir = dirname($this->outfile);
-        if(!is_dir($configDir)){
+        if (!is_dir($configDir)) {
             return false;
         }
 

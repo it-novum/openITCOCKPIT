@@ -65,4 +65,11 @@ interface ConfigInterface {
      */
     public function getDbKey();
 
+    /**
+     * Migrate current existing config file to database
+     * @param array $dbRecords from CakePHP find
+     * @return bool
+     */
+    public function migrate($dbRecords);
+
 }
