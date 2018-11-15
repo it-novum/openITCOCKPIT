@@ -521,7 +521,7 @@ certificate expiration times.',
                         [
                             'id'           => '17',
                             'name'         => 'check_local_disk',
-                            'command_line' => '$USER1$/check_disk -w $ARG1$ -c $ARG2$ -p $ARG3$',
+                            'command_line' => '$USER1$/check_disk -w $ARG1$% -c $ARG2$% -p $ARG3$',
                             'command_type' => '1',
                             'human_args'   => null,
                             'uuid'         => '74a59dd0-2eff-4f41-9bcd-3e8786f34f04',
