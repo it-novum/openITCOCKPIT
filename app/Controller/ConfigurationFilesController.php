@@ -23,9 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 use itnovum\openITCOCKPIT\ConfigGenerator\ConfigInterface;
-use itnovum\openITCOCKPIT\ConfigGenerator\DbBackend;
 use itnovum\openITCOCKPIT\ConfigGenerator\GeneratorRegistry;
-use itnovum\openITCOCKPIT\ConfigGenerator\phpNstaMaster;
 
 /**
  * Class ConfigurationFilesController
@@ -93,6 +91,12 @@ class ConfigurationFilesController extends AppController {
         $this->layout = 'blank';
 
         $this->__sharedControllerAction('itnovum\openITCOCKPIT\ConfigGenerator\DbBackend', 'DbBackend');
+    }
+
+    public function PerfdataBackend(){
+        $this->layout = 'blank';
+
+        $this->__sharedControllerAction('itnovum\openITCOCKPIT\ConfigGenerator\Perfdatabackend', 'Perfdatabackend');
     }
 
     /**

@@ -36,7 +36,8 @@ class GeneratorRegistry {
             new AfterExport(),
             new NagiosModuleConfig(),
             new phpNstaMaster(),
-            new DbBackend()
+            new DbBackend(),
+            new Perfdatabackend()
         ];
     }
 
@@ -48,7 +49,8 @@ class GeneratorRegistry {
             __('openITCOCKPIT Interface configuration files') => [
                 new AfterExport(),
                 new NagiosModuleConfig(),
-                new DbBackend()
+                new DbBackend(),
+                new Perfdatabackend()
             ],
             __('Monitoring engine')                           => [
                 new NagiosCfg()
