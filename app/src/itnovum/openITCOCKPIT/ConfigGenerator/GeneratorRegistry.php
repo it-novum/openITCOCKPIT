@@ -37,7 +37,8 @@ class GeneratorRegistry {
             new NagiosModuleConfig(),
             new phpNstaMaster(),
             new DbBackend(),
-            new Perfdatabackend()
+            new Perfdatabackend(),
+            new GraphingDocker()
         ];
     }
 
@@ -58,6 +59,9 @@ class GeneratorRegistry {
             __('phpNSTA')                                     => [
                 new phpNstaMaster()
             ],
+            __('Carbon and Whisper (Graphing)')               => [
+                new GraphingDocker()
+            ]
 
         ];
     }

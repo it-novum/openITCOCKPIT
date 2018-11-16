@@ -99,6 +99,13 @@ class ConfigurationFilesController extends AppController {
         $this->__sharedControllerAction('itnovum\openITCOCKPIT\ConfigGenerator\Perfdatabackend', 'Perfdatabackend');
     }
 
+    public function GraphingDocker(){
+        $this->layout = 'blank';
+
+        $this->__sharedControllerAction('itnovum\openITCOCKPIT\ConfigGenerator\GraphingDocker', 'GraphingDocker');
+    }
+
+
     /**
      * @param $ConfigurationObjectClassName
      */
