@@ -31,8 +31,7 @@ class DbBackend extends ConfigGenerator implements ConfigInterface {
 
     protected $template = 'dbbackend.php.tpl';
 
-    //protected $outfile = '/etc/openitcockpit/app/Config/dbbackend.php';
-    protected $outfile = '/tmp/dbbackend.php';
+    protected $outfile = '/etc/openitcockpit/app/Config/dbbackend.php';
 
     /**
      * @var string
