@@ -31,8 +31,7 @@ class GraphingDocker extends ConfigGenerator implements ConfigInterface {
 
     protected $template = 'docker-compose.yml';
 
-    //protected $outfile = '/usr/share/openitcockpit/docker/container/graphing/docker-compose.yml';
-    protected $outfile = '/tmp/docker-compose.yml';
+    protected $outfile = '/usr/share/openitcockpit/docker/container/graphing/docker-compose.yml';
 
     /**
      * @var string
