@@ -81,30 +81,40 @@ class ConfigurationFilesController extends AppController {
         $this->__sharedControllerAction('itnovum\openITCOCKPIT\ConfigGenerator\NagiosModuleConfig', 'NagiosModuleConfig');
     }
 
-    public function phpNSTAMaster(){
+    public function phpNSTAMaster() {
         $this->layout = 'blank';
 
         $this->__sharedControllerAction('itnovum\openITCOCKPIT\ConfigGenerator\phpNstaMaster', 'phpNstaMaster');
     }
 
-    public function DbBackend(){
+    public function DbBackend() {
         $this->layout = 'blank';
 
         $this->__sharedControllerAction('itnovum\openITCOCKPIT\ConfigGenerator\DbBackend', 'DbBackend');
     }
 
-    public function PerfdataBackend(){
+    public function PerfdataBackend() {
         $this->layout = 'blank';
 
         $this->__sharedControllerAction('itnovum\openITCOCKPIT\ConfigGenerator\Perfdatabackend', 'Perfdatabackend');
     }
 
-    public function GraphingDocker(){
+    public function GraphingDocker() {
         $this->layout = 'blank';
 
         $this->__sharedControllerAction('itnovum\openITCOCKPIT\ConfigGenerator\GraphingDocker', 'GraphingDocker');
     }
 
+
+    public function restorDefault($configFile) {
+        $className = sprintf('\'itnovum\openITCOCKPIT\ConfigGenerator\%s', $configFile);
+        if (!class_exists($className)) {
+            throw new NotFoundException('Config file not found');
+        }
+
+        $ConfigurationObjectClassName = new $className();
+
+    }
 
     /**
      * @param $ConfigurationObjectClassName
@@ -127,7 +137,7 @@ class ConfigurationFilesController extends AppController {
                 //Save new config to database
                 $configFileForDatabase = $ConfigurationObjectClassName->convertRequestForSaveAll($this->request->data);
                 if ($this->ConfigurationFile->saveConfigurationValuesForConfigFile($ConfigurationObjectClassName->getDbKey(), $configFileForDatabase)) {
-                    $this->setFlash(_('Config saved successfully'));
+                    $this->setFlash(__('Config saved successfully'));
                     $this->set('success', true);
                     $this->set('_serialize', ['success']);
                     return;
