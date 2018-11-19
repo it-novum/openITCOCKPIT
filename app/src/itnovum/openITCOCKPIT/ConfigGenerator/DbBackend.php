@@ -31,8 +31,6 @@ class DbBackend extends ConfigGenerator implements ConfigInterface {
 
     protected $template = 'dbbackend.php.tpl';
 
-    protected $outfile = '/etc/openitcockpit/app/Config/dbbackend.php';
-
     /**
      * @var string
      */
@@ -45,6 +43,10 @@ class DbBackend extends ConfigGenerator implements ConfigInterface {
     ];
 
     protected $dbKey = 'DbBackend';
+
+    public function __construct() {
+        $this->outfile = APP . 'Config' . DS . 'dbbackend.php';
+    }
 
     /**
      * @param array $data
@@ -127,7 +129,7 @@ class DbBackend extends ConfigGenerator implements ConfigInterface {
         \Configure::load('dbbackend');
         $configFromFile = \Configure::read('dbbackend');
 
-        if($config['string']['dbbackend'] != $configFromFile){
+        if ($config['string']['dbbackend'] != $configFromFile) {
             $config['string']['dbbackend'] = $configFromFile;
         }
 

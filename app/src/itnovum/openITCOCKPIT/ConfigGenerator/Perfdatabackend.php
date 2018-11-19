@@ -31,8 +31,6 @@ class Perfdatabackend extends ConfigGenerator implements ConfigInterface {
 
     protected $template = 'perfdatabackend.php.tpl';
 
-    protected $outfile = '/etc/openitcockpit/app/Config/perfdatabackend.php';
-
     /**
      * @var string
      */
@@ -45,6 +43,10 @@ class Perfdatabackend extends ConfigGenerator implements ConfigInterface {
     ];
 
     protected $dbKey = 'PerfdataBackend';
+
+    public function __construct() {
+        $this->outfile = APP . 'Config' . DS . 'perfdatabackend.php';
+    }
 
     /**
      * @param array $data

@@ -31,7 +31,7 @@ class PerfdataBackend {
      * PerfdataBackend constructor.
      */
     public function __construct() {
-        $configFile = APP . 'Config' . DS . 'dbbackend.php';
+        $configFile = APP . 'Config' . DS . 'perfdatabackend.php';
         if (file_exists($configFile)) {
             \Configure::load('perfdatabackend');
             $this->perfdataBackend = \Configure::read('perfdatabackend');

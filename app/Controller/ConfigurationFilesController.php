@@ -24,6 +24,8 @@
 //	confirmation.
 use itnovum\openITCOCKPIT\ConfigGenerator\ConfigInterface;
 use itnovum\openITCOCKPIT\ConfigGenerator\GeneratorRegistry;
+use itnovum\openITCOCKPIT\Core\DbBackend;
+use itnovum\openITCOCKPIT\Core\PerfdataBackend;
 
 /**
  * Class ConfigurationFilesController
@@ -38,6 +40,10 @@ class ConfigurationFilesController extends AppController {
     public $layout = 'angularjs';
 
     public function index() {
+
+        debug(new DbBackend());
+        debug(new PerfdataBackend());
+
         if (!$this->isAngularJsRequest()) {
             //Only ship HTML Template
             return;
