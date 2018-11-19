@@ -51,6 +51,8 @@ class ConfigGeneratorTask extends AppShell implements CronjobInterface {
             $this->beQuiet();
         }
 
+        $this->out('Check for pending configuration files');
+
         $systemsettings = $this->Systemsetting->findAsArray();
 
         $configFilesToGenerate = $this->ConfigurationQueue->getConfigFilesToGenerate();
@@ -94,10 +96,10 @@ class ConfigGeneratorTask extends AppShell implements CronjobInterface {
                 default:
                     break;
             }
+            $this->ConfigurationQueue->delete($record['ConfigurationQueue']['id']);
         }
-
-        $this->ConfigurationQueue->delete($record['ConfigurationQueue']['id']);
-
+        $this->out('<green>Ok</green>');
+        $this->hr();
     }
 
 

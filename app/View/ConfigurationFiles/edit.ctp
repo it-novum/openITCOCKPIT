@@ -37,7 +37,7 @@ use itnovum\openITCOCKPIT\ConfigGenerator\ConfigInterface;
     <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
         <div class="alert alert-info">
             <i class="fa-fw fa fa-info"></i>
-            <?php echo __('To apply configuration changes, please "Refresh monitoring configuration".'); ?>
+            <?php echo __('Configuration changes will be applied automatically with the next schedule of "ConfigGenerator" cron job.'); ?>
         </div>
     </div>
 </div>
