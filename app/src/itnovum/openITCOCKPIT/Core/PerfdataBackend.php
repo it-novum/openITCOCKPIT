@@ -28,11 +28,17 @@ namespace itnovum\openITCOCKPIT\Core;
 class PerfdataBackend {
 
     /**
-     * DbBackend constructor.
-     * @param string $backend
+     * PerfdataBackend constructor.
      */
-    public function __construct($perfdataBackend) {
-        $this->perfdataBackend = $perfdataBackend;
+    public function __construct() {
+        $configFile = APP . 'Config' . DS . 'dbbackend.php';
+        if (file_exists($configFile)) {
+            \Configure::load('perfdatabackend');
+            $this->perfdataBackend = \Configure::read('perfdatabackend');
+        } else {
+            //Use default backend as fallback
+            $this->perfdataBackend = 'Whisper';
+        }
     }
 
     /**

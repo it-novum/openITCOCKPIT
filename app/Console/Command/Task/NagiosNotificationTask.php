@@ -209,11 +209,9 @@ class NagiosNotificationTask extends AppShell {
         ];
 
         if (!$parameters['no-attachments']) {
-            Configure::load('dbbackend');
-            Configure::load('perfdatabackend');
 
-            $DbBackend = new DbBackend(Configure::read('dbbackend'));
-            $PerfdataBackend = new PerfdataBackend(Configure::read('perfdatabackend'));
+            $DbBackend = new DbBackend();
+            $PerfdataBackend = new PerfdataBackend();
             $PerfdataLoader = new PerfdataLoader($DbBackend, $PerfdataBackend, $this->Servicestatus, $this->Rrd);
 
             try {
