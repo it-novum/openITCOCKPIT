@@ -107,13 +107,30 @@ class ConfigurationFilesController extends AppController {
 
 
     public function restorDefault($configFile) {
-        $className = sprintf('\'itnovum\openITCOCKPIT\ConfigGenerator\%s', $configFile);
+        if (!$this->request->is('post') || !$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        $className = sprintf('itnovum\openITCOCKPIT\ConfigGenerator\%s', $configFile);
         if (!class_exists($className)) {
             throw new NotFoundException('Config file not found');
         }
 
+        /** @var  $ConfigurationObjectClassName ConfigInterface */
         $ConfigurationObjectClassName = new $className();
 
+        $config = $ConfigurationObjectClassName->convertRequestForSaveAll($ConfigurationObjectClassName->getDefaults());
+        if ($this->ConfigurationFile->saveConfigurationValuesForConfigFile($ConfigurationObjectClassName->getDbKey(), $config)) {
+            $this->setFlash(__('Config restored to default successfully'));
+            $this->set('success', true);
+            $this->set('_serialize', ['success']);
+            return;
+        }
+
+        $this->response->statusCode(400);
+        $this->set('success', false);
+        $this->set('_serialize', ['success']);
+        return;
     }
 
     /**

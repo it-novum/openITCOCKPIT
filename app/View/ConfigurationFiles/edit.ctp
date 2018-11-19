@@ -50,6 +50,14 @@ use itnovum\openITCOCKPIT\ConfigGenerator\ConfigInterface;
             <?php echo __('Edit configuration file'); ?>
             <?php echo $ConfigFileObject->getOutfile(); ?>
         </h2>
+
+        <div class="widget-toolbar" role="menu">
+            <button type="button" class="btn btn-xs btn-primary" ng-click="askRestoreDefault()">
+                <i class="fa fa-recycle"></i>
+                <?php echo __('Restore default'); ?>
+            </button>
+        </div>
+
         <div class="widget-toolbar" role="menu">
             <?php echo $this->Utils->backButton(); ?>
         </div>
@@ -66,3 +74,32 @@ use itnovum\openITCOCKPIT\ConfigGenerator\ConfigInterface;
     </div>
 </div>
 
+<div id="angularConfirmRestoreDefault" class="modal" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary txt-color-white">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title"><?php echo __('Attention!'); ?></h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <?php echo __('Do you really want to restore default configuration? All manual changes will be lost.'); ?>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" ng-click="restoreDefault('<?php echo $ConfigFileObject->getDbKey(); ?>')">
+                    <i class="fa fa-refresh fa-spin" ng-show="isRestoring"></i>
+                    <?php echo __('Restore default'); ?>
+                </button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">
+                    <?php echo __('Cancel'); ?>
+                </button>
+            </div>
+        </div>
+
+    </div>
+</div>
