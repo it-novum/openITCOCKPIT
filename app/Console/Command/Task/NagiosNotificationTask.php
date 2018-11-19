@@ -164,8 +164,7 @@ class NagiosNotificationTask extends AppShell {
                 'UNKNOWN'  => 3
             ];
 
-            Configure::load('dbbackend');
-            $DbBackend = new DbBackend(Configure::read('dbbackend'));
+            $DbBackend = new DbBackend();
             $ServicestatusFields = new ServicestatusFields($DbBackend);
             $ServicestatusFields->currentState()->longOutput();
 

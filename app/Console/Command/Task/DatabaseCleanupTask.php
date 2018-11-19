@@ -49,8 +49,7 @@ class DatabaseCleanupTask extends AppShell implements CronjobInterface {
 
         $this->_systemsettings = $this->Systemsetting->findAsArray();
 
-        Configure::load('dbbackend');
-        $this->DbBackend = new DbBackend(Configure::read('dbbackend'));
+        $this->DbBackend = new DbBackend();
 
         if ($this->DbBackend->isNdoUtils()) {
             $models = [

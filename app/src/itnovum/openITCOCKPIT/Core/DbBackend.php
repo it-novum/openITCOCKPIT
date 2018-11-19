@@ -62,4 +62,11 @@ class DbBackend {
         return $this->backend === 'Statusengine3';
     }
 
+    /**
+     * @return string
+     */
+    public function getBackendAsString(){
+        return $this->backend;
+    }
+
 }

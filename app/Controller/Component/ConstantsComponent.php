@@ -24,6 +24,8 @@
 //	confirmation.
 
 
+use itnovum\openITCOCKPIT\Core\DbBackend;
+
 class ConstantsComponent extends Component {
     /**
      * Creates an array with the basic constants and define them automatically
@@ -33,13 +35,12 @@ class ConstantsComponent extends Component {
             define('ROOT_CONTAINER', 1);
         }
 
-        Configure::load('dbbackend');
-
         //core array
         $this->defines = [];
 
         //Monitoring Objects
-        $monitoring = Configure::read('dbbackend');
+        $DbBackend = new DbBackend();
+        $monitoring = $DbBackend->getBackendAsString();
 
         $this->defines['monitoring'] = [
             //Models
