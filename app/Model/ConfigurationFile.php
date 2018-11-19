@@ -52,4 +52,36 @@ class ConfigurationFile extends AppModel {
         return $this->saveAll($records);
     }
 
+    /**
+     * @param array $currentConfiguration from Cake's findAll
+     * @param array $newConfiguration for Cake's saveAll
+     * @return bool
+     */
+    public function hasChanged($currentConfiguration, $newConfiguration) {
+        $currentConfigKeyValue = [];
+        foreach ($currentConfiguration as $record) {
+            $key = $record['ConfigurationFile']['key'];
+            $value = $record['ConfigurationFile']['value'];
+            $currentConfigKeyValue[$key] = $value;
+        }
+
+        foreach ($newConfiguration as $record) {
+            $key = $record['ConfigurationFile']['key'];
+            $value = $record['ConfigurationFile']['value'];
+
+            if (!isset($currentConfigKeyValue[$key])) {
+                //Key not found in old configuration
+                //mark configuration file to rewrite
+                return true;
+            }
+
+            if ($currentConfigKeyValue[$key] != $value) {
+                //Value has changed
+                //mark configuration file to rewrite
+                return true;
+            }
+        }
+        return false;
+    }
+
 }

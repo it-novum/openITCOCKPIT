@@ -30,12 +30,22 @@ use itnovum\openITCOCKPIT\ConfigGenerator\GeneratorRegistry;
 /**
  * Class ConfigGeneratorShell
  * @property ConfigurationFile $ConfigurationFile
+ * @property ConfigGeneratorTask $ConfigGenerator
  */
 class ConfigGeneratorShell extends AppShell {
 
     public $uses = [
         'ConfigurationFile'
     ];
+
+    public $tasks = [
+        'ConfigGenerator'
+    ];
+
+    /**
+     * @var bool
+     */
+    private $force = false;
 
     public function main() {
         $this->stdout->styles('green', ['text' => 'green']);

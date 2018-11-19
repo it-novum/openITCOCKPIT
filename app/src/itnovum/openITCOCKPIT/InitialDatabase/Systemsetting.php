@@ -178,7 +178,7 @@ class Systemsetting extends Importer {
             [
                 'Systemsetting' => [
                     'key'     => 'MONITORING.RESTART',
-                    'value'   => 'service nagios restart',
+                    'value'   => 'systemctl restart nagios',
                     'info'    => 'Command to restart your monitoring software',
                     'section' => 'MONITORING'
                 ],
@@ -186,7 +186,7 @@ class Systemsetting extends Importer {
             [
                 'Systemsetting' => [
                     'key'     => 'MONITORING.RELOAD',
-                    'value'   => 'service nagios reload',
+                    'value'   => 'systemctl reload nagios',
                     'info'    => 'Command to reload your monitoring software',
                     'section' => 'MONITORING'
                 ],
@@ -194,7 +194,7 @@ class Systemsetting extends Importer {
             [
                 'Systemsetting' => [
                     'key'     => 'MONITORING.STOP',
-                    'value'   => 'service nagios stop',
+                    'value'   => 'systemctl stop nagios',
                     'info'    => 'Command to stop your monitoring software',
                     'section' => 'MONITORING'
                 ],
@@ -202,7 +202,7 @@ class Systemsetting extends Importer {
             [
                 'Systemsetting' => [
                     'key'     => 'MONITORING.START',
-                    'value'   => 'service nagios start',
+                    'value'   => 'systemctl start nagios',
                     'info'    => 'Command to start your monitoring software',
                     'section' => 'MONITORING'
                 ],
@@ -210,7 +210,7 @@ class Systemsetting extends Importer {
             [
                 'Systemsetting' => [
                     'key'     => 'MONITORING.STATUS',
-                    'value'   => 'service nagios status',
+                    'value'   => 'systemctl status nagios',
                     'info'    => 'Command to query the status of your monitoring software',
                     'section' => 'MONITORING'
                 ],
@@ -586,7 +586,7 @@ class Systemsetting extends Importer {
             [
                 'Systemsetting' => [
                     'key'     => 'INIT.SUDO_SERVER_STATUS',
-                    'value'   => 'service sudo_server status',
+                    'value'   => 'systemctl status sudo_server',
                     'info'    => 'Command to query the status of your sudo_server',
                     'section' => 'INIT'
                 ],
@@ -594,7 +594,7 @@ class Systemsetting extends Importer {
             [
                 'Systemsetting' => [
                     'key'     => 'INIT.GEARMAN_WORKER_STATUS',
-                    'value'   => 'service gearman_worker status',
+                    'value'   => 'systemctl status gearman_worker',
                     'info'    => 'Command to query the status of gearman_worker',
                     'section' => 'INIT'
                 ],
@@ -602,7 +602,7 @@ class Systemsetting extends Importer {
             [
                 'Systemsetting' => [
                     'key'     => 'INIT.OITC_CMD_STATUS',
-                    'value'   => 'service oitc_cmd status',
+                    'value'   => 'systemctl status oitc_cmd',
                     'info'    => 'Command to query the status of your oitc_cmd',
                     'section' => 'INIT'
                 ],
@@ -626,7 +626,7 @@ class Systemsetting extends Importer {
             [
                 'Systemsetting' => [
                     'key'     => 'INIT.STATUSENIGNE_STATUS',
-                    'value'   => 'service statusengine status',
+                    'value'   => 'systemctl status statusengine',
                     'info'    => 'Command to query the status of your statusengine',
                     'section' => 'INIT'
                 ],
@@ -634,7 +634,7 @@ class Systemsetting extends Importer {
             [
                 'Systemsetting' => [
                     'key'     => 'INIT.GEARMAN_JOB_SERVER_STATUS',
-                    'value'   => 'service gearman-job-server status',
+                    'value'   => 'systemctl status gearman-job-server',
                     'info'    => 'Command to query the status of  gearman-job-server',
                     'section' => 'INIT'
                 ],
@@ -642,7 +642,7 @@ class Systemsetting extends Importer {
             [
                 'Systemsetting' => [
                     'key'     => 'INIT.PHPNSTA_STATUS',
-                    'value'   => 'service phpNSTA status',
+                    'value'   => 'systemctl status phpnsta',
                     'info'    => 'Command to query the status of  phpNSTA',
                     'section' => 'INIT'
                 ],
@@ -650,7 +650,7 @@ class Systemsetting extends Importer {
             [
                 'Systemsetting' => [
                     'key'     => 'INIT.PUSH_NOTIFICATION',
-                    'value'   => 'service push_notification status',
+                    'value'   => 'systemctl status push_notification',
                     'info'    => 'Command to query the status of openITCOCKPITs push notification service',
                     'section' => 'INIT'
                 ],
@@ -658,8 +658,32 @@ class Systemsetting extends Importer {
             [
                 'Systemsetting' => [
                     'key'     => 'INIT.NODEJS_SERVER',
-                    'value'   => 'service nodejs_server status',
+                    'value'   => 'systemctl status nodejs_server',
                     'info'    => 'Command to query the status of openITCOCKPITs NodeJS Server backend',
+                    'section' => 'INIT'
+                ],
+            ],
+            [
+                'Systemsetting' => [
+                    'key'     => 'INIT.GEARMAN_WORKER_RESTART',
+                    'value'   => 'systemctl restart gearman_worker',
+                    'info'    => 'Command to restart gearman_worker service',
+                    'section' => 'INIT'
+                ],
+            ],
+            [
+                'Systemsetting' => [
+                    'key'     => 'INIT.OITC_GRAPHING_RESTART',
+                    'value'   => 'systemctl restart openitcockpit-graphing',
+                    'info'    => 'Command to restart openitcockpit-graphing service',
+                    'section' => 'INIT'
+                ],
+            ],
+            [
+                'Systemsetting' => [
+                    'key'     => 'INIT.PHPNSTA_RESTART',
+                    'value'   => 'systemctl restart phpnsta',
+                    'info'    => 'Command to restart phpNSTA service',
                     'section' => 'INIT'
                 ],
             ],

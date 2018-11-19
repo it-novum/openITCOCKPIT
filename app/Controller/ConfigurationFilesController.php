@@ -28,11 +28,13 @@ use itnovum\openITCOCKPIT\ConfigGenerator\GeneratorRegistry;
 /**
  * Class ConfigurationFilesController
  * @property ConfigurationFile $ConfigurationFile
+ * @property ConfigurationQueue $ConfigurationQueue
  */
 class ConfigurationFilesController extends AppController {
 
     public $uses = [
-        'ConfigurationFile'
+        'ConfigurationFile',
+        'ConfigurationQueue'
     ];
 
     public $layout = 'angularjs';
@@ -135,6 +137,8 @@ class ConfigurationFilesController extends AppController {
 
     /**
      * @param $ConfigurationObjectClassName
+     * @param $ShortClassName
+     * @throws Exception
      */
     private function __sharedControllerAction($ConfigurationObjectClassName, $ShortClassName) {
         $this->layout = 'blank';
@@ -153,10 +157,31 @@ class ConfigurationFilesController extends AppController {
             if ($ConfigurationObjectClassName->validate($this->request->data)) {
                 //Save new config to database
                 $configFileForDatabase = $ConfigurationObjectClassName->convertRequestForSaveAll($this->request->data);
+
+                $currentConfig = $this->ConfigurationFile->getConfigValuesByConfigFile($ConfigurationObjectClassName->getDbKey());
+
+                $configHasChanged = $this->ConfigurationFile->hasChanged($currentConfig, $configFileForDatabase);
+
                 if ($this->ConfigurationFile->saveConfigurationValuesForConfigFile($ConfigurationObjectClassName->getDbKey(), $configFileForDatabase)) {
                     $this->setFlash(__('Config saved successfully'));
                     $this->set('success', true);
                     $this->set('_serialize', ['success']);
+
+                    if($configHasChanged) {
+                        //Require rewirte of configuration file on disk?
+                        $this->ConfigurationQueue->deleteAll([
+                            'ConfigurationQueue.task' => 'ConfigGenerator',
+                            'ConfigurationQueue.data' => $ConfigurationObjectClassName->getDbKey()
+                        ]);
+                        $this->ConfigurationQueue->create();
+                        $this->ConfigurationQueue->save([
+                            'ConfigurationQueue' => [
+                                'task' => 'ConfigGenerator',
+                                'data' => $ConfigurationObjectClassName->getDbKey()
+                            ]
+                        ]);
+                    }
+
                     return;
                 } else {
                     $this->response->statusCode(400);
