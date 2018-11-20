@@ -509,8 +509,7 @@
                                             <strong><?php
                                                 echo __('The current status was acknowledged by %s ', $parameters['hostackauthor']);
                                                 echo __('with the comment "');
-                                                ?>
-                                                <?php
+
                                                 if (!empty($_systemsettings['TICKET_SYSTEM']['TICKET_SYSTEM.URL']) && preg_match('/^(Ticket)_?(\d+);?(\d+)/', $parameters['hostackcomment'], $ticketDetails)):
                                                     echo (isset($ticketDetails[1], $ticketDetails[3], $ticketDetails[2])) ?
                                                         $this->Html->link(
