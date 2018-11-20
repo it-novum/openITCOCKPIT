@@ -190,7 +190,7 @@ class DatabaseCleanupTask extends AppShell implements CronjobInterface {
         $this->deletePartitionsFromCrateDb($this->Logentry, 'LOGENTRIES');
         $this->deletePartitionsFromCrateDb($this->NotificationHost, 'NOTIFICATIONS');
         $this->deletePartitionsFromCrateDb($this->NotificationService, 'NOTIFICATIONS');
-        $this->deletePartitionsFromCrateDb($this->NotificationService, 'NOTIFICATIONS');
+        //$this->deletePartitionsFromCrateDb($this->NotificationService, 'NOTIFICATIONS');
 
         $this->out('<green>Cleanup done</green>');
         $this->hr();
