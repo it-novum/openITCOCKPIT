@@ -83,6 +83,7 @@ Vendor
 Vendor/*
 app/.c9
 
+docker
 app/Config/after_export.php
 app/Config/dbbackend.php
 app/Config/perfdatabackend.php
