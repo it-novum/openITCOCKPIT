@@ -6,6 +6,7 @@ class DateRangeBehavior extends ModelBehavior {
     function createDateRanges(&$Model, $date_start, $date_end, $time_ranges = []) {
         $date_start_timestamp = strtotime($date_start);
         $date_end_timestamp = strtotime($date_end);
+        $time_slices_default = [];
 
         $time_slices = [];
 
