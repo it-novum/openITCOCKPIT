@@ -185,7 +185,7 @@ $notification_settings = [
                                 'data-placeholder' => __('Please select...'),
                                 'class'            => 'chosen',
                                 'label'            => ['text' => __('Servicegroup'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
-                                'selected'         => $service['Servicegroup'],
+                                'selected'         => $this->Html->getParameter('Service.Servicegroup', $service['Servicegroup']),
                                 'wrapInput'        => 'col col-xs-10 col-md-10 col-lg-10',
                                 'style'            => 'width: 100%',
                                 'multiple'         => true,
