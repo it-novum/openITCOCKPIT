@@ -33,6 +33,7 @@ use itnovum\openITCOCKPIT\Core\Dashboards\TachoJson;
 use itnovum\openITCOCKPIT\Core\Dashboards\TrafficlightJson;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use Statusengine\PerfdataParser;
+use Cake\ORM\Locator\LocatorAwareTrait;
 
 /**
  * Class DashboardsController
@@ -45,6 +46,8 @@ use Statusengine\PerfdataParser;
  * @property Service $Service
  */
 class DashboardsController extends AppController {
+
+    use LocatorAwareTrait;
 
     //Most calls are API calls or modal html requests
     //Blank is the best default for Dashboards...
@@ -63,6 +66,10 @@ class DashboardsController extends AppController {
     ];
 
     public function index() {
+        $TableLocator = $this->getTableLocator();
+        $Proxy = $TableLocator->get('Proxies');
+        debug($Proxy->find()->first());
+
         $this->layout = 'angularjs';
         if (!$this->isAngularJsRequest()) {
             $askForHelp = false;

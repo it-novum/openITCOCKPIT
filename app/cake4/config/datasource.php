@@ -1,21 +1,24 @@
 <?php
 
+$DbConfig = new \DATABASE_CONFIG();
+
+
 return [
     'Datasources' => [
         'default' => [
             'className'        => 'Cake\Database\Connection',
             'driver'           => 'Cake\Database\Driver\Mysql',
             'persistent'       => false,
-            'host'             => 'cake-mariadb',
+            'host'             => $DbConfig->default['host'],
             /*
              * CakePHP will use the default DB port based on the driver selected
              * MySQL on MAMP uses port 8889, MAMP users will want to uncomment
              * the following line and set the port accordingly
              */
             //'port' => 'non_standard_port_number',
-            'username'         => 'root',
-            'password'         => '',
-            'database'         => 'cake',
+            'username'         => $DbConfig->default['login'],
+            'password'         => $DbConfig->default['password'],
+            'database'         => $DbConfig->default['database'],
             /*
              * You do not need to set this flag to use full utf-8 encoding (internal default since CakePHP 3.6).
              */
@@ -43,11 +46,11 @@ return [
             'className'        => 'Cake\Database\Connection',
             'driver'           => 'Cake\Database\Driver\Mysql',
             'persistent'       => false,
-            'host'             => 'localhost',
+            'host'             => $DbConfig->default['host'],
             //'port' => 'non_standard_port_number',
-            'username'         => 'my_app',
-            'password'         => 'secret',
-            'database'         => 'test_myapp',
+            'username'         => $DbConfig->default['login'],
+            'password'         => $DbConfig->default['password'],
+            'database'         => $DbConfig->default['database'].'_test',
             //'encoding' => 'utf8mb4',
             'timezone'         => 'UTC',
             'cacheMetadata'    => true,

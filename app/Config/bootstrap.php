@@ -216,3 +216,4 @@ CakePlugin::load('CakePdf', [
 );
 
 require_once OLD_APP . 'Vendor' . DS . 'autoload.php';
+require_once OLD_APP . 'cake4' . DS . 'config' . DS . 'bootstrap.php';
