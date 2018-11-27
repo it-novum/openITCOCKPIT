@@ -114,8 +114,8 @@ class ProjectTask extends AppShell {
 			}
 			$success = $this->corePath($path, $hardCode) === true;
 			if ($success) {
-				$this->out(__d('cake_console', ' * CAKE_CORE_INCLUDE_PATH set to %s in %s', CAKE_CORE_INCLUDE_PATH, 'webroot/index.php'));
-				$this->out(__d('cake_console', ' * CAKE_CORE_INCLUDE_PATH set to %s in %s', CAKE_CORE_INCLUDE_PATH, 'webroot/test.php'));
+				$this->out(__d('cake_console', ' * CAKE_CORE_INCLUDE_PATH set to %s in %s', OLD_CAKE_CORE_INCLUDE_PATH, 'webroot/index.php'));
+				$this->out(__d('cake_console', ' * CAKE_CORE_INCLUDE_PATH set to %s in %s', OLD_CAKE_CORE_INCLUDE_PATH, 'webroot/test.php'));
 			} else {
 				$this->err(__d('cake_console', 'Unable to set CAKE_CORE_INCLUDE_PATH, you should change it in %s', $path . 'webroot' . DS . 'index.php'));
 				$success = false;
@@ -237,8 +237,8 @@ class ProjectTask extends AppShell {
 		$File = new File($path . 'Console' . DS . 'cake.php');
 		$contents = $File->read();
 		if (preg_match('/(__CAKE_PATH__)/', $contents, $match)) {
-			$root = strpos(CAKE_CORE_INCLUDE_PATH, '/') === 0 ? " DS . '" : "'";
-			$replacement = $root . str_replace(DS, "' . DS . '", trim(CAKE_CORE_INCLUDE_PATH, DS)) . "'";
+			$root = strpos(OLD_CAKE_CORE_INCLUDE_PATH, '/') === 0 ? " DS . '" : "'";
+			$replacement = $root . str_replace(DS, "' . DS . '", trim(OLD_CAKE_CORE_INCLUDE_PATH, DS)) . "'";
 			$result = str_replace($match[0], $replacement, $contents);
 			if ($File->write($result)) {
 				return true;
@@ -314,7 +314,7 @@ class ProjectTask extends AppShell {
  * @return bool Success
  */
 	public function corePath($path, $hardCode = true) {
-		if (dirname($path) !== CAKE_CORE_INCLUDE_PATH) {
+		if (dirname($path) !== OLD_CAKE_CORE_INCLUDE_PATH) {
 			$filename = $path . 'webroot' . DS . 'index.php';
 			if (!$this->_replaceCorePath($filename, $hardCode)) {
 				return false;
@@ -337,8 +337,8 @@ class ProjectTask extends AppShell {
 	protected function _replaceCorePath($filename, $hardCode) {
 		$contents = file_get_contents($filename);
 
-		$root = strpos(CAKE_CORE_INCLUDE_PATH, '/') === 0 ? " DS . '" : "'";
-		$corePath = $root . str_replace(DS, "' . DS . '", trim(CAKE_CORE_INCLUDE_PATH, DS)) . "'";
+		$root = strpos(OLD_CAKE_CORE_INCLUDE_PATH, '/') === 0 ? " DS . '" : "'";
+		$corePath = $root . str_replace(DS, "' . DS . '", trim(OLD_CAKE_CORE_INCLUDE_PATH, DS)) . "'";
 
 		$composer = OLD_ROOT . DS . OLD_APP_DIR . DS . 'Vendor' . DS . 'cakephp' . DS . 'cakephp' . DS . 'lib';
 		if (file_exists($composer)) {

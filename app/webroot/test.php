@@ -75,7 +75,7 @@ if (!defined('WWW_ROOT')) {
 	define('WWW_ROOT', dirname(__FILE__) . DS);
 }
 
-if (!defined('CAKE_CORE_INCLUDE_PATH')) {
+if (!defined('OLD_CAKE_CORE_INCLUDE_PATH')) {
 	if (function_exists('ini_set')) {
 		ini_set('include_path', OLD_ROOT . DS . 'lib' . PATH_SEPARATOR . ini_get('include_path'));
 	}
@@ -83,7 +83,7 @@ if (!defined('CAKE_CORE_INCLUDE_PATH')) {
 		$failed = true;
 	}
 } else {
-	if (!include (CAKE_CORE_INCLUDE_PATH . DS . 'Cake' . DS . 'bootstrap.php')) {
+	if (!include (OLD_CAKE_CORE_INCLUDE_PATH . DS . 'Cake' . DS . 'bootstrap.php')) {
 		$failed = true;
 	}
 }

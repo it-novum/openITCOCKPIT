@@ -168,7 +168,7 @@ class CakeFixtureManager {
 			}
 
 			if (!$loaded) {
-				$firstPath = str_replace(array(OLD_APP, CAKE_CORE_INCLUDE_PATH, OLD_ROOT), '', $fixturePaths[0] . DS . $className . 'Fixture.php');
+				$firstPath = str_replace(array(OLD_APP, OLD_CAKE_CORE_INCLUDE_PATH, OLD_ROOT), '', $fixturePaths[0] . DS . $className . 'Fixture.php');
 				throw new UnexpectedValueException(__d('cake_dev', 'Referenced fixture class %s (%s) not found', $className, $firstPath));
 			}
 		}

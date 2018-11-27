@@ -146,7 +146,7 @@ class TemplateTaskTest extends CakeTestCase {
 		App::build(array(
 			'Console' => array(
 				CAKE . 'Test' . DS . 'test_app' . DS . 'Console' . DS,
-				CAKE_CORE_INCLUDE_PATH . DS . 'console' . DS
+				OLD_CAKE_CORE_INCLUDE_PATH . DS . 'console' . DS
 			)
 		));
 		$this->Task->initialize();

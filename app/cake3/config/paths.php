@@ -65,10 +65,10 @@ define('NEW_CACHE', NEW_TMP . 'cache' . DS);
  *
  * CakePHP should always be installed with composer, so look there.
  */
-define('CAKE_CORE_INCLUDE_PATH', OLD_ROOT . DS . 'vendor' . DS . 'cakephp' . DS . 'cakephp');
+define('OLD_CAKE_CORE_INCLUDE_PATH', OLD_ROOT . DS . 'vendor' . DS . 'cakephp' . DS . 'cakephp');
 
 /**
  * Path to the cake directory.
  */
-define('CORE_PATH', CAKE_CORE_INCLUDE_PATH . DS);
+define('CORE_PATH', OLD_CAKE_CORE_INCLUDE_PATH . DS);
 define('CAKE', CORE_PATH . 'src' . DS);

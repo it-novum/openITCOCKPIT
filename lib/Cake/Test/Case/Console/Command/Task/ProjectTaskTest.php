@@ -158,7 +158,7 @@ class ProjectTaskTest extends CakeTestCase {
 			$this->markTestAsSkipped('Not access to ini_set, cannot proceed.');
 		}
 		$restore = ini_get('include_path');
-		ini_set('include_path', CAKE_CORE_INCLUDE_PATH . PATH_SEPARATOR . $restore);
+		ini_set('include_path', OLD_CAKE_CORE_INCLUDE_PATH . PATH_SEPARATOR . $restore);
 
 		$path = $this->Task->args[0] = OLD_TMP . 'tests' . DS . 'bake_test_app';
 		$this->Task->params['skel'] = CAKE . 'Console' . DS . 'Templates' . DS . 'skel';

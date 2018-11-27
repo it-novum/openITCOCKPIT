@@ -65,8 +65,8 @@ if (!defined('OLD_APP_DIR')) {
  */
 $vendorPath = OLD_ROOT . DS . OLD_APP_DIR . DS . 'Vendor' . DS . 'cakephp' . DS . 'cakephp' . DS . 'lib';
 $dispatcher = 'Cake' . DS . 'Console' . DS . 'ShellDispatcher.php';
-if (!defined('CAKE_CORE_INCLUDE_PATH') && file_exists($vendorPath . DS . $dispatcher)) {
-	define('CAKE_CORE_INCLUDE_PATH', $vendorPath);
+if (!defined('OLD_CAKE_CORE_INCLUDE_PATH') && file_exists($vendorPath . DS . $dispatcher)) {
+	define('OLD_CAKE_CORE_INCLUDE_PATH', $vendorPath);
 }
 
 /**
@@ -88,14 +88,14 @@ if (PHP_SAPI === 'cli-server') {
 	$_SERVER['PHP_SELF'] = '/' . basename(__FILE__);
 }
 
-if (!defined('CAKE_CORE_INCLUDE_PATH')) {
+if (!defined('OLD_CAKE_CORE_INCLUDE_PATH')) {
 	if (function_exists('ini_set')) {
 		ini_set('include_path', OLD_ROOT . DS . 'lib' . PATH_SEPARATOR . ini_get('include_path'));
 	}
 	if (!include 'Cake' . DS . 'bootstrap.php') {
 		$failed = true;
 	}
-} elseif (!include CAKE_CORE_INCLUDE_PATH . DS . 'Cake' . DS . 'bootstrap.php') {
+} elseif (!include OLD_CAKE_CORE_INCLUDE_PATH . DS . 'Cake' . DS . 'bootstrap.php') {
 	$failed = true;
 }
 if (!empty($failed)) {

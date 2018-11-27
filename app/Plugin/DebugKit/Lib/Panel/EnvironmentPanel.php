@@ -47,7 +47,7 @@ class EnvironmentPanel extends DebugPanel
             'APPLIBS'                => APPLIBS,
             'CACHE'                  => OLD_CACHE,
             'CAKE'                   => CAKE,
-            'CAKE_CORE_INCLUDE_PATH' => CAKE_CORE_INCLUDE_PATH,
+            'CAKE_CORE_INCLUDE_PATH' => OLD_CAKE_CORE_INCLUDE_PATH,
             'CORE_PATH'              => CORE_PATH,
             'CAKE_VERSION'           => Configure::version(),
             'CSS'                    => CSS,

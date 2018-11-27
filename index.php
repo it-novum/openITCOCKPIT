@@ -31,8 +31,8 @@ define('WWW_ROOT', OLD_ROOT.DS.OLD_APP_DIR.DS.WEBROOT_DIR.DS);
  * outside of the distributed structure.
  * Full path to the directory containing "cake". Do not add trailing directory separator
  */
-if (!defined('CAKE_CORE_INCLUDE_PATH')) {
-    define('CAKE_CORE_INCLUDE_PATH', OLD_ROOT.DS.'lib');
+if (!defined('OLD_CAKE_CORE_INCLUDE_PATH')) {
+    define('OLD_CAKE_CORE_INCLUDE_PATH', OLD_ROOT.DS.'lib');
 }
 
 require OLD_APP_DIR.DS.WEBROOT_DIR.DS.'index.php';

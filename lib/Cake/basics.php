@@ -81,7 +81,7 @@ if (!function_exists('debug')) {
 		$lineInfo = '';
 		if ($showFrom) {
 			$trace = Debugger::trace(array('start' => 1, 'depth' => 2, 'format' => 'array'));
-			$file = str_replace(array(CAKE_CORE_INCLUDE_PATH, OLD_ROOT), '', $trace[0]['file']);
+			$file = str_replace(array(OLD_CAKE_CORE_INCLUDE_PATH, OLD_ROOT), '', $trace[0]['file']);
 			$line = $trace[0]['line'];
 		}
 		$html = <<<HTML
