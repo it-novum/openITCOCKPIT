@@ -36,6 +36,12 @@
         "matthiasmullie/minify": "^1.3",
         "guzzlehttp/guzzle": "^6.3",
         "symfony/process": "^3.4",
-        "guiguiboy/php-cli-progress-bar": "^0.0.4"
+        "guiguiboy/php-cli-progress-bar": "^0.0.4",
+        "cakephp/orm": "3.7.0-RC3",
+        "cakephp/migrations": "^2.0",
+        "cakephp/i18n": "^3.6"
+    },
+    "require-dev": {
+        "cakephp/bake": "^1.8"
     }
 }
