@@ -60,7 +60,7 @@ class EnvironmentPanel extends DebugPanel
             'JS_URL'                 => JS_URL,
             'LOGS'                   => LOGS,
             'ROOT'                   => OLD_ROOT,
-            'TESTS'                  => TESTS,
+            'TESTS'                  => OLD_TESTS,
             'TMP'                    => TMP,
             'VENDORS'                => VENDORS,
             'WEBROOT_DIR'            => WEBROOT_DIR,

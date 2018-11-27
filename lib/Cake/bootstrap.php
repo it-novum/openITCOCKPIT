@@ -89,8 +89,8 @@ if (!defined('IMAGES')) {
 /**
  * Path to the tests directory.
  */
-if (!defined('TESTS')) {
-	define('TESTS', OLD_APP . 'Test' . DS);
+if (!defined('OLD_TESTS')) {
+	define('OLD_TESTS', OLD_APP . 'Test' . DS);
 }
 
 /**

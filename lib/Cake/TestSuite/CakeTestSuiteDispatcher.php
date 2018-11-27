@@ -17,7 +17,7 @@
  */
 
 define('CORE_TEST_CASES', CAKE . 'Test' . DS . 'Case');
-define('APP_TEST_CASES', TESTS . 'Case');
+define('APP_TEST_CASES', OLD_TESTS . 'Case');
 
 App::uses('CakeTestSuiteCommand', 'TestSuite');
 

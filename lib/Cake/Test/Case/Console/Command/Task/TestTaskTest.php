@@ -224,7 +224,7 @@ class TestTaskTest extends CakeTestCase {
 		$this->Task->expects($this->never())->method('err');
 		$this->Task->expects($this->never())->method('_stop');
 
-		$file = TESTS . 'Case' . DS . 'Model' . DS . 'MyClassTest.php';
+		$file = OLD_TESTS . 'Case' . DS . 'Model' . DS . 'MyClassTest.php';
 
 		$this->Task->expects($this->at(1))->method('createFile')
 			->with($file, $this->anything());
@@ -232,7 +232,7 @@ class TestTaskTest extends CakeTestCase {
 		$this->Task->expects($this->at(3))->method('createFile')
 			->with($file, $this->anything());
 
-		$file = TESTS . 'Case' . DS . 'Controller' . DS . 'CommentsControllerTest.php';
+		$file = OLD_TESTS . 'Case' . DS . 'Controller' . DS . 'CommentsControllerTest.php';
 		$this->Task->expects($this->at(5))->method('createFile')
 			->with($file, $this->anything());
 
