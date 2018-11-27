@@ -68,7 +68,7 @@ class DashboardsController extends AppController {
     public function index() {
         $TableLocator = $this->getTableLocator();
         $Proxy = $TableLocator->get('Proxies');
-        debug($Proxy->find()->first());
+        debug($Proxy->find()->first());die();
 
         $this->layout = 'angularjs';
         if (!$this->isAngularJsRequest()) {

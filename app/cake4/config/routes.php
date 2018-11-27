@@ -53,7 +53,7 @@ Router::scope('/', function (RouteBuilder $routes) {
      */
     $routes->applyMiddleware('csrf');
 
-    
+
     $routes->fallbacks(DashedRoute::class);
 });
 
