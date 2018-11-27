@@ -1243,7 +1243,7 @@ class CakeResponseTest extends CakeTestCase {
 			->method('_isActive')
 			->will($this->returnValue(true));
 
-		$response->file(CAKE . 'Test' . DS . 'test_app' . DS . 'Vendor' . DS . 'css' . DS . 'test_asset.css');
+		$response->file(OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'Vendor' . DS . 'css' . DS . 'test_asset.css');
 
 		ob_start();
 		$result = $response->send();
@@ -1300,7 +1300,7 @@ class CakeResponseTest extends CakeTestCase {
 			->method('_isActive')
 			->will($this->returnValue(true));
 
-		$response->file(CAKE . 'Test' . DS . 'test_app' . DS . 'Config' . DS . 'no_section.ini');
+		$response->file(OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'Config' . DS . 'no_section.ini');
 
 		ob_start();
 		$result = $response->send();
@@ -1364,7 +1364,7 @@ class CakeResponseTest extends CakeTestCase {
 			->method('_isActive')
 			->will($this->returnValue(true));
 
-		$response->file(CAKE . 'Test' . DS . 'test_app' . DS . 'Config' . DS . 'no_section.ini');
+		$response->file(OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'Config' . DS . 'no_section.ini');
 
 		ob_start();
 		$result = $response->send();
@@ -1428,7 +1428,7 @@ class CakeResponseTest extends CakeTestCase {
 			->method('_isActive')
 			->will($this->returnValue(true));
 
-		$response->file(CAKE . 'Test' . DS . 'test_app' . DS . 'Config' . DS . 'no_section.ini', array(
+		$response->file(OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'Config' . DS . 'no_section.ini', array(
 			'name' => 'config.ini'
 		));
 
@@ -1473,7 +1473,7 @@ class CakeResponseTest extends CakeTestCase {
 		$response->expects($this->never())
 			->method('download');
 
-		$response->file(CAKE . 'Test' . DS . 'test_app' . DS . 'Config' . DS . 'no_section.ini', array(
+		$response->file(OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'Config' . DS . 'no_section.ini', array(
 			'download' => false
 		));
 
@@ -1511,7 +1511,7 @@ class CakeResponseTest extends CakeTestCase {
 		$response->expects($this->once())->method('_clearBuffer');
 		$response->expects($this->never())->method('_flushBuffer');
 
-		$response->file(CAKE . 'Test' . DS . 'test_app' . DS . 'Vendor' . DS . 'css' . DS . 'test_asset.css');
+		$response->file(OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'Vendor' . DS . 'css' . DS . 'test_asset.css');
 
 		$result = $response->send();
 		$this->assertNull($result);
@@ -1543,7 +1543,7 @@ class CakeResponseTest extends CakeTestCase {
 			->method('_isActive')
 			->will($this->returnValue(true));
 
-		$response->file(CAKE . 'Test' . DS . 'test_app' . DS . 'Vendor' . DS . 'img' . DS . 'test_2.JPG');
+		$response->file(OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'Vendor' . DS . 'img' . DS . 'test_2.JPG');
 	}
 
 /**
@@ -1572,7 +1572,7 @@ class CakeResponseTest extends CakeTestCase {
 			->method('_isActive')
 			->will($this->returnValue(true));
 
-		$response->file(CAKE . 'Test' . DS . 'test_app' . DS . 'Vendor' . DS . 'img' . DS . 'test_2.JPG');
+		$response->file(OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'Vendor' . DS . 'img' . DS . 'test_2.JPG');
 	}
 
 /**
@@ -1640,7 +1640,7 @@ class CakeResponseTest extends CakeTestCase {
 			->will($this->returnValue(true));
 
 		$response->file(
-			CAKE . 'Test' . DS . 'test_app' . DS . 'Vendor' . DS . 'css' . DS . 'test_asset.css',
+			OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'Vendor' . DS . 'css' . DS . 'test_asset.css',
 			array('download' => true)
 		);
 
@@ -1697,7 +1697,7 @@ class CakeResponseTest extends CakeTestCase {
 			->will($this->returnValue(true));
 
 		$response->file(
-			CAKE . 'Test' . DS . 'test_app' . DS . 'Vendor' . DS . 'css' . DS . 'test_asset.css',
+			OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'Vendor' . DS . 'css' . DS . 'test_asset.css',
 			array('download' => true)
 		);
 
@@ -1745,7 +1745,7 @@ class CakeResponseTest extends CakeTestCase {
 		));
 
 		$response->file(
-			CAKE . 'Test' . DS . 'test_app' . DS . 'Vendor' . DS . 'css' . DS . 'test_asset.css',
+			OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'Vendor' . DS . 'css' . DS . 'test_asset.css',
 			array('download' => true)
 		);
 
@@ -1772,7 +1772,7 @@ class CakeResponseTest extends CakeTestCase {
 		));
 
 		$response->file(
-			CAKE . 'Test' . DS . 'test_app' . DS . 'Vendor' . DS . 'css' . DS . 'test_asset.css',
+			OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'Vendor' . DS . 'css' . DS . 'test_asset.css',
 			array('download' => true)
 		);
 
@@ -1819,7 +1819,7 @@ class CakeResponseTest extends CakeTestCase {
 			->will($this->returnValue(true));
 
 		$response->file(
-			CAKE . 'Test' . DS . 'test_app' . DS . 'Vendor' . DS . 'css' . DS . 'test_asset.css',
+			OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'Vendor' . DS . 'css' . DS . 'test_asset.css',
 			array('download' => false)
 		);
 
@@ -1868,7 +1868,7 @@ class CakeResponseTest extends CakeTestCase {
 			->will($this->returnValue(true));
 
 		$response->file(
-			CAKE . 'Test' . DS . 'test_app' . DS . 'Vendor' . DS . 'css' . DS . 'test_asset.css',
+			OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'Vendor' . DS . 'css' . DS . 'test_asset.css',
 			array('download' => false)
 		);
 
@@ -1908,7 +1908,7 @@ class CakeResponseTest extends CakeTestCase {
 			));
 
 		$response->file(
-			CAKE . 'Test' . DS . 'test_app' . DS . 'Vendor' . DS . 'css' . DS . 'test_asset.css',
+			OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'Vendor' . DS . 'css' . DS . 'test_asset.css',
 			array('download' => false)
 		);
 

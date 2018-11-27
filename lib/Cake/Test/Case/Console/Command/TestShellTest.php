@@ -150,7 +150,7 @@ class TestShellTest extends CakeTestCase {
 		$return = $this->Shell->mapFileToCategory(OLD_APP . 'Plugin/awesome/Controller/ExampleController.php');
 		$this->assertSame('awesome', $return);
 
-		$return = $this->Shell->mapFileToCategory(dirname(CAKE) . 'plugins/awesome/Controller/ExampleController.php');
+		$return = $this->Shell->mapFileToCategory(dirname(OLD_CAKE) . 'plugins/awesome/Controller/ExampleController.php');
 		$this->assertSame('awesome', $return);
 	}
 
@@ -165,7 +165,7 @@ class TestShellTest extends CakeTestCase {
 		$return = $this->Shell->mapFileToCase(OLD_APP . 'Plugin/awesome/Controller/ExampleController.php', 'awesome', false);
 		$this->assertSame('Controller/ExampleController', $return);
 
-		$return = $this->Shell->mapFileToCase(dirname(CAKE) . 'plugins/awesome/Controller/ExampleController.php', 'awesome', false);
+		$return = $this->Shell->mapFileToCase(dirname(OLD_CAKE) . 'plugins/awesome/Controller/ExampleController.php', 'awesome', false);
 		$this->assertSame('Controller/ExampleController', $return);
 	}
 
@@ -248,7 +248,7 @@ class TestShellTest extends CakeTestCase {
 		$return = $this->Shell->mapFileToCategory(OLD_APP . 'Plugin/awesome/Test/Case/Controller/ExampleControllerTest.php');
 		$this->assertSame('awesome', $return);
 
-		$return = $this->Shell->mapFileToCategory(dirname(CAKE) . 'plugins/awesome/Test/Case/Controller/ExampleControllerTest.php');
+		$return = $this->Shell->mapFileToCategory(dirname(OLD_CAKE) . 'plugins/awesome/Test/Case/Controller/ExampleControllerTest.php');
 		$this->assertSame('awesome', $return);
 	}
 
@@ -263,7 +263,7 @@ class TestShellTest extends CakeTestCase {
 		$return = $this->Shell->mapFileToCase(OLD_APP . 'Plugin/awesome/Test/Case/Controller/ExampleControllerTest.php', 'awesome', false);
 		$this->assertSame('Controller/ExampleController', $return);
 
-		$return = $this->Shell->mapFileToCase(dirname(CAKE) . 'plugins/awesome/Test/Case/Controller/ExampleControllerTest.php', 'awesome', false);
+		$return = $this->Shell->mapFileToCase(dirname(OLD_CAKE) . 'plugins/awesome/Test/Case/Controller/ExampleControllerTest.php', 'awesome', false);
 		$this->assertSame('Controller/ExampleController', $return);
 	}
 

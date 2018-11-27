@@ -69,7 +69,7 @@ class ProjectTaskTest extends CakeTestCase {
  * @return void
  */
 	protected function _setupTestProject() {
-		$skel = CAKE . 'Console' . DS . 'Templates' . DS . 'skel';
+		$skel = OLD_CAKE . 'Console' . DS . 'Templates' . DS . 'skel';
 		$this->Task->expects($this->at(0))->method('in')->will($this->returnValue('y'));
 		$this->Task->bake($this->Task->path . 'bake_test_app', $skel);
 	}
@@ -135,7 +135,7 @@ class ProjectTaskTest extends CakeTestCase {
  */
 	public function testExecuteWithAbsolutePath() {
 		$path = $this->Task->args[0] = OLD_TMP . 'tests' . DS . 'bake_test_app';
-		$this->Task->params['skel'] = CAKE . 'Console' . DS . 'Templates' . DS . 'skel';
+		$this->Task->params['skel'] = OLD_CAKE . 'Console' . DS . 'Templates' . DS . 'skel';
 		$this->Task->expects($this->at(0))->method('in')->will($this->returnValue('y'));
 		$this->Task->execute();
 
@@ -161,7 +161,7 @@ class ProjectTaskTest extends CakeTestCase {
 		ini_set('include_path', OLD_CAKE_CORE_INCLUDE_PATH . PATH_SEPARATOR . $restore);
 
 		$path = $this->Task->args[0] = OLD_TMP . 'tests' . DS . 'bake_test_app';
-		$this->Task->params['skel'] = CAKE . 'Console' . DS . 'Templates' . DS . 'skel';
+		$this->Task->params['skel'] = OLD_CAKE . 'Console' . DS . 'Templates' . DS . 'skel';
 		$this->Task->expects($this->at(0))->method('in')->will($this->returnValue('y'));
 		$this->Task->execute();
 
@@ -347,7 +347,7 @@ class ProjectTaskTest extends CakeTestCase {
  * @return void
  */
 	public function testExecute() {
-		$this->Task->params['skel'] = CAKE . 'Console' . DS . 'Templates' . DS . 'skel';
+		$this->Task->params['skel'] = OLD_CAKE . 'Console' . DS . 'Templates' . DS . 'skel';
 		$this->Task->params['working'] = OLD_TMP . 'tests' . DS;
 
 		$path = $this->Task->path . 'bake_test_app';

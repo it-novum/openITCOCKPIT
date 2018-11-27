@@ -76,8 +76,8 @@ class CakeTestCaseTest extends CakeTestCase {
  * @return void
  */
 	public static function setUpBeforeClass() {
-		require_once CAKE . 'Test' . DS . 'Fixture' . DS . 'AssertTagsTestCase.php';
-		require_once CAKE . 'Test' . DS . 'Fixture' . DS . 'FixturizedTestCase.php';
+		require_once OLD_CAKE . 'Test' . DS . 'Fixture' . DS . 'AssertTagsTestCase.php';
+		require_once OLD_CAKE . 'Test' . DS . 'Fixture' . DS . 'FixturizedTestCase.php';
 	}
 
 /**
@@ -415,7 +415,7 @@ class CakeTestCaseTest extends CakeTestCase {
 	public function testGetMockForModel() {
 		App::build(array(
 			'Model' => array(
-				CAKE . 'Test' . DS . 'test_app' . DS . 'Model' . DS
+				OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'Model' . DS
 			)
 		), App::RESET);
 		$Post = $this->getMockForModel('Post');
@@ -438,9 +438,9 @@ class CakeTestCaseTest extends CakeTestCase {
  */
 	public function testGetMockForModelSecondaryDatasource() {
 		App::build(array(
-			'Plugin' => array(CAKE . 'Test' . DS . 'test_app' . DS . 'Plugin' . DS),
+			'Plugin' => array(OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'Plugin' . DS),
 			'Model/Datasource/Database' => array(
-				CAKE . 'Test' . DS . 'test_app' . DS . 'Model' . DS . 'Datasource' . DS . 'Database' . DS
+				OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'Model' . DS . 'Datasource' . DS . 'Database' . DS
 			)
 		), App::RESET);
 		CakePlugin::load('TestPlugin');
@@ -471,7 +471,7 @@ class CakeTestCaseTest extends CakeTestCase {
 	public function testGetMockForModelWithPlugin() {
 		App::build(array(
 			'Plugin' => array(
-				CAKE . 'Test' . DS . 'test_app' . DS . 'Plugin' . DS
+				OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'Plugin' . DS
 			)
 		), App::RESET);
 		CakePlugin::load('TestPlugin');

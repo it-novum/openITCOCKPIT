@@ -52,7 +52,7 @@ class IniReaderTest extends CakeTestCase {
  */
 	public function setUp() {
 		parent::setUp();
-		$this->path = CAKE . 'Test' . DS . 'test_app' . DS . 'Config' . DS;
+		$this->path = OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'Config' . DS;
 	}
 
 /**
@@ -214,7 +214,7 @@ class IniReaderTest extends CakeTestCase {
  */
 	public function testReadPluginValue() {
 		App::build(array(
-			'Plugin' => array(CAKE . 'Test' . DS . 'test_app' . DS . 'Plugin' . DS)
+			'Plugin' => array(OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'Plugin' . DS)
 		), App::RESET);
 		CakePlugin::load('TestPlugin');
 		$reader = new IniReader($this->path);
@@ -237,7 +237,7 @@ class IniReaderTest extends CakeTestCase {
  */
 	public function testReadPluginSpecialAclIniPhpValue() {
 		App::build(array(
-			'Plugin' => array(CAKE . 'Test' . DS . 'test_app' . DS . 'Plugin' . DS)
+			'Plugin' => array(OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'Plugin' . DS)
 		), App::RESET);
 		CakePlugin::load('TestPlugin');
 		$reader = new IniReader($this->path);

@@ -36,7 +36,7 @@ class HtmlCoverageReportTest extends CakeTestCase {
 	public function setUp() {
 		parent::setUp();
 		App::build(array(
-			'Plugin' => array(CAKE . 'Test' . DS . 'test_app' . DS . 'Plugin' . DS)
+			'Plugin' => array(OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'Plugin' . DS)
 		), App::RESET);
 		CakePlugin::load(array('TestPlugin'));
 		$reporter = new CakeBaseReporter();
@@ -53,7 +53,7 @@ class HtmlCoverageReportTest extends CakeTestCase {
 	public function testGetPathFilter() {
 		$this->Coverage->appTest = false;
 		$result = $this->Coverage->getPathFilter();
-		$this->assertEquals(CAKE, $result);
+		$this->assertEquals(OLD_CAKE, $result);
 
 		$this->Coverage->appTest = true;
 		$result = $this->Coverage->getPathFilter();
@@ -72,18 +72,18 @@ class HtmlCoverageReportTest extends CakeTestCase {
  */
 	public function testFilterCoverageDataByPathRemovingElements() {
 		$data = array(
-            CAKE . 'dispatcher.php'   => array(
+            OLD_CAKE . 'dispatcher.php' => array(
 				10 => -1,
 				12 => 1
 			),
-            OLD_APP . 'app_model.php' => array(
+            OLD_APP . 'app_model.php'   => array(
 				50 => 1,
 				52 => -1
 			)
 		);
 		$this->Coverage->setCoverage($data);
-		$result = $this->Coverage->filterCoverageDataByPath(CAKE);
-		$this->assertTrue(isset($result[CAKE . 'dispatcher.php']));
+		$result = $this->Coverage->filterCoverageDataByPath(OLD_CAKE);
+		$this->assertTrue(isset($result[OLD_CAKE . 'dispatcher.php']));
 		$this->assertFalse(isset($result[OLD_APP . 'app_model.php']));
 	}
 

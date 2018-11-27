@@ -188,10 +188,10 @@ class ExtractTask extends AppShell {
 		}
 
 		if ($this->_extractCore) {
-			$this->_paths[] = CAKE;
+			$this->_paths[] = OLD_CAKE;
 			$this->_exclude = array_merge($this->_exclude, array(
-				CAKE . 'Test',
-				CAKE . 'Console' . DS . 'Templates'
+				OLD_CAKE . 'Test',
+				OLD_CAKE . 'Console' . DS . 'Templates'
 			));
 		}
 

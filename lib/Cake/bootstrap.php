@@ -44,7 +44,7 @@ if (!defined('WEBROOT_DIR')) {
 /**
  * Path to the cake directory.
  */
-	define('CAKE', OLD_CORE_PATH . 'Cake' . DS);
+	define('OLD_CAKE', OLD_CORE_PATH . 'Cake' . DS);
 /**
  * Path to the application's directory.
  */
@@ -143,9 +143,9 @@ if (!defined('JS_URL')) {
 	define('JS_URL', 'js/');
 }
 
-require CAKE . 'basics.php';
-require CAKE . 'Core' . DS . 'App.php';
-require CAKE . 'Error' . DS . 'exceptions.php';
+require OLD_CAKE . 'basics.php';
+require OLD_CAKE . 'Core' . DS . 'App.php';
+require OLD_CAKE . 'Error' . DS . 'exceptions.php';
 
 spl_autoload_register(array('App', 'load'));
 

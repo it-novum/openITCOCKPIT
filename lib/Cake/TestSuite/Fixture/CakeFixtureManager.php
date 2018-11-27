@@ -129,7 +129,7 @@ class CakeFixtureManager {
 
 			if (strpos($fixture, 'core.') === 0) {
 				$fixture = substr($fixture, strlen('core.'));
-				$fixturePaths[] = CAKE . 'Test' . DS . 'Fixture';
+				$fixturePaths[] = OLD_CAKE . 'Test' . DS . 'Fixture';
 			} elseif (strpos($fixture, 'app.') === 0) {
 				$fixturePrefixLess = substr($fixture, strlen('app.'));
 				$fixtureParsedPath = $this->_parseFixturePath($fixturePrefixLess);
@@ -149,7 +149,7 @@ class CakeFixtureManager {
 			} else {
 				$fixturePaths = array(
 					OLD_TESTS . 'Fixture',
-					CAKE . 'Test' . DS . 'Fixture'
+					OLD_CAKE . 'Test' . DS . 'Fixture'
 				);
 			}
 

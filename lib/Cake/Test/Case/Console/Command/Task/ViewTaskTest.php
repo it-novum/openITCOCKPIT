@@ -200,7 +200,7 @@ class ViewTaskTest extends CakeTestCase {
 
 		$this->Task->path = OLD_TMP;
 		$this->Task->Template->params['theme'] = 'default';
-		$this->Task->Template->templatePaths = array('default' => CAKE . 'Console' . DS . 'Templates' . DS . 'default' . DS);
+		$this->Task->Template->templatePaths = array('default' => OLD_CAKE . 'Console' . DS . 'Templates' . DS . 'default' . DS);
 	}
 
 /**
@@ -323,7 +323,7 @@ class ViewTaskTest extends CakeTestCase {
 	public function testBakeIndex() {
 		$this->Task->controllerName = 'ViewTaskComments';
 
-		$expected = file_get_contents(CAKE . 'Test' . DS . 'bake_compare' . DS . 'View' . DS . 'index.ctp');
+		$expected = file_get_contents(OLD_CAKE . 'Test' . DS . 'bake_compare' . DS . 'View' . DS . 'index.ctp');
 		$this->Task->expects($this->at(0))->method('createFile')
 			->with(
 				OLD_TMP . 'ViewTaskComments' . DS . 'index.ctp',
@@ -689,7 +689,7 @@ class ViewTaskTest extends CakeTestCase {
 		$this->assertEquals('form', $result);
 
 		$this->Task->Template->templatePaths = array(
-			'test' => CAKE . 'Test' . DS . 'test_app' . DS . 'Console' . DS . 'Templates' . DS . 'test' . DS
+			'test' => OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'Console' . DS . 'Templates' . DS . 'test' . DS
 		);
 		$this->Task->Template->params['theme'] = 'test';
 

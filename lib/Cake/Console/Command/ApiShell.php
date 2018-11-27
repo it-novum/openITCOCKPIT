@@ -43,14 +43,14 @@ class ApiShell extends AppShell {
  */
 	public function initialize() {
 		$this->paths = array_merge($this->paths, array(
-			'behavior' => CAKE . 'Model' . DS . 'Behavior' . DS,
-			'cache' => CAKE . 'Cache' . DS,
-			'controller' => CAKE . 'Controller' . DS,
-			'component' => CAKE . 'Controller' . DS . 'Component' . DS,
-			'helper' => CAKE . 'View' . DS . 'Helper' . DS,
-			'model' => CAKE . 'Model' . DS,
-			'view' => CAKE . 'View' . DS,
-			'core' => CAKE
+			'behavior' => OLD_CAKE . 'Model' . DS . 'Behavior' . DS,
+			'cache' => OLD_CAKE . 'Cache' . DS,
+			'controller' => OLD_CAKE . 'Controller' . DS,
+			'component' => OLD_CAKE . 'Controller' . DS . 'Component' . DS,
+			'helper' => OLD_CAKE . 'View' . DS . 'Helper' . DS,
+			'model' => OLD_CAKE . 'Model' . DS,
+			'view' => OLD_CAKE . 'View' . DS,
+			'core' => OLD_CAKE
 		));
 	}
 

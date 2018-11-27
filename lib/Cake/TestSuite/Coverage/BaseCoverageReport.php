@@ -107,7 +107,7 @@ abstract class BaseCoverageReport {
 		} elseif ($this->pluginTest) {
 			$path = CakePlugin::path($this->pluginTest);
 		} else {
-			$path = CAKE;
+			$path = OLD_CAKE;
 		}
 		return $path;
 	}

@@ -74,7 +74,7 @@ class FileTest extends CakeTestCase {
  * @covers ::Folder
  */
 	public function testBasic() {
-		$file = CAKE . DS . 'LICENSE.txt';
+		$file = OLD_CAKE . DS . 'LICENSE.txt';
 
 		$this->File = new File($file, false);
 
@@ -579,7 +579,7 @@ class FileTest extends CakeTestCase {
  */
 	public function testMime() {
 		$this->skipIf(!function_exists('finfo_open') && !function_exists('mime_content_type'), 'Not able to read mime type');
-		$path = CAKE . 'Test' . DS . 'test_app' . DS . 'webroot' . DS . 'img' . DS . 'cake.power.gif';
+		$path = OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'webroot' . DS . 'img' . DS . 'cake.power.gif';
 		$file = new File($path);
 		$expected = 'image/gif';
 		if (function_exists('mime_content_type') && mime_content_type($file->pwd()) === false) {

@@ -400,7 +400,7 @@ class App {
  * @link https://book.cakephp.org/2.0/en/core-utility-libraries/app.html#App::core
  */
 	public static function core($type) {
-		return array(CAKE . str_replace('/', DS, $type) . DS);
+		return array(OLD_CAKE . str_replace('/', DS, $type) . DS);
 	}
 
 /**
@@ -552,7 +552,7 @@ class App {
 			$appLibs = empty(static::$_packages['Lib']) ? APPLIBS : current(static::$_packages['Lib']);
 			$paths[] = $appLibs . $package . DS;
 			$paths[] = OLD_APP . $package . DS;
-			$paths[] = CAKE . $package . DS;
+			$paths[] = OLD_CAKE . $package . DS;
 		} else {
 			$pluginPath = CakePlugin::path($plugin);
 			$paths[] = $pluginPath . 'Lib' . DS . $package . DS;
@@ -875,12 +875,12 @@ class App {
 				'Vendor' => array(
 					'%s' . 'Vendor' . DS,
 					OLD_ROOT . DS . 'vendors' . DS,
-					dirname(dirname(CAKE)) . DS . 'vendors' . DS
+					dirname(dirname(OLD_CAKE)) . DS . 'vendors' . DS
 				),
 				'Plugin' => array(
 					OLD_APP . 'Plugin' . DS,
 					OLD_ROOT . DS . 'plugins' . DS,
-					dirname(dirname(CAKE)) . DS . 'plugins' . DS
+					dirname(dirname(OLD_CAKE)) . DS . 'plugins' . DS
 				)
 			);
 		}

@@ -16,7 +16,7 @@
  * @license       https://opensource.org/licenses/mit-license.php MIT License
  */
 
-require_once CAKE . 'basics.php';
+require_once OLD_CAKE . 'basics.php';
 
 App::uses('Folder', 'Utility');
 App::uses('CakeResponse', 'Network');
@@ -37,7 +37,7 @@ class BasicsTest extends CakeTestCase {
 	public function setUp() {
 		parent::setUp();
 		App::build(array(
-			'Locale' => array(CAKE . 'Test' . DS . 'test_app' . DS . 'Locale' . DS)
+			'Locale' => array(OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'Locale' . DS)
 		));
 	}
 

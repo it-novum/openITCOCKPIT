@@ -387,7 +387,7 @@ class TestShell extends Shell {
 			$testCase = str_replace(DS, '/', $file);
 			$testCase = preg_replace('@.*lib/Cake/@', '', $file);
 			$testCase[0] = strtoupper($testCase[0]);
-			$testFile = CAKE . 'Test/Case/' . $testCase . 'Test.php';
+			$testFile = OLD_CAKE . 'Test/Case/' . $testCase . 'Test.php';
 
 			if (!file_exists($testFile) && $throwOnMissingFile) {
 				throw new Exception(__d('cake_dev', 'Test case %s not found', $testFile));
