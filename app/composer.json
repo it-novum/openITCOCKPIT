@@ -14,7 +14,8 @@
         "psr-4": {
             "itnovum\\openITCOCKPIT\\": "src/itnovum/openITCOCKPIT/",
             "Statusengine\\": "src/Statusengine/",
-            "Adldap\\": "Vendor/adldap/adldap/src/"
+            "Adldap\\": "Vendor/adldap/adldap/src/",
+            "App\\": "cake4/src/"
         },
         "files": ["Vendor/imageSmoothArc.php"]
     },

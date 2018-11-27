@@ -18,6 +18,18 @@
  */
 require __DIR__ . '/paths.php';
 
+if (!defined('OLD_APP')) {
+    define('OLD_APP', APP  . '../../');
+}
+
+if (!defined('ENVIRONMENT')) {
+    define('ENVIRONMENT', 'development');
+}
+
+if(!defined('WWW_ROOT')) {
+    define('WWW_ROOT', OLD_APP . 'webroot' . DS);
+}
+
 require_once OLD_APP . 'Config' . DS . 'database.php';
 
 /*
