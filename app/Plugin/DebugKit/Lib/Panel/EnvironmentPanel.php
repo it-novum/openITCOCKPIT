@@ -61,7 +61,7 @@ class EnvironmentPanel extends DebugPanel
             'LOGS'                   => LOGS,
             'ROOT'                   => OLD_ROOT,
             'TESTS'                  => OLD_TESTS,
-            'TMP'                    => TMP,
+            'TMP'                    => OLD_TMP,
             'VENDORS'                => VENDORS,
             'WEBROOT_DIR'            => WEBROOT_DIR,
             'WWW_ROOT'               => WWW_ROOT,

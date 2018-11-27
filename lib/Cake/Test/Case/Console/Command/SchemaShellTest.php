@@ -210,13 +210,13 @@ class SchemaShellTest extends CakeTestCase {
 		$this->Shell->params = array(
 			'name' => 'i18n',
 			'connection' => 'test',
-			'write' => TMP . 'tests' . DS . 'i18n.sql'
+			'write' => OLD_TMP . 'tests' . DS . 'i18n.sql'
 		);
 		$this->Shell->expects($this->once())->method('_stop');
 		$this->Shell->startup();
 		$this->Shell->dump();
 
-		$this->file = new File(TMP . 'tests' . DS . 'i18n.sql');
+		$this->file = new File(OLD_TMP . 'tests' . DS . 'i18n.sql');
 		$contents = $this->file->read();
 		$this->assertRegExp('/DROP TABLE/', $contents);
 		$this->assertRegExp('/CREATE TABLE.*?i18n/', $contents);
@@ -241,13 +241,13 @@ class SchemaShellTest extends CakeTestCase {
 		$this->Shell->args = array('TestPlugin.TestPluginApp');
 		$this->Shell->params = array(
 			'connection' => 'test',
-			'write' => TMP . 'tests' . DS . 'dump_test.sql'
+			'write' => OLD_TMP . 'tests' . DS . 'dump_test.sql'
 		);
 		$this->Shell->startup();
 		$this->Shell->expects($this->once())->method('_stop');
 		$this->Shell->dump();
 
-		$this->file = new File(TMP . 'tests' . DS . 'dump_test.sql');
+		$this->file = new File(OLD_TMP . 'tests' . DS . 'dump_test.sql');
 		$contents = $this->file->read();
 
 		$this->assertRegExp('/CREATE TABLE.*?test_plugin_acos/', $contents);
@@ -265,7 +265,7 @@ class SchemaShellTest extends CakeTestCase {
  * @return void
  */
 	public function testGenerateSnapshot() {
-		$this->Shell->path = TMP;
+		$this->Shell->path = OLD_TMP;
 		$this->Shell->params['file'] = 'schema.php';
 		$this->Shell->params['force'] = false;
 		$this->Shell->args = array('snapshot');
@@ -285,18 +285,18 @@ class SchemaShellTest extends CakeTestCase {
  * @return void
  */
 	public function testGenerateNoOverwrite() {
-		touch(TMP . 'schema.php');
+		touch(OLD_TMP . 'schema.php');
 		$this->Shell->params['file'] = 'schema.php';
 		$this->Shell->params['force'] = false;
 		$this->Shell->args = array();
 
 		$this->Shell->expects($this->once())->method('in')->will($this->returnValue('q'));
 		$this->Shell->Schema = $this->getMock('CakeSchema');
-		$this->Shell->Schema->path = TMP;
+		$this->Shell->Schema->path = OLD_TMP;
 		$this->Shell->Schema->expects($this->never())->method('read');
 
 		$this->Shell->generate();
-		unlink(TMP . 'schema.php');
+		unlink(OLD_TMP . 'schema.php');
 	}
 
 /**
@@ -305,7 +305,7 @@ class SchemaShellTest extends CakeTestCase {
  * @return void
  */
 	public function testGenerateOverwrite() {
-		touch(TMP . 'schema.php');
+		touch(OLD_TMP . 'schema.php');
 		$this->Shell->params['file'] = 'schema.php';
 		$this->Shell->params['force'] = false;
 		$this->Shell->args = array();
@@ -316,7 +316,7 @@ class SchemaShellTest extends CakeTestCase {
 			->with(new PHPUnit_Framework_Constraint_PCREMatch('/Schema file:\s[a-z\.]+\sgenerated/'));
 
 		$this->Shell->Schema = $this->getMock('CakeSchema');
-		$this->Shell->Schema->path = TMP;
+		$this->Shell->Schema->path = OLD_TMP;
 		$this->Shell->Schema->expects($this->once())->method('read')->will($this->returnValue(array('schema data')));
 		$this->Shell->Schema->expects($this->once())->method('write')->will($this->returnValue(true));
 
@@ -325,7 +325,7 @@ class SchemaShellTest extends CakeTestCase {
 			->with(array('schema data', 'file' => 'schema.php'));
 
 		$this->Shell->generate();
-		unlink(TMP . 'schema.php');
+		unlink(OLD_TMP . 'schema.php');
 	}
 
 /**
@@ -347,10 +347,10 @@ class SchemaShellTest extends CakeTestCase {
 			'force' => false
 		);
 		$this->Shell->startup();
-		$this->Shell->Schema->path = TMP . 'tests' . DS;
+		$this->Shell->Schema->path = OLD_TMP . 'tests' . DS;
 
 		$this->Shell->generate();
-		$this->file = new File(TMP . 'tests' . DS . 'schema.php');
+		$this->file = new File(OLD_TMP . 'tests' . DS . 'schema.php');
 		$contents = $this->file->read();
 
 		$this->assertRegExp('/class TestPluginSchema/', $contents);
@@ -383,10 +383,10 @@ class SchemaShellTest extends CakeTestCase {
 			'overwrite' => true
 		);
 		$this->Shell->startup();
-		$this->Shell->Schema->path = TMP . 'tests' . DS;
+		$this->Shell->Schema->path = OLD_TMP . 'tests' . DS;
 
 		$this->Shell->generate();
-		$this->file = new File(TMP . 'tests' . DS . 'schema.php');
+		$this->file = new File(OLD_TMP . 'tests' . DS . 'schema.php');
 		$contents = $this->file->read();
 
 		$this->assertRegExp('/class TestPluginSchema/', $contents);
@@ -413,10 +413,10 @@ class SchemaShellTest extends CakeTestCase {
 			'exclude' => 'acos, aros',
 		);
 		$this->Shell->startup();
-		$this->Shell->Schema->path = TMP . 'tests' . DS;
+		$this->Shell->Schema->path = OLD_TMP . 'tests' . DS;
 
 		$this->Shell->generate();
-		$this->file = new File(TMP . 'tests' . DS . 'schema.php');
+		$this->file = new File(OLD_TMP . 'tests' . DS . 'schema.php');
 		$contents = $this->file->read();
 
 		$this->assertNotContains('public $acos = array(', $contents);

@@ -1365,7 +1365,7 @@ class CakeEmailTest extends CakeTestCase {
 	public function testSendWithLog() {
 		CakeLog::config('email', array(
 			'engine' => 'File',
-			'path' => TMP
+			'path' => OLD_TMP
 		));
 		CakeLog::drop('default');
 		$this->CakeEmail->transport('Debug');
@@ -1376,7 +1376,7 @@ class CakeEmailTest extends CakeTestCase {
 		$result = $this->CakeEmail->send("Logging This");
 
 		App::uses('File', 'Utility');
-		$File = new File(TMP . 'cake_test_emails.log');
+		$File = new File(OLD_TMP . 'cake_test_emails.log');
 		$log = $File->read();
 		$this->assertTrue(strpos($log, $result['headers']) !== false);
 		$this->assertTrue(strpos($log, $result['message']) !== false);
@@ -1392,7 +1392,7 @@ class CakeEmailTest extends CakeTestCase {
 	public function testSendWithLogAndScope() {
 		CakeLog::config('email', array(
 			'engine' => 'File',
-			'path' => TMP,
+			'path' => OLD_TMP,
 			'types' => array('cake_test_emails'),
 			'scopes' => array('email')
 		));
@@ -1405,7 +1405,7 @@ class CakeEmailTest extends CakeTestCase {
 		$result = $this->CakeEmail->send("Logging This");
 
 		App::uses('File', 'Utility');
-		$File = new File(TMP . 'cake_test_emails.log');
+		$File = new File(OLD_TMP . 'cake_test_emails.log');
 		$log = $File->read();
 		$this->assertTrue(strpos($log, $result['headers']) !== false);
 		$this->assertTrue(strpos($log, $result['message']) !== false);

@@ -96,22 +96,22 @@ if (!defined('OLD_TESTS')) {
 /**
  * Path to the temporary files directory.
  */
-if (!defined('TMP')) {
-	define('TMP', OLD_APP . 'tmp' . DS);
+if (!defined('OLD_TMP')) {
+	define('OLD_TMP', OLD_APP . 'tmp' . DS);
 }
 
 /**
  * Path to the logs directory.
  */
 if (!defined('LOGS')) {
-	define('LOGS', TMP . 'logs' . DS);
+	define('LOGS', OLD_TMP . 'logs' . DS);
 }
 
 /**
  * Path to the cache files directory. It can be shared between hosts in a multi-server setup.
  */
 if (!defined('CACHE')) {
-	define('CACHE', TMP . 'cache' . DS);
+	define('CACHE', OLD_TMP . 'cache' . DS);
 }
 
 /**

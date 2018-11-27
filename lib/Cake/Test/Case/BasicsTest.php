@@ -823,7 +823,7 @@ class BasicsTest extends CakeTestCase {
 
 		$_includePath = ini_get('include_path');
 
-		$path = TMP . 'basics_test';
+		$path = OLD_TMP . 'basics_test';
 		$folder1 = $path . DS . 'folder1';
 		$folder2 = $path . DS . 'folder2';
 		$file1 = $path . DS . 'file1.php';

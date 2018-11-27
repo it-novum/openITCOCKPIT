@@ -136,8 +136,8 @@ class ShellDispatcher {
 			}
 			define('WWW_ROOT', $webroot . DS);
 		}
-		if (!defined('TMP') && !is_dir(OLD_APP . 'tmp')) {
-			define('TMP', CAKE_CORE_INCLUDE_PATH . DS . 'Cake' . DS . 'Console' . DS . 'Templates' . DS . 'skel' . DS . 'tmp' . DS);
+		if (!defined('OLD_TMP') && !is_dir(OLD_APP . 'tmp')) {
+			define('OLD_TMP', CAKE_CORE_INCLUDE_PATH . DS . 'Cake' . DS . 'Console' . DS . 'Templates' . DS . 'skel' . DS . 'tmp' . DS);
 		}
 
 		// $boot is used by Cake/bootstrap.php file

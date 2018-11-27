@@ -255,7 +255,7 @@ class IniReaderTest extends CakeTestCase {
  * @return void
  */
 	public function testDump() {
-		$reader = new IniReader(TMP);
+		$reader = new IniReader(OLD_TMP);
 		$result = $reader->dump('test.ini', $this->testData);
 		$this->assertTrue($result > 0);
 
@@ -270,7 +270,7 @@ bool_true = true
 [Asset]
 timestamp = force
 INI;
-		$file = TMP . 'test.ini';
+		$file = OLD_TMP . 'test.ini';
 		$result = file_get_contents($file);
 		unlink($file);
 
@@ -290,10 +290,10 @@ INI;
  * @return void
  */
 	public function testDumpRead() {
-		$reader = new IniReader(TMP);
+		$reader = new IniReader(OLD_TMP);
 		$reader->dump('test.ini', $this->testData);
 		$result = $reader->read('test.ini');
-		unlink(TMP . 'test.ini');
+		unlink(OLD_TMP . 'test.ini');
 
 		$expected = $this->testData;
 		$expected['One']['is_null'] = false;

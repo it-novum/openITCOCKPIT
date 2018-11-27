@@ -47,7 +47,7 @@ class ProjectTaskTest extends CakeTestCase {
 			array('in', 'err', 'createFile', '_stop'),
 			array($out, $out, $in)
 		);
-		$this->Task->path = TMP . 'tests' . DS;
+		$this->Task->path = OLD_TMP . 'tests' . DS;
 	}
 
 /**
@@ -134,7 +134,7 @@ class ProjectTaskTest extends CakeTestCase {
  * @return void
  */
 	public function testExecuteWithAbsolutePath() {
-		$path = $this->Task->args[0] = TMP . 'tests' . DS . 'bake_test_app';
+		$path = $this->Task->args[0] = OLD_TMP . 'tests' . DS . 'bake_test_app';
 		$this->Task->params['skel'] = CAKE . 'Console' . DS . 'Templates' . DS . 'skel';
 		$this->Task->expects($this->at(0))->method('in')->will($this->returnValue('y'));
 		$this->Task->execute();
@@ -160,7 +160,7 @@ class ProjectTaskTest extends CakeTestCase {
 		$restore = ini_get('include_path');
 		ini_set('include_path', CAKE_CORE_INCLUDE_PATH . PATH_SEPARATOR . $restore);
 
-		$path = $this->Task->args[0] = TMP . 'tests' . DS . 'bake_test_app';
+		$path = $this->Task->args[0] = OLD_TMP . 'tests' . DS . 'bake_test_app';
 		$this->Task->params['skel'] = CAKE . 'Console' . DS . 'Templates' . DS . 'skel';
 		$this->Task->expects($this->at(0))->method('in')->will($this->returnValue('y'));
 		$this->Task->execute();
@@ -314,11 +314,11 @@ class ProjectTaskTest extends CakeTestCase {
 	public function testCakeAdmin() {
 		$File = new File(OLD_CONFIG . 'core.php');
 		$contents = $File->read();
-		$File = new File(TMP . 'tests' . DS . 'core.php');
+		$File = new File(OLD_TMP . 'tests' . DS . 'core.php');
 		$File->write($contents);
 
 		Configure::write('Routing.prefixes', null);
-		$this->Task->configPath = TMP . 'tests' . DS;
+		$this->Task->configPath = OLD_TMP . 'tests' . DS;
 		$result = $this->Task->cakeAdmin('my_prefix');
 		$this->assertTrue($result);
 
@@ -348,7 +348,7 @@ class ProjectTaskTest extends CakeTestCase {
  */
 	public function testExecute() {
 		$this->Task->params['skel'] = CAKE . 'Console' . DS . 'Templates' . DS . 'skel';
-		$this->Task->params['working'] = TMP . 'tests' . DS;
+		$this->Task->params['working'] = OLD_TMP . 'tests' . DS;
 
 		$path = $this->Task->path . 'bake_test_app';
 		$this->Task->expects($this->at(0))->method('in')->will($this->returnValue($path));

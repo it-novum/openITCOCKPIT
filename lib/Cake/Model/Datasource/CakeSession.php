@@ -679,7 +679,7 @@ class CakeSession {
 					'session.serialize_handler' => 'php',
 					'session.use_cookies' => 1,
 					'session.cookie_path' => static::$path,
-					'session.save_path' => TMP . 'sessions',
+					'session.save_path' => OLD_TMP . 'sessions',
 					'session.save_handler' => 'files'
 				)
 			),

@@ -77,9 +77,9 @@ class AdministratorsController extends AppController {
 
         $load = null;
 
-        if (file_exists(TMP . 'loadavg')) {
+        if (file_exists(OLD_TMP . 'loadavg')) {
             $this->Frontend->setJson('renderGraph', true);
-            $load = file(TMP . 'loadavg');
+            $load = file(OLD_TMP . 'loadavg');
             if (sizeof($load) >= 3) {
                 $graphData = [
                     1  => [],

@@ -46,7 +46,7 @@ endif;
 </p>
 <p>
 	<?php
-		if (is_writable(TMP)):
+		if (is_writable(OLD_TMP)):
 			echo '<span class="notice success">';
 				echo __d('cake_dev', 'Your tmp directory is writable.');
 			echo '</span>';

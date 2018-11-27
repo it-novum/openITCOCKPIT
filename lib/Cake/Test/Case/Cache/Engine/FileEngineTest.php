@@ -63,10 +63,10 @@ class FileEngineTest extends CakeTestCase {
  * @return void
  */
 	public function testCacheDirChange() {
-		$result = Cache::config('sessions', array('engine' => 'File', 'path' => TMP . 'sessions'));
+		$result = Cache::config('sessions', array('engine' => 'File', 'path' => OLD_TMP . 'sessions'));
 		$this->assertEquals(Cache::settings('sessions'), $result['settings']);
 
-		$result = Cache::config('sessions', array('engine' => 'File', 'path' => TMP . 'tests'));
+		$result = Cache::config('sessions', array('engine' => 'File', 'path' => OLD_TMP . 'tests'));
 		$this->assertEquals(Cache::settings('sessions'), $result['settings']);
 		$this->assertNotEquals(Cache::settings('default'), $result['settings']);
 	}
@@ -158,7 +158,7 @@ class FileEngineTest extends CakeTestCase {
 
 		$result = Cache::delete('delete_test', 'file_test');
 		$this->assertTrue($result);
-		$this->assertFalse(file_exists(TMP . 'tests' . DS . 'delete_test'));
+		$this->assertFalse(file_exists(OLD_TMP . 'tests' . DS . 'delete_test'));
 
 		$result = Cache::delete('delete_test', 'file_test');
 		$this->assertFalse($result);
@@ -319,7 +319,7 @@ class FileEngineTest extends CakeTestCase {
  * @return void
  */
 	public function testRemoveWindowsSlashesFromCache() {
-		Cache::config('windows_test', array('engine' => 'File', 'isWindows' => true, 'prefix' => null, 'path' => TMP));
+		Cache::config('windows_test', array('engine' => 'File', 'isWindows' => true, 'prefix' => null, 'path' => OLD_TMP));
 
 		$expected = array(
 			'C:\dev\prj2\sites\cake\libs' => array(
@@ -364,13 +364,13 @@ class FileEngineTest extends CakeTestCase {
  * @return void
  */
 	public function testWriteQuotedString() {
-		Cache::config('file_test', array('engine' => 'File', 'path' => TMP . 'tests'));
+		Cache::config('file_test', array('engine' => 'File', 'path' => OLD_TMP . 'tests'));
 		Cache::write('App.doubleQuoteTest', '"this is a quoted string"', 'file_test');
 		$this->assertSame(Cache::read('App.doubleQuoteTest', 'file_test'), '"this is a quoted string"');
 		Cache::write('App.singleQuoteTest', "'this is a quoted string'", 'file_test');
 		$this->assertSame(Cache::read('App.singleQuoteTest', 'file_test'), "'this is a quoted string'");
 
-		Cache::config('file_test', array('isWindows' => true, 'path' => TMP . 'tests'));
+		Cache::config('file_test', array('isWindows' => true, 'path' => OLD_TMP . 'tests'));
 		$this->assertSame(Cache::read('App.doubleQuoteTest', 'file_test'), '"this is a quoted string"');
 		Cache::write('App.singleQuoteTest', "'this is a quoted string'", 'file_test');
 		$this->assertSame(Cache::read('App.singleQuoteTest', 'file_test'), "'this is a quoted string'");
@@ -384,11 +384,11 @@ class FileEngineTest extends CakeTestCase {
  * @return void
  */
 	public function testPathDoesNotExist() {
-		$this->skipIf(is_dir(TMP . 'tests' . DS . 'autocreate'), 'Cannot run if test directory exists.');
+		$this->skipIf(is_dir(OLD_TMP . 'tests' . DS . 'autocreate'), 'Cannot run if test directory exists.');
 
 		Cache::config('autocreate', array(
 			'engine' => 'File',
-			'path' => TMP . 'tests' . DS . 'autocreate'
+			'path' => OLD_TMP . 'tests' . DS . 'autocreate'
 		));
 
 		Cache::drop('autocreate');
@@ -403,34 +403,34 @@ class FileEngineTest extends CakeTestCase {
 		if (DS === '\\') {
 			$this->markTestSkipped('File permission testing does not work on Windows.');
 		}
-		Cache::config('mask_test', array('engine' => 'File', 'path' => TMP . 'tests'));
+		Cache::config('mask_test', array('engine' => 'File', 'path' => OLD_TMP . 'tests'));
 		$data = 'This is some test content';
 		$write = Cache::write('masking_test', $data, 'mask_test');
-		$result = substr(sprintf('%o', fileperms(TMP . 'tests' . DS . 'cake_masking_test')), -4);
+		$result = substr(sprintf('%o', fileperms(OLD_TMP . 'tests' . DS . 'cake_masking_test')), -4);
 		$expected = '0664';
 		$this->assertEquals($expected, $result);
 		Cache::delete('masking_test', 'mask_test');
 		Cache::drop('mask_test');
 
-		Cache::config('mask_test', array('engine' => 'File', 'mask' => 0666, 'path' => TMP . 'tests'));
+		Cache::config('mask_test', array('engine' => 'File', 'mask' => 0666, 'path' => OLD_TMP . 'tests'));
 		Cache::write('masking_test', $data, 'mask_test');
-		$result = substr(sprintf('%o', fileperms(TMP . 'tests' . DS . 'cake_masking_test')), -4);
+		$result = substr(sprintf('%o', fileperms(OLD_TMP . 'tests' . DS . 'cake_masking_test')), -4);
 		$expected = '0666';
 		$this->assertEquals($expected, $result);
 		Cache::delete('masking_test', 'mask_test');
 		Cache::drop('mask_test');
 
-		Cache::config('mask_test', array('engine' => 'File', 'mask' => 0644, 'path' => TMP . 'tests'));
+		Cache::config('mask_test', array('engine' => 'File', 'mask' => 0644, 'path' => OLD_TMP . 'tests'));
 		Cache::write('masking_test', $data, 'mask_test');
-		$result = substr(sprintf('%o', fileperms(TMP . 'tests' . DS . 'cake_masking_test')), -4);
+		$result = substr(sprintf('%o', fileperms(OLD_TMP . 'tests' . DS . 'cake_masking_test')), -4);
 		$expected = '0644';
 		$this->assertEquals($expected, $result);
 		Cache::delete('masking_test', 'mask_test');
 		Cache::drop('mask_test');
 
-		Cache::config('mask_test', array('engine' => 'File', 'mask' => 0640, 'path' => TMP . 'tests'));
+		Cache::config('mask_test', array('engine' => 'File', 'mask' => 0640, 'path' => OLD_TMP . 'tests'));
 		Cache::write('masking_test', $data, 'mask_test');
-		$result = substr(sprintf('%o', fileperms(TMP . 'tests' . DS . 'cake_masking_test')), -4);
+		$result = substr(sprintf('%o', fileperms(OLD_TMP . 'tests' . DS . 'cake_masking_test')), -4);
 		$expected = '0640';
 		$this->assertEquals($expected, $result);
 		Cache::delete('masking_test', 'mask_test');

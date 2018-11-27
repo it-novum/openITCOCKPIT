@@ -138,7 +138,7 @@ class TidyHelper extends AppHelper
         }
 
         // cli
-        $File = new File(rtrim(TMP, DS).DS.rand().'.html', true);
+        $File = new File(rtrim(OLD_TMP, DS).DS.rand().'.html', true);
         $File->write($out);
         $path = $File->pwd();
         $errors = $path.'.err';

@@ -472,7 +472,7 @@ TEXT;
 		if (file_exists(LOGS . 'debug.log')) {
 			unlink(LOGS . 'debug.log');
 		}
-		CakeLog::config('file', array('engine' => 'File', 'path' => TMP . 'logs' . DS));
+		CakeLog::config('file', array('engine' => 'File', 'path' => OLD_TMP . 'logs' . DS));
 
 		Debugger::log('cool');
 		$result = file_get_contents(LOGS . 'debug.log');
@@ -499,7 +499,7 @@ TEXT;
 		if (file_exists(LOGS . 'debug.log')) {
 			unlink(LOGS . 'debug.log');
 		}
-		CakeLog::config('file', array('engine' => 'File', 'path' => TMP . 'logs' . DS));
+		CakeLog::config('file', array('engine' => 'File', 'path' => OLD_TMP . 'logs' . DS));
 
 		$val = array(
 			'test' => array('key' => 'val')

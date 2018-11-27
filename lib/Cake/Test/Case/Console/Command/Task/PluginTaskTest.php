@@ -48,8 +48,8 @@ class PluginTaskTest extends CakeTestCase {
 			array('in', 'err', 'createFile', '_stop', 'clear'),
 			array($this->out, $this->out, $this->in)
 		);
-		$this->Task->path = TMP . 'tests' . DS;
-		$this->Task->bootstrap = TMP . 'tests' . DS . 'bootstrap.php';
+		$this->Task->path = OLD_TMP . 'tests' . DS;
+		$this->Task->bootstrap = OLD_TMP . 'tests' . DS . 'bootstrap.php';
 		touch($this->Task->bootstrap);
 
 		$this->_paths = $paths = App::path('plugins');
@@ -58,7 +58,7 @@ class PluginTaskTest extends CakeTestCase {
 				array_splice($paths, $i, 1);
 			}
 		}
-		$this->_testPath = array_push($paths, TMP . 'tests' . DS) - 1;
+		$this->_testPath = array_push($paths, OLD_TMP . 'tests' . DS) - 1;
 		App::build(array('plugins' => $paths));
 	}
 
@@ -206,7 +206,7 @@ class PluginTaskTest extends CakeTestCase {
 			array('in', 'out', 'err', 'createFile', '_stop'),
 			array($this->out, $this->out, $this->in)
 		);
-		$this->Task->path = TMP . 'tests' . DS;
+		$this->Task->path = OLD_TMP . 'tests' . DS;
 
 		// Make sure the added path is filtered out.
 		$this->Task->expects($this->exactly($last))

@@ -47,7 +47,7 @@ class ExtractTaskTest extends CakeTestCase {
 			array('in', 'out', 'err', '_stop'),
 			array($out, $out, $in)
 		);
-		$this->path = TMP . 'tests' . DS . 'extract_task_test';
+		$this->path = OLD_TMP . 'tests' . DS . 'extract_task_test';
 		new Folder($this->path . DS . 'locale', true);
 	}
 

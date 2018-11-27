@@ -440,7 +440,7 @@ if (!function_exists('cache')) {
 				$filename = WWW_ROOT . $path;
 				break;
 			case 'tmp':
-				$filename = TMP . $path;
+				$filename = OLD_TMP . $path;
 				break;
 		}
 		$timediff = $expires - $now;

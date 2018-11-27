@@ -145,8 +145,8 @@ class ShellTest extends CakeTestCase {
 		$in = $this->getMock('ConsoleInput', array(), array(), '', false);
 		$this->Shell = new ShellTestShell($output, $error, $in);
 
-		if (is_dir(TMP . 'shell_test')) {
-			$Folder = new Folder(TMP . 'shell_test');
+		if (is_dir(OLD_TMP . 'shell_test')) {
+			$Folder = new Folder(OLD_TMP . 'shell_test');
 			$Folder->delete();
 		}
 	}
@@ -600,7 +600,7 @@ class ShellTest extends CakeTestCase {
 	public function testCreateFileNonInteractive() {
 		$eol = PHP_EOL;
 
-		$path = TMP . 'shell_test';
+		$path = OLD_TMP . 'shell_test';
 		$file = $path . DS . 'file1.php';
 
 		new Folder($path, true);
@@ -628,7 +628,7 @@ class ShellTest extends CakeTestCase {
 	public function testCreateFileInteractive() {
 		$eol = PHP_EOL;
 
-		$path = TMP . 'shell_test';
+		$path = OLD_TMP . 'shell_test';
 		$file = $path . DS . 'file1.php';
 		new Folder($path, true);
 
@@ -671,7 +671,7 @@ class ShellTest extends CakeTestCase {
 	public function testCreateFileNoPermissions() {
 		$this->skipIf(DIRECTORY_SEPARATOR === '\\', 'Cant perform operations using permissions on Windows.');
 
-		$path = TMP . 'shell_test';
+		$path = OLD_TMP . 'shell_test';
 		$file = $path . DS . 'no_perms';
 
 		if (!is_dir($path)) {

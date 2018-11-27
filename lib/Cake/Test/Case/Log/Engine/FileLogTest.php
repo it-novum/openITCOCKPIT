@@ -59,7 +59,7 @@ class FileLogTest extends CakeTestCase {
  * @return void
  */
 	public function testPathSetting() {
-		$path = TMP . 'tests' . DS;
+		$path = OLD_TMP . 'tests' . DS;
 		$this->_deleteLogs($path);
 
 		$log = new FileLog(compact('path'));
@@ -73,7 +73,7 @@ class FileLogTest extends CakeTestCase {
  * @return void
  */
 	public function testRotation() {
-		$path = TMP . 'tests' . DS;
+		$path = OLD_TMP . 'tests' . DS;
 		$this->_deleteLogs($path);
 
 		file_put_contents($path . 'error.log', "this text is under 35 bytes\n");
@@ -155,7 +155,7 @@ class FileLogTest extends CakeTestCase {
 			$this->markTestSkipped('File permission testing does not work on Windows.');
 		}
 
-		$path = TMP . 'tests' . DS;
+		$path = OLD_TMP . 'tests' . DS;
 		$this->_deleteLogs($path);
 
 		$log = new FileLog(array('path' => $path, 'mask' => 0666));
