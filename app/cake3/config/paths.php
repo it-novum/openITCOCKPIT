@@ -70,5 +70,5 @@ define('OLD_CAKE_CORE_INCLUDE_PATH', OLD_ROOT . DS . 'vendor' . DS . 'cakephp' .
 /**
  * Path to the cake directory.
  */
-define('CORE_PATH', OLD_CAKE_CORE_INCLUDE_PATH . DS);
-define('CAKE', CORE_PATH . 'src' . DS);
+define('OLD_CORE_PATH', OLD_CAKE_CORE_INCLUDE_PATH . DS);
+define('CAKE', OLD_CORE_PATH . 'src' . DS);

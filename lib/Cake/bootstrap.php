@@ -33,8 +33,8 @@ if (!defined('OLD_CAKE_CORE_INCLUDE_PATH')) {
 	define('OLD_CAKE_CORE_INCLUDE_PATH', dirname(dirname(__FILE__)));
 }
 
-if (!defined('CORE_PATH')) {
-	define('CORE_PATH', OLD_CAKE_CORE_INCLUDE_PATH . DS);
+if (!defined('OLD_CORE_PATH')) {
+	define('OLD_CORE_PATH', OLD_CAKE_CORE_INCLUDE_PATH . DS);
 }
 
 if (!defined('WEBROOT_DIR')) {
@@ -44,7 +44,7 @@ if (!defined('WEBROOT_DIR')) {
 /**
  * Path to the cake directory.
  */
-	define('CAKE', CORE_PATH . 'Cake' . DS);
+	define('CAKE', OLD_CORE_PATH . 'Cake' . DS);
 /**
  * Path to the application's directory.
  */

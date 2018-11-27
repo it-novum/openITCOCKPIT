@@ -53,7 +53,7 @@ class CommandListShell extends AppShell {
 			$this->out(" -app: " . OLD_APP_DIR);
 			$this->out(" -working: " . rtrim(OLD_APP, DS));
 			$this->out(" -root: " . rtrim(OLD_ROOT, DS));
-			$this->out(" -core: " . rtrim(CORE_PATH, DS));
+			$this->out(" -core: " . rtrim(OLD_CORE_PATH, DS));
 			$this->out(" -webroot: " . rtrim(WWW_ROOT, DS));
 			$this->out("");
 			$this->out(__d('cake_console', "<info>Changing Paths:</info>"), 2);

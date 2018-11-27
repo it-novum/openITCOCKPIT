@@ -84,8 +84,8 @@ class ShellDispatcher {
 			if (!defined('DS')) {
 				define('DS', DIRECTORY_SEPARATOR);
 			}
-			if (!defined('CORE_PATH')) {
-				define('CORE_PATH', OLD_CAKE_CORE_INCLUDE_PATH . DS);
+			if (!defined('OLD_CORE_PATH')) {
+				define('OLD_CORE_PATH', OLD_CAKE_CORE_INCLUDE_PATH . DS);
 			}
 		}
 	}
@@ -142,7 +142,7 @@ class ShellDispatcher {
 
 		// $boot is used by Cake/bootstrap.php file
 		$boot = file_exists(OLD_ROOT . DS . OLD_APP_DIR . DS . 'Config' . DS . 'bootstrap.php');
-		require CORE_PATH . 'Cake' . DS . 'bootstrap.php';
+		require OLD_CORE_PATH . 'Cake' . DS . 'bootstrap.php';
 
 		if (!file_exists(OLD_CONFIG . 'core.php')) {
 			include_once OLD_CAKE_CORE_INCLUDE_PATH . DS . 'Cake' . DS . 'Console' . DS . 'Templates' . DS . 'skel' . DS . 'Config' . DS . 'core.php';
