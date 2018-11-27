@@ -45,19 +45,18 @@ if (!defined('WEBROOT_DIR')) {
  * Path to the cake directory.
  */
 	define('CAKE', CORE_PATH . 'Cake' . DS);
-
 /**
  * Path to the application's directory.
  */
 if (!defined('OLD_APP')) {
-	define('OLD_APP', OLD_ROOT . DS . APP_DIR . DS);
+	define('OLD_APP', OLD_ROOT . DS . OLD_APP_DIR . DS);
 }
 
 /**
  * Config Directory
  */
 if (!defined('CONFIG')) {
-	define('CONFIG', OLD_ROOT . DS . APP_DIR . DS . 'Config' . DS);
+	define('CONFIG', OLD_ROOT . DS . OLD_APP_DIR . DS . 'Config' . DS);
 }
 
 /**

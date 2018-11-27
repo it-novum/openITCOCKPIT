@@ -103,7 +103,7 @@ abstract class BaseCoverageReport {
 	public function getPathFilter() {
 		$path = OLD_ROOT . DS;
 		if ($this->appTest) {
-			$path .= APP_DIR . DS;
+			$path .= OLD_APP_DIR . DS;
 		} elseif ($this->pluginTest) {
 			$path = CakePlugin::path($this->pluginTest);
 		} else {

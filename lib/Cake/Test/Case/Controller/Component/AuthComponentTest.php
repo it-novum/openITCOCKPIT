@@ -963,7 +963,7 @@ class AuthComponentTest extends CakeTestCase {
 		$_GET = array();
 
 		Configure::write('App', array(
-			'dir' => APP_DIR,
+			'dir' => OLD_APP_DIR,
 			'webroot' => WEBROOT_DIR,
 			'base' => false,
 			'baseUrl' => '/cake/index.php'
@@ -1646,7 +1646,7 @@ class AuthComponentTest extends CakeTestCase {
 		$App = Configure::read('App');
 
 		Configure::write('App', array(
-			'dir' => APP_DIR,
+			'dir' => OLD_APP_DIR,
 			'webroot' => WEBROOT_DIR,
 			'base' => false,
 			'baseUrl' => '/cake/index.php'

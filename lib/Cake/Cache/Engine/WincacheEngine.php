@@ -45,7 +45,7 @@ class WincacheEngine extends CacheEngine {
  */
 	public function init($settings = array()) {
 		if (!isset($settings['prefix'])) {
-			$settings['prefix'] = Inflector::slug(APP_DIR) . '_';
+			$settings['prefix'] = Inflector::slug(OLD_APP_DIR) . '_';
 		}
 		$settings += array('engine' => 'Wincache');
 		parent::init($settings);

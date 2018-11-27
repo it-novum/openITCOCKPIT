@@ -46,8 +46,8 @@ if (!defined('OLD_ROOT')) {
  * The actual directory name for the "app".
  *
  */
-if (!defined('APP_DIR')) {
-	define('APP_DIR', basename(dirname(dirname(__FILE__))));
+if (!defined('OLD_APP_DIR')) {
+	define('OLD_APP_DIR', basename(dirname(dirname(__FILE__))));
 }
 
 /**

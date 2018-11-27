@@ -122,8 +122,8 @@ class ShellDispatcher {
 		if (!defined('OLD_ROOT')) {
 			define('OLD_ROOT', $this->params['root']);
 		}
-		if (!defined('APP_DIR')) {
-			define('APP_DIR', $this->params['app']);
+		if (!defined('OLD_APP_DIR')) {
+			define('OLD_APP_DIR', $this->params['app']);
 		}
 		if (!defined('APP')) {
 			define('APP', $this->params['working'] . DS);
@@ -141,7 +141,7 @@ class ShellDispatcher {
 		}
 
 		// $boot is used by Cake/bootstrap.php file
-		$boot = file_exists(OLD_ROOT . DS . APP_DIR . DS . 'Config' . DS . 'bootstrap.php');
+		$boot = file_exists(OLD_ROOT . DS . OLD_APP_DIR . DS . 'Config' . DS . 'bootstrap.php');
 		require CORE_PATH . 'Cake' . DS . 'bootstrap.php';
 
 		if (!file_exists(CONFIG . 'core.php')) {

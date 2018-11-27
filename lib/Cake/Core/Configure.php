@@ -126,7 +126,7 @@ class Configure {
 		static::write('App', (array)static::read('App') + array(
 			'base' => false,
 			'baseUrl' => false,
-			'dir' => APP_DIR,
+			'dir' => OLD_APP_DIR,
 			'webroot' => WEBROOT_DIR,
 			'www_root' => WWW_ROOT
 		));
