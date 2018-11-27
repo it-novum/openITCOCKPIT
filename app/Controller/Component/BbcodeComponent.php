@@ -37,7 +37,7 @@ class BbcodeComponent extends Component {
     public function initialize(Controller $controller) {
         $this->Controller = $controller;
 
-        require_once APP . "Lib/jbbcode-1.2.0/Parser.php";
+        require_once OLD_APP . "Lib/jbbcode-1.2.0/Parser.php";
         $bbparser = new JBBCode\Parser();
         $bbparser->addCodeDefinitionSet(new JBBCode\DefaultCodeDefinitionSet());
         $builder = new JBBCode\CodeDefinitionBuilder('left', '<p align="left">{param}</p>');

@@ -35,7 +35,7 @@ class Systemsetting extends AppModel {
 
         // sort the list like it is in openITCOCKPIT\InitialDatabase\Systemsettings
         // it is just sorting, no deletions, no additions
-        require_once APP . 'src' . DS . 'itnovum' . DS . 'openITCOCKPIT' . DS . 'InitialDatabase' . DS . 'Systemsetting.php';
+        require_once OLD_APP . 'src' . DS . 'itnovum' . DS . 'openITCOCKPIT' . DS . 'InitialDatabase' . DS . 'Systemsetting.php';
         $mySytemsettings = new itnovum\openITCOCKPIT\InitialDatabase\Systemsetting(new Model());
         $myData = $mySytemsettings->getData();
         $sortedSystemSettingsSchema = $sortedSystemSettings = [];

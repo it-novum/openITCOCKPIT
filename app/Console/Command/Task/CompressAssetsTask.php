@@ -172,7 +172,7 @@ class CompressAssetsTask extends AppShell {
      * @return void
      */
     protected function _runCompressor($inputFile, $outputFile, $assetType) {
-        $compressorPath = APP . 'Vendor/';
+        $compressorPath = OLD_APP . 'Vendor/';
         echo system("java -jar {$compressorPath}yuicompressor-2.4.7.jar --type={$assetType} -o {$outputFile} {$inputFile}");
         #file_put_contents($outputFile, file_get_contents($inputFile));
     }

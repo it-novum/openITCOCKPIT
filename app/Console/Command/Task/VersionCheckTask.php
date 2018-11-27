@@ -82,7 +82,7 @@ class VersionCheckTask extends AppShell implements CronjobInterface {
      */
     public function saveNewVersion($availableVersion) {
         $newConfig = sprintf($this->getConfigTemplate(), $availableVersion);
-        $fileName = APP . 'Lib' . DS . 'AvailableVersion.php';
+        $fileName = OLD_APP . 'Lib' . DS . 'AvailableVersion.php';
         file_put_contents($fileName, $newConfig);
     }
 
@@ -90,7 +90,7 @@ class VersionCheckTask extends AppShell implements CronjobInterface {
      * @return string
      */
     public function getConfigTemplate() {
-        $fileName = APP . 'src' . DS . 'itnovum' . DS . 'openITCOCKPIT' . DS . 'Core' . DS . 'AvailableVersionTemplate.txt';
+        $fileName = OLD_APP . 'src' . DS . 'itnovum' . DS . 'openITCOCKPIT' . DS . 'Core' . DS . 'AvailableVersionTemplate.txt';
 
         return file_get_contents($fileName);
     }

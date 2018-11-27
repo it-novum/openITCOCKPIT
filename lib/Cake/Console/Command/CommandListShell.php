@@ -51,7 +51,7 @@ class CommandListShell extends AppShell {
 		if (empty($this->params['xml'])) {
 			$this->out(__d('cake_console', "<info>Current Paths:</info>"), 2);
 			$this->out(" -app: " . APP_DIR);
-			$this->out(" -working: " . rtrim(APP, DS));
+			$this->out(" -working: " . rtrim(OLD_APP, DS));
 			$this->out(" -root: " . rtrim(ROOT, DS));
 			$this->out(" -core: " . rtrim(CORE_PATH, DS));
 			$this->out(" -webroot: " . rtrim(WWW_ROOT, DS));

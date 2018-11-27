@@ -315,7 +315,7 @@ class App {
 		$defaults = array();
 		foreach ($packageFormat as $package => $format) {
 			foreach ($format as $f) {
-				$defaults[$package][] = sprintf($f, APP);
+				$defaults[$package][] = sprintf($f, OLD_APP);
 			}
 		}
 
@@ -467,7 +467,7 @@ class App {
 			}
 
 			foreach ((array)$path as $dir) {
-				if ($dir != APP && is_dir($dir)) {
+				if ($dir != OLD_APP && is_dir($dir)) {
 					$files = new RegexIterator(new DirectoryIterator($dir), $extension);
 					foreach ($files as $file) {
 						$fileName = basename($file);
@@ -551,7 +551,7 @@ class App {
 		if (empty($plugin)) {
 			$appLibs = empty(static::$_packages['Lib']) ? APPLIBS : current(static::$_packages['Lib']);
 			$paths[] = $appLibs . $package . DS;
-			$paths[] = APP . $package . DS;
+			$paths[] = OLD_APP . $package . DS;
 			$paths[] = CAKE . $package . DS;
 		} else {
 			$pluginPath = CakePlugin::path($plugin);
@@ -878,7 +878,7 @@ class App {
 					dirname(dirname(CAKE)) . DS . 'vendors' . DS
 				),
 				'Plugin' => array(
-					APP . 'Plugin' . DS,
+					OLD_APP . 'Plugin' . DS,
 					ROOT . DS . 'plugins' . DS,
 					dirname(dirname(CAKE)) . DS . 'plugins' . DS
 				)

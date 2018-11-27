@@ -583,12 +583,12 @@ class ShellTest extends CakeTestCase {
 		$expected = 'tmp' . DS . 'ab';
 		$this->assertEquals($expected, $this->Shell->shortPath($path));
 
-		$path = APP;
-		$expected = DS . basename(APP) . DS;
+		$path = OLD_APP;
+		$expected = DS . basename(OLD_APP) . DS;
 		$this->assertEquals($expected, $this->Shell->shortPath($path));
 
-		$path = APP . 'index.php';
-		$expected = DS . basename(APP) . DS . 'index.php';
+		$path = OLD_APP . 'index.php';
+		$expected = DS . basename(OLD_APP) . DS . 'index.php';
 		$this->assertEquals($expected, $this->Shell->shortPath($path));
 	}
 

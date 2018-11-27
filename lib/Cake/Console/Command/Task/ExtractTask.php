@@ -117,7 +117,7 @@ class ExtractTask extends AppShell {
  * @return void
  */
 	protected function _getPaths() {
-		$defaultPath = APP;
+		$defaultPath = OLD_APP;
 		while (true) {
 			$currentPaths = count($this->_paths) > 0 ? $this->_paths : array('None');
 			$message = __d(
@@ -570,7 +570,7 @@ class ExtractTask extends AppShell {
  */
 	protected function _buildFiles() {
 		$paths = $this->_paths;
-		$paths[] = realpath(APP) . DS;
+		$paths[] = realpath(OLD_APP) . DS;
 
 		usort($paths, function ($a, $b) {
 			return strlen($b) - strlen($a);
@@ -831,7 +831,7 @@ class ExtractTask extends AppShell {
  * @return bool
  */
 	protected function _isExtractingApp() {
-		return $this->_paths === array(APP);
+		return $this->_paths === array(OLD_APP);
 	}
 
 /**

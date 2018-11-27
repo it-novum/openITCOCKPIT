@@ -23,7 +23,7 @@ CakePlugin::loadAll();
 //Purifier::config('StandardConfig', $config);
 
 // FIXME: App::uses() doesn't seem to work in this context
-require_once APP . 'Lib/AppExceptionRenderer.php';
+require_once OLD_APP . 'Lib/AppExceptionRenderer.php';
 
 App::uses('Utils', 'Lib');
 
@@ -215,4 +215,4 @@ CakePlugin::load('CakePdf', [
     ]
 );
 
-require_once APP . 'Vendor' . DS . 'autoload.php';
+require_once OLD_APP . 'Vendor' . DS . 'autoload.php';

@@ -29,7 +29,7 @@ use Ratchet\Server\IoServer;
 use Ratchet\WebSocket\WsServer;
 use React\Socket\Server as Reactor;
 
-require_once APP . '/Lib/SudoMessageInterface.php';
+require_once OLD_APP . '/Lib/SudoMessageInterface.php';
 
 App::import('Model', 'Export');
 

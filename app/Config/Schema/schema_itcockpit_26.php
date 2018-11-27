@@ -7,9 +7,9 @@ class AppSchema extends CakeSchema {
     public function __construct($options = []) {
         parent::__construct($options);
 
-        require_once APP . 'Model' . DS . 'Host.php';
-        require_once APP . 'Model' . DS . 'Service.php';
-        require_once APP . 'Model' . DS . 'Container.php';
+        require_once OLD_APP . 'Model' . DS . 'Host.php';
+        require_once OLD_APP . 'Model' . DS . 'Service.php';
+        require_once OLD_APP . 'Model' . DS . 'Container.php';
     }
 
     public function before($event = []) {

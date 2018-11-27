@@ -84,7 +84,7 @@ class AngularAssets implements AngularAssetsInterface {
         });
 
         foreach ($loadedModules as $loadedModule) {
-            $file = APP . 'Plugin' . DS . $loadedModule . DS . 'Lib' . DS . 'AngularAssets.php';
+            $file = OLD_APP . 'Plugin' . DS . $loadedModule . DS . 'Lib' . DS . 'AngularAssets.php';
             if (file_exists($file)) {
                 require_once $file;
                 $dynamicAngularAssets = sprintf('itnovum\openITCOCKPIT\%s\AngularAssets\AngularAssets', $loadedModule);

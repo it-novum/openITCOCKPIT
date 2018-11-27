@@ -49,8 +49,8 @@ if (!defined('WEBROOT_DIR')) {
 /**
  * Path to the application's directory.
  */
-if (!defined('APP')) {
-	define('APP', ROOT . DS . APP_DIR . DS);
+if (!defined('OLD_APP')) {
+	define('OLD_APP', ROOT . DS . APP_DIR . DS);
 }
 
 /**
@@ -63,7 +63,7 @@ if (!defined('CONFIG')) {
 /**
  * Path to the application's libs directory.
  */
-	define('APPLIBS', APP . 'Lib' . DS);
+	define('APPLIBS', OLD_APP . 'Lib' . DS);
 
 /**
  * Path to the public CSS directory.
@@ -90,14 +90,14 @@ if (!defined('IMAGES')) {
  * Path to the tests directory.
  */
 if (!defined('TESTS')) {
-	define('TESTS', APP . 'Test' . DS);
+	define('TESTS', OLD_APP . 'Test' . DS);
 }
 
 /**
  * Path to the temporary files directory.
  */
 if (!defined('TMP')) {
-	define('TMP', APP . 'tmp' . DS);
+	define('TMP', OLD_APP . 'tmp' . DS);
 }
 
 /**

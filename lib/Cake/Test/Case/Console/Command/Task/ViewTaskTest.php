@@ -355,8 +355,8 @@ class ViewTaskTest extends CakeTestCase {
 		$this->Task->name = 'View';
 
 		//fake plugin path
-		CakePlugin::load('TestTest', array('path' => APP . 'Plugin' . DS . 'TestTest' . DS));
-		$path = APP . 'Plugin' . DS . 'TestTest' . DS . 'View' . DS . 'ViewTaskComments' . DS . 'view.ctp';
+		CakePlugin::load('TestTest', array('path' => OLD_APP . 'Plugin' . DS . 'TestTest' . DS));
+		$path = OLD_APP . 'Plugin' . DS . 'TestTest' . DS . 'View' . DS . 'ViewTaskComments' . DS . 'view.ctp';
 
 		$result = $this->Task->getContent('index');
 		$this->assertNotContains('List Test Test.view Task Articles', $result);

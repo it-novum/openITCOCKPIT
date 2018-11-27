@@ -44,7 +44,7 @@ class PacketmanagerController extends AppController {
         $openITCVersion = Configure::read('version');
         $this->set('openITCVersion', $openITCVersion);
 
-        $installedModules = glob(APP . 'Plugin/*', GLOB_ONLYDIR);
+        $installedModules = glob(OLD_APP . 'Plugin/*', GLOB_ONLYDIR);
         $installedModules = array_map(function ($file) {
             return basename($file);
         }, $installedModules);

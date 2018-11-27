@@ -72,11 +72,11 @@ class HtmlCoverageReportTest extends CakeTestCase {
  */
 	public function testFilterCoverageDataByPathRemovingElements() {
 		$data = array(
-			CAKE . 'dispatcher.php' => array(
+            CAKE . 'dispatcher.php'   => array(
 				10 => -1,
 				12 => 1
 			),
-			APP . 'app_model.php' => array(
+            OLD_APP . 'app_model.php' => array(
 				50 => 1,
 				52 => -1
 			)
@@ -84,7 +84,7 @@ class HtmlCoverageReportTest extends CakeTestCase {
 		$this->Coverage->setCoverage($data);
 		$result = $this->Coverage->filterCoverageDataByPath(CAKE);
 		$this->assertTrue(isset($result[CAKE . 'dispatcher.php']));
-		$this->assertFalse(isset($result[APP . 'app_model.php']));
+		$this->assertFalse(isset($result[OLD_APP . 'app_model.php']));
 	}
 
 /**

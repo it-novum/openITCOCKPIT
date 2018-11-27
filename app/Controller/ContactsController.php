@@ -505,7 +505,7 @@ class ContactsController extends AppController {
         if ($this->request->is('post') || $this->request->is('put')) {
             $samaccountname = str_replace('string:', '', $this->request->data('Ldap.samaccountname'));
             if ($PHPVersionChecker->isVersionGreaterOrEquals7Dot1()) {
-                require_once APP . 'vendor_freedsx_ldap' . DS . 'autoload.php';
+                require_once OLD_APP . 'vendor_freedsx_ldap' . DS . 'autoload.php';
                 $ldap = new \FreeDSx\Ldap\LdapClient([
                     'servers'               => [$systemsettings['FRONTEND']['FRONTEND.LDAP.ADDRESS']],
                     'port'                  => (int)$systemsettings['FRONTEND']['FRONTEND.LDAP.PORT'],
@@ -575,7 +575,7 @@ class ContactsController extends AppController {
 
         if ($PHPVersionChecker->isVersionGreaterOrEquals7Dot1()) {
             $usersForSelect = [];
-            require_once APP . 'vendor_freedsx_ldap' . DS . 'autoload.php';
+            require_once OLD_APP . 'vendor_freedsx_ldap' . DS . 'autoload.php';
             $ldap = new \FreeDSx\Ldap\LdapClient([
                 'servers'               => [$systemsettings['FRONTEND']['FRONTEND.LDAP.ADDRESS']],
                 'port'                  => (int)$systemsettings['FRONTEND']['FRONTEND.LDAP.PORT'],
@@ -653,7 +653,7 @@ class ContactsController extends AppController {
         $samaccountname = $this->request->query('samaccountname');
         if (!empty($samaccountname) && strlen($samaccountname) > 2) {
             $systemsettings = $this->Systemsetting->findAsArraySection('FRONTEND');
-            require_once APP . 'vendor_freedsx_ldap' . DS . 'autoload.php';
+            require_once OLD_APP . 'vendor_freedsx_ldap' . DS . 'autoload.php';
 
             $ldap = new \FreeDSx\Ldap\LdapClient([
                 'servers'               => [$systemsettings['FRONTEND']['FRONTEND.LDAP.ADDRESS']],

@@ -130,13 +130,13 @@ class ShellDispatcher {
 		}
 		if (!defined('WWW_ROOT')) {
 			if (!$this->_isAbsolutePath($this->params['webroot'])) {
-				$webroot = realpath(APP . $this->params['webroot']);
+				$webroot = realpath(OLD_APP . $this->params['webroot']);
 			} else {
 				$webroot = $this->params['webroot'];
 			}
 			define('WWW_ROOT', $webroot . DS);
 		}
-		if (!defined('TMP') && !is_dir(APP . 'tmp')) {
+		if (!defined('TMP') && !is_dir(OLD_APP . 'tmp')) {
 			define('TMP', CAKE_CORE_INCLUDE_PATH . DS . 'Cake' . DS . 'Console' . DS . 'Templates' . DS . 'skel' . DS . 'tmp' . DS);
 		}
 

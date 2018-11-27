@@ -253,7 +253,7 @@ class Shell extends CakeObject {
 		$this->out(__d('cake_console', '<info>Welcome to CakePHP %s Console</info>', 'v' . Configure::version()));
 		$this->hr();
 		$this->out(__d('cake_console', 'App : %s', APP_DIR));
-		$this->out(__d('cake_console', 'Path: %s', APP));
+		$this->out(__d('cake_console', 'Path: %s', OLD_APP));
 		$this->hr();
 	}
 

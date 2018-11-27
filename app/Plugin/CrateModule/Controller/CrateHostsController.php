@@ -141,7 +141,7 @@ class CrateHostsController extends CrateModuleAppController {
         // Distributed Monitoring
         $this->set('masterInstance', $masterInstance);
         $SatelliteModel = false;
-        if (is_dir(APP . 'Plugin' . DS . 'DistributeModule')) {
+        if (is_dir(OLD_APP . 'Plugin' . DS . 'DistributeModule')) {
             $SatelliteModel = ClassRegistry::init('DistributeModule.Satellite', 'Model');
         }
         $SatelliteNames = [];

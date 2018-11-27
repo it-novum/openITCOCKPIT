@@ -42,7 +42,7 @@ class EnvironmentPanel extends DebugPanel
 
         // CakePHP Data
         $return['cake'] = [
-            'APP'                    => APP,
+            'APP'                    => OLD_APP,
             'APP_DIR'                => APP_DIR,
             'APPLIBS'                => APPLIBS,
             'CACHE'                  => CACHE,

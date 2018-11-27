@@ -41,7 +41,7 @@ class AppTest extends CakeTestCase {
 	public function testBuild() {
 		$old = App::path('Model');
 		$expected = array(
-			APP . 'Model' . DS
+			OLD_APP . 'Model' . DS
 		);
 		$this->assertEquals($expected, $old);
 
@@ -49,7 +49,7 @@ class AppTest extends CakeTestCase {
 		$new = App::path('Model');
 		$expected = array(
 			'/path/to/models/',
-			APP . 'Model' . DS
+			OLD_APP . 'Model' . DS
 		);
 		$this->assertEquals($expected, $new);
 
@@ -58,7 +58,7 @@ class AppTest extends CakeTestCase {
 		$new = App::path('Model');
 		$expected = array(
 			'/path/to/models/',
-			APP . 'Model' . DS
+			OLD_APP . 'Model' . DS
 		);
 		$this->assertEquals($expected, $new);
 
@@ -66,7 +66,7 @@ class AppTest extends CakeTestCase {
 		App::build(array('Model' => array('/path/to/models/')), App::APPEND);
 		$new = App::path('Model');
 		$expected = array(
-			APP . 'Model' . DS,
+			OLD_APP . 'Model' . DS,
 			'/path/to/models/'
 		);
 		$this->assertEquals($expected, $new);
@@ -78,13 +78,13 @@ class AppTest extends CakeTestCase {
 		), App::APPEND);
 		$new = App::path('Model');
 		$expected = array(
-			APP . 'Model' . DS,
+			OLD_APP . 'Model' . DS,
 			'/path/to/models/'
 		);
 		$this->assertEquals($expected, $new);
 		$new = App::path('Controller');
 		$expected = array(
-			APP . 'Controller' . DS,
+			OLD_APP . 'Controller' . DS,
 			'/path/to/controllers/'
 		);
 		$this->assertEquals($expected, $new);
@@ -102,7 +102,7 @@ class AppTest extends CakeTestCase {
 	public function testCompatibleBuild() {
 		$old = App::path('models');
 		$expected = array(
-			APP . 'Model' . DS
+			OLD_APP . 'Model' . DS
 		);
 		$this->assertEquals($expected, $old);
 
@@ -112,7 +112,7 @@ class AppTest extends CakeTestCase {
 
 		$expected = array(
 			'/path/to/models/',
-			APP . 'Model' . DS
+			OLD_APP . 'Model' . DS
 		);
 		$this->assertEquals($expected, $new);
 		$this->assertEquals($expected, App::path('Model'));
@@ -120,7 +120,7 @@ class AppTest extends CakeTestCase {
 		App::build(array('datasources' => array('/path/to/datasources/')));
 		$expected = array(
 			'/path/to/datasources/',
-			APP . 'Model' . DS . 'Datasource' . DS
+			OLD_APP . 'Model' . DS . 'Datasource' . DS
 		);
 		$result = App::path('datasources');
 		$this->assertEquals($expected, $result);
@@ -129,7 +129,7 @@ class AppTest extends CakeTestCase {
 		App::build(array('behaviors' => array('/path/to/behaviors/')));
 		$expected = array(
 			'/path/to/behaviors/',
-			APP . 'Model' . DS . 'Behavior' . DS
+			OLD_APP . 'Model' . DS . 'Behavior' . DS
 		);
 		$result = App::path('behaviors');
 		$this->assertEquals($expected, $result);
@@ -138,7 +138,7 @@ class AppTest extends CakeTestCase {
 		App::build(array('controllers' => array('/path/to/controllers/')));
 		$expected = array(
 			'/path/to/controllers/',
-			APP . 'Controller' . DS
+			OLD_APP . 'Controller' . DS
 		);
 		$result = App::path('controllers');
 		$this->assertEquals($expected, $result);
@@ -147,7 +147,7 @@ class AppTest extends CakeTestCase {
 		App::build(array('components' => array('/path/to/components/')));
 		$expected = array(
 			'/path/to/components/',
-			APP . 'Controller' . DS . 'Component' . DS
+			OLD_APP . 'Controller' . DS . 'Component' . DS
 		);
 		$result = App::path('components');
 		$this->assertEquals($expected, $result);
@@ -156,7 +156,7 @@ class AppTest extends CakeTestCase {
 		App::build(array('views' => array('/path/to/views/')));
 		$expected = array(
 			'/path/to/views/',
-			APP . 'View' . DS
+			OLD_APP . 'View' . DS
 		);
 		$result = App::path('views');
 		$this->assertEquals($expected, $result);
@@ -165,7 +165,7 @@ class AppTest extends CakeTestCase {
 		App::build(array('helpers' => array('/path/to/helpers/')));
 		$expected = array(
 			'/path/to/helpers/',
-			APP . 'View' . DS . 'Helper' . DS
+			OLD_APP . 'View' . DS . 'Helper' . DS
 		);
 		$result = App::path('helpers');
 		$this->assertEquals($expected, $result);
@@ -174,7 +174,7 @@ class AppTest extends CakeTestCase {
 		App::build(array('shells' => array('/path/to/shells/')));
 		$expected = array(
 			'/path/to/shells/',
-			APP . 'Console' . DS . 'Command' . DS
+			OLD_APP . 'Console' . DS . 'Command' . DS
 		);
 		$result = App::path('shells');
 		$this->assertEquals($expected, $result);
@@ -193,7 +193,7 @@ class AppTest extends CakeTestCase {
 	public function testBuildPackage() {
 		$pluginPaths = array(
 			'/foo/bar',
-			APP . 'Plugin' . DS,
+			OLD_APP . 'Plugin' . DS,
 			dirname(dirname(CAKE)) . DS . 'plugins' . DS
 		);
 		App::build(array(
@@ -214,7 +214,7 @@ class AppTest extends CakeTestCase {
 		), App::REGISTER);
 
 		$expected = array(
-			APP . 'Service' . DS,
+			OLD_APP . 'Service' . DS,
 		);
 		$result = App::path('Service');
 		$this->assertEquals($expected, $result);
@@ -252,7 +252,7 @@ class AppTest extends CakeTestCase {
 	public function testBuildWithReset() {
 		$old = App::path('Model');
 		$expected = array(
-			APP . 'Model' . DS
+			OLD_APP . 'Model' . DS
 		);
 		$this->assertEquals($expected, $old);
 

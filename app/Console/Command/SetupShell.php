@@ -86,7 +86,7 @@ class SetupShell extends AppShell {
                         if ($this->fetchMailconfig()) {
                             if ($this->Systemsetting->save($this->Systemdata)) {
                                 //Return mail address saved successfully
-                                $file = fopen(APP . 'Config' . DS . 'email.php', 'w+');
+                                $file = fopen(OLD_APP . 'Config' . DS . 'email.php', 'w+');
                                 $mailHost = new MailConfigValue($this->Mail['host']);
                                 $mailPort = new MailConfigValueInt((int)$this->Mail['port']);
                                 $mailUsername = new MailConfigValue($this->Mail['username']);
@@ -238,7 +238,7 @@ class SetupShell extends AppShell {
         $this->out('<blue>This configuration is used by the interface and the monitoring software to send emails</blue>');
         $this->out('<blue>You don\'t need to install a local mailserver</blue>');
         $this->out('<blue>If you want to change this settings later </blue>', false);
-        $this->out('<red>' . APP . 'Config' . DS . 'email.php </red>', false);
+        $this->out('<red>' . OLD_APP . 'Config' . DS . 'email.php </red>', false);
         $this->out('<blue> is the place you need to search for</blue>');
 
         $currentValue = $this->Systemsetting->findByKey('MONITORING.FROM_ADDRESS');
@@ -304,7 +304,7 @@ class SetupShell extends AppShell {
     public function createMysqlPartitions() {
         $this->out('Create MySQL partitions', false);
         if (file_exists('/etc/openitcockpit/mysql.cnf')) {
-            exec('mysql --defaults-extra-file=/etc/openitcockpit/mysql.cnf < ' . APP . 'partitions.sql', $out, $ret);
+            exec('mysql --defaults-extra-file=/etc/openitcockpit/mysql.cnf < ' . OLD_APP . 'partitions.sql', $out, $ret);
             if ($ret == 0) {
                 $this->out('<green> ...OK</green>');
 

@@ -397,7 +397,7 @@ class TestShell extends Shell {
 		}
 
 		if ($category === 'app') {
-			$testFile = str_replace(APP, APP . 'Test/Case/', $file) . 'Test.php';
+			$testFile = str_replace(OLD_APP, OLD_APP . 'Test/Case/', $file) . 'Test.php';
 		} else {
 			$testFile = preg_replace(
 				"@((?:plugins|Plugin)[\\/]{$category}[\\/])(.*)$@",

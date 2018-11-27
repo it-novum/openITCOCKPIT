@@ -57,7 +57,7 @@ class BackgroundUploadsController extends MapModuleAppController {
 
         $response = $this->MapUpload->getUploadResponse($_FILES['file']['error']);
         if ($_FILES['file']['error'] === UPLOAD_ERR_OK) {
-            $backgroundImgDirectory = APP . 'Plugin' . DS . 'MapModule' . DS . 'webroot' . DS . 'img' . DS . 'backgrounds';
+            $backgroundImgDirectory = OLD_APP . 'Plugin' . DS . 'MapModule' . DS . 'webroot' . DS . 'img' . DS . 'backgrounds';
 
             //check if upload folder exist
             if (!is_dir($backgroundImgDirectory)) {
@@ -140,7 +140,7 @@ class BackgroundUploadsController extends MapModuleAppController {
         }
 
         if ($this->MapUpload->delete($background['MapUpload']['id'])) {
-            $backgroundImgDirectory = APP . 'Plugin' . DS . 'MapModule' . DS . 'webroot' . DS . 'img' . DS . 'backgrounds';
+            $backgroundImgDirectory = OLD_APP . 'Plugin' . DS . 'MapModule' . DS . 'webroot' . DS . 'img' . DS . 'backgrounds';
 
             if (file_exists($backgroundImgDirectory . DS . $filename)) {
                 unlink($backgroundImgDirectory . DS . $filename);
@@ -181,7 +181,7 @@ class BackgroundUploadsController extends MapModuleAppController {
 
         $response = $this->MapUpload->getUploadResponse($_FILES['file']['error']);
         if ($_FILES['file']['error'] === UPLOAD_ERR_OK) {
-            $iconImgDirectory = APP . 'Plugin' . DS . 'MapModule' . DS . 'webroot' . DS . 'img' . DS . 'icons';
+            $iconImgDirectory = OLD_APP . 'Plugin' . DS . 'MapModule' . DS . 'webroot' . DS . 'img' . DS . 'icons';
 
             //$iconFolder = new Folder($iconImgDirectory);
             $fileExtension = pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION);
@@ -230,7 +230,7 @@ class BackgroundUploadsController extends MapModuleAppController {
     }
 
     public function deleteIcon() {
-        $iconImgDirectory = APP . 'Plugin' . DS . 'MapModule' . DS . 'webroot' . DS . 'img' . DS . 'icons';
+        $iconImgDirectory = OLD_APP . 'Plugin' . DS . 'MapModule' . DS . 'webroot' . DS . 'img' . DS . 'icons';
         if (!$this->request->is('post')) {
             throw new MethodNotAllowedException();
         }
@@ -275,8 +275,8 @@ class BackgroundUploadsController extends MapModuleAppController {
 
         $response = $this->MapUpload->getUploadResponse($_FILES['file']['error']);
         if ($_FILES['file']['error'] === UPLOAD_ERR_OK) {
-            $iconsetImgDirectory = APP . 'Plugin' . DS . 'MapModule' . DS . 'webroot' . DS . 'img' . DS . 'items';
-            $tempZipsDirectory = APP . 'Plugin' . DS . 'MapModule' . DS . 'webroot' . DS . 'img' . DS . 'temp';
+            $iconsetImgDirectory = OLD_APP . 'Plugin' . DS . 'MapModule' . DS . 'webroot' . DS . 'img' . DS . 'items';
+            $tempZipsDirectory = OLD_APP . 'Plugin' . DS . 'MapModule' . DS . 'webroot' . DS . 'img' . DS . 'temp';
 
             if (!is_dir($tempZipsDirectory)) {
                 mkdir($tempZipsDirectory);

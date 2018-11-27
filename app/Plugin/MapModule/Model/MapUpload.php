@@ -192,7 +192,7 @@ class MapUpload extends MapModuleAppModel {
      * @throws Exception
      */
     public function getIconSets() {
-        $basePath = APP . 'Plugin' . DS . 'MapModule' . DS . 'webroot' . DS . 'img' . DS . 'items';
+        $basePath = OLD_APP . 'Plugin' . DS . 'MapModule' . DS . 'webroot' . DS . 'img' . DS . 'items';
         $finder = new Finder();
         $finder->directories()->in($basePath);
 
@@ -238,7 +238,7 @@ class MapUpload extends MapModuleAppModel {
     }
 
     public function getIcons() {
-        $basePath = APP . 'Plugin' . DS . 'MapModule' . DS . 'webroot' . DS . 'img' . DS . 'icons';
+        $basePath = OLD_APP . 'Plugin' . DS . 'MapModule' . DS . 'webroot' . DS . 'img' . DS . 'icons';
         if (!is_dir($basePath)) {
             return [];
         }

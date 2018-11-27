@@ -2581,7 +2581,7 @@ class NagiosExportTask extends AppShell {
             return strpos($value, 'Module') !== false;
         });
         foreach ($modulePlugins as $pluginName) {
-            if (file_exists(APP . 'Plugin/' . $pluginName . '/Console/Command/Task/' . $pluginName . 'NagiosExportTask.php')) {
+            if (file_exists(OLD_APP . 'Plugin/' . $pluginName . '/Console/Command/Task/' . $pluginName . 'NagiosExportTask.php')) {
                 $this->externalTasks[$pluginName] = $pluginName . 'NagiosExport';
             }
         }

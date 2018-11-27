@@ -46,11 +46,11 @@ class ProjectTask extends AppShell {
 		if (isset($this->args[0])) {
 			$project = $this->args[0];
 		} else {
-			$appContents = array_diff(scandir(APP), array('.', '..'));
+			$appContents = array_diff(scandir(OLD_APP), array('.', '..'));
 			if (empty($appContents)) {
-				$suggestedPath = rtrim(APP, DS);
+				$suggestedPath = rtrim(OLD_APP, DS);
 			} else {
-				$suggestedPath = APP . 'myapp';
+				$suggestedPath = OLD_APP . 'myapp';
 			}
 		}
 

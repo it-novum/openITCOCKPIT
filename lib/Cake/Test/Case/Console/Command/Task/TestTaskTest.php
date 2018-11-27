@@ -586,8 +586,8 @@ class TestTaskTest extends CakeTestCase {
 		$this->Task->plugin = 'TestTest';
 
 		//fake plugin path
-		CakePlugin::load('TestTest', array('path' => APP . 'Plugin' . DS . 'TestTest' . DS));
-		$path = APP . 'Plugin' . DS . 'TestTest' . DS . 'Test' . DS . 'Case' . DS . 'View' . DS . 'Helper' . DS . 'FormHelperTest.php';
+		CakePlugin::load('TestTest', array('path' => OLD_APP . 'Plugin' . DS . 'TestTest' . DS));
+		$path = OLD_APP . 'Plugin' . DS . 'TestTest' . DS . 'Test' . DS . 'Case' . DS . 'View' . DS . 'Helper' . DS . 'FormHelperTest.php';
 		$this->Task->expects($this->once())->method('createFile')
 			->with($path, $this->anything());
 
@@ -664,10 +664,10 @@ class TestTaskTest extends CakeTestCase {
 	public function testTestCaseFileNamePlugin() {
 		$this->Task->path = DS . 'my' . DS . 'path' . DS . 'tests' . DS;
 
-		CakePlugin::load('TestTest', array('path' => APP . 'Plugin' . DS . 'TestTest' . DS));
+		CakePlugin::load('TestTest', array('path' => OLD_APP . 'Plugin' . DS . 'TestTest' . DS));
 		$this->Task->plugin = 'TestTest';
 		$result = $this->Task->testCaseFileName('Model', 'Post');
-		$expected = APP . 'Plugin' . DS . 'TestTest' . DS . 'Test' . DS . 'Case' . DS . 'Model' . DS . 'PostTest.php';
+		$expected = OLD_APP . 'Plugin' . DS . 'TestTest' . DS . 'Test' . DS . 'Case' . DS . 'Model' . DS . 'PostTest.php';
 		$this->assertEquals($expected, $result);
 	}
 

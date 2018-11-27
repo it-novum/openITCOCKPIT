@@ -740,7 +740,7 @@ class DocumentationsController extends AppController {
             //require_once APP.'Vendor'.DS.'parsedown'.DS.'Parsedown.php';
             //require_once APP.'Vendor'.DS.'parsedown'.DS.'ParsedownExtra.php';
 
-            $basePath = APP . 'docs' . DS . $language;
+            $basePath = OLD_APP . 'docs' . DS . $language;
             $categoryDirectory = $wiki[$categoryUrl]['directory'];
             $filename = $wiki[$categoryUrl]['children'][$pageUrl]['file'] . '.md';
             $filePath = $basePath . DS . $categoryDirectory . DS . $filename;
