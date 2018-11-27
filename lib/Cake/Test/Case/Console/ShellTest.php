@@ -944,10 +944,10 @@ TEXT;
 		CakeLog::disable('stderr');
 		// file logging
 		$this->Shell->log_something();
-		$this->assertTrue(file_exists(LOGS . 'error.log'));
+		$this->assertTrue(file_exists(OLD_LOGS . 'error.log'));
 
-		unlink(LOGS . 'error.log');
-		$this->assertFalse(file_exists(LOGS . 'error.log'));
+		unlink(OLD_LOGS . 'error.log');
+		$this->assertFalse(file_exists(OLD_LOGS . 'error.log'));
 
 		// both file and console logging
 		require_once CORE_TEST_CASES . DS . 'Log' . DS . 'Engine' . DS . 'ConsoleLogTest.php';
@@ -963,8 +963,8 @@ TEXT;
 			->method('write')
 			->with('error', $this->Shell->testMessage);
 		$this->Shell->log_something();
-		$this->assertTrue(file_exists(LOGS . 'error.log'));
-		$contents = file_get_contents(LOGS . 'error.log');
+		$this->assertTrue(file_exists(OLD_LOGS . 'error.log'));
+		$contents = file_get_contents(OLD_LOGS . 'error.log');
 		$this->assertContains($this->Shell->testMessage, $contents);
 
 		CakeLog::enable('stdout');

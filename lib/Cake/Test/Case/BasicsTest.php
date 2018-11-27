@@ -789,8 +789,8 @@ class BasicsTest extends CakeTestCase {
  * @return void
  */
 	public function testLogError() {
-		if (file_exists(LOGS . 'error.log')) {
-			unlink(LOGS . 'error.log');
+		if (file_exists(OLD_LOGS . 'error.log')) {
+			unlink(OLD_LOGS . 'error.log');
 		}
 
 		// disable stderr output for this test
@@ -805,7 +805,7 @@ class BasicsTest extends CakeTestCase {
 			CakeLog::enable('stderr');
 		}
 
-		$result = file_get_contents(LOGS . 'error.log');
+		$result = file_get_contents(OLD_LOGS . 'error.log');
 		$this->assertRegExp('/Error: Testing LogError\(\) basic function/', $result);
 		$this->assertNotRegExp("/Error: Testing with\nmulti-line\nstring/", $result);
 		$this->assertRegExp('/Error: Testing with multi-line string/', $result);

@@ -433,7 +433,7 @@ class AppController extends Controller {
                     $sqlLogs[$source] = $db->getLog();
                 endforeach;
             endif;
-            $queryLog = LOGS . 'query.log';
+            $queryLog = OLD_LOGS . 'query.log';
             $logfile = fopen($queryLog, 'a+');
 
             foreach ($sqlLogs as $datasource => $log) {

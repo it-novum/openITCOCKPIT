@@ -469,20 +469,20 @@ TEXT;
  * @return void
  */
 	public function testLog() {
-		if (file_exists(LOGS . 'debug.log')) {
-			unlink(LOGS . 'debug.log');
+		if (file_exists(OLD_LOGS . 'debug.log')) {
+			unlink(OLD_LOGS . 'debug.log');
 		}
 		CakeLog::config('file', array('engine' => 'File', 'path' => OLD_TMP . 'logs' . DS));
 
 		Debugger::log('cool');
-		$result = file_get_contents(LOGS . 'debug.log');
+		$result = file_get_contents(OLD_LOGS . 'debug.log');
 		$this->assertContains('DebuggerTest::testLog', $result);
 		$this->assertContains("'cool'", $result);
 
-		unlink(LOGS . 'debug.log');
+		unlink(OLD_LOGS . 'debug.log');
 
 		Debugger::log(array('whatever', 'here'));
-		$result = file_get_contents(LOGS . 'debug.log');
+		$result = file_get_contents(OLD_LOGS . 'debug.log');
 		$this->assertContains('DebuggerTest::testLog', $result);
 		$this->assertContains('[main]', $result);
 		$this->assertContains('array', $result);
@@ -496,8 +496,8 @@ TEXT;
  * @return void
  */
 	public function testLogDepth() {
-		if (file_exists(LOGS . 'debug.log')) {
-			unlink(LOGS . 'debug.log');
+		if (file_exists(OLD_LOGS . 'debug.log')) {
+			unlink(OLD_LOGS . 'debug.log');
 		}
 		CakeLog::config('file', array('engine' => 'File', 'path' => OLD_TMP . 'logs' . DS));
 
@@ -505,11 +505,11 @@ TEXT;
 			'test' => array('key' => 'val')
 		);
 		Debugger::log($val, LOG_DEBUG, 0);
-		$result = file_get_contents(LOGS . 'debug.log');
+		$result = file_get_contents(OLD_LOGS . 'debug.log');
 		$this->assertContains('DebuggerTest::testLog', $result);
 		$this->assertNotContains("/'val'/", $result);
 
-		unlink(LOGS . 'debug.log');
+		unlink(OLD_LOGS . 'debug.log');
 	}
 
 /**

@@ -58,7 +58,7 @@ class EnvironmentPanel extends DebugPanel
             'IMAGES_URL'             => IMAGES_URL,
             'JS'                     => JS,
             'JS_URL'                 => JS_URL,
-            'LOGS'                   => LOGS,
+            'LOGS'                   => OLD_LOGS,
             'ROOT'                   => OLD_ROOT,
             'TESTS'                  => OLD_TESTS,
             'TMP'                    => OLD_TMP,

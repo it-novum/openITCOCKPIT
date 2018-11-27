@@ -103,8 +103,8 @@ if (!defined('OLD_TMP')) {
 /**
  * Path to the logs directory.
  */
-if (!defined('LOGS')) {
-	define('LOGS', OLD_TMP . 'logs' . DS);
+if (!defined('OLD_LOGS')) {
+	define('OLD_LOGS', OLD_TMP . 'logs' . DS);
 }
 
 /**

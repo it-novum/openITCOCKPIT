@@ -31,25 +31,25 @@ class FileLogTest extends CakeTestCase {
  * @return void
  */
 	public function testLogFileWriting() {
-		$this->_deleteLogs(LOGS);
+		$this->_deleteLogs(OLD_LOGS);
 
 		$log = new FileLog();
 		$log->write('warning', 'Test warning');
-		$this->assertTrue(file_exists(LOGS . 'error.log'));
+		$this->assertTrue(file_exists(OLD_LOGS . 'error.log'));
 
-		$result = file_get_contents(LOGS . 'error.log');
+		$result = file_get_contents(OLD_LOGS . 'error.log');
 		$this->assertRegExp('/^2[0-9]{3}-[0-9]+-[0-9]+ [0-9]+:[0-9]+:[0-9]+ Warning: Test warning/', $result);
 
 		$log->write('debug', 'Test warning');
-		$this->assertTrue(file_exists(LOGS . 'debug.log'));
+		$this->assertTrue(file_exists(OLD_LOGS . 'debug.log'));
 
-		$result = file_get_contents(LOGS . 'debug.log');
+		$result = file_get_contents(OLD_LOGS . 'debug.log');
 		$this->assertRegExp('/^2[0-9]{3}-[0-9]+-[0-9]+ [0-9]+:[0-9]+:[0-9]+ Debug: Test warning/', $result);
 
 		$log->write('random', 'Test warning');
-		$this->assertTrue(file_exists(LOGS . 'random.log'));
+		$this->assertTrue(file_exists(OLD_LOGS . 'random.log'));
 
-		$result = file_get_contents(LOGS . 'random.log');
+		$result = file_get_contents(OLD_LOGS . 'random.log');
 		$this->assertRegExp('/^2[0-9]{3}-[0-9]+-[0-9]+ [0-9]+:[0-9]+:[0-9]+ Random: Test warning/', $result);
 	}
 
