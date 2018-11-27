@@ -46,8 +46,8 @@ if (!function_exists('config')) {
 		$count = count($args);
 		$included = 0;
 		foreach ($args as $arg) {
-			if (file_exists(CONFIG . $arg . '.php')) {
-				include_once CONFIG . $arg . '.php';
+			if (file_exists(OLD_CONFIG . $arg . '.php')) {
+				include_once OLD_CONFIG . $arg . '.php';
 				$included++;
 			}
 		}

@@ -55,9 +55,10 @@ if (!defined('OLD_APP')) {
 /**
  * Config Directory
  */
-if (!defined('CONFIG')) {
-	define('CONFIG', OLD_ROOT . DS . OLD_APP_DIR . DS . 'Config' . DS);
+if (!defined('OLD_CONFIG')) {
+	define('OLD_CONFIG', OLD_ROOT . DS . OLD_APP_DIR . DS . 'Config' . DS);
 }
+
 
 /**
  * Path to the application's libs directory.

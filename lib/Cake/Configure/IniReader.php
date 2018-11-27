@@ -79,7 +79,7 @@ class IniReader implements ConfigReaderInterface {
  */
 	public function __construct($path = null, $section = null) {
 		if (!$path) {
-			$path = CONFIG;
+			$path = OLD_CONFIG;
 		}
 		$this->_path = $path;
 		$this->_section = $section;

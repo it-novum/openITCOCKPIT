@@ -312,7 +312,7 @@ class ProjectTaskTest extends CakeTestCase {
  * @return void
  */
 	public function testCakeAdmin() {
-		$File = new File(CONFIG . 'core.php');
+		$File = new File(OLD_CONFIG . 'core.php');
 		$contents = $File->read();
 		$File = new File(TMP . 'tests' . DS . 'core.php');
 		$File->write($contents);
