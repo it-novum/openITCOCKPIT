@@ -101,7 +101,7 @@ abstract class BaseCoverageReport {
  * @return string Path
  */
 	public function getPathFilter() {
-		$path = ROOT . DS;
+		$path = OLD_ROOT . DS;
 		if ($this->appTest) {
 			$path .= APP_DIR . DS;
 		} elseif ($this->pluginTest) {

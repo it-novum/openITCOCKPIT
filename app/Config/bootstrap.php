@@ -199,7 +199,7 @@ $modulePlugins = array_filter(CakePlugin::loaded(), function ($value) {
     return strpos($value, 'Module') !== false;
 });
 foreach ($modulePlugins as $pluginName) {
-    if (file_exists(ROOT . '/app/Plugin/' . $pluginName . '/Config/config.php')) {
+    if (file_exists(OLD_ROOT . '/app/Plugin/' . $pluginName . '/Config/config.php')) {
         Configure::load($pluginName . '.' . 'config');
     }
 }

@@ -50,14 +50,14 @@ if (!defined('WEBROOT_DIR')) {
  * Path to the application's directory.
  */
 if (!defined('OLD_APP')) {
-	define('OLD_APP', ROOT . DS . APP_DIR . DS);
+	define('OLD_APP', OLD_ROOT . DS . APP_DIR . DS);
 }
 
 /**
  * Config Directory
  */
 if (!defined('CONFIG')) {
-	define('CONFIG', ROOT . DS . APP_DIR . DS . 'Config' . DS);
+	define('CONFIG', OLD_ROOT . DS . APP_DIR . DS . 'Config' . DS);
 }
 
 /**
@@ -118,7 +118,7 @@ if (!defined('CACHE')) {
  * Path to the vendors directory.
  */
 if (!defined('VENDORS')) {
-	define('VENDORS', ROOT . DS . 'vendors' . DS);
+	define('VENDORS', OLD_ROOT . DS . 'vendors' . DS);
 }
 
 /**

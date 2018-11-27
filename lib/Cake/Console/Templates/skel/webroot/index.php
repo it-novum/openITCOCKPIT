@@ -32,8 +32,8 @@ if (!defined('DS')) {
 /**
  * The full path to the directory which holds "app", WITHOUT a trailing DS.
  */
-if (!defined('ROOT')) {
-	define('ROOT', dirname(dirname(dirname(__FILE__))));
+if (!defined('OLD_ROOT')) {
+	define('OLD_ROOT', dirname(dirname(dirname(__FILE__))));
 }
 
 /**
@@ -63,7 +63,7 @@ if (!defined('APP_DIR')) {
  * This auto-detects CakePHP as a composer installed library.
  * You may remove this if you are not planning to use composer (not recommended, though).
  */
-$vendorPath = ROOT . DS . APP_DIR . DS . 'Vendor' . DS . 'cakephp' . DS . 'cakephp' . DS . 'lib';
+$vendorPath = OLD_ROOT . DS . APP_DIR . DS . 'Vendor' . DS . 'cakephp' . DS . 'cakephp' . DS . 'lib';
 $dispatcher = 'Cake' . DS . 'Console' . DS . 'ShellDispatcher.php';
 if (!defined('CAKE_CORE_INCLUDE_PATH') && file_exists($vendorPath . DS . $dispatcher)) {
 	define('CAKE_CORE_INCLUDE_PATH', $vendorPath);
@@ -90,7 +90,7 @@ if (PHP_SAPI === 'cli-server') {
 
 if (!defined('CAKE_CORE_INCLUDE_PATH')) {
 	if (function_exists('ini_set')) {
-		ini_set('include_path', ROOT . DS . 'lib' . PATH_SEPARATOR . ini_get('include_path'));
+		ini_set('include_path', OLD_ROOT . DS . 'lib' . PATH_SEPARATOR . ini_get('include_path'));
 	}
 	if (!include 'Cake' . DS . 'bootstrap.php') {
 		$failed = true;

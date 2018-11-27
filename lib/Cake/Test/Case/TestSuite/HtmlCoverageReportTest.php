@@ -57,7 +57,7 @@ class HtmlCoverageReportTest extends CakeTestCase {
 
 		$this->Coverage->appTest = true;
 		$result = $this->Coverage->getPathFilter();
-		$this->assertEquals(ROOT . DS . APP_DIR . DS, $result);
+		$this->assertEquals(OLD_ROOT . DS . APP_DIR . DS, $result);
 
 		$this->Coverage->appTest = false;
 		$this->Coverage->pluginTest = 'TestPlugin';

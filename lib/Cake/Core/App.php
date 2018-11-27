@@ -874,12 +874,12 @@ class App {
 				),
 				'Vendor' => array(
 					'%s' . 'Vendor' . DS,
-					ROOT . DS . 'vendors' . DS,
+					OLD_ROOT . DS . 'vendors' . DS,
 					dirname(dirname(CAKE)) . DS . 'vendors' . DS
 				),
 				'Plugin' => array(
 					OLD_APP . 'Plugin' . DS,
-					ROOT . DS . 'plugins' . DS,
+					OLD_ROOT . DS . 'plugins' . DS,
 					dirname(dirname(CAKE)) . DS . 'plugins' . DS
 				)
 			);

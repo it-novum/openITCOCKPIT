@@ -95,11 +95,11 @@ class FolderTest extends CakeTestCase {
 		$expected = $path . DS . 'test';
 		$this->assertEquals($expected, $result);
 
-		$result = $Folder->cd(ROOT);
-		$expected = ROOT;
+		$result = $Folder->cd(OLD_ROOT);
+		$expected = OLD_ROOT;
 		$this->assertEquals($expected, $result);
 
-		$result = $Folder->cd(ROOT . DS . 'non-existent');
+		$result = $Folder->cd(OLD_ROOT . DS . 'non-existent');
 		$this->assertFalse($result);
 	}
 
@@ -701,18 +701,18 @@ class FolderTest extends CakeTestCase {
  */
 	public function testInCakePath() {
 		$Folder = new Folder();
-		$Folder->cd(ROOT);
+		$Folder->cd(OLD_ROOT);
 		$path = 'C:\\path\\to\\file';
 		$result = $Folder->inCakePath($path);
 		$this->assertFalse($result);
 
-		$path = ROOT;
-		$Folder->cd(ROOT);
+		$path = OLD_ROOT;
+		$Folder->cd(OLD_ROOT);
 		$result = $Folder->inCakePath($path);
 		$this->assertFalse($result);
 
 		$path = DS . 'lib' . DS . 'Cake' . DS . 'Config';
-		$Folder->cd(ROOT . DS . 'lib' . DS . 'Cake' . DS . 'Config');
+		$Folder->cd(OLD_ROOT . DS . 'lib' . DS . 'Cake' . DS . 'Config');
 		$result = $Folder->inCakePath($path);
 		$this->assertTrue($result);
 	}

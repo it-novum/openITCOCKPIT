@@ -392,7 +392,7 @@ class Folder {
  * @link https://book.cakephp.org/2.0/en/core-utility-libraries/file-folder.html#Folder::inCakePath
  */
 	public function inCakePath($path = '') {
-		$dir = substr(Folder::slashTerm(ROOT), 0, -1);
+		$dir = substr(Folder::slashTerm(OLD_ROOT), 0, -1);
 		$newdir = $dir . $path;
 
 		return $this->inPath($newdir);

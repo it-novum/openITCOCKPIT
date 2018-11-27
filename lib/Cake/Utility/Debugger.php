@@ -362,8 +362,8 @@ class Debugger {
 			return str_replace(OLD_APP, 'APP' . DS, $path);
 		} elseif (strpos($path, CAKE_CORE_INCLUDE_PATH) === 0) {
 			return str_replace(CAKE_CORE_INCLUDE_PATH, 'CORE', $path);
-		} elseif (strpos($path, ROOT) === 0) {
-			return str_replace(ROOT, 'ROOT', $path);
+		} elseif (strpos($path, OLD_ROOT) === 0) {
+			return str_replace(OLD_ROOT, 'ROOT', $path);
 		}
 
 		return $path;
