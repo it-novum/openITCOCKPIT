@@ -1736,10 +1736,10 @@ class DispatcherTest extends CakeTestCase {
 		}
 		$path = strtolower(Inflector::slug($path));
 
-		$filename = CACHE . 'views' . DS . $path . '.php';
+		$filename = OLD_CACHE . 'views' . DS . $path . '.php';
 
 		if (!file_exists($filename)) {
-			$filename = CACHE . 'views' . DS . $path . '_index.php';
+			$filename = OLD_CACHE . 'views' . DS . $path . '_index.php';
 		}
 		return $filename;
 	}

@@ -279,12 +279,12 @@ class BasicsTest extends CakeTestCase {
 		Configure::write('Cache.disable', false);
 		$result = cache('basics_test', 'simple cache write');
 		$this->assertTrue((bool)$result);
-		$this->assertTrue(file_exists(CACHE . 'basics_test'));
+		$this->assertTrue(file_exists(OLD_CACHE . 'basics_test'));
 
 		$result = cache('basics_test');
 		$this->assertEquals('simple cache write', $result);
-		if (file_exists(CACHE . 'basics_test')) {
-			unlink(CACHE . 'basics_test');
+		if (file_exists(OLD_CACHE . 'basics_test')) {
+			unlink(OLD_CACHE . 'basics_test');
 		}
 
 		cache('basics_test', 'expired', '+1 second');
@@ -305,55 +305,55 @@ class BasicsTest extends CakeTestCase {
 		$this->skipIf($cacheOff, 'Cache is disabled, skipping clearCache() tests.');
 
 		cache('views' . DS . 'basics_test.cache', 'simple cache write');
-		$this->assertTrue(file_exists(CACHE . 'views' . DS . 'basics_test.cache'));
+		$this->assertTrue(file_exists(OLD_CACHE . 'views' . DS . 'basics_test.cache'));
 
 		cache('views' . DS . 'basics_test_2.cache', 'simple cache write 2');
-		$this->assertTrue(file_exists(CACHE . 'views' . DS . 'basics_test_2.cache'));
+		$this->assertTrue(file_exists(OLD_CACHE . 'views' . DS . 'basics_test_2.cache'));
 
 		cache('views' . DS . 'basics_test_3.cache', 'simple cache write 3');
-		$this->assertTrue(file_exists(CACHE . 'views' . DS . 'basics_test_3.cache'));
+		$this->assertTrue(file_exists(OLD_CACHE . 'views' . DS . 'basics_test_3.cache'));
 
 		$result = clearCache(array('basics_test', 'basics_test_2'), 'views', '.cache');
 		$this->assertTrue($result);
-		$this->assertFalse(file_exists(CACHE . 'views' . DS . 'basics_test.cache'));
-		$this->assertFalse(file_exists(CACHE . 'views' . DS . 'basics_test.cache'));
-		$this->assertTrue(file_exists(CACHE . 'views' . DS . 'basics_test_3.cache'));
+		$this->assertFalse(file_exists(OLD_CACHE . 'views' . DS . 'basics_test.cache'));
+		$this->assertFalse(file_exists(OLD_CACHE . 'views' . DS . 'basics_test.cache'));
+		$this->assertTrue(file_exists(OLD_CACHE . 'views' . DS . 'basics_test_3.cache'));
 
 		$result = clearCache(null, 'views', '.cache');
 		$this->assertTrue($result);
-		$this->assertFalse(file_exists(CACHE . 'views' . DS . 'basics_test_3.cache'));
+		$this->assertFalse(file_exists(OLD_CACHE . 'views' . DS . 'basics_test_3.cache'));
 
 		// Different path from views and with prefix
 		cache('models' . DS . 'basics_test.cache', 'simple cache write');
-		$this->assertTrue(file_exists(CACHE . 'models' . DS . 'basics_test.cache'));
+		$this->assertTrue(file_exists(OLD_CACHE . 'models' . DS . 'basics_test.cache'));
 
 		cache('models' . DS . 'basics_test_2.cache', 'simple cache write 2');
-		$this->assertTrue(file_exists(CACHE . 'models' . DS . 'basics_test_2.cache'));
+		$this->assertTrue(file_exists(OLD_CACHE . 'models' . DS . 'basics_test_2.cache'));
 
 		cache('models' . DS . 'basics_test_3.cache', 'simple cache write 3');
-		$this->assertTrue(file_exists(CACHE . 'models' . DS . 'basics_test_3.cache'));
+		$this->assertTrue(file_exists(OLD_CACHE . 'models' . DS . 'basics_test_3.cache'));
 
 		$result = clearCache('basics', 'models', '.cache');
 		$this->assertTrue($result);
-		$this->assertFalse(file_exists(CACHE . 'models' . DS . 'basics_test.cache'));
-		$this->assertFalse(file_exists(CACHE . 'models' . DS . 'basics_test_2.cache'));
-		$this->assertFalse(file_exists(CACHE . 'models' . DS . 'basics_test_3.cache'));
+		$this->assertFalse(file_exists(OLD_CACHE . 'models' . DS . 'basics_test.cache'));
+		$this->assertFalse(file_exists(OLD_CACHE . 'models' . DS . 'basics_test_2.cache'));
+		$this->assertFalse(file_exists(OLD_CACHE . 'models' . DS . 'basics_test_3.cache'));
 
 		// checking if empty files were not removed
-		$emptyExists = file_exists(CACHE . 'views' . DS . 'empty');
+		$emptyExists = file_exists(OLD_CACHE . 'views' . DS . 'empty');
 		if (!$emptyExists) {
 			cache('views' . DS . 'empty', '');
 		}
 		cache('views' . DS . 'basics_test.php', 'simple cache write');
-		$this->assertTrue(file_exists(CACHE . 'views' . DS . 'basics_test.php'));
-		$this->assertTrue(file_exists(CACHE . 'views' . DS . 'empty'));
+		$this->assertTrue(file_exists(OLD_CACHE . 'views' . DS . 'basics_test.php'));
+		$this->assertTrue(file_exists(OLD_CACHE . 'views' . DS . 'empty'));
 
 		$result = clearCache();
 		$this->assertTrue($result);
-		$this->assertTrue(file_exists(CACHE . 'views' . DS . 'empty'));
-		$this->assertFalse(file_exists(CACHE . 'views' . DS . 'basics_test.php'));
+		$this->assertTrue(file_exists(OLD_CACHE . 'views' . DS . 'empty'));
+		$this->assertFalse(file_exists(OLD_CACHE . 'views' . DS . 'basics_test.php'));
 		if (!$emptyExists) {
-			unlink(CACHE . 'views' . DS . 'empty');
+			unlink(OLD_CACHE . 'views' . DS . 'empty');
 		}
 	}
 

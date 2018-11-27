@@ -110,9 +110,10 @@ if (!defined('OLD_LOGS')) {
 /**
  * Path to the cache files directory. It can be shared between hosts in a multi-server setup.
  */
-if (!defined('CACHE')) {
-	define('CACHE', OLD_TMP . 'cache' . DS);
+if (!defined('OLD_CACHE')) {
+	define('OLD_CACHE', OLD_TMP . 'cache' . DS);
 }
+
 
 /**
  * Path to the vendors directory.

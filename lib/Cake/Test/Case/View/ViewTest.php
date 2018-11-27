@@ -854,7 +854,7 @@ class ViewTest extends CakeTestCase {
 		Cache::config('test_view', array(
 			'engine' => 'File',
 			'duration' => '+1 day',
-			'path' => CACHE . 'views' . DS,
+			'path' => OLD_CACHE . 'views' . DS,
 			'prefix' => ''
 		));
 		Cache::clear(true, 'test_view');
@@ -1240,11 +1240,11 @@ class ViewTest extends CakeTestCase {
  * @return void
  */
 	public function testRenderCache() {
-		$this->skipIf(!is_writable(CACHE . 'views' . DS), 'CACHE/views dir is not writable, cannot test renderCache.');
+		$this->skipIf(!is_writable(OLD_CACHE . 'views' . DS), 'CACHE/views dir is not writable, cannot test renderCache.');
 
 		$view = 'test_view';
 		$View = new View($this->PostsController);
-		$path = CACHE . 'views' . DS . 'view_cache_' . $view;
+		$path = OLD_CACHE . 'views' . DS . 'view_cache_' . $view;
 
 		$cacheText = '<!--cachetime:' . time() . '-->some cacheText';
 		$f = fopen($path, 'w+');

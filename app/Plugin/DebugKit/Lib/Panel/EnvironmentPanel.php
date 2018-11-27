@@ -45,7 +45,7 @@ class EnvironmentPanel extends DebugPanel
             'APP'                    => OLD_APP,
             'APP_DIR'                => OLD_APP_DIR,
             'APPLIBS'                => APPLIBS,
-            'CACHE'                  => CACHE,
+            'CACHE'                  => OLD_CACHE,
             'CAKE'                   => CAKE,
             'CAKE_CORE_INCLUDE_PATH' => CAKE_CORE_INCLUDE_PATH,
             'CORE_PATH'              => CORE_PATH,

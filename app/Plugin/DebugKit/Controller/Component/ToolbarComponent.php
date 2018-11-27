@@ -392,7 +392,7 @@ class ToolbarComponent extends Component implements CakeEventListener
             $cache = [
                 'duration' => $this->cacheDuration,
                 'engine'   => 'File',
-                'path'     => CACHE,
+                'path'     => OLD_CACHE,
             ];
             if (isset($this->settings['cache'])) {
                 $cache = array_merge($cache, $this->settings['cache']);

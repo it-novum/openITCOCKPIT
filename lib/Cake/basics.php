@@ -434,7 +434,7 @@ if (!function_exists('cache')) {
 
 		switch (strtolower($target)) {
 			case 'cache':
-				$filename = CACHE . $path;
+				$filename = OLD_CACHE . $path;
 				break;
 			case 'public':
 				$filename = WWW_ROOT . $path;
@@ -489,7 +489,7 @@ if (!function_exists('clearCache')) {
 	function clearCache($params = null, $type = 'views', $ext = '.php') {
 		if (is_string($params) || $params === null) {
 			$params = preg_replace('/\/\//', '/', $params);
-			$cache = CACHE . $type . DS . $params;
+			$cache = OLD_CACHE . $type . DS . $params;
 
 			if (is_file($cache . $ext)) {
 				//@codingStandardsIgnoreStart
@@ -513,8 +513,8 @@ if (!function_exists('clearCache')) {
 				return true;
 			}
 			$cache = array(
-				CACHE . $type . DS . '*' . $params . $ext,
-				CACHE . $type . DS . '*' . $params . '_*' . $ext
+				OLD_CACHE . $type . DS . '*' . $params . $ext,
+				OLD_CACHE . $type . DS . '*' . $params . '_*' . $ext
 			);
 			$files = array();
 			while ($search = array_shift($cache)) {
