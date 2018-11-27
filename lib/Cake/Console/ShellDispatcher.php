@@ -125,8 +125,8 @@ class ShellDispatcher {
 		if (!defined('OLD_APP_DIR')) {
 			define('OLD_APP_DIR', $this->params['app']);
 		}
-		if (!defined('APP')) {
-			define('APP', $this->params['working'] . DS);
+		if (!defined('OLD_APP')) {
+			define('OLD_APP', $this->params['working'] . DS);
 		}
 		if (!defined('WWW_ROOT')) {
 			if (!$this->_isAbsolutePath($this->params['webroot'])) {
