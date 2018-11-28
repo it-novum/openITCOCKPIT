@@ -22,6 +22,15 @@
     "config": {
         "vendor-dir": "Vendor"
     },
+    "scripts": {
+        "cs-check": "Vendor/bin/phpcs --colors -p --standard=cake4/analysis/codestyle_openitcockpit.xml ./cake4/src ./cake4/tests",
+        "cs-check-strict": "Vendor/bin/phpcs -pn --ignore=./cake4/config/Migrations/*,./cake4/config/Seeds/*,./cake4/config/schema.php  --standard=cake4/analysis/openitcockpit-strict.xml ./cake4/src ./cake4/tests ./cake4/plugins ./cake4/config",
+        "cs-fix": "Vendor/bin/phpcbf --colors --standard=cake4/analysis/codestyle_openitcockpit.xml ./cake4/src ./cake4/tests",
+        "stan": "php -d memory_limit=-1 vendor/bin/phpstan analyse -c cake4/analysis/phpstan.neon -l 1 ./cake4/src ./cake4/plugins",
+        "php-syntax": "cake4/analysis/php_syntax.sh cake4/src/ cake4/tests/ cake4/plugins/",
+        "test": "Vendor/bin/phpunit --colors=always --configuration=cake4/analysis/phpunit.xml",
+        "coverage": "Vendor/bin/phpunit --configuration=cake4/analysis/phpunit.xml --coverage-html cake4/tmp/phpunit/"
+    },
     "minimum-stability": "dev",
     "prefer-stable": true,
     "require": {
@@ -40,9 +49,12 @@
         "guiguiboy/php-cli-progress-bar": "^0.0.4",
         "cakephp/orm": "3.7.0-RC3",
         "cakephp/migrations": "^2.0",
-        "cakephp/i18n": "^3.6"
+        "cakephp/i18n": "^3.6",
+        "phpstan/phpstan": "^0.10.5"
     },
     "require-dev": {
-        "cakephp/bake": "^1.8"
+        "cakephp/bake": "^1.8",
+        "phpunit/phpunit": "^7.4",
+        "slevomat/coding-standard": "^4.8"
     }
 }

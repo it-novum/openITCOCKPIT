@@ -1,0 +1,6 @@
+parameters:
+    autoload_files:
+        - %rootDir%/../../../cake4/config/paths.php
+    ignoreErrors:
+        - '#customizeCodeceptionBinary#'
+    excludes_analyse:
