@@ -989,6 +989,7 @@ class MapeditorsController extends MapModuleAppController {
                                 }
                             }
                             foreach ($hosts as $host) {
+                                $hosts[$host['Host']['id']] = $host;
                                 foreach ($host['Service'] as $serviceData) {
                                     $services[$serviceData['id']] = [
                                         'Service' => $serviceData
@@ -1002,7 +1003,10 @@ class MapeditorsController extends MapModuleAppController {
                             'recursive'  => -1,
                             'contain'    => [
                                 'Host' => [
-                                    'Container'
+                                    'Container',
+                                    'fields' => [
+                                        'Host.uuid'
+                                    ]
                                 ]
                             ],
                             'conditions' => [
@@ -1022,6 +1026,7 @@ class MapeditorsController extends MapModuleAppController {
                                 }
                             }
                             foreach ($dependentServices as $service) {
+                                $hosts[$service['Host']['id']] = ['Host' => $service['Host']];
                                 $services[$service['Service']['id']] = $service;
                             }
                         }
