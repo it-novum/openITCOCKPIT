@@ -41,6 +41,8 @@ define('APP_DIR', 'src');
  */
 define('APP', ROOT . DS . APP_DIR . DS);
 
+define('PLUGIN', ROOT . DS . 'plugins' . DS);
+
 /**
  * Path to the config directory.
  */
@@ -71,7 +73,7 @@ define('CACHE', TMP . 'cache' . DS);
  *
  * CakePHP should always be installed with composer, so look there.
  */
-define('CAKE_CORE_INCLUDE_PATH', ROOT . DS . '..'  . DS . 'Vendor' . DS . 'cakephp' . DS . 'cakephp');
+define('CAKE_CORE_INCLUDE_PATH', ROOT . DS . '..' . DS . 'Vendor' . DS . 'cakephp' . DS . 'cakephp');
 
 /**
  * Path to the cake directory.

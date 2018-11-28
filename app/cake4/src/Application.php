@@ -15,6 +15,7 @@
 
 namespace App;
 
+use App\Lib\PluginManager;
 use Cake\Core\Configure;
 use Cake\Core\Exception\MissingPluginException;
 use Cake\Error\Middleware\ErrorHandlerMiddleware;
@@ -36,6 +37,8 @@ class Application extends BaseApplication {
     public function bootstrap() {
         // Call parent to load bootstrap from files.
         parent::bootstrap();
+
+        $PluginManager = new PluginManager($this);
 
         if (PHP_SAPI === 'cli') {
             try {
