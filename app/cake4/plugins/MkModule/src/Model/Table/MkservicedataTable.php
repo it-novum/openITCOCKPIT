@@ -2,6 +2,8 @@
 
 namespace MkModule\Model\Table;
 
+use App\Lib\Interfaces\PluginManagerCoreAssociationsInterface;
+use Cake\Datasource\RepositoryInterface;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
@@ -23,7 +25,7 @@ use Cake\Validation\Validator;
  *
  * @mixin \Cake\ORM\Behavior\TimestampBehavior
  */
-class MkservicedataTable extends Table {
+class MkservicedataTable extends Table implements PluginManagerCoreAssociationsInterface {
 
     /**
      * Initialize method
@@ -54,10 +56,10 @@ class MkservicedataTable extends Table {
     /**
      * @param Table $coreTable
      */
-    public function bindCoreAssociations($coreTable) {
+    public function bindCoreAssociations(RepositoryInterface $coreTable) {
         switch ($coreTable->getAlias()) {
             case 'Services':
-                $coreTable->hasOne('Mkservicedata');
+                $coreTable->hasOne('MkModule.Mkservicedata');
                 break;
         }
     }

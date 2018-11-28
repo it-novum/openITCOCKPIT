@@ -39,6 +39,9 @@ class TestingCommand extends Command {
         //$this->loadModel('Services');
 
         $this->Services = TableRegistry::getTableLocator()->get('Services');
-        debug($this->Services);
+        //dd($this->Services);
+        debug($this->Services->find()->contain(['Mkservicedata', 'Servicecommandargumentvalues'])->where([
+            'Services.id' => 2
+        ])->toArray());//, 'NewModule.Servicecommandargumentvalues']));
     }
 }
