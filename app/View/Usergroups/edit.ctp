@@ -54,7 +54,7 @@ $defaultActions = [
             <?php echo __('Administration'); ?>
             <span>>
                 <?php echo __('Manage User Roles'); ?>
-			</span>
+            </span>
         </h1>
     </div>
 </div>
@@ -68,87 +68,163 @@ $defaultActions = [
     </header>
     <div>
         <div class="widget-body">
-            <?php
-            echo $this->Form->create('Usergroup', [
-                'class' => 'form-horizontal clear',
-            ]);
-            echo $this->Form->input('id', [
-                'type'  => 'hidden',
-                'value' => $usergroup['Usergroup']['id'],
-            ]);
-            echo $this->Form->input('Usergroup.name', [
-                'value' => $usergroup['Usergroup']['name'],
-            ]);
-            echo $this->Form->input('Usergroup.description', [
-                'value' => $usergroup['Usergroup']['description'],
-            ]);
-            if (!empty($acos)):
-            ?>
+            <form ng-submit="submit();" class="form-horizontal">
 
-        <?php if ($usergroup['Usergroup']['name'] === 'Administrator'): ?>
-            <div class="row">
-                <div class="col-xs-12">
-                    <div class="alert alert-info alert-block">
-                        <h4 class="alert-heading"><?php echo __('Notice!'); ?></h4>
-                        <?php echo __('Permissions of the user role <strong>Administrator</strong> will be set back to default on every update of %s!', $systemname); ?>
-                    </div>
-                </div>
-            </div>
-        <?php endif; ?>
-
-            <div class="padding-left-50 row">
-                <div class="row">
-                    <div class="col-md-2 no-padding">
-                        <div class="row pointer" id="collapseAll">
-                            <i class="fa fa-folder text-primary"
-                               title="<?php echo __('Collapse all'); ?>"></i> <?php echo __('Collapse all'); ?>
-                        </div>
-                        <div class="row pointer" id="expandAll">
-                            <i class="fa fa-folder-open text-primary"
-                               title="<?php echo __('Expand all'); ?>"></i> <?php echo __('Expand all'); ?>
-                        </div>
-                    </div>
-                    <div class="col-xs-7 col-md-7 col-lg-7 col-xs-offset-1 col-md-offset-1 col-lg-offset-1">
-                        <div class="row">
-                            <?php
-                            foreach ($defaultActions as $action => $actionDetails):?>
-                                <div class="col-xs-1 col-md-1 col-lg-1 text-center">
-                                    <i class="fa fa-<?php echo $actionDetails['icon'] . ' ' . $actionDetails['class']; ?> "
-                                       title="<?php echo ucfirst(__($action)); ?>"></i>
-                                </div>
-                            <?php
-                            endforeach;
-                            ?>
-                        </div>
-                        <div class="row text-center">
-                            <?php
-                            foreach ($defaultActions as $action => $actionDetails):?>
-                                <div class="no-padding col-xs-1 col-md-1 col-lg-1">
-                                    <i class="fa fa-check-square-o pointer txt-color-blueDark"
-                                       title="<?php echo __('Select all'); ?>" data-action="<?php echo $action; ?>"
-                                       click-action="on"></i>
-                                    <i class="fa fa-square-o pointer txt-color-blueDark"
-                                       title="<?php echo __('Deselect all'); ?>" data-action="<?php echo $action; ?>"
-                                       click-action="off"></i>
-                                </div>
-                            <?php
-                            endforeach;
-                            ?>
+                <?php
+                /*echo $this->Form->create('Usergroup', [
+                    'class' => 'form-horizontal clear',
+                ]);*/
+                echo $this->Form->input('id', [
+                    'type'  => 'hidden',
+                    'value' => $usergroup['Usergroup']['id'],
+                ]);
+                /*   echo $this->Form->input('Usergroup.name', [
+                       'value' => $usergroup['Usergroup']['name'],
+                   ]); */
+                /*   echo $this->Form->input('Usergroup.description', [
+                       'value' => $usergroup['Usergroup']['description'],
+                   ]);*/
+                if (!empty($acos)):
+                ?>
+                <div class="form-group required" ng-class="{'has-error': errors.name}">
+                    <div class="col col-xs-10">
+                        <label class="col col-md-2 control-label">
+                            <?php echo __('Name'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+                            <input
+                                    class="form-control"
+                                    type="text"
+                                    placeholder="Name"
+                                    ng-model="post.Usergroup.name"/>
+                            <div ng-repeat="error in errors.name">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="row padding-top-20 padding-left-50">
-                <div>
-                    <div id="tree" class="tree custom-tree">
-                        <ul>
+
+                <div class="form-group required" ng-class="{'has-error': errors.description}">
+                    <div class="col col-xs-10">
+                        <label class="col col-md-2 control-label">
+                            <?php echo __('Description'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+                            <input
+                                    class="form-control"
+                                    type="text"
+                                    placeholder="Description"
+                                    ng-model="post.Usergroup.description"/>
+                            <div ng-repeat="error in errors.description">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <?php if ($usergroup['Usergroup']['name'] === 'Administrator'): ?>
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <div class="alert alert-info alert-block">
+                                <h4 class="alert-heading"><?php echo __('Notice!'); ?></h4>
+                                <?php echo __('Permissions of the user role <strong>Administrator</strong> will be set back to default on every update of %s!', $systemname); ?>
+                            </div>
+                        </div>
+                    </div>
+                <?php endif; ?>
+
+                <div class="padding-left-50 row">
+                    <div class="row">
+                        <div class="col-md-2 no-padding">
+                            <div class="row pointer" id="collapseAll">
+                                <i class="fa fa-folder text-primary"
+                                   title="<?php echo __('Collapse all'); ?>"></i> <?php echo __('Collapse all'); ?>
+                            </div>
+                            <div class="row pointer" id="expandAll">
+                                <i class="fa fa-folder-open text-primary"
+                                   title="<?php echo __('Expand all'); ?>"></i> <?php echo __('Expand all'); ?>
+                            </div>
+                        </div>
+                        <div class="col-xs-7 col-md-7 col-lg-7 col-xs-offset-1 col-md-offset-1 col-lg-offset-1">
+                            <div class="row">
+                                <?php
+                                foreach ($defaultActions as $action => $actionDetails):?>
+                                    <div class="col-xs-1 col-md-1 col-lg-1 text-center">
+                                        <i class="fa fa-<?php echo $actionDetails['icon'] . ' ' . $actionDetails['class']; ?> "
+                                           title="<?php echo ucfirst(__($action)); ?>"></i>
+                                    </div>
+                                <?php
+                                endforeach;
+                                ?>
+                            </div>
+                            <div class="row text-center">
+                                <?php
+                                foreach ($defaultActions as $action => $actionDetails):?>
+                                    <div class="no-padding col-xs-1 col-md-1 col-lg-1">
+                                        <i class="fa fa-check-square-o pointer txt-color-blueDark"
+                                           title="<?php echo __('Select all'); ?>" data-action="<?php echo $action; ?>"
+                                           click-action="on"></i>
+                                        <i class="fa fa-square-o pointer txt-color-blueDark"
+                                           title="<?php echo __('Deselect all'); ?>"
+                                           data-action="<?php echo $action; ?>"
+                                           click-action="off"></i>
+                                    </div>
+                                <?php
+                                endforeach;
+                                ?>
+                            </div>
+                        </div>
+                        <div class="col-xs-2">
+                            <div class="formactions">
+                                <div class="pull-right">
+                                    <input class="btn btn-primary" type="submit" value="<?php echo __('Save'); ?>"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row padding-top-20 padding-left-50">
+                    <div>
+                        <div id="tree" class="tree custom-tree">
+                            <ul>
+                                <li ng-repeat="aco in Usergroup.acos">
+                                    <span class="label btn-primary font-sm">
+                                        <i class="fa fa-lg fa-folder-open"></i>
+                                        <?php echo __('Access Control Objects'); ?>
+                                    </span>
+                                    <ul>
+
+                                        <li ng-repeat="rootChildren in aco.children">
+                                            <span class="font-sm no-padding">
+                                                    <i class="fa fa-lg fa-folder-open "
+                                                       ng-class="isModule(rootChildren.Aco.alias) ? 'text-success module-controller' : 'text-primary'"></i>
+                                                {{ cleanControllerName(rootChildren.Aco.alias) }}
+                                            </span>
+                                        </li>
+
+                                        <li ng-repeat="action in rootChildren.children" ng-if="!isModule(rootChildren.Aco.alias)">
+{{action}}
+                                            <!-- Hide always allowed acos -->
+                                           <!--  <input type="checkbox"
+                                                    ng-if="Usergroup.alwaysAllowedAcos[action['Aco']['id']] != null"
+                                                  ng-model="Usergroup." > -->
+
+                                        </li>
+                                        <li ng-repeat="action in rootChildren.children" ng-if="isModule(rootChildren.Aco.alias)">
+{{action}}
+                                        </li>
+                                    </ul>
+                                </li>
+                            </ul>
+
+
                             <?php
+                            // debug($acos);
                             foreach ($acos as $rootElement => $rootArray):?>
                                 <li>
-									<span class="label btn-primary font-sm">
-										<i class="fa fa-lg fa-folder-open"></i>
+                                    <span class="label btn-primary font-sm">
+                                        <i class="fa fa-lg fa-folder-open"></i>
                                         <?php echo __('Access Control Objects'); ?>
-									</span>
+                                    </span>
 
                                     <ul>
                                         <?php
@@ -158,11 +234,11 @@ $defaultActions = [
                                                 $isModule = preg_match('/Module/', $controllerWithActions['Aco']['alias']);
                                                 ?>
                                                 <li>
-												<span class="font-sm no-padding">
-													<i class="fa fa-lg fa-folder-open text-<?php echo ($isModule) ? 'success module-controller' : 'primary'; ?>"></i>
+                                                <span class="font-sm no-padding">
+                                                    <i class="fa fa-lg fa-folder-open text-<?php echo ($isModule) ? 'success module-controller' : 'primary'; ?>"></i>
                                                     <?php
                                                     echo h(preg_replace('/Controller/', '', $controllerWithActions['Aco']['alias'])); ?>
-												</span>
+                                                </span>
                                                     <ul>
                                                         <?php
                                                         foreach ($controllerWithActions['children'] as $action):
@@ -193,11 +269,11 @@ $defaultActions = [
                                                             else:
                                                                 if (!empty($action['children'])):?>
                                                                     <li class="awesomeTest">
-																	<span class="font-sm no-padding">
-																		<i class="fa fa-lg fa-folder text-success"></i>
+                                                                    <span class="font-sm no-padding">
+                                                                        <i class="fa fa-lg fa-folder text-success"></i>
                                                                         <?php
                                                                         echo h(preg_replace('/Controller/', '', $action['Aco']['alias'])); ?>
-																	</span>
+                                                                    </span>
                                                                         <ul>
                                                                             <?php
                                                                             foreach ($action['children'] as $moduleAction):
@@ -242,14 +318,15 @@ $defaultActions = [
                             <?php
                             endforeach;
                             ?>
-                        </ul>
+                            </ul>
+                        </div>
                     </div>
+                    <?php
+                    endif;
+                    ?>
                 </div>
-                <?php
-                endif;
-                ?>
-            </div>
-            <?php echo $this->Form->formActions(); ?>
+
+            </form>
         </div>
     </div>
 </div>

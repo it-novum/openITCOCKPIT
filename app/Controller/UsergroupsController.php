@@ -69,7 +69,60 @@ class UsergroupsController extends AppController {
         $this->set('_serialize', ['usergroup']);
     }
 
+    public function loadRoles($usergroupId){
+        /*if (!$this->isApiRequest()) {
+            throw new MethodNotAllowedException();
+        }*/
+
+        $userId = $this->Auth->user('id');
+        if (!$this->Usergroup->exists($usergroupId)) {
+            throw new NotFoundException(__('Invalid user role'));
+        }
+
+        $permissions = $this->Acl->Aro->Permission->find('all', [
+            'conditions' => [
+                'Aro.foreign_key' => $usergroupId,
+            ],
+        ]);
+
+        $aros = Hash::extract($permissions, '{n}.Permission.aco_id');
+        unset($permissions);
+
+        $acos = $this->Acl->Aco->find('threaded', [
+            'recursive' => -1,
+            'fields' => [
+                'id',
+                'parent_id',
+                'alias',
+                'lft',
+                'rght'
+            ]
+         ]);
+
+        $usergroup = $this->Usergroup->findById($usergroupId);
+
+
+        $alwaysAllowedAcos = $this->Usergroup->getAlwaysAllowedAcos($acos);
+        $acoDependencies = $this->Usergroup->getAcoDependencies($acos);
+        $dependentAcoIds = $this->Usergroup->getAcoDependencyIds($acoDependencies);
+
+
+        $usergroup = [
+            'acos' => $acos,
+            'aros' => $aros,
+            'usergroup' => $usergroup,
+            'alwaysAllowedAcos' => $alwaysAllowedAcos,
+            'acoDependencies' => $acoDependencies,
+            'dependentAcoIds' => $dependentAcoIds
+        ];
+
+        $this->set('usergroup', $usergroup);
+        $this->set('_serialize', ['usergroup']);
+    }
+
     public function edit($id = null) {
+        $this->layout = 'angularjs';
+
         $userId = $this->Auth->user('id');
         if (!$this->Usergroup->exists($id)) {
             throw new NotFoundException(__('Invalid user role'));
@@ -96,6 +149,9 @@ class UsergroupsController extends AppController {
         $dependenAcoIds = $this->Usergroup->getAcoDependencyIds($acoDependencies);
 
         if ($this->request->is('post') || $this->request->is('put')) {
+            debug($this->request->data);
+
+
             $aro = $this->Acl->Aro->find('first', [
                 'recursive'  => -1,
                 'conditions' => [

@@ -658,7 +658,7 @@ if (!$QueryHandler->exists()): ?>
                                             <div class="browser-action"
                                                  ng-click="rescheduleHost(getObjectsForExternalCommand())">
                                                 <i class="fa fa-refresh"></i>
-                                                <?php echo __('Reset check time '); ?>
+                                                <?php echo __('Check now '); ?>
                                             </div>
 
                                             <div class="browser-action margin-top-10"
