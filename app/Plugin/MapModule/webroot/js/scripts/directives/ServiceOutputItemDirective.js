@@ -39,7 +39,6 @@ angular.module('openITCOCKPIT').directive('serviceOutputItem', function($http, $
                         'includeServiceOutput': true
                     }
                 }).then(function(result){
-                    console.log(result.data);
                     $scope.current_state = result.data.data.Servicestatus.currentState;
                     $scope.is_flapping = result.data.data.Servicestatus.isFlapping;
 
