@@ -498,6 +498,7 @@ class MapModuleSchema extends CakeSchema {
         'font_size'              => ['type' => 'integer', 'null' => false, 'default' => 13],
         'z_index'                => ['type' => 'integer', 'null' => false, 'default' => 0],
         'metric'                 => ['type' => 'string', 'null' => true, 'default' => null, 'length' => 256, 'collate' => 'utf8_unicode_ci', 'charset' => 'utf8'],
+        'output_type'            => ['type' => 'string', 'null' => true, 'default' => null, 'length' => 256, 'collate' => 'utf8_unicode_ci', 'charset' => 'utf8'],
         'created'                => ['type' => 'datetime', 'null' => false, 'default' => null],
         'modified'               => ['type' => 'datetime', 'null' => false, 'default' => null],
         'indexes'                => [

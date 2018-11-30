@@ -191,6 +191,7 @@ class MapeditorsController extends MapModuleAppController {
                 break;
 
             case 'service':
+                $includeServiceOutput = $this->request->query('includeServiceOutput') === 'true';
                 $service = $this->Service->find('first', [
                     'recursive'  => -1,
                     'fields'     => [
@@ -227,7 +228,7 @@ class MapeditorsController extends MapModuleAppController {
                         }
                     }
                     $allowView = true;
-                    $properties = $this->Map->getServiceInformation($this->Servicestatus, $service);
+                    $properties = $this->Map->getServiceInformation($this->Servicestatus, $service, $includeServiceOutput);
                     break;
                 }
                 $allowView = false;
@@ -561,6 +562,11 @@ class MapeditorsController extends MapModuleAppController {
     }
 
     public function perfdatatext() {
+        //Only ship template
+        return;
+    }
+
+    public function serviceOutput() {
         //Only ship template
         return;
     }
@@ -1658,12 +1664,13 @@ class MapeditorsController extends MapModuleAppController {
             //Only ship template
 
             $gadgetPreviews = [
-                'RRDGraph'     => 'graph_gadget.png',
-                'Tacho'        => 'tacho_gadget.png',
-                'TrafficLight' => 'trafficlight_gadget.png',
-                'Cylinder'     => 'cylinder_gadget.png',
-                'Text'         => 'perfdata_gadget.png',
-                'Temperature'  => 'temperature_gadget.png'
+                'RRDGraph'      => 'graph_gadget.png',
+                'Tacho'         => 'tacho_gadget.png',
+                'TrafficLight'  => 'trafficlight_gadget.png',
+                'Cylinder'      => 'cylinder_gadget.png',
+                'Text'          => 'perfdata_gadget.png',
+                'Temperature'   => 'temperature_gadget.png',
+                'ServiceOutput' => 'serviceoutput_gadget.png'
             ];
             $this->set('gadgetPreviews', $gadgetPreviews);
             $this->set('requiredIcons', $this->MapUpload->getIconsNames());
