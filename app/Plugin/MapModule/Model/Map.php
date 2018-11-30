@@ -1081,21 +1081,19 @@ class Map extends MapModuleAppModel {
                 $hoststatusByUuids = Hash::sort($hoststatusByUuids, '{s}.Hoststatus.current_state', 'desc')
             );
             $cumulatedHostState = (int)$worstHostState[0]['Hoststatus']['current_state'];
-            if ($cumulatedHostState > 0) {
-                $hosts = Hash::combine($hosts, '{n}.Host.uuid', '{n}');
-                foreach ($hoststatusByUuids as $hostUuid => $hoststatusByUuid) {
-                    $hostStatus = new \itnovum\openITCOCKPIT\Core\Hoststatus($hoststatusByUuid['Hoststatus'], $UserTime);
-                    $currentHostState = $hostStatus->currentState();
+            $hosts = Hash::combine($hosts, '{n}.Host.uuid', '{n}');
+            foreach ($hoststatusByUuids as $hostUuid => $hoststatusByUuid) {
+                $hostStatus = new \itnovum\openITCOCKPIT\Core\Hoststatus($hoststatusByUuid['Hoststatus'], $UserTime);
+                $currentHostState = $hostStatus->currentState();
 
-                    $hostIdsGroupByState[$currentHostState][] = $hosts[$hostUuid]['Host']['id'];
-                    $host = new \itnovum\openITCOCKPIT\Core\Views\Host($hosts[$hostUuid]);
-                    if ($counterForNotOkHostAndService <= $limitForNotOkHostAndService && $currentHostState > 0) {
-                        $notOkHosts[] = [
-                            'Hoststatus' => $hostStatus->toArray(),
-                            'Host'       => $host->toArray()
-                        ];
-                        $counterForNotOkHostAndService++;
-                    }
+                $hostIdsGroupByState[$currentHostState][] = $hosts[$hostUuid]['Host']['id'];
+                $host = new \itnovum\openITCOCKPIT\Core\Views\Host($hosts[$hostUuid]);
+                if ($counterForNotOkHostAndService <= $limitForNotOkHostAndService && $currentHostState > 0) {
+                    $notOkHosts[] = [
+                        'Hoststatus' => $hostStatus->toArray(),
+                        'Host'       => $host->toArray()
+                    ];
+                    $counterForNotOkHostAndService++;
                 }
             }
         }
@@ -1105,21 +1103,19 @@ class Map extends MapModuleAppModel {
                 $servicestatusResults = Hash::sort($servicestatusResults, '{s}.Servicestatus.current_state', 'desc')
             );
             $cumulatedServiceState = (int)$worstServiceState[0]['Servicestatus']['current_state'];
-            if ($cumulatedServiceState > 0) {
-                $services = Hash::combine($services, '{n}.Service.uuid', '{n}');
-                foreach ($servicestatusResults as $serviceUuid => $servicestatusByUuid) {
-                    $serviceStatus = new \itnovum\openITCOCKPIT\Core\Servicestatus($servicestatusByUuid['Servicestatus'], $UserTime);
-                    $currentServiceState = $serviceStatus->currentState();
-                    $serviceIdsGroupByState[$currentServiceState][] = $services[$serviceUuid]['Service']['id'];
+            $services = Hash::combine($services, '{n}.Service.uuid', '{n}');
+            foreach ($servicestatusResults as $serviceUuid => $servicestatusByUuid) {
+                $serviceStatus = new \itnovum\openITCOCKPIT\Core\Servicestatus($servicestatusByUuid['Servicestatus'], $UserTime);
+                $currentServiceState = $serviceStatus->currentState();
+                $serviceIdsGroupByState[$currentServiceState][] = $services[$serviceUuid]['Service']['id'];
 
-                    $service = new \itnovum\openITCOCKPIT\Core\Views\Service($services[$serviceUuid]);
-                    if ($counterForNotOkHostAndService <= $limitForNotOkHostAndService && $currentServiceState > 0) {
-                        $notOkServices[] = [
-                            'Servicestatus' => $serviceStatus->toArray(),
-                            'Service'       => $service->toArray()
-                        ];
-                        $counterForNotOkHostAndService++;
-                    }
+                $service = new \itnovum\openITCOCKPIT\Core\Views\Service($services[$serviceUuid]);
+                if ($counterForNotOkHostAndService <= $limitForNotOkHostAndService && $currentServiceState > 0) {
+                    $notOkServices[] = [
+                        'Servicestatus' => $serviceStatus->toArray(),
+                        'Service'       => $service->toArray()
+                    ];
+                    $counterForNotOkHostAndService++;
                 }
             }
         }

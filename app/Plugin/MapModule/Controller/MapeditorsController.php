@@ -479,7 +479,11 @@ class MapeditorsController extends MapModuleAppController {
                                 'recursive'  => -1,
                                 'contain'    => [
                                     'Host' => [
-                                        'Container'
+                                        'Container',
+                                        'fields' => [
+                                            'Host.id',
+                                            'Host.uuid'
+                                        ]
                                     ]
                                 ],
                                 'conditions' => [
@@ -491,7 +495,7 @@ class MapeditorsController extends MapModuleAppController {
                                     'Service.uuid'
                                 ]
                             ]);
-                            if (!empty($services)) {
+                            if (!empty($dependentServices)) {
                                 if ($this->hasRootPrivileges === false) {
                                     if (!$this->allowedByContainerId(Hash::extract($services, '{n}.Host.Container.{n}.HostsToContainer.container_id'), false)) {
                                         $allowView = false;
@@ -499,6 +503,7 @@ class MapeditorsController extends MapModuleAppController {
                                     }
                                 }
                                 foreach ($dependentServices as $service) {
+                                    $hosts[$service['Host']['id']] = ['Host' => $service['Host']];
                                     $services[$service['Service']['id']] = $service;
                                 }
                             }
@@ -991,6 +996,7 @@ class MapeditorsController extends MapModuleAppController {
                                 }
                             }
                             foreach ($hosts as $host) {
+                                $hosts[$host['Host']['id']] = $host;
                                 foreach ($host['Service'] as $serviceData) {
                                     $services[$serviceData['id']] = [
                                         'Service' => $serviceData
@@ -1004,7 +1010,10 @@ class MapeditorsController extends MapModuleAppController {
                             'recursive'  => -1,
                             'contain'    => [
                                 'Host' => [
-                                    'Container'
+                                    'Container',
+                                    'fields' => [
+                                        'Host.uuid'
+                                    ]
                                 ]
                             ],
                             'conditions' => [
@@ -1024,6 +1033,7 @@ class MapeditorsController extends MapModuleAppController {
                                 }
                             }
                             foreach ($dependentServices as $service) {
+                                $hosts[$service['Host']['id']] = ['Host' => $service['Host']];
                                 $services[$service['Service']['id']] = $service;
                             }
                         }
@@ -1605,6 +1615,8 @@ class MapeditorsController extends MapModuleAppController {
                                 'Host'            => [
                                     'Container',
                                     'fields' => [
+                                        'Host.id',
+                                        'Host.uuid',
                                         'Host.name'
                                     ]
                                 ],
@@ -1629,6 +1641,9 @@ class MapeditorsController extends MapModuleAppController {
                                 if (!$this->allowedByContainerId(Hash::extract($services, '{n}.Host.Container.{n}.HostsToContainer.container_id'), false)) {
                                     break;
                                 }
+                            }
+                            foreach ($services as $service){
+                                $hosts[$service['Host']['id']] = ['Host' => $service['Host']];
                             }
                         }
                     }
