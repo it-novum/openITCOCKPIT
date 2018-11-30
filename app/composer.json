@@ -57,7 +57,7 @@
         "cakephp/orm": "3.7.0-RC3",
         "cakephp/migrations": "^2.0",
         "cakephp/i18n": "^3.6",
-        "phpstan/phpstan": "^0.10.5"
+        "phpstan/phpstan": "^0.9.2"
     },
     "require-dev": {
         "cakephp/bake": "^1.8",
