@@ -171,9 +171,10 @@ class MapeditorsController extends MapModuleAppController {
                         'Host.id' => $objectId
                     ]
                 ]);
+
                 if (!empty($host)) {
                     if ($this->hasRootPrivileges === false) {
-                        if (!$this->allowedByContainerId(Hash::extract($host, 'Container.{n}.HostsToContainer.container_id'))) {
+                        if (!$this->allowedByContainerId(Hash::extract($host, 'Container.{n}.HostsToContainer.container_id'), false)) {
                             $allowView = false;
                             break;
                         }
@@ -222,7 +223,7 @@ class MapeditorsController extends MapModuleAppController {
 
                 if (!empty($service)) {
                     if ($this->hasRootPrivileges === false) {
-                        if (!$this->allowedByContainerId(Hash::extract($service, 'Host.Container.{n}.HostsToContainer.container_id'))) {
+                        if (!$this->allowedByContainerId(Hash::extract($service, 'Host.Container.{n}.HostsToContainer.container_id'), false)) {
                             $allowView = false;
                             break;
                         }
@@ -264,7 +265,7 @@ class MapeditorsController extends MapModuleAppController {
                 ]);
                 if (!empty($hostgroup)) {
                     if ($this->hasRootPrivileges === false) {
-                        if (!$this->allowedByContainerId(Hash::extract($hostgroup, 'Host.{n}.Container.{n}.HostsToContainer.container_id'))) {
+                        if (!$this->allowedByContainerId(Hash::extract($hostgroup, 'Host.{n}.Container.{n}.HostsToContainer.container_id'), false)) {
                             $allowView = false;
                             break;
                         }
@@ -328,7 +329,7 @@ class MapeditorsController extends MapModuleAppController {
 
                 if (!empty($servicegroup)) {
                     if ($this->hasRootPrivileges === false) {
-                        if (!$this->allowedByContainerId(Hash::extract($servicegroup, 'Host.{n}.Container.{n}.HostsToContainer.container_id'))) {
+                        if (!$this->allowedByContainerId(Hash::extract($servicegroup, 'Host.{n}.Container.{n}.HostsToContainer.container_id'), false)) {
                             $allowView = false;
                             break;
                         }
@@ -364,7 +365,7 @@ class MapeditorsController extends MapModuleAppController {
                 ]);
                 if (!empty($map)) {
                     if ($this->hasRootPrivileges === false) {
-                        if (!$this->allowedByContainerId(Hash::extract($map, 'Container.{n}.MapsToContainer.container_id'))) {
+                        if (!$this->allowedByContainerId(Hash::extract($map, 'Container.{n}.MapsToContainer.container_id'), false)) {
                             $allowView = false;
                             break;
                         }
@@ -459,7 +460,7 @@ class MapeditorsController extends MapModuleAppController {
                             ]);
                             if (!empty($hosts)) {
                                 if ($this->hasRootPrivileges === false) {
-                                    if (!$this->allowedByContainerId(Hash::extract($hosts, '{n}.Container.{n}.HostsToContainer.container_id'))) {
+                                    if (!$this->allowedByContainerId(Hash::extract($hosts, '{n}.Container.{n}.HostsToContainer.container_id'), false)) {
                                         $allowView = false;
                                         break;
                                     }
@@ -492,7 +493,7 @@ class MapeditorsController extends MapModuleAppController {
                             ]);
                             if (!empty($services)) {
                                 if ($this->hasRootPrivileges === false) {
-                                    if (!$this->allowedByContainerId(Hash::extract($services, '{n}.Host.Container.{n}.HostsToContainer.container_id'))) {
+                                    if (!$this->allowedByContainerId(Hash::extract($services, '{n}.Host.Container.{n}.HostsToContainer.container_id'), false)) {
                                         $allowView = false;
                                         break;
                                     }
@@ -613,7 +614,7 @@ class MapeditorsController extends MapModuleAppController {
                 ]);
                 if (!empty($host)) {
                     if ($this->hasRootPrivileges === false) {
-                        if (!$this->allowedByContainerId(Hash::extract($host, 'Container.{n}.HostsToContainer.container_id'))) {
+                        if (!$this->allowedByContainerId(Hash::extract($host, 'Container.{n}.HostsToContainer.container_id'), false)) {
                             $allowView = false;
                             break;
                         }
@@ -660,7 +661,7 @@ class MapeditorsController extends MapModuleAppController {
 
                 if (!empty($service)) {
                     if ($this->hasRootPrivileges === false) {
-                        if (!$this->allowedByContainerId(Hash::extract($service, 'Host.Container.{n}.HostsToContainer.container_id'))) {
+                        if (!$this->allowedByContainerId(Hash::extract($service, 'Host.Container.{n}.HostsToContainer.container_id'), false)) {
                             $allowView = false;
                             break;
                         }
@@ -715,7 +716,7 @@ class MapeditorsController extends MapModuleAppController {
                 ]);
                 if (!empty($hostgroup)) {
                     if ($this->hasRootPrivileges === false) {
-                        if (!$this->allowedByContainerId(Hash::extract($hostgroup, 'Host.{n}.Container.{n}.HostsToContainer.container_id'))) {
+                        if (!$this->allowedByContainerId(Hash::extract($hostgroup, 'Host.{n}.Container.{n}.HostsToContainer.container_id'), false)) {
                             $allowView = false;
                             break;
                         }
@@ -778,7 +779,7 @@ class MapeditorsController extends MapModuleAppController {
 
                 if (!empty($servicegroup)) {
                     if ($this->hasRootPrivileges === false) {
-                        if (!$this->allowedByContainerId(Hash::extract($servicegroup, 'Host.{n}.Container.{n}.HostsToContainer.container_id'))) {
+                        if (!$this->allowedByContainerId(Hash::extract($servicegroup, 'Host.{n}.Container.{n}.HostsToContainer.container_id'), false)) {
                             $allowView = false;
                             break;
                         }
@@ -813,7 +814,7 @@ class MapeditorsController extends MapModuleAppController {
                 ]);
                 if (!empty($map)) {
                     if ($this->hasRootPrivileges === false) {
-                        if (!$this->allowedByContainerId(Hash::extract($map, 'Container.{n}.MapsToContainer.container_id'))) {
+                        if (!$this->allowedByContainerId(Hash::extract($map, 'Container.{n}.MapsToContainer.container_id'), false)) {
                             $allowView = false;
                             break;
                         }
@@ -984,7 +985,7 @@ class MapeditorsController extends MapModuleAppController {
                         ]);
                         if (!empty($hosts)) {
                             if ($this->hasRootPrivileges === false) {
-                                if (!$this->allowedByContainerId(Hash::extract($hosts, '{n}.Container.{n}.HostsToContainer.container_id'))) {
+                                if (!$this->allowedByContainerId(Hash::extract($hosts, '{n}.Container.{n}.HostsToContainer.container_id'), false)) {
                                     $allowView = false;
                                     break;
                                 }
@@ -1017,7 +1018,7 @@ class MapeditorsController extends MapModuleAppController {
                         ]);
                         if (!empty($dependentServices)) {
                             if ($this->hasRootPrivileges === false) {
-                                if (!$this->allowedByContainerId(Hash::extract($services, '{n}.Host.Container.{n}.HostsToContainer.container_id'))) {
+                                if (!$this->allowedByContainerId(Hash::extract($services, '{n}.Host.Container.{n}.HostsToContainer.container_id'), false)) {
                                     $allowView = false;
                                     break;
                                 }
@@ -1087,7 +1088,7 @@ class MapeditorsController extends MapModuleAppController {
         }
 
         if ($this->hasRootPrivileges === false) {
-            if (!$this->allowedByContainerId(Hash::extract($service, 'Host.Container.{n}.HostsToContainer.container_id'))) {
+            if (!$this->allowedByContainerId(Hash::extract($service, 'Host.Container.{n}.HostsToContainer.container_id'), false)) {
                 $this->set('allowView', false);
                 $this->set('_serialize', ['allowView']);
             }
@@ -1153,7 +1154,7 @@ class MapeditorsController extends MapModuleAppController {
                 ]);
                 if (!empty($host)) {
                     if ($this->hasRootPrivileges === false) {
-                        if (!$this->allowedByContainerId(Hash::extract($host, 'Container.{n}.HostsToContainer.container_id'))) {
+                        if (!$this->allowedByContainerId(Hash::extract($host, 'Container.{n}.HostsToContainer.container_id'), false)) {
                             $this->render403();
                             return;
                         }
@@ -1206,7 +1207,7 @@ class MapeditorsController extends MapModuleAppController {
 
                 if (!empty($service)) {
                     if ($this->hasRootPrivileges === false) {
-                        if (!$this->allowedByContainerId(Hash::extract($service, 'Host.Container.{n}.HostsToContainer.container_id'))) {
+                        if (!$this->allowedByContainerId(Hash::extract($service, 'Host.Container.{n}.HostsToContainer.container_id'), false)) {
                             $this->render403();
                             return;
                         }
@@ -1265,7 +1266,7 @@ class MapeditorsController extends MapModuleAppController {
 
                 if (!empty($hostgroup)) {
                     if ($this->hasRootPrivileges === false) {
-                        if (!$this->allowedByContainerId(Hash::extract($hostgroup, 'Container.{n}.HostsToContainer.container_id'))) {
+                        if (!$this->allowedByContainerId(Hash::extract($hostgroup, 'Container.{n}.HostsToContainer.container_id'), false)) {
                             $this->render403();
                             return;
                         }
@@ -1333,7 +1334,7 @@ class MapeditorsController extends MapModuleAppController {
 
                 if (!empty($servicegroup)) {
                     if ($this->hasRootPrivileges === false) {
-                        if (!$this->allowedByContainerId(Hash::extract($servicegroup, 'Container.{n}.HostsToContainer.container_id'))) {
+                        if (!$this->allowedByContainerId(Hash::extract($servicegroup, 'Container.{n}.HostsToContainer.container_id'), false)) {
                             $this->render403();
                             return;
                         }
@@ -1402,7 +1403,7 @@ class MapeditorsController extends MapModuleAppController {
 
                 if (!empty($map)) {
                     if ($this->hasRootPrivileges === false) {
-                        if (!$this->allowedByContainerId(Hash::extract($map, 'Container.{n}.MapsToContainer.container_id'))) {
+                        if (!$this->allowedByContainerId(Hash::extract($map, 'Container.{n}.MapsToContainer.container_id'), false)) {
                             $allowView = false;
                             break;
                         }
@@ -1580,7 +1581,7 @@ class MapeditorsController extends MapModuleAppController {
                         ]);
                         if (!empty($hosts)) {
                             if ($this->hasRootPrivileges === false) {
-                                if (!$this->allowedByContainerId(Hash::extract($hosts, '{n}.Container.{n}.HostsToContainer.container_id'))) {
+                                if (!$this->allowedByContainerId(Hash::extract($hosts, '{n}.Container.{n}.HostsToContainer.container_id'), false)) {
                                     break;
                                 }
                             }
@@ -1625,7 +1626,7 @@ class MapeditorsController extends MapModuleAppController {
                         ]);
                         if (!empty($services)) {
                             if ($this->hasRootPrivileges === false) {
-                                if (!$this->allowedByContainerId(Hash::extract($services, '{n}.Host.Container.{n}.HostsToContainer.container_id'))) {
+                                if (!$this->allowedByContainerId(Hash::extract($services, '{n}.Host.Container.{n}.HostsToContainer.container_id'), false)) {
                                     break;
                                 }
                             }
