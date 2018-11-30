@@ -2392,6 +2392,9 @@ class MapeditorsController extends MapModuleAppController {
             'recursive'  => -1,
             'conditions' => [
                 'Map.id' => $id
+            ],
+            'contain' => [
+                'Container'
             ]
         ]);
 
