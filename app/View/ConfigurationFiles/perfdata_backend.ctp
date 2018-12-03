@@ -41,7 +41,7 @@ use itnovum\openITCOCKPIT\ConfigGenerator\Perfdatabackend;
                 <select
                         class="form-control"
                         ng-model="post.string.perfdatabackend">
-                    <option value="Whisper"><?php echo __('Whisper (Statusengine 3)'); ?></option>
+                    <option value="Whisper"><?php echo __('Whisper (Statusengine 3 / Statusengine 2)'); ?></option>
                     <option value="Crate"><?php echo __('Crate (Statusengine 3)'); ?></option>
                     <option value="Rrdtool"><?php echo __('Rrdtool (Statusengine 2 / NPCD)'); ?></option>
                 </select>

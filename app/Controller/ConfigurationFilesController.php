@@ -107,6 +107,11 @@ class ConfigurationFilesController extends AppController {
         $this->__sharedControllerAction('itnovum\openITCOCKPIT\ConfigGenerator\GraphingDocker', 'GraphingDocker');
     }
 
+    public function StatusengineCfg() {
+        $this->layout = 'blank';
+
+        $this->__sharedControllerAction('itnovum\openITCOCKPIT\ConfigGenerator\StatusengineConfig', 'StatusengineConfig');
+    }
 
     public function restorDefault($configFile) {
         if (!$this->request->is('post') || !$this->isAngularJsRequest()) {
@@ -167,7 +172,7 @@ class ConfigurationFilesController extends AppController {
                     $this->set('success', true);
                     $this->set('_serialize', ['success']);
 
-                    if($configHasChanged) {
+                    if ($configHasChanged) {
                         //Require rewirte of configuration file on disk?
                         $this->ConfigurationQueue->deleteAll([
                             'ConfigurationQueue.task' => 'ConfigGenerator',
