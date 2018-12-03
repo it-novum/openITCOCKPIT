@@ -37,9 +37,9 @@ class GeneratorRegistry {
             new NagiosModuleConfig(),
             new phpNstaMaster(),
             new DbBackend(),
-            new Perfdatabackend(),
+            new PerfdataBackend(),
             new GraphingDocker(),
-            new StatusengineConfig()
+            new StatusengineCfg()
         ];
     }
 
@@ -52,13 +52,13 @@ class GeneratorRegistry {
                 new AfterExport(),
                 new NagiosModuleConfig(),
                 new DbBackend(),
-                new Perfdatabackend()
+                new PerfdataBackend()
             ],
             __('Monitoring engine')                           => [
                 new NagiosCfg()
             ],
             __('Statusengine')                                => [
-                new StatusengineConfig()
+                new StatusengineCfg()
             ],
             __('phpNSTA')                                     => [
                 new phpNstaMaster()

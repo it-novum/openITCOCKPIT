@@ -25,7 +25,7 @@
 namespace itnovum\openITCOCKPIT\ConfigGenerator;
 
 
-class StatusengineConfig extends ConfigGenerator implements ConfigInterface {
+class StatusengineCfg extends ConfigGenerator implements ConfigInterface {
 
     protected $templateDir = 'statusengine';
 

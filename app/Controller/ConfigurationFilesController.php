@@ -98,7 +98,7 @@ class ConfigurationFilesController extends AppController {
     public function PerfdataBackend() {
         $this->layout = 'blank';
 
-        $this->__sharedControllerAction('itnovum\openITCOCKPIT\ConfigGenerator\Perfdatabackend', 'Perfdatabackend');
+        $this->__sharedControllerAction('itnovum\openITCOCKPIT\ConfigGenerator\PerfdataBackend', 'PerfdataBackend');
     }
 
     public function GraphingDocker() {
@@ -110,7 +110,7 @@ class ConfigurationFilesController extends AppController {
     public function StatusengineCfg() {
         $this->layout = 'blank';
 
-        $this->__sharedControllerAction('itnovum\openITCOCKPIT\ConfigGenerator\StatusengineConfig', 'StatusengineConfig');
+        $this->__sharedControllerAction('itnovum\openITCOCKPIT\ConfigGenerator\StatusengineCfg', 'StatusengineCfg');
     }
 
     public function restorDefault($configFile) {

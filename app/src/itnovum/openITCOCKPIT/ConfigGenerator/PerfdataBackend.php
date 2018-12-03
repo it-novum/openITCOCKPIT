@@ -25,7 +25,7 @@
 namespace itnovum\openITCOCKPIT\ConfigGenerator;
 
 
-class Perfdatabackend extends ConfigGenerator implements ConfigInterface {
+class PerfdataBackend extends ConfigGenerator implements ConfigInterface {
 
     protected $templateDir = 'config';
 

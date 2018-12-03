@@ -22,10 +22,10 @@
 //  License agreement and license key will be shipped with the order
 //  confirmation.
 
-use itnovum\openITCOCKPIT\ConfigGenerator\StatusengineConfig;
+use itnovum\openITCOCKPIT\ConfigGenerator\StatusengineCfg;
 
 
-/** @var StatusengineConfig $StatusengineConfig */
+/** @var StatusengineCfg $StatusengineCfg */
 
 ?>
 
@@ -34,7 +34,7 @@ use itnovum\openITCOCKPIT\ConfigGenerator\StatusengineConfig;
 
 
     <div class="row">
-        <?php foreach ($StatusengineConfig->getDefaults()['int'] as $key => $defaultValue): ?>
+        <?php foreach ($StatusengineCfg->getDefaults()['int'] as $key => $defaultValue): ?>
             <div class="form-group required" ng-class="{'has-error': errors.Configfile.<?php echo $key; ?>}">
                 <label class="col col-md-2 control-label">
                     <?php echo h($key); ?>
@@ -50,14 +50,14 @@ use itnovum\openITCOCKPIT\ConfigGenerator\StatusengineConfig;
                     </div>
                 </div>
                 <div class="helpText text-muted col-md-offset-2 col-md-6">
-                    <?php echo h($StatusengineConfig->getHelpText($key)); ?>
+                    <?php echo h($StatusengineCfg->getHelpText($key)); ?>
                 </div>
             </div>
         <?php endforeach; ?>
     </div>
 
     <div class="row">
-        <?php foreach ($StatusengineConfig->getDefaults()['string'] as $key => $defaultValue): ?>
+        <?php foreach ($StatusengineCfg->getDefaults()['string'] as $key => $defaultValue): ?>
             <div class="form-group required" ng-class="{'has-error': errors.Configfile.<?php echo $key; ?>}">
                 <label class="col col-md-2 control-label">
                     <?php echo h($key); ?>
@@ -72,7 +72,7 @@ use itnovum\openITCOCKPIT\ConfigGenerator\StatusengineConfig;
                     </div>
                 </div>
                 <div class="helpText text-muted col-md-offset-2 col-md-6">
-                    <?php echo h($StatusengineConfig->getHelpText($key)); ?>
+                    <?php echo h($StatusengineCfg->getHelpText($key)); ?>
                 </div>
             </div>
         <?php endforeach; ?>

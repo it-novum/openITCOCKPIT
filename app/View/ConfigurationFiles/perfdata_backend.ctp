@@ -23,9 +23,9 @@
 //  confirmation.
 
 
-use itnovum\openITCOCKPIT\ConfigGenerator\Perfdatabackend;
+use itnovum\openITCOCKPIT\ConfigGenerator\PerfdataBackend;
 
-/** @var Perfdatabackend $Perfdatabackend */
+/** @var PerfdataBackend $PerfdataBackend */
 ?>
 
 
@@ -33,24 +33,24 @@ use itnovum\openITCOCKPIT\ConfigGenerator\Perfdatabackend;
 
     <div class="row">
         <div class="form-group required"
-             ng-class="{'has-error': errors.Configfile.perfdatabackend}">
+             ng-class="{'has-error': errors.Configfile.PerfdataBackend}">
             <label class="col col-md-2 control-label">
                 <?php echo __('Database backend'); ?>
             </label>
             <div class="col col-xs-10">
                 <select
                         class="form-control"
-                        ng-model="post.string.perfdatabackend">
+                        ng-model="post.string.PerfdataBackend">
                     <option value="Whisper"><?php echo __('Whisper (Statusengine 3 / Statusengine 2)'); ?></option>
                     <option value="Crate"><?php echo __('Crate (Statusengine 3)'); ?></option>
                     <option value="Rrdtool"><?php echo __('Rrdtool (Statusengine 2 / NPCD)'); ?></option>
                 </select>
-                <div ng-repeat="error in errors.Configfile.perfdatabackend">
+                <div ng-repeat="error in errors.Configfile.PerfdataBackend">
                     <div class="help-block text-danger">{{ error }}</div>
                 </div>
             </div>
             <div class="helpText text-muted col-md-offset-2 col-md-6">
-                <?php echo h($Perfdatabackend->getHelpText('perfdatabackend')); ?>
+                <?php echo h($PerfdataBackend->getHelpText('PerfdataBackend')); ?>
             </div>
         </div>
     </div>
