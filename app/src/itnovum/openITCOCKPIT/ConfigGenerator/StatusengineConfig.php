@@ -31,9 +31,7 @@ class StatusengineConfig extends ConfigGenerator implements ConfigInterface {
 
     protected $template = 'Statusengine.php.tpl';
 
-    //protected $outfile = '/etc/statusengine/Config/Statusengine.php';
-    protected $outfile = '/tmp/Statusenginegenerated.php';
-
+    protected $outfile = '/etc/statusengine/Config/Statusengine.php';
 
     /**
      * @var string
@@ -150,7 +148,37 @@ class StatusengineConfig extends ConfigGenerator implements ConfigInterface {
                 '\'queues\' => [\'statusngin_servicechecks\' => \'processServicechecks\']';
         }
 
-        return $this->saveConfigFile($configToExport);
+
+        $success = true;
+
+        /*
+         * Write:
+         * - Statusengine.php
+         * - Perfdata.php
+         * - Graphite.php
+         */
+        $loader = new \Twig_Loader_Filesystem([
+            $this->getTemplatePath()
+        ]);
+        $twig = new \Twig_Environment($loader, ['debug' => true]);
+
+        // /etc/statusengine/Config/Statusengine.php
+        if (!file_put_contents($this->outfile, $twig->render($this->getTemplateName(), $configToExport))) {
+            $success = false;
+        }
+
+        // /etc/statusengine/Config/Perfdata.php
+        if (!file_put_contents('/etc/statusengine/Config/Perfdata.php', $twig->render('Perfdata.php.tpl', $configToExport))) {
+            $success = false;
+        }
+
+        // /etc/statusengine/Config/Graphite.php
+        if (!file_put_contents('/etc/statusengine/Config/Graphite.php', $twig->render('Graphite.php.tpl', $configToExport))) {
+            $success = false;
+        }
+
+        return $success;
+
     }
 
     /**
@@ -192,18 +220,18 @@ class StatusengineConfig extends ConfigGenerator implements ConfigInterface {
         $defaultConfig['int']['number_of_bulk_records'] = (int)$config['bulk_query_limit'];
 
         //Try to load Graphite.php
-        if(file_exists('/etc/statusengine/Config/Graphite.php')){
+        if (file_exists('/etc/statusengine/Config/Graphite.php')) {
             require_once '/etc/statusengine/Config/Graphite.php';
 
-            if(isset($config['graphite']['host'])){
+            if (isset($config['graphite']['host'])) {
                 $defaultConfig['string']['graphite_address'] = $config['graphite']['host'];
             }
 
-            if(isset($config['graphite']['prefix'])){
+            if (isset($config['graphite']['prefix'])) {
                 $defaultConfig['string']['graphite_prefix'] = $config['graphite']['prefix'];
             }
 
-            if(isset($config['graphite']['port'])){
+            if (isset($config['graphite']['port'])) {
                 $defaultConfig['int']['graphite_port'] = (int)$config['graphite']['port'];
             }
 

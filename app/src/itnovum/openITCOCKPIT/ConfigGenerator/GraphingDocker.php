@@ -120,8 +120,13 @@ class GraphingDocker extends ConfigGenerator implements ConfigInterface {
         /*
          * Write:
          * - carbon-c-relay.conf
-         * carbon.conf
-         * docker-compose.yml
+         * - carbon.conf
+         * - storage-schemas.conf
+         * - storage-aggregation.conf
+         * - local_settings.py
+         * - wsgi.py
+         * - grafana.ini
+         * - docker-compose.yml
          */
         $loader = new \Twig_Loader_Filesystem([
             $this->getTemplatePath(),
