@@ -13,6 +13,8 @@ services:
 {% endfor %}
   graphite-web:
     image: openitcockpit/graphite-web:latest
+    ports:
+      - "127.0.0.1:8888:80"
     volumes:
       - {{carbon_path}}:/var/lib/graphite/whisper
       - /etc/openitcockpit/carbon:/etc/carbon
