@@ -1,4 +1,7 @@
 <?php
+
+{{STATIC_FILE_HEADER}}
+
 /* Main configuration file of Statusengine's ModPerfdata Graphite extension
  * This is a PHP file, please check for syntax errors!
  * Example command to check for any syntax erros:
