@@ -1,9 +1,12 @@
 <?php
 App::uses('ModelBehavior', 'Model');
 
+/**
+ * Class DateRangeBehavior
+ */
 class DateRangeBehavior extends ModelBehavior {
 
-    function createDateRanges(&$Model, $date_start, $date_end, $time_ranges = []) {
+    public function createDateRanges(&$Model, $date_start, $date_end, $time_ranges = []) {
         $date_start_timestamp = strtotime($date_start);
         $date_end_timestamp = strtotime($date_end);
         $time_slices_default = [];
@@ -52,7 +55,7 @@ class DateRangeBehavior extends ModelBehavior {
         return $this->removeUselessTimeslices(date('Ymd', $date_start_timestamp), date('Ymd', $date_end_timestamp), $time_slices);
     }
 
-    function removeUselessTimeslices($date_start, $date_end, $time_slices) {
+    private function removeUselessTimeslices($date_start, $date_end, $time_slices) {
         $time_slices_new = [];
         foreach ($time_slices as $time_slice) {
             $current_time_slice_start = date('Ymd', $time_slice['start']);
@@ -97,7 +100,7 @@ class DateRangeBehavior extends ModelBehavior {
         return $timeslice_array;
     }
 
-    public function dateIsBetween($start_date, $end_date, $current_date) {
+    private function dateIsBetween($start_date, $end_date, $current_date) {
         return (($current_date >= $start_date) && ($current_date <= $end_date));
     }
 
@@ -154,5 +157,273 @@ class DateRangeBehavior extends ModelBehavior {
         $time_slices = Hash::sort($time_slices, '{n}.start', 'ASC');
 
         return $time_slices;
+    }
+
+    /**
+     * @param $lastUpdateDate
+     * @param $interval
+     * @return array date time slices
+     * @throws Exception
+     */
+    public function createDateSlicesByIntervalAndLastUpdateDate(&$Model, $lastUpdateDate, $interval) {
+        $now = time();
+        $dateTimeSlices = [];
+        switch ($interval) {
+            case 'DAY':
+                if (date('zY', $lastUpdateDate) !== date('zY', $now)) {
+                    $dateTimeSlices[] = [
+                        'start'     => $lastUpdateDate,
+                        'end'       => strtotime(date('d.m.Y', $lastUpdateDate) . ' 23:59:59'),
+                        'entryType' => 'update'
+                    ];
+                    $begin = new DateTime(date('d.m.Y', $lastUpdateDate));
+                    $end = new DateTime(date('d.m.Y', $now));
+                    $end = $end->modify('+1 day');
+
+                    $dateInterval = new DateInterval('P1D');
+                    $dateRange = new DatePeriod($begin, $dateInterval, $end);
+                    foreach ($dateRange as $date) {
+                        $dateAsTimestamp = $date->getTimestamp();
+                        if (date('z', $dateAsTimestamp) < date('z', $now)) {
+                            $dateTimeSlices[] = [
+                                'start'     => strtotime(date('d.m.Y', $dateAsTimestamp) . ' 00:00:00'),
+                                'end'       => strtotime(date('d.m.Y', $dateAsTimestamp) . ' 23:59:59'),
+                                'entryType' => 'new'
+                            ];
+                        } else {
+                            $dateTimeSlices[] = [
+                                'start'     => strtotime(date('d.m.Y', $dateAsTimestamp) . ' 00:00:00'),
+                                'end'       => $now,
+                                'entryType' => 'new'
+                            ];
+                        }
+                    }
+                } else {
+                    $dateTimeSlices[] = [
+                        'start'     => $lastUpdateDate,
+                        'end'       => $now,
+                        'entryType' => 'update'
+                    ];
+                }
+                return $dateTimeSlices;
+                break;
+            case 'WEEK':
+                if (date('WY', $lastUpdateDate) !== date('WY', $now)) {
+                    $begin = new DateTime(date('d.m.Y H:i:s', $lastUpdateDate));
+                    $sunday = $begin->modify('sunday this week');
+                    $dateTimeSlices[] = [
+                        'start'     => $lastUpdateDate,
+                        'end'       => strtotime($sunday->format('d.m.Y') . ' 23:59:59'),
+                        'entryType' => 'update'
+                    ];
+                    $nextWeekMonday = $begin->modify('monday next week 00:00:00');
+                    $end = new DateTime(date('Y-m-d', $now));
+
+                    $interval = new DateInterval('P1W');
+                    $daterange = new DatePeriod($nextWeekMonday, $interval, $end);
+                    foreach ($daterange as $date) {
+                        $dateAsTimestamp = $date->getTimestamp();
+                        if (date('W', $now) === date('W', $dateAsTimestamp)) {
+                            echo "\n IF " . $date->format("d.m.Y") . PHP_EOL;
+                            $dateTimeSlices[] = [
+                                'start'     => strtotime(date('d.m.Y', $dateAsTimestamp) . ' 00:00:00'),
+                                'end'       => $now,
+                                'entryType' => 'new'
+                            ];
+                        } else {
+                            $dateTimeSlices[] = [
+                                'start'     => strtotime(date('d.m.Y', $dateAsTimestamp) . ' 00:00:00'),
+                                'end'       => strtotime(date('d.m.Y', $dateAsTimestamp) . ' sunday this week 23:59:59'),
+                                'entryType' => 'new'
+                            ];
+                        }
+                    }
+                } else {
+                    $dateTimeSlices[] = [
+                        'start'     => $lastUpdateDate,
+                        'end'       => $now,
+                        'entryType' => 'update'
+                    ];
+                }
+                return $dateTimeSlices;
+                break;
+            case 'MONTH':
+                if (date('mY', $lastUpdateDate) !== date('mY', $now)) {
+                    $begin = new DateTime(date('d.m.Y H:i:s', $lastUpdateDate));
+                    $lastDayOfThisMonth = $begin->modify('last day of this month');
+                    $dateTimeSlices[] = [
+                        'start'     => $lastUpdateDate,
+                        'end'       => strtotime($lastDayOfThisMonth->format('d.m.Y') . ' 23:59:59'),
+                        'entryType' => 'update'
+                    ];
+                    $nextMonthFirstDay = $begin->modify('first day of next month 00:00:00');
+                    $end = new DateTime(date('Y-m-d', $now));
+
+                    $interval = new DateInterval('P1M');
+                    $daterange = new DatePeriod($nextMonthFirstDay, $interval, $end);
+                    foreach ($daterange as $date) {
+                        $dateAsTimestamp = $date->getTimestamp();
+                        if (date('m', $now) === date('m', $dateAsTimestamp)) {
+                            $dateTimeSlices[] = [
+                                'start'     => strtotime(date('d.m.Y', $dateAsTimestamp) . ' 00:00:00'),
+                                'end'       => $now,
+                                'entryType' => 'new'
+                            ];
+                        } else {
+                            $dateTimeSlices[] = [
+                                'start'     => strtotime(date('d.m.Y', $dateAsTimestamp) . ' 00:00:00'),
+                                'end'       => strtotime(date('d.m.Y', $dateAsTimestamp) . ' last day of this month 23:59:59'),
+                                'entryType' => 'new'
+                            ];
+                        }
+                    }
+                } else {
+                    $dateTimeSlices[] = [
+                        'start'     => $lastUpdateDate,
+                        'end'       => $now,
+                        'entryType' => 'update'
+                    ];
+                }
+                return $dateTimeSlices;
+                break;
+            case 'QUARTER':
+                $numberFromCurrentQuarter = $this->getNumberFromQuarter($now);
+                if (date('Y', $lastUpdateDate).$this->getNumberFromQuarter($lastUpdateDate) !== date('Y', $now).$numberFromCurrentQuarter) {
+                    $begin = new DateTime(date('d.m.Y H:i:s', $lastUpdateDate));
+                    $lastUpdateQuarter = $this->getNumberFromQuarter($lastUpdateDate);
+                    $lastDayOfThisQuarter = $this->lastDayOfQuarter($begin, $lastUpdateQuarter);
+                    $dateTimeSlices[] = [
+                        'start'     => $lastUpdateDate,
+                        'end'       => strtotime($lastDayOfThisQuarter->format('d.m.Y') . ' 23:59:59'),
+                        'entryType' => 'update'
+                    ];
+
+                    $nextQuarterFirstDay = $begin->modify('tomorrow 00:00:00');
+                    $end = new DateTime(date('Y-m-d', $now));
+                    $interval = new DateInterval('P3M');
+                    $daterange = new DatePeriod($nextQuarterFirstDay, $interval, $end);
+                    foreach($daterange as $date){
+                        $dateAsTimestamp = $date->getTimestamp();
+                        $numberFromDateQuarter = $this->getNumberFromQuarter($dateAsTimestamp);
+                        if (date('Y', $now).$numberFromCurrentQuarter === date('Y', $dateAsTimestamp).$this->getNumberFromQuarter($dateAsTimestamp)) {
+                            $dateTimeSlices[] = [
+                                'start'     => strtotime(date('d.m.Y', $dateAsTimestamp) . ' 00:00:00'),
+                                'end'       => $now,
+                                'entryType' => 'new'
+                            ];
+                        } else {
+                            $end = $date;
+                            $lastDayOfDateQuarter = $this->lastDayOfQuarter($end, $numberFromDateQuarter);
+                            $dateTimeSlices[] = [
+                                'start'     => strtotime(date('d.m.Y', $dateAsTimestamp) . ' 00:00:00'),
+                                'end'       => strtotime(date('d.m.Y', $lastDayOfDateQuarter->getTimestamp()) . ' 23:59:59'),
+                                'entryType' => 'new'
+                            ];
+                        }
+                    }
+
+                } else{
+                    $dateTimeSlices[] = [
+                        'start'     => $lastUpdateDate,
+                        'end'       => $now,
+                        'entryType' => 'update'
+                    ];
+                }
+                break;
+            case 'YEAR':
+                if (date('Y', $lastUpdateDate) !== date('Y', $now)) {
+                    $begin = new DateTime(date('d.m.Y H:i:s', $lastUpdateDate));
+                    $lastDayOfThisYear = $begin->modify('last day of december this year');
+                    $dateTimeSlices[] = [
+                        'start'     => $lastUpdateDate,
+                        'end'       => strtotime($lastDayOfThisYear->format('d.m.Y') . ' 23:59:59'),
+                        'entryType' => 'update'
+                    ];
+                    $nextMonthFirstDay = $begin->modify('first day of january next year 00:00:00');
+                    $end = new DateTime(date('Y-m-d', $now));
+
+                    $interval = new DateInterval('P1Y');
+                    $daterange = new DatePeriod($nextMonthFirstDay, $interval, $end);
+                    foreach ($daterange as $date) {
+                        $dateAsTimestamp = $date->getTimestamp();
+                        if (date('Y', $now) === date('Y', $dateAsTimestamp)) {
+                            $dateTimeSlices[] = [
+                                'start'     => strtotime(date('d.m.Y', $dateAsTimestamp) . ' 00:00:00'),
+                                'end'       => $now,
+                                'entryType' => 'new'
+                            ];
+                        } else {
+                            $dateTimeSlices[] = [
+                                'start'     => strtotime(date('d.m.Y', $dateAsTimestamp) . ' 00:00:00'),
+                                'end'       => strtotime(date('d.m.Y', $dateAsTimestamp) . ' last day of december this year 23:59:59'),
+                                'entryType' => 'new'
+                            ];
+                        }
+                    }
+                } else {
+                    $dateTimeSlices[] = [
+                        'start'     => $lastUpdateDate,
+                        'end'       => $now,
+                        'entryType' => 'update'
+                    ];
+                }
+                return $dateTimeSlices;
+                break;
+
+        }
+        return $dateTimeSlices;
+    }
+
+    /**
+     * @param $numberOfQuarter
+     * @return Datetime $date
+     */
+    private function firstDayOfQuarter(Datetime $date, $numberOfQuarter){
+        switch($numberOfQuarter){
+            case 1:
+                $date->modify('first day of january');
+                break;
+            case 2:
+                $date->modify('first day of april');
+                break;
+            case 3:
+                $date->modify('first day of july');
+                break;
+            case 4:
+                $date->modify('first day of october');
+                break;
+        }
+        return $date;
+    }
+
+    /**
+     * @param $numberOfQuarter
+     * @return Datetime $date
+     */
+    private function lastDayOfQuarter(Datetime $date, $numberOfQuarter){
+        switch($numberOfQuarter){
+            case 1:
+                $date->modify('last day of march');
+                break;
+            case 2:
+                $date->modify('last day of june');
+                break;
+            case 3:
+                $date->modify('last day of september');
+                break;
+            case 4:
+                $date->modify('last day of december');
+                break;
+        }
+        return $date;
+    }
+
+    /**
+     * @param $date
+     * @return float
+     */
+    private function getNumberFromQuarter($date){
+        $currentMonth = date('m', $date);
+        return ceil($currentMonth/3);
     }
 }
