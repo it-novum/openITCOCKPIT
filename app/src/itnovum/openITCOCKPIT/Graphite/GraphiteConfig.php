@@ -27,8 +27,14 @@ namespace itnovum\openITCOCKPIT\Graphite;
 
 class GraphiteConfig {
 
-    private $host = 'metrics-development.oitc.itn';
+    /**
+     * @var string
+     */
+    private $host = '127.0.0.1';
 
+    /**
+     * @var int
+     */
     private $port = 8888;
 
     /**
@@ -53,7 +59,7 @@ class GraphiteConfig {
 
 
     public function __construct() {
-        $this->graphitePrefix = 'dziegler.oitc.itn';
+        $this->graphitePrefix = 'openitcockpit';
         $this->useHttps = false;
         $this->useProxy = false;
     }
