@@ -689,6 +689,14 @@ class Systemsetting extends Importer {
             ],
             [
                 'Systemsetting' => [
+                    'key'     => 'INIT.STATUSENGINE_RESTART',
+                    'value'   => 'systemctl restart statusengine',
+                    'info'    => 'Command to restartstatusengine service',
+                    'section' => 'INIT'
+                ],
+            ],
+            [
+                'Systemsetting' => [
                     'key'     => 'TICKET_SYSTEM.URL',
                     'value'   => '',
                     'info'    => 'Link to the ticket system',

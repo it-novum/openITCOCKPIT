@@ -93,6 +93,11 @@ class ConfigGeneratorTask extends AppShell implements CronjobInterface {
                     $this->restartService($command, 'Restart and rebuild openITCOCKPIT-Graphing Docker Containers');
                     break;
 
+                case 'StatusengineCfg':
+                    $command = $systemsettings['INIT']['INIT.STATUSENGINE_RESTART'];
+                    $this->restartService($command, 'Restart Statusengine service');
+                    break;
+
                 default:
                     break;
             }
