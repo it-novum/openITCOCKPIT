@@ -59,9 +59,15 @@ class GraphiteConfig {
 
 
     public function __construct() {
-        $this->graphitePrefix = 'openitcockpit';
-        $this->useHttps = false;
-        $this->useProxy = false;
+
+        \Configure::load('graphite');
+        $configFromFile = \Configure::read('graphite');
+
+        $this->host = $configFromFile['graphite_web_host'];
+        $this->port = $configFromFile['graphite_web_port'];
+        $this->graphitePrefix = $configFromFile['graphite_prefix'];
+        $this->useHttps = $configFromFile['use_https'];
+        $this->useProxy = $configFromFile['use_proxy'];
     }
 
     /**

@@ -358,7 +358,7 @@ $config = [
                 'index' => ['saveStatisticDecision']
             ],
             'ConfigurationFiles' => [
-                'edit' => ['NagiosCfg', 'AfterExport', 'NagiosModuleConfig', 'phpNSTAMaster', 'DbBackend', 'PerfdataBackend', 'GraphingDocker', 'StatusengineCfg', 'restorDefault']
+                'edit' => ['NagiosCfg', 'AfterExport', 'NagiosModuleConfig', 'phpNSTAMaster', 'DbBackend', 'PerfdataBackend', 'GraphingDocker', 'StatusengineCfg', 'GraphiteWeb', 'restorDefault']
             ]
         ],
         'roles_rights'   => [

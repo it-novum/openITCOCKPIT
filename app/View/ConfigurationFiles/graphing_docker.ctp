@@ -107,6 +107,44 @@ use itnovum\openITCOCKPIT\ConfigGenerator\GraphingDocker;
             </div>
         </div>
 
+        <div class="form-group required" ng-class="{'has-error': errors.Configfile.local_graphite_http_port}">
+            <label class="col col-md-2 control-label">
+                <?php echo __('Local Graphite-Web port'); ?>
+            </label>
+            <div class="col col-xs-10">
+                <input
+                        class="form-control"
+                        type="number"
+                        min="1"
+                        ng-model="post.int.local_graphite_http_port">
+                <div ng-repeat="error in errors.Configfile.local_graphite_http_port">
+                    <div class="help-block text-danger">{{ error }}</div>
+                </div>
+            </div>
+            <div class="helpText text-muted col-md-offset-2 col-md-6">
+                <?php echo h($GraphingDocker->getHelpText('local_graphite_http_port')); ?>
+            </div>
+        </div>
+
+        <div class="form-group required" ng-class="{'has-error': errors.Configfile.local_graphite_plaintext_port}">
+            <label class="col col-md-2 control-label">
+                <?php echo __('Local Carbon C Relay port'); ?>
+            </label>
+            <div class="col col-xs-10">
+                <input
+                        class="form-control"
+                        type="number"
+                        min="1"
+                        ng-model="post.int.local_graphite_plaintext_port">
+                <div ng-repeat="error in errors.Configfile.local_graphite_plaintext_port">
+                    <div class="help-block text-danger">{{ error }}</div>
+                </div>
+            </div>
+            <div class="helpText text-muted col-md-offset-2 col-md-6">
+                <?php echo h($GraphingDocker->getHelpText('local_graphite_plaintext_port')); ?>
+            </div>
+        </div>
+
     </div>
 
     <div class="row">

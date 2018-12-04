@@ -25,11 +25,12 @@
 namespace itnovum\openITCOCKPIT\ConfigGenerator;
 
 
-class PerfdataBackend extends ConfigGenerator implements ConfigInterface {
+class GraphiteWeb extends ConfigGenerator implements ConfigInterface {
 
     protected $templateDir = 'config';
 
-    protected $template = 'perfdatabackend.php.tpl';
+    protected $template = 'graphite.php.tpl';
+
 
     /**
      * @see self::__construct()
@@ -44,14 +45,22 @@ class PerfdataBackend extends ConfigGenerator implements ConfigInterface {
 
     protected $defaults = [
         'string' => [
-            'perfdatabackend' => 'Whisper'
+            'graphite_web_host' => '127.0.0.1',
+            'graphite_prefix'   => 'openitcockpit'
+        ],
+        'int'    => [
+            'graphite_web_port' => 8888
+        ],
+        'bool'   => [
+            'use_https' => false,
+            'use_proxy' => false
         ]
     ];
 
-    protected $dbKey = 'PerfdataBackend';
+    protected $dbKey = 'GraphiteWeb';
 
     public function __construct() {
-        $this->outfile = APP . 'Config' . DS . 'perfdatabackend.php';
+        $this->outfile = APP . 'Config' . DS . 'graphite.php';
     }
 
     /**
@@ -59,22 +68,6 @@ class PerfdataBackend extends ConfigGenerator implements ConfigInterface {
      * @return array|bool|true
      */
     public function customValidationRules($data) {
-        $error = [];
-        $fakeModelName = 'Configfile';
-        if (isset($data['string']) && is_array($data['string'])) {
-            foreach ($data['string'] as $field => $value) {
-                if ($field === 'perfdatabackend') {
-                    if (!in_array($value, ['Whisper', 'Crate', 'Rrdtool'], true)) {
-                        $error[$fakeModelName][$field][] = __('Value out of range (Whisper, Crate, Rrdtool)');
-                    }
-                }
-            }
-        }
-
-        if (!empty($error)) {
-            return $error;
-        }
-
         return true;
     }
 
@@ -82,7 +75,7 @@ class PerfdataBackend extends ConfigGenerator implements ConfigInterface {
      * @return string
      */
     public function getAngularDirective() {
-        return 'perfdata-backend-cfg';
+        return 'graphite-web-cfg';
     }
 
     /**
@@ -91,7 +84,11 @@ class PerfdataBackend extends ConfigGenerator implements ConfigInterface {
      */
     public function getHelpText($key) {
         $help = [
-            'dbbackend' => __('Time-series backend used by openITCOCKPIT to store performance data. Be careful with this option!'),
+            'graphite_web_host' => __('IP-Address of the Graphite-Web server openITCOCKPIT should use to query data.'),
+            'graphite_web_port' => __('Port of the Graphite-Web server.'),
+            'graphite_prefix'   => __('Prefix added to every metric stored in carbon'),
+            'use_https'         => __('Use HTTPS to connect to Graphite-Web server.'),
+            'use_proxy'         => __('Use configured proxy server to connect to Graphite-Web server.')
         ];
 
         if (isset($help[$key])) {
@@ -127,16 +124,25 @@ class PerfdataBackend extends ConfigGenerator implements ConfigInterface {
      * @return bool|array
      */
     public function migrate($dbRecords) {
-        if (!file_exists($this->outfile)) {
-            return false;
+        //return $this->mergeDbResultWithDefaultConfiguration($dbRecords);
+
+        \Configure::load('graphite');
+        $configFromFile = \Configure::read('graphite');
+        debug($configFromFile);
+        die();
+
+        foreach ($config['string'] as $field => $value) {
+            if (isset($configFromFile['SSH'][$field])) {
+                if ($config['string'][$field] != $configFromFile['SSH'][$field]) {
+                    $config['string'][$field] = $configFromFile['SSH'][$field];
+                }
+            }
         }
-        $config = $this->mergeDbResultWithDefaultConfiguration($dbRecords);
 
-        \Configure::load('perfdatabackend');
-        $configFromFile = \Configure::read('perfdatabackend');
-
-        if ($config['string']['perfdatabackend'] != $configFromFile) {
-            $config['string']['perfdatabackend'] = $configFromFile;
+        if (isset($configFromFile['SSH']['port'])) {
+            if ($config['int']['remote_port'] != $configFromFile['SSH']['port']) {
+                $config['int']['remote_port'] = $configFromFile['SSH']['port'];
+            }
         }
 
         return $config;

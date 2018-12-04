@@ -39,7 +39,8 @@ class GeneratorRegistry {
             new DbBackend(),
             new PerfdataBackend(),
             new GraphingDocker(),
-            new StatusengineCfg()
+            new StatusengineCfg(),
+            new GraphiteWeb()
         ];
     }
 
@@ -52,7 +53,8 @@ class GeneratorRegistry {
                 new AfterExport(),
                 new NagiosModuleConfig(),
                 new DbBackend(),
-                new PerfdataBackend()
+                new PerfdataBackend(),
+                new GraphiteWeb()
             ],
             __('Monitoring engine')                           => [
                 new NagiosCfg()

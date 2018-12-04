@@ -32,6 +32,12 @@ class DbBackend extends ConfigGenerator implements ConfigInterface {
     protected $template = 'dbbackend.php.tpl';
 
     /**
+     * @see self::__construct()
+     * @var string
+     */
+    protected $outfile = '';
+
+    /**
      * @var string
      */
     protected $commentChar = '//';

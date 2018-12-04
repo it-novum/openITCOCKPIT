@@ -45,7 +45,9 @@ class GraphingDocker extends ConfigGenerator implements ConfigInterface {
         ],
         'int'    => [
             'number_of_carbon_cache_instances' => 2,
-            'number_of_carbon_c_relay_workers' => 4
+            'number_of_carbon_c_relay_workers' => 4,
+            'local_graphite_http_port'         => 8888,
+            'local_graphite_plaintext_port'    => 2003,
         ]
     ];
 
@@ -76,6 +78,8 @@ class GraphingDocker extends ConfigGenerator implements ConfigInterface {
             'carbon_storage_schema'            => __('Carbon storage schema'),
             'number_of_carbon_cache_instances' => __('Number of carbon cache instances for multi core CPU scaling'),
             'number_of_carbon_c_relay_workers' => __('Number of Carbon-C-Relay worker threads. (Carbon-Cache load balancer)'),
+            'local_graphite_http_port'         => __('Local HTTP port used by Graphite-Web'),
+            'local_graphite_plaintext_port'    => __('Local plaintext port to send metrics to Carbon-C-Relay.')
         ];
 
         if (isset($help[$key])) {
