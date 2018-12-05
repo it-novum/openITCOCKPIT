@@ -31,11 +31,13 @@ use itnovum\openITCOCKPIT\ConfigGenerator\GeneratorRegistry;
  * Class ConfigGeneratorShell
  * @property ConfigurationFile $ConfigurationFile
  * @property ConfigGeneratorTask $ConfigGenerator
+ * @property Systemsetting $Systemsetting
  */
 class ConfigGeneratorShell extends AppShell {
 
     public $uses = [
-        'ConfigurationFile'
+        'ConfigurationFile',
+        'Systemsetting'
     ];
 
     public $tasks = [
@@ -50,6 +52,7 @@ class ConfigGeneratorShell extends AppShell {
     public function main() {
         $this->stdout->styles('green', ['text' => 'green']);
         $this->stdout->styles('blue', ['text' => 'blue']);
+        $this->stdout->styles('red', ['text' => 'red']);
 
         $this->parser = $this->getOptionParser();
 
@@ -63,7 +66,11 @@ class ConfigGeneratorShell extends AppShell {
         }
 
         if (array_key_exists('generate', $this->params)) {
-            $this->generate();
+            if (array_key_exists('reload', $this->params)) {
+                $this->generateAndReload();
+            } else {
+                $this->generate();
+            }
         }
     }
 
@@ -79,6 +86,22 @@ class ConfigGeneratorShell extends AppShell {
             $this->out('<green>Ok</green>');
         }
     }
+
+    public function generateAndReload() {
+        $this->out('Generate all configuration files...    ');
+
+        $systemsettings = $this->Systemsetting->findAsArray();
+
+        $GeneratorRegistry = new GeneratorRegistry();
+
+        foreach ($GeneratorRegistry->getAllConfigFiles() as $ConfigFileObject) {
+            /** @var ConfigInterface $ConfigFileObject */
+            $this->out(sprintf('Generate %s', $ConfigFileObject->getOutfile()));
+            $ConfigFileObject->writeToFile($this->ConfigurationFile->getConfigValuesByConfigFile($ConfigFileObject->getDbKey()));
+            $this->ConfigGenerator->restartByConfigFile($ConfigFileObject->getDbKey(), $systemsettings);
+        }
+    }
+
 
     public function migrate() {
         $this->out('Migrate existing configuration files to database...    ');
@@ -107,6 +130,7 @@ class ConfigGeneratorShell extends AppShell {
         $parser = parent::getOptionParser();
         $parser->addOptions([
             'generate' => ['help' => "Will generate all configuration files from database"],
+            'reload'   => ['help' => "Reload services, where a new configuration file was generated for"],
             'migrate'  => ['help' => 'Will migrate existing configuration files to database']
         ]);
 

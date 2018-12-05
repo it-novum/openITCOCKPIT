@@ -25,6 +25,8 @@
 namespace itnovum\openITCOCKPIT\ConfigGenerator;
 
 
+use itnovum\openITCOCKPIT\Core\System\Health\MonitoringEngine;
+
 class NagiosCfg extends ConfigGenerator implements ConfigInterface {
 
     protected $templateDir = 'nagios';
@@ -74,7 +76,9 @@ class NagiosCfg extends ConfigGenerator implements ConfigInterface {
             'additional_freshness_latency'     => 15,
 
             'debug_level'     => 0,
-            'debug_verbosity' => 1
+            'debug_verbosity' => 1,
+
+            'retention_update_interval' => 3600
         ],
 
         'string' => [
@@ -90,6 +94,11 @@ class NagiosCfg extends ConfigGenerator implements ConfigInterface {
     ];
 
     protected $dbKey = 'NagiosCfg';
+
+    /**
+     * @var int
+     */
+    private $retention_update_interval = 3600;
 
     /**
      * @param array $data
@@ -158,6 +167,7 @@ class NagiosCfg extends ConfigGenerator implements ConfigInterface {
             'debug_level'     => 'This option determines how much (if any) debugging information will be written to the debug file. Values: -1 = Everything, 0 = Nothing Enabling this feature could has a HIGH PERFORMANCE IMPACT!',
             'debug_verbosity' => 'This option determines how verbose the debug log out will be. Values: 0 = Brief output, 1 = More detailed, 2 = Very detailed',
 
+            'retention_update_interval' => 'This setting determines how often (in minutes) that Nagios will automatically save retention data during normal operation. If you set this value to 0, Nagios will not save retention data at regular interval, but it will still save retention data before shutting down or restarting.  If you have disabled state retention, this option has no effect.',
 
             'service_check_timeout_state' => 'This setting determines the state Naemon/Nagios will report when a service check times out - that is does not respond within service_check_timeout seconds.  This can be useful if a machine is running at too high a load and you do not want to consider a failed service check to be critical (the default).',
 
@@ -190,12 +200,20 @@ class NagiosCfg extends ConfigGenerator implements ConfigInterface {
      * @throws \Twig_Error_Syntax
      */
     public function writeToFile($dbRecords) {
+
+        $MonitoringEngine = new MonitoringEngine();
+
         $config = $this->mergeDbResultWithDefaultConfiguration($dbRecords);
         $configToExport = [];
         foreach ($config as $type => $fields) {
             foreach ($fields as $key => $value) {
                 $configToExport[$key] = $value;
             }
+        }
+
+        if ($MonitoringEngine->isNagios()) {
+            //Convert seconds to minutes
+            $configToExport['retention_update_interval'] = ceil($configToExport['retention_update_interval'] / 60);
         }
 
         return $this->saveConfigFile($configToExport);
@@ -224,6 +242,16 @@ class NagiosCfg extends ConfigGenerator implements ConfigInterface {
             $keyValue = explode('=', $line, 2);
             if (count($keyValue) === 2) {
                 $nagiosCfgConfigFromFile[$keyValue[0]] = $keyValue[1];
+            }
+        }
+
+
+        $MonitoringEngine = new MonitoringEngine();
+        if (isset($nagiosCfgConfigFromFile['retention_update_interval'])) {
+            $retention_update_interval = (int)$nagiosCfgConfigFromFile['retention_update_interval'];
+            if ($MonitoringEngine->isNagios()) {
+                //Convert minutes to seconds
+                $nagiosCfgConfigFromFile['retention_update_interval'] = $retention_update_interval * 60;
             }
         }
 

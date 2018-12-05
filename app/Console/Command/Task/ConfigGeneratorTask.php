@@ -72,35 +72,7 @@ class ConfigGeneratorTask extends AppShell implements CronjobInterface {
             $ConfigFileObject->writeToFile($config);
             $this->out('<green>Ok</green>');
 
-            switch ($configFile) {
-                case 'NagiosCfg':
-                    $command = $systemsettings['MONITORING']['MONITORING.RESTART'];
-                    $this->restartService($command, 'Restart Nagios/Naemon core');
-                    break;
-
-                case 'AfterExport':
-                    $command = $systemsettings['INIT']['INIT.OITC_GRAPHING_RESTART'];
-                    $this->restartService($command, 'Restart gearman_worker service');
-                    break;
-
-                case 'phpNSTAMaster':
-                    $command = $systemsettings['INIT']['INIT.PHPNSTA_RESTART'];
-                    $this->restartService($command, 'Restart phpNSTA service');
-                    break;
-
-                case 'GraphingDocker':
-                    $command = $systemsettings['INIT']['INIT.OITC_GRAPHING_RESTART'];
-                    $this->restartService($command, 'Restart and rebuild openITCOCKPIT-Graphing Docker Containers');
-                    break;
-
-                case 'StatusengineCfg':
-                    $command = $systemsettings['INIT']['INIT.STATUSENGINE_RESTART'];
-                    $this->restartService($command, 'Restart Statusengine service');
-                    break;
-
-                default:
-                    break;
-            }
+            $this->restartByConfigFile($configFile, $systemsettings);
             $this->ConfigurationQueue->delete($record['ConfigurationQueue']['id']);
         }
         $this->out('<green>Ok</green>');
@@ -110,6 +82,42 @@ class ConfigGeneratorTask extends AppShell implements CronjobInterface {
 
     public function beQuiet() {
         $this->params['quiet'] = true;
+    }
+
+    /**
+     * @param string $configFile
+     * @param array $systemsettings
+     */
+    public function restartByConfigFile($configFile, $systemsettings) {
+        switch ($configFile) {
+            case 'NagiosCfg':
+                $command = $systemsettings['MONITORING']['MONITORING.RESTART'];
+                $this->restartService($command, 'Restart Nagios/Naemon core');
+                break;
+
+            case 'AfterExport':
+                $command = $systemsettings['INIT']['INIT.GEARMAN_WORKER_RESTART'];
+                $this->restartService($command, 'Restart gearman_worker service');
+                break;
+
+            case 'phpNSTAMaster':
+                $command = $systemsettings['INIT']['INIT.PHPNSTA_RESTART'];
+                $this->restartService($command, 'Restart phpNSTA service');
+                break;
+
+            case 'GraphingDocker':
+                $command = $systemsettings['INIT']['INIT.OITC_GRAPHING_RESTART'];
+                $this->restartService($command, 'Restart and rebuild openITCOCKPIT-Graphing Docker Containers');
+                break;
+
+            case 'StatusengineCfg':
+                $command = $systemsettings['INIT']['INIT.STATUSENGINE_RESTART'];
+                $this->restartService($command, 'Restart Statusengine service');
+                break;
+
+            default:
+                break;
+        }
     }
 
     private function restartService($command, $outputTxt) {
