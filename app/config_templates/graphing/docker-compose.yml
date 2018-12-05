@@ -14,7 +14,7 @@ services:
   graphite-web:
     image: openitcockpit/graphite-web:latest
     ports:
-      - "127.0.0.1:{{local_graphite_http_port}}:80"
+      - "127.0.0.1:{{local_graphite_http_port}}:8080"
     volumes:
       - {{carbon_path}}:/var/lib/graphite/whisper
       - /etc/openitcockpit/carbon:/etc/carbon

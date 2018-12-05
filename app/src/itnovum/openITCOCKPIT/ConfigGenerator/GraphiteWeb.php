@@ -112,7 +112,16 @@ class GraphiteWeb extends ConfigGenerator implements ConfigInterface {
         $configToExport = [];
         foreach ($config as $type => $fields) {
             foreach ($fields as $key => $value) {
-                $configToExport[$key] = $value;
+                switch ($type) {
+                    case 'bool':
+                        $configToExport[$key] = $this->asBoolString($value);
+                        break;
+
+                    default:
+                        $configToExport[$key] = $value;
+                        break;
+                }
+
             }
         }
 
@@ -124,28 +133,7 @@ class GraphiteWeb extends ConfigGenerator implements ConfigInterface {
      * @return bool|array
      */
     public function migrate($dbRecords) {
-        //return $this->mergeDbResultWithDefaultConfiguration($dbRecords);
-
-        \Configure::load('graphite');
-        $configFromFile = \Configure::read('graphite');
-        debug($configFromFile);
-        die();
-
-        foreach ($config['string'] as $field => $value) {
-            if (isset($configFromFile['SSH'][$field])) {
-                if ($config['string'][$field] != $configFromFile['SSH'][$field]) {
-                    $config['string'][$field] = $configFromFile['SSH'][$field];
-                }
-            }
-        }
-
-        if (isset($configFromFile['SSH']['port'])) {
-            if ($config['int']['remote_port'] != $configFromFile['SSH']['port']) {
-                $config['int']['remote_port'] = $configFromFile['SSH']['port'];
-            }
-        }
-
-        return $config;
+        return $this->mergeDbResultWithDefaultConfiguration($dbRecords);
     }
 
 }

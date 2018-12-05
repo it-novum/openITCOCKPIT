@@ -215,8 +215,9 @@ class GrafanaApiConfiguration {
     public function getApiUrl() {
         if ($this->isDockerGrafana()) {
             return sprintf(
-                '%s127.0.0.1/api',
-                $this->isUseHttps() ? 'https://' : 'http://'
+                '%s127.0.0.1%s/api',
+                $this->isUseHttps() ? 'https://' : 'http://',
+                $this->getDockerUrl()
             );
         }
 
