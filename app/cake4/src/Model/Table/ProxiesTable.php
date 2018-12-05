@@ -1,8 +1,7 @@
 <?php
+
 namespace App\Model\Table;
 
-use Cake\ORM\Query;
-use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
 
@@ -18,8 +17,7 @@ use Cake\Validation\Validator;
  * @method \App\Model\Entity\Proxy[] patchEntities($entities, array $data, array $options = [])
  * @method \App\Model\Entity\Proxy findOrCreate($search, callable $callback = null, $options = [])
  */
-class ProxiesTable extends Table
-{
+class ProxiesTable extends Table {
 
     /**
      * Initialize method
@@ -27,8 +25,7 @@ class ProxiesTable extends Table
      * @param array $config The configuration for the Table.
      * @return void
      */
-    public function initialize(array $config)
-    {
+    public function initialize(array $config) {
         parent::initialize($config);
 
         $this->setTable('proxies');
@@ -42,8 +39,7 @@ class ProxiesTable extends Table
      * @param \Cake\Validation\Validator $validator Validator instance.
      * @return \Cake\Validation\Validator
      */
-    public function validationDefault(Validator $validator)
-    {
+    public function validationDefault(Validator $validator) {
         $validator
             ->integer('id')
             ->allowEmpty('id', 'create');
@@ -65,5 +61,21 @@ class ProxiesTable extends Table
             ->notEmpty('enabled');
 
         return $validator;
+    }
+
+    /**
+     * Get Proxy Settings
+     * @return array
+     */
+    public function getSettings() {
+        $query = $this->find()->first();
+        $settings = ['ipaddress' => '', 'port' => 0, 'enabled' => false];
+        if (!empty($query)) {
+            $proxy = $query->toArray();
+            if (isset($proxy['Proxy'])) {
+                $settings = Hash::merge($settings, $proxy['Proxy']);
+            }
+        }
+        return $settings;
     }
 }
