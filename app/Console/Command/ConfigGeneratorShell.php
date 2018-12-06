@@ -62,7 +62,11 @@ class ConfigGeneratorShell extends AppShell {
         }
 
         if (array_key_exists('migrate', $this->params)) {
-            $this->migrate();
+            try {
+                $this->migrate();
+            }catch (Exception $e){
+                $this->out('<red>'.$e->getMessage().'</red>');
+            }
         }
 
         if (array_key_exists('generate', $this->params)) {
