@@ -239,7 +239,6 @@ class DateRangeBehavior extends ModelBehavior {
                     foreach ($daterange as $date) {
                         $dateAsTimestamp = $date->getTimestamp();
                         if (date('W', $now) === date('W', $dateAsTimestamp)) {
-                            echo "\n IF " . $date->format("d.m.Y") . PHP_EOL;
                             $dateTimeSlices[] = [
                                 'start'     => strtotime(date('d.m.Y', $dateAsTimestamp) . ' 00:00:00'),
                                 'end'       => $now,
