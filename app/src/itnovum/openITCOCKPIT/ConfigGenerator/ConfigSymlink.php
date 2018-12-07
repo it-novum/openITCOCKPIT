@@ -71,14 +71,22 @@ class ConfigSymlink {
                     }
                 }
             }
+
+            if (!file_exists($this->linkedOutfile)) {
+                //Symlink does not exists at all!
+                //We need to create it
+                $requireNewSymlink = true;
+            }
         }
 
         $this->requireNewSymlink = $requireNewSymlink;
     }
 
-    public function link(){
-        if ($this->requireNewSymlink) {
-            symlink($this->realOutfile, $this->linkedOutfile);
+    public function link() {
+        if ($this->requireNewSymlink && $this->realOutfile !== $this->linkedOutfile) {
+            if (file_exists($this->realOutfile)) {
+                symlink($this->realOutfile, $this->linkedOutfile);
+            }
         }
     }
 
