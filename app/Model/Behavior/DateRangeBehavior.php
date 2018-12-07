@@ -168,13 +168,23 @@ class DateRangeBehavior extends ModelBehavior {
     public function createDateSlicesByIntervalAndLastUpdateDate(&$Model, $lastUpdateDate, $interval) {
         $now = time();
         $dateTimeSlices = [];
+        $initialEntryType = 'update';
+
+        $LastUpdateDate = new DateTime(date('Y-d-m H:i:s', $lastUpdateDate));
+        $h = $LastUpdateDate->format('H');
+        $m = $LastUpdateDate->format('i');
+        $s = $LastUpdateDate->format('s');
+
         switch ($interval) {
             case 'DAY':
+                if ($h == 0 && $m == 0 && $s == 0) {
+                    $initialEntryType = 'new'; //midnight -> new day detected
+                }
                 if (date('zY', $lastUpdateDate) !== date('zY', $now)) {
                     $dateTimeSlices[] = [
                         'start'     => $lastUpdateDate,
                         'end'       => strtotime(date('d.m.Y', $lastUpdateDate) . ' 23:59:59'),
-                        'entryType' => 'update'
+                        'entryType' => $initialEntryType
                     ];
                     $begin = new DateTime(date('d.m.Y', $lastUpdateDate));
                     $end = new DateTime(date('d.m.Y', $now));
@@ -202,19 +212,24 @@ class DateRangeBehavior extends ModelBehavior {
                     $dateTimeSlices[] = [
                         'start'     => $lastUpdateDate,
                         'end'       => $now,
-                        'entryType' => 'update'
+                        'entryType' => $initialEntryType
                     ];
                 }
                 return $dateTimeSlices;
                 break;
             case 'WEEK':
+                $w = date('W', $lastUpdateDate); // ISO-8601 week number of year, weeks starting on Monday(=1)
+                if ($h == 0 && $m == 0 && $s == 0 && $w == 1) {
+                    $initialEntryType = 'new'; //midnight and monday -> new day detected
+                }
+
                 if (date('WY', $lastUpdateDate) !== date('WY', $now)) {
                     $begin = new DateTime(date('d.m.Y H:i:s', $lastUpdateDate));
                     $sunday = $begin->modify('sunday this week');
                     $dateTimeSlices[] = [
                         'start'     => $lastUpdateDate,
                         'end'       => strtotime($sunday->format('d.m.Y') . ' 23:59:59'),
-                        'entryType' => 'update'
+                        'entryType' => $initialEntryType
                     ];
                     $nextWeekMonday = $begin->modify('monday next week 00:00:00');
                     $end = new DateTime(date('Y-m-d', $now));
@@ -242,19 +257,23 @@ class DateRangeBehavior extends ModelBehavior {
                     $dateTimeSlices[] = [
                         'start'     => $lastUpdateDate,
                         'end'       => $now,
-                        'entryType' => 'update'
+                        'entryType' => $initialEntryType
                     ];
                 }
                 return $dateTimeSlices;
                 break;
             case 'MONTH':
+                $j = date('j',$lastUpdateDate); //Day of the month without leading zeros
+                if ($h == 0 && $m == 0 && $s == 0 && $j == 1) {
+                    $initialEntryType = 'new'; //midnight and first day of month -> new day detected
+                }
                 if (date('mY', $lastUpdateDate) !== date('mY', $now)) {
                     $begin = new DateTime(date('d.m.Y H:i:s', $lastUpdateDate));
                     $lastDayOfThisMonth = $begin->modify('last day of this month');
                     $dateTimeSlices[] = [
                         'start'     => $lastUpdateDate,
                         'end'       => strtotime($lastDayOfThisMonth->format('d.m.Y') . ' 23:59:59'),
-                        'entryType' => 'update'
+                        'entryType' => $initialEntryType
                     ];
                     $nextMonthFirstDay = $begin->modify('first day of next month 00:00:00');
                     $end = new DateTime(date('Y-m-d', $now));
@@ -281,31 +300,40 @@ class DateRangeBehavior extends ModelBehavior {
                     $dateTimeSlices[] = [
                         'start'     => $lastUpdateDate,
                         'end'       => $now,
-                        'entryType' => 'update'
+                        'entryType' => $initialEntryType
                     ];
                 }
                 return $dateTimeSlices;
                 break;
             case 'QUARTER':
                 $numberFromCurrentQuarter = $this->getNumberFromQuarter($now);
-                if (date('Y', $lastUpdateDate).$this->getNumberFromQuarter($lastUpdateDate) !== date('Y', $now).$numberFromCurrentQuarter) {
+                //$firstDateFromUpdateDate = $this->getNumberFromQuarter($lastUpdateDate);
+
+                $firstDayOfThisQuarter = $this->firstDayOfQuarter($LastUpdateDate, $numberFromCurrentQuarter);
+                //$firstDayOfLastUpdateQuarter = $this->firstDayOfQuarter($LastUpdateDate, $firstDateFromUpdateDate);
+
+                if ($firstDayOfThisQuarter->getTimestamp() === $lastUpdateDate) {
+                    $initialEntryType = 'new';
+                }
+
+                if (date('Y', $lastUpdateDate) . $this->getNumberFromQuarter($lastUpdateDate) !== date('Y', $now) . $numberFromCurrentQuarter) {
                     $begin = new DateTime(date('d.m.Y H:i:s', $lastUpdateDate));
                     $lastUpdateQuarter = $this->getNumberFromQuarter($lastUpdateDate);
                     $lastDayOfThisQuarter = $this->lastDayOfQuarter($begin, $lastUpdateQuarter);
                     $dateTimeSlices[] = [
                         'start'     => $lastUpdateDate,
                         'end'       => strtotime($lastDayOfThisQuarter->format('d.m.Y') . ' 23:59:59'),
-                        'entryType' => 'update'
+                        'entryType' => $initialEntryType
                     ];
 
                     $nextQuarterFirstDay = $begin->modify('tomorrow 00:00:00');
                     $end = new DateTime(date('Y-m-d', $now));
                     $interval = new DateInterval('P3M');
                     $daterange = new DatePeriod($nextQuarterFirstDay, $interval, $end);
-                    foreach($daterange as $date){
+                    foreach ($daterange as $date) {
                         $dateAsTimestamp = $date->getTimestamp();
                         $numberFromDateQuarter = $this->getNumberFromQuarter($dateAsTimestamp);
-                        if (date('Y', $now).$numberFromCurrentQuarter === date('Y', $dateAsTimestamp).$this->getNumberFromQuarter($dateAsTimestamp)) {
+                        if (date('Y', $now) . $numberFromCurrentQuarter === date('Y', $dateAsTimestamp) . $this->getNumberFromQuarter($dateAsTimestamp)) {
                             $dateTimeSlices[] = [
                                 'start'     => strtotime(date('d.m.Y', $dateAsTimestamp) . ' 00:00:00'),
                                 'end'       => $now,
@@ -322,22 +350,27 @@ class DateRangeBehavior extends ModelBehavior {
                         }
                     }
 
-                } else{
+                } else {
                     $dateTimeSlices[] = [
                         'start'     => $lastUpdateDate,
                         'end'       => $now,
-                        'entryType' => 'update'
+                        'entryType' => $initialEntryType
                     ];
                 }
                 break;
             case 'YEAR':
+                $j = date('j',$lastUpdateDate); //Day of the month without leading zeros
+                $n = date('n',$lastUpdateDate); //Numeric representation of a month, without leading zeros
+                if ($h == 0 && $m == 0 && $s == 0 && $j == 1 && $n == 1) {
+                    $initialEntryType = 'new'; //midnight and first day of the year -> new day detected
+                }
                 if (date('Y', $lastUpdateDate) !== date('Y', $now)) {
                     $begin = new DateTime(date('d.m.Y H:i:s', $lastUpdateDate));
                     $lastDayOfThisYear = $begin->modify('last day of december this year');
                     $dateTimeSlices[] = [
                         'start'     => $lastUpdateDate,
                         'end'       => strtotime($lastDayOfThisYear->format('d.m.Y') . ' 23:59:59'),
-                        'entryType' => 'update'
+                        'entryType' => $initialEntryType
                     ];
                     $nextMonthFirstDay = $begin->modify('first day of january next year 00:00:00');
                     $end = new DateTime(date('Y-m-d', $now));
@@ -364,7 +397,7 @@ class DateRangeBehavior extends ModelBehavior {
                     $dateTimeSlices[] = [
                         'start'     => $lastUpdateDate,
                         'end'       => $now,
-                        'entryType' => 'update'
+                        'entryType' => $initialEntryType
                     ];
                 }
                 return $dateTimeSlices;
@@ -378,19 +411,19 @@ class DateRangeBehavior extends ModelBehavior {
      * @param $numberOfQuarter
      * @return Datetime $date
      */
-    private function firstDayOfQuarter(Datetime $date, $numberOfQuarter){
-        switch($numberOfQuarter){
+    private function firstDayOfQuarter(Datetime $date, $numberOfQuarter) {
+        switch ($numberOfQuarter) {
             case 1:
-                $date->modify('first day of january');
+                $date->modify('first day of january 00:00:00');
                 break;
             case 2:
-                $date->modify('first day of april');
+                $date->modify('first day of april 00:00:00');
                 break;
             case 3:
-                $date->modify('first day of july');
+                $date->modify('first day of july 00:00:00');
                 break;
             case 4:
-                $date->modify('first day of october');
+                $date->modify('first day of october 00:00:00');
                 break;
         }
         return $date;
@@ -400,8 +433,8 @@ class DateRangeBehavior extends ModelBehavior {
      * @param $numberOfQuarter
      * @return Datetime $date
      */
-    private function lastDayOfQuarter(Datetime $date, $numberOfQuarter){
-        switch($numberOfQuarter){
+    private function lastDayOfQuarter(Datetime $date, $numberOfQuarter) {
+        switch ($numberOfQuarter) {
             case 1:
                 $date->modify('last day of march');
                 break;
@@ -422,8 +455,8 @@ class DateRangeBehavior extends ModelBehavior {
      * @param $date
      * @return float
      */
-    private function getNumberFromQuarter($date){
+    private function getNumberFromQuarter($date) {
         $currentMonth = date('m', $date);
-        return ceil($currentMonth/3);
+        return ceil($currentMonth / 3);
     }
 }
