@@ -170,42 +170,42 @@ class GraphingDocker extends ConfigGenerator implements ConfigInterface {
 
         //carbon.conf
         $ConfigSymlink = new ConfigSymlink('/var/lib/openitcockpit/etc/generated/carbon/carbon.conf', '/etc/openitcockpit/carbon/carbon.conf');
-        if (!file_put_contents('/etc/openitcockpit/carbon/carbon.conf', $twig->render('carbon.conf', $configToExport))) {
+        if (!file_put_contents('/var/lib/openitcockpit/etc/generated/carbon/carbon.conf', $twig->render('carbon.conf', $configToExport))) {
             $success = false;
         }
         $ConfigSymlink->link();
 
         //storage-schemas.conf
         $ConfigSymlink = new ConfigSymlink('/var/lib/openitcockpit/etc/generated/carbon/storage-schemas.conf', '/etc/openitcockpit/carbon/storage-schemas.conf');
-        if (!file_put_contents('/etc/openitcockpit/carbon/storage-schemas.conf', $twig->render('storage-schemas.conf', $configToExport))) {
+        if (!file_put_contents('/var/lib/openitcockpit/etc/generated/carbon/storage-schemas.conf', $twig->render('storage-schemas.conf', $configToExport))) {
             $success = false;
         }
         $ConfigSymlink->link();
 
         //storage-aggregation.conf
         $ConfigSymlink = new ConfigSymlink('/var/lib/openitcockpit/etc/generated/carbon/storage-aggregation.conf', '/etc/openitcockpit/carbon/storage-aggregation.conf');
-        if (!file_put_contents('/etc/openitcockpit/carbon/storage-aggregation.conf', $twig->render('storage-aggregation.conf', $configToExport))) {
+        if (!file_put_contents('/var/lib/openitcockpit/etc/generated/carbon/storage-aggregation.conf', $twig->render('storage-aggregation.conf', $configToExport))) {
             $success = false;
         }
         $ConfigSymlink->link();
 
         //local_settings.py (graphite web)
         $ConfigSymlink = new ConfigSymlink('/var/lib/openitcockpit/etc/generated/carbon/local_settings.py', '/etc/openitcockpit/carbon/local_settings.py');
-        if (!file_put_contents('/etc/openitcockpit/carbon/local_settings.py', $twig->render('local_settings.py', $configToExport))) {
+        if (!file_put_contents('/var/lib/openitcockpit/etc/generated/carbon/local_settings.py', $twig->render('local_settings.py', $configToExport))) {
             $success = false;
         }
         $ConfigSymlink->link();
 
         //wsgi.py (graphite web)
         $ConfigSymlink = new ConfigSymlink('/var/lib/openitcockpit/etc/generated/carbon/wsgi.py', '/etc/openitcockpit/carbon/wsgi.py');
-        if (!file_put_contents('/etc/openitcockpit/carbon/wsgi.py', $twig->render('wsgi.py', $configToExport))) {
+        if (!file_put_contents('/var/lib/openitcockpit/etc/generated/carbon/wsgi.py', $twig->render('wsgi.py', $configToExport))) {
             $success = false;
         }
         $ConfigSymlink->link();
 
         //grafana.ini
         $ConfigSymlink = new ConfigSymlink('/var/lib/openitcockpit/etc/generated/grafana/grafana.ini', '/etc/openitcockpit/grafana/grafana.ini');
-        if (!file_put_contents('/etc/openitcockpit/grafana/grafana.ini', $twig->render('grafana.ini', $configToExport))) {
+        if (!file_put_contents('/var/lib/openitcockpit/etc/generated/grafana/grafana.ini', $twig->render('grafana.ini', $configToExport))) {
             $success = false;
         }
         $ConfigSymlink->link();

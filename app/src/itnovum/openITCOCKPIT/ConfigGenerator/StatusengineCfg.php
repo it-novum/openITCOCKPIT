@@ -169,21 +169,21 @@ class StatusengineCfg extends ConfigGenerator implements ConfigInterface {
 
         // /etc/statusengine/Config/Statusengine.php
         $ConfigSymlink = new ConfigSymlink('/var/lib/openitcockpit/etc/generated/statusengine/Statusengine.php', '/etc/statusengine/Config/Statusengine.php');
-        if (!file_put_contents($this->linkedOutfile, $twig->render($this->getTemplateName(), $configToExport))) {
+        if (!file_put_contents($this->realOutfile, $twig->render($this->getTemplateName(), $configToExport))) {
             $success = false;
         }
         $ConfigSymlink->link();
 
         // /etc/statusengine/Config/Perfdata.php
         $ConfigSymlink = new ConfigSymlink('/var/lib/openitcockpit/etc/generated/statusengine/Perfdata.php', '/etc/statusengine/Config/Perfdata.php');
-        if (!file_put_contents('/etc/statusengine/Config/Perfdata.php', $twig->render('Perfdata.php.tpl', $configToExport))) {
+        if (!file_put_contents('/var/lib/openitcockpit/etc/generated/statusengine/Perfdata.php', $twig->render('Perfdata.php.tpl', $configToExport))) {
             $success = false;
         }
         $ConfigSymlink->link();
 
         // /etc/statusengine/Config/Graphite.php
         $ConfigSymlink = new ConfigSymlink('/var/lib/openitcockpit/etc/generated/statusengine/Graphite.php', '/etc/statusengine/Config/Graphite.php');
-        if (!file_put_contents('/etc/statusengine/Config/Graphite.php', $twig->render('Graphite.php.tpl', $configToExport))) {
+        if (!file_put_contents('/var/lib/openitcockpit/etc/generated/statusengine/Graphite.php', $twig->render('Graphite.php.tpl', $configToExport))) {
             $success = false;
         }
         $ConfigSymlink->link();
