@@ -31,7 +31,9 @@ class phpNstaMaster extends ConfigGenerator implements ConfigInterface {
 
     protected $template = 'config.php.tpl';
 
-    protected $outfile = '/etc/phpnsta/config.php';
+    protected $linkedOutfile = '/etc/phpnsta/config.php';
+
+    protected $realOutfile = '/var/lib/openitcockpit/etc/generated/phpnsta/config.php';
 
     /**
      * @var string
@@ -172,11 +174,11 @@ class phpNstaMaster extends ConfigGenerator implements ConfigInterface {
      * @return bool|array
      */
     public function migrate($dbRecords) {
-        if (!file_exists($this->outfile)) {
+        if (!file_exists($this->linkedOutfile)) {
             return false;
         }
 
-        require_once $this->outfile;
+        require_once $this->linkedOutfile;
         if(!isset($config)){
             return false;
         }

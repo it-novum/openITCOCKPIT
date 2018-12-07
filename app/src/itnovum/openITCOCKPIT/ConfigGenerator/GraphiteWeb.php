@@ -33,10 +33,14 @@ class GraphiteWeb extends ConfigGenerator implements ConfigInterface {
 
 
     /**
-     * @see self::__construct()
      * @var string
      */
-    protected $outfile = '';
+    protected $linkedOutfile = '/etc/openitcockpit/app/Config/graphite.php';
+
+    /**
+     * @var string
+     */
+    protected $realOutfile = '/var/lib/openitcockpit/etc/generated/app/Config/graphite.php';
 
     /**
      * @var string
@@ -58,10 +62,6 @@ class GraphiteWeb extends ConfigGenerator implements ConfigInterface {
     ];
 
     protected $dbKey = 'GraphiteWeb';
-
-    public function __construct() {
-        $this->outfile = APP . 'Config' . DS . 'graphite.php';
-    }
 
     /**
      * @param array $data

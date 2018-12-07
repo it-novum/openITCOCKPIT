@@ -45,10 +45,16 @@ class ConfigGenerator {
     protected $template = '';
 
     /**
-     * Full path (/etc/foo/bar.cfg) where configuration file should be get written.
+     * Path where the real config file will be generated
      * @var string
      */
-    protected $outfile = '';
+    protected $realOutfile = '';
+
+    /**
+     * Full path where the config will be symlinked to!
+     * @var string
+     */
+    protected $linkedOutfile = '';
 
     /**
      * Default values for configuration file
@@ -93,8 +99,16 @@ class ConfigGenerator {
         return $this->getTemplatePath() . DS . $this->getTemplateName();
     }
 
-    public function getOutfile() {
-        return $this->outfile;
+    /**
+     * @return string
+     */
+    public function getRealOutfile() {
+        return $this->realOutfile;
+    }
+
+
+    public function getLinkedOutfile() {
+        return $this->linkedOutfile;
     }
 
     /**
@@ -319,11 +333,17 @@ class ConfigGenerator {
         $FileHeader = new FileHeader();
         $configToExport['STATIC_FILE_HEADER'] = $FileHeader->getHeader($this->commentChar);
 
-        $configDir = dirname($this->outfile);
+        $configDir = dirname($this->realOutfile);
         if (!is_dir($configDir)) {
             return false;
         }
 
-        return file_put_contents($this->outfile, $twig->render($this->getTemplateName(), $configToExport));
+        $ConfigSymlink = new ConfigSymlink($this->realOutfile, $this->linkedOutfile);
+        $result = file_put_contents($this->realOutfile, $twig->render($this->getTemplateName(), $configToExport));
+        $ConfigSymlink->link();
+
+        return $result;
     }
+
+
 }

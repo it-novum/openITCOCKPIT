@@ -31,11 +31,16 @@ class PerfdataBackend extends ConfigGenerator implements ConfigInterface {
 
     protected $template = 'perfdatabackend.php.tpl';
 
+
     /**
-     * @see self::__construct()
      * @var string
      */
-    protected $outfile = '';
+    protected $linkedOutfile = '/etc/openitcockpit/app/Config/perfdatabackend.php';
+
+    /**
+     * @var string
+     */
+    protected $realOutfile = '/var/lib/openitcockpit/etc/generated/app/Config/perfdatabackend.php';
 
     /**
      * @var string
@@ -50,9 +55,6 @@ class PerfdataBackend extends ConfigGenerator implements ConfigInterface {
 
     protected $dbKey = 'PerfdataBackend';
 
-    public function __construct() {
-        $this->outfile = APP . 'Config' . DS . 'perfdatabackend.php';
-    }
 
     /**
      * @param array $data
@@ -127,7 +129,7 @@ class PerfdataBackend extends ConfigGenerator implements ConfigInterface {
      * @return bool|array
      */
     public function migrate($dbRecords) {
-        if (!file_exists($this->outfile)) {
+        if (!file_exists($this->linkedOutfile)) {
             return false;
         }
         $config = $this->mergeDbResultWithDefaultConfiguration($dbRecords);

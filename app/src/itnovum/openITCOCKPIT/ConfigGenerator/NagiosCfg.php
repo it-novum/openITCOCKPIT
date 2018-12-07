@@ -33,7 +33,15 @@ class NagiosCfg extends ConfigGenerator implements ConfigInterface {
 
     protected $template = 'nagios.cfg';
 
-    protected $outfile = '/etc/openitcockpit/nagios.cfg';
+    /**
+     * @var string
+     */
+    protected $linkedOutfile = '/etc/openitcockpit/nagios.cfg';
+
+    /**
+     * @var string
+     */
+    protected $realOutfile = '/var/lib/openitcockpit/etc/generated/nagios.cfg';
 
     /**
      * @var string
@@ -224,7 +232,7 @@ class NagiosCfg extends ConfigGenerator implements ConfigInterface {
      * @return bool|array
      */
     public function migrate($dbRecords) {
-        if (!file_exists($this->outfile)) {
+        if (!file_exists($this->linkedOutfile)) {
             return false;
         }
 
@@ -232,7 +240,7 @@ class NagiosCfg extends ConfigGenerator implements ConfigInterface {
 
         //Parse nagios.cfg
         $nagiosCfgConfigFromFile = [];
-        foreach (file($this->outfile) as $line) {
+        foreach (file($this->linkedOutfile) as $line) {
             $line = trim($line);
             //Skip comments
             if ($line === '' || substr($line, 0, 1) === '#') {

@@ -68,7 +68,7 @@ class ConfigGeneratorTask extends AppShell implements CronjobInterface {
             $ConfigFileObject = new $className();
             $config = $this->ConfigurationFile->getConfigValuesByConfigFile($ConfigFileObject->getDbKey());
 
-            $this->out(sprintf('Generate %s   ', $ConfigFileObject->getOutfile()), false);
+            $this->out(sprintf('Generate %s   ', $ConfigFileObject->getLinkedOutfile()), false);
             $ConfigFileObject->writeToFile($config);
             $this->out('<green>Ok</green>');
 

@@ -87,7 +87,7 @@ use itnovum\openITCOCKPIT\ConfigGenerator\GeneratorRegistry;
                                     <?php foreach ($ConfigFileObjects as $ConfigFileObject):
                                         /** @var ConfigInterface $ConfigFileObject */ ?>
                                         <tr>
-                                            <td><?php echo h($ConfigFileObject->getOutfile()); ?></td>
+                                            <td><?php echo h($ConfigFileObject->getLinkedOutfile()); ?></td>
                                             <td class="text-center">
                                                 <?php if ($this->Acl->hasPermission('edit', 'configurationfiles')): ?>
                                                     <a href="/ConfigurationFiles/edit/<?php echo h($ConfigFileObject->getDbKey()); ?>">

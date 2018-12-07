@@ -31,7 +31,9 @@ class StatusengineCfg extends ConfigGenerator implements ConfigInterface {
 
     protected $template = 'Statusengine.php.tpl';
 
-    protected $outfile = '/etc/statusengine/Config/Statusengine.php';
+    protected $realOutfile = '/var/lib/openitcockpit/etc/generated/statusengine/Statusengine.php';
+
+    protected $linkedOutfile = '/etc/statusengine/Config/Statusengine.php';
 
     /**
      * @var string
@@ -151,6 +153,9 @@ class StatusengineCfg extends ConfigGenerator implements ConfigInterface {
 
         $success = true;
 
+        $FileHeader = new FileHeader();
+        $configToExport['STATIC_FILE_HEADER'] = $FileHeader->getHeader($this->commentChar);
+
         /*
          * Write:
          * - Statusengine.php
@@ -163,19 +168,25 @@ class StatusengineCfg extends ConfigGenerator implements ConfigInterface {
         $twig = new \Twig_Environment($loader, ['debug' => true]);
 
         // /etc/statusengine/Config/Statusengine.php
-        if (!file_put_contents($this->outfile, $twig->render($this->getTemplateName(), $configToExport))) {
+        $ConfigSymlink = new ConfigSymlink('/var/lib/openitcockpit/etc/generated/statusengine/Statusengine.php', '/etc/statusengine/Config/Statusengine.php');
+        if (!file_put_contents($this->linkedOutfile, $twig->render($this->getTemplateName(), $configToExport))) {
             $success = false;
         }
+        $ConfigSymlink->link();
 
         // /etc/statusengine/Config/Perfdata.php
+        $ConfigSymlink = new ConfigSymlink('/var/lib/openitcockpit/etc/generated/statusengine/Perfdata.php', '/etc/statusengine/Config/Perfdata.php');
         if (!file_put_contents('/etc/statusengine/Config/Perfdata.php', $twig->render('Perfdata.php.tpl', $configToExport))) {
             $success = false;
         }
+        $ConfigSymlink->link();
 
         // /etc/statusengine/Config/Graphite.php
+        $ConfigSymlink = new ConfigSymlink('/var/lib/openitcockpit/etc/generated/statusengine/Graphite.php', '/etc/statusengine/Config/Graphite.php');
         if (!file_put_contents('/etc/statusengine/Config/Graphite.php', $twig->render('Graphite.php.tpl', $configToExport))) {
             $success = false;
         }
+        $ConfigSymlink->link();
 
         return $success;
 
@@ -186,14 +197,14 @@ class StatusengineCfg extends ConfigGenerator implements ConfigInterface {
      * @return bool|array
      */
     public function migrate($dbRecords) {
-        if (!file_exists($this->outfile)) {
+        if (!file_exists($this->linkedOutfile)) {
             return false;
         }
 
         $defaultConfig = $this->mergeDbResultWithDefaultConfiguration($dbRecords);
 
         //Load current Statusengine.php
-        require_once $this->outfile;
+        require_once $this->linkedOutfile;
 
         $counts = [
             'statusngin_hoststatus'    => 0,

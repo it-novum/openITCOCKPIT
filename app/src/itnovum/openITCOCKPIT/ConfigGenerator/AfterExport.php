@@ -31,7 +31,9 @@ class AfterExport extends ConfigGenerator implements ConfigInterface {
 
     protected $template = 'after_export.php.tpl';
 
-    protected $outfile = '/etc/openitcockpit/app/Config/after_export.php';
+    protected $realOutfile = '/var/lib/openitcockpit/etc/generated/app/Config/after_export.php';
+
+    protected $linkedOutfile = '/etc/openitcockpit/app/Config/after_export.php';
 
     /**
      * @var string
@@ -105,7 +107,8 @@ class AfterExport extends ConfigGenerator implements ConfigInterface {
             }
         }
 
-        return $this->saveConfigFile($configToExport);
+        $realFile = '/var/lib/openitcockpit/etc/generated/app/Config/after_export.php';
+        return $this->saveConfigFile($configToExport, $realFile);
     }
 
     /**
@@ -113,7 +116,7 @@ class AfterExport extends ConfigGenerator implements ConfigInterface {
      * @return bool|array
      */
     public function migrate($dbRecords) {
-        if (!file_exists($this->outfile)) {
+        if (!file_exists($this->linkedOutfile)) {
             return false;
         }
         $config = $this->mergeDbResultWithDefaultConfiguration($dbRecords);

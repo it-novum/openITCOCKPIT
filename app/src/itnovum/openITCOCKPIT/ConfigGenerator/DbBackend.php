@@ -32,10 +32,14 @@ class DbBackend extends ConfigGenerator implements ConfigInterface {
     protected $template = 'dbbackend.php.tpl';
 
     /**
-     * @see self::__construct()
      * @var string
      */
-    protected $outfile = '';
+    protected $linkedOutfile = '/etc/openitcockpit/app/Config/dbbackend.php';
+
+    /**
+     * @var string
+     */
+    protected $realOutfile = '/var/lib/openitcockpit/etc/generated/app/Config/dbbackend.php';
 
     /**
      * @var string
@@ -49,10 +53,6 @@ class DbBackend extends ConfigGenerator implements ConfigInterface {
     ];
 
     protected $dbKey = 'DbBackend';
-
-    public function __construct() {
-        $this->outfile = APP . 'Config' . DS . 'dbbackend.php';
-    }
 
     /**
      * @param array $data
@@ -127,7 +127,7 @@ class DbBackend extends ConfigGenerator implements ConfigInterface {
      * @return bool|array
      */
     public function migrate($dbRecords) {
-        if (!file_exists($this->outfile)) {
+        if (!file_exists($this->linkedOutfile)) {
             return false;
         }
         $config = $this->mergeDbResultWithDefaultConfiguration($dbRecords);

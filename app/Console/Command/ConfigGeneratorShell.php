@@ -64,8 +64,8 @@ class ConfigGeneratorShell extends AppShell {
         if (array_key_exists('migrate', $this->params)) {
             try {
                 $this->migrate();
-            }catch (Exception $e){
-                $this->out('<red>'.$e->getMessage().'</red>');
+            } catch (Exception $e) {
+                $this->out('<red>' . $e->getMessage() . '</red>');
             }
         }
 
@@ -85,7 +85,7 @@ class ConfigGeneratorShell extends AppShell {
 
         foreach ($GeneratorRegistry->getAllConfigFiles() as $ConfigFileObject) {
             /** @var ConfigInterface $ConfigFileObject */
-            $this->out(sprintf('Generate %s   ', $ConfigFileObject->getOutfile()), false);
+            $this->out(sprintf('Generate %s   ', $ConfigFileObject->getLinkedOutfile()), false);
             $ConfigFileObject->writeToFile($this->ConfigurationFile->getConfigValuesByConfigFile($ConfigFileObject->getDbKey()));
             $this->out('<green>Ok</green>');
         }
@@ -100,7 +100,7 @@ class ConfigGeneratorShell extends AppShell {
 
         foreach ($GeneratorRegistry->getAllConfigFiles() as $ConfigFileObject) {
             /** @var ConfigInterface $ConfigFileObject */
-            $this->out(sprintf('Generate %s', $ConfigFileObject->getOutfile()));
+            $this->out(sprintf('Generate %s', $ConfigFileObject->getLinkedOutfile()));
             $ConfigFileObject->writeToFile($this->ConfigurationFile->getConfigValuesByConfigFile($ConfigFileObject->getDbKey()));
             $this->ConfigGenerator->restartByConfigFile($ConfigFileObject->getDbKey(), $systemsettings);
         }
@@ -113,7 +113,7 @@ class ConfigGeneratorShell extends AppShell {
         $GeneratorRegistry = new GeneratorRegistry();
         foreach ($GeneratorRegistry->getAllConfigFiles() as $ConfigFileObject) {
             /** @var ConfigInterface $ConfigFileObject */
-            $this->out(sprintf('Processing %s   ', $ConfigFileObject->getOutfile()), false);
+            $this->out(sprintf('Processing %s   ', $ConfigFileObject->getLinkedOutfile()), false);
 
             $dbConfig = $this->ConfigurationFile->getConfigValuesByConfigFile($ConfigFileObject->getDbKey());
             $config = $ConfigFileObject->migrate($dbConfig);

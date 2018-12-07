@@ -31,7 +31,9 @@ class GraphingDocker extends ConfigGenerator implements ConfigInterface {
 
     protected $template = 'docker-compose.yml';
 
-    protected $outfile = '/usr/share/openitcockpit/docker/container/graphing/docker-compose.yml';
+    protected $linkedOutfile = '/usr/share/openitcockpit/docker/container/graphing/docker-compose.yml';
+
+    protected $realOutfile = '/usr/share/openitcockpit/docker/container/graphing/docker-compose.yml';
 
     /**
      * @var string
@@ -112,7 +114,7 @@ class GraphingDocker extends ConfigGenerator implements ConfigInterface {
             return false;
         }
 
-        $configDir = dirname($this->outfile);
+        $configDir = dirname($this->linkedOutfile);
         if (!is_dir($configDir)) {
             return false;
         }
@@ -155,44 +157,58 @@ class GraphingDocker extends ConfigGenerator implements ConfigInterface {
             ];
         }
         //docker-compose.yml
-        if (!file_put_contents($this->outfile, $twig->render($this->getTemplateName(), $configToExport))) {
+        if (!file_put_contents($this->linkedOutfile, $twig->render($this->getTemplateName(), $configToExport))) {
             $success = false;
         }
 
         //carbon-c-relay.conf
-        if (!file_put_contents('/etc/openitcockpit/carbon/carbon-c-relay.conf', $twig->render('carbon-c-relay.conf', $configToExport))) {
+        $ConfigSymlink = new ConfigSymlink('/var/lib/openitcockpit/etc/generated/carbon/carbon-c-relay.conf', '/etc/openitcockpit/carbon/carbon-c-relay.conf');
+        if (!file_put_contents('/var/lib/openitcockpit/etc/generated/carbon/carbon-c-relay.conf', $twig->render('carbon-c-relay.conf', $configToExport))) {
             $success = false;
         }
+        $ConfigSymlink->link();
 
         //carbon.conf
+        $ConfigSymlink = new ConfigSymlink('/var/lib/openitcockpit/etc/generated/carbon/carbon.conf', '/etc/openitcockpit/carbon/carbon.conf');
         if (!file_put_contents('/etc/openitcockpit/carbon/carbon.conf', $twig->render('carbon.conf', $configToExport))) {
             $success = false;
         }
+        $ConfigSymlink->link();
 
         //storage-schemas.conf
+        $ConfigSymlink = new ConfigSymlink('/var/lib/openitcockpit/etc/generated/carbon/storage-schemas.conf', '/etc/openitcockpit/carbon/storage-schemas.conf');
         if (!file_put_contents('/etc/openitcockpit/carbon/storage-schemas.conf', $twig->render('storage-schemas.conf', $configToExport))) {
             $success = false;
         }
+        $ConfigSymlink->link();
 
         //storage-aggregation.conf
+        $ConfigSymlink = new ConfigSymlink('/var/lib/openitcockpit/etc/generated/carbon/storage-aggregation.conf', '/etc/openitcockpit/carbon/storage-aggregation.conf');
         if (!file_put_contents('/etc/openitcockpit/carbon/storage-aggregation.conf', $twig->render('storage-aggregation.conf', $configToExport))) {
             $success = false;
         }
+        $ConfigSymlink->link();
 
         //local_settings.py (graphite web)
+        $ConfigSymlink = new ConfigSymlink('/var/lib/openitcockpit/etc/generated/carbon/local_settings.py', '/etc/openitcockpit/carbon/local_settings.py');
         if (!file_put_contents('/etc/openitcockpit/carbon/local_settings.py', $twig->render('local_settings.py', $configToExport))) {
             $success = false;
         }
+        $ConfigSymlink->link();
 
         //wsgi.py (graphite web)
+        $ConfigSymlink = new ConfigSymlink('/var/lib/openitcockpit/etc/generated/carbon/wsgi.py', '/etc/openitcockpit/carbon/wsgi.py');
         if (!file_put_contents('/etc/openitcockpit/carbon/wsgi.py', $twig->render('wsgi.py', $configToExport))) {
             $success = false;
         }
+        $ConfigSymlink->link();
 
         //grafana.ini
+        $ConfigSymlink = new ConfigSymlink('/var/lib/openitcockpit/etc/generated/grafana/grafana.ini', '/etc/openitcockpit/grafana/grafana.ini');
         if (!file_put_contents('/etc/openitcockpit/grafana/grafana.ini', $twig->render('grafana.ini', $configToExport))) {
             $success = false;
         }
+        $ConfigSymlink->link();
 
 
         return $success;

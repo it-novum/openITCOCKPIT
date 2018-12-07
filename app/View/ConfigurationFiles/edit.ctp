@@ -48,7 +48,7 @@ use itnovum\openITCOCKPIT\ConfigGenerator\ConfigInterface;
         <span class="widget-icon"> <i class="fa fa-file-text-o"></i> </span>
         <h2>
             <?php echo __('Edit configuration file'); ?>
-            <?php echo $ConfigFileObject->getOutfile(); ?>
+            <?php echo $ConfigFileObject->getLinkedOutfile(); ?>
         </h2>
 
         <div class="widget-toolbar" role="menu">
