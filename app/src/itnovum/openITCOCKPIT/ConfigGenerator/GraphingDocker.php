@@ -43,7 +43,7 @@ class GraphingDocker extends ConfigGenerator implements ConfigInterface {
     protected $defaults = [
         'string' => [
             'carbon_path'           => '/var/lib/graphite/whisper',
-            'carbon_storage_schema' => '60s:365'
+            'carbon_storage_schema' => '60s:365d'
         ],
         'int'    => [
             'number_of_carbon_cache_instances' => 2,
