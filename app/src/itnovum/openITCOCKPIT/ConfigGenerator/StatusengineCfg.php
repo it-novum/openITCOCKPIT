@@ -245,7 +245,12 @@ class StatusengineCfg extends ConfigGenerator implements ConfigInterface {
             if (isset($config['graphite']['port'])) {
                 $defaultConfig['int']['graphite_port'] = (int)$config['graphite']['port'];
             }
+        }
 
+        if ($defaultConfig['string']['graphite_address'] === 'graphite.example.org') {
+            $defaultConfig['string']['graphite_address'] = $this->defaults['string']['graphite_address'];
+            $defaultConfig['int']['graphite_port'] = $this->defaults['int']['graphite_port'];
+            $defaultConfig['string']['graphite_prefix'] = $this->defaults['string']['graphite_prefix'];
         }
 
         return $defaultConfig;
