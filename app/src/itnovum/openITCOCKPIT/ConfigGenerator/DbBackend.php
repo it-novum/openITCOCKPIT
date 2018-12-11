@@ -48,7 +48,8 @@ class DbBackend extends ConfigGenerator implements ConfigInterface {
 
     protected $defaults = [
         'string' => [
-            'dbbackend' => 'Nagios' /* @todo change me to Statusengine3 */
+            'dbbackend' => 'Nagios'
+            /* @todo change me to Statusengine3 */
         ]
     ];
 
@@ -127,6 +128,10 @@ class DbBackend extends ConfigGenerator implements ConfigInterface {
      * @return bool|array
      */
     public function migrate($dbRecords) {
+        return $this->mergeDbResultWithDefaultConfiguration($dbRecords);
+
+        /*
+        //No migration for DbBackend
         if (!file_exists($this->linkedOutfile)) {
             return false;
         }
@@ -140,6 +145,7 @@ class DbBackend extends ConfigGenerator implements ConfigInterface {
         }
 
         return $config;
+        */
     }
 
 }

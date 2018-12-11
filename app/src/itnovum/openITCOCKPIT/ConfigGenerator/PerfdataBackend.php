@@ -129,6 +129,10 @@ class PerfdataBackend extends ConfigGenerator implements ConfigInterface {
      * @return bool|array
      */
     public function migrate($dbRecords) {
+        return $this->mergeDbResultWithDefaultConfiguration($dbRecords);
+
+        /*
+        //No migration for PerfdataBackend
         if (!file_exists($this->linkedOutfile)) {
             return false;
         }
@@ -142,6 +146,7 @@ class PerfdataBackend extends ConfigGenerator implements ConfigInterface {
         }
 
         return $config;
+        */
     }
 
 }
