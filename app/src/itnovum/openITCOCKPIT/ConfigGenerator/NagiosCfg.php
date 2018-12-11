@@ -232,7 +232,7 @@ class NagiosCfg extends ConfigGenerator implements ConfigInterface {
      * @return bool|array
      */
     public function migrate($dbRecords) {
-        if (!file_exists($this->linkedOutfile)) {
+        if (!file_exists($this->realOutfile)) {
             return false;
         }
 
@@ -240,7 +240,7 @@ class NagiosCfg extends ConfigGenerator implements ConfigInterface {
 
         //Parse nagios.cfg
         $nagiosCfgConfigFromFile = [];
-        foreach (file($this->linkedOutfile) as $line) {
+        foreach (file($this->realOutfile) as $line) {
             $line = trim($line);
             //Skip comments
             if ($line === '' || substr($line, 0, 1) === '#') {

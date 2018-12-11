@@ -197,14 +197,14 @@ class StatusengineCfg extends ConfigGenerator implements ConfigInterface {
      * @return bool|array
      */
     public function migrate($dbRecords) {
-        if (!file_exists($this->linkedOutfile)) {
+        if (!file_exists($this->realOutfile)) {
             return false;
         }
 
         $defaultConfig = $this->mergeDbResultWithDefaultConfiguration($dbRecords);
 
         //Load current Statusengine.php
-        require_once $this->linkedOutfile;
+        require_once $this->realOutfile;
 
         $counts = [
             'statusngin_hoststatus'    => 0,
@@ -231,8 +231,8 @@ class StatusengineCfg extends ConfigGenerator implements ConfigInterface {
         $defaultConfig['int']['number_of_bulk_records'] = (int)$config['bulk_query_limit'];
 
         //Try to load Graphite.php
-        if (file_exists('/etc/statusengine/Config/Graphite.php')) {
-            require_once '/etc/statusengine/Config/Graphite.php';
+        if (file_exists('/var/lib/openitcockpit/etc/generated/statusengine/Graphite.php')) {
+            require_once '/var/lib/openitcockpit/etc/generated/statusengine/Graphite.php';
 
             if (isset($config['graphite']['host'])) {
                 $defaultConfig['string']['graphite_address'] = $config['graphite']['host'];
