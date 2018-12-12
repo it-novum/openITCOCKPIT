@@ -166,11 +166,13 @@ class DateRangeBehavior extends ModelBehavior {
      * @throws Exception
      */
     public function createDateSlicesByIntervalAndLastUpdateDate(&$Model, $lastUpdateDate, $interval) {
+        if(date('H:i:s', $lastUpdateDate) === '23:59:59'){
+            $lastUpdateDate+=1;// plus on second for moving timestamp into new day
+        }
         $now = time();
         $dateTimeSlices = [];
         $initialEntryType = 'update';
-
-        $LastUpdateDate = new DateTime(date('Y-d-m H:i:s', $lastUpdateDate));
+        $LastUpdateDate = new DateTime(date('Y-m-d H:i:s', $lastUpdateDate));
         $h = $LastUpdateDate->format('H');
         $m = $LastUpdateDate->format('i');
         $s = $LastUpdateDate->format('s');
@@ -266,6 +268,7 @@ class DateRangeBehavior extends ModelBehavior {
                 if ($h == 0 && $m == 0 && $s == 0 && $j == 1) {
                     $initialEntryType = 'new'; //midnight and first day of month -> new day detected
                 }
+
                 if (date('mY', $lastUpdateDate) !== date('mY', $now)) {
                     $begin = new DateTime(date('d.m.Y H:i:s', $lastUpdateDate));
                     $lastDayOfThisMonth = $begin->modify('last day of this month');
@@ -306,10 +309,7 @@ class DateRangeBehavior extends ModelBehavior {
                 break;
             case 'QUARTER':
                 $numberFromCurrentQuarter = $this->getNumberFromQuarter($now);
-                //$firstDateFromUpdateDate = $this->getNumberFromQuarter($lastUpdateDate);
-
                 $firstDayOfThisQuarter = $this->firstDayOfQuarter($LastUpdateDate, $numberFromCurrentQuarter);
-                //$firstDayOfLastUpdateQuarter = $this->firstDayOfQuarter($LastUpdateDate, $firstDateFromUpdateDate);
 
                 if ($firstDayOfThisQuarter->getTimestamp() === $lastUpdateDate) {
                     $initialEntryType = 'new';
