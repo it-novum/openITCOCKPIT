@@ -3592,7 +3592,22 @@ class HostsController extends AppController {
             $StatehistoryHost = new \itnovum\openITCOCKPIT\Core\Views\StatehistoryHost($record['StatehistoryHost']);
             $statehistoryRecords[] = $StatehistoryHost;
         }
+        if (empty($statehistories) && empty($record)) {
+            $HoststatusFields = new HoststatusFields($this->DbBackend);
+            $HoststatusFields->currentState()
+                ->isHardstate()
+                ->lastStateChange()
+                ->lastHardStateChange();
 
+            $hoststatus = $this->Hoststatus->byUuid($host['Host']['uuid'], $HoststatusFields);
+            if (!empty($hoststatus)) {
+                $record['StatehistoryHost']['state_time'] = $hoststatus['Hoststatus']['last_state_change'];
+                $record['StatehistoryHost']['state'] = $hoststatus['Hoststatus']['current_state'];
+                $record['StatehistoryHost']['state_type'] = ($hoststatus['Hoststatus']['state_type'])?true:false;
+                $StatehistoryHost = new \itnovum\openITCOCKPIT\Core\Views\StatehistoryHost($record['StatehistoryHost']);
+                $statehistoryRecords[] = $StatehistoryHost;
+            }
+        }
         foreach ($statehistories as $statehistory) {
             $StatehistoryHost = new \itnovum\openITCOCKPIT\Core\Views\StatehistoryHost($statehistory['StatehistoryHost']);
             $statehistoryRecords[] = $StatehistoryHost;

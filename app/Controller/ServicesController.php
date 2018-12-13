@@ -3010,6 +3010,23 @@ class ServicesController extends AppController {
             $statehistoryRecords[] = $StatehistoryHost;
         }
 
+        if (empty($statehistories) && empty($record)) {
+            $HoststatusFields = new HoststatusFields($this->DbBackend);
+            $HoststatusFields->currentState()
+                ->isHardstate()
+                ->lastStateChange()
+                ->lastHardStateChange();
+
+            $hoststatus = $this->Hoststatus->byUuid($hostUuid, $HoststatusFields);
+            if (!empty($hoststatus)) {
+                $record['StatehistoryHost']['state_time'] = $hoststatus['Hoststatus']['last_state_change'];
+                $record['StatehistoryHost']['state'] = $hoststatus['Hoststatus']['current_state'];
+                $record['StatehistoryHost']['state_type'] = ($hoststatus['Hoststatus']['state_type'])?true:false;
+                $StatehistoryHost = new \itnovum\openITCOCKPIT\Core\Views\StatehistoryHost($record['StatehistoryHost']);
+                $statehistoryRecords[] = $StatehistoryHost;
+            }
+        }
+
 
         foreach ($statehistories as $statehistory) {
             $StatehistoryHost = new \itnovum\openITCOCKPIT\Core\Views\StatehistoryHost($statehistory['StatehistoryHost']);
@@ -3042,6 +3059,23 @@ class ServicesController extends AppController {
             $record['StatehistoryService']['state_time'] = $start;
             $StatehistoryService = new \itnovum\openITCOCKPIT\Core\Views\StatehistoryService($record['StatehistoryService']);
             $statehistoryServiceRecords[] = $StatehistoryService;
+        }
+
+        if (empty($statehistoriesService) && empty($record)) {
+            $ServicestatusFields = new ServicestatusFields($this->DbBackend);
+            $ServicestatusFields->currentState()
+                ->isHardstate()
+                ->lastStateChange()
+                ->lastHardStateChange();
+
+            $servicestatus = $this->Servicestatus->byUuid($service['Service']['uuid'], $ServicestatusFields);
+            if (!empty($servicestatus)) {
+                $record['StatehistoryService']['state_time'] = $servicestatus['Servicestatus']['last_state_change'];
+                $record['StatehistoryService']['state'] = $servicestatus['Servicestatus']['current_state'];
+                $record['StatehistoryService']['state_type'] = $servicestatus['Servicestatus']['state_type'];
+                $StatehistoryService = new \itnovum\openITCOCKPIT\Core\Views\StatehistoryService($record['StatehistoryService']);
+                $statehistoryServiceRecords[] = $StatehistoryService;
+            }
         }
 
         foreach ($statehistoriesService as $statehistoryService) {
