@@ -132,8 +132,27 @@ class ConfigurationFilesController extends AppController {
         /** @var  $ConfigurationObjectClassName ConfigInterface */
         $ConfigurationObjectClassName = new $className();
 
+        $currentConfig = $this->ConfigurationFile->getConfigValuesByConfigFile($ConfigurationObjectClassName->getDbKey());
         $config = $ConfigurationObjectClassName->convertRequestForSaveAll($ConfigurationObjectClassName->getDefaults());
+
         if ($this->ConfigurationFile->saveConfigurationValuesForConfigFile($ConfigurationObjectClassName->getDbKey(), $config)) {
+            $configHasChanged = $this->ConfigurationFile->hasChanged($currentConfig, $config);
+
+            if ($configHasChanged) {
+                //Require rewirte of configuration file on disk?
+                $this->ConfigurationQueue->deleteAll([
+                    'ConfigurationQueue.task' => 'ConfigGenerator',
+                    'ConfigurationQueue.data' => $ConfigurationObjectClassName->getDbKey()
+                ]);
+                $this->ConfigurationQueue->create();
+                $this->ConfigurationQueue->save([
+                    'ConfigurationQueue' => [
+                        'task' => 'ConfigGenerator',
+                        'data' => $ConfigurationObjectClassName->getDbKey()
+                    ]
+                ]);
+            }
+
             $this->setFlash(__('Config restored to default successfully'));
             $this->set('success', true);
             $this->set('_serialize', ['success']);
