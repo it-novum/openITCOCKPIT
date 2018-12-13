@@ -814,7 +814,8 @@ class MapeditorsController extends MapModuleAppController {
                         ],
                     ],
                     'conditions' => [
-                        'Map.id' => $objectId
+                        'Map.id'                => $objectId,
+                        'Mapsummaryitem.map_id' => $mapId
                     ]
                 ]);
                 if (!empty($map)) {
@@ -824,20 +825,19 @@ class MapeditorsController extends MapModuleAppController {
                             break;
                         }
                     }
-
-                    //fetch all dependent map items after permissions check SUMMARY STATE ITEMS (TYPE MAP)
-                    $mapSummaryItemToResolve = $this->Mapsummaryitem->find('first', [
+                    //fetch all dependent map items after permissions check
+                    $mapSummaryItemIdToResolve = $this->Mapsummaryitem->find('first', [
                         'recursive'  => -1,
                         'conditions' => [
-                            'Mapsummaryitem.map_id' => $map['Map']['id'],
-                            'Mapsummaryitem.type'   => 'map'
+                            'Mapsummaryitem.object_id' => $map['Map']['id'],
+                            'Mapsummaryitem.type'      => 'map',
+                            'Mapsummaryitem.map_id'    => $mapId
                         ],
                         'fields'     => [
                             'Mapsummaryitem.object_id'
                         ]
                     ]);
-
-                    if (!empty($mapSummaryItemToResolve)) {
+                    if (!empty($mapSummaryItemIdToResolve)) {
                         $query = [
                             'recursive'  => -1,
                             'joins'      => [
@@ -854,7 +854,7 @@ class MapeditorsController extends MapModuleAppController {
                             'conditions' => [
                                 'Mapsummaryitem.type' => 'map',
                                 'NOT'                 => [
-                                    'Mapsummaryitem.map_id' => $map['Map']['id']
+                                    'Mapsummaryitem.map_id' => $mapId
                                 ]
                             ],
                             'fields'     => [
@@ -867,15 +867,13 @@ class MapeditorsController extends MapModuleAppController {
                         }
                         $allVisibleItems = $this->Mapsummaryitem->find('all', $query);
 
-
-                        $mapSummaryItemIdToResolve = $mapSummaryItemToResolve['Mapsummaryitem']['object_id'];
+                        $mapSummaryItemIdToResolve = $mapSummaryItemIdToResolve['Mapsummaryitem']['object_id'];
                         $mapIdGroupByMapId = Hash::combine(
                             $allVisibleItems,
                             '{n}.Mapsummaryitem.object_id',
                             '{n}.Mapsummaryitem.object_id',
                             '{n}.Mapsummaryitem.map_id'
                         );
-
                         if (isset($mapIdGroupByMapId[$mapSummaryItemIdToResolve])) {
                             $dependentMapsIds = $this->getDependendMaps($mapIdGroupByMapId, $mapSummaryItemIdToResolve);
                         }
@@ -966,7 +964,7 @@ class MapeditorsController extends MapModuleAppController {
                     $hosts = [];
                     $services = [];
                     if (!empty($hostIds)) {
-                        $hosts = $this->Host->find('all', [
+                        $hostsById = $this->Host->find('all', [
                             'recursive'  => -1,
                             'contain'    => [
                                 'Container',
@@ -988,14 +986,14 @@ class MapeditorsController extends MapModuleAppController {
                                 'Host.uuid'
                             ]
                         ]);
-                        if (!empty($hosts)) {
+                        if (!empty($hostsById)) {
                             if ($this->hasRootPrivileges === false) {
-                                if (!$this->allowedByContainerId(Hash::extract($hosts, '{n}.Container.{n}.HostsToContainer.container_id'), false)) {
+                                if (!$this->allowedByContainerId(Hash::extract($hostsById, '{n}.Container.{n}.HostsToContainer.container_id'), false)) {
                                     $allowView = false;
                                     break;
                                 }
                             }
-                            foreach ($hosts as $host) {
+                            foreach ($hostsById as $host) {
                                 $hosts[$host['Host']['id']] = $host;
                                 foreach ($host['Service'] as $serviceData) {
                                     $services[$serviceData['id']] = [
@@ -1376,11 +1374,11 @@ class MapeditorsController extends MapModuleAppController {
                                 'table'      => 'mapsummaryitems',
                                 'type'       => 'INNER',
                                 'alias'      => 'Mapsummaryitem',
-                                'conditions' => 'Mapsummaryitem.object_id = Map.id',
+                                'conditions' => 'Mapsummaryitem.map_id = Map.id',
                             ],
                         ],
                         'conditions' => [
-                            'Map.id' => $objectId
+                            'Mapsummaryitem.object_id' => $objectId
                         ],
                         'fields'     => [
                             'Map.*',
@@ -1418,19 +1416,19 @@ class MapeditorsController extends MapModuleAppController {
                             break;
                         }
                     }
-                    //fetch all dependent map items after permissions check SUMMARY STATE ITEMS (TYPE MAP)
-                    $mapSummaryItemToResolve = $this->Mapsummaryitem->find('first', [
+                    //fetch all dependent map items after permissions check
+                    $mapSummaryItemIdToResolve = $this->Mapsummaryitem->find('first', [
                         'recursive'  => -1,
                         'conditions' => [
-                            'Mapsummaryitem.map_id' => $map['Map']['id'],
-                            'Mapsummaryitem.type'   => 'map'
+                            'Mapsummaryitem.object_id' => $objectId,
+                            'Mapsummaryitem.type'      => 'map',
+                            'Mapsummaryitem.map_id'    => $map['Map']['id']
                         ],
                         'fields'     => [
                             'Mapsummaryitem.object_id'
                         ]
                     ]);
-
-                    if (!empty($mapSummaryItemToResolve)) {
+                    if (!empty($mapSummaryItemIdToResolve)) {
                         $query = [
                             'recursive'  => -1,
                             'joins'      => [
@@ -1460,15 +1458,13 @@ class MapeditorsController extends MapModuleAppController {
                         }
                         $allVisibleItems = $this->Mapsummaryitem->find('all', $query);
 
-
-                        $mapSummaryItemIdToResolve = $mapSummaryItemToResolve['Mapsummaryitem']['object_id'];
+                        $mapSummaryItemIdToResolve = $mapSummaryItemIdToResolve['Mapsummaryitem']['object_id'];
                         $mapIdGroupByMapId = Hash::combine(
                             $allVisibleItems,
                             '{n}.Mapsummaryitem.object_id',
                             '{n}.Mapsummaryitem.object_id',
                             '{n}.Mapsummaryitem.map_id'
                         );
-
                         if (isset($mapIdGroupByMapId[$mapSummaryItemIdToResolve])) {
                             $dependentMapsIds = $this->getDependendMaps($mapIdGroupByMapId, $mapSummaryItemIdToResolve);
                         }
@@ -1642,7 +1638,7 @@ class MapeditorsController extends MapModuleAppController {
                                     break;
                                 }
                             }
-                            foreach ($services as $service){
+                            foreach ($services as $service) {
                                 $hosts[$service['Host']['id']] = ['Host' => $service['Host']];
                             }
                         }
@@ -2409,7 +2405,7 @@ class MapeditorsController extends MapModuleAppController {
             'conditions' => [
                 'Map.id' => $id
             ],
-            'contain' => [
+            'contain'    => [
                 'Container'
             ]
         ]);

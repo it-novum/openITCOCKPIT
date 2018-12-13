@@ -1483,8 +1483,6 @@ class Map extends MapModuleAppModel {
                 'Map'                 => $map
             ];
         }
-
-
         $HoststatusFields = new HoststatusFields($this->DbBackend);
         $HoststatusFields->currentState();
         $ServicestatusFields = new ServicestatusFields($this->DbBackend);
