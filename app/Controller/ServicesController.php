@@ -1124,7 +1124,11 @@ class ServicesController extends AppController {
             $this->Service->set($this->request->data);
             $this->request->data['Contact']['Contact'] = $this->request->data('Service.Contact');
             $this->request->data['Contactgroup']['Contactgroup'] = $this->request->data('Service.Contactgroup');
-            $this->request->data['Servicegroup']['Servicegroup'] = (is_array($this->request->data['Service']['Servicegroup'])) ? $this->request->data['Service']['Servicegroup'] : [];
+            if (isset($this->request->data['Service']['Servicegroup']) && is_array($this->request->data['Service']['Servicegroup'])) {
+                $this->request->data['Servicegroup']['Servicegroup'] = $this->request->data['Service']['Servicegroup'];
+            } else {
+                $this->request->data['Servicegroup']['Servicegroup'] = [];
+            }
 
             $servicetemplate = [];
             if (isset($this->request->data['Service']['servicetemplate_id']) &&
@@ -1143,6 +1147,7 @@ class ServicesController extends AppController {
                         'Contactgroup',
                         'Contact',
                         'Servicetemplategroup',
+                        'Servicegroup'
                     ],
                     'recursive'  => -1,
                     'conditions' => [
