@@ -188,7 +188,7 @@ class PerfdataLoader {
                             if ($jsTimestamp) {
                                 $data[($timestamp * 1000)] = $value;
                             } else {
-                                $data[] = $value;
+                                $data[$timestamp] = $value;
                             }
                         }
                     }
