@@ -27,8 +27,14 @@ namespace itnovum\openITCOCKPIT\Graphite;
 
 class GraphiteConfig {
 
-    private $host = 'metrics-development.oitc.itn';
+    /**
+     * @var string
+     */
+    private $host = '127.0.0.1';
 
+    /**
+     * @var int
+     */
     private $port = 8888;
 
     /**
@@ -53,9 +59,15 @@ class GraphiteConfig {
 
 
     public function __construct() {
-        $this->graphitePrefix = 'dziegler.oitc.itn';
-        $this->useHttps = false;
-        $this->useProxy = false;
+
+        \Configure::load('graphite');
+        $configFromFile = \Configure::read('graphite');
+
+        $this->host = $configFromFile['graphite_web_host'];
+        $this->port = $configFromFile['graphite_web_port'];
+        $this->graphitePrefix = $configFromFile['graphite_prefix'];
+        $this->useHttps = $configFromFile['use_https'];
+        $this->useProxy = $configFromFile['use_proxy'];
     }
 
     /**

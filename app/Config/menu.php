@@ -72,6 +72,12 @@ $config = [
                     'icon'              => 'bolt',
                     'parent_controller' => 'Administrators',
                 ],
+                'configfiles'              => [
+                    'url'               => ['controller' => 'ConfigurationFiles', 'action' => 'index'],
+                    'title'             => 'Config file editor',
+                    'icon'              => 'file-text-o',
+                    'parent_controller' => 'Administrators',
+                ],
             ],
         ],
         'admin'         => [

@@ -460,8 +460,7 @@ class Externalcommand extends NagiosModuleAppModel {
                 $serviceUuids = Hash::extract($hostAndServices['Service'], '{n}.uuid');
 
                 if ($this->DbBackend === null) {
-                    Configure::load('dbbackend');
-                    $this->DbBackend = new DbBackend(Configure::read('dbbackend'));
+                    $this->DbBackend = new DbBackend();
                 }
 
                 $ServicestatusFields = new ServicestatusFields($this->DbBackend);
@@ -504,8 +503,7 @@ class Externalcommand extends NagiosModuleAppModel {
         $options = Hash::merge($_options, $options);
 
         if ($this->DbBackend === null) {
-            Configure::load('dbbackend');
-            $this->DbBackend = new DbBackend(Configure::read('dbbackend'));
+            $this->DbBackend = new DbBackend();
         }
 
         $this->Hoststatus = ClassRegistry::init(MONITORING_HOSTSTATUS);
@@ -545,8 +543,7 @@ class Externalcommand extends NagiosModuleAppModel {
                 $serviceUuids = Hash::extract($hostAndServices['Service'], '{n}.uuid');
 
                 if ($this->DbBackend === null) {
-                    Configure::load('dbbackend');
-                    $this->DbBackend = new DbBackend(Configure::read('dbbackend'));
+                    $this->DbBackend = new DbBackend();
                 }
 
                 $ServicestatusFields = new ServicestatusFields($this->DbBackend);
@@ -602,8 +599,7 @@ class Externalcommand extends NagiosModuleAppModel {
             $hostUuids = Hash::extract($hostgroup, 'Host.{n}.uuid');
 
             if ($this->DbBackend === null) {
-                Configure::load('dbbackend');
-                $this->DbBackend = new DbBackend(Configure::read('dbbackend'));
+                $this->DbBackend = new DbBackend();
             }
 
             $this->Hoststatus = ClassRegistry::init(MONITORING_HOSTSTATUS);
@@ -661,8 +657,7 @@ class Externalcommand extends NagiosModuleAppModel {
         $this->Servicestatus = ClassRegistry::init(MONITORING_SERVICESTATUS);
 
         if ($this->DbBackend === null) {
-            Configure::load('dbbackend');
-            $this->DbBackend = new DbBackend(Configure::read('dbbackend'));
+            $this->DbBackend = new DbBackend();
         }
 
         $ServicestatusFields = new ServicestatusFields($this->DbBackend);

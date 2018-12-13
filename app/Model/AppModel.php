@@ -44,8 +44,7 @@ class AppModel extends Model {
         parent::__construct($id, $table, $ds);
 
         if (class_exists('\itnovum\openITCOCKPIT\Core\DbBackend')) {
-            Configure::load('dbbackend');
-            $this->DbBackend = new DbBackend(Configure::read('dbbackend'));
+            $this->DbBackend = new DbBackend();
             $this->set('DbBackend', $this->DbBackend);
         }
 

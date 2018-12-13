@@ -170,10 +170,8 @@ class AppController extends Controller {
         //DANGER ZONE - ALLOW ALL ACTIONS
         //$this->Auth->allow();
 
-        Configure::load('dbbackend');
-        Configure::load('perfdatabackend');
-        $this->DbBackend = new DbBackend(Configure::read('dbbackend'));
-        $this->PerfdataBackend = new PerfdataBackend(Configure::read('perfdatabackend'));
+        $this->DbBackend = new DbBackend();
+        $this->PerfdataBackend = new PerfdataBackend();
         $this->set('DbBackend', $this->DbBackend);
         $this->set('PerfdataBackend', $this->PerfdataBackend);
 

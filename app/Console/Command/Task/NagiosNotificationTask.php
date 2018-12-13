@@ -164,8 +164,7 @@ class NagiosNotificationTask extends AppShell {
                 'UNKNOWN'  => 3
             ];
 
-            Configure::load('dbbackend');
-            $DbBackend = new DbBackend(Configure::read('dbbackend'));
+            $DbBackend = new DbBackend();
             $ServicestatusFields = new ServicestatusFields($DbBackend);
             $ServicestatusFields->currentState()->longOutput();
 
@@ -209,11 +208,9 @@ class NagiosNotificationTask extends AppShell {
         ];
 
         if (!$parameters['no-attachments']) {
-            Configure::load('dbbackend');
-            Configure::load('perfdatabackend');
 
-            $DbBackend = new DbBackend(Configure::read('dbbackend'));
-            $PerfdataBackend = new PerfdataBackend(Configure::read('perfdatabackend'));
+            $DbBackend = new DbBackend();
+            $PerfdataBackend = new PerfdataBackend();
             $PerfdataLoader = new PerfdataLoader($DbBackend, $PerfdataBackend, $this->Servicestatus, $this->Rrd);
 
             try {

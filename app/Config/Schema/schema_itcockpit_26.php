@@ -1604,6 +1604,33 @@ class AppSchema extends CakeSchema {
         'tableParameters'  => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB'],
     ];
 
+    public $configuration_files = [
+        'id'              => ['type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary', 'unsigned' => true],
+        'config_file'     => ['type' => 'string', 'null' => false, 'length' => 255, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
+        'key'             => ['type' => 'string', 'null' => false, 'length' => 2000, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
+        'value'           => ['type' => 'string', 'null' => false, 'length' => 2000, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
+        'created'         => ['type' => 'datetime', 'null' => false, 'default' => null],
+        'modified'        => ['type' => 'datetime', 'null' => false, 'default' => null],
+        'indexes'         => [
+            'PRIMARY' => ['column' => 'id', 'unique' => 1],
+        ],
+        'tableParameters' => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB'],
+    ];
+
+    public $configuration_queue = [
+        'id'              => ['type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary', 'unsigned' => true],
+        'task'            => ['type' => 'string', 'null' => false],
+        'data'            => ['type' => 'string', 'null' => false],
+        'json_data'       => ['type' => 'string', 'null' => true, 'default' => null, 'length' => 2000, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
+        'created'         => ['type' => 'datetime', 'null' => false, 'default' => null],
+        'modified'        => ['type' => 'datetime', 'null' => false, 'default' => null],
+        'indexes'         => [
+            'PRIMARY' => ['column' => 'id', 'unique' => 1],
+        ],
+        'tableParameters' => ['charset' => 'utf8', 'collate' => 'utf8_swedish_ci', 'engine' => 'InnoDB'],
+    ];
+
+
     /*public $devicegroups = array(
         'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'key' => 'primary'),
         'container_id' => array('type' => 'integer', 'null' => false, 'default' => null),

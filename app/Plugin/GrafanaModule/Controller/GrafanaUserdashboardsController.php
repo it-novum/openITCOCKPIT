@@ -768,7 +768,7 @@ class GrafanaUserdashboardsController extends GrafanaModuleAppController {
                     $GrafanaPanel->setTitle($panel['title']);
 
                     foreach ($panel['metrics'] as $metric) {
-                        //@todo implement perfdata backends
+                        /**  TODO implement perfdata backends **/
                         $replacedMetricName = preg_replace('/[^a-zA-Z^0-9\-\.]/', '_', $metric['metric']);
                         $GrafanaTargetCollection->addTarget(
                             new GrafanaTarget(
