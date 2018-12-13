@@ -1048,68 +1048,13 @@ if (!$QueryHandler->exists()): ?>
                 <div class="widget-toolbar" role="menu">
                     <div class="btn-group">
                         <button class="btn btn-xs btn-default" data-toggle="dropdown">
-                            <?php echo __('Select time range'); ?>
+                            <?php echo __('Timerange: '); ?>{{availableTimeranges[currentSelectedTimerange]}}
                             <span class="caret"></span>
                         </button>
                         <ul class="dropdown-menu pull-right">
-                            <li>
-                                <a href="javascript:void(0);" ng-click="changeGraphTimespan(1)">
-                                    <?php echo __('1 hour'); ?>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="javascript:void(0);" ng-click="changeGraphTimespan(2)">
-                                    <?php echo __('2 hours'); ?>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="javascript:void(0);" ng-click="changeGraphTimespan(4)">
-                                    <?php echo __('4 hours'); ?>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="javascript:void(0);" ng-click="changeGraphTimespan(8)">
-                                    <?php echo __('8 hours'); ?>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="javascript:void(0);" ng-click="changeGraphTimespan(24)">
-                                    <?php echo __('1 day'); ?>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="javascript:void(0);" ng-click="changeGraphTimespan(24*2)">
-                                    <?php echo __('2 days'); ?>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="javascript:void(0);" ng-click="changeGraphTimespan(24*5)">
-                                    <?php echo __('5 days'); ?>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="javascript:void(0);" ng-click="changeGraphTimespan(24*7)">
-                                    <?php echo __('7 days'); ?>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="javascript:void(0);" ng-click="changeGraphTimespan(24*30)">
-                                    <?php echo __('30 days'); ?>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="javascript:void(0);" ng-click="changeGraphTimespan(24*90)">
-                                    <?php echo __('90 days'); ?>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="javascript:void(0);" ng-click="changeGraphTimespan(24*31*6)">
-                                    <?php echo __('6 months'); ?>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="javascript:void(0);" ng-click="changeGraphTimespan(24*365)">
-                                    <?php echo __('1 year'); ?>
+                            <li ng-repeat="(timerange, timerangeName) in availableTimeranges">
+                                <a href="javascript:void(0);" ng-click="changeGraphTimespan(timerange)">
+                                    {{timerangeName}}
                                 </a>
                             </li>
                         </ul>
@@ -1119,7 +1064,7 @@ if (!$QueryHandler->exists()): ?>
                 <div class="widget-toolbar" role="menu">
                     <div class="btn-group">
                         <button class="btn btn-xs btn-default" data-toggle="dropdown">
-                            <?php echo __('Select data source'); ?>
+                            <?php echo __('Datasource: '); ?>{{currentDataSource}}
                             <span class="caret"></span>
                         </button>
                         <ul class="dropdown-menu pull-right">
