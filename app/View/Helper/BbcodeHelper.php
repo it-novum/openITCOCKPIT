@@ -23,6 +23,8 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use itnovum\openITCOCKPIT\Core\Views\BBCodeParser;
+
 class BbcodeHelper extends AppHelper {
 
     /**
@@ -36,17 +38,8 @@ class BbcodeHelper extends AppHelper {
      * @since  3.0
      */
     public function asHtml($bbcode, $nl2br = true) {
-        if (!isset($this->_View->viewVars['bbparser'])) {
-            throw new InternalErrorException(__('BB code parser not found! BbcodeComponent not loaded in Controller?'));
-        }
-
-        $this->bbparser = $this->_View->viewVars['bbparser'];
-        $this->bbparser->parse(htmlentities($bbcode));
-        if ($nl2br === true) {
-            return nl2br($this->bbparser->getAsHtml());
-        }
-
-        return $this->bbparser->getAsHtml();
+        $parser = new BBCodeParser();
+        return $parser->asHtml($bbcode, $nl2br);
     }
 
     /**
@@ -58,7 +51,8 @@ class BbcodeHelper extends AppHelper {
      * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since  3.0
      */
-    public function nagiosNl2br($string) {
-        return str_replace(['\n', '\r\n', '\r'], '<br>', $string);
+    public function nagiosNl2br($str) {
+        $parser = new BBCodeParser();
+        return $parser->nagiosNl2br($str);
     }
 }

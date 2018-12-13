@@ -127,7 +127,7 @@
             <div ng-repeat="gadgetItem in map.Mapgadget" class="draggable resizable"
                  style="position:absolute; top: {{gadgetItem.y}}px; left: {{gadgetItem.x}}px;  z-index: {{gadgetItem.z_index}}; cursor: move;"
                  data-id="{{gadgetItem.id}}" data-type="gadget" ng-dblclick="editGadget(gadgetItem)"
-                 ng-show="gadgetItem.display">
+                 ng-show="gadgetItem.display" ng-if="gadgetItem.gadget !== 'ServiceOutput'">
                 <graph-item item="gadgetItem" ng-if="gadgetItem.gadget === 'RRDGraph'"
                             refresh-interval="0"></graph-item>
 
@@ -145,6 +145,16 @@
 
                 <temperature-item item="gadgetItem"
                                   ng-if="gadgetItem.gadget === 'Temperature'" refresh-interval="0"></temperature-item>
+            </div>
+
+            <div ng-repeat="gadgetItem in map.Mapgadget" class="draggable resizable-no-aspect-ratio"
+                 style="position:absolute; top: {{gadgetItem.y}}px; left: {{gadgetItem.x}}px;  z-index: {{gadgetItem.z_index}}; cursor: move;"
+                 data-id="{{gadgetItem.id}}" data-type="gadget" ng-dblclick="editGadget(gadgetItem)"
+                 ng-show="gadgetItem.display" ng-if="gadgetItem.gadget === 'ServiceOutput'">
+
+                <service-output-item item="gadgetItem"
+                                     ng-if="gadgetItem.gadget === 'ServiceOutput'"
+                                     refresh-interval="0"></service-output-item>
             </div>
 
             <div ng-repeat="summaryItem in map.Mapsummaryitem"
@@ -776,7 +786,8 @@
                 </div>
                 <br/>
 
-                <div class="row" ng-show="currentItem.gadget !== 'TrafficLight'">
+                <div class="row"
+                     ng-show="currentItem.gadget !== 'TrafficLight' && currentItem.gadget !== 'ServiceOutput'">
                     <div class="col-xs-12">
                         <div class="form-group smart-form hintmark_red">
                             <?php echo __('Select metric'); ?>
@@ -798,6 +809,47 @@
                         </div>
                     </div>
                 </div>
+
+                <div class="row" ng-show="currentItem.gadget == 'ServiceOutput'">
+                    <div class="col-xs-12">
+                        <div class="form-group smart-form hintmark_red">
+                            <?php echo __('Select output type'); ?>
+                        </div>
+                    </div>
+                    <div class="col-xs-12">
+                        <div class="form-group" ng-class="{'has-error': errors.output_type}">
+                            <select
+                                    id="AddEditGadgetObjectGaugeSelect"
+                                    data-placeholder="<?php echo __('Please choose'); ?>"
+                                    class="form-control"
+                                    chosen=""
+                                    ng-model="currentItem.output_type">
+                                <option value="service_output"><?php echo __('Service output'); ?></option>
+                                <option value="service_long_output"><?php echo __('Service long output'); ?></option>
+                            </select>
+                            <div ng-repeat="error in errors.output_type">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row" ng-show="currentItem.gadget == 'ServiceOutput'">
+                    <div class="col-xs-12">
+                        <div class="form-group smart-form" ng-class="{'has-error': errors.font_size}">
+                            <label class="label hintmark_red"><?php echo __('Font size'); ?></label>
+                            <label class="input"> <b class="icon-prepend">X</b>
+                                <input type="number" min="1" class="input-sm"
+                                       placeholder="<?php echo __('13'); ?>"
+                                       ng-model="currentItem.font_size">
+                            </label>
+                            <div ng-repeat="error in errors.font_size">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <br/>
 
                 <div class="row">

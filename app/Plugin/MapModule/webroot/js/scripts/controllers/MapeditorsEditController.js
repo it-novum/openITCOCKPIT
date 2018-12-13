@@ -432,7 +432,9 @@ angular.module('openITCOCKPIT')
                         gadget: 'RRDGraph',
                         size_x: null,
                         size_y: null,
-                        metric: null
+                        metric: null,
+                        output_type: null,
+                        font_size: 13
                     };
 
                     $scope.action = null;
@@ -720,11 +722,22 @@ angular.module('openITCOCKPIT')
             $scope.currentItem.map_id = $scope.id;
 
             if(action === 'add_or_edit'){
-                if($scope.currentItem.gadget !== 'TrafficLight'){
+                if($scope.currentItem.gadget !== 'TrafficLight' && $scope.currentItem.gadget !== 'ServiceOutput'){
                     if($scope.currentItem.hasOwnProperty('metric') === false || $scope.currentItem.metric === null){
                         $scope.errors = {
                             metric: [
                                 'Please select a metric.'
+                            ]
+                        };
+                        return;
+                    }
+                }
+
+                if($scope.currentItem.gadget === 'ServiceOutput'){
+                    if($scope.currentItem.hasOwnProperty('output_type') === false || $scope.currentItem.output_type === null){
+                        $scope.errors = {
+                            output_type: [
+                                'Please select an output type.'
                             ]
                         };
                         return;
@@ -1485,6 +1498,7 @@ angular.module('openITCOCKPIT')
 
                     switch(type){
                         case 'gadget':
+                            console.log('HIER');
                             for(var key in $scope.map.Mapgadget){
                                 if($scope.map.Mapgadget[key].id === id){
                                     $scope.map.Mapgadget[key].size_y = newHeight;
@@ -1516,6 +1530,42 @@ angular.module('openITCOCKPIT')
                                 size_y: newHeight
                             };
                             $scope.saveSummaryItem('resizestop');
+                            break;
+
+                        default:
+                            console.log('Unknown map object type');
+                            genericError();
+                    }
+                }
+            });
+
+            $('.resizable-no-aspect-ratio').resizable({
+                aspectRatio: false,
+                helper: 'ui-resizable-helper',
+                stop: function(event, ui){
+                    var $this = $(this);
+                    var id = $this.data('id');
+                    var type = $this.data('type');
+
+                    var newWidth = parseInt(ui.size.width);
+                    var newHeight = parseInt(ui.size.height);
+
+                    switch(type){
+                        case 'gadget':
+                            for(var key in $scope.map.Mapgadget){
+                                if($scope.map.Mapgadget[key].id === id){
+                                    $scope.map.Mapgadget[key].size_y = newHeight;
+                                    //Set Y value first because $scope.$watch is listening to X value!
+                                    $scope.map.Mapgadget[key].size_x = newWidth;
+                                }
+                            }
+
+                            $scope.currentItem = {
+                                id: id,
+                                size_x: newWidth,
+                                size_y: newHeight
+                            };
+                            $scope.saveGadget('resizestop');
                             break;
 
                         default:
