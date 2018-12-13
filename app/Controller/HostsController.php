@@ -3674,4 +3674,39 @@ class HostsController extends AppController {
             'timeranges'
         ]);
     }
+
+    public function getGrafanaIframeUrlForDatepicker(){
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        $hostUuid = $this->request->query('uuid');
+        $timerange = $this->request->query('from');
+        if ($timerange === null) {
+            $timerange = 'now-6h';
+        }
+        $refresh = $this->request->query('refresh');
+        if ($refresh === null) {
+            $refresh = 0;
+        }
+
+        $grafanaDashboard = null;
+        $GrafanaDashboardExists = false;
+
+        $ModuleManager = new ModuleManager('GrafanaModule');
+        if ($ModuleManager->moduleExists()) {
+            $this->loadModel('GrafanaModule.GrafanaDashboard');
+            $this->loadModel('GrafanaModule.GrafanaConfiguration');
+            $grafanaConfiguration = $this->GrafanaConfiguration->find('first');
+            if (!empty($grafanaConfiguration) && $this->GrafanaDashboard->existsForUuid($hostUuid)) {
+                $GrafanaDashboardExists = true;
+                $GrafanaConfiguration = \itnovum\openITCOCKPIT\Grafana\GrafanaApiConfiguration::fromArray($grafanaConfiguration);
+                $GrafanaConfiguration->setHostUuid($hostUuid);
+                $this->set('iframeUrl', $GrafanaConfiguration->getIframeUrlForDatepicker($timerange, $refresh));
+            }
+        }
+
+        $this->set('GrafanaDashboardExists', $GrafanaDashboardExists);
+        $this->set('_serialize', ['GrafanaDashboardExists', 'iframeUrl']);
+    }
 }
