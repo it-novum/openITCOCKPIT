@@ -17,6 +17,22 @@ angular.module('openITCOCKPIT')
 
         $scope.dataSources = [];
         $scope.currentDataSource = null;
+        $scope.availableTimeranges = {
+            1: '1 hour',
+            2: '2 hours',
+            3: '3 hours',
+            4: '4 hours',
+            8: '8 hours',
+            24: '1 day',
+            48: '2 days',
+            120: '5 days',
+            168: '7 days',
+            720: '30 days',
+            2160: '90 days',
+            4464: '6 months',
+            8760: '1 year'
+        };
+        $scope.currentSelectedTimerange = 3;
 
         $scope.visTimeline = null;
         $scope.visTimelineInit = true;
@@ -192,6 +208,7 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.changeGraphTimespan = function(timespan){
+            $scope.currentSelectedTimerange = timespan;
             var start = (parseInt(new Date().getTime() / 1000, 10) - (timespan * 3600));
             var end = parseInt(new Date().getTime() / 1000, 10);
             //graphTimeSpan = timespan;
@@ -645,20 +662,15 @@ angular.module('openITCOCKPIT')
             var itemEnd = item.end.getTime();
             if(itemEnd < start){
                 return false;
-            }
-            else if(itemStart > end){
+            }else if(itemStart > end){
                 return false;
-            }
-            else if(itemStart >= start && itemEnd <= end){
+            }else if(itemStart >= start && itemEnd <= end){
                 return true;
-            }
-            else if(itemStart >= start && itemEnd > end){ //item started behind the start and ended behind the end
+            }else if(itemStart >= start && itemEnd > end){ //item started behind the start and ended behind the end
                 return true;
-            }
-            else if(itemStart < start && itemEnd > start && itemEnd < end){ //item started before the start and ended behind the end
+            }else if(itemStart < start && itemEnd > start && itemEnd < end){ //item started before the start and ended behind the end
                 return true;
-            }
-            else if(itemStart < start && itemEnd >= end){ // item startet before the start and enden before the end
+            }else if(itemStart < start && itemEnd >= end){ // item startet before the start and enden before the end
                 return true;
             }
             return false;
