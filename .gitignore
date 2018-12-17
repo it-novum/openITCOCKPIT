@@ -88,4 +88,4 @@ app/Config/after_export.php
 app/Config/dbbackend.php
 app/Config/perfdatabackend.php
 app/Config/graphite.php
-
+app/Plugin/NagiosModule/Config/config.php
