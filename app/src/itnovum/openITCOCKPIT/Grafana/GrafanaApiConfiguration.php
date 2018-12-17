@@ -271,9 +271,14 @@ class GrafanaApiConfiguration {
             $autoRefreshUrlStr = sprintf('&refresh=%s', $autorefresh);
         }
 
+        $uiUrl = $this->getUiUrl();
+        if ($this->isDockerGrafana()) {
+            $uiUrl = $this->getDockerUrl();
+        }
+
         return sprintf(
             '%s/dashboard/db/%s?theme=%s%s&from=%s&to=now&kiosk',
-            $this->getUiUrl(),
+            $uiUrl,
             $this->hostUuid,
             $this->dashboardStyle,
             $autoRefreshUrlStr,
