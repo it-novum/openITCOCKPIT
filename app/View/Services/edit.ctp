@@ -560,7 +560,7 @@ $notification_settings = [
                                     'caption'          => __(ucfirst('Status volatile')),
                                     'icon'             => '<i class="fa fa-asterisk"></i> ',
                                     'class'            => 'onoffswitch-checkbox',
-                                    'checked'          => $this->CustomValidationErrors->refill('is_volatile', false),
+                                    'checked'          => $this->CustomValidationErrors->refill('is_volatile', $service['Service']['is_volatile']),
                                     'wrapGridClass'    => 'col col-xs-1',
                                     'captionGridClass' => 'col col-md-2',
                                 ]); ?>

@@ -1031,6 +1031,7 @@ class Service extends AppModel {
             'service_url',
             'active_checks_enabled',
             'process_performance_data',
+            'is_volatile'
         ];
 
         $compare_array = [
