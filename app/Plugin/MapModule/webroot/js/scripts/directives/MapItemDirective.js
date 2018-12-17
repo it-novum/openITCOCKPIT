@@ -1,4 +1,4 @@
-angular.module('openITCOCKPIT').directive('mapItem', function($http, $interval){
+angular.module('openITCOCKPIT').directive('mapItem', function($http, $interval, UuidService, BlinkService){
     return {
         restrict: 'E',
         templateUrl: '/map_module/mapeditors/mapitem.html',
@@ -11,9 +11,14 @@ angular.module('openITCOCKPIT').directive('mapItem', function($http, $interval){
             $scope.statusUpdateInterval = null;
 
 
+            var uuidForBlinkService = null;
             var interval = null;
 
             $scope.load = function(){
+                if(uuidForBlinkService === null){
+                    uuidForBlinkService = UuidService.v4();
+                }
+
                 $http.get("/map_module/mapeditors/mapitem/.json", {
                     params: {
                         'angular': true,
@@ -33,7 +38,9 @@ angular.module('openITCOCKPIT').directive('mapItem', function($http, $interval){
                     $scope.currentIcon = $scope.icon;
 
                     if(result.data.data.isAcknowledged === true || result.data.data.isInDowntime === true){
-                        startBlink();
+                        BlinkService.registerNewObject(uuidForBlinkService, $scope.blinkServiceCallback);
+                    }else{
+                        BlinkService.unregisterObject(uuidForBlinkService);
                     }
 
                 });
@@ -81,7 +88,15 @@ angular.module('openITCOCKPIT').directive('mapItem', function($http, $interval){
                 interval = null;
             };
 
+            $scope.blinkServiceCallback = function(){if($scope.currentIcon === $scope.icon){
+                $scope.currentIcon = $scope.icon_property;
+            }else{
+                $scope.currentIcon = $scope.icon;
+            }};
+
             $scope.stop = function(){
+                BlinkService.unregisterObject(uuidForBlinkService);
+
                 if($scope.statusUpdateInterval !== null){
                     $interval.cancel($scope.statusUpdateInterval);
                 }

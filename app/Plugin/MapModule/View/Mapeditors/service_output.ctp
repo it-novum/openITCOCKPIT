@@ -1,5 +1,5 @@
 <?php
-// Copyright (C) <2015>  <it-novum GmbH>
+// Copyright (C) <2018>  <it-novum GmbH>
 //
 // This file is dual licensed
 //
@@ -21,12 +21,12 @@
 //  under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //  License agreement and license key will be shipped with the order
 //  confirmation.
+?>
 
-$config = [
-    // @todo enable mysql by default!
-    'dbbackend' => 'Nagios',
-    //'dbbackend' => 'Crate',
-    //'dbbackend' => 'Statusengine3',
 
-];
-
+<div ng-if="allowView" style="width: {{width}}px; height: {{height}}px; font-size: {{item.font_size}}px">
+    <span ng-show="item.show_label" class="bold">
+        {{Service.hostname}} / {{Service.servicename}}:
+    </span>
+    <span class="{{color}}" ng-bind-html="output | trustAsHtml"></span>
+</div>

@@ -90,6 +90,12 @@
                           ng-mouseenter="showSummaryStateDelayed(gadgetItem, false)"
                           ng-mouseleave="cancelTimer()"
                           refresh-interval="refreshInterval"></temperature-item>
+
+        <service-output-item item="gadgetItem"
+                          ng-if="gadgetItem.gadget === 'ServiceOutput'"
+                          ng-mouseenter="showSummaryStateDelayed(gadgetItem, false)"
+                          ng-mouseleave="cancelTimer()"
+                          refresh-interval="refreshInterval"></service-output-item>
     </a>
 </div>
 

@@ -823,7 +823,11 @@ class HostsController extends AppController {
             $this->request->data['Contact']['Contact'] = $this->request->data('Host.Contact');
             $this->request->data['Contactgroup']['Contactgroup'] = $this->request->data('Host.Contactgroup');
             $this->request->data['Parenthost']['Parenthost'] = $this->request->data['Host']['Parenthost'];
-            $this->request->data['Hostgroup']['Hostgroup'] = (is_array($this->request->data['Host']['Hostgroup'])) ? $this->request->data['Host']['Hostgroup'] : [];
+            if (isset($this->request->data['Host']['Hostgroup']) && is_array($this->request->data['Host']['Hostgroup'])) {
+                $this->request->data['Hostgroup']['Hostgroup'] = $this->request->data['Host']['Hostgroup'];
+            } else {
+                $this->request->data['Hostgroup']['Hostgroup'] = [];
+            }
             $hosttemplate = [];
             if (isset($this->request->data['Host']['hosttemplate_id']) && $this->Hosttemplate->exists($this->request->data['Host']['hosttemplate_id'])) {
                 $hosttemplate = $this->Hosttemplate->findById($this->request->data['Host']['hosttemplate_id']);
@@ -1363,6 +1367,7 @@ class HostsController extends AppController {
                 $this->request->data,
                 'add'
             );
+
             $data_to_save['Host']['own_customvariables'] = 0;
             //Add Customvariables data to $data_to_save
             $data_to_save['Customvariable'] = [];
@@ -3592,7 +3597,22 @@ class HostsController extends AppController {
             $StatehistoryHost = new \itnovum\openITCOCKPIT\Core\Views\StatehistoryHost($record['StatehistoryHost']);
             $statehistoryRecords[] = $StatehistoryHost;
         }
+        if (empty($statehistories) && empty($record)) {
+            $HoststatusFields = new HoststatusFields($this->DbBackend);
+            $HoststatusFields->currentState()
+                ->isHardstate()
+                ->lastStateChange()
+                ->lastHardStateChange();
 
+            $hoststatus = $this->Hoststatus->byUuid($host['Host']['uuid'], $HoststatusFields);
+            if (!empty($hoststatus)) {
+                $record['StatehistoryHost']['state_time'] = $hoststatus['Hoststatus']['last_state_change'];
+                $record['StatehistoryHost']['state'] = $hoststatus['Hoststatus']['current_state'];
+                $record['StatehistoryHost']['state_type'] = ($hoststatus['Hoststatus']['state_type'])?true:false;
+                $StatehistoryHost = new \itnovum\openITCOCKPIT\Core\Views\StatehistoryHost($record['StatehistoryHost']);
+                $statehistoryRecords[] = $StatehistoryHost;
+            }
+        }
         foreach ($statehistories as $statehistory) {
             $StatehistoryHost = new \itnovum\openITCOCKPIT\Core\Views\StatehistoryHost($statehistory['StatehistoryHost']);
             $statehistoryRecords[] = $StatehistoryHost;

@@ -171,9 +171,10 @@ class MapeditorsController extends MapModuleAppController {
                         'Host.id' => $objectId
                     ]
                 ]);
+
                 if (!empty($host)) {
                     if ($this->hasRootPrivileges === false) {
-                        if (!$this->allowedByContainerId(Hash::extract($host, 'Container.{n}.HostsToContainer.container_id'))) {
+                        if (!$this->allowedByContainerId(Hash::extract($host, 'Container.{n}.HostsToContainer.container_id'), false)) {
                             $allowView = false;
                             break;
                         }
@@ -191,6 +192,7 @@ class MapeditorsController extends MapModuleAppController {
                 break;
 
             case 'service':
+                $includeServiceOutput = $this->request->query('includeServiceOutput') === 'true';
                 $service = $this->Service->find('first', [
                     'recursive'  => -1,
                     'fields'     => [
@@ -221,13 +223,13 @@ class MapeditorsController extends MapModuleAppController {
 
                 if (!empty($service)) {
                     if ($this->hasRootPrivileges === false) {
-                        if (!$this->allowedByContainerId(Hash::extract($service, 'Host.Container.{n}.HostsToContainer.container_id'))) {
+                        if (!$this->allowedByContainerId(Hash::extract($service, 'Host.Container.{n}.HostsToContainer.container_id'), false)) {
                             $allowView = false;
                             break;
                         }
                     }
                     $allowView = true;
-                    $properties = $this->Map->getServiceInformation($this->Servicestatus, $service);
+                    $properties = $this->Map->getServiceInformation($this->Servicestatus, $service, $includeServiceOutput);
                     break;
                 }
                 $allowView = false;
@@ -263,7 +265,7 @@ class MapeditorsController extends MapModuleAppController {
                 ]);
                 if (!empty($hostgroup)) {
                     if ($this->hasRootPrivileges === false) {
-                        if (!$this->allowedByContainerId(Hash::extract($hostgroup, 'Host.{n}.Container.{n}.HostsToContainer.container_id'))) {
+                        if (!$this->allowedByContainerId(Hash::extract($hostgroup, 'Host.{n}.Container.{n}.HostsToContainer.container_id'), false)) {
                             $allowView = false;
                             break;
                         }
@@ -327,7 +329,7 @@ class MapeditorsController extends MapModuleAppController {
 
                 if (!empty($servicegroup)) {
                     if ($this->hasRootPrivileges === false) {
-                        if (!$this->allowedByContainerId(Hash::extract($servicegroup, 'Host.{n}.Container.{n}.HostsToContainer.container_id'))) {
+                        if (!$this->allowedByContainerId(Hash::extract($servicegroup, 'Host.{n}.Container.{n}.HostsToContainer.container_id'), false)) {
                             $allowView = false;
                             break;
                         }
@@ -363,7 +365,7 @@ class MapeditorsController extends MapModuleAppController {
                 ]);
                 if (!empty($map)) {
                     if ($this->hasRootPrivileges === false) {
-                        if (!$this->allowedByContainerId(Hash::extract($map, 'Container.{n}.MapsToContainer.container_id'))) {
+                        if (!$this->allowedByContainerId(Hash::extract($map, 'Container.{n}.MapsToContainer.container_id'), false)) {
                             $allowView = false;
                             break;
                         }
@@ -458,7 +460,7 @@ class MapeditorsController extends MapModuleAppController {
                             ]);
                             if (!empty($hosts)) {
                                 if ($this->hasRootPrivileges === false) {
-                                    if (!$this->allowedByContainerId(Hash::extract($hosts, '{n}.Container.{n}.HostsToContainer.container_id'))) {
+                                    if (!$this->allowedByContainerId(Hash::extract($hosts, '{n}.Container.{n}.HostsToContainer.container_id'), false)) {
                                         $allowView = false;
                                         break;
                                     }
@@ -477,7 +479,11 @@ class MapeditorsController extends MapModuleAppController {
                                 'recursive'  => -1,
                                 'contain'    => [
                                     'Host' => [
-                                        'Container'
+                                        'Container',
+                                        'fields' => [
+                                            'Host.id',
+                                            'Host.uuid'
+                                        ]
                                     ]
                                 ],
                                 'conditions' => [
@@ -489,14 +495,15 @@ class MapeditorsController extends MapModuleAppController {
                                     'Service.uuid'
                                 ]
                             ]);
-                            if (!empty($services)) {
+                            if (!empty($dependentServices)) {
                                 if ($this->hasRootPrivileges === false) {
-                                    if (!$this->allowedByContainerId(Hash::extract($services, '{n}.Host.Container.{n}.HostsToContainer.container_id'))) {
+                                    if (!$this->allowedByContainerId(Hash::extract($services, '{n}.Host.Container.{n}.HostsToContainer.container_id'), false)) {
                                         $allowView = false;
                                         break;
                                     }
                                 }
                                 foreach ($dependentServices as $service) {
+                                    $hosts[$service['Host']['id']] = ['Host' => $service['Host']];
                                     $services[$service['Service']['id']] = $service;
                                 }
                             }
@@ -565,6 +572,11 @@ class MapeditorsController extends MapModuleAppController {
         return;
     }
 
+    public function serviceOutput() {
+        //Only ship template
+        return;
+    }
+
     public function mapsummaryitem() {
         if (!$this->isApiRequest()) {
             return;
@@ -607,7 +619,7 @@ class MapeditorsController extends MapModuleAppController {
                 ]);
                 if (!empty($host)) {
                     if ($this->hasRootPrivileges === false) {
-                        if (!$this->allowedByContainerId(Hash::extract($host, 'Container.{n}.HostsToContainer.container_id'))) {
+                        if (!$this->allowedByContainerId(Hash::extract($host, 'Container.{n}.HostsToContainer.container_id'), false)) {
                             $allowView = false;
                             break;
                         }
@@ -654,7 +666,7 @@ class MapeditorsController extends MapModuleAppController {
 
                 if (!empty($service)) {
                     if ($this->hasRootPrivileges === false) {
-                        if (!$this->allowedByContainerId(Hash::extract($service, 'Host.Container.{n}.HostsToContainer.container_id'))) {
+                        if (!$this->allowedByContainerId(Hash::extract($service, 'Host.Container.{n}.HostsToContainer.container_id'), false)) {
                             $allowView = false;
                             break;
                         }
@@ -709,7 +721,7 @@ class MapeditorsController extends MapModuleAppController {
                 ]);
                 if (!empty($hostgroup)) {
                     if ($this->hasRootPrivileges === false) {
-                        if (!$this->allowedByContainerId(Hash::extract($hostgroup, 'Host.{n}.Container.{n}.HostsToContainer.container_id'))) {
+                        if (!$this->allowedByContainerId(Hash::extract($hostgroup, 'Host.{n}.Container.{n}.HostsToContainer.container_id'), false)) {
                             $allowView = false;
                             break;
                         }
@@ -772,7 +784,7 @@ class MapeditorsController extends MapModuleAppController {
 
                 if (!empty($servicegroup)) {
                     if ($this->hasRootPrivileges === false) {
-                        if (!$this->allowedByContainerId(Hash::extract($servicegroup, 'Host.{n}.Container.{n}.HostsToContainer.container_id'))) {
+                        if (!$this->allowedByContainerId(Hash::extract($servicegroup, 'Host.{n}.Container.{n}.HostsToContainer.container_id'), false)) {
                             $allowView = false;
                             break;
                         }
@@ -802,30 +814,30 @@ class MapeditorsController extends MapModuleAppController {
                         ],
                     ],
                     'conditions' => [
-                        'Map.id' => $objectId
+                        'Map.id'                => $objectId,
+                        'Mapsummaryitem.map_id' => $mapId
                     ]
                 ]);
                 if (!empty($map)) {
                     if ($this->hasRootPrivileges === false) {
-                        if (!$this->allowedByContainerId(Hash::extract($map, 'Container.{n}.MapsToContainer.container_id'))) {
+                        if (!$this->allowedByContainerId(Hash::extract($map, 'Container.{n}.MapsToContainer.container_id'), false)) {
                             $allowView = false;
                             break;
                         }
                     }
-
-                    //fetch all dependent map items after permissions check SUMMARY STATE ITEMS (TYPE MAP)
-                    $mapSummaryItemToResolve = $this->Mapsummaryitem->find('first', [
+                    //fetch all dependent map items after permissions check
+                    $mapSummaryItemIdToResolve = $this->Mapsummaryitem->find('first', [
                         'recursive'  => -1,
                         'conditions' => [
-                            'Mapsummaryitem.map_id' => $map['Map']['id'],
-                            'Mapsummaryitem.type'   => 'map'
+                            'Mapsummaryitem.object_id' => $map['Map']['id'],
+                            'Mapsummaryitem.type'      => 'map',
+                            'Mapsummaryitem.map_id'    => $mapId
                         ],
                         'fields'     => [
                             'Mapsummaryitem.object_id'
                         ]
                     ]);
-
-                    if (!empty($mapSummaryItemToResolve)) {
+                    if (!empty($mapSummaryItemIdToResolve)) {
                         $query = [
                             'recursive'  => -1,
                             'joins'      => [
@@ -842,7 +854,7 @@ class MapeditorsController extends MapModuleAppController {
                             'conditions' => [
                                 'Mapsummaryitem.type' => 'map',
                                 'NOT'                 => [
-                                    'Mapsummaryitem.map_id' => $map['Map']['id']
+                                    'Mapsummaryitem.map_id' => $mapId
                                 ]
                             ],
                             'fields'     => [
@@ -855,15 +867,13 @@ class MapeditorsController extends MapModuleAppController {
                         }
                         $allVisibleItems = $this->Mapsummaryitem->find('all', $query);
 
-
-                        $mapSummaryItemIdToResolve = $mapSummaryItemToResolve['Mapsummaryitem']['object_id'];
+                        $mapSummaryItemIdToResolve = $mapSummaryItemIdToResolve['Mapsummaryitem']['object_id'];
                         $mapIdGroupByMapId = Hash::combine(
                             $allVisibleItems,
                             '{n}.Mapsummaryitem.object_id',
                             '{n}.Mapsummaryitem.object_id',
                             '{n}.Mapsummaryitem.map_id'
                         );
-
                         if (isset($mapIdGroupByMapId[$mapSummaryItemIdToResolve])) {
                             $dependentMapsIds = $this->getDependendMaps($mapIdGroupByMapId, $mapSummaryItemIdToResolve);
                         }
@@ -954,7 +964,7 @@ class MapeditorsController extends MapModuleAppController {
                     $hosts = [];
                     $services = [];
                     if (!empty($hostIds)) {
-                        $hosts = $this->Host->find('all', [
+                        $hostsById = $this->Host->find('all', [
                             'recursive'  => -1,
                             'contain'    => [
                                 'Container',
@@ -976,14 +986,15 @@ class MapeditorsController extends MapModuleAppController {
                                 'Host.uuid'
                             ]
                         ]);
-                        if (!empty($hosts)) {
+                        if (!empty($hostsById)) {
                             if ($this->hasRootPrivileges === false) {
-                                if (!$this->allowedByContainerId(Hash::extract($hosts, '{n}.Container.{n}.HostsToContainer.container_id'))) {
+                                if (!$this->allowedByContainerId(Hash::extract($hostsById, '{n}.Container.{n}.HostsToContainer.container_id'), false)) {
                                     $allowView = false;
                                     break;
                                 }
                             }
-                            foreach ($hosts as $host) {
+                            foreach ($hostsById as $host) {
+                                $hosts[$host['Host']['id']] = $host;
                                 foreach ($host['Service'] as $serviceData) {
                                     $services[$serviceData['id']] = [
                                         'Service' => $serviceData
@@ -997,7 +1008,10 @@ class MapeditorsController extends MapModuleAppController {
                             'recursive'  => -1,
                             'contain'    => [
                                 'Host' => [
-                                    'Container'
+                                    'Container',
+                                    'fields' => [
+                                        'Host.uuid'
+                                    ]
                                 ]
                             ],
                             'conditions' => [
@@ -1011,12 +1025,13 @@ class MapeditorsController extends MapModuleAppController {
                         ]);
                         if (!empty($dependentServices)) {
                             if ($this->hasRootPrivileges === false) {
-                                if (!$this->allowedByContainerId(Hash::extract($services, '{n}.Host.Container.{n}.HostsToContainer.container_id'))) {
+                                if (!$this->allowedByContainerId(Hash::extract($services, '{n}.Host.Container.{n}.HostsToContainer.container_id'), false)) {
                                     $allowView = false;
                                     break;
                                 }
                             }
                             foreach ($dependentServices as $service) {
+                                $hosts[$service['Host']['id']] = ['Host' => $service['Host']];
                                 $services[$service['Service']['id']] = $service;
                             }
                         }
@@ -1081,7 +1096,7 @@ class MapeditorsController extends MapModuleAppController {
         }
 
         if ($this->hasRootPrivileges === false) {
-            if (!$this->allowedByContainerId(Hash::extract($service, 'Host.Container.{n}.HostsToContainer.container_id'))) {
+            if (!$this->allowedByContainerId(Hash::extract($service, 'Host.Container.{n}.HostsToContainer.container_id'), false)) {
                 $this->set('allowView', false);
                 $this->set('_serialize', ['allowView']);
             }
@@ -1147,7 +1162,7 @@ class MapeditorsController extends MapModuleAppController {
                 ]);
                 if (!empty($host)) {
                     if ($this->hasRootPrivileges === false) {
-                        if (!$this->allowedByContainerId(Hash::extract($host, 'Container.{n}.HostsToContainer.container_id'))) {
+                        if (!$this->allowedByContainerId(Hash::extract($host, 'Container.{n}.HostsToContainer.container_id'), false)) {
                             $this->render403();
                             return;
                         }
@@ -1200,7 +1215,7 @@ class MapeditorsController extends MapModuleAppController {
 
                 if (!empty($service)) {
                     if ($this->hasRootPrivileges === false) {
-                        if (!$this->allowedByContainerId(Hash::extract($service, 'Host.Container.{n}.HostsToContainer.container_id'))) {
+                        if (!$this->allowedByContainerId(Hash::extract($service, 'Host.Container.{n}.HostsToContainer.container_id'), false)) {
                             $this->render403();
                             return;
                         }
@@ -1259,7 +1274,7 @@ class MapeditorsController extends MapModuleAppController {
 
                 if (!empty($hostgroup)) {
                     if ($this->hasRootPrivileges === false) {
-                        if (!$this->allowedByContainerId(Hash::extract($hostgroup, 'Container.{n}.HostsToContainer.container_id'))) {
+                        if (!$this->allowedByContainerId(Hash::extract($hostgroup, 'Container.{n}.HostsToContainer.container_id'), false)) {
                             $this->render403();
                             return;
                         }
@@ -1327,7 +1342,7 @@ class MapeditorsController extends MapModuleAppController {
 
                 if (!empty($servicegroup)) {
                     if ($this->hasRootPrivileges === false) {
-                        if (!$this->allowedByContainerId(Hash::extract($servicegroup, 'Container.{n}.HostsToContainer.container_id'))) {
+                        if (!$this->allowedByContainerId(Hash::extract($servicegroup, 'Container.{n}.HostsToContainer.container_id'), false)) {
                             $this->render403();
                             return;
                         }
@@ -1359,11 +1374,11 @@ class MapeditorsController extends MapModuleAppController {
                                 'table'      => 'mapsummaryitems',
                                 'type'       => 'INNER',
                                 'alias'      => 'Mapsummaryitem',
-                                'conditions' => 'Mapsummaryitem.object_id = Map.id',
+                                'conditions' => 'Mapsummaryitem.map_id = Map.id',
                             ],
                         ],
                         'conditions' => [
-                            'Map.id' => $objectId
+                            'Mapsummaryitem.object_id' => $objectId
                         ],
                         'fields'     => [
                             'Map.*',
@@ -1396,24 +1411,24 @@ class MapeditorsController extends MapModuleAppController {
 
                 if (!empty($map)) {
                     if ($this->hasRootPrivileges === false) {
-                        if (!$this->allowedByContainerId(Hash::extract($map, 'Container.{n}.MapsToContainer.container_id'))) {
+                        if (!$this->allowedByContainerId(Hash::extract($map, 'Container.{n}.MapsToContainer.container_id'), false)) {
                             $allowView = false;
                             break;
                         }
                     }
-                    //fetch all dependent map items after permissions check SUMMARY STATE ITEMS (TYPE MAP)
-                    $mapSummaryItemToResolve = $this->Mapsummaryitem->find('first', [
+                    //fetch all dependent map items after permissions check
+                    $mapSummaryItemIdToResolve = $this->Mapsummaryitem->find('first', [
                         'recursive'  => -1,
                         'conditions' => [
-                            'Mapsummaryitem.map_id' => $map['Map']['id'],
-                            'Mapsummaryitem.type'   => 'map'
+                            'Mapsummaryitem.object_id' => $objectId,
+                            'Mapsummaryitem.type'      => 'map',
+                            'Mapsummaryitem.map_id'    => $map['Map']['id']
                         ],
                         'fields'     => [
                             'Mapsummaryitem.object_id'
                         ]
                     ]);
-
-                    if (!empty($mapSummaryItemToResolve)) {
+                    if (!empty($mapSummaryItemIdToResolve)) {
                         $query = [
                             'recursive'  => -1,
                             'joins'      => [
@@ -1443,15 +1458,13 @@ class MapeditorsController extends MapModuleAppController {
                         }
                         $allVisibleItems = $this->Mapsummaryitem->find('all', $query);
 
-
-                        $mapSummaryItemIdToResolve = $mapSummaryItemToResolve['Mapsummaryitem']['object_id'];
+                        $mapSummaryItemIdToResolve = $mapSummaryItemIdToResolve['Mapsummaryitem']['object_id'];
                         $mapIdGroupByMapId = Hash::combine(
                             $allVisibleItems,
                             '{n}.Mapsummaryitem.object_id',
                             '{n}.Mapsummaryitem.object_id',
                             '{n}.Mapsummaryitem.map_id'
                         );
-
                         if (isset($mapIdGroupByMapId[$mapSummaryItemIdToResolve])) {
                             $dependentMapsIds = $this->getDependendMaps($mapIdGroupByMapId, $mapSummaryItemIdToResolve);
                         }
@@ -1574,7 +1587,7 @@ class MapeditorsController extends MapModuleAppController {
                         ]);
                         if (!empty($hosts)) {
                             if ($this->hasRootPrivileges === false) {
-                                if (!$this->allowedByContainerId(Hash::extract($hosts, '{n}.Container.{n}.HostsToContainer.container_id'))) {
+                                if (!$this->allowedByContainerId(Hash::extract($hosts, '{n}.Container.{n}.HostsToContainer.container_id'), false)) {
                                     break;
                                 }
                             }
@@ -1598,6 +1611,8 @@ class MapeditorsController extends MapModuleAppController {
                                 'Host'            => [
                                     'Container',
                                     'fields' => [
+                                        'Host.id',
+                                        'Host.uuid',
                                         'Host.name'
                                     ]
                                 ],
@@ -1619,9 +1634,12 @@ class MapeditorsController extends MapModuleAppController {
                         ]);
                         if (!empty($services)) {
                             if ($this->hasRootPrivileges === false) {
-                                if (!$this->allowedByContainerId(Hash::extract($services, '{n}.Host.Container.{n}.HostsToContainer.container_id'))) {
+                                if (!$this->allowedByContainerId(Hash::extract($services, '{n}.Host.Container.{n}.HostsToContainer.container_id'), false)) {
                                     break;
                                 }
+                            }
+                            foreach ($services as $service) {
+                                $hosts[$service['Host']['id']] = ['Host' => $service['Host']];
                             }
                         }
                     }
@@ -1658,12 +1676,13 @@ class MapeditorsController extends MapModuleAppController {
             //Only ship template
 
             $gadgetPreviews = [
-                'RRDGraph'     => 'graph_gadget.png',
-                'Tacho'        => 'tacho_gadget.png',
-                'TrafficLight' => 'trafficlight_gadget.png',
-                'Cylinder'     => 'cylinder_gadget.png',
-                'Text'         => 'perfdata_gadget.png',
-                'Temperature'  => 'temperature_gadget.png'
+                'RRDGraph'      => 'graph_gadget.png',
+                'Tacho'         => 'tacho_gadget.png',
+                'TrafficLight'  => 'trafficlight_gadget.png',
+                'Cylinder'      => 'cylinder_gadget.png',
+                'Text'          => 'perfdata_gadget.png',
+                'Temperature'   => 'temperature_gadget.png',
+                'ServiceOutput' => 'serviceoutput_gadget.png'
             ];
             $this->set('gadgetPreviews', $gadgetPreviews);
             $this->set('requiredIcons', $this->MapUpload->getIconsNames());
@@ -2385,6 +2404,9 @@ class MapeditorsController extends MapModuleAppController {
             'recursive'  => -1,
             'conditions' => [
                 'Map.id' => $id
+            ],
+            'contain'    => [
+                'Container'
             ]
         ]);
 

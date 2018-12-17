@@ -53,7 +53,8 @@ $config = [
                 'getPerformanceDataMetrics',
                 'mapWidget',
                 'viewDirective',
-                'mapDetails'
+                'mapDetails',
+                'serviceOutput'
             ],
             'Maps'              => [
                 'loadUsersForTenant',

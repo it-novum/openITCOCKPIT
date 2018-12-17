@@ -236,6 +236,7 @@ angular.module('openITCOCKPIT').directive('graphItem', function($http, $timeout,
 
                 options.xaxis.min = graphStart * 1000;
                 options.xaxis.max = graphEnd * 1000;
+                options.selection.mode = null;
 
                 $scope.plot = $.plot('#mapgraph-' + $scope.item.id, graph_data, options);
             };
