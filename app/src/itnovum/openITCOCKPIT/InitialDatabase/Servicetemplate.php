@@ -713,7 +713,7 @@ class Servicetemplate extends Importer {
                             'check_period_id'              => '1',
                             'notify_period_id'             => '1',
                             'description'                  => 'Send request to an HTTPS server',
-                            'command_id'                   => '7',
+                            'command_id'                   => '8',
                             'check_command_args'           => '',
                             'checkcommand_info'            => '',
                             'eventhandler_command_id'      => '0',
@@ -760,7 +760,7 @@ class Servicetemplate extends Importer {
                             0 =>
                                 [
                                     'id'                 => '8',
-                                    'commandargument_id' => '8',
+                                    'commandargument_id' => '11',
                                     'servicetemplate_id' => '7',
                                     'value'              => '1',
                                     'created'            => '2015-01-15 23:52:49',
@@ -769,7 +769,7 @@ class Servicetemplate extends Importer {
                             1 =>
                                 [
                                     'id'                 => '9',
-                                    'commandargument_id' => '9',
+                                    'commandargument_id' => '12',
                                     'servicetemplate_id' => '7',
                                     'value'              => '2',
                                     'created'            => '2015-01-15 23:52:49',
@@ -778,7 +778,7 @@ class Servicetemplate extends Importer {
                             2 =>
                                 [
                                     'id'                 => '10',
-                                    'commandargument_id' => '10',
+                                    'commandargument_id' => '13',
                                     'servicetemplate_id' => '7',
                                     'value'              => '/',
                                     'created'            => '2015-01-15 23:52:49',
