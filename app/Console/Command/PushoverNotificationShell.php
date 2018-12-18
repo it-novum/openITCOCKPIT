@@ -136,8 +136,8 @@ class PushoverNotificationShell extends AppShell {
             'serviceuuid'         => ['help' => __d('oitc_console', 'Service uuid you want to send a notification => $SERVICEDESC$')],
             'state'               => ['help' => __d('oitc_console', 'current host state => $HOSTSTATEID$/$SERVICESTATEID$')],
             'output'              => ['help' => __d('oitc_console', 'host output => $HOSTOUTPUT$/$SERVICEOUTPUT$')],
-            'ackauthor'           => ['help' => __d('oitc_console', 'host acknowledgement author => $HOSTACKAUTHOR$/$SERVICEACKAUTHOR$')],
-            'ackcomment'          => ['help' => __d('oitc_console', 'host acknowledgement comment => $HOSTACKCOMMENT$/$SERVICEACKCOMMENT$')],
+            'ackauthor'           => ['help' => __d('oitc_console', 'host acknowledgement author => $NOTIFICATIONAUTHOR$')],
+            'ackcomment'          => ['help' => __d('oitc_console', 'host acknowledgement comment => $NOTIFICATIONCOMMENT$')],
             'pushover-api-token'  => ['help' => __d('oitc_console', 'API Token of your Pushover Application => $_CONTACTPUSHOVERAPP$')],
             'pushover-user-token' => ['help' => __d('oitc_console', 'Your Pushover User Key => $_CONTACTPUSHOVERUSER$')],
             'proxy'               => ['help' => __d('oitc_console', 'If set, connection will be established using the proxy server defined in openITCOCKPIT interface. (1/0)')]
