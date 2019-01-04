@@ -521,6 +521,14 @@ class Systemsetting extends Importer {
             ],
             [
                 'Systemsetting' => [
+                    'key'     => 'CHECK_MK.TMP',
+                    'value'   => '/opt/openitc/nagios/3rd/check_mk/tmp/',
+                    'info'    => 'Path to Check_MK tmp files',
+                    'section' => 'CHECK_MK'
+                ],
+            ],
+            [
+                'Systemsetting' => [
                     'key'     => 'CHECK_MK.ACTIVE_CHECK',
                     'value'   => 'CHECK_MK_ACTIVE',
                     'info'    => 'The name of the check_mk active check service template',

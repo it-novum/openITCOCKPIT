@@ -315,7 +315,20 @@ class GearmanWorkerShell extends AppShell {
                         escapeshellarg($this->_systemsettings['MONITORING']['MONITORING.USER']),
                         escapeshellarg($this->_systemsettings['MONITORING']['MONITORING.GROUP']),
                         escapeshellarg($this->_systemsettings['CHECK_MK']['CHECK_MK.VAR'])
-                    ));                }
+                    ));
+
+                    if (isset($this->_systemsettings['CHECK_MK']['CHECK_MK.TMP'])) {
+                        if (is_dir($this->_systemsettings['CHECK_MK']['CHECK_MK.TMP'])) {
+                            exec(sprintf(
+                                'chown %s:%s %s -R',
+                                escapeshellarg($this->_systemsettings['MONITORING']['MONITORING.USER']),
+                                escapeshellarg($this->_systemsettings['MONITORING']['MONITORING.GROUP']),
+                                escapeshellarg($this->_systemsettings['CHECK_MK']['CHECK_MK.TMP'])
+                            ));
+                        }
+                    }
+
+                }
 
                 $return = $output;
                 break;
@@ -364,6 +377,17 @@ class GearmanWorkerShell extends AppShell {
                         escapeshellarg($this->_systemsettings['MONITORING']['MONITORING.GROUP']),
                         escapeshellarg($this->_systemsettings['CHECK_MK']['CHECK_MK.VAR'])
                     ));
+
+                    if (isset($this->_systemsettings['CHECK_MK']['CHECK_MK.TMP'])) {
+                        if (is_dir($this->_systemsettings['CHECK_MK']['CHECK_MK.TMP'])) {
+                            exec(sprintf(
+                                'chown %s:%s %s -R',
+                                escapeshellarg($this->_systemsettings['MONITORING']['MONITORING.USER']),
+                                escapeshellarg($this->_systemsettings['MONITORING']['MONITORING.GROUP']),
+                                escapeshellarg($this->_systemsettings['CHECK_MK']['CHECK_MK.TMP'])
+                            ));
+                        }
+                    }
                 }
                 $return = $output;
                 unset($output);
@@ -426,6 +450,17 @@ class GearmanWorkerShell extends AppShell {
                         escapeshellarg($this->_systemsettings['MONITORING']['MONITORING.GROUP']),
                         escapeshellarg($this->_systemsettings['CHECK_MK']['CHECK_MK.VAR'])
                     ));
+
+                    if (isset($this->_systemsettings['CHECK_MK']['CHECK_MK.TMP'])) {
+                        if (is_dir($this->_systemsettings['CHECK_MK']['CHECK_MK.TMP'])) {
+                            exec(sprintf(
+                                'chown %s:%s %s -R',
+                                escapeshellarg($this->_systemsettings['MONITORING']['MONITORING.USER']),
+                                escapeshellarg($this->_systemsettings['MONITORING']['MONITORING.GROUP']),
+                                escapeshellarg($this->_systemsettings['CHECK_MK']['CHECK_MK.TMP'])
+                            ));
+                        }
+                    }
                 }
 
                 $return = $output;
@@ -477,6 +512,17 @@ class GearmanWorkerShell extends AppShell {
                         escapeshellarg($this->_systemsettings['MONITORING']['MONITORING.GROUP']),
                         escapeshellarg($this->_systemsettings['CHECK_MK']['CHECK_MK.VAR'])
                     ));
+
+                    if (isset($this->_systemsettings['CHECK_MK']['CHECK_MK.TMP'])) {
+                        if (is_dir($this->_systemsettings['CHECK_MK']['CHECK_MK.TMP'])) {
+                            exec(sprintf(
+                                'chown %s:%s %s -R',
+                                escapeshellarg($this->_systemsettings['MONITORING']['MONITORING.USER']),
+                                escapeshellarg($this->_systemsettings['MONITORING']['MONITORING.GROUP']),
+                                escapeshellarg($this->_systemsettings['CHECK_MK']['CHECK_MK.TMP'])
+                            ));
+                        }
+                    }
                 }
 
                 $return = $output;
