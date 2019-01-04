@@ -1461,6 +1461,7 @@ class Host extends AppModel {
 
     public function virtualFieldsForIndex() {
         $this->virtualFields['keywords'] = 'IF((Host.tags IS NULL OR Host.tags=""), Hosttemplate.tags, Host.tags)';
+        $this->virtualFields['not_keywords'] = 'IF((Host.tags IS NULL OR Host.tags=""), Hosttemplate.tags, Host.tags)';
     }
 
     /**

@@ -1323,6 +1323,7 @@ class Service extends AppModel {
     public function virtualFieldsForIndexAndServiceList() {
         $this->virtualFields['servicename'] = 'IF((Service.name IS NULL OR Service.name=""), Servicetemplate.name, Service.name)';
         $this->virtualFields['keywords'] = 'IF((Service.tags IS NULL OR Service.tags=""), Servicetemplate.tags, Service.tags)';
+        $this->virtualFields['not_keywords'] = 'IF((Service.tags IS NULL OR Service.tags=""), Servicetemplate.tags, Service.tags)';
     }
 
     public function virtualFieldsForNotMonitored() {

@@ -107,6 +107,7 @@ class Servicestatus extends CrateModuleAppModel {
 
     public function virtualFieldsForIndexAndServiceList() {
         $this->virtualFields['"Service.servicename"'] = 'Service.name';
+        $this->virtualFields['"Service.not_keywords"'] = 'Service.keywords';
 
     }
 
@@ -123,6 +124,15 @@ class Servicestatus extends CrateModuleAppModel {
             }
             unset($conditions['Service.keywords rlike']);
             $conditions['Service.tags rlike'] = implode('|', $values);
+        }
+
+        if (isset($conditions['Service.not_keywords not rlike'])) {
+            $values = [];
+            foreach (explode('|', $conditions['Service.not_keywords not rlike']) as $value) {
+                $values[] = sprintf('.*%s.*', $value);
+            }
+            unset($conditions['Service.not_keywords not rlike']);
+            $conditions['Service.tags not rlike'] = implode('|', $values);
         }
 
         if (isset($conditions['Servicestatus.problem_has_been_acknowledged'])) {

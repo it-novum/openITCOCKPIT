@@ -26,7 +26,8 @@ angular.module('openITCOCKPIT')
                 Service: {
                     id: QueryStringService.getIds('filter[Service.id][]', []),
                     name: QueryStringService.getValue('filter[Service.servicename]', ''),
-                    keywords: ''
+                    keywords: '',
+                    not_keywords: ''
                 },
                 Host: {
                     id: QueryStringService.getValue('filter[Host.id]', ''),
@@ -165,6 +166,7 @@ angular.module('openITCOCKPIT')
                 'filter[Servicestatus.output]': $scope.filter.Servicestatus.output,
                 'filter[Servicestatus.current_state][]': $rootScope.currentStateForApi($scope.filter.Servicestatus.current_state),
                 'filter[Service.keywords][]': $scope.filter.Service.keywords.split(','),
+                'filter[Service.not_keywords][]': $scope.filter.Service.not_keywords.split(','),
                 'filter[Servicestatus.problem_has_been_acknowledged]': hasBeenAcknowledged,
                 'filter[Servicestatus.scheduled_downtime_depth]': inDowntime,
                 'filter[Servicestatus.active_checks_enabled]': passive
@@ -295,6 +297,7 @@ angular.module('openITCOCKPIT')
                 'filter[Servicestatus.output]': $scope.filter.Servicestatus.output,
                 'filter[Servicestatus.current_state][]': $rootScope.currentStateForApi($scope.filter.Servicestatus.current_state),
                 'filter[Service.keywords][]': $scope.filter.Service.keywords.split(','),
+                'filter[Service.not_keywords][]': $scope.filter.Service.not_keywords.split(','),
                 'filter[Servicestatus.problem_has_been_acknowledged]': hasBeenAcknowledged,
                 'filter[Servicestatus.scheduled_downtime_depth]': inDowntime,
                 'filter[Servicestatus.active_checks_enabled]': passive
