@@ -126,7 +126,7 @@ class Hoststatus extends CrateModuleAppModel {
                 $values[] = sprintf('.*%s.*', $value);
             }
             unset($conditions['Host.not_keywords not rlike']);
-            $conditions['Host.tags not rlike'] = implode('|', $values);
+            $conditions['Host.tags not_rlike'] = implode('|', $values);
         }
 
         if (isset($conditions['Hoststatus.problem_has_been_acknowledged'])) {
@@ -153,7 +153,6 @@ class Hoststatus extends CrateModuleAppModel {
             ],
             'order'            => $HostConditions->getOrder()
         ];
-
         $query['conditions']['Host.disabled'] = (bool)$HostConditions->includeDisabled();
 
         if ($HostConditions->getHostIds()) {
@@ -262,10 +261,5 @@ class Hoststatus extends CrateModuleAppModel {
         }
 
         return $query;
-    }
-
-    public function virtualFieldsForIndex() {
-        $this->virtualFields['"Host.not_keywords"'] = 'Host.keywords';
-
     }
 }

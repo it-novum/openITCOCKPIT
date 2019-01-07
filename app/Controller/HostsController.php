@@ -189,7 +189,6 @@ class HostsController extends AppController {
         }
 
         if ($this->DbBackend->isCrateDb()) {
-            $this->Hoststatus->virtualFieldsForIndex();
             $query = $this->Hoststatus->getHostIndexQuery($HostCondition, $HostFilter->indexFilter());
             $modelName = 'Hoststatus';
         }

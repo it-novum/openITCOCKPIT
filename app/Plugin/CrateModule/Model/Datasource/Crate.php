@@ -49,7 +49,7 @@ class Crate extends DboSource {
      *
      * @var array
      */
-    protected $_sqlOps = ['like', 'ilike', 'rlike', 'not rlike','or', 'not', 'in', 'between', 'regexp', 'similar to', '~*', 'IS NULL'];
+    protected $_sqlOps = ['like', 'ilike', 'rlike', 'not_rlike','or', 'not', 'in', 'between', 'regexp', 'similar to', '~*', 'IS NULL'];
 
     /**
      * @var array
@@ -1065,7 +1065,7 @@ class Crate extends DboSource {
                 $operator = '~*';
             }
 
-            if ($operator === 'NOT RLIKE' || $operator === 'not rlike') {
+            if ($operator === 'NOT_RLIKE' || $operator === 'not_rlike') {
                 $operator = '!~*';
             }
 
