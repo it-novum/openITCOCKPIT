@@ -274,7 +274,7 @@ $config = [
                 'index' => ['addMacro'],
             ],
             'Registers'             => [
-                'index' => ['check'],
+                'index' => ['checkLicense'],
             ],
             'Servicedependencies'   => [
                 'index' => ['view'],
