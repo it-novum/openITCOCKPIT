@@ -172,7 +172,7 @@ class RecurringDowntimesTask extends AppShell implements CronjobInterface {
                                     break;
 
                                 case OBJECT_NODE: //Type 4 is Container, object Container does not exists
-                                    debug('test container downtime');
+                                    if (!$this->Container->exists($downtime['Systemdowntimes']['object_id'])) {
                                     if (!$this->Container->exists($downtime['Systemdowntimes']['object_id'])) {
                                         $this->Systemdowntimes->delete($downtime['Systemdowntimes']['id']);
                                         break;
