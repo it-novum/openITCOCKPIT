@@ -125,6 +125,15 @@ class Servicestatus extends CrateModuleAppModel {
             $conditions['Service.tags rlike'] = implode('|', $values);
         }
 
+        if (isset($conditions['Service.not_keywords not rlike'])) {
+            $values = [];
+            foreach (explode('|', $conditions['Service.not_keywords not rlike']) as $value) {
+                $values[] = sprintf('.*%s.*', $value);
+            }
+            unset($conditions['Service.not_keywords not rlike']);
+            $conditions['Service.tags not_rlike'] = implode('|', $values);
+        }
+
         if (isset($conditions['Servicestatus.problem_has_been_acknowledged'])) {
             $conditions['Servicestatus.problem_has_been_acknowledged'] = (bool)$conditions['Servicestatus.problem_has_been_acknowledged'];
         }

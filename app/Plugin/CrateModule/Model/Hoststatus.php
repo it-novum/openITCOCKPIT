@@ -120,6 +120,15 @@ class Hoststatus extends CrateModuleAppModel {
             $conditions['Host.tags rlike'] = implode('|', $values);
         }
 
+        if (isset($conditions['Host.not_keywords not rlike'])) {
+            $values = [];
+            foreach (explode('|', $conditions['Host.not_keywords not rlike']) as $value) {
+                $values[] = sprintf('.*%s.*', $value);
+            }
+            unset($conditions['Host.not_keywords not rlike']);
+            $conditions['Host.tags not_rlike'] = implode('|', $values);
+        }
+
         if (isset($conditions['Hoststatus.problem_has_been_acknowledged'])) {
             $conditions['Hoststatus.problem_has_been_acknowledged'] = (bool)$conditions['Hoststatus.problem_has_been_acknowledged'];
         }
@@ -144,7 +153,6 @@ class Hoststatus extends CrateModuleAppModel {
             ],
             'order'            => $HostConditions->getOrder()
         ];
-
         $query['conditions']['Host.disabled'] = (bool)$HostConditions->includeDisabled();
 
         if ($HostConditions->getHostIds()) {
