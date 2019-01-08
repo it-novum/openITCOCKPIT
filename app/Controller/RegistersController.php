@@ -28,6 +28,7 @@ use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\Http;
 use itnovum\openITCOCKPIT\Core\PackagemanagerRequestBuilder;
 use itnovum\openITCOCKPIT\Core\ValueObjects\License;
+use itnovum\openITCOCKPIT\Core\Views\UserTime;
 
 class RegistersController extends AppController {
     use LocatorAwareTrait;
@@ -41,6 +42,7 @@ class RegistersController extends AppController {
 
         if ($this->request->is('post')) {
             //$this->request->data['Register']['id'] = 1;
+            $Registers->get(1);
             $licenseValid = $this->checkLicense($this->request->data['Registers']['license']);
 
             $license = $Registers->getLicense();
@@ -148,11 +150,8 @@ class RegistersController extends AppController {
                         //license is valid
                         if ($this->isAngularJsRequest()) {
                             $license = $response->licence->Licence;
-                            $date = [
-                                'timezone'=> $this->Auth->user('timezone'),
-                                'dateformat' => $this->Auth->user('dateformat'),
-                            ];
-                            $license = hash::merge((array)$license, $date);
+                            $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
+                            $license->expire = $UserTime->format($license->expire);
                             $this->set(compact('license'));
                             $this->set('_serialize', ['license']);
                             return;

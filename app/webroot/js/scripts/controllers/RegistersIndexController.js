@@ -42,12 +42,6 @@ angular.module('openITCOCKPIT')
             });
         };
 
-        $scope.formatDate = function(date){
-            var date = date.split("-").join("/");
-            var dateOut = new Date(date);
-            return dateOut;
-        };
-
 
         $scope.submit = function(){
             $http.post("/registers/index.json?angular=true",

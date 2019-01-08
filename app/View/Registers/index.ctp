@@ -89,14 +89,7 @@
                         <strong><?php echo __('Expires'); ?>:</strong>
                     </div>
                     <div class="col-xs-12 col-md-3 text-primary">
-
                         {{license.expire}}
-                        {{license.dateformat}}
-                        {{license.timezone}}
-                        <!--{{license.expire | date: license.dateformat + license.timezone}} -->
-                        <!--{{license.expire | date: 'short'}} -->
-                        <!-- 2037-07-18 12:31:00 %H:%M:%S - %d.%m.%Y Europe/Berlin  -->
-                        {{'2037-07-18 12:31:00' | date: 'MMMM dd, yyyy'}}
                     </div>
                 </div>
                 <div class="row">
