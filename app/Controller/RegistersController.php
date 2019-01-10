@@ -41,37 +41,30 @@ class RegistersController extends AppController {
         $Registers = $TableLocator->get('Registers');
 
         if ($this->request->is('post')) {
-            //$this->request->data['Register']['id'] = 1;
-            $Registers->get(1);
             $licenseValid = $this->checkLicense($this->request->data['Registers']['license']);
-
             $license = $Registers->getLicense();
-            $apt = false;
-            if (!empty($license)) {
-                if ($this->request->data['Registers']['license'] == $license['license']) {
-                    $this->GearmanClient->sendBackground('create_apt_config', ['key' => $license['license']]);
-                    $apt = true;
-                } else {
-                    $apt = $license['apt'];
-                }
+           // $registersTable = TableRegistry::get('Registers');
+
+            if (empty($license)) {
+                //no license yet
+                $data = [
+                    'license' => $this->request->data['Registers']['license'],
+                ];
+                $register = $Registers->newEntity($data);
+                //debug($register);
             }
 
-            $data = [
-                'id'      => 1,
-                'license' => $this->request->data['Registers']['license'],
-                'apt'     => $apt
-            ];
-            $registersTable = TableRegistry::get('Registers');
-
-            $register = $registersTable->newEntity($data);
-
             if (!empty($licenseValid)) {
+                $this->GearmanClient->sendBackground('create_apt_config', ['key' => $license['license']]);
+                $register->apt = true;
+
                 if ($Registers->save($register)) {
                     if ($this->isAngularJsRequest()) {
                         $id = $register->id;
+                        debug($id);
                         $this->set('_serialize', ['id']);
 
-                        $this->serializeId();
+                       // $this->serializeId();
 
                         return;
                     } else {
@@ -99,6 +92,10 @@ class RegistersController extends AppController {
         $TableLocator = $this->getTableLocator();
         $Registers = $TableLocator->get('Registers');
         $license = $Registers->getLicense();
+        if($license == null){
+            //no license available
+            $license = ['license' => []];
+        }
         //get also the state env for License input autocompletion
         $env = ['productionEnv' => ENVIRONMENT === Environments::PRODUCTION];
         $license = Hash::merge($license, $env);
@@ -121,7 +118,6 @@ class RegistersController extends AppController {
 
         $prb = new PackagemanagerRequestBuilder(ENVIRONMENT, $license);
         $url = $prb->getUrlForLicenseCheck();
-        //$url = 'https://172.16.2.243/licences/check/F7C6761F-263B-46FD-8879-92F7CDFB7BFB.json';
         $http = new Http(
             $url,
             $prb->getOptions(),
@@ -168,59 +164,4 @@ class RegistersController extends AppController {
         }
         return false;
     }
-/*
-    public function check() {
-        $TableLocator = $this->getTableLocator();
-        $Registers = $TableLocator->get('Registers');
-        $Proxies = $TableLocator->get('Proxies');
-        $license = $Registers->getLicense();
-
-        if (empty($license)) {
-            $this->setFlash('Please enter a license key', false);
-            $this->redirect(['action' => 'index']);
-        }
-
-        $License = new License($license);
-        $packagemanagerRequestBuilder = new PackagemanagerRequestBuilder(ENVIRONMENT, $License->getLicense());
-        $http = new Http(
-            $packagemanagerRequestBuilder->getUrlForLicenseCheck(),
-            $packagemanagerRequestBuilder->getOptions(),
-            $Proxies->getSettings()
-        );
-
-        $http->sendRequest();
-        $error = $http->getLastError();
-        $response = json_decode($http->data);
-
-        $isValide = false;
-        $licence = null;
-
-        debug($response);
-
-        if (is_object($response)) {
-            if (property_exists($response, 'licence')) {
-                if (property_exists($response, 'licence')) {
-                    if (!empty($response->licence) && property_exists($response->licence, 'Licence')) {
-                        if (strtotime($response->licence->Licence->expire) > time()) {
-                            $isValide = true;
-                            $licence = $response->licence->Licence;
-                            if ($license['apt'] == 0) {
-                                $this->GearmanClient->sendBackground('create_apt_config', ['key' => $license['license']]);
-                                $license['apt'] = 1;
-                                $this->Register->save($license);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        if ($isValide == false) {
-            //The license is invalid, so we delete it again out of the database
-            if (isset($license['id'])) {
-                $this->Register->delete($license['id']);
-            }
-        }
-
-        $this->set(compact('isValide', 'licence', 'error'));
-    } */
 }

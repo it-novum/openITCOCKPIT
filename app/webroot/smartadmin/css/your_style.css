@@ -2175,4 +2175,8 @@ label[class^='aco-host']:after, label[class^='aco-service']:after {
     border-radius: 7px 3px 3px 7px;
 }
 
+.resetMinHeight {
+    min-height: 0px !important;
+}
+
 iframe { -webkit-backface-visibility:hidden }

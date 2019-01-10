@@ -9,6 +9,7 @@ angular.module('openITCOCKPIT')
 
         $scope.license = null;
         $scope.errors = null;
+        $scope.checked = false;
 
         $scope.load = function(){
             $http.get("/registers/loadLicense.json", {
@@ -27,6 +28,7 @@ angular.module('openITCOCKPIT')
                     'angular': true
                 }
             }).then(function(result){
+                $scope.checked = true;
                 console.log(result);
                 if(result.data.hasOwnProperty('license')){
                     $scope.license = result.data.license;
@@ -47,9 +49,13 @@ angular.module('openITCOCKPIT')
             $http.post("/registers/index.json?angular=true",
                 $scope.post
             ).then(function(result){
+
+                console.log('hudeldudel');
+                console.log(result);
                 console.log('Data saved successfully');
                 // window.location.href = '/registers/index';
             }, function errorCallback(result){
+                console.log(result);
                 if(result.data.hasOwnProperty('error')){
                     $scope.errors = result.data.error;
                 }

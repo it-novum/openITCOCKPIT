@@ -47,7 +47,7 @@
         </div>
     </header>
     <div>
-        <div class="widget-body">
+        <div class="widget-body resetMinHeight">
             <div ng-if="license.hasOwnProperty('id')">
                 <div class="paddint-top-20">
                     <h2><?php echo __('Your license is registered to:'); ?></h2>
@@ -101,7 +101,7 @@
                     </div>
                 </div>
             </div>
-            <div ng-if="!license.hasOwnProperty('id') && !errors.error">
+            <div ng-if="!license.hasOwnProperty('id') && !errors.error && post.Registers.license != '' && checked">
                 <div class="alert alert-danger alert-block">
                     <a href="#" data-dismiss="alert" class="close">×</a>
                     <h4 class="alert-heading"><?php echo __('Error'); ?></h4>
@@ -121,7 +121,6 @@
         </div>
         <hr>
         <br>
-
 
         <form ng-submit="submit();" class="form-horizontal">
             <div class="form-group required" ng-class="{'has-error': errors.license}">
