@@ -182,8 +182,7 @@ class GrafanaDashboardTask extends AppShell implements CronjobInterface {
             ]
         ]);
 
-        Configure::load('dbbackend');
-        $DbBackend = new DbBackend(Configure::read('dbbackend'));
+        $DbBackend = new DbBackend();
         $ServicestatusFields = new ServicestatusFields($DbBackend);
         $ServicestatusFields->perfdata();
         $ServicestatusConditions = new ServicestatusConditions($DbBackend);

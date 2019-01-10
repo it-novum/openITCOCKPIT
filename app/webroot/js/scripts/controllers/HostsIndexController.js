@@ -26,6 +26,7 @@ angular.module('openITCOCKPIT')
                     id: QueryStringService.getIds('filter[Host.id][]', []),
                     name: QueryStringService.getValue('filter[Host.name]', ''),
                     keywords: '',
+                    not_keywords: '',
                     address: QueryStringService.getValue('filter[Host.address]', ''),
                     satellite_id: []
                 }
@@ -64,6 +65,7 @@ angular.module('openITCOCKPIT')
                 'filter[Hoststatus.output]': $scope.filter.Hoststatus.output,
                 'filter[Hoststatus.current_state][]': $rootScope.currentStateForApi($scope.filter.Hoststatus.current_state),
                 'filter[Host.keywords][]': $scope.filter.Host.keywords.split(','),
+                'filter[Host.not_keywords][]': $scope.filter.Host.not_keywords.split(','),
                 'filter[Hoststatus.problem_has_been_acknowledged]': hasBeenAcknowledged,
                 'filter[Hoststatus.scheduled_downtime_depth]': inDowntime,
                 'filter[Host.address]': $scope.filter.Host.address,
@@ -186,6 +188,7 @@ angular.module('openITCOCKPIT')
                 'filter[Hoststatus.output]': $scope.filter.Hoststatus.output,
                 'filter[Hoststatus.current_state][]': $rootScope.currentStateForApi($scope.filter.Hoststatus.current_state),
                 'filter[Host.keywords][]': $scope.filter.Host.keywords.split(','),
+                'filter[Host.not_keywords][]': $scope.filter.Host.not_keywords.split(','),
                 'filter[Hoststatus.problem_has_been_acknowledged]': hasBeenAcknowledged,
                 'filter[Hoststatus.scheduled_downtime_depth]': inDowntime,
                 'filter[Host.address]': $scope.filter.Host.address,

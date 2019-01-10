@@ -213,6 +213,14 @@ class GrafanaApiConfiguration {
      * @return string
      */
     public function getApiUrl() {
+        if ($this->isDockerGrafana()) {
+            return sprintf(
+                '%s127.0.0.1%s/api',
+                $this->isUseHttps() ? 'https://' : 'http://',
+                $this->getDockerUrl()
+            );
+        }
+
         return sprintf(
             '%s%s/api',
             $this->isUseHttps() ? 'https://' : 'http://',
@@ -220,7 +228,7 @@ class GrafanaApiConfiguration {
         );
     }
 
-    public function getUiUrl() {
+    private function getUiUrl() {
         return sprintf(
             '%s%s',
             $this->isUseHttps() ? 'https://' : 'http://',
@@ -239,11 +247,42 @@ class GrafanaApiConfiguration {
      * @return string
      */
     public function getIframeUrl() {
+        $uiUrl = $this->getUiUrl();
+        if ($this->isDockerGrafana()) {
+            $uiUrl = $this->getDockerUrl();
+        }
+
         return sprintf(
             '%s/dashboard/db/%s?theme=%s&kiosk',
-            $this->getUiUrl(),
+            $uiUrl,
             $this->hostUuid,
             $this->dashboardStyle
+        );
+    }
+
+    public function getIframeUrlForDatepicker($timerange = 'now-3h', $autorefresh = '0') {
+        //&kiosk=tv require Grafana 5.3+ to work
+        //https://github.com/grafana/grafana/issues/13493
+        //Since Grafana 5.3, users can escape the &kiosk mode by pressing esc key.
+        //Also &kiosk=tv is not very helpful. So we implemented an datepicker for now.
+
+        $autoRefreshUrlStr = '';
+        if ($autorefresh !== 0 && $autorefresh !== '0') {
+            $autoRefreshUrlStr = sprintf('&refresh=%s', $autorefresh);
+        }
+
+        $uiUrl = $this->getUiUrl();
+        if ($this->isDockerGrafana()) {
+            $uiUrl = $this->getDockerUrl();
+        }
+
+        return sprintf(
+            '%s/dashboard/db/%s?theme=%s%s&from=%s&to=now&kiosk',
+            $uiUrl,
+            $this->hostUuid,
+            $this->dashboardStyle,
+            $autoRefreshUrlStr,
+            $timerange
         );
     }
 
@@ -258,13 +297,26 @@ class GrafanaApiConfiguration {
             $autoRefreshUrlStr = sprintf('&refresh=%s', $autorefresh);
         }
 
+        $uiUrl = $this->getUiUrl();
+        if ($this->isDockerGrafana()) {
+            $uiUrl = $this->getDockerUrl();
+        }
+
         return sprintf(
             '%s%s?theme=%s%s&from=%s&to=now&kiosk',
-            $this->getUiUrl(),
+            $uiUrl,
             $url,
             $this->dashboardStyle,
             $autoRefreshUrlStr,
             $timerange
         );
+    }
+
+    public function isDockerGrafana() {
+        return $this->apiUrl === 'grafana.docker';
+    }
+
+    public function getDockerUrl() {
+        return '/grafana';
     }
 }

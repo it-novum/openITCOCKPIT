@@ -13,7 +13,7 @@ angular.module('openITCOCKPIT')
             getValue: function(varName, defaultReturn){
 
                 defaultReturn = (typeof defaultReturn === 'undefined') ? null : defaultReturn;
-                var query = parseUri(decodeURIComponent(location.href)).queryKey;
+                var query = parseUri(decodeURIComponent(window.location.href)).queryKey;
                 if(query.hasOwnProperty(varName)){
                     return query[varName];
                 }
@@ -23,21 +23,56 @@ angular.module('openITCOCKPIT')
 
             getIds: function(varName, defaultReturn){
                 defaultReturn = (typeof defaultReturn === 'undefined') ? null : defaultReturn;
-                var url = new URL(location.href);
-                var serviceIds = url.searchParams.getAll(varName);
-                if(serviceIds.length > 0){
-                    return serviceIds;
+                try{
+                    //&filter[Service.id][]=861&filter[Service.id][]=53&filter[Service.id][]=860
+                    var url = new URL(window.location.href);
+                    var serviceIds = url.searchParams.getAll(varName);
+                    //getAll('filter[Service.id][]'); returns [861, 53, 860]
+                    if(serviceIds.length > 0){
+                        return serviceIds;
+                    }
+                    return defaultReturn;
+                }catch(e){
+                    //IE or Edge??
+
+                    ////&filter[Service.id][]=861&filter[Service.id][]=53&filter[Service.id][]=860&bert=123
+                    var urlString = window.location.href;
+                    var peaces = urlString.split(varName);
+                    //split returns [ "https://foo.bar/services/index?angular=true&", "=861&", "=53&", "=860&", "=865&", "=799&", "=802&bert=123" ]
+                    var ids = [];
+
+                    for(var i = 0; i < peaces.length; i++){
+                        if(peaces[i].charAt(0) === '='){
+                            //Read from = to next &
+                            var currentId = '';
+                            for(var k = 0; k < peaces[i].length; k++){
+                                var currentChar = peaces[i].charAt(k);
+
+                                if(currentChar !== '='){
+                                    if(currentChar === '&'){
+                                        //Next variable in GET
+                                        break;
+                                    }
+                                    currentId = currentId + currentChar;
+                                }
+                            }
+                            ids.push(currentId);
+                        }
+                    }
+                    if(ids.length > 0){
+                        return ids;
+                    }
+                    return defaultReturn;
                 }
-                return defaultReturn;
             },
 
             hasValue: function(varName){
-                var query = parseUri(decodeURIComponent(location.href)).queryKey;
+                var query = parseUri(decodeURIComponent(window.location.href)).queryKey;
                 return query.hasOwnProperty(varName);
             },
 
             hoststate: function(){
-                var query = parseUri(decodeURIComponent(location.href)).queryKey;
+                var query = parseUri(decodeURIComponent(window.location.href)).queryKey;
 
                 var states = {
                     up: false,
@@ -61,7 +96,7 @@ angular.module('openITCOCKPIT')
             },
 
             servicestate: function(){
-                var query = parseUri(decodeURIComponent(location.href)).queryKey;
+                var query = parseUri(decodeURIComponent(window.location.href)).queryKey;
 
                 var states = {
                     ok: false,

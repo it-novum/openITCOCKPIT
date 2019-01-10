@@ -49,7 +49,7 @@ class Crate extends DboSource {
      *
      * @var array
      */
-    protected $_sqlOps = ['like', 'ilike', 'rlike', 'or', 'not', 'in', 'between', 'regexp', 'similar to', '~*', 'IS NULL'];
+    protected $_sqlOps = ['like', 'ilike', 'rlike', 'not_rlike','or', 'not', 'in', 'between', 'regexp', 'similar to', '~*', 'IS NULL'];
 
     /**
      * @var array
@@ -1065,6 +1065,10 @@ class Crate extends DboSource {
                 $operator = '~*';
             }
 
+            if ($operator === 'NOT_RLIKE' || $operator === 'not_rlike') {
+                $operator = '!~*';
+            }
+
             if (!preg_match($operatorMatch, trim($operator)) && strpos($operator, ' ') !== false) {
                 $key = $key . ' ' . $operator;
                 $split = strrpos($key, ' ');
@@ -1103,7 +1107,7 @@ class Crate extends DboSource {
         }
 
 
-        if ($operator === '~*') {
+        if ($operator === '~*' || $operator === '!~*') {
             //Replace first % if exists
             if (substr($value, 0, 1) === '%') {
                 $value = sprintf('.*%s', substr($value, 1));

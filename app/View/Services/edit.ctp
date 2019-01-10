@@ -185,7 +185,7 @@ $notification_settings = [
                                 'data-placeholder' => __('Please select...'),
                                 'class'            => 'chosen',
                                 'label'            => ['text' => __('Servicegroup'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
-                                'selected'         => $service['Servicegroup'],
+                                'selected'         => $this->Html->getParameter('Service.Servicegroup', $service['Servicegroup']),
                                 'wrapInput'        => 'col col-xs-10 col-md-10 col-lg-10',
                                 'style'            => 'width: 100%',
                                 'multiple'         => true,
@@ -560,7 +560,7 @@ $notification_settings = [
                                     'caption'          => __(ucfirst('Status volatile')),
                                     'icon'             => '<i class="fa fa-asterisk"></i> ',
                                     'class'            => 'onoffswitch-checkbox',
-                                    'checked'          => $this->CustomValidationErrors->refill('is_volatile', false),
+                                    'checked'          => $this->CustomValidationErrors->refill('is_volatile', $service['Service']['is_volatile']),
                                     'wrapGridClass'    => 'col col-xs-1',
                                     'captionGridClass' => 'col col-md-2',
                                 ]); ?>

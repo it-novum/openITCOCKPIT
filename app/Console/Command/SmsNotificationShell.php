@@ -63,8 +63,7 @@ class SmsNotificationShell extends AppShell {
             ],
         ];
 
-        Configure::load('dbbackend');
-        $DbBackend = new DbBackend(Configure::read('dbbackend'));
+        $DbBackend = new DbBackend();
 
         $address = $this->params['address'];
         $method = 'nrpe';

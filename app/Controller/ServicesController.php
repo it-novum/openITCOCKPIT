@@ -819,6 +819,7 @@ class ServicesController extends AppController {
                 'priority',
                 'active_checks_enabled',
                 'process_performance_data',
+                'is_volatile'
             ],
             'Contact'      => [
                 'Contact',
@@ -1124,7 +1125,11 @@ class ServicesController extends AppController {
             $this->Service->set($this->request->data);
             $this->request->data['Contact']['Contact'] = $this->request->data('Service.Contact');
             $this->request->data['Contactgroup']['Contactgroup'] = $this->request->data('Service.Contactgroup');
-            $this->request->data['Servicegroup']['Servicegroup'] = (is_array($this->request->data['Service']['Servicegroup'])) ? $this->request->data['Service']['Servicegroup'] : [];
+            if (isset($this->request->data['Service']['Servicegroup']) && is_array($this->request->data['Service']['Servicegroup'])) {
+                $this->request->data['Servicegroup']['Servicegroup'] = $this->request->data['Service']['Servicegroup'];
+            } else {
+                $this->request->data['Servicegroup']['Servicegroup'] = [];
+            }
 
             $servicetemplate = [];
             if (isset($this->request->data['Service']['servicetemplate_id']) &&
@@ -1143,6 +1148,7 @@ class ServicesController extends AppController {
                         'Contactgroup',
                         'Contact',
                         'Servicetemplategroup',
+                        'Servicegroup'
                     ],
                     'recursive'  => -1,
                     'conditions' => [
@@ -2881,7 +2887,7 @@ class ServicesController extends AppController {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
-        $this->Service->virtualFields['servicename'] = 'IF((Service.name IS NULL OR Service.name=""), Servicetemplate.name, Service.name)';
+        $this->Service->virtualFields['servicename'] = 'CONCAT(Host.name,"/",IF((Service.name IS NULL OR Service.name=""), Servicetemplate.name, Service.name))';
         $selected = $this->request->query('selected');
         $includeDisabled = $this->request->query('includeDisabled') === 'true';
 
@@ -3010,6 +3016,23 @@ class ServicesController extends AppController {
             $statehistoryRecords[] = $StatehistoryHost;
         }
 
+        if (empty($statehistories) && empty($record)) {
+            $HoststatusFields = new HoststatusFields($this->DbBackend);
+            $HoststatusFields->currentState()
+                ->isHardstate()
+                ->lastStateChange()
+                ->lastHardStateChange();
+
+            $hoststatus = $this->Hoststatus->byUuid($hostUuid, $HoststatusFields);
+            if (!empty($hoststatus)) {
+                $record['StatehistoryHost']['state_time'] = $hoststatus['Hoststatus']['last_state_change'];
+                $record['StatehistoryHost']['state'] = $hoststatus['Hoststatus']['current_state'];
+                $record['StatehistoryHost']['state_type'] = ($hoststatus['Hoststatus']['state_type'])?true:false;
+                $StatehistoryHost = new \itnovum\openITCOCKPIT\Core\Views\StatehistoryHost($record['StatehistoryHost']);
+                $statehistoryRecords[] = $StatehistoryHost;
+            }
+        }
+
 
         foreach ($statehistories as $statehistory) {
             $StatehistoryHost = new \itnovum\openITCOCKPIT\Core\Views\StatehistoryHost($statehistory['StatehistoryHost']);
@@ -3042,6 +3065,23 @@ class ServicesController extends AppController {
             $record['StatehistoryService']['state_time'] = $start;
             $StatehistoryService = new \itnovum\openITCOCKPIT\Core\Views\StatehistoryService($record['StatehistoryService']);
             $statehistoryServiceRecords[] = $StatehistoryService;
+        }
+
+        if (empty($statehistoriesService) && empty($record)) {
+            $ServicestatusFields = new ServicestatusFields($this->DbBackend);
+            $ServicestatusFields->currentState()
+                ->isHardstate()
+                ->lastStateChange()
+                ->lastHardStateChange();
+
+            $servicestatus = $this->Servicestatus->byUuid($service['Service']['uuid'], $ServicestatusFields);
+            if (!empty($servicestatus)) {
+                $record['StatehistoryService']['state_time'] = $servicestatus['Servicestatus']['last_state_change'];
+                $record['StatehistoryService']['state'] = $servicestatus['Servicestatus']['current_state'];
+                $record['StatehistoryService']['state_type'] = $servicestatus['Servicestatus']['state_type'];
+                $StatehistoryService = new \itnovum\openITCOCKPIT\Core\Views\StatehistoryService($record['StatehistoryService']);
+                $statehistoryServiceRecords[] = $StatehistoryService;
+            }
         }
 
         foreach ($statehistoriesService as $statehistoryService) {

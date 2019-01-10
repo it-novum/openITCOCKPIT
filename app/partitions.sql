@@ -23,10 +23,10 @@ CREATE TABLE IF NOT EXISTS `nagios_servicechecks` (
   `execution_time`        DOUBLE      NOT NULL    DEFAULT '0',
   `latency`               DOUBLE      NOT NULL    DEFAULT '0',
   `return_code`           SMALLINT(6) NOT NULL    DEFAULT '0',
-  `output`                VARCHAR(1000)
+  `output`                VARCHAR(4096)
                           COLLATE utf8_swedish_ci,
   `long_output`           TEXT COLLATE utf8_swedish_ci,
-  `perfdata`              VARCHAR(1000)
+  `perfdata`              VARCHAR(4096)
                           COLLATE utf8_swedish_ci,
   PRIMARY KEY (`servicecheck_id`, `start_time`),
   KEY `start_time` (`start_time`),
@@ -70,10 +70,10 @@ CREATE TABLE IF NOT EXISTS `nagios_hostchecks` (
   `execution_time`        DOUBLE      NOT NULL    DEFAULT '0',
   `latency`               DOUBLE      NOT NULL    DEFAULT '0',
   `return_code`           SMALLINT(6) NOT NULL    DEFAULT '0',
-  `output`                VARCHAR(255)
+  `output`                VARCHAR(4096)
                           CHARACTER SET utf8      DEFAULT '',
   `long_output`           TEXT CHARACTER SET utf8,
-  `perfdata`              VARCHAR(255)
+  `perfdata`              VARCHAR(4096)
                           COLLATE utf8_swedish_ci DEFAULT '',
   PRIMARY KEY (`hostcheck_id`, `start_time`),
   KEY `start_time` (`start_time`),
@@ -104,7 +104,7 @@ CREATE TABLE IF NOT EXISTS `nagios_statehistory` (
   `max_check_attempts`    SMALLINT(6) NOT NULL    DEFAULT '0',
   `last_state`            SMALLINT(6) NOT NULL    DEFAULT '-1',
   `last_hard_state`       SMALLINT(6) NOT NULL    DEFAULT '-1',
-  `output`                VARCHAR(255)
+  `output`                VARCHAR(4096)
                           COLLATE utf8_swedish_ci DEFAULT '',
   `long_output`           TEXT COLLATE utf8_swedish_ci,
   PRIMARY KEY (`statehistory_id`, `state_time`),
@@ -160,7 +160,7 @@ CREATE TABLE IF NOT EXISTS `nagios_notifications` (
   `end_time`            DATETIME    NOT NULL    DEFAULT '1970-01-01 00:00:00',
   `end_time_usec`       INT(11)     NOT NULL    DEFAULT '0',
   `state`               SMALLINT(6) NOT NULL    DEFAULT '0',
-  `output`              VARCHAR(255)
+  `output`              VARCHAR(4096)
                         COLLATE utf8_swedish_ci DEFAULT '',
   `long_output`         TEXT COLLATE utf8_swedish_ci,
   `escalated`           SMALLINT(6) NOT NULL    DEFAULT '0',

@@ -43,4 +43,22 @@ class MonitoringEngine {
         return $this->monitoringEngine;
     }
 
+    /**
+     * @return bool
+     */
+    public function isNaemon() {
+        $monitoringEngine = strtolower($this->monitoringEngine);
+        if (preg_match('/naemon/', $monitoringEngine)) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isNagios() {
+        return !$this->isNaemon();
+    }
+
 }

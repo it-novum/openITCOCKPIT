@@ -77,6 +77,15 @@ abstract class Filter {
                                 $conditions[sprintf('%s rlike', $field)] = sprintf('.*(%s).*', implode('|', $value));
                             }
                             break;
+                        case 'notrlike':
+                            $value = $this->getQueryFieldValue($field, true);
+                            if ($value) {
+                                if (!is_array($value)) {
+                                    $value = [$value];
+                                }
+                                $conditions[sprintf('%s not rlike', $field)] = sprintf('.*(%s).*', implode('|', $value));
+                            }
+                            break;
                         case 'equals':
                             $values = $this->getQueryFieldValue($field);
                             if (is_array($values) && !empty($values)) {

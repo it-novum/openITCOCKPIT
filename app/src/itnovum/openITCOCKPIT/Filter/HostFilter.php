@@ -44,6 +44,9 @@ class HostFilter extends Filter {
             'rlike'    => [
                 'Host.keywords'
             ],
+            'notrlike'    => [
+                'Host.not_keywords'
+            ],
             'equals'   => [
                 'Host.id',
                 'Host.uuid',

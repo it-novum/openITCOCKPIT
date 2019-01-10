@@ -32,7 +32,7 @@ class Mapgadget extends MapModuleAppModel {
     ];
 
     public $validate = [
-        'map_id'     => [
+        'map_id'      => [
             'notBlank' => [
                 'rule'     => 'notBlank',
                 'message'  => 'No Map selected',
@@ -48,7 +48,7 @@ class Mapgadget extends MapModuleAppModel {
                 'required' => true,
             ],
         ],
-        'object_id'  => [
+        'object_id'   => [
             'notBlank' => [
                 'rule'     => 'notBlank',
                 'message'  => 'No Service selected',
@@ -64,7 +64,7 @@ class Mapgadget extends MapModuleAppModel {
                 'required' => true,
             ],
         ],
-        'x'          => [
+        'x'           => [
             'notBlank' => [
                 'rule'     => 'notBlank',
                 'message'  => 'This field cannot be left blank.',
@@ -80,7 +80,7 @@ class Mapgadget extends MapModuleAppModel {
                 'required' => true,
             ],
         ],
-        'y'          => [
+        'y'           => [
             'notBlank' => [
                 'rule'     => 'notBlank',
                 'message'  => 'This field cannot be left blank.',
@@ -96,21 +96,21 @@ class Mapgadget extends MapModuleAppModel {
                 'required' => true,
             ],
         ],
-        'size_x'     => [
+        'size_x'      => [
             'notBlank' => [
                 'rule'     => ['isNullOrNumericGtZeroX'],
                 'message'  => 'This field needs to be numeric or null',
                 'required' => true,
             ],
         ],
-        'size_y'     => [
+        'size_y'      => [
             'notBlank' => [
                 'rule'     => ['isNullOrNumericGtZeroY'],
                 'message'  => 'This field needs to be numeric or null',
                 'required' => true,
             ],
         ],
-        'z_index'    => [
+        'z_index'     => [
             'notBlank' => [
                 'rule'     => 'notBlank',
                 'message'  => 'This field cannot be left blank.',
@@ -121,13 +121,19 @@ class Mapgadget extends MapModuleAppModel {
                 'message' => 'This field needs to be numeric.',
             ]
         ],
-        'show_label' => [
+        'show_label'  => [
             'numeric' => [
                 'rule'    => 'numeric',
                 'message' => 'This field needs to be numeric.',
             ]
         ],
-        'type'       => [
+        'font_size'   => [
+            'numeric' => [
+                'rule'    => 'numeric',
+                'message' => 'This field needs to be numeric.',
+            ]
+        ],
+        'type'        => [
             'notBlank'       => [
                 'rule'     => 'notBlank',
                 'message'  => 'This field cannot be left blank.',
@@ -138,7 +144,7 @@ class Mapgadget extends MapModuleAppModel {
                 'message' => 'Unsupported object type',
             ],
         ],
-        'gadget'     => [
+        'gadget'      => [
             'notBlank'       => [
                 'rule'     => 'notBlank',
                 'message'  => 'This field cannot be left blank.',
@@ -149,10 +155,16 @@ class Mapgadget extends MapModuleAppModel {
                 'message' => 'Unsupported Gatget type',
             ],
         ],
-        'metric'     => [
+        'metric'      => [
             'valObjectTypes' => [
                 'rule'    => ['valMetric'],
                 'message' => 'Metric needs to be a string or null',
+            ]
+        ],
+        'output_type' => [
+            'valObjectTypes' => [
+                'rule'    => ['valOutputType'],
+                'message' => 'Output type out of range service_output, service_long_output or null',
             ]
         ]
     ];
@@ -166,7 +178,16 @@ class Mapgadget extends MapModuleAppModel {
 
     public function valGadgetTypes($data) {
         if (isset($data['gadget'])) {
-            return in_array($data['gadget'], ['Tacho', 'Cylinder', 'Text', 'TrafficLight', 'RRDGraph', 'Temperature'], true);
+            $availableGadgets = [
+                'Tacho',
+                'Cylinder',
+                'Text',
+                'TrafficLight',
+                'RRDGraph',
+                'Temperature',
+                'ServiceOutput'
+            ];
+            return in_array($data['gadget'], $availableGadgets, true);
         }
         return false;
     }
@@ -189,6 +210,20 @@ class Mapgadget extends MapModuleAppModel {
             }
             if ($data['metric'] !== '') {
                 return true;
+            }
+        }
+        return false;
+    }
+
+    public function valOutputType($data) {
+        if (array_key_exists('output_type', $data)) {
+            if ($data['output_type'] === null) {
+                return true;
+            }
+            if ($data['output_type'] !== '') {
+                if ($data['output_type'] === 'service_output' || $data['output_type'] === 'service_long_output') {
+                    return true;
+                }
             }
         }
         return false;

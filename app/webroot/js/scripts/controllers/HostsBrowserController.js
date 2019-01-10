@@ -59,6 +59,9 @@ angular.module('openITCOCKPIT')
         $scope.timelineIsLoading = false;
         $scope.failureDurationInPercent = null;
 
+        $scope.selectedGrafanaTimerange = 'now-3h';
+        $scope.selectedGrafanaAutorefresh = '60s';
+
         var flappingInterval;
 
         var graphStart = 0;
@@ -118,6 +121,7 @@ angular.module('openITCOCKPIT')
                 }
 
                 $scope.load();
+                $scope.loadGrafanaIframeUrl();
 
                 $scope.init = false;
             });
@@ -609,6 +613,27 @@ angular.module('openITCOCKPIT')
             });
             return (failuresDuration / totalTime * 100).toFixed(3);
         };
+
+        $scope.loadGrafanaIframeUrl = function(){
+            $http.get("/hosts/getGrafanaIframeUrlForDatepicker/.json", {
+                params: {
+                    'uuid': $scope.mergedHost.Host.uuid,
+                    'angular': true,
+                    'from': $scope.selectedGrafanaTimerange,
+                    'refresh': $scope.selectedGrafanaAutorefresh
+                }
+            }).then(function(result){
+                $scope.GrafanaDashboardExists = result.data.GrafanaDashboardExists;
+                $scope.GrafanaIframeUrl = result.data.iframeUrl;
+            });
+        };
+
+        $scope.grafanaTimepickerCallback = function(selectedTimerange, selectedAutorefresh){
+            $scope.selectedGrafanaTimerange = selectedTimerange;
+            $scope.selectedGrafanaAutorefresh = selectedAutorefresh;
+            $scope.loadGrafanaIframeUrl();
+        };
+
 
         $scope.loadHost();
         $scope.loadTimezone();

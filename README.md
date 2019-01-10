@@ -20,7 +20,7 @@ Password: demo123
 ````
 
 # System requirements
-* Ubuntu Linux 64 bit (14.04 LTS "trusty" and 16.04 LTS "xenial"), Debian Linux 64 bit (8 "jessie" and 9 "stretch")
+* Ubuntu Linux 64 bit (16.04 LTS "xenial" and 18.04 LTS "bionic"), Debian Linux 64 bit (9 "stretch")
 * 2 CPU cores (x86-64)
 * 2 GB RAM
 * 15 GB space
@@ -44,10 +44,12 @@ If [phpMyAdmin](https://www.phpmyadmin.net/) asks you for your web server **leav
 
 openITCOCKPIT uses Nginx as webserver and will generate a configuration for phpMyAdmin automatically for you.
 
+Please execute all commands as user `root` or via `sudo`.
+
 **openITCOCKPIT + Naemon (recommended)**
 ````
-apt-get install apt-transport-https
-apt-key adv --recv --keyserver hkp://keyserver.ubuntu.com 1148DA8E
+apt-get install apt-transport-https curl
+curl https://packages.openitcockpit.com/072783CB.txt | apt-key add
 ````
 If you can not import the key from the keyserver, use this:
 ````
@@ -58,18 +60,16 @@ mQINBFhHx0UBEAC8WMQdvfHOVs89RUBjTnpIfPUu6/0WMdw4G7cv7smMtaodZmwlr/nfn3RsMYy/kiQ6
 -----END PGP PUBLIC KEY BLOCK-----
 " | apt-key add -
 ````
-Ubuntu 14.04 - Trusty
-````
-echo 'deb https://packages.openitcockpit.com/repositories/trusty trusty main' > /etc/apt/sources.list.d/openitcockpit.list
-````
+
 Ubuntu 16.04 - Xenial
 ````
 echo 'deb https://packages.openitcockpit.com/repositories/xenial xenial main' > /etc/apt/sources.list.d/openitcockpit.list
 ````
-Debian 8 - Jessie
+Ubuntu 18.04 - Bionic
 ````
-echo 'deb https://packages.openitcockpit.com/repositories/jessie jessie main' > /etc/apt/sources.list.d/openitcockpit.list
+echo 'deb https://packages.openitcockpit.com/repositories/bionic bionic main' > /etc/apt/sources.list.d/openitcockpit.list
 ````
+
 Debian 9 - Stretch
 ````
 echo 'deb https://packages.openitcockpit.com/repositories/stretch stretch main' > /etc/apt/sources.list.d/openitcockpit.list
@@ -81,9 +81,10 @@ apt-get install openitcockpit{,-common,-naemon,-statusengine-naemon,-message}
 ````
 **openITCOCKPIT Nagios 4:**
 
+Please execute all commands as user `root` or via `sudo`. 
 ````
-apt-get install apt-transport-https
-apt-key adv --recv --keyserver hkp://keyserver.ubuntu.com 1148DA8E
+apt-get install apt-transport-https curl
+curl https://packages.openitcockpit.com/072783CB.txt | apt-key add
 ````
 If you can not import the key from the keyserver, use this:
 ````
@@ -94,18 +95,16 @@ mQINBFhHx0UBEAC8WMQdvfHOVs89RUBjTnpIfPUu6/0WMdw4G7cv7smMtaodZmwlr/nfn3RsMYy/kiQ6
 -----END PGP PUBLIC KEY BLOCK-----
 " | apt-key add -
 ````
-Ubuntu 14.04 - Trusty
-````
-echo 'deb https://packages.openitcockpit.com/repositories/trusty trusty main' > /etc/apt/sources.list.d/openitcockpit.list
-````
+
 Ubuntu 16.04 - Xenial
 ````
 echo 'deb https://packages.openitcockpit.com/repositories/xenial xenial main' > /etc/apt/sources.list.d/openitcockpit.list
 ````
-Debian 8 - Jessie
+Ubuntu 18.04 - Bionic
 ````
-echo 'deb https://packages.openitcockpit.com/repositories/jessie jessie main' > /etc/apt/sources.list.d/openitcockpit.list
+echo 'deb https://packages.openitcockpit.com/repositories/bionic bionic main' > /etc/apt/sources.list.d/openitcockpit.list
 ````
+
 Debian 9 - Stretch
 ````
 echo 'deb https://packages.openitcockpit.com/repositories/stretch stretch main' > /etc/apt/sources.list.d/openitcockpit.list
@@ -169,6 +168,7 @@ Use [this Vagrantfile](https://raw.githubusercontent.com/it-novum/vagrantboxes/m
 * [it-novum GmbH](https://it-novum.com/en/it-service-management/openitcockpit/openitcockpit-enterprise-subscription-license) provides commercial support
 
 # License
+```
 Copyright (C) 2015-2017  it-novum GmbH
 
 
@@ -194,3 +194,4 @@ If you purchased an openITCOCKPIT Enterprise Edition you can use this file
 under the terms of the openITCOCKPIT Enterprise Edition licence agreement.
 Licence agreement and licence key will be shipped with the order
 confirmation.
+```

@@ -462,6 +462,27 @@ div.info .chosen-container-multi .chosen-choices li.search-choice .search-choice
     padding: 5px;
 }
 
+.padding-bottom-7 {
+    padding-bottom: 7px;
+}
+
+.padding-top-7 {
+    padding-top: 7px;
+}
+
+.padding-left-7 {
+    padding-left: 7px;
+}
+
+.padding-right-7 {
+    padding-right: 7px;
+}
+
+.padding-7 {
+    padding: 7px;
+}
+
+
 .padding-bottom-8 {
     padding-bottom: 8px;
 }

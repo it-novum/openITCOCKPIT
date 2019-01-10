@@ -23,7 +23,19 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use itnovum\openITCOCKPIT\Core\Views\BBCodeParser;
+
 class BbcodeComponent extends Component {
+
+    /**
+     * @var BBCodeParser
+     */
+    private $parser;
+
+    /**
+     * @var JBBCode\Parser
+     */
+    private $bbparser;
 
     /**
      * initialize the BB Code Component
@@ -78,12 +90,7 @@ class BbcodeComponent extends Component {
      * @since  3.0
      */
     public function asHtml($bbcode, $nl2br = true) {
-        $this->bbparser->parse(htmlentities($bbcode));
-        if ($nl2br === true) {
-            return nl2br($this->bbparser->getAsHtml());
-        }
-
-        return $this->bbparser->getAsHtml();
+        return $this->parser->asHtml($bbcode, $nl2br);
     }
 
     /**
@@ -95,7 +102,7 @@ class BbcodeComponent extends Component {
      * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since  3.0
      */
-    public function nagiosNl2br($string) {
-        return str_replace(['\n', '\r\n', '\r'], '<br>', $string);
+    public function nagiosNl2br($str) {
+        return $this->parser->nagiosNl2br($str);
     }
 }

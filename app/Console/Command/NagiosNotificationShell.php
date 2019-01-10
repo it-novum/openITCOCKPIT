@@ -147,16 +147,16 @@ class NagiosNotificationShell extends AppShell {
             }
         }
 
-        if (isset($_SERVER['NAGIOS_HOSTACKAUTHOR'])) {
-            $return['hostackauthor'] = $_SERVER['NAGIOS_HOSTACKAUTHOR'];
+        if (isset($_SERVER['NAGIOS_NOTIFICATIONAUTHOR'])) {
+            $return['hostackauthor'] = $_SERVER['NAGIOS_NOTIFICATIONAUTHOR'];
         } else {
             if (array_key_exists('hostackauthor', $this->params)) {
                 $return['hostackauthor'] = $this->params['hostackauthor'];
             }
         }
 
-        if (isset($_SERVER['NAGIOS_HOSTACKCOMMENT'])) {
-            $return['hostackcomment'] = $_SERVER['NAGIOS_HOSTACKCOMMENT'];
+        if (isset($_SERVER['NAGIOS_NOTIFICATIONCOMMENT'])) {
+            $return['hostackcomment'] = $_SERVER['NAGIOS_NOTIFICATIONCOMMENT'];
         } else {
             if (array_key_exists('hostackcomment', $this->params)) {
                 $return['hostackcomment'] = $this->params['hostackcomment'];
@@ -203,16 +203,16 @@ class NagiosNotificationShell extends AppShell {
             }
         }
 
-        if (isset($_SERVER['NAGIOS_SERVICEACKAUTHOR'])) {
-            $return['serviceackauthor'] = $_SERVER['NAGIOS_SERVICEACKAUTHOR'];
+        if (isset($_SERVER['NAGIOS_NOTIFICATIONAUTHOR'])) {
+            $return['serviceackauthor'] = $_SERVER['NAGIOS_NOTIFICATIONAUTHOR'];
         } else {
             if (array_key_exists('serviceackauthor', $this->params)) {
                 $return['serviceackauthor'] = $this->params['serviceackauthor'];
             }
         }
 
-        if (isset($_SERVER['NAGIOS_SERVICEACKCOMMENT'])) {
-            $return['serviceackcomment'] = $_SERVER['NAGIOS_SERVICEACKCOMMENT'];
+        if (isset($_SERVER['NAGIOS_NOTIFICATIONCOMMENT'])) {
+            $return['serviceackcomment'] = $_SERVER['NAGIOS_NOTIFICATIONCOMMENT'];
         } else {
             if (array_key_exists('serviceoutput', $this->params)) {
                 $return['serviceackcomment'] = $this->params['serviceackcomment'];
