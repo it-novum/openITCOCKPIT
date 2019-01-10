@@ -18,7 +18,7 @@ angular.module('openITCOCKPIT').directive('servicesStatusWidget', function($http
                 hasResize();
             });
 
-            $scope.hostListTimeout = null;
+            $scope.serviceListTimeout = null;
 
             $scope.sort = 'Servicestatus.current_state';
             $scope.direction = 'desc';
