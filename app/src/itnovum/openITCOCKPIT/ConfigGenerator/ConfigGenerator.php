@@ -27,7 +27,7 @@ namespace itnovum\openITCOCKPIT\ConfigGenerator;
 
 class ConfigGenerator {
 
-    protected $basePath = APP . 'config_templates' . DS;
+    protected $basePath = OLD_APP . 'config_templates' . DS;
 
     /**
      * Folder where Twig should search for the template.

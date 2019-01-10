@@ -31,7 +31,7 @@ class DbBackend {
      * DbBackend constructor.
      */
     public function __construct() {
-        $configFile = APP . 'Config' . DS . 'dbbackend.php';
+        $configFile = OLD_APP . 'Config' . DS . 'dbbackend.php';
         if (file_exists($configFile)) {
             \Configure::load('dbbackend');
             $this->backend = \Configure::read('dbbackend');
