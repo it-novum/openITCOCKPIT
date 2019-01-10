@@ -56,9 +56,15 @@ class TestingShell extends AppShell {
     public function main() {
         //debug($this->Aro->find('all'));
         //debug($this->Aco->find('all', ['recursive' => -1]));
+
+        //Load CakePHP4 Models
+        //$Proxy = TableRegistry::getTableLocator()->get('Proxies');
+        //print_r($Proxy->getSettings());
+
         /*
          * Lof of space for your experimental code :)
          */
+
     }
 
     public function getOptionParser() {

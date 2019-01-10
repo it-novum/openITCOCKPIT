@@ -3,6 +3,7 @@
 namespace App\Model\Table;
 
 use Cake\ORM\Table;
+use Cake\Utility\Hash;
 use Cake\Validation\Validator;
 
 /**
@@ -42,7 +43,7 @@ class ProxiesTable extends Table {
     public function validationDefault(Validator $validator) {
         $validator
             ->integer('id')
-            ->allowEmpty('id', 'create');
+            ->allowEmptyString('id', 'create');
 
         $validator
             ->scalar('ipaddress')
@@ -51,7 +52,7 @@ class ProxiesTable extends Table {
             ->notEmpty('ipaddress');
 
         $validator
-            ->integer('port')
+            ->integer('port', 'This field needs to be numeric.')
             ->requirePresence('port', 'create')
             ->notEmpty('port');
 
@@ -68,13 +69,11 @@ class ProxiesTable extends Table {
      * @return array
      */
     public function getSettings() {
-        $query = $this->find()->first();
+        $result = $this->find()->first();
         $settings = ['ipaddress' => '', 'port' => 0, 'enabled' => false];
-        if (!empty($query)) {
-            $proxy = $query->toArray();
-            if (isset($proxy['Proxy'])) {
-                $settings = Hash::merge($settings, $proxy['Proxy']);
-            }
+        if (!is_null($result)) {
+            $proxy = $result->toArray();
+            $settings = Hash::merge($settings, $proxy);
         }
         return $settings;
     }
