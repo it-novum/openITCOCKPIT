@@ -2,8 +2,11 @@
 
 namespace App\Model\Table;
 
+use Cake\ORM\Locator\LocatorAwareTrait;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
+use itnovum\openITCOCKPIT\Core\Http;
+use itnovum\openITCOCKPIT\Core\PackagemanagerRequestBuilder;
 
 /**
  * Registers Model
@@ -20,6 +23,7 @@ use Cake\Validation\Validator;
  * @mixin \Cake\ORM\Behavior\TimestampBehavior
  */
 class RegistersTable extends Table {
+    use LocatorAwareTrait;
 
     /**
      * Initialize method
@@ -54,16 +58,16 @@ class RegistersTable extends Table {
             ->requirePresence('license', 'create')
             ->notEmpty('license');
 
-       /* $validator
-            ->boolean('accepted')
-            ->requirePresence('accepted', 'create')
-            ->notEmpty('accepted');
+        /* $validator
+             ->boolean('accepted')
+             ->requirePresence('accepted', 'create')
+             ->notEmpty('accepted');
 
-        $validator
-            ->boolean('apt')
-            ->requirePresence('apt', 'create')
-            ->notEmpty('apt');
-*/
+         $validator
+             ->boolean('apt')
+             ->requirePresence('apt', 'create')
+             ->notEmpty('apt');
+ */
         return $validator;
     }
 
@@ -71,10 +75,53 @@ class RegistersTable extends Table {
      * @return mixed License Array or null
      */
     public function getLicense() {
-        $query = $this->find()->first();
-        if(!empty($query)){
+        $query = $this->getLicenseEntity();
+        if (!empty($query)) {
             return $query->toArray();
         }
         return $query;
+    }
+
+    /**
+     * @return array|\Cake\Datasource\EntityInterface|null
+     */
+    public function getLicenseEntity() {
+        return $this->find()->first();
+    }
+
+    public function checkLicenseKey($license) {
+        $TableLocator = $this->getTableLocator();
+        $Proxies = $TableLocator->get('Proxies');
+
+        $prb = new PackagemanagerRequestBuilder(ENVIRONMENT, $license);
+
+        $url = $prb->getUrlForLicenseCheck();
+
+        $http = new Http(
+            $url,
+            $prb->getOptions(),
+            $Proxies->getSettings()
+        );
+
+        $http->sendRequest();
+        $error = $http->getLastError();
+
+        if ($error) {
+            return $error;
+        }
+
+        $response = json_decode($http->data);
+        if (is_object($response)) {
+            //wrong spelled "licence" comes from license server
+            if (property_exists($response, 'licence')) {
+                if (!empty($response->licence) && property_exists($response->licence, 'Licence')) {
+                    if (!empty($response->licence->Licence) && strtotime($response->licence->Licence->expire) > time()) {
+                        //license is valid
+                        return $response->licence->Licence;
+                    }
+                }
+            }
+        }
+        return null;
     }
 }
