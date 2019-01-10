@@ -75,7 +75,7 @@
                     <div class="col-xs-12 margin-top-10">
                         <div class="well formactions ">
                             <div class="pull-right">
-                                <input class="btn btn-primary" type="submit" value="Save">&nbsp;
+                                <input class="btn btn-primary" type="submit" value="<?php echo __('Save'); ?>">&nbsp;
                             </div>
                         </div>
                     </div>
