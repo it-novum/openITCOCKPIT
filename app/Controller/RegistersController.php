@@ -24,9 +24,6 @@
 //	confirmation.
 
 use Cake\ORM\Locator\LocatorAwareTrait;
-use Cake\ORM\TableRegistry;
-use itnovum\openITCOCKPIT\Core\Http;
-use itnovum\openITCOCKPIT\Core\PackagemanagerRequestBuilder;
 use itnovum\openITCOCKPIT\Core\ValueObjects\License;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
 
@@ -41,31 +38,30 @@ class RegistersController extends AppController {
         $Registers = $TableLocator->get('Registers');
 
         if ($this->request->is('post')) {
-            $licenseValid = $this->checkLicense($this->request->data['Registers']['license']);
-            $license = $Registers->getLicense();
-           // $registersTable = TableRegistry::get('Registers');
-
-            if (empty($license)) {
-                //no license yet
-                $data = [
-                    'license' => $this->request->data['Registers']['license'],
-                ];
-                $register = $Registers->newEntity($data);
-                //debug($register);
+            $licenseValid = false;
+            $licenseResponse = $Registers->checkLicenseKey($this->request->data['Registers']['license']);
+            if (is_object($licenseResponse) && property_exists($licenseResponse, 'licence')) {
+                //license is valid
+                $licenseValid = true;
             }
+            $licenseEntity = $Registers->getLicenseEntity();
+
+            if (is_null($licenseEntity)) {
+                //no license yet
+                $licenseEntity = $Registers->newEntity();
+            }
+            $license = $this->request->data['Registers']['license'];
+
+            $licenseEntity = $Registers->patchEntity($licenseEntity, ['license' => $license]);
 
             if (!empty($licenseValid)) {
-                $this->GearmanClient->sendBackground('create_apt_config', ['key' => $license['license']]);
-                $register->apt = true;
+                $this->GearmanClient->sendBackground('create_apt_config', ['key' => $license]);
+                $licenseEntity->apt = true;
 
-                if ($Registers->save($register)) {
+                if ($Registers->save($licenseEntity)) {
                     if ($this->isAngularJsRequest()) {
-                        $id = $register->id;
-                        debug($id);
+                        $id = $licenseEntity->id;
                         $this->set('_serialize', ['id']);
-
-                       // $this->serializeId();
-
                         return;
                     } else {
                         $this->setFlash(__('License successfully added'));
@@ -92,7 +88,7 @@ class RegistersController extends AppController {
         $TableLocator = $this->getTableLocator();
         $Registers = $TableLocator->get('Registers');
         $license = $Registers->getLicense();
-        if($license == null){
+        if ($license == null) {
             //no license available
             $license = ['license' => []];
         }
@@ -109,59 +105,98 @@ class RegistersController extends AppController {
      * @return bool
      */
     public function checkLicense($license) {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
         $TableLocator = $this->getTableLocator();
-        $Proxies = $TableLocator->get('Proxies');
+        $Registers = $TableLocator->get('Registers');
+        $response = $Registers->checkLicenseKey($license);
 
-        if (empty($license) || !is_string($license)) {
-            return false;
-        }
+        if (is_object($response) && property_exists($response, 'licence')) {
+            //License found and valid
 
-        $prb = new PackagemanagerRequestBuilder(ENVIRONMENT, $license);
-        $url = $prb->getUrlForLicenseCheck();
-        $http = new Http(
-            $url,
-            $prb->getOptions(),
-            $Proxies->getSettings()
-        );
+            //rearrange expire date to user date
+            $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
+            $response->expire = $UserTime->format($response->expire);
 
-        $http->sendRequest();
-        $error = $http->getLastError();
-
-        if ($error) {
-            if ($this->isAngularJsRequest()) {
-                $this->set(compact('error'));
-                $this->set('_serialize', ['error']);
-                return;
-            }
-            return false;
-        }
-
-        $response = json_decode($http->data);
-        $license = null;
-        if (is_object($response)) {
-            //wrong spelled "licence" comes from license server
-            if (property_exists($response, 'licence')) {
-                if (!empty($response->licence) && property_exists($response->licence, 'Licence')) {
-                    if (!empty($response->licence->Licence) && strtotime($response->licence->Licence->expire) > time()) {
-                        //license is valid
-                        if ($this->isAngularJsRequest()) {
-                            $license = $response->licence->Licence;
-                            $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
-                            $license->expire = $UserTime->format($license->expire);
-                            $this->set(compact('license'));
-                            $this->set('_serialize', ['license']);
-                            return;
-                        }
-                        return true;
-                    }
-                }
-            }
-        }
-        if ($this->isAngularJsRequest()) {
+            $license = $response;
             $this->set(compact('license'));
             $this->set('_serialize', ['license']);
             return;
         }
-        return false;
+
+        if (is_null($response)) {
+            $license = $response;
+            $this->set(compact('license'));
+            $this->set('_serialize', ['license']);
+            return;
+        }
+
+        if (isset($response['error'])) {
+            $error = $response;
+            $this->set(compact('error'));
+            $this->set('_serialize', ['error']);
+            return;
+        }
+
+
+        /*
+
+
+                $TableLocator = $this->getTableLocator();
+                $Proxies = $TableLocator->get('Proxies');
+
+                if (empty($license) || !is_string($license)) {
+                    return false;
+                }
+
+                $prb = new PackagemanagerRequestBuilder(ENVIRONMENT, $license);
+                $url = $prb->getUrlForLicenseCheck();
+                $http = new Http(
+                    $url,
+                    $prb->getOptions(),
+                    $Proxies->getSettings()
+                );
+
+                $http->sendRequest();
+                $error = $http->getLastError();
+
+                if ($error) {
+                    if ($this->isAngularJsRequest()) {
+                        $this->set(compact('error'));
+                        $this->set('_serialize', ['error']);
+                        return;
+                    }
+                    return false;
+                }
+
+                $response = json_decode($http->data);
+                $license = null;
+                if (is_object($response)) {
+                    //wrong spelled "licence" comes from license server
+                    if (property_exists($response, 'licence')) {
+                        if (!empty($response->licence) && property_exists($response->licence, 'Licence')) {
+                            if (!empty($response->licence->Licence) && strtotime($response->licence->Licence->expire) > time()) {
+                                //license is valid
+                                if ($this->isAngularJsRequest()) {
+                                    $license = $response->licence->Licence;
+                                    $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
+                                    $license->expire = $UserTime->format($license->expire);
+                                    $this->set(compact('license'));
+                                    $this->set('_serialize', ['license']);
+                                    return;
+                                }
+                                return true;
+                            }
+                        }
+                    }
+                }
+                if ($this->isAngularJsRequest()) {
+                    $this->set(compact('license'));
+                    $this->set('_serialize', ['license']);
+                    return;
+                }
+                return false;
+        */
     }
 }
