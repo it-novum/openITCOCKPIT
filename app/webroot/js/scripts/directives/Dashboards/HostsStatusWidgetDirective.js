@@ -7,7 +7,7 @@ angular.module('openITCOCKPIT').directive('hostsStatusWidget', function($http, $
         },
 
         controller: function($scope){
-            var interval;
+            $scope.interval = null;
             $scope.init = true;
             $scope.useScroll = true;
             $scope.scroll_interval = 30000;
@@ -61,6 +61,10 @@ angular.module('openITCOCKPIT').directive('hostsStatusWidget', function($http, $
                     $scope.load();
                 });
             };
+
+            $scope.$on('$destroy', function(){
+                $scope.pauseScroll();
+            });
 
             $scope.load = function(options){
 
@@ -148,7 +152,7 @@ angular.module('openITCOCKPIT').directive('hostsStatusWidget', function($http, $
                 $scope.pauseScroll();
                 $scope.useScroll = true;
 
-                interval = $interval(function(){
+                $scope.interval = $interval(function(){
                     var page = $scope.currentPage;
                     if($scope.scroll.hasNextPage){
                         page++;
@@ -161,9 +165,9 @@ angular.module('openITCOCKPIT').directive('hostsStatusWidget', function($http, $
             };
 
             $scope.pauseScroll = function(){
-                if(angular.isDefined(interval)){
-                    $interval.cancel(interval);
-                    interval = undefined;
+                if($scope.interval !== null){
+                    $interval.cancel($scope.interval);
+                    $scope.interval = null;
                 }
                 $scope.useScroll = false;
             };
