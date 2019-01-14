@@ -21,6 +21,7 @@
 // THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
+use Cake\ORM\TableRegistry;
 use GuzzleHttp\Client;
 use itnovum\openITCOCKPIT\Core\Views\Host;
 use itnovum\openITCOCKPIT\Core\Views\HoststatusIcon;
@@ -31,14 +32,12 @@ use itnovum\openITCOCKPIT\Core\Views\ServicestatusIcon;
  * Class PushoverNotificationShell
  * @property \Host Host
  * @property \Service Service
- * @property Proxy Proxy
  */
 class PushoverNotificationShell extends AppShell {
 
     public $uses = [
         'Host',
-        'Service',
-        'Proxy'
+        'Service'
     ];
 
     /**
@@ -357,7 +356,10 @@ class PushoverNotificationShell extends AppShell {
             'https' => false
         ];
         if ($this->useProxy) {
-            $proxySettings = $this->Proxy->getSettings();
+            /** @var $Proxy App\Model\Table\ProxiesTable */
+            $Proxy = TableRegistry::getTableLocator()->get('Proxies');
+            $proxySettings = $Proxy->getSettings();
+
             if ($proxySettings['enabled']) {
                 $params['proxy']['http'] = sprintf('%s:%s', $proxySettings['ipaddress'], $proxySettings['port']);
                 $params['proxy']['https'] = $params['proxy']['http'];

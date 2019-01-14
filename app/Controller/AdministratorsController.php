@@ -31,7 +31,6 @@ use itnovum\openITCOCKPIT\Core\System\Health\LsbRelease;
  */
 class AdministratorsController extends AppController {
     public $components = ['GearmanClient'];
-    public $uses = ['Proxy'];
     public $layout = 'Admin.default';
 
     function index() {

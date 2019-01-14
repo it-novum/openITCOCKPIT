@@ -23,6 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\Http;
 use itnovum\openITCOCKPIT\Core\PackagemanagerRequestBuilder;
 use itnovum\openITCOCKPIT\Core\RepositoryChecker;
@@ -32,9 +33,7 @@ use itnovum\openITCOCKPIT\Core\ValueObjects\License;
 class PacketmanagerController extends AppController {
     public $layout = 'Admin.default';
     public $components = ['Session'];
-    public $uses = ['Proxy', 'Register'];
-
-    //public $controllers = array('Proxy');
+    public $uses = ['Register'];
 
     public function index() {
         $this->Frontend->setJson('username', $this->Auth->user('full_name'));
@@ -50,12 +49,16 @@ class PacketmanagerController extends AppController {
         }, $installedModules);
         $this->set('installedModules', $installedModules);
 
+        /** @var $Proxy App\Model\Table\ProxiesTable */
+        $Proxy = TableRegistry::getTableLocator()->get('Proxies');
+
+
         $License = new License($this->Register->find('first'));
         $packagemanagerRequestBuilder = new PackagemanagerRequestBuilder(ENVIRONMENT, $License->getLicense());
         $http = new Http(
             $packagemanagerRequestBuilder->getUrl(),
             $packagemanagerRequestBuilder->getOptions(),
-            $this->Proxy->getSettings()
+            $Proxy->getSettings()
         );
 
         $this->set('RepositoryChecker', new RepositoryChecker());

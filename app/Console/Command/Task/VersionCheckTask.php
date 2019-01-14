@@ -22,6 +22,7 @@
 //  License agreement and license key will be shipped with the order
 //  confirmation.
 
+use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\Http;
 use itnovum\openITCOCKPIT\Core\Interfaces\CronjobInterface;
 use itnovum\openITCOCKPIT\Core\PackagemanagerRequestBuilder;
@@ -48,14 +49,16 @@ class VersionCheckTask extends AppShell implements CronjobInterface {
      */
     public function getNewVersion() {
         $this->loadModel('Register');
-        $this->loadModel('Proxy');
+
+        /** @var $Proxy App\Model\Table\ProxiesTable */
+        $Proxy = TableRegistry::getTableLocator()->get('Proxies');
 
         $License = new License($this->Register->find('first'));
         $packagemanagerRequestBuilder = new PackagemanagerRequestBuilder(ENVIRONMENT, $License->getLicense());
         $http = new Http(
             $packagemanagerRequestBuilder->getUrl(),
             $packagemanagerRequestBuilder->getOptions(),
-            $this->Proxy->getSettings()
+            $Proxy->getSettings()
         );
 
         //Send https request

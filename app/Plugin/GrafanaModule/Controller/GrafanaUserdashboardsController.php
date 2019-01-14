@@ -23,6 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use Cake\ORM\TableRegistry;
 use GuzzleHttp\Client;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\Views\Host;
@@ -52,7 +53,6 @@ use Statusengine\PerfdataParser;
  * @property \Host $Host
  * @property \Service $Service
  * @property Servicestatus $Servicestatus
- * @property Proxy $Proxy
  * @property AppPaginatorComponent $Paginator
  */
 class GrafanaUserdashboardsController extends GrafanaModuleAppController {
@@ -66,8 +66,7 @@ class GrafanaUserdashboardsController extends GrafanaModuleAppController {
         'GrafanaModule.GrafanaUserdashboardMetric',
         'Host',
         'Service',
-        MONITORING_SERVICESTATUS,
-        'Proxy'
+        MONITORING_SERVICESTATUS
     ];
 
     public $components = [
@@ -326,8 +325,11 @@ class GrafanaUserdashboardsController extends GrafanaModuleAppController {
         /** @var GrafanaApiConfiguration $GrafanaApiConfiguration */
         $GrafanaApiConfiguration = GrafanaApiConfiguration::fromArray($grafanaConfiguration);
 
+        /** @var $Proxy App\Model\Table\ProxiesTable */
+        $Proxy = TableRegistry::getTableLocator()->get('Proxies');
+
         $dashboardFoundInGrafana = false;
-        if ($this->GrafanaConfiguration->existsUserDashboard($GrafanaApiConfiguration, $this->Proxy->getSettings(), $dashboard['GrafanaUserdashboard']['grafana_uid'])) {
+        if ($this->GrafanaConfiguration->existsUserDashboard($GrafanaApiConfiguration, $Proxy->getSettings(), $dashboard['GrafanaUserdashboard']['grafana_uid'])) {
             $dashboardFoundInGrafana = true;
         }
 
@@ -374,8 +376,11 @@ class GrafanaUserdashboardsController extends GrafanaModuleAppController {
         /** @var GrafanaApiConfiguration $GrafanaApiConfiguration */
         $GrafanaApiConfiguration = GrafanaApiConfiguration::fromArray($grafanaConfiguration);
 
+        /** @var $Proxy App\Model\Table\ProxiesTable */
+        $Proxy = TableRegistry::getTableLocator()->get('Proxies');
+
         $dashboardFoundInGrafana = false;
-        if ($this->GrafanaConfiguration->existsUserDashboard($GrafanaApiConfiguration, $this->Proxy->getSettings(), $dashboard['GrafanaUserdashboard']['grafana_uid'])) {
+        if ($this->GrafanaConfiguration->existsUserDashboard($GrafanaApiConfiguration, $Proxy->getSettings(), $dashboard['GrafanaUserdashboard']['grafana_uid'])) {
             $dashboardFoundInGrafana = true;
         }
 
@@ -427,9 +432,12 @@ class GrafanaUserdashboardsController extends GrafanaModuleAppController {
             ]);
             if ($this->GrafanaUserdashboard->delete($dashboard['GrafanaUserdashboard']['id'])) {
                 if (!empty($grafanaConfiguration)) {
+                    /** @var $Proxy App\Model\Table\ProxiesTable */
+                    $Proxy = TableRegistry::getTableLocator()->get('Proxies');
+
                     /** @var GrafanaApiConfiguration $GrafanaApiConfiguration */
                     $GrafanaApiConfiguration = GrafanaApiConfiguration::fromArray($grafanaConfiguration);
-                    $client = $this->GrafanaConfiguration->testConnection($GrafanaApiConfiguration, $this->Proxy->getSettings());
+                    $client = $this->GrafanaConfiguration->testConnection($GrafanaApiConfiguration, $Proxy->getSettings());
                     if ($client instanceof Client) {
                         $deleteUrl = sprintf(
                             '%s/dashboards/uid/%s',
@@ -742,7 +750,11 @@ class GrafanaUserdashboardsController extends GrafanaModuleAppController {
 
         /** @var GrafanaApiConfiguration $GrafanaApiConfiguration */
         $GrafanaApiConfiguration = GrafanaApiConfiguration::fromArray($grafanaConfiguration);
-        $client = $this->GrafanaConfiguration->testConnection($GrafanaApiConfiguration, $this->Proxy->getSettings());
+
+        /** @var $Proxy App\Model\Table\ProxiesTable */
+        $Proxy = TableRegistry::getTableLocator()->get('Proxies');
+
+        $client = $this->GrafanaConfiguration->testConnection($GrafanaApiConfiguration, $Proxy->getSettings());
 
 
         $dashboard = $this->GrafanaUserdashboard->find('first', $this->GrafanaUserdashboard->getQuery($id));
@@ -887,8 +899,12 @@ class GrafanaUserdashboardsController extends GrafanaModuleAppController {
             if (!empty($grafanaDashboardId) && !empty($dashboard)) {
                 $grafanaConfiguration = $this->GrafanaConfiguration->find('first');
                 if (!empty($grafanaConfiguration)) {
+
+                    /** @var $Proxy App\Model\Table\ProxiesTable */
+                    $Proxy = TableRegistry::getTableLocator()->get('Proxies');
+
                     $GrafanaConfiguration = GrafanaApiConfiguration::fromArray($grafanaConfiguration);
-                    if ($this->GrafanaConfiguration->existsUserDashboard($GrafanaConfiguration, $this->Proxy->getSettings(), $dashboard['GrafanaUserdashboard']['grafana_uid'])) {
+                    if ($this->GrafanaConfiguration->existsUserDashboard($GrafanaConfiguration, $Proxy->getSettings(), $dashboard['GrafanaUserdashboard']['grafana_uid'])) {
                         $iframeUrl = $GrafanaConfiguration->getIframeUrlForUserDashboard($dashboard['GrafanaUserdashboard']['grafana_url']);
                     }
                 }

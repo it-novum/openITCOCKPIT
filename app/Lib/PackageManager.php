@@ -27,8 +27,7 @@
 App::uses('Folder', 'Utility');
 App::uses('File', 'Utility');
 
-App::import('Controller', 'Proxy');
-
+use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\Http;
 
 /**
@@ -210,8 +209,11 @@ class PackageManager {
                 'CURLOPT_SSL_VERIFYHOST' => false,
             ];
         }
-        $proxy = new ProxyController();
-        $httpComponent = new Http($url, $curlSettings, $proxy->getSettings());
+
+        /** @var $Proxy App\Model\Table\ProxiesTable */
+        $Proxy = TableRegistry::getTableLocator()->get('Proxies');
+
+        $httpComponent = new Http($url, $curlSettings, $Proxy->getSettings());
         $httpComponent->sendRequest();
 
         if (empty($httpComponent->data)) {
