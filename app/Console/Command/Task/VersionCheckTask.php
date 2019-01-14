@@ -52,8 +52,9 @@ class VersionCheckTask extends AppShell implements CronjobInterface {
 
         /** @var $Proxy App\Model\Table\ProxiesTable */
         $Proxy = TableRegistry::getTableLocator()->get('Proxies');
-
-        $License = new License($this->Register->find('first'));
+        $Registers = TableRegistry::getTableLocator()->get('Registers');
+        $License = $Registers->getLicense();
+        $License = new License($License);
         $packagemanagerRequestBuilder = new PackagemanagerRequestBuilder(ENVIRONMENT, $License->getLicense());
         $http = new Http(
             $packagemanagerRequestBuilder->getUrl(),

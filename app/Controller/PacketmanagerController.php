@@ -51,9 +51,10 @@ class PacketmanagerController extends AppController {
 
         /** @var $Proxy App\Model\Table\ProxiesTable */
         $Proxy = TableRegistry::getTableLocator()->get('Proxies');
+        $Registers = TableRegistry::getTableLocator()->get('Registers');
+        $License = $Registers->getLicense();
+        $License = new License($License);
 
-
-        $License = new License($this->Register->find('first'));
         $packagemanagerRequestBuilder = new PackagemanagerRequestBuilder(ENVIRONMENT, $License->getLicense());
         $http = new Http(
             $packagemanagerRequestBuilder->getUrl(),

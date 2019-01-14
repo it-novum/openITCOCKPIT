@@ -23,6 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\RepositoryChecker;
 use itnovum\openITCOCKPIT\Core\System\Health\LsbRelease;
 
@@ -68,9 +69,10 @@ class AdministratorsController extends AppController {
             $this->Cronjob->add('CpuLoad', 'Core', 15);
         }
 
-        $license = $this->Register->find('first');
+        $Registers = TableRegistry::getTableLocator()->get('Registers');
+        $License = $Registers->getLicense();
         $isEnterprise = false;
-        if (!empty($license)) {
+        if(!empty($License)){
             $isEnterprise = true;
         }
 
