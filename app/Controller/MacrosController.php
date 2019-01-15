@@ -23,55 +23,138 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-class MacrosController extends AppController {
-    public $layout = 'Admin.default';
-    public $components = ['RequestHandler'];
+use App\Model\Table\MacrosTable;
+use Cake\ORM\Locator\LocatorAwareTrait;
+use Cake\Utility\Hash;
 
+class MacrosController extends AppController {
+
+    use LocatorAwareTrait;
+
+    public $layout = 'angularjs';
 
     public function index() {
+        $TableLocator = $this->getTableLocator();
+        /** @var $Macros MacrosTable */
+        $Macros = $TableLocator->get('Macros');
 
-        $this->Paginator->settings['limit'] = 500;
-        $this->Paginator->settings['order'] = ['Macro.name' => 'asc'];
-        $all_macros = $this->Paginator->paginate();
-
-        //Sorting the SQL result in a human frindly way. Will sort $USER10$ below $USER2$
-        $all_macros = Hash::sort($all_macros, '{n}.Macro.name', 'asc', 'natural');
-
-        //Restore submited macros after a validation error
-        if (!empty($this->request->data) && $this->request->is('post')) {
-            $all_macros = Hash::merge($all_macros, $this->request->data);
-        }
-
-        $this->set(compact(['all_macros']));
-        $this->set('_serialize', ['all_macros']);
-
-        //Checking if the user delete a macro
-        $macrosToDelete = [];
-        if (!empty($all_macros) && !empty($this->request->data)) {
-            $macrosToDelete = $this->Macro->find('all', [
-                'conditions' => [
-                    'Macro.id' => array_diff(Hash::extract($all_macros, '{n}.Macro.id'), Hash::extract($this->request->data, '{n}.Macro.id')),
-                ],
-            ]);
-        }
-
-
-        //Delete all macros that was removed by the user:
-        foreach ($macrosToDelete as $macroToDelete) {
-            $this->Macro->delete($macroToDelete['Macro']['id']);
-        }
-
-
-        //Saving the data
-        if ($this->request->is('post') || $this->request->is('put')) {
-            if ($this->Macro->saveAll($this->_rewritePostData($this->request->data))) {
-                $this->setFlash(__('Macros saves successfully'));
-                $this->redirect(['action' => 'index']);
-            } else {
-                $this->setFlash(__('Error while saving data'), false);
+        if (!$this->isAngularJsRequest()) {
+            if ($this->isJsonRequest()) {
+                //Legacy API
+                $this->set('all_macros', $Macros->getAllMacrosInCake2Format());
+                $this->set('_serialize', ['all_macros']);
+                return;
             }
+
+            //Only ship HTML template for angular
+            return;
         }
+
+        $all_macros = $Macros->find('all')->disableHydration()->toArray();
+        $all_macros = Hash::sort($all_macros, '{n}.name', 'asc', 'natural');
+        $this->set('all_macros', $all_macros);
+        $this->set('_serialize', ['all_macros']);
     }
+
+    public function add() {
+        if (!$this->isAngularJsRequest() || !$this->request->is('post')) {
+            throw new MethodNotAllowedException();
+        }
+
+        $TableLocator = $this->getTableLocator();
+        /** @var $Macros MacrosTable */
+        $Macros = $TableLocator->get('Macros');
+
+        $macro = $Macros->newEntity();
+        $macro = $Macros->patchEntity($macro, $this->request->data('Macro'));
+        $Macros->save($macro);
+
+        if ($macro->hasErrors()) {
+            $this->response->statusCode(400);
+            $this->set('error', $macro->getErrors());
+            $this->set('_serialize', ['error']);
+            return;
+        }
+
+        $this->set('macro', $macro);
+        $this->set('_serialize', ['macro']);
+    }
+
+    public function edit($id = null) {
+        if (!$this->isAngularJsRequest() || !$this->request->is('post')) {
+            throw new MethodNotAllowedException();
+        }
+
+        $TableLocator = $this->getTableLocator();
+        /** @var $Macros MacrosTable */
+        $Macros = $TableLocator->get('Macros');
+
+        if (!$Macros->exists($id)) {
+            throw new NotFoundException('Macro not found');
+        }
+
+        $macro = $Macros->get($id);
+        $macro = $Macros->patchEntity($macro, $this->request->data('Macro'));
+
+        $Macros->save($macro);
+
+        if ($macro->hasErrors()) {
+            $this->response->statusCode(400);
+            $this->set('error', $macro->getErrors());
+            $this->set('_serialize', ['error']);
+            return;
+        }
+
+        $this->set('macro', $macro);
+        $this->set('_serialize', ['macro']);
+    }
+
+    public function delete($id = null) {
+        if (!$this->isAngularJsRequest() || !$this->request->is('post')) {
+            throw new MethodNotAllowedException();
+        }
+
+        $TableLocator = $this->getTableLocator();
+        /** @var $Macros MacrosTable */
+        $Macros = $TableLocator->get('Macros');
+
+        if (!$Macros->exists($id)) {
+            throw new NotFoundException('Macro not found');
+        }
+
+        $macro = $Macros->get($id);
+        if ($Macros->delete($macro)) {
+            $this->set('success', true);
+            $this->set('_serialize', ['success']);
+            return;
+        }
+
+        $this->response->statusCode(500);
+        $this->set('success', false);
+        $this->set('_serialize', ['success']);
+    }
+
+    public function getAvailableMacroNames() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        $include = $this->request->query('include');
+
+        $TableLocator = $this->getTableLocator();
+        /** @var $Macros MacrosTable */
+        $Macros = $TableLocator->get('Macros');
+
+        $availableMacroNames = array_values($Macros->getAvailableMacroNames());
+        if ($include !== '') {
+            $availableMacroNames[] = $include;
+        }
+
+
+        $this->set('availableMacroNames', $availableMacroNames);
+        $this->set('_serialize', ['availableMacroNames']);
+    }
+
 
     public function addMacro() {
 
