@@ -22,8 +22,8 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+
 ?>
-<?php $this->Paginator->options(['url' => $this->params['named']]); ?>
 <div class="row">
     <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
         <h1 class="page-title txt-color-blueDark">
@@ -62,7 +62,6 @@
                                    style="">
                                 <thead>
                                 <tr>
-                                    <?php $order = $this->Paginator->param('order'); ?>
                                     <th class="no-sort"><?php echo __('Task') ?></th>
                                     <th class="no-sort"><?php echo __('Plugin') ?></th>
                                     <th class="no-sort"><?php echo __('Interval'); ?></th>
@@ -75,13 +74,13 @@
                                 <tbody>
                                 <?php foreach ($cronjobs as $cronjob): ?>
                                     <tr>
-                                        <td><?php echo h($cronjob['Cronjob']['task']); ?></td>
-                                        <td><?php echo h($cronjob['Cronjob']['plugin']); ?></td>
-                                        <td><?php echo h($cronjob['Cronjob']['interval']); ?></td>
-                                        <td><?php echo h($this->Time->format($cronjob['Cronschedule']['start_time'], $this->Auth->user('dateformat'), false, $this->Auth->user('timezone'))); ?></td>
+                                        <td><?php echo h($cronjob->task); ?></td>
+                                        <td><?php echo h($cronjob->plugin); ?></td>
+                                        <td><?php echo h($cronjob->interval); ?></td>
+                                        <td><?php echo h($this->Time->format($cronjob->Cronschedules['start_time'], $this->Auth->user('dateformat'), false, $this->Auth->user('timezone'))); ?></td>
                                         <td class="text-center">
                                             <?php
-                                            if ($cronjob['Cronschedule']['is_running'] == 0):
+                                            if ($cronjob->Cronschedules['is_running'] == 0):
                                                 echo __('No');
                                             else:
                                                 echo __('Yes');
@@ -89,7 +88,7 @@
                                             ?>
                                         </td>
                                         <td class="text-align-center">
-                                            <?php if ($cronjob['Cronjob']['enabled']): ?>
+                                            <?php if ($cronjob->enabled): ?>
                                                 <i class="fa fa-check text-success"></i>
                                             <?php else: ?>
                                                 <i class="fa fa-times text-danger"></i>
@@ -97,7 +96,7 @@
                                         </td>
                                         <td class="text-center">
                                             <?php if ($this->Acl->hasPermission('edit')): ?>
-                                                <a href="/<?php echo $this->params['controller']; ?>/edit/<?php echo $cronjob['Cronjob']['id']; ?>"
+                                                <a href="/<?php echo $this->params['controller']; ?>/edit/<?php echo $cronjob->id; ?>"
                                                    data-original-title="<?php echo __('Edit'); ?>" data-placement="left"
                                                    rel="tooltip" data-container="body"><i id="list_edit"
                                                                                           class="fa fa-gear fa-lg txt-color-teal"></i></a>
@@ -120,13 +119,10 @@
                             <div class="row">
                                 <div class="col-sm-6">
                                     <div class="dataTables_info" style="line-height: 32px;"
-                                         id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('Page') . ' {:page} ' . __('of') . ' {:pages}, ' . __('Total') . ' {:count} ' . __('entries')); ?></div>
+                                         id="datatable_fixed_column_info"></div>
                                 </div>
                                 <div class="col-sm-6 text-right">
                                     <div class="dataTables_paginate paging_bootstrap">
-                                        <?php echo $this->Paginator->pagination([
-                                            'ul' => 'pagination',
-                                        ]); ?>
                                     </div>
                                 </div>
                             </div>

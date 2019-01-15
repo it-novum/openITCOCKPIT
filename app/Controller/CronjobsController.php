@@ -23,12 +23,16 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use Cake\ORM\TableRegistry;
+
 class CronjobsController extends AppController {
     public $layout = 'Admin.default';
 
     public function index() {
-        //$cronjobs = $this->Cronjob->find('all');
-        $cronjobs = $this->Paginator->paginate();
+        /** @var $Cronjobs App\Model\Table\CronjobsTable */
+        $Cronjobs = TableRegistry::getTableLocator()->get('Cronjobs');
+        $cronjobs = $Cronjobs->getCronjobs();
+
         $this->set(compact('cronjobs'));
         $this->set('_serialize', ['cronjobs']);
     }
