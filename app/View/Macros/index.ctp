@@ -54,11 +54,6 @@
                             </button>
                         <?php endif; ?>
 
-                        <button type="button" class="btn btn-xs btn-primary" ng-click="triggerFilter()">
-                            <i class="fa fa-filter"></i>
-                            <?php echo __('Filter'); ?>
-                        </button>
-
                     </div>
                     <div class="jarviswidget-ctrls" role="menu">
                     </div>
@@ -68,70 +63,6 @@
                 <div>
 
                     <div class="widget-body no-padding">
-
-                        <div class="list-filter well" ng-show="showFilter">
-                            <h3><i class="fa fa-filter"></i> <?php echo __('Filter'); ?></h3>
-                            <div class="row">
-                                <div class="col-xs-12 col-md-6">
-                                    <div class="form-group smart-form">
-                                        <label class="input"> <i class="icon-prepend fa fa-filter"></i>
-                                            <input type="text" class="input-sm"
-                                                   placeholder="<?php echo __('Filter by description'); ?>"
-                                                   ng-model="filter.Macro.description"
-                                                   ng-model-options="{debounce: 500}">
-                                        </label>
-                                    </div>
-                                </div>
-
-                                <div class="col-xs-12 col-md-6">
-                                    <?php $satellites = [
-                                        '$USER1$',
-                                        '$USER5$',
-                                        '$USER10$',
-                                        '$USER1337$'
-
-                                    ]; ?>
-
-                                    <fieldset>
-                                        <div class="form-group smart-form">
-                                            <select
-                                                    id="Instance"
-                                                    data-placeholder="<?php echo __('Filter by macros'); ?>"
-                                                    class="form-control"
-                                                    chosen="{}"
-                                                    multiple
-                                                    ng-model="filter.Macro.name"
-                                                    ng-model-options="{debounce: 500}">
-                                                <?php
-                                                foreach ($satellites as $satelliteId => $satelliteName):
-                                                    printf('<option value="%s">%s</option>', h($satelliteId), h($satelliteName));
-                                                endforeach;
-                                                ?>
-                                            </select>
-                                        </div>
-                                    </fieldset>
-                                </div>
-
-                            </div>
-
-
-                            <div class="col-xs-12 col-md-6">
-
-                            </div>
-
-
-                            <div class="row">
-                                <div class="col-xs-12">
-                                    <div class="pull-right margin-top-10">
-                                        <button type="button" ng-click="resetFilter()"
-                                                class="btn btn-xs btn-danger">
-                                            <?php echo __('Reset Filter'); ?>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
 
                         <div class="mobile_table">
                             <table id="macrosTable" class="table table-striped table-hover table-bordered smart-form"
@@ -198,12 +129,7 @@
                             </div>
                         </div>
                     </div>
-
-
-                    <div class="col-xs-12 margin-top-10 txt-color-redLight">
-                        <i class="fa fa-exclamation-circle"></i>
-                        <?php echo __('Empty macros will be removed automatically.'); ?>
-                    </div>
+                    
 
                     <div class="col-xs-12 padding-bottom-10 text-info">
                         <i class="fa fa-info-circle"></i>
