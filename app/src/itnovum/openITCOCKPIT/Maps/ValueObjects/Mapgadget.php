@@ -103,6 +103,11 @@ class Mapgadget {
     private $metric;
 
     /**
+     * @var null|string
+     */
+    private $output_type;
+
+    /**
      * @var bool
      * Required for frontend to show and hide layers
      * Backend will not use this variable but it is an easy way to get it into the json
@@ -171,6 +176,9 @@ class Mapgadget {
 
         if (isset($mapgadget['font_size'])) {
             $this->font_size = (int)$mapgadget['font_size'];
+            if ($this->font_size === 0) {
+                $this->font_size = 13;
+            }
         }
 
         if (isset($mapgadget['z_index'])) {
@@ -180,6 +188,10 @@ class Mapgadget {
 
         if (isset($mapgadget['metric'])) {
             $this->metric = $mapgadget['metric'];
+        }
+
+        if (isset($mapgadget['output_type'])) {
+            $this->output_type = $mapgadget['output_type'];
         }
 
 
@@ -295,6 +307,13 @@ class Mapgadget {
      */
     public function getMetric() {
         return $this->metric;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getOutputType() {
+        return $this->output_type;
     }
 
     /**

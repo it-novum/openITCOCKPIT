@@ -29,10 +29,16 @@ class DbBackend {
 
     /**
      * DbBackend constructor.
-     * @param string $backend
      */
-    public function __construct($backend) {
-        $this->backend = $backend;
+    public function __construct() {
+        $configFile = APP . 'Config' . DS . 'dbbackend.php';
+        if (file_exists($configFile)) {
+            \Configure::load('dbbackend');
+            $this->backend = \Configure::read('dbbackend');
+        } else {
+            //Use default backend as fallback
+            $this->backend = 'Statusengine3';
+        }
     }
 
     /**
@@ -54,6 +60,13 @@ class DbBackend {
      */
     public function isStatusengine3() {
         return $this->backend === 'Statusengine3';
+    }
+
+    /**
+     * @return string
+     */
+    public function getBackendAsString(){
+        return $this->backend;
     }
 
 }

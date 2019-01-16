@@ -62,6 +62,7 @@ app/Plugin/VMWAREModule
 app/Plugin/WindowsBasicMonitoringNSCPModule
 app/Plugin/MasterSelfMonitoringModule
 app/Plugin/SatelliteSelfMonitoringModule
+app/Plugin/UCSModule
 app/Lib/AvailableVersion.php
 app/docs/en/administration/systemsettings.md
 app/docs/en/api/systemsettings.md
@@ -82,4 +83,9 @@ Vendor
 Vendor/*
 app/.c9
 
-
+docker
+app/Config/after_export.php
+app/Config/dbbackend.php
+app/Config/perfdatabackend.php
+app/Config/graphite.php
+app/Plugin/NagiosModule/Config/config.php

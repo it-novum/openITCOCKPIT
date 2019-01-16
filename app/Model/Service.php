@@ -471,7 +471,6 @@ class Service extends AppModel {
         } else {
             $contactData = $request_data['Service']['Contact'];
         }
-
         //Stupid nagios 4 inheritance
         //See https://github.com/naemon/naemon-core/pull/92
         $breakInherit = false;
@@ -527,9 +526,6 @@ class Service extends AppModel {
         } else {
             $contact = $contactData;
         }
-        if (empty($diff_array['Servicegroup']['Servicegroup'])) {
-            $diff_array['Servicegroup']['Servicegroup'] = [];
-        }
 
         if (isset($request_data['Service'])) {
             $diff_array = Hash::merge($diff_array, [
@@ -545,6 +541,7 @@ class Service extends AppModel {
                     'Contactgroup'       => [
                         $contactGroup,
                     ],
+                    'Servicegroup'       => (!empty($diff_array['Servicegroup']['Servicegroup'])) ? $request_data['Service']['Servicegroup'] : [],
                 ],
                 'Contact'      => [
                     'Contact' => [
@@ -555,10 +552,7 @@ class Service extends AppModel {
                     'Contactgroup' => [
                         $contactGroup,
                     ],
-                ],
-                'Servicegroup' => [
-                    'Servicegroup' => $request_data['Servicegroup']['Servicegroup'],
-                ],
+                ]
             ]);
         }
 
@@ -576,6 +570,11 @@ class Service extends AppModel {
                         'id' => $request_data['Service']['id'],
                     ],
                 ]);
+            if (!empty($diff_array['Servicegroup']['Servicegroup'])) {
+                $diff_array['Servicegroup']['Servicegroup'] = $request_data['Service']['Servicegroup'];
+            } else {
+                $diff_array['Servicegroup']['Servicegroup'] = [];
+            }
         }
 
         if (!isset($request_data['Servicecommandargumentvalue'])) {
@@ -1032,6 +1031,7 @@ class Service extends AppModel {
             'service_url',
             'active_checks_enabled',
             'process_performance_data',
+            'is_volatile'
         ];
 
         $compare_array = [
@@ -1323,6 +1323,7 @@ class Service extends AppModel {
     public function virtualFieldsForIndexAndServiceList() {
         $this->virtualFields['servicename'] = 'IF((Service.name IS NULL OR Service.name=""), Servicetemplate.name, Service.name)';
         $this->virtualFields['keywords'] = 'IF((Service.tags IS NULL OR Service.tags=""), Servicetemplate.tags, Service.tags)';
+        $this->virtualFields['not_keywords'] = 'IF((Service.tags IS NULL OR Service.tags=""), Servicetemplate.tags, Service.tags)';
     }
 
     public function virtualFieldsForNotMonitored() {

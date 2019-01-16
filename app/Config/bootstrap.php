@@ -3,6 +3,8 @@
 //$group_info = posix_getgrnam('itcockpit');
 //posix_setgid($group_info['gid']);
 
+require_once APP . 'Vendor' . DS . 'autoload.php';
+
 App::uses('Component', 'Controller');
 App::uses('ConstantsComponent', 'Controller/Component');
 App::uses('PhpReader', 'SilentPhpReader');
@@ -215,4 +217,3 @@ CakePlugin::load('CakePdf', [
     ]
 );
 
-require_once APP . 'Vendor' . DS . 'autoload.php';

@@ -564,11 +564,9 @@ class Host extends AppModel {
         if (empty($requestData['Host']['Contact'])) {
             $requestData['Host']['Contact'] = [];
         }
-
         if (empty($requestData['Host']['Hostgroup'])) {
             $requestData['Host']['Hostgroup'] = [];
         }
-
 
         $diff_array = Hash::merge($diff_array, [
             'Host'       => [
@@ -577,7 +575,7 @@ class Host extends AppModel {
                 /* Set Contact/Contactgroup for custom validation rule*/
                 'Contact'         => $requestData['Host']['Contact'],
                 'Contactgroup'    => $requestData['Host']['Contactgroup'],
-                'Hostgroup'       => $requestData['Host']['Hostgroup'],
+                'Hostgroup'       => (!empty($diff_array['Hostgroup']['Hostgroup'])) ? $requestData['Host']['Hostgroup'] : [],
                 'Parenthost'      => $requestData['Parenthost']['Parenthost'],
             ],
             'Container'  => [
@@ -585,7 +583,7 @@ class Host extends AppModel {
             ],
             'Parenthost' => [
                 'Parenthost' => $requestData['Parenthost']['Parenthost'],
-            ],
+            ]
         ]);
         if (empty($diff_array['Hostcommandargumentvalue'])) {
             $diff_array = Hash::merge($diff_array, [
@@ -605,6 +603,11 @@ class Host extends AppModel {
                     'id' => $requestData['Host']['id'],
                 ],
             ]);
+            if (!empty($diff_array['Hostgroup']['Hostgroup'])) {
+                $diff_array['Hostgroup']['Hostgroup'] = $requestData['Host']['Hostgroup'];
+            } else {
+                $diff_array['Hostgroup']['Hostgroup'] = [];
+            }
         }
         if (empty($requestData['Hostcommandargumentvalue'])) {
             $diff_array = Hash::remove($diff_array, 'Hostcommandargumentvalue');
@@ -1458,6 +1461,7 @@ class Host extends AppModel {
 
     public function virtualFieldsForIndex() {
         $this->virtualFields['keywords'] = 'IF((Host.tags IS NULL OR Host.tags=""), Hosttemplate.tags, Host.tags)';
+        $this->virtualFields['not_keywords'] = 'IF((Host.tags IS NULL OR Host.tags=""), Hosttemplate.tags, Host.tags)';
     }
 
     /**

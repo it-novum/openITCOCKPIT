@@ -32,8 +32,6 @@ class DatabaseCleanupTask extends AppShell implements CronjobInterface {
         'Systemsetting',
     ];
 
-    public $modelsToCleanUp = ['Servicecheck', 'Hostcheck', 'Statehistory', 'Logentry', 'Notification', 'Contactnotification', 'Contactnotificationmethod'];
-    //public $modelsToCleanUp = ['Servicecheck', 'Hostcheck'];
     public $_systemsettings = [];
 
     /**
@@ -49,8 +47,7 @@ class DatabaseCleanupTask extends AppShell implements CronjobInterface {
 
         $this->_systemsettings = $this->Systemsetting->findAsArray();
 
-        Configure::load('dbbackend');
-        $this->DbBackend = new DbBackend(Configure::read('dbbackend'));
+        $this->DbBackend = new DbBackend();
 
         if ($this->DbBackend->isNdoUtils()) {
             $models = [
@@ -66,7 +63,25 @@ class DatabaseCleanupTask extends AppShell implements CronjobInterface {
                 $this->loadModel($model);
             }
 
-            $this->checkAndCreatePartitionsNdoUitls();
+            $this->checkAndCreatePartitionsNdoUitls($models);
+        }
+
+        if ($this->DbBackend->isStatusengine3()) {
+            $models = [
+                MONITORING_SERVICECHECK,
+                MONITORING_HOSTCHECK,
+                MONITORING_STATEHISTORY_HOST,
+                MONITORING_STATEHISTORY_SERVICE,
+                MONITORING_LOGENTRY,
+                MONITORING_NOTIFICATION_HOST,
+                MONITORING_NOTIFICATION_SERVICE
+            ];
+
+            foreach ($models as $model) {
+                $this->loadModel($model);
+            }
+
+            $this->checkAndCreatePartitionsNdoUitls($models);
         }
 
         if ($this->DbBackend->isCrateDb()) {
@@ -87,11 +102,19 @@ class DatabaseCleanupTask extends AppShell implements CronjobInterface {
         }
     }
 
-    public function checkAndCreatePartitionsNdoUitls() {
+    public function checkAndCreatePartitionsNdoUitls($modelNamesAsArray) {
         //return true;
         $db = $this->Cronjob->getDataSource();
 
-        foreach ($this->modelsToCleanUp as $Model) {
+        foreach ($modelNamesAsArray as $Model) {
+            if ($this->DbBackend->isStatusengine3()) {
+                $Model = str_replace('Statusengine3Module.', '', $Model);
+            }
+
+            if ($this->DbBackend->isNdoUtils()) {
+                $Model = str_replace('NagiosModule.', '', $Model);
+            }
+
             //Get existing partitions for this table out of MySQL's information_schema
             $result = $db->fetchAll("
 			SELECT partition_name
@@ -143,7 +166,39 @@ class DatabaseCleanupTask extends AppShell implements CronjobInterface {
 
     public function cleanupPartition($Model, $partitions = []) {
         $this->out('Checking age of partitions...');
-        $maxAgeInWeeks = $this->_systemsettings['ARCHIVE']['ARCHIVE.AGE.' . strtoupper(Inflector::pluralize($Model))];
+        if ($this->DbBackend->isNdoUtils()) {
+            $maxAgeInWeeks = $this->_systemsettings['ARCHIVE']['ARCHIVE.AGE.' . strtoupper(Inflector::pluralize($Model))];
+        }
+
+        if ($this->DbBackend->isStatusengine3()) {
+            $systemsettingsKey = '';
+            switch ($Model) {
+                case 'StatehistoryHost':
+                case 'StatehistoryService':
+                    $systemsettingsKey = 'STATEHISTORIES';
+                    break;
+
+                case 'Hostcheck':
+                    $systemsettingsKey = 'HOSTCHECKS';
+                    break;
+                case 'Servicecheck':
+                    $systemsettingsKey = 'SERVICECHECKS';
+                    break;
+                case 'Logentry':
+                    $systemsettingsKey = 'LOGENTRIES';
+                    break;
+                case 'NotificationHost':
+                case 'NotificationService':
+                    $systemsettingsKey = 'NOTIFICATIONS';
+                    break;
+            }
+            $maxAgeInWeeks = $this->_systemsettings['ARCHIVE']['ARCHIVE.AGE.' . $systemsettingsKey];
+        }
+
+        if (!isset($maxAgeInWeeks)) {
+            throw new RuntimeException('$maxAgeInWeeks is not set!');
+        }
+
         $maxAgeTimestamp = strtotime('00:00:00 last monday -' . ($maxAgeInWeeks + 1) . ' week');
 
         //Valide date
@@ -191,7 +246,7 @@ class DatabaseCleanupTask extends AppShell implements CronjobInterface {
         $this->deletePartitionsFromCrateDb($this->Logentry, 'LOGENTRIES');
         $this->deletePartitionsFromCrateDb($this->NotificationHost, 'NOTIFICATIONS');
         $this->deletePartitionsFromCrateDb($this->NotificationService, 'NOTIFICATIONS');
-        $this->deletePartitionsFromCrateDb($this->NotificationService, 'NOTIFICATIONS');
+        //$this->deletePartitionsFromCrateDb($this->NotificationService, 'NOTIFICATIONS');
 
         $this->out('<green>Cleanup done</green>');
         $this->hr();
@@ -227,4 +282,5 @@ class DatabaseCleanupTask extends AppShell implements CronjobInterface {
             }
         }
     }
+
 }

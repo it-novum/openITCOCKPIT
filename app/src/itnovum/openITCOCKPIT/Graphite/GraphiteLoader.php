@@ -295,16 +295,18 @@ class GraphiteLoader {
     private function normalizeData($data) {
         $normalizedData = [];
 
-        foreach ($data as $metric) {
-            foreach ($metric['datapoints'] as $datapoint) {
-                if ($this->hideNullValues && $datapoint[0] === null) {
-                    continue;
+        if(is_array($data)) {
+            foreach ($data as $metric) {
+                foreach ($metric['datapoints'] as $datapoint) {
+                    if ($this->hideNullValues && $datapoint[0] === null) {
+                        continue;
+                    }
+                    $timestamp = $datapoint[1];
+                    if ($this->useJsTimestamp) {
+                        $timestamp = $timestamp * 1000;
+                    }
+                    $normalizedData[$timestamp] = $datapoint[0];
                 }
-                $timestamp = $datapoint[1];
-                if ($this->useJsTimestamp) {
-                    $timestamp = $timestamp * 1000;
-                }
-                $normalizedData[$timestamp] = $datapoint[0];
             }
         }
         return $normalizedData;

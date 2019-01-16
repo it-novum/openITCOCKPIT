@@ -57,7 +57,7 @@ class Commands extends Importer {
                         [
                             'id'           => '1',
                             'name'         => 'host-notify-by-cake',
-                            'command_line' => '/usr/share/openitcockpit/app/Console/cake nagios_notification -q --type Host --notificationtype $NOTIFICATIONTYPE$ --hostname "$HOSTNAME$" --hoststate "$HOSTSTATE$" --hostaddress "$HOSTADDRESS$" --hostoutput "$HOSTOUTPUT$" --contactmail "$CONTACTEMAIL$" --contactalias "$CONTACTALIAS$" --hostackauthor "$HOSTACKAUTHOR$" --hostackcomment "$HOSTACKCOMMENT$" --format "both"',
+                            'command_line' => '/usr/share/openitcockpit/app/Console/cake nagios_notification -q --type Host --notificationtype $NOTIFICATIONTYPE$ --hostname "$HOSTNAME$" --hoststate "$HOSTSTATE$" --hostaddress "$HOSTADDRESS$" --hostoutput "$HOSTOUTPUT$" --contactmail "$CONTACTEMAIL$" --contactalias "$CONTACTALIAS$" --hostackauthor "$NOTIFICATIONAUTHOR$" --hostackcomment "$NOTIFICATIONCOMMENT$" --format "both"',
                             'command_type' => '3',
                             'human_args'   => null,
                             'uuid'         => 'a13ff7f1-0642-4a11-be05-9931ca98da10',
@@ -72,7 +72,7 @@ class Commands extends Importer {
                         [
                             'id'           => '2',
                             'name'         => 'service-notify-by-cake',
-                            'command_line' => '/usr/share/openitcockpit/app/Console/cake nagios_notification -q --type Service --notificationtype $NOTIFICATIONTYPE$ --hostname "$HOSTNAME$" --hoststate "$HOSTSTATE$" --hostaddress "$HOSTADDRESS$" --hostoutput "$HOSTOUTPUT$" --contactmail "$CONTACTEMAIL$" --contactalias "$CONTACTALIAS$" --servicedesc "$SERVICEDESC$" --servicestate "$SERVICESTATE$" --serviceoutput "$SERVICEOUTPUT$" --serviceackauthor "$SERVICEACKAUTHOR$" --serviceackcomment "$SERVICEACKCOMMENT$" --format "both"',
+                            'command_line' => '/usr/share/openitcockpit/app/Console/cake nagios_notification -q --type Service --notificationtype $NOTIFICATIONTYPE$ --hostname "$HOSTNAME$" --hoststate "$HOSTSTATE$" --hostaddress "$HOSTADDRESS$" --hostoutput "$HOSTOUTPUT$" --contactmail "$CONTACTEMAIL$" --contactalias "$CONTACTALIAS$" --servicedesc "$SERVICEDESC$" --servicestate "$SERVICESTATE$" --serviceoutput "$SERVICEOUTPUT$" --serviceackauthor "$NOTIFICATIONAUTHOR$" --serviceackcomment "$NOTIFICATIONCOMMENT$" --format "both"',
                             'command_type' => '3',
                             'human_args'   => null,
                             'uuid'         => 'a517bbb6-f299-4b57-9865-a4e0b70597e4',
@@ -521,7 +521,7 @@ certificate expiration times.',
                         [
                             'id'           => '17',
                             'name'         => 'check_local_disk',
-                            'command_line' => '$USER1$/check_disk -w $ARG1$ -c $ARG2$ -p $ARG3$',
+                            'command_line' => '$USER1$/check_disk -w $ARG1$% -c $ARG2$% -p $ARG3$',
                             'command_type' => '1',
                             'human_args'   => null,
                             'uuid'         => '74a59dd0-2eff-4f41-9bcd-3e8786f34f04',
@@ -798,7 +798,7 @@ of processes.  Search filters can be applied to limit the processes to check.',
                     'Command'         =>
                         [
                             'name'         => 'host-notify-by-pushover',
-                            'command_line' => '/usr/share/openitcockpit/app/Console/cake pushover_notification --type Host --notificationtype $NOTIFICATIONTYPE$ --hostuuid "$HOSTNAME$" --state "$HOSTSTATEID$" --output "$HOSTOUTPUT$"  --pushover-api-token "$_CONTACTPUSHOVERAPP$" --pushover-user-token "$_CONTACTPUSHOVERUSER$" --ackauthor "$HOSTACKAUTHOR$" --ackcomment "$HOSTACKCOMMENT$" --proxy 1',
+                            'command_line' => '/usr/share/openitcockpit/app/Console/cake pushover_notification --type Host --notificationtype $NOTIFICATIONTYPE$ --hostuuid "$HOSTNAME$" --state "$HOSTSTATEID$" --output "$HOSTOUTPUT$"  --pushover-api-token "$_CONTACTPUSHOVERAPP$" --pushover-user-token "$_CONTACTPUSHOVERUSER$" --ackauthor "$NOTIFICATIONAUTHOR$" --ackcomment "$NOTIFICATIONCOMMENT$" --proxy 1',
                             'command_type' => '3',
                             'human_args'   => null,
                             'uuid'         => '93f28eb9-9cce-4373-9a39-c6fef86419eb',
@@ -812,7 +812,7 @@ of processes.  Search filters can be applied to limit the processes to check.',
                     'Command'         =>
                         [
                             'name'         => 'service-notify-by-pushover',
-                            'command_line' => '/usr/share/openitcockpit/app/Console/cake pushover_notification --type Service --notificationtype $NOTIFICATIONTYPE$ --hostuuid "$HOSTNAME$" --serviceuuid "$SERVICEDESC$" --state "$SERVICESTATEID$" --output "$SERVICEOUTPUT$"  --pushover-api-token "$_CONTACTPUSHOVERAPP$" --pushover-user-token "$_CONTACTPUSHOVERUSER$" --ackauthor "$SERVICEACKAUTHOR$" --ackcomment "$SERVICEACKCOMMENT$" --proxy 1',
+                            'command_line' => '/usr/share/openitcockpit/app/Console/cake pushover_notification --type Service --notificationtype $NOTIFICATIONTYPE$ --hostuuid "$HOSTNAME$" --serviceuuid "$SERVICEDESC$" --state "$SERVICESTATEID$" --output "$SERVICEOUTPUT$"  --pushover-api-token "$_CONTACTPUSHOVERAPP$" --pushover-user-token "$_CONTACTPUSHOVERUSER$" --ackauthor "$NOTIFICATIONAUTHOR$" --ackcomment "$NOTIFICATIONCOMMENT$" --proxy 1',
                             'command_type' => '3',
                             'human_args'   => null,
                             'uuid'         => '52c9c3e2-4a00-40a4-8e75-db4649eba846',
@@ -826,7 +826,7 @@ of processes.  Search filters can be applied to limit the processes to check.',
                     'Command'         =>
                         [
                             'name'         => 'host-notify-by-browser-notification',
-                            'command_line' => '/usr/share/openitcockpit/app/Console/cake send_push_notification --type Host --notificationtype $NOTIFICATIONTYPE$ --hostuuid "$HOSTNAME$" --state "$HOSTSTATEID$" --output "$HOSTOUTPUT$"  --ackauthor "$HOSTACKAUTHOR$" --ackcomment "$HOSTACKCOMMENT$" --user-id $_CONTACTOITCUSERID$',
+                            'command_line' => '/usr/share/openitcockpit/app/Console/cake send_push_notification --type Host --notificationtype $NOTIFICATIONTYPE$ --hostuuid "$HOSTNAME$" --state "$HOSTSTATEID$" --output "$HOSTOUTPUT$"  --ackauthor "$NOTIFICATIONAUTHOR$" --ackcomment "$NOTIFICATIONCOMMENT$" --user-id $_CONTACTOITCUSERID$',
                             'command_type' => '3',
                             'human_args'   => null,
                             'uuid'         => 'cd13d22e-acd4-4a67-997b-6e120e0d3153',
@@ -840,7 +840,7 @@ of processes.  Search filters can be applied to limit the processes to check.',
                     'Command'         =>
                         [
                             'name'         => 'service-notify-by-browser-notification',
-                            'command_line' => '/usr/share/openitcockpit/app/Console/cake send_push_notification --type Service --notificationtype $NOTIFICATIONTYPE$ --hostuuid "$HOSTNAME$" --serviceuuid "$SERVICEDESC$" --state "$SERVICESTATEID$" --output "$SERVICEOUTPUT$" --ackauthor "$SERVICEACKAUTHOR$" --ackcomment "$SERVICEACKCOMMENT$" --user-id $_CONTACTOITCUSERID$',
+                            'command_line' => '/usr/share/openitcockpit/app/Console/cake send_push_notification --type Service --notificationtype $NOTIFICATIONTYPE$ --hostuuid "$HOSTNAME$" --serviceuuid "$SERVICEDESC$" --state "$SERVICESTATEID$" --output "$SERVICEOUTPUT$" --ackauthor "$NOTIFICATIONAUTHOR$" --ackcomment "$NOTIFICATIONCOMMENT$" --user-id $_CONTACTOITCUSERID$',
                             'command_type' => '3',
                             'human_args'   => null,
                             'uuid'         => 'c23255b7-5b1a-40b4-b614-17837dc376af',

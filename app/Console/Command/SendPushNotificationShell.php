@@ -148,8 +148,8 @@ class SendPushNotificationShell extends AppShell {
             'serviceuuid'      => ['help' => __d('oitc_console', 'Service uuid you want to send a notification => $SERVICEDESC$')],
             'state'            => ['help' => __d('oitc_console', 'current host state => $HOSTSTATEID$/$SERVICESTATEID$')],
             'output'           => ['help' => __d('oitc_console', 'host output => $HOSTOUTPUT$/$SERVICEOUTPUT$')],
-            'ackauthor'        => ['help' => __d('oitc_console', 'host acknowledgement author => $HOSTACKAUTHOR$/$SERVICEACKAUTHOR$')],
-            'ackcomment'       => ['help' => __d('oitc_console', 'host acknowledgement comment => $HOSTACKCOMMENT$/$SERVICEACKCOMMENT$')],
+            'ackauthor'        => ['help' => __d('oitc_console', 'host acknowledgement author => $NOTIFICATIONAUTHOR$')],
+            'ackcomment'       => ['help' => __d('oitc_console', 'host acknowledgement comment => $NOTIFICATIONCOMMENT$')],
             'user-id'          => ['help' => __d('oitc_console', 'openITCOCKPIT User Id')],
         ]);
 

@@ -967,8 +967,13 @@ if (!$QueryHandler->exists()): ?>
 
                         <?php if ($GrafanaDashboardExists): ?>
                             <div id="tab5" class="tab-pane fade">
+                                <div class="widget-toolbar">
+                                    <grafana-timepicker callback="grafanaTimepickerCallback"></grafana-timepicker>
+                                </div>
+                                <iframe-directive url="GrafanaIframeUrl" ng-if="GrafanaDashboardExists"></iframe-directive>
+                                <?php /*
                                 <iframe src="<?php echo $GrafanaConfiguration->getIframeUrl(); ?>" width="100%"
-                                        onload="this.height=(screen.height+15);" frameBorder="0"></iframe>
+                                        onload="this.height=(screen.height+15);" frameBorder="0"></iframe> */ ?>
                             </div>
                         <?php endif; ?>
                     </div>
