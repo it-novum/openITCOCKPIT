@@ -26,7 +26,7 @@
 use Cake\ORM\TableRegistry;
 
 class CronjobsController extends AppController {
-    public $layout = 'Admin.default';
+    public $layout = 'angularjs';
 
     public function index() {
         /** @var $Cronjobs App\Model\Table\CronjobsTable */
@@ -37,19 +37,47 @@ class CronjobsController extends AppController {
         $this->set('_serialize', ['cronjobs']);
     }
 
-    public function add() {
-        if ($this->request->is('post') || $this->request->is('put')) {
-            if ($this->Cronjob->save($this->request->data)) {
-                $this->setFlash(__('Cronjob added successfully'));
-
-                return $this->redirect(['action' => 'index']);
-            }
-            $this->setFlash(__('Data could not be saved'), false);
+    public function getPlugins() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
         }
+        /** @var $Cronjobs App\Model\Table\CronjobsTable */
+        $Cronjobs = TableRegistry::getTableLocator()->get('Cronjobs');
+        $plugins = $Cronjobs->fetchPlugins();
+        $this->set(compact('plugins'));
+        $this->set('_serialize', ['plugins']);
+    }
 
-        $plugins = $this->Cronjob->fetchPlugins();
-        $coreTasks = $this->Cronjob->fetchTasks('Core');
-        $this->set(compact('coreTasks', 'plugins'));
+    public function getTasks() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+        /** @var $Cronjobs App\Model\Table\CronjobsTable */
+        $Cronjobs = TableRegistry::getTableLocator()->get('Cronjobs');
+        $coreTasks = $Cronjobs->fetchTasks('Core');
+        $this->set(compact('coreTasks'));
+        $this->set('_serialize', ['coreTasks']);
+    }
+
+    public function add() {
+        if (!$this->isAngularJsRequest() || !$this->request->is('post')) {
+            throw new MethodNotAllowedException();
+        }
+        /** @var $Cronjobs App\Model\Table\CronjobsTable */
+        $Cronjobs = TableRegistry::getTableLocator()->get('Cronjobs');
+        $data = $this->request->data['Cronjob'];
+        $cronjob = $Cronjobs->newEntity();
+        $cronjob = $Cronjobs->patchEntity($cronjob, $data);
+        $Cronjobs->save($cronjob);
+
+        if ($cronjob->hasErrors()) {
+            $this->response->statusCode(400);
+            $this->set('error', $cronjob->getErrors());
+            $this->set('_serialize', ['error']);
+            return;
+        }
+        $this->set('cronjob', $cronjob);
+        $this->set('_serialize', ['cronjob']);
     }
 
     public function edit($id) {
