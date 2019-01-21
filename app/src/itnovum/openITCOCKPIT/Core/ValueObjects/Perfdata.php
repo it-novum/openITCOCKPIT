@@ -102,12 +102,21 @@ class Perfdata {
         if (!empty($perfdata['unit'])) {
             $unit = $perfdata['unit'];
         }
+
         if (!empty($perfdata['warn'])) {
             $warning = $perfdata['warn'];
         }
         if (!empty($perfdata['crit'])) {
             $critical = $perfdata['crit'];
         }
+
+        if (!empty($perfdata['warning'])) {
+            $warning = $perfdata['warning'];
+        }
+        if (!empty($perfdata['critical'])) {
+            $critical = $perfdata['critical'];
+        }
+
         if (!empty($perfdata['min'])) {
             $min = $perfdata['min'];
         }

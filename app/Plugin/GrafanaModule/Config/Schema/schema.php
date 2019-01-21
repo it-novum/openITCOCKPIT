@@ -79,6 +79,7 @@ class GrafanaModuleSchema extends CakeSchema {
         'configuration_id' => ['type' => 'integer', 'null' => false, 'key' => 'index'],
         'host_id'          => ['type' => 'integer', 'null' => false, 'key' => 'index'],
         'host_uuid'        => ['type' => 'string', 'null' => false, 'length' => 200, 'collate' => 'utf8_swedish_ci', 'charset' => 'utf8'],
+        'grafana_uid'      => ['type' => 'string', 'null' => false, 'default' => '', 'collate' => 'utf8_unicode_ci', 'charset' => 'utf8'],
         'indexes'          => [
             'PRIMARY' => [
                 'column' => 'id',

@@ -3608,7 +3608,7 @@ class HostsController extends AppController {
             if (!empty($hoststatus)) {
                 $record['StatehistoryHost']['state_time'] = $hoststatus['Hoststatus']['last_state_change'];
                 $record['StatehistoryHost']['state'] = $hoststatus['Hoststatus']['current_state'];
-                $record['StatehistoryHost']['state_type'] = ($hoststatus['Hoststatus']['state_type'])?true:false;
+                $record['StatehistoryHost']['state_type'] = ($hoststatus['Hoststatus']['state_type']) ? true : false;
                 $StatehistoryHost = new \itnovum\openITCOCKPIT\Core\Views\StatehistoryHost($record['StatehistoryHost']);
                 $statehistoryRecords[] = $StatehistoryHost;
             }
@@ -3695,7 +3695,7 @@ class HostsController extends AppController {
         ]);
     }
 
-    public function getGrafanaIframeUrlForDatepicker(){
+    public function getGrafanaIframeUrlForDatepicker() {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
@@ -3720,8 +3720,17 @@ class HostsController extends AppController {
             $grafanaConfiguration = $this->GrafanaConfiguration->find('first');
             if (!empty($grafanaConfiguration) && $this->GrafanaDashboard->existsForUuid($hostUuid)) {
                 $GrafanaDashboardExists = true;
+                $dashboardFromDatabase = $this->GrafanaDashboard->find('first', [
+                    'conditions' => [
+                        'GrafanaDashboard.host_uuid' => $hostUuid
+                    ]
+                ]);
+
                 $GrafanaConfiguration = \itnovum\openITCOCKPIT\Grafana\GrafanaApiConfiguration::fromArray($grafanaConfiguration);
                 $GrafanaConfiguration->setHostUuid($hostUuid);
+                if (isset($dashboardFromDatabase['GrafanaDashboard']['grafana_uid'])) {
+                    $GrafanaConfiguration->setGrafanaUid($dashboardFromDatabase['GrafanaDashboard']['grafana_uid']);
+                }
                 $this->set('iframeUrl', $GrafanaConfiguration->getIframeUrlForDatepicker($timerange, $refresh));
             }
         }

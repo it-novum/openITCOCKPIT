@@ -79,6 +79,11 @@ class GrafanaApiConfiguration {
     private $hostUuid = null;
 
     /**
+     * @var null|string
+     */
+    private $grafana_uid = null;
+
+    /**
      * GrafanaConfiguration constructor.
      * @param $apiUrl
      * @param $apiKey
@@ -244,6 +249,16 @@ class GrafanaApiConfiguration {
     }
 
     /**
+     * @param string
+     */
+    public function setGrafanaUid($uid) {
+        if($uid === ''){
+            $uid = null;
+        }
+        $this->grafana_uid = $uid;
+    }
+
+    /**
      * @return string
      */
     public function getIframeUrl() {
@@ -276,14 +291,28 @@ class GrafanaApiConfiguration {
             $uiUrl = $this->getDockerUrl();
         }
 
-        return sprintf(
-            '%s/dashboard/db/%s?theme=%s%s&from=%s&to=now&kiosk',
-            $uiUrl,
-            $this->hostUuid,
-            $this->dashboardStyle,
-            $autoRefreshUrlStr,
-            $timerange
-        );
+        if($this->grafana_uid !== null) {
+            //Old Grfana URL <? 5.4
+            return sprintf(
+                '%s/d/%s/%s?theme=%s%s&from=%s&to=now&kiosk',
+                $uiUrl,
+                $this->grafana_uid,
+                $this->hostUuid,
+                $this->dashboardStyle,
+                $autoRefreshUrlStr,
+                $timerange
+            );
+        }else{
+            //Old Grfana URL <? 5.4
+            return sprintf(
+                '%s/dashboard/db/%s?theme=%s%s&from=%s&to=now&kiosk',
+                $uiUrl,
+                $this->hostUuid,
+                $this->dashboardStyle,
+                $autoRefreshUrlStr,
+                $timerange
+            );
+        }
     }
 
     public function getIframeUrlForUserDashboard($url, $timerange = 'now-3h', $autorefresh = '0') {
