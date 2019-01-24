@@ -22,6 +22,8 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+use App\Model\Table\MacrosTable;
+use Cake\ORM\TableRegistry;
 
 /**
  * Class NagiosExportTask
@@ -40,7 +42,6 @@
  * @property Hostgroup $Hostgroup
  * @property Hostescalation $Hostescalation
  * @property Host $Host
- * @property Macro $Macro
  * @property Servicetemplate $Servicetemplate
  * @property Service $Service
  * @property Systemsetting $Systemsetting
@@ -75,7 +76,6 @@ class NagiosExportTask extends AppShell {
         'Hostgroup',
         'Hostescalation',
         'Host',
-        'Macro',
         'Servicetemplate',
         'Service',
         'Systemsetting',
@@ -2557,12 +2557,9 @@ class NagiosExportTask extends AppShell {
             $file->create();
         }
 
-        $macros = $this->Macro->find('all', [
-            'fields' => [
-                'name',
-                'value',
-            ],
-        ]);
+        /** @var $Macro MacrosTable */
+        $Macro = TableRegistry::getTableLocator()->get('Macros');
+        $macros = $Macro->getAllMacrosInCake2Format();
 
         foreach ($macros as $macro) {
             $content .= $this->addContent($macro['Macro']['name'] . '=' . $macro['Macro']['value'], 0);

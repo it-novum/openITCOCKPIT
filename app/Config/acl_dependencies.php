@@ -271,7 +271,7 @@ $config = [
                 'add'   => ['loadContainers']
             ],
             'Macros'                => [
-                'index' => ['addMacro', 'add', 'edit', 'delete', 'getAvailableMacroNames'],
+                'index' => ['add', 'edit', 'delete', 'getAvailableMacroNames'],
             ],
             'Registers'             => [
                 'index' => ['checkLicense'],

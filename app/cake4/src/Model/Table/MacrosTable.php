@@ -94,14 +94,12 @@ class MacrosTable extends Table {
      * @return array
      */
     public function getAllMacrosInCake2Format() {
-        $macros = $this->find('all')->disableHydration();
-        $all_macros = [];
-        foreach ($macros as $macro) {
-            $all_macros[] = [
-                'Macro' => $macro
-            ];
+        $query = $this->find('all')->disableHydration();
+        if (is_null($query)) {
+            return [];
         }
-        return $all_macros;
+
+        return $this->formatResultAsCake2($query->toArray());
     }
 
     /**
@@ -127,15 +125,4 @@ class MacrosTable extends Table {
         return $availableMacroNames;
     }
 
-    /**
-     * @return array
-     */
-    public function getAllMacros() {
-        $query = $this->find('all')->disableHydration();
-        if (is_null($query)) {
-            return [];
-        }
-
-        return $this->formatResultAsCake2($query->toArray());
-    }
 }

@@ -24,8 +24,11 @@
 //	confirmation.
 
 
+use App\Model\Table\MacrosTable;
+use Cake\ORM\TableRegistry;
+
 class CommandsController extends AppController {
-    public $uses = ['Command', 'Commandargument', 'Macro', 'UUID'];
+    public $uses = ['Command', 'Commandargument', 'UUID'];
     public $layout = 'Admin.default';
     public $components = ['ListFilter.ListFilter', 'RequestHandler'];
     public $helpers = ['ListFilter.ListFilter'];
@@ -455,7 +458,10 @@ class CommandsController extends AppController {
     }
 
     public function loadMacros() {
-        $all_macros = $this->Macro->find('all');
+        /** @var $Macro MacrosTable */
+        $Macro = TableRegistry::getTableLocator()->get('Macros');
+        $all_macros = $Macro->getAllMacrosInCake2Format();
+
 
         //Sorting the SQL result in a human frindly way. Will sort $USER10$ below $USER2$
         $all_macros = Hash::sort($all_macros, '{n}.Macro.name', 'asc', 'natural');
