@@ -4,22 +4,6 @@ angular.module('openITCOCKPIT')
         $scope.availableMacros = [];
         $scope.post = {};
 
-        /*** Filter Settings ***/
-        var defaultFilter = function(){
-            $scope.filter = {
-                Macro: {
-                    name: [],
-                    description: ''
-                }
-            };
-        };
-        $scope.showFilter = false;
-        /*** Filter end ***/
-
-        $scope.triggerFilter = function(){
-            $scope.showFilter = !$scope.showFilter === true;
-        };
-
         $scope.load = function(){
             var params = {
                 'angular': true
@@ -89,9 +73,6 @@ angular.module('openITCOCKPIT')
 
         };
 
-        $scope.resetFilter = function(){
-            defaultFilter();
-        };
 
         $scope.triggerAddModal = function(){
             $scope.post = {
@@ -123,26 +104,18 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.deleteMacro = function(macro){
-            $http.post("/macros/edit/" + $scope.editPost.Macro.id + ".json?angular=true",
+            $http.post("/macros/delete/" + $scope.editPost.Macro.id + ".json?angular=true",
                 $scope.editPost
             ).then(function(result){
-                $scope.errors = {};
-
-                $('#editMacroModal').modal('hide');
-                $scope.editPost = {};
-
                 $scope.load();
-                NotyService.genericSuccess();
+                $('#editMacroModal').modal('hide');
+                NotyService.deleteSuccess();
             }, function errorCallback(result){
-                if(result.data.hasOwnProperty('error')){
-                    $scope.errors = result.data.error;
-                }
-                NotyService.genericError();
+                NotyService.deleteError();
             });
         };
 
         //Fire on page load
-        defaultFilter();
         $scope.load();
 
     });
