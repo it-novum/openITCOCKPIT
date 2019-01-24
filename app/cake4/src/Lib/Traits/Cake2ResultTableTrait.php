@@ -56,7 +56,8 @@ trait Cake2ResultTableTrait {
         foreach ($records as $row) {
             $record = [];
             foreach ($row as $key => $value) {
-                if (isset($associations[$key]) && is_array($value)) {
+                if (isset($associations[strtolower($key)]) && is_array($value)) {
+                    //associated model
                     $assoc = $AssociationCollection->get($key);
                     $assocRecords = [];
                     if ($assoc instanceof HasMany) {
@@ -76,6 +77,7 @@ trait Cake2ResultTableTrait {
                     $assocModelName = ucfirst(Inflector::singularize($key));
                     $record[$assocModelName] = $assocRecords;
                 } else {
+                    //Model itself
                     $record[$modelName][$key] = $this->asString($value);
                 }
 
