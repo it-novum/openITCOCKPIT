@@ -70,7 +70,7 @@ trait Cake2ResultTableTrait {
                     } else {
                         //hasOne
                         foreach ($value as $assocKey => $assocValue) {
-                            $assocRecord[$assocKey] = $this->asString($assocValue);
+                            $assocRecords[$assocKey] = $this->asString($assocValue);
                         }
                     }
                     $assocModelName = ucfirst(Inflector::singularize($key));
