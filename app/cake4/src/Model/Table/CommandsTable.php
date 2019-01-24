@@ -1,7 +1,8 @@
 <?php
+
 namespace App\Model\Table;
 
-use Cake\ORM\Query;
+use App\Lib\Traits\Cake2ResultTableTrait;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
@@ -27,8 +28,9 @@ use Cake\Validation\Validator;
  * @method \App\Model\Entity\Command[] patchEntities($entities, array $data, array $options = [])
  * @method \App\Model\Entity\Command findOrCreate($search, callable $callback = null, $options = [])
  */
-class CommandsTable extends Table
-{
+class CommandsTable extends Table {
+
+    use Cake2ResultTableTrait;
 
     /**
      * Initialize method
@@ -36,8 +38,7 @@ class CommandsTable extends Table
      * @param array $config The configuration for the Table.
      * @return void
      */
-    public function initialize(array $config)
-    {
+    public function initialize(array $config) {
         parent::initialize($config);
 
         $this->setTable('commands');
@@ -76,8 +77,7 @@ class CommandsTable extends Table
      * @param \Cake\Validation\Validator $validator Validator instance.
      * @return \Cake\Validation\Validator
      */
-    public function validationDefault(Validator $validator)
-    {
+    public function validationDefault(Validator $validator) {
         $validator
             ->integer('id')
             ->allowEmptyString('id', 'create');
@@ -121,10 +121,24 @@ class CommandsTable extends Table
      * @param \Cake\ORM\RulesChecker $rules The rules object to be modified.
      * @return \Cake\ORM\RulesChecker
      */
-    public function buildRules(RulesChecker $rules)
-    {
+    public function buildRules(RulesChecker $rules) {
         $rules->add($rules->isUnique(['uuid']));
 
         return $rules;
+    }
+
+    /**
+     * @return array
+     */
+    public function test() {
+        $query = $this->find()->contain([
+            'Commandarguments'
+        ])->disableHydration();
+
+        if (is_null($query)) {
+            return [];
+        }
+
+        return $this->formatResultAsCake2($query->toArray());
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Model\Table;
 
+use App\Lib\Traits\Cake2ResultTableTrait;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Utility\Hash;
@@ -22,6 +23,8 @@ use Cake\Validation\Validator;
  * @mixin \Cake\ORM\Behavior\TimestampBehavior
  */
 class MacrosTable extends Table {
+
+    use Cake2ResultTableTrait;
 
     /**
      * Nagios supports up to 256 $USERx$ macros ($USER1$ through $USER256$)
@@ -122,5 +125,17 @@ class MacrosTable extends Table {
             }
         }
         return $availableMacroNames;
+    }
+
+    /**
+     * @return array
+     */
+    public function getAllMacros() {
+        $query = $this->find('all')->disableHydration();
+        if (is_null($query)) {
+            return [];
+        }
+
+        return $this->formatResultAsCake2($query->toArray());
     }
 }
