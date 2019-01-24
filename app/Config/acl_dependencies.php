@@ -224,8 +224,8 @@ $config = [
                 'edit'  => ['loadTimeperiods', 'addCustomMacro', 'loadLdapUserByString', 'loadUsersByContainerId'],
             ],
             'Cronjobs'              => [
-                'add'  => ['loadTasksByPlugin'],
-                'edit' => ['loadTasksByPlugin'],
+                'add'  => ['getTasks'],
+                'edit' => ['getTasks'],
             ],
             'Currentstatereports'   => [
                 'index' => ['createPdfReport', 'createHtmlReport'],

@@ -6,20 +6,24 @@ angular.module('openITCOCKPIT')
 
 
         /*** Filter Settings ***/
-        var defaultFilter = function(){
+/*        var defaultFilter = function(){
             $scope.filter = {
-                Macro: {
-                    name: [],
-                    description: ''
+                Cronjob: {
+                    Plugin: '',
+                    Task: ''
+                    Interval:0
+                    enabled
                 }
             };
         };
         $scope.showFilter = false;
+        */
         /*** Filter end ***/
 
-        $scope.triggerFilter = function(){
+        /*$scope.triggerFilter = function(){
             $scope.showFilter = !$scope.showFilter === true;
         };
+        */
 
         $scope.load = function(){
             var params = {
@@ -139,14 +143,14 @@ angular.module('openITCOCKPIT')
 
             $('#editCronjobModal').modal('show');
         };
-/*
-        $scope.deleteMacro = function(macro){
-            $http.post("/macros/edit/" + $scope.editPost.Macro.id + ".json?angular=true",
+
+        $scope.deleteCronjob = function(){
+            $http.post("/cronjobs/delete/" + $scope.editPost.Cronjob.id + ".json?angular=true",
                 $scope.editPost
             ).then(function(result){
                 $scope.errors = {};
 
-                $('#editMacroModal').modal('hide');
+                $('#editCronjobModal').modal('hide');
                 $scope.editPost = {};
 
                 $scope.load();
@@ -158,7 +162,7 @@ angular.module('openITCOCKPIT')
                 NotyService.genericError();
             });
         };
-*/
+
         //Fire on page load
     //    defaultFilter();
         $scope.load();

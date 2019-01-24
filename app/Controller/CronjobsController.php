@@ -117,34 +117,25 @@ class CronjobsController extends AppController {
     }
 
     public function delete($id = null) {
-        if (!$this->request->is('post')) {
+        if (!$this->isAngularJsRequest() || !$this->request->is('post')) {
             throw new MethodNotAllowedException();
         }
 
-        $this->Cronjob->id = $id;
-        if (!$this->Cronjob->exists()) {
+        $Cronjobs = TableRegistry::getTableLocator()->get('Cronjobs');
+        $cronjob = $Cronjobs->get($id);
+
+        if (is_null($cronjob)) {
             throw new NotFoundException(__('Invalid cronjob'));
         }
 
-        $cronjob = $this->Cronjob->findById($id);
-
-        if ($this->Cronjob->delete()) {
-            $this->setFlash(__('Cronjob deleted'));
-
-            return $this->redirect(['action' => 'index']);
+        $Cronjobs->delete($cronjob);
+        if ($cronjob->hasErrors()) {
+            $this->response->statusCode(400);
+            $this->set('error', $cronjob->getErrors());
+            $this->set('_serialize', ['error']);
+            return;
         }
-        $this->setFlash(__('Could not delete cronjob'));
-        $this->redirect(['action' => 'index']);
+        $this->set('cronjob', $cronjob);
+        $this->set('_serialize', ['cronjob']);
     }
-
-    public function loadTasksByPlugin($pluginName) {
-        if (!$this->request->is('ajax')) {
-            throw new MethodNotAllowedException();
-        }
-
-        $tasks = $this->Cronjob->fetchTasks($pluginName);
-        $this->set('tasks', $tasks);
-        $this->set('_serialize', ['tasks']);
-    }
-
 }
