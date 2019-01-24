@@ -431,7 +431,7 @@ class AppController extends Controller {
                     $sqlLogs[$source] = $db->getLog();
                 endforeach;
             endif;
-            $queryLog = LOGS . 'query.log';
+            $queryLog = OLD_LOGS . 'query.log';
             $logfile = fopen($queryLog, 'a+');
 
             foreach ($sqlLogs as $datasource => $log) {
@@ -955,7 +955,7 @@ class AppController extends Controller {
 
 
     public function checkForUpdates() {
-        $path = APP . 'Lib' . DS . 'AvailableVersion.php';
+        $path = OLD_APP . 'Lib' . DS . 'AvailableVersion.php';
         $availableVersion = '???';
         if (file_exists($path)) {
             require_once $path;

@@ -250,7 +250,7 @@ class UsersController extends AppController {
             $PHPVersionChecker = new PHPVersionChecker();
             if ($PHPVersionChecker->isVersionGreaterOrEquals7Dot1()) {
                 $systemsettings = $this->Systemsetting->findAsArraySection('FRONTEND');
-                require_once APP . 'vendor_freedsx_ldap' . DS . 'autoload.php';
+                require_once OLD_APP . 'vendor_freedsx_ldap' . DS . 'autoload.php';
 
                 $ldap = new \FreeDSx\Ldap\LdapClient([
                     'servers'               => [$systemsettings['FRONTEND']['FRONTEND.LDAP.ADDRESS']],
@@ -453,7 +453,7 @@ class UsersController extends AppController {
         $PHPVersionChecker = new PHPVersionChecker();
         if ($PHPVersionChecker->isVersionGreaterOrEquals7Dot1()) {
             $systemsettings = $this->Systemsetting->findAsArraySection('FRONTEND');
-            require_once APP . 'vendor_freedsx_ldap' . DS . 'autoload.php';
+            require_once OLD_APP . 'vendor_freedsx_ldap' . DS . 'autoload.php';
 
             $ldap = new \FreeDSx\Ldap\LdapClient([
                 'servers'               => [$systemsettings['FRONTEND']['FRONTEND.LDAP.ADDRESS']],
@@ -542,7 +542,7 @@ class UsersController extends AppController {
         $samaccountname = $this->request->query('samaccountname');
         if (!empty($samaccountname) && strlen($samaccountname) > 2) {
             $systemsettings = $this->Systemsetting->findAsArraySection('FRONTEND');
-            require_once APP . 'vendor_freedsx_ldap' . DS . 'autoload.php';
+            require_once OLD_APP . 'vendor_freedsx_ldap' . DS . 'autoload.php';
 
             $ldap = new \FreeDSx\Ldap\LdapClient([
                 'servers'               => [$systemsettings['FRONTEND']['FRONTEND.LDAP.ADDRESS']],

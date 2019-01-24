@@ -23,6 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\RepositoryChecker;
 use itnovum\openITCOCKPIT\Core\System\Health\LsbRelease;
 
@@ -31,7 +32,6 @@ use itnovum\openITCOCKPIT\Core\System\Health\LsbRelease;
  */
 class AdministratorsController extends AppController {
     public $components = ['GearmanClient'];
-    public $uses = ['Proxy'];
     public $layout = 'Admin.default';
 
     function index() {
@@ -69,17 +69,18 @@ class AdministratorsController extends AppController {
             $this->Cronjob->add('CpuLoad', 'Core', 15);
         }
 
-        $license = $this->Register->find('first');
+        $Registers = TableRegistry::getTableLocator()->get('Registers');
+        $License = $Registers->getLicense();
         $isEnterprise = false;
-        if (!empty($license)) {
+        if(!empty($License)){
             $isEnterprise = true;
         }
 
         $load = null;
 
-        if (file_exists(TMP . 'loadavg')) {
+        if (file_exists(OLD_TMP . 'loadavg')) {
             $this->Frontend->setJson('renderGraph', true);
-            $load = file(TMP . 'loadavg');
+            $load = file(OLD_TMP . 'loadavg');
             if (sizeof($load) >= 3) {
                 $graphData = [
                     1  => [],

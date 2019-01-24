@@ -101,7 +101,7 @@ class UpgradeShell extends AppShell {
  * @return void
  */
 	public function tests() {
-		$this->_paths = array(APP . 'tests' . DS);
+		$this->_paths = array(OLD_APP . 'tests' . DS);
 		if (!empty($this->params['plugin'])) {
 			$this->_paths = array(CakePlugin::path($this->params['plugin']) . 'tests' . DS);
 		}
@@ -258,7 +258,7 @@ class UpgradeShell extends AppShell {
  */
 	public function i18n() {
 		$this->_paths = array(
-			APP
+			OLD_APP
 		);
 		if (!empty($this->params['plugin'])) {
 			$this->_paths = array(CakePlugin::path($this->params['plugin']));
@@ -297,7 +297,7 @@ class UpgradeShell extends AppShell {
  */
 	public function basics() {
 		$this->_paths = array(
-			APP
+			OLD_APP
 		);
 		if (!empty($this->params['plugin'])) {
 			$this->_paths = array(CakePlugin::path($this->params['plugin']));
@@ -349,7 +349,7 @@ class UpgradeShell extends AppShell {
  */
 	public function request() {
 		$views = array_diff(App::path('views'), App::core('views'));
-		$controllers = array_diff(App::path('controllers'), App::core('controllers'), array(APP));
+		$controllers = array_diff(App::path('controllers'), App::core('controllers'), array(OLD_APP));
 		$components = array_diff(App::path('components'), App::core('components'));
 
 		$this->_paths = array_merge($views, $controllers, $components);
@@ -409,7 +409,7 @@ class UpgradeShell extends AppShell {
  */
 	public function configure() {
 		$this->_paths = array(
-			APP
+			OLD_APP
 		);
 		if (!empty($this->params['plugin'])) {
 			$this->_paths = array(CakePlugin::path($this->params['plugin']));
@@ -431,7 +431,7 @@ class UpgradeShell extends AppShell {
  */
 	public function constants() {
 		$this->_paths = array(
-			APP
+			OLD_APP
 		);
 		if (!empty($this->params['plugin'])) {
 			$this->_paths = array(CakePlugin::path($this->params['plugin']));
@@ -564,7 +564,7 @@ class UpgradeShell extends AppShell {
  * @return void
  */
 	public function exceptions() {
-		$controllers = array_diff(App::path('controllers'), App::core('controllers'), array(APP));
+		$controllers = array_diff(App::path('controllers'), App::core('controllers'), array(OLD_APP));
 		$components = array_diff(App::path('components'), App::core('components'));
 
 		$this->_paths = array_merge($controllers, $components);
@@ -640,10 +640,10 @@ class UpgradeShell extends AppShell {
  */
 	protected function _moveAppClasses() {
 		$files = array(
-			APP . 'app_controller.php' => APP . 'Controller' . DS . 'AppController.php',
-			APP . 'controllers' . DS . 'app_controller.php' => APP . 'Controller' . DS . 'AppController.php',
-			APP . 'app_model.php' => APP . 'Model' . DS . 'AppModel.php',
-			APP . 'models' . DS . 'app_model.php' => APP . 'Model' . DS . 'AppModel.php',
+            OLD_APP . 'app_controller.php'                      => OLD_APP . 'Controller' . DS . 'AppController.php',
+            OLD_APP . 'controllers' . DS . 'app_controller.php' => OLD_APP . 'Controller' . DS . 'AppController.php',
+            OLD_APP . 'app_model.php'                           => OLD_APP . 'Model' . DS . 'AppModel.php',
+            OLD_APP . 'models' . DS . 'app_model.php'           => OLD_APP . 'Model' . DS . 'AppModel.php',
 		);
 		foreach ($files as $old => $new) {
 			if (file_exists($old)) {

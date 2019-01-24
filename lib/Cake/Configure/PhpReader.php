@@ -42,7 +42,7 @@ class PhpReader implements ConfigReaderInterface {
  */
 	public function __construct($path = null) {
 		if (!$path) {
-			$path = CONFIG;
+			$path = OLD_CONFIG;
 		}
 		$this->_path = $path;
 	}

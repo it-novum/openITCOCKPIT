@@ -723,7 +723,7 @@ class HttpSocketTest extends CakeTestCase {
 			->will($this->onConsecutiveCalls($serverResponse, false, $serverResponse, false));
 		$this->Socket->connected = true;
 
-		$f = fopen(TMP . 'download.txt', 'w');
+		$f = fopen(OLD_TMP . 'download.txt', 'w');
 		if (!$f) {
 			$this->markTestSkipped('Can not write in TMP directory.');
 		}
@@ -733,8 +733,8 @@ class HttpSocketTest extends CakeTestCase {
 		$this->assertEquals('', $result);
 		$this->assertEquals('CakeHttp Server', $this->Socket->response['header']['Server']);
 		fclose($f);
-		$this->assertEquals(file_get_contents(TMP . 'download.txt'), '<h1>This is a test!</h1>');
-		unlink(TMP . 'download.txt');
+		$this->assertEquals(file_get_contents(OLD_TMP . 'download.txt'), '<h1>This is a test!</h1>');
+		unlink(OLD_TMP . 'download.txt');
 
 		$this->Socket->setContentResource(false);
 		$result = (string)$this->Socket->request('http://www.cakephp.org/');

@@ -3,7 +3,7 @@
 //$group_info = posix_getgrnam('itcockpit');
 //posix_setgid($group_info['gid']);
 
-require_once APP . 'Vendor' . DS . 'autoload.php';
+require_once OLD_APP . 'Vendor' . DS . 'autoload.php';
 
 App::uses('Component', 'Controller');
 App::uses('ConstantsComponent', 'Controller/Component');
@@ -25,7 +25,7 @@ CakePlugin::loadAll();
 //Purifier::config('StandardConfig', $config);
 
 // FIXME: App::uses() doesn't seem to work in this context
-require_once APP . 'Lib/AppExceptionRenderer.php';
+require_once OLD_APP . 'Lib/AppExceptionRenderer.php';
 
 App::uses('Utils', 'Lib');
 
@@ -156,7 +156,7 @@ if (php_sapi_name() == 'cli') {
         'engine'      => 'Redis',
         'duration'    => '+24hour',
         'probability' => 100,
-        'path'        => CACHE,
+        'path'        => OLD_CACHE,
         'prefix'      => 'app_',
         'lock'        => false,
         'serialize'   => true,
@@ -166,7 +166,7 @@ if (php_sapi_name() == 'cli') {
         'engine'      => 'Redis',
         'duration'    => '+1hour',
         'probability' => 100,
-        'path'        => CACHE,
+        'path'        => OLD_CACHE,
         'prefix'      => 'app_',
         'lock'        => false,
         'serialize'   => true,
@@ -176,7 +176,7 @@ if (php_sapi_name() == 'cli') {
         'engine'      => 'Redis',
         'duration'    => '+24hour',
         'probability' => 100,
-        'path'        => CACHE,
+        'path'        => OLD_CACHE,
         'prefix'      => 'long_',
         'lock'        => false,
         'serialize'   => true,
@@ -186,7 +186,7 @@ if (php_sapi_name() == 'cli') {
         'engine'      => 'Redis',
         'duration'    => '+600 seconds',
         'probability' => 100,
-        'path'        => CACHE,
+        'path'        => OLD_CACHE,
         'prefix'      => 'permissions_',
         'lock'        => false,
         'serialize'   => true,
@@ -201,7 +201,7 @@ $modulePlugins = array_filter(CakePlugin::loaded(), function ($value) {
     return strpos($value, 'Module') !== false;
 });
 foreach ($modulePlugins as $pluginName) {
-    if (file_exists(ROOT . '/app/Plugin/' . $pluginName . '/Config/config.php')) {
+    if (file_exists(OLD_ROOT . '/app/Plugin/' . $pluginName . '/Config/config.php')) {
         Configure::load($pluginName . '.' . 'config');
     }
 }
@@ -217,3 +217,5 @@ CakePlugin::load('CakePdf', [
     ]
 );
 
+require_once OLD_APP . 'Vendor' . DS . 'autoload.php';
+require_once OLD_APP . 'cake4' . DS . 'config' . DS . 'bootstrap.php';

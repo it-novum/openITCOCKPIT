@@ -3,7 +3,7 @@
 	<span class="notice">
 		<?php
 			echo __d('cake', 'Your tmp directory is ');
-			if (is_writable(TMP)):
+			if (is_writable(OLD_TMP)):
 				echo __d('cake', 'writable.');
 			else:
 				echo __d('cake', 'NOT writable.');
@@ -35,7 +35,7 @@
 			else:
 				echo __d('cake', 'NOT working.');
 				echo '<br />';
-				if (is_writable(TMP)):
+				if (is_writable(OLD_TMP)):
 					echo __d('cake', 'Edit: config/core.php to insure you have the newset version of this file and the variable $cakeCache set properly');
 				endif;
 			endif;
@@ -47,7 +47,7 @@
 		<?php
 			echo __d('cake', 'Your database configuration file is ');
 			$filePresent = null;
-			if (file_exists(CONFIG . 'database.php')):
+			if (file_exists(OLD_CONFIG . 'database.php')):
 				echo __d('cake', 'present.');
 				$filePresent = true;
 			else:

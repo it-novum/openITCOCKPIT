@@ -69,7 +69,7 @@ class PhpAcl extends CakeObject implements AclInterface {
 	public function __construct() {
 		$this->options = array(
 			'policy' => static::DENY,
-			'config' => CONFIG . 'acl.php',
+			'config' => OLD_CONFIG . 'acl.php',
 		);
 	}
 

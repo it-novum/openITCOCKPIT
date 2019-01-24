@@ -105,7 +105,7 @@ class ExportsController extends AppController {
 
         if (isset($this->request->query['instances'])) {
             $instancesToExport = $this->request->query['instances'];
-            if (is_dir(APP . 'Plugin' . DS . 'DistributeModule')) {
+            if (is_dir(OLD_APP . 'Plugin' . DS . 'DistributeModule')) {
                 $SatelliteModel = ClassRegistry::init('DistributeModule.Satellite', 'Model');
                 $SatelliteModel->disableAllInstanceConfigSyncs();
                 $SatelliteModel->saveInstancesForConfigSync($instancesToExport);
@@ -149,7 +149,7 @@ class ExportsController extends AppController {
             throw new MethodNotAllowedException();
         }
 
-        if (is_dir(APP . 'Plugin' . DS . 'DistributeModule')) {
+        if (is_dir(OLD_APP . 'Plugin' . DS . 'DistributeModule')) {
             $SatelliteModel = ClassRegistry::init('DistributeModule.Satellite', 'Model');
             $SatelliteModel->disableAllInstanceConfigSyncs();
             if (isset($this->request->query['instances'])) {

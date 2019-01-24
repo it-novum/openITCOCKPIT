@@ -56,7 +56,7 @@ class FixtureTask extends BakeTask {
  */
 	public function __construct($stdout = null, $stderr = null, $stdin = null) {
 		parent::__construct($stdout, $stderr, $stdin);
-		$this->path = APP . 'Test' . DS . 'Fixture' . DS;
+		$this->path = OLD_APP . 'Test' . DS . 'Fixture' . DS;
 	}
 
 /**

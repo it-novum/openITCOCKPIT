@@ -106,7 +106,7 @@ $Servicestatus = new Servicestatus($servicestatus['Servicestatus']);
 
     $rrd_path = Configure::read('rrd.path');
 
-    require_once APP . 'GrapherTemplates' . DS . $commandUuid . '.php';
+    require_once OLD_APP . 'GrapherTemplates' . DS . $commandUuid . '.php';
 
     foreach ($graphs as $graph):
         foreach ($templateSettings as $key => $templateSetting):

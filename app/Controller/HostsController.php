@@ -96,7 +96,7 @@ class HostsController extends AppController {
     ];
     public $uses = [
         'Host',
-        MONITORING_HOSTSTATUS,
+        MONITORING_HOSTSTATUS, //MysqlModule.Hoststatus || CrateModule.Hoststatus
         MONITORING_SERVICESTATUS,
         MONITORING_OBJECTS,
         'Documentation',

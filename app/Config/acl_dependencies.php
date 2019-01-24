@@ -25,7 +25,7 @@
 
 $config = [
     'acl_dependencies' => [
-        'AppController'  => ['getNamedParameter', 'isAuthorized', 'flashBack', 'setFlash', 'serviceResponse', 'allowedByContainerId', 'render403', 'checkForUpdates'],
+        'AppController'  => ['getNamedParameter', 'isAuthorized', 'flashBack', 'setFlash', 'serviceResponse', 'allowedByContainerId', 'render403', 'checkForUpdates', 'tableLocator', 'setTableLocator', 'getTableLocator'],
         'always_allowed' => [
             'Angular'          => [
                 'paginator',
@@ -271,10 +271,10 @@ $config = [
                 'add'   => ['loadContainers']
             ],
             'Macros'                => [
-                'index' => ['addMacro'],
+                'index' => ['add', 'edit', 'delete', 'getAvailableMacroNames'],
             ],
             'Registers'             => [
-                'index' => ['check'],
+                'index' => ['checkLicense'],
             ],
             'Servicedependencies'   => [
                 'index' => ['view'],

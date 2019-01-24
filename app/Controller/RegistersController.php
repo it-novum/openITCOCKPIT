@@ -23,80 +23,180 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-use itnovum\openITCOCKPIT\Core\Http;
-use itnovum\openITCOCKPIT\Core\PackagemanagerRequestBuilder;
+use Cake\ORM\Locator\LocatorAwareTrait;
 use itnovum\openITCOCKPIT\Core\ValueObjects\License;
+use itnovum\openITCOCKPIT\Core\Views\UserTime;
 
 class RegistersController extends AppController {
-    public $layout = 'Admin.register';
+    use LocatorAwareTrait;
+
+    public $layout = 'angularjs';
     public $components = ['GearmanClient'];
-    public $uses = ['Register', 'Proxy'];
 
     public function index() {
+        $TableLocator = $this->getTableLocator();
+        $Registers = $TableLocator->get('Registers');
+
         if ($this->request->is('post')) {
-            $this->request->data['Register']['id'] = 1;
-            if ($this->Register->save($this->request->data)) {
-                //$this->setFlash('License added successfully');
-                $this->redirect(['action' => 'check']);
-            } else {
-                $this->setFlash('Could not add license', false);
+            $licenseValid = false;
+            $licenseResponse = $Registers->checkLicenseKey($this->request->data['Registers']['license']);
+            if (is_object($licenseResponse) && property_exists($licenseResponse, 'licence')) {
+                //license is valid
+                $licenseValid = true;
             }
-        }
+            $licenseEntity = $Registers->getLicenseEntity();
 
-        $license = $this->Register->find('first');
+            if (is_null($licenseEntity)) {
+                //no license yet
+                $licenseEntity = $Registers->newEntity();
+            }
+            $license = $this->request->data['Registers']['license'];
 
-        if (!empty($license)) {
-            //$this->redirect(array('action' => 'check'));
+            $licenseEntity = $Registers->patchEntity($licenseEntity, ['license' => $license]);
+
+            if (!empty($licenseValid)) {
+                $this->GearmanClient->sendBackground('create_apt_config', ['key' => $license]);
+                $licenseEntity->apt = true;
+
+                if ($Registers->save($licenseEntity)) {
+                    if ($this->isAngularJsRequest()) {
+                        $id = $licenseEntity->id;
+                        $this->set('_serialize', ['id']);
+                        return;
+                    } else {
+                        $this->setFlash(__('License successfully added'));
+                        $this->redirect(['action' => 'index']);
+                    }
+                }
+                if ($this->isAngularJsRequest()) {
+                    $this->serializeErrorMessage();
+
+                    return;
+                } else {
+                    $this->setFlash(__('Could not add license'), false);
+                }
+            }
+
         }
-        $this->set('licence', $license);
     }
 
-    public function check() {
-        $license = $this->Register->find('first');
-        if (empty($license)) {
-            $this->setFlash('Please enter a license key', false);
-            $this->redirect(['action' => 'index']);
+    public function loadLicense() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
         }
 
-        $License = new License($this->Register->find('first'));
-        $packagemanagerRequestBuilder = new PackagemanagerRequestBuilder(ENVIRONMENT, $License->getLicense());
-        $http = new Http(
-            $packagemanagerRequestBuilder->getUrlForLicenseCheck(),
-            $packagemanagerRequestBuilder->getOptions(),
-            $this->Proxy->getSettings()
-        );
+        $TableLocator = $this->getTableLocator();
+        $Registers = $TableLocator->get('Registers');
+        $license = $Registers->getLicense();
+        if ($license == null) {
+            //no license available
+            $license = ['license' => []];
+        }
+        //get also the state env for License input autocompletion
+        $env = ['productionEnv' => ENVIRONMENT === Environments::PRODUCTION];
+        $license = Hash::merge($license, $env);
+        $this->set(compact('license'));
+        $this->set('_serialize', ['license']);
+    }
 
-        $http->sendRequest();
-        $error = $http->getLastError();
-        $response = json_decode($http->data);
 
-        $isValide = false;
-        $licence = null;
+    /**
+     * @param $license License key
+     * @return bool
+     */
+    public function checkLicense($license) {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+        $TableLocator = $this->getTableLocator();
+        $Registers = $TableLocator->get('Registers');
+        $response = $Registers->checkLicenseKey($license);
 
-        if (is_object($response)) {
-            if (property_exists($response, 'licence')) {
-                if (property_exists($response, 'licence')) {
-                    if (!empty($response->licence) && property_exists($response->licence, 'Licence')) {
-                        if (strtotime($response->licence->Licence->expire) > time()) {
-                            $isValide = true;
-                            $licence = $response->licence->Licence;
-                            if ($license['Register']['apt'] == 0) {
-                                $this->GearmanClient->sendBackground('create_apt_config', ['key' => $license['Register']['license']]);
-                                $license['Register']['apt'] = 1;
-                                $this->Register->save($license);
+        if (is_object($response) && property_exists($response, 'licence')) {
+            //License found and valid
+
+            //rearrange expire date to user date
+            $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
+            $response->expire = $UserTime->format($response->expire);
+
+            $license = $response;
+            $this->set(compact('license'));
+            $this->set('_serialize', ['license']);
+            return;
+        }
+
+        if (is_null($response)) {
+            $license = $response;
+            $this->set(compact('license'));
+            $this->set('_serialize', ['license']);
+            return;
+        }
+
+        if (isset($response['error'])) {
+            $error = $response;
+            $this->set(compact('error'));
+            $this->set('_serialize', ['error']);
+            return;
+        }
+
+
+        /*
+
+
+                $TableLocator = $this->getTableLocator();
+                $Proxies = $TableLocator->get('Proxies');
+
+                if (empty($license) || !is_string($license)) {
+                    return false;
+                }
+
+                $prb = new PackagemanagerRequestBuilder(ENVIRONMENT, $license);
+                $url = $prb->getUrlForLicenseCheck();
+                $http = new Http(
+                    $url,
+                    $prb->getOptions(),
+                    $Proxies->getSettings()
+                );
+
+                $http->sendRequest();
+                $error = $http->getLastError();
+
+                if ($error) {
+                    if ($this->isAngularJsRequest()) {
+                        $this->set(compact('error'));
+                        $this->set('_serialize', ['error']);
+                        return;
+                    }
+                    return false;
+                }
+
+                $response = json_decode($http->data);
+                $license = null;
+                if (is_object($response)) {
+                    //wrong spelled "licence" comes from license server
+                    if (property_exists($response, 'licence')) {
+                        if (!empty($response->licence) && property_exists($response->licence, 'Licence')) {
+                            if (!empty($response->licence->Licence) && strtotime($response->licence->Licence->expire) > time()) {
+                                //license is valid
+                                if ($this->isAngularJsRequest()) {
+                                    $license = $response->licence->Licence;
+                                    $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
+                                    $license->expire = $UserTime->format($license->expire);
+                                    $this->set(compact('license'));
+                                    $this->set('_serialize', ['license']);
+                                    return;
+                                }
+                                return true;
                             }
                         }
                     }
                 }
-            }
-        }
-        if ($isValide == false) {
-            //The lincense is invalide, so we delete it again out of the database
-            if (isset($license['Register']['id'])) {
-                $this->Register->delete($license['Register']['id']);
-            }
-        }
-
-        $this->set(compact('isValide', 'licence', 'error'));
+                if ($this->isAngularJsRequest()) {
+                    $this->set(compact('license'));
+                    $this->set('_serialize', ['license']);
+                    return;
+                }
+                return false;
+        */
     }
 }

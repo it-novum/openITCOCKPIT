@@ -21,13 +21,13 @@
 /**
  * Basic defines for timing functions.
  */
-	define('SECOND', 1);
+	/*define('SECOND', 1);
 	define('MINUTE', 60);
 	define('HOUR', 3600);
 	define('DAY', 86400);
 	define('WEEK', 604800);
 	define('MONTH', 2592000);
-	define('YEAR', 31536000);
+	define('YEAR', 31536000);*/
 
 if (!function_exists('config')) {
 
@@ -46,8 +46,8 @@ if (!function_exists('config')) {
 		$count = count($args);
 		$included = 0;
 		foreach ($args as $arg) {
-			if (file_exists(CONFIG . $arg . '.php')) {
-				include_once CONFIG . $arg . '.php';
+			if (file_exists(OLD_CONFIG . $arg . '.php')) {
+				include_once OLD_CONFIG . $arg . '.php';
 				$included++;
 			}
 		}
@@ -81,7 +81,7 @@ if (!function_exists('debug')) {
 		$lineInfo = '';
 		if ($showFrom) {
 			$trace = Debugger::trace(array('start' => 1, 'depth' => 2, 'format' => 'array'));
-			$file = str_replace(array(CAKE_CORE_INCLUDE_PATH, ROOT), '', $trace[0]['file']);
+			$file = str_replace(array(OLD_CAKE_CORE_INCLUDE_PATH, OLD_ROOT), '', $trace[0]['file']);
 			$line = $trace[0]['line'];
 		}
 		$html = <<<HTML
@@ -434,13 +434,13 @@ if (!function_exists('cache')) {
 
 		switch (strtolower($target)) {
 			case 'cache':
-				$filename = CACHE . $path;
+				$filename = OLD_CACHE . $path;
 				break;
 			case 'public':
 				$filename = WWW_ROOT . $path;
 				break;
 			case 'tmp':
-				$filename = TMP . $path;
+				$filename = OLD_TMP . $path;
 				break;
 		}
 		$timediff = $expires - $now;
@@ -489,7 +489,7 @@ if (!function_exists('clearCache')) {
 	function clearCache($params = null, $type = 'views', $ext = '.php') {
 		if (is_string($params) || $params === null) {
 			$params = preg_replace('/\/\//', '/', $params);
-			$cache = CACHE . $type . DS . $params;
+			$cache = OLD_CACHE . $type . DS . $params;
 
 			if (is_file($cache . $ext)) {
 				//@codingStandardsIgnoreStart
@@ -513,8 +513,8 @@ if (!function_exists('clearCache')) {
 				return true;
 			}
 			$cache = array(
-				CACHE . $type . DS . '*' . $params . $ext,
-				CACHE . $type . DS . '*' . $params . '_*' . $ext
+				OLD_CACHE . $type . DS . '*' . $params . $ext,
+				OLD_CACHE . $type . DS . '*' . $params . '_*' . $ext
 			);
 			$files = array();
 			while ($search = array_shift($cache)) {

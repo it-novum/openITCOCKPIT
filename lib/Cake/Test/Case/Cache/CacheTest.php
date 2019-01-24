@@ -38,7 +38,7 @@ class CacheTest extends CakeTestCase {
 		Configure::write('Cache.disable', false);
 
 		$this->_defaultCacheConfig = Cache::config('default');
-		Cache::config('default', array('engine' => 'File', 'path' => TMP . 'tests'));
+		Cache::config('default', array('engine' => 'File', 'path' => OLD_TMP . 'tests'));
 	}
 
 /**
@@ -61,7 +61,7 @@ class CacheTest extends CakeTestCase {
  * @return void
  */
 	public function testConfig() {
-		$settings = array('engine' => 'File', 'path' => TMP . 'tests', 'prefix' => 'cake_test_');
+		$settings = array('engine' => 'File', 'path' => OLD_TMP . 'tests', 'prefix' => 'cake_test_');
 		$results = Cache::config('new', $settings);
 		$this->assertEquals(Cache::config('new'), $results);
 		$this->assertTrue(isset($results['engine']));
@@ -86,7 +86,7 @@ class CacheTest extends CakeTestCase {
  */
 	public function testNonFatalErrorsWithCachedisable() {
 		Configure::write('Cache.disable', true);
-		Cache::config('test', array('engine' => 'File', 'path' => TMP, 'prefix' => 'error_test_'));
+		Cache::config('test', array('engine' => 'File', 'path' => OLD_TMP, 'prefix' => 'error_test_'));
 
 		Cache::write('no_save', 'Noooo!', 'test');
 		Cache::read('no_save', 'test');
@@ -103,16 +103,16 @@ class CacheTest extends CakeTestCase {
  */
 	public function testConfigWithLibAndPluginEngines() {
 		App::build(array(
-			'Lib' => array(CAKE . 'Test' . DS . 'test_app' . DS . 'Lib' . DS),
-			'Plugin' => array(CAKE . 'Test' . DS . 'test_app' . DS . 'Plugin' . DS)
+			'Lib' => array(OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'Lib' . DS),
+			'Plugin' => array(OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'Plugin' . DS)
 		), App::RESET);
 		CakePlugin::load('TestPlugin');
 
-		$settings = array('engine' => 'TestAppCache', 'path' => TMP, 'prefix' => 'cake_test_');
+		$settings = array('engine' => 'TestAppCache', 'path' => OLD_TMP, 'prefix' => 'cake_test_');
 		$result = Cache::config('libEngine', $settings);
 		$this->assertEquals(Cache::config('libEngine'), $result);
 
-		$settings = array('engine' => 'TestPlugin.TestPluginCache', 'path' => TMP, 'prefix' => 'cake_test_');
+		$settings = array('engine' => 'TestPlugin.TestPluginCache', 'path' => OLD_TMP, 'prefix' => 'cake_test_');
 		$result = Cache::config('pluginLibEngine', $settings);
 		$this->assertEquals(Cache::config('pluginLibEngine'), $result);
 
@@ -183,10 +183,10 @@ class CacheTest extends CakeTestCase {
 		$_cacheConfigSessions = Cache::config('sessions');
 		$_cacheConfigTests = Cache::config('tests');
 
-		$result = Cache::config('sessions', array('engine' => 'File', 'path' => TMP . 'sessions'));
+		$result = Cache::config('sessions', array('engine' => 'File', 'path' => OLD_TMP . 'sessions'));
 		$this->assertEquals(Cache::settings('sessions'), $result['settings']);
 
-		$result = Cache::config('tests', array('engine' => 'File', 'path' => TMP . 'tests'));
+		$result = Cache::config('tests', array('engine' => 'File', 'path' => OLD_TMP . 'tests'));
 		$this->assertEquals(Cache::settings('tests'), $result['settings']);
 
 		Cache::config('sessions', $_cacheConfigSessions['settings']);
@@ -230,7 +230,7 @@ class CacheTest extends CakeTestCase {
 		Cache::write('test_something', 'this is the test data', 'tests');
 
 		$expected = array(
-			'path' => TMP . 'sessions' . DS,
+			'path' => OLD_TMP . 'sessions' . DS,
 			'prefix' => 'cake_',
 			'lock' => true,
 			'serialize' => true,
@@ -330,7 +330,7 @@ class CacheTest extends CakeTestCase {
  */
 	public function testInitSettings() {
 		$initial = Cache::settings();
-		$override = array('engine' => 'File', 'path' => TMP . 'tests');
+		$override = array('engine' => 'File', 'path' => OLD_TMP . 'tests');
 		Cache::config('for_test', $override);
 
 		$settings = Cache::settings();
@@ -346,8 +346,8 @@ class CacheTest extends CakeTestCase {
  */
 	public function testDrop() {
 		App::build(array(
-			'Lib' => array(CAKE . 'Test' . DS . 'test_app' . DS . 'Lib' . DS),
-			'Plugin' => array(CAKE . 'Test' . DS . 'test_app' . DS . 'Plugin' . DS)
+			'Lib' => array(OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'Lib' . DS),
+			'Plugin' => array(OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'Plugin' . DS)
 		), App::RESET);
 
 		$result = Cache::drop('some_config_that_does_not_exist');
@@ -398,8 +398,8 @@ class CacheTest extends CakeTestCase {
  */
 	public function testWriteTriggerError() {
 		App::build(array(
-			'Lib' => array(CAKE . 'Test' . DS . 'test_app' . DS . 'Lib' . DS),
-			'Plugin' => array(CAKE . 'Test' . DS . 'test_app' . DS . 'Plugin' . DS)
+			'Lib' => array(OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'Lib' . DS),
+			'Plugin' => array(OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'Plugin' . DS)
 		), App::RESET);
 
 		Cache::config('test_trigger', array('engine' => 'TestAppCache', 'prefix' => ''));
@@ -423,7 +423,7 @@ class CacheTest extends CakeTestCase {
  */
 	public function testCacheDisable() {
 		Configure::write('Cache.disable', false);
-		Cache::config('test_cache_disable_1', array('engine' => 'File', 'path' => TMP . 'tests'));
+		Cache::config('test_cache_disable_1', array('engine' => 'File', 'path' => OLD_TMP . 'tests'));
 
 		$this->assertTrue(Cache::write('key_1', 'hello', 'test_cache_disable_1'));
 		$this->assertSame(Cache::read('key_1', 'test_cache_disable_1'), 'hello');
@@ -439,7 +439,7 @@ class CacheTest extends CakeTestCase {
 		$this->assertSame(Cache::read('key_3', 'test_cache_disable_1'), 'hello');
 
 		Configure::write('Cache.disable', true);
-		Cache::config('test_cache_disable_2', array('engine' => 'File', 'path' => TMP . 'tests'));
+		Cache::config('test_cache_disable_2', array('engine' => 'File', 'path' => OLD_TMP . 'tests'));
 
 		$this->assertFalse(Cache::write('key_4', 'hello', 'test_cache_disable_2'));
 		$this->assertFalse(Cache::read('key_4', 'test_cache_disable_2'));

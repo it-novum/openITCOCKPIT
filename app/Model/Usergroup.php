@@ -64,7 +64,7 @@ class Usergroup extends AppModel {
             return strpos($value, 'Module') !== false;
         });
         foreach ($modulePlugins as $moduleName) {
-            $pluginAclConfigFile = APP . 'Plugin' . DS . $moduleName . DS . 'Config' . DS . 'acl_dependencies.php';
+            $pluginAclConfigFile = OLD_APP . 'Plugin' . DS . $moduleName . DS . 'Config' . DS . 'acl_dependencies.php';
             if (file_exists($pluginAclConfigFile)) {
                 Configure::load($moduleName . '.acl_dependencies');
             }
@@ -142,7 +142,7 @@ class Usergroup extends AppModel {
         });
 
         foreach ($modulePlugins as $moduleName) {
-            $pluginAclConfigFile = APP . 'Plugin' . DS . $moduleName . DS . 'Config' . DS . 'acl_dependencies.php';
+            $pluginAclConfigFile = OLD_APP . 'Plugin' . DS . $moduleName . DS . 'Config' . DS . 'acl_dependencies.php';
             if (file_exists($pluginAclConfigFile)) {
                 Configure::load($moduleName . '.acl_dependencies');
             }
@@ -217,7 +217,7 @@ class Usergroup extends AppModel {
             return strpos($value, 'Module') !== false;
         });
         foreach ($modulePlugins as $moduleName) {
-            $pluginAclConfigFile = APP . 'Plugin' . DS . $moduleName . DS . 'Config' . DS . 'acl_dependencies.php';
+            $pluginAclConfigFile = OLD_APP . 'Plugin' . DS . $moduleName . DS . 'Config' . DS . 'acl_dependencies.php';
             if (file_exists($pluginAclConfigFile)) {
                 Configure::load($moduleName . '.acl_dependencies');
             }

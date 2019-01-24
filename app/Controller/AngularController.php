@@ -115,7 +115,7 @@ class AngularController extends AppController {
             return;
         }
 
-        $path = APP . 'Lib' . DS . 'AvailableVersion.php';
+        $path = OLD_APP . 'Lib' . DS . 'AvailableVersion.php';
         $availableVersion = '???';
         if (file_exists($path)) {
             require_once $path;

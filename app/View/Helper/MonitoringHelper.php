@@ -336,7 +336,7 @@ class MonitoringHelper extends AppHelper {
     }
 
     public function checkForGrapherTemplate($commandUuid) {
-        if (file_exists(APP . 'GrapherTemplates' . DS . $commandUuid . '.php')) {
+        if (file_exists(OLD_APP . 'GrapherTemplates' . DS . $commandUuid . '.php')) {
             return true;
         }
 

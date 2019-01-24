@@ -49,8 +49,33 @@ class BbcodeComponent extends Component {
     public function initialize(Controller $controller) {
         $this->Controller = $controller;
 
-        $this->parser = new BBCodeParser();
-        $bbparser = $this->parser->getParser();
+        require_once OLD_APP . "Lib/jbbcode-1.2.0/Parser.php";
+        $bbparser = new JBBCode\Parser();
+        $bbparser->addCodeDefinitionSet(new JBBCode\DefaultCodeDefinitionSet());
+        $builder = new JBBCode\CodeDefinitionBuilder('left', '<p align="left">{param}</p>');
+        $bbparser->addCodeDefinition($builder->build());
+        $builder = new JBBCode\CodeDefinitionBuilder('right', '<p align="right">{param}</p>');
+        $bbparser->addCodeDefinition($builder->build());
+        $builder = new JBBCode\CodeDefinitionBuilder('center', '<p align="center">{param}</p>');
+        $bbparser->addCodeDefinition($builder->build());
+        $builder = new JBBCode\CodeDefinitionBuilder('justify', '<p align="justify">{param}</p>');
+        $bbparser->addCodeDefinition($builder->build());
+        $builder = new JBBCode\CodeDefinitionBuilder('xx-small', '<span style="font-size: xx-small;">{param}</span>');
+        $bbparser->addCodeDefinition($builder->build());
+        $builder = new JBBCode\CodeDefinitionBuilder('x-small', '<span style="font-size: x-small;">{param}</span>');
+        $bbparser->addCodeDefinition($builder->build());
+        $builder = new JBBCode\CodeDefinitionBuilder('small', '<span style="font-size: small;">{param}</span>');
+        $bbparser->addCodeDefinition($builder->build());
+        $builder = new JBBCode\CodeDefinitionBuilder('xx-large', '<span style="font-size: xx-large;">{param}</span>');
+        $bbparser->addCodeDefinition($builder->build());
+        $builder = new JBBCode\CodeDefinitionBuilder('x-large', '<span style="font-size: x-large;">{param}</span>');
+        $bbparser->addCodeDefinition($builder->build());
+        $builder = new JBBCode\CodeDefinitionBuilder('large', '<span style="font-size: large;">{param}</span>');
+        $bbparser->addCodeDefinition($builder->build());
+
+        $builder = new JBBCode\CodeDefinitionBuilder('code', '<pre style="line-height: 12px;">{param}</pre>');
+        $bbparser->addCodeDefinition($builder->build());
+        $this->Controller->set('bbparser', $bbparser);
         $this->bbparser = $bbparser;
     }
 

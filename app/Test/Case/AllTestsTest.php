@@ -39,7 +39,7 @@ class AllTestsTest extends PHPUnit_Framework_TestSuite {
      * @return array
      */
     private static function getTestDirectories() {
-        $baseTestsPath = APP . 'Test' . DS . 'Case' . DS;
+        $baseTestsPath = OLD_APP . 'Test' . DS . 'Case' . DS;
 
         $iterator = new RecursiveIteratorIterator(
             new RecursiveDirectoryIterator(

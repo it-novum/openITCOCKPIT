@@ -54,8 +54,8 @@ class AssetDispatcherTest extends CakeTestCase {
 			'css' => ''
 		));
 		App::build(array(
-			'Plugin' => array(CAKE . 'Test' . DS . 'test_app' . DS . 'Plugin' . DS),
-			'View' => array(CAKE . 'Test' . DS . 'test_app' . DS . 'View' . DS)
+			'Plugin' => array(OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'Plugin' . DS),
+			'View' => array(OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'View' . DS)
 		), App::RESET);
 
 		$request = new CakeRequest('theme/test_theme/ccss/cake.generic.css');
@@ -104,8 +104,8 @@ class AssetDispatcherTest extends CakeTestCase {
 			'css' => ''
 		));
 		App::build(array(
-			'Plugin' => array(CAKE . 'Test' . DS . 'test_app' . DS . 'Plugin' . DS),
-			'View' => array(CAKE . 'Test' . DS . 'test_app' . DS . 'View' . DS)
+			'Plugin' => array(OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'Plugin' . DS),
+			'View' => array(OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'View' . DS)
 		), App::RESET);
 		Router::parseExtensions('json');
 		Router::connect('/test_plugin/api/v1/:action', array('controller' => 'api'));
@@ -132,8 +132,8 @@ class AssetDispatcherTest extends CakeTestCase {
 			'css' => ''
 		));
 		App::build(array(
-			'Plugin' => array(CAKE . 'Test' . DS . 'test_app' . DS . 'Plugin' . DS),
-			'View' => array(CAKE . 'Test' . DS . 'test_app' . DS . 'View' . DS)
+			'Plugin' => array(OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'Plugin' . DS),
+			'View' => array(OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'View' . DS)
 		));
 		$time = filemtime(App::themePath('TestTheme') . 'webroot' . DS . 'img' . DS . 'cake.power.gif');
 		$time = new DateTime('@' . $time);
@@ -187,8 +187,8 @@ class AssetDispatcherTest extends CakeTestCase {
  */
 	public function test404OnDoubleDot() {
 		App::build(array(
-			'Plugin' => array(CAKE . 'Test' . DS . 'test_app' . DS . 'Plugin' . DS),
-			'View' => array(CAKE . 'Test' . DS . 'test_app' . DS . 'View' . DS)
+			'Plugin' => array(OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'Plugin' . DS),
+			'View' => array(OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'View' . DS)
 		), App::RESET);
 		$response = $this->getMock('CakeResponse', array('_sendHeader'));
 		$request = new CakeRequest('theme/test_theme/../../../../../../VERSION.txt');
@@ -206,8 +206,8 @@ class AssetDispatcherTest extends CakeTestCase {
  */
 	public function test404OnDoubleDotEncoded() {
 		App::build(array(
-			'Plugin' => array(CAKE . 'Test' . DS . 'test_app' . DS . 'Plugin' . DS),
-			'View' => array(CAKE . 'Test' . DS . 'test_app' . DS . 'View' . DS)
+			'Plugin' => array(OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'Plugin' . DS),
+			'View' => array(OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'View' . DS)
 		), App::RESET);
 
 		$response = $this->getMock('CakeResponse', array('_sendHeader', 'send'));
@@ -233,7 +233,7 @@ class AssetDispatcherTest extends CakeTestCase {
 		Router::reload();
 		Configure::write('Dispatcher.filters', array('AssetDispatcher'));
 		App::build(array(
-			'View' => array(CAKE . 'Test' . DS . 'test_app' . DS . 'View' . DS)
+			'View' => array(OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'View' . DS)
 		));
 
 		$url = 'theme/test_theme/css/test_asset.css';
@@ -247,7 +247,7 @@ class AssetDispatcherTest extends CakeTestCase {
 		$filter->beforeDispatch($event);
 		$result = ob_get_clean();
 
-		$path = CAKE . 'Test' . DS . 'test_app' . DS . str_replace('/', DS, $file);
+		$path = OLD_CAKE . 'Test' . DS . 'test_app' . DS . str_replace('/', DS, $file);
 		$file = file_get_contents($path);
 		$this->assertEquals($file, $result);
 

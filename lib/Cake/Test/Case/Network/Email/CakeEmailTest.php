@@ -153,7 +153,7 @@ class CakeEmailTest extends CakeTestCase {
 		parent::setUp();
 
 		$this->_configFileExists = true;
-		$emailConfig = new File(CONFIG . 'email.php');
+		$emailConfig = new File(OLD_CONFIG . 'email.php');
 		if (!$emailConfig->exists()) {
 			$this->_configFileExists = false;
 			$emailConfig->create();
@@ -162,7 +162,7 @@ class CakeEmailTest extends CakeTestCase {
 		$this->CakeEmail = new TestCakeEmail();
 
 		App::build(array(
-			'View' => array(CAKE . 'Test' . DS . 'test_app' . DS . 'View' . DS)
+			'View' => array(OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'View' . DS)
 		));
 	}
 
@@ -176,7 +176,7 @@ class CakeEmailTest extends CakeTestCase {
 		App::build();
 
 		if (!$this->_configFileExists) {
-			unlink(CONFIG . 'email.php');
+			unlink(OLD_CONFIG . 'email.php');
 		}
 	}
 
@@ -843,10 +843,10 @@ class CakeEmailTest extends CakeTestCase {
  * @return void
  */
 	public function testAttachments() {
-		$this->CakeEmail->attachments(CAKE . 'basics.php');
+		$this->CakeEmail->attachments(OLD_CAKE . 'basics.php');
 		$expected = array(
 			'basics.php' => array(
-				'file' => CAKE . 'basics.php',
+				'file' => OLD_CAKE . 'basics.php',
 				'mimetype' => 'text/x-php'
 			)
 		);
@@ -856,21 +856,21 @@ class CakeEmailTest extends CakeTestCase {
 		$this->assertSame(array(), $this->CakeEmail->attachments());
 
 		$this->CakeEmail->attachments(array(
-			array('file' => CAKE . 'basics.php', 'mimetype' => 'text/plain')
+			array('file' => OLD_CAKE . 'basics.php', 'mimetype' => 'text/plain')
 		));
-		$this->CakeEmail->addAttachments(CAKE . 'bootstrap.php');
-		$this->CakeEmail->addAttachments(array(CAKE . 'bootstrap.php'));
-		$this->CakeEmail->addAttachments(array('other.txt' => CAKE . 'bootstrap.php', 'license' => CAKE . 'LICENSE.txt'));
+		$this->CakeEmail->addAttachments(OLD_CAKE . 'bootstrap.php');
+		$this->CakeEmail->addAttachments(array(OLD_CAKE . 'bootstrap.php'));
+		$this->CakeEmail->addAttachments(array('other.txt' => OLD_CAKE . 'bootstrap.php', 'license' => OLD_CAKE . 'LICENSE.txt'));
 		$expected = array(
-			'basics.php' => array('file' => CAKE . 'basics.php', 'mimetype' => 'text/plain'),
-			'bootstrap.php' => array('file' => CAKE . 'bootstrap.php', 'mimetype' => 'text/x-php'),
-			'other.txt' => array('file' => CAKE . 'bootstrap.php', 'mimetype' => 'text/x-php'),
-			'license' => array('file' => CAKE . 'LICENSE.txt', 'mimetype' => 'text/plain')
+			'basics.php' => array('file' => OLD_CAKE . 'basics.php', 'mimetype' => 'text/plain'),
+			'bootstrap.php' => array('file' => OLD_CAKE . 'bootstrap.php', 'mimetype' => 'text/x-php'),
+			'other.txt' => array('file' => OLD_CAKE . 'bootstrap.php', 'mimetype' => 'text/x-php'),
+			'license' => array('file' => OLD_CAKE . 'LICENSE.txt', 'mimetype' => 'text/plain')
 		);
 		$this->assertSame($expected, $this->CakeEmail->attachments());
 
 		$this->setExpectedException('SocketException');
-		$this->CakeEmail->attachments(array(array('nofile' => CAKE . 'basics.php', 'mimetype' => 'text/plain')));
+		$this->CakeEmail->attachments(array(array('nofile' => OLD_CAKE . 'basics.php', 'mimetype' => 'text/plain')));
 	}
 
 /**
@@ -1087,7 +1087,7 @@ class CakeEmailTest extends CakeTestCase {
 		$this->CakeEmail->to('cake@cakephp.org');
 		$this->CakeEmail->subject('My title');
 		$this->CakeEmail->emailFormat('text');
-		$this->CakeEmail->attachments(array(CAKE . 'basics.php'));
+		$this->CakeEmail->attachments(array(OLD_CAKE . 'basics.php'));
 		$result = $this->CakeEmail->send('Hello');
 
 		$boundary = $this->CakeEmail->getBoundary();
@@ -1119,7 +1119,7 @@ class CakeEmailTest extends CakeTestCase {
 		$this->CakeEmail->to('cake@cakephp.org');
 		$this->CakeEmail->subject('My title');
 		$this->CakeEmail->emailFormat('text');
-		$data = file_get_contents(CAKE . 'Console/Templates/skel/webroot/img/cake.icon.png');
+		$data = file_get_contents(OLD_CAKE . 'Console/Templates/skel/webroot/img/cake.icon.png');
 		$this->CakeEmail->attachments(array('cake.icon.png' => array(
 				'data' => $data,
 				'mimetype' => 'image/png'
@@ -1155,7 +1155,7 @@ class CakeEmailTest extends CakeTestCase {
 		$this->CakeEmail->to('cake@cakephp.org');
 		$this->CakeEmail->subject('My title');
 		$this->CakeEmail->emailFormat('text');
-		$data = file_get_contents(CAKE . 'Console/Templates/skel/webroot/img/cake.icon.png');
+		$data = file_get_contents(OLD_CAKE . 'Console/Templates/skel/webroot/img/cake.icon.png');
 		$this->CakeEmail->attachments(array('cake.icon.png' => array(
 			'data' => $data
 		)));
@@ -1190,7 +1190,7 @@ class CakeEmailTest extends CakeTestCase {
 		$this->CakeEmail->to('cake@cakephp.org');
 		$this->CakeEmail->subject('My title');
 		$this->CakeEmail->emailFormat('both');
-		$this->CakeEmail->attachments(array(CAKE . 'VERSION.txt'));
+		$this->CakeEmail->attachments(array(OLD_CAKE . 'VERSION.txt'));
 		$result = $this->CakeEmail->send('Hello');
 
 		$boundary = $this->CakeEmail->getBoundary();
@@ -1236,7 +1236,7 @@ class CakeEmailTest extends CakeTestCase {
 		$this->CakeEmail->emailFormat('both');
 		$this->CakeEmail->attachments(array(
 			'cake.png' => array(
-				'file' => CAKE . 'VERSION.txt',
+				'file' => OLD_CAKE . 'VERSION.txt',
 				'contentId' => 'abc123'
 			)
 		));
@@ -1291,7 +1291,7 @@ class CakeEmailTest extends CakeTestCase {
 		$this->CakeEmail->emailFormat('html');
 		$this->CakeEmail->attachments(array(
 			'cake.png' => array(
-				'file' => CAKE . 'VERSION.txt',
+				'file' => OLD_CAKE . 'VERSION.txt',
 				'contentId' => 'abc123'
 			)
 		));
@@ -1333,7 +1333,7 @@ class CakeEmailTest extends CakeTestCase {
 		$this->CakeEmail->emailFormat('text');
 		$this->CakeEmail->attachments(array(
 			'cake.png' => array(
-				'file' => CAKE . 'VERSION.txt',
+				'file' => OLD_CAKE . 'VERSION.txt',
 				'contentDisposition' => false
 			)
 		));
@@ -1365,7 +1365,7 @@ class CakeEmailTest extends CakeTestCase {
 	public function testSendWithLog() {
 		CakeLog::config('email', array(
 			'engine' => 'File',
-			'path' => TMP
+			'path' => OLD_TMP
 		));
 		CakeLog::drop('default');
 		$this->CakeEmail->transport('Debug');
@@ -1376,7 +1376,7 @@ class CakeEmailTest extends CakeTestCase {
 		$result = $this->CakeEmail->send("Logging This");
 
 		App::uses('File', 'Utility');
-		$File = new File(TMP . 'cake_test_emails.log');
+		$File = new File(OLD_TMP . 'cake_test_emails.log');
 		$log = $File->read();
 		$this->assertTrue(strpos($log, $result['headers']) !== false);
 		$this->assertTrue(strpos($log, $result['message']) !== false);
@@ -1392,7 +1392,7 @@ class CakeEmailTest extends CakeTestCase {
 	public function testSendWithLogAndScope() {
 		CakeLog::config('email', array(
 			'engine' => 'File',
-			'path' => TMP,
+			'path' => OLD_TMP,
 			'types' => array('cake_test_emails'),
 			'scopes' => array('email')
 		));
@@ -1405,7 +1405,7 @@ class CakeEmailTest extends CakeTestCase {
 		$result = $this->CakeEmail->send("Logging This");
 
 		App::uses('File', 'Utility');
-		$File = new File(TMP . 'cake_test_emails.log');
+		$File = new File(OLD_TMP . 'cake_test_emails.log');
 		$log = $File->read();
 		$this->assertTrue(strpos($log, $result['headers']) !== false);
 		$this->assertTrue(strpos($log, $result['message']) !== false);
@@ -1672,7 +1672,7 @@ class CakeEmailTest extends CakeTestCase {
  */
 	public function testSendRenderPlugin() {
 		App::build(array(
-			'Plugin' => array(CAKE . 'Test' . DS . 'test_app' . DS . 'Plugin' . DS)
+			'Plugin' => array(OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'Plugin' . DS)
 		));
 		CakePlugin::load(array('TestPlugin', 'TestPluginTwo'));
 
@@ -1766,19 +1766,19 @@ class CakeEmailTest extends CakeTestCase {
 		$this->CakeEmail->to(array('you@cakephp.org' => 'You'));
 		$this->CakeEmail->subject('My title');
 		$this->CakeEmail->config(array());
-		$this->CakeEmail->attachments(array(CAKE . 'basics.php'));
+		$this->CakeEmail->attachments(array(OLD_CAKE . 'basics.php'));
 		$result = $this->CakeEmail->send('body');
 		$this->assertContains("Content-Type: text/x-php\r\nContent-Transfer-Encoding: base64\r\nContent-Disposition: attachment; filename=\"basics.php\"", $result['message']);
 
-		$this->CakeEmail->attachments(array('my.file.txt' => CAKE . 'basics.php'));
+		$this->CakeEmail->attachments(array('my.file.txt' => OLD_CAKE . 'basics.php'));
 		$result = $this->CakeEmail->send('body');
 		$this->assertContains("Content-Type: text/x-php\r\nContent-Transfer-Encoding: base64\r\nContent-Disposition: attachment; filename=\"my.file.txt\"", $result['message']);
 
-		$this->CakeEmail->attachments(array('file.txt' => array('file' => CAKE . 'basics.php', 'mimetype' => 'text/plain')));
+		$this->CakeEmail->attachments(array('file.txt' => array('file' => OLD_CAKE . 'basics.php', 'mimetype' => 'text/plain')));
 		$result = $this->CakeEmail->send('body');
 		$this->assertContains("Content-Type: text/plain\r\nContent-Transfer-Encoding: base64\r\nContent-Disposition: attachment; filename=\"file.txt\"", $result['message']);
 
-		$this->CakeEmail->attachments(array('file2.txt' => array('file' => CAKE . 'basics.php', 'mimetype' => 'text/plain', 'contentId' => 'a1b1c1')));
+		$this->CakeEmail->attachments(array('file2.txt' => array('file' => OLD_CAKE . 'basics.php', 'mimetype' => 'text/plain', 'contentId' => 'a1b1c1')));
 		$result = $this->CakeEmail->send('body');
 		$this->assertContains("Content-Type: text/plain\r\nContent-Transfer-Encoding: base64\r\nContent-ID: <a1b1c1>\r\nContent-Disposition: inline; filename=\"file2.txt\"", $result['message']);
 	}
@@ -1961,7 +1961,7 @@ class CakeEmailTest extends CakeTestCase {
 	public function testRenderWithLayoutAndAttachment() {
 		$this->CakeEmail->emailFormat('html');
 		$this->CakeEmail->template('html', 'default');
-		$this->CakeEmail->attachments(array(CAKE . 'basics.php'));
+		$this->CakeEmail->attachments(array(OLD_CAKE . 'basics.php'));
 		$result = $this->CakeEmail->render(array());
 		$this->assertNotEmpty($result);
 

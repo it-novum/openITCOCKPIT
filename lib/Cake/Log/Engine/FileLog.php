@@ -35,7 +35,7 @@ class FileLog extends BaseLog {
  * @see FileLog::__construct()
  */
 	protected $_defaults = array(
-		'path' => LOGS,
+		'path' => OLD_LOGS,
 		'file' => null,
 		'types' => null,
 		'scopes' => array(),

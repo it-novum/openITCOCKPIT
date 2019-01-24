@@ -31,7 +31,7 @@ class TestTask extends BakeTask {
  *
  * @var string
  */
-	public $path = TESTS;
+	public $path = OLD_TESTS;
 
 /**
  * Tasks used.

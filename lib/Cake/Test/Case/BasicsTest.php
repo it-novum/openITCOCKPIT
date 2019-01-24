@@ -16,7 +16,7 @@
  * @license       https://opensource.org/licenses/mit-license.php MIT License
  */
 
-require_once CAKE . 'basics.php';
+require_once OLD_CAKE . 'basics.php';
 
 App::uses('Folder', 'Utility');
 App::uses('CakeResponse', 'Network');
@@ -37,7 +37,7 @@ class BasicsTest extends CakeTestCase {
 	public function setUp() {
 		parent::setUp();
 		App::build(array(
-			'Locale' => array(CAKE . 'Test' . DS . 'test_app' . DS . 'Locale' . DS)
+			'Locale' => array(OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'Locale' . DS)
 		));
 	}
 
@@ -279,12 +279,12 @@ class BasicsTest extends CakeTestCase {
 		Configure::write('Cache.disable', false);
 		$result = cache('basics_test', 'simple cache write');
 		$this->assertTrue((bool)$result);
-		$this->assertTrue(file_exists(CACHE . 'basics_test'));
+		$this->assertTrue(file_exists(OLD_CACHE . 'basics_test'));
 
 		$result = cache('basics_test');
 		$this->assertEquals('simple cache write', $result);
-		if (file_exists(CACHE . 'basics_test')) {
-			unlink(CACHE . 'basics_test');
+		if (file_exists(OLD_CACHE . 'basics_test')) {
+			unlink(OLD_CACHE . 'basics_test');
 		}
 
 		cache('basics_test', 'expired', '+1 second');
@@ -305,55 +305,55 @@ class BasicsTest extends CakeTestCase {
 		$this->skipIf($cacheOff, 'Cache is disabled, skipping clearCache() tests.');
 
 		cache('views' . DS . 'basics_test.cache', 'simple cache write');
-		$this->assertTrue(file_exists(CACHE . 'views' . DS . 'basics_test.cache'));
+		$this->assertTrue(file_exists(OLD_CACHE . 'views' . DS . 'basics_test.cache'));
 
 		cache('views' . DS . 'basics_test_2.cache', 'simple cache write 2');
-		$this->assertTrue(file_exists(CACHE . 'views' . DS . 'basics_test_2.cache'));
+		$this->assertTrue(file_exists(OLD_CACHE . 'views' . DS . 'basics_test_2.cache'));
 
 		cache('views' . DS . 'basics_test_3.cache', 'simple cache write 3');
-		$this->assertTrue(file_exists(CACHE . 'views' . DS . 'basics_test_3.cache'));
+		$this->assertTrue(file_exists(OLD_CACHE . 'views' . DS . 'basics_test_3.cache'));
 
 		$result = clearCache(array('basics_test', 'basics_test_2'), 'views', '.cache');
 		$this->assertTrue($result);
-		$this->assertFalse(file_exists(CACHE . 'views' . DS . 'basics_test.cache'));
-		$this->assertFalse(file_exists(CACHE . 'views' . DS . 'basics_test.cache'));
-		$this->assertTrue(file_exists(CACHE . 'views' . DS . 'basics_test_3.cache'));
+		$this->assertFalse(file_exists(OLD_CACHE . 'views' . DS . 'basics_test.cache'));
+		$this->assertFalse(file_exists(OLD_CACHE . 'views' . DS . 'basics_test.cache'));
+		$this->assertTrue(file_exists(OLD_CACHE . 'views' . DS . 'basics_test_3.cache'));
 
 		$result = clearCache(null, 'views', '.cache');
 		$this->assertTrue($result);
-		$this->assertFalse(file_exists(CACHE . 'views' . DS . 'basics_test_3.cache'));
+		$this->assertFalse(file_exists(OLD_CACHE . 'views' . DS . 'basics_test_3.cache'));
 
 		// Different path from views and with prefix
 		cache('models' . DS . 'basics_test.cache', 'simple cache write');
-		$this->assertTrue(file_exists(CACHE . 'models' . DS . 'basics_test.cache'));
+		$this->assertTrue(file_exists(OLD_CACHE . 'models' . DS . 'basics_test.cache'));
 
 		cache('models' . DS . 'basics_test_2.cache', 'simple cache write 2');
-		$this->assertTrue(file_exists(CACHE . 'models' . DS . 'basics_test_2.cache'));
+		$this->assertTrue(file_exists(OLD_CACHE . 'models' . DS . 'basics_test_2.cache'));
 
 		cache('models' . DS . 'basics_test_3.cache', 'simple cache write 3');
-		$this->assertTrue(file_exists(CACHE . 'models' . DS . 'basics_test_3.cache'));
+		$this->assertTrue(file_exists(OLD_CACHE . 'models' . DS . 'basics_test_3.cache'));
 
 		$result = clearCache('basics', 'models', '.cache');
 		$this->assertTrue($result);
-		$this->assertFalse(file_exists(CACHE . 'models' . DS . 'basics_test.cache'));
-		$this->assertFalse(file_exists(CACHE . 'models' . DS . 'basics_test_2.cache'));
-		$this->assertFalse(file_exists(CACHE . 'models' . DS . 'basics_test_3.cache'));
+		$this->assertFalse(file_exists(OLD_CACHE . 'models' . DS . 'basics_test.cache'));
+		$this->assertFalse(file_exists(OLD_CACHE . 'models' . DS . 'basics_test_2.cache'));
+		$this->assertFalse(file_exists(OLD_CACHE . 'models' . DS . 'basics_test_3.cache'));
 
 		// checking if empty files were not removed
-		$emptyExists = file_exists(CACHE . 'views' . DS . 'empty');
+		$emptyExists = file_exists(OLD_CACHE . 'views' . DS . 'empty');
 		if (!$emptyExists) {
 			cache('views' . DS . 'empty', '');
 		}
 		cache('views' . DS . 'basics_test.php', 'simple cache write');
-		$this->assertTrue(file_exists(CACHE . 'views' . DS . 'basics_test.php'));
-		$this->assertTrue(file_exists(CACHE . 'views' . DS . 'empty'));
+		$this->assertTrue(file_exists(OLD_CACHE . 'views' . DS . 'basics_test.php'));
+		$this->assertTrue(file_exists(OLD_CACHE . 'views' . DS . 'empty'));
 
 		$result = clearCache();
 		$this->assertTrue($result);
-		$this->assertTrue(file_exists(CACHE . 'views' . DS . 'empty'));
-		$this->assertFalse(file_exists(CACHE . 'views' . DS . 'basics_test.php'));
+		$this->assertTrue(file_exists(OLD_CACHE . 'views' . DS . 'empty'));
+		$this->assertFalse(file_exists(OLD_CACHE . 'views' . DS . 'basics_test.php'));
 		if (!$emptyExists) {
-			unlink(CACHE . 'views' . DS . 'empty');
+			unlink(OLD_CACHE . 'views' . DS . 'empty');
 		}
 	}
 
@@ -789,8 +789,8 @@ class BasicsTest extends CakeTestCase {
  * @return void
  */
 	public function testLogError() {
-		if (file_exists(LOGS . 'error.log')) {
-			unlink(LOGS . 'error.log');
+		if (file_exists(OLD_LOGS . 'error.log')) {
+			unlink(OLD_LOGS . 'error.log');
 		}
 
 		// disable stderr output for this test
@@ -805,7 +805,7 @@ class BasicsTest extends CakeTestCase {
 			CakeLog::enable('stderr');
 		}
 
-		$result = file_get_contents(LOGS . 'error.log');
+		$result = file_get_contents(OLD_LOGS . 'error.log');
 		$this->assertRegExp('/Error: Testing LogError\(\) basic function/', $result);
 		$this->assertNotRegExp("/Error: Testing with\nmulti-line\nstring/", $result);
 		$this->assertRegExp('/Error: Testing with multi-line string/', $result);
@@ -823,7 +823,7 @@ class BasicsTest extends CakeTestCase {
 
 		$_includePath = ini_get('include_path');
 
-		$path = TMP . 'basics_test';
+		$path = OLD_TMP . 'basics_test';
 		$folder1 = $path . DS . 'folder1';
 		$folder2 = $path . DS . 'folder2';
 		$file1 = $path . DS . 'file1.php';
@@ -888,7 +888,7 @@ class BasicsTest extends CakeTestCase {
 ###########################
 
 EXPECTED;
-		$expected = sprintf($expectedText, str_replace(CAKE_CORE_INCLUDE_PATH, '', __FILE__), __LINE__ - 9);
+		$expected = sprintf($expectedText, str_replace(OLD_CAKE_CORE_INCLUDE_PATH, '', __FILE__), __LINE__ - 9);
 
 		$this->assertEquals($expected, $result);
 
@@ -903,7 +903,7 @@ EXPECTED;
 </pre>
 </div>
 EXPECTED;
-		$expected = sprintf($expectedHtml, str_replace(CAKE_CORE_INCLUDE_PATH, '', __FILE__), __LINE__ - 10);
+		$expected = sprintf($expectedHtml, str_replace(OLD_CAKE_CORE_INCLUDE_PATH, '', __FILE__), __LINE__ - 10);
 		$this->assertEquals($expected, $result);
 
 		ob_start();
@@ -917,7 +917,7 @@ EXPECTED;
 </pre>
 </div>
 EXPECTED;
-		$expected = sprintf($expected, str_replace(CAKE_CORE_INCLUDE_PATH, '', __FILE__), __LINE__ - 10);
+		$expected = sprintf($expected, str_replace(OLD_CAKE_CORE_INCLUDE_PATH, '', __FILE__), __LINE__ - 10);
 		$this->assertEquals($expected, $result);
 
 		ob_start();
@@ -931,7 +931,7 @@ EXPECTED;
 </pre>
 </div>
 EXPECTED;
-		$expected = sprintf($expected, str_replace(CAKE_CORE_INCLUDE_PATH, '', __FILE__), __LINE__ - 10);
+		$expected = sprintf($expected, str_replace(OLD_CAKE_CORE_INCLUDE_PATH, '', __FILE__), __LINE__ - 10);
 		$this->assertEquals($expected, $result);
 
 		ob_start();
@@ -953,9 +953,9 @@ EXPECTED;
 
 EXPECTED;
 		if (PHP_SAPI === 'cli') {
-			$expected = sprintf($expectedText, str_replace(CAKE_CORE_INCLUDE_PATH, '', __FILE__), __LINE__ - 18);
+			$expected = sprintf($expectedText, str_replace(OLD_CAKE_CORE_INCLUDE_PATH, '', __FILE__), __LINE__ - 18);
 		} else {
-			$expected = sprintf($expectedHtml, str_replace(CAKE_CORE_INCLUDE_PATH, '', __FILE__), __LINE__ - 20);
+			$expected = sprintf($expectedHtml, str_replace(OLD_CAKE_CORE_INCLUDE_PATH, '', __FILE__), __LINE__ - 20);
 		}
 		$this->assertEquals($expected, $result);
 
@@ -978,9 +978,9 @@ EXPECTED;
 
 EXPECTED;
 		if (PHP_SAPI === 'cli') {
-			$expected = sprintf($expectedText, str_replace(CAKE_CORE_INCLUDE_PATH, '', __FILE__), __LINE__ - 18);
+			$expected = sprintf($expectedText, str_replace(OLD_CAKE_CORE_INCLUDE_PATH, '', __FILE__), __LINE__ - 18);
 		} else {
-			$expected = sprintf($expectedHtml, str_replace(CAKE_CORE_INCLUDE_PATH, '', __FILE__), __LINE__ - 19);
+			$expected = sprintf($expectedHtml, str_replace(OLD_CAKE_CORE_INCLUDE_PATH, '', __FILE__), __LINE__ - 19);
 		}
 		$this->assertEquals($expected, $result);
 
@@ -994,7 +994,7 @@ EXPECTED;
 ###########################
 
 EXPECTED;
-		$expected = sprintf($expected, str_replace(CAKE_CORE_INCLUDE_PATH, '', __FILE__), __LINE__ - 9);
+		$expected = sprintf($expected, str_replace(OLD_CAKE_CORE_INCLUDE_PATH, '', __FILE__), __LINE__ - 9);
 		$this->assertEquals($expected, $result);
 
 		ob_start();
@@ -1007,7 +1007,7 @@ EXPECTED;
 ###########################
 
 EXPECTED;
-		$expected = sprintf($expected, str_replace(CAKE_CORE_INCLUDE_PATH, '', __FILE__), __LINE__ - 9);
+		$expected = sprintf($expected, str_replace(OLD_CAKE_CORE_INCLUDE_PATH, '', __FILE__), __LINE__ - 9);
 		$this->assertEquals($expected, $result);
 
 		ob_start();
@@ -1020,7 +1020,7 @@ EXPECTED;
 ###########################
 
 EXPECTED;
-		$expected = sprintf($expected, str_replace(CAKE_CORE_INCLUDE_PATH, '', __FILE__), __LINE__ - 9);
+		$expected = sprintf($expected, str_replace(OLD_CAKE_CORE_INCLUDE_PATH, '', __FILE__), __LINE__ - 9);
 		$this->assertEquals($expected, $result);
 
 		ob_start();
@@ -1033,7 +1033,7 @@ false
 ###########################
 
 EXPECTED;
-		$expected = sprintf($expected, str_replace(CAKE_CORE_INCLUDE_PATH, '', __FILE__), __LINE__ - 9);
+		$expected = sprintf($expected, str_replace(OLD_CAKE_CORE_INCLUDE_PATH, '', __FILE__), __LINE__ - 9);
 		$this->assertEquals($expected, $result);
 	}
 
