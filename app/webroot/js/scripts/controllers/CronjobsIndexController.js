@@ -1,8 +1,9 @@
 angular.module('openITCOCKPIT')
     .controller('CronjobsIndexController', function($scope, $http, NotyService){
 
-        $scope.availableMacros = [];
         $scope.post = {};
+        $scope.editPost = {};
+
 
         /*** Filter Settings ***/
         var defaultFilter = function(){
@@ -33,22 +34,24 @@ angular.module('openITCOCKPIT')
             });
         };
 
-        $scope.loadAvailableCronjobTasks = function(tasksToInclude){
+        $scope.loadAvailableCronjobTasks = function(tasksToInclude, pluginName, callback){
             $scope.availableTasks = [];
 
             var params = {
                 'angular': true,
-                'include': tasksToInclude
+                'include': tasksToInclude,
+                'pluginName': pluginName
             };
 
             $http.get("/cronjobs/getTasks.json", {
                 params: params
             }).then(function(result){
                 $scope.availableTasks = result.data.coreTasks;
+                callback(tasksToInclude);
             });
         };
 
-        $scope.loadAvailablePlugins = function(pluginsToInclude){
+        $scope.loadAvailablePlugins = function(pluginsToInclude, callback){
             $scope.availablePlugins = [];
 
             var params = {
@@ -60,6 +63,7 @@ angular.module('openITCOCKPIT')
                 params: params
             }).then(function(result){
                 $scope.availablePlugins = result.data.plugins;
+                callback(pluginsToInclude);
             });
         };
 
@@ -80,16 +84,15 @@ angular.module('openITCOCKPIT')
                 }
                 NotyService.genericError();
             });
-
         };
-/*
-        $scope.editMacro = function(){
-            $http.post("/macros/edit/" + $scope.editPost.Macro.id + ".json?angular=true",
+
+        $scope.editCronjob = function(){
+            $http.post("/cronjobs/edit/" + $scope.editPost.Cronjob.id + ".json?angular=true",
                 $scope.editPost
             ).then(function(result){
                 $scope.errors = {};
 
-                $('#editMacroModal').modal('hide');
+                $('#editCronjobModal').modal('hide');
                 $scope.editPost = {};
 
                 $scope.load();
@@ -100,9 +103,8 @@ angular.module('openITCOCKPIT')
                 }
                 NotyService.genericError();
             });
-
         };
-
+/*
         $scope.resetFilter = function(){
             defaultFilter();
         };
@@ -117,29 +119,27 @@ angular.module('openITCOCKPIT')
                 }
             };
 
-            $scope.loadAvailablePlugins('');
+            $scope.loadAvailablePlugins('', function(){
 
-            $scope.loadAvailableCronjobTasks('');
-
-
-
+            });
             $('#addCronjobModal').modal('show');
         };
-/*
-        $scope.triggerEditModal = function(macro){
 
+        $scope.triggerEditModal = function(cronjob){
             $scope.editPost = {
-                Macro: JSON.parse(JSON.stringify(macro)) //Get clone not reference
+                Cronjob: JSON.parse(JSON.stringify(cronjob)) //Get clone not reference
             };
 
-
-            $scope.loadAvailableMacroNames($scope.editPost.Macro.name, function(macroname){
-                $scope.editPost.Macro.name = macroname; //Fix strange name is null behavior
-                $('#editMacroModal').modal('show');
+            $scope.loadAvailablePlugins(cronjob.plugin, function(){
+                $scope.editPost.Cronjob.plugin = cronjob.plugin;
+            });
+            $scope.loadAvailableCronjobTasks(cronjob.task, cronjob.plugin, function(){
+                $scope.editPost.Cronjob.task = cronjob.task;
             });
 
+            $('#editCronjobModal').modal('show');
         };
-
+/*
         $scope.deleteMacro = function(macro){
             $http.post("/macros/edit/" + $scope.editPost.Macro.id + ".json?angular=true",
                 $scope.editPost
@@ -162,5 +162,13 @@ angular.module('openITCOCKPIT')
         //Fire on page load
     //    defaultFilter();
         $scope.load();
+
+        $scope.$watch('post.Cronjob.plugin',function(){
+            if($scope.post.Cronjob != null){
+                console.log($scope.post.Cronjob.plugin);
+                $scope.loadAvailableCronjobTasks('', $scope.post.Cronjob.plugin, function(){
+                })
+            }
+        },true)
 
     });

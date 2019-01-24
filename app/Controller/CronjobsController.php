@@ -32,7 +32,6 @@ class CronjobsController extends AppController {
         /** @var $Cronjobs App\Model\Table\CronjobsTable */
         $Cronjobs = TableRegistry::getTableLocator()->get('Cronjobs');
         $cronjobs = $Cronjobs->getCronjobs();
-
         $this->set(compact('cronjobs'));
         $this->set('_serialize', ['cronjobs']);
     }
@@ -43,7 +42,12 @@ class CronjobsController extends AppController {
         }
         /** @var $Cronjobs App\Model\Table\CronjobsTable */
         $Cronjobs = TableRegistry::getTableLocator()->get('Cronjobs');
-        $plugins = $Cronjobs->fetchPlugins();
+        $include = $this->request->query('include');
+        $plugins = array_values($Cronjobs->fetchPlugins());
+        if ($include !== '') {
+            $plugins[] = $include;
+        }
+
         $this->set(compact('plugins'));
         $this->set('_serialize', ['plugins']);
     }
@@ -54,7 +58,17 @@ class CronjobsController extends AppController {
         }
         /** @var $Cronjobs App\Model\Table\CronjobsTable */
         $Cronjobs = TableRegistry::getTableLocator()->get('Cronjobs');
-        $coreTasks = $Cronjobs->fetchTasks('Core');
+        $include = $this->request->query('include');
+        $pluginName = 'Core';
+        if($this->request->query('pluginName') != null){
+            $pluginName = $this->request->query('pluginName');
+        }
+
+        $coreTasks = $Cronjobs->fetchTasks($pluginName);
+        if ($include !== '') {
+            $coreTasks[] = $include;
+        }
+
         $this->set(compact('coreTasks'));
         $this->set('_serialize', ['coreTasks']);
     }
@@ -80,25 +94,26 @@ class CronjobsController extends AppController {
         $this->set('_serialize', ['cronjob']);
     }
 
-    public function edit($id) {
-        if (!$this->Cronjob->exists($id)) {
-            throw new NotFoundException(__('Invalid cronjob'));
+    public function edit($id = null) {
+        if (!$this->isAngularJsRequest() || !$this->request->is('post')) {
+            throw new MethodNotAllowedException();
         }
 
-        if ($this->request->is('post') || $this->request->is('put')) {
-            if ($this->Cronjob->save($this->request->data)) {
-                $this->setFlash(__('Cronjob modified successfully'));
+        /** @var $Cronjobs App\Model\Table\CronjobsTable */
+        $Cronjobs = TableRegistry::getTableLocator()->get('Cronjobs');
+        $data = $this->request->data['Cronjob'];
+        $cronjob = $Cronjobs->get($id);
+        $cronjob = $Cronjobs->patchEntity($cronjob, $data);
+        $Cronjobs->save($cronjob);
 
-                return $this->redirect(['action' => 'index']);
-            }
-            $this->setFlash(__('Data could not be saved'), false);
+        if ($cronjob->hasErrors()) {
+            $this->response->statusCode(400);
+            $this->set('error', $cronjob->getErrors());
+            $this->set('_serialize', ['error']);
+            return;
         }
-
-        $cronjob = $this->Cronjob->findById($id);
-
-        $plugins = $this->Cronjob->fetchPlugins();
-        $pluginTasks = $this->Cronjob->fetchTasks($cronjob['Cronjob']['plugin']);
-        $this->set(compact('pluginTasks', 'plugins', 'cronjob'));
+        $this->set('cronjob', $cronjob);
+        $this->set('_serialize', ['cronjob']);
     }
 
     public function delete($id = null) {
