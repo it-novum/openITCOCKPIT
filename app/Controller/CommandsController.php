@@ -242,31 +242,6 @@ class CommandsController extends AppController {
 
     }
 
-
-    protected function __delete($command) {
-        $userId = $this->Auth->user('id');
-        $this->Command->id = $command['Command']['id'];
-        if ($this->Command->delete()) {
-            $changelog_data = $this->Changelog->parseDataForChangelog(
-                'delete',
-                $this->params['controller'],
-                $command['Command']['id'],
-                OBJECT_COMMAND,
-                [ROOT_CONTAINER],
-                $userId,
-                $command['Command']['name'],
-                $command
-            );
-            if ($changelog_data) {
-                CakeLog::write('log', serialize($changelog_data));
-            }
-
-            return true;
-        }
-
-        return false;
-    }
-
     protected function __allowDelete($command) {
         //Check if the command is used somewere, if yes we can not delete it!
         $this->loadModel('__ContactsToServicecommands');

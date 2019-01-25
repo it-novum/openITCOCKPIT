@@ -85,7 +85,7 @@
                         <?php if (empty($servicestemplates)): ?>
                             <div class="noMatch">
                                 <center>
-                                    <span class="txt-color-red italic"><?php echo __('This service template is not used by any service'); ?></span>
+                                    <span class="txt-color-red italic"><?php echo __('This command is not used by any service template'); ?></span>
                                 </center>
                             </div>
                         <?php endif; ?>
