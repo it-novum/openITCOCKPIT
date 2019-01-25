@@ -37,11 +37,12 @@ trait Cake2ResultTableTrait {
 
 
     /**
-     * @param array $data
+     * @param array $records
+     * @param bool $contain
      * @return array
      */
-    public function formatResultAsCake2($records = []) {
-        if (empty($records)) {
+    public function formatResultAsCake2($records = [], $contain = true) {
+        if (empty($records) || is_null($records)) {
             return [];
         }
 
@@ -82,10 +83,12 @@ trait Cake2ResultTableTrait {
                 }
 
                 //Add missing associations
-                foreach ($associations as $association => $index) {
-                    $assocName = ucfirst(Inflector::singularize($association));
-                    if (!isset($record[$assocName])) {
-                        $record[$assocName] = [];
+                if($contain === true) {
+                    foreach ($associations as $association => $index) {
+                        $assocName = ucfirst(Inflector::singularize($association));
+                        if (!isset($record[$assocName])) {
+                            $record[$assocName] = [];
+                        }
                     }
                 }
             }

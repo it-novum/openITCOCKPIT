@@ -30,7 +30,7 @@ use Controller;
 class ScrollIndex {
 
     /**
-     * @var AppPaginatorComponent
+     * @var AppPaginatorComponent|Cake4Paginator
      */
     private $Paginator;
 
@@ -81,11 +81,36 @@ class ScrollIndex {
         $this->hasNextPage = true;
     }
 
+    /**
+     * @param int $page
+     */
+    public function setPage($page) {
+        $this->page = $page;
+    }
+
+    /**
+     * @return int
+     */
+    public function getOffset() {
+        //return (int)$this->limit * $this->page;
+        if ($this->page === 1) {
+            return 0;
+        }
+        return (int)$this->limit * ($this->page - 1);
+    }
+
+    /**
+     * @return int
+     */
+    public function getLimit() {
+        return $this->limit;
+    }
+
     public function getScroll() {
         return [
             'page'        => $this->page,
             'limit'       => $this->limit,
-            'offset'      => $this->limit * $this->page,
+            'offset'      => $this->getOffset(),
             'hasPrevPage' => $this->page !== 1,
             'prevPage'    => ($this->page !== 1) ? $this->page - 1 : 1,
             'nextPage'    => $this->page + 1,

@@ -3,21 +3,17 @@
 namespace App\Model\Table;
 
 use App\Lib\Traits\Cake2ResultTableTrait;
+use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
+use itnovum\openITCOCKPIT\Database\PaginateOMat;
+use itnovum\openITCOCKPIT\Filter\CommandsFilter;
 
 /**
  * Commands Model
  *
  * @property \App\Model\Table\CommandargumentsTable|\Cake\ORM\Association\HasMany $Commandarguments
- * @property \App\Model\Table\ContactsToHostcommandsTable|\Cake\ORM\Association\HasMany $ContactsToHostcommands
- * @property \App\Model\Table\ContactsToServicecommandsTable|\Cake\ORM\Association\HasMany $ContactsToServicecommands
- * @property \App\Model\Table\HostsTable|\Cake\ORM\Association\HasMany $Hosts
- * @property \App\Model\Table\HosttemplatesTable|\Cake\ORM\Association\HasMany $Hosttemplates
- * @property \App\Model\Table\NagiosCommandsTable|\Cake\ORM\Association\HasMany $NagiosCommands
- * @property \App\Model\Table\ServicesTable|\Cake\ORM\Association\HasMany $Services
- * @property \App\Model\Table\ServicetemplatesTable|\Cake\ORM\Association\HasMany $Servicetemplates
  *
  * @method \App\Model\Entity\Command get($primaryKey, $options = [])
  * @method \App\Model\Entity\Command newEntity($data = null, array $options = [])
@@ -31,6 +27,12 @@ use Cake\Validation\Validator;
 class CommandsTable extends Table {
 
     use Cake2ResultTableTrait;
+    use PaginationAndScrollIndexTrait;
+
+    /**
+     * @var array
+     */
+    private $commandTypes = [];
 
     /**
      * Initialize method
@@ -48,27 +50,13 @@ class CommandsTable extends Table {
         $this->hasMany('Commandarguments', [
             'foreignKey' => 'command_id'
         ]);
-        $this->hasMany('ContactsToHostcommands', [
-            'foreignKey' => 'command_id'
-        ]);
-        $this->hasMany('ContactsToServicecommands', [
-            'foreignKey' => 'command_id'
-        ]);
-        $this->hasMany('Hosts', [
-            'foreignKey' => 'command_id'
-        ]);
-        $this->hasMany('Hosttemplates', [
-            'foreignKey' => 'command_id'
-        ]);
-        $this->hasMany('NagiosCommands', [
-            'foreignKey' => 'command_id'
-        ]);
-        $this->hasMany('Services', [
-            'foreignKey' => 'command_id'
-        ]);
-        $this->hasMany('Servicetemplates', [
-            'foreignKey' => 'command_id'
-        ]);
+
+        $this->commandTypes = [
+            CHECK_COMMAND        => __('Service check command'),
+            HOSTCHECK_COMMAND    => __('Host check command'),
+            NOTIFICATION_COMMAND => __('Notification command'),
+            EVENTHANDLER_COMMAND => __('Eventhandler command'),
+        ];
     }
 
     /**
@@ -128,17 +116,30 @@ class CommandsTable extends Table {
     }
 
     /**
+     * @param CommandsFilter $CommandsFilter
+     * @param null $PaginateOMat
      * @return array
      */
-    public function test() {
-        $query = $this->find()->contain([
-            'Commandarguments'
-        ])->disableHydration();
+    public function getCommandsIndex(CommandsFilter $CommandsFilter, $PaginateOMat = null) {
+        $query = $this->find('all')->disableHydration();
+        $query->where($CommandsFilter->indexFilter());
+        $query->order($CommandsFilter->getOrderForPaginator('Commands.name', 'asc'));
 
-        if (is_null($query)) {
-            return [];
+        $result = [];
+        if ($PaginateOMat === null) {
+            //Just execute query
+            $result = $this->formatResultAsCake2($query->toArray(), false);
+        } else {
+            if ($PaginateOMat->useScroll()) {
+                $result = $this->scroll($query, $PaginateOMat->getHandler(), false);
+            } else {
+                $result = $this->paginate($query, $PaginateOMat->getHandler(), false);
+            }
         }
 
-        return $this->formatResultAsCake2($query->toArray());
+        foreach ($result as $index => $row) {
+            $result[$index]['Command']['type'] = $this->commandTypes[$row['Command']['command_type']];
+        }
+        return $result;
     }
 }

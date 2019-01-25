@@ -248,7 +248,7 @@ abstract class Filter {
 
     /**
      * @param array $sortAsArray
-     * return array
+     * @return array
      */
     public function validateArrayDirection($sortAsArray = []) {
         $validatedSort = [];

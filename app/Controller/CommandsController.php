@@ -24,42 +24,43 @@
 //	confirmation.
 
 
+use App\Model\Table\CommandsTable;
 use App\Model\Table\MacrosTable;
 use Cake\ORM\TableRegistry;
+use itnovum\openITCOCKPIT\Database\Cake4Paginator;
+use itnovum\openITCOCKPIT\Database\PaginateOMat;
+use itnovum\openITCOCKPIT\Database\ScrollIndex;
+use itnovum\openITCOCKPIT\Filter\CommandsFilter;
 
 class CommandsController extends AppController {
     public $uses = ['Command', 'Commandargument', 'UUID'];
     public $layout = 'Admin.default';
-    public $components = ['ListFilter.ListFilter', 'RequestHandler'];
-    public $helpers = ['ListFilter.ListFilter'];
 
-    /**
-     * Define the search function for each field that should be searchable
-     */
-    public $listFilters = [
-        'index'         => [
-            'fields' => [
-                'Command.name' => ['label' => 'Commandname', 'searchType' => 'wildcard'],
-            ],
-        ],
-        'hostchecks'    => [
-            'fields' => [
-                'Command.name' => ['label' => 'Commandname', 'searchType' => 'wildcard'],
-            ],
-        ],
-        'notifications' => [
-            'fields' => [
-                'Command.name' => ['label' => 'Commandname', 'searchType' => 'wildcard'],
-            ],
-        ],
-        'handler'       => [
-            'fields' => [
-                'Command.name' => ['label' => 'Commandname', 'searchType' => 'wildcard'],
-            ],
-        ],
-    ];
 
     public function index() {
+        $this->layout = 'angularjs';
+        if (!$this->isAngularJsRequest()) {
+            //Only ship HTML Template
+            return;
+        }
+
+        /** @var $Commands CommandsTable */
+        $Commands = TableRegistry::getTableLocator()->get('Commands');
+        $CommandFilter = new CommandsFilter($this->request);
+
+        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $CommandFilter->getPage());
+        $all_commands = $Commands->getCommandsIndex($CommandFilter, $PaginateOMat);
+
+        $this->set('all_commands', $all_commands);
+        $toJson = ['all_commands', 'paging'];
+        if ($this->isScrollRequest()) {
+            $toJson = ['all_commands', 'scroll'];
+        }
+        $this->set('_serialize', $toJson);
+
+        return;
+
+
         $query = [
             'recursive'  => -1,
             'order'      => [
@@ -497,23 +498,6 @@ class CommandsController extends AppController {
         return $requestData;
     }
 
-    /**
-     * This function creates for each command a new UUID. Normally you should never execute this function!
-     * ! Caution: May be destroy your whole system!
-     * ! Only execute this if you know what you are doing!
-     * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
-     * @since  3.0
-     */
-    protected function resetAllUUID() {
-        throw new BadRequestException('To call this function is a really bad idea, because all your UUIDs get lost and generated new. So this function is disabled by default!');
-
-        return false;
-        foreach ($this->Command->find('all', ['fields' => ['uuid', 'id']]) as $command) {
-            debug($command);
-            $command['Command']['uuid'] = UUID::v4();
-            $this->Command->save($command);
-        }
-    }
 
     private function getConsoleWelcome() {
         return "This is a terminal connected to your " . $this->systemname . " " .
@@ -534,10 +518,6 @@ class CommandsController extends AppController {
         $command = $this->Command->findById($id);
         $commandName = $command['Command']['name'];
 
-//		if(!$this->allowedByContainerId(Hash::extract($servicetemplate, 'Container.id'), false)){
-//			$this->render403();
-//			return;
-//		}
 
         $this->loadModel('Servicetemplate');
         $servicestemplates = $this->Servicetemplate->find('all', [
