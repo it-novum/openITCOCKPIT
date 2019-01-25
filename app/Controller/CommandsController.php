@@ -75,6 +75,31 @@ class CommandsController extends AppController {
     }
 
     public function add() {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
+            return;
+        }
+
+        $TableLocator = $this->getTableLocator();
+        $Commandos = $TableLocator->get('Commandos');
+
+      /*
+        $commando = $Commandos->newEntity();
+        $commando = $Commandos->patchEntity($commando, $this->request->data('Commando'));
+        $Commandos->save($commando);
+
+        if ($commando->hasErrors()) {
+            $this->response->statusCode(400);
+            $this->set('error', $commando->getErrors());
+            $this->set('_serialize', ['error']);
+            return;
+        }
+
+        $this->set('commando', $commando);
+        $this->set('_serialize', ['commando']);
+         * */
+
+return;
         $userId = $this->Auth->user('id');
         $this->Frontend->setJson('console_welcome', $this->Command->getConsoleWelcome($this->systemname));
         $this->set('command_types', $this->getCommandTypes());
