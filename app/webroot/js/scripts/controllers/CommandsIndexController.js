@@ -84,12 +84,10 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.selectAll = function(){
-            if($scope.hosts){
-                for(var key in $scope.hosts){
-                    if($scope.hosts[key].Host.allow_edit){
-                        var id = $scope.hosts[key].Host.id;
-                        $scope.massChange[id] = true;
-                    }
+            if($scope.commands){
+                for(var key in $scope.commands){
+                    var id = $scope.commands[key].Command.id;
+                    $scope.massChange[id] = true;
                 }
             }
         };
@@ -100,19 +98,19 @@ angular.module('openITCOCKPIT')
             $scope.selectedElements = MassChangeService.getCount();
         };
 
-        $scope.getObjectForDelete = function(host){
+        $scope.getObjectForDelete = function(command){
             var object = {};
-            object[host.Host.id] = host.Host.hostname;
+            object[command.Command.id] = command.Command.name;
             return object;
         };
 
         $scope.getObjectsForDelete = function(){
             var objects = {};
             var selectedObjects = MassChangeService.getSelected();
-            for(var key in $scope.hosts){
+            for(var key in $scope.commands){
                 for(var id in selectedObjects){
-                    if(id == $scope.hosts[key].Host.id){
-                        objects[id] = $scope.hosts[key].Host.hostname;
+                    if(id == $scope.commands[key].Command.id){
+                        objects[id] = $scope.commands[key].Command.name;
                     }
                 }
             }

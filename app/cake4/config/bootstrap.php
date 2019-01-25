@@ -205,4 +205,4 @@ Type::build('timestamp')
 //Inflector::rules('transliteration', ['/å/' => 'aa']);
 
 
-Plugin::load('NewModule', ['autoload' => true, 'bootstrap' => false, 'routes' => true]);
+//Plugin::load('NewModule', ['autoload' => true, 'bootstrap' => false, 'routes' => true]);
