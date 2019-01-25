@@ -27,9 +27,7 @@
 use App\Model\Table\CommandsTable;
 use App\Model\Table\MacrosTable;
 use Cake\ORM\TableRegistry;
-use itnovum\openITCOCKPIT\Database\Cake4Paginator;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
-use itnovum\openITCOCKPIT\Database\ScrollIndex;
 use itnovum\openITCOCKPIT\Filter\CommandsFilter;
 
 class CommandsController extends AppController {
@@ -57,104 +55,21 @@ class CommandsController extends AppController {
             $toJson = ['all_commands', 'scroll'];
         }
         $this->set('_serialize', $toJson);
-
-        return;
-
-
-        $query = [
-            'recursive'  => -1,
-            'order'      => [
-                'Command.name' => 'asc',
-            ],
-            'conditions' => [
-                'Command.command_type' => CHECK_COMMAND,
-            ],
-        ];
-
-        //Add all commands to result for API requests
-        if ($this->isApiRequest()) {
-            unset($query['conditions']['Command.command_type']);
-            $all_commands = $this->Command->find('all', $query);
-        } else {
-            $this->Paginator->settings = Hash::merge($this->Paginator->settings, $query);
-            $all_commands = $this->Paginator->paginate();
-        }
-        $this->set('_serialize', ['all_commands']);
-        $this->set(compact(['all_commands']));
     }
 
-    public function hostchecks() {
-        $query = [
-            'recursive'  => -1,
-            'order'      => [
-                'Command.name' => 'asc',
-            ],
-            'conditions' => [
-                'Command.command_type' => HOSTCHECK_COMMAND,
-            ],
-        ];
-
-        if ($this->isApiRequest()) {
-            $all_commands = $this->Command->find('all', $query);
-        } else {
-            $this->Paginator->settings = Hash::merge($this->Paginator->settings, $query);
-            $all_commands = $this->Paginator->paginate();
-        }
-        $this->set('_serialize', ['all_commands']);
-        $this->set(compact(['all_commands']));
-    }
-
-    public function notifications() {
-        $query = [
-            'recursive'  => -1,
-            'order'      => [
-                'Command.name' => 'asc',
-            ],
-            'conditions' => [
-                'Command.command_type' => NOTIFICATION_COMMAND,
-            ],
-        ];
-
-        if ($this->isApiRequest()) {
-            $all_commands = $this->Command->find('all', $query);
-        } else {
-            $this->Paginator->settings = Hash::merge($this->Paginator->settings, $query);
-            $all_commands = $this->Paginator->paginate();
-        }
-        $this->set('_serialize', ['all_commands']);
-        $this->set(compact(['all_commands']));
-    }
-
-    public function handler() {
-        $query = [
-            'recursive'  => -1,
-            'order'      => [
-                'Command.name' => 'asc',
-            ],
-            'conditions' => [
-                'Command.command_type' => EVENTHANDLER_COMMAND,
-            ],
-        ];
-
-        if ($this->isApiRequest()) {
-            $all_commands = $this->Command->find('all', $query);
-        } else {
-            $this->Paginator->settings = array_merge($this->Paginator->settings, $query);
-            $all_commands = $this->Paginator->paginate();
-        }
-        $this->set('_serialize', ['all_commands']);
-        $this->set(compact(['all_commands']));
-    }
 
     public function view($id = null) {
         if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();
-
         }
-        if (!$this->Command->exists($id)) {
+
+        /** @var CommandsTable $Commands */
+        $Commands = TableRegistry::getTableLocator()->get('Commands');
+        if (!$Commands->exists($id)) {
             throw new NotFoundException(__('Invalid command'));
         }
-        $command = $this->Command->findById($id);
+
+        $command = $Commands->getCommandById($id);
         $this->set('command', $command);
         $this->set('_serialize', ['command']);
     }
