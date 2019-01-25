@@ -50,32 +50,81 @@
         </div>
     </header>
     <div>
+
         <div class="widget-body">
-            <?php
-            echo $this->Form->create('Command', [
-                'class' => 'form-horizontal clear',
-            ]);
-            echo $this->Form->input('command_type', ['options' => $command_types, 'class' => 'chosen', 'style' => 'width: 100%;', 'label' => __('Command type')]);
-            echo $this->Form->input('name', ['label' => __('Name')]);
-            echo $this->Form->input('command_line', ['label' => __('Command line')]);
-            ?>
-            <div class="col col-md-2 hidden-mobile hidden-tablet"><!-- space for nice layout --></div>
-            <div class="col col-md-10 col-xs-12 text-info">
-                <i class="fa fa-info-circle"></i>
+            <form ng-submit="submit();" class="form-horizontal">
+                <div class="row">
+                    <div class="form-group">
+                        <label class="col col-md-2 control-label">
+                            <?php echo __('Command type'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+                            <select
+                                    class="form-control"
+                                    chosen="commandtypes"
+                                    ng-init="post.Command.command_type='1'"
+                                    ng-model="post.Command.command_type">
+                                <?php
+                                $command_types = [
+                                    CHECK_COMMAND        => __('Service check command'),
+                                    HOSTCHECK_COMMAND    => __('Host check command'),
+                                    NOTIFICATION_COMMAND => __('Notification command'),
+                                    EVENTHANDLER_COMMAND => __('Eventhandler command'),
+                                ];
+                                foreach ($command_types as $key => $value) :
+                                    printf('<option value="%s">%s</option>', $key, $value);
+                                endforeach;
+                                ?>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group required">
+                        <label class="col col-md-2 control-label">
+                            <?php echo __('Name'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+                            <input class="form-control" type="text" ng-model="post.Command.name">
+                        </div>
+                    </div>
+                    <div class="form-group required">
+                        <label class="col col-md-2 control-label">
+                            <?php echo __('Command line'); ?>
+                        </label>
+                        <div class="col col-xs-10 required">
+                            <textarea class="form-control" type="text" ng-model="post.Command.command_line"
+                                      cols="30" rows="6">
+                            </textarea>
+                        </div>
+                    </div>
+                    <div class="col col-md-2 hidden-mobile hidden-tablet"><!-- space for nice layout --></div>
+                    <div class="col col-md-10 col-xs-12 text-info padding-bottom-10">
+                        <i class="fa fa-info-circle"></i>
 
-                <?php
-                $link = __('user defined macro');
-                if ($this->Acl->hasPermission('index', 'macros')):
-                    $link = sprintf('<a href="/macros">%s</a>', $link);
-                endif;
-                ?>
+                        <?php
+                        $link = __('user defined macro');
+                        if ($this->Acl->hasPermission('index', 'macros')):
+                            $link = sprintf('<a href="/macros">%s</a>', $link);
+                        endif;
+                        ?>
 
-                <?php echo __('A $-sign needs to be escaped manually (\$). Semicolons (;) needs to be defined as %s.', $link); ?>
-                <br/>
-                <?php echo __('Nagios supports up to 32 $ARGx$ macros ($ARG1$ through $ARG32$)'); ?>
-            </div>
-            <br/><br/>
-            <?php echo $this->Form->input('description', ['label' => __('Description')]); ?>
+                        <?php echo __('A $-sign needs to be escaped manually (\$). Semicolons (;) needs to be defined as %s.', $link); ?>
+                        <br/>
+                        <?php echo __('Nagios supports up to 32 $ARGx$ macros ($ARG1$ through $ARG32$)'); ?>
+                    </div>
+                    <div class="form-group">
+                        <label class="col col-md-2 control-label">
+                            <?php echo __('Description'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+                            <textarea class="form-control" type="text" ng-model="post.Command.description"
+                                      cols="30" rows="6">
+                            </textarea>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="widget-body">
             <fieldset class=" form-inline required padding-10">
                 <legend class="font-sm">
                     <div>
@@ -97,7 +146,6 @@
                 <div id="console"></div>
             <?php endif; ?>
             <br/>
-            <?php echo $this->Form->formActions(); ?>
         </div>
     </div>
 </div>
@@ -118,12 +166,12 @@
                     <div class="row">
                         <div class="col-12">
                             <div id="macros_loader">
-								<span class="text-center">
-									<h1>
-										<i class="fa fa-cog fa-lg fa-spin"></i>
-									</h1>
-									<br/>
-								</span>
+                                <span class="text-center">
+                                    <h1>
+                                        <i class="fa fa-cog fa-lg fa-spin"></i>
+                                    </h1>
+                                    <br/>
+                                </span>
                             </div>
                             <div id="MacroContent"><!-- content loaded by ajax --></div>
                         </div>
