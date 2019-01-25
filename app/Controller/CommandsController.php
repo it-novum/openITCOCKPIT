@@ -31,7 +31,7 @@ use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\CommandsFilter;
 
 class CommandsController extends AppController {
-    public $uses = ['Command', 'Commandargument', 'UUID'];
+    public $uses = ['Command', 'Commandargument'];
     public $layout = 'Admin.default';
 
 
@@ -201,90 +201,49 @@ return;
     }
 
     public function delete($id = null) {
+        $this->layout = 'angularjs';
+
+
         $userId = $this->Auth->user('id');
-        if (!$this->request->is('post') && !$this->request->is('delete')) {
+        if (!$this->request->is('post')) {
             throw new MethodNotAllowedException();
         }
 
-        $this->Command->id = $id;
-        if (!$this->Command->exists()) {
+        /** @var CommandsTable $Commands */
+        $Commands = TableRegistry::getTableLocator()->get('Commands');
+        if (!$Commands->exists($id)) {
             throw new NotFoundException(__('Invalid command'));
         }
 
-        $command = $this->Command->findById($id);
-        if ($this->__allowDelete($command)) {
-            if ($this->Command->delete()) {
-                $changelog_data = $this->Changelog->parseDataForChangelog(
-                    $this->params['action'],
-                    $this->params['controller'],
-                    $id,
-                    OBJECT_COMMAND,
-                    [ROOT_CONTAINER],
-                    $userId,
-                    $command['Command']['name'],
-                    $command
-                );
-                if ($changelog_data) {
-                    CakeLog::write('log', serialize($changelog_data));
-                }
-                $this->setFlash(__('Command deleted'));
-                $this->redirect(['action' => 'index']);
-            }
-        } else {
-            $count = 1;
-            $commandsCanotDelete = [$command['Command']['name']];
-            $commandsToDelete = [];
-            $this->set(compact(['commandsToDelete', 'commandsCanotDelete', 'count']));
-            $this->render('mass_delete');
+        $command = $Commands->getCommandById($id);
+        if (!$this->__allowDelete($command)) {
+            $usedBy = [
+                [
+                    'baseUrl' => Router::url([
+                            'controller' => 'commands',
+                            'action'     => 'usedBy',
+                            'plugin'     => '',
+                        ]) . '/',
+                    'message' => __('Used by other objects'),
+                    'module'  => 'Core'
+                ]
+            ];
 
+            $this->response->statusCode(400);
+            $this->set('success', false);
+            $this->set('id', $id);
+            $this->set('message', __('Issue while deleting command'));
+            $this->set('usedBy', $usedBy);
+            $this->set('_serialize', ['success', 'id', 'message', 'usedBy']);
             return;
         }
-        $this->setFlash(__('Could not delete command'), false);
-        $this->redirect(['action' => 'index']);
 
-    }
 
-    public function mass_delete($id = null) {
-        if ($this->request->is('post') || $this->request->is('put')) {
-            //Delete the commands and forward to index
-            foreach ($this->request->data('Command.delete') as $command_id) {
-                $command = $this->Command->findById($command_id);
-                if ($this->__allowDelete($command)) {
-                    $this->__delete($command);
-                }
-            }
-            $this->setFlash('Commands deleted');
-            $this->redirect(['action' => 'index']);
-        }
-
-        $commandsToDelete = [];
-        $commandsCanotDelete = [];
-        $count = 0;
-
-        foreach (func_get_args() as $command_id) {
-            if ($this->Command->exists($command_id)) {
-                $command = $this->Command->findById($command_id);
-                if ($this->__allowDelete($command)) {
-                    $commandsToDelete[] = $command;
-                } else {
-                    $commandsCanotDelete[] = $command['Command']['name'];
-                }
-            }
-        }
-
-        $count = sizeof($commandsToDelete) + sizeof($commandsCanotDelete);
-        $this->set(compact(['commandsToDelete', 'commandsCanotDelete', 'count']));
-        $this->set('back_url', $this->referer());
-    }
-
-    protected function __delete($command) {
-        $userId = $this->Auth->user('id');
-        $this->Command->id = $command['Command']['id'];
-        if ($this->Command->delete()) {
+        if ($Commands->delete($Commands->get($id))) {
             $changelog_data = $this->Changelog->parseDataForChangelog(
-                'delete',
+                $this->params['action'],
                 $this->params['controller'],
-                $command['Command']['id'],
+                $id,
                 OBJECT_COMMAND,
                 [ROOT_CONTAINER],
                 $userId,
@@ -295,10 +254,17 @@ return;
                 CakeLog::write('log', serialize($changelog_data));
             }
 
-            return true;
+            $this->set('success', true);
+            $this->set('_serialize', ['success']);
+            return;
         }
 
-        return false;
+
+        $this->response->statusCode(500);
+        $this->set('success', false);
+        $this->set('_serialize', ['success']);
+        return;
+
     }
 
     protected function __allowDelete($command) {
