@@ -83,7 +83,7 @@ trait Cake2ResultTableTrait {
                 }
 
                 //Add missing associations
-                if($contain === true) {
+                if ($contain === true) {
                     foreach ($associations as $association => $index) {
                         $assocName = ucfirst(Inflector::singularize($association));
                         if (!isset($record[$assocName])) {
@@ -95,6 +95,63 @@ trait Cake2ResultTableTrait {
             $cake2Result[] = $record;
         }
         return $cake2Result;
+    }
+
+    /**
+     * @param array $records
+     * @param bool $contain
+     * @return array
+     */
+    public function formatFirstResultAsCake2($row = [], $contain = true) {
+        if (empty($row) || is_null($row)) {
+            return [];
+        }
+
+
+        $modelName = ucfirst(Inflector::singularize($this->getAlias()));
+        /** @var \Cake\ORM\AssociationCollection $AssociationCollection */
+        $AssociationCollection = $this->associations();
+        $associations = array_flip($AssociationCollection->keys());
+
+        $record = [];
+        foreach ($row as $key => $value) {
+            if (isset($associations[strtolower($key)]) && is_array($value)) {
+                //associated model
+                $assoc = $AssociationCollection->get($key);
+                $assocRecords = [];
+                if ($assoc instanceof HasMany) {
+                    foreach ($value as $assocRow) {
+                        $assocRecord = [];
+                        foreach ($assocRow as $assocKey => $assocValue) {
+                            $assocRecord[$assocKey] = $this->asString($assocValue);
+                        }
+                        $assocRecords[] = $assocRecord;
+                    }
+                } else {
+                    //hasOne
+                    foreach ($value as $assocKey => $assocValue) {
+                        $assocRecords[$assocKey] = $this->asString($assocValue);
+                    }
+                }
+                $assocModelName = ucfirst(Inflector::singularize($key));
+                $record[$assocModelName] = $assocRecords;
+            } else {
+                //Model itself
+                $record[$modelName][$key] = $this->asString($value);
+            }
+
+            //Add missing associations
+            if ($contain === true) {
+                foreach ($associations as $association => $index) {
+                    $assocName = ucfirst(Inflector::singularize($association));
+                    if (!isset($record[$assocName])) {
+                        $record[$assocName] = [];
+                    }
+                }
+            }
+        }
+
+        return $record;
     }
 
     private function asString($value) {

@@ -142,4 +142,17 @@ class CommandsTable extends Table {
         }
         return $result;
     }
+
+    /**
+     * @param $id
+     * @return array
+     */
+    public function getCommandById($id){
+        $command = $this->find('all')
+            ->contain('Commandarguments')
+            ->where(['Commands.id' => $id])
+            ->first();
+
+        return $this->formatFirstResultAsCake2($command->toArray());
+    }
 }
