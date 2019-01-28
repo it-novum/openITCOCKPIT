@@ -116,11 +116,6 @@ class MenuComponent extends Component {
             }
         }
 
-        /*echo "<pre>";
-        print_r($finalMenu);
-        echo "</pre>";
-        exit;*/
-
         return $finalMenu;
     }
 
@@ -200,11 +195,6 @@ class MenuComponent extends Component {
                 $_menu[$parentKey]['children'] = $_childNodes;
             }
         }
-
-        /*echo "<pre>";
-        print_r($_menu);
-        echo "</pre>";
-        exit;*/
 
         return $_menu;
     }
