@@ -1,8 +1,8 @@
 <?php
+
 namespace App\Model\Table;
 
-use Cake\ORM\Query;
-use Cake\ORM\RulesChecker;
+use App\Lib\Traits\Cake2ResultTableTrait;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
 use CakePlugin;
@@ -21,8 +21,9 @@ use CakePlugin;
  * @method \App\Model\Entity\Cronjob[] patchEntities($entities, array $data, array $options = [])
  * @method \App\Model\Entity\Cronjob findOrCreate($search, callable $callback = null, $options = [])
  */
-class CronjobsTable extends Table
-{
+class CronjobsTable extends Table {
+
+    use Cake2ResultTableTrait;
 
     /**
      * Initialize method
@@ -30,8 +31,7 @@ class CronjobsTable extends Table
      * @param array $config The configuration for the Table.
      * @return void
      */
-    public function initialize(array $config)
-    {
+    public function initialize(array $config) {
         parent::initialize($config);
 
         $this->setTable('cronjobs');
@@ -49,8 +49,7 @@ class CronjobsTable extends Table
      * @param \Cake\Validation\Validator $validator Validator instance.
      * @return \Cake\Validation\Validator
      */
-    public function validationDefault(Validator $validator)
-    {
+    public function validationDefault(Validator $validator) {
         $validator
             ->integer('id')
             ->allowEmptyString('id', 'create');
@@ -82,16 +81,37 @@ class CronjobsTable extends Table
     /**
      * @return array|\Cake\Datasource\ResultSetInterface
      */
-    public function getCronjobs(){
+    public function getCronjobs() {
         $query = $this->find()->contain([
             'cronschedules'
         ]);
-        if(!is_null($query)){
-            return $query->toArray();
+        if (!is_null($query)) {
+            return $this->formatResultAsCake2($query->disableHydration()->toArray());
         }
-        return $query;
+        return [];
     }
 
+    public function getCronjob($id = null){
+        $query = $this->get($id, [
+            'contain' => [
+                'cronschedules'
+            ]
+        ]);
+        if (!is_null($query)) {
+            return $this->formatResultAsCake2($query->disableHydration()->toArray());
+        }
+        return [];
+    }
+
+    public function getEnabledCronjobs() {
+        $query = $this->find()
+            ->where(['enabled' => 1])
+            ->contain('cronschedules');
+        if (!is_null($query)) {
+            return $this->formatResultAsCake2($query->disableHydration()->toArray());
+        }
+        return [];
+    }
 
 
     public function fetchPlugins() {

@@ -73,25 +73,25 @@
                                 </thead>
                                 <tbody>
                                 <tr ng-repeat="cronjob in cronjobs">
-                                    <td>{{cronjob.task}}</td>
-                                    <td>{{cronjob.plugin}}</td>
-                                    <td>{{cronjob.interval}}</td>
+                                    <td>{{cronjob.Cronjob.task}}</td>
+                                    <td>{{cronjob.Cronjob.plugin}}</td>
+                                    <td>{{cronjob.Cronjob.interval}}</td>
                                     <td>{{'usertime'}}</td>
-                                    <td class="text-center" ng-if="cronjob.cronschedules.is_running == 0">
+                                    <td class="text-center" ng-if="cronjob.Cronschedules.is_running == 0">
                                         <?php echo __('No'); ?>
                                     </td>
-                                    <td class="text-center" ng-if="cronjob.cronschedules.is_running != 0">
+                                    <td class="text-center" ng-if="cronjob.Cronschedules.is_running != 0">
                                         <?php echo __('Yes'); ?>
                                     </td>
-                                    <td class="text-align-center" ng-if="cronjob.enabled">
+                                    <td class="text-align-center" ng-if="cronjob.Cronjob.enabled">
                                         <i class="fa fa-check text-success"></i>
                                     </td>
-                                    <td class="text-align-center" ng-if="!cronjob.enabled">
+                                    <td class="text-align-center" ng-if="!cronjob.Cronjob.enabled">
                                         <i class="fa fa-times text-danger"></i>
                                     </td>
                                     <td class="text-center">
                                         <!-- modal edit -->
-                                        <a href="#" ng-click="triggerEditModal(cronjob);"
+                                        <a href="#" ng-click="triggerEditModal(cronjob.Cronjob);"
                                            data-original-title="<?php echo __('Edit'); ?>" data-placement="left"
                                            rel="tooltip" data-container="body">
                                             <i class="fa fa-gear fa-lg txt-color-teal"></i>

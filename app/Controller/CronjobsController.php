@@ -29,6 +29,7 @@ class CronjobsController extends AppController {
     public $layout = 'angularjs';
 
     public function index() {
+
         /** @var $Cronjobs App\Model\Table\CronjobsTable */
         $Cronjobs = TableRegistry::getTableLocator()->get('Cronjobs');
         $cronjobs = $Cronjobs->getCronjobs();
@@ -60,7 +61,7 @@ class CronjobsController extends AppController {
         $Cronjobs = TableRegistry::getTableLocator()->get('Cronjobs');
         $include = $this->request->query('include');
         $pluginName = 'Core';
-        if($this->request->query('pluginName') != null){
+        if($this->request->query('pluginName') != null || $this->request->query('pluginName') != ''){
             $pluginName = $this->request->query('pluginName');
         }
 
@@ -124,7 +125,7 @@ class CronjobsController extends AppController {
         $Cronjobs = TableRegistry::getTableLocator()->get('Cronjobs');
         $cronjob = $Cronjobs->get($id);
 
-        if (is_null($cronjob)) {
+        if (empty($cronjob)) {
             throw new NotFoundException(__('Invalid cronjob'));
         }
 
