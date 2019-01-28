@@ -112,10 +112,14 @@
                     </td>
                     <td>
                         <div class="btn-group smart-form">
-                            <?php if ($this->Acl->hasPermission('edit', 'GrafanaUserdashboards', 'GrafanaModule')): ?>
+                            <?php if ($this->Acl->hasPermission('editor', 'GrafanaUserdashboards', 'GrafanaModule')): ?>
                                 <a href="/grafana_module/grafana_userdashboards/editor/{{userdashboard.GrafanaUserdashboard.id}}"
                                    ng-if="userdashboard.GrafanaUserdashboard.allowEdit"
                                    class="btn btn-default">&nbsp;<i class="fa fa-cog "></i>&nbsp;</a>
+                                <a href="javascript:void(0);" class="btn btn-default"
+                                   ng-if="!userdashboard.GrafanaUserdashboard.allowEdit">
+                                    <i class="fa fa-cog"></i>
+                                </a>
                             <?php else: ?>
                                 <a href="javascript:void(0);" class="btn btn-default">
                                     <i class="fa fa-cog"></i>

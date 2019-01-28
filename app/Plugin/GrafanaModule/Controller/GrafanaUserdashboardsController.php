@@ -201,7 +201,7 @@ class GrafanaUserdashboardsController extends GrafanaModuleAppController {
 
     }
 
-    public function getGrafanaUserdashboardUrl($userdashboardId) {
+    /*public function getGrafanaUserdashboardUrl($userdashboardId) {
 
         $userdashboardData = $this->GrafanaUserdashboardData->find('all', [
             'recursive'  => -1,
@@ -220,7 +220,7 @@ class GrafanaUserdashboardsController extends GrafanaModuleAppController {
 
         $this->set('userdashboardDataForGrafana', $userdashboardDataForGrafana);
         $this->set('_serialize', ['userdashboardDataForGrafana']);
-    }
+    }*/
 
     public function edit($id) {
         if (!$this->GrafanaUserdashboard->exists($id)) {
