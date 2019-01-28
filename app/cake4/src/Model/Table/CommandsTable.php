@@ -48,7 +48,7 @@ class CommandsTable extends Table {
 
         $this->hasMany('Commandarguments', [
             'foreignKey' => 'command_id'
-        ]);
+        ])->setDependent(true);
 
         $this->commandTypes = [
             CHECK_COMMAND        => __('Service check command'),
