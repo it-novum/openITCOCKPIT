@@ -50,9 +50,8 @@
         </div>
     </header>
     <div>
-
-        <div class="widget-body">
-            <form ng-submit="submit();" class="form-horizontal">
+        <form ng-submit="submit();" class="form-horizontal">
+            <div class="widget-body">
                 <div class="row">
                     <div class="form-group">
                         <label class="col col-md-2 control-label">
@@ -122,31 +121,39 @@
                         </div>
                     </div>
                 </div>
-            </form>
-        </div>
-        <div class="widget-body">
-            <fieldset class=" form-inline required padding-10">
-                <legend class="font-sm">
-                    <div>
-                        <label><?php echo __('Arguments'); ?>:</label>
+            </div>
+            <div class="widget-body">
+                <fieldset class=" form-inline required padding-10">
+                    <legend class="font-sm">
+                        <div>
+                            <label><?php echo __('Arguments'); ?>:</label>
+                        </div>
+                    </legend>
+                    <div id="command_args">
+                        <!-- empty because we create a new command! -->
                     </div>
-                </legend>
-                <div id="command_args">
-                    <!-- empty because we create a new command! -->
-                </div>
-                <div class="col-xs-12 padding-top-10">
-                    <a class="btn btn-success btn-xs pull-right" id="add_new_arg" href="javascript:void(0);">
-                        <i class="fa fa-plus"></i>
-                        <?php echo __('Add argument'); ?>
-                    </a>
-                </div>
-            </fieldset>
-            <?php if ($this->Acl->hasPermission('terminal')): ?>
+                    <div class="col-xs-12 padding-top-10">
+                        <a class="btn btn-success btn-xs pull-right" id="add_new_arg" href="javascript:void(0);">
+                            <i class="fa fa-plus"></i>
+                            <?php echo __('Add argument'); ?>
+                        </a>
+                    </div>
+                </fieldset>
+                <?php if ($this->Acl->hasPermission('terminal')): ?>
+                    <br/>
+                    <div id="console"></div>
+                <?php endif; ?>
                 <br/>
-                <div id="console"></div>
-            <?php endif; ?>
-            <br/>
-        </div>
+            </div>
+            <div class="col-xs-12 margin-top-10">
+                <div class="well formactions ">
+                    <div class="pull-right">
+                        <input class="btn btn-primary" type="submit" value="<?php echo __('Save'); ?>">
+                        <a href="/commands/index" class="btn btn-default"><?php echo __('Cancel'); ?></a>
+                    </div>
+                </div>
+            </div>
+        </form>
     </div>
 </div>
 

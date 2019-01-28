@@ -1,7 +1,5 @@
 angular.module('openITCOCKPIT')
     .controller('CommandsAddController', function($scope, $http){
-
-
         $scope.post = {
             Command: {
                 name: '',
@@ -13,6 +11,7 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.init = true;
+        $scope.hasError = null;
 
 
         $scope.submit = function(){

@@ -26,6 +26,7 @@
 
 use App\Model\Table\CommandsTable;
 use App\Model\Table\MacrosTable;
+use Cake\ORM\Locator\LocatorAwareTrait;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\CommandsFilter;
@@ -33,6 +34,7 @@ use itnovum\openITCOCKPIT\Filter\CommandsFilter;
 class CommandsController extends AppController {
     public $uses = ['Command', 'Commandargument'];
     public $layout = 'Admin.default';
+    use LocatorAwareTrait;
 
 
     public function index() {
@@ -75,29 +77,36 @@ class CommandsController extends AppController {
     }
 
     public function add() {
+        $this->layout = 'angularjs';
         if (!$this->isApiRequest()) {
             //Only ship HTML template for angular
             return;
         }
 
         $TableLocator = $this->getTableLocator();
-        $Commandos = $TableLocator->get('Commandos');
+        $Commands = $TableLocator->get('Commands');
 
-      /*
-        $commando = $Commandos->newEntity();
-        $commando = $Commandos->patchEntity($commando, $this->request->data('Commando'));
-        $Commandos->save($commando);
+        if ($this->request->is('post') && $this->isAngularJsRequest()) {
+            //debug($this->request->data);
 
-        if ($commando->hasErrors()) {
-            $this->response->statusCode(400);
-            $this->set('error', $commando->getErrors());
-            $this->set('_serialize', ['error']);
-            return;
+            $command = $Commands->newEntity();
+
+            $command = $Commands->patchEntity($command, $this->request->data('Command'));
+            $command->set('uuid', UUID::v4());
+            $Commands->save($command);
+            if ($command->hasErrors()) {
+                $this->response->statusCode(400);
+                $this->set('error', $command->getErrors());
+                $this->set('_serialize', ['error']);
+                return;
+            }
+
+            $this->set('command', $command);
+            $this->set('_serialize', ['command']);
+
+
         }
 
-        $this->set('commando', $commando);
-        $this->set('_serialize', ['commando']);
-         * */
 
 return;
         $userId = $this->Auth->user('id');
