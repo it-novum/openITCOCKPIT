@@ -1,7 +1,7 @@
 <?php
+
 namespace App\Model\Table;
 
-use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
@@ -20,8 +20,7 @@ use Cake\Validation\Validator;
  * @method \App\Model\Entity\Cronschedule[] patchEntities($entities, array $data, array $options = [])
  * @method \App\Model\Entity\Cronschedule findOrCreate($search, callable $callback = null, $options = [])
  */
-class CronschedulesTable extends Table
-{
+class CronschedulesTable extends Table {
 
     /**
      * Initialize method
@@ -29,8 +28,7 @@ class CronschedulesTable extends Table
      * @param array $config The configuration for the Table.
      * @return void
      */
-    public function initialize(array $config)
-    {
+    public function initialize(array $config) {
         parent::initialize($config);
 
         $this->setTable('cronschedules');
@@ -48,8 +46,7 @@ class CronschedulesTable extends Table
      * @param \Cake\Validation\Validator $validator Validator instance.
      * @return \Cake\Validation\Validator
      */
-    public function validationDefault(Validator $validator)
-    {
+    public function validationDefault(Validator $validator) {
         $validator
             ->integer('id')
             ->allowEmptyString('id', 'create');
@@ -78,8 +75,7 @@ class CronschedulesTable extends Table
      * @param \Cake\ORM\RulesChecker $rules The rules object to be modified.
      * @return \Cake\ORM\RulesChecker
      */
-    public function buildRules(RulesChecker $rules)
-    {
+    public function buildRules(RulesChecker $rules) {
         $rules->add($rules->existsIn(['cronjob_id'], 'Cronjobs'));
 
         return $rules;
