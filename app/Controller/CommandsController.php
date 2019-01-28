@@ -27,6 +27,7 @@
 use App\Model\Table\CommandsTable;
 use App\Model\Table\MacrosTable;
 use Cake\ORM\TableRegistry;
+use itnovum\openITCOCKPIT\Core\KeyValueStore;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\CommandsFilter;
 
@@ -420,6 +421,88 @@ class CommandsController extends AppController {
     }
 
     public function copy($id = null) {
+        $this->layout = 'angularjs';
+
+        if (!$this->isAngularJsRequest()) {
+            //Only ship HTML Template
+            return;
+        }
+
+        /** @var $Commands CommandsTable */
+        $Commands = TableRegistry::getTableLocator()->get('Commands');
+
+        if ($this->request->is('get')) {
+            $commands = $Commands->getCommandsForCopy(func_get_args());
+            $this->set('commands', $commands);
+            $this->set('_serialize', ['commands']);
+            return;
+        }
+
+        $hasErrors = false;
+
+        if ($this->request->is('post')) {
+            $Cache = new KeyValueStore();
+
+            $postData = $this->request->data('data');
+
+            foreach ($postData as $index => $commandData) {
+                if (!isset($commandData['Command']['id'])) {
+                    //Create/clone command
+                    $sourceCommandId = $commandData['Source']['id'];
+                    if (!$Cache->has($sourceCommandId)) {
+                        $sourceCommand = $Commands->get($sourceCommandId, [
+                            'contain' => [
+                                'Commandarguments'
+                            ]
+                        ])->toArray();
+                        $Cache->set($sourceCommand['id'], $sourceCommand);
+                    }
+
+                    $sourceCommand = $Cache->get($sourceCommandId);
+
+                    $newCommandData = [
+                        'name'             => $commandData['Command']['name'],
+                        'command_line'     => $commandData['Command']['command_line'],
+                        'command_type'     => $sourceCommand['command_type'],
+                        'description'      => $commandData['Command']['description'],
+                        'uuid'             => UUID::v4(),
+                        'commandarguments' => $sourceCommand['commandarguments']
+                    ];
+
+                    $newCommandEntity = $Commands->newEntity($newCommandData);
+                }
+
+                if (isset($commandData['Command']['id'])) {
+                    //Update existing command
+                    //This happens, if a user copy multiple commands, and one run into an validation error
+                    //All commands without validation errors got already saved to the database
+                    $newCommandEntity = $Commands->get($commandData['Command']['id']);
+                    $newCommandEntity = $Commands->patchEntity($newCommandEntity, $commandData['Command']);
+                }
+
+
+                $Commands->save($newCommandEntity);
+
+
+                $postData[$index]['Error'] = [];
+                if ($newCommandEntity->hasErrors()) {
+                    $hasErrors = true;
+                    $postData[$index]['Error'] = $newCommandEntity->getErrors();
+                } else {
+                    //No errors
+                    $postData[$index]['Command']['id'] = $newCommandEntity->get('id');
+                }
+            }
+        }
+
+        if ($hasErrors) {
+            $this->response->statusCode(400);
+        }
+        $this->set('result', $postData);
+        $this->set('_serialize', ['result']);
+
+        return;
+
         $userId = $this->Auth->user('id');
         $commands = $this->Command->find('all', [
             'resursive'  => -1,

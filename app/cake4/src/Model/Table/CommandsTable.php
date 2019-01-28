@@ -7,7 +7,6 @@ use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
-use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\CommandsFilter;
 
 /**
@@ -73,11 +72,16 @@ class CommandsTable extends Table {
         $validator
             ->scalar('name')
             ->maxLength('name', 255)
-            ->allowEmptyString('name');
+            ->allowEmptyString('name', false)
+            ->add('name', 'unique', [
+                'rule' => 'validateUnique',
+                'provider' => 'table',
+                'message' => __('This command name has already been taken.')
+            ]);
 
         $validator
             ->scalar('command_line')
-            ->allowEmptyString('command_line');
+            ->allowEmptyString('command_line', false, __('This field cannot be left blank.'));
 
         $validator
             ->integer('command_type')
@@ -147,12 +151,32 @@ class CommandsTable extends Table {
      * @param $id
      * @return array
      */
-    public function getCommandById($id){
+    public function getCommandById($id) {
         $command = $this->find('all')
             ->contain('Commandarguments')
             ->where(['Commands.id' => $id])
             ->first();
 
         return $this->formatFirstResultAsCake2($command->toArray());
+    }
+
+    /**
+     * @param array $ids
+     * @return array
+     */
+    public function getCommandsForCopy($ids = []) {
+        $query = $this->find()
+            ->select([
+                'Commands.id',
+                'Commands.name',
+                'Commands.command_line',
+                'Commands.description'
+            ])
+            ->where(['Commands.id IN' => $ids])
+            ->order(['Commands.id' => 'asc'])
+            ->disableHydration()
+            ->all();
+
+        return $this->formatResultAsCake2($query->toArray(), false);
     }
 }
