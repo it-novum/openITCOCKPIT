@@ -25,7 +25,7 @@ angular.module('openITCOCKPIT').directive('menu', function($http, $timeout, $htt
             };
 
             $scope.isActiveChild = function(childNode){
-                if(childNode.url_array.plugin === $scope.phpplugin){
+                if(childNode.url_array.plugin == $scope.phpplugin){
                     if(childNode.url_array.controller === $scope.phpcontroller){
                         if(childNode.url_array.action === $scope.phpaction){
                             return true;
@@ -36,7 +36,7 @@ angular.module('openITCOCKPIT').directive('menu', function($http, $timeout, $htt
             };
 
             $scope.isActiveParent = function(parentNode){
-                if(parentNode.url_array.plugin === $scope.phpplugin){
+                if(parentNode.url_array && parentNode.url_array.plugin == $scope.phpplugin){
                     if(parentNode.url_array.controller === $scope.phpcontroller){
                         if(parentNode.url_array.action === $scope.phpaction){
                             return true;

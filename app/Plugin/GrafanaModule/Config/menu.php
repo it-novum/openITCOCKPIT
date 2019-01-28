@@ -27,32 +27,27 @@ $config = [
     'menu' => [
 
         'grafanamodule' => [
-            'url'      => ['controller' => 'grafana_configuration', 'action' => 'index', 'plugin' => 'grafana_module'],
             'title'    => 'Grafana',
             'icon'     => 'area-chart',
             'order'    => 2,
-            'parent'   => 'grafana',
             'children' => [
-                'grafana_userdashboards' => [
+                [
                     'url'               => ['controller' => 'grafana_userdashboards', 'action' => 'index', 'plugin' => 'grafana_module'],
                     'title'             => 'User Dashboards',
                     'icon'              => 'area-chart',
-                    'parent_controller' => 'grafana',
                 ],
             ],
         ],
 
         'configuration' => [
-            'url'      => ['controller' => 'systemsettings', 'action' => 'index', 'plugin' => ''],
             'title'    => 'Configuration',
             'icon'     => 'wrench',
             'order'    => 9,
             'children' => [
-                'config' => [
+                [
                     'url'               => ['controller' => 'grafana_configuration', 'action' => 'index', 'plugin' => 'grafana_module'],
                     'title'             => 'Grafana',
                     'icon'              => 'area-chart',
-                    'parent_controller' => 'grafana',
                 ],
             ],
         ],
