@@ -76,9 +76,6 @@ $config = [
             'Automaps'         => [
                 'icon'
             ],
-            'Commands'         => [
-                'sortByCommandType',
-            ],
             'Containers'       => [
                 'byTenantForSelect', 'byTenant', 'loadContainersForAngular'
             ],
@@ -202,8 +199,7 @@ $config = [
             'Commands'              => [
                 'index'  => ['view'],
                 'add'    => ['addCommandArg', 'loadMacros'],
-                'edit'   => ['addCommandArg', 'loadMacros'],
-                'delete' => ['mass_delete'],
+                'edit'   => ['addCommandArg', 'loadMacros']
             ],
             'Timeperiods'           => [
                 'index'  => [
@@ -271,7 +267,7 @@ $config = [
                 'add'   => ['loadContainers']
             ],
             'Macros'                => [
-                'index' => ['addMacro', 'add', 'edit', 'delete', 'getAvailableMacroNames'],
+                'index' => ['add', 'edit', 'delete', 'getAvailableMacroNames'],
             ],
             'Registers'             => [
                 'index' => ['checkLicense'],

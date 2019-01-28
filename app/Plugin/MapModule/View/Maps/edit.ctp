@@ -29,8 +29,8 @@
             <i class="fa fa-map-marker fa-fw "></i>
             <?php echo __('Maps'); ?>
             <span>>
-			<div class="third_level"> <?php echo ucfirst($this->params['action']); ?></div>
-			</span>
+                <div class="third_level"> <?php echo ucfirst($this->params['action']); ?></div>
+            </span>
         </h1>
     </div>
 </div>

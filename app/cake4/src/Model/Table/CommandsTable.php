@@ -3,21 +3,16 @@
 namespace App\Model\Table;
 
 use App\Lib\Traits\Cake2ResultTableTrait;
+use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
+use itnovum\openITCOCKPIT\Filter\CommandsFilter;
 
 /**
  * Commands Model
  *
  * @property \App\Model\Table\CommandargumentsTable|\Cake\ORM\Association\HasMany $Commandarguments
- * @property \App\Model\Table\ContactsToHostcommandsTable|\Cake\ORM\Association\HasMany $ContactsToHostcommands
- * @property \App\Model\Table\ContactsToServicecommandsTable|\Cake\ORM\Association\HasMany $ContactsToServicecommands
- * @property \App\Model\Table\HostsTable|\Cake\ORM\Association\HasMany $Hosts
- * @property \App\Model\Table\HosttemplatesTable|\Cake\ORM\Association\HasMany $Hosttemplates
- * @property \App\Model\Table\NagiosCommandsTable|\Cake\ORM\Association\HasMany $NagiosCommands
- * @property \App\Model\Table\ServicesTable|\Cake\ORM\Association\HasMany $Services
- * @property \App\Model\Table\ServicetemplatesTable|\Cake\ORM\Association\HasMany $Servicetemplates
  *
  * @method \App\Model\Entity\Command get($primaryKey, $options = [])
  * @method \App\Model\Entity\Command newEntity($data = null, array $options = [])
@@ -31,6 +26,12 @@ use Cake\Validation\Validator;
 class CommandsTable extends Table {
 
     use Cake2ResultTableTrait;
+    use PaginationAndScrollIndexTrait;
+
+    /**
+     * @var array
+     */
+    private $commandTypes = [];
 
     /**
      * Initialize method
@@ -47,28 +48,14 @@ class CommandsTable extends Table {
 
         $this->hasMany('Commandarguments', [
             'foreignKey' => 'command_id'
-        ]);
-        $this->hasMany('ContactsToHostcommands', [
-            'foreignKey' => 'command_id'
-        ]);
-        $this->hasMany('ContactsToServicecommands', [
-            'foreignKey' => 'command_id'
-        ]);
-        $this->hasMany('Hosts', [
-            'foreignKey' => 'command_id'
-        ]);
-        $this->hasMany('Hosttemplates', [
-            'foreignKey' => 'command_id'
-        ]);
-        $this->hasMany('NagiosCommands', [
-            'foreignKey' => 'command_id'
-        ]);
-        $this->hasMany('Services', [
-            'foreignKey' => 'command_id'
-        ]);
-        $this->hasMany('Servicetemplates', [
-            'foreignKey' => 'command_id'
-        ]);
+        ])->setDependent(true);
+
+        $this->commandTypes = [
+            CHECK_COMMAND        => __('Service check command'),
+            HOSTCHECK_COMMAND    => __('Host check command'),
+            NOTIFICATION_COMMAND => __('Notification command'),
+            EVENTHANDLER_COMMAND => __('Eventhandler command'),
+        ];
     }
 
     /**
@@ -85,11 +72,16 @@ class CommandsTable extends Table {
         $validator
             ->scalar('name')
             ->maxLength('name', 255)
-            ->allowEmptyString('name');
+            ->allowEmptyString('name', false)
+            ->add('name', 'unique', [
+                'rule' => 'validateUnique',
+                'provider' => 'table',
+                'message' => __('This command name has already been taken.')
+            ]);
 
         $validator
             ->scalar('command_line')
-            ->allowEmptyString('command_line');
+            ->allowEmptyString('command_line', false, __('This field cannot be left blank.'));
 
         $validator
             ->integer('command_type')
@@ -128,17 +120,63 @@ class CommandsTable extends Table {
     }
 
     /**
+     * @param CommandsFilter $CommandsFilter
+     * @param null $PaginateOMat
      * @return array
      */
-    public function test() {
-        $query = $this->find()->contain([
-            'Commandarguments'
-        ])->disableHydration();
+    public function getCommandsIndex(CommandsFilter $CommandsFilter, $PaginateOMat = null) {
+        $query = $this->find('all')->disableHydration();
+        $query->where($CommandsFilter->indexFilter());
+        $query->order($CommandsFilter->getOrderForPaginator('Commands.name', 'asc'));
 
-        if (is_null($query)) {
-            return [];
+        $result = [];
+        if ($PaginateOMat === null) {
+            //Just execute query
+            $result = $this->formatResultAsCake2($query->toArray(), false);
+        } else {
+            if ($PaginateOMat->useScroll()) {
+                $result = $this->scroll($query, $PaginateOMat->getHandler(), false);
+            } else {
+                $result = $this->paginate($query, $PaginateOMat->getHandler(), false);
+            }
         }
 
-        return $this->formatResultAsCake2($query->toArray());
+        foreach ($result as $index => $row) {
+            $result[$index]['Command']['type'] = $this->commandTypes[$row['Command']['command_type']];
+        }
+        return $result;
+    }
+
+    /**
+     * @param $id
+     * @return array
+     */
+    public function getCommandById($id) {
+        $command = $this->find('all')
+            ->contain('Commandarguments')
+            ->where(['Commands.id' => $id])
+            ->first();
+
+        return $this->formatFirstResultAsCake2($command->toArray());
+    }
+
+    /**
+     * @param array $ids
+     * @return array
+     */
+    public function getCommandsForCopy($ids = []) {
+        $query = $this->find()
+            ->select([
+                'Commands.id',
+                'Commands.name',
+                'Commands.command_line',
+                'Commands.description'
+            ])
+            ->where(['Commands.id IN' => $ids])
+            ->order(['Commands.id' => 'asc'])
+            ->disableHydration()
+            ->all();
+
+        return $this->formatResultAsCake2($query->toArray(), false);
     }
 }

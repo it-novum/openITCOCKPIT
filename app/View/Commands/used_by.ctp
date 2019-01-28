@@ -31,7 +31,7 @@
             <?php echo __('Commands'); ?>
             <span>>
                 <?php echo __('used by...'); ?>
-			</span>
+            </span>
         </h1>
     </div>
 </div>
@@ -64,7 +64,7 @@
                             <tr>
                                 <?php $order = $this->Paginator->param('order'); ?>
                                 <th class="no-sort" style="width: 15px;"><i class="fa fa-check-square-o fa-lg"></i></th>
-                                <th class="no-sort"><?php echo __('Service name'); ?></th>
+                                <th class="no-sort"><?php echo __('Service template name'); ?></th>
                             </tr>
                             </thead>
                             <tbody>
@@ -72,11 +72,11 @@
                                 <tr>
                                     <td class="text-center" style="width: 15px;">
                                         <input type="checkbox" class="massChange"
-                                               servicename="<?php echo $servicestemplate['Servicetemplate']['name']; ?>"
+                                               servicename="<?php echo h($servicestemplate['Servicetemplate']['name']); ?>"
                                                value="<?php echo $servicestemplate['Servicetemplate']['id']; ?>"/>
                                     </td>
                                     <td>
-                                        <a href="/servicetemplates/edit/<?php echo $servicestemplate['Servicetemplate']['id']; ?>"><?php echo $servicestemplate['Servicetemplate']['name']; ?></a>
+                                        <a href="/servicetemplates/edit/<?php echo $servicestemplate['Servicetemplate']['id']; ?>"><?php echo h($servicestemplate['Servicetemplate']['name']); ?></a>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
@@ -85,7 +85,7 @@
                         <?php if (empty($servicestemplates)): ?>
                             <div class="noMatch">
                                 <center>
-                                    <span class="txt-color-red italic"><?php echo __('This service template is not used by any service'); ?></span>
+                                    <span class="txt-color-red italic"><?php echo __('This command is not used by any service template'); ?></span>
                                 </center>
                             </div>
                         <?php endif; ?>

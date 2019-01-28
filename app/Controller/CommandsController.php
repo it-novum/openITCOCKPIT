@@ -24,133 +24,53 @@
 //	confirmation.
 
 
-class CommandsController extends AppController {
-    public $uses = ['Command', 'Commandargument', 'Macro', 'UUID'];
-    public $layout = 'Admin.default';
-    public $components = ['ListFilter.ListFilter', 'RequestHandler'];
-    public $helpers = ['ListFilter.ListFilter'];
+use App\Model\Table\CommandsTable;
+use App\Model\Table\MacrosTable;
+use Cake\ORM\TableRegistry;
+use itnovum\openITCOCKPIT\Core\KeyValueStore;
+use itnovum\openITCOCKPIT\Database\PaginateOMat;
+use itnovum\openITCOCKPIT\Filter\CommandsFilter;
 
-    /**
-     * Define the search function for each field that should be searchable
-     */
-    public $listFilters = [
-        'index'         => [
-            'fields' => [
-                'Command.name' => ['label' => 'Commandname', 'searchType' => 'wildcard'],
-            ],
-        ],
-        'hostchecks'    => [
-            'fields' => [
-                'Command.name' => ['label' => 'Commandname', 'searchType' => 'wildcard'],
-            ],
-        ],
-        'notifications' => [
-            'fields' => [
-                'Command.name' => ['label' => 'Commandname', 'searchType' => 'wildcard'],
-            ],
-        ],
-        'handler'       => [
-            'fields' => [
-                'Command.name' => ['label' => 'Commandname', 'searchType' => 'wildcard'],
-            ],
-        ],
-    ];
+class CommandsController extends AppController {
+    public $uses = ['Command', 'Commandargument'];
+    public $layout = 'Admin.default';
+
 
     public function index() {
-        $query = [
-            'recursive'  => -1,
-            'order'      => [
-                'Command.name' => 'asc',
-            ],
-            'conditions' => [
-                'Command.command_type' => CHECK_COMMAND,
-            ],
-        ];
-
-        //Add all commands to result for API requests
-        if ($this->isApiRequest()) {
-            unset($query['conditions']['Command.command_type']);
-            $all_commands = $this->Command->find('all', $query);
-        } else {
-            $this->Paginator->settings = Hash::merge($this->Paginator->settings, $query);
-            $all_commands = $this->Paginator->paginate();
+        $this->layout = 'angularjs';
+        if (!$this->isAngularJsRequest()) {
+            //Only ship HTML Template
+            return;
         }
-        $this->set('_serialize', ['all_commands']);
-        $this->set(compact(['all_commands']));
+
+        /** @var $Commands CommandsTable */
+        $Commands = TableRegistry::getTableLocator()->get('Commands');
+        $CommandFilter = new CommandsFilter($this->request);
+
+        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $CommandFilter->getPage());
+        $all_commands = $Commands->getCommandsIndex($CommandFilter, $PaginateOMat);
+
+        $this->set('all_commands', $all_commands);
+        $toJson = ['all_commands', 'paging'];
+        if ($this->isScrollRequest()) {
+            $toJson = ['all_commands', 'scroll'];
+        }
+        $this->set('_serialize', $toJson);
     }
 
-    public function hostchecks() {
-        $query = [
-            'recursive'  => -1,
-            'order'      => [
-                'Command.name' => 'asc',
-            ],
-            'conditions' => [
-                'Command.command_type' => HOSTCHECK_COMMAND,
-            ],
-        ];
-
-        if ($this->isApiRequest()) {
-            $all_commands = $this->Command->find('all', $query);
-        } else {
-            $this->Paginator->settings = Hash::merge($this->Paginator->settings, $query);
-            $all_commands = $this->Paginator->paginate();
-        }
-        $this->set('_serialize', ['all_commands']);
-        $this->set(compact(['all_commands']));
-    }
-
-    public function notifications() {
-        $query = [
-            'recursive'  => -1,
-            'order'      => [
-                'Command.name' => 'asc',
-            ],
-            'conditions' => [
-                'Command.command_type' => NOTIFICATION_COMMAND,
-            ],
-        ];
-
-        if ($this->isApiRequest()) {
-            $all_commands = $this->Command->find('all', $query);
-        } else {
-            $this->Paginator->settings = Hash::merge($this->Paginator->settings, $query);
-            $all_commands = $this->Paginator->paginate();
-        }
-        $this->set('_serialize', ['all_commands']);
-        $this->set(compact(['all_commands']));
-    }
-
-    public function handler() {
-        $query = [
-            'recursive'  => -1,
-            'order'      => [
-                'Command.name' => 'asc',
-            ],
-            'conditions' => [
-                'Command.command_type' => EVENTHANDLER_COMMAND,
-            ],
-        ];
-
-        if ($this->isApiRequest()) {
-            $all_commands = $this->Command->find('all', $query);
-        } else {
-            $this->Paginator->settings = array_merge($this->Paginator->settings, $query);
-            $all_commands = $this->Paginator->paginate();
-        }
-        $this->set('_serialize', ['all_commands']);
-        $this->set(compact(['all_commands']));
-    }
 
     public function view($id = null) {
         if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();
-
         }
-        if (!$this->Command->exists($id)) {
+
+        /** @var CommandsTable $Commands */
+        $Commands = TableRegistry::getTableLocator()->get('Commands');
+        if (!$Commands->exists($id)) {
             throw new NotFoundException(__('Invalid command'));
         }
-        $command = $this->Command->findById($id);
+
+        $command = $Commands->getCommandById($id);
         $this->set('command', $command);
         $this->set('_serialize', ['command']);
     }
@@ -257,90 +177,49 @@ class CommandsController extends AppController {
     }
 
     public function delete($id = null) {
+        $this->layout = 'angularjs';
+
+
         $userId = $this->Auth->user('id');
-        if (!$this->request->is('post') && !$this->request->is('delete')) {
+        if (!$this->request->is('post')) {
             throw new MethodNotAllowedException();
         }
 
-        $this->Command->id = $id;
-        if (!$this->Command->exists()) {
+        /** @var CommandsTable $Commands */
+        $Commands = TableRegistry::getTableLocator()->get('Commands');
+        if (!$Commands->exists($id)) {
             throw new NotFoundException(__('Invalid command'));
         }
 
-        $command = $this->Command->findById($id);
-        if ($this->__allowDelete($command)) {
-            if ($this->Command->delete()) {
-                $changelog_data = $this->Changelog->parseDataForChangelog(
-                    $this->params['action'],
-                    $this->params['controller'],
-                    $id,
-                    OBJECT_COMMAND,
-                    [ROOT_CONTAINER],
-                    $userId,
-                    $command['Command']['name'],
-                    $command
-                );
-                if ($changelog_data) {
-                    CakeLog::write('log', serialize($changelog_data));
-                }
-                $this->setFlash(__('Command deleted'));
-                $this->redirect(['action' => 'index']);
-            }
-        } else {
-            $count = 1;
-            $commandsCanotDelete = [$command['Command']['name']];
-            $commandsToDelete = [];
-            $this->set(compact(['commandsToDelete', 'commandsCanotDelete', 'count']));
-            $this->render('mass_delete');
+        $command = $Commands->getCommandById($id);
+        if (!$this->__allowDelete($command)) {
+            $usedBy = [
+                [
+                    'baseUrl' => Router::url([
+                            'controller' => 'commands',
+                            'action'     => 'usedBy',
+                            'plugin'     => '',
+                        ]) . '/',
+                    'message' => __('Used by other objects'),
+                    'module'  => 'Core'
+                ]
+            ];
 
+            $this->response->statusCode(400);
+            $this->set('success', false);
+            $this->set('id', $id);
+            $this->set('message', __('Issue while deleting command'));
+            $this->set('usedBy', $usedBy);
+            $this->set('_serialize', ['success', 'id', 'message', 'usedBy']);
             return;
         }
-        $this->setFlash(__('Could not delete command'), false);
-        $this->redirect(['action' => 'index']);
 
-    }
 
-    public function mass_delete($id = null) {
-        if ($this->request->is('post') || $this->request->is('put')) {
-            //Delete the commands and forward to index
-            foreach ($this->request->data('Command.delete') as $command_id) {
-                $command = $this->Command->findById($command_id);
-                if ($this->__allowDelete($command)) {
-                    $this->__delete($command);
-                }
-            }
-            $this->setFlash('Commands deleted');
-            $this->redirect(['action' => 'index']);
-        }
-
-        $commandsToDelete = [];
-        $commandsCanotDelete = [];
-        $count = 0;
-
-        foreach (func_get_args() as $command_id) {
-            if ($this->Command->exists($command_id)) {
-                $command = $this->Command->findById($command_id);
-                if ($this->__allowDelete($command)) {
-                    $commandsToDelete[] = $command;
-                } else {
-                    $commandsCanotDelete[] = $command['Command']['name'];
-                }
-            }
-        }
-
-        $count = sizeof($commandsToDelete) + sizeof($commandsCanotDelete);
-        $this->set(compact(['commandsToDelete', 'commandsCanotDelete', 'count']));
-        $this->set('back_url', $this->referer());
-    }
-
-    protected function __delete($command) {
-        $userId = $this->Auth->user('id');
-        $this->Command->id = $command['Command']['id'];
-        if ($this->Command->delete()) {
+        if ($Commands->delete($Commands->get($id))) {
             $changelog_data = $this->Changelog->parseDataForChangelog(
-                'delete',
+                $this->params['action'],
                 $this->params['controller'],
-                $command['Command']['id'],
+                $id,
                 OBJECT_COMMAND,
                 [ROOT_CONTAINER],
                 $userId,
@@ -351,10 +230,17 @@ class CommandsController extends AppController {
                 CakeLog::write('log', serialize($changelog_data));
             }
 
-            return true;
+            $this->set('success', true);
+            $this->set('_serialize', ['success']);
+            return;
         }
 
-        return false;
+
+        $this->response->statusCode(500);
+        $this->set('success', false);
+        $this->set('_serialize', ['success']);
+        return;
+
     }
 
     protected function __allowDelete($command) {
@@ -455,7 +341,10 @@ class CommandsController extends AppController {
     }
 
     public function loadMacros() {
-        $all_macros = $this->Macro->find('all');
+        /** @var $Macro MacrosTable */
+        $Macro = TableRegistry::getTableLocator()->get('Macros');
+        $all_macros = $Macro->getAllMacrosInCake2Format();
+
 
         //Sorting the SQL result in a human frindly way. Will sort $USER10$ below $USER2$
         $all_macros = Hash::sort($all_macros, '{n}.Macro.name', 'asc', 'natural');
@@ -491,23 +380,6 @@ class CommandsController extends AppController {
         return $requestData;
     }
 
-    /**
-     * This function creates for each command a new UUID. Normally you should never execute this function!
-     * ! Caution: May be destroy your whole system!
-     * ! Only execute this if you know what you are doing!
-     * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
-     * @since  3.0
-     */
-    protected function resetAllUUID() {
-        throw new BadRequestException('To call this function is a really bad idea, because all your UUIDs get lost and generated new. So this function is disabled by default!');
-
-        return false;
-        foreach ($this->Command->find('all', ['fields' => ['uuid', 'id']]) as $command) {
-            debug($command);
-            $command['Command']['uuid'] = UUID::v4();
-            $this->Command->save($command);
-        }
-    }
 
     private function getConsoleWelcome() {
         return "This is a terminal connected to your " . $this->systemname . " " .
@@ -528,10 +400,6 @@ class CommandsController extends AppController {
         $command = $this->Command->findById($id);
         $commandName = $command['Command']['name'];
 
-//		if(!$this->allowedByContainerId(Hash::extract($servicetemplate, 'Container.id'), false)){
-//			$this->render403();
-//			return;
-//		}
 
         $this->loadModel('Servicetemplate');
         $servicestemplates = $this->Servicetemplate->find('all', [
@@ -553,6 +421,88 @@ class CommandsController extends AppController {
     }
 
     public function copy($id = null) {
+        $this->layout = 'angularjs';
+
+        if (!$this->isAngularJsRequest()) {
+            //Only ship HTML Template
+            return;
+        }
+
+        /** @var $Commands CommandsTable */
+        $Commands = TableRegistry::getTableLocator()->get('Commands');
+
+        if ($this->request->is('get')) {
+            $commands = $Commands->getCommandsForCopy(func_get_args());
+            $this->set('commands', $commands);
+            $this->set('_serialize', ['commands']);
+            return;
+        }
+
+        $hasErrors = false;
+
+        if ($this->request->is('post')) {
+            $Cache = new KeyValueStore();
+
+            $postData = $this->request->data('data');
+
+            foreach ($postData as $index => $commandData) {
+                if (!isset($commandData['Command']['id'])) {
+                    //Create/clone command
+                    $sourceCommandId = $commandData['Source']['id'];
+                    if (!$Cache->has($sourceCommandId)) {
+                        $sourceCommand = $Commands->get($sourceCommandId, [
+                            'contain' => [
+                                'Commandarguments'
+                            ]
+                        ])->toArray();
+                        $Cache->set($sourceCommand['id'], $sourceCommand);
+                    }
+
+                    $sourceCommand = $Cache->get($sourceCommandId);
+
+                    $newCommandData = [
+                        'name'             => $commandData['Command']['name'],
+                        'command_line'     => $commandData['Command']['command_line'],
+                        'command_type'     => $sourceCommand['command_type'],
+                        'description'      => $commandData['Command']['description'],
+                        'uuid'             => UUID::v4(),
+                        'commandarguments' => $sourceCommand['commandarguments']
+                    ];
+
+                    $newCommandEntity = $Commands->newEntity($newCommandData);
+                }
+
+                if (isset($commandData['Command']['id'])) {
+                    //Update existing command
+                    //This happens, if a user copy multiple commands, and one run into an validation error
+                    //All commands without validation errors got already saved to the database
+                    $newCommandEntity = $Commands->get($commandData['Command']['id']);
+                    $newCommandEntity = $Commands->patchEntity($newCommandEntity, $commandData['Command']);
+                }
+
+
+                $Commands->save($newCommandEntity);
+
+
+                $postData[$index]['Error'] = [];
+                if ($newCommandEntity->hasErrors()) {
+                    $hasErrors = true;
+                    $postData[$index]['Error'] = $newCommandEntity->getErrors();
+                } else {
+                    //No errors
+                    $postData[$index]['Command']['id'] = $newCommandEntity->get('id');
+                }
+            }
+        }
+
+        if ($hasErrors) {
+            $this->response->statusCode(400);
+        }
+        $this->set('result', $postData);
+        $this->set('_serialize', ['result']);
+
+        return;
+
         $userId = $this->Auth->user('id');
         $commands = $this->Command->find('all', [
             'resursive'  => -1,
