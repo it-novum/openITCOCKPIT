@@ -77,15 +77,19 @@
                             </select>
                         </div>
                     </div>
-                    <div class="form-group required">
+                    <div class="form-group required" ng-class="{'has-error': errors.name}">
                         <label class="col col-md-2 control-label">
                             <?php echo __('Name'); ?>
                         </label>
                         <div class="col col-xs-10">
                             <input class="form-control" type="text" ng-model="post.Command.name">
+                            <div ng-repeat="error in errors.name">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
                         </div>
+
                     </div>
-                    <div class="form-group required">
+                    <div class="form-group required" ng-class="{'has-error': errors.command_line}">
                         <label class="col col-md-2 control-label">
                             <?php echo __('Command line'); ?>
                         </label>
@@ -93,6 +97,9 @@
                             <textarea class="form-control" type="text" ng-model="post.Command.command_line"
                                       cols="30" rows="6">
                             </textarea>
+                            <div ng-repeat="error in errors.command_line">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
                         </div>
                     </div>
                     <div class="col col-md-2 hidden-mobile hidden-tablet"><!-- space for nice layout --></div>
@@ -132,11 +139,44 @@
                     <div id="command_args">
                         <!-- empty because we create a new command! -->
                     </div>
+
+                    <div ng-repeat="arg in args">
+                        <div class="col-md-12 padding-top-5">
+                            <div class="col-md-1 text-primary padding-top-10">
+                                {{arg.name}}
+                            </div>
+                            <div class="col-md-10">
+                                <label class="col col-md-1 control-label">
+                                    <?php echo __('Name'); ?>
+                                </label>
+                                <div class="col col-md-11">
+                                    <input class="form-control input-sm" type="text"
+                                           placeholder="<?php echo __('Please enter a name'); ?>"
+                                           name="data[Commandargument][{{arg.id}}][human_name]" value="{{arg.value}}"
+                                           style="width: 100%;">
+                                </div>
+                            </div>
+                            <div class="col-md-1">
+                                <a class="btn btn-default btn-sm txt-color-red deleteCommandArg"
+                                   href="javascript:void(0);"
+                                   ng-click="removeArg(arg)">
+                                    <i class="fa fa-trash-o fa-lg"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
                     <div class="col-xs-12 padding-top-10">
-                        <a class="btn btn-success btn-xs pull-right" id="add_new_arg" href="javascript:void(0);">
+                        <a class="btn btn-success btn-xs pull-right" id="add_new_arg" href="javascript:void(0);"
+                           ng-click="addArg()">
                             <i class="fa fa-plus"></i>
                             <?php echo __('Add argument'); ?>
                         </a>
+                    </div>
+                    <div ng-show="args.length > 0">
+                        <span class="col col-md-10 col-xs-12 txt-color-redLight">
+                            <i class="fa fa-exclamation-circle"></i>
+                            <?php echo __('empty arguments will be removed automatically'); ?>
+                        </span>
                     </div>
                 </fieldset>
                 <?php if ($this->Acl->hasPermission('terminal')): ?>
