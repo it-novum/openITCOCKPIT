@@ -23,7 +23,7 @@ angular.module('openITCOCKPIT')
                 }
             }
 
-            $scope.args = args;
+            $scope.args = _.sortBy(args, 'id');
         }
 
         $scope.addArg = function(){
@@ -37,19 +37,24 @@ angular.module('openITCOCKPIT')
                 name: '$ARG'+argsCount,
                 value: ''
             });
+            $scope.args = _.sortBy($scope.args, 'id');
         }
 
 
         $scope.submit = function(){
+            $scope.post.Command.Commandargument = $scope.args;
+            console.log($scope.post);
+            /*
             $http.post("/commands/add.json?angular=true",
                 $scope.post
             ).then(function(result){
-                console.log('Data saved successfully');
+//                console.log('Data saved successfully');
                 window.location.href = '/commands/index';
             }, function errorCallback(result){
                 if(result.data.hasOwnProperty('error')){
                     $scope.errors = result.data.error;
                 }
             });
+            */
         };
     });

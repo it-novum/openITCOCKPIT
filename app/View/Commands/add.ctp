@@ -152,7 +152,8 @@
                                 <div class="col col-md-11">
                                     <input class="form-control input-sm" type="text"
                                            placeholder="<?php echo __('Please enter a name'); ?>"
-                                           name="data[Commandargument][{{arg.id}}][human_name]" value="{{arg.value}}"
+                                           name="data[Commandargument][{{arg.id}}][human_name]"
+                                           ng-model="arg.value"
                                            style="width: 100%;">
                                 </div>
                             </div>
