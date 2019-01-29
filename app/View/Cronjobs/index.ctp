@@ -22,8 +22,8 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+
 ?>
-<?php $this->Paginator->options(['url' => $this->params['named']]); ?>
 <div class="row">
     <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
         <h1 class="page-title txt-color-blueDark">
@@ -42,11 +42,11 @@
             <div class="jarviswidget jarviswidget-color-blueDark" id="wid-id-1" data-widget-editbutton="false">
                 <header>
                     <div class="widget-toolbar" role="menu">
-                        <?php
-                        if ($this->Acl->hasPermission('add')):
-                            echo $this->Html->link(__('New'), '/' . $this->params['controller'] . '/add', ['class' => 'btn btn-xs btn-success', 'icon' => 'fa fa-plus']);
-                        endif;
-                        ?>
+                        <?php if ($this->Acl->hasPermission('add', 'Cronjobs')): ?>
+                            <button type="button" class="btn btn-xs btn-success" ng-click="triggerAddModal()">
+                                <i class="fa fa-plus"></i> <?php echo __('New'); ?>
+                            </button>
+                        <?php endif; ?>
                     </div>
 
                     <span class="widget-icon hidden-mobile"> <i class="fa fa-clock-o"></i> </span>
@@ -62,7 +62,6 @@
                                    style="">
                                 <thead>
                                 <tr>
-                                    <?php $order = $this->Paginator->param('order'); ?>
                                     <th class="no-sort"><?php echo __('Task') ?></th>
                                     <th class="no-sort"><?php echo __('Plugin') ?></th>
                                     <th class="no-sort"><?php echo __('Interval'); ?></th>
@@ -73,60 +72,49 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <?php foreach ($cronjobs as $cronjob): ?>
-                                    <tr>
-                                        <td><?php echo h($cronjob['Cronjob']['task']); ?></td>
-                                        <td><?php echo h($cronjob['Cronjob']['plugin']); ?></td>
-                                        <td><?php echo h($cronjob['Cronjob']['interval']); ?></td>
-                                        <td><?php echo h($this->Time->format($cronjob['Cronschedule']['start_time'], $this->Auth->user('dateformat'), false, $this->Auth->user('timezone'))); ?></td>
-                                        <td class="text-center">
-                                            <?php
-                                            if ($cronjob['Cronschedule']['is_running'] == 0):
-                                                echo __('No');
-                                            else:
-                                                echo __('Yes');
-                                            endif;
-                                            ?>
-                                        </td>
-                                        <td class="text-align-center">
-                                            <?php if ($cronjob['Cronjob']['enabled']): ?>
-                                                <i class="fa fa-check text-success"></i>
-                                            <?php else: ?>
-                                                <i class="fa fa-times text-danger"></i>
-                                            <?php endif; ?>
-                                        </td>
-                                        <td class="text-center">
-                                            <?php if ($this->Acl->hasPermission('edit')): ?>
-                                                <a href="/<?php echo $this->params['controller']; ?>/edit/<?php echo $cronjob['Cronjob']['id']; ?>"
-                                                   data-original-title="<?php echo __('Edit'); ?>" data-placement="left"
-                                                   rel="tooltip" data-container="body"><i id="list_edit"
-                                                                                          class="fa fa-gear fa-lg txt-color-teal"></i></a>
-                                            <?php endif; ?>
-                                        </td>
-                                    </tr>
-                                <?php endforeach; ?>
+                                <tr ng-repeat="cronjob in cronjobs">
+                                    <td>{{cronjob.Cronjob.task}}</td>
+                                    <td>{{cronjob.Cronjob.plugin}}</td>
+                                    <td>{{cronjob.Cronjob.interval}}</td>
+                                    <td>{{'usertime'}}</td>
+                                    <td class="text-center" ng-if="cronjob.Cronschedules.is_running == 0">
+                                        <?php echo __('No'); ?>
+                                    </td>
+                                    <td class="text-center" ng-if="cronjob.Cronschedules.is_running != 0">
+                                        <?php echo __('Yes'); ?>
+                                    </td>
+                                    <td class="text-align-center" ng-if="cronjob.Cronjob.enabled">
+                                        <i class="fa fa-check text-success"></i>
+                                    </td>
+                                    <td class="text-align-center" ng-if="!cronjob.Cronjob.enabled">
+                                        <i class="fa fa-times text-danger"></i>
+                                    </td>
+                                    <td class="text-center">
+                                        <!-- modal edit -->
+                                        <a href="#" ng-click="triggerEditModal(cronjob.Cronjob);"
+                                           data-original-title="<?php echo __('Edit'); ?>" data-placement="left"
+                                           rel="tooltip" data-container="body">
+                                            <i class="fa fa-gear fa-lg txt-color-teal"></i>
+                                        </a>
+                                    </td>
+
+                                </tr>
                                 </tbody>
                             </table>
                         </div>
-                        <?php if (empty($cronjobs)): ?>
-                            <div class="noMatch">
-                                <center>
-                                    <span class="txt-color-red italic"><?php echo __('No entries match the selection'); ?></span>
-                                </center>
-                            </div>
-                        <?php endif; ?>
-
+                        <div class="noMatch" ng-if="cronjobs.length == 0">
+                            <center>
+                                <span class="txt-color-red italic"><?php echo __('No entries match the selection'); ?></span>
+                            </center>
+                        </div>
                         <div style="padding: 5px 10px;">
                             <div class="row">
                                 <div class="col-sm-6">
                                     <div class="dataTables_info" style="line-height: 32px;"
-                                         id="datatable_fixed_column_info"><?php echo $this->Paginator->counter(__('Page') . ' {:page} ' . __('of') . ' {:pages}, ' . __('Total') . ' {:count} ' . __('entries')); ?></div>
+                                         id="datatable_fixed_column_info"></div>
                                 </div>
                                 <div class="col-sm-6 text-right">
                                     <div class="dataTables_paginate paging_bootstrap">
-                                        <?php echo $this->Paginator->pagination([
-                                            'ul' => 'pagination',
-                                        ]); ?>
                                     </div>
                                 </div>
                             </div>
@@ -136,3 +124,251 @@
             </div>
     </div>
 </section>
+
+
+<!-- Add cronjob modal -->
+<div id="addCronjobModal" class="modal" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">
+                    <i class="fa fa-usd"></i>
+                    <?php echo __('Add Cronjob'); ?>
+                </h4>
+            </div>
+            <div class="modal-body">
+
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="form-group smart-form hintmark_red">
+                            <?php echo __('Plugin'); ?>
+                        </div>
+                    </div>
+                    <div class="col-xs-12">
+                        <div class="form-group" ng-class="{'has-error': errors.name}">
+                            <select
+                                    id="AddCronjobPluginSelect"
+                                    data-placeholder="<?php echo __('Please choose'); ?>"
+                                    class="form-control"
+                                    chosen="availablePlugins"
+                                    ng-options="value as value for (key , value) in availablePlugins"
+                                    ng-model="post.Cronjob.plugin">
+                            </select>
+                            <div ng-repeat="error in errors.name">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="form-group smart-form hintmark_red">
+                            <?php echo __('Task'); ?>
+                        </div>
+                    </div>
+                    <div class="col-xs-12">
+                        <div class="form-group" ng-class="{'has-error': errors.name}">
+                            <select
+                                    id="AddCronjobTaskSelect"
+                                    data-placeholder="<?php echo __('Please choose'); ?>"
+                                    class="form-control"
+                                    chosen="availableTasks"
+                                    ng-options="value as value for (key , value) in availableTasks"
+                                    ng-model="post.Cronjob.task">
+                            </select>
+                            <div ng-repeat="error in errors.name">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12 smart-form">
+                        <div class="form-group smart-form" ng-class="{'has-error': errors.interval}">
+                            <label class="label hintmark_red">
+                                <?php echo __('Interval'); ?>
+                            </label>
+                            <label class="input">
+                                <b class="icon-prepend">
+                                    <i class="fa fa-clock-o"></i>
+                                </b>
+                                <input type="number" class="input-sm" min="0"
+                                       ng-model="post.Cronjob.interval">
+                            </label>
+                            <div ng-repeat="error in errors.interval">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                            <div class="help-block">
+                                <?php echo __('Cronjob schedule interval in minutes'); ?>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12 smart-form padding-top-15">
+                        <div class="form-group smart-form" ng-class="{'has-error': errors.enabled}">
+                            <label class="label hintmark_red">
+                                <?php echo __('Enabled'); ?>
+                            </label>
+                            <label class="checkbox small-checkbox-label">
+                                <input type="checkbox" name="checkbox"
+                                       ng-true-value="1"
+                                       ng-false-value="0"
+                                       ng-model="post.Cronjob.enabled">
+                                <i class="checkbox-primary"></i>
+
+                                <div ng-repeat="error in errors.enabled">
+                                    <div class="help-block text-danger">{{ error }}</div>
+                                </div>
+                                <div class="help-block">
+                                    <?php echo __('Determine if this cronjob should be executed.'); ?>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+
+                <button type="button" class="btn btn-default" data-dismiss="modal">
+                    <?php echo __('Close'); ?>
+                </button>
+
+                <button type="button" class="btn btn-primary" ng-click="saveCronjob()">
+                    <?php echo __('Save'); ?>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Edit cronjob modal -->
+<div id="editCronjobModal" class="modal" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">
+                    <i class="fa fa-usd"></i>
+                    <?php echo __('Edit Cronjob'); ?>
+                </h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="form-group smart-form hintmark_red">
+                            <?php echo __('Plugin'); ?>
+                        </div>
+                    </div>
+                    <div class="col-xs-12">
+                        <div class="form-group" ng-class="{'has-error': errors.name}">
+                            <select
+                                    id="EditCronjobPluginSelect"
+                                    data-placeholder="<?php echo __('Please choose'); ?>"
+                                    class="form-control"
+                                    chosen="availablePlugins"
+                                    ng-options="value as value for (key , value) in availablePlugins"
+                                    ng-model="editPost.Cronjob.plugin">
+                            </select>
+                            <div ng-repeat="error in errors.name">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="form-group smart-form hintmark_red">
+                            <?php echo __('Task'); ?>
+                        </div>
+                    </div>
+                    <div class="col-xs-12">
+                        <div class="form-group" ng-class="{'has-error': errors.name}">
+                            <select
+                                    id="EditCronjobTaskSelect"
+                                    data-placeholder="<?php echo __('Please choose'); ?>"
+                                    class="form-control"
+                                    chosen="availableTasks"
+                                    ng-options="value as value for (key , value) in availableTasks"
+                                    ng-model="editPost.Cronjob.task">
+                            </select>
+                            <div ng-repeat="error in errors.name">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12 smart-form">
+                        <div class="form-group smart-form" ng-class="{'has-error': errors.interval}">
+                            <label class="label hintmark_red">
+                                <?php echo __('Interval'); ?>
+                            </label>
+                            <label class="input">
+                                <b class="icon-prepend">
+                                    <i class="fa fa-clock-o"></i>
+                                </b>
+                                <input type="number" class="input-sm" min="0"
+                                       ng-model="editPost.Cronjob.interval">
+                            </label>
+                            <div ng-repeat="error in errors.interval">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                            <div class="help-block">
+                                <?php echo __('Cronjob schedule interval in minutes'); ?>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12 smart-form padding-top-15">
+                        <div class="form-group smart-form" ng-class="{'has-error': errors.enabled}">
+                            <label class="label hintmark_red">
+                                <?php echo __('Enabled'); ?>
+                            </label>
+                            <label class="checkbox small-checkbox-label">
+                                <input type="checkbox" name="checkbox"
+                                       ng-model="editPost.Cronjob.enabled">
+                                <i class="checkbox-primary"></i>
+
+                                <div ng-repeat="error in errors.enabled">
+                                    <div class="help-block text-danger">{{ error }}</div>
+                                </div>
+                                <div class="help-block">
+                                    <?php echo __('Determine if this cronjob should be executed.'); ?>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="modal-footer">
+
+                <button type="button" class="btn btn-danger pull-left" ng-click="deleteCronjob()">
+                    <?php echo __('Delete'); ?>
+                </button>
+
+                <button type="button" class="btn btn-default" data-dismiss="modal">
+                    <?php echo __('Close'); ?>
+                </button>
+
+                <button type="button" class="btn btn-primary" ng-click="editCronjob()">
+                    <?php echo __('Save'); ?>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
