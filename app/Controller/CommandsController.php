@@ -180,7 +180,6 @@ class CommandsController extends AppController {
         $this->layout = 'angularjs';
 
 
-        $userId = $this->Auth->user('id');
         if (!$this->request->is('post')) {
             throw new MethodNotAllowedException();
         }
@@ -216,6 +215,7 @@ class CommandsController extends AppController {
 
 
         if ($Commands->delete($Commands->get($id))) {
+            $userId = $this->Auth->user('id');
             $changelog_data = $this->Changelog->parseDataForChangelog(
                 $this->params['action'],
                 $this->params['controller'],
@@ -441,6 +441,7 @@ class CommandsController extends AppController {
         $hasErrors = false;
 
         if ($this->request->is('post')) {
+            $userId = $this->Auth->user('id');
             $Cache = new KeyValueStore();
 
             $postData = $this->request->data('data');
@@ -472,12 +473,14 @@ class CommandsController extends AppController {
                     $newCommandEntity = $Commands->newEntity($newCommandData);
                 }
 
+                $action = 'add';
                 if (isset($commandData['Command']['id'])) {
                     //Update existing command
                     //This happens, if a user copy multiple commands, and one run into an validation error
                     //All commands without validation errors got already saved to the database
                     $newCommandEntity = $Commands->get($commandData['Command']['id']);
                     $newCommandEntity = $Commands->patchEntity($newCommandEntity, $commandData['Command']);
+                    $action = 'edit';
                 }
 
 
@@ -491,6 +494,21 @@ class CommandsController extends AppController {
                 } else {
                     //No errors
                     $postData[$index]['Command']['id'] = $newCommandEntity->get('id');
+
+                    $userId = $this->Auth->user('id');
+                    $changelog_data = $this->Changelog->parseDataForChangelog(
+                        $action,
+                        $this->params['controller'],
+                        $postData[$index]['Command']['id'],
+                        OBJECT_COMMAND,
+                        [ROOT_CONTAINER],
+                        $userId,
+                        $postData[$index]['Command']['name'],
+                        $postData[$index]
+                    );
+                    if ($changelog_data) {
+                        CakeLog::write('log', serialize($changelog_data));
+                    }
                 }
             }
         }
