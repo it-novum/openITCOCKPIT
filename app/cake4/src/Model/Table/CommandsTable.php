@@ -74,9 +74,9 @@ class CommandsTable extends Table {
             ->maxLength('name', 255)
             ->allowEmptyString('name', false)
             ->add('name', 'unique', [
-                'rule' => 'validateUnique',
+                'rule'     => 'validateUnique',
                 'provider' => 'table',
-                'message' => __('This command name has already been taken.')
+                'message'  => __('This command name has already been taken.')
             ]);
 
         $validator
@@ -147,6 +147,7 @@ class CommandsTable extends Table {
         return $result;
     }
 
+
     /**
      * @param $id
      * @return array
@@ -158,6 +159,63 @@ class CommandsTable extends Table {
             ->first();
 
         return $this->formatFirstResultAsCake2($command->toArray());
+    }
+
+    /**
+     * @param int|array $ids
+     * @return array
+     */
+    public function getCommandByIds($ids = []) {
+        if (!is_array($ids)) {
+            $ids = [$ids];
+        }
+
+        $command = $this->find('all')
+            ->contain('Commandarguments')
+            ->where(['Commands.id IN' => $ids])
+            ->all();
+
+        return $this->formatResultAsCake2($command->toArray());
+    }
+
+    /**
+     * @param int|array $ids
+     * @return array
+     */
+    public function getCommandByIdAsList($ids = []) {
+        if (!is_array($ids)) {
+            $ids = [$ids];
+        }
+
+        $command = $this->find()
+            ->select([
+                'Commands.id',
+                'Commands.name'
+            ])
+            ->where(['Commands.id IN' => $ids])
+            ->all();
+
+        return $this->formatListAsCake2($command->toArray());
+    }
+
+    /**
+     * @param int|array
+     * @return array
+     */
+    public function getCommandByTypeAsList($commandTypeId) {
+        if (!is_array($commandTypeId)) {
+            $commandTypeId = [$commandTypeId];
+        }
+
+        $command = $this->find()
+            ->select([
+                'Commands.id',
+                'Commands.name'
+            ])
+            ->where(['Commands.command_type IN' => $commandTypeId])
+            ->all();
+
+        return $this->formatListAsCake2($command->toArray());
     }
 
     /**
@@ -178,5 +236,95 @@ class CommandsTable extends Table {
             ->all();
 
         return $this->formatResultAsCake2($query->toArray(), false);
+    }
+
+    /**
+     * @param int $typeId
+     * @return array
+     */
+    public function getCommandsByTypeId($typeId) {
+        $query = $this->find()
+            ->select([
+                'Commands.id',
+                'Commands.name',
+                'Commands.command_line',
+                'Commands.uuid',
+                'Commands.command_type',
+                'Commands.description'
+            ])
+            ->where(['Commands.command_type' => $typeId])
+            ->disableHydration()
+            ->all();
+
+        return $this->formatResultAsCake2($query->toArray(), false);
+    }
+
+
+    /**
+     * @param string $uuid
+     * @return int|null
+     */
+    public function getCommandIdByCommandUuid($uuid) {
+        $command = $this->find('all')
+            ->select(['Commands.id'])
+            ->where(['Commands.uuid' => $uuid])
+            ->first();
+
+        if (is_null($command)) {
+            return null;
+        }
+
+        return $command->id;
+    }
+
+    /**
+     * @param int $id
+     * @return string|null
+     */
+    public function getCommandUuidByCommandId($id) {
+        $command = $this->find('all')
+            ->select(['Commands.uuid'])
+            ->where(['Commands.id' => $id])
+            ->first();
+
+        if (is_null($command)) {
+            return null;
+        }
+
+        return $command->uuid;
+    }
+
+    /**
+     * @param string $uuid
+     * @param bool $contain
+     * @return array
+     */
+    public function getCommandByUuid($uuid, $contain = false) {
+        $command = $this->find('all')
+            ->where(['Commands.uuid' => $uuid])
+            ->disableHydration();
+
+        if ($contain) {
+            $command->contain('Commandarguments');
+        }
+        $command->first();
+
+        return $this->formatFirstResultAsCake2($command->toArray());
+    }
+
+    /**
+     * @param bool $contain
+     * @return array
+     */
+    public function getAllCommands($contain = false) {
+        $command = $this->find('all')
+            ->disableHydration()
+            ->all();
+
+        if ($contain) {
+            $command->contain('Commandarguments');
+        }
+
+        return $this->formatResultAsCake2($command->toArray(), $contain);
     }
 }

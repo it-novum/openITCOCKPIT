@@ -36,7 +36,7 @@ return [
              * decreases performance because each query needs to be traversed and
              * manipulated before being executed.
              */
-            'quoteIdentifiers' => false,
+            'quoteIdentifiers' => true,
         ],
 
         /**

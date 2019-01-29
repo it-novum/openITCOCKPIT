@@ -23,6 +23,8 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use App\Model\Table\CommandsTable;
+use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AcknowledgedServiceConditions;
 use itnovum\openITCOCKPIT\Core\CustomMacroReplacer;
 use itnovum\openITCOCKPIT\Core\CustomVariableDiffer;
@@ -62,7 +64,6 @@ use Statusengine\PerfdataParser;
  * @property Host $Host
  * @property Servicetemplate $Servicetemplate
  * @property Servicegroup $Servicegroup
- * @property Command $Command
  * @property Commandargument $Commandargument
  * @property Timeperiod $Timeperiod
  * @property Contact $Contact
@@ -645,14 +646,16 @@ class ServicesController extends AppController {
             unset($myRights[$rootKey]);
         }
 
+        /** @var $CommandsTable CommandsTable */
+        $CommandsTable = TableRegistry::getTableLocator()->get('Commands');
 
         $servicetemplates = $this->Servicetemplate->servicetemplatesByContainerId($myContainerId, 'list');
         $timeperiods = $this->Timeperiod->find('list');
         $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
         $contacts = $this->Contact->contactsByContainerId($containerIds, 'list', 'id');
         $contactgroups = $this->Contactgroup->contactgroupsByContainerId($containerIds, 'list', 'id');
-        $commands = $this->Command->serviceCommands('list');
-        $eventhandlers = $this->Command->eventhandlerCommands('list');
+        $commands = $CommandsTable->getCommandByTypeAsList(CHECK_COMMAND);
+        $eventhandlers = $CommandsTable->getCommandByTypeAsList(EVENTHANDLER_COMMAND);
         $servicegroups = $this->Servicegroup->servicegroupsByContainerId($containerIds, 'list', 'id');
 
         $this->Frontend->set('data_placeholder', __('Please choose a contact'));
@@ -851,6 +854,9 @@ class ServicesController extends AppController {
             $Customvariable = $this->request->data['Customvariable'];
         }
 
+        /** @var $CommandsTable CommandsTable */
+        $CommandsTable = TableRegistry::getTableLocator()->get('Commands');
+
         $userContainerId = $this->Auth->user('container_id');
         $hosts = $this->Host->find('list');
         $myContainerId = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
@@ -860,8 +866,8 @@ class ServicesController extends AppController {
         $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
         $contacts = $this->Contact->contactsByContainerId($containerIds, 'list', 'id');
         $contactgroups = $this->Contactgroup->contactgroupsByContainerId($containerIds, 'list', 'id');
-        $commands = $this->Command->serviceCommands('list');
-        $eventhandlers = $this->Command->eventhandlerCommands('list');
+        $commands = $CommandsTable->getCommandByTypeAsList(CHECK_COMMAND);
+        $eventhandlers = $CommandsTable->getCommandByTypeAsList(EVENTHANDLER_COMMAND);
         $servicegroups = $this->Servicegroup->servicegroupsByContainerId($containerIds, 'list', 'id');
         //Fehlende bzw. neu angelegte CommandArgummente ermitteln und anzeigen
         $commandarguments = $this->Commandargument->find('all', [
@@ -1083,20 +1089,16 @@ class ServicesController extends AppController {
                 }
             }
             if ($this->request->data('Service.command_id')) {
-                if ($commandsForChangelog = $this->Command->find('list', [
-                    'conditions' => [
-                        'Command.id' => $this->request->data['Service']['command_id'],
-                    ],
-                ])
-                ) {
-                    foreach ($commandsForChangelog as $commandId => $commandName) {
-                        $ext_data_for_changelog['CheckCommand'] = [
-                            'id'   => $commandId,
-                            'name' => $commandName,
-                        ];
-                    }
-                    unset($commandsForChangelog);
+                /** @var $Commands CommandsTable */
+                $Commands = TableRegistry::getTableLocator()->get('Commands');
+                $commandsForChangelog = $Commands->getCommandByIdAsList($this->request->data['Service']['command_id']);
+                foreach ($commandsForChangelog as $commandId => $commandName) {
+                    $ext_data_for_changelog['CheckCommand'] = [
+                        'id'   => $commandId,
+                        'name' => $commandName,
+                    ];
                 }
+                unset($commandsForChangelog);
             }
             if ($this->request->data('Service.host_id')) {
                 if ($hostsForChangelog = $this->Host->find('first', [
@@ -2783,20 +2785,16 @@ class ServicesController extends AppController {
             }
         }
         if ($this->request->data('Service.command_id')) {
-            if ($commandsForChangelog = $this->Command->find('list', [
-                'conditions' => [
-                    'Command.id' => $this->request->data['Service']['command_id'],
-                ],
-            ])
-            ) {
-                foreach ($commandsForChangelog as $commandId => $commandName) {
-                    $changelogData['CheckCommand'] = [
-                        'id'   => $commandId,
-                        'name' => $commandName,
-                    ];
-                }
-                unset($commandsForChangelog);
+            /** @var $Commands CommandsTable */
+            $Commands = TableRegistry::getTableLocator()->get('Commands');
+            $commandsForChangelog = $Commands->getCommandByIdAsList($this->request->data['Service']['command_id']);
+            foreach ($commandsForChangelog as $commandId => $commandName) {
+                $changelogData['CheckCommand'] = [
+                    'id'   => $commandId,
+                    'name' => $commandName,
+                ];
             }
+            unset($commandsForChangelog);
         }
         if ($this->request->data('Service.host_id')) {
             $hostsForChangelog = $this->Host->find('first', [
@@ -3027,7 +3025,7 @@ class ServicesController extends AppController {
             if (!empty($hoststatus)) {
                 $record['StatehistoryHost']['state_time'] = $hoststatus['Hoststatus']['last_state_change'];
                 $record['StatehistoryHost']['state'] = $hoststatus['Hoststatus']['current_state'];
-                $record['StatehistoryHost']['state_type'] = ($hoststatus['Hoststatus']['state_type'])?true:false;
+                $record['StatehistoryHost']['state_type'] = ($hoststatus['Hoststatus']['state_type']) ? true : false;
                 $StatehistoryHost = new \itnovum\openITCOCKPIT\Core\Views\StatehistoryHost($record['StatehistoryHost']);
                 $statehistoryRecords[] = $StatehistoryHost;
             }

@@ -24,6 +24,8 @@
 //	confirmation.
 
 
+use App\Model\Table\CommandsTable;
+use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AcknowledgedHostConditions;
 use itnovum\openITCOCKPIT\Core\CustomMacroReplacer;
 use itnovum\openITCOCKPIT\Core\CustomVariableDiffer;
@@ -527,7 +529,6 @@ class HostsController extends AppController {
         }
 
         $this->loadModel('Timeperiod');
-        $this->loadModel('Command');
         $this->loadModel('Contact');
         $this->loadModel('Contactgroup');
         $this->loadModel('Container');
@@ -536,13 +537,15 @@ class HostsController extends AppController {
         $this->loadModel('Hostgroup');
         $this->loadModel('Commandargument');
         $this->loadModel('Hostcommandargumentvalue');
+        /** @var $CommandsTable CommandsTable */
+        $CommandsTable = TableRegistry::getTableLocator()->get('Commands');
 
         // Data required for changelog
         $contacts = $this->Contact->find('list');
         $hosts = $this->Host->find('list');
         $contactgroups = $this->Contactgroup->findList();
         $timeperiods = $this->Timeperiod->find('list');
-        $commands = $this->Command->hostCommands('list');
+        $commands = $CommandsTable->getCommandByTypeAsList(HOSTCHECK_COMMAND);
         $hosttemplates = $this->Hosttemplate->find('list');
         $hostgroups = $this->Hostgroup->findList([
             'recursive' => -1,
@@ -787,20 +790,16 @@ class HostsController extends AppController {
                 }
             }
             if ($this->request->data('Host.command_id')) {
-                if ($commandsForChangelog = $this->Command->find('list', [
-                    'conditions' => [
-                        'Command.id' => $this->request->data['Host']['command_id'],
-                    ],
-                ])
-                ) {
-                    foreach ($commandsForChangelog as $commandId => $commandName) {
-                        $ext_data_for_changelog['CheckCommand'] = [
-                            'id'   => $commandId,
-                            'name' => $commandName,
-                        ];
-                    }
-                    unset($commandsForChangelog);
+                /** @var $Commands CommandsTable */
+                $Commands = TableRegistry::getTableLocator()->get('Commands');
+                $commandsForChangelog = $Commands->getCommandByIdAsList($this->request->data['Host']['command_id']);
+                foreach ($commandsForChangelog as $commandId => $commandName) {
+                    $ext_data_for_changelog['CheckCommand'] = [
+                        'id'   => $commandId,
+                        'name' => $commandName,
+                    ];
                 }
+                unset($commandsForChangelog);
             }
             if ($this->request->data('Host.Parenthost')) {
                 if ($hostsForChangelog = $this->Host->find('list', [
@@ -1155,15 +1154,16 @@ class HostsController extends AppController {
 
         $this->loadModel('Timeperiod');
 
-        $this->loadModel('Command');
         $this->loadModel('Contact');
         $this->loadModel('Contactgroup');
         $this->loadModel('Container');
         $this->loadModel('Customvariable');
         $this->loadModel('Hosttemplate');
         $this->loadModel('Hostgroup');
+        /** @var $CommandsTable CommandsTable */
+        $CommandsTable = TableRegistry::getTableLocator()->get('Commands');
 
-        $commands = $this->Command->hostCommands('list');
+        $commands = $CommandsTable->getCommandByTypeAsList(HOSTCHECK_COMMAND);
 
         if ($this->hasRootPrivileges === true) {
             $containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_HOST, [], $this->hasRootPrivileges, [CT_HOSTGROUP]);
@@ -1297,20 +1297,16 @@ class HostsController extends AppController {
                 }
             }
             if ($this->request->data('Host.command_id')) {
-                if ($commandsForChangelog = $this->Command->find('list', [
-                    'conditions' => [
-                        'Command.id' => $this->request->data['Host']['command_id'],
-                    ],
-                ])
-                ) {
-                    foreach ($commandsForChangelog as $commandId => $commandName) {
-                        $ext_data_for_changelog['CheckCommand'] = [
-                            'id'   => $commandId,
-                            'name' => $commandName,
-                        ];
-                    }
-                    unset($commandsForChangelog);
+                /** @var $Commands CommandsTable */
+                $Commands = TableRegistry::getTableLocator()->get('Commands');
+                $commandsForChangelog = $Commands->getCommandByIdAsList($this->request->data['Host']['command_id']);
+                foreach ($commandsForChangelog as $commandId => $commandName) {
+                    $ext_data_for_changelog['CheckCommand'] = [
+                        'id'   => $commandId,
+                        'name' => $commandName,
+                    ];
                 }
+                unset($commandsForChangelog);
             }
             if ($this->request->data('Host.Parenthost')) {
                 if ($hostsForChangelog = $this->Host->find('list', [
