@@ -98,7 +98,7 @@ class CronjobsTable extends Table {
             ]
         ]);
         if (!is_null($query)) {
-            return $this->formatResultAsCake2($query->disableHydration()->toArray());
+            return $this->formatFirstResultAsCake2($query->toArray());
         }
         return [];
     }

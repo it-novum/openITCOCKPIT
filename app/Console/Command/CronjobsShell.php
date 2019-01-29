@@ -23,14 +23,9 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-use Cake\I18n\FrozenTime;
 use Cake\ORM\TableRegistry;
 
 class CronjobsShell extends AppShell {
-    public $uses = [
-        'Cronjob',
-        'Cronschedule',
-    ];
 
     public function main() {
         $fp = fopen('/var/run/oitc_cronjob.lock', 'wb');
@@ -86,34 +81,30 @@ class CronjobsShell extends AppShell {
     public function scheduleCronjob($cronjob) {
         /** @var CronjobsTable $Cronjobs */
         $Cronjobs = TableRegistry::getTableLocator()->get('Cronjobs');
+
+        $cronjobId = $cronjob['Cronjob']['id'];
+        //get current Cronjob entity
+        $cronjobData = $Cronjobs->get($cronjobId);
         //Flag the cronjob as is_running in DB and set start_time
         $cronjob['Cronschedule']['start_time'] = date('Y-m-d H:i:s');
         $cronjob['Cronschedule']['is_running'] = 1;
         if ($cronjob['Cronschedule']['id'] == null || $cronjob['Cronschedule']['id'] == '') {
-
             //The cron was never scheduled or the databases was truncated
             $cronjob['Cronschedule']['end_time'] = date('Y-m-d H:i:s');
 
-            //get current Cronjob entity
-            $cronjobData = $Cronjobs->get($cronjob['Cronjob']['id']);
-
-            $cronjob = $Cronjobs->patchEntity($cronjobData, [
+            $cronjobPatch = $Cronjobs->patchEntity($cronjobData, [
                 'cronschedule' => $cronjob['Cronschedule']
-            ], [
-                'associated' => [
-                    'Cronschedules'
-                ]
             ]);
 
-            $Cronjobs->save($cronjob);
+            $Cronjobs->save($cronjobPatch);
 
-            if ($cronjob->hasErrors()) {
+            if ($cronjobPatch->hasErrors()) {
                 //Error in save
                 return false;
             }
             // We saved new data and need to select this now again (because of DB truncate or cron never runs or what ever)
 
-            $cronjob = $Cronjobs->getCronjob($cronjob['Cronjob']['id']);
+            $cronjob = $Cronjobs->getCronjob($cronjobId);
         }
 
         //Executing the cron
@@ -135,14 +126,25 @@ class CronjobsShell extends AppShell {
         //Cronjob is done, set is_running back to 0 and the end_time
         $cronjob['Cronschedule']['end_time'] = date('Y-m-d H:i:s');
         $cronjob['Cronschedule']['is_running'] = 0;
-        if ($this->Cronjob->saveAll($cronjob)) {
-            //Cronjob done
+
+        $cronjob = $Cronjobs->patchEntity($cronjobData, [
+            'cronschedule' => $cronjob['Cronschedule']
+        ], [
+            'associated' => [
+                'Cronschedules' => [
+                    'accessibleFields' => ['id' => true]
+                ]
+            ]
+        ]);
+        $Cronjobs->save($cronjob);
+
+        if (!$cronjob->hasErrors()) {
+            //no Error on cronjob execution
             return true;
         }
 
         //Error on execution of the cron
         return false;
-
     }
 
     public function m2s($minutes) {
