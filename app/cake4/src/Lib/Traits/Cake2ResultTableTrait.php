@@ -154,6 +154,26 @@ trait Cake2ResultTableTrait {
         return $record;
     }
 
+    /**
+     * @param array $records
+     * @param string $key
+     * @param string $value
+     * @return array
+     */
+    public function formatListAsCake2($records = [], $key = 'id', $value = 'name') {
+        if (empty($records) || is_null($records)) {
+            return [];
+        }
+
+        $result = [];
+        foreach ($records as $row) {
+            $result[$row[$key]] = $row[$value];
+        }
+
+        return $result;
+
+    }
+
     private function asString($value) {
         if ($value instanceof FrozenTime) {
             /** @var FrozenTime $value */

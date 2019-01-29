@@ -22,13 +22,14 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+use App\Model\Table\CommandsTable;
+use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\PHPVersionChecker;
 
 
 /**
  * @property Contact $Contact
  * @property Container $Container
- * @property Command $Command
  * @property Timeperiod $Timeperiod
  * @property Customvariable $Customvariable
  */
@@ -36,7 +37,6 @@ class ContactsController extends AppController {
     public $uses = [
         'Contact',
         'Container',
-        'Command',
         'Timeperiod',
         'Customvariable',
         'User'
@@ -168,25 +168,10 @@ class ContactsController extends AppController {
         }
 
         /******** Push Notifications ********/
-        $hostPushComamndId = $this->Command->find('first', [
-            'recursive'  => -1,
-            'conditions' => [
-                'Command.uuid' => 'cd13d22e-acd4-4a67-997b-6e120e0d3153'
-            ],
-            'fields'     => [
-                'Command.id'
-            ]
-        ])['Command']['id'];
-
-        $servicePushComamndId = $this->Command->find('first', [
-            'recursive'  => -1,
-            'conditions' => [
-                'Command.uuid' => 'c23255b7-5b1a-40b4-b614-17837dc376af'
-            ],
-            'fields'     => [
-                'Command.id'
-            ]
-        ])['Command']['id'];
+        /** @var $Commands CommandsTable */
+        $Commands = TableRegistry::getTableLocator()->get('Commands');
+        $hostPushComamndId = $Commands->getCommandIdByCommandUuid('cd13d22e-acd4-4a67-997b-6e120e0d3153');
+        $servicePushComamndId = $Commands->getCommandIdByCommandUuid('c23255b7-5b1a-40b4-b614-17837dc376af');
 
         $this->Frontend->setJson('hostPushComamndId', $hostPushComamndId);
         $this->Frontend->setJson('servicePushComamndId', $servicePushComamndId);
@@ -227,7 +212,11 @@ class ContactsController extends AppController {
         $this->set('MY_WRITABLE_CONTAINERS', $this->getWriteContainers());
 
         $containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_CONTACT, [], $this->hasRootPrivileges, [CT_CONTACTGROUP]);
-        $notification_commands = $this->Command->notificationCommands('list');
+
+        /** @var $CommandsTable CommandsTable */
+        $CommandsTable = TableRegistry::getTableLocator()->get('Commands');
+        $notification_commands = $CommandsTable->getCommandByTypeAsList(NOTIFICATION_COMMAND);
+
 
         $containerIds = Hash::extract($contact, 'Container.{n}.id');
 
@@ -329,25 +318,10 @@ class ContactsController extends AppController {
         $userId = $this->Auth->user('id');
 
         /******** Push Notifications ********/
-        $hostPushComamndId = $this->Command->find('first', [
-            'recursive'  => -1,
-            'conditions' => [
-                'Command.uuid' => 'cd13d22e-acd4-4a67-997b-6e120e0d3153'
-            ],
-            'fields'     => [
-                'Command.id'
-            ]
-        ])['Command']['id'];
-
-        $servicePushComamndId = $this->Command->find('first', [
-            'recursive'  => -1,
-            'conditions' => [
-                'Command.uuid' => 'c23255b7-5b1a-40b4-b614-17837dc376af'
-            ],
-            'fields'     => [
-                'Command.id'
-            ]
-        ])['Command']['id'];
+        /** @var $Commands CommandsTable */
+        $Commands = TableRegistry::getTableLocator()->get('Commands');
+        $hostPushComamndId = $Commands->getCommandIdByCommandUuid('cd13d22e-acd4-4a67-997b-6e120e0d3153');
+        $servicePushComamndId = $Commands->getCommandIdByCommandUuid('c23255b7-5b1a-40b4-b614-17837dc376af');
 
         $this->Frontend->setJson('hostPushComamndId', $hostPushComamndId);
         $this->Frontend->setJson('servicePushComamndId', $servicePushComamndId);
@@ -381,7 +355,9 @@ class ContactsController extends AppController {
         } else {
             $containers = $this->Tree->easyPath($this->getWriteContainers(), OBJECT_CONTACT, [], $this->hasRootPrivileges, [CT_CONTACTGROUP]);
         }
-        $notification_commands = $this->Command->notificationCommands('list');
+        /** @var $CommandsTable CommandsTable */
+        $CommandsTable = TableRegistry::getTableLocator()->get('Commands');
+        $notification_commands = $CommandsTable->getCommandByTypeAsList(NOTIFICATION_COMMAND);
         $timeperiods = $this->Timeperiod->find('list');
 
         $_timeperiods = [];
