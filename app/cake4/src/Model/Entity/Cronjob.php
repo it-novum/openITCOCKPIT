@@ -31,6 +31,6 @@ class Cronjob extends Entity
         'plugin' => true,
         'interval' => true,
         'enabled' => true,
-        'cronschedules' => true
+        'cronschedule' => true
     ];
 }

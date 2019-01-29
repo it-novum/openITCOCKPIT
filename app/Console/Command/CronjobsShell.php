@@ -23,6 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use Cake\I18n\FrozenTime;
 use Cake\ORM\TableRegistry;
 
 class CronjobsShell extends AppShell {
@@ -83,6 +84,7 @@ class CronjobsShell extends AppShell {
     }
 
     public function scheduleCronjob($cronjob) {
+        /** @var CronjobsTable $Cronjobs */
         $Cronjobs = TableRegistry::getTableLocator()->get('Cronjobs');
         //Flag the cronjob as is_running in DB and set start_time
         $cronjob['Cronschedule']['start_time'] = date('Y-m-d H:i:s');
@@ -92,58 +94,23 @@ class CronjobsShell extends AppShell {
             //The cron was never scheduled or the databases was truncated
             $cronjob['Cronschedule']['end_time'] = date('Y-m-d H:i:s');
 
-
-            //set cronjob id necessary?!
-            //$cronjob['Cronschedule']['cronjob_id'] = $cronjob['Cronjob']['id'];
-
             //get current Cronjob entity
             $cronjobData = $Cronjobs->get($cronjob['Cronjob']['id']);
 
-            //associated data which shall be saved
-            $newData = [
-                'cronschedules' => $cronjob['Cronschedule']
-            ];
+            $cronjob = $Cronjobs->patchEntity($cronjobData, [
+                'cronschedule' => $cronjob['Cronschedule']
+            ], [
+                'associated' => [
+                    'Cronschedules'
+                ]
+            ]);
 
-            //merge Cronjob data with cronschedule data
-            /*
-               array(
-                    'id' => (int) 1,
-                    'task' => 'CleanupTemp',
-                    'plugin' => 'Core',
-                    'interval' => (int) 10,
-                    'enabled' => true,
-                    'cronschedules' => array(
-                        'id' => null,
-                        'cronjob_id' => null,
-                        'is_running' => (int) 1,
-                        'start_time' => '2019-01-28 13:25:04',
-                        'end_time' => '2019-01-28 13:25:04'
-                    )
-                )
-             */
-            $newData = array_merge($cronjob['Cronjob'], $newData);
+            $Cronjobs->save($cronjob);
 
-            debug($cronjobData);
-            debug($newData);
-
-            //gibts hier irgendeine zeile die funktioniert ?
-            $cronEntity = $Cronjobs->patchEntity($cronjobData, $newData);
-            //$cronEntity = $Cronjobs->patchEntity($cronjobData, $newData, ['associated' => ['Cronschedules']]);
-            //$cronEntity = $Cronjobs->newEntity($newData, ['associated' => ['Cronschedules']]);
-
-            debug($cronEntity);
-
-            debug($Cronjobs->save($cronEntity));
-
-            //meisstens keine errors
-            debug($cronEntity->hasErrors());
-
-            if ($cronEntity->hasErrors()) {
-                debug($cronEntity->getErrors());
+            if ($cronjob->hasErrors()) {
                 //Error in save
                 return false;
             }
-die();
             // We saved new data and need to select this now again (because of DB truncate or cron never runs or what ever)
 
             $cronjob = $Cronjobs->getCronjob($cronjob['Cronjob']['id']);
