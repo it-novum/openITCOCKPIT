@@ -36,7 +36,14 @@
     </div>
 </div>
 <div id="error_msg"></div>
-
+<div class="alert alert-danger alert-block" ng-show="hasWebSocketError">
+    <a href="#" data-dismiss="alert" class="close">×</a>
+    <h5 class="alert-heading">
+        <i class="fa fa-warning"></i>
+        <?php echo __('Error'); ?>
+    </h5>
+    <?php echo __('Could not connect to SudoWebsocket Server'); ?>
+</div>
 <div class="jarviswidget" id="wid-id-0">
     <header>
         <span class="widget-icon"> <i class="fa fa-terminal"></i> </span>

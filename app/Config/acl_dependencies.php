@@ -198,8 +198,8 @@ $config = [
             ],
             'Commands'              => [
                 'index'  => ['view'],
-                'add'    => ['addCommandArg', 'loadMacros'],
-                'edit'   => ['addCommandArg', 'loadMacros']
+                'add'    => ['addCommandArg', 'loadMacros', 'getConsoleWelcome'],
+                'edit'   => ['addCommandArg', 'loadMacros', 'getConsoleWelcome']
             ],
             'Timeperiods'           => [
                 'index'  => [

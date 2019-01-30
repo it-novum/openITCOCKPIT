@@ -121,7 +121,6 @@ class CommandsController extends AppController {
                     return;
                 }
             }
-
             $this->set('command', $command);
             $this->set('_serialize', ['command']);
 
@@ -389,10 +388,14 @@ class CommandsController extends AppController {
     }
 
 
-    private function getConsoleWelcome() {
-        return "This is a terminal connected to your " . $this->systemname . " " .
+    public function getConsoleWelcome() {
+        $welcomeMessage = "This is a terminal connected to your " . $this->systemname . " " .
             "Server, this is very powerful to test and debug plugins.\n" .
             "User: \033[31mnagios\033[0m\nPWD: \033[35m/opt/openitc/nagios/libexec/\033[0m\n\n";
+
+        $this->set('welcomeMessage', $welcomeMessage);
+        $this->set('_serialize', ['welcomeMessage']);
+
     }
 
     //ALC permission
