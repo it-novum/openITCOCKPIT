@@ -156,4 +156,17 @@ class CronjobsTable extends Table {
 
         return $return;
     }
+
+    public function checkForCronjob($task, $plugin = 'Core'){
+        $query = $this->find()
+            ->where([
+                'task' => $task,
+                'plugin' => $plugin
+            ])
+            ->first();
+        if (!is_null($query)) {
+            return true;
+        }
+        return false;
+    }
 }
