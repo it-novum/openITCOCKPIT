@@ -22,6 +22,7 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+use App\Model\Table\CommandargumentsTable;
 use App\Model\Table\CommandsTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\Views\ContainerPermissions;
@@ -34,7 +35,6 @@ use itnovum\openITCOCKPIT\Core\Views\ContainerPermissions;
  * @property Contactgroup $Contactgroup
  * @property Container $Container
  * @property Customvariable $Customvariable
- * @property Commandargument $Commandargument
  * @property Hosttemplatecommandargumentvalue $Hosttemplatecommandargumentvalue
  */
 class HosttemplatesController extends AppController {
@@ -46,7 +46,6 @@ class HosttemplatesController extends AppController {
         'Contactgroup',
         'Container',
         'Customvariable',
-        'Commandargument',
         'Hosttemplatecommandargumentvalue',
         'Hostcommandargumentvalue',
         'Hostgroup',
@@ -157,8 +156,6 @@ class HosttemplatesController extends AppController {
             throw new NotFoundException(__('Invalid hosttemplate'));
         }
 
-        $this->loadModel('Command');
-
         $hosttemplate = $this->Hosttemplate->find('first', [
             'recursive'  => -1,
             'conditions' => [
@@ -186,15 +183,11 @@ class HosttemplatesController extends AppController {
         }
 
         //Fehlende bzw. neu angelegte CommandArgummente ermitteln und anzeigen
-        $commandarguments = $this->Commandargument->find('all', [
-            'recursive'  => -1,
-            'conditions' => [
-                'Commandargument.command_id' => $hosttemplate['CheckCommand']['id'],
-            ],
-        ]);
-
         /** @var $CommandsTable CommandsTable */
         $CommandsTable = TableRegistry::getTableLocator()->get('Commands');
+        /** @var $CommandargumentsTable CommandargumentsTable */
+        $CommandargumentsTable = TableRegistry::getTableLocator()->get('Commandarguments');
+        $commandarguments = $CommandargumentsTable->getByCommandId($hosttemplate['CheckCommand']['id']);
 
         // Data required for changelog
         $contacts = $this->Contact->find('list');
@@ -1132,13 +1125,9 @@ class HosttemplatesController extends AppController {
 
         //Checking if the hosttemplade has own arguments defined
         if (empty($commandarguments)) {
-
-            $commandarguments = $this->Commandargument->find('all', [
-                'recursive'  => -1,
-                'conditions' => [
-                    'Commandargument.command_id' => $command_id,
-                ],
-            ]);
+            /** @var $CommandargumentsTable CommandargumentsTable */
+            $CommandargumentsTable = TableRegistry::getTableLocator()->get('Commandarguments');
+            $commandarguments = $CommandargumentsTable->getByCommandId($command_id);
         }
 
         $this->set('commandarguments', $commandarguments);
@@ -1149,15 +1138,9 @@ class HosttemplatesController extends AppController {
             throw new MethodNotAllowedException();
         }
         //Deleting associations that we dont get values of other hosttemplates
-        $this->Commandargument->unbindModel(
-            ['hasOne' => ['Servicetemplatecommandargumentvalue', 'Servicecommandargumentvalue', 'Hosttemplatecommandargumentvalue', 'Hostcommandargumentvalue']]
-        );
-
-        $commandarguments = $this->Commandargument->find('all', [
-            'conditions' => [
-                'Commandargument.command_id' => $command_id,
-            ],
-        ]);
+        /** @var $CommandargumentsTable CommandargumentsTable */
+        $CommandargumentsTable = TableRegistry::getTableLocator()->get('Commandarguments');
+        $commandarguments = $CommandargumentsTable->getByCommandId($command_id);
 
         $this->set('commandarguments', $commandarguments);
         $this->render('load_arguments');

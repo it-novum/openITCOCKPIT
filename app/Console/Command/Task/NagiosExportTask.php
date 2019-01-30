@@ -38,7 +38,6 @@ use Cake\ORM\TableRegistry;
  * @property Servicetemplatecommandargumentvalue $Servicetemplatecommandargumentvalue
  * @property Hostcommandargumentvalue $Hostcommandargumentvalue
  * @property Servicecommandargumentvalue $Servicecommandargumentvalue
- * @property Commandargument $Commandargument
  * @property Hostgroup $Hostgroup
  * @property Hostescalation $Hostescalation
  * @property Host $Host
@@ -71,7 +70,6 @@ class NagiosExportTask extends AppShell {
         'Servicetemplatecommandargumentvalue',
         'Hostcommandargumentvalue',
         'Servicecommandargumentvalue',
-        'Commandargument',
         'Hostgroup',
         'Hostescalation',
         'Host',
