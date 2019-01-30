@@ -64,6 +64,7 @@ class HostgroupsController extends AppController {
     ];
 
     public function index() {
+        $this->layout = 'blank';
         if (!$this->isApiRequest()) {
             //Only ship template for AngularJs
             return;
@@ -133,6 +134,7 @@ class HostgroupsController extends AppController {
     }
 
     public function extended() {
+        $this->layout = 'blank';
         if (!$this->isApiRequest()) {
             $this->set('QueryHandler', new QueryHandler($this->Systemsetting->getQueryHandlerPath()));
             $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
@@ -142,6 +144,7 @@ class HostgroupsController extends AppController {
 
 
     public function edit($id = null) {
+        $this->layout = 'blank';
         if (!$this->isApiRequest()) {
             //Only ship HTML template for angular
             return;
@@ -255,6 +258,7 @@ class HostgroupsController extends AppController {
     }
 
     public function add() {
+        $this->layout = 'blank';
         if (!$this->isApiRequest()) {
             //Only ship HTML template for angular
             return;

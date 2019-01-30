@@ -28,6 +28,7 @@ $config = [
         'AppController'  => ['getNamedParameter', 'isAuthorized', 'flashBack', 'setFlash', 'serviceResponse', 'allowedByContainerId', 'render403', 'checkForUpdates', 'tableLocator', 'setTableLocator', 'getTableLocator'],
         'always_allowed' => [
             'Angular'          => [
+                'index',
                 'paginator',
                 'scroll',
                 'mass_delete',

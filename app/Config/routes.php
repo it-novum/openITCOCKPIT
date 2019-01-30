@@ -1,5 +1,6 @@
 <?php
 Router::connect('/', ['controller' => 'dashboards', 'action' => 'index']);
+Router::connect('/ng', ['controller' => 'angular', 'action' => 'index']);
 Router::connect('/widget/:plugin/:controller/:action/*', ['widget' => true]);
 Router::connect('/widget/:controller/:action/*', ['widget' => true]);
 

@@ -1,4 +1,4 @@
-angular.module('openITCOCKPIT', ['gridster'])
+angular.module('openITCOCKPIT', ['ui.router', 'gridster'])
 
     .factory("httpInterceptor", function($q, $rootScope, $timeout){
         return {
@@ -88,6 +88,34 @@ angular.module('openITCOCKPIT', ['gridster'])
         // disable IE ajax request caching
         $httpProvider.defaults.headers.get['If-Modified-Since'] = '0';
 
+    })
+
+    .config(function($urlRouterProvider, $stateProvider){
+        $stateProvider
+
+            .state('HostgroupsIndex', {
+                url: '/hostgroups/index',
+                templateUrl: "/hostgroups/index.html",
+                controller: "HostgroupsIndexController"
+            })
+
+            .state('HostgroupsAdd', {
+                url: '/hostgroups/add',
+                templateUrl: "/hostgroups/add.html",
+                controller: "HostgroupsAddController"
+            })
+
+            .state('HostgroupsEdit', {
+                url: '/hostgroups/edit/:id',
+                templateUrl: "/hostgroups/edit.html",
+                controller: "HostgroupsEditController"
+            })
+
+            .state('HostgroupsExtended', {
+                url: '/hostgroups/extended',
+                templateUrl: "/hostgroups/extended.html",
+                controller: "HostgroupsExtendedController"
+            })
     })
 
     /*

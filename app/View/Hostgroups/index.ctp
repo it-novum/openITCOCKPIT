@@ -50,7 +50,7 @@
                         </button>
 
                         <?php if ($this->Acl->hasPermission('add')): ?>
-                            <a href="/hostgroups/add" class="btn btn-xs btn-success">
+                            <a ui-sref="HostgroupsAdd" class="btn btn-xs btn-success">
                                 <i class="fa fa-plus"></i>
                                 <?php echo __('New'); ?>
                             </a>
@@ -68,7 +68,7 @@
                     <?php if ($this->Acl->hasPermission('extended')): ?>
                         <ul class="nav nav-tabs pull-right" id="widget-tab-1">
                             <li>
-                                <a href="/hostgroups/extended"><i class="fa fa-plus-square"></i>
+                                <a ui-sref="HostgroupsExtended"><i class="fa fa-plus-square"></i>
                                     <span class="hidden-mobile hidden-tablet"><?php echo __('Extended overview'); ?></span></a>
                             </li>
                         </ul>
@@ -146,7 +146,7 @@
                                         {{ hostgroup.Hostgroup.description }}
                                     </td>
                                     <td class="text-center">
-                                        <a href="/hostgroups/edit/{{hostgroup.Hostgroup.id}}"
+                                        <a ui-sref="HostgroupsEdit({id:hostgroup.Hostgroup.id})"
                                            ng-if="hostgroup.Hostgroup.allowEdit">
                                             <i class="fa fa-cog fa-lg txt-color-teal"></i>
                                         </a>

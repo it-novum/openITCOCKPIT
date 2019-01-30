@@ -48,6 +48,13 @@ class AngularController extends AppController {
         'Contact'
     ];
 
+    public function index(){
+        //Shipp the AngularJS Single Page Application layout
+        //URL: /spa#!/<state>
+        $this->layout = 'angularjs_spa';
+        return;
+    }
+
     public function paginator() {
         //Return HTML Template for PaginatorDirective
         return;
