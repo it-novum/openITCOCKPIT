@@ -23,6 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\SetupShell\MailConfigurator;
 use itnovum\openITCOCKPIT\SetupShell\MailConfigValue;
 use itnovum\openITCOCKPIT\SetupShell\MailConfigValueInt;
@@ -322,22 +323,62 @@ class SetupShell extends AppShell {
 
     public function createCronjobs() {
         $this->out('<blue>Checking for missing cronjobs</blue>');
+
+        /** @var CronjobsTable $Cronjobs */
+        $Cronjobs = TableRegistry::getTableLocator()->get('Cronjobs');
+
         //Check if load cronjob exists
-        if (!$this->Cronjob->checkForCronjob('CpuLoad', 'Core')) {
+        if (!$Cronjobs->checkForCronjob('CpuLoad', 'Core')) {
             //Cron does not exists, so we create it
-            $this->Cronjob->add('CpuLoad', 'Core', 15);
+            $cpuCron = $Cronjobs->newEntity([
+                'task'     => 'CpuLoad',
+                'plugin'   => 'Core',
+                'interval' => 15,
+                'enabled'  => 1
+            ]);
+
+            $Cronjobs->save($cpuCron);
+
+            if ($cpuCron->hasErrors()) {
+                $this->out($cpuCron->getErrors());
+            }
         }
 
-        //Check if version check cronjob exists
-        if (!$this->Cronjob->checkForCronjob('VersionCheck', 'Core')) {
+        //Check if load cronjob exists
+        if (!$Cronjobs->checkForCronjob('CpuLoad', 'Core')) {
             //Cron does not exists, so we create it
-            $this->Cronjob->add('VersionCheck', 'Core', 1440);
+            $versionCheckCron = $Cronjobs->newEntity([
+                'task'     => 'VersionCheck',
+                'plugin'   => 'Core',
+                'interval' => 1440,
+                'enabled'  => 1
+            ]);
+
+            $Cronjobs->save($versionCheckCron);
+
+            if ($versionCheckCron->hasErrors()) {
+                $this->out($versionCheckCron->getErrors());
+            }
         }
 
-        //Check if SystemHealth cronjob exists
-        if (!$this->Cronjob->checkForCronjob('SystemHealth', 'Core')) {
+
+        //Check if load cronjob exists
+        if (!$Cronjobs->checkForCronjob('CpuLoad', 'Core')) {
             //Cron does not exists, so we create it
-            $this->Cronjob->add('SystemHealth', 'Core', 1);
+            $systemHealthCron = $Cronjobs->newEntity([
+                'task'     => 'SystemHealth',
+                'plugin'   => 'Core',
+                'interval' => 1,
+                'enabled'  => 1
+            ]);
+
+            $Cronjobs->save($systemHealthCron);
+
+            if ($systemHealthCron->hasErrors()) {
+                $this->out($systemHealthCron->getErrors());
+            }
         }
+
+
     }
 }
