@@ -22,18 +22,19 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+use App\Model\Table\CommandargumentsTable;
+use App\Model\Table\CommandsTable;
+use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\Views\ContainerPermissions;
 
 
 /**
  * @property Hosttemplate $Hosttemplate
  * @property Timeperiod $Timeperiod
- * @property Command $Command
  * @property Contact $Contact
  * @property Contactgroup $Contactgroup
  * @property Container $Container
  * @property Customvariable $Customvariable
- * @property Commandargument $Commandargument
  * @property Hosttemplatecommandargumentvalue $Hosttemplatecommandargumentvalue
  */
 class HosttemplatesController extends AppController {
@@ -45,7 +46,6 @@ class HosttemplatesController extends AppController {
         'Contactgroup',
         'Container',
         'Customvariable',
-        'Commandargument',
         'Hosttemplatecommandargumentvalue',
         'Hostcommandargumentvalue',
         'Hostgroup',
@@ -156,8 +156,6 @@ class HosttemplatesController extends AppController {
             throw new NotFoundException(__('Invalid hosttemplate'));
         }
 
-        $this->loadModel('Command');
-
         $hosttemplate = $this->Hosttemplate->find('first', [
             'recursive'  => -1,
             'conditions' => [
@@ -185,18 +183,17 @@ class HosttemplatesController extends AppController {
         }
 
         //Fehlende bzw. neu angelegte CommandArgummente ermitteln und anzeigen
-        $commandarguments = $this->Commandargument->find('all', [
-            'recursive'  => -1,
-            'conditions' => [
-                'Commandargument.command_id' => $hosttemplate['CheckCommand']['id'],
-            ],
-        ]);
+        /** @var $CommandsTable CommandsTable */
+        $CommandsTable = TableRegistry::getTableLocator()->get('Commands');
+        /** @var $CommandargumentsTable CommandargumentsTable */
+        $CommandargumentsTable = TableRegistry::getTableLocator()->get('Commandarguments');
+        $commandarguments = $CommandargumentsTable->getByCommandId($hosttemplate['CheckCommand']['id']);
 
         // Data required for changelog
         $contacts = $this->Contact->find('list');
         $contactgroups = $this->Contactgroup->findList();
         $timeperiods = $this->Timeperiod->find('list');
-        $commands = $this->Command->hostCommands('list');
+        $commands = $CommandsTable->getCommandByTypeAsList(HOSTCHECK_COMMAND);
         $hostgroups = $this->Hostgroup->find('list');
         // End changelog
 
@@ -330,20 +327,16 @@ class HosttemplatesController extends AppController {
                 }
             }
             if ($this->request->data('Hosttemplate.command_id')) {
-                if ($commandsForChangelog = $this->Command->find('list', [
-                    'conditions' => [
-                        'Command.id' => $this->request->data['Hosttemplate']['command_id'],
-                    ],
-                ])
-                ) {
-                    foreach ($commandsForChangelog as $commandId => $commandName) {
-                        $ext_data_for_changelog['CheckCommand'] = [
-                            'id'   => $commandId,
-                            'name' => $commandName,
-                        ];
-                    }
-                    unset($commandsForChangelog);
+                /** @var $Commands CommandsTable */
+                $Commands = TableRegistry::getTableLocator()->get('Commands');
+                $commandsForChangelog = $Commands->getCommandByIdAsList($this->request->data['Hosttemplate']['command_id']);
+                foreach ($commandsForChangelog as $commandId => $commandName) {
+                    $ext_data_for_changelog['CheckCommand'] = [
+                        'id'   => $commandId,
+                        'name' => $commandName,
+                    ];
                 }
+                unset($commandsForChangelog);
             }
 
             if ($this->request->data('Hosttemplate.Hostgroup')) {
@@ -562,7 +555,10 @@ class HosttemplatesController extends AppController {
         if (isset($this->request->data['Customvariable'])) {
             $Customvariable = $this->request->data['Customvariable'];
         }
-        $commands = $this->Command->hostCommands('list');
+        /** @var $CommandsTable CommandsTable */
+        $CommandsTable = TableRegistry::getTableLocator()->get('Commands');
+
+        $commands = $CommandsTable->getCommandByTypeAsList(HOSTCHECK_COMMAND);
 
         if ($this->hasRootPrivileges === true) {
             $containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_HOSTTEMPLATE, [], $this->hasRootPrivileges, [CT_HOSTGROUP]);
@@ -661,20 +657,16 @@ class HosttemplatesController extends AppController {
                 }
             }
             if ($this->request->data('Hosttemplate.command_id')) {
-                if ($commandsForChangelog = $this->Command->find('list', [
-                    'conditions' => [
-                        'Command.id' => $this->request->data['Hosttemplate']['command_id'],
-                    ],
-                ])
-                ) {
-                    foreach ($commandsForChangelog as $commandId => $commandName) {
-                        $ext_data_for_changelog['CheckCommand'] = [
-                            'id'   => $commandId,
-                            'name' => $commandName,
-                        ];
-                    }
-                    unset($commandsForChangelog);
+                /** @var $Commands CommandsTable */
+                $Commands = TableRegistry::getTableLocator()->get('Commands');
+                $commandsForChangelog = $Commands->getCommandByIdAsList($this->request->data['Hosttemplate']['command_id']);
+                foreach ($commandsForChangelog as $commandId => $commandName) {
+                    $ext_data_for_changelog['CheckCommand'] = [
+                        'id'   => $commandId,
+                        'name' => $commandName,
+                    ];
                 }
+                unset($commandsForChangelog);
             }
 
             if ($this->request->data('Hosttemplate.Hostgroup')) {
@@ -1133,13 +1125,9 @@ class HosttemplatesController extends AppController {
 
         //Checking if the hosttemplade has own arguments defined
         if (empty($commandarguments)) {
-
-            $commandarguments = $this->Commandargument->find('all', [
-                'recursive'  => -1,
-                'conditions' => [
-                    'Commandargument.command_id' => $command_id,
-                ],
-            ]);
+            /** @var $CommandargumentsTable CommandargumentsTable */
+            $CommandargumentsTable = TableRegistry::getTableLocator()->get('Commandarguments');
+            $commandarguments = $CommandargumentsTable->getByCommandId($command_id);
         }
 
         $this->set('commandarguments', $commandarguments);
@@ -1150,15 +1138,9 @@ class HosttemplatesController extends AppController {
             throw new MethodNotAllowedException();
         }
         //Deleting associations that we dont get values of other hosttemplates
-        $this->Commandargument->unbindModel(
-            ['hasOne' => ['Servicetemplatecommandargumentvalue', 'Servicecommandargumentvalue', 'Hosttemplatecommandargumentvalue', 'Hostcommandargumentvalue']]
-        );
-
-        $commandarguments = $this->Commandargument->find('all', [
-            'conditions' => [
-                'Commandargument.command_id' => $command_id,
-            ],
-        ]);
+        /** @var $CommandargumentsTable CommandargumentsTable */
+        $CommandargumentsTable = TableRegistry::getTableLocator()->get('Commandarguments');
+        $commandarguments = $CommandargumentsTable->getByCommandId($command_id);
 
         $this->set('commandarguments', $commandarguments);
         $this->render('load_arguments');

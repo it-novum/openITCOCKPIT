@@ -22,6 +22,9 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+use App\Model\Table\CommandargumentsTable;
+use App\Model\Table\CommandsTable;
+use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\ServiceConditions;
 use itnovum\openITCOCKPIT\Core\Views\ContainerPermissions;
 use itnovum\openITCOCKPIT\Filter\ServicetemplateFilter;
@@ -31,11 +34,9 @@ use itnovum\openITCOCKPIT\Filter\ServicetemplateFilter;
  * @property CustomValidationErrorsComponent $CustomValidationErrors
  * @property Servicetemplate $Servicetemplate
  * @property Timeperiod $Timeperiod
- * @property Command $Command
  * @property Contact $Contact
  * @property Contactgroup $Contactgroup
  * @property Container $Container
- * @property Commandargument $Commandargument
  * @property Customvariable $Customvariable
  * @property Servicetemplatecommandargumentvalue $Servicetemplatecommandargumentvalue
  * @property Servicetemplateeventcommandargumentvalue $Servicetemplateeventcommandargumentvalue
@@ -66,12 +67,10 @@ class ServicetemplatesController extends AppController {
         'Servicetemplate',
         'Service',
         'Timeperiod',
-        'Command',
         'Contact',
         'Contactgroup',
         'Servicegroup',
         'Container',
-        'Commandargument',
         'Customvariable',
         'Servicetemplatecommandargumentvalue',
         'Servicetemplateeventcommandargumentvalue',
@@ -192,8 +191,11 @@ class ServicetemplatesController extends AppController {
         $oldServicetemplateCheckCommandId = $serviceTemplate['Servicetemplate']['command_id'];
         $oldServicetemplateEventkCommandId = $serviceTemplate['Servicetemplate']['eventhandler_command_id'];
 
-        $commands = $this->Command->serviceCommands('list');
-        $eventHandlers = $this->Command->eventhandlerCommands('list');
+        /** @var $CommandsTable CommandsTable */
+        $CommandsTable = TableRegistry::getTableLocator()->get('Commands');
+
+        $commands = $CommandsTable->getCommandByTypeAsList(CHECK_COMMAND);
+        $eventHandlers = $CommandsTable->getCommandByTypeAsList(EVENTHANDLER_COMMAND);
         if ($this->hasRootPrivileges === true) {
             $containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_SERVICETEMPLATE, [], $this->hasRootPrivileges, [CT_SERVICETEMPLATEGROUP]);
         } else {
@@ -225,12 +227,9 @@ class ServicetemplatesController extends AppController {
         $serviceGroups = $this->Servicegroup->servicegroupsByContainerId($containerIds, 'list');
 
         //Fehlende bzw. neu angelegte CommandArgummente ermitteln und anzeigen
-        $commandarguments = $this->Commandargument->find('all', [
-            'recursive'  => -1,
-            'conditions' => [
-                'Commandargument.command_id' => $serviceTemplate['CheckCommand']['id'],
-            ],
-        ]);
+        /** @var $CommandargumentsTable CommandargumentsTable */
+        $CommandargumentsTable = TableRegistry::getTableLocator()->get('Commandarguments');
+        $commandarguments = $CommandargumentsTable->getByCommandId($serviceTemplate['CheckCommand']['id']);
 
         //Fix that we dont lose any unsaved host macros, because of vaildation error
         if (isset($this->request->data['Customvariable'])) {
@@ -355,37 +354,29 @@ class ServicetemplatesController extends AppController {
                 }
             }
             if ($this->request->data('Servicetemplate.command_id')) {
-                if ($commandsForChangelog = $this->Command->find('list', [
-                    'conditions' => [
-                        'Command.id' => $this->request->data['Servicetemplate']['command_id'],
-                    ],
-                ])
-                ) {
-                    foreach ($commandsForChangelog as $commandId => $commandName) {
-                        $ext_data_for_changelog['CheckCommand'] = [
-                            'id'   => $commandId,
-                            'name' => $commandName,
-                        ];
-                    }
-                    unset($commandsForChangelog);
+                /** @var $Commands CommandsTable */
+                $Commands = TableRegistry::getTableLocator()->get('Commands');
+                $commandsForChangelog = $Commands->getCommandByIdAsList($this->request->data['Servicetemplate']['command_id']);
+                foreach ($commandsForChangelog as $commandId => $commandName) {
+                    $ext_data_for_changelog['CheckCommand'] = [
+                        'id'   => $commandId,
+                        'name' => $commandName,
+                    ];
                 }
+                unset($commandsForChangelog);
             }
 
             if ($this->request->data('Servicetemplate.eventhandler_command_id') && $this->request->data('Servicetemplate.eventhandler_command_id') > 0) {
-                if ($eventHandlerCommandsForChangelog = $this->Command->find('list', [
-                    'conditions' => [
-                        'Command.id' => $this->request->data['Servicetemplate']['eventhandler_command_id'],
-                    ],
-                ])
-                ) {
-                    foreach ($eventHandlerCommandsForChangelog as $eventHandlerCommandId => $eventHandlerCommandName) {
-                        $ext_data_for_changelog['EventhandlerCommand'] = [
-                            'id'   => $eventHandlerCommandId,
-                            'name' => $eventHandlerCommandName,
-                        ];
-                    }
-                    unset($eventHandlerCommandsForChangelog);
+                /** @var $Commands CommandsTable */
+                $Commands = TableRegistry::getTableLocator()->get('Commands');
+                $eventHandlerCommandsForChangelog = $Commands->getCommandByIdAsList($this->request->data['Servicetemplate']['eventhandler_command_id']);
+                foreach ($eventHandlerCommandsForChangelog as $eventHandlerCommandId => $eventHandlerCommandName) {
+                    $ext_data_for_changelog['EventhandlerCommand'] = [
+                        'id'   => $eventHandlerCommandId,
+                        'name' => $eventHandlerCommandName,
+                    ];
                 }
+                unset($eventHandlerCommandsForChangelog);
             }
 
             //Checks if the user deletes a customvariable/macro over the trash icon
@@ -654,8 +645,11 @@ class ServicetemplatesController extends AppController {
 
         $userContainerId = $this->Auth->user('container_id');
 
-        $commands = $this->Command->serviceCommands('list');
-        $eventhandlers = $this->Command->eventhandlerCommands('list');
+        /** @var $CommandsTable CommandsTable */
+        $CommandsTable = TableRegistry::getTableLocator()->get('Commands');
+        $commands = $CommandsTable->getCommandByTypeAsList(CHECK_COMMAND);
+        $eventhandlers = $CommandsTable->getCommandByTypeAsList(EVENTHANDLER_COMMAND);
+
 
         if ($this->hasRootPrivileges === true) {
             $containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_SERVICETEMPLATE, [], $this->hasRootPrivileges, [CT_SERVICETEMPLATEGROUP]);
@@ -794,37 +788,29 @@ class ServicetemplatesController extends AppController {
                 }
             }
             if ($this->request->data('Servicetemplate.command_id')) {
-                if ($commandsForChangelog = $this->Command->find('list', [
-                    'conditions' => [
-                        'Command.id' => $this->request->data['Servicetemplate']['command_id'],
-                    ],
-                ])
-                ) {
-                    foreach ($commandsForChangelog as $commandId => $commandName) {
-                        $ext_data_for_changelog['CheckCommand'] = [
-                            'id'   => $commandId,
-                            'name' => $commandName,
-                        ];
-                    }
-                    unset($commandsForChangelog);
+                /** @var $Commands CommandsTable */
+                $Commands = TableRegistry::getTableLocator()->get('Commands');
+                $commandsForChangelog = $Commands->getCommandByIdAsList($this->request->data['Servicetemplate']['command_id']);
+                foreach ($commandsForChangelog as $commandId => $commandName) {
+                    $ext_data_for_changelog['CheckCommand'] = [
+                        'id'   => $commandId,
+                        'name' => $commandName,
+                    ];
                 }
+                unset($commandsForChangelog);
             }
 
             if ($this->request->data('Servicetemplate.eventhandler_command_id')) {
-                if ($commandsForChangelog = $this->Command->find('list', [
-                    'conditions' => [
-                        'Command.id' => $this->request->data['Servicetemplate']['eventhandler_command_id'],
-                    ],
-                ])
-                ) {
-                    foreach ($commandsForChangelog as $commandId => $commandName) {
-                        $ext_data_for_changelog['EventhandlerCommand'] = [
-                            'id'   => $commandId,
-                            'name' => $commandName,
-                        ];
-                    }
-                    unset($commandsForChangelog);
+                /** @var $Commands CommandsTable */
+                $Commands = TableRegistry::getTableLocator()->get('Commands');
+                $commandsForChangelog = $Commands->getCommandByIdAsList($this->request->data['Servicetemplate']['eventhandler_command_id']);
+                foreach ($commandsForChangelog as $commandId => $commandName) {
+                    $ext_data_for_changelog['EventhandlerCommand'] = [
+                        'id'   => $commandId,
+                        'name' => $commandName,
+                    ];
                 }
+                unset($commandsForChangelog);
             }
 
             $this->request->data['Servicetemplate']['uuid'] = $this->Servicetemplate->createUUID();
@@ -1494,12 +1480,9 @@ class ServicetemplatesController extends AppController {
         ]);
         //Checking if the servicetemplade has own arguments defined
         if (empty($commandarguments)) {
-            $commandarguments = $this->Commandargument->find('all', [
-                'recursive'  => -1,
-                'conditions' => [
-                    'Commandargument.command_id' => $command_id,
-                ],
-            ]);
+            /** @var $CommandargumentsTable CommandargumentsTable */
+            $CommandargumentsTable = TableRegistry::getTableLocator()->get('Commandarguments');
+            $commandarguments = $CommandargumentsTable->getByCommandId($command_id);
         }
 
         $this->set('commandarguments', $commandarguments);
@@ -1537,17 +1520,11 @@ class ServicetemplatesController extends AppController {
 
     public function loadArgumentsAdd($command_id = null) {
         $this->allowOnlyAjaxRequests();
-        $this->loadModel('Commandargument');
 
-        //Deleting associations that we dont get values of other hosttemplates
-        $this->Commandargument->unbindModel(
-            ['hasOne' => ['Servicetemplatecommandargumentvalue', 'Servicecommandargumentvalue', 'Hosttemplatecommandargumentvalue', 'Hostcommandargumentvalue']]
-        );
-        $commandarguments = $this->Commandargument->find('all', [
-            'conditions' => [
-                'Commandargument.command_id' => $command_id,
-            ],
-        ]);
+
+        /** @var $CommandargumentsTable CommandargumentsTable */
+        $CommandargumentsTable = TableRegistry::getTableLocator()->get('Commandarguments');
+        $commandarguments = $CommandargumentsTable->getByCommandId($command_id);
 
         $this->set('commandarguments', $commandarguments);
         $this->render('load_arguments');
@@ -1555,17 +1532,10 @@ class ServicetemplatesController extends AppController {
 
     public function loadNagArgumentsAdd($command_id = null) {
         $this->allowOnlyAjaxRequests();
-        $this->loadModel('Commandargument');
 
-        //Deleting associations that we dont get values of other hosttemplates
-        $this->Commandargument->unbindModel(
-            ['hasOne' => ['Servicetemplatecommandargumentvalue', 'Servicecommandargumentvalue', 'Hosttemplatecommandargumentvalue', 'Hostcommandargumentvalue']]
-        );
-        $commandarguments = $this->Commandargument->find('all', [
-            'conditions' => [
-                'Commandargument.command_id' => $command_id,
-            ],
-        ]);
+        /** @var $CommandargumentsTable CommandargumentsTable */
+        $CommandargumentsTable = TableRegistry::getTableLocator()->get('Commandarguments');
+        $commandarguments = $CommandargumentsTable->getByCommandId($command_id);
 
         $this->set('commandarguments', $commandarguments);
         $this->render('load_nag_arguments');
@@ -1587,12 +1557,9 @@ class ServicetemplatesController extends AppController {
         $test = [];
         $commandarguments = [];
         if ($command_id) {
-            $commandarguments = $this->Commandargument->find('all', [
-                'recursive'  => -1,
-                'conditions' => [
-                    'Commandargument.command_id' => $command_id,
-                ],
-            ]);
+            /** @var $CommandargumentsTable CommandargumentsTable */
+            $CommandargumentsTable = TableRegistry::getTableLocator()->get('Commandarguments');
+            $commandarguments = $CommandargumentsTable->getByCommandId($command_id);
             foreach ($commandarguments as $key => $commandargument) {
                 if ($servicetemplate_id) {
                     $servicetemplate_command_argument_value = $this->Servicetemplatecommandargumentvalue->find('first', [
@@ -1629,12 +1596,9 @@ class ServicetemplatesController extends AppController {
         $test = [];
         $commandarguments = [];
         if ($command_id) {
-            $commandarguments = $this->Commandargument->find('all', [
-                'recursive'  => -1,
-                'conditions' => [
-                    'Commandargument.command_id' => $command_id,
-                ],
-            ]);
+            /** @var $CommandargumentsTable CommandargumentsTable */
+            $CommandargumentsTable = TableRegistry::getTableLocator()->get('Commandarguments');
+            $commandarguments = $CommandargumentsTable->getByCommandId($command_id);
             foreach ($commandarguments as $key => $commandargument) {
                 if ($servicetemplate_id) {
                     $servicetemplate_command_argument_value = $this->Servicetemplateeventcommandargumentvalue->find('first', [

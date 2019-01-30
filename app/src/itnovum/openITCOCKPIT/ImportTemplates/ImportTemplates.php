@@ -24,6 +24,9 @@
 
 namespace itnovum\openITCOCKPIT\ImportTemplates;
 
+use App\Model\Table\CommandsTable;
+use Cake\ORM\TableRegistry;
+
 class ImportTemplates {
     public $mapping = [];
     //root path for json and check files
@@ -237,11 +240,10 @@ class ImportTemplates {
      * @return void
      */
     private function mapCommandArgs($commandId) {
-        $commands = $this->Command->find('all', [
-            'conditions' => [
-                'id' => $commandId,
-            ],
-        ]);
+        /** @var $CommandsTable CommandsTable */
+        $CommandsTable = TableRegistry::getTableLocator()->get('Commands');
+        $commands = $CommandsTable->getCommandByIds($commandId);
+
         $commandargIds = \Hash::filter(\Hash::extract($commands, '{n}.Commandargument.{n}.id'));
         $this->mapping['Commandarguments'][$commandId] = $commandargIds;
     }
