@@ -61,7 +61,7 @@ class CronjobsController extends AppController {
         $Cronjobs = TableRegistry::getTableLocator()->get('Cronjobs');
         $include = $this->request->query('include');
         $pluginName = 'Core';
-        if($this->request->query('pluginName') != null || $this->request->query('pluginName') != ''){
+        if ($this->request->query('pluginName') != null || $this->request->query('pluginName') != '') {
             $pluginName = $this->request->query('pluginName');
         }
 
