@@ -31,7 +31,7 @@
     <i class="fa fa-refresh fa-lg"></i>
 </span>
 <?php endif; ?>
-<?php if ($this->Acl->hasPermission('view', 'documentations') && $service['Service']['service_type'] == GENERIC_SERVICE): ?>
+<?php if ($this->Acl->hasPermission('view', 'documentations')): ?>
     <span style="position:relative;">
         <a href="/documentations/view/<?php echo $service['Service']['uuid']; ?>/service"
            data-original-title="<?php echo __('Documentation'); ?>" data-placement="bottom" rel="tooltip"
