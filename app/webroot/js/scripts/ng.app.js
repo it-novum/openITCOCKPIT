@@ -174,7 +174,12 @@ angular.module('openITCOCKPIT', ['gridster'])
 
     .filter('highlight', function($sce){
         return function(title, searchString){
-            if(searchString) title = title.replace(new RegExp('(' + searchString + ')', 'gi'),
+            searchString = searchString.replace(/\s/g, "");
+            let newSearchString = "";
+            for (var i = 0; i < searchString.length; i++) {
+                newSearchString += searchString.charAt(i)+"\\s*";
+            }
+            if(searchString) title = title.replace(new RegExp('(' + newSearchString + ')', 'gi'),
                 '<span class="search-highlight">$1</span>');
 
             return $sce.trustAsHtml(title)
