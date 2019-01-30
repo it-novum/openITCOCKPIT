@@ -26,7 +26,6 @@
 
 use App\Model\Table\CommandsTable;
 use App\Model\Table\MacrosTable;
-use Cake\ORM\Locator\LocatorAwareTrait;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\KeyValueStore;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
@@ -35,7 +34,6 @@ use itnovum\openITCOCKPIT\Filter\CommandsFilter;
 class CommandsController extends AppController {
     public $uses = ['Command', 'Commandargument'];
     public $layout = 'Admin.default';
-    use LocatorAwareTrait;
 
 
     public function index() {
@@ -84,8 +82,8 @@ class CommandsController extends AppController {
             return;
         }
 
-        $TableLocator = $this->getTableLocator();
-        $Commands = $TableLocator->get('Commands');
+        /** @var $Commands CommandsTable */
+        $Commands = TableRegistry::getTableLocator()->get('Commands');
 
         if ($this->request->is('post') && $this->isAngularJsRequest()) {
             $command = $Commands->newEntity();
@@ -123,7 +121,6 @@ class CommandsController extends AppController {
             }
             $this->set('command', $command);
             $this->set('_serialize', ['command']);
-
         }
     }
 

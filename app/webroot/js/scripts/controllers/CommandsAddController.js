@@ -105,5 +105,5 @@ angular.module('openITCOCKPIT')
             };
             newLineInPromt();
         };
-        $scope.createJQConsole();
+        setTimeout($scope.createJQConsole, 250);
     });
