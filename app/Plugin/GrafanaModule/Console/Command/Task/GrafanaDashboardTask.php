@@ -141,12 +141,17 @@ class GrafanaDashboardTask extends AppShell implements CronjobInterface {
 
                 if ($response->getStatusCode() == 200) {
                     $this->out('<success>Dashboard for host with id ' . $id . ' created</success>');
+
+                    $responseBody = $response->getBody()->getContents();
+                    $responseBody = json_decode($responseBody, true);
+
                     $this->GrafanaDashboard->create();
                     $this->GrafanaDashboard->save([
                         'GrafanaDashboard' => [
                             'configuration_id' => 1,
                             'host_id'          => $id,
-                            'host_uuid'        => $hostData['uuid']
+                            'host_uuid'        => $hostData['uuid'],
+                            'grafana_uid'      => $responseBody['uid']
                         ]
                     ]);
                 }

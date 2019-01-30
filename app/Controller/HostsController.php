@@ -3701,8 +3701,17 @@ class HostsController extends AppController {
             $grafanaConfiguration = $this->GrafanaConfiguration->find('first');
             if (!empty($grafanaConfiguration) && $this->GrafanaDashboard->existsForUuid($hostUuid)) {
                 $GrafanaDashboardExists = true;
+                $dashboardFromDatabase = $this->GrafanaDashboard->find('first', [
+                    'conditions' => [
+                        'GrafanaDashboard.host_uuid' => $hostUuid
+                    ]
+                ]);
+
                 $GrafanaConfiguration = \itnovum\openITCOCKPIT\Grafana\GrafanaApiConfiguration::fromArray($grafanaConfiguration);
                 $GrafanaConfiguration->setHostUuid($hostUuid);
+                if (isset($dashboardFromDatabase['GrafanaDashboard']['grafana_uid'])) {
+                    $GrafanaConfiguration->setGrafanaUid($dashboardFromDatabase['GrafanaDashboard']['grafana_uid']);
+                }
                 $this->set('iframeUrl', $GrafanaConfiguration->getIframeUrlForDatepicker($timerange, $refresh));
             }
         }

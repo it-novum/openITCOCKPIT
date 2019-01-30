@@ -59,7 +59,12 @@ class GrafanaTargetCollection {
             /**
              * @var GrafanaTarget $grafanaTarget
              */
-            $refId = $this->abc[$key];
+            if(isset($this->abc[$key])){
+                $refId = $this->abc[$key];
+            }else{
+                $refId = sprintf('A%s', $key);
+            }
+
             $target = [
                 'refId' => $refId,
             ];

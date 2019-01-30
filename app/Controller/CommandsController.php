@@ -26,6 +26,7 @@
 
 use App\Model\Table\CommandsTable;
 use App\Model\Table\MacrosTable;
+use Cake\ORM\Locator\LocatorAwareTrait;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\KeyValueStore;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
@@ -34,6 +35,7 @@ use itnovum\openITCOCKPIT\Filter\CommandsFilter;
 class CommandsController extends AppController {
     public $uses = ['Command', 'Commandargument'];
     public $layout = 'Admin.default';
+    use LocatorAwareTrait;
 
 
     public function index() {
@@ -76,47 +78,52 @@ class CommandsController extends AppController {
     }
 
     public function add() {
-        $userId = $this->Auth->user('id');
-        $this->Frontend->setJson('console_welcome', $this->Command->getConsoleWelcome($this->systemname));
-        $this->set('command_types', $this->getCommandTypes());
+        $this->layout = 'angularjs';
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
+            return;
+        }
 
-        if ($this->request->is('post') || $this->request->is('put')) {
-            $this->request->data['Command']['uuid'] = UUID::v4();
-            $this->request->data = $this->rewritePostData();
+        $TableLocator = $this->getTableLocator();
+        $Commands = $TableLocator->get('Commands');
 
-            if ($this->Command->saveAll($this->request->data)) {
-                $changeLogData = $this->Changelog->parseDataForChangelog(
-                    $this->params['action'],
+        if ($this->request->is('post') && $this->isAngularJsRequest()) {
+            $command = $Commands->newEntity();
+
+            $command = $Commands->patchEntity($command, $this->request->data('Command'));
+            $command->set('uuid', UUID::v4());
+
+            $Commands->save($command);
+            if ($command->hasErrors()) {
+                $this->response->statusCode(400);
+                $this->set('error', $command->getErrors());
+                $this->set('_serialize', ['error']);
+                return;
+            } else {
+                //No errors
+                $userId = $this->Auth->user('id');
+                $requestData = $this->request->data;
+                $changelog_data = $this->Changelog->parseDataForChangelog(
+                    'add',
                     $this->params['controller'],
-                    $this->Command->id,
+                    $command->get('id'),
                     OBJECT_COMMAND,
                     [ROOT_CONTAINER],
                     $userId,
-                    $this->request->data['Command']['name'],
-                    $this->request->data
+                    $requestData['Command']['name'],
+                    $requestData
                 );
-                if ($changeLogData) {
-                    CakeLog::write('log', serialize($changeLogData));
+                if ($changelog_data) {
+                    CakeLog::write('log', serialize($changelog_data));
                 }
-
                 if ($this->request->ext == 'json') {
                     $this->serializeId(); // REST API ID serialization
                     return;
                 }
-
-                // Redirect normal browser POST requests only, not for REST API requests
-                $this->setFlash(__('<a href="/commands/edit/%s">Command</a> created successfully', $this->Command->id));
-                $redirect = $this->Command->redirect($this->request->params, ['action' => 'index']);
-                $this->redirect($redirect);
-            } else {
-                if ($this->request->ext == 'json') {
-                    $this->serializeErrorMessage();
-
-                    return;
-                }
-
-                $this->setFlash(__('Could not save data'), false);
             }
+            $this->set('command', $command);
+            $this->set('_serialize', ['command']);
+
         }
     }
 
@@ -381,10 +388,14 @@ class CommandsController extends AppController {
     }
 
 
-    private function getConsoleWelcome() {
-        return "This is a terminal connected to your " . $this->systemname . " " .
+    public function getConsoleWelcome() {
+        $welcomeMessage = "This is a terminal connected to your " . $this->systemname . " " .
             "Server, this is very powerful to test and debug plugins.\n" .
             "User: \033[31mnagios\033[0m\nPWD: \033[35m/opt/openitc/nagios/libexec/\033[0m\n\n";
+
+        $this->set('welcomeMessage', $welcomeMessage);
+        $this->set('_serialize', ['welcomeMessage']);
+
     }
 
     //ALC permission
@@ -473,7 +484,7 @@ class CommandsController extends AppController {
                     $newCommandEntity = $Commands->newEntity($newCommandData);
                 }
 
-                $action = 'add';
+                $action = 'copy';
                 if (isset($commandData['Command']['id'])) {
                     //Update existing command
                     //This happens, if a user copy multiple commands, and one run into an validation error
@@ -482,10 +493,7 @@ class CommandsController extends AppController {
                     $newCommandEntity = $Commands->patchEntity($newCommandEntity, $commandData['Command']);
                     $action = 'edit';
                 }
-
-
                 $Commands->save($newCommandEntity);
-
 
                 $postData[$index]['Error'] = [];
                 if ($newCommandEntity->hasErrors()) {
@@ -504,7 +512,7 @@ class CommandsController extends AppController {
                         [ROOT_CONTAINER],
                         $userId,
                         $postData[$index]['Command']['name'],
-                        $postData[$index]
+                        ['Command' => $newCommandData]
                     );
                     if ($changelog_data) {
                         CakeLog::write('log', serialize($changelog_data));
@@ -518,85 +526,6 @@ class CommandsController extends AppController {
         }
         $this->set('result', $postData);
         $this->set('_serialize', ['result']);
-
-        return;
-
-        $userId = $this->Auth->user('id');
-        $commands = $this->Command->find('all', [
-            'resursive'  => -1,
-            'contain'    => [
-                'Commandargument' => [
-                    'fields' => [
-                        'Commandargument.name',
-                        'Commandargument.human_name'
-                    ]
-                ]
-            ],
-            'conditions' => [
-                'Command.id' => func_get_args(),
-            ],
-            'fields'     => [
-                'Command.name',
-                'Command.command_line',
-                'Command.description',
-                'Command.command_type'
-            ]
-        ]);
-        $commands = Hash::combine($commands, '{n}.Command.id', '{n}');
-        $commands = Hash::remove($commands, '{n}.Commandargument.{n}.command_id'); //clean up source command id
-        if ($this->request->is('post') || $this->request->is('put')) {
-            $datasource = $this->Command->getDataSource();
-            try {
-                $datasource->begin();
-                foreach ($this->request->data['Command'] as $sourceCommandId => $newCommand) {
-                    $newCommandArgs = [];
-                    if (!empty($commands[$sourceCommandId]['Commandargument'])) {
-                        $newCommandArgs = $commands[$sourceCommandId]['Commandargument'];
-                    }
-                    $newCommandData = [
-                        'Command'         => [
-                            'uuid'         => UUID::v4(),
-                            'name'         => $newCommand['name'],
-                            'command_line' => $newCommand['command_line'],
-                            'command_type' => $commands[$sourceCommandId]['Command']['command_type'],
-                            'description'  => $newCommand['description'],
-                        ],
-                        'Commandargument' => $newCommandArgs,
-                    ];
-
-                    $this->Command->create();
-                    if (!$this->Command->saveAll($newCommandData)) {
-                        throw new Exception('Some of the Commands could not be copied');
-                    }
-                    $changeLogData = $this->Changelog->parseDataForChangelog(
-                        $this->params['action'],
-                        $this->params['controller'],
-                        $this->Command->id,
-                        OBJECT_COMMAND,
-                        [ROOT_CONTAINER],
-                        $userId,
-                        $newCommand['name'],
-                        $newCommandData
-                    );
-                    if ($changeLogData) {
-                        CakeLog::write('log', serialize($changeLogData));
-                    }
-                }
-
-                $datasource->commit();
-                $this->setFlash(__('Commands are successfully copied'));
-                $this->redirect(['action' => 'index']);
-
-            } catch (Exception $e) {
-                $datasource->rollback();
-                $this->setFlash(__($e->getMessage()), false);
-                $this->redirect(['action' => 'index']);
-            }
-
-        }
-
-        $this->set(compact('commands'));
-        $this->set('back_url', $this->referer());
     }
 }
 

@@ -38,7 +38,7 @@ class Changelog extends AppModel {
         $_objectDefaults = [
             'command'              => [
                 'Command'         => '{(command_type|name|description|command_line)}',
-                'Commandargument' => '{n}.{(id|name|human_name)}',
+                'Command.commandarguments' => '{n}.{(id|name|human_name)}',
             ],
             /*'devicegroup' => [
                 'Devicegroup' => '{(description)}',

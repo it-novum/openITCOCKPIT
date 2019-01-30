@@ -65,6 +65,8 @@ class NagiosCfg extends ConfigGenerator implements ConfigInterface {
             'check_host_freshness'    => 1,
             'check_service_freshness' => 1,
 
+            'use_aggressive_host_checking' => 1,
+
             'statusengine_use_log_data' => 1,
             'statusengine_enable_ochp'  => 0,
             'statusengine_enable_ocsp'  => 0,
@@ -155,6 +157,8 @@ class NagiosCfg extends ConfigGenerator implements ConfigInterface {
             'log_external_commands' => 'If you don\'t want Naemon/Nagios to log external commands, set this value to 0.  If external commands should be logged, set this value to 1. Note: This option does not include logging of passive service checks - see the option below for controlling whether or not passive checks are logged. Enabling this feature could has a HIGH PERFORMANCE IMPACT!',
             'log_passive_checks'    => 'If you don\'t want Naemon/Nagios to log passive host and service checks, set this value to 0.  If passive checks should be logged, set this value to 1. Enabling this feature could has a HIGH PERFORMANCE IMPACT!',
 
+            'use_aggressive_host_checking' => 'If you don\'t want to turn on aggressive host checking features, set this value to 0 (the default).  Otherwise set this value to 1 to enable the aggressive check option.  Read the docs for more info on what aggressive host check is or check out the source code in base/checks.c',
+
             'max_concurrent_checks' => 'This option allows you to specify the maximum number of service checks that can be run in parallel at any given time. Specifying a value of 1 for this variable essentially prevents any service checks from being parallelized.  A value of 0 will not restrict the number of concurrent checks that are being executed. Changing this value could has a HIGH PERFORMANCE IMPACT!',
 
             'enable_notifications'    => 'This determines whether or not Naemon/Nagios will sent out any host or service notifications when it is initially (re)started. Values: 1 = enable notifications, 0 = disable notifications',
@@ -235,7 +239,7 @@ class NagiosCfg extends ConfigGenerator implements ConfigInterface {
         $file = $this->realOutfile;
 
         if (!file_exists($file)) {
-            if(!file_exists($this->linkedOutfile)) {
+            if (!file_exists($this->linkedOutfile)) {
                 return false;
             }
             $file = $this->linkedOutfile;
