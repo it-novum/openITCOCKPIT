@@ -32,6 +32,9 @@ if(!defined('WWW_ROOT')) {
 
 require_once OLD_APP . 'Config' . DS . 'database.php';
 
+
+
+
 /*
  * Bootstrap CakePHP.
  *
@@ -58,7 +61,10 @@ use Cake\Mailer\Email;
 use Cake\Mailer\TransportFactory;
 use Cake\Utility\Inflector;
 use Cake\Utility\Security;
+use App\Lib\Constants;
 
+//Define openITCOCKPIT constants
+$Constnats = new Constants();
 
 /*
  * Read configuration file and inject configuration into various

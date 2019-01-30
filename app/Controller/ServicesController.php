@@ -23,6 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use App\Model\Table\CommandargumentsTable;
 use App\Model\Table\CommandsTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AcknowledgedServiceConditions;
@@ -64,7 +65,6 @@ use Statusengine\PerfdataParser;
  * @property Host $Host
  * @property Servicetemplate $Servicetemplate
  * @property Servicegroup $Servicegroup
- * @property Commandargument $Commandargument
  * @property Timeperiod $Timeperiod
  * @property Contact $Contact
  * @property Contactgroup $Contactgroup
@@ -104,7 +104,6 @@ class ServicesController extends AppController {
         'Servicetemplate',
         'Servicegroup',
         'Command',
-        'Commandargument',
         'Timeperiod',
         'Contact',
         'Contactgroup',
@@ -856,6 +855,8 @@ class ServicesController extends AppController {
 
         /** @var $CommandsTable CommandsTable */
         $CommandsTable = TableRegistry::getTableLocator()->get('Commands');
+        /** @var $CommandargumentsTable CommandargumentsTable */
+        $CommandargumentsTable = TableRegistry::getTableLocator()->get('Commandarguments');
 
         $userContainerId = $this->Auth->user('container_id');
         $hosts = $this->Host->find('list');
@@ -870,18 +871,8 @@ class ServicesController extends AppController {
         $eventhandlers = $CommandsTable->getCommandByTypeAsList(EVENTHANDLER_COMMAND);
         $servicegroups = $this->Servicegroup->servicegroupsByContainerId($containerIds, 'list', 'id');
         //Fehlende bzw. neu angelegte CommandArgummente ermitteln und anzeigen
-        $commandarguments = $this->Commandargument->find('all', [
-            'recursive'  => -1,
-            'conditions' => [
-                'Commandargument.command_id' => $service['Service']['command_id'],
-            ],
-        ]);
-        $eventhandler_commandarguments = $this->Commandargument->find('all', [
-            'recursive'  => -1,
-            'conditions' => [
-                'Commandargument.command_id' => $service['Service']['eventhandler_command_id'],
-            ],
-        ]);
+        $commandarguments = $CommandargumentsTable->getByCommandId($service['Service']['command_id']);
+        $eventhandler_commandarguments = $CommandargumentsTable->getByCommandId($service['Service']['command_id']);
         $contacts_for_changelog = [];
         foreach ($service['Contact'] as $contact_id) {
             if (isset($contacts[$contact_id])) {
@@ -1747,12 +1738,9 @@ class ServicesController extends AppController {
 
         $commandarguments = [];
         if ($command_id) {
-            $commandarguments = $this->Commandargument->find('all', [
-                'recursive'  => -1,
-                'conditions' => [
-                    'Commandargument.command_id' => $command_id,
-                ],
-            ]);
+            /** @var $CommandargumentsTable CommandargumentsTable */
+            $CommandargumentsTable = TableRegistry::getTableLocator()->get('Commandarguments');
+            $commandarguments = $CommandargumentsTable->getByCommandId($command_id);
             foreach ($commandarguments as $key => $commandargument) {
                 if ($servicetemplate_id) {
                     $servicemteplate_command_argument_value = $this->Servicetemplatecommandargumentvalue->find('first', [
@@ -1786,12 +1774,9 @@ class ServicesController extends AppController {
         $test = [];
         $commandarguments = [];
         if ($command_id) {
-            $commandarguments = $this->Commandargument->find('all', [
-                'recursive'  => -1,
-                'conditions' => [
-                    'Commandargument.command_id' => $command_id,
-                ],
-            ]);
+            /** @var $CommandargumentsTable CommandargumentsTable */
+            $CommandargumentsTable = TableRegistry::getTableLocator()->get('Commandarguments');
+            $commandarguments = $CommandargumentsTable->getByCommandId($command_id);
             foreach ($commandarguments as $key => $commandargument) {
                 if ($servicetemplate_id) {
                     $servicemteplate_command_argument_value = $this->Servicetemplateeventcommandargumentvalue->find('first', [
@@ -1821,14 +1806,11 @@ class ServicesController extends AppController {
 
     public function loadArgumentsAdd($command_id = null) {
         $this->allowOnlyAjaxRequests();
-        $this->loadModel('Commandargument');
 
-        $commandarguments = $this->Commandargument->find('all', [
-            'recursive'  => -1,
-            'conditions' => [
-                'Commandargument.command_id' => $command_id,
-            ],
-        ]);
+        /** @var $CommandargumentsTable CommandargumentsTable */
+        $CommandargumentsTable = TableRegistry::getTableLocator()->get('Commandarguments');
+        $commandarguments = $CommandargumentsTable->getByCommandId($command_id);
+
 
         $this->set('commandarguments', $commandarguments);
         $this->render('load_arguments');
@@ -1844,7 +1826,6 @@ class ServicesController extends AppController {
             throw new NotFoundException(__('Invalid servicetemplate'));
         }
 
-        $this->loadModel('Commandargument');
         $this->loadModel('Servicetemplatecommandargumentvalue');
         $commandarguments = $this->Servicetemplatecommandargumentvalue->find('all', [
             'conditions' => [

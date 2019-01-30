@@ -39,7 +39,7 @@ class AdministratorsController extends AppController {
 
     function debug() {
         $this->loadModel('Systemsetting');
-        $this->loadModel('Cronjob');
+        //$this->loadModel('Cronjob');
         $this->loadModel('Register');
 
 
@@ -62,17 +62,30 @@ class AdministratorsController extends AppController {
         }
         $this->set('isGearmanWorkerRunning', $isGearmanWorkerRunning);
 
+        /** @var CronjobsTable $Cronjobs */
+        $Cronjobs = TableRegistry::getTableLocator()->get('Cronjobs');
 
         //Check if load cronjob exists
-        if (!$this->Cronjob->checkForCronjob('CpuLoad', 'Core')) {
+        if (!$Cronjobs->checkForCronjob('CpuLoad', 'Core')) {
             //Cron does not exists, so we create it
-            $this->Cronjob->add('CpuLoad', 'Core', 15);
+            $newCron = $Cronjobs->newEntity([
+                'task'     => 'CpuLoad',
+                'plugin'   => 'Core',
+                'interval' => 15,
+                'enabled'  => 1
+            ]);
+
+            $Cronjobs->save($newCron);
+
+            if ($newCron->hasErrors()) {
+            }
+
         }
 
         $Registers = TableRegistry::getTableLocator()->get('Registers');
         $License = $Registers->getLicense();
         $isEnterprise = false;
-        if(!empty($License)){
+        if (!empty($License)) {
             $isEnterprise = true;
         }
 

@@ -24,6 +24,7 @@
 //	confirmation.
 
 use App\Model\Table\CommandsTable;
+use App\Model\Table\ContainersTable;
 use Cake\ORM\TableRegistry;
 
 class TestingShell extends AppShell {
@@ -53,7 +54,8 @@ class TestingShell extends AppShell {
         'Servicecommandargumentvalue',
         'Aro',
         'Aco',
-        'Calendar'
+        'Calendar',
+        'Container'
     ];
 
     public function main() {
@@ -68,9 +70,16 @@ class TestingShell extends AppShell {
          * Lof of space for your experimental code :)
          */
 
-        /** @var $Commands CommandsTable */
-        $Commands = TableRegistry::getTableLocator()->get('Commands');
-        debug($Commands->getCommandUuidByCommandId(1));
+        /** @var $Containers ContainersTable */
+        $Containers = TableRegistry::getTableLocator()->get('Containers');
+        debug($Containers->get(1)->toArray());
+
+        debug($this->Container->find('first', [
+            'recursive' => -1,
+            'conditions' => [
+                'Container.id' => 1
+            ]
+        ]));
 
 
     }

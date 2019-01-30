@@ -24,6 +24,7 @@
 //	confirmation.
 
 
+use App\Model\Table\CommandargumentsTable;
 use App\Model\Table\CommandsTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AcknowledgedHostConditions;
@@ -59,7 +60,6 @@ use itnovum\openITCOCKPIT\Monitoring\QueryHandler;
 /**
  * @property Host $Host
  * @property Documentation $Documentation
- * @property Commandargument $Commandargument
  * @property Hosttemplatecommandargumentvalue $Hosttemplatecommandargumentvalue
  * @property Hostcommandargumentvalue $Hostcommandargumentvalue
  * @property Contact $Contact
@@ -102,7 +102,6 @@ class HostsController extends AppController {
         MONITORING_SERVICESTATUS,
         MONITORING_OBJECTS,
         'Documentation',
-        'Commandargument',
         'Hosttemplatecommandargumentvalue',
         'Hostcommandargumentvalue',
         'Contact',
@@ -581,12 +580,9 @@ class HostsController extends AppController {
         }
 
         //Fehlende bzw. neu angelegte CommandArgummente ermitteln und anzeigen
-        $commandarguments = $this->Commandargument->find('all', [
-            'recursive'  => -1,
-            'conditions' => [
-                'Commandargument.command_id' => $host['Host']['command_id'],
-            ],
-        ]);
+        /** @var $CommandargumentsTable CommandargumentsTable */
+        $CommandargumentsTable = TableRegistry::getTableLocator()->get('Commandarguments');
+        $commandarguments = $CommandargumentsTable->getByCommandId($host['Host']['command_id']);
 
         $contacts_for_changelog = [];
         foreach ($host['Contact'] as $contact_id) {
@@ -2718,12 +2714,9 @@ class HostsController extends AppController {
         $test = [];
         $commandarguments = [];
         if ($command_id) {
-            $commandarguments = $this->Commandargument->find('all', [
-                'recursive'  => -1,
-                'conditions' => [
-                    'Commandargument.command_id' => $command_id,
-                ],
-            ]);
+            /** @var $CommandargumentsTable CommandargumentsTable */
+            $CommandargumentsTable = TableRegistry::getTableLocator()->get('Commandarguments');
+            $commandarguments = $CommandargumentsTable->getByCommandId($command_id);
             //print_r($commandarguments);
             foreach ($commandarguments as $key => $commandargument) {
                 if ($hosttemplate_id) {
@@ -2764,13 +2757,9 @@ class HostsController extends AppController {
 
         //Checking if the hosttemplade has own arguments defined
         if (empty($commandarguments)) {
-
-            $commandarguments = $this->Commandargument->find('all', [
-                'recursive'  => -1,
-                'conditions' => [
-                    'Commandargument.command_id' => $command_id,
-                ],
-            ]);
+            /** @var $CommandargumentsTable CommandargumentsTable */
+            $CommandargumentsTable = TableRegistry::getTableLocator()->get('Commandarguments');
+            $commandarguments = $CommandargumentsTable->getByCommandId($command_id);
         }
 
         $this->set('commandarguments', $commandarguments);
@@ -2781,13 +2770,10 @@ class HostsController extends AppController {
             throw new MethodNotAllowedException();
         }
 
-        $commandarguments = [];
-        $commandarguments = $this->Commandargument->find('all', [
-            'recursive'  => -1,
-            'conditions' => [
-                'Commandargument.command_id' => $command_id,
-            ],
-        ]);
+        /** @var $CommandargumentsTable CommandargumentsTable */
+        $CommandargumentsTable = TableRegistry::getTableLocator()->get('Commandarguments');
+        $commandarguments = $CommandargumentsTable->getByCommandId($command_id);
+
 
         $this->set('commandarguments', $commandarguments);
         $this->render('load_arguments');
@@ -2803,7 +2789,6 @@ class HostsController extends AppController {
             throw new NotFoundException(__('Invalid hosttemplate'));
         }
 
-        $this->loadModel('Commandargument');
         $this->loadModel('Hosttemplatecommandargumentvalue');
         $commandarguments = $this->Hosttemplatecommandargumentvalue->find('all', [
             //	'recursive' => -1,
