@@ -157,11 +157,6 @@ if (ENVIRONMENT === Environments::PRODUCTION) {
 </div>
 
 <?php printf('<script src="/%s"></script>', 'smartadmin/js/app.js'); ?>
-<script>
-    $(document).ready(function(){
-        //pageSetUp();
 
-    });
-</script>
 </body>
 </html>
