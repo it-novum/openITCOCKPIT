@@ -69,15 +69,15 @@ class AdministratorsController extends AppController {
         if (!$Cronjobs->checkForCronjob('CpuLoad', 'Core')) {
             //Cron does not exists, so we create it
             $newCron = $Cronjobs->newEntity([
-                'task' => 'CpuLoad',
-                'plugin' => 'Core',
+                'task'     => 'CpuLoad',
+                'plugin'   => 'Core',
                 'interval' => 15,
-                'enabled' => 1
+                'enabled'  => 1
             ]);
 
             $Cronjobs->save($newCron);
 
-            if($newCron->hasErrors()){
+            if ($newCron->hasErrors()) {
             }
 
         }
@@ -85,7 +85,7 @@ class AdministratorsController extends AppController {
         $Registers = TableRegistry::getTableLocator()->get('Registers');
         $License = $Registers->getLicense();
         $isEnterprise = false;
-        if(!empty($License)){
+        if (!empty($License)) {
             $isEnterprise = true;
         }
 
