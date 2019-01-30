@@ -6,14 +6,14 @@ angular.module('openITCOCKPIT')
                 command_type: '1',
                 command_line: '',
                 description: '',
-                Commandargument: []
+                commandarguments: []
             }
         };
 
         $scope.init = true;
         $scope.hasError = null;
 
-        $scope.args= [];
+        $scope.args = [];
 
         $scope.removeArg = function(arg){
             var args = [];
@@ -34,27 +34,34 @@ angular.module('openITCOCKPIT')
             }
             $scope.args.push({
                 id: argsCount,
-                name: '$ARG'+argsCount,
-                value: ''
+                name: '$ARG' + argsCount,
+                human_name: ''
             });
             $scope.args = _.sortBy($scope.args, 'id');
         }
 
 
         $scope.submit = function(){
-            $scope.post.Command.Commandargument = $scope.args;
-            console.log($scope.post);
-            /*
+            var index = 0;
+            console.log($scope.args);
+            for(var i in $scope.args){
+                if(!/\S/.test($scope.args[i].human_name)){
+                    continue;
+                }
+                $scope.post.Command.commandarguments[index] = {
+                    'name': $scope.args[i].name,
+                    'human_name': $scope.args[i].human_name
+                };
+                index++;
+            }
             $http.post("/commands/add.json?angular=true",
                 $scope.post
             ).then(function(result){
-//                console.log('Data saved successfully');
                 window.location.href = '/commands/index';
             }, function errorCallback(result){
                 if(result.data.hasOwnProperty('error')){
                     $scope.errors = result.data.error;
                 }
             });
-            */
         };
     });
