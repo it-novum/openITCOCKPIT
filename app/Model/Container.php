@@ -23,8 +23,6 @@
 //  License agreement and license key will be shipped with the order
 //  confirmation.
 
-use itnovum\openITCOCKPIT\Core\ContainerConditions;
-
 /**
  * Class Container
  * @mixin TreeBehavior
@@ -146,46 +144,7 @@ class Container extends AppModel {
     */
 
     var $name = 'Container';
-
-    /**
-     * Returns the name and id of the tenant that is the owner of the given container_id
-     * Example:
-     * $id = 5
-     * Return:
-     * [$tenant_contaier_id => tenant name]
-     *
-     * @param int $containerId of the container
-     *
-     * @return array with all path [$tenant_contaier_id] => $tenant_name
-     */
-    public function getTenantByContainer($containerId) {
-        $exists = Cache::remember('ContainerExists:' . $containerId, function () use ($containerId) {
-            return $this->exists($containerId);
-        }, 'migration');
-        if (!$exists) {
-            return null;
-        }
-        $container = Cache::remember('ContainerGetTenantByContainer:' . $containerId, function () use ($containerId) {
-            return $this->find('first', [
-                'recursive'  => -1,
-                'conditions' => [
-                    'id' => $containerId,
-                ],
-            ], 'migration');
-        });
-
-        $possibleContainerTypes = [CT_GLOBAL, CT_TENANT];
-        while (!in_array($container['Container']['containertype_id'], $possibleContainerTypes)) {
-            $container = Cache::remember('ContainerGetTenantByContainerParentNode:' . md5(json_encode($container)), function () use ($container) {
-                return $this->getParentNode($container['Container']['id']);
-            }, 'migration');
-        }
-
-        return [$container['Container']['id'] => $container['Container']['name']];
-    }
-
-
-
+    
     public function isUniqueByObject() {
         if (isset($this->data['Container']['containertype_id']) && in_array($this->data['Container']['containertype_id'], [CT_TENANT])) {
             //return $this->isUnique('name');
