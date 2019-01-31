@@ -9,7 +9,7 @@ return [
      * Development Mode:
      * true: Errors and warnings shown.
      */
-    'debug' => filter_var(env('DEBUG', true), FILTER_VALIDATE_BOOLEAN),
+    'debug'          => filter_var(env('DEBUG', true), FILTER_VALIDATE_BOOLEAN),
 
     /**
      * Configure basic information about the application.
@@ -39,24 +39,24 @@ return [
      *   `plugins`, `templates`, `locales` subkeys, which allow the definition of
      *   paths for plugins, view templates and locale files respectively.
      */
-    'App' => [
-        'namespace' => 'App',
-        'encoding' => 'UTF-8',
-        'defaultLocale' =>  'en_US',
+    'App'            => [
+        'namespace'       => 'App',
+        'encoding'        => 'UTF-8',
+        'defaultLocale'   => 'en_US',
         'defaultTimezone' => 'UTC',
-        'base' => false,
-        'dir' => 'src',
-        'webroot' => 'webroot',
-        'wwwRoot' => WWW_ROOT,
+        'base'            => false,
+        'dir'             => 'src',
+        'webroot'         => 'webroot',
+        'wwwRoot'         => WWW_ROOT,
         //'baseUrl' => env('SCRIPT_NAME'),
-        'fullBaseUrl' => false,
-        'imageBaseUrl' => 'img/',
-        'cssBaseUrl' => 'css/',
-        'jsBaseUrl' => 'js/',
-        'paths' => [
-            'plugins' => [ROOT . DS . 'plugins' . DS],
+        'fullBaseUrl'     => false,
+        'imageBaseUrl'    => 'img/',
+        'cssBaseUrl'      => 'css/',
+        'jsBaseUrl'       => 'js/',
+        'paths'           => [
+            'plugins'   => [ROOT . DS . 'plugins' . DS],
             'templates' => [APP . 'Template' . DS],
-            'locales' => [APP . 'Locale' . DS],
+            'locales'   => [APP . 'Locale' . DS],
         ],
     ],
 
@@ -67,7 +67,7 @@ return [
      *   The salt value is also used as the encryption key.
      *   You should treat it as extremely sensitive data.
      */
-    'Security' => [
+    'Security'       => [
         'salt' => 'cf4515a2c1833f4aed69591f81598da0124cbd460449b2812495a64d8d70aadc'
     ],
 
@@ -79,7 +79,7 @@ return [
      * Set to true to apply timestamps when debug is true. Set to 'force' to always
      * enable timestamping regardless of debug value.
      */
-    'Asset' => [
+    'Asset'          => [
         //'timestamp' => true,
         // 'cacheTime' => '+1 year'
     ],
@@ -87,11 +87,20 @@ return [
     /**
      * Configure the cache adapters.
      */
-    'Cache' => [
+    'Cache'          => [
         'default' => [
             'className' => 'Cake\Cache\Engine\FileEngine',
-            'path' => CACHE,
-            'url' => null
+            'path'      => CACHE,
+            'url'       => null
+        ],
+
+        'migration'     => [
+            'className' => 'Redis',
+            'serialize' => true,
+            'prefix'    => 'oitc_',
+            'duration'  => '+30 minute',
+            'host'      => '127.0.0.1',
+            'port'      => 6379
         ],
 
         /**
@@ -100,13 +109,13 @@ return [
          * Duration will be set to '+2 minutes' in bootstrap.php when debug = true
          * If you set 'className' => 'Null' core cache will be disabled.
          */
-        '_cake_core_' => [
+        '_cake_core_'   => [
             'className' => 'Cake\Cache\Engine\FileEngine',
-            'prefix' => 'myapp_cake_core_',
-            'path' => CACHE . 'persistent/',
+            'prefix'    => 'myapp_cake_core_',
+            'path'      => CACHE . 'persistent/',
             'serialize' => true,
-            'duration' => '+1 years',
-            'url' => env('CACHE_CAKECORE_URL', null),
+            'duration'  => '+1 years',
+            'url'       => env('CACHE_CAKECORE_URL', null),
         ],
 
         /**
@@ -115,13 +124,13 @@ return [
          * in connections.
          * Duration will be set to '+2 minutes' in bootstrap.php when debug = true
          */
-        '_cake_model_' => [
+        '_cake_model_'  => [
             'className' => 'Cake\Cache\Engine\FileEngine',
-            'prefix' => 'myapp_cake_model_',
-            'path' => CACHE . 'models/',
+            'prefix'    => 'myapp_cake_model_',
+            'path'      => CACHE . 'models/',
             'serialize' => true,
-            'duration' => '+1 years',
-            'url' => env('CACHE_CAKEMODEL_URL', null),
+            'duration'  => '+1 years',
+            'url'       => env('CACHE_CAKEMODEL_URL', null),
         ],
 
         /**
@@ -131,11 +140,11 @@ return [
          */
         '_cake_routes_' => [
             'className' => 'Cake\Cache\Engine\FileEngine',
-            'prefix' => 'myapp_cake_routes_',
-            'path' => CACHE,
+            'prefix'    => 'myapp_cake_routes_',
+            'path'      => CACHE,
             'serialize' => true,
-            'duration' => '+1 years',
-            'url' => env('CACHE_CAKEROUTES_URL', null),
+            'duration'  => '+1 years',
+            'url'       => env('CACHE_CAKEROUTES_URL', null),
         ],
     ],
 
@@ -168,12 +177,12 @@ return [
      *   the memory limit by when a fatal error is encountered. This allows
      *   breathing room to complete logging or error handling.
      */
-    'Error' => [
-        'errorLevel' => E_ALL,
+    'Error'          => [
+        'errorLevel'        => E_ALL,
         'exceptionRenderer' => 'Cake\Error\ExceptionRenderer',
-        'skipLog' => [],
-        'log' => true,
-        'trace' => true,
+        'skipLog'           => [],
+        'log'               => true,
+        'trace'             => true,
     ],
 
     /**
@@ -201,14 +210,14 @@ return [
             /*
              * The following keys are used in SMTP transports:
              */
-            'host' => 'localhost',
-            'port' => 25,
-            'timeout' => 30,
-            'username' => null,
-            'password' => null,
-            'client' => null,
-            'tls' => null,
-            'url' => env('EMAIL_TRANSPORT_DEFAULT_URL', null),
+            'host'      => 'localhost',
+            'port'      => 25,
+            'timeout'   => 30,
+            'username'  => null,
+            'password'  => null,
+            'client'    => null,
+            'tls'       => null,
+            'url'       => env('EMAIL_TRANSPORT_DEFAULT_URL', null),
         ],
     ],
 
@@ -221,10 +230,10 @@ return [
      * easier. Each profile accepts a number of keys. See `Cake\Mailer\Email`
      * for more information.
      */
-    'Email' => [
+    'Email'          => [
         'default' => [
             'transport' => 'default',
-            'from' => 'you@localhost',
+            'from'      => 'you@localhost',
             //'charset' => 'utf-8',
             //'headerCharset' => 'utf-8',
         ],
@@ -234,30 +243,30 @@ return [
     /**
      * Configures logging options
      */
-    'Log' => [
-        'debug' => [
+    'Log'            => [
+        'debug'   => [
             'className' => 'Cake\Log\Engine\FileLog',
-            'path' => LOGS,
-            'file' => 'debug',
-            'url' => env('LOG_DEBUG_URL', null),
-            'scopes' => false,
-            'levels' => ['notice', 'info', 'debug'],
+            'path'      => LOGS,
+            'file'      => 'debug',
+            'url'       => env('LOG_DEBUG_URL', null),
+            'scopes'    => false,
+            'levels'    => ['notice', 'info', 'debug'],
         ],
-        'error' => [
+        'error'   => [
             'className' => 'Cake\Log\Engine\FileLog',
-            'path' => LOGS,
-            'file' => 'error',
-            'url' => env('LOG_ERROR_URL', null),
-            'scopes' => false,
-            'levels' => ['warning', 'error', 'critical', 'alert', 'emergency'],
+            'path'      => LOGS,
+            'file'      => 'error',
+            'url'       => env('LOG_ERROR_URL', null),
+            'scopes'    => false,
+            'levels'    => ['warning', 'error', 'critical', 'alert', 'emergency'],
         ],
         // To enable this dedicated query log, you need set your datasource's log flag to true
         'queries' => [
             'className' => 'Cake\Log\Engine\FileLog',
-            'path' => LOGS,
-            'file' => 'queries',
-            'url' => env('LOG_QUERIES_URL', null),
-            'scopes' => ['queriesLog'],
+            'path'      => LOGS,
+            'file'      => 'queries',
+            'url'       => env('LOG_QUERIES_URL', null),
+            'scopes'    => ['queriesLog'],
         ],
     ],
 
@@ -300,7 +309,7 @@ return [
      *
      * To use database sessions, load the SQL file located at config/schema/sessions.sql
      */
-    'Session' => [
+    'Session'        => [
         'defaults' => env('SESSION_DEFAULTS', 'php'),
     ],
 ];

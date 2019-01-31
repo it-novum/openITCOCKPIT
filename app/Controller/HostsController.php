@@ -26,6 +26,7 @@
 
 use App\Model\Table\CommandargumentsTable;
 use App\Model\Table\CommandsTable;
+use App\Model\Table\ContainersTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AcknowledgedHostConditions;
 use itnovum\openITCOCKPIT\Core\CustomMacroReplacer;
@@ -2495,12 +2496,15 @@ class HostsController extends AppController {
         }
 
         //Get Containers
-        $mainContainer = $this->Tree->treePath($rawHost['Host']['container_id'], ['delimiter' => '/']);
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        $mainContainer = $ContainersTable->treePath($rawHost['Host']['container_id']);
+
         //Add shared containers
         $sharedContainers = [];
         foreach ($rawHost['Container'] as $container) {
             if (isset($container['id']) && $container['id'] != $rawHost['Host']['container_id']) {
-                $sharedContainers[$container['id']] = $this->Tree->treePath($container['id'], ['delimiter' => '/']);
+                $sharedContainers[$container['id']] = $ContainersTable->treePath($container['id']);
             }
         }
 

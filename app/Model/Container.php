@@ -144,7 +144,7 @@ class Container extends AppModel {
     */
 
     var $name = 'Container';
-    
+
     public function isUniqueByObject() {
         if (isset($this->data['Container']['containertype_id']) && in_array($this->data['Container']['containertype_id'], [CT_TENANT])) {
             //return $this->isUnique('name');
