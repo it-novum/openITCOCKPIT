@@ -27,6 +27,7 @@
 /**
  * Class TreeComponent
  * @property Container Container
+ * @deprecated Use ContainersTable
  */
 class TreeComponent extends Component {
 
@@ -47,6 +48,7 @@ class TreeComponent extends Component {
     /**
      *
      * NO EXTERNAL CALLS (30.01.2019)
+     * INTERNAL CALLS: 1
      *
      * This function can be called with a parrent id of an container and will fetch all childrens of the container
      * and return you a path to the childrens
@@ -114,6 +116,7 @@ class TreeComponent extends Component {
     /**
      *
      * CALLS: 3 (30.01.2019)
+     * INTERNAL CALLS: 1
      *
      * Returns tha path to a single node in the tree
      * ### Options
@@ -141,6 +144,7 @@ class TreeComponent extends Component {
     /**
      *
      * MANY EXTERNAL CALLS
+     * INTERNAL CALLS: 0
      *
      * Is a wrapper function for $this->path for an easy access and call
      * This is mostly used to create selectboxes
@@ -182,6 +186,7 @@ class TreeComponent extends Component {
     /**
      *
      * MANY EXTERNAL CALLS
+     * INTERNAL CALLS: 0
      *
      * @param int|int[] $containerIds
      * @param bool $resolveRoot
@@ -219,6 +224,7 @@ class TreeComponent extends Component {
     /**
      *
      * CALLS: 3 (30.01.2019)
+     * INTERNAL CALLS: 0
      *
      * Remove the ROOT_CONTAINER from a given array with container ids as value
      *
