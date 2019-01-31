@@ -25,6 +25,7 @@
 
 use Cake\ORM\TableRegistry;
 use GuzzleHttp\Client;
+use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\Views\Host;
 use itnovum\openITCOCKPIT\Core\Views\Service;
@@ -479,7 +480,7 @@ class GrafanaUserdashboardsController extends GrafanaModuleAppController {
         } else {
             $containers = $this->Tree->easyPath($this->getWriteContainers(), CT_TENANT, [], $this->hasRootPrivileges);
         }
-        $containers = $this->Container->makeItJavaScriptAble($containers);
+        $containers = Api::makeItJavaScriptAble($containers);
 
 
         $this->set('containers', $containers);

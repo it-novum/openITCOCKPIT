@@ -22,6 +22,7 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 
 
 /**
@@ -290,7 +291,7 @@ class ContactgroupsController extends AppController {
 
         $containerIds = $this->Tree->resolveChildrenOfContainerIds($containerIds);
         $contacts = $this->Contact->contactsByContainerId($containerIds, 'list');
-        $contacts = $this->Contact->makeItJavaScriptAble($contacts);
+        $contacts = Api::makeItJavaScriptAble($contacts);
 
         $data = [
             'contacts' => $contacts,

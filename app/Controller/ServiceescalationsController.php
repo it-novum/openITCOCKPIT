@@ -22,6 +22,7 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 
 
 /**
@@ -379,11 +380,11 @@ class ServiceescalationsController extends AppController {
         list($servicegroups, $services, $timeperiods, $contacts, $contactgroups) =
             $this->getAvailableDataByContainerId($containerId);
 
-        $servicegroups = $this->Servicegroup->makeItJavaScriptAble($servicegroups);
-        $services = $this->Service->makeItJavaScriptAble($services);
-        $timeperiods = $this->Timeperiod->makeItJavaScriptAble($timeperiods);
-        $contacts = $this->Contact->makeItJavaScriptAble($contacts);
-        $contactgroups = $this->Contactgroup->makeItJavaScriptAble($contactgroups);
+        $servicegroups = Api::makeItJavaScriptAble($servicegroups);
+        $services = Api::makeItJavaScriptAble($services);
+        $timeperiods = Api::makeItJavaScriptAble($timeperiods);
+        $contacts = Api::makeItJavaScriptAble($contacts);
+        $contactgroups = Api::makeItJavaScriptAble($contactgroups);
 
         $servicegroupsExcluded = $servicegroups;
         $servicesExcluded = $services;

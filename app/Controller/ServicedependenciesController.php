@@ -22,6 +22,7 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 
 
 /**
@@ -347,11 +348,11 @@ class ServicedependenciesController extends AppController {
         );
         $timeperiods = $this->Timeperiod->timeperiodsByContainerId($timeperiodContainerIds, 'list');
 
-        $servicegroups = $this->Servicegroup->makeItJavaScriptAble($servicegroups);
+        $servicegroups = Api::makeItJavaScriptAble($servicegroups);
         $servicegroupsDependent = $servicegroups;
-        $services = $this->Service->makeItJavaScriptAble($services);
+        $services = Api::makeItJavaScriptAble($services);
         $servicesDependent = $services;
-        $timeperiods = $this->Timeperiod->makeItJavaScriptAble($timeperiods);
+        $timeperiods = Api::makeItJavaScriptAble($timeperiods);
 
         $data = [
             'services'               => $services,

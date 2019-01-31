@@ -70,9 +70,6 @@ class TestingShell extends AppShell {
         /*
          * Lof of space for your experimental code :)
          */
-
-        debug($this->User->getTenantIds(1));
-
     }
 
     public function getOptionParser() {

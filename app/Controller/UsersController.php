@@ -26,6 +26,7 @@
 //App::uses('AdminAppController', 'Admin.Controller');
 //require_once APP . 'Model/User.php';
 
+use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\PHPVersionChecker;
 use itnovum\openITCOCKPIT\Core\Views\Logo;
 
@@ -527,7 +528,7 @@ class UsersController extends AppController {
             $systemsettings = $this->Systemsetting->findAsArraySection('FRONTEND');
         }
 
-        $usersForSelect = $this->User->makeItJavaScriptAble($usersForSelect);
+        $usersForSelect = Api::makeItJavaScriptAble($usersForSelect);
 
         $isPhp7Dot1 = $PHPVersionChecker->isVersionGreaterOrEquals7Dot1();
         $this->set(compact(['usersForSelect', 'systemsettings', 'isPhp7Dot1']));
@@ -613,7 +614,7 @@ class UsersController extends AppController {
             }
         }
 
-        $usersForSelect = $this->User->makeItJavaScriptAble($usersForSelect);
+        $usersForSelect = Api::makeItJavaScriptAble($usersForSelect);
 
         $this->set('usersForSelect', $usersForSelect);
         $this->set('_serialize', ['usersForSelect']);
@@ -706,7 +707,7 @@ class UsersController extends AppController {
             ],
             'group'      => 'User.id'
         ]);
-        $users = $this->User->makeItJavaScriptAble(
+        $users = Api::makeItJavaScriptAble(
             $users
         );
 

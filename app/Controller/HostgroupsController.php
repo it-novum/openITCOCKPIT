@@ -23,6 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\HostConditions;
 use itnovum\openITCOCKPIT\Core\HostgroupConditions;
 use itnovum\openITCOCKPIT\Core\HoststatusFields;
@@ -354,7 +355,7 @@ class HostgroupsController extends AppController {
         } else {
             $containers = $this->Tree->easyPath($this->getWriteContainers(), OBJECT_HOSTGROUP, [], $this->hasRootPrivileges);
         }
-        $containers = $this->Container->makeItJavaScriptAble($containers);
+        $containers = Api::makeItJavaScriptAble($containers);
 
 
         $this->set('containers', $containers);
@@ -388,7 +389,7 @@ class HostgroupsController extends AppController {
         }
         $HostCondition = new HostConditions($HostFilter->ajaxFilter());
         $HostCondition->setContainerIds($containerIds);
-        $hosts = $this->Host->makeItJavaScriptAble(
+        $hosts = Api::makeItJavaScriptAble(
             $this->Host->getHostsForAngular($HostCondition, $selected)
         );
         $this->set(compact(['hosts']));
@@ -570,7 +571,7 @@ class HostgroupsController extends AppController {
             $containerIds = $this->Tree->resolveChildrenOfContainerIds(ROOT_CONTAINER, true);
         }
 
-        $hosttemplates = $this->Hosttemplate->makeItJavaScriptAble(
+        $hosttemplates = Api::makeItJavaScriptAble(
             $this->Hosttemplate->getHosttemplatesForAngular($containerIds, $HosttemplateFilter, $selected)
         );
 
@@ -590,7 +591,7 @@ class HostgroupsController extends AppController {
         $HostgroupCondition = new HostgroupConditions($HostgroupFilter->indexFilter());
         $HostgroupCondition->setContainerIds($this->MY_RIGHTS);
 
-        $hostgroups = $this->Hostgroup->makeItJavaScriptAble(
+        $hostgroups = Api::makeItJavaScriptAble(
             $this->Hostgroup->getHostgroupsForAngular($HostgroupCondition, $selected)
         );
 
@@ -634,7 +635,7 @@ class HostgroupsController extends AppController {
             $hostgroups = $this->Paginator->paginate();
         }
 
-        $hostgroups = $this->Hostgroup->makeItJavaScriptAble(
+        $hostgroups = Api::makeItJavaScriptAble(
             Hash::combine(
                 $hostgroups,
                 '{n}.Hostgroup.id',

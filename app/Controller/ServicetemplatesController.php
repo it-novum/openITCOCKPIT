@@ -25,6 +25,7 @@
 use App\Model\Table\CommandargumentsTable;
 use App\Model\Table\CommandsTable;
 use Cake\ORM\TableRegistry;
+use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\ServiceConditions;
 use itnovum\openITCOCKPIT\Core\Views\ContainerPermissions;
 use itnovum\openITCOCKPIT\Filter\ServicetemplateFilter;
@@ -1635,17 +1636,17 @@ class ServicetemplatesController extends AppController {
         $containerIds = $this->Tree->resolveChildrenOfContainerIds($containerId);
 
         $timeperiods = $timeperiods = $this->Timeperiod->timeperiodsByContainerId($containerIds, 'list');
-        $timeperiods = $this->Timeperiod->makeItJavaScriptAble($timeperiods);
+        $timeperiods = Api::makeItJavaScriptAble($timeperiods);
         $checkperiods = $timeperiods;
 
         $contacts = $this->Contact->contactsByContainerId($containerIds, 'list');
-        $contacts = $this->Timeperiod->makeItJavaScriptAble($contacts);
+        $contacts = Api::makeItJavaScriptAble($contacts);
 
         $contactgroups = $this->Contactgroup->contactgroupsByContainerId($containerIds, 'list');
-        $contactgroups = $this->Timeperiod->makeItJavaScriptAble($contactgroups);
+        $contactgroups = Api::makeItJavaScriptAble($contactgroups);
 
         $servicegroups = $this->Servicegroup->servicegroupsByContainerId($containerIds, 'list');
-        $servicegroups = $this->Servicegroup->makeItJavaScriptAble($servicegroups);
+        $servicegroups = Api::makeItJavaScriptAble($servicegroups);
 
         $this->set(compact(['timeperiods', 'checkperiods', 'contacts', 'contactgroups', 'servicegroups']));
         $this->set('_serialize', ['timeperiods', 'checkperiods', 'contacts', 'contactgroups', 'servicegroups']);
@@ -1663,7 +1664,7 @@ class ServicetemplatesController extends AppController {
         if ($containerId == ROOT_CONTAINER) {
             $containerIds = $this->Tree->resolveChildrenOfContainerIds(ROOT_CONTAINER, true);
         }
-        $servicetemplates = $this->Servicetemplate->makeItJavaScriptAble(
+        $servicetemplates = Api::makeItJavaScriptAble(
             $this->Servicetemplate->getServicetemplatesForAngular($containerIds, $ServicetemplateFilter, $selected)
         );
         $this->set(compact(['servicetemplates']));

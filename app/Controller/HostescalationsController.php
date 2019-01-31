@@ -22,6 +22,7 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 
 
 /**
@@ -345,21 +346,21 @@ class HostescalationsController extends AppController {
         $containerIds = $this->Tree->resolveChildrenOfContainerIds($containerId);
 
         $hostgroups = $this->Hostgroup->hostgroupsByContainerId($containerIds, 'list', 'id');
-        $hostgroups = $this->Host->makeItJavaScriptAble($hostgroups);
+        $hostgroups = Api::makeItJavaScriptAble($hostgroups);
         $hostgroupsExcluded = $hostgroups;
 
         $hosts = $this->Host->hostsByContainerId($containerIds, 'list');
-        $hosts = $this->Host->makeItJavaScriptAble($hosts);
+        $hosts = Api::makeItJavaScriptAble($hosts);
         $hostsExcluded = $hosts;
 
         $timeperiods = $this->Timeperiod->timeperiodsByContainerId($containerIds, 'list');
-        $timeperiods = $this->Host->makeItJavaScriptAble($timeperiods);
+        $timeperiods = Api::makeItJavaScriptAble($timeperiods);
 
         $contacts = $this->Contact->contactsByContainerId($containerIds, 'list');
-        $contacts = $this->Host->makeItJavaScriptAble($contacts);
+        $contacts = Api::makeItJavaScriptAble($contacts);
 
         $contactgroups = $this->Contactgroup->contactgroupsByContainerId($containerIds, 'list');
-        $contactgroups = $this->Host->makeItJavaScriptAble($contactgroups);
+        $contactgroups = Api::makeItJavaScriptAble($contactgroups);
 
         $this->set(compact(['hosts', 'hostsExcluded', 'hostgroups', 'hostgroupsExcluded', 'timeperiods', 'contacts', 'contactgroups']));
         $this->set('_serialize', ['hosts', 'hostsExcluded', 'hostgroups', 'hostgroupsExcluded', 'timeperiods', 'contacts', 'contactgroups']);

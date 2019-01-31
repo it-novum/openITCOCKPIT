@@ -27,6 +27,7 @@ use App\Model\Table\CommandargumentsTable;
 use App\Model\Table\CommandsTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AcknowledgedServiceConditions;
+use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\CustomMacroReplacer;
 use itnovum\openITCOCKPIT\Core\CustomVariableDiffer;
 use itnovum\openITCOCKPIT\Core\DbBackend;
@@ -2854,7 +2855,7 @@ class ServicesController extends AppController {
         $ServiceCondition->setContainerIds($containerIds);
         $ServiceCondition->setIncludeDisabled(false);
 
-        $services = $this->Service->makeItJavaScriptAble(
+        $services = Api::makeItJavaScriptAble(
             $this->Service->getServicesForAngular($ServiceCondition, $selected)
         );
 
@@ -2877,7 +2878,7 @@ class ServicesController extends AppController {
         $ServiceCondition->setContainerIds($this->MY_RIGHTS);
         $ServiceCondition->includeDisabled();
 
-        $services = $this->Service->makeItJavaScriptAble(
+        $services = Api::makeItJavaScriptAble(
             $this->Service->getServicesForAngular($ServiceCondition, $selected)
         );
 

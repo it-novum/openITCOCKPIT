@@ -22,6 +22,7 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\DowntimeHostConditions;
 use itnovum\openITCOCKPIT\Core\DowntimeServiceConditions;
 use itnovum\openITCOCKPIT\Core\StatehistoryHostConditions;
@@ -980,7 +981,7 @@ class InstantreportsController extends AppController {
         } else {
             $containers = $this->Tree->easyPath($this->getWriteContainers(), OBJECT_HOSTGROUP, [], $this->hasRootPrivileges);
         }
-        $containers = $this->Container->makeItJavaScriptAble($containers);
+        $containers = Api::makeItJavaScriptAble($containers);
 
 
         $this->set('containers', $containers);

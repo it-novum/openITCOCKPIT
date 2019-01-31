@@ -22,6 +22,7 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 
 
 /**
@@ -705,7 +706,7 @@ class ServicetemplategroupsController extends AppController {
 
         $containerId = $this->Tree->resolveChildrenOfContainerIds($containerId);
         $servicetemplates = $this->Servicetemplate->servicetemplatesByContainerId($containerId, 'list');
-        $servicetemplates = $this->Servicetemplategroup->makeItJavaScriptAble($servicetemplates);
+        $servicetemplates = Api::makeItJavaScriptAble($servicetemplates);
 
         $this->set(compact(['servicetemplates']));
         $this->set('_serialize', ['servicetemplates']);

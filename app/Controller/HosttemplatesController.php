@@ -25,6 +25,7 @@
 use App\Model\Table\CommandargumentsTable;
 use App\Model\Table\CommandsTable;
 use Cake\ORM\TableRegistry;
+use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\Views\ContainerPermissions;
 
 
@@ -1239,17 +1240,17 @@ class HosttemplatesController extends AppController {
         $containerIds = $this->Tree->resolveChildrenOfContainerIds($container_id);
 
         $timeperiods = $this->Timeperiod->timeperiodsByContainerId($containerIds, 'list');
-        $timeperiods = $this->Timeperiod->makeItJavaScriptAble($timeperiods);
+        $timeperiods = Api::makeItJavaScriptAble($timeperiods);
         $checkperiods = $timeperiods;
 
         $contacts = $this->Contact->contactsByContainerId($containerIds, 'list');
-        $contacts = $this->Contact->makeItJavaScriptAble($contacts);
+        $contacts = Api::makeItJavaScriptAble($contacts);
 
         $contactgroups = $this->Contactgroup->contactgroupsByContainerId($containerIds, 'list');
-        $contactgroups = $this->Contactgroup->makeItJavaScriptAble($contactgroups);
+        $contactgroups = Api::makeItJavaScriptAble($contactgroups);
 
         $hostgroups = $this->Hostgroup->hostgroupsByContainerId($containerIds, 'list', 'id');
-        $hostgroups = $this->Hostgroup->makeItJavaScriptAble($hostgroups);
+        $hostgroups = Api::makeItJavaScriptAble($hostgroups);
 
         $this->set(compact(['timeperiods', 'checkperiods', 'contacts', 'contactgroups', 'hostgroups']));
         $this->set('_serialize', ['timeperiods', 'checkperiods', 'contacts', 'contactgroups', 'hostgroups']);
