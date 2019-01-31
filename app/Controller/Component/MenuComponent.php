@@ -60,6 +60,9 @@ class MenuComponent extends Component {
                             if(!isset($menu[$key]['order']) && isset($moduleMenu[$key]['order'])) {
                                 $menu[$key]['order'] = $moduleMenu[$key]['order'];
                             }
+                            if(!isset($menu[$key]['state']) && isset($moduleMenu[$key]['state'])) {
+                                $menu[$key]['state'] = $moduleMenu[$key]['state'];
+                            }
                         }
                         if(isset($menu[$key]['children']) && !empty($moduleMenu[$key]['children'])){
                             foreach($moduleMenu[$key]['children'] as $child){
@@ -108,6 +111,9 @@ class MenuComponent extends Component {
                         }
                         if(!isset($finalMenu[$key]['order']) && isset($menu[$key]['order'])) {
                             $finalMenu[$key]['order'] = $menu[$key]['order'];
+                        }
+                        if(!isset($finalMenu[$key]['state']) && isset($menu[$key]['state'])) {
+                            $finalMenu[$key]['state'] = $menu[$key]['state'];
                         }
                     }
                     $finalMenu[$key]['children'] = $menu[$key]['children'];
@@ -237,12 +243,27 @@ class MenuComponent extends Component {
         $jsMenu = [];
         foreach ($menu as $parentKey => $_parentNode) {
             $_parentNode['id'] = $parentKey;
-
             $parentNode = $_parentNode;
+
+            if(isset($parentNode['url'])) {
+                if (isset($parentNode['state'])) {
+                    $parentNode['isAngular'] = "1";
+                } else {
+                    $parentNode['isAngular'] = "0";
+                }
+            }
+
             $parentNode['children'] = [];
             if (isset($_parentNode['children'])) {
                 foreach ($_parentNode['children'] as $childKey => $childNode) {
                     $childNode['id'] = $childKey;
+
+                    if(isset($childNode['state'])){
+                        $childNode['isAngular'] = "1";
+                    } else {
+                        $childNode['isAngular'] = "0";
+                    }
+
                     $parentNode['children'][] = $childNode;
                 }
             }

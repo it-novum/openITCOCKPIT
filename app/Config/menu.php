@@ -135,6 +135,7 @@ $config = [
             'children' => [
                 [
                     'url'               => ['controller' => 'hosts', 'action' => 'index'],
+                    'state'             => 'HostsIndex',
                     'title'             => 'Hosts',
                     'icon'              => 'desktop',
                 ],
@@ -165,6 +166,7 @@ $config = [
                 ],
                 [
                     'url'               => ['controller' => 'hostgroups', 'action' => 'index'],
+                    'state'             => 'HostgroupsIndex',
                     'title'             => 'Host Groups',
                     'icon'              => 'sitemap',
                 ],
