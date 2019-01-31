@@ -25,6 +25,11 @@
 
 use itnovum\openITCOCKPIT\Core\ValueObjects\LastDeletedId;
 
+
+/**
+ * Class Command
+ * @deprecated deprecated
+ */
 class Command extends AppModel {
     public $hasMany = [
         'Commandargument' => [
@@ -70,6 +75,13 @@ class Command extends AppModel {
      */
     private $LastDeletedId = null;
 
+    /**
+     * Command constructor.
+     * @param bool $id
+     * @param null $table
+     * @param null $ds
+     * @deprecated
+     */
     public function __construct($id = false, $table = null, $ds = null) {
         parent::__construct($id, $table, $ds);
         App::uses('UUID', 'Lib');
@@ -84,6 +96,7 @@ class Command extends AppModel {
      * @return array $ find result
      * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since  3.0
+     * @deprecated
      */
     public function checkCommands($type = 'all', $options = []) {
         $_options = [
@@ -104,6 +117,7 @@ class Command extends AppModel {
      * @return array $ find result
      * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since  3.0
+     * @deprecated
      */
     public function hostCommands($type = 'all', $options = []) {
         $_options = [
@@ -124,6 +138,7 @@ class Command extends AppModel {
      * @return array $ find result
      * @author Maximilian Pappert <maximilian.pappert@it-novum.com>
      * @since  3.0
+     * @deprecated
      */
     public function serviceCommands($type = 'all', $options = []) {
         $_options = [
@@ -144,6 +159,7 @@ class Command extends AppModel {
      * @return array $ find result
      * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
      * @since  3.0
+     * @deprecated
      */
     public function notificationCommands($type = 'all', $options = []) {
         $_options = [
@@ -160,6 +176,7 @@ class Command extends AppModel {
      *
      * @param string $type for tha CakePHP find function (all, list, first, ...)
      * @param array $options Options for find()
+     * @deprecated
      *
      * @return array $ find result
      */
@@ -176,6 +193,7 @@ class Command extends AppModel {
     /**
      * @param bool $created
      * @param array $options
+     * @deprecated
      * @return bool|void
      */
     public function afterSave($created, $options = []) {
@@ -206,17 +224,30 @@ class Command extends AppModel {
 
     }
 
+    /**
+     * @param $systemname
+     * @deprecated
+     * @return string
+     */
     public function getConsoleWelcome($systemname) {
         return "This is a terminal connected to your " . $systemname . " " .
             "Server, this is very powerful to test and debug plugins.\n" .
             "User: \033[31mnagios\033[0m\nPWD: \033[35m/opt/openitc/nagios/libexec/\033[0m\n\n";
     }
 
+    /**
+     * @param bool $cascade
+     * @deprecated
+     * @return bool
+     */
     public function beforeDelete($cascade = true) {
         $this->LastDeletedId = new LastDeletedId($this->id);
         return parent::beforeDelete($cascade);
     }
 
+    /**
+     * @deprecated
+     */
     public function afterDelete() {
         if ($this->LastDeletedId !== null) {
             if ($this->DbBackend->isCrateDb() && $this->LastDeletedId->hasId()) {

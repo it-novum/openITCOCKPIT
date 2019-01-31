@@ -70,18 +70,6 @@ class TestingShell extends AppShell {
          * Lof of space for your experimental code :)
          */
 
-        /** @var $Containers ContainersTable */
-        $Containers = TableRegistry::getTableLocator()->get('Containers');
-        debug($Containers->get(1)->toArray());
-
-        debug($this->Container->find('first', [
-            'recursive' => -1,
-            'conditions' => [
-                'Container.id' => 1
-            ]
-        ]));
-
-
     }
 
     public function getOptionParser() {

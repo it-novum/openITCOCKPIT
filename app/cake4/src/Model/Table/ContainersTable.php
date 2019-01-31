@@ -2,8 +2,13 @@
 
 namespace App\Model\Table;
 
+use App\Lib\Constants;
+use Cake\Cache\Cache;
+use Cake\Datasource\Exception\RecordNotFoundException;
+use Cake\Http\Exception\ForbiddenException;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
+use Cake\Utility\Hash;
 use Cake\Validation\Validator;
 
 /**
@@ -209,5 +214,184 @@ class ContainersTable extends Table {
         $rules->add($rules->existsIn(['parent_id'], 'ParentContainers'));
 
         return $rules;
+    }
+
+
+    /**
+     * @param int|array $ids
+     * @param array $options
+     * @param array $valide_types
+     * @return array
+     *
+     * ### Options
+     * - `delimiter`   The delimiter for the path (default /)
+     * - `order`       Order of the returned array asc|desc (default asc)
+     */
+    private function path($ids, $options = [], $valide_types = [CT_GLOBAL, CT_TENANT, CT_LOCATION, CT_NODE]) {
+        $_options = [
+            'delimiter'    => '/',
+            'valide_types' => $valide_types,
+            'order'        => 'asc',
+        ];
+        $options = Hash::merge($_options, $options);
+
+        if (!is_array($ids)) {
+            $ids = [$ids];
+        }
+
+        $node = $this->find()
+            ->where(['id IN ' => $ids])
+            ->disableHydration()
+            ->all()
+            ->toArray();
+
+        $paths = [];
+        foreach ($node as $container) {
+            $containerTypeId = (int)$container['containertype_id'];
+            if (in_array($containerTypeId, $options['valide_types'], true)) {
+                $paths[$container['id']] = '/' . $this->treePath($container['id'], $options['delimiter']);
+            }
+        }
+
+        if ($options['order'] === 'asc') {
+            asort($paths);
+        }
+
+        if ($options['order'] === 'desc') {
+            arsort($paths);
+        }
+
+        return $paths;
+    }
+
+    /**
+     * Returns tha path to a single node in the tree
+     *
+     * @param integer $id of the container
+     * @param string $delimiter (default /)
+     *
+     * @return string with the path to the container
+     */
+    public function treePath($id = null, $delimiter = '/') {
+        try {
+            $containerNames = [];
+            $tree = $this->find('path', ['for' => $id])
+                ->disableHydration()
+                ->toArray();
+
+            foreach ($tree as $node) {
+                $containerNames[] = $node['name'];
+            }
+
+            return implode($delimiter, $containerNames);
+
+        } catch (RecordNotFoundException $e) {
+            return '';
+        }
+    }
+
+
+    /**
+     * @param int|array $id
+     * @param array $ObjectsByConstancName Array of container types that should be considered
+     * @param array $options
+     * @param bool $hasRootPrivileges
+     * @param array $exclude Array of container tyoes which gets excluded from result
+     * @return array
+     *
+     * Returns:
+     * [
+     *     1 => '/root',
+     *     2 => '/root/tenant'
+     * ]
+     *
+     * ### Options
+     * - `delimiter`   The delimiter for the path (default /)
+     * - `order`       Order of the returned array asc|desc (default asc)
+     */
+    public function easyPath($id, $ObjectsByConstancName = [], $options = [], $hasRootPrivileges = false, $exclude = []) {
+        if ($hasRootPrivileges == false) {
+            if (is_array($id)) {
+                // User has no root privileges so we need to delete the root container
+                $id = $this->removeRootContainer($id);
+            } else {
+                if ($id == ROOT_CONTAINER) {
+                    throw new ForbiddenException(__('You need root privileges'));
+                }
+            }
+        }
+
+        if (empty($ObjectsByConstancName)) {
+            return [];
+        }
+
+        $Constants = new Constants();
+        return $this->path($id, $options, $Constants->containerProperties($ObjectsByConstancName, $exclude));
+    }
+
+    /**
+     * @param int|array $containerIds
+     * @param bool $resolveRoot
+     * @param array $includeContainerTypes
+     * @return array
+     */
+    public function resolveChildrenOfContainerIds($containerIds, $resolveRoot = false, $includeContainerTypes = []) {
+        if (!is_array($containerIds)) {
+            $containerIds = [$containerIds];
+        }
+
+        $containerIds = array_unique($containerIds);
+        $result = [ROOT_CONTAINER];
+        foreach ($containerIds as $containerId) {
+            $containerId = (int)$containerId;
+            if ($containerId === ROOT_CONTAINER && $resolveRoot === false) {
+                continue;
+            }
+
+            $cacheKey = 'TreeComponentResolveChildrenOfContainerIds:' . $containerId . ':false';
+            if ($resolveRoot) {
+                $cacheKey = 'TreeComponentResolveChildrenOfContainerIds:' . $containerId . ':true';
+            }
+
+            $tmpResult = Cache::remember($cacheKey, function () use ($containerId) {
+                try {
+                    $query = $this->find('children', [
+                        'for' => $containerId
+                    ])->disableHydration()->select(['id', 'containertype_id'])->all();
+                    return $query->toArray();
+                }catch (RecordNotFoundException $e){
+                    return [];
+                }
+            }, 'migration');
+
+            if (!empty($includeContainerTypes)) {
+                $tmpResult = Hash::extract($tmpResult, '{n}[containertype_id=/^(' . implode('|', $includeContainerTypes) . ')$/].id');
+            } else {
+                $tmpResult = Hash::extract($tmpResult, '{n}.id');
+            }
+            $result = array_merge($result, $tmpResult);
+            $result[] = $containerId;
+        }
+
+        return array_unique($result);
+    }
+
+    /**
+     * Remove the ROOT_CONTAINER from a given array with container ids as value
+     *
+     * @param array $containerIds
+     *
+     * @return array
+     */
+    public function removeRootContainer($containerIds) {
+        $result = [];
+        foreach ($containerIds as $containerId) {
+            $containerId = (int)$containerId;
+            if ($containerId !== ROOT_CONTAINER) {
+                $result[] = $containerId;
+            }
+        }
+
+        return $result;
     }
 }

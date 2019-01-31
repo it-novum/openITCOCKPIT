@@ -26,6 +26,10 @@
 
 use itnovum\openITCOCKPIT\Core\DbBackend;
 
+/**
+ * Class ConstantsComponent
+ * @deprecated use App\Lib\Constants
+ */
 class ConstantsComponent extends Component {
     /**
      * Creates an array with the basic constants and define them automatically
@@ -231,6 +235,7 @@ class ConstantsComponent extends Component {
      * @param array $constants Array of constants that should be defined
      *
      * @return void
+     * @deprecated use App\Lib\Constants
      */
     private function define($constants = []) {
         foreach ($constants as $constantName => $constantValue) {
@@ -251,6 +256,7 @@ class ConstantsComponent extends Component {
      * @param array $exclude to exlude some containers like Hosstgroup in Host::add()
      *
      * @return array with all matching container type ids
+     * @deprecated use App\Lib\Constants
      */
     public function containerProperties($object = null, $exclude = []) {
         if (!empty($exclude)) {

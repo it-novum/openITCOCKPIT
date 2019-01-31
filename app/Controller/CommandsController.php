@@ -125,59 +125,58 @@ class CommandsController extends AppController {
     }
 
     public function edit($id = null) {
-        $userId = $this->Auth->user('id');
-        //Checking if the id/ids are ture ids
-        if ($this->Command->exists(['Command.id' => $id])) {
-            $command = $this->Command->findById($id);
-            $command['Commandargument'] = Hash::sort($command['Commandargument'], '{n}.name', 'asc', 'natural');
+        $this->layout = 'angularjs';
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
+            return;
+        }
 
-            $command_types = $this->getCommandTypes();
-            $this->set(compact(['command', 'command_types']));
-            $this->set('_serialize', ['command', 'command_types']);
-            $this->Frontend->setJson('console_welcome', $this->Command->getConsoleWelcome($this->systemname));
-            $this->Frontend->setJson('command_id', $id);
+        /** @var $Commands CommandsTable */
+        $Commands = TableRegistry::getTableLocator()->get('Commands');
+        if (!$Commands->exists($id)) {
+            throw new NotFoundException('Command not found');
+        }
+        $command = $Commands->get($id, [
+            'contain' => 'commandarguments'
+        ]);
+        $commandForChangeLog = $command;
 
-            if ($this->request->is('post') || $this->request->is('put')) {
-                $this->request->data = $this->rewritePostData();
+        if ($this->request->is('post') && $this->isAngularJsRequest()) {
+            $command = $Commands->patchEntity($command, $this->request->data('Command'));
+            $Commands->save($command);
+            if ($command->hasErrors()) {
+                $this->response->statusCode(400);
+                $this->set('error', $command->getErrors());
+                $this->set('_serialize', ['error']);
+                return;
+            } else {
+                //No errors
+                $userId = $this->Auth->user('id');
+                $requestData = $this->request->data;
 
-                //Checking if the user delete a argument
-                if (!empty($command['Commandargument']) && !empty($this->request->data['Commandargument'])) {
-                    $argumentsToDelete = array_diff(Hash::extract($command['Commandargument'], '{n}.id'), Hash::extract($this->request->data['Commandargument'], '{n}.id'));
-                    //Delete all arguments that was removed by the user:
-                    foreach ($argumentsToDelete as $argumentToDelete) {
-                        $this->Commandargument->delete($argumentToDelete);
-                    }
-                } else if (empty($this->request->data('Commandargument'))) {
-                    $this->Commandargument->deleteAll([
-                        'Commandargument.command_id' => $id,
-                    ]);
+                $changelog_data = $this->Changelog->parseDataForChangelog(
+                    'edit',
+                    $this->params['controller'],
+                    $command->get('id'),
+                    OBJECT_COMMAND,
+                    [ROOT_CONTAINER],
+                    $userId,
+                    $requestData['Command']['name'],
+                    $requestData,
+                    ['Command' => $commandForChangeLog->toArray()]
+                );
+                if ($changelog_data) {
+                    CakeLog::write('log', serialize($changelog_data));
                 }
-                if ($this->Command->saveAll($this->request->data)) {
-                    $changelog_data = $this->Changelog->parseDataForChangelog(
-                        $this->params['action'],
-                        $this->params['controller'],
-                        $this->Command->id,
-                        OBJECT_COMMAND,
-                        [ROOT_CONTAINER],
-                        $userId,
-                        $this->request->data['Command']['name'],
-                        $this->request->data,
-                        $command
-                    );
-                    if ($changelog_data) {
-                        CakeLog::write('log', serialize($changelog_data));
-                    }
-
-                    $this->setFlash(__('<a href="/commands/edit/%s">Command</a> successfully saved', $this->Command->id));
-                    $redirect = $this->Command->redirect($this->request->params, ['action' => 'index']);
-                    $this->redirect($redirect);
-                } else {
-                    $this->setFlash(__('Could not save data'), false);
+                if ($this->request->ext == 'json') {
+                    $this->serializeId(); // REST API ID serialization
+                    return;
                 }
             }
-        } else {
-            throw new NotFoundException(__('Command not found'));
         }
+
+        $this->set('command', $command);
+        $this->set('_serialize', ['command']);
     }
 
     public function delete($id = null) {
