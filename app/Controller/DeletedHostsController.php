@@ -27,7 +27,7 @@ use itnovum\openITCOCKPIT\Core\Views\UserTime;
 use itnovum\openITCOCKPIT\Filter\HostFilter;
 
 class DeletedHostsController extends AppController {
-    public $layout = 'angularjs';
+    public $layout = 'blank';
 
     public $uses = ['DeletedHost'];
 

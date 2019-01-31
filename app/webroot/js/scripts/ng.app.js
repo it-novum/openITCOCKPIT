@@ -93,6 +93,30 @@ angular.module('openITCOCKPIT', ['ui.router', 'gridster'])
     .config(function($urlRouterProvider, $stateProvider){
         $stateProvider
 
+            .state('DeletedHostsIndex', {
+                url: '/deletedHosts/index',
+                templateUrl: "/deletedHosts/index.html",
+                controller: "DeletedHostsIndexController"
+            })
+
+            .state('HostsIndex', {
+                url: '/hosts/index',
+                templateUrl: "/hosts/index.html",
+                controller: "HostsIndexController"
+            })
+
+            .state('HostsNotMonitored', {
+                url: '/hosts/notMonitored',
+                templateUrl: "/hosts/notMonitored.html",
+                controller: "HostsNotMonitoredController"
+            })
+
+            .state('HostsDisabled', {
+                url: '/hosts/disabled',
+                templateUrl: "/hosts/disabled.html",
+                controller: "HostsDisabledController"
+            })
+
             .state('HostgroupsIndex', {
                 url: '/hostgroups/index',
                 templateUrl: "/hostgroups/index.html",

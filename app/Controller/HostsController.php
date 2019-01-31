@@ -123,7 +123,7 @@ class HostsController extends AppController {
     ];
 
     public function index() {
-        $this->layout = 'angularjs';
+        $this->layout = 'blank';
         $User = new User($this->Auth);
 
         $masterInstanceName = $this->Systemsetting->getMasterInstanceName();
@@ -337,7 +337,7 @@ class HostsController extends AppController {
     }
 
     public function notMonitored() {
-        $this->layout = 'angularjs';
+        $this->layout = 'blank';
 
         $masterInstanceName = $this->Systemsetting->getMasterInstanceName();
         $SatelliteNames = [];
@@ -1443,7 +1443,7 @@ class HostsController extends AppController {
     }
 
     public function disabled() {
-        $this->layout = 'angularjs';
+        $this->layout = 'blank';
 
         $masterInstanceName = $this->Systemsetting->getMasterInstanceName();
         $SatelliteNames = [];
