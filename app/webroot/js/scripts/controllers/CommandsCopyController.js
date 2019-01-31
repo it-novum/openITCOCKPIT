@@ -1,8 +1,7 @@
 angular.module('openITCOCKPIT')
-    .controller('CommandsCopyController', function($scope, $http, QueryStringService, NotyService){
+    .controller('CommandsCopyController', function($scope, $http, $state, $stateParams, QueryStringService, NotyService){
 
-        var ids = QueryStringService.getCakeIds();
-
+        var ids = $stateParams.ids.split(',');
 
         if(ids.length === 0){
             //No ids to copy given - redirect
@@ -43,7 +42,7 @@ angular.module('openITCOCKPIT')
                 }
             ).then(function(result){
                 NotyService.genericSuccess();
-                window.location.href = '/commands/index';
+                $state.go('CommandsIndex');
             }, function errorCallback(result){
                 //Print errors
                 NotyService.genericError();

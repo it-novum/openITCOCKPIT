@@ -46,7 +46,10 @@
             <?php echo __('Copy command/s'); ?>
         </h2>
         <div class="widget-toolbar hidden-mobile hidden-tablet" role="menu">
-            <?php echo $this->Utils->backButton() ?>
+            <a class="btn btn-default" ui-sref="CommandsIndex">
+                <i class="fa fa-arrow-left"></i>
+                <?php echo __('Back to list'); ?>
+            </a>
         </div>
     </header>
     <div>
@@ -108,7 +111,7 @@
                     <button class="btn btn-primary" ng-click="copy()">
                         <?php echo __('Copy'); ?>
                     </button>
-                    <a href="/commands/index" class="btn btn-default"><?php echo __('Cancel'); ?></a>
+                    <a ui-sref="CommandsIndex" class="btn btn-default"><?php echo __('Cancel'); ?></a>
                 </div>
             </div>
 

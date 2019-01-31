@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('CommandsAddController', function($scope, $http, SudoService){
+    .controller('CommandsAddController', function($scope, $http, SudoService, $state, NotyService){
         $scope.post = {
             Command: {
                 name: '',
@@ -58,9 +58,11 @@ angular.module('openITCOCKPIT')
             $http.post("/commands/add.json?angular=true",
                 $scope.post
             ).then(function(result){
-                window.location.href = '/commands/index';
+                NotyService.genericSuccess();
+                $state.go('CommandsIndex');
             }, function errorCallback(result){
                 if(result.data.hasOwnProperty('error')){
+                    NotyService.genericError();
                     $scope.errors = result.data.error;
                 }
             });

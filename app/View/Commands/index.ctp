@@ -49,12 +49,12 @@
                             <?php echo __('Refresh'); ?>
                         </button>
 
-                        <?php
-                        if ($this->Acl->hasPermission('add', 'commands')):
-                            echo $this->Html->link(__('New'), '/commands/add', ['class' => 'btn btn-xs btn-success', 'icon' => 'fa fa-plus']);
-                            echo " "; //Hix HTML
-                        endif;
-                        ?>
+                        <?php if ($this->Acl->hasPermission('add', 'commands')): ?>
+                            <a class="btn btn-xs btn-success" ui-sref="CommandsAdd">
+                                <i class="fa fa-plus"></i>
+                                <?php echo __('New'); ?>
+                            </a>
+                        <?php endif; ?>
 
                         <button type="button" class="btn btn-xs btn-primary" ng-click="triggerFilter()">
                             <i class="fa fa-filter"></i>
@@ -174,7 +174,7 @@
                                     <td class="width-50">
                                         <div class="btn-group">
                                             <?php if ($this->Acl->hasPermission('edit', 'commands')): ?>
-                                                <a href="/commands/edit/{{ command.Command.id}}"
+                                                <a ui-sref="CommandsEdit({id: command.Command.id})"
                                                    class="btn btn-default">
                                                     &nbsp;<i class="fa fa-cog"></i>&nbsp;
                                                 </a>
@@ -244,7 +244,7 @@
                                 </span>
                             </div>
                             <div class="col-xs-12 col-md-2">
-                                <a ng-href="{{ linkForCopy() }}" class="a-clean">
+                                <a ui-sref="CommandsCopy({ids: linkForCopy()})" class="a-clean">
                                     <i class="fa fa-lg fa-files-o"></i>
                                     <?php echo __('Copy'); ?>
                                 </a>
