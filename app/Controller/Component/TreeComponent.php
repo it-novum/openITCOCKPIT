@@ -121,7 +121,6 @@ class TreeComponent extends Component {
      * Returns tha path to a single node in the tree
      * ### Options
      * - `delimiter`   The delimiter for the path (default /)
-     * - `order` of the retun array asc|desc (default asc)
      *
      * @param integer $id of the container
      * @param array $options Array of options
