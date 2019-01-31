@@ -23,6 +23,9 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use App\Model\Table\ContainersTable;
+use Cake\ORM\TableRegistry;
+
 class User extends AppModel {
 
     //public $actsAs = [
@@ -360,13 +363,27 @@ class User extends AppModel {
         if ($id === null) {
             $id = $this->id;
         }
-        $Container = ClassRegistry::init('Container');
-        $user = $this->findById($id);
+
+
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        $user = $this->find('first', [
+            'recursive'  => -1,
+            'conditions' => [
+                'User.id' => $id
+            ],
+            'contain' => [
+                'ContainerUserMembership'
+            ]
+        ]);
         $tenants = [];
         foreach ($user['ContainerUserMembership'] as $_container) {
-            foreach ($Container->getPath($_container['container_id']) as $subContainer) {
-                if ($subContainer['Container']['containertype_id'] == CT_TENANT) {
-                    $tenants[$subContainer['Container'][$index]] = $subContainer['Container']['name'];
+            $path = $ContainersTable->getPathByIdAndCacheResult($_container['container_id'], 'UserGetTenantIds');
+            foreach ($path as $subContainer) {
+                if ($subContainer['containertype_id'] == CT_TENANT) {
+                    $tenants[$subContainer[$index]] = $subContainer['name'];
                 }
             }
         }
@@ -375,14 +392,9 @@ class User extends AppModel {
     }
 
     public function __delete($user, $userId) {
-        if (is_numeric($user)) {
-            $userId = $user;
-            $user = $this->findById($userId);
-        } else {
-            $userId = $user['User']['id'];
-        }
-
-        if ($this->delete($user['User']['id'])) {
+        //@todo remove me plz!
+        //$user is unused
+        if ($this->delete($userId)) {
             return true;
         }
 

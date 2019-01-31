@@ -22,6 +22,7 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 
 
 /**
@@ -299,15 +300,15 @@ class HostdependenciesController extends AppController {
         $containerIds = $this->Tree->resolveChildrenOfContainerIds($containerId);
 
         $hostgroups = $this->Hostgroup->hostgroupsByContainerId($containerIds, 'list', 'id');
-        $hostgroups = $this->Host->makeItJavaScriptAble($hostgroups);
+        $hostgroups = Api::makeItJavaScriptAble($hostgroups);
         $hostgroupsDependent = $hostgroups;
 
         $hosts = $this->Host->hostsByContainerId($containerIds, 'list');
-        $hosts = $this->Host->makeItJavaScriptAble($hosts);
+        $hosts = Api::makeItJavaScriptAble($hosts);
         $hostsDependent = $hosts;
 
         $timeperiods = $this->Timeperiod->timeperiodsByContainerId($containerIds, 'list');
-        $timeperiods = $this->Host->makeItJavaScriptAble($timeperiods);
+        $timeperiods = Api::makeItJavaScriptAble($timeperiods);
 
         $this->set(compact(['hosts', 'hostsDependent', 'hostgroups', 'hostgroupsDependent', 'timeperiods']));
         $this->set('_serialize', ['hosts', 'hostsDependent', 'hostgroups', 'hostgroupsDependent', 'timeperiods']);

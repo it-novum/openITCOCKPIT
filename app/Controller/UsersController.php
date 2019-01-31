@@ -26,6 +26,7 @@
 //App::uses('AdminAppController', 'Admin.Controller');
 //require_once APP . 'Model/User.php';
 
+use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\PHPVersionChecker;
 use itnovum\openITCOCKPIT\Core\Views\Logo;
 
@@ -208,11 +209,10 @@ class UsersController extends AppController {
         $user = $this->User->findById($id);
         if (!$this->allowedByContainerId(Hash::extract($user['ContainerUserMembership'], '{n}.container_id'))) {
             $this->render403();
-
-            return;
+            return false;
         }
 
-        if ($this->User->__delete($id, $this->Auth->user('id'))) {
+        if ($this->User->__delete($id, $id)) {
             $this->setFlash(__('User deleted'));
             $this->redirect(['action' => 'index']);
         } else {
@@ -528,7 +528,7 @@ class UsersController extends AppController {
             $systemsettings = $this->Systemsetting->findAsArraySection('FRONTEND');
         }
 
-        $usersForSelect = $this->User->makeItJavaScriptAble($usersForSelect);
+        $usersForSelect = Api::makeItJavaScriptAble($usersForSelect);
 
         $isPhp7Dot1 = $PHPVersionChecker->isVersionGreaterOrEquals7Dot1();
         $this->set(compact(['usersForSelect', 'systemsettings', 'isPhp7Dot1']));
@@ -614,7 +614,7 @@ class UsersController extends AppController {
             }
         }
 
-        $usersForSelect = $this->User->makeItJavaScriptAble($usersForSelect);
+        $usersForSelect = Api::makeItJavaScriptAble($usersForSelect);
 
         $this->set('usersForSelect', $usersForSelect);
         $this->set('_serialize', ['usersForSelect']);
@@ -707,7 +707,7 @@ class UsersController extends AppController {
             ],
             'group'      => 'User.id'
         ]);
-        $users = $this->User->makeItJavaScriptAble(
+        $users = Api::makeItJavaScriptAble(
             $users
         );
 

@@ -23,6 +23,8 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use itnovum\openITCOCKPIT\Core\AngularJS\Api;
+
 class TimeperiodsController extends AppController {
     public $layout = 'Admin.default';
     public $components = [
@@ -587,7 +589,7 @@ class TimeperiodsController extends AppController {
             ]
         ]);
 
-        $timeperiods = $this->Timeperiod->makeItJavaScriptAble(
+        $timeperiods = Api::makeItJavaScriptAble(
             $timeperiods
         );
 

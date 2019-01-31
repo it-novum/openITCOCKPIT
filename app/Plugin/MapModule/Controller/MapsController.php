@@ -23,6 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Filter\MapFilter;
 
 /**
@@ -153,7 +154,7 @@ class MapsController extends MapModuleAppController {
         } else {
             $containers = $this->Tree->easyPath($this->getWriteContainers(), CT_TENANT, [], $this->hasRootPrivileges);
         }
-        $containers = $this->Container->makeItJavaScriptAble($containers);
+        $containers = Api::makeItJavaScriptAble($containers);
 
 
         $this->set('containers', $containers);

@@ -24,6 +24,9 @@
 //	confirmation.
 
 
+use App\Model\Table\ContainersTable;
+use Cake\ORM\TableRegistry;
+
 App::uses('Timerange', 'Model');
 
 class Timeperiod extends AppModel {
@@ -131,19 +134,18 @@ class Timeperiod extends AppModel {
 
         $container_ids = array_unique($container_ids);
 
-        //Lookup for the tenant container of $container_id
-        $this->Container = ClassRegistry::init('Container');
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
 
         $tenantContainerIds = [];
-
         foreach ($container_ids as $container_id) {
             if ($container_id != ROOT_CONTAINER) {
-
                 // Get contaier id of the tenant container
                 // $container_id is may be a location, devicegroup or whatever, so we need to container id of the tenant container to load contactgroups and contacts
-                $path = $this->Container->getPath($container_id);
-                if (isset($path[1]['Container']['id'])) {
-                    $tenantContainerIds[] = $path[1]['Container']['id'];
+                $path = $ContainersTable->getPathByIdAndCacheResult($container_id, 'TimeperiodTimeperiodsByContainerId');
+                if (isset($path[1]['id'])) {
+                    $tenantContainerIds[] = $path[1]['id'];
                 }
             } else {
                 $tenantContainerIds[] = ROOT_CONTAINER;

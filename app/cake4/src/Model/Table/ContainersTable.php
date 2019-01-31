@@ -359,7 +359,7 @@ class ContainersTable extends Table {
                         'for' => $containerId
                     ])->disableHydration()->select(['id', 'containertype_id'])->all();
                     return $query->toArray();
-                }catch (RecordNotFoundException $e){
+                } catch (RecordNotFoundException $e) {
                     return [];
                 }
             }, 'migration');
@@ -393,5 +393,49 @@ class ContainersTable extends Table {
         }
 
         return $result;
+    }
+
+    public function getPathByIdAndCacheResult($id, $cacheKey) {
+        $cacheKey = sprintf('%s:%s', $cacheKey, $id);
+        $path = Cache::remember($cacheKey, function () use ($id) {
+            try {
+                $path = $this->find('path', ['for' => $id])
+                    ->disableHydration()
+                    ->all()
+                    ->toArray();
+                return $path;
+            } catch (RecordNotFoundException $e) {
+                return [];
+            }
+        }, 'migration');
+        return $path;
+    }
+
+    public function getAllContainerByParentId($parentContainerId) {
+        if (!is_array($parentContainerId)) {
+            $parentContainerId = [$parentContainerId];
+        }
+
+        $containers = $this->find()
+            ->where(['Containers.parent_id IN' => $parentContainerId])
+            ->disableHydration()
+            ->all()
+            ->toArray();
+
+        if ($containers === null) {
+            return [];
+        }
+
+        return $containers;
+    }
+
+    /**
+     * @param int $id
+     * @return bool|mixed
+     * @link https://book.cakephp.org/3.0/en/orm/behaviors/tree.html#deleting-nodes
+     */
+    public function deleteContainerById($id) {
+        $container = $this->get($id);
+        return $this->delete($container);
     }
 }

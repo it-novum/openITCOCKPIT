@@ -24,6 +24,7 @@
 //	confirmation.
 use App\Model\Table\CommandsTable;
 use Cake\ORM\TableRegistry;
+use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\PHPVersionChecker;
 
 
@@ -615,7 +616,7 @@ class ContactsController extends AppController {
             $usersForSelect = $this->Ldap->findAllUser();
         }
 
-        $usersForSelect = $this->Contact->makeItJavaScriptAble($usersForSelect);
+        $usersForSelect = Api::makeItJavaScriptAble($usersForSelect);
 
         $isPhp7Dot1 = $PHPVersionChecker->isVersionGreaterOrEquals7Dot1();
         $this->set(compact(['usersForSelect', 'systemsettings', 'isPhp7Dot1']));
@@ -701,7 +702,7 @@ class ContactsController extends AppController {
             }
         }
 
-        $usersForSelect = $this->User->makeItJavaScriptAble($usersForSelect);
+        $usersForSelect = Api::makeItJavaScriptAble($usersForSelect);
 
         $this->set('usersForSelect', $usersForSelect);
         $this->set('_serialize', ['usersForSelect']);
@@ -876,7 +877,7 @@ class ContactsController extends AppController {
         if (isset($this->request->data['container_ids'])) {
             $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->request->data['container_ids']);
             $timePeriods = $this->Timeperiod->timeperiodsByContainerId($containerIds, 'list');
-            $timePeriods = $this->Timeperiod->makeItJavaScriptAble($timePeriods);
+            $timePeriods = Api::makeItJavaScriptAble($timePeriods);
         }
 
         $data = [
@@ -893,7 +894,7 @@ class ContactsController extends AppController {
         if (isset($this->request->data['container_ids'])) {
             $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->request->data['container_ids']);
             $users = $this->User->usersByContainerId($containerIds, 'list');
-            $users = $this->User->makeItJavaScriptAble($users);
+            $users = Api::makeItJavaScriptAble($users);
         }
 
         $data = [

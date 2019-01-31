@@ -22,6 +22,7 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\MapConditions;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\System\FileUploadSize;
@@ -1776,7 +1777,7 @@ class MapeditorsController extends MapModuleAppController {
         $MapConditions = new MapConditions($MapFilter->indexFilter());
         $MapConditions->setContainerIds($this->MY_RIGHTS);
 
-        $maps = $this->Map->makeItJavaScriptAble(
+        $maps = Api::makeItJavaScriptAble(
             $this->Map->getMapsForAngular($MapConditions, $selected, $excluded)
         );
 

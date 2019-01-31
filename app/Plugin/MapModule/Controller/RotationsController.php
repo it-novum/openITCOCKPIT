@@ -23,6 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Filter\MapFilter;
 use itnovum\openITCOCKPIT\Filter\RotationFilter;
 
@@ -199,7 +200,7 @@ class RotationsController extends MapModuleAppController {
         $maps = $this->Map->find('all', $query);
 
         $maps = Hash::combine($maps, '{n}.Map.id', '{n}.Map.name');
-        $maps = $this->Rotation->makeItJavaScriptAble($maps);
+        $maps = Api::makeItJavaScriptAble($maps);
 
         $this->set('maps', $maps);
         $this->set('_serialize', ['maps']);
@@ -215,7 +216,7 @@ class RotationsController extends MapModuleAppController {
         } else {
             $containers = $this->Tree->easyPath($this->getWriteContainers(), CT_TENANT, [], $this->hasRootPrivileges);
         }
-        $containers = $this->Rotation->makeItJavaScriptAble($containers);
+        $containers = Api::makeItJavaScriptAble($containers);
 
 
         $this->set('containers', $containers);

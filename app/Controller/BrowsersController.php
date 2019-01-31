@@ -25,6 +25,7 @@
 
 //App::import('Model', 'Host');
 //App::import('Model', 'Container');
+use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\ModuleManager;
 use itnovum\openITCOCKPIT\Monitoring\QueryHandler;
 
@@ -84,8 +85,8 @@ class BrowsersController extends AppController {
         if ((int)$containerId === ROOT_CONTAINER && !empty($tenants)) {
             //First request if tenants are not empty or ROOT_CONTAINER
 
-            $this->set('containers', $this->Container->makeItJavaScriptAble($tenants));
-            $this->set('breadcrumbs', $this->Container->makeItJavaScriptAble([ROOT_CONTAINER => __('root')]));
+            $this->set('containers', Api::makeItJavaScriptAble($tenants));
+            $this->set('breadcrumbs', Api::makeItJavaScriptAble([ROOT_CONTAINER => __('root')]));
         } else {
             //Child container (or so)
 
@@ -126,8 +127,8 @@ class BrowsersController extends AppController {
                 }
             }
             $breadcrumbs[$currentContainer['Container']['id']] = $currentContainer['Container']['name'];
-            $this->set('containers', $this->Container->makeItJavaScriptAble($containers));
-            $this->set('breadcrumbs', $this->Container->makeItJavaScriptAble($breadcrumbs));
+            $this->set('containers', Api::makeItJavaScriptAble($containers));
+            $this->set('breadcrumbs', Api::makeItJavaScriptAble($breadcrumbs));
 
         }
 

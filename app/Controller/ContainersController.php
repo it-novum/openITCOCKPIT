@@ -23,6 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\ModuleManager;
 
 
@@ -454,11 +455,11 @@ class ContainersController extends AppController {
         }
 
         if ($this->hasRootPrivileges === true) {
-            $containers = $this->Container->makeItJavaScriptAble(
+            $containers = Api::makeItJavaScriptAble(
                 $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_HOST, [], $this->hasRootPrivileges, [CT_HOSTGROUP])
             );
         } else {
-            $containers = $this->Container->makeItJavaScriptAble(
+            $containers = Api::makeItJavaScriptAble(
                 $containers = $this->Tree->easyPath($this->getWriteContainers(), OBJECT_HOST, [], $this->hasRootPrivileges, [CT_HOSTGROUP])
             );
         }

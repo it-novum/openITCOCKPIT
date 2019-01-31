@@ -23,6 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\HoststatusFields;
 use itnovum\openITCOCKPIT\Core\ServicegroupConditions;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
@@ -369,7 +370,7 @@ class ServicegroupsController extends AppController {
         } else {
             $containers = $this->Tree->easyPath($this->getWriteContainers(), OBJECT_SERVICEGROUP, [], $this->hasRootPrivileges);
         }
-        $containers = $this->Container->makeItJavaScriptAble($containers);
+        $containers = Api::makeItJavaScriptAble($containers);
 
 
         $this->set('containers', $containers);
@@ -382,7 +383,7 @@ class ServicegroupsController extends AppController {
         $services = $this->Host->servicesByContainerIds([ROOT_CONTAINER, $containerId], 'list', [
             'forOptiongroup' => true,
         ]);
-        $services = $this->Service->makeItJavaScriptAble($services);
+        $services = Api::makeItJavaScriptAble($services);
 
         $data = ['services' => $services];
         $this->set($data);
@@ -558,7 +559,7 @@ class ServicegroupsController extends AppController {
         $this->allowOnlyAjaxRequests();
 
         $servicetemplates = $this->Servicetemplate->servicetemplatesByContainerId([ROOT_CONTAINER, $containerId], 'list');
-        $servicetemplates = $this->Servicetemplate->makeItJavaScriptAble($servicetemplates);
+        $servicetemplates = Api::makeItJavaScriptAble($servicetemplates);
 
         $data = ['servicetemplates' => $servicetemplates];
         $this->set($data);
@@ -803,7 +804,7 @@ class ServicegroupsController extends AppController {
             $servicegroups = $this->Paginator->paginate();
         }
 
-        $servicegroups = $this->Servicegroup->makeItJavaScriptAble(
+        $servicegroups = Api::makeItJavaScriptAble(
             Hash::combine(
                 $servicegroups,
                 '{n}.Servicegroup.id',
@@ -865,7 +866,7 @@ class ServicegroupsController extends AppController {
         $ServicegroupConditions = new ServicegroupConditions($ServicegroupFilter->indexFilter());
         $ServicegroupConditions->setContainerIds($this->MY_RIGHTS);
 
-        $servicegroups = $this->Servicegroup->makeItJavaScriptAble(
+        $servicegroups = Api::makeItJavaScriptAble(
             $this->Servicegroup->getServicegroupsForAngular($ServicegroupConditions, $selected)
         );
 

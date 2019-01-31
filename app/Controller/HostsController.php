@@ -29,6 +29,7 @@ use App\Model\Table\CommandsTable;
 use App\Model\Table\ContainersTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AcknowledgedHostConditions;
+use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\CustomMacroReplacer;
 use itnovum\openITCOCKPIT\Core\CustomVariableDiffer;
 use itnovum\openITCOCKPIT\Core\DowntimeHostConditions;
@@ -3096,9 +3097,9 @@ class HostsController extends AppController {
 
         $hosttemplates = $this->Hosttemplate->hosttemplatesByContainerId($containerIds, 'list', $hosttemplate_type);
         $hosttemplates = $this->Hosttemplate->chosenPlaceholder($hosttemplates);
-        $hosttemplates = $this->Hosttemplate->makeItJavaScriptAble($hosttemplates);
+        $hosttemplates = Api::makeItJavaScriptAble($hosttemplates);
 
-        $hostgroups = $this->Host->makeItJavaScriptAble(
+        $hostgroups = Api::makeItJavaScriptAble(
             $this->Hostgroup->hostgroupsByContainerId($containerIds, 'list', 'id')
         );
 
@@ -3106,17 +3107,17 @@ class HostsController extends AppController {
         if ($host_id != 0 && isset($parenthosts[$host_id])) {
             unset($parenthosts[$host_id]);
         }
-        $parenthosts = $this->Host->makeItJavaScriptAble($parenthosts);
+        $parenthosts = Api::makeItJavaScriptAble($parenthosts);
 
         $timeperiods = $this->Timeperiod->timeperiodsByContainerId($containerIds, 'list');
-        $timeperiods = $this->Host->makeItJavaScriptAble($timeperiods);
+        $timeperiods = Api::makeItJavaScriptAble($timeperiods);
         $checkperiods = $timeperiods;
 
         $contacts = $this->Contact->contactsByContainerId($containerIds, 'list');
-        $contacts = $this->Host->makeItJavaScriptAble($contacts);
+        $contacts = Api::makeItJavaScriptAble($contacts);
 
         $contactgroups = $this->Contactgroup->contactgroupsByContainerId($containerIds, 'list');
-        $contactgroups = $this->Host->makeItJavaScriptAble($contactgroups);
+        $contactgroups = Api::makeItJavaScriptAble($contactgroups);
 
         $this->set(compact(['hosttemplates', 'hostgroups', 'parenthosts', 'timeperiods', 'checkperiods', 'contacts', 'contactgroups']));
         $this->set('_serialize', ['hosttemplates', 'hostgroups', 'parenthosts', 'timeperiods', 'checkperiods', 'contacts', 'contactgroups']);
@@ -3240,7 +3241,7 @@ class HostsController extends AppController {
         $HostCondition = new HostConditions($HostFilter->ajaxFilter());
         $HostCondition->setContainerIds($this->MY_RIGHTS);
 
-        $hosts = $this->Host->makeItJavaScriptAble(
+        $hosts = Api::makeItJavaScriptAble(
             $this->Host->getHostsForAngular($HostCondition, $selected)
         );
 
@@ -3268,7 +3269,7 @@ class HostsController extends AppController {
         $HostCondition = new HostConditions($HostFilter->ajaxFilter());
         $HostCondition->setContainerIds($containerIds);
 
-        $hosts = $this->Host->makeItJavaScriptAble(
+        $hosts = Api::makeItJavaScriptAble(
             $this->Host->getHostsForAngular($HostCondition, $selected)
         );
 
@@ -3304,7 +3305,7 @@ class HostsController extends AppController {
             $HostCondition->setContainerIds(array_keys($writeContainers));
         }
 
-        $hosts = $this->Host->makeItJavaScriptAble(
+        $hosts = Api::makeItJavaScriptAble(
             $this->Host->getHostsForAngular($HostCondition, $selected)
         );
 
@@ -3335,7 +3336,7 @@ class HostsController extends AppController {
                 'Host.id' => $hostId
             ]);
         }
-        $hosts = $this->Host->makeItJavaScriptAble(
+        $hosts = Api::makeItJavaScriptAble(
             $this->Host->getHostsForAngular($HostCondition, $selected)
         );
 

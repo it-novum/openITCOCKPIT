@@ -26,6 +26,7 @@
 
 use Cake\ORM\TableRegistry;
 use GuzzleHttp\Client;
+use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Grafana\GrafanaApiConfiguration;
 
 /**
@@ -160,7 +161,7 @@ class GrafanaConfigurationController extends GrafanaModuleAppController {
             ],
         ]);
 
-        $hostgroups = $this->Container->makeItJavaScriptAble($hostgroups);
+        $hostgroups = Api::makeItJavaScriptAble($hostgroups);
 
         $this->set('hostgroups', $hostgroups);
         $this->set('_serialize', ['hostgroups']);
