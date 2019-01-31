@@ -184,9 +184,6 @@ class Container extends AppModel {
         return [$container['Container']['id'] => $container['Container']['name']];
     }
 
-    public function findTenantByContainer($container_id) {
-        return $this->getTenantByContainer($container_id);
-    }
 
 
     public function isUniqueByObject() {
@@ -230,22 +227,6 @@ class Container extends AppModel {
 
     }
 
-    /**
-     * Returns an array of $type with all Contactgroups
-     *
-     * @param string $type for find (all, first, list,...)
-     *
-     * @return array with all contactgroups
-     * @author Daniel Ziegler <daniel.ziegler@it-novum.com>
-     * @since  3.0
-     */
-    public function findContactgroup($type = 'all') {
-        return $this->find($type, [
-            'conditions' => [
-                'containertype_id' => CT_CONTACTGROUP,
-            ],
-        ]);
-    }
 
     public function __delete($id) {
         return $this->delete($id, true);
@@ -288,38 +269,5 @@ class Container extends AppModel {
         return true;
     }
 
-    public function getContainersForAngular(ContainerConditions $ContainerConditions, $selected = []) {
-        $query = [
-            'recursive'  => -1,
-            'fields'     => 'Container.name',
-            'conditions' => $ContainerConditions->getConditionsForFind(),
-            'order'      => [
-                'Container.name' => 'ASC',
-            ],
-            'group'      => [
-                'Container.id'
-            ]
-        ];
-        $containersWithLimit = $this->find('list', $query);
-
-        $selectedContainers = [];
-        if (!empty($selected)) {
-            $query = [
-                'recursive'  => -1,
-                'fields'     => 'Container.name',
-                'conditions' => [
-                    'Container.id' => $selected
-                ],
-                'order'      => [
-                    'Container.name' => 'ASC',
-                ],
-            ];
-            $selectedContainers = $this->find('list', $query);
-        }
-
-        $containers = $containersWithLimit + $selectedContainers;
-        asort($containers, SORT_FLAG_CASE | SORT_NATURAL);
-        return $containers;
-    }
 }
 
