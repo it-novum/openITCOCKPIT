@@ -62,6 +62,7 @@ if (ENVIRONMENT === Environments::PRODUCTION) {
     echo $this->element('assets');
 
     printf('<script src="%s"></script>', '/vendor/angular/angular.min.js');
+    printf('<script src="%s"></script>', '/vendor/angular-ui-router/release/angular-ui-router.min.js');
     printf('<script src="%s"></script>', '/js/vendor/vis-4.21.0/dist/vis.js');
     printf('<script src="%s"></script>', '/js/scripts/ng.app.js');
     printf('<script src="%s"></script>', '/vendor/javascript-detect-element-resize/jquery.resize.js');
