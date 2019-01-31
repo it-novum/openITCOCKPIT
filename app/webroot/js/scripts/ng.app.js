@@ -117,6 +117,12 @@ angular.module('openITCOCKPIT', ['ui.router', 'gridster'])
                 controller: "HostsDisabledController"
             })
 
+            .state('HostsBrowser', {
+                url: '/hosts/browser/:id',
+                templateUrl: "/hosts/browser.html",
+                controller: "HostsBrowserController"
+            })
+
             .state('HostgroupsIndex', {
                 url: '/hostgroups',
                 templateUrl: "/hostgroups/index.html",

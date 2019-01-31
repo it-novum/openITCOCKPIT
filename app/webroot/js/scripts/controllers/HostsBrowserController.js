@@ -1,7 +1,8 @@
 angular.module('openITCOCKPIT')
-    .controller('HostsBrowserController', function($scope, $rootScope, $http, QueryStringService, SortService, $interval){
+    .controller('HostsBrowserController', function($scope, $rootScope, $http, QueryStringService, $stateParams, $state, SortService, $interval){
 
-        $scope.id = QueryStringService.getCakeId();
+        //$scope.id = QueryStringService.getCakeId();
+        $scope.id = $stateParams.id;
 
         $scope.activeTab = 'active';
         SortService.setSort('Servicestatus.current_state');

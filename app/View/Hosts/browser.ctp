@@ -25,7 +25,7 @@
 
 $Hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus([]);
 
-if (!$QueryHandler->exists()): ?>
+if (isset($QueryHandler) && !$QueryHandler->exists()): ?>
     <div class="alert alert-danger alert-block">
         <a href="#" data-dismiss="alert" class="close">×</a>
         <h4 class="alert-heading"><i class="fa fa-warning"></i> <?php echo __('Monitoring Engine is not running!'); ?>
@@ -59,7 +59,8 @@ if (!$QueryHandler->exists()): ?>
     <div class="col-xs-12 col-sm-5 col-md-6 col-lg-6">
         <h5>
             <div class="pull-right">
-                <?php echo $this->element('host_browser_menu'); ?>
+                <?php //echo $this->element('host_browser_menu'); ?>
+                <host-browser-menu host-id="id" host-uuid="mergedHost.Host.uuid" hostUrl="" action="browser" controller="hosts"></host-browser-menu>
             </div>
         </h5>
     </div>
@@ -97,7 +98,7 @@ if (!$QueryHandler->exists()): ?>
 
                     <?php echo $this->AdditionalLinks->renderAsTabs($additionalLinksTab, null, 'host', 'tabLink', 'hideTimeline()'); ?>
 
-                    <?php if ($GrafanaDashboardExists): ?>
+                    <?php if (isset($GrafanaDashboardExists) && $GrafanaDashboardExists): ?>
                         <li class="">
                             <a href="#tab5" data-toggle="tab" ng-click="hideTimeline()">
                                 <i class="fa fa-lg fa-area-chart"></i>
@@ -851,7 +852,7 @@ if (!$QueryHandler->exists()): ?>
                                                 <tr ng-show="mergedHost.Host.is_satellite_host === false">
                                                     <td><?php echo __('Instance'); ?></td>
                                                     <td>
-                                                        <?php echo h($masterInstanceName); ?>
+                                                        <?php if(isset($masterInstanceName)) echo h($masterInstanceName); ?>
                                                     </td>
                                                 </tr>
 
