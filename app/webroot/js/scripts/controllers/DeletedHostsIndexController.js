@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('Deleted_hostsIndexController', function($scope, $http, $httpParamSerializer, SortService, QueryStringService){
+    .controller('DeletedHostsIndexController', function($scope, $http, $httpParamSerializer, SortService, QueryStringService){
         SortService.setSort(QueryStringService.getValue('sort', 'DeletedHost.created'));
         SortService.setDirection(QueryStringService.getValue('direction', 'desc'));
         $scope.currentPage = 1;
@@ -29,7 +29,7 @@ angular.module('openITCOCKPIT')
                 'filter[DeletedHost.name]': $scope.filter.DeletedHost.name
             };
 
-            $http.get("/deleted_hosts/index.json", {
+            $http.get("/deletedHosts/index.json", {
                 params: params
             }).then(function(result){
                 $scope.hosts = result.data.deletedHosts;

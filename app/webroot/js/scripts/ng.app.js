@@ -93,8 +93,32 @@ angular.module('openITCOCKPIT', ['ui.router', 'gridster'])
     .config(function($urlRouterProvider, $stateProvider){
         $stateProvider
 
+            .state('DeletedHostsIndex', {
+                url: '/deletedHosts',
+                templateUrl: "/deletedHosts/index.html",
+                controller: "DeletedHostsIndexController"
+            })
+
+            .state('HostsIndex', {
+                url: '/hosts',
+                templateUrl: "/hosts/index.html",
+                controller: "HostsIndexController"
+            })
+
+            .state('HostsNotMonitored', {
+                url: '/hosts/notMonitored',
+                templateUrl: "/hosts/notMonitored.html",
+                controller: "HostsNotMonitoredController"
+            })
+
+            .state('HostsDisabled', {
+                url: '/hosts/disabled',
+                templateUrl: "/hosts/disabled.html",
+                controller: "HostsDisabledController"
+            })
+
             .state('HostgroupsIndex', {
-                url: '/hostgroups/index',
+                url: '/hostgroups',
                 templateUrl: "/hostgroups/index.html",
                 controller: "HostgroupsIndexController"
             })
@@ -202,7 +226,12 @@ angular.module('openITCOCKPIT', ['ui.router', 'gridster'])
 
     .filter('highlight', function($sce){
         return function(title, searchString){
-            if(searchString) title = title.replace(new RegExp('(' + searchString + ')', 'gi'),
+            searchString = searchString.replace(/\s/g, "");
+            let newSearchString = "";
+            for (var i = 0; i < searchString.length; i++) {
+                newSearchString += searchString.charAt(i)+"\\s*";
+            }
+            if(searchString) title = title.replace(new RegExp('(' + newSearchString + ')', 'gi'),
                 '<span class="search-highlight">$1</span>');
 
             return $sce.trustAsHtml(title)
