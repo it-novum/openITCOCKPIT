@@ -24,6 +24,8 @@
 //	confirmation.
 
 
+use App\Model\Table\ContainersTable;
+use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\ValueObjects\LastDeletedId;
 
 class Contact extends AppModel {
@@ -306,21 +308,16 @@ class Contact extends AppModel {
 
         $container_ids = array_unique($container_ids);
 
-        //Lookup for the tenant container of $container_id
-        $this->Container = ClassRegistry::init('Container');
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
 
         $tenantContainerIds = [];
-
         foreach ($container_ids as $container_id) {
             if ($container_id != ROOT_CONTAINER) {
-
+                $path = $ContainersTable->getPathByIdAndCacheResult($container_id, 'ContactContactsByContainerId');
                 // Get container id of the tenant container
-                // $container_id is may be a location, devicegroup or whatever, so we need to container id of the tenant container to load contactgroups and contacts
-                $path = Cache::remember('ContactContactsByContainerId:' . $container_id, function () use ($container_id) {
-                    return $this->Container->getPath($container_id);
-                }, 'migration');
                 if (isset($path[1])) {
-                    $tenantContainerIds[] = $path[1]['Container']['id'];
+                    $tenantContainerIds[] = $path[1]['id'];
                 }
             } else {
                 $tenantContainerIds[] = ROOT_CONTAINER;

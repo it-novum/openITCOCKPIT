@@ -160,7 +160,7 @@ class GrafanaConfigurationController extends GrafanaModuleAppController {
             ],
         ]);
 
-        $hostgroups = $this->Container->makeItJavaScriptAble($hostgroups);
+        $hostgroups = $this->Hostgroup->makeItJavaScriptAble($hostgroups);
 
         $this->set('hostgroups', $hostgroups);
         $this->set('_serialize', ['hostgroups']);

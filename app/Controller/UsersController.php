@@ -208,11 +208,10 @@ class UsersController extends AppController {
         $user = $this->User->findById($id);
         if (!$this->allowedByContainerId(Hash::extract($user['ContainerUserMembership'], '{n}.container_id'))) {
             $this->render403();
-
-            return;
+            return false;
         }
 
-        if ($this->User->__delete($id, $this->Auth->user('id'))) {
+        if ($this->User->__delete($id, $id)) {
             $this->setFlash(__('User deleted'));
             $this->redirect(['action' => 'index']);
         } else {
