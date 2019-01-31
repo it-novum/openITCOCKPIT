@@ -46,7 +46,7 @@
             <i class="fa fa-lg fa-fw fa-{{menuMatche.icon}}"></i>
             <span class="menu-item-parent" ng-bind-html="menuMatche.title | highlight:menuFilter"></span>
         </a>
-        <a ng-if="menuMatche.isAngular == 1" ui-sref="{{ menuMatche.state }}">
+        <a ng-if="menuMatche.isAngular == 1" href="/ng/#!{{ menuMatche.url }}">
             <i class="fa fa-lg fa-fw fa-{{menuMatche.icon}}"></i>
             <span class="menu-item-parent" ng-bind-html="menuMatche.title | highlight:menuFilter"></span>
         </a>
@@ -63,7 +63,7 @@
                 <em class="fa fa-minus-square-o" ng-if="isActiveParent(parentNode)"></em>
             </b>
         </a>
-        <a ng-if="parentNode.isAngular == 1" ui-sref="{{ parentNode.state }}">
+        <a ng-if="parentNode.isAngular == 1" href="/ng/#!{{ parentNode.url }}">
 
             <i class="fa fa-lg fa-fw fa-{{ parentNode.icon }}"></i>
             <span class="menu-item-parent">{{ parentNode.title }}</span>
@@ -78,7 +78,7 @@
                     <i class="fa fa-lg fa-fw fa-{{ childNode.icon }}"></i>
                     <span class="menu-item-parent">{{ childNode.title }}</span>
                 </a>
-                <a ng-if="childNode.isAngular == 1" ui-sref="{{ childNode.state }}">
+                <a ng-if="childNode.isAngular == 1" href="/ng/#!{{ childNode.url }}">
                     <i class="fa fa-lg fa-fw fa-{{ childNode.icon }}"></i>
                     <span class="menu-item-parent">{{ childNode.title }}</span>
                 </a>
