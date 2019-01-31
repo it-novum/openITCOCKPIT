@@ -153,6 +153,7 @@ class CommandsController extends AppController {
                 //No errors
                 $userId = $this->Auth->user('id');
                 $requestData = $this->request->data;
+
                 $changelog_data = $this->Changelog->parseDataForChangelog(
                     'edit',
                     $this->params['controller'],
@@ -162,7 +163,7 @@ class CommandsController extends AppController {
                     $userId,
                     $requestData['Command']['name'],
                     $requestData,
-                    $commandForChangeLog
+                    ['Command' => $commandForChangeLog->toArray()]
                 );
                 if ($changelog_data) {
                     CakeLog::write('log', serialize($changelog_data));
