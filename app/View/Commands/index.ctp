@@ -189,8 +189,9 @@
                                                 id="menuHack-{{command.Command.id}}">
                                                 <?php if ($this->Acl->hasPermission('edit', 'commands')): ?>
                                                     <li>
-                                                        <a href="/commands/edit/{{ command.Command.id}}">
-                                                            <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
+                                                        <a ui-sref="CommandsEdit({id:command.Command.id})">
+                                                            <i class="fa fa-cog"></i>
+                                                            <?php echo __('Edit'); ?>
                                                         </a>
                                                     </li>
                                                 <?php endif; ?>

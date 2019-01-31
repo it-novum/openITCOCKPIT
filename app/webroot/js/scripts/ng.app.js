@@ -94,13 +94,13 @@ angular.module('openITCOCKPIT', ['ui.router', 'gridster'])
         $stateProvider
 
             .state('DeletedHostsIndex', {
-                url: '/deletedHosts/index',
+                url: '/deletedHosts',
                 templateUrl: "/deletedHosts/index.html",
                 controller: "DeletedHostsIndexController"
             })
 
             .state('HostsIndex', {
-                url: '/hosts/index',
+                url: '/hosts',
                 templateUrl: "/hosts/index.html",
                 controller: "HostsIndexController"
             })
@@ -118,7 +118,7 @@ angular.module('openITCOCKPIT', ['ui.router', 'gridster'])
             })
 
             .state('HostgroupsIndex', {
-                url: '/hostgroups/index',
+                url: '/hostgroups',
                 templateUrl: "/hostgroups/index.html",
                 controller: "HostgroupsIndexController"
             })

@@ -24,10 +24,17 @@ angular.module('openITCOCKPIT').directive('menu', function($http, $timeout, $htt
                 });
             };
 
-            $scope.isActiveChild = function(childNode){
+            $scope.isActiveChild = function(childNode) {
+                let urlController = $scope.phpcontroller;
+                let urlAction = $scope.phpaction;
+                if (window.location.href.includes('/ng/#!/')) {
+                    let oldUrlParams = window.location.href.split('/ng/#!/')[1].split('/');
+                    urlController = oldUrlParams[0];
+                    urlAction = oldUrlParams[1] ? oldUrlParams[1] : "index";
+                }
                 if(childNode.url_array.plugin == $scope.phpplugin){
-                    if(childNode.url_array.controller === $scope.phpcontroller){
-                        if(childNode.url_array.action === $scope.phpaction){
+                    if(childNode.url_array.controller === urlController){
+                        if(childNode.url_array.action === urlAction){
                             return true;
                         }
                     }
@@ -35,10 +42,18 @@ angular.module('openITCOCKPIT').directive('menu', function($http, $timeout, $htt
                 return false;
             };
 
-            $scope.isActiveParent = function(parentNode){
+            $scope.isActiveParent = function(parentNode) {
+                let urlController = $scope.phpcontroller;
+                let urlAction = $scope.phpaction;
+                if (window.location.href.includes('/ng/#!/')) {
+                    let oldUrlParams = window.location.href.split('/ng/#!/')[1].split('/');
+                    urlController = oldUrlParams[0];
+                    urlAction = oldUrlParams[1] ? oldUrlParams[1] : "index";
+                }
+
                 if(parentNode.url_array && parentNode.url_array.plugin == $scope.phpplugin){
-                    if(parentNode.url_array.controller === $scope.phpcontroller){
-                        if(parentNode.url_array.action === $scope.phpaction){
+                    if(parentNode.url_array.controller === urlController){
+                        if(parentNode.url_array.action === urlAction){
                             return true;
                         }
                     }
