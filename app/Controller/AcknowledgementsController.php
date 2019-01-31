@@ -173,7 +173,7 @@ class AcknowledgementsController extends AppController {
     }
 
     public function host($id = null) {
-        $this->layout = "angularjs";
+        $this->layout = 'blank';
 
         if (!$this->Host->exists($id)) {
             throw new NotFoundException(__('Invalid host'));

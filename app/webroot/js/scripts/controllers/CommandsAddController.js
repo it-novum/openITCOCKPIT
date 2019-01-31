@@ -45,7 +45,6 @@ angular.module('openITCOCKPIT')
 
         $scope.submit = function(){
             var index = 0;
-            console.log($scope.args);
             for(var i in $scope.args){
                 if(!/\S/.test($scope.args[i].human_name)){
                     continue;
