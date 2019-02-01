@@ -77,7 +77,11 @@ class ContainersController extends AppController {
             throw new MethodNotAllowedException();
 
         }
-        if (!$this->Container->exists($id)) {
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        if (!$ContainersTable->existsById($id)) {
             throw new NotFoundException(__('Invalid container'));
         }
         $container = $this->Container->findById($id);
@@ -115,9 +119,13 @@ class ContainersController extends AppController {
             return;
         }
         if ($this->request->is('post')) {
+
+            /** @var $ContainersTable ContainersTable */
+            $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
             $containerId = $this->request->data['Container']['id'];
             $containerTypeId = $this->request->data['Container']['containertype_id'];
-            if (!$this->Container->exists($containerId) || $containerTypeId != 5) {
+            if (!$ContainersTable->existsById($containerId) || $containerTypeId != 5) {
                 throw new NotFoundException(__('Invalid container'));
             }
 
@@ -218,7 +226,11 @@ class ContainersController extends AppController {
 
     public function delete($id = null) {
         $userId = $this->Auth->user('id');
-        if (!$this->Container->exists($id)) {
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        if (!$ContainersTable->existsById($id)) {
             throw new NotFoundException(__('Invalid container'));
         }
         if (!$this->request->is('post')) {
@@ -491,7 +503,11 @@ class ContainersController extends AppController {
             $this->render403();
             return;
         }
-        if (!$this->Container->exists($id)) {
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        if (!$ContainersTable->existsById($id)) {
             throw new NotFoundException(__('Invalid container'));
         }
 
