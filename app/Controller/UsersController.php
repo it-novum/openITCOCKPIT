@@ -26,6 +26,8 @@
 //App::uses('AdminAppController', 'Admin.Controller');
 //require_once APP . 'Model/User.php';
 
+use App\Model\Table\ContainersTable;
+use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\PHPVersionChecker;
 use itnovum\openITCOCKPIT\Core\Views\Logo;
@@ -336,7 +338,9 @@ class UsersController extends AppController {
             }
         }
 
-        $containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_USER, [], $this->hasRootPrivileges);
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        $containers = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_USER, [], $this->hasRootPrivileges);
         $this->set(compact(['containers', 'usergroups']));
 
         $this->set('type', $type);
@@ -424,7 +428,11 @@ class UsersController extends AppController {
         $usergroups = $this->Usergroup->find('list');
         $options = ['conditions' => ['User.' . $this->User->primaryKey => $id]];
         $this->request->data = $this->User->find('first', $options);
-        $containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_USER, [], $this->hasRootPrivileges);
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        $containers = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_USER, [], $this->hasRootPrivileges);
         $selectedContainers = ($this->request->data('Container')) ? Hash::extract($this->request->data['Container'], '{n}.id') : Hash::extract($permissionsUser['ContainerUserMembership'], '{n}.container_id');
         $this->set(compact(['containers', 'selectedContainers', 'permissionsUser']));
         $this->request->data['User']['password'] = '';

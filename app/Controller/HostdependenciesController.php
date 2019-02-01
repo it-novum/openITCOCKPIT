@@ -22,6 +22,8 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+use App\Model\Table\ContainersTable;
+use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 
 
@@ -135,8 +137,11 @@ class HostdependenciesController extends AppController {
         $this->Frontend->set('data_placeholder', __('Please choose'));
         $this->Frontend->set('data_placeholder_empty', __('No entries found'));
 
-        $containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_HOSTDEPENDENCY, [], $this->hasRootPrivileges);
-        $containerIds = $this->Tree->resolveChildrenOfContainerIds($hostdependency['Hostdependency']['container_id']);
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        $containers = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_HOSTDEPENDENCY, [], $this->hasRootPrivileges);
+        $containerIds = $ContainersTable->resolveChildrenOfContainerIds($hostdependency['Hostdependency']['container_id']);
 
         $hosts = $this->Host->hostsByContainerId($containerIds, 'list');
 
@@ -209,7 +214,9 @@ class HostdependenciesController extends AppController {
         $hostgroups = [];
         $timeperiods = [];
 
-        $containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_HOSTDEPENDENCY, [], $this->hasRootPrivileges);
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        $containers = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_HOSTDEPENDENCY, [], $this->hasRootPrivileges);
 
 
         $customFildsToRefill = [

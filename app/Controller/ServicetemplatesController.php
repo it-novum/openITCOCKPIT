@@ -24,6 +24,7 @@
 //	confirmation.
 use App\Model\Table\CommandargumentsTable;
 use App\Model\Table\CommandsTable;
+use App\Model\Table\ContainersTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\ServiceConditions;
@@ -113,7 +114,10 @@ class ServicetemplatesController extends AppController {
             $this->Paginator->settings = Hash::merge($this->Paginator->settings, $options);
             $all_servicetemplates = $this->Paginator->paginate();
         }
-        $resolvedContainerNames = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_SERVICETEMPLATE, [], $this->hasRootPrivileges);
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        $resolvedContainerNames = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_SERVICETEMPLATE, [], $this->hasRootPrivileges);
         $this->set(compact(['all_servicetemplates', 'resolvedContainerNames']));
         $this->set('_serialize', ['all_servicetemplates']);
     }
@@ -194,13 +198,15 @@ class ServicetemplatesController extends AppController {
 
         /** @var $CommandsTable CommandsTable */
         $CommandsTable = TableRegistry::getTableLocator()->get('Commands');
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
 
         $commands = $CommandsTable->getCommandByTypeAsList(CHECK_COMMAND);
         $eventHandlers = $CommandsTable->getCommandByTypeAsList(EVENTHANDLER_COMMAND);
         if ($this->hasRootPrivileges === true) {
-            $containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_SERVICETEMPLATE, [], $this->hasRootPrivileges, [CT_SERVICETEMPLATEGROUP]);
+            $containers = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_SERVICETEMPLATE, [], $this->hasRootPrivileges, [CT_SERVICETEMPLATEGROUP]);
         } else {
-            $containers = $this->Tree->easyPath($this->getWriteContainers(), OBJECT_SERVICETEMPLATE, [], $this->hasRootPrivileges, [CT_SERVICETEMPLATEGROUP]);
+            $containers = $ContainersTable->easyPath($this->getWriteContainers(), OBJECT_SERVICETEMPLATE, [], $this->hasRootPrivileges, [CT_SERVICETEMPLATEGROUP]);
         }
 
         if (count($serviceTemplate['Service']) > 0) {
@@ -220,7 +226,7 @@ class ServicetemplatesController extends AppController {
             $containerId = $serviceTemplate['Servicetemplate']['container_id'];
         }
 
-        $containerIds = $this->Tree->resolveChildrenOfContainerIds($containerId);
+        $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId);
 
         $timeperiods = $this->Timeperiod->timeperiodsByContainerId($containerIds, 'list');
         $contacts = $this->Contact->contactsByContainerId($containerIds, 'list');
@@ -565,7 +571,7 @@ class ServicetemplatesController extends AppController {
                     // Refill data that was loaded by Ajax
                     if ($this->Container->exists($this->request->data('Servicetemplate.container_id'))) {
                         $containerIds = $this->request->data('Servicetemplate.container_id');
-                        $containerIds = $this->Tree->resolveChildrenOfContainerIds($containerIds);
+                        $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerIds);
 
                         $timeperiods = $this->Timeperiod->timeperiodsByContainerId($containerIds, 'list');
                         $contacts = $this->Contact->contactsByContainerId($containerIds, 'list');
@@ -648,14 +654,17 @@ class ServicetemplatesController extends AppController {
 
         /** @var $CommandsTable CommandsTable */
         $CommandsTable = TableRegistry::getTableLocator()->get('Commands');
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
         $commands = $CommandsTable->getCommandByTypeAsList(CHECK_COMMAND);
         $eventhandlers = $CommandsTable->getCommandByTypeAsList(EVENTHANDLER_COMMAND);
 
 
         if ($this->hasRootPrivileges === true) {
-            $containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_SERVICETEMPLATE, [], $this->hasRootPrivileges, [CT_SERVICETEMPLATEGROUP]);
+            $containers = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_SERVICETEMPLATE, [], $this->hasRootPrivileges, [CT_SERVICETEMPLATEGROUP]);
         } else {
-            $containers = $this->Tree->easyPath($this->getWriteContainers(), OBJECT_SERVICETEMPLATE, [], $this->hasRootPrivileges, [CT_SERVICETEMPLATEGROUP]);
+            $containers = $ContainersTable->easyPath($this->getWriteContainers(), OBJECT_SERVICETEMPLATE, [], $this->hasRootPrivileges, [CT_SERVICETEMPLATEGROUP]);
         }
 
         $this->Frontend->set('ServicetemplateActiveChecksEnabled_', __('1'));
@@ -882,7 +891,7 @@ class ServicetemplatesController extends AppController {
                 //Refil data that was loaded by ajax due to selected container id
                 if ($this->Container->exists($this->request->data('Servicetemplate.container_id'))) {
                     $container_id = $this->request->data('Servicetemplate.container_id');
-                    $containerIds = $this->Tree->resolveChildrenOfContainerIds($container_id);
+                    $containerIds = $ContainersTable->resolveChildrenOfContainerIds($container_id);
 
                     $_timeperiods = $this->Timeperiod->timeperiodsByContainerId($containerIds, 'list');
                     $_contacts = $this->Contact->contactsByContainerId($containerIds, 'list');
@@ -1302,7 +1311,11 @@ class ServicetemplatesController extends AppController {
             $this->setFlash(__('Please choose at least one Servicetemplate'), false);
             $this->redirect(['action' => 'index']);
         }
-        $resolvedPathContainerName = $this->Tree->easyPath([$checkedContanerId], OBJECT_SERVICETEMPLATEGROUP, [], $this->hasRootPrivileges);
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        $resolvedPathContainerName = $ContainersTable->easyPath([$checkedContanerId], OBJECT_SERVICETEMPLATEGROUP, [], $this->hasRootPrivileges);
         if (!isset($resolvedPathContainerName[$checkedContanerId])) {
             $this->setFlash(__('Please choose at least one Servicetemplate'), false);
             $this->redirect(['action' => 'index']);
@@ -1317,7 +1330,7 @@ class ServicetemplatesController extends AppController {
             $this->redirect(['action' => 'index']);
         }
 
-        $myContainerId = $this->Tree->resolveChildrenOfContainerIds($checkedContanerId);
+        $myContainerId = $ContainersTable->resolveChildrenOfContainerIds($checkedContanerId);
         $allServicetemplates = $this->Servicetemplate->servicetemplatesByContainerId($myContainerId, 'list');
         $allServicetemplateGroups = $this->Servicetemplategroup->find('all', [
             'conditions' => ['Container.parent_id' => $checkedContanerId],
@@ -1505,8 +1518,12 @@ class ServicetemplatesController extends AppController {
                 'sizeof'        => 0,
             ],
         ];
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
         //$result['contacts']['contacts'] = $this->Contact->contactsByServicetemplateId($servicetemplate_id, 'list');
-        $containerIds = $this->Tree->resolveChildrenOfContainerIds($servicetemplate_id);
+        $containerIds = $ContainersTable->resolveChildrenOfContainerIds($servicetemplate_id);
         $result['contacts']['contacts'] = $this->Contact->contactsByContainerId($containerIds, 'list');
 
         $result['contacts']['sizeof'] = sizeof($result['contacts']['contacts']);
@@ -1633,7 +1650,10 @@ class ServicetemplatesController extends AppController {
             throw new NotFoundException(__('Invalid hosttemplate'));
         }
 
-        $containerIds = $this->Tree->resolveChildrenOfContainerIds($containerId);
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId);
 
         $timeperiods = $timeperiods = $this->Timeperiod->timeperiodsByContainerId($containerIds, 'list');
         $timeperiods = Api::makeItJavaScriptAble($timeperiods);
@@ -1660,9 +1680,12 @@ class ServicetemplatesController extends AppController {
         $selected = $this->request->query('selected');
         $ServicetemplateFilter = new ServicetemplateFilter($this->request);
 
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
         $containerIds = [ROOT_CONTAINER, $containerId];
         if ($containerId == ROOT_CONTAINER) {
-            $containerIds = $this->Tree->resolveChildrenOfContainerIds(ROOT_CONTAINER, true);
+            $containerIds = $ContainersTable->resolveChildrenOfContainerIds(ROOT_CONTAINER, true);
         }
         $servicetemplates = Api::makeItJavaScriptAble(
             $this->Servicetemplate->getServicetemplatesForAngular($containerIds, $ServicetemplateFilter, $selected)

@@ -22,6 +22,8 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+use App\Model\Table\ContainersTable;
+use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 
 
@@ -151,9 +153,13 @@ class ServicedependenciesController extends AppController {
 
             return;
         }
-        $serviceDependencyContainerIds = $this->Tree->resolveChildrenOfContainerIds($serviceDependencyContainerId);
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
 
-        $containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_SERVICEDEPENDENCY, [], $this->hasRootPrivileges);
+        $serviceDependencyContainerIds = $ContainersTable->resolveChildrenOfContainerIds($serviceDependencyContainerId);
+
+
+        $containers = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_SERVICEDEPENDENCY, [], $this->hasRootPrivileges);
         $servicegroups = $this->Servicegroup->servicegroupsByContainerId($serviceDependencyContainerIds, 'list', 'id');
 
         $services = $this->Host->servicesByContainerIds($serviceDependencyContainerIds, 'list', [
@@ -249,7 +255,10 @@ class ServicedependenciesController extends AppController {
             ],
         ];
         $this->CustomValidationErrors->checkForRefill($customFieldsToRefill);
-        $containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_SERVICEDEPENDENCY, [], $this->hasRootPrivileges);
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        $containers = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_SERVICEDEPENDENCY, [], $this->hasRootPrivileges);
         $services = [];
         $servicegroups = [];
         $timeperiods = [];

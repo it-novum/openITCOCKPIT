@@ -22,6 +22,8 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+use App\Model\Table\ContainersTable;
+use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 
 
@@ -189,7 +191,9 @@ class ServiceescalationsController extends AppController {
             return;
         }
 
-        $containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_SERVICEESCALATION, [], $this->hasRootPrivileges);
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        $containers = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_SERVICEESCALATION, [], $this->hasRootPrivileges);
         list($servicegroups, $services, $timeperiods, $contacts, $contactgroups) = $this->getAvailableDataByContainerId($serviceescalation['Serviceescalation']['container_id']);
 
         if ($this->request->is('post') || $this->request->is('put')) {
@@ -271,7 +275,9 @@ class ServiceescalationsController extends AppController {
         $contactgroups = [];
         $timeperiods = [];
 
-        $containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_SERVICEESCALATION, [], $this->hasRootPrivileges);
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        $containers = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_SERVICEESCALATION, [], $this->hasRootPrivileges);
 
         $customFieldsToRefill = [
             'Serviceescalation' => [

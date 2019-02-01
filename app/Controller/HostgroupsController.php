@@ -23,6 +23,8 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use App\Model\Table\ContainersTable;
+use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\HostConditions;
 use itnovum\openITCOCKPIT\Core\HostgroupConditions;
@@ -350,10 +352,13 @@ class HostgroupsController extends AppController {
             throw new MethodNotAllowedException();
         }
 
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
         if ($this->hasRootPrivileges === true) {
-            $containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_HOSTGROUP, [], $this->hasRootPrivileges);
+            $containers = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_HOSTGROUP, [], $this->hasRootPrivileges);
         } else {
-            $containers = $this->Tree->easyPath($this->getWriteContainers(), OBJECT_HOSTGROUP, [], $this->hasRootPrivileges);
+            $containers = $ContainersTable->easyPath($this->getWriteContainers(), OBJECT_HOSTGROUP, [], $this->hasRootPrivileges);
         }
         $containers = Api::makeItJavaScriptAble($containers);
 
@@ -798,13 +803,16 @@ class HostgroupsController extends AppController {
             $hostsToAppend[] = $host;
         }
 
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
         if ($this->hasRootPrivileges === true) {
-            $containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_HOSTGROUP, [], $this->hasRootPrivileges);
-            $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+            $containers = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_HOSTGROUP, [], $this->hasRootPrivileges);
+            $containerIds = $ContainersTable->resolveChildrenOfContainerIds($this->MY_RIGHTS);
             $hostgroups = $this->Hostgroup->hostgroupsByContainerId($containerIds, 'list', 'id');
         } else {
-            $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->getWriteContainers());
-            $containers = $this->Tree->easyPath($containerIds, OBJECT_HOSTGROUP, [], $this->hasRootPrivileges);
+            $containerIds = $ContainersTable->resolveChildrenOfContainerIds($this->getWriteContainers());
+            $containers = $ContainersTable->easyPath($containerIds, OBJECT_HOSTGROUP, [], $this->hasRootPrivileges);
             $hostgroups = $this->Hostgroup->hostgroupsByContainerId($this->getWriteContainers(), 'list', 'id');
         }
         $userContainerId = (isset($this->request->data['Container']['parent_id'])) ? $this->request->data['Container']['parent_id'] : $this->Auth->user('container_id');

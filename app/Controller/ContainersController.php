@@ -23,6 +23,8 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use App\Model\Table\ContainersTable;
+use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\ModuleManager;
 
@@ -194,7 +196,7 @@ class ContainersController extends AppController {
     /**
      * Randers the selectbox with all the nodes and path of the tenant
      * ### Options
-     * Please check at Tree->easyPath()
+     * Please check at ContainersTable->easyPath()
      *
      * @param int $id of the tenant
      * @param array $options Array of options and HTML attributes.
@@ -206,7 +208,11 @@ class ContainersController extends AppController {
         if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();
         }
-        $this->set('paths', $this->Tree->easyPath($this->Tree->resolveChildrenOfContainerIds($id), OBJECT_NODE));
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        $this->set('paths', $ContainersTable->easyPath($ContainersTable->resolveChildrenOfContainerIds($id), OBJECT_NODE));
         $this->set('_serialize', ['paths']);
     }
 
@@ -454,13 +460,16 @@ class ContainersController extends AppController {
             throw new MethodNotAllowedException();
         }
 
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
         if ($this->hasRootPrivileges === true) {
             $containers = Api::makeItJavaScriptAble(
-                $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_HOST, [], $this->hasRootPrivileges, [CT_HOSTGROUP])
+                $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_HOST, [], $this->hasRootPrivileges, [CT_HOSTGROUP])
             );
         } else {
             $containers = Api::makeItJavaScriptAble(
-                $containers = $this->Tree->easyPath($this->getWriteContainers(), OBJECT_HOST, [], $this->hasRootPrivileges, [CT_HOSTGROUP])
+                $containers = $ContainersTable->easyPath($this->getWriteContainers(), OBJECT_HOST, [], $this->hasRootPrivileges, [CT_HOSTGROUP])
             );
         }
 

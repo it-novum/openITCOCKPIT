@@ -116,6 +116,7 @@ class TreeComponent extends Component {
     /**
      *
      * CALLS: 3 (30.01.2019)
+     * CALLS: 0 (01.02.2019)
      * INTERNAL CALLS: 1
      *
      * Returns tha path to a single node in the tree
