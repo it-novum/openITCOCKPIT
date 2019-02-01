@@ -144,6 +144,8 @@ class TreeComponent extends Component {
     /**
      *
      * MANY EXTERNAL CALLS
+     * EXTERNAL CALLS: 0 (01.02.2019)
+     *
      * INTERNAL CALLS: 0
      *
      * Is a wrapper function for $this->path for an easy access and call
