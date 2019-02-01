@@ -35,7 +35,6 @@ use itnovum\openITCOCKPIT\Core\ModuleManager;
  */
 class ContainersController extends AppController {
     public $layout = 'Admin.default';
-    public $helpers = ['Nest'];
 
     public function index() {
         $this->layout = 'angularjs';
@@ -136,20 +135,6 @@ class ContainersController extends AppController {
                 $this->serializeId();
             }
         }
-    }
-
-    /**
-     * recovers the container tree if left and/or right is missing or broken
-     * Wrapper public function of CakePHP´s TreeBehavior::recover
-     *
-     * @param string $mode
-     * @param        array $$missingParentAction
-     *
-     * @link  http://book.cakephp.org/2.0/en/core-libraries/behaviors/tree.html#TreeBehavior::recover
-     * @since 3.0
-     */
-    protected function recover($mode = 'parent', $missingParentAction = null) {
-        $this->Container->recover($mode, $missingParentAction);
     }
 
     /**
