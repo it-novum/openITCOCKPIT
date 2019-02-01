@@ -438,4 +438,28 @@ class ContainersTable extends Table {
         $container = $this->get($id);
         return $this->delete($container);
     }
+
+    /**
+     * @param $id
+     * @param bool $threaded
+     * @return array
+     */
+    public function getChildren($id, $threaded = false){
+        try {
+            $query = $this->find('children', [
+                'for' => $id
+            ]);
+
+            if($threaded){
+                $query->find('threaded');
+            }
+
+            return $query->disableHydration()
+                ->all()
+                ->toArray();
+
+        }catch (RecordNotFoundException $e){
+            return [];
+        }
+    }
 }

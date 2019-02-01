@@ -82,9 +82,6 @@ class Calendar extends AppModel {
 
         $container_ids = array_unique($container_ids);
 
-        //Lookup for the tenant container of $container_id
-        $this->Container = ClassRegistry::init('Container');
-
         $tenantContainerIds = [];
 
         /** @var $ContainersTable ContainersTable */

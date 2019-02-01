@@ -207,6 +207,11 @@ class AppController extends Controller {
         $cacheKey = 'userPermissions_' . $User->getId();
 
         if (!Cache::read($cacheKey, 'permissions')) {
+
+            /** @var $ContainersTable ContainersTable */
+            $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+
             $rights = [ROOT_CONTAINER];
             $rights_levels = [ROOT_CONTAINER => READ_RIGHT];
             $this->hasRootPrivileges = false;
@@ -220,9 +225,9 @@ class AppController extends Controller {
                     $this->hasRootPrivileges = true;
                 }
 
-                foreach ($this->Container->children($container['container_id'], false) as $childContainer) {
-                    $rights[] = (int)$childContainer['Container']['id'];
-                    $rights_levels[(int)$childContainer['Container']['id']] = $container['permission_level'];
+                foreach ($ContainersTable->getChildren($container['container_id']) as $childContainer) {
+                    $rights[] = (int)$childContainer['id'];
+                    $rights_levels[(int)$childContainer['id']] = $container['permission_level'];
                 }
             }
 

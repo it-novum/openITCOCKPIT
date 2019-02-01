@@ -22,6 +22,8 @@
 //  License agreement and license key will be shipped with the order
 //  confirmation.
 
+use App\Model\Table\ContainersTable;
+use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Core\Views\HostAndServiceSummaryIcon;
 use itnovum\openITCOCKPIT\Core\Views\PieChart;
@@ -48,7 +50,7 @@ class AngularController extends AppController {
         'Contact'
     ];
 
-    public function index(){
+    public function index() {
         //Shipp the AngularJS Single Page Application layout
         //URL: /spa#!/<state>
         $this->layout = 'angularjs_spa';
@@ -198,10 +200,14 @@ class AngularController extends AppController {
             $containerIds = [$containerIds];
         }
 
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
         if ($recursive) {
             //get recursive container ids
             $containerIdToResolve = $containerIds;
-            $containerIdsResolved = Hash::extract($this->Container->children($containerIdToResolve[0], false, ['Container.id']), '{n}.Container.id');
+            $children = $ContainersTable->getChildren($containerIdToResolve[0]);
+            $containerIdsResolved = Hash::extract($children, '{n}.id');
             $recursiveContainerIds = [];
             foreach ($containerIdsResolved as $containerId) {
                 if (in_array($containerId, $this->MY_RIGHTS)) {

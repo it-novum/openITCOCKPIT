@@ -25,6 +25,8 @@
 
 //App::import('Model', 'Host');
 //App::import('Model', 'Container');
+use App\Model\Table\ContainersTable;
+use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\ModuleManager;
 use itnovum\openITCOCKPIT\Monitoring\QueryHandler;
@@ -82,6 +84,9 @@ class BrowsersController extends AppController {
         $tenants = $tenantsFiltered;
         natcasesort($tenants);
 
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
         if ((int)$containerId === ROOT_CONTAINER && !empty($tenants)) {
             //First request if tenants are not empty or ROOT_CONTAINER
 
@@ -91,9 +96,10 @@ class BrowsersController extends AppController {
             //Child container (or so)
 
             if ($this->hasRootPrivileges === true) {
-                $browser = Hash::extract($this->Container->children($containerId, true), '{n}.Container[containertype_id=/^(' . CT_GLOBAL . '|' . CT_TENANT . '|' . CT_LOCATION . '|' . CT_NODE . ')$/]');
+                $children = $ContainersTable->getChildren($containerId);
+                $browser = Hash::extract($children, '{n}[containertype_id=/^(' . CT_GLOBAL . '|' . CT_TENANT . '|' . CT_LOCATION . '|' . CT_NODE . ')$/]');
             } else {
-                $containerNest = Hash::nest($this->Container->children($containerId));
+                $containerNest = $ContainersTable->getChildren($containerId, true);
                 $browser = $this->Browser->getFirstContainers($containerNest, $this->MY_RIGHTS, [CT_GLOBAL, CT_TENANT, CT_LOCATION, CT_NODE]);
             }
 

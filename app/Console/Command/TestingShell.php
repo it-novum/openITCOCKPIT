@@ -56,7 +56,8 @@ class TestingShell extends AppShell {
         'Aco',
         'Calendar',
         'Container',
-        'User'
+        'User',
+        'Browser'
     ];
 
     public function main() {
