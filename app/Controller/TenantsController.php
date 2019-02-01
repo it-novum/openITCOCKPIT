@@ -99,6 +99,7 @@ class TenantsController extends AppController {
                 }
             }
         }
+
         $this->set(compact(['all_tenants']));
         $this->set('_serialize', ['all_tenants']);
     }

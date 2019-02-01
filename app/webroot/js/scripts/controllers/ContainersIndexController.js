@@ -2,7 +2,12 @@ angular.module('openITCOCKPIT')
     .controller('ContainersIndexController', function($scope, $http, $timeout){
 
         $scope.init = true;
-        $scope.selectedTenant = null;
+
+        //Objects gets passed as reference.
+        //So we use an object here, to make the $watch trigger, if the chosen directive change the value for selectedTenant.id
+        $scope.selectedTenant = {
+            id: null
+        };
         $scope.selectedTenantForNode = null;
         $scope.errors = null;
 
@@ -49,7 +54,7 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.loadContainers = function(){
-            $http.get('/containers/byTenant/' + $scope.selectedTenant + '.json', {
+            $http.get('/containers/byTenant/' + $scope.selectedTenant.id + '.json', {
                 params: {
                     'angular': true
                 }
@@ -62,18 +67,18 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.loadContainerlist = function(){
-            $http.get('/containers/byTenantForSelect/' + $scope.selectedTenant + '.json').then(function(result){
+            $http.get('/containers/byTenantForSelect/' + $scope.selectedTenant.id + '.json').then(function(result){
                 $scope.containerlist = result.data.paths;
             });
         };
 
         $scope.loadTenants();
 
-        $scope.$watch('selectedTenant', function(){
-            if($scope.selectedTenant !== null){
+        $scope.$watch('selectedTenant.id', function(){
+            if($scope.selectedTenant.id !== null){
 
                 for(var key in $scope.tenants){
-                    if($scope.tenants[key].Tenant.container_id == $scope.selectedTenant){
+                    if($scope.tenants[key].Tenant.container_id == $scope.selectedTenant.id){
                         $scope.tenant = $scope.tenants[key];
                     }
                 }
