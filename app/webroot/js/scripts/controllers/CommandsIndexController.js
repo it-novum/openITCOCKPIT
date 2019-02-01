@@ -119,9 +119,8 @@ angular.module('openITCOCKPIT')
 
 
         $scope.linkForCopy = function(){
-            var baseUrl = '/commands/copy/';
-            return buildUrl(baseUrl);
-
+            var ids = Object.keys(MassChangeService.getSelected());
+            return ids.join(',');
         };
 
 

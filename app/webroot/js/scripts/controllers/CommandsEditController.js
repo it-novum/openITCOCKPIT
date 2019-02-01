@@ -9,8 +9,7 @@ angular.module('openITCOCKPIT')
                 commandarguments: []
             }
         };
-        //$scope.id = $stateParams.id;
-        $scope.id = QueryStringService.getCakeId();
+        $scope.id = $stateParams.id;
 
         $scope.init = true;
         $scope.hasError = null;
@@ -98,9 +97,11 @@ angular.module('openITCOCKPIT')
             $http.post("/commands/edit/" + $scope.id + ".json?angular=true",
                 $scope.post
             ).then(function(result){
-                window.location.href = '/commands/index';
+                NotyService.genericSuccess();
+                $state.go('CommandsIndex');
             }, function errorCallback(result){
                 if(result.data.hasOwnProperty('error')){
+                    NotyService.genericError();
                     $scope.errors = result.data.error;
                 }
             });
