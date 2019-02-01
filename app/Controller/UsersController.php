@@ -32,6 +32,10 @@ use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\PHPVersionChecker;
 use itnovum\openITCOCKPIT\Core\Views\Logo;
 
+/**
+ * Class UsersController
+ * @property User $User
+ */
 class UsersController extends AppController {
     public $layout = 'Admin.default';
     public $uses = [
