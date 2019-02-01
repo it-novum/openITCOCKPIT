@@ -43,6 +43,11 @@ class ContainersController extends AppController {
     }
 
 
+    /**
+     * @param null $id
+     * @todo Remove me
+     * @deprecated
+     */
     public function view($id = null) {
         if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();
@@ -103,19 +108,25 @@ class ContainersController extends AppController {
 
             /** @var $ContainersTable ContainersTable */
             $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+            $containerId = (int)$this->request->data['Container']['id'];
+            $containerTypeId = (int)$this->request->data['Container']['containertype_id'];
 
-            $containerId = $this->request->data['Container']['id'];
-            $containerTypeId = $this->request->data['Container']['containertype_id'];
-            if (!$ContainersTable->existsById($containerId) || $containerTypeId != 5) {
+            if (!$ContainersTable->existsById($containerId) || $containerTypeId !== CT_NODE) {
                 throw new NotFoundException(__('Invalid container'));
             }
+            $container = $ContainersTable->get($containerId);
+            $container = $ContainersTable->patchEntity($container, $this->request->data('Container'));
 
-            if (!$this->Container->save($this->request->data)) {
-                Cache::clear(false, 'permissions');
-                $this->serializeErrorMessage();
-            } else {
-                $this->serializeId();
+
+            $ContainersTable->save($container);
+            if ($container->hasErrors()) {
+                $this->response->statusCode(400);
+                $this->serializeCake4ErrorMessage($container);
+                return;
             }
+
+            Cache::clear(false, 'permissions');
+            $this->serializeCake4Id($container);
         }
     }
 
@@ -131,29 +142,30 @@ class ContainersController extends AppController {
         if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();
         }
-        if (!$this->Container->hasAny()) {
-            throw new NotFoundException(__('tenant.notfound'));
-        }
-        $parent = $this->Container->find('all', [
-            'recursive'  => -1,
-            'conditions' => [
-                'id' => $id,
-            ],
-        ]);
 
-        $parent[0]['Container']['allow_edit'] = false;
-        if (isset($this->MY_RIGHTS_LEVEL[$parent[0]['Container']['id']])) {
-            if ((int)$this->MY_RIGHTS_LEVEL[$parent[0]['Container']['id']] === WRITE_RIGHT) {
-                $parent[0]['Container']['allow_edit'] = true;
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        if (!$ContainersTable->existsById($id)) {
+            throw new NotFoundException(__('Tenant not found'));
+        }
+
+        $parent = [$ContainersTable->get($id)->toArray()];
+
+        $parent[0]['allow_edit'] = false;
+
+        if (isset($this->MY_RIGHTS_LEVEL[$parent[0]['id']])) {
+            if ((int)$this->MY_RIGHTS_LEVEL[$parent[0]['id']] === WRITE_RIGHT) {
+                $parent[0]['allow_edit'] = true;
             }
         }
-        $containers = $this->Container->children($id, false, null, 'name');
+        $containers = $ContainersTable->getChildren($id);
         foreach ($containers as $key => $container) {
-            $containers[$key]['Container']['allow_edit'] = false;
-            $containerId = $container['Container']['id'];
+            $containers[$key]['allow_edit'] = false;
+            $containerId = $container['id'];
             if (isset($this->MY_RIGHTS_LEVEL[$containerId])) {
                 if ((int)$this->MY_RIGHTS_LEVEL[$containerId] === WRITE_RIGHT) {
-                    $containers[$key]['Container']['allow_edit'] = true;
+                    $containers[$key]['allow_edit'] = true;
                 }
             }
         }
@@ -162,9 +174,29 @@ class ContainersController extends AppController {
             $containers = $parent[0];
             $hasChilds = false;
         }
-        $nest = Hash::nest($containers);
-        $parent[0]['children'] = ($hasChilds) ? $nest : [];
-        $this->set('nest', $parent);
+
+        //Add Container alias like in Cake2 for Hash::nest
+        $cake2Containers = [];
+        foreach ($containers as $container) {
+            $cake2Containers[] = [
+                'Container' => $container
+            ];
+        }
+
+        $nest = \Cake\Utility\Hash::nest($cake2Containers);
+
+        $parent['children'] = ($hasChilds) ? $nest : [];
+
+        //Gormat result like CakePHP2 for Frontend
+        $result = [
+            0 => [
+            'Container' => $parent[0],
+            'children' => $parent['children']
+                ]
+        ];
+
+
+        $this->set('nest', $result);
         $this->set('_serialize', ['nest']);
     }
 
