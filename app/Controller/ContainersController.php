@@ -38,43 +38,14 @@ class ContainersController extends AppController {
 
     public function index() {
         $this->layout = 'angularjs';
-        if ($this->request->is('post') || $this->request->is('put')) {
-            $this->request->data['Container']['containertype_id'] = CT_NODE;
-            $this->Container->create();
-            if ($this->Container->save(Hash::remove($this->request->data, 'Container.id'))) {
-                Cache::clear(false, 'permissions');
-                $this->setFlash(__('new node created successfully'));
-            } else {
-                $this->setFlash(__('error while saving data'), false);
-            }
-        }
-        $all_containers = $this->Container->find('all', [
-            'recursive' => -1,
-        ]);
-        $tenants = Hash::combine(Hash::extract($all_containers, '{n}.Container[containertype_id=' . CT_TENANT . ']'), '{n}.id', '{n}.name');
-
-        $this->set('validationError', (!empty($this->Container->validationErrors) ? true : false));
-
-        $this->set(compact(['all_containers', 'tenants']));
-        $this->set('_serialize', ['all_containers']);
+        $this->set('empty', null);
+        $this->set('_serialize', ['empty']);
     }
 
-    public function nest() {
-        if (!$this->isApiRequest()) {
-            throw new MethodNotAllowedException();
-        }
-        $all_container = $this->Container->find('all', [
-            'recursive' => -1,
-        ]);
-        $all_container = Hash::nest($all_container);
-        $this->set('all_container', $all_container);
-        $this->set('_serialize', ['all_container']);
-    }
 
     public function view($id = null) {
         if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();
-
         }
 
         /** @var $ContainersTable ContainersTable */
@@ -92,24 +63,35 @@ class ContainersController extends AppController {
         $this->set('_serialize', ['container']);
     }
 
-    protected function tree($id = 0) {
-        debug($this->Container->generateTreeList());
-    }
 
     public function add() {
         $this->layout = 'blank';
-        if (!$this->request->is('post') && !$this->request->is('put') && $this->request->ext == 'json') {
+        if ($this->request->is('GET')) {
+            //Only ship HTML Template
             return;
         }
-        if ($this->request->ext == 'json') {
-            if ($this->Container->saveAll($this->request->data)) {
-                Cache::clear(false, 'permissions');
-                $this->serializeId();
 
-                return;
-            }
-            $this->serializeErrorMessage();
+        if (!$this->request->is('post') && !$this->request->is('put')) {
+            throw new MethodNotAllowedException();
         }
+
+        if (!$this->isJsonRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        $container = $ContainersTable->newEntity($this->request->data('Container'));
+
+        $ContainersTable->save($container);
+        if ($container->hasErrors()) {
+            $this->response->statusCode(400);
+            $this->serializeCake4ErrorMessage($container);
+            return;
+        }
+
+        Cache::clear(false, 'permissions');
+        $this->serializeCake4Id($container);
     }
 
     public function edit() {

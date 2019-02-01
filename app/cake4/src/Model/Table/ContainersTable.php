@@ -198,7 +198,30 @@ class ContainersTable extends Table {
             ->scalar('name')
             ->maxLength('name', 255)
             ->requirePresence('name', 'create')
-            ->allowEmptyString('name', false);
+            ->allowEmptyString('name', false, __('This field cannot be left blank.'))
+            ->add('name', 'custom', [
+                'rule' => function ($value, $context){
+                    if(isset($context['data']['containertype_id']) && $context['data']['containertype_id'] == CT_TENANT){
+                        $count = $this->find()
+                            ->where([
+                                'Containers.name' => $context['data']['name'],
+                                'Containers.containertype_id' => CT_TENANT
+                            ])
+                            ->count();
+
+                        return $count === 0;
+                    }
+
+                    return true;
+                },
+                'message' => __('This name already exists.')
+            ]);
+
+        $validator
+            ->scalar('parent_id')
+            ->numeric('parent_id')
+            ->greaterThan('parent_id', 0)
+            ->allowEmptyString('parent_id', false, __('This field cannot be left blank.'));
 
         return $validator;
     }
@@ -211,7 +234,7 @@ class ContainersTable extends Table {
      * @return \Cake\ORM\RulesChecker
      */
     public function buildRules(RulesChecker $rules) {
-        $rules->add($rules->existsIn(['parent_id'], 'ParentContainers'));
+        //$rules->add($rules->existsIn(['parent_id'], 'ParentContainers'));
 
         return $rules;
     }

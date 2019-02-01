@@ -36,6 +36,7 @@ App::uses('User', 'Model');
 App::uses('UUID', 'Lib');
 
 use App\Model\Table\ContainersTable;
+use Cake\Datasource\EntityInterface;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\DbBackend;
 use itnovum\openITCOCKPIT\Core\PerfdataBackend;
@@ -716,6 +717,17 @@ class AppController extends Controller {
     }
 
     /**
+     * @param EntityInterface $entity
+     */
+    protected function serializeCake4Id(EntityInterface $entity) {
+        if ($this->request->ext != 'json') {
+            return;
+        }
+        $this->set('id', $entity->id);
+        $this->set('_serialize', ['id']);
+    }
+
+    /**
      * REST API functionality
      */
     protected function serializeErrorMessage() {
@@ -738,6 +750,17 @@ class AppController extends Controller {
         $name = Inflector::singularize($modelName);
         $error = $this->{$name}->validationErrors;
         $this->set(compact('error'));
+        $this->set('_serialize', ['error']);
+    }
+
+    /**
+     * REST API functionality
+     */
+    protected function serializeCake4ErrorMessage(EntityInterface $entity) {
+        if ($this->isAngularJsRequest()) {
+            $this->response->statusCode(400);
+        }
+        $this->set('error', $entity->getErrors());
         $this->set('_serialize', ['error']);
     }
 
