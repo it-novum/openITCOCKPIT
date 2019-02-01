@@ -414,7 +414,10 @@ class ServiceescalationsController extends AppController {
      * @return array
      */
     protected function getAvailableDataByContainerId($containerIds) {
-        $containerIds = $this->Tree->resolveChildrenOfContainerIds($containerIds);
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerIds);
 
         $servicegroups = $this->Servicegroup->servicegroupsByContainerId($containerIds, 'list', 'id');
         $services = $this->Host->servicesByContainerIds($containerIds, 'list', ['forOptiongroup' => true]);

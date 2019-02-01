@@ -150,7 +150,7 @@ class HostdependenciesController extends AppController {
 
         if ($this->request->is('post') || $this->request->is('put')) {
             if (isset($this->request->data['Hostdependency']['container_id']) && $hostdependency['Hostdependency']['container_id'] != $this->request->data['Hostdependency']['container_id']) {
-                $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->request->data['Hostdependency']['container_id']);
+                $containerIds = $ContainersTable->resolveChildrenOfContainerIds($this->request->data['Hostdependency']['container_id']);
                 $hosts = $this->Host->hostsByContainerId($containerIds, 'list');
                 $hostgroups = $this->Hostgroup->hostgroupsByContainerId($containerIds, 'list', 'id');
                 $timeperiods = $this->Timeperiod->timeperiodsByContainerId($containerIds, 'list');
@@ -260,7 +260,7 @@ class HostdependenciesController extends AppController {
             } else {
                 $containerId = $this->request->data('Hostdependency.container_id');
                 if ($containerId > 0) {
-                    $containerIds = $this->Tree->resolveChildrenOfContainerIds($containerId);
+                    $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId);
                     $hosts = $this->Host->hostsByContainerId($containerIds, 'list');
                     $hostgroups = $this->Hostgroup->hostgroupsByContainerId($containerIds, 'list', 'id');
                     $timeperiods = $this->Timeperiod->timeperiodsByContainerId($containerIds, 'list');
@@ -304,7 +304,10 @@ class HostdependenciesController extends AppController {
             throw new NotFoundException(__('Invalid hosttemplate'));
         }
 
-        $containerIds = $this->Tree->resolveChildrenOfContainerIds($containerId);
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId);
 
         $hostgroups = $this->Hostgroup->hostgroupsByContainerId($containerIds, 'list', 'id');
         $hostgroups = Api::makeItJavaScriptAble($hostgroups);

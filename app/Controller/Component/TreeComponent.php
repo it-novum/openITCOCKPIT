@@ -188,6 +188,7 @@ class TreeComponent extends Component {
     /**
      *
      * MANY EXTERNAL CALLS
+     * EXTERNAL CALLS: 0 (01.02.2019)
      * INTERNAL CALLS: 0
      *
      * @param int|int[] $containerIds
@@ -226,6 +227,7 @@ class TreeComponent extends Component {
     /**
      *
      * CALLS: 3 (30.01.2019)
+     * EXTERNAL CALLS: 0 (01.02.2019)
      * INTERNAL CALLS: 0
      *
      * Remove the ROOT_CONTAINER from a given array with container ids as value

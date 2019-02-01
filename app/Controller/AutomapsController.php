@@ -169,12 +169,16 @@ class AutomapsController extends AppController {
             return;
         }
 
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
         $ContainerRepository = new ContainerRepository($automap['Automap']['container_id']);
         if ($automap['Automap']['recursive'] === true) {
             if ($automap['Automap']['container_id'] == ROOT_CONTAINER) {
-                $childContainers = $this->Tree->resolveChildrenOfContainerIds($ContainerRepository->getContainer(), true);
+                $childContainers = $ContainersTable->resolveChildrenOfContainerIds($ContainerRepository->getContainer(), true);
             } else {
-                $childContainers = $this->Tree->resolveChildrenOfContainerIds($ContainerRepository->getContainer(), false);
+                $childContainers = $ContainersTable->resolveChildrenOfContainerIds($ContainerRepository->getContainer(), false);
             }
             $ContainerRepository->addContainer($childContainers);
 

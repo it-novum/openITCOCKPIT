@@ -679,7 +679,11 @@ class ServicegroupsController extends AppController {
             $service = $this->Service->findById($service_id);
             $servicesToAppend[] = $service;
         }
-        $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        $containerIds = $ContainersTable->resolveChildrenOfContainerIds($this->MY_RIGHTS);
         $servicegroups = $this->Servicegroup->servicegroupsByContainerId($containerIds, 'list');
 
         $this->set(compact(['servicesToAppend', 'servicegroups']));
@@ -781,13 +785,16 @@ class ServicegroupsController extends AppController {
             return;
         }
 
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
         $containerId = $this->request->query('containerId');
         $selected = $this->request->query('selected');
         $ServicegroupFilter = new ServicegroupFilter($this->request);
 
         $containerIds = [ROOT_CONTAINER, $containerId];
         if ($containerId == ROOT_CONTAINER) {
-            $containerIds = $this->Tree->resolveChildrenOfContainerIds(ROOT_CONTAINER, true);
+            $containerIds = $ContainersTable->resolveChildrenOfContainerIds(ROOT_CONTAINER, true);
         }
 
         $query = [

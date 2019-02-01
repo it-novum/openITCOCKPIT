@@ -22,6 +22,8 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+use App\Model\Table\ContainersTable;
+use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\DowntimeHostConditions;
 use itnovum\openITCOCKPIT\Core\DowntimeServiceConditions;
 use itnovum\openITCOCKPIT\Core\StatehistoryHostConditions;
@@ -47,7 +49,10 @@ class DowntimereportsController extends AppController {
     ];
 
     public function index() {
-        $userContainerIds = $this->Tree->resolveChildrenOfContainerIds(
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        $userContainerIds = $ContainersTable->resolveChildrenOfContainerIds(
             $this->MY_RIGHTS,
             $this->hasRootPrivileges);
         $timeperiods = $this->Timeperiod->timeperiodsByContainerId($userContainerIds, 'list');

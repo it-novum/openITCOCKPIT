@@ -377,16 +377,19 @@ class HostgroupsController extends AppController {
 
         $HostFilter = new HostFilter($this->request);
 
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
         if ($containerId == ROOT_CONTAINER) {
             //Don't panic! Only root users can edit /root objects ;)
             //So no loss of selected hosts/host templates
-            $containerIds = $this->Tree->resolveChildrenOfContainerIds(ROOT_CONTAINER, true, [
+            $containerIds = $ContainersTable->resolveChildrenOfContainerIds(ROOT_CONTAINER, true, [
                 CT_GLOBAL,
                 CT_TENANT,
                 CT_NODE
             ]);
         } else {
-            $containerIds = $this->Tree->resolveChildrenOfContainerIds($containerId, false, [
+            $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId, false, [
                 CT_GLOBAL,
                 CT_TENANT,
                 CT_NODE
@@ -571,9 +574,12 @@ class HostgroupsController extends AppController {
         $selected = $this->request->query('selected');
         $HosttemplateFilter = new HosttemplateFilter($this->request);
 
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
         $containerIds = [ROOT_CONTAINER, $containerId];
         if ($containerId == ROOT_CONTAINER) {
-            $containerIds = $this->Tree->resolveChildrenOfContainerIds(ROOT_CONTAINER, true);
+            $containerIds = $ContainersTable->resolveChildrenOfContainerIds(ROOT_CONTAINER, true);
         }
 
         $hosttemplates = Api::makeItJavaScriptAble(
@@ -614,10 +620,13 @@ class HostgroupsController extends AppController {
         $selected = $this->request->query('selected');
         $HostgroupFilter = new HostgroupFilter($this->request);
 
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
         if ($containerId == ROOT_CONTAINER) {
-            $containerIds = $this->Tree->resolveChildrenOfContainerIds(ROOT_CONTAINER, true, [CT_HOSTGROUP]);
+            $containerIds = $ContainersTable->resolveChildrenOfContainerIds(ROOT_CONTAINER, true, [CT_HOSTGROUP]);
         } else {
-            $containerIds = $this->Tree->resolveChildrenOfContainerIds($containerId, false, [CT_HOSTGROUP]);
+            $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId, false, [CT_HOSTGROUP]);
         }
         $HostgroupCondition = new HostgroupConditions($HostgroupFilter->indexFilter());
         $HostgroupCondition->setContainerIds($containerIds);

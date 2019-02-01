@@ -310,7 +310,7 @@ class ContactsController extends AppController {
         $this->request->data = Hash::merge($contact, $this->request->data);
 
         if ($containerIds !== '') {
-            $containerIds = $this->Tree->resolveChildrenOfContainerIds($containerIds);
+            $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerIds);
             $_timeperiods = $this->Timeperiod->timeperiodsByContainerId($containerIds, 'list');
             $_users = $this->User->usersByContainerId($containerIds, 'list');
         }
@@ -389,7 +389,7 @@ class ContactsController extends AppController {
             if (isset($this->request->data['Container']['Container'])) {
                 $containerIds = $this->request->data['Container']['Container'];
                 if ($containerIds !== '') {
-                    $containerIds = $this->Tree->resolveChildrenOfContainerIds($containerIds);
+                    $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerIds);
                     $_timeperiods = $this->Timeperiod->timeperiodsByContainerId($containerIds, 'list');
 
                     $_users = $this->User->usersByContainerId($containerIds, 'list');
@@ -881,9 +881,12 @@ class ContactsController extends AppController {
     public function loadTimeperiods() {
         $this->allowOnlyAjaxRequests();
 
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
         $timePeriods = [];
         if (isset($this->request->data['container_ids'])) {
-            $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->request->data['container_ids']);
+            $containerIds = $ContainersTable->resolveChildrenOfContainerIds($this->request->data['container_ids']);
             $timePeriods = $this->Timeperiod->timeperiodsByContainerId($containerIds, 'list');
             $timePeriods = Api::makeItJavaScriptAble($timePeriods);
         }
@@ -896,11 +899,12 @@ class ContactsController extends AppController {
     }
 
     public function loadUsersByContainerId() {
-        //$this->allowOnlyAjaxRequests();
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
 
         $users = [];
         if (isset($this->request->data['container_ids'])) {
-            $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->request->data['container_ids']);
+            $containerIds = $ContainersTable->resolveChildrenOfContainerIds($this->request->data['container_ids']);
             $users = $this->User->usersByContainerId($containerIds, 'list');
             $users = Api::makeItJavaScriptAble($users);
         }

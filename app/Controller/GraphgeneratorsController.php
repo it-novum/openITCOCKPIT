@@ -23,6 +23,8 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use App\Model\Table\ContainersTable;
+use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\DbBackend;
 use itnovum\openITCOCKPIT\Core\PerfdataBackend;
 use itnovum\openITCOCKPIT\Perfdata\PerfdataLoader;
@@ -70,7 +72,10 @@ class GraphgeneratorsController extends AppController {
     public function index($configuration_id = 0) {
         $this->__unbindAssociations('Host');
 
-        $userContainerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        $userContainerIds = $ContainersTable->resolveChildrenOfContainerIds($this->MY_RIGHTS);
         $hostUuids = array_keys($this->Host->hostsByContainerId($userContainerIds, 'all', [], 'uuid'));
         $all_hosts = $this->Host->find('all', [
                 'recursive'  => -1,
@@ -279,7 +284,10 @@ class GraphgeneratorsController extends AppController {
     public function loadServicesByHostId($hostId) {
         $this->allowOnlyAjaxRequests();
 
-        $userContainerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        $userContainerIds = $ContainersTable->resolveChildrenOfContainerIds($this->MY_RIGHTS);
         $host = $this->Host->hostsByContainerId($userContainerIds, 'first', ['Host.id' => $hostId], 'uuid');
 
         $_services = [];
@@ -336,7 +344,10 @@ class GraphgeneratorsController extends AppController {
     public function loadServiceruleFromService($host_uuid, $service_uuid) {
         $this->allowOnlyAjaxRequests();
 
-        $userContainerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        $userContainerIds = $ContainersTable->resolveChildrenOfContainerIds($this->MY_RIGHTS);
         if ($this->Host->hostsByContainerId($userContainerIds, 'first', ['Host.uuid' => $host_uuid])) {
             $perfdataStructure = $this->Rrd->getPerfDataStructureByHostAndServiceUuid($host_uuid, $service_uuid);
         }

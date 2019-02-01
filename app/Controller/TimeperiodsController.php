@@ -137,7 +137,7 @@ class TimeperiodsController extends AppController {
         }
         array_multisort($day, SORT_ASC, $start, SORT_ASC, $end, SORT_ASC, $timeperiod['Timerange']);
 
-        $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+        $containerIds = $ContainersTable->resolveChildrenOfContainerIds($this->MY_RIGHTS);
         $query = [
             'recursive'  => -1,
             'contain'    => [
@@ -262,7 +262,7 @@ class TimeperiodsController extends AppController {
             }
         }
 
-        $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+        $containerIds = $ContainersTable->resolveChildrenOfContainerIds($this->MY_RIGHTS);
         $query = [
             'recursive'  => -1,
             'contain'    => [

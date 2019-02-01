@@ -185,7 +185,7 @@ class HostescalationsController extends AppController {
         if ($this->request->is('post') || $this->request->is('put')) {
 
             if ($this->request->data('Hostescalation.container_id') > 0 && $this->request->data('Hostescalation.container_id') != $hostescalation['Hostescalation']['container_id']) {
-                $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->request->data('Hostescalation.container_id'));
+                $containerIds = $ContainersTable->resolveChildrenOfContainerIds($this->request->data('Hostescalation.container_id'));
                 $hostgroups = $this->Hostgroup->hostgroupsByContainerId($containerIds, 'list', 'id');
                 $hosts = $this->Host->hostsByContainerId($containerIds, 'list');
                 $timeperiods = $this->Timeperiod->timeperiodsByContainerId($containerIds, 'list');
@@ -311,7 +311,7 @@ class HostescalationsController extends AppController {
                     $this->setFlash(__('Hostescalation could not be saved'), false);
                     $containerIds = $this->request->data('Hostescalation.container_id');
                     if ($containerIds > 0) {
-                        $containerIds = $this->Tree->resolveChildrenOfContainerIds($containerIds);
+                        $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerIds);
                         $hostgroups = $this->Hostgroup->hostgroupsByContainerId($containerIds, 'list', 'id');
                         $hosts = $this->Host->hostsByContainerId($containerIds, 'list');
                         $timeperiods = $this->Timeperiod->timeperiodsByContainerId($containerIds, 'list');
@@ -349,7 +349,9 @@ class HostescalationsController extends AppController {
             throw new NotFoundException(__('Invalid hosttemplate'));
         }
 
-        $containerIds = $this->Tree->resolveChildrenOfContainerIds($containerId);
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId);
 
         $hostgroups = $this->Hostgroup->hostgroupsByContainerId($containerIds, 'list', 'id');
         $hostgroups = Api::makeItJavaScriptAble($hostgroups);

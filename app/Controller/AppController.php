@@ -35,6 +35,8 @@ App::uses('AuthActions', 'Lib');
 App::uses('User', 'Model');
 App::uses('UUID', 'Lib');
 
+use App\Model\Table\ContainersTable;
+use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\DbBackend;
 use itnovum\openITCOCKPIT\Core\PerfdataBackend;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
@@ -777,7 +779,10 @@ class AppController extends Controller {
             return false;
         }
 
-        $rights = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        $rights = $ContainersTable->resolveChildrenOfContainerIds($this->MY_RIGHTS);
 
         if (is_array($containerIds)) {
             $result = array_intersect($containerIds, $rights);

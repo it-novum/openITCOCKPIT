@@ -24,6 +24,8 @@
 //	confirmation.
 
 
+use App\Model\Table\ContainersTable;
+use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\HoststatusFields;
 use itnovum\openITCOCKPIT\Core\ModuleManager;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
@@ -118,8 +120,12 @@ class StatusmapsController extends AppController {
             }
         }
         $containerIds = [];
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
         if ($this->hasRootPrivileges === false) {
-            $containerIds = $this->Tree->resolveChildrenOfContainerIds(
+            $containerIds = $ContainersTable->resolveChildrenOfContainerIds(
                 $this->MY_RIGHTS,
                 false, [
                 CT_GLOBAL,
