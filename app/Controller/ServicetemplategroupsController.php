@@ -717,12 +717,13 @@ class ServicetemplategroupsController extends AppController {
 
     public function loadServicetemplatesByContainerId($containerId = null) {
         $this->allowOnlyAjaxRequests();
-        if (!$this->Container->exists($containerId)) {
-            throw new NotFoundException(__('Invalid hosttemplate'));
-        }
 
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        if (!$ContainersTable->existsById($containerId)) {
+            throw new NotFoundException(__('Invalid hosttemplate'));
+        }
 
         $containerId = $ContainersTable->resolveChildrenOfContainerIds($containerId);
         $servicetemplates = $this->Servicetemplate->servicetemplatesByContainerId($containerId, 'list');

@@ -569,7 +569,7 @@ class ServicetemplatesController extends AppController {
                     }
 
                     // Refill data that was loaded by Ajax
-                    if ($this->Container->exists($this->request->data('Servicetemplate.container_id'))) {
+                    if ($ContainersTable->existsById($this->request->data('Servicetemplate.container_id'))) {
                         $containerIds = $this->request->data('Servicetemplate.container_id');
                         $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerIds);
 
@@ -889,7 +889,7 @@ class ServicetemplatesController extends AppController {
                 }
 
                 //Refil data that was loaded by ajax due to selected container id
-                if ($this->Container->exists($this->request->data('Servicetemplate.container_id'))) {
+                if ($ContainersTable->existsById($this->request->data('Servicetemplate.container_id'))) {
                     $container_id = $this->request->data('Servicetemplate.container_id');
                     $containerIds = $ContainersTable->resolveChildrenOfContainerIds($container_id);
 
@@ -1646,12 +1646,12 @@ class ServicetemplatesController extends AppController {
 
     public function loadElementsByContainerId($containerId = null) {
         $this->allowOnlyAjaxRequests();
-        if (!$this->Container->exists($containerId)) {
-            throw new NotFoundException(__('Invalid hosttemplate'));
-        }
-
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        if (!$ContainersTable->existsById($containerId)) {
+            throw new NotFoundException(__('Invalid hosttemplate'));
+        }
 
         $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId);
 

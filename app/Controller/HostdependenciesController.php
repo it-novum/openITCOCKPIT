@@ -300,12 +300,13 @@ class HostdependenciesController extends AppController {
         if (!$this->request->is('ajax')) {
             throw new MethodNotAllowedException();
         }
-        if (!$this->Container->exists($containerId)) {
-            throw new NotFoundException(__('Invalid hosttemplate'));
-        }
 
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        if (!$ContainersTable->existsById($containerId)) {
+            throw new NotFoundException(__('Invalid hosttemplate'));
+        }
 
         $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId);
 

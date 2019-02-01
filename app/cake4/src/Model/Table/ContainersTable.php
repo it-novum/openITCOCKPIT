@@ -462,4 +462,12 @@ class ContainersTable extends Table {
             return [];
         }
     }
+
+    /**
+     * @param int $id
+     * @return bool
+     */
+    public function existsById($id) {
+        return $this->exists(['Containers.id' => $id]);
+    }
 }

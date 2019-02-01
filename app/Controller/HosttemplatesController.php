@@ -495,7 +495,7 @@ class HosttemplatesController extends AppController {
                 }
 
                 //Refill data that was loaded by ajax due to selected container id
-                if ($this->Container->exists($this->request->data('Hosttemplate.container_id'))) {
+                if ($ContainersTable->existsById($this->request->data('Hosttemplate.container_id'))) {
                     $containerId = $this->request->data('Hosttemplate.container_id');
                     $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId);
 
@@ -770,7 +770,7 @@ class HosttemplatesController extends AppController {
                 }
 
                 //Refill data that was loaded by ajax due to selected container id
-                if ($this->Container->exists($this->request->data('Hosttemplate.container_id'))) {
+                if ($ContainersTable->existsById($this->request->data('Hosttemplate.container_id'))) {
                     $container_id = $this->request->data('Hosttemplate.container_id');
                     $containerIds = $ContainersTable->resolveChildrenOfContainerIds($container_id);
 
@@ -1239,12 +1239,12 @@ class HosttemplatesController extends AppController {
             throw new MethodNotAllowedException();
         }
 
-        if (!$this->Container->exists($container_id)) {
-            throw new NotFoundException(__('Invalid Container'));
-        }
-
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        if (!$ContainersTable->existsById($container_id)) {
+            throw new NotFoundException(__('Invalid Container'));
+        }
 
         $containerIds = $ContainersTable->resolveChildrenOfContainerIds($container_id);
 

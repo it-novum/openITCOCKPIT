@@ -1427,7 +1427,7 @@ class HostsController extends AppController {
                     $this->setFlash(__('Data could not be saved'), false);
                 }
                 //Refil data that was loaded by ajax due to selected container id
-                if ($this->Container->exists($this->request->data('Host.container_id'))) {
+                if($ContainersTable->existsById($this->request->data('Host.container_id'))){
                     $container_id = $this->request->data('Host.container_id');
 
                     $containerIds = $ContainersTable->resolveChildrenOfContainerIds($container_id);
@@ -3129,7 +3129,10 @@ class HostsController extends AppController {
             throw new MethodNotAllowedException();
         }
 
-        if (!$this->Container->exists($container_id)) {
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        if (!$ContainersTable->existsById($container_id)) {
             throw new NotFoundException(__('Invalid hosttemplate'));
         }
 
@@ -3144,9 +3147,6 @@ class HostsController extends AppController {
                 $hosttemplate_type = $host['Host']['host_type'];
             }
         }
-
-        /** @var $ContainersTable ContainersTable */
-        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
 
         $containerIds = $ContainersTable->resolveChildrenOfContainerIds($container_id);
 
