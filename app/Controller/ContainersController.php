@@ -484,7 +484,7 @@ class ContainersController extends AppController {
             );
         }
 
-        $this->set(compact(['containers']));
+        $this->set('containers', $containers);
         $this->set('_serialize', ['containers']);
     }
 
