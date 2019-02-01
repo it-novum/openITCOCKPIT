@@ -692,7 +692,10 @@ class ServicetemplategroupsController extends AppController {
 
             return;
         }
-        if ($this->Container->delete($servicetemplategroup['Servicetemplategroup']['container_id'], true)) {
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        if ($ContainersTable->delete($ContainersTable->get($servicetemplategroup['Servicetemplategroup']['container_id']))) {
             Cache::clear(false, 'permissions');
             $changelog_data = $this->Changelog->parseDataForChangelog(
                 $this->params['action'],

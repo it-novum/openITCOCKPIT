@@ -677,7 +677,11 @@ class HostgroupsController extends AppController {
             $this->render403();
             return;
         }
-        if ($this->Container->delete($container['Hostgroup']['container_id'], true)) {
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        if ($ContainersTable->delete($ContainersTable->get($container['Hostgroup']['container_id']))) {
             Cache::clear(false, 'permissions');
             $changelog_data = $this->Changelog->parseDataForChangelog(
                 $this->params['action'],

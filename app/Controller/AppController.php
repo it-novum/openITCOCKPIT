@@ -689,6 +689,7 @@ class AppController extends Controller {
 
     /**
      * REST API functionality
+     * @todo Refactor me for CakePHP 4
      */
     protected function serializeId() {
         if ($this->request->ext != 'json') {

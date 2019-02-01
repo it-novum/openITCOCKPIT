@@ -26,6 +26,7 @@
 /**
  * Class Container
  * @mixin TreeBehavior
+ * @deprecated Use ContianersTable
  */
 class Container extends AppModel {
     public $actsAs = ['Tree'];

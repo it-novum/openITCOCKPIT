@@ -587,7 +587,10 @@ class ServicegroupsController extends AppController {
             return;
         }
 
-        if ($this->Container->delete($container['Servicegroup']['container_id'], true)) {
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        if ($ContainersTable->delete($ContainersTable->get($container['Servicegroup']['container_id']))) {
             Cache::clear(false, 'permissions');
             $changelog_data = $this->Changelog->parseDataForChangelog(
                 $this->params['action'],
@@ -612,6 +615,10 @@ class ServicegroupsController extends AppController {
 
     public function mass_delete($id = null) {
         $userId = $this->Auth->user('id');
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
         foreach (func_get_args() as $servicegroupId) {
             if ($this->Servicegroup->exists($servicegroupId)) {
                 $servicegroup = $this->Servicegroup->find('first', [
@@ -624,7 +631,7 @@ class ServicegroupsController extends AppController {
                     ],
                 ]);
                 if ($this->allowedByContainerId(Hash::extract($servicegroup, 'Container.parent_id'))) {
-                    if ($this->Container->delete($servicegroup['Servicegroup']['container_id'], true)) {
+                    if ($ContainersTable->delete($ContainersTable->get($servicegroup['Servicegroup']['container_id']))) {
                         $changelog_data = $this->Changelog->parseDataForChangelog(
                             $this->params['action'],
                             $this->params['controller'],

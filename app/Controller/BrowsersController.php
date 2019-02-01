@@ -118,21 +118,17 @@ class BrowsersController extends AppController {
                 $containers[$node['id']] = $node['name'];
             }
 
-            $currentContainer = $this->Container->find('first', [
-                'recursive'  => -1,
-                'conditions' => [
-                    'Container.id' => $containerId
-                ]
-            ]);
+            $currentContainer = $ContainersTable->get($containerId)->toArray();
+            
             $breadcrumbs = [];
-            $parents = $this->Container->getPath($currentContainer['Container']['parent_id']);
+            $parents = $ContainersTable->getPathByIdAndCacheResult($currentContainer['parent_id'], 'BrowsersIndex');
 
             foreach ($parents as $parentContainer) {
-                if (in_array((int)$parentContainer['Container']['id'], $this->MY_RIGHTS, true)) {
-                    $breadcrumbs[$parentContainer['Container']['id']] = $parentContainer['Container']['name'];
+                if (in_array((int)$parentContainer['id'], $this->MY_RIGHTS, true)) {
+                    $breadcrumbs[$parentContainer['id']] = $parentContainer['name'];
                 }
             }
-            $breadcrumbs[$currentContainer['Container']['id']] = $currentContainer['Container']['name'];
+            $breadcrumbs[$currentContainer['id']] = $currentContainer['name'];
             $this->set('containers', Api::makeItJavaScriptAble($containers));
             $this->set('breadcrumbs', Api::makeItJavaScriptAble($breadcrumbs));
 

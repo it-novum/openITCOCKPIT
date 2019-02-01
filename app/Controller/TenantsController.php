@@ -24,6 +24,8 @@
 //	confirmation.
 
 
+use App\Model\Table\ContainersTable;
+use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Filter\TenantFilter;
 
 App::import('Model', 'Container');
@@ -178,7 +180,11 @@ class TenantsController extends AppController {
         }
 
         if ($this->Tenant->__allowDelete($container['Tenant']['container_id'])) {
-            if ($this->Container->delete($container['Tenant']['container_id'])) {
+
+            /** @var $ContainersTable ContainersTable */
+            $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+            if ($ContainersTable->delete($ContainersTable->get($container['Tenant']['container_id']))) {
                 Cache::clear(false, 'permissions');
                 $this->set('message', __('Tenant deleted successfully'));
                 $this->set('_serialize', ['message']);
