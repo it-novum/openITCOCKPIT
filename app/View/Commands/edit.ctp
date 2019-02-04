@@ -60,7 +60,8 @@
         </div>
     </header>
     <div>
-        <form ng-submit="submit();" class="form-horizontal">
+        <form ng-submit="submit();" class="form-horizontal" ng-init="successMessage=
+            {objectName : '<?php echo __('Command'); ?>' , message: '<?php echo __('created successfully'); ?>'}">
             <div class="widget-body">
                 <div class="row">
                     <div class="form-group">
