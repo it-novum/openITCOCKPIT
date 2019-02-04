@@ -343,18 +343,6 @@ class CommandsController extends AppController {
         $this->set(compact(['newArgument', 'argumentsCount', 'id']));
     }
 
-    public function loadMacros() {
-        /** @var $Macro MacrosTable */
-        $Macro = TableRegistry::getTableLocator()->get('Macros');
-        $all_macros = $Macro->getAllMacrosInCake2Format();
-
-
-        //Sorting the SQL result in a human frindly way. Will sort $USER10$ below $USER2$
-        $all_macros = Hash::sort($all_macros, '{n}.Macro.name', 'asc', 'natural');
-
-        $this->set('all_macros', $all_macros);
-    }
-
     private function getCommandTypes() {
         return [
             CHECK_COMMAND        => __('Service check command'),
