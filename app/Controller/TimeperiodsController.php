@@ -91,21 +91,32 @@ class TimeperiodsController extends AppController {
     public function view($id) {
         if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();
-
         }
-        if (!$this->Timeperiod->exists($id)) {
+
+        /** @var $TimeperiodsTable TimeperiodsTable */
+        $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
+
+
+
+        if (!$TimeperiodsTable->exists($id)) {
             throw new NotFoundException(__('Invalid timeperiod'));
         }
-        $timeperiod = $this->Timeperiod->findById($id);
-        if (!$this->allowedByContainerId(Hash::extract($timeperiod, 'Timeperiod.container_id'))) {
-            $this->render403();
+        $timeperiod = $TimeperiodsTable->get($id);
+        $timeperiod = $timeperiod->toArray();
 
+        if (!$this->allowedByContainerId(Hash::extract($timeperiod, 'container_id'))) {
+            $this->render403();
             return;
         }
         $this->set('timeperiod', $timeperiod);
         $this->set('_serialize', ['timeperiod']);
     }
 
+    /**
+     * @param null $id
+     * @throws Exception
+     * @todo refactor me
+     */
     public function edit($id = null) {
         $userId = $this->Auth->user('id');
         if (!$this->Timeperiod->exists($id)) {
@@ -209,6 +220,10 @@ class TimeperiodsController extends AppController {
         }
     }
 
+    /**
+     * @throws Exception
+     * @todo refactor me
+     */
     public function add() {
         $userId = $this->Auth->user('id');
         /** @var $ContainersTable ContainersTable */
@@ -491,55 +506,10 @@ class TimeperiodsController extends AppController {
         return;
     }
 
-    public function mass_delete($id = null) {
-        $userId = $this->Auth->user('id');
-        //PUT/POST request (form submit)
-        if ($this->request->is('post') || $this->request->is('put')) {
-            foreach ($this->request->data('Timeperiod.delete') as $timeperiodId) {
-                if ($this->Timeperiod->exists($timeperiodId)) {
-                    $timeperiod = $this->Timeperiod->findById($timeperiodId);
-                    if ($this->allowedByContainerId(Hash::extract($timeperiod, 'Timeperiod.container_id'))) {
-                        if ($this->Timeperiod->delete($timeperiodId)) {
-                            $changelog_data = $this->Changelog->parseDataForChangelog(
-                                $this->params['action'],
-                                $this->params['controller'],
-                                $timeperiodId,
-                                OBJECT_TIMEPERIOD,
-                                [$timeperiod['Timeperiod']['container_id']],
-                                $userId,
-                                $timeperiod['Timeperiod']['name'],
-                                $timeperiod
-                            );
-                            if ($changelog_data) {
-                                CakeLog::write('log', serialize($changelog_data));
-                            }
-                        }
-                    }
-                }
-            }
-            $this->setFlash(__('Timeperiods deleted'));
-            $this->redirect(['action' => 'index']);
-        }
-
-        //GET request
-        $timeperiodsToDelete = [];
-        $timeperiodsCanotDelete = [];
-        foreach (func_get_args() as $timeperiodId) {
-            if ($this->Timeperiod->exists($timeperiodId)) {
-                $timeperiod = $this->Timeperiod->findById($timeperiodId);
-                if ($this->allowedByContainerId(Hash::extract($timeperiod, 'Timeperiod.container_id'))) {
-                    if ($this->__allowDelete($timeperiod)) {
-                        $timeperiodsToDelete[] = $timeperiod;
-                    } else {
-                        $timeperiodsCanotDelete[] = $timeperiod['Timeperiod']['name'];
-                    }
-                }
-            }
-        }
-        $count = sizeof($timeperiodsToDelete) + sizeof($timeperiodsCanotDelete);
-        $this->set(compact(['timeperiodsToDelete', 'timeperiodsCanotDelete', 'count']));
-    }
-
+    /**
+     * @param null $id
+     * @todo refactor me
+     */
     public function copy($id = null) {
         $userId = $this->Auth->user('id');
         $timeperiods = $this->Timeperiod->find('all', [
@@ -625,12 +595,10 @@ class TimeperiodsController extends AppController {
 
         $containerId = $this->request->query('containerId');
 
-        $timeperiods = $this->Timeperiod->find('list', [
-            'conditions' => [
-                'Timeperiod.container_id' => [
-                    ROOT_CONTAINER, $containerId
-                ]
-            ]
+        /** @var $TimeperiodsTable TimeperiodsTable */
+        $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
+        $timeperiods = $TimeperiodsTable->getCommandByContainerIdsAsList([
+            ROOT_CONTAINER, $containerId
         ]);
 
         $timeperiods = Api::makeItJavaScriptAble(

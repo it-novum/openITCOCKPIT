@@ -171,4 +171,24 @@ class TimeperiodsTable extends Table {
             ->first();
         return $this->formatFirstResultAsCake2($query->toArray(), false);
     }
+
+    /**
+     * @param int|array $containerIds
+     * @return array
+     */
+    public function getCommandByContainerIdsAsList($containerIds = []) {
+        if (!is_array($containerIds)) {
+            $containerIds = [$containerIds];
+        }
+
+        $timeperiods = $this->find()
+            ->select([
+                'Timeperiods.id',
+                'Timeperiods.name'
+            ])
+            ->where(['Timeperiods.container_id IN' => $containerIds])
+            ->all();
+
+        return $this->formatListAsCake2($timeperiods->toArray());
+    }
 }
