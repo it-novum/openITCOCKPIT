@@ -23,8 +23,6 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-$Hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus([]);
-
 if (isset($QueryHandler) && !$QueryHandler->exists()): ?>
     <div class="alert alert-danger alert-block">
         <a href="#" data-dismiss="alert" class="close">×</a>

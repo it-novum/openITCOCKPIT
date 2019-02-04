@@ -45,52 +45,17 @@ class HostchecksController extends AppController {
     public $layout = 'Admin.default';
 
     public function index($id = null) {
-        $this->layout = "angularjs";
+        $this->layout = "blank";
 
-        if (!$this->Host->exists($id)) {
+        if (!$this->Host->exists($id) && $id !== null) {
             throw new NotFoundException(__('invalid host'));
         }
 
-        if (!$this->isAngularJsRequest()) {
+        if (!$this->isAngularJsRequest() && $id === null) {
             //Host for .html requests
-            $host = $this->Host->find('first', [
-                'fields'     => [
-                    'Host.id',
-                    'Host.uuid',
-                    'Host.name',
-                    'Host.address',
-                    'Host.host_url',
-                    'Host.container_id',
-                    'Host.host_type'
-                ],
-                'conditions' => [
-                    'Host.id' => $id,
-                ],
-                'contain'    => [
-                    'Container',
-                ],
-            ]);
-
-            //Check if user is permitted to see this object
-            $containerIdsToCheck = Hash::extract($host, 'Container.{n}.HostsToContainer.container_id');
-            $containerIdsToCheck[] = $host['Host']['container_id'];
-            if (!$this->allowedByContainerId($containerIdsToCheck, false)) {
-                $this->render403();
-                return;
-            }
-
-            //Get meta data and push to front end
-            $HoststatusFields = new HoststatusFields($this->DbBackend);
-            $HoststatusFields->currentState()->isFlapping();
-
-            $hoststatus = $this->Hoststatus->byUuid($host['Host']['uuid'], $HoststatusFields);
-            $docuExists = $this->Documentation->existsForUuid($host['Host']['uuid']);
-            $this->set(compact(['host', 'hoststatus', 'docuExists']));
             return;
         }
 
-
-        //Host for .json requests
         $host = $this->Host->find('first', [
             'fields'     => [
                 'Host.id',
@@ -103,8 +68,19 @@ class HostchecksController extends AppController {
             ],
             'conditions' => [
                 'Host.id' => $id,
-            ]
+            ],
+            'contain'    => [
+                'Container',
+            ],
         ]);
+
+        //Check if user is permitted to see this object
+        $containerIdsToCheck = Hash::extract($host, 'Container.{n}.HostsToContainer.container_id');
+        $containerIdsToCheck[] = $host['Host']['container_id'];
+        if (!$this->allowedByContainerId($containerIdsToCheck, false)) {
+            $this->render403();
+            return;
+        }
 
         $AngularHostchecksControllerRequest = new \itnovum\openITCOCKPIT\Core\AngularJS\Request\HostchecksControllerRequest($this->request);
 

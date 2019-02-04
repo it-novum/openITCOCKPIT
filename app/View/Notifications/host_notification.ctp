@@ -23,17 +23,9 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-use itnovum\openITCOCKPIT\Core\Hoststatus;
-use itnovum\openITCOCKPIT\Core\Views\Host;
-
 //Flapping Workaround while the status date is not loaded via Angular
 echo $this->Html->script('lib/FlappingWorkaround.js');
 
-$Host = new Host($host);
-if (!isset($hoststatus['Hoststatus'])):
-    $hoststatus['Hoststatus'] = [];
-endif;
-$Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
 ?>
 <div id="error_msg"></div>
 <div class="alert auto-hide alert-success" id="flashSuccess"
@@ -42,23 +34,25 @@ $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
      style="display:none"><?php echo __('Error while sending command'); ?></div>
 <div class="row">
     <div class="col-xs-12 col-sm-7 col-md-6 col-lg-6">
-        <h1 class="status_headline <?php echo $Hoststatus->HostStatusColor(); ?>">
-            <?php echo $Hoststatus->getHostFlappingIconColored(); ?>
+        <h1 class="status_headline" ng-class="hostStatusTextClass">
+
+            <span class="flapping_airport stateClass" ng-show="hoststatus.isFlapping">
+                <i class="fa" ng-class="flappingState === 1 ? 'fa-circle' : 'fa-circle-o'"></i>
+                <i class="fa" ng-class="flappingState === 0 ? 'fa-circle' : 'fa-circle-o'"></i>
+            </span>
+
             <i class="fa fa-desktop fa-fw"></i>
-            <?php echo h($Host->getHostname()) ?>
+            {{ host.Host.name }}
             <span>
-                (<?php echo h($Host->getAddress()) ?>)
+                ({{ host.Host.address }})
             </span>
         </h1>
     </div>
     <div class="col-xs-12 col-sm-5 col-md-6 col-lg-6">
         <h5>
             <div class="pull-right">
-                <a href="<?php echo Router::url([
-                    'controller' => 'hosts',
-                    'action'     => 'browser',
-                    $Host->getId()
-                ]); ?>" class="btn btn-primary btn-sm">
+                <a ui-sref="HostsBrowser({id:hostBrowserMenu.hostId})"
+                   class="btn btn-primary btn-sm">
                     <i class="fa fa-arrow-circle-left"></i> <?php echo $this->Html->underline('b', __('Back to Host')); ?>
                 </a>
                 <?php echo $this->element('host_browser_menu'); ?>
