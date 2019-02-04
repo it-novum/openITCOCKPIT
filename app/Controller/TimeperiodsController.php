@@ -24,16 +24,18 @@
 //	confirmation.
 
 use App\Model\Table\ContainersTable;
+use App\Model\Table\TimeperiodsTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
+use itnovum\openITCOCKPIT\Database\PaginateOMat;
+use itnovum\openITCOCKPIT\Filter\TimeperiodsFilter;
 
+/**
+ * Class TimeperiodsController
+ * @property AppPaginatorComponent $Paginator
+ */
 class TimeperiodsController extends AppController {
     public $layout = 'Admin.default';
-    public $components = [
-        'ListFilter.ListFilter',
-        'RequestHandler',
-    ];
-    public $helpers = ['ListFilter.ListFilter'];
 
     public $uses = [
         'Timeperiod',
@@ -41,35 +43,49 @@ class TimeperiodsController extends AppController {
         'Calendar'
     ];
 
-    public $listFilters = [
-        'index' => [
-            'fields' => [
-                'Timeperiod.name'        => ['label' => 'Name', 'searchType' => 'wildcard'],
-                'Timeperiod.description' => ['label' => 'Description', 'searchType' => 'wildcard'],
-            ],
-        ],
-    ];
-
 
     function index() {
-        $options = [
-            'recursive'  => -1,
-            'order'      => [
-                'Timeperiod.name' => 'asc',
-            ],
-            'conditions' => [
-                'Timeperiod.container_id' => $this->MY_RIGHTS,
-            ],
-        ];
+        $this->layout = 'blank';
 
-        if ($this->isApiRequest()) {
-            $this->set('all_timeperiods', $this->Timeperiod->find('all', $options));
-        } else {
-            $this->Paginator->settings = Hash::merge($this->Paginator->settings, $options);
-            $this->set('all_timeperiods', $this->Paginator->paginate());
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template
+            return;
         }
-        //Aufruf für json oder xml view: /nagios_module/hosts.json oder /nagios_module/hosts.xml
-        $this->set('_serialize', ['all_timeperiods']);
+
+        /** @var $TimeperiodsTable TimeperiodsTable */
+        $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
+
+        if ($this->isApiRequest() && !$this->isAngularJsRequest()) {
+            //Legacy API Request
+            $this->set('all_timeperiods', $TimeperiodsTable->getAllTimeperiodsAsCake2($this->MY_RIGHTS));
+            $this->set('_serialize', ['all_timeperiods']);
+            return;
+        }
+
+        if ($this->isAngularJsRequest()) {
+            //AngularJS API Request
+            $TimeperiodsFilter = new TimeperiodsFilter($this->request);
+            $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $TimeperiodsFilter->getPage());
+            $all_timeperiods = $TimeperiodsTable->getTimeperiodsIndex($TimeperiodsFilter, $PaginateOMat);
+
+            foreach ($all_timeperiods as $index => $timeperiod) {
+                $allowEdit = $this->hasRootPrivileges;
+                if ($this->hasRootPrivileges === false) {
+                    $allowEdit = $this->isWritableContainer($timeperiod['Timeperiod']['container_id']);
+                }
+                $all_timeperiods[$index]['Timeperiod']['allow_edit'] = $allowEdit;
+            }
+
+
+            $this->set('all_timeperiods', $all_timeperiods);
+            $toJson = ['all_timeperiods', 'paging'];
+            if ($this->isScrollRequest()) {
+                $toJson = ['all_timeperiods', 'scroll'];
+            }
+            $this->set('_serialize', $toJson);
+            return;
+        }
+
     }
 
     public function view($id) {
@@ -280,6 +296,12 @@ class TimeperiodsController extends AppController {
         $this->set('calendars', $calendars);
     }
 
+    /**
+     * @param $timeperiod
+     * @return bool
+     * @todo refactor me and move me to TimeperiodsTable
+     * @deprecated
+     */
     protected function __allowDelete($timeperiod) {
         if (is_numeric($timeperiod)) {
             $timeperiodId = $timeperiod;
@@ -404,48 +426,69 @@ class TimeperiodsController extends AppController {
     }
 
     public function delete($id = null) {
-        $userId = $this->Auth->user('id');
         if (!$this->request->is('post')) {
             throw new MethodNotAllowedException();
         }
-        if (!$this->Timeperiod->exists($id)) {
-            throw new NotFoundException(__('invalid_timeperiod'));
+
+        /** @var $TimeperiodsTable TimeperiodsTable */
+        $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
+
+        if (!$TimeperiodsTable->exists($id)) {
+            throw new NotFoundException(__('Timeperiod not found'));
         }
 
-        $timeperiod = $this->Timeperiod->findById($id);
+        $timeperiod = $TimeperiodsTable->getTimeperiodById($id);
 
         if (!$this->allowedByContainerId(Hash::extract($timeperiod, 'Timeperiod.container_id'))) {
             $this->render403();
-
             return;
         }
 
-        if ($this->__allowDelete($timeperiod)) {
-            if ($this->Timeperiod->delete($id)) {
-                $changelog_data = $this->Changelog->parseDataForChangelog(
-                    $this->params['action'],
-                    $this->params['controller'],
-                    $id,
-                    OBJECT_TIMEPERIOD,
-                    [$timeperiod['Timeperiod']['container_id']],
-                    $userId,
-                    $timeperiod['Timeperiod']['name'],
-                    $timeperiod
-                );
-                if ($changelog_data) {
-                    CakeLog::write('log', serialize($changelog_data));
-                }
-                $this->setFlash(__('Timeperiod deleted'));
-                $this->redirect(['action' => 'index']);
-            } else {
-                $this->setFlash(__('Could not delete timeperiod'), false);
-                $this->redirect(['action' => 'index']);
-            }
-        } else {
-            $timeperiodsCanotDelete = [$timeperiod['Timeperiod']['name']];
-            $this->set(compact(['timeperiodsCanotDelete']));
-            $this->render('mass_delete');
+        if (!$this->__allowDelete($timeperiod)) {
+            $usedBy = [
+                [
+                    'baseUrl' => '#',
+                    'message' => __('Used by other objects'),
+                    'module'  => 'Core'
+                ]
+            ];
+
+            $this->response->statusCode(400);
+            $this->set('success', false);
+            $this->set('id', $id);
+            $this->set('message', __('Issue while deleting timeperiod'));
+            $this->set('usedBy', $usedBy);
+            $this->set('_serialize', ['success', 'id', 'message', 'usedBy']);
+            return;
         }
+
+
+        $timeperiodEntity = $TimeperiodsTable->get($id);
+        if ($TimeperiodsTable->delete($timeperiodEntity)) {
+            $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+            $changelog_data = $this->Changelog->parseDataForChangelog(
+                'delete',
+                'timeperiods',
+                $id,
+                OBJECT_TIMEPERIOD,
+                [$timeperiod['Timeperiod']['container_id']],
+                $User->getId(),
+                $timeperiod['Timeperiod']['name'],
+                $timeperiod
+            );
+            if ($changelog_data) {
+                CakeLog::write('log', serialize($changelog_data));
+            }
+
+            $this->set('success', true);
+            $this->set('_serialize', ['success']);
+            return;
+        }
+
+        $this->response->statusCode(500);
+        $this->set('success', false);
+        $this->set('_serialize', ['success']);
+        return;
     }
 
     public function mass_delete($id = null) {
@@ -495,13 +538,6 @@ class TimeperiodsController extends AppController {
         }
         $count = sizeof($timeperiodsToDelete) + sizeof($timeperiodsCanotDelete);
         $this->set(compact(['timeperiodsToDelete', 'timeperiodsCanotDelete', 'count']));
-    }
-
-    function browser($id = null) {
-    }
-
-    function controller() {
-        return 'TimeperiodsController';
     }
 
     public function copy($id = null) {
@@ -601,7 +637,7 @@ class TimeperiodsController extends AppController {
             $timeperiods
         );
 
-        $this->set(compact(['timeperiods']));
+        $this->set('timeperiods', $timeperiods);
         $this->set('_serialize', ['timeperiods']);
     }
 }

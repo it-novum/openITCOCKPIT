@@ -246,6 +246,11 @@ class CommandsController extends AppController {
 
     }
 
+    /**
+     * @param $command
+     * @return bool
+     * @deprecated
+     */
     protected function __allowDelete($command) {
         //Check if the command is used somewere, if yes we can not delete it!
         $this->loadModel('__ContactsToServicecommands');
