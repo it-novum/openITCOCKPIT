@@ -100,7 +100,7 @@ angular.module('openITCOCKPIT', ['ui.router', 'gridster'])
             })
 
             .state('HostsIndex', {
-                url: '/hosts',
+                url: '/hosts/index',
                 templateUrl: "/hosts/index.html",
                 controller: "HostsIndexController"
             })
@@ -124,7 +124,7 @@ angular.module('openITCOCKPIT', ['ui.router', 'gridster'])
             })
 
             .state('HostgroupsIndex', {
-                url: '/hostgroups',
+                url: '/hostgroups/index',
                 templateUrl: "/hostgroups/index.html",
                 controller: "HostgroupsIndexController"
             })

@@ -59,8 +59,7 @@ if (isset($QueryHandler) && !$QueryHandler->exists()): ?>
     <div class="col-xs-12 col-sm-5 col-md-6 col-lg-6">
         <h5>
             <div class="pull-right">
-                <?php //echo $this->element('host_browser_menu'); ?>
-                <host-browser-menu host-id="id" host-uuid="mergedHost.Host.uuid" hostUrl="" action="browser" controller="hosts"></host-browser-menu>
+                <?php echo $this->element('host_browser_menu'); ?>
             </div>
         </h5>
     </div>
@@ -98,14 +97,12 @@ if (isset($QueryHandler) && !$QueryHandler->exists()): ?>
 
                     <?php echo $this->AdditionalLinks->renderAsTabs($additionalLinksTab, null, 'host', 'tabLink', 'hideTimeline()'); ?>
 
-                    <?php if (isset($GrafanaDashboardExists) && $GrafanaDashboardExists): ?>
-                        <li class="">
-                            <a href="#tab5" data-toggle="tab" ng-click="hideTimeline()">
-                                <i class="fa fa-lg fa-area-chart"></i>
-                                <span class="hidden-mobile hidden-tablet"> <?php echo __('Grafana'); ?> </span>
-                            </a>
-                        </li>
-                    <?php endif; ?>
+                    <li class="" ng-if="GrafanaDashboardExists">
+                        <a href="#tab5" data-toggle="tab" ng-click="hideTimeline()">
+                            <i class="fa fa-lg fa-area-chart"></i>
+                            <span class="hidden-mobile hidden-tablet"> <?php echo __('Grafana'); ?> </span>
+                        </a>
+                    </li>
                 </ul>
 
                 <div class="widget-toolbar" role="menu">
@@ -852,7 +849,7 @@ if (isset($QueryHandler) && !$QueryHandler->exists()): ?>
                                                 <tr ng-show="mergedHost.Host.is_satellite_host === false">
                                                     <td><?php echo __('Instance'); ?></td>
                                                     <td>
-                                                        <?php if(isset($masterInstanceName)) echo h($masterInstanceName); ?>
+                                                        <?php if (isset($masterInstanceName)) echo h($masterInstanceName); ?>
                                                     </td>
                                                 </tr>
 
@@ -966,17 +963,12 @@ if (isset($QueryHandler) && !$QueryHandler->exists()): ?>
                         <!-- render additional Tabs if necessary -->
                         <?php echo $this->AdditionalLinks->renderAsTabs($additionalLinksTab, null, 'host', 'tab'); ?>
 
-                        <?php if ($GrafanaDashboardExists): ?>
-                            <div id="tab5" class="tab-pane fade">
-                                <div class="widget-toolbar">
-                                    <grafana-timepicker callback="grafanaTimepickerCallback"></grafana-timepicker>
-                                </div>
-                                <iframe-directive url="GrafanaIframeUrl" ng-if="GrafanaDashboardExists"></iframe-directive>
-                                <?php /*
-                                <iframe src="<?php echo $GrafanaConfiguration->getIframeUrl(); ?>" width="100%"
-                                        onload="this.height=(screen.height+15);" frameBorder="0"></iframe> */ ?>
+                        <div id="tab5" class="tab-pane fade" ng-if="GrafanaDashboardExists">
+                            <div class="widget-toolbar">
+                                <grafana-timepicker callback="grafanaTimepickerCallback"></grafana-timepicker>
                             </div>
-                        <?php endif; ?>
+                            <iframe-directive url="GrafanaIframeUrl" ng-if="GrafanaDashboardExists"></iframe-directive>
+                        </div>
                     </div>
 
                     <div class="widget-footer text-right"></div>

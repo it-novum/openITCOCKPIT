@@ -43,11 +43,16 @@ class AdditionalLinksHelper extends AppHelper {
      *
      * @return string The list items (<li>) with the corresponding links (<a>)
      */
-    public function renderAsListItems($additionalLinks, $currentIndex = -1, $addArrParam = [], $angularJs = false) {
-        $links = $this->renderLinks($additionalLinks, $currentIndex, $addArrParam, $angularJs);
-        $links = array_map(function ($element) {
-            return '<li>' . $element . '</li>';
-        }, $links);
+    public function renderAsListItems($additionalLinks, $currentIndex = -1, $addArrParam = [], $angularJs = false, $ngIf = null) {
+        $elements = $this->renderLinks($additionalLinks, $currentIndex, $addArrParam, $angularJs);
+        $links = [];
+        foreach ($elements as $element) {
+            if (!empty($ngIf)) {
+                $links[] = '<li ng-if="' . $ngIf . '">' . $element . '</li>';
+            } else {
+                $links[] = '<li>' . $element . '</li>';
+            }
+        }
 
         return implode($links);
     }

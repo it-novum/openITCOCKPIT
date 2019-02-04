@@ -124,6 +124,15 @@ angular.module('openITCOCKPIT')
                 $scope.load();
                 $scope.loadGrafanaIframeUrl();
 
+                $scope.hostBrowserMenu = {
+                    hostId: $scope.mergedHost.Host.id,
+                    hostUuid: $scope.mergedHost.Host.uuid,
+                    allowEdit: $scope.mergedHost.Host.allowEdit,
+                    hostUrl: $scope.mergedHost.Host.host_url_replaced,
+                    docuExists: result.data.docuExists,
+                    isHostBrowser: true
+                };
+
                 $scope.init = false;
             });
         };

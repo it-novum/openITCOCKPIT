@@ -312,12 +312,6 @@ class HostsController extends AppController {
         return;
     }
 
-    public function host_browser_menu() {
-        $this->layout = 'blank';
-        //Only ship HTML Template
-        return;
-    }
-
     public function view($id = null) {
         if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();
@@ -2315,7 +2309,28 @@ class HostsController extends AppController {
 
 
     public function browser($idOrUuid = null) {
-        $this->layout = 'angularjs';
+        $this->layout = 'blank';
+
+        if (!$this->isAngularJsRequest() && $idOrUuid === null) {
+            //AngularJS loads the HTML template via https://xxx/hosts/browser.html
+            $User = new User($this->Auth);
+            $ModuleManager = new ModuleManager('GrafanaModule');
+            if ($ModuleManager->moduleExists()) {
+                $this->loadModel('GrafanaModule.GrafanaDashboard');
+                $this->loadModel('GrafanaModule.GrafanaConfiguration');
+                $grafanaConfiguration = $this->GrafanaConfiguration->find('first');
+                if (!empty($grafanaConfiguration)) {
+                    $GrafanaConfiguration = \itnovum\openITCOCKPIT\Grafana\GrafanaApiConfiguration::fromArray($grafanaConfiguration);
+                    $this->set('GrafanaConfiguration', $GrafanaConfiguration);
+                }
+            }
+            $this->set('username', $User->getFullName());
+            $this->set('QueryHandler', new QueryHandler($this->Systemsetting->getQueryHandlerPath()));
+            $this->set('masterInstanceName', $this->Systemsetting->getMasterInstanceName());
+            //Only ship template
+            return;
+        }
+
         $id = $idOrUuid;
         if (!is_numeric($idOrUuid)) {
             if (preg_match(UUID::regex(), $idOrUuid)) {
@@ -2382,32 +2397,7 @@ class HostsController extends AppController {
             $ContainerPermissions = new ContainerPermissions($this->MY_RIGHTS_LEVEL, $containerIdsToCheck);
             $allowEdit = $ContainerPermissions->hasPermission();
         }
-        if (!$this->isAngularJsRequest()) {
-            $User = new User($this->Auth);
-            $grafanaDashboard = null;
-            $GrafanaDashboardExists = false;
-            $ModuleManager = new ModuleManager('GrafanaModule');
-            if ($ModuleManager->moduleExists()) {
-                $this->loadModel('GrafanaModule.GrafanaDashboard');
-                $this->loadModel('GrafanaModule.GrafanaConfiguration');
-                $grafanaConfiguration = $this->GrafanaConfiguration->find('first');
-                if (!empty($grafanaConfiguration) && $this->GrafanaDashboard->existsForUuid($rawHost['Host']['uuid'])) {
-                    $GrafanaDashboardExists = true;
-                    $GrafanaConfiguration = \itnovum\openITCOCKPIT\Grafana\GrafanaApiConfiguration::fromArray($grafanaConfiguration);
-                    $GrafanaConfiguration->setHostUuid($rawHost['Host']['uuid']);
-                    $this->set('GrafanaConfiguration', $GrafanaConfiguration);
-                }
-            }
-            $this->set('GrafanaDashboardExists', $GrafanaDashboardExists);
-            $this->set('username', $User->getFullName());
-            $this->set('host', $rawHost);
-            $this->set('allowEdit', $allowEdit);
-            $this->set('docuExists', $this->Documentation->existsForUuid($rawHost['Host']['uuid']));
-            $this->set('QueryHandler', new QueryHandler($this->Systemsetting->getQueryHandlerPath()));
-            $this->set('masterInstanceName', $this->Systemsetting->getMasterInstanceName());
-            //Only ship template
-            return;
-        }
+
         $hostQuery = $this->Host->getQueryForBrowser($id);
         $host = $this->Host->find('first', $hostQuery);
         $hosttemplateQuery = $this->Hosttemplate->getQueryForBrowser($host['Host']['hosttemplate_id']);
@@ -2435,6 +2425,12 @@ class HostsController extends AppController {
         // Replace $HOSTNAME$
         $HostMacroReplacerCommandLine = new HostMacroReplacer($host);
         $hostCommandLine = $HostMacroReplacerCommandLine->replaceBasicMacros($mergedHost['CheckCommand']['command_line']);
+
+        $mergedHost['Host']['host_url_replaced'] = $mergedHost['Host']['host_url'];
+        if ($mergedHost['Host']['host_url'] !== '' && $mergedHost['Host']['host_url'] !== null) {
+            $mergedHost['Host']['host_url_replaced'] = $HostMacroReplacerCommandLine->replaceBasicMacros($mergedHost['Host']['host_url']);
+        }
+
         // Replace $_HOSTFOOBAR$
         $HostCustomMacroReplacerCommandLine = new CustomMacroReplacer($mergedHost['Customvariable'], OBJECT_HOST);
         $hostCommandLine = $HostCustomMacroReplacerCommandLine->replaceAllMacros($hostCommandLine);
@@ -2540,6 +2536,7 @@ class HostsController extends AppController {
         }
         $canSubmitExternalCommands = $this->hasPermission('externalcommands', 'hosts');
         $this->set('mergedHost', $mergedHost);
+        $this->set('docuExists', $this->Documentation->existsForUuid($rawHost['Host']['uuid']));
         $this->set('hoststatus', $hoststatus);
         $this->set('mainContainer', $mainContainer);
         $this->set('sharedContainers', $sharedContainers);
@@ -2550,6 +2547,7 @@ class HostsController extends AppController {
         $this->set('canSubmitExternalCommands', $canSubmitExternalCommands);
         $this->set('_serialize', [
             'mergedHost',
+            'docuExists',
             'hoststatus',
             'mainContainer',
             'sharedContainers',
