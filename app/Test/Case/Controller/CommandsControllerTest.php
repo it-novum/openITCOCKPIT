@@ -265,11 +265,6 @@ class CommandsControllerTest extends ControllerTestCase {
         $this->assertEquals($expectedCommand, $myCommand);
     }
 
-    public function testAddCommandArg() {
-        $this->setExpectedException(MethodNotAllowedException::class);
-        $this->testAction('/commands/addCommandArg/1', ['method' => 'post']);
-    }
-
 
     public function testGetCopy() {
         $this->testAction('/commands/copy/1/2', ['method' => 'get']);
