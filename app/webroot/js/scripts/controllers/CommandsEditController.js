@@ -16,6 +16,7 @@ angular.module('openITCOCKPIT')
         $scope.hasWebSocketError = false;
 
         $scope.args = [];
+        $scope.macros = [];
         $scope.jqConsole = null;
 
         $scope.load = function(){
@@ -109,6 +110,17 @@ angular.module('openITCOCKPIT')
                     NotyService.genericError();
                     $scope.errors = result.data.error;
                 }
+            });
+        };
+
+        $scope.showMacros = function(){
+            $http.get('/macros/index/.json', {
+                params: {
+                    'angular': true
+                }
+            }).then(function(result){
+                $scope.macros = result.data.all_macros;
+                $("#MacrosOverview").modal("show");
             });
         };
 

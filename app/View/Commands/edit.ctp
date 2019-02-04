@@ -50,7 +50,7 @@
         <h2><?php echo __('Add command'); ?></h2>
         <div class="widget-toolbar" role="menu">
             <?php if ($this->Acl->hasPermission('index', 'macros')): ?>
-                <a href="javascript:void(0);" data-toggle="modal" id="loadMacrosOberview" data-target="#MacrosOverview"
+                <a ng-click="showMacros()"
                    class="btn btn-primary btn-xs"><i class="fa fa-usd"></i> <?php echo __('Macros overview'); ?></a>
             <?php endif; ?>
             <a class="btn btn-default" ui-sref="CommandsIndex">
@@ -208,29 +208,67 @@
 </div>
 
 <?php if ($this->Acl->hasPermission('index', 'macros')): ?>
-    <div class="modal fade" id="MacrosOverview" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
-         aria-hidden="true">
-        <div class="modal-dialog">
+    <div class="modal fade" role="dialog" aria-labelledby="myModalLabel" id="MacrosOverview">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                    <button type="button" class="close" data-dismiss="modal">
                         &times;
                     </button>
                     <h4 class="modal-title" id="myModalLabel"><?php echo __('User defined macros'); ?></h4>
                 </div>
-                <div class="modal-body">
-
+                <div class="modal-body padding-5">
                     <div class="row">
                         <div class="col-12">
-                            <div id="macros_loader">
-                                <span class="text-center">
-                                    <h1>
-                                        <i class="fa fa-cog fa-lg fa-spin"></i>
-                                    </h1>
-                                    <br/>
-                                </span>
+                            <div id="MacroContent">
+                                <table id="macrosTable" class="table table-bordered table-striped">
+                                    <thead>
+                                    <tr>
+                                        <th class="no-sort">
+                                            <?php echo __('Name'); ?>
+                                        </th>
+                                        <th class="no-sort">
+                                            <?php echo __('Value'); ?>
+                                        </th>
+                                        <th class="no-sort">
+                                            <?php echo __('Description'); ?>
+                                        </th>
+                                        <th>
+                                        </th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr ng-repeat="macro in macros">
+                                        <td class="text-primary bold">
+                                            {{macro.name}}
+                                        </td>
+                                        <td>
+                                            <code ng-class="{'macroPassword': macro.password}">
+                                                {{macro.value}}
+                                            </code>
+                                        </td>
+                                        <td>
+                                            {{macro.description}}
+                                        </td>
+                                        <td class="text-center">
+                                            <button class="btn btn-default txt-color-red btn-xs"
+                                                    title="<?php echo __('Hide value'); ?>"
+                                                    ng-click="macro.password = 1"
+                                                    ng-hide="macro.password">
+                                                <i class="fa fa-eye-slash"></i>
+                                            </button>
+
+                                            <button class="btn btn-default txt-color-blue btn-xs"
+                                                    title="<?php echo __('Show value'); ?>"
+                                                    ng-click="macro.password = 0"
+                                                    ng-show="macro.password">
+                                                <i class="fa fa-eye"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
                             </div>
-                            <div id="MacroContent"><!-- content loaded by ajax --></div>
                         </div>
                     </div>
                 </div>

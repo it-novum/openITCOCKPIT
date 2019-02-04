@@ -25,7 +25,6 @@
 
 
 use App\Model\Table\CommandsTable;
-use App\Model\Table\MacrosTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\KeyValueStore;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
@@ -317,71 +316,6 @@ class CommandsController extends AppController {
         return true;
     }
 
-    public function addCommandArg($id = null) {
-        $this->allowOnlyAjaxRequests();
-
-        //Fetching arguments out of $_POST or the database
-        if (!empty($this->request->data)) {
-            $all_arguments = $this->request->data;
-        } else if ($id !== null) {
-            $all_arguments = $this->Commandargument->find('list', [
-                'conditions' => [
-                    'command_id' => $this->Command->findById($id)['Command']['id'],
-                ],
-            ]);
-        } else {
-            $all_arguments = [];
-        }
-
-        $argumentsCount = 1;
-
-        while (in_array('$ARG' . $argumentsCount . '$', $all_arguments)) {
-            $argumentsCount++;
-        }
-
-        $newArgument = '$ARG' . $argumentsCount . '$';
-        $this->set(compact(['newArgument', 'argumentsCount', 'id']));
-    }
-
-    public function loadMacros() {
-        /** @var $Macro MacrosTable */
-        $Macro = TableRegistry::getTableLocator()->get('Macros');
-        $all_macros = $Macro->getAllMacrosInCake2Format();
-
-
-        //Sorting the SQL result in a human frindly way. Will sort $USER10$ below $USER2$
-        $all_macros = Hash::sort($all_macros, '{n}.Macro.name', 'asc', 'natural');
-
-        $this->set('all_macros', $all_macros);
-    }
-
-    private function getCommandTypes() {
-        return [
-            CHECK_COMMAND        => __('Service check command'),
-            HOSTCHECK_COMMAND    => __('Host check command'),
-            NOTIFICATION_COMMAND => __('Notification command'),
-            EVENTHANDLER_COMMAND => __('Eventhandler command'),
-        ];
-    }
-
-    private function rewritePostData() {
-        $requestData = $this->request->data;
-        // See MacrosController.php function _rewritePostData() for more information about this
-        $Commandarguments = [];
-        if (isset($this->request->data['Commandargument'])) {
-            $Commandarguments = $this->request->data['Commandargument'];
-            $requestData['Commandargument'] = [];
-        }
-        foreach ($Commandarguments as $data) {
-            // Remove empty values, because nagios will throw a config error
-            if (!isset($data['name']) || strlen($data['name']) == 0 || !isset($data['human_name']) || strlen($data['human_name']) == 0) {
-                continue;
-            }
-            $requestData['Commandargument'][] = $data;
-        }
-
-        return $requestData;
-    }
 
 
     public function getConsoleWelcome() {
