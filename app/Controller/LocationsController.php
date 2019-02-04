@@ -24,6 +24,9 @@
 //	confirmation.
 
 
+use App\Model\Table\ContainersTable;
+use Cake\ORM\TableRegistry;
+
 class LocationsController extends AppController {
     public $uses = ['Location', 'Container'];
     public $layout = 'Admin.default';
@@ -39,11 +42,13 @@ class LocationsController extends AppController {
     ];
 
     public function index() {
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
 
         if ($this->hasRootPrivileges === true) {
-            $container = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_LOCATION, [], $this->hasRootPrivileges);
+            $container = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_LOCATION, [], $this->hasRootPrivileges);
         } else {
-            $container = $this->Tree->easyPath($this->getWriteContainers(), OBJECT_LOCATION, [], $this->hasRootPrivileges);
+            $container = $ContainersTable->easyPath($this->getWriteContainers(), OBJECT_LOCATION, [], $this->hasRootPrivileges);
         }
         $options = [
             'order'      => [
@@ -87,10 +92,13 @@ class LocationsController extends AppController {
     }
 
     public function add() {
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
         if ($this->hasRootPrivileges === true) {
-            $container = $this->Tree->easyPath($this->MY_RIGHTS, CT_LOCATION, [], $this->hasRootPrivileges, [CT_GLOBAL]);
+            $container = $ContainersTable->easyPath($this->MY_RIGHTS, CT_LOCATION, [], $this->hasRootPrivileges, [CT_GLOBAL]);
         } else {
-            $container = $this->Tree->easyPath($this->getWriteContainers(), CT_LOCATION, [], $this->hasRootPrivileges, [CT_GLOBAL]);
+            $container = $ContainersTable->easyPath($this->getWriteContainers(), CT_LOCATION, [], $this->hasRootPrivileges, [CT_GLOBAL]);
         }
 
         if ($this->request->is('post') || $this->request->is('put')) {
@@ -135,10 +143,13 @@ class LocationsController extends AppController {
             return;
         }
 
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
         if ($this->hasRootPrivileges === true) {
-            $container = $this->Tree->easyPath($this->MY_RIGHTS, CT_LOCATION, [], $this->hasRootPrivileges, [CT_GLOBAL]);
+            $container = $ContainersTable->easyPath($this->MY_RIGHTS, CT_LOCATION, [], $this->hasRootPrivileges, [CT_GLOBAL]);
         } else {
-            $container = $this->Tree->easyPath($this->getWriteContainers(), CT_LOCATION, [], $this->hasRootPrivileges, [CT_GLOBAL]);
+            $container = $ContainersTable->easyPath($this->getWriteContainers(), CT_LOCATION, [], $this->hasRootPrivileges, [CT_GLOBAL]);
         }
         if ($this->request->is('post') || $this->request->is('put')) {
             $this->request->data['Location']['id'] = $id;

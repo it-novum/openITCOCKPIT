@@ -35,6 +35,9 @@ App::uses('AuthActions', 'Lib');
 App::uses('User', 'Model');
 App::uses('UUID', 'Lib');
 
+use App\Model\Table\ContainersTable;
+use Cake\Datasource\EntityInterface;
+use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\DbBackend;
 use itnovum\openITCOCKPIT\Core\PerfdataBackend;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
@@ -205,6 +208,11 @@ class AppController extends Controller {
         $cacheKey = 'userPermissions_' . $User->getId();
 
         if (!Cache::read($cacheKey, 'permissions')) {
+
+            /** @var $ContainersTable ContainersTable */
+            $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+
             $rights = [ROOT_CONTAINER];
             $rights_levels = [ROOT_CONTAINER => READ_RIGHT];
             $this->hasRootPrivileges = false;
@@ -218,9 +226,9 @@ class AppController extends Controller {
                     $this->hasRootPrivileges = true;
                 }
 
-                foreach ($this->Container->children($container['container_id'], false) as $childContainer) {
-                    $rights[] = (int)$childContainer['Container']['id'];
-                    $rights_levels[(int)$childContainer['Container']['id']] = $container['permission_level'];
+                foreach ($ContainersTable->getChildren($container['container_id']) as $childContainer) {
+                    $rights[] = (int)$childContainer['id'];
+                    $rights_levels[(int)$childContainer['id']] = $container['permission_level'];
                 }
             }
 
@@ -682,6 +690,7 @@ class AppController extends Controller {
 
     /**
      * REST API functionality
+     * @todo Refactor me for CakePHP 4
      */
     protected function serializeId() {
         if ($this->request->ext != 'json') {
@@ -708,6 +717,17 @@ class AppController extends Controller {
     }
 
     /**
+     * @param EntityInterface $entity
+     */
+    protected function serializeCake4Id(EntityInterface $entity) {
+        if ($this->request->ext != 'json') {
+            return;
+        }
+        $this->set('id', $entity->id);
+        $this->set('_serialize', ['id']);
+    }
+
+    /**
      * REST API functionality
      */
     protected function serializeErrorMessage() {
@@ -730,6 +750,17 @@ class AppController extends Controller {
         $name = Inflector::singularize($modelName);
         $error = $this->{$name}->validationErrors;
         $this->set(compact('error'));
+        $this->set('_serialize', ['error']);
+    }
+
+    /**
+     * REST API functionality
+     */
+    protected function serializeCake4ErrorMessage(EntityInterface $entity) {
+        if ($this->isAngularJsRequest()) {
+            $this->response->statusCode(400);
+        }
+        $this->set('error', $entity->getErrors());
         $this->set('_serialize', ['error']);
     }
 
@@ -777,7 +808,10 @@ class AppController extends Controller {
             return false;
         }
 
-        $rights = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        $rights = $ContainersTable->resolveChildrenOfContainerIds($this->MY_RIGHTS);
 
         if (is_array($containerIds)) {
             $result = array_intersect($containerIds, $rights);

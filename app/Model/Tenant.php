@@ -23,6 +23,9 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use App\Model\Table\ContainersTable;
+use Cake\ORM\TableRegistry;
+
 class Tenant extends AppModel {
 
     public $belongsTo = [
@@ -101,16 +104,20 @@ class Tenant extends AppModel {
     }
 
     public function __allowDelete($containerId) {
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+
         $Container = ClassRegistry::init('Container');
         $Host = ClassRegistry::init('Host');
         $Service = ClassRegistry::init('Service');
-        $children = $Container->children($containerId);
+        $children = $ContainersTable->getChildren($containerId);
 
         $newContainerIds = [];
         //get rid of the locations
-        foreach ($children as $key => $child) {
-            if ($child['Container']['containertype_id'] != CT_LOCATION) {
-                $newContainerIds[] = $child['Container']['id'];
+        foreach ($children as $child) {
+            if ($child['containertype_id'] != CT_LOCATION) {
+                $newContainerIds[] = $child['id'];
             }
         }
         //append the containerID itself

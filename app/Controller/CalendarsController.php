@@ -23,6 +23,9 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use App\Model\Table\ContainersTable;
+use Cake\ORM\TableRegistry;
+
 App::uses('CalendarHolidays', 'Vendor/Date');
 
 
@@ -49,7 +52,10 @@ class CalendarsController extends AppController {
      * Lists the existing configurations to load and edit them.
      */
     public function index() {
-        $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        $containerIds = $ContainersTable->resolveChildrenOfContainerIds($this->MY_RIGHTS);
         $query = [
             'recursive'  => -1,
             'contain'    => [
@@ -75,8 +81,11 @@ class CalendarsController extends AppController {
     }
 
     public function add() {
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
         if ($this->hasRootPrivileges === true) {
-            $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+            $containerIds = $ContainersTable->resolveChildrenOfContainerIds($this->MY_RIGHTS);
             $tenants = $this->Tenant->tenantsByContainerId($containerIds, 'list', 'container_id');
         } else {
             $tenants = $this->Tenant->tenantsByContainerId($this->getWriteContainers(), 'list', 'container_id');
@@ -113,8 +122,11 @@ class CalendarsController extends AppController {
             throw new NotFoundException(__('Invalid calendar'));
         }
 
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
         if ($this->hasRootPrivileges === true) {
-            $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+            $containerIds = $ContainersTable->resolveChildrenOfContainerIds($this->MY_RIGHTS);
             $tenants = $this->Tenant->tenantsByContainerId($containerIds, 'list', 'container_id');
         } else {
             $tenants = $this->Tenant->tenantsByContainerId($this->getWriteContainers(), 'list', 'container_id');

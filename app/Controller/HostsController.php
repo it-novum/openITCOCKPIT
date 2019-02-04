@@ -148,6 +148,9 @@ class HostsController extends AppController {
 
         $HostFilter = new HostFilter($this->request);
 
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
         $HostControllerRequest = new HostControllerRequest($this->request, $HostFilter);
         $HostCondition = new HostConditions();
         $User = new User($this->Auth);
@@ -171,7 +174,9 @@ class HostsController extends AppController {
             if ($User->isRecursiveBrowserEnabled()) {
                 //get recursive container ids
                 $containerIdToResolve = $browserContainerIds;
-                $containerIds = Hash::extract($this->Container->children($containerIdToResolve[0], false, ['Container.id']), '{n}.Container.id');
+
+                $children = $ContainersTable->getChildren($containerIdToResolve[0]);
+                $containerIds = Hash::extract($children, '{n}.id');
                 $recursiveContainerIds = [];
                 foreach ($containerIds as $containerId) {
                     if (in_array($containerId, $this->MY_RIGHTS)) {
@@ -569,7 +574,10 @@ class HostsController extends AppController {
             $containerId = $host['Host']['container_id'];
         }
 
-        $containerIds = $this->Tree->resolveChildrenOfContainerIds($containerId);
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId);
 
         $_hosttemplates = $this->Hosttemplate->hosttemplatesByContainerId($containerIds, 'list', $host['Host']['host_type']);
         $_hostgroups = $this->Hostgroup->hostgroupsByContainerId($containerIds, 'list', 'id');
@@ -581,10 +589,11 @@ class HostsController extends AppController {
         $this->set(compact(['_hosttemplates', '_hostgroups', '_parenthosts', '_timeperiods', '_contacts', '_contactgroups', 'id']));
         // End form refill
 
+
         if ($this->hasRootPrivileges === true) {
-            $containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_HOST, [], $this->hasRootPrivileges, [CT_HOSTGROUP]);
+            $containers = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_HOST, [], $this->hasRootPrivileges, [CT_HOSTGROUP]);
         } else {
-            $containers = $this->Tree->easyPath($this->getWriteContainers(), OBJECT_HOST, [], $this->hasRootPrivileges, [CT_HOSTGROUP]);
+            $containers = $ContainersTable->easyPath($this->getWriteContainers(), OBJECT_HOST, [], $this->hasRootPrivileges, [CT_HOSTGROUP]);
         }
 
         //Fehlende bzw. neu angelegte CommandArgummente ermitteln und anzeigen
@@ -918,7 +927,9 @@ class HostsController extends AppController {
 
             return;
         }
-        $containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_HOST, [], $this->hasRootPrivileges, [CT_HOSTGROUP]);
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        $containers = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_HOST, [], $this->hasRootPrivileges, [CT_HOSTGROUP]);
 
         $sharingContainers = array_diff_key($containers, [$host['Host']['container_id'] => $host['Host']['container_id']]);
         if ($this->request->is('post') || $this->request->is('put')) {
@@ -945,7 +956,11 @@ class HostsController extends AppController {
     public function edit_details($host_id = null) {
         $this->set('MY_RIGHTS', $this->MY_RIGHTS);
         $this->set('back_url', $this->referer());
-        $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        $containerIds = $ContainersTable->resolveChildrenOfContainerIds($this->MY_RIGHTS);
         $contacts = $this->Contact->contactsByContainerId($containerIds, 'list', 'id');
         $contactgroups = $this->Contactgroup->contactgroupsByContainerId($containerIds, 'list', 'id');
 
@@ -1166,13 +1181,15 @@ class HostsController extends AppController {
         $this->loadModel('Hostgroup');
         /** @var $CommandsTable CommandsTable */
         $CommandsTable = TableRegistry::getTableLocator()->get('Commands');
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
 
         $commands = $CommandsTable->getCommandByTypeAsList(HOSTCHECK_COMMAND);
 
         if ($this->hasRootPrivileges === true) {
-            $containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_HOST, [], $this->hasRootPrivileges, [CT_HOSTGROUP]);
+            $containers = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_HOST, [], $this->hasRootPrivileges, [CT_HOSTGROUP]);
         } else {
-            $containers = $this->Tree->easyPath($this->getWriteContainers(), OBJECT_HOST, [], $this->hasRootPrivileges, [CT_HOSTGROUP]);
+            $containers = $ContainersTable->easyPath($this->getWriteContainers(), OBJECT_HOST, [], $this->hasRootPrivileges, [CT_HOSTGROUP]);
         }
 
         $masterInstance = $this->Systemsetting->findAsArraySection('FRONTEND')['FRONTEND']['FRONTEND.MASTER_INSTANCE'];
@@ -1416,10 +1433,10 @@ class HostsController extends AppController {
                     $this->setFlash(__('Data could not be saved'), false);
                 }
                 //Refil data that was loaded by ajax due to selected container id
-                if ($this->Container->exists($this->request->data('Host.container_id'))) {
+                if($ContainersTable->existsById($this->request->data('Host.container_id'))){
                     $container_id = $this->request->data('Host.container_id');
 
-                    $containerIds = $this->Tree->resolveChildrenOfContainerIds($container_id);
+                    $containerIds = $ContainersTable->resolveChildrenOfContainerIds($container_id);
                     $_hosttemplates = $this->Hosttemplate->hosttemplatesByContainerId($containerIds, 'list');
                     $_hostgroups = $this->Hostgroup->hostgroupsByContainerId($containerIds, 'list', 'id');
                     //$_parenthosts = $this->Host->hostsByContainerId($containerIds, 'list');
@@ -1440,7 +1457,10 @@ class HostsController extends AppController {
         if ($jsonOutput) {
             $this->autoRender = false;
         }
-        $containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_HOST, [], $this->hasRootPrivileges, [CT_HOSTGROUP]);
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        $containers = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_HOST, [], $this->hasRootPrivileges, [CT_HOSTGROUP]);
         $sharingContainers = array_diff_key($containers, [$containerId => $containerId]);
 
         if ($jsonOutput) {
@@ -3077,7 +3097,10 @@ class HostsController extends AppController {
             throw new MethodNotAllowedException();
         }
 
-        if (!$this->Container->exists($container_id)) {
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        if (!$ContainersTable->existsById($container_id)) {
             throw new NotFoundException(__('Invalid hosttemplate'));
         }
 
@@ -3093,7 +3116,7 @@ class HostsController extends AppController {
             }
         }
 
-        $containerIds = $this->Tree->resolveChildrenOfContainerIds($container_id);
+        $containerIds = $ContainersTable->resolveChildrenOfContainerIds($container_id);
 
         $hosttemplates = $this->Hosttemplate->hosttemplatesByContainerId($containerIds, 'list', $hosttemplate_type);
         $hosttemplates = $this->Hosttemplate->chosenPlaceholder($hosttemplates);
@@ -3261,9 +3284,12 @@ class HostsController extends AppController {
 
         $containerIds = [ROOT_CONTAINER, $containerId];
         if ($containerId == ROOT_CONTAINER) {
+            /** @var $ContainersTable ContainersTable */
+            $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
             //Don't panic! Only root users can edit /root objects ;)
             //So no loss of selected hosts/host templates
-            $containerIds = $this->Tree->resolveChildrenOfContainerIds(ROOT_CONTAINER, true);
+            $containerIds = $ContainersTable->resolveChildrenOfContainerIds(ROOT_CONTAINER, true);
         }
 
         $HostCondition = new HostConditions($HostFilter->ajaxFilter());
@@ -3323,9 +3349,12 @@ class HostsController extends AppController {
         $containerId = $this->request->query('containerId');
         $containerIds = [ROOT_CONTAINER, $containerId];
         if ($containerId == ROOT_CONTAINER) {
+            /** @var $ContainersTable ContainersTable */
+            $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
             //Don't panic! Only root users can edit /root objects ;)
             //So no loss of selected hosts/host templates
-            $containerIds = $this->Tree->resolveChildrenOfContainerIds(ROOT_CONTAINER, true);
+            $containerIds = $ContainersTable->resolveChildrenOfContainerIds(ROOT_CONTAINER, true);
         }
         $HostFilter = new HostFilter($this->request);
         $HostCondition = new HostConditions($HostFilter->ajaxFilter());

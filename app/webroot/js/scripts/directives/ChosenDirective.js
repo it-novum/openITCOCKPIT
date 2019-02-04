@@ -56,10 +56,6 @@ angular.module('openITCOCKPIT').directive('chosen', function($http, $filter, $ro
 
             element.chosen(defaultOptions);
 
-            /*$scope.updateChosen = function(){
-                console.log($scope.post.Instantreport.Service);
-                element.trigger('chosen:updated');
-            };*/
 
             $scope.$on('$destroy', function(){
                 unwatchModel();

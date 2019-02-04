@@ -22,6 +22,8 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+use App\Model\Table\ContainersTable;
+use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 
 
@@ -102,10 +104,14 @@ class ServicetemplategroupsController extends AppController {
 
     public function add() {
         $userId = $this->Auth->user('id');
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
         if ($this->hasRootPrivileges === true) {
-            $containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_SERVICETEMPLATEGROUP, [], $this->hasRootPrivileges);
+            $containers = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_SERVICETEMPLATEGROUP, [], $this->hasRootPrivileges);
         } else {
-            $containers = $this->Tree->easyPath($this->getWriteContainers(), OBJECT_SERVICETEMPLATEGROUP, [], $this->hasRootPrivileges);
+            $containers = $ContainersTable->easyPath($this->getWriteContainers(), OBJECT_SERVICETEMPLATEGROUP, [], $this->hasRootPrivileges);
         }
 
         $servicetemplates = [];
@@ -163,7 +169,7 @@ class ServicetemplategroupsController extends AppController {
             }
             $this->setFlash(__('Servicetemplategroup could not be saved'), false);
             if (isset($this->request->data['Container']['parent_id'])) {
-                $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->request->data['Container']['parent_id']);
+                $containerIds = $ContainersTable->resolveChildrenOfContainerIds($this->request->data['Container']['parent_id']);
                 $servicetemplates = $this->Servicetemplate->servicetemplatesByContainerId($containerIds, 'list');
             }
         }
@@ -197,6 +203,9 @@ class ServicetemplategroupsController extends AppController {
             $this->render403();
             return;
         }
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
 
         if ($this->request->is('post') || $this->request->is('put')) {
             if ($this->request->data('Servicetemplategroup.Servicetemplate')) {
@@ -240,21 +249,22 @@ class ServicetemplategroupsController extends AppController {
                 $this->redirect(['action' => 'index']);
             }
             if (isset($this->request->data['Container']['parent_id'])) {
-                $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->request->data['Container']['parent_id']);
+                $containerIds = $ContainersTable->resolveChildrenOfContainerIds($this->request->data['Container']['parent_id']);
                 $servicetemplates = $this->Servicetemplate->servicetemplatesByContainerId($containerIds, 'list');
                 $selectedServicetemplates = $this->request->data['Servicetemplate'];
             }
             $this->setFlash(__('Servicetemplategroup could not be saved'), false);
         } else {
-            $containerIds = $this->Tree->resolveChildrenOfContainerIds($servicetemplategroup['Container']['parent_id']);
+            $containerIds = $ContainersTable->resolveChildrenOfContainerIds($servicetemplategroup['Container']['parent_id']);
             $servicetemplates = $this->Servicetemplate->servicetemplatesByContainerId($containerIds, 'list');
             $selectedServicetemplates = Hash::extract($servicetemplategroup['Servicetemplate'], '{n}.id');
         }
 
+
         if ($this->hasRootPrivileges === true) {
-            $containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_SERVICETEMPLATEGROUP, [], $this->hasRootPrivileges);
+            $containers = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_SERVICETEMPLATEGROUP, [], $this->hasRootPrivileges);
         } else {
-            $containers = $this->Tree->easyPath($this->getWriteContainers(), OBJECT_SERVICETEMPLATEGROUP, [], $this->hasRootPrivileges);
+            $containers = $ContainersTable->easyPath($this->getWriteContainers(), OBJECT_SERVICETEMPLATEGROUP, [], $this->hasRootPrivileges);
         }
         $this->request->data['Servicetemplate'] = $selectedServicetemplates;
         $this->request->data = Hash::merge($servicetemplategroup, $this->request->data);
@@ -266,6 +276,9 @@ class ServicetemplategroupsController extends AppController {
         if (!$this->Servicetemplategroup->exists($id)) {
             throw new NotFoundException(__('Invalid servicetemplategroup'));
         }
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
 
         $servicetemplateCache = [];
         $this->loadModel('Host');
@@ -325,7 +338,7 @@ class ServicetemplategroupsController extends AppController {
         }
         $servicetemplategroup = $this->Servicetemplategroup->findById($id);
         if ($this->hasRootPrivileges === true) {
-            $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+            $containerIds = $ContainersTable->resolveChildrenOfContainerIds($this->MY_RIGHTS);
             $hosts = $this->Host->hostsByContainerId($containerIds, 'list');
         } else {
             $hosts = $this->Host->hostsByContainerId($this->getWriteContainers(), 'list');
@@ -336,6 +349,10 @@ class ServicetemplategroupsController extends AppController {
 
     public function allocateToHostgroup($id = null) {
         $this->loadModel('Hostgroup');
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
         if ($this->request->is('post') || $this->request->is('put')) {
             $userId = $this->Auth->user('id');
             $this->loadModel('Host');
@@ -395,7 +412,7 @@ class ServicetemplategroupsController extends AppController {
             }
         }
         $servicetemplategroup = $this->Servicetemplategroup->findById($id);
-        $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+        $containerIds = $ContainersTable->resolveChildrenOfContainerIds($this->MY_RIGHTS);
         if ($this->hasRootPrivileges === true) {
             $hostgroups = $this->Hostgroup->hostgroupsByContainerId($containerIds, 'list', 'id');
         } else {
@@ -675,7 +692,10 @@ class ServicetemplategroupsController extends AppController {
 
             return;
         }
-        if ($this->Container->delete($servicetemplategroup['Servicetemplategroup']['container_id'], true)) {
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        if ($ContainersTable->delete($ContainersTable->get($servicetemplategroup['Servicetemplategroup']['container_id']))) {
             Cache::clear(false, 'permissions');
             $changelog_data = $this->Changelog->parseDataForChangelog(
                 $this->params['action'],
@@ -700,11 +720,15 @@ class ServicetemplategroupsController extends AppController {
 
     public function loadServicetemplatesByContainerId($containerId = null) {
         $this->allowOnlyAjaxRequests();
-        if (!$this->Container->exists($containerId)) {
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        if (!$ContainersTable->existsById($containerId)) {
             throw new NotFoundException(__('Invalid hosttemplate'));
         }
 
-        $containerId = $this->Tree->resolveChildrenOfContainerIds($containerId);
+        $containerId = $ContainersTable->resolveChildrenOfContainerIds($containerId);
         $servicetemplates = $this->Servicetemplate->servicetemplatesByContainerId($containerId, 'list');
         $servicetemplates = Api::makeItJavaScriptAble($servicetemplates);
 

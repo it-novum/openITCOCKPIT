@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('CommandsEditController', function($scope, $http, SudoService, QueryStringService, $stateParams, $state, NotyService){
+    .controller('CommandsEditController', function($scope, $http, SudoService, QueryStringService, $stateParams, $state, $location, NotyService){
         $scope.post = {
             Command: {
                 name: '',
@@ -9,8 +9,7 @@ angular.module('openITCOCKPIT')
                 commandarguments: []
             }
         };
-        //$scope.id = $stateParams.id;
-        $scope.id = QueryStringService.getCakeId();
+        $scope.id = $stateParams.id;
 
         $scope.init = true;
         $scope.hasError = null;
@@ -87,7 +86,7 @@ angular.module('openITCOCKPIT')
                         'name': $scope.args[i].name,
                         'human_name': $scope.args[i].human_name
                     };
-                } else{
+                }else{
                     $scope.post.Command.commandarguments[index] = {
                         'name': $scope.args[i].name,
                         'human_name': $scope.args[i].human_name
@@ -98,9 +97,16 @@ angular.module('openITCOCKPIT')
             $http.post("/commands/edit/" + $scope.id + ".json?angular=true",
                 $scope.post
             ).then(function(result){
-                window.location.href = '/commands/index';
+                NotyService.genericSuccess({
+                    message: '<u><a href="' + $location.absUrl() + '" class="txt-color-white"> '
+                        + $scope.successMessage.objectName
+                        + '</a></u> ' + $scope.successMessage.message,
+                    timeout: 10000
+                });
+                $state.go('CommandsIndex');
             }, function errorCallback(result){
                 if(result.data.hasOwnProperty('error')){
+                    NotyService.genericError();
                     $scope.errors = result.data.error;
                 }
             });

@@ -27,7 +27,10 @@ use itnovum\openITCOCKPIT\Core\Views\Logo;
 
 App::uses('Validation', 'Utility');
 
-
+/**
+ * Class LoginController
+ * @property User $User
+ */
 class LoginController extends AppController {
 
     public $uses = ['User', 'SystemContent', 'Systemsetting', 'Container', 'Oauth2client'];

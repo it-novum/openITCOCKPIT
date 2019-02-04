@@ -197,6 +197,7 @@ $config = [
                 ],
                 [
                     'url'               => ['controller' => 'commands', 'action' => 'index'],
+                    'state'             => 'CommandsIndex',
                     'title'             => 'Commands',
                     'icon'              => 'terminal',
                 ],

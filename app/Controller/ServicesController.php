@@ -25,6 +25,7 @@
 
 use App\Model\Table\CommandargumentsTable;
 use App\Model\Table\CommandsTable;
+use App\Model\Table\ContainersTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AcknowledgedServiceConditions;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
@@ -135,6 +136,9 @@ class ServicesController extends AppController {
         $this->layout = 'angularjs';
         $User = new User($this->Auth);
 
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
         if (!$this->isApiRequest()) {
             $this->set('QueryHandler', new QueryHandler($this->Systemsetting->getQueryHandlerPath()));
             $this->set('username', $User->getFullName());
@@ -164,7 +168,8 @@ class ServicesController extends AppController {
             if ($User->isRecursiveBrowserEnabled()) {
                 //get recursive container ids
                 $containerIdToResolve = $browserContainerIds;
-                $containerIds = Hash::extract($this->Container->children($containerIdToResolve[0], false, ['Container.id']), '{n}.Container.id');
+                $children = $ContainersTable->getChildren($containerIdToResolve[0]);
+                $containerIds = Hash::extract($children, '{n}.id');
                 $recursiveContainerIds = [];
                 foreach ($containerIds as $containerId) {
                     if (in_array($containerId, $this->MY_RIGHTS)) {
@@ -639,19 +644,22 @@ class ServicesController extends AppController {
 
         $this->loadModel('Customvariable');
 
+        /** @var $CommandsTable CommandsTable */
+        $CommandsTable = TableRegistry::getTableLocator()->get('Commands');
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
         $userContainerId = $this->Auth->user('container_id');
-        $myContainerId = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+        $myContainerId = $ContainersTable->resolveChildrenOfContainerIds($this->MY_RIGHTS);
         $myRights = $myContainerId;
         if (!$this->hasRootPrivileges && ($rootKey = array_search(ROOT_CONTAINER, $myRights)) !== false) {
             unset($myRights[$rootKey]);
         }
 
-        /** @var $CommandsTable CommandsTable */
-        $CommandsTable = TableRegistry::getTableLocator()->get('Commands');
 
         $servicetemplates = $this->Servicetemplate->servicetemplatesByContainerId($myContainerId, 'list');
         $timeperiods = $this->Timeperiod->find('list');
-        $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+        $containerIds = $ContainersTable->resolveChildrenOfContainerIds($this->MY_RIGHTS);
         $contacts = $this->Contact->contactsByContainerId($containerIds, 'list', 'id');
         $contactgroups = $this->Contactgroup->contactgroupsByContainerId($containerIds, 'list', 'id');
         $commands = $CommandsTable->getCommandByTypeAsList(CHECK_COMMAND);
@@ -858,14 +866,16 @@ class ServicesController extends AppController {
         $CommandsTable = TableRegistry::getTableLocator()->get('Commands');
         /** @var $CommandargumentsTable CommandargumentsTable */
         $CommandargumentsTable = TableRegistry::getTableLocator()->get('Commandarguments');
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
 
         $userContainerId = $this->Auth->user('container_id');
         $hosts = $this->Host->find('list');
-        $myContainerId = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+        $myContainerId = $ContainersTable->resolveChildrenOfContainerIds($this->MY_RIGHTS);
         $servicetemplates = $this->Servicetemplate->servicetemplatesByContainerId($myContainerId, 'list', $service['Service']['service_type']);
         $timeperiods = $this->Timeperiod->find('list');
         //container_id = 1 => ROOT
-        $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+        $containerIds = $ContainersTable->resolveChildrenOfContainerIds($this->MY_RIGHTS);
         $contacts = $this->Contact->contactsByContainerId($containerIds, 'list', 'id');
         $contactgroups = $this->Contactgroup->contactgroupsByContainerId($containerIds, 'list', 'id');
         $commands = $CommandsTable->getCommandByTypeAsList(CHECK_COMMAND);
@@ -1621,9 +1631,12 @@ class ServicesController extends AppController {
                 }
             }
 
+            /** @var $ContainersTable ContainersTable */
+            $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
             //Find hosts to copy on this host.
             if (!empty($servicesToCopy)) {
-                $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+                $containerIds = $ContainersTable->resolveChildrenOfContainerIds($this->MY_RIGHTS);
                 $hosts = $this->Host->hostsByContainerId($containerIds, 'list', ['Host.host_type' => GENERIC_HOST]);
             }
         }
@@ -1721,8 +1734,12 @@ class ServicesController extends AppController {
                 'sizeof'        => 0,
             ],
         ];
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
         //container_id = 1 => ROOT
-        $containerIds = $this->Tree->resolveChildrenOfContainerIds($container_id);
+        $containerIds = $ContainersTable->resolveChildrenOfContainerIds($container_id);
         $result['contacts']['contacts'] = $this->Contact->contactsByContainerId($containerIds, 'list');
         $result['contacts']['sizeof'] = sizeof($result['contacts']['contacts']);
         //container_id = 1 => ROOT
@@ -2845,10 +2862,13 @@ class ServicesController extends AppController {
         $selected = $this->request->query('selected');
         $ServiceFilter = new ServiceFilter($this->request);
         $containerIds = [ROOT_CONTAINER, $containerId];
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
         if ($containerId == ROOT_CONTAINER) {
             //Don't panic! Only root users can edit /root objects ;)
             //So no loss of selected hosts/host templates
-            $containerIds = $this->Tree->resolveChildrenOfContainerIds(ROOT_CONTAINER, true);
+            $containerIds = $ContainersTable->resolveChildrenOfContainerIds(ROOT_CONTAINER, true);
         }
 
         $ServiceCondition = new ServiceConditions($ServiceFilter->indexFilter());

@@ -53,11 +53,15 @@
                 <a href="javascript:void(0);" data-toggle="modal" id="loadMacrosOberview" data-target="#MacrosOverview"
                    class="btn btn-primary btn-xs"><i class="fa fa-usd"></i> <?php echo __('Macros overview'); ?></a>
             <?php endif; ?>
-            <?php echo $this->Utils->backButton(); ?>
+            <a class="btn btn-default" ui-sref="CommandsIndex">
+                <i class="fa fa-arrow-left"></i>
+                <?php echo __('Back to list'); ?>
+            </a>
         </div>
     </header>
     <div>
-        <form ng-submit="submit();" class="form-horizontal">
+        <form ng-submit="submit();" class="form-horizontal" ng-init="successMessage=
+            {objectName : '<?php echo __('Command'); ?>' , message: '<?php echo __('created successfully'); ?>'}">
             <div class="widget-body">
                 <div class="row">
                     <div class="form-group">
@@ -195,7 +199,7 @@
                 <div class="well formactions ">
                     <div class="pull-right">
                         <input class="btn btn-primary" type="submit" value="<?php echo __('Save'); ?>">
-                        <a href="/commands/index" class="btn btn-default"><?php echo __('Cancel'); ?></a>
+                        <a ui-sref="CommandsIndex" class="btn btn-default"><?php echo __('Cancel'); ?></a>
                     </div>
                 </div>
             </div>

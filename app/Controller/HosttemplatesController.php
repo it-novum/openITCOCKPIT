@@ -24,6 +24,7 @@
 //	confirmation.
 use App\Model\Table\CommandargumentsTable;
 use App\Model\Table\CommandsTable;
+use App\Model\Table\ContainersTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\Views\ContainerPermissions;
@@ -188,6 +189,9 @@ class HosttemplatesController extends AppController {
         $CommandsTable = TableRegistry::getTableLocator()->get('Commands');
         /** @var $CommandargumentsTable CommandargumentsTable */
         $CommandargumentsTable = TableRegistry::getTableLocator()->get('Commandarguments');
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
         $commandarguments = $CommandargumentsTable->getByCommandId($hosttemplate['CheckCommand']['id']);
 
         // Data required for changelog
@@ -199,9 +203,9 @@ class HosttemplatesController extends AppController {
         // End changelog
 
         if ($this->hasRootPrivileges === true) {
-            $containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_HOSTTEMPLATE, [], $this->hasRootPrivileges, [CT_HOSTGROUP]);
+            $containers = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_HOSTTEMPLATE, [], $this->hasRootPrivileges, [CT_HOSTGROUP]);
         } else {
-            $containers = $this->Tree->easyPath($this->getWriteContainers(), OBJECT_HOSTTEMPLATE, [], $this->hasRootPrivileges, [CT_HOSTGROUP]);
+            $containers = $ContainersTable->easyPath($this->getWriteContainers(), OBJECT_HOSTTEMPLATE, [], $this->hasRootPrivileges, [CT_HOSTGROUP]);
         }
 
         if (count($hosttemplate['Host']) > 0) {
@@ -222,7 +226,7 @@ class HosttemplatesController extends AppController {
         }
 
         $containerId = array_unique([ROOT_CONTAINER, $containerId]);
-        $containerIds = $this->Tree->resolveChildrenOfContainerIds($containerId);
+        $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId);
 
         $_timeperiods = $this->Timeperiod->timeperiodsByContainerId($containerIds, 'list');
         $_contacts = $this->Contact->contactsByContainerId($containerIds, 'list');
@@ -491,9 +495,9 @@ class HosttemplatesController extends AppController {
                 }
 
                 //Refill data that was loaded by ajax due to selected container id
-                if ($this->Container->exists($this->request->data('Hosttemplate.container_id'))) {
+                if ($ContainersTable->existsById($this->request->data('Hosttemplate.container_id'))) {
                     $containerId = $this->request->data('Hosttemplate.container_id');
-                    $containerIds = $this->Tree->resolveChildrenOfContainerIds($containerId);
+                    $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId);
 
                     $_timeperiods = $this->Timeperiod->timeperiodsByContainerId($containerIds, 'list');
                     $_contacts = $this->Contact->contactsByContainerId($containerIds, 'list');
@@ -558,13 +562,15 @@ class HosttemplatesController extends AppController {
         }
         /** @var $CommandsTable CommandsTable */
         $CommandsTable = TableRegistry::getTableLocator()->get('Commands');
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
 
         $commands = $CommandsTable->getCommandByTypeAsList(HOSTCHECK_COMMAND);
 
         if ($this->hasRootPrivileges === true) {
-            $containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_HOSTTEMPLATE, [], $this->hasRootPrivileges, [CT_HOSTGROUP]);
+            $containers = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_HOSTTEMPLATE, [], $this->hasRootPrivileges, [CT_HOSTGROUP]);
         } else {
-            $containers = $this->Tree->easyPath($this->getWriteContainers(), OBJECT_HOSTTEMPLATE, [], $this->hasRootPrivileges, [CT_HOSTGROUP]);
+            $containers = $ContainersTable->easyPath($this->getWriteContainers(), OBJECT_HOSTTEMPLATE, [], $this->hasRootPrivileges, [CT_HOSTGROUP]);
         }
 
         $this->Frontend->set('data_placeholder', __('Please choose a contact'));
@@ -764,9 +770,9 @@ class HosttemplatesController extends AppController {
                 }
 
                 //Refill data that was loaded by ajax due to selected container id
-                if ($this->Container->exists($this->request->data('Hosttemplate.container_id'))) {
+                if ($ContainersTable->existsById($this->request->data('Hosttemplate.container_id'))) {
                     $container_id = $this->request->data('Hosttemplate.container_id');
-                    $containerIds = $this->Tree->resolveChildrenOfContainerIds($container_id);
+                    $containerIds = $ContainersTable->resolveChildrenOfContainerIds($container_id);
 
                     $_timeperiods = $this->Timeperiod->timeperiodsByContainerId($containerIds, 'list');
                     $_contacts = $this->Contact->contactsByContainerId($containerIds, 'list');
@@ -1233,11 +1239,14 @@ class HosttemplatesController extends AppController {
             throw new MethodNotAllowedException();
         }
 
-        if (!$this->Container->exists($container_id)) {
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        if (!$ContainersTable->existsById($container_id)) {
             throw new NotFoundException(__('Invalid Container'));
         }
 
-        $containerIds = $this->Tree->resolveChildrenOfContainerIds($container_id);
+        $containerIds = $ContainersTable->resolveChildrenOfContainerIds($container_id);
 
         $timeperiods = $this->Timeperiod->timeperiodsByContainerId($containerIds, 'list');
         $timeperiods = Api::makeItJavaScriptAble($timeperiods);

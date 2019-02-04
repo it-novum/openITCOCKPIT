@@ -156,6 +156,9 @@ class MenuComponent extends Component {
                         if ($realUrl) {
                             $childNode['url_array'] = $childNode['url'];
                             $childNode['url'] = Router::url($childNode['url']);
+                            if($childNode['url_array']['action'] === 'index'){
+                                $childNode['url'] = $childNode['url'].'/index';
+                            }
                         }
                         $_childNodes[$childKey] = $childNode;
                     } else {
@@ -170,6 +173,9 @@ class MenuComponent extends Component {
                                     if ($realUrl) {
                                         $childNode['url_array'] = $childNode['url'];
                                         $childNode['url'] = Router::url($childNode['url']);
+                                        if($childNode['url_array']['action'] === 'index'){
+                                            $childNode['url'] = $childNode['url'].'/index';
+                                        }
                                     }
                                     $_childNodes[$childKey] = $childNode;
                                     break;
@@ -188,6 +194,9 @@ class MenuComponent extends Component {
                     if ($realUrl) {
                         $parentNode['url_array'] = $parentNode['url'];
                         $parentNode['url'] = Router::url($parentNode['url']);
+                        if($parentNode['url_array']['action'] === 'index'){
+                            $parentNode['url'] = $parentNode['url'].'/index';
+                        }
                     }
                     if(isset($parentNode['children']) && empty($parentNode['children'])){
                         unset($parentNode['children']);

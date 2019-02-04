@@ -23,6 +23,8 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use App\Model\Table\ContainersTable;
+use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\HoststatusFields;
 use itnovum\openITCOCKPIT\Core\ServicegroupConditions;
@@ -365,10 +367,13 @@ class ServicegroupsController extends AppController {
             throw new MethodNotAllowedException();
         }
 
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
         if ($this->hasRootPrivileges === true) {
-            $containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_SERVICEGROUP, [], $this->hasRootPrivileges);
+            $containers = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_SERVICEGROUP, [], $this->hasRootPrivileges);
         } else {
-            $containers = $this->Tree->easyPath($this->getWriteContainers(), OBJECT_SERVICEGROUP, [], $this->hasRootPrivileges);
+            $containers = $ContainersTable->easyPath($this->getWriteContainers(), OBJECT_SERVICEGROUP, [], $this->hasRootPrivileges);
         }
         $containers = Api::makeItJavaScriptAble($containers);
 
@@ -582,7 +587,10 @@ class ServicegroupsController extends AppController {
             return;
         }
 
-        if ($this->Container->delete($container['Servicegroup']['container_id'], true)) {
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        if ($ContainersTable->delete($ContainersTable->get($container['Servicegroup']['container_id']))) {
             Cache::clear(false, 'permissions');
             $changelog_data = $this->Changelog->parseDataForChangelog(
                 $this->params['action'],
@@ -607,6 +615,10 @@ class ServicegroupsController extends AppController {
 
     public function mass_delete($id = null) {
         $userId = $this->Auth->user('id');
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
         foreach (func_get_args() as $servicegroupId) {
             if ($this->Servicegroup->exists($servicegroupId)) {
                 $servicegroup = $this->Servicegroup->find('first', [
@@ -619,7 +631,7 @@ class ServicegroupsController extends AppController {
                     ],
                 ]);
                 if ($this->allowedByContainerId(Hash::extract($servicegroup, 'Container.parent_id'))) {
-                    if ($this->Container->delete($servicegroup['Servicegroup']['container_id'], true)) {
+                    if ($ContainersTable->delete($ContainersTable->get($servicegroup['Servicegroup']['container_id']))) {
                         $changelog_data = $this->Changelog->parseDataForChangelog(
                             $this->params['action'],
                             $this->params['controller'],
@@ -674,7 +686,11 @@ class ServicegroupsController extends AppController {
             $service = $this->Service->findById($service_id);
             $servicesToAppend[] = $service;
         }
-        $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        $containerIds = $ContainersTable->resolveChildrenOfContainerIds($this->MY_RIGHTS);
         $servicegroups = $this->Servicegroup->servicegroupsByContainerId($containerIds, 'list');
 
         $this->set(compact(['servicesToAppend', 'servicegroups']));
@@ -776,13 +792,16 @@ class ServicegroupsController extends AppController {
             return;
         }
 
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
         $containerId = $this->request->query('containerId');
         $selected = $this->request->query('selected');
         $ServicegroupFilter = new ServicegroupFilter($this->request);
 
         $containerIds = [ROOT_CONTAINER, $containerId];
         if ($containerId == ROOT_CONTAINER) {
-            $containerIds = $this->Tree->resolveChildrenOfContainerIds(ROOT_CONTAINER, true);
+            $containerIds = $ContainersTable->resolveChildrenOfContainerIds(ROOT_CONTAINER, true);
         }
 
         $query = [

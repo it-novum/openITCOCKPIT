@@ -146,6 +146,30 @@ angular.module('openITCOCKPIT', ['ui.router', 'gridster'])
                 templateUrl: "/hostgroups/extended.html",
                 controller: "HostgroupsExtendedController"
             })
+
+            .state('CommandsIndex', {
+                url: '/commands/index',
+                templateUrl: "/commands/index.html",
+                controller: "CommandsIndexController"
+            })
+
+            .state('CommandsAdd', {
+                url: '/commands/add',
+                templateUrl: "/commands/add.html",
+                controller: "CommandsAddController"
+            })
+
+            .state('CommandsEdit', {
+                url: '/commands/edit/:id',
+                templateUrl: "/commands/edit.html",
+                controller: "CommandsEditController"
+            })
+
+            .state('CommandsCopy', {
+                url: '/commands/copy/:ids',
+                templateUrl: "/commands/copy.html",
+                controller: "CommandsCopyController"
+            })
     })
 
     /*

@@ -37,7 +37,7 @@ class CommandsController extends AppController {
 
 
     public function index() {
-        $this->layout = 'angularjs';
+        $this->layout = 'blank';
         if (!$this->isAngularJsRequest()) {
             //Only ship HTML Template
             return;
@@ -76,7 +76,7 @@ class CommandsController extends AppController {
     }
 
     public function add() {
-        $this->layout = 'angularjs';
+        $this->layout = 'blank';
         if (!$this->isApiRequest()) {
             //Only ship HTML template for angular
             return;
@@ -125,7 +125,7 @@ class CommandsController extends AppController {
     }
 
     public function edit($id = null) {
-        $this->layout = 'angularjs';
+        $this->layout = 'blank';
         if (!$this->isApiRequest()) {
             //Only ship HTML template for angular
             return;
@@ -428,7 +428,7 @@ class CommandsController extends AppController {
     }
 
     public function copy($id = null) {
-        $this->layout = 'angularjs';
+        $this->layout = 'blank';
 
         if (!$this->isAngularJsRequest()) {
             //Only ship HTML Template

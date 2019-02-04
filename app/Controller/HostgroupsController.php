@@ -23,6 +23,8 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use App\Model\Table\ContainersTable;
+use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\HostConditions;
 use itnovum\openITCOCKPIT\Core\HostgroupConditions;
@@ -350,10 +352,13 @@ class HostgroupsController extends AppController {
             throw new MethodNotAllowedException();
         }
 
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
         if ($this->hasRootPrivileges === true) {
-            $containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_HOSTGROUP, [], $this->hasRootPrivileges);
+            $containers = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_HOSTGROUP, [], $this->hasRootPrivileges);
         } else {
-            $containers = $this->Tree->easyPath($this->getWriteContainers(), OBJECT_HOSTGROUP, [], $this->hasRootPrivileges);
+            $containers = $ContainersTable->easyPath($this->getWriteContainers(), OBJECT_HOSTGROUP, [], $this->hasRootPrivileges);
         }
         $containers = Api::makeItJavaScriptAble($containers);
 
@@ -372,16 +377,19 @@ class HostgroupsController extends AppController {
 
         $HostFilter = new HostFilter($this->request);
 
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
         if ($containerId == ROOT_CONTAINER) {
             //Don't panic! Only root users can edit /root objects ;)
             //So no loss of selected hosts/host templates
-            $containerIds = $this->Tree->resolveChildrenOfContainerIds(ROOT_CONTAINER, true, [
+            $containerIds = $ContainersTable->resolveChildrenOfContainerIds(ROOT_CONTAINER, true, [
                 CT_GLOBAL,
                 CT_TENANT,
                 CT_NODE
             ]);
         } else {
-            $containerIds = $this->Tree->resolveChildrenOfContainerIds($containerId, false, [
+            $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId, false, [
                 CT_GLOBAL,
                 CT_TENANT,
                 CT_NODE
@@ -566,9 +574,12 @@ class HostgroupsController extends AppController {
         $selected = $this->request->query('selected');
         $HosttemplateFilter = new HosttemplateFilter($this->request);
 
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
         $containerIds = [ROOT_CONTAINER, $containerId];
         if ($containerId == ROOT_CONTAINER) {
-            $containerIds = $this->Tree->resolveChildrenOfContainerIds(ROOT_CONTAINER, true);
+            $containerIds = $ContainersTable->resolveChildrenOfContainerIds(ROOT_CONTAINER, true);
         }
 
         $hosttemplates = Api::makeItJavaScriptAble(
@@ -609,10 +620,13 @@ class HostgroupsController extends AppController {
         $selected = $this->request->query('selected');
         $HostgroupFilter = new HostgroupFilter($this->request);
 
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
         if ($containerId == ROOT_CONTAINER) {
-            $containerIds = $this->Tree->resolveChildrenOfContainerIds(ROOT_CONTAINER, true, [CT_HOSTGROUP]);
+            $containerIds = $ContainersTable->resolveChildrenOfContainerIds(ROOT_CONTAINER, true, [CT_HOSTGROUP]);
         } else {
-            $containerIds = $this->Tree->resolveChildrenOfContainerIds($containerId, false, [CT_HOSTGROUP]);
+            $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId, false, [CT_HOSTGROUP]);
         }
         $HostgroupCondition = new HostgroupConditions($HostgroupFilter->indexFilter());
         $HostgroupCondition->setContainerIds($containerIds);
@@ -663,7 +677,11 @@ class HostgroupsController extends AppController {
             $this->render403();
             return;
         }
-        if ($this->Container->delete($container['Hostgroup']['container_id'], true)) {
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        if ($ContainersTable->delete($ContainersTable->get($container['Hostgroup']['container_id']))) {
             Cache::clear(false, 'permissions');
             $changelog_data = $this->Changelog->parseDataForChangelog(
                 $this->params['action'],
@@ -798,13 +816,16 @@ class HostgroupsController extends AppController {
             $hostsToAppend[] = $host;
         }
 
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
         if ($this->hasRootPrivileges === true) {
-            $containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_HOSTGROUP, [], $this->hasRootPrivileges);
-            $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+            $containers = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_HOSTGROUP, [], $this->hasRootPrivileges);
+            $containerIds = $ContainersTable->resolveChildrenOfContainerIds($this->MY_RIGHTS);
             $hostgroups = $this->Hostgroup->hostgroupsByContainerId($containerIds, 'list', 'id');
         } else {
-            $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->getWriteContainers());
-            $containers = $this->Tree->easyPath($containerIds, OBJECT_HOSTGROUP, [], $this->hasRootPrivileges);
+            $containerIds = $ContainersTable->resolveChildrenOfContainerIds($this->getWriteContainers());
+            $containers = $ContainersTable->easyPath($containerIds, OBJECT_HOSTGROUP, [], $this->hasRootPrivileges);
             $hostgroups = $this->Hostgroup->hostgroupsByContainerId($this->getWriteContainers(), 'list', 'id');
         }
         $userContainerId = (isset($this->request->data['Container']['parent_id'])) ? $this->request->data['Container']['parent_id'] : $this->Auth->user('container_id');

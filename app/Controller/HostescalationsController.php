@@ -22,6 +22,8 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+use App\Model\Table\ContainersTable;
+use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 
 
@@ -165,9 +167,11 @@ class HostescalationsController extends AppController {
             return;
         }
 
-        $containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_HOSTESCALATION, [], $this->hasRootPrivileges);
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        $containers = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_HOSTESCALATION, [], $this->hasRootPrivileges);
 
-        $containerIds = $this->Tree->resolveChildrenOfContainerIds($hostescalation['Hostescalation']['container_id']);
+        $containerIds = $ContainersTable->resolveChildrenOfContainerIds($hostescalation['Hostescalation']['container_id']);
         $hostgroups = $this->Hostgroup->hostgroupsByContainerId($containerIds, 'list', 'id');
         $hosts = $this->Host->hostsByContainerId($containerIds, 'list');
         $timeperiods = $this->Timeperiod->timeperiodsByContainerId($containerIds, 'list');
@@ -181,7 +185,7 @@ class HostescalationsController extends AppController {
         if ($this->request->is('post') || $this->request->is('put')) {
 
             if ($this->request->data('Hostescalation.container_id') > 0 && $this->request->data('Hostescalation.container_id') != $hostescalation['Hostescalation']['container_id']) {
-                $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->request->data('Hostescalation.container_id'));
+                $containerIds = $ContainersTable->resolveChildrenOfContainerIds($this->request->data('Hostescalation.container_id'));
                 $hostgroups = $this->Hostgroup->hostgroupsByContainerId($containerIds, 'list', 'id');
                 $hosts = $this->Host->hostsByContainerId($containerIds, 'list');
                 $timeperiods = $this->Timeperiod->timeperiodsByContainerId($containerIds, 'list');
@@ -245,7 +249,9 @@ class HostescalationsController extends AppController {
     }
 
     public function add() {
-        $containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_HOSTESCALATION, [], $this->hasRootPrivileges);
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        $containers = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_HOSTESCALATION, [], $this->hasRootPrivileges);
 
         $hosts = [];
         $hostgroups = [];
@@ -305,7 +311,7 @@ class HostescalationsController extends AppController {
                     $this->setFlash(__('Hostescalation could not be saved'), false);
                     $containerIds = $this->request->data('Hostescalation.container_id');
                     if ($containerIds > 0) {
-                        $containerIds = $this->Tree->resolveChildrenOfContainerIds($containerIds);
+                        $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerIds);
                         $hostgroups = $this->Hostgroup->hostgroupsByContainerId($containerIds, 'list', 'id');
                         $hosts = $this->Host->hostsByContainerId($containerIds, 'list');
                         $timeperiods = $this->Timeperiod->timeperiodsByContainerId($containerIds, 'list');
@@ -339,11 +345,14 @@ class HostescalationsController extends AppController {
 
     public function loadElementsByContainerId($containerId = null) {
         $this->allowOnlyAjaxRequests();
-        if (!$this->Container->exists($containerId)) {
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        if (!$ContainersTable->existsById($containerId)) {
             throw new NotFoundException(__('Invalid hosttemplate'));
         }
 
-        $containerIds = $this->Tree->resolveChildrenOfContainerIds($containerId);
+        $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId);
 
         $hostgroups = $this->Hostgroup->hostgroupsByContainerId($containerIds, 'list', 'id');
         $hostgroups = Api::makeItJavaScriptAble($hostgroups);

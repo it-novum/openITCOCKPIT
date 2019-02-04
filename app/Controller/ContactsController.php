@@ -23,6 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 use App\Model\Table\CommandsTable;
+use App\Model\Table\ContainersTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\PHPVersionChecker;
@@ -212,7 +213,10 @@ class ContactsController extends AppController {
 
         $this->set('MY_WRITABLE_CONTAINERS', $this->getWriteContainers());
 
-        $containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_CONTACT, [], $this->hasRootPrivileges, [CT_CONTACTGROUP]);
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        $containers = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_CONTACT, [], $this->hasRootPrivileges, [CT_CONTACTGROUP]);
 
         /** @var $CommandsTable CommandsTable */
         $CommandsTable = TableRegistry::getTableLocator()->get('Commands');
@@ -306,7 +310,7 @@ class ContactsController extends AppController {
         $this->request->data = Hash::merge($contact, $this->request->data);
 
         if ($containerIds !== '') {
-            $containerIds = $this->Tree->resolveChildrenOfContainerIds($containerIds);
+            $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerIds);
             $_timeperiods = $this->Timeperiod->timeperiodsByContainerId($containerIds, 'list');
             $_users = $this->User->usersByContainerId($containerIds, 'list');
         }
@@ -351,13 +355,17 @@ class ContactsController extends AppController {
 
         $this->CustomValidationErrors->checkForRefill($customFieldsToRefill);
 
-        if ($this->hasRootPrivileges === true) {
-            $containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_CONTACT, [], $this->hasRootPrivileges, [CT_CONTACTGROUP]);
-        } else {
-            $containers = $this->Tree->easyPath($this->getWriteContainers(), OBJECT_CONTACT, [], $this->hasRootPrivileges, [CT_CONTACTGROUP]);
-        }
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
         /** @var $CommandsTable CommandsTable */
         $CommandsTable = TableRegistry::getTableLocator()->get('Commands');
+
+        if ($this->hasRootPrivileges === true) {
+            $containers = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_CONTACT, [], $this->hasRootPrivileges, [CT_CONTACTGROUP]);
+        } else {
+            $containers = $ContainersTable->easyPath($this->getWriteContainers(), OBJECT_CONTACT, [], $this->hasRootPrivileges, [CT_CONTACTGROUP]);
+        }
+
         $notification_commands = $CommandsTable->getCommandByTypeAsList(NOTIFICATION_COMMAND);
         $timeperiods = $this->Timeperiod->find('list');
 
@@ -381,7 +389,7 @@ class ContactsController extends AppController {
             if (isset($this->request->data['Container']['Container'])) {
                 $containerIds = $this->request->data['Container']['Container'];
                 if ($containerIds !== '') {
-                    $containerIds = $this->Tree->resolveChildrenOfContainerIds($containerIds);
+                    $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerIds);
                     $_timeperiods = $this->Timeperiod->timeperiodsByContainerId($containerIds, 'list');
 
                     $_users = $this->User->usersByContainerId($containerIds, 'list');
@@ -873,9 +881,12 @@ class ContactsController extends AppController {
     public function loadTimeperiods() {
         $this->allowOnlyAjaxRequests();
 
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
         $timePeriods = [];
         if (isset($this->request->data['container_ids'])) {
-            $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->request->data['container_ids']);
+            $containerIds = $ContainersTable->resolveChildrenOfContainerIds($this->request->data['container_ids']);
             $timePeriods = $this->Timeperiod->timeperiodsByContainerId($containerIds, 'list');
             $timePeriods = Api::makeItJavaScriptAble($timePeriods);
         }
@@ -888,11 +899,12 @@ class ContactsController extends AppController {
     }
 
     public function loadUsersByContainerId() {
-        //$this->allowOnlyAjaxRequests();
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
 
         $users = [];
         if (isset($this->request->data['container_ids'])) {
-            $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->request->data['container_ids']);
+            $containerIds = $ContainersTable->resolveChildrenOfContainerIds($this->request->data['container_ids']);
             $users = $this->User->usersByContainerId($containerIds, 'list');
             $users = Api::makeItJavaScriptAble($users);
         }

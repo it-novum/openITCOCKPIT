@@ -23,6 +23,8 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use App\Model\Table\ContainersTable;
+use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\Interfaces\CronjobInterface;
 
 class RecurringDowntimesTask extends AppShell implements CronjobInterface {
@@ -61,6 +63,11 @@ class RecurringDowntimesTask extends AppShell implements CronjobInterface {
     public function recurringDowntimes() {
         $all_downtimes = $this->Systemdowntimes->find('all');
         $statusdat = $this->parseStatusDat();
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+
         foreach ($all_downtimes as $downtime) {
             $weekdays = [];
             $days_of_month = [];
@@ -172,7 +179,7 @@ class RecurringDowntimesTask extends AppShell implements CronjobInterface {
                                     break;
 
                                 case OBJECT_NODE: //Type 4 is Container, object Container does not exists
-                                    if (!$this->Container->exists($downtime['Systemdowntimes']['object_id'])) {
+                                    if (!$ContainersTable->existsById($downtime['Systemdowntimes']['object_id'])) {
                                         $this->Systemdowntimes->delete($downtime['Systemdowntimes']['id']);
                                         break;
                                     }
@@ -305,7 +312,7 @@ class RecurringDowntimesTask extends AppShell implements CronjobInterface {
                                     ]);
                                     break;
                                 case OBJECT_NODE: //Type 4 is Container, object Container does not exists
-                                    if (!$this->Container->exists($downtime['Systemdowntimes']['object_id'])) {
+                                    if (!$ContainersTable->existsById($downtime['Systemdowntimes']['object_id'])) {
                                         $this->Systemdowntimes->delete($downtime['Systemdowntimes']['id']);
                                         break;
                                     }
@@ -439,7 +446,7 @@ class RecurringDowntimesTask extends AppShell implements CronjobInterface {
                                     break;
 
                                 case OBJECT_NODE: //Type 4 is Container, object Container does not exists
-                                    if (!$this->Container->exists($downtime['Systemdowntimes']['object_id'])) {
+                                    if (!$ContainersTable->existsById($downtime['Systemdowntimes']['object_id'])) {
                                         $this->Systemdowntimes->delete($downtime['Systemdowntimes']['id']);
                                         break;
                                     }

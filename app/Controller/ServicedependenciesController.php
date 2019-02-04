@@ -22,6 +22,9 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+use App\Lib\Constants;
+use App\Model\Table\ContainersTable;
+use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 
 
@@ -151,9 +154,13 @@ class ServicedependenciesController extends AppController {
 
             return;
         }
-        $serviceDependencyContainerIds = $this->Tree->resolveChildrenOfContainerIds($serviceDependencyContainerId);
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
 
-        $containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_SERVICEDEPENDENCY, [], $this->hasRootPrivileges);
+        $serviceDependencyContainerIds = $ContainersTable->resolveChildrenOfContainerIds($serviceDependencyContainerId);
+
+
+        $containers = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_SERVICEDEPENDENCY, [], $this->hasRootPrivileges);
         $servicegroups = $this->Servicegroup->servicegroupsByContainerId($serviceDependencyContainerIds, 'list', 'id');
 
         $services = $this->Host->servicesByContainerIds($serviceDependencyContainerIds, 'list', [
@@ -169,7 +176,7 @@ class ServicedependenciesController extends AppController {
             if ($containerId > 0 && $containerId != $serviceDependencyContainerId) {
                 // If the container ID has been changed, fill the variables
 
-                $containerIds = $this->Tree->resolveChildrenOfContainerIds($containerId);
+                $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId);
                 $services = $this->Host->servicesByContainerIds($containerIds, 'list', [
                     'prefixHostname' => true,
                     'delimiter'      => '/',
@@ -249,7 +256,10 @@ class ServicedependenciesController extends AppController {
             ],
         ];
         $this->CustomValidationErrors->checkForRefill($customFieldsToRefill);
-        $containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_SERVICEDEPENDENCY, [], $this->hasRootPrivileges);
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        $containers = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_SERVICEDEPENDENCY, [], $this->hasRootPrivileges);
         $services = [];
         $servicegroups = [];
         $timeperiods = [];
@@ -285,7 +295,7 @@ class ServicedependenciesController extends AppController {
 
                     $containerId = $this->request->data('Servicedependency.container_id');
                     if ($containerId > 0) {
-                        $containerIds = $this->Tree->resolveChildrenOfContainerIds($containerId);
+                        $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId);
                         $services = $this->Host->servicesByContainerIds($containerIds, 'list', [
                             'forOptiongroup' => true,
                         ]);
@@ -330,21 +340,26 @@ class ServicedependenciesController extends AppController {
     public function loadElementsByContainerId($containerId = null) {
         $this->allowOnlyAjaxRequests();
 
-        if (!$this->Container->exists($containerId)) {
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        if (!$ContainersTable->existsById($containerId)) {
             throw new NotFoundException(__('Invalid hosttemplate'));
         }
 
-        $containerIds = $this->Tree->resolveChildrenOfContainerIds($containerId,
+        $Constants = new Constants();
+
+        $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId,
             false,
-            $this->Constants->containerProperties(OBJECT_HOST, CT_HOSTGROUP)
+            $Constants->containerProperties(OBJECT_HOST, CT_HOSTGROUP)
         );
         $servicegroups = $this->Servicegroup->servicegroupsByContainerId($containerIds, 'list', 'id');
         $services = $this->Host->servicesByContainerIds($containerIds, 'list', [
             'forOptiongroup' => true
         ]);
-        $timeperiodContainerIds = $this->Tree->resolveChildrenOfContainerIds($containerId,
+
+        $timeperiodContainerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId,
             false,
-            $this->Constants->containerProperties(OBJECT_TIMEPERIOD)
+            $Constants->containerProperties(OBJECT_TIMEPERIOD)
         );
         $timeperiods = $this->Timeperiod->timeperiodsByContainerId($timeperiodContainerIds, 'list');
 
