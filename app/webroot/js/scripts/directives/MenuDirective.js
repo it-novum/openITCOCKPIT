@@ -91,12 +91,16 @@ angular.module('openITCOCKPIT').directive('menu', function($http, $timeout, $htt
                 var keyCode = $event.keyCode;
 
                 if(keyCode === RETURN_KEY && $scope.menuFilterPosition > -1){
+                    if($scope.menuMatches[$scope.menuFilterPosition].isAngular){
+                        window.location.href = "/ng/#!"+$scope.menuMatches[$scope.menuFilterPosition].url;
+                        return;
+                    }
                     window.location.href = $scope.menuMatches[$scope.menuFilterPosition].url;
                     return;
                 }
 
                 if(keyCode === RETURN_KEY && $scope.menuFilterPosition === -1){
-                    window.location.href = '/hosts/index?filter[Host.name]=' + rawurlencode($scope.menuFilter);
+                    window.location.href = '/ng/#!/hosts/index?filter[Host.name]=' + rawurlencode($scope.menuFilter);
                 }
 
                 if(keyCode !== ARROW_KEY_UP && keyCode !== ARROW_KEY_DOWN){

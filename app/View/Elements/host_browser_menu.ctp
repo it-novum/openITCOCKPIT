@@ -31,7 +31,7 @@
 </span>
 <?php if ($this->Acl->hasPermission('view', 'documentations')): ?>
     <span style="position:relative;">
-        <a href="/documentations/view/{{ hostBrowserMenu.hostUuid }}/host"
+        <a ui-sref="DocumentationsView({uuid:hostBrowserMenu.hostUuid, type:'host'})"
            data-original-title="<?php echo __('Documentation'); ?>" data-placement="bottom" rel="tooltip"
            class="btn btn-default btn-sm"><i class="fa fa-book fa-lg"></i></a>
 
