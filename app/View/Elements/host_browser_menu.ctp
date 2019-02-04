@@ -24,51 +24,49 @@
 //	confirmation.
 
 ?>
-<?php if ($this->request->params['action'] == 'browser' && $this->request->params['controller'] == 'hosts'): ?>
-    <span data-original-title="<?php echo __('Reset check time'); ?>" data-placement="bottom" rel="tooltip"
-          class="btn btn-default btn-sm" ng-click="rescheduleHost(getObjectsForExternalCommand())">
+<span ng-if="hostBrowserMenu.isHostBrowser" data-original-title="<?php echo __('Reset check time'); ?>"
+      data-placement="bottom" rel="tooltip"
+      class="btn btn-default btn-sm" ng-click="rescheduleHost(getObjectsForExternalCommand())">
     <i class="fa fa-refresh fa-lg"></i>
 </span>
-<?php endif; ?>
-<?php if ($this->Acl->hasPermission('view', 'documentations') && $host['Host']['host_type'] == GENERIC_HOST): ?>
+<?php if ($this->Acl->hasPermission('view', 'documentations')): ?>
     <span style="position:relative;">
-        <a href="/documentations/view/<?php echo $host['Host']['uuid']; ?>/host"
+        <a href="/documentations/view/{{ hostBrowserMenu.hostUuid }}/host"
            data-original-title="<?php echo __('Documentation'); ?>" data-placement="bottom" rel="tooltip"
            class="btn btn-default btn-sm"><i class="fa fa-book fa-lg"></i></a>
-        <?php if ($docuExists === true): ?>
-            <span class="badge bg-color-green docu-badge"><i class="fa fa-check"></i></span>
-        <?php endif; ?>
+
+        <span ng-show="hostBrowserMenu.docuExists" class="badge bg-color-green docu-badge"><i
+                    class="fa fa-check"></i></span>
     </span>
 <?php endif; ?>
 <?php if ($this->Acl->hasPermission('hostNotification', 'notifications')): ?>
-    <a href="/notifications/hostNotification/<?php echo $host['Host']['id']; ?>"
+    <a ui-sref="NotificationsHostNotification({id:hostBrowserMenu.hostId})"
        data-original-title="<?php echo __('Notifications'); ?>" data-placement="bottom" rel="tooltip"
        class="btn btn-default btn-sm"><i class="fa fa-envelope  fa-lg"></i></a>
 <?php endif; ?>
 <?php if ($this->Acl->hasPermission('index', 'hostchecks')): ?>
-    <a href="/hostchecks/index/<?php echo $host['Host']['id']; ?>"
+    <a ui-sref="HostchecksIndex({id:hostBrowserMenu.hostId})"
        data-original-title="<?php echo __('Check history'); ?>" data-placement="bottom" rel="tooltip"
        class="btn btn-default btn-sm"><i class="fa fa-check-square-o fa-lg"></i></a>
 <?php endif; ?>
 <?php if ($this->Acl->hasPermission('host', 'statehistories')): ?>
-    <a href="/statehistories/host/<?php echo $host['Host']['id']; ?>"
+    <a ui-sref="StatehistoriesHost({id:hostBrowserMenu.hostId})"
        data-original-title="<?php echo __('State history'); ?>" data-placement="bottom" rel="tooltip"
        class="btn btn-default btn-sm"><i class="fa fa-history fa-lg"></i></a>
 <?php endif; ?>
 <?php if ($this->Acl->hasPermission('host', 'acknowledgements')): ?>
-    <a href="/acknowledgements/host/<?php echo $host['Host']['id']; ?>"
+    <a ui-sref="AcknowledgementsHost({id:hostBrowserMenu.hostId})"
        data-original-title="<?php echo _('Acknowledgement history'); ?>" data-placement="bottom" rel="tooltip"
        class="btn btn-default btn-sm"><i class="fa fa-user fa-lg"></i></a>
 <?php endif; ?>
-<?php if ($host['Host']['host_url'] !== '' && $host['Host']['host_url'] !== null):
-    $HostMacroReplacerMenu = new \itnovum\openITCOCKPIT\Core\HostMacroReplacer($host);
-    $hostUrl = $HostMacroReplacerMenu->replaceBasicMacros($host['Host']['host_url']);
-    ?>
-    <a href="<?php echo $hostUrl; ?>" data-original-title="<?php echo __('External link'); ?>" data-placement="bottom"
-       rel="tooltip" target="_blank" class="btn btn-default btn-sm"><i class="fa fa-external-link fa-lg"></i></a>
-<?php endif; ?>
-<?php if ($this->Acl->hasPermission('edit') && $allowEdit): ?>
-    <a href="/hosts/edit/<?php echo $host['Host']['id']; ?>/_controller:hosts/_action:browser/_id:<?php echo $host['Host']['id']; ?>/"
+<a ng-show="hostBrowserMenu.hostUrl" href="{{ hostBrowserMenu.hostUrl }}"
+   data-original-title="<?php echo __('External link'); ?>"
+   data-placement="bottom"
+   rel="tooltip" target="_blank" class="btn btn-default btn-sm"><i class="fa fa-external-link fa-lg"></i></a>
+<?php /*endif;*/ ?>
+<?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
+    <a ng-if="hostBrowserMenu.allowEdit"
+       href="/hosts/edit/{{ hostBrowserMenu.hostId }}/_controller:hosts/_action:browser/_id:{{ hostBrowserMenu.hostId }}/"
        data-original-title="<?php echo __('Edit host'); ?>"
        data-placement="bottom" rel="tooltip" class="btn btn-default btn-sm"><i class="fa fa-cog fa-lg"></i></a>
 <?php endif; ?>
@@ -79,30 +77,34 @@
     <ul class="dropdown-menu dropdown-menu-right">
         <?php if ($this->Acl->hasPermission('serviceList', 'services')): ?>
             <li>
-                <a href="/services/serviceList/<?php echo $host['Host']['id']; ?>"><i
+                <a href="/services/serviceList/{{ hostBrowserMenu.hostId }}"><i
                             class="fa fa-list"></i> <?php echo __('Service list'); ?></a>
             </li>
         <?php endif; ?>
         <?php if ($this->Acl->hasPermission('allocateToHost', 'servicetemplategroups')): ?>
             <li>
-                <a href="/hosts/allocateServiceTemplateGroup/<?php echo $host['Host']['id']; ?>"><i
+                <a href="/hosts/allocateServiceTemplateGroup/{{ hostBrowserMenu.hostId }}"><i
                             class="fa fa-external-link"></i> <?php echo __('Allocate Servicetemplategroup'); ?></a>
             </li>
         <?php endif; ?>
-        <?php if ($this->params['controller'] == 'hosts' && $this->params['action'] == 'browser'): ?>
-            <?php if ($this->Acl->hasPermission('ping')): ?>
-                <li>
-                    <a href="javascript:void(0);" data-toggle="modal" data-target="#pingmodal" id="pingopen"><i
-                                class="fa fa-wifi"></i> <?php echo __('Ping'); ?></a>
-                </li>
-            <?php endif; ?>
+        <?php if ($this->Acl->hasPermission('ping', 'hosts')): ?>
+            <li ng-if="hostBrowserMenu.isHostBrowser">
+                <a href="javascript:void(0);" data-toggle="modal" data-target="#pingmodal" id="pingopen"><i
+                            class="fa fa-wifi"></i> <?php echo __('Ping'); ?></a>
+            </li>
         <?php endif; ?>
         <?php
-        if ($this->Acl->hasPermission('edit') && $allowEdit):
+        if ($this->Acl->hasPermission('edit', 'hosts')):
             if (!empty($additionalLinksList)):
                 echo '<li class="divider"></li>';
             endif;
-            echo $this->AdditionalLinks->renderAsListItems($additionalLinksList, $host['Host']['id']);
+            echo $this->AdditionalLinks->renderAsListItems(
+                $additionalLinksList,
+                '{{hostBrowserMenu.hostId}}',
+                [],
+                true,
+                'hostBrowserMenu.allowEdit'
+            );
         endif;
         ?>
     </ul>

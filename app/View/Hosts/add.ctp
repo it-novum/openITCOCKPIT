@@ -56,7 +56,8 @@ $notification_settings = [
         <span class="widget-icon hidden-mobile hidden-tablet"> <i class="fa fa-pencil-square-o"></i> </span>
         <h2 class="hidden-mobile hidden-tablet"><?php echo __('Add Host'); ?></h2>
         <div class="widget-toolbar hidden-mobile hidden-tablet" role="menu">
-            <?php echo $this->Utils->backButton(__('Back'), $back_url); ?>
+            <a href="/ng/#!/hosts" class="btn btn-default btn-xs" iconcolor="white">
+                <i class="glyphicon glyphicon-white glyphicon-arrow-left"></i> Back</a>
         </div>
         <div class="widget-toolbar" role="menu">
             <span class="onoffswitch-title" rel="tooltip" data-placement="top"
@@ -88,7 +89,8 @@ $notification_settings = [
         <div class="widget-body">
             <?php
             echo $this->Form->create('Host', [
-                'class' => 'form-horizontal clear',
+                'class' => 'form-horizontal clear'
+
             ]); ?>
             <div class="row">
                 <div class="col-xs-12 col-md-12 col-lg-12">
@@ -455,7 +457,12 @@ $notification_settings = [
                 </div> <!-- close col -->
             </div> <!-- close row-->
             <br/>
-            <?php echo $this->Form->formActions(); ?>
+            <div class="well formactions ">
+                <div class="pull-right">
+                    <input class="btn btn-primary" type="submit" value="Save">&nbsp;
+                    <a href="/ng/#!/hosts" class="btn btn-default">Cancel</a>
+                </div>
+            </div>
         </div> <!-- close widget body -->
     </div>
 </div> <!-- end jarviswidget -->

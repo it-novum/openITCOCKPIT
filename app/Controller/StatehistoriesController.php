@@ -179,47 +179,14 @@ class StatehistoriesController extends AppController {
     }
 
     public function host($id = null) {
-        $this->layout = 'angularjs';
-        if (!$this->Host->exists($id)) {
+        $this->layout = 'blank';
+
+        if (!$this->Host->exists($id) && $id !== null) {
             throw new NotFoundException(__('Invalid host'));
         }
 
-        //Process request and set request settings back to front end
-
-        if (!$this->isAngularJsRequest()) {
+        if (!$this->isAngularJsRequest() && $id === null) {
             //Host for .html request
-            $host = $this->Host->find('first', [
-                'fields'     => [
-                    'Host.id',
-                    'Host.uuid',
-                    'Host.name',
-                    'Host.address',
-                    'Host.host_url',
-                    'Host.container_id',
-                    'Host.host_type'
-                ],
-                'conditions' => [
-                    'Host.id' => $id,
-                ],
-                'contain'    => [
-                    'Container',
-                ],
-            ]);
-
-            //Check if user is permitted to see this object
-            $containerIdsToCheck = Hash::extract($host, 'Container.{n}.HostsToContainer.container_id');
-            $containerIdsToCheck[] = $host['Host']['container_id'];
-            if (!$this->allowedByContainerId($containerIdsToCheck, false)) {
-                $this->render403();
-                return;
-            }
-
-            //Get meta data and push to front end
-            $HoststatusFields = new HoststatusFields($this->DbBackend);
-            $HoststatusFields->currentState()->isFlapping();
-            $hoststatus = $this->Hoststatus->byUuid($host['Host']['uuid'], $HoststatusFields);
-            $docuExists = $this->Documentation->existsForUuid($host['Host']['uuid']);
-            $this->set(compact(['host', 'hoststatus', 'docuExists']));
             return;
         }
 
@@ -229,11 +196,23 @@ class StatehistoriesController extends AppController {
             'fields'     => [
                 'Host.id',
                 'Host.uuid',
+                'Host.container_id'
             ],
             'conditions' => [
                 'Host.id' => $id,
-            ]
+            ],
+            'contain'    => [
+                'Container',
+            ],
         ]);
+
+        //Check if user is permitted to see this object
+        $containerIdsToCheck = Hash::extract($host, 'Container.{n}.HostsToContainer.container_id');
+        $containerIdsToCheck[] = $host['Host']['container_id'];
+        if (!$this->allowedByContainerId($containerIdsToCheck, false)) {
+            $this->render403();
+            return;
+        }
 
         $AngularStatehistoryControllerRequest = new \itnovum\openITCOCKPIT\Core\AngularJS\Request\StatehistoryControllerRequest($this->request);
         $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));

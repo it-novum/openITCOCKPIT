@@ -100,7 +100,7 @@ angular.module('openITCOCKPIT', ['ui.router', 'gridster'])
             })
 
             .state('HostsIndex', {
-                url: '/hosts',
+                url: '/hosts/index',
                 templateUrl: "/hosts/index.html",
                 controller: "HostsIndexController"
             })
@@ -117,8 +117,14 @@ angular.module('openITCOCKPIT', ['ui.router', 'gridster'])
                 controller: "HostsDisabledController"
             })
 
+            .state('HostsBrowser', {
+                url: '/hosts/browser/:id',
+                templateUrl: "/hosts/browser.html",
+                controller: "HostsBrowserController"
+            })
+
             .state('HostgroupsIndex', {
-                url: '/hostgroups',
+                url: '/hostgroups/index',
                 templateUrl: "/hostgroups/index.html",
                 controller: "HostgroupsIndexController"
             })
@@ -139,6 +145,18 @@ angular.module('openITCOCKPIT', ['ui.router', 'gridster'])
                 url: '/hostgroups/extended',
                 templateUrl: "/hostgroups/extended.html",
                 controller: "HostgroupsExtendedController"
+            })
+
+            .state('HostchecksIndex', {
+                url: '/hostchecks/index/:id',
+                templateUrl: "/hostchecks/index.html",
+                controller: "HostchecksIndexController"
+            })
+
+            .state('StatehistoriesHost', {
+                url: '/statehistories/host/:id',
+                templateUrl: "/statehistories/host.html",
+                controller: "StatehistoriesHostController"
             })
 
             .state('CommandsIndex', {
@@ -163,6 +181,18 @@ angular.module('openITCOCKPIT', ['ui.router', 'gridster'])
                 url: '/commands/copy/:ids',
                 templateUrl: "/commands/copy.html",
                 controller: "CommandsCopyController"
+            })
+
+            .state('NotificationsHostNotification', {
+                url: '/notifications/hostNotification/:id',
+                templateUrl: "/notifications/hostNotification.html",
+                controller: "NotificationsHostNotificationController"
+            })
+
+            .state('AcknowledgementsHost', {
+                url: '/acknowledgements/host/:id',
+                templateUrl: "/acknowledgements/host.html",
+                controller: "AcknowledgementsHostController"
             })
     })
 

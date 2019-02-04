@@ -23,9 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-$Hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus([]);
-
-if (!$QueryHandler->exists()): ?>
+if (isset($QueryHandler) && !$QueryHandler->exists()): ?>
     <div class="alert alert-danger alert-block">
         <a href="#" data-dismiss="alert" class="close">×</a>
         <h4 class="alert-heading"><i class="fa fa-warning"></i> <?php echo __('Monitoring Engine is not running!'); ?>
@@ -97,14 +95,12 @@ if (!$QueryHandler->exists()): ?>
 
                     <?php echo $this->AdditionalLinks->renderAsTabs($additionalLinksTab, null, 'host', 'tabLink', 'hideTimeline()'); ?>
 
-                    <?php if ($GrafanaDashboardExists): ?>
-                        <li class="">
-                            <a href="#tab5" data-toggle="tab" ng-click="hideTimeline()">
-                                <i class="fa fa-lg fa-area-chart"></i>
-                                <span class="hidden-mobile hidden-tablet"> <?php echo __('Grafana'); ?> </span>
-                            </a>
-                        </li>
-                    <?php endif; ?>
+                    <li class="" ng-if="GrafanaDashboardExists">
+                        <a href="#tab5" data-toggle="tab" ng-click="hideTimeline()">
+                            <i class="fa fa-lg fa-area-chart"></i>
+                            <span class="hidden-mobile hidden-tablet"> <?php echo __('Grafana'); ?> </span>
+                        </a>
+                    </li>
                 </ul>
 
                 <div class="widget-toolbar" role="menu">
@@ -851,7 +847,7 @@ if (!$QueryHandler->exists()): ?>
                                                 <tr ng-show="mergedHost.Host.is_satellite_host === false">
                                                     <td><?php echo __('Instance'); ?></td>
                                                     <td>
-                                                        <?php echo h($masterInstanceName); ?>
+                                                        <?php if (isset($masterInstanceName)) echo h($masterInstanceName); ?>
                                                     </td>
                                                 </tr>
 
@@ -965,17 +961,12 @@ if (!$QueryHandler->exists()): ?>
                         <!-- render additional Tabs if necessary -->
                         <?php echo $this->AdditionalLinks->renderAsTabs($additionalLinksTab, null, 'host', 'tab'); ?>
 
-                        <?php if ($GrafanaDashboardExists): ?>
-                            <div id="tab5" class="tab-pane fade">
-                                <div class="widget-toolbar">
-                                    <grafana-timepicker callback="grafanaTimepickerCallback"></grafana-timepicker>
-                                </div>
-                                <iframe-directive url="GrafanaIframeUrl" ng-if="GrafanaDashboardExists"></iframe-directive>
-                                <?php /*
-                                <iframe src="<?php echo $GrafanaConfiguration->getIframeUrl(); ?>" width="100%"
-                                        onload="this.height=(screen.height+15);" frameBorder="0"></iframe> */ ?>
+                        <div id="tab5" class="tab-pane fade" ng-if="GrafanaDashboardExists">
+                            <div class="widget-toolbar">
+                                <grafana-timepicker callback="grafanaTimepickerCallback"></grafana-timepicker>
                             </div>
-                        <?php endif; ?>
+                            <iframe-directive url="GrafanaIframeUrl" ng-if="GrafanaDashboardExists"></iframe-directive>
+                        </div>
                     </div>
 
                     <div class="widget-footer text-right"></div>
