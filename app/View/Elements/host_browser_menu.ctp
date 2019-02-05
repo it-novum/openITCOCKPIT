@@ -31,7 +31,7 @@
 </span>
 <?php if ($this->Acl->hasPermission('view', 'documentations')): ?>
     <span style="position:relative;">
-        <a href="/documentations/view/{{ hostBrowserMenu.hostUuid }}/host"
+        <a ui-sref="DocumentationsView({uuid:hostBrowserMenu.hostUuid, type:'host'})"
            data-original-title="<?php echo __('Documentation'); ?>" data-placement="bottom" rel="tooltip"
            class="btn btn-default btn-sm"><i class="fa fa-book fa-lg"></i></a>
 
@@ -40,22 +40,22 @@
     </span>
 <?php endif; ?>
 <?php if ($this->Acl->hasPermission('hostNotification', 'notifications')): ?>
-    <a href="/notifications/hostNotification/{{ hostBrowserMenu.hostId }}"
+    <a ui-sref="NotificationsHostNotification({id:hostBrowserMenu.hostId})"
        data-original-title="<?php echo __('Notifications'); ?>" data-placement="bottom" rel="tooltip"
        class="btn btn-default btn-sm"><i class="fa fa-envelope  fa-lg"></i></a>
 <?php endif; ?>
 <?php if ($this->Acl->hasPermission('index', 'hostchecks')): ?>
-    <a href="/hostchecks/index/{{ hostBrowserMenu.hostId }}"
+    <a ui-sref="HostchecksIndex({id:hostBrowserMenu.hostId})"
        data-original-title="<?php echo __('Check history'); ?>" data-placement="bottom" rel="tooltip"
        class="btn btn-default btn-sm"><i class="fa fa-check-square-o fa-lg"></i></a>
 <?php endif; ?>
 <?php if ($this->Acl->hasPermission('host', 'statehistories')): ?>
-    <a href="/statehistories/host/{{ hostBrowserMenu.hostId }}"
+    <a ui-sref="StatehistoriesHost({id:hostBrowserMenu.hostId})"
        data-original-title="<?php echo __('State history'); ?>" data-placement="bottom" rel="tooltip"
        class="btn btn-default btn-sm"><i class="fa fa-history fa-lg"></i></a>
 <?php endif; ?>
 <?php if ($this->Acl->hasPermission('host', 'acknowledgements')): ?>
-    <a href="/acknowledgements/host/{{ hostBrowserMenu.hostId }}"
+    <a ui-sref="AcknowledgementsHost({id:hostBrowserMenu.hostId})"
        data-original-title="<?php echo _('Acknowledgement history'); ?>" data-placement="bottom" rel="tooltip"
        class="btn btn-default btn-sm"><i class="fa fa-user fa-lg"></i></a>
 <?php endif; ?>

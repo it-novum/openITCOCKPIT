@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('HostsBrowserController', function($scope, $rootScope, $http, QueryStringService, $stateParams, $state, SortService, $interval){
+    .controller('HostsBrowserController', function($scope, $rootScope, $http, QueryStringService, $stateParams, $state, SortService, $interval, StatusHelperService){
 
         //$scope.id = QueryStringService.getCakeId();
         $scope.id = $stateParams.id;
@@ -400,20 +400,7 @@ angular.module('openITCOCKPIT')
         };
 
         var getHoststatusTextColor = function(){
-            switch($scope.hoststatus.currentState){
-                case 0:
-                case '0':
-                    return 'txt-color-green';
-
-                case 1:
-                case '1':
-                    return 'txt-color-red';
-
-                case 2:
-                case '2':
-                    return 'txt-color-blueLight';
-            }
-            return 'txt-primary';
+            return StatusHelperService.getHoststatusTextColor($scope.hoststatus.currentState);
         };
 
         var buildParentHostProblems = function(){

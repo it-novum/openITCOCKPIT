@@ -265,28 +265,6 @@ class CommandsControllerTest extends ControllerTestCase {
         $this->assertEquals($expectedCommand, $myCommand);
     }
 
-    public function testAddCommandArg() {
-        $this->setExpectedException(MethodNotAllowedException::class);
-        $this->testAction('/commands/addCommandArg/1', ['method' => 'post']);
-    }
-
-    public function testLoadMacros() {
-        $this->testAction('/commands/loadMacros', ['method' => 'post']);
-        $expectedMacros = [
-            [
-                'Macro' => [
-                    'id'          => '1',
-                    'name'        => 'Macro name',
-                    'value'       => 'Macro value',
-                    'password'    => '1',
-                    'description' => 'Macro description',
-                    'created'     => '2017-01-20 14:44:47',
-                    'modified'    => '2017-01-20 14:44:47'
-                ]
-            ]
-        ];
-        $this->assertEquals($expectedMacros, $this->vars['all_macros']);
-    }
 
     public function testGetCopy() {
         $this->testAction('/commands/copy/1/2', ['method' => 'get']);

@@ -147,6 +147,18 @@ angular.module('openITCOCKPIT', ['ui.router', 'gridster'])
                 controller: "HostgroupsExtendedController"
             })
 
+            .state('HostchecksIndex', {
+                url: '/hostchecks/index/:id',
+                templateUrl: "/hostchecks/index.html",
+                controller: "HostchecksIndexController"
+            })
+
+            .state('StatehistoriesHost', {
+                url: '/statehistories/host/:id',
+                templateUrl: "/statehistories/host.html",
+                controller: "StatehistoriesHostController"
+            })
+
             .state('CommandsIndex', {
                 url: '/commands/index',
                 templateUrl: "/commands/index.html",
@@ -193,6 +205,23 @@ angular.module('openITCOCKPIT', ['ui.router', 'gridster'])
                 url: '/timeperiods/copy/:ids',
                 templateUrl: "/timeperiods/copy.html",
                 controller: "TimeperiodsCopyController"
+
+            .state('DocumentationsView', {
+                url: '/documentations/view/:uuid/:type',
+                templateUrl: "/documentations/view.html",
+                controller: "DocumentationsViewController"
+            })
+
+            .state('NotificationsHostNotification', {
+                url: '/notifications/hostNotification/:id',
+                templateUrl: "/notifications/hostNotification.html",
+                controller: "NotificationsHostNotificationController"
+            })
+
+            .state('AcknowledgementsHost', {
+                url: '/acknowledgements/host/:id',
+                templateUrl: "/acknowledgements/host.html",
+                controller: "AcknowledgementsHostController"
             })
     })
 

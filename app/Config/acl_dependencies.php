@@ -171,7 +171,8 @@ $config = [
                 'hostservicelist',
                 'loadParentHostsByString',
                 'loadParentHostsById',
-                'hoststatus'
+                'hoststatus',
+                'hostBrowserMenu'
             ],
             'Statistics'       => [
                 'ask_anonymous_statistics'
@@ -199,8 +200,8 @@ $config = [
             ],
             'Commands'              => [
                 'index'  => ['view'],
-                'add'    => ['addCommandArg', 'loadMacros', 'getConsoleWelcome'],
-                'edit'   => ['addCommandArg', 'loadMacros', 'getConsoleWelcome']
+                'add'    => ['getConsoleWelcome'],
+                'edit'   => ['getConsoleWelcome']
             ],
             'Timeperiods'           => [
                 'index'  => [

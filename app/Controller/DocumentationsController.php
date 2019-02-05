@@ -39,24 +39,29 @@ class DocumentationsController extends AppController {
     ];
 
     public function view($uuid = null, $type = 'host') {
+        $this->layout = "blank";
+
+        if(empty($type)){
+            throw new InvalidArgumentException();
+        }
+
         if ($this->request->is('post') || $this->request->is('put')) {
             if ($this->Documentation->save($this->request->data)) {
                 if ($this->request->ext == 'json') {
                     $this->serializeId(); // REST API ID serialization
                     return;
                 }
-                $this->setFlash(__('Page successfully saved'));
-                $this->redirect(Hash::merge(['action' => 'view'], $this->request->params['pass']));
-            } else {
-                if ($this->request->ext == 'json') {
-                    $this->serializeErrorMessage();
-                    return;
-                }
-                $this->setFlash(__('Could not save data'), false);
             }
+            $this->serializeErrorMessage();
+            return;
+
         }
 
-        $this->set('back_url', $this->referer());
+        if (!$this->isAngularJsRequest() && $uuid === null) {
+            //Host for .html requests
+            return;
+        }
+
         $post = $this->Documentation->find('first', [
             'recursive'  => -1,
             'conditions' => [
@@ -64,7 +69,18 @@ class DocumentationsController extends AppController {
             ]
         ]);
 
-        if ($type === 'host') {
+        if (!$this->isAngularJsRequest() && $uuid === null) {
+            //Host for .html requests
+            return;
+        }
+
+        $allowEdit = false;
+        $host = [];
+        if ($type == 'host') {
+            if (!$this->Host->exists($uuid)) {
+                throw new NotFoundException(__('invalid host'));
+            }
+
             $host = $this->Host->find('first', [
                 'fields'     => [
                     'Host.id',
@@ -99,11 +115,14 @@ class DocumentationsController extends AppController {
                 $allowEdit = true;
             }
 
-            $this->set('host', $host);
-            $this->set('allowEdit', $allowEdit);
         }
 
-        if ($type === 'service') {
+        $service = [];
+        if ($type == 'service') {
+            if (!$this->Service->exists($uuid)) {
+                throw new NotFoundException(__('invalid service'));
+            }
+
             $service = $this->Service->find('first', [
                 'recursive'  => -1,
                 'contain'    => [
@@ -138,14 +157,23 @@ class DocumentationsController extends AppController {
                 $allowEdit = true;
             }
 
-            $this->set('service', $service);
-            $this->set('allowEdit', $allowEdit);
+        }
+
+        if(!empty($post) && !empty($post['Documentation']['content'])){
+            $post['Documentation']['content_html'] = "";
+            $post['Documentation']['content_html'] = $this->Bbcode->asHtml($post['Documentation']['content']);
+            $post['Documentation']['modified_formatted'] = "";
+            //$post['Documentation']['modified_formatted'] = $this->Time->format($post['Documentation']['modified'], $this->Auth->user('dateformat'), false, $this->Auth->user('timezone'));
         }
 
         $docuExists = !empty($post);
 
-        $this->set(compact(['post', 'uuid', 'docuExists', 'type']));
-        $this->set('_serialize', ['post']);
+        $this->set('post', $post);
+        $this->set('docuExists', $docuExists);
+        $this->set('host', $host);
+        $this->set('service', $service);
+        $this->set('allowEdit', $allowEdit);
+        $this->set('_serialize', ['post', 'docuExists', 'allowEdit', 'host', 'service']);
     }
 
     public function index() {

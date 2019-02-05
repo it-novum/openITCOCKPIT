@@ -182,47 +182,15 @@ class NotificationsController extends AppController {
         $this->set('_serialize', $toJson);
     }
 
-    public function hostNotification($host_id) {
-        $this->layout = "angularjs";
+    public function hostNotification($host_id = null) {
+        $this->layout = "blank";
 
-        if (!$this->Host->exists($host_id)) {
+        if (!$this->Host->exists($host_id) && $host_id !== null) {
             throw new NotFoundException(__('invalid host'));
         }
 
-        if (!$this->isAngularJsRequest()) {
+        if (!$this->isAngularJsRequest() && $host_id === null) {
             //Host for .html requests
-            $host = $this->Host->find('first', [
-                'fields'     => [
-                    'Host.id',
-                    'Host.uuid',
-                    'Host.name',
-                    'Host.address',
-                    'Host.host_url',
-                    'Host.host_type',
-                    'Host.container_id'
-                ],
-                'conditions' => [
-                    'Host.id' => $host_id,
-                ],
-                'contain'    => [
-                    'Container',
-                ],
-            ]);
-
-            //Check if user is permitted to see this object
-            $containerIdsToCheck = Hash::extract($host, 'Container.{n}.HostsToContainer.container_id');
-            $containerIdsToCheck[] = $host['Host']['container_id'];
-            if (!$this->allowedByContainerId($containerIdsToCheck, false)) {
-                $this->render403();
-                return;
-            }
-            $docuExists = $this->Documentation->existsForUuid($host['Host']['uuid']);
-
-            //Get meta data and push to front end
-            $HoststatusFields = new HoststatusFields($this->DbBackend);
-            $HoststatusFields->currentState()->isFlapping();
-            $hoststatus = $this->Hoststatus->byUuid($host['Host']['uuid'], $HoststatusFields);
-            $this->set(compact(['host', 'hoststatus', 'docuExists']));
             return;
         }
 
@@ -240,7 +208,18 @@ class NotificationsController extends AppController {
             'conditions' => [
                 'Host.id' => $host_id,
             ],
+            'contain'    => [
+                'Container',
+            ],
         ]);
+
+        //Check if user is permitted to see this object
+        $containerIdsToCheck = Hash::extract($host, 'Container.{n}.HostsToContainer.container_id');
+        $containerIdsToCheck[] = $host['Host']['container_id'];
+        if (!$this->allowedByContainerId($containerIdsToCheck, false)) {
+            $this->render403();
+            return;
+        }
 
         $AngularNotificationsControllerRequest = new \itnovum\openITCOCKPIT\Core\AngularJS\Request\NotificationsControllerRequest($this->request);
 
