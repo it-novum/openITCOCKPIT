@@ -3,9 +3,10 @@ angular.module('openITCOCKPIT')
 
         var ids = $stateParams.ids.split(',');
 
-        if(ids.length === 0){
+        if(ids.length === 0 || ids[0] === ''){
             //No ids to copy given - redirect
-            window.location.href = '/commands/index';
+            $state.go('CommandsIndex');
+            return;
         }
 
 

@@ -208,7 +208,7 @@
                                 </span>
                             </div>
                             <div class="col-xs-12 col-md-2">
-                                <a ui-sref="CommandsCopy({ids: linkForCopy()})" class="a-clean">
+                                <a ui-sref="TimeperiodsCopy({ids: linkForCopy()})" class="a-clean">
                                     <i class="fa fa-lg fa-files-o"></i>
                                     <?php echo __('Copy'); ?>
                                 </a>

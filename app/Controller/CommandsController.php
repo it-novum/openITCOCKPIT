@@ -492,6 +492,7 @@ class CommandsController extends AppController {
                     //All commands without validation errors got already saved to the database
                     $newCommandEntity = $Commands->get($commandData['Command']['id']);
                     $newCommandEntity = $Commands->patchEntity($newCommandEntity, $commandData['Command']);
+                    $newCommandData = $newCommandEntity->toArray();
                     $action = 'edit';
                 }
                 $Commands->save($newCommandEntity);

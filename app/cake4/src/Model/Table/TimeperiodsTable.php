@@ -14,18 +14,6 @@ use itnovum\openITCOCKPIT\Filter\TimeperiodsFilter;
  * Timeperiods Model
  *
  * @property \App\Model\Table\ContainersTable|\Cake\ORM\Association\BelongsTo $Containers
- * @property \App\Model\Table\CalendarsTable|\Cake\ORM\Association\BelongsTo $Calendars
- * @property \App\Model\Table\AutoreportsTable|\Cake\ORM\Association\HasMany $Autoreports
- * @property \App\Model\Table\HostdependenciesTable|\Cake\ORM\Association\HasMany $Hostdependencies
- * @property \App\Model\Table\HostescalationsTable|\Cake\ORM\Association\HasMany $Hostescalations
- * @property \App\Model\Table\HostsTable|\Cake\ORM\Association\HasMany $Hosts
- * @property \App\Model\Table\HosttemplatesTable|\Cake\ORM\Association\HasMany $Hosttemplates
- * @property \App\Model\Table\InstantreportsTable|\Cake\ORM\Association\HasMany $Instantreports
- * @property \App\Model\Table\NagiosTimeperiodTimerangesTable|\Cake\ORM\Association\HasMany $NagiosTimeperiodTimeranges
- * @property \App\Model\Table\NagiosTimeperiodsTable|\Cake\ORM\Association\HasMany $NagiosTimeperiods
- * @property \App\Model\Table\ServicedependenciesTable|\Cake\ORM\Association\HasMany $Servicedependencies
- * @property \App\Model\Table\ServiceescalationsTable|\Cake\ORM\Association\HasMany $Serviceescalations
- * @property \App\Model\Table\ServicetemplatesTable|\Cake\ORM\Association\HasMany $Servicetemplates
  * @property \App\Model\Table\TimeperiodTimerangesTable|\Cake\ORM\Association\HasMany $TimeperiodTimeranges
  *
  * @method \App\Model\Entity\Timeperiod get($primaryKey, $options = [])
@@ -190,5 +178,24 @@ class TimeperiodsTable extends Table {
             ->all();
 
         return $this->formatListAsCake2($timeperiods->toArray());
+    }
+
+    /**
+     * @param array $ids
+     * @return array
+     */
+    public function getTimeperiodsForCopy($ids = []) {
+        $query = $this->find()
+            ->select([
+                'Timeperiods.id',
+                'Timeperiods.name',
+                'Timeperiods.description'
+            ])
+            ->where(['Timeperiods.id IN' => $ids])
+            ->order(['Timeperiods.id' => 'asc'])
+            ->disableHydration()
+            ->all();
+
+        return $this->formatResultAsCake2($query->toArray(), false);
     }
 }

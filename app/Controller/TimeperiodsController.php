@@ -27,6 +27,7 @@ use App\Model\Table\ContainersTable;
 use App\Model\Table\TimeperiodsTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
+use itnovum\openITCOCKPIT\Core\KeyValueStore;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\TimeperiodsFilter;
 
@@ -46,7 +47,6 @@ class TimeperiodsController extends AppController {
 
     function index() {
         $this->layout = 'blank';
-
         if (!$this->isApiRequest()) {
             //Only ship HTML template
             return;
@@ -95,7 +95,6 @@ class TimeperiodsController extends AppController {
 
         /** @var $TimeperiodsTable TimeperiodsTable */
         $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
-
 
 
         if (!$TimeperiodsTable->exists($id)) {
@@ -507,85 +506,108 @@ class TimeperiodsController extends AppController {
     }
 
     /**
-     * @param null $id
-     * @todo refactor me
+     * @param int|null $id
      */
     public function copy($id = null) {
-        $userId = $this->Auth->user('id');
-        $timeperiods = $this->Timeperiod->find('all', [
-            'contain'    => [
-                'Timerange' => [
-                    'fields' => [
-                        'Timerange.day',
-                        'Timerange.start',
-                        'Timerange.end'
-                    ]
-                ]
-            ],
-            'conditions' => [
-                'Timeperiod.id' => func_get_args(),
-            ],
-            'fields'     => [
-                'Timeperiod.name',
-                'Timeperiod.container_id',
-                'Timeperiod.description',
-            ]
-        ]);
+        $this->layout = 'blank';
 
+        if (!$this->isAngularJsRequest()) {
+            //Only ship HTML Template
+            return;
+        }
 
-        $timeperiods = Hash::combine($timeperiods, '{n}.Timeperiod.id', '{n}');
-        $timeperiods = Hash::remove($timeperiods, '{n}.Timerange.{n}.timeperiod_id'); //clean up time ranges
-        if ($this->request->is('post') || $this->request->is('put')) {
-            $datasource = $this->Timeperiod->getDataSource();
-            try {
-                $datasource->begin();
-                foreach ($this->request->data['Timeperiod'] as $sourcePeriodId => $timeperiodData) {
-                    $timeRanges = [];
-                    if (!empty($timeperiods[$sourcePeriodId]['Timerange'])) {
-                        $timeRanges = $timeperiods[$sourcePeriodId]['Timerange'];
+        /** @var $TimeperiodsTable TimeperiodsTable */
+        $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
+
+        if ($this->request->is('get')) {
+            $timeperiods = $TimeperiodsTable->getTimeperiodsForCopy(func_get_args());
+            $this->set('timeperiods', $timeperiods);
+            $this->set('_serialize', ['timeperiods']);
+            return;
+        }
+
+        $hasErrors = false;
+
+        if ($this->request->is('post')) {
+            $Cache = new KeyValueStore();
+
+            $postData = $this->request->data('data');
+            $userId = $this->Auth->user('id');
+
+            foreach ($postData as $index => $timeperiodData) {
+                if (!isset($timeperiodData['Timeperiod']['id'])) {
+                    //Create/clone timeperiod
+                    $sourceTimeperiodId = $timeperiodData['Source']['id'];
+                    if (!$Cache->has($sourceTimeperiodId)) {
+                        $sourceTimeperiod = $TimeperiodsTable->get($sourceTimeperiodId, [
+                            'contain' => [
+                                'TimeperiodTimeranges'
+                            ]
+                        ])->toArray();
+                        foreach ($sourceTimeperiod['timeperiod_timeranges'] as $i => $timerange) {
+                            unset($sourceTimeperiod['timeperiod_timeranges'][$i]['id']);
+                            unset($sourceTimeperiod['timeperiod_timeranges'][$i]['timeperiod_id']);
+                        }
+
+                        $Cache->set($sourceTimeperiod['id'], $sourceTimeperiod);
                     }
+
+                    $sourceTimeperiod = $Cache->get($sourceTimeperiodId);
+
+
                     $newTimeperiodData = [
-                        'Timeperiod' => [
-                            'uuid'         => UUID::v4(),
-                            'name'         => $timeperiodData['name'],
-                            'container_id' => $timeperiodData['container_id'],
-                            'description'  => $timeperiodData['description'],
-                        ],
-                        'Timerange'  => $timeRanges,
+                        'name'                  => $timeperiodData['Timeperiod']['name'],
+                        'description'           => $timeperiodData['Timeperiod']['description'],
+                        'container_id'          => $sourceTimeperiod['container_id'],
+                        'uuid'                  => UUID::v4(),
+                        'timeperiod_timeranges' => $sourceTimeperiod['timeperiod_timeranges']
                     ];
-                    $this->Timeperiod->create();
-                    if (!$this->Timeperiod->saveAll($newTimeperiodData)) {
-                        throw new Exception('Some of the Timeperiods could not be copied');
-                    }
+
+                    $newTimeperiodEntity = $TimeperiodsTable->newEntity($newTimeperiodData);
+                }
+
+                $action = 'copy';
+                if (isset($timeperiodData['Timeperiod']['id'])) {
+                    //Update existing timeperiod
+                    //This happens, if a user copy multiple timeperiods, and one run into an validation error
+                    //All timeperiods without validation errors got already saved to the database
+                    $newTimeperiodEntity = $TimeperiodsTable->get($timeperiodData['Timeperiod']['id']);
+                    $newTimeperiodEntity = $TimeperiodsTable->patchEntity($newTimeperiodEntity, $timeperiodData['Timeperiod']);
+                    $newTimeperiodData = $newTimeperiodEntity->toArray();
+                    $action = 'edit';
+                }
+                $TimeperiodsTable->save($newTimeperiodEntity);
+
+                $postData[$index]['Error'] = [];
+                if ($newTimeperiodEntity->hasErrors()) {
+                    $hasErrors = true;
+                    $postData[$index]['Error'] = $newTimeperiodEntity->getErrors();
+                } else {
+                    //No errors
+                    $postData[$index]['Timeperiod']['id'] = $newTimeperiodEntity->get('id');
+
                     $changelog_data = $this->Changelog->parseDataForChangelog(
-                        $this->params['action'],
-                        $this->params['controller'],
-                        $this->Timeperiod->id,
-                        OBJECT_TIMEPERIOD,
-                        [$timeperiodData['container_id']],
+                        $action,
+                        'timeperiods',
+                        $postData[$index]['Timeperiod']['id'],
+                        OBJECT_COMMAND,
+                        [ROOT_CONTAINER],
                         $userId,
-                        $timeperiodData['name'],
-                        $newTimeperiodData
+                        $newTimeperiodEntity->get('name'),
+                        ['Timeperiod' => $newTimeperiodData]
                     );
                     if ($changelog_data) {
                         CakeLog::write('log', serialize($changelog_data));
                     }
                 }
-
-                $datasource->commit();
-                $this->setFlash(__('Timeperiods are successfully copied'));
-                $this->redirect(['action' => 'index']);
-
-            } catch (Exception $e) {
-                $datasource->rollback();
-                $this->setFlash(__($e->getMessage()), false);
-                $this->redirect(['action' => 'index']);
             }
-
         }
 
-        $this->set(compact('timeperiods'));
-        $this->set('back_url', $this->referer());
+        if ($hasErrors) {
+            $this->response->statusCode(400);
+        }
+        $this->set('result', $postData);
+        $this->set('_serialize', ['result']);
     }
 
     public function loadTimeperiodsByContainerId() {

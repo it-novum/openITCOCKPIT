@@ -25,6 +25,7 @@
 
 use App\Model\Table\CommandsTable;
 use App\Model\Table\ContainersTable;
+use App\Model\Table\TimeperiodsTable;
 use Cake\ORM\TableRegistry;
 
 class TestingShell extends AppShell {
@@ -71,6 +72,33 @@ class TestingShell extends AppShell {
         /*
          * Lof of space for your experimental code :)
          */
+
+        /** @var $TimeperiodsTable TimeperiodsTable */
+        $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
+
+        $query = $TimeperiodsTable->find()
+            ->contain('TimeperiodTimeranges')
+            ->disableHydration()
+            ->all();
+
+        //debug($query->toArray());
+
+
+
+        $sourceTimeperiod = $TimeperiodsTable->get(1, [
+            'contain' => [
+                'TimeperiodTimeranges' => [
+                    'fields' => [
+                        'TimeperiodTimeranges.timeperiod_id',
+                        'TimeperiodTimeranges.day',
+                        'TimeperiodTimeranges.start',
+                        'TimeperiodTimeranges.end'
+                    ]
+                ]
+            ]
+        ]);
+
+
     }
 
     public function getOptionParser() {
