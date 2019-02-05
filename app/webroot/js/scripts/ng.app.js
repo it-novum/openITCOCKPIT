@@ -205,6 +205,7 @@ angular.module('openITCOCKPIT', ['ui.router', 'gridster'])
                 url: '/timeperiods/copy/:ids',
                 templateUrl: "/timeperiods/copy.html",
                 controller: "TimeperiodsCopyController"
+            })
 
             .state('DocumentationsView', {
                 url: '/documentations/view/:uuid/:type',
