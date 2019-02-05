@@ -183,6 +183,12 @@ angular.module('openITCOCKPIT', ['ui.router', 'gridster'])
                 controller: "CommandsCopyController"
             })
 
+            .state('DocumentationsView', {
+                url: '/documentations/view/:uuid/:type',
+                templateUrl: "/documentations/view.html",
+                controller: "DocumentationsViewController"
+            })
+
             .state('NotificationsHostNotification', {
                 url: '/notifications/hostNotification/:id',
                 templateUrl: "/notifications/hostNotification.html",
