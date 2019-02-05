@@ -51,6 +51,26 @@ use itnovum\openITCOCKPIT\ConfigGenerator\GraphingDocker;
             </div>
         </div>
 
+        <div class="form-group required" ng-class="{'has-error': errors.Configfile.WHISPER_FALLOCATE_CREATE}">
+            <label class="col col-md-2 control-label" for="WHISPER_FALLOCATE_CREATE">
+                WHISPER_FALLOCATE_CREATE
+            </label>
+            <div class="col col-md-10 padding-top-7">
+                <input
+                        type="checkbox"
+                        id="WHISPER_FALLOCATE_CREATE"
+                        ng-false-value="0"
+                        ng-true-value="1"
+                        ng-model="post.bool.WHISPER_FALLOCATE_CREATE">
+                <div ng-repeat="error in errors.Configfile.WHISPER_FALLOCATE_CREATE">
+                    <div class="help-block text-danger">{{ error }}</div>
+                </div>
+            </div>
+            <div class="helpText text-muted col-md-offset-2 col-md-6">
+                <?php echo h($GraphingDocker->getHelpText('WHISPER_FALLOCATE_CREATE')); ?>
+            </div>
+        </div>
+
         <div class="form-group required" ng-class="{'has-error': errors.Configfile.number_of_carbon_cache_instances}">
             <label class="col col-md-2 control-label">
                 <?php echo __('Carbon Cache instances'); ?>
