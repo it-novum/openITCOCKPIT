@@ -439,6 +439,9 @@ class TimeperiodsController extends AppController {
         return true;
     }
 
+    /**
+     * @param null $id
+     */
     public function delete($id = null) {
         if (!$this->request->is('post')) {
             throw new MethodNotAllowedException();
