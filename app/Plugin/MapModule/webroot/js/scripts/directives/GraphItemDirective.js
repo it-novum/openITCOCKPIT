@@ -151,7 +151,7 @@ angular.module('openITCOCKPIT').directive('graphItem', function($http, $timeout,
                 var self = this;
                 var $graph_data_tooltip = $('#graph_data_tooltip');
 
-                var fooJS = new Date(timestamp + ($scope.timezone.server_timezone_offset * 1000));
+                var fooJS = new Date(timestamp + ($scope.timezone.user_offset * 1000));
                 var fixTime = function(value){
                     if(value < 10){
                         return '0' + value;
@@ -213,7 +213,7 @@ angular.module('openITCOCKPIT').directive('graphItem', function($http, $timeout,
                 };
 
                 options.xaxis.tickFormatter = function(val, axis){
-                    var fooJS = new Date(val + ($scope.timezone.server_timezone_offset * 1000));
+                    var fooJS = new Date(val + ($scope.timezone.user_offset * 1000));
                     var fixTime = function(value){
                         if(value < 10){
                             return '0' + value;
@@ -221,7 +221,7 @@ angular.module('openITCOCKPIT').directive('graphItem', function($http, $timeout,
                         return value;
                     };
                     return fixTime(fooJS.getUTCDate()) + '.' + fixTime(fooJS.getUTCMonth() + 1) + '.' + fooJS.getUTCFullYear() + ' ' + fixTime(fooJS.getUTCHours()) + ':' + fixTime(fooJS.getUTCMinutes());
-                };
+                }
 
                 options.points = {
                     show: false,
