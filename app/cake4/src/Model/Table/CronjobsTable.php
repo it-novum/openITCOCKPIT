@@ -79,7 +79,7 @@ class CronjobsTable extends Table {
     }
 
     /**
-     * @return array|\Cake\Datasource\ResultSetInterface
+     * @return array
      */
     public function getCronjobs() {
         $query = $this->find()->contain([
@@ -91,6 +91,10 @@ class CronjobsTable extends Table {
         return [];
     }
 
+    /**
+     * @param null $id Cronjob ID
+     * @return array
+     */
     public function getCronjob($id = null) {
         $query = $this->get($id, [
             'contain' => [
@@ -103,6 +107,9 @@ class CronjobsTable extends Table {
         return [];
     }
 
+    /**
+     * @return array
+     */
     public function getEnabledCronjobs() {
         $query = $this->find()
             ->where(['enabled' => 1])
@@ -113,6 +120,9 @@ class CronjobsTable extends Table {
     }
 
 
+    /**
+     * @return array
+     */
     public function fetchPlugins() {
         $plugins = [];
         $plugins['Core'] = 'Core';
@@ -126,6 +136,10 @@ class CronjobsTable extends Table {
         return $plugins;
     }
 
+    /**
+     * @param $pluginName
+     * @return array
+     */
     public function fetchTasks($pluginName) {
         $return = [];
         if ($pluginName == 'Core') {
@@ -157,6 +171,11 @@ class CronjobsTable extends Table {
         return $return;
     }
 
+    /**
+     * @param $task
+     * @param string $plugin
+     * @return bool
+     */
     public function checkForCronjob($task, $plugin = 'Core'){
         $query = $this->find()
             ->where([

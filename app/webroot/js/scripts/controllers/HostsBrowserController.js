@@ -8,6 +8,7 @@ angular.module('openITCOCKPIT')
         SortService.setSort('Servicestatus.current_state');
         SortService.setDirection('desc');
         $scope.currentPage = 1;
+        $scope.selectedTab = 'tab1';
 
         $scope.deleteUrl = '/services/delete/';
         $scope.deactivateUrl = '/services/deactivate/';

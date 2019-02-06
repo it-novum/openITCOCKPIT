@@ -91,7 +91,7 @@ angular.module('openITCOCKPIT').directive('menu', function($http, $timeout, $htt
                 var keyCode = $event.keyCode;
 
                 if(keyCode === RETURN_KEY && $scope.menuFilterPosition > -1){
-                    if($scope.menuMatches[$scope.menuFilterPosition].isAngular){
+                    if($scope.menuMatches[$scope.menuFilterPosition].isAngular === "1"){
                         window.location.href = "/ng/#!"+$scope.menuMatches[$scope.menuFilterPosition].url;
                         return;
                     }

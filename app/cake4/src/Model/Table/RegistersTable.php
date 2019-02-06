@@ -89,6 +89,10 @@ class RegistersTable extends Table {
         return $this->find()->first();
     }
 
+    /**
+     * @param $license
+     * @return array|bool|null
+     */
     public function checkLicenseKey($license) {
         $TableLocator = $this->getTableLocator();
         $Proxies = $TableLocator->get('Proxies');

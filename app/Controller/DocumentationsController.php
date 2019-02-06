@@ -27,6 +27,7 @@
  * Class DocumentationsController
  * @property Documentation $Documentation
  */
+
 class DocumentationsController extends AppController {
     public $layout = 'Admin.default';
     public $components = ['Bbcode'];
@@ -159,11 +160,8 @@ class DocumentationsController extends AppController {
 
         }
 
-        if(!empty($post) && !empty($post['Documentation']['content'])){
-            $post['Documentation']['content_html'] = "";
-            $post['Documentation']['content_html'] = $this->Bbcode->asHtml($post['Documentation']['content']);
-            $post['Documentation']['modified_formatted'] = "";
-            //$post['Documentation']['modified_formatted'] = $this->Time->format($post['Documentation']['modified'], $this->Auth->user('dateformat'), false, $this->Auth->user('timezone'));
+        if(!empty($post) && !empty($post['Documentation']['modified'])){
+            $post['Documentation']['modified_formatted'] = CakeTime::format($post['Documentation']['modified'], $this->Auth->user('dateformat'), false, $this->Auth->user('timezone'));
         }
 
         $docuExists = !empty($post);

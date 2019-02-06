@@ -71,30 +71,29 @@ echo $this->Form->create('Documentation', [
 <div id="error_msg"></div>
 
 <ul id="myTab1" class="nav nav-tabs bordered">
-    <li class="active">
-        <a href="#s1" data-toggle="tab"><i class="fa fa-file-text-o fa-fw "></i> <?php echo __('View'); ?></a>
+    <li class="active cursor-pointer">
+        <a ng-click="showView()" data-toggle="tab"><i class="fa fa-file-text-o fa-fw "></i> <?php echo __('View'); ?>
+        </a>
     </li>
-    <li>
-        <a href="#s2" data-toggle="tab"><i class="fa fa-pencil-square-o"></i> <?php echo __('Edit'); ?></a>
+    <li class="cursor-pointer">
+        <a ng-click="showEdit()" data-toggle="tab"><i class="fa fa-pencil-square-o"></i> <?php echo __('Edit'); ?></a>
     </li>
 </ul>
 
-<div id="myTabContent1" class="tab-content padding-10">
-    <div class="tab-pane fade in active" id="s1">
+<div class="tab-content padding-10">
+    <div ng-show="displayView" class="tab-pane active">
         <div class="row">
             <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                 <div class="jarviswidget">
                     <header ng-show="docuExists">
                         <h2>
                             <strong class="padding-right-10"><?php echo __('Modified:'); ?>
-                                {{ post.Documentation.modified }}
+                                {{ post.Documentation.modified_formatted }}
                             </strong>
                         </h2>
                     </header>
                     <div ng-show="docuExists">
-                        <div class="widget-body">
-                            {{ contentView }}
-                        </div>
+                        <div class="widget-body" ng-bind-html="contentView"></div>
                     </div>
 
                     <header ng-hide="docuExists">
@@ -114,7 +113,7 @@ echo $this->Form->create('Documentation', [
     </div>
 
     <!-- Tab nummer 2 -->
-    <div class="tab-pane fade" id="s2">
+    <div ng-show="!displayView" class="tab-pane active">
         <div class="row">
             <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                 <div class="form-horizontal clear jarviswidget">
@@ -292,7 +291,8 @@ echo $this->Form->create('Documentation', [
                                task="justify"><i class="fa fa-align-justify"></i></a>
                             <span class="padding-left-10"></span>
                             <a href="javascript:void(0);" class="btn btn-default" data-toggle="modal"
-                               data-target="#hyerlinkModal" id="insert-link"><i class="fa fa-link"></i></a>
+                               data-target="#hyerlinkModal" ng-click="prepareHyperlinkSelection()" id="insert-link"><i
+                                        class="fa fa-link"></i></a>
                         </div>
                         <div class="widget-toolbar pull-right" role="menu">
                             <button type="button" class="btn btn-success" ng-click="saveText()">
@@ -303,8 +303,7 @@ echo $this->Form->create('Documentation', [
                     <div>
                         <div class="widget-body" ng-class="{'has-error': errors.text}">
                             <textarea class="form-control" ng-model="post.Documentation.content"
-                                      ng-focus="post.Documentation.content" style="width: 100%; height: 200px;"
-                                      id="docuText"></textarea>
+                                      style="width: 100%; height: 200px;" id="docuText"></textarea>
                         </div>
                         <div ng-repeat="error in errors.text">
                             <div class="help-block text-danger">{{ error }}</div>
@@ -315,11 +314,6 @@ echo $this->Form->create('Documentation', [
         </div>
     </div>
 </div>
-
-<input ng-if="docuExists" type="hidden" name="data[Documentation][id]" class="form-control" ng-value="id"
-       id="DocumentationId" autocomplete="off">
-<input type="hidden" name="data[Documentation][uuid]" class="form-control" ng-value="uuid" id="DocumentationUuid"
-       autocomplete="off">
 
 <?php echo $this->Form->end(); ?>
 
@@ -336,21 +330,38 @@ echo $this->Form->create('Documentation', [
             <div class="modal-body">
 
                 <div class="row">
-                    <?php echo $this->Form->input('url', [
-                        'label'       => __('URL:'),
-                        'placeholder' => 'https://openitcockpit.io',
-                        'style'       => 'width: 100%;'
-                    ]); ?>
-                    <?php echo $this->Form->input('description', [
-                        'label'       => __('Description:'),
-                        'placeholder' => __('Official page for openITCOCKPIT'),
-                        'style'       => 'width: 100%;'
-                    ]); ?>
+                    <div class="form-group">
+                        <label for="url" class="col col-md-2 control-label">URL:</label>
+                        <div class="col col-xs-10">
+                            <input class="form-control" type="text" ng-model="hyperlink"
+                                   placeholder="<?php echo __('https://openitcockpit.io'); ?>" style="width: 100%;">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="description" class="col col-md-2 control-label">Description:</label>
+                        <div class="col col-xs-10">
+                            <input class="form-control" style="width: 100%;" ng-model="hyperlinkDescription"
+                                   placeholder="<?php echo __('Official page for openITCOCKPIT'); ?>" type="text">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="form-group smart-form no-padding">
+                            <label class="checkbox small-checkbox-label">
+                                <input type="checkbox" name="checkbox"
+                                       id="modalLinkNewTab">
+                                <i class="checkbox-primary"></i>
+                                <?php echo __('Open in new tab'); ?>
+                            </label>
+                        </div>
+                    </div>
                 </div>
 
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary" id="insertWysiwygHyperlink" data-dismiss="modal">
+                <button type="button" class="btn btn-primary" ng-click="insertWysiwygHyperlink()" data-dismiss="modal">
                     <?php echo __('Insert'); ?>
                 </button>
                 <button type="button" class="btn btn-default" data-dismiss="modal">
