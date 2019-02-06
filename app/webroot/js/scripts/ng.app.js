@@ -123,6 +123,24 @@ angular.module('openITCOCKPIT', ['ui.router', 'gridster'])
                 controller: "HostsBrowserController"
             })
 
+            .state('ServicesIndex', {
+                url: '/services/index',
+                templateUrl: "/services/index.html",
+                controller: "ServicesIndexController"
+            })
+
+            .state('ServicesNotMonitored', {
+                url: '/services/notMonitored',
+                templateUrl: "/services/notMonitored.html",
+                controller: "ServicesNotMonitoredController"
+            })
+
+            .state('ServicesDisabled', {
+                url: '/services/disabled',
+                templateUrl: "/services/disabled.html",
+                controller: "ServicesDisabledController"
+            })
+
             .state('HostgroupsIndex', {
                 url: '/hostgroups/index',
                 templateUrl: "/hostgroups/index.html",

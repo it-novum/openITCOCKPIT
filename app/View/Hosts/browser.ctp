@@ -1001,24 +1001,24 @@ if (isset($QueryHandler) && !$QueryHandler->exists()): ?>
                 <span class="widget-icon hidden-mobile"> <i class="fa fa-cogs"></i> </span>
                 <h2 class="hidden-mobile"><?php echo __('Service overview'); ?></h2>
                 <ul class="nav nav-tabs pull-right" id="widget-tab-1">
-                    <li class="active">
-                        <a href="#serviceTab1" data-toggle="tab" ng-click="changeTab('active')">
+                    <li class="active cursor-pointer">
+                        <a data-toggle="tab" ng-click="changeTab('active')">
                             <i class="fa fa-stethoscope"></i>
                             <span class="hidden-mobile hidden-tablet">
                                 <?php echo __('Active'); ?>
                             </span>
                         </a>
                     </li>
-                    <li>
-                        <a href="#serviceTab2" data-toggle="tab" ng-click="changeTab('notMonitored')">
+                    <li class="cursor-pointer">
+                        <a data-toggle="tab" ng-click="changeTab('notMonitored')">
                             <i class="fa fa-user-md"></i>
                             <span class="hidden-mobile hidden-tablet">
                                 <?php echo __('Not monitored'); ?>
                             </span>
                         </a>
                     </li>
-                    <li class="">
-                        <a href="#serviceTab3" data-toggle="tab" ng-click="changeTab('disabled')">
+                    <li class="cursor-pointer">
+                        <a data-toggle="tab" ng-click="changeTab('disabled')">
                             <i class="fa fa-plug"></i>
                             <span class="hidden-mobile hidden-tablet">
                                 <?php echo __('Disabled'); ?>

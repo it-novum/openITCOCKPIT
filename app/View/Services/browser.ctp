@@ -23,7 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-if (!$QueryHandler->exists()): ?>
+if (isset($QueryHandler) && !$QueryHandler->exists()): ?>
     <div class="alert alert-danger alert-block">
         <a href="#" data-dismiss="alert" class="close">×</a>
         <h4 class="alert-heading"><i class="fa fa-warning"></i> <?php echo __('Monitoring Engine is not running!'); ?>
@@ -50,7 +50,7 @@ if (!$QueryHandler->exists()): ?>
             <i class="fa fa-cog fa-fw"></i>
             {{ mergedService.Service.name }}
             <?php echo __('on'); ?>
-            <a href="/hosts/browser/{{host.Host.id}}">
+            <a href="/ng/#!/hosts/browser/{{host.Host.id}}">
                 <span>
                     {{ host.Host.name }}
                     ({{ host.Host.address }})

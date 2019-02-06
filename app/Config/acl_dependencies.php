@@ -117,7 +117,8 @@ $config = [
             'Services'         => [
                 'icon',
                 'servicecumulatedstatusicon',
-                'details'
+                'details',
+                'serviceBrowserMenu'
             ],
             'Graphgenerators'  => [
                 'fetchGraphData',

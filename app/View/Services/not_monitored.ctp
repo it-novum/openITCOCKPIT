@@ -70,21 +70,21 @@ $this->Paginator->options(['url' => $this->params['named']]);
                     <ul class="nav nav-tabs pull-right" id="widget-tab-1">
                         <?php if ($this->Acl->hasPermission('index')): ?>
                             <li class="">
-                                <a href="<?php echo Router::url(array_merge(['controller' => 'services', 'action' => 'index'], $this->params['named'])); ?>">
+                                <a ui-sref="ServicesIndex">
                                     <i class="fa fa-stethoscope"></i> <span
                                             class="hidden-mobile hidden-tablet"> <?php echo __('Monitored'); ?></span>
                                 </a>
                             </li>
                         <?php endif; ?>
                         <li class="active">
-                            <a href="<?php echo Router::url(array_merge(['controller' => 'services', 'action' => 'notMonitored'], $this->params['named'])); ?>">
+                            <a ui-sref="ServicesNotMonitored">
                                 <i class="fa fa-user-md"></i> <span
                                         class="hidden-mobile hidden-tablet"> <?php echo __('Not monitored'); ?></span>
                             </a>
                         </li>
                         <?php if ($this->Acl->hasPermission('disabled')): ?>
                             <li class="">
-                                <a href="<?php echo Router::url(array_merge(['controller' => 'services', 'action' => 'disabled'], $this->params['named'])); ?>">
+                                <a ui-sref="ServicesDisabled">
                                     <i class="fa fa-plug"></i> <span
                                             class="hidden-mobile hidden-tablet"> <?php echo __('Disabled'); ?></span>
                                 </a>

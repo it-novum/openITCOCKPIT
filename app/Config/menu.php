@@ -141,6 +141,7 @@ $config = [
                 ],
                 [
                     'url'               => ['controller' => 'services', 'action' => 'index'],
+                    'state'             => 'ServicesIndex',
                     'title'             => 'Services',
                     'icon'              => 'cog',
                 ],
