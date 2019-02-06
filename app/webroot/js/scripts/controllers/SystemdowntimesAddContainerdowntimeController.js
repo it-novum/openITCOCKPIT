@@ -3,6 +3,9 @@ angular.module('openITCOCKPIT')
 
         $scope.init = true;
         $scope.errors = null;
+        $scope.obj = {
+            containerIds: []
+        };
 
         $scope.Downtime = {
             is_recurring: false,
@@ -61,8 +64,9 @@ angular.module('openITCOCKPIT')
         $scope.loadRefillData();
 
         $scope.saveNewContainerDowntime = function(){
-            if($scope.containerIds){
-                $scope.post.Systemdowntime.object_id = $scope.containerIds;
+            console.log($scope.obj.containerIds);
+            if($scope.obj.containerIds){
+                $scope.post.Systemdowntime.object_id = $scope.obj.containerIds;
             }
             if($scope.post.Systemdowntime.is_recurring){
                 $scope.post.Systemdowntime.to_time = null;

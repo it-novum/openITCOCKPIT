@@ -5,7 +5,9 @@ angular.module('openITCOCKPIT')
         $scope.containerId = parseInt(QueryStringService.getValue('containerId', 1), 10); //Default ROOT_CONTAINER
 
         $scope.containers = [];
-        $scope.containerFilter = '';
+        $scope.data = {
+            containerFilter: ''
+        };
         $scope.recursiveBrowser = false;
 
 
@@ -231,8 +233,8 @@ angular.module('openITCOCKPIT')
             $scope.selectedElements = MassChangeService.getCount();
         }, true);
 
-        $scope.$watch('containerFilter', function(){
-            var searchString = $scope.containerFilter.toLowerCase();
+        $scope.$watch('data.containerFilter', function(){
+            var searchString = $scope.data.containerFilter.toLowerCase();
 
             if(searchString === ''){
                 $scope.containers = $scope.containersFromApi;

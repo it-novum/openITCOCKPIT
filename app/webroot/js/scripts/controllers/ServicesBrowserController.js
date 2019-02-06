@@ -44,9 +44,11 @@ angular.module('openITCOCKPIT')
         $scope.timelineIsLoading = false;
         $scope.failureDurationInPercent = null;
 
-        $scope.graphAutoRefresh = true;
+        $scope.graph = {
+            graphAutoRefresh: true,
+            showDatapoints: false
+        };
         $scope.graphAutoRefreshInterval = 0;
-        $scope.showDatapoints = false;
 
         var flappingInterval;
         var zoomCallbackWasBind = false;
@@ -300,7 +302,7 @@ angular.module('openITCOCKPIT')
                     }
 
 
-                    if($scope.graphAutoRefresh === true && $scope.graphAutoRefreshInterval > 1000){
+                    if($scope.graph.graphAutoRefresh === true && $scope.graphAutoRefreshInterval > 1000){
                         enableGraphAutorefresh();
                     }
 
@@ -467,7 +469,7 @@ angular.module('openITCOCKPIT')
             options.lines.fillColor.colors = [{opacity: 0.3}, {brightness: 1, opacity: 0.6}];
 
             options.points = {
-                show: $scope.showDatapoints,
+                show: $scope.graph.showDatapoints,
                 radius: 1
             };
 
@@ -688,7 +690,7 @@ angular.module('openITCOCKPIT')
         };
 
         var enableGraphAutorefresh = function(){
-            $scope.graphAutoRefresh = true;
+            $scope.graph.graphAutoRefresh = true;
 
             if(graphAutoRefreshIntervalId === null){
                 graphAutoRefreshIntervalId = $interval(function(){
@@ -713,7 +715,7 @@ angular.module('openITCOCKPIT')
         };
 
         var disableGraphAutorefresh = function(){
-            $scope.graphAutoRefresh = false;
+            $scope.graph.graphAutoRefresh = false;
 
             if(graphAutoRefreshIntervalId !== null){
                 $interval.cancel(graphAutoRefreshIntervalId);
@@ -739,19 +741,19 @@ angular.module('openITCOCKPIT')
             }
         });
 
-        $scope.$watch('graphAutoRefresh', function(){
+        $scope.$watch('graph.graphAutoRefresh', function(){
             if($scope.init){
                 return;
             }
 
-            if($scope.graphAutoRefresh === true){
+            if($scope.graph.graphAutoRefresh === true){
                 enableGraphAutorefresh();
             }else{
                 disableGraphAutorefresh();
             }
         });
 
-        $scope.$watch('showDatapoints', function(){
+        $scope.$watch('graph.showDatapoints', function(){
             if($scope.init){
                 return;
             }

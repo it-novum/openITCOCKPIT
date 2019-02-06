@@ -60,7 +60,7 @@
                                     chosen="services"
                                     callback="loadServices"
                                     ng-options="value.id as value.label group by value.group for value in services"
-                                    ng-model="serviceIds"
+                                    ng-model="data.serviceIds"
                             >
                             </select>
                             <div ng-repeat="error in errors.object_id">

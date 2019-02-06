@@ -5,7 +5,9 @@ angular.module('openITCOCKPIT')
         $scope.init = true;
         $scope.isPhp7Dot1 = false;
 
-        $scope.selectedSamAccountName = '';
+        $scope.data = {
+            selectedSamAccountName: ''
+        };
         $scope.errors = false;
 
         $scope.loadUsers = function(searchString){
@@ -31,14 +33,17 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.submit = function(){
-            if($scope.selectedSamAccountName.length === 0){
+
+            console.log($scope.data.selectedSamAccountName);
+
+            if($scope.data.selectedSamAccountName.length === 0){
                 $scope.errors = [
                     'Please select one user'
                 ];
                 return false;
             }
 
-            window.location.href = '/users/add/ldap:1/samaccountname:' + encodeURI($scope.selectedSamAccountName) + '/fix:1';
+            window.location.href = '/users/add/ldap:1/samaccountname:' + encodeURI($scope.data.selectedSamAccountName) + '/fix:1';
         };
 
         $scope.loadUsers();

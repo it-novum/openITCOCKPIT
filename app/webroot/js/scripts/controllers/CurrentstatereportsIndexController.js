@@ -7,7 +7,9 @@ angular.module('openITCOCKPIT')
         $scope.services = {};
         $scope.InitialListLoaded = null;
         $scope.service_id = null;
-        $scope.reportformat = "1";
+        $scope.data = {
+            reportformat: "1"
+        };
         $scope.current_state = {
             ok: true,
             warning: true,
@@ -26,10 +28,10 @@ angular.module('openITCOCKPIT')
         $scope.createCurrentStateReport = function(){
             $scope.generatingReport = true;
             $scope.noDataFound = false;
-            $scope.post.Currentstatereport.report_format = 'pdf'
+            $scope.post.Currentstatereport.report_format = 'pdf';
             $scope.post.Currentstatereport.current_state = [];
 
-            if($scope.reportformat == "2"){
+            if($scope.data.reportformat === "2"){
                 $scope.post.Currentstatereport.report_format = 'html';
             }
 
