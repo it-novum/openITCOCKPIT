@@ -105,6 +105,13 @@ if (Configure::read('debug')) {
  * Check http://php.net/manual/en/timezones.php for list of valid timezone strings.
  */
 date_default_timezone_set(Configure::read('App.defaultTimezone'));
+$defaultTimeZone = 'Europe/Berlin';
+if ($dateDefaultTimeZone = date_default_timezone_get()) {
+    $defaultTimeZone = $dateDefaultTimeZone;
+}
+
+date_default_timezone_set($defaultTimeZone);
+Configure::write('Config.timezone', $defaultTimeZone);
 
 /*
  * Configure the mbstring extension to use the correct encoding.
