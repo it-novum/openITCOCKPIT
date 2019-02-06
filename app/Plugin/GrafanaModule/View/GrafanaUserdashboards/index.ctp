@@ -115,13 +115,15 @@
                             <?php if ($this->Acl->hasPermission('editor', 'GrafanaUserdashboards', 'GrafanaModule')): ?>
                                 <a href="/grafana_module/grafana_userdashboards/editor/{{userdashboard.GrafanaUserdashboard.id}}"
                                    ng-if="userdashboard.GrafanaUserdashboard.allowEdit"
-                                   class="btn btn-default">&nbsp;<i class="fa fa-cog "></i>&nbsp;</a>
-                                <a href="javascript:void(0);" class="btn btn-default"
+                                   class="btn btn-default btn-xs">
+                                    <i class="fa fa-cog"></i>
+                                </a>
+                                <a href="javascript:void(0);" class="btn btn-default btn-xs"
                                    ng-if="!userdashboard.GrafanaUserdashboard.allowEdit">
                                     <i class="fa fa-cog"></i>
                                 </a>
                             <?php else: ?>
-                                <a href="javascript:void(0);" class="btn btn-default">
+                                <a href="javascript:void(0);" class="btn btn-default btn-xs">
                                     <i class="fa fa-cog"></i>
                                 </a>
                             <?php endif; ?>
