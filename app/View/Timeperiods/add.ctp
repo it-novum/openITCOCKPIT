@@ -32,7 +32,9 @@
             <span>>
                 <?php echo __('Time Periods'); ?>
             </span>
-            <div class="third_level"> <?php echo ucfirst($this->params['action']); ?></div>
+            <div class="third_level">
+                <?php echo ucfirst($this->params['action']); ?>
+            </div>
         </h1>
     </div>
 </div>
@@ -40,186 +42,75 @@
 <div class="jarviswidget" id="wid-id-0">
     <header>
         <span class="widget-icon"> <i class="fa fa-clock-o"></i> </span>
-        <h2><?php echo $this->action == 'edit' ? 'Edit' : 'Add' ?><?php echo __('timeperiod'); ?></h2>
+        <h2>
+            <?php echo __('Add timeperiod'); ?>
+        </h2>
         <div class="widget-toolbar" role="menu">
-            <?php echo $this->Utils->backButton() ?>
+            <a class="btn btn-default" ui-sref="TimeperiodsIndex">
+                <i class="fa fa-arrow-left"></i>
+                <?php echo __('Back to list'); ?>
+            </a>
         </div>
     </header>
     <div>
         <div class="widget-body">
-            <?php
-            echo $this->Form->create('Timeperiod', [
-                'class' => 'form-horizontal clear',
-            ]);
-            echo $this->Form->input('Timeperiod.container_id', [
-                    'options' => $containers,
-                    'class'   => 'chosen',
-                    'style'   => 'width: 100%',
-                    'label'   => __('Container'),
-                ]
-            );
-            echo $this->Form->input('Timeperiod.name');
-            echo $this->Form->input('Timeperiod.description');
-            echo $this->Form->input('check_timerange', ['type' => 'hidden']);
-            ?>
-            <br/>
-            <fieldset class=" form-inline required padding-10">
-                <legend class="font-sm">
-                    <div class="required <?php echo (isset($timerange_errors['check_timerange'])) ? ' has-error' : ''; ?> ">
-                        <label><?php echo __('Time ranges:'); ?>  </label>
-                    </div>
-                    <?php if (isset($timerange_errors['check_timerange'])): ?>
-                        <span class="text-danger"><?php echo (isset($timerange_errors['check_timerange'])) ? $timerange_errors['check_timerange'][0] : ''; ?></span>
-                    <?php endif; ?>
-                </legend>
-                <?php
-                if (sizeof($timeranges) > 0):
-                    $intern_day_counter = 0;
-                    $tmp_day = 0;
-                    foreach ($timeranges as $key => $timerange):
-                        if ($tmp_day != $timerange['day']):
-                            $tmp_day = $timerange['day'];
-                            $intern_day_counter = 0;
-                        endif;
-                        ?>
-                        <div class="col-md-10 padding-top-10 required">
-                            <?php
-                            echo $this->Form->input('Timerange.' . $key . '.day', [
-                                    'options'   => $weekdays,
-                                    'multiple'  => false,
-                                    'class'     => 'chosen weekdays',
-                                    'div'       => false,
-                                    'wrapInput' => 'col-md-2',
-                                    'label'     => [
-                                        'text'  => __('Day'),
-                                        'class' => 'col-md-1 no-padding text-right'
-                                    ],
-                                    'selected'  => $timerange['day'],
-                                ]
-                            );
-
-                            echo $this->Form->input('Timerange.' . $key . '.start', [
-                                    'class'       => 'form-control no-padding ' . ((isset($timerange_errors) && array_key_exists('Timerange.' . $timerange['day'] . '.' . $intern_day_counter . '.start', $timerange_errors)) ? 'input_error_field' : ' no-padding'),
-                                    'placeholder' => '00:00',
-                                    'maxlength'   => 5,
-                                    'size'        => 5,
-                                    'div'         => false,
-                                    'wrapInput'   => 'col-md-2',
-                                    'label'       => ['class' => 'col col-md-2 text-right control-label'],
-                                    'value'       => $timerange['start'],
-                                    'error'       => [
-                                        'attributes' => [
-                                            'wrap'  => 'div',
-                                            'class' => 'text-danger',
-                                        ],
-                                    ],
-                                    'style'       => 'height:auto; padding:1px 4px!important;',
-                                    'errorClass'  => 'text-danger error',
-                                ]
-                            );
-                            echo $this->Form->input('Timerange.' . $key . '.end', [
-                                    'class'       => 'form-control no-padding ' . ((isset($timerange_errors) && array_key_exists('Timerange.' . $timerange['day'] . '.' . $intern_day_counter . '.start', $timerange_errors)) ? 'input_error_field' : ' no-padding'),
-                                    'placeholder' => '24:00',
-                                    'maxlength'   => 5,
-                                    'size'        => 5,
-                                    'div'         => false,
-                                    'wrapInput'   => 'col-md-2',
-                                    'label'       => ['class' => 'col-md-2 text-right'],
-                                    'value'       => $timerange['end'],
-                                    'error'       => [
-                                        'attributes' => [
-                                            'wrap'  => 'div',
-                                            'class' => 'text-danger',
-                                        ],
-                                    ],
-                                    'style'       => 'height:auto; padding:1px 4px!important;',
-
-                                ]
-                            );
-                            ?>
-                            <div class="col-md-1">
-                                <a class="btn btn-default btn-xs txt-color-red removeTimeRangeDivButton">
-                                    <i class="fa fa-trash-o"></i>
-                                </a>
+            <form ng-submit="submit();" class="form-horizontal">
+                <div class="row">
+                    <div class="form-group required" ng-class="{'has-error': errors.Container.parent_id}">
+                        <label class="col col-md-2 control-label">
+                            <?php echo __('Container'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+                            <select
+                                    id="HostgroupParentContainer"
+                                    data-placeholder="<?php echo __('Please choose'); ?>"
+                                    class="form-control"
+                                    chosen="containers"
+                                    ng-options="container.key as container.value for container in containers"
+                                    ng-model="post.Container.parent_id">
+                            </select>
+                            <div ng-repeat="error in errors.Container.parent_id">
+                                <div class="help-block text-danger">{{ error }}</div>
                             </div>
                         </div>
-                        <?php
-                        $intern_day_counter++;
-                    endforeach;
-                endif;
-                ?>
-                <div class="col-md-1 padding-top-10 right" id="addTimerangeButton">
-                    <a class="btn btn-primary btn-xs addTimeRangeDivButton">
-                        <i class="fa fa-plus"></i>
-                        <?php echo __('Add'); ?>
-                    </a>
-                </div>
-                <div class="col-md-10 padding-top-10 invisible template required" id="timerange_template">
-                    <?php
-                    echo $this->Form->input('template.1.day', [
-                            'options'   => $weekdays,
-                            'multiple'  => false,
-                            'class'     => 'weekdays',
-                            'style'     => 'width:100%',
-                            'div'       => false,
-                            'wrapInput' => 'col-md-2',
-                            'label'     => [
-                                'text'  => __('Day'),
-                                'class' => 'col-md-1 no-padding text-right'
-                            ],
-                        ]
-                    );
-
-                    echo $this->Form->input('template.1.start', [
-                        'class'       => 'form-control col-xs-8 no-padding',
-                        'style'       => 'height:auto; padding:1px 4px!important;',
-                        'placeholder' => '00:00',
-                        'maxlength'   => 5,
-                        'size'        => 5,
-                        'div'         => false,
-                        'wrapInput'   => 'col-md-2',
-                        'label'       => [
-                            'class' => 'col-md-2 text-right',
-                            'style' => 'margin-top:4px;'
-                        ],
-                        'error'       => [
-                            'attributes' => [
-                                'wrap'  => 'div',
-                                'class' => 'text-danger',
-                            ],
-                        ],
-                    ]);
-                    echo $this->Form->input('template.1.end', [
-                            'class'       => 'form-control col-xs-8 no-padding',
-                            'style'       => 'height:auto; padding:1px 4px!important;',
-                            'placeholder' => '24:00',
-                            'maxlength'   => 5,
-                            'size'        => 5,
-                            'div'         => false,
-                            'wrapInput'   => 'col-md-2',
-                            'label'       => [
-                                'class' => 'col-md-2 text-right',
-                                'style' => 'margin-top:4px;'
-                            ],
-                            'error'       => [
-                                'attributes' => [
-                                    'wrap'  => 'div',
-                                    'class' => 'text-danger',
-                                ],
-                            ],
-                        ]
-                    );
-                    ?>
-                    <div class="col-md-1">
-                        <a class="btn btn-default btn-xs txt-color-red removeTimeRangeDivButton">
-                            <i class="fa fa-trash-o"></i>
-                        </a>
                     </div>
-                </div>
-            </fieldset>
-            <div class="row">
-                <div class="col-xs-12">
-                    <fieldset class=" form-inline required padding-10">
+                    <div class="form-group required" ng-class="{'has-error': errors.name}">
+                        <label class="col col-md-2 control-label">
+                            <?php echo __('Name'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+                            <input class="form-control" type="text" ng-model="post.Timeperiod.name">
+                            <div ng-repeat="error in errors.name">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col col-md-2 control-label">
+                            <?php echo __('Description'); ?>
+                        </label>
+                        <div class="col col-xs-10">
+                            <input class="form-control" type="text" ng-model="post.Timeperiod.description">
+                        </div>
+                    </div>
+                    <fieldset class=" form-inline padding-10">
+                        <legend class="font-sm">
+                            <div <?php echo (isset($timerange_errors['check_timerange'])) ? ' has-error' : ''; ?> ">
+                                <label><?php echo __('Time ranges:'); ?>  </label>
+                            </div>
+                            <?php if (isset($timerange_errors['check_timerange'])): ?>
+                                <span class="text-danger"><?php echo (isset($timerange_errors['check_timerange'])) ? $timerange_errors['check_timerange'][0] : ''; ?></span>
+                            <?php endif; ?>
+                        </legend>
+
+                        <div class="col-md-1 padding-top-10 pull-right" id="addTimerangeButton">
+                            <a class="btn btn-success btn-xs addTimeRangeDivButton">
+                                <i class="fa fa-plus"></i>
+                                <?php echo __('Add'); ?>
+                            </a>
+                        </div>
+                    </fieldset>
+                    <fieldset class=" form-inline padding-10">
                         <legend class="font-sm">
                             <div>
                                 <label><?php echo __('Link to calendar:'); ?>  </label>
@@ -227,17 +118,7 @@
                         </legend>
                     </fieldset>
                 </div>
-                <?php
-                echo $this->Form->input('Timeperiod.calendar_id', [
-                    'options'  => Hash::merge([0 => __('None')], $calendars),
-                    'class'    => 'chosen',
-                    'style'    => 'width: 100%',
-                    'label'    => __('Calendar'),
-                    'selected' => 0,
-                    'help'     => __('In addition to the interval defined by the given time ranges, you are able to add 24x7 days using a calendar. This will only affect the monitoring engine.')
-                ]); ?>
-            </div>
-            <?php echo $this->Form->formActions(); ?>
+            </form>
         </div>
     </div>
 </div>

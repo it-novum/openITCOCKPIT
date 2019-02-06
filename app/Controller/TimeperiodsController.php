@@ -224,6 +224,12 @@ class TimeperiodsController extends AppController {
      * @todo refactor me
      */
     public function add() {
+        $this->layout = 'blank';
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
+            return;
+        }
+        return;
         $userId = $this->Auth->user('id');
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
