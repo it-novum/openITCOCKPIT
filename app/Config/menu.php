@@ -192,6 +192,7 @@ $config = [
                 ],
                 [
                     'url'               => ['controller' => 'timeperiods', 'action' => 'index'],
+                    'state'             => 'TimeperiodsIndex',
                     'title'             => 'Time Periods',
                     'icon'              => 'clock-o',
                 ],

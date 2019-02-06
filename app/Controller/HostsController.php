@@ -2870,11 +2870,6 @@ class HostsController extends AppController {
         return $diff_array;
     }
 
-    //This function return the controller name
-    protected function controller() {
-        return 'HostsController';
-    }
-
     public function getHostByAjax($id = null) {
         if (!$this->Host->exists($id)) {
             throw new NotFoundException(__('Invalid host'));

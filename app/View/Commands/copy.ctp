@@ -46,10 +46,12 @@
             <?php echo __('Copy command/s'); ?>
         </h2>
         <div class="widget-toolbar hidden-mobile hidden-tablet" role="menu">
-            <a class="btn btn-default" ui-sref="CommandsIndex">
-                <i class="fa fa-arrow-left"></i>
-                <?php echo __('Back to list'); ?>
-            </a>
+            <?php if ($this->Acl->hasPermission('index', 'commands')): ?>
+                <a class="btn btn-default" ui-sref="CommandsIndex">
+                    <i class="fa fa-arrow-left"></i>
+                    <?php echo __('Back to list'); ?>
+                </a>
+            <?php endif; ?>
         </div>
     </header>
     <div>
@@ -111,7 +113,9 @@
                     <button class="btn btn-primary" ng-click="copy()">
                         <?php echo __('Copy'); ?>
                     </button>
-                    <a ui-sref="CommandsIndex" class="btn btn-default"><?php echo __('Cancel'); ?></a>
+                    <?php if ($this->Acl->hasPermission('index', 'commands')): ?>
+                        <a ui-sref="CommandsIndex" class="btn btn-default"><?php echo __('Cancel'); ?></a>
+                    <?php endif; ?>
                 </div>
             </div>
 

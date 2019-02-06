@@ -245,6 +245,11 @@ class CommandsController extends AppController {
 
     }
 
+    /**
+     * @param $command
+     * @return bool
+     * @deprecated
+     */
     protected function __allowDelete($command) {
         //Check if the command is used somewere, if yes we can not delete it!
         $this->loadModel('__ContactsToServicecommands');
@@ -421,6 +426,7 @@ class CommandsController extends AppController {
                     //All commands without validation errors got already saved to the database
                     $newCommandEntity = $Commands->get($commandData['Command']['id']);
                     $newCommandEntity = $Commands->patchEntity($newCommandEntity, $commandData['Command']);
+                    $newCommandData = $newCommandEntity->toArray();
                     $action = 'edit';
                 }
                 $Commands->save($newCommandEntity);
