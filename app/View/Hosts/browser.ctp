@@ -70,33 +70,33 @@ if (isset($QueryHandler) && !$QueryHandler->exists()): ?>
                 <h2 class="hidden-mobile hidden-tablet"><strong><?php echo __('Host'); ?>:</strong> {{
                     mergedHost.Host.name }}</h2>
                 <ul class="nav nav-tabs pull-right" id="widget-tab-1">
-                    <li class="active">
-                        <a href="#tab1" data-toggle="tab" ng-click="hideTimeline()">
+                    <li class="active cursor-pointer">
+                        <a ng-click="selectedTab = 'tab1'; hideTimeline()" data-toggle="tab">
                             <i class="fa fa-lg fa-info"></i>
                             <span class="hidden-mobile hidden-tablet"> <?php echo __('Status information'); ?></span>
                         </a>
                     </li>
 
-                    <li class="">
-                        <a href="#tab2" data-toggle="tab" ng-click="hideTimeline()">
+                    <li class="cursor-pointer">
+                        <a ng-click="selectedTab = 'tab2'; hideTimeline()" data-toggle="tab">
                             <i class="fa fa-lg fa-hdd-o"></i>
                             <span class="hidden-mobile hidden-tablet"> <?php echo __('Device information'); ?> </span>
                         </a>
                     </li>
 
                     <?php if ($this->Acl->hasPermission('timeline', 'hosts')): ?>
-                        <li class="">
-                            <a href="#tab3" data-toggle="tab" ng-click="showTimeline()">
+                        <li class="cursor-pointer">
+                            <a ng-click="selectedTab = 'tab3'; showTimeline()" data-toggle="tab">
                                 <i class="fa fa-lg fa-clock-o"></i>
                                 <span class="hidden-mobile hidden-tablet"> <?php echo __('Timeline'); ?> </span>
                             </a>
                         </li>
                     <?php endif; ?>
 
-                    <?php echo $this->AdditionalLinks->renderAsTabs($additionalLinksTab, null, 'host', 'tabLink', 'hideTimeline()'); ?>
+                    <?php echo $this->AdditionalLinks->renderAsTabs($additionalLinksTab, null, 'host', 'tabLink', 'hideTimeline()', true); ?>
 
-                    <li class="" ng-if="GrafanaDashboardExists">
-                        <a href="#tab5" data-toggle="tab" ng-click="hideTimeline()">
+                    <li class="cursor-pointer" ng-show="GrafanaDashboardExists">
+                        <a ng-click="selectedTab = 'tab5'; hideTimeline()" data-toggle="tab">
                             <i class="fa fa-lg fa-area-chart"></i>
                             <span class="hidden-mobile hidden-tablet"> <?php echo __('Grafana'); ?> </span>
                         </a>
@@ -115,7 +115,7 @@ if (isset($QueryHandler) && !$QueryHandler->exists()): ?>
 
                 <div class="widget-body no-padding">
                     <div class="tab-content no-padding">
-                        <div id="tab1" class="tab-pane fade active in">
+                        <div ng-show="selectedTab == 'tab1'" class="tab-pane fade active in">
                             <div class="hidden-sm hidden-md hidden-lg"
                                  ng-class="{'browser-state-green': stateIsUp(), 'browser-state-red': stateIsDown(), 'browser-state-gray': stateIsUnreachable(), 'browser-state-blue': stateIsNotInMonitoring()}"
                                  ng-if="hoststatus">
@@ -717,7 +717,7 @@ if (isset($QueryHandler) && !$QueryHandler->exists()): ?>
 
                         </div>
 
-                        <div id="tab2" class="tab-pane fade in">
+                        <div ng-show="selectedTab == 'tab2'" class="tab-pane active fade in">
                             <div class="row">
                                 <div class="col-xs-12 padding-10">
                                     <div class="row">
@@ -870,7 +870,7 @@ if (isset($QueryHandler) && !$QueryHandler->exists()): ?>
                             </div>
                         </div>
 
-                        <div id="tab3" class="fade in" ng-show="showTimelineTab">
+                        <div class="fade in active" ng-show="showTimelineTab && selectedTab == 'tab3'">
                             <div class="row">
                                 <div class="col-xs-12 padding-10">
                                     <div class="row">
@@ -959,13 +959,13 @@ if (isset($QueryHandler) && !$QueryHandler->exists()): ?>
 
 
                         <!-- render additional Tabs if necessary -->
-                        <?php echo $this->AdditionalLinks->renderAsTabs($additionalLinksTab, null, 'host', 'tab'); ?>
+                        <?php echo $this->AdditionalLinks->renderAsTabs($additionalLinksTab, null, 'host', 'tab', null, true); ?>
 
-                        <div id="tab5" class="tab-pane fade" ng-if="GrafanaDashboardExists">
+                        <div class="fade in active" ng-show="GrafanaDashboardExists && selectedTab == 'tab5'">
                             <div class="widget-toolbar">
                                 <grafana-timepicker callback="grafanaTimepickerCallback"></grafana-timepicker>
                             </div>
-                            <iframe-directive url="GrafanaIframeUrl" ng-if="GrafanaDashboardExists"></iframe-directive>
+                            <iframe-directive url="GrafanaIframeUrl" ng-if="GrafanaDashboardExists && selectedTab == 'tab5'"></iframe-directive>
                         </div>
                     </div>
 

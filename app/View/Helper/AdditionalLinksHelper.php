@@ -129,11 +129,14 @@ class AdditionalLinksHelper extends AppHelper {
     }
 
 
-    public function renderTabs($additionalElements) {
+    public function renderTabs($additionalElements, $spa = false) {
 
         $htmlContent = [];
         foreach ($additionalElements as $element) {
             $html = '<div id="tab' . $element['uuid'] . '" class="tab-pane fade">';
+            if($spa){
+                $html = '<div ng-show="selectedTab == \'tab' . $element['uuid'] . '\'" class="tab-pane fade in active">';
+            }
             //load element ctp here
             if (!empty($element['element'])) {
                 $html .= $this->renderElements([$element['element']]);
@@ -144,13 +147,20 @@ class AdditionalLinksHelper extends AppHelper {
         return implode($htmlContent);
     }
 
-    public function renderTabLinks($additionalElements, $ngClick = null) {
+    public function renderTabLinks($additionalElements, $ngClick = null, $spa = false) {
         $htmlLink = [];
         foreach ($additionalElements as $element) {
             if (!is_null($ngClick)) {
-                $ngClick = ' ng-click="' . $ngClick . '"';
+                if($spa){
+                    $ngClick = ' ng-click="selectedTab = \'tab'.$element['uuid'].'\'; ' . $ngClick . '"';
+                } else {
+                    $ngClick = ' ng-click="' . $ngClick . '"';
+                }
             }
             $html = '<li class=""><a href="#tab' . $element['uuid'] . '" data-toggle="tab" ' . $ngClick . '>';
+            if($spa){
+                $html = '<li class="cursor-pointer"><a data-toggle="tab" ' . $ngClick . '>';
+            }
             $html .= '<span class="hidden-mobile hidden-tablet">' . __($element['title']) . '</span></a>';
             $html .= '</li>';
             $htmlLink[] = $html;
@@ -158,15 +168,15 @@ class AdditionalLinksHelper extends AppHelper {
         return implode($htmlLink);
     }
 
-    public function renderAsTabs($additionalLinks, $elementId, $type, $renderType = 'tab', $ngClick = null) {
+    public function renderAsTabs($additionalLinks, $elementId, $type, $renderType = 'tab', $ngClick = null, $spa = false) {
         $type = lcfirst($type);
         //if elementId is null its a new Host/Service
 
         $result = '';
         if ($renderType == 'tabLink') {
-            $result = $this->renderTabLinks($additionalLinks, $ngClick);
+            $result = $this->renderTabLinks($additionalLinks, $ngClick, $spa);
         } else {
-            $result = $this->renderTabs($additionalLinks);
+            $result = $this->renderTabs($additionalLinks, $spa);
         }
 
         return $result;
