@@ -1,4 +1,4 @@
-angular.module('openITCOCKPIT', ['ui.router', 'gridster'])
+angular.module('openITCOCKPIT', ['gridster', 'ui.router'])
 
     .factory("httpInterceptor", function($q, $rootScope, $timeout){
         return {
@@ -89,6 +89,7 @@ angular.module('openITCOCKPIT', ['ui.router', 'gridster'])
         $httpProvider.defaults.headers.get['If-Modified-Since'] = '0';
 
     })
+
 
     .config(function($urlRouterProvider, $stateProvider){
         $stateProvider

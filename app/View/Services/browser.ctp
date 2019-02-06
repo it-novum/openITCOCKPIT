@@ -1080,7 +1080,7 @@ if (!$QueryHandler->exists()): ?>
                 <div class="widget-toolbar form-group smart-form" role="menu">
                     <label class="checkbox small-checkbox-label display-inline margin-right-5">
                         <input type="checkbox" name="checkbox" checked="checked"
-                               ng-model="graphAutoRefresh">
+                               ng-model="graph.graphAutoRefresh">
                         <i class="checkbox-primary"></i>
                         <?php echo __('Auto refresh'); ?>
                     </label>
@@ -1089,7 +1089,7 @@ if (!$QueryHandler->exists()): ?>
                 <div class="widget-toolbar form-group smart-form" role="menu">
                     <label class="checkbox small-checkbox-label display-inline margin-right-5">
                         <input type="checkbox" name="checkbox" checked="checked"
-                               ng-model="showDatapoints">
+                               ng-model="graph.showDatapoints">
                         <i class="checkbox-primary"></i>
                         <?php echo __('Show data points'); ?>
                     </label>

@@ -8,6 +8,10 @@ angular.module('openITCOCKPIT')
             is_recurring: false
         };
 
+        $scope.data = {
+            hostgroupIds: []
+        };
+
         $scope.post = {
             params: {
                 'angular': true
@@ -59,7 +63,7 @@ angular.module('openITCOCKPIT')
         $scope.loadRefillData();
 
         $scope.saveNewHostgroupDowntime = function(){
-            $scope.post.Systemdowntime.object_id = $scope.hostgroupIds;
+            $scope.post.Systemdowntime.object_id = $scope.data.hostgroupIds;
             if($scope.post.Systemdowntime.is_recurring){
                 $scope.post.Systemdowntime.to_time = null;
                 $scope.post.Systemdowntime.to_date = null;
@@ -88,7 +92,7 @@ angular.module('openITCOCKPIT')
                 params: {
                     'angular': true,
                     'filter[Container.name]': searchString,
-                    'selected[]': $scope.hostgroupIds
+                    'selected[]': $scope.data.hostgroupIds
                 }
             }).then(function(result){
                 $scope.hostgroups = result.data.hostgroups;

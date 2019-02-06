@@ -56,7 +56,7 @@
                             chosen="hosts"
                             callback="loadHosts"
                             ng-options="host.key as host.value for host in hosts"
-                            ng-model="hostId">
+                            ng-model="data.hostId">
                     </select>
                 </div>
 

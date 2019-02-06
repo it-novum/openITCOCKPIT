@@ -106,11 +106,11 @@
                 </label>
                 <div class="col col-xs-10 col-md-10 col-lg-10">
                     <label class="padding-right-10">
-                        <input type="radio" name="report_format" ng-model="reportformat" value="1">
+                        <input type="radio" name="report_format" ng-model="data.reportformat" value="1">
                         <i class="fa fa-file-pdf-o"></i> <?php echo __('PDF'); ?>
                     </label>
                     <label class="padding-right-10">
-                        <input type="radio" name="report_format" ng-model="reportformat" value="2">
+                        <input type="radio" name="report_format" ng-model="data.reportformat" value="2">
                         <i class="fa fa-html5"></i> <?php echo __('HTML'); ?>
                     </label>
                     <div ng-repeat="error in errors.report_format">

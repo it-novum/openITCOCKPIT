@@ -71,7 +71,7 @@ use itnovum\openITCOCKPIT\Core\RFCRouter;
                     <label class="input"> <i class="icon-prepend fa fa-filter"></i>
                         <input class="input-sm"
                                placeholder="<?php echo __('Type to filter...'); ?>"
-                               ng-model="containerFilter"
+                               ng-model="data.containerFilter"
                                ng-model-options="{debounce: 250}"
                                type="text">
                     </label>

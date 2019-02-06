@@ -60,7 +60,7 @@
                                     chosen="containers"
                                     callback="loadContainers"
                                     ng-options="host.key as host.value for host in containers"
-                                    ng-model="containerIds"
+                                    ng-model="obj.containerIds"
                             >
                             </select>
                             <div ng-repeat="error in errors.object_id">

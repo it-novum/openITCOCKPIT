@@ -4,8 +4,10 @@ angular.module('openITCOCKPIT')
         $scope.init = true;
         $scope.errors = null;
 
-        $scope.serviceIds = [];
-        $scope.serviceIds.push(QueryStringService.getCakeId().toString());
+        $scope.data = {
+            serviceIds: []
+        };
+        $scope.data.serviceIds.push(QueryStringService.getCakeId().toString());
 
         $scope.Downtime = {
             is_recurring: false
@@ -55,7 +57,7 @@ angular.module('openITCOCKPIT')
         $scope.loadRefillData();
 
         $scope.saveNewServiceDowntime = function(){
-            $scope.post.Systemdowntime.object_id = $scope.serviceIds;
+            $scope.post.Systemdowntime.object_id = $scope.data.serviceIds;
             if($scope.post.Systemdowntime.is_recurring){
                 $scope.post.Systemdowntime.to_time = null;
                 $scope.post.Systemdowntime.to_date = null;
@@ -84,7 +86,7 @@ angular.module('openITCOCKPIT')
                     'angular': true,
                     'filter[Host.name]': searchString,
                     'filter[Service.servicename]': searchString,
-                    'selected[]': $scope.serviceIds
+                    'selected[]': $scope.data.serviceIds
                 }
             }).then(function(result){
                 $scope.services = [];
