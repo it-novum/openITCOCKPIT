@@ -27,6 +27,7 @@
  * Class DocumentationsController
  * @property Documentation $Documentation
  */
+
 class DocumentationsController extends AppController {
     public $layout = 'Admin.default';
     public $components = ['Bbcode'];
@@ -39,24 +40,29 @@ class DocumentationsController extends AppController {
     ];
 
     public function view($uuid = null, $type = 'host') {
+        $this->layout = "blank";
+
+        if(empty($type)){
+            throw new InvalidArgumentException();
+        }
+
         if ($this->request->is('post') || $this->request->is('put')) {
             if ($this->Documentation->save($this->request->data)) {
                 if ($this->request->ext == 'json') {
                     $this->serializeId(); // REST API ID serialization
                     return;
                 }
-                $this->setFlash(__('Page successfully saved'));
-                $this->redirect(Hash::merge(['action' => 'view'], $this->request->params['pass']));
-            } else {
-                if ($this->request->ext == 'json') {
-                    $this->serializeErrorMessage();
-                    return;
-                }
-                $this->setFlash(__('Could not save data'), false);
             }
+            $this->serializeErrorMessage();
+            return;
+
         }
 
-        $this->set('back_url', $this->referer());
+        if (!$this->isAngularJsRequest() && $uuid === null) {
+            //Host for .html requests
+            return;
+        }
+
         $post = $this->Documentation->find('first', [
             'recursive'  => -1,
             'conditions' => [
@@ -64,7 +70,15 @@ class DocumentationsController extends AppController {
             ]
         ]);
 
-        if ($type === 'host') {
+        if (!$this->isAngularJsRequest() && $uuid === null) {
+            //Host for .html requests
+            return;
+        }
+
+        $allowEdit = false;
+        $host = [];
+        if ($type == 'host') {
+
             $host = $this->Host->find('first', [
                 'fields'     => [
                     'Host.id',
@@ -83,6 +97,10 @@ class DocumentationsController extends AppController {
                 ],
             ]);
 
+            if (empty($host)) {
+                throw new NotFoundException(__('invalid host'));
+            }
+
             $containerIdsToCheck = Hash::extract($host, 'Container.{n}.HostsToContainer.container_id');
             $containerIdsToCheck[] = $host['Host']['container_id'];
 
@@ -99,11 +117,11 @@ class DocumentationsController extends AppController {
                 $allowEdit = true;
             }
 
-            $this->set('host', $host);
-            $this->set('allowEdit', $allowEdit);
         }
 
-        if ($type === 'service') {
+        $service = [];
+        if ($type == 'service') {
+
             $service = $this->Service->find('first', [
                 'recursive'  => -1,
                 'contain'    => [
@@ -123,6 +141,9 @@ class DocumentationsController extends AppController {
 
             ]);
 
+            if (empty($service)) {
+                throw new NotFoundException(__('invalid service'));
+            }
 
             $host = $this->Host->findById($service['Service']['host_id']);
             $containerIdsToCheck = Hash::extract($host, 'Container.{n}.HostsToContainer.container_id');
@@ -138,14 +159,20 @@ class DocumentationsController extends AppController {
                 $allowEdit = true;
             }
 
-            $this->set('service', $service);
-            $this->set('allowEdit', $allowEdit);
+        }
+
+        if(!empty($post) && !empty($post['Documentation']['modified'])){
+            $post['Documentation']['modified_formatted'] = CakeTime::format($post['Documentation']['modified'], $this->Auth->user('dateformat'), false, $this->Auth->user('timezone'));
         }
 
         $docuExists = !empty($post);
 
-        $this->set(compact(['post', 'uuid', 'docuExists', 'type']));
-        $this->set('_serialize', ['post']);
+        $this->set('post', $post);
+        $this->set('docuExists', $docuExists);
+        $this->set('host', $host);
+        $this->set('service', $service);
+        $this->set('allowEdit', $allowEdit);
+        $this->set('_serialize', ['post', 'docuExists', 'allowEdit', 'host', 'service']);
     }
 
     public function index() {
@@ -740,7 +767,7 @@ class DocumentationsController extends AppController {
             //require_once APP.'Vendor'.DS.'parsedown'.DS.'Parsedown.php';
             //require_once APP.'Vendor'.DS.'parsedown'.DS.'ParsedownExtra.php';
 
-            $basePath = APP . 'docs' . DS . $language;
+            $basePath = OLD_APP . 'docs' . DS . $language;
             $categoryDirectory = $wiki[$categoryUrl]['directory'];
             $filename = $wiki[$categoryUrl]['children'][$pageUrl]['file'] . '.md';
             $filePath = $basePath . DS . $categoryDirectory . DS . $filename;

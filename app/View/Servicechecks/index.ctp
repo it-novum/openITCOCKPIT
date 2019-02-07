@@ -23,38 +23,27 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-use itnovum\openITCOCKPIT\Core\Servicestatus;
-use itnovum\openITCOCKPIT\Core\Views\Host;
-use itnovum\openITCOCKPIT\Core\Views\Service;
-
 //Flapping Workaround while the status date is not loaded via Angular
 echo $this->Html->script('lib/FlappingWorkaround.js');
 
-$Service = new Service($service);
-$Host = new Host($service);
-if (!isset($servicestatus['Servicestatus'])):
-    $servicestatus['Servicestatus'] = [];
-endif;
-$Servicestatus = new Servicestatus($servicestatus['Servicestatus']);
 ?>
 <div class="row">
     <div class="col-xs-12 col-sm-12 col-md-5 col-lg-5">
-        <h1 class="status_headline <?php echo $Servicestatus->ServiceStatusColor(); ?>">
-            <?php echo $Servicestatus->getServiceFlappingIconColored(); ?>
+        <h1 class="status_headline" ng-class="serviceStatusTextClass">
+
+            <span class="flapping_airport stateClass" ng-show="servicestatus.isFlapping">
+                <i class="fa" ng-class="flappingState === 1 ? 'fa-circle' : 'fa-circle-o'"></i>
+                <i class="fa" ng-class="flappingState === 0 ? 'fa-circle' : 'fa-circle-o'"></i>
+            </span>
+
             <i class="fa fa-cog fa-fw"></i>
-            <?php echo h($Service->getServicename()); ?>
+            {{ service.Service.name }}
             <span>
                 &nbsp;<?php echo __('on'); ?>
                 <?php if ($this->Acl->hasPermission('browser', 'Hosts')): ?>
-                    <a href="<?php echo Router::url([
-                        'controller' => 'hosts',
-                        'action'     => 'browser',
-                        $Service->getHostId()
-                    ]); ?>">
-                    <?php printf('%s (%s)', h($Host->getHostname()), h($Host->getAddress())); ?>
-                </a>
+                    <a ui-sref="HostsBrowser({id:service.Host.id})">{{ service.Host.name }} ({{ service.Host.address }})</a>
                 <?php else: ?>
-                    <?php printf('%s (%s)', h($Host->getHostname()), h($Host->getAddress())); ?>
+                    ({{ service.Service.address }})
                 <?php endif; ?>
             </span>
         </h1>
@@ -62,13 +51,8 @@ $Servicestatus = new Servicestatus($servicestatus['Servicestatus']);
     <div class="col-xs-12 col-sm-12 col-md-7 col-lg-7">
         <h5>
             <div class="pull-right">
-                <a href="<?php echo Router::url([
-                    'controller' => 'services',
-                    'action'     => 'browser',
-                    $Service->getId()
-                ]); ?>" class="btn btn-primary btn-sm">
-                    <i class="fa fa-arrow-circle-left"></i>
-                    <?php echo $this->Html->underline('b', __('Back to Service')); ?>
+                <a ui-sref="ServicesBrowser({id:serviceBrowserMenu.serviceId})" class="btn btn-primary btn-sm">
+                    <i class="fa fa-arrow-circle-left"></i> <?php echo $this->Html->underline('b', __('Back to Service')); ?>
                 </a>
                 <?php echo $this->element('service_browser_menu'); ?>
             </div>

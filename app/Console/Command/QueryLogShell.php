@@ -49,7 +49,7 @@ class QueryLogShell extends AppShell {
     public function main() {
         App::uses('SqlFormatter', 'Lib');
 
-        $this->logfile = LOGS . 'query.log';
+        $this->logfile = OLD_LOGS . 'query.log';
 
         $this->parser = $this->getOptionParser();
 

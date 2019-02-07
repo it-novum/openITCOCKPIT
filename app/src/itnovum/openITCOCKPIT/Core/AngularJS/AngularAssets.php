@@ -36,7 +36,7 @@ class AngularAssets implements AngularAssetsInterface {
         'vendor/jqueryui/jquery-ui.min.js',
         'vendor/bootstrap/dist/js/bootstrap.min.js',
         'vendor/angular/angular.min.js',
-        //'vendor/angular-ui-router/release/angular-ui-router.min.js',
+        'vendor/angular-ui-router/release/angular-ui-router.min.js',
         'js/lib/jquery-cookie.js',
         'js/vendor/chosen.jquery.min.js',
         'js/plugin/bootstrap-tags/bootstrap-tagsinput.min.js',
@@ -70,7 +70,9 @@ class AngularAssets implements AngularAssetsInterface {
         'js/lib/rangyinputs-jquery-1.1.2.min.js',
         'vendor/javascript-detect-element-resize/jquery.resize.js',
         'vendor/angular-gridster/dist/angular-gridster.min.js',
-        'js/lib/GraphDefaults.js'
+        'js/lib/GraphDefaults.js',
+        'js/lib/jqconsole.min.js',
+        'js/vendor/jquery.blockUI.js'
     ];
 
     /**
@@ -84,7 +86,7 @@ class AngularAssets implements AngularAssetsInterface {
         });
 
         foreach ($loadedModules as $loadedModule) {
-            $file = APP . 'Plugin' . DS . $loadedModule . DS . 'Lib' . DS . 'AngularAssets.php';
+            $file = OLD_APP . 'Plugin' . DS . $loadedModule . DS . 'Lib' . DS . 'AngularAssets.php';
             if (file_exists($file)) {
                 require_once $file;
                 $dynamicAngularAssets = sprintf('itnovum\openITCOCKPIT\%s\AngularAssets\AngularAssets', $loadedModule);

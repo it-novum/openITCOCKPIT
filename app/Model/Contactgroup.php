@@ -29,6 +29,9 @@
  * a contact belongsTo a container (many to one)
  */
 
+use App\Model\Table\ContainersTable;
+use Cake\ORM\TableRegistry;
+
 class Contactgroup extends AppModel {
     //public $primaryKey = 'container_id';
 //	public $primaryKeyArray = array('id','container_id');
@@ -102,7 +105,9 @@ class Contactgroup extends AppModel {
         }
 
         //Lookup for the tenant container of $container_id
-        $this->Container = ClassRegistry::init('Container');
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
 
         $tenantContainerIds = [];
 
@@ -111,10 +116,8 @@ class Contactgroup extends AppModel {
 
                 // Get container id of the tenant container
                 // $container_id is may be a location, devicegroup or whatever, so we need to container id of the tenant container to load contactgroups and contacts
-                $path = Cache::remember('ContactGroupContactsByContainerId:' . $container_id, function () use ($container_id) {
-                    return $this->Container->getPath($container_id);
-                }, 'migration');
-                $tenantContainerIds[] = $path[1]['Container']['id'];
+                $path = $ContainersTable->getPathByIdAndCacheResult($container_id, 'ContactGroupContactsByContainerId');
+                $tenantContainerIds[] = $path[1]['id'];
             } else {
                 $tenantContainerIds[] = ROOT_CONTAINER;
             }

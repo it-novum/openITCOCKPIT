@@ -88,7 +88,7 @@ class IncludePanel extends DebugPanel
      */
     protected function _includePaths()
     {
-        $paths = array_flip(array_merge(explode(PATH_SEPARATOR, get_include_path()), [CAKE]));
+        $paths = array_flip(array_merge(explode(PATH_SEPARATOR, get_include_path()), [OLD_CAKE]));
 
         unset($paths['.']);
 
@@ -104,7 +104,7 @@ class IncludePanel extends DebugPanel
      */
     protected function _isCoreFile($file)
     {
-        return strstr($file, CAKE);
+        return strstr($file, OLD_CAKE);
     }
 
     /**
@@ -116,7 +116,7 @@ class IncludePanel extends DebugPanel
      */
     protected function _isAppFile($file)
     {
-        return strstr($file, APP);
+        return strstr($file, OLD_APP);
     }
 
     /**
@@ -152,10 +152,10 @@ class IncludePanel extends DebugPanel
     {
         switch ($type) {
             case 'app':
-                return str_replace(APP, 'APP/', $file);
+                return str_replace(OLD_APP, 'APP/', $file);
 
             case 'core':
-                return str_replace(CAKE, 'CORE/', $file);
+                return str_replace(OLD_CAKE, 'CORE/', $file);
 
             default:
                 return str_replace($this->_pluginPaths[$type], $type.'/', $file);

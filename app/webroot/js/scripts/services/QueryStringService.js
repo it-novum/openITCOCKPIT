@@ -10,6 +10,24 @@ angular.module('openITCOCKPIT')
                 return id;
             },
 
+            getCakeIds: function(){
+                var url = window.location.href;
+                var ids = [];
+
+                url = url.split('/');
+                if(url.length > 5){
+                    //Ignore protocol, controller and action
+                    //[ "https:", "", "example.com", "commands", "copy", "39", "31" ]
+
+                    for(var i = 5; i < url.length; i++){
+                        if(isNaN(url[i]) === false && url[i] !== null && url[i] !== ''){
+                            ids.push(parseInt(url[i], 10));
+                        }
+                    }
+                }
+                return ids;
+            },
+
             getValue: function(varName, defaultReturn){
 
                 defaultReturn = (typeof defaultReturn === 'undefined') ? null : defaultReturn;

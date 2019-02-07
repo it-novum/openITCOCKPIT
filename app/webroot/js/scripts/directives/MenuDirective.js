@@ -24,10 +24,17 @@ angular.module('openITCOCKPIT').directive('menu', function($http, $timeout, $htt
                 });
             };
 
-            $scope.isActiveChild = function(childNode){
-                if(childNode.url_array.plugin === $scope.phpplugin){
-                    if(childNode.url_array.controller === $scope.phpcontroller){
-                        if(childNode.url_array.action === $scope.phpaction){
+            $scope.isActiveChild = function(childNode) {
+                let urlController = $scope.phpcontroller;
+                let urlAction = $scope.phpaction;
+                if (window.location.href.includes('/ng/#!/')) {
+                    let oldUrlParams = window.location.href.split('/ng/#!/')[1].split('/');
+                    urlController = oldUrlParams[0];
+                    urlAction = oldUrlParams[1] ? oldUrlParams[1] : "index";
+                }
+                if(childNode.url_array.plugin == $scope.phpplugin){
+                    if(childNode.url_array.controller === urlController){
+                        if(childNode.url_array.action === urlAction){
                             return true;
                         }
                     }
@@ -35,10 +42,18 @@ angular.module('openITCOCKPIT').directive('menu', function($http, $timeout, $htt
                 return false;
             };
 
-            $scope.isActiveParent = function(parentNode){
-                if(parentNode.url_array.plugin === $scope.phpplugin){
-                    if(parentNode.url_array.controller === $scope.phpcontroller){
-                        if(parentNode.url_array.action === $scope.phpaction){
+            $scope.isActiveParent = function(parentNode) {
+                let urlController = $scope.phpcontroller;
+                let urlAction = $scope.phpaction;
+                if (window.location.href.includes('/ng/#!/')) {
+                    let oldUrlParams = window.location.href.split('/ng/#!/')[1].split('/');
+                    urlController = oldUrlParams[0];
+                    urlAction = oldUrlParams[1] ? oldUrlParams[1] : "index";
+                }
+
+                if(parentNode.url_array && parentNode.url_array.plugin == $scope.phpplugin){
+                    if(parentNode.url_array.controller === urlController){
+                        if(parentNode.url_array.action === urlAction){
                             return true;
                         }
                     }
@@ -76,12 +91,16 @@ angular.module('openITCOCKPIT').directive('menu', function($http, $timeout, $htt
                 var keyCode = $event.keyCode;
 
                 if(keyCode === RETURN_KEY && $scope.menuFilterPosition > -1){
+                    if($scope.menuMatches[$scope.menuFilterPosition].isAngular === "1"){
+                        window.location.href = "/ng/#!"+$scope.menuMatches[$scope.menuFilterPosition].url;
+                        return;
+                    }
                     window.location.href = $scope.menuMatches[$scope.menuFilterPosition].url;
                     return;
                 }
 
                 if(keyCode === RETURN_KEY && $scope.menuFilterPosition === -1){
-                    window.location.href = '/hosts/index?filter[Host.name]=' + rawurlencode($scope.menuFilter);
+                    window.location.href = '/ng/#!/hosts/index?filter[Host.name]=' + rawurlencode($scope.menuFilter);
                 }
 
                 if(keyCode !== ARROW_KEY_UP && keyCode !== ARROW_KEY_DOWN){
@@ -111,11 +130,11 @@ angular.module('openITCOCKPIT').directive('menu', function($http, $timeout, $htt
 
                 $scope.menuMatches = [];
                 $scope.menuFilterPosition = -1;
-                searchString = searchString.toLowerCase();
+                searchString = searchString.toLowerCase().replace(/ /g,'');
                 for(var parentKey in $scope.menu){
                     if($scope.menu[parentKey].children.length === 0){
                         //Search parent records, that have no child elements
-                        var parentTitle = $scope.menu[parentKey].title.toLowerCase();
+                        var parentTitle = $scope.menu[parentKey].title.toLowerCase().replace(/ /g,'');
                         if(parentTitle.match(searchString)){
                             $scope.menuMatches.push($scope.menu[parentKey]);
                         }
@@ -123,7 +142,7 @@ angular.module('openITCOCKPIT').directive('menu', function($http, $timeout, $htt
 
                     //Search in child items
                     for(var childKey in $scope.menu[parentKey].children){
-                        var title = $scope.menu[parentKey].children[childKey].title.toLowerCase();
+                        var title = $scope.menu[parentKey].children[childKey].title.toLowerCase().replace(/ /g,'');
                         if(title.match(searchString)){
                             $scope.menuMatches.push($scope.menu[parentKey].children[childKey]);
                         }

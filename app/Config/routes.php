@@ -1,5 +1,6 @@
 <?php
 Router::connect('/', ['controller' => 'dashboards', 'action' => 'index']);
+Router::connect('/ng', ['controller' => 'angular', 'action' => 'index']);
 Router::connect('/widget/:plugin/:controller/:action/*', ['widget' => true]);
 Router::connect('/widget/:controller/:action/*', ['widget' => true]);
 
@@ -49,4 +50,4 @@ Router::parseExtensions();
 //Router::setExtensions(['json', 'xml', 'pdf']);
 
 CakePlugin::routes();
-require CAKE . 'Config' . DS . 'routes.php';
+require OLD_CAKE . 'Config' . DS . 'routes.php';

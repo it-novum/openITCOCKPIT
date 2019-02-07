@@ -31,7 +31,7 @@ class MailConfiguratorTest extends \PHPUnit_Framework_TestCase {
     private $resourcePath;
 
     public function setUp() {
-        $this->resourcePath = TESTS . 'resources' . DS . 'Shell' . DS . 'Setup' . DS;
+        $this->resourcePath = OLD_TESTS . 'resources' . DS . 'Shell' . DS . 'Setup' . DS;
     }
 
     public function testGetConfigWithUsernameAndPassword() {

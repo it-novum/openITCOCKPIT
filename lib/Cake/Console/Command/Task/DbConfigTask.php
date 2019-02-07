@@ -64,7 +64,7 @@ class DbConfigTask extends AppShell {
  * @return void
  */
 	public function initialize() {
-		$this->path = CONFIG;
+		$this->path = OLD_CONFIG;
 	}
 
 /**

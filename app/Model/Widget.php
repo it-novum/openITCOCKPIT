@@ -260,7 +260,7 @@ class Widget extends AppModel {
         });
 
         foreach ($loadedModules as $loadedModule) {
-            $file = APP . 'Plugin' . DS . $loadedModule . DS . 'Lib' . DS . 'Widgets.php';
+            $file = OLD_APP . 'Plugin' . DS . $loadedModule . DS . 'Lib' . DS . 'Widgets.php';
             if (file_exists($file)) {
                 require_once $file;
                 $dynamicNamespaceWithClassName = sprintf('itnovum\openITCOCKPIT\%s\Widgets\Widgets', $loadedModule);

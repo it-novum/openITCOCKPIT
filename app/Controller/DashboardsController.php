@@ -22,6 +22,8 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+use App\Model\Table\ContainersTable;
+use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\Dashboards\DowntimeHostListJson;
 use itnovum\openITCOCKPIT\Core\Dashboards\DowntimeServiceListJson;
 use itnovum\openITCOCKPIT\Core\Dashboards\HostStatusListJson;
@@ -33,6 +35,7 @@ use itnovum\openITCOCKPIT\Core\Dashboards\TachoJson;
 use itnovum\openITCOCKPIT\Core\Dashboards\TrafficlightJson;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use Statusengine\PerfdataParser;
+use Cake\ORM\Locator\LocatorAwareTrait;
 
 /**
  * Class DashboardsController
@@ -45,6 +48,8 @@ use Statusengine\PerfdataParser;
  * @property Service $Service
  */
 class DashboardsController extends AppController {
+
+    use LocatorAwareTrait;
 
     //Most calls are API calls or modal html requests
     //Blank is the best default for Dashboards...
@@ -63,6 +68,11 @@ class DashboardsController extends AppController {
     ];
 
     public function index() {
+        //CakePHP 4 Model usage Example
+        //$TableLocator = $this->getTableLocator();
+        //$Proxy = $TableLocator->get('Proxies');
+        //debug($Proxy->find()->first());die();
+
         $this->layout = 'angularjs';
         if (!$this->isAngularJsRequest()) {
             $askForHelp = false;
@@ -749,10 +759,12 @@ class DashboardsController extends AppController {
             return;
         }
 
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
 
         $containerIds = [];
         if ($this->hasRootPrivileges === false) {
-            $containerIds = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_HOST, [], $this->hasRootPrivileges, [CT_HOSTGROUP]);
+            $containerIds = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_HOST, [], $this->hasRootPrivileges, [CT_HOSTGROUP]);
         }
 
         $query = [

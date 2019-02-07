@@ -315,28 +315,28 @@ class ObjectTest extends CakeTestCase {
  * @return void
  */
 	public function testLog() {
-		if (file_exists(LOGS . 'error.log')) {
-			unlink(LOGS . 'error.log');
+		if (file_exists(OLD_LOGS . 'error.log')) {
+			unlink(OLD_LOGS . 'error.log');
 		}
 		$this->assertTrue($this->object->log('Test warning 1'));
 		$this->assertTrue($this->object->log(array('Test' => 'warning 2')));
-		$result = file(LOGS . 'error.log');
+		$result = file(OLD_LOGS . 'error.log');
 		$this->assertRegExp('/^2[0-9]{3}-[0-9]+-[0-9]+ [0-9]+:[0-9]+:[0-9]+ Error: Test warning 1$/', $result[0]);
 		$this->assertRegExp('/^2[0-9]{3}-[0-9]+-[0-9]+ [0-9]+:[0-9]+:[0-9]+ Error: Array$/', $result[1]);
 		$this->assertRegExp('/^\($/', $result[2]);
 		$this->assertRegExp('/\[Test\] => warning 2$/', $result[3]);
 		$this->assertRegExp('/^\)$/', $result[4]);
-		unlink(LOGS . 'error.log');
+		unlink(OLD_LOGS . 'error.log');
 
 		$this->assertTrue($this->object->log('Test warning 1', LOG_WARNING));
 		$this->assertTrue($this->object->log(array('Test' => 'warning 2'), LOG_WARNING));
-		$result = file(LOGS . 'error.log');
+		$result = file(OLD_LOGS . 'error.log');
 		$this->assertRegExp('/^2[0-9]{3}-[0-9]+-[0-9]+ [0-9]+:[0-9]+:[0-9]+ Warning: Test warning 1$/', $result[0]);
 		$this->assertRegExp('/^2[0-9]{3}-[0-9]+-[0-9]+ [0-9]+:[0-9]+:[0-9]+ Warning: Array$/', $result[1]);
 		$this->assertRegExp('/^\($/', $result[2]);
 		$this->assertRegExp('/\[Test\] => warning 2$/', $result[3]);
 		$this->assertRegExp('/^\)$/', $result[4]);
-		unlink(LOGS . 'error.log');
+		unlink(OLD_LOGS . 'error.log');
 	}
 
 /**
@@ -442,9 +442,9 @@ class ObjectTest extends CakeTestCase {
  */
 	public function testRequestAction() {
 		App::build(array(
-			'Model' => array(CAKE . 'Test' . DS . 'test_app' . DS . 'Model' . DS),
-			'View' => array(CAKE . 'Test' . DS . 'test_app' . DS . 'View' . DS),
-			'Controller' => array(CAKE . 'Test' . DS . 'test_app' . DS . 'Controller' . DS)
+			'Model' => array(OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'Model' . DS),
+			'View' => array(OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'View' . DS),
+			'Controller' => array(OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'Controller' . DS)
 		), App::RESET);
 		$this->assertNull(Router::getRequest(), 'request stack should be empty.');
 
@@ -501,7 +501,7 @@ class ObjectTest extends CakeTestCase {
  */
 	public function testRequestActionPlugins() {
 		App::build(array(
-			'Plugin' => array(CAKE . 'Test' . DS . 'test_app' . DS . 'Plugin' . DS),
+			'Plugin' => array(OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'Plugin' . DS),
 		), App::RESET);
 		CakePlugin::load('TestPlugin');
 		Router::reload();
@@ -538,10 +538,10 @@ class ObjectTest extends CakeTestCase {
  */
 	public function testRequestActionArray() {
 		App::build(array(
-			'Model' => array(CAKE . 'Test' . DS . 'test_app' . DS . 'Model' . DS),
-			'View' => array(CAKE . 'Test' . DS . 'test_app' . DS . 'View' . DS),
-			'Controller' => array(CAKE . 'Test' . DS . 'test_app' . DS . 'Controller' . DS),
-			'Plugin' => array(CAKE . 'Test' . DS . 'test_app' . DS . 'Plugin' . DS)
+			'Model' => array(OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'Model' . DS),
+			'View' => array(OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'View' . DS),
+			'Controller' => array(OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'Controller' . DS),
+			'Plugin' => array(OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'Plugin' . DS)
 		), App::RESET);
 		CakePlugin::load(array('TestPlugin'));
 

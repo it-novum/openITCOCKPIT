@@ -511,7 +511,7 @@ class DebugKitToolbarComponentTestCase extends CakeTestCase
             'Controller' => $debugKitPath.'Test'.DS.'test_app'.DS.'Controller'.DS,
             'View'       => [
                 $debugKitPath.'Test'.DS.'test_app'.DS.'View'.DS,
-                CAKE_CORE_INCLUDE_PATH.DS.'Cake'.DS.'View'.DS,
+                OLD_CAKE_CORE_INCLUDE_PATH.DS.'Cake'.DS.'View'.DS,
             ],
             'plugins'    => $this->_paths['plugins'],
         ]);

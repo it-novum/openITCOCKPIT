@@ -23,6 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\RepositoryChecker;
 use itnovum\openITCOCKPIT\Core\System\Health\LsbRelease;
 
@@ -31,7 +32,6 @@ use itnovum\openITCOCKPIT\Core\System\Health\LsbRelease;
  */
 class AdministratorsController extends AppController {
     public $components = ['GearmanClient'];
-    public $uses = ['Proxy'];
     public $layout = 'Admin.default';
 
     function index() {
@@ -39,7 +39,7 @@ class AdministratorsController extends AppController {
 
     function debug() {
         $this->loadModel('Systemsetting');
-        $this->loadModel('Cronjob');
+        //$this->loadModel('Cronjob');
         $this->loadModel('Register');
 
 
@@ -62,24 +62,38 @@ class AdministratorsController extends AppController {
         }
         $this->set('isGearmanWorkerRunning', $isGearmanWorkerRunning);
 
+        /** @var CronjobsTable $Cronjobs */
+        $Cronjobs = TableRegistry::getTableLocator()->get('Cronjobs');
 
         //Check if load cronjob exists
-        if (!$this->Cronjob->checkForCronjob('CpuLoad', 'Core')) {
+        if (!$Cronjobs->checkForCronjob('CpuLoad', 'Core')) {
             //Cron does not exists, so we create it
-            $this->Cronjob->add('CpuLoad', 'Core', 15);
+            $newCron = $Cronjobs->newEntity([
+                'task'     => 'CpuLoad',
+                'plugin'   => 'Core',
+                'interval' => 15,
+                'enabled'  => 1
+            ]);
+
+            $Cronjobs->save($newCron);
+
+            if ($newCron->hasErrors()) {
+            }
+
         }
 
-        $license = $this->Register->find('first');
+        $Registers = TableRegistry::getTableLocator()->get('Registers');
+        $License = $Registers->getLicense();
         $isEnterprise = false;
-        if (!empty($license)) {
+        if (!empty($License)) {
             $isEnterprise = true;
         }
 
         $load = null;
 
-        if (file_exists(TMP . 'loadavg')) {
+        if (file_exists(OLD_TMP . 'loadavg')) {
             $this->Frontend->setJson('renderGraph', true);
-            $load = file(TMP . 'loadavg');
+            $load = file(OLD_TMP . 'loadavg');
             if (sizeof($load) >= 3) {
                 $graphData = [
                     1  => [],

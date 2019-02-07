@@ -2388,7 +2388,7 @@ class ValidationTest extends CakeTestCase {
  * @return void
  */
 	public function testMimeType() {
-		$image = CORE_PATH . 'Cake' . DS . 'Test' . DS . 'test_app' . DS . 'webroot' . DS . 'img' . DS . 'cake.power.gif';
+		$image = OLD_CORE_PATH . 'Cake' . DS . 'Test' . DS . 'test_app' . DS . 'webroot' . DS . 'img' . DS . 'cake.power.gif';
 		$File = new File($image, false);
 
 		$this->skipIf(!$File->mime(), 'Cannot determine mimeType');
@@ -2409,7 +2409,7 @@ class ValidationTest extends CakeTestCase {
  * @return void
  */
 	public function testMimeTypeFalse() {
-		$image = CORE_PATH . 'Cake' . DS . 'Test' . DS . 'test_app' . DS . 'webroot' . DS . 'img' . DS . 'cake.power.gif';
+		$image = OLD_CORE_PATH . 'Cake' . DS . 'Test' . DS . 'test_app' . DS . 'webroot' . DS . 'img' . DS . 'cake.power.gif';
 		$File = new File($image, false);
 		$this->skipIf($File->mime(), 'mimeType can be determined, no Exception will be thrown');
 		Validation::mimeType($image, array('image/gif'));
@@ -2442,7 +2442,7 @@ class ValidationTest extends CakeTestCase {
  * @return void
  */
 	public function testFileSize() {
-		$image = CORE_PATH . 'Cake' . DS . 'Test' . DS . 'test_app' . DS . 'webroot' . DS . 'img' . DS . 'cake.power.gif';
+		$image = OLD_CORE_PATH . 'Cake' . DS . 'Test' . DS . 'test_app' . DS . 'webroot' . DS . 'img' . DS . 'cake.power.gif';
 		$this->assertTrue(Validation::fileSize($image, '<', 1024));
 		$this->assertTrue(Validation::fileSize(array('tmp_name' => $image), 'isless', 1024));
 		$this->assertTrue(Validation::fileSize($image, '<', '1KB'));
@@ -2467,7 +2467,7 @@ class ValidationTest extends CakeTestCase {
 		$this->assertFalse(ValidationStub::uploadedFile($invalid));
 		$file = array(
 			'name' => 'cake.power.gif',
-			'tmp_name' => CORE_PATH . 'Cake' . DS . 'Test' . DS . 'test_app' . DS . 'webroot/img/cake.power.gif',
+			'tmp_name' => OLD_CORE_PATH . 'Cake' . DS . 'Test' . DS . 'test_app' . DS . 'webroot/img/cake.power.gif',
 			'error' => UPLOAD_ERR_OK,
 			'type' => 'image/gif',
 			'size' => 201
@@ -2485,7 +2485,7 @@ class ValidationTest extends CakeTestCase {
 	public function testUploadedFileMimeType() {
 		$file = array(
 			'name' => 'cake.power.gif',
-			'tmp_name' => CORE_PATH . 'Cake' . DS . 'Test' . DS . 'test_app' . DS . 'webroot/img/cake.power.gif',
+			'tmp_name' => OLD_CORE_PATH . 'Cake' . DS . 'Test' . DS . 'test_app' . DS . 'webroot/img/cake.power.gif',
 			'error' => UPLOAD_ERR_OK,
 			'type' => 'text/plain',
 			'size' => 201
@@ -2508,7 +2508,7 @@ class ValidationTest extends CakeTestCase {
 	public function testUploadedFileSize() {
 		$file = array(
 			'name' => 'cake.power.gif',
-			'tmp_name' => CORE_PATH . 'Cake' . DS . 'Test' . DS . 'test_app' . DS . 'webroot/img/cake.power.gif',
+			'tmp_name' => OLD_CORE_PATH . 'Cake' . DS . 'Test' . DS . 'test_app' . DS . 'webroot/img/cake.power.gif',
 			'error' => UPLOAD_ERR_OK,
 			'type' => 'text/plain',
 			'size' => 201
@@ -2544,7 +2544,7 @@ class ValidationTest extends CakeTestCase {
 	public function testUploadedFileNoFile() {
 		$file = array(
 			'name' => '',
-			'tmp_name' => CORE_PATH . 'Cake' . DS . 'Test' . DS . 'test_app' . DS . 'webroot/img/cake.power.gif',
+			'tmp_name' => OLD_CORE_PATH . 'Cake' . DS . 'Test' . DS . 'test_app' . DS . 'webroot/img/cake.power.gif',
 			'error' => UPLOAD_ERR_NO_FILE,
 			'type' => '',
 			'size' => 0
@@ -2569,7 +2569,7 @@ class ValidationTest extends CakeTestCase {
 		$file = array(
 			'name' => 'cake.power.gif',
 			'error' => UPLOAD_ERR_OK,
-			'tmp_name' => CORE_PATH . 'Cake' . DS . 'Test' . DS . 'test_app' . DS . 'webroot/img/cake.power.gif',
+			'tmp_name' => OLD_CORE_PATH . 'Cake' . DS . 'Test' . DS . 'test_app' . DS . 'webroot/img/cake.power.gif',
 			'type' => 'text/plain',
 			'size' => 201
 		);

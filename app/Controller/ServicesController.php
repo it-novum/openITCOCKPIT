@@ -23,7 +23,12 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use App\Model\Table\CommandargumentsTable;
+use App\Model\Table\CommandsTable;
+use App\Model\Table\ContainersTable;
+use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AcknowledgedServiceConditions;
+use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\CustomMacroReplacer;
 use itnovum\openITCOCKPIT\Core\CustomVariableDiffer;
 use itnovum\openITCOCKPIT\Core\DbBackend;
@@ -62,8 +67,6 @@ use Statusengine\PerfdataParser;
  * @property Host $Host
  * @property Servicetemplate $Servicetemplate
  * @property Servicegroup $Servicegroup
- * @property Command $Command
- * @property Commandargument $Commandargument
  * @property Timeperiod $Timeperiod
  * @property Contact $Contact
  * @property Contactgroup $Contactgroup
@@ -103,7 +106,6 @@ class ServicesController extends AppController {
         'Servicetemplate',
         'Servicegroup',
         'Command',
-        'Commandargument',
         'Timeperiod',
         'Contact',
         'Contactgroup',
@@ -131,8 +133,11 @@ class ServicesController extends AppController {
     ];
 
     public function index() {
-        $this->layout = 'angularjs';
+        $this->layout = 'blank';
         $User = new User($this->Auth);
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
 
         if (!$this->isApiRequest()) {
             $this->set('QueryHandler', new QueryHandler($this->Systemsetting->getQueryHandlerPath()));
@@ -163,7 +168,8 @@ class ServicesController extends AppController {
             if ($User->isRecursiveBrowserEnabled()) {
                 //get recursive container ids
                 $containerIdToResolve = $browserContainerIds;
-                $containerIds = Hash::extract($this->Container->children($containerIdToResolve[0], false, ['Container.id']), '{n}.Container.id');
+                $children = $ContainersTable->getChildren($containerIdToResolve[0]);
+                $containerIds = Hash::extract($children, '{n}.id');
                 $recursiveContainerIds = [];
                 foreach ($containerIds as $containerId) {
                     if (in_array($containerId, $this->MY_RIGHTS)) {
@@ -312,7 +318,7 @@ class ServicesController extends AppController {
     }
 
     public function notMonitored() {
-        $this->layout = 'angularjs';
+        $this->layout = 'blank';
         $User = new User($this->Auth);
 
         if (!$this->isApiRequest()) {
@@ -436,7 +442,7 @@ class ServicesController extends AppController {
     }
 
     public function disabled() {
-        $this->layout = 'angularjs';
+        $this->layout = 'blank';
 
         if (!$this->isApiRequest()) {
             //Only ship HTML template
@@ -638,8 +644,13 @@ class ServicesController extends AppController {
 
         $this->loadModel('Customvariable');
 
+        /** @var $CommandsTable CommandsTable */
+        $CommandsTable = TableRegistry::getTableLocator()->get('Commands');
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
         $userContainerId = $this->Auth->user('container_id');
-        $myContainerId = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+        $myContainerId = $ContainersTable->resolveChildrenOfContainerIds($this->MY_RIGHTS);
         $myRights = $myContainerId;
         if (!$this->hasRootPrivileges && ($rootKey = array_search(ROOT_CONTAINER, $myRights)) !== false) {
             unset($myRights[$rootKey]);
@@ -648,11 +659,11 @@ class ServicesController extends AppController {
 
         $servicetemplates = $this->Servicetemplate->servicetemplatesByContainerId($myContainerId, 'list');
         $timeperiods = $this->Timeperiod->find('list');
-        $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+        $containerIds = $ContainersTable->resolveChildrenOfContainerIds($this->MY_RIGHTS);
         $contacts = $this->Contact->contactsByContainerId($containerIds, 'list', 'id');
         $contactgroups = $this->Contactgroup->contactgroupsByContainerId($containerIds, 'list', 'id');
-        $commands = $this->Command->serviceCommands('list');
-        $eventhandlers = $this->Command->eventhandlerCommands('list');
+        $commands = $CommandsTable->getCommandByTypeAsList(CHECK_COMMAND);
+        $eventhandlers = $CommandsTable->getCommandByTypeAsList(EVENTHANDLER_COMMAND);
         $servicegroups = $this->Servicegroup->servicegroupsByContainerId($containerIds, 'list', 'id');
 
         $this->Frontend->set('data_placeholder', __('Please choose a contact'));
@@ -851,31 +862,28 @@ class ServicesController extends AppController {
             $Customvariable = $this->request->data['Customvariable'];
         }
 
+        /** @var $CommandsTable CommandsTable */
+        $CommandsTable = TableRegistry::getTableLocator()->get('Commands');
+        /** @var $CommandargumentsTable CommandargumentsTable */
+        $CommandargumentsTable = TableRegistry::getTableLocator()->get('Commandarguments');
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
         $userContainerId = $this->Auth->user('container_id');
         $hosts = $this->Host->find('list');
-        $myContainerId = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+        $myContainerId = $ContainersTable->resolveChildrenOfContainerIds($this->MY_RIGHTS);
         $servicetemplates = $this->Servicetemplate->servicetemplatesByContainerId($myContainerId, 'list', $service['Service']['service_type']);
         $timeperiods = $this->Timeperiod->find('list');
         //container_id = 1 => ROOT
-        $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+        $containerIds = $ContainersTable->resolveChildrenOfContainerIds($this->MY_RIGHTS);
         $contacts = $this->Contact->contactsByContainerId($containerIds, 'list', 'id');
         $contactgroups = $this->Contactgroup->contactgroupsByContainerId($containerIds, 'list', 'id');
-        $commands = $this->Command->serviceCommands('list');
-        $eventhandlers = $this->Command->eventhandlerCommands('list');
+        $commands = $CommandsTable->getCommandByTypeAsList(CHECK_COMMAND);
+        $eventhandlers = $CommandsTable->getCommandByTypeAsList(EVENTHANDLER_COMMAND);
         $servicegroups = $this->Servicegroup->servicegroupsByContainerId($containerIds, 'list', 'id');
         //Fehlende bzw. neu angelegte CommandArgummente ermitteln und anzeigen
-        $commandarguments = $this->Commandargument->find('all', [
-            'recursive'  => -1,
-            'conditions' => [
-                'Commandargument.command_id' => $service['Service']['command_id'],
-            ],
-        ]);
-        $eventhandler_commandarguments = $this->Commandargument->find('all', [
-            'recursive'  => -1,
-            'conditions' => [
-                'Commandargument.command_id' => $service['Service']['eventhandler_command_id'],
-            ],
-        ]);
+        $commandarguments = $CommandargumentsTable->getByCommandId($service['Service']['command_id']);
+        $eventhandler_commandarguments = $CommandargumentsTable->getByCommandId($service['Service']['command_id']);
         $contacts_for_changelog = [];
         foreach ($service['Contact'] as $contact_id) {
             if (isset($contacts[$contact_id])) {
@@ -1083,20 +1091,16 @@ class ServicesController extends AppController {
                 }
             }
             if ($this->request->data('Service.command_id')) {
-                if ($commandsForChangelog = $this->Command->find('list', [
-                    'conditions' => [
-                        'Command.id' => $this->request->data['Service']['command_id'],
-                    ],
-                ])
-                ) {
-                    foreach ($commandsForChangelog as $commandId => $commandName) {
-                        $ext_data_for_changelog['CheckCommand'] = [
-                            'id'   => $commandId,
-                            'name' => $commandName,
-                        ];
-                    }
-                    unset($commandsForChangelog);
+                /** @var $Commands CommandsTable */
+                $Commands = TableRegistry::getTableLocator()->get('Commands');
+                $commandsForChangelog = $Commands->getCommandByIdAsList($this->request->data['Service']['command_id']);
+                foreach ($commandsForChangelog as $commandId => $commandName) {
+                    $ext_data_for_changelog['CheckCommand'] = [
+                        'id'   => $commandId,
+                        'name' => $commandName,
+                    ];
                 }
+                unset($commandsForChangelog);
             }
             if ($this->request->data('Service.host_id')) {
                 if ($hostsForChangelog = $this->Host->find('first', [
@@ -1627,9 +1631,12 @@ class ServicesController extends AppController {
                 }
             }
 
+            /** @var $ContainersTable ContainersTable */
+            $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
             //Find hosts to copy on this host.
             if (!empty($servicesToCopy)) {
-                $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+                $containerIds = $ContainersTable->resolveChildrenOfContainerIds($this->MY_RIGHTS);
                 $hosts = $this->Host->hostsByContainerId($containerIds, 'list', ['Host.host_type' => GENERIC_HOST]);
             }
         }
@@ -1727,8 +1734,12 @@ class ServicesController extends AppController {
                 'sizeof'        => 0,
             ],
         ];
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
         //container_id = 1 => ROOT
-        $containerIds = $this->Tree->resolveChildrenOfContainerIds($container_id);
+        $containerIds = $ContainersTable->resolveChildrenOfContainerIds($container_id);
         $result['contacts']['contacts'] = $this->Contact->contactsByContainerId($containerIds, 'list');
         $result['contacts']['sizeof'] = sizeof($result['contacts']['contacts']);
         //container_id = 1 => ROOT
@@ -1745,12 +1756,9 @@ class ServicesController extends AppController {
 
         $commandarguments = [];
         if ($command_id) {
-            $commandarguments = $this->Commandargument->find('all', [
-                'recursive'  => -1,
-                'conditions' => [
-                    'Commandargument.command_id' => $command_id,
-                ],
-            ]);
+            /** @var $CommandargumentsTable CommandargumentsTable */
+            $CommandargumentsTable = TableRegistry::getTableLocator()->get('Commandarguments');
+            $commandarguments = $CommandargumentsTable->getByCommandId($command_id);
             foreach ($commandarguments as $key => $commandargument) {
                 if ($servicetemplate_id) {
                     $servicemteplate_command_argument_value = $this->Servicetemplatecommandargumentvalue->find('first', [
@@ -1784,12 +1792,9 @@ class ServicesController extends AppController {
         $test = [];
         $commandarguments = [];
         if ($command_id) {
-            $commandarguments = $this->Commandargument->find('all', [
-                'recursive'  => -1,
-                'conditions' => [
-                    'Commandargument.command_id' => $command_id,
-                ],
-            ]);
+            /** @var $CommandargumentsTable CommandargumentsTable */
+            $CommandargumentsTable = TableRegistry::getTableLocator()->get('Commandarguments');
+            $commandarguments = $CommandargumentsTable->getByCommandId($command_id);
             foreach ($commandarguments as $key => $commandargument) {
                 if ($servicetemplate_id) {
                     $servicemteplate_command_argument_value = $this->Servicetemplateeventcommandargumentvalue->find('first', [
@@ -1819,14 +1824,11 @@ class ServicesController extends AppController {
 
     public function loadArgumentsAdd($command_id = null) {
         $this->allowOnlyAjaxRequests();
-        $this->loadModel('Commandargument');
 
-        $commandarguments = $this->Commandargument->find('all', [
-            'recursive'  => -1,
-            'conditions' => [
-                'Commandargument.command_id' => $command_id,
-            ],
-        ]);
+        /** @var $CommandargumentsTable CommandargumentsTable */
+        $CommandargumentsTable = TableRegistry::getTableLocator()->get('Commandarguments');
+        $commandarguments = $CommandargumentsTable->getByCommandId($command_id);
+
 
         $this->set('commandarguments', $commandarguments);
         $this->render('load_arguments');
@@ -1842,7 +1844,6 @@ class ServicesController extends AppController {
             throw new NotFoundException(__('Invalid servicetemplate'));
         }
 
-        $this->loadModel('Commandargument');
         $this->loadModel('Servicetemplatecommandargumentvalue');
         $commandarguments = $this->Servicetemplatecommandargumentvalue->find('all', [
             'conditions' => [
@@ -1941,7 +1942,12 @@ class ServicesController extends AppController {
 
 
     public function browser($idOrUuid = null) {
-        $this->layout = 'angularjs';
+        $this->layout = 'blank';
+
+        if (!$this->isAngularJsRequest() && $idOrUuid === null) {
+            //Only ship template
+            return;
+        }
 
         $id = $idOrUuid;
         if (!is_numeric($idOrUuid)) {
@@ -2005,6 +2011,12 @@ class ServicesController extends AppController {
 
         if ($rawService['Service']['service_url'] === '' || $rawService['Service']['service_url'] === null) {
             $rawService['Service']['service_url'] = $rawService['Servicetemplate']['service_url'];
+        }
+
+        $ServiceMacroReplacer = new \itnovum\openITCOCKPIT\Core\ServiceMacroReplacer($rawService);
+        $rawService['Service']['service_url_replaced'] = $rawService['Service']['service_url'];
+        if ($rawService['Service']['service_url'] !== '' && $rawService['Service']['service_url'] !== null) {
+            $rawService['Service']['service_url_replaced'] = $ServiceMacroReplacer->replaceBasicMacros($rawService['Service']['service_url']);
         }
 
         $rawHost = $this->Host->find('first', $this->Host->getQueryForServiceBrowser($rawService['Service']['host_id']));
@@ -2099,6 +2111,11 @@ class ServicesController extends AppController {
         $mergedService['retryIntervalHuman'] = $UserTime->secondsInHumanShort($mergedService['Service']['retry_interval']);
         $mergedService['notificationIntervalHuman'] = $UserTime->secondsInHumanShort($mergedService['Service']['notification_interval']);
 
+        $ServiceMacroReplacer = new \itnovum\openITCOCKPIT\Core\ServiceMacroReplacer($mergedService);
+        $mergedService['Service']['service_url_replaced'] = $mergedService['Service']['service_url'];
+        if ($mergedService['Service']['service_url'] !== '' && $mergedService['Service']['service_url'] !== null) {
+            $mergedService['Service']['service_url_replaced'] = $ServiceMacroReplacer->replaceBasicMacros($mergedService['Service']['service_url']);
+        }
 
         // Replace $HOSTNAME$
         $ServiceMacroReplacerCommandLine = new HostMacroReplacer($rawHost);
@@ -2271,11 +2288,13 @@ class ServicesController extends AppController {
             }
         }
 
+        $docuExists = $this->Documentation->existsForUuid($mergedService['Service']['uuid']);
 
         $canSubmitExternalCommands = $this->hasPermission('externalcommands', 'hosts');
 
         $this->set('mergedService', $mergedService);
         $this->set('host', $rawHost);
+        $this->set('docuExists', $docuExists);
         $this->set('contacts', $contacts);
         $this->set('contactgroups', $contactgroups);
         $this->set('hoststatus', $hoststatus);
@@ -2290,6 +2309,7 @@ class ServicesController extends AppController {
             'host',
             'hoststatus',
             'servicestatus',
+            'docuExists',
             'contacts',
             'contactgroups',
             'acknowledgement',
@@ -2783,20 +2803,16 @@ class ServicesController extends AppController {
             }
         }
         if ($this->request->data('Service.command_id')) {
-            if ($commandsForChangelog = $this->Command->find('list', [
-                'conditions' => [
-                    'Command.id' => $this->request->data['Service']['command_id'],
-                ],
-            ])
-            ) {
-                foreach ($commandsForChangelog as $commandId => $commandName) {
-                    $changelogData['CheckCommand'] = [
-                        'id'   => $commandId,
-                        'name' => $commandName,
-                    ];
-                }
-                unset($commandsForChangelog);
+            /** @var $Commands CommandsTable */
+            $Commands = TableRegistry::getTableLocator()->get('Commands');
+            $commandsForChangelog = $Commands->getCommandByIdAsList($this->request->data['Service']['command_id']);
+            foreach ($commandsForChangelog as $commandId => $commandName) {
+                $changelogData['CheckCommand'] = [
+                    'id'   => $commandId,
+                    'name' => $commandName,
+                ];
             }
+            unset($commandsForChangelog);
         }
         if ($this->request->data('Service.host_id')) {
             $hostsForChangelog = $this->Host->find('first', [
@@ -2865,17 +2881,20 @@ class ServicesController extends AppController {
         $selected = $this->request->query('selected');
         $ServiceFilter = new ServiceFilter($this->request);
         $containerIds = [ROOT_CONTAINER, $containerId];
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
         if ($containerId == ROOT_CONTAINER) {
             //Don't panic! Only root users can edit /root objects ;)
             //So no loss of selected hosts/host templates
-            $containerIds = $this->Tree->resolveChildrenOfContainerIds(ROOT_CONTAINER, true);
+            $containerIds = $ContainersTable->resolveChildrenOfContainerIds(ROOT_CONTAINER, true);
         }
 
         $ServiceCondition = new ServiceConditions($ServiceFilter->indexFilter());
         $ServiceCondition->setContainerIds($containerIds);
         $ServiceCondition->setIncludeDisabled(false);
 
-        $services = $this->Service->makeItJavaScriptAble(
+        $services = Api::makeItJavaScriptAble(
             $this->Service->getServicesForAngular($ServiceCondition, $selected)
         );
 
@@ -2898,7 +2917,7 @@ class ServicesController extends AppController {
         $ServiceCondition->setContainerIds($this->MY_RIGHTS);
         $ServiceCondition->includeDisabled();
 
-        $services = $this->Service->makeItJavaScriptAble(
+        $services = Api::makeItJavaScriptAble(
             $this->Service->getServicesForAngular($ServiceCondition, $selected)
         );
 
@@ -3027,7 +3046,7 @@ class ServicesController extends AppController {
             if (!empty($hoststatus)) {
                 $record['StatehistoryHost']['state_time'] = $hoststatus['Hoststatus']['last_state_change'];
                 $record['StatehistoryHost']['state'] = $hoststatus['Hoststatus']['current_state'];
-                $record['StatehistoryHost']['state_type'] = ($hoststatus['Hoststatus']['state_type'])?true:false;
+                $record['StatehistoryHost']['state_type'] = ($hoststatus['Hoststatus']['state_type']) ? true : false;
                 $StatehistoryHost = new \itnovum\openITCOCKPIT\Core\Views\StatehistoryHost($record['StatehistoryHost']);
                 $statehistoryRecords[] = $StatehistoryHost;
             }
@@ -3166,5 +3185,94 @@ class ServicesController extends AppController {
             'acknowledgements',
             'timeranges'
         ]);
+    }
+
+    public function serviceBrowserMenu($id) {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+        if(!$this->Service->exists($id)){
+            throw new NotFoundException();
+        }
+
+        $service = $this->Service->find('first', [
+            'recursive'  => -1,
+            'fields'     => [
+                'Service.id',
+                'Service.uuid',
+                'Service.name',
+                'Service.host_id',
+                'Service.service_type',
+                'Service.service_url'
+            ],
+            'contain'    => [
+                'Servicetemplate' => [
+                    'fields' => [
+                        'Servicetemplate.name',
+                        'Servicetemplate.service_url'
+                    ]
+                ],
+                'Host'            => [
+                    'fields' => [
+                        'Host.id',
+                        'Host.uuid',
+                        'Host.name',
+                        'Host.address'
+                    ]
+                ]
+            ],
+            'conditions' => [
+                'Service.id' => $id
+            ]
+        ]);
+
+        if ($service['Service']['service_url'] === '' || $service['Service']['service_url'] === null) {
+            $service['Service']['service_url'] = $service['Servicetemplate']['service_url'];
+        }
+
+        if ($service['Service']['name'] === '' || $service['Service']['name'] === null) {
+            $service['Service']['name'] = $service['Servicetemplate']['name'];
+        }
+
+        $rawHost = $this->Host->find('first', $this->Host->getQueryForServiceBrowser($service['Service']['host_id']));
+        $host = new \itnovum\openITCOCKPIT\Core\Views\Host($rawHost);
+        $rawHost['Host']['is_satellite_host'] = $host->isSatelliteHost();
+
+        $containerIdsToCheck = Hash::extract($rawHost, 'Container.{n}.HostsToContainer.container_id');
+        $containerIdsToCheck[] = $rawHost['Host']['container_id'];
+        if (!$this->allowedByContainerId($containerIdsToCheck, false)) {
+            $this->render403();
+            return;
+        }
+
+        $docuExists = $this->Documentation->existsForUuid($service['Service']['uuid']);
+
+        //Get meta data and push to front end
+        $ServicestatusFields = new ServicestatusFields($this->DbBackend);
+        $ServicestatusFields->currentState()->isFlapping();
+        $servicestatus = $this->Servicestatus->byUuid($service['Service']['uuid'], $ServicestatusFields);
+        if (!isset($servicestatus['Servicestatus'])) {
+            $servicestatus['Servicestatus'] = [];
+        }
+        $Servicestatus = new \itnovum\openITCOCKPIT\Core\Servicestatus($servicestatus['Servicestatus']);
+
+        $ServiceMacroReplacer = new \itnovum\openITCOCKPIT\Core\ServiceMacroReplacer($service);
+        $service['Service']['service_url_replaced'] = $service['Service']['service_url'];
+        if ($service['Service']['service_url'] !== '' && $service['Service']['service_url'] !== null) {
+            $service['Service']['service_url_replaced'] = $ServiceMacroReplacer->replaceBasicMacros($service['Service']['service_url']);
+        }
+
+        if ($this->hasRootPrivileges) {
+            $allowEdit = true;
+        } else {
+            $ContainerPermissions = new \itnovum\openITCOCKPIT\Core\Views\ContainerPermissions($this->MY_RIGHTS_LEVEL, $containerIdsToCheck);
+            $allowEdit = $ContainerPermissions->hasPermission();
+        }
+        $service['Service']['allowEdit'] = $allowEdit;
+
+        $this->set('service', $service);
+        $this->set('servicestatus', $Servicestatus->toArray());
+        $this->set('docuExists', $docuExists);
+        $this->set('_serialize', ['service', 'servicestatus', 'docuExists']);
     }
 }

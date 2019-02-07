@@ -22,6 +22,8 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+use App\Model\Table\ContainersTable;
+use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Request\AngularRequest;
 use itnovum\openITCOCKPIT\Core\SystemdowntimesConditions;
 use itnovum\openITCOCKPIT\Core\Views\ContainerPermissions;
@@ -558,6 +560,9 @@ class SystemdowntimesController extends AppController {
         }
 
 
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
         $childrenContainers = [];
 
         if ($this->request->is('post') || $this->request->is('put')) {
@@ -572,10 +577,10 @@ class SystemdowntimesController extends AppController {
 
                 foreach ($this->request->data('Systemdowntime.object_id') as $containerId) {
                     if ($containerId == ROOT_CONTAINER) {
-                        $childrenContainers = $this->Tree->resolveChildrenOfContainerIds(ROOT_CONTAINER, true);
+                        $childrenContainers = $ContainersTable->resolveChildrenOfContainerIds(ROOT_CONTAINER, true);
                     } else {
-                        $childrenContainers = $this->Tree->resolveChildrenOfContainerIds($this->request->data('Systemdowntime.object_id'));
-                        $childrenContainers = $this->Tree->removeRootContainer($childrenContainers);
+                        $childrenContainers = $ContainersTable->resolveChildrenOfContainerIds($this->request->data('Systemdowntime.object_id'));
+                        $childrenContainers = $ContainersTable->removeRootContainer($childrenContainers);
                     }
                 }
 

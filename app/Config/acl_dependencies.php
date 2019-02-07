@@ -25,9 +25,10 @@
 
 $config = [
     'acl_dependencies' => [
-        'AppController'  => ['getNamedParameter', 'isAuthorized', 'flashBack', 'setFlash', 'serviceResponse', 'allowedByContainerId', 'render403', 'checkForUpdates'],
+        'AppController'  => ['getNamedParameter', 'isAuthorized', 'flashBack', 'setFlash', 'serviceResponse', 'allowedByContainerId', 'render403', 'checkForUpdates', 'tableLocator', 'setTableLocator', 'getTableLocator'],
         'always_allowed' => [
             'Angular'          => [
+                'index',
                 'paginator',
                 'scroll',
                 'mass_delete',
@@ -76,9 +77,6 @@ $config = [
             'Automaps'         => [
                 'icon'
             ],
-            'Commands'         => [
-                'sortByCommandType',
-            ],
             'Containers'       => [
                 'byTenantForSelect', 'byTenant', 'loadContainersForAngular'
             ],
@@ -119,7 +117,8 @@ $config = [
             'Services'         => [
                 'icon',
                 'servicecumulatedstatusicon',
-                'details'
+                'details',
+                'serviceBrowserMenu'
             ],
             'Graphgenerators'  => [
                 'fetchGraphData',
@@ -173,7 +172,8 @@ $config = [
                 'hostservicelist',
                 'loadParentHostsByString',
                 'loadParentHostsById',
-                'hoststatus'
+                'hoststatus',
+                'hostBrowserMenu'
             ],
             'Statistics'       => [
                 'ask_anonymous_statistics'
@@ -201,9 +201,8 @@ $config = [
             ],
             'Commands'              => [
                 'index'  => ['view'],
-                'add'    => ['addCommandArg', 'loadMacros'],
-                'edit'   => ['addCommandArg', 'loadMacros'],
-                'delete' => ['mass_delete'],
+                'add'    => ['getConsoleWelcome'],
+                'edit'   => ['getConsoleWelcome']
             ],
             'Timeperiods'           => [
                 'index'  => [
@@ -224,8 +223,8 @@ $config = [
                 'edit'  => ['loadTimeperiods', 'addCustomMacro', 'loadLdapUserByString', 'loadUsersByContainerId'],
             ],
             'Cronjobs'              => [
-                'add'  => ['loadTasksByPlugin'],
-                'edit' => ['loadTasksByPlugin'],
+                'add'  => ['getTasks'],
+                'edit' => ['getTasks'],
             ],
             'Currentstatereports'   => [
                 'index' => ['createPdfReport', 'createHtmlReport'],
@@ -271,10 +270,10 @@ $config = [
                 'add'   => ['loadContainers']
             ],
             'Macros'                => [
-                'index' => ['addMacro'],
+                'index' => ['add', 'edit', 'delete', 'getAvailableMacroNames'],
             ],
             'Registers'             => [
-                'index' => ['check'],
+                'index' => ['checkLicense'],
             ],
             'Servicedependencies'   => [
                 'index' => ['view'],

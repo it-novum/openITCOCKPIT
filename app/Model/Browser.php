@@ -162,8 +162,8 @@ class Browser extends AppModel {
     public function getFirstContainers($browserAsNest, $MY_RIGHTS, $containerTypes) {
         $containers = [];
         foreach ($browserAsNest as $container) {
-            if (in_array($container['Container']['id'], $MY_RIGHTS) && in_array($container['Container']['containertype_id'], $containerTypes)) {
-                $containers[] = $container['Container'];
+            if (in_array($container['id'], $MY_RIGHTS) && in_array($container['containertype_id'], $containerTypes)) {
+                $containers[] = $container;
                 continue;
             }
 

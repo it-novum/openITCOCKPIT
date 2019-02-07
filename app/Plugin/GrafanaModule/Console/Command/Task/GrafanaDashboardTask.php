@@ -1,5 +1,6 @@
 <?php
 
+use Cake\ORM\TableRegistry;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\BadResponseException;
 use GuzzleHttp\Psr7\Request;
@@ -32,7 +33,6 @@ use itnovum\openITCOCKPIT\Grafana\GrafanaYAxes;
  * @property GrafanaConfiguration $GrafanaConfiguration
  * @property GrafanaConfigurationHostgroupMembership $GrafanaConfigurationHostgroupMembership
  * @property GrafanaDashboard $GrafanaDashboard
- * @property Proxy $Proxy
  */
 class GrafanaDashboardTask extends AppShell implements CronjobInterface {
 
@@ -46,7 +46,6 @@ class GrafanaDashboardTask extends AppShell implements CronjobInterface {
         'GrafanaModule.GrafanaConfiguration',
         'GrafanaModule.GrafanaConfigurationHostgroupMembership',
         'GrafanaModule.GrafanaDashboard',
-        'Proxy'
     ];
 
     public $client = [];
@@ -70,9 +69,13 @@ class GrafanaDashboardTask extends AppShell implements CronjobInterface {
             throw new RuntimeException('No Grafana configuration found');
         }
 
+        /** @var $Proxy App\Model\Table\ProxiesTable */
+        $Proxy = TableRegistry::getTableLocator()->get('Proxies');
+
+
         $this->GrafanaApiConfiguration = GrafanaApiConfiguration::fromArray($grafanaConfiguration);
         $this->out('Check Connection to Grafana');
-        $this->client = $this->GrafanaConfiguration->testConnection($this->GrafanaApiConfiguration, $this->Proxy->getSettings());
+        $this->client = $this->GrafanaConfiguration->testConnection($this->GrafanaApiConfiguration, $Proxy->getSettings());
 
         if ($this->client instanceof Client) {
             $this->out('<success>Connection check successful</success>');

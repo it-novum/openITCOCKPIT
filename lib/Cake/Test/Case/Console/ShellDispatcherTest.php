@@ -113,10 +113,10 @@ class ShellDispatcherTest extends CakeTestCase {
 		parent::setUp();
 		App::build(array(
 			'Plugin' => array(
-				CAKE . 'Test' . DS . 'test_app' . DS . 'Plugin' . DS
+				OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'Plugin' . DS
 			),
 			'Console/Command' => array(
-				CAKE . 'Test' . DS . 'test_app' . DS . 'Console' . DS . 'Command' . DS
+				OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'Console' . DS . 'Command' . DS
 			)
 		), App::RESET);
 		CakePlugin::load('TestPlugin');
@@ -168,8 +168,8 @@ class ShellDispatcherTest extends CakeTestCase {
 		$expected = array(
 			'app' => 'app',
 			'webroot' => 'webroot',
-			'working' => str_replace('\\', DS, dirname(CAKE_CORE_INCLUDE_PATH) . DS . 'app'),
-			'root' => str_replace('\\', DS, dirname(CAKE_CORE_INCLUDE_PATH)),
+			'working' => str_replace('\\', DS, dirname(OLD_CAKE_CORE_INCLUDE_PATH) . DS . 'app'),
+			'root' => str_replace('\\', DS, dirname(OLD_CAKE_CORE_INCLUDE_PATH)),
 		);
 		$Dispatcher->params = $Dispatcher->args = array();
 		$Dispatcher->parseParams($params);
@@ -191,8 +191,8 @@ class ShellDispatcherTest extends CakeTestCase {
 		$expected = array(
 			'app' => 'new',
 			'webroot' => 'webroot',
-			'working' => str_replace('\\', DS, dirname(CAKE_CORE_INCLUDE_PATH) . DS . 'new'),
-			'root' => str_replace('\\', DS, dirname(CAKE_CORE_INCLUDE_PATH))
+			'working' => str_replace('\\', DS, dirname(OLD_CAKE_CORE_INCLUDE_PATH) . DS . 'new'),
+			'root' => str_replace('\\', DS, dirname(OLD_CAKE_CORE_INCLUDE_PATH))
 		);
 		$Dispatcher->params = $Dispatcher->args = array();
 		$Dispatcher->parseParams($params);
@@ -217,8 +217,8 @@ class ShellDispatcherTest extends CakeTestCase {
 		$expected = array(
 			'app' => 'new',
 			'webroot' => 'webroot',
-			'working' => str_replace('\\', DS, dirname(CAKE_CORE_INCLUDE_PATH) . DS . 'new'),
-			'root' => str_replace('\\', DS, dirname(CAKE_CORE_INCLUDE_PATH))
+			'working' => str_replace('\\', DS, dirname(OLD_CAKE_CORE_INCLUDE_PATH) . DS . 'new'),
+			'root' => str_replace('\\', DS, dirname(OLD_CAKE_CORE_INCLUDE_PATH))
 		);
 		$Dispatcher->params = $Dispatcher->args = array();
 		$Dispatcher->parseParams($params);
@@ -244,8 +244,8 @@ class ShellDispatcherTest extends CakeTestCase {
 		$expected = array(
 			'app' => 'new',
 			'webroot' => 'webroot',
-			'working' => str_replace('\\', DS, dirname(CAKE_CORE_INCLUDE_PATH) . DS . 'new'),
-			'root' => str_replace('\\', DS, dirname(CAKE_CORE_INCLUDE_PATH))
+			'working' => str_replace('\\', DS, dirname(OLD_CAKE_CORE_INCLUDE_PATH) . DS . 'new'),
+			'root' => str_replace('\\', DS, dirname(OLD_CAKE_CORE_INCLUDE_PATH))
 		);
 		$Dispatcher->params = $Dispatcher->args = array();
 		$Dispatcher->parseParams($params);
@@ -262,8 +262,8 @@ class ShellDispatcherTest extends CakeTestCase {
 		);
 		$expected = array(
 			'app' => 'new',
-			'working' => str_replace('\\', DS, dirname(CAKE_CORE_INCLUDE_PATH) . DS . 'new'),
-			'root' => str_replace('\\', DS, dirname(CAKE_CORE_INCLUDE_PATH)),
+			'working' => str_replace('\\', DS, dirname(OLD_CAKE_CORE_INCLUDE_PATH) . DS . 'new'),
+			'root' => str_replace('\\', DS, dirname(OLD_CAKE_CORE_INCLUDE_PATH)),
 			'webroot' => 'webroot'
 		);
 		$Dispatcher->params = $Dispatcher->args = array();
@@ -285,8 +285,8 @@ class ShellDispatcherTest extends CakeTestCase {
 		$expected = array(
 			'app' => 'app',
 			'webroot' => 'webroot',
-			'working' => str_replace('\\', DS, dirname(CAKE_CORE_INCLUDE_PATH) . DS . 'app'),
-			'root' => str_replace('\\', DS, dirname(CAKE_CORE_INCLUDE_PATH)),
+			'working' => str_replace('\\', DS, dirname(OLD_CAKE_CORE_INCLUDE_PATH) . DS . 'app'),
+			'root' => str_replace('\\', DS, dirname(OLD_CAKE_CORE_INCLUDE_PATH)),
 		);
 		$Dispatcher->params = $Dispatcher->args = array();
 		$Dispatcher->parseParams($params);

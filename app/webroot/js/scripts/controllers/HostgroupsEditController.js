@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('HostgroupsEditController', function($scope, $http, QueryStringService){
+    .controller('HostgroupsEditController', function($scope, $http, QueryStringService, $stateParams, $state, NotyService){
 
 
         $scope.post = {
@@ -15,7 +15,8 @@ angular.module('openITCOCKPIT')
             }
         };
 
-        $scope.id = QueryStringService.getCakeId();
+        //$scope.id = QueryStringService.getCakeId();
+        $scope.id = $stateParams.id;
 
         $scope.deleteUrl = "/hostgroups/delete/" + $scope.id + ".json?angular=true";
         $scope.sucessUrl = '/hostgroups/index';
@@ -95,8 +96,12 @@ angular.module('openITCOCKPIT')
                 $scope.post
             ).then(function(result){
                 console.log('Data saved successfully');
-                window.location.href = '/hostgroups/index';
+                //window.location.href = '/hostgroups/index';
+                NotyService.genericSuccess();
+                $state.go('HostgroupsIndex');
+
             }, function errorCallback(result){
+                NotyService.genericError();
                 if(result.data.hasOwnProperty('error')){
                     $scope.errors = result.data.error;
                 }

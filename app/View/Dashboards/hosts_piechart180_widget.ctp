@@ -34,7 +34,7 @@ use itnovum\openITCOCKPIT\Core\RFCRouter;
 
             <?php if ($this->Acl->hasPermission('index', 'Hosts', '')): ?>
                 <div class="col-xs-12 col-md-4 no-padding">
-                    <a ng-href="/hosts/index<?php echo RFCRouter::queryString([
+                    <a ng-href="/ng/#!/hosts/index<?php echo RFCRouter::queryString([
                         'filter'    => [
                             'Hoststatus.current_state' => ['0' => 1]
                         ],
@@ -54,7 +54,7 @@ use itnovum\openITCOCKPIT\Core\RFCRouter;
 
             <?php if ($this->Acl->hasPermission('index', 'Hosts', '')): ?>
                 <div class="col-xs-12 col-md-4 no-padding">
-                    <a ng-href="/hosts/index<?php echo RFCRouter::queryString([
+                    <a ng-href="/ng/#!/hosts/index<?php echo RFCRouter::queryString([
                         'filter'    => [
                             'Hoststatus.current_state' => ['1' => 1]
                         ],
@@ -74,7 +74,7 @@ use itnovum\openITCOCKPIT\Core\RFCRouter;
 
             <?php if ($this->Acl->hasPermission('index', 'Hosts', '')): ?>
                 <div class="col-xs-12 col-md-4 no-padding">
-                    <a ng-href="/hosts/index<?php echo RFCRouter::queryString([
+                    <a ng-href="/ng/#!/hosts/index<?php echo RFCRouter::queryString([
                         'filter'    => [
                             'Hoststatus.current_state' => ['2' => 1]
                         ],

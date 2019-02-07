@@ -5,7 +5,9 @@ angular.module('openITCOCKPIT')
         SortService.setDirection('desc');
         $scope.currentPage = 1;
 
-        $scope.hostId = QueryStringService.getCakeId();
+        $scope.data = {
+            hostId: QueryStringService.getCakeId()
+        };
 
         $scope.massChange = {};
         $scope.selectedElements = 0;
@@ -75,7 +77,7 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.loadHost = function(){
-            $http.get("/hosts/loadHostById/" + $scope.hostId + ".json", {
+            $http.get("/hosts/loadHostById/" + $scope.data.hostId + ".json", {
                 params: {
                     'angular': true
                 }
@@ -90,7 +92,7 @@ angular.module('openITCOCKPIT')
                 'sort': SortService.getSort(),
                 'page': $scope.currentPage,
                 'direction': SortService.getDirection(),
-                'filter[Host.id]': $scope.hostId
+                'filter[Host.id]': $scope.data.hostId
             };
 
             $http.get("/services/index.json", {
@@ -130,7 +132,7 @@ angular.module('openITCOCKPIT')
                 'sort': SortService.getSort(),
                 'page': $scope.currentPage,
                 'direction': SortService.getDirection(),
-                'filter[Host.id]': $scope.hostId
+                'filter[Host.id]': $scope.data.hostId
             };
 
             $http.get("/services/disabled.json", {
@@ -150,7 +152,7 @@ angular.module('openITCOCKPIT')
                 'sort': SortService.getSort(),
                 'page': $scope.currentPage,
                 'direction': SortService.getDirection(),
-                'filter[DeletedService.host_id]': $scope.hostId
+                'filter[DeletedService.host_id]': $scope.data.hostId
             };
 
             $http.get("/services/deleted.json", {
@@ -169,7 +171,7 @@ angular.module('openITCOCKPIT')
                 params: {
                     'angular': true,
                     'filter[Host.name]': searchString,
-                    'selected[]': $scope.hostId
+                    'selected[]': $scope.data.hostId
                 }
             }).then(function(result){
                 $scope.hosts = result.data.hosts;
@@ -338,7 +340,7 @@ angular.module('openITCOCKPIT')
             self.plot = $.plot('#serviceGraphFlot', graph_data, options);
         };
 
-        $scope.$watch('hostId', function(){
+        $scope.$watch('data.hostId', function(){
             $scope.loadHost();
             $scope.load();
         });

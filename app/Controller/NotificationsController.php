@@ -182,47 +182,15 @@ class NotificationsController extends AppController {
         $this->set('_serialize', $toJson);
     }
 
-    public function hostNotification($host_id) {
-        $this->layout = "angularjs";
+    public function hostNotification($host_id = null) {
+        $this->layout = "blank";
 
-        if (!$this->Host->exists($host_id)) {
+        if (!$this->Host->exists($host_id) && $host_id !== null) {
             throw new NotFoundException(__('invalid host'));
         }
 
-        if (!$this->isAngularJsRequest()) {
+        if (!$this->isAngularJsRequest() && $host_id === null) {
             //Host for .html requests
-            $host = $this->Host->find('first', [
-                'fields'     => [
-                    'Host.id',
-                    'Host.uuid',
-                    'Host.name',
-                    'Host.address',
-                    'Host.host_url',
-                    'Host.host_type',
-                    'Host.container_id'
-                ],
-                'conditions' => [
-                    'Host.id' => $host_id,
-                ],
-                'contain'    => [
-                    'Container',
-                ],
-            ]);
-
-            //Check if user is permitted to see this object
-            $containerIdsToCheck = Hash::extract($host, 'Container.{n}.HostsToContainer.container_id');
-            $containerIdsToCheck[] = $host['Host']['container_id'];
-            if (!$this->allowedByContainerId($containerIdsToCheck, false)) {
-                $this->render403();
-                return;
-            }
-            $docuExists = $this->Documentation->existsForUuid($host['Host']['uuid']);
-
-            //Get meta data and push to front end
-            $HoststatusFields = new HoststatusFields($this->DbBackend);
-            $HoststatusFields->currentState()->isFlapping();
-            $hoststatus = $this->Hoststatus->byUuid($host['Host']['uuid'], $HoststatusFields);
-            $this->set(compact(['host', 'hoststatus', 'docuExists']));
             return;
         }
 
@@ -240,7 +208,18 @@ class NotificationsController extends AppController {
             'conditions' => [
                 'Host.id' => $host_id,
             ],
+            'contain'    => [
+                'Container',
+            ],
         ]);
+
+        //Check if user is permitted to see this object
+        $containerIdsToCheck = Hash::extract($host, 'Container.{n}.HostsToContainer.container_id');
+        $containerIdsToCheck[] = $host['Host']['container_id'];
+        if (!$this->allowedByContainerId($containerIdsToCheck, false)) {
+            $this->render403();
+            return;
+        }
 
         $AngularNotificationsControllerRequest = new \itnovum\openITCOCKPIT\Core\AngularJS\Request\NotificationsControllerRequest($this->request);
 
@@ -297,61 +276,15 @@ class NotificationsController extends AppController {
         $this->set('_serialize', $toJson);
     }
 
-    public function serviceNotification($service_id) {
-        $this->layout = "angularjs";
+    public function serviceNotification($service_id = null) {
+        $this->layout = "blank";
 
-        if (!$this->Service->exists($service_id)) {
+        if (!$this->Service->exists($service_id) && $service_id !== null) {
             throw new NotFoundException(__('Invalid service'));
         }
 
-        if (!$this->isAngularJsRequest()) {
+        if (!$this->isAngularJsRequest() && $service_id === null) {
             //Service for .html requests
-            $service = $this->Service->find('first', [
-                'recursive'  => -1,
-                'fields'     => [
-                    'Service.id',
-                    'Service.uuid',
-                    'Service.name',
-                    'Service.service_type',
-                    'Service.service_url'
-                ],
-                'contain'    => [
-                    'Host'            => [
-                        'fields' => [
-                            'Host.id',
-                            'Host.name',
-                            'Host.uuid',
-                            'Host.address'
-                        ],
-                        'Container',
-                    ],
-                    'Servicetemplate' => [
-                        'fields' => [
-                            'Servicetemplate.id',
-                            'Servicetemplate.name',
-                        ],
-                    ],
-                ],
-                'conditions' => [
-                    'Service.id' => $service_id,
-                ],
-            ]);
-
-            if (!$this->allowedByContainerId(Hash::extract($service, 'Host.Container.{n}.HostsToContainer.container_id'))) {
-                $this->render403();
-                return;
-            }
-            $allowEdit = false;
-            if ($this->allowedByContainerId(Hash::extract($service, 'Host.Container.{n}.HostsToContainer.container_id'))) {
-                $allowEdit = true;
-            }
-
-            //Get meta data and push to front end
-            $ServicestatusFields = new ServicestatusFields($this->DbBackend);
-            $ServicestatusFields->currentState()->isFlapping();
-            $servicestatus = $this->Servicestatus->byUuid($service['Service']['uuid'], $ServicestatusFields);
-            $docuExists = $this->Documentation->existsForUuid($service['Service']['uuid']);
-            $this->set(compact(['service', 'servicestatus', 'docuExists', 'allowEdit']));
             return;
         }
 
@@ -365,10 +298,32 @@ class NotificationsController extends AppController {
                 'Service.service_type',
                 'Service.service_url'
             ],
+            'contain'    => [
+                'Host'            => [
+                    'fields' => [
+                        'Host.id',
+                        'Host.name',
+                        'Host.uuid',
+                        'Host.address'
+                    ],
+                    'Container',
+                ],
+                'Servicetemplate' => [
+                    'fields' => [
+                        'Servicetemplate.id',
+                        'Servicetemplate.name',
+                    ],
+                ],
+            ],
             'conditions' => [
                 'Service.id' => $service_id,
             ],
         ]);
+
+        if (!$this->allowedByContainerId(Hash::extract($service, 'Host.Container.{n}.HostsToContainer.container_id'))) {
+            $this->render403();
+            return;
+        }
 
         $AngularNotificationsControllerRequest = new \itnovum\openITCOCKPIT\Core\AngularJS\Request\NotificationsControllerRequest($this->request);
 

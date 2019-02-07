@@ -78,14 +78,14 @@ class ShellDispatcher {
 			ini_set('max_execution_time', 0);
 		}
 
-		if (!defined('CAKE_CORE_INCLUDE_PATH')) {
-			define('CAKE_CORE_INCLUDE_PATH', dirname(dirname(dirname(__FILE__))));
+		if (!defined('OLD_CAKE_CORE_INCLUDE_PATH')) {
+			define('OLD_CAKE_CORE_INCLUDE_PATH', dirname(dirname(dirname(__FILE__))));
 			define('CAKEPHP_SHELL', true);
 			if (!defined('DS')) {
 				define('DS', DIRECTORY_SEPARATOR);
 			}
-			if (!defined('CORE_PATH')) {
-				define('CORE_PATH', CAKE_CORE_INCLUDE_PATH . DS);
+			if (!defined('OLD_CORE_PATH')) {
+				define('OLD_CORE_PATH', OLD_CAKE_CORE_INCLUDE_PATH . DS);
 			}
 		}
 	}
@@ -98,7 +98,7 @@ class ShellDispatcher {
  */
 	protected function _initEnvironment() {
 		if (!$this->_bootstrap()) {
-			$message = "Unable to load CakePHP core.\nMake sure " . DS . 'lib' . DS . 'Cake exists in ' . CAKE_CORE_INCLUDE_PATH;
+			$message = "Unable to load CakePHP core.\nMake sure " . DS . 'lib' . DS . 'Cake exists in ' . OLD_CAKE_CORE_INCLUDE_PATH;
 			throw new CakeException($message);
 		}
 
@@ -119,33 +119,33 @@ class ShellDispatcher {
  * @return bool Success.
  */
 	protected function _bootstrap() {
-		if (!defined('ROOT')) {
-			define('ROOT', $this->params['root']);
+		if (!defined('OLD_ROOT')) {
+			define('OLD_ROOT', $this->params['root']);
 		}
-		if (!defined('APP_DIR')) {
-			define('APP_DIR', $this->params['app']);
+		if (!defined('OLD_APP_DIR')) {
+			define('OLD_APP_DIR', $this->params['app']);
 		}
-		if (!defined('APP')) {
-			define('APP', $this->params['working'] . DS);
+		if (!defined('OLD_APP')) {
+			define('OLD_APP', $this->params['working'] . DS);
 		}
 		if (!defined('WWW_ROOT')) {
 			if (!$this->_isAbsolutePath($this->params['webroot'])) {
-				$webroot = realpath(APP . $this->params['webroot']);
+				$webroot = realpath(OLD_APP . $this->params['webroot']);
 			} else {
 				$webroot = $this->params['webroot'];
 			}
 			define('WWW_ROOT', $webroot . DS);
 		}
-		if (!defined('TMP') && !is_dir(APP . 'tmp')) {
-			define('TMP', CAKE_CORE_INCLUDE_PATH . DS . 'Cake' . DS . 'Console' . DS . 'Templates' . DS . 'skel' . DS . 'tmp' . DS);
+		if (!defined('OLD_TMP') && !is_dir(OLD_APP . 'tmp')) {
+			define('OLD_TMP', OLD_CAKE_CORE_INCLUDE_PATH . DS . 'Cake' . DS . 'Console' . DS . 'Templates' . DS . 'skel' . DS . 'tmp' . DS);
 		}
 
 		// $boot is used by Cake/bootstrap.php file
-		$boot = file_exists(ROOT . DS . APP_DIR . DS . 'Config' . DS . 'bootstrap.php');
-		require CORE_PATH . 'Cake' . DS . 'bootstrap.php';
+		$boot = file_exists(OLD_ROOT . DS . OLD_APP_DIR . DS . 'Config' . DS . 'bootstrap.php');
+		require OLD_CORE_PATH . 'Cake' . DS . 'bootstrap.php';
 
-		if (!file_exists(CONFIG . 'core.php')) {
-			include_once CAKE_CORE_INCLUDE_PATH . DS . 'Cake' . DS . 'Console' . DS . 'Templates' . DS . 'skel' . DS . 'Config' . DS . 'core.php';
+		if (!file_exists(OLD_CONFIG . 'core.php')) {
+			include_once OLD_CAKE_CORE_INCLUDE_PATH . DS . 'Cake' . DS . 'Console' . DS . 'Templates' . DS . 'skel' . DS . 'Config' . DS . 'core.php';
 			App::build();
 		}
 

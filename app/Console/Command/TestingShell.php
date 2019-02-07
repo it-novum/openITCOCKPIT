@@ -23,6 +23,11 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use App\Model\Table\CommandsTable;
+use App\Model\Table\ContainersTable;
+use App\Model\Table\TimeperiodsTable;
+use Cake\ORM\TableRegistry;
+
 class TestingShell extends AppShell {
     /*
      * This is a test and debuging shell for development purposes
@@ -50,15 +55,50 @@ class TestingShell extends AppShell {
         'Servicecommandargumentvalue',
         'Aro',
         'Aco',
-        'Calendar'
+        'Calendar',
+        'Container',
+        'User',
+        'Browser'
     ];
 
     public function main() {
         //debug($this->Aro->find('all'));
         //debug($this->Aco->find('all', ['recursive' => -1]));
+
+        //Load CakePHP4 Models
+        //$Proxy = TableRegistry::getTableLocator()->get('Proxies');
+        //print_r($Proxy->getSettings());
+
         /*
          * Lof of space for your experimental code :)
          */
+
+        /** @var $TimeperiodsTable TimeperiodsTable */
+        $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
+
+        $query = $TimeperiodsTable->find()
+            ->contain('TimeperiodTimeranges')
+            ->disableHydration()
+            ->all();
+
+        //debug($query->toArray());
+
+
+
+        $sourceTimeperiod = $TimeperiodsTable->get(1, [
+            'contain' => [
+                'TimeperiodTimeranges' => [
+                    'fields' => [
+                        'TimeperiodTimeranges.timeperiod_id',
+                        'TimeperiodTimeranges.day',
+                        'TimeperiodTimeranges.start',
+                        'TimeperiodTimeranges.end'
+                    ]
+                ]
+            ]
+        ]);
+
+
     }
 
     public function getOptionParser() {

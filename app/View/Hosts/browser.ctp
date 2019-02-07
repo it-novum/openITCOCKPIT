@@ -23,9 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-$Hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus([]);
-
-if (!$QueryHandler->exists()): ?>
+if (isset($QueryHandler) && !$QueryHandler->exists()): ?>
     <div class="alert alert-danger alert-block">
         <a href="#" data-dismiss="alert" class="close">×</a>
         <h4 class="alert-heading"><i class="fa fa-warning"></i> <?php echo __('Monitoring Engine is not running!'); ?>
@@ -72,39 +70,37 @@ if (!$QueryHandler->exists()): ?>
                 <h2 class="hidden-mobile hidden-tablet"><strong><?php echo __('Host'); ?>:</strong> {{
                     mergedHost.Host.name }}</h2>
                 <ul class="nav nav-tabs pull-right" id="widget-tab-1">
-                    <li class="active">
-                        <a href="#tab1" data-toggle="tab" ng-click="hideTimeline()">
+                    <li class="active cursor-pointer">
+                        <a ng-click="selectedTab = 'tab1'; hideTimeline()" data-toggle="tab">
                             <i class="fa fa-lg fa-info"></i>
                             <span class="hidden-mobile hidden-tablet"> <?php echo __('Status information'); ?></span>
                         </a>
                     </li>
 
-                    <li class="">
-                        <a href="#tab2" data-toggle="tab" ng-click="hideTimeline()">
+                    <li class="cursor-pointer">
+                        <a ng-click="selectedTab = 'tab2'; hideTimeline()" data-toggle="tab">
                             <i class="fa fa-lg fa-hdd-o"></i>
                             <span class="hidden-mobile hidden-tablet"> <?php echo __('Device information'); ?> </span>
                         </a>
                     </li>
 
                     <?php if ($this->Acl->hasPermission('timeline', 'hosts')): ?>
-                        <li class="">
-                            <a href="#tab3" data-toggle="tab" ng-click="showTimeline()">
+                        <li class="cursor-pointer">
+                            <a ng-click="selectedTab = 'tab3'; showTimeline()" data-toggle="tab">
                                 <i class="fa fa-lg fa-clock-o"></i>
                                 <span class="hidden-mobile hidden-tablet"> <?php echo __('Timeline'); ?> </span>
                             </a>
                         </li>
                     <?php endif; ?>
 
-                    <?php echo $this->AdditionalLinks->renderAsTabs($additionalLinksTab, null, 'host', 'tabLink', 'hideTimeline()'); ?>
+                    <?php echo $this->AdditionalLinks->renderAsTabs($additionalLinksTab, null, 'host', 'tabLink', 'hideTimeline()', true); ?>
 
-                    <?php if ($GrafanaDashboardExists): ?>
-                        <li class="">
-                            <a href="#tab5" data-toggle="tab" ng-click="hideTimeline()">
-                                <i class="fa fa-lg fa-area-chart"></i>
-                                <span class="hidden-mobile hidden-tablet"> <?php echo __('Grafana'); ?> </span>
-                            </a>
-                        </li>
-                    <?php endif; ?>
+                    <li class="cursor-pointer" ng-show="GrafanaDashboardExists">
+                        <a ng-click="selectedTab = 'tab5'; hideTimeline()" data-toggle="tab">
+                            <i class="fa fa-lg fa-area-chart"></i>
+                            <span class="hidden-mobile hidden-tablet"> <?php echo __('Grafana'); ?> </span>
+                        </a>
+                    </li>
                 </ul>
 
                 <div class="widget-toolbar" role="menu">
@@ -119,7 +115,7 @@ if (!$QueryHandler->exists()): ?>
 
                 <div class="widget-body no-padding">
                     <div class="tab-content no-padding">
-                        <div id="tab1" class="tab-pane fade active in">
+                        <div ng-show="selectedTab == 'tab1'" class="tab-pane fade active in">
                             <div class="hidden-sm hidden-md hidden-lg"
                                  ng-class="{'browser-state-green': stateIsUp(), 'browser-state-red': stateIsDown(), 'browser-state-gray': stateIsUnreachable(), 'browser-state-blue': stateIsNotInMonitoring()}"
                                  ng-if="hoststatus">
@@ -365,7 +361,7 @@ if (!$QueryHandler->exists()): ?>
                                                 <div>
                                                     <ul>
                                                         <li ng-repeat="parentHostProblem in parentHostProblems">
-                                                            <a href="/hosts/browser/{{parentHostProblem.id}}">
+                                                            <a ui-sref="HostsBrowser({id:parentHostProblem.id})">
                                                                 {{parentHostProblem.name}}
                                                             </a>
                                                         </li>
@@ -468,7 +464,7 @@ if (!$QueryHandler->exists()): ?>
                                                                 state="parentHoststatus[parenthost.uuid].currentState"></hoststatusicon>
                                                     </td>
                                                     <td>
-                                                        <a href="/hosts/browser/{{parenthost.id}}">
+                                                        <a ui-sref="HostsBrowser({id:parenthost.id})">
                                                             {{ parenthost.name }}
                                                         </a>
                                                     </td>
@@ -721,7 +717,7 @@ if (!$QueryHandler->exists()): ?>
 
                         </div>
 
-                        <div id="tab2" class="tab-pane fade in">
+                        <div ng-show="selectedTab == 'tab2'" class="tab-pane active fade in">
                             <div class="row">
                                 <div class="col-xs-12 padding-10">
                                     <div class="row">
@@ -851,7 +847,7 @@ if (!$QueryHandler->exists()): ?>
                                                 <tr ng-show="mergedHost.Host.is_satellite_host === false">
                                                     <td><?php echo __('Instance'); ?></td>
                                                     <td>
-                                                        <?php echo h($masterInstanceName); ?>
+                                                        <?php if (isset($masterInstanceName)) echo h($masterInstanceName); ?>
                                                     </td>
                                                 </tr>
 
@@ -874,7 +870,7 @@ if (!$QueryHandler->exists()): ?>
                             </div>
                         </div>
 
-                        <div id="tab3" class="fade in" ng-show="showTimelineTab">
+                        <div class="fade in active" ng-show="showTimelineTab && selectedTab == 'tab3'">
                             <div class="row">
                                 <div class="col-xs-12 padding-10">
                                     <div class="row">
@@ -963,19 +959,14 @@ if (!$QueryHandler->exists()): ?>
 
 
                         <!-- render additional Tabs if necessary -->
-                        <?php echo $this->AdditionalLinks->renderAsTabs($additionalLinksTab, null, 'host', 'tab'); ?>
+                        <?php echo $this->AdditionalLinks->renderAsTabs($additionalLinksTab, null, 'host', 'tab', null, true); ?>
 
-                        <?php if ($GrafanaDashboardExists): ?>
-                            <div id="tab5" class="tab-pane fade">
-                                <div class="widget-toolbar">
-                                    <grafana-timepicker callback="grafanaTimepickerCallback"></grafana-timepicker>
-                                </div>
-                                <iframe-directive url="GrafanaIframeUrl" ng-if="GrafanaDashboardExists"></iframe-directive>
-                                <?php /*
-                                <iframe src="<?php echo $GrafanaConfiguration->getIframeUrl(); ?>" width="100%"
-                                        onload="this.height=(screen.height+15);" frameBorder="0"></iframe> */ ?>
+                        <div class="fade in active" ng-show="GrafanaDashboardExists && selectedTab == 'tab5'">
+                            <div class="widget-toolbar">
+                                <grafana-timepicker callback="grafanaTimepickerCallback"></grafana-timepicker>
                             </div>
-                        <?php endif; ?>
+                            <iframe-directive url="GrafanaIframeUrl" ng-if="GrafanaDashboardExists && selectedTab == 'tab5'"></iframe-directive>
+                        </div>
                     </div>
 
                     <div class="widget-footer text-right"></div>
@@ -1010,24 +1001,24 @@ if (!$QueryHandler->exists()): ?>
                 <span class="widget-icon hidden-mobile"> <i class="fa fa-cogs"></i> </span>
                 <h2 class="hidden-mobile"><?php echo __('Service overview'); ?></h2>
                 <ul class="nav nav-tabs pull-right" id="widget-tab-1">
-                    <li class="active">
-                        <a href="#serviceTab1" data-toggle="tab" ng-click="changeTab('active')">
+                    <li class="active cursor-pointer">
+                        <a data-toggle="tab" ng-click="changeTab('active')">
                             <i class="fa fa-stethoscope"></i>
                             <span class="hidden-mobile hidden-tablet">
                                 <?php echo __('Active'); ?>
                             </span>
                         </a>
                     </li>
-                    <li>
-                        <a href="#serviceTab2" data-toggle="tab" ng-click="changeTab('notMonitored')">
+                    <li class="cursor-pointer">
+                        <a data-toggle="tab" ng-click="changeTab('notMonitored')">
                             <i class="fa fa-user-md"></i>
                             <span class="hidden-mobile hidden-tablet">
                                 <?php echo __('Not monitored'); ?>
                             </span>
                         </a>
                     </li>
-                    <li class="">
-                        <a href="#serviceTab3" data-toggle="tab" ng-click="changeTab('disabled')">
+                    <li class="cursor-pointer">
+                        <a data-toggle="tab" ng-click="changeTab('disabled')">
                             <i class="fa fa-plug"></i>
                             <span class="hidden-mobile hidden-tablet">
                                 <?php echo __('Disabled'); ?>
@@ -1191,7 +1182,7 @@ if (!$QueryHandler->exists()): ?>
 
                                         <td class="text-center">
                                             <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
-                                                <a href="/services/browser/{{ service.Service.id }}"
+                                                <a ui-sref="ServicesBrowser({id:service.Service.id})"
                                                    class="txt-color-blueDark">
                                                     <i class="fa fa-lg fa-area-chart"
                                                        ng-mouseenter="mouseenter($event, mergedHost.Host.uuid, service)"
@@ -1217,7 +1208,7 @@ if (!$QueryHandler->exists()): ?>
 
                                         <td>
                                             <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
-                                                <a href="/services/browser/{{ service.Service.id }}">
+                                                <a ui-sref="ServicesBrowser({id:service.Service.id})">
                                                     {{ service.Service.servicename }}
                                                 </a>
                                             <?php else: ?>
@@ -1329,7 +1320,7 @@ if (!$QueryHandler->exists()): ?>
 
                                     <td>
                                         <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
-                                            <a href="/services/browser/{{ service.Service.id }}">
+                                            <a ui-sref="ServicesBrowser({id:service.Service.id})">
                                                 {{ service.Service.servicename }}
                                             </a>
                                         <?php else: ?>
@@ -1425,7 +1416,7 @@ if (!$QueryHandler->exists()): ?>
 
                                         <td>
                                             <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
-                                                <a href="/services/browser/{{ service.Service.id }}">
+                                                <a ui-sref="ServicesBrowser({id:service.Service.id})">
                                                     {{ service.Service.servicename }}
                                                 </a>
                                             <?php else: ?>

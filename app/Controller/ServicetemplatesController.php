@@ -22,6 +22,11 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+use App\Model\Table\CommandargumentsTable;
+use App\Model\Table\CommandsTable;
+use App\Model\Table\ContainersTable;
+use Cake\ORM\TableRegistry;
+use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\ServiceConditions;
 use itnovum\openITCOCKPIT\Core\Views\ContainerPermissions;
 use itnovum\openITCOCKPIT\Filter\ServicetemplateFilter;
@@ -31,11 +36,9 @@ use itnovum\openITCOCKPIT\Filter\ServicetemplateFilter;
  * @property CustomValidationErrorsComponent $CustomValidationErrors
  * @property Servicetemplate $Servicetemplate
  * @property Timeperiod $Timeperiod
- * @property Command $Command
  * @property Contact $Contact
  * @property Contactgroup $Contactgroup
  * @property Container $Container
- * @property Commandargument $Commandargument
  * @property Customvariable $Customvariable
  * @property Servicetemplatecommandargumentvalue $Servicetemplatecommandargumentvalue
  * @property Servicetemplateeventcommandargumentvalue $Servicetemplateeventcommandargumentvalue
@@ -66,12 +69,10 @@ class ServicetemplatesController extends AppController {
         'Servicetemplate',
         'Service',
         'Timeperiod',
-        'Command',
         'Contact',
         'Contactgroup',
         'Servicegroup',
         'Container',
-        'Commandargument',
         'Customvariable',
         'Servicetemplatecommandargumentvalue',
         'Servicetemplateeventcommandargumentvalue',
@@ -113,7 +114,10 @@ class ServicetemplatesController extends AppController {
             $this->Paginator->settings = Hash::merge($this->Paginator->settings, $options);
             $all_servicetemplates = $this->Paginator->paginate();
         }
-        $resolvedContainerNames = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_SERVICETEMPLATE, [], $this->hasRootPrivileges);
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        $resolvedContainerNames = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_SERVICETEMPLATE, [], $this->hasRootPrivileges);
         $this->set(compact(['all_servicetemplates', 'resolvedContainerNames']));
         $this->set('_serialize', ['all_servicetemplates']);
     }
@@ -192,12 +196,17 @@ class ServicetemplatesController extends AppController {
         $oldServicetemplateCheckCommandId = $serviceTemplate['Servicetemplate']['command_id'];
         $oldServicetemplateEventkCommandId = $serviceTemplate['Servicetemplate']['eventhandler_command_id'];
 
-        $commands = $this->Command->serviceCommands('list');
-        $eventHandlers = $this->Command->eventhandlerCommands('list');
+        /** @var $CommandsTable CommandsTable */
+        $CommandsTable = TableRegistry::getTableLocator()->get('Commands');
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        $commands = $CommandsTable->getCommandByTypeAsList(CHECK_COMMAND);
+        $eventHandlers = $CommandsTable->getCommandByTypeAsList(EVENTHANDLER_COMMAND);
         if ($this->hasRootPrivileges === true) {
-            $containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_SERVICETEMPLATE, [], $this->hasRootPrivileges, [CT_SERVICETEMPLATEGROUP]);
+            $containers = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_SERVICETEMPLATE, [], $this->hasRootPrivileges, [CT_SERVICETEMPLATEGROUP]);
         } else {
-            $containers = $this->Tree->easyPath($this->getWriteContainers(), OBJECT_SERVICETEMPLATE, [], $this->hasRootPrivileges, [CT_SERVICETEMPLATEGROUP]);
+            $containers = $ContainersTable->easyPath($this->getWriteContainers(), OBJECT_SERVICETEMPLATE, [], $this->hasRootPrivileges, [CT_SERVICETEMPLATEGROUP]);
         }
 
         if (count($serviceTemplate['Service']) > 0) {
@@ -217,7 +226,7 @@ class ServicetemplatesController extends AppController {
             $containerId = $serviceTemplate['Servicetemplate']['container_id'];
         }
 
-        $containerIds = $this->Tree->resolveChildrenOfContainerIds($containerId);
+        $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId);
 
         $timeperiods = $this->Timeperiod->timeperiodsByContainerId($containerIds, 'list');
         $contacts = $this->Contact->contactsByContainerId($containerIds, 'list');
@@ -225,12 +234,9 @@ class ServicetemplatesController extends AppController {
         $serviceGroups = $this->Servicegroup->servicegroupsByContainerId($containerIds, 'list');
 
         //Fehlende bzw. neu angelegte CommandArgummente ermitteln und anzeigen
-        $commandarguments = $this->Commandargument->find('all', [
-            'recursive'  => -1,
-            'conditions' => [
-                'Commandargument.command_id' => $serviceTemplate['CheckCommand']['id'],
-            ],
-        ]);
+        /** @var $CommandargumentsTable CommandargumentsTable */
+        $CommandargumentsTable = TableRegistry::getTableLocator()->get('Commandarguments');
+        $commandarguments = $CommandargumentsTable->getByCommandId($serviceTemplate['CheckCommand']['id']);
 
         //Fix that we dont lose any unsaved host macros, because of vaildation error
         if (isset($this->request->data['Customvariable'])) {
@@ -355,37 +361,29 @@ class ServicetemplatesController extends AppController {
                 }
             }
             if ($this->request->data('Servicetemplate.command_id')) {
-                if ($commandsForChangelog = $this->Command->find('list', [
-                    'conditions' => [
-                        'Command.id' => $this->request->data['Servicetemplate']['command_id'],
-                    ],
-                ])
-                ) {
-                    foreach ($commandsForChangelog as $commandId => $commandName) {
-                        $ext_data_for_changelog['CheckCommand'] = [
-                            'id'   => $commandId,
-                            'name' => $commandName,
-                        ];
-                    }
-                    unset($commandsForChangelog);
+                /** @var $Commands CommandsTable */
+                $Commands = TableRegistry::getTableLocator()->get('Commands');
+                $commandsForChangelog = $Commands->getCommandByIdAsList($this->request->data['Servicetemplate']['command_id']);
+                foreach ($commandsForChangelog as $commandId => $commandName) {
+                    $ext_data_for_changelog['CheckCommand'] = [
+                        'id'   => $commandId,
+                        'name' => $commandName,
+                    ];
                 }
+                unset($commandsForChangelog);
             }
 
             if ($this->request->data('Servicetemplate.eventhandler_command_id') && $this->request->data('Servicetemplate.eventhandler_command_id') > 0) {
-                if ($eventHandlerCommandsForChangelog = $this->Command->find('list', [
-                    'conditions' => [
-                        'Command.id' => $this->request->data['Servicetemplate']['eventhandler_command_id'],
-                    ],
-                ])
-                ) {
-                    foreach ($eventHandlerCommandsForChangelog as $eventHandlerCommandId => $eventHandlerCommandName) {
-                        $ext_data_for_changelog['EventhandlerCommand'] = [
-                            'id'   => $eventHandlerCommandId,
-                            'name' => $eventHandlerCommandName,
-                        ];
-                    }
-                    unset($eventHandlerCommandsForChangelog);
+                /** @var $Commands CommandsTable */
+                $Commands = TableRegistry::getTableLocator()->get('Commands');
+                $eventHandlerCommandsForChangelog = $Commands->getCommandByIdAsList($this->request->data['Servicetemplate']['eventhandler_command_id']);
+                foreach ($eventHandlerCommandsForChangelog as $eventHandlerCommandId => $eventHandlerCommandName) {
+                    $ext_data_for_changelog['EventhandlerCommand'] = [
+                        'id'   => $eventHandlerCommandId,
+                        'name' => $eventHandlerCommandName,
+                    ];
                 }
+                unset($eventHandlerCommandsForChangelog);
             }
 
             //Checks if the user deletes a customvariable/macro over the trash icon
@@ -571,9 +569,9 @@ class ServicetemplatesController extends AppController {
                     }
 
                     // Refill data that was loaded by Ajax
-                    if ($this->Container->exists($this->request->data('Servicetemplate.container_id'))) {
+                    if ($ContainersTable->existsById($this->request->data('Servicetemplate.container_id'))) {
                         $containerIds = $this->request->data('Servicetemplate.container_id');
-                        $containerIds = $this->Tree->resolveChildrenOfContainerIds($containerIds);
+                        $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerIds);
 
                         $timeperiods = $this->Timeperiod->timeperiodsByContainerId($containerIds, 'list');
                         $contacts = $this->Contact->contactsByContainerId($containerIds, 'list');
@@ -654,13 +652,19 @@ class ServicetemplatesController extends AppController {
 
         $userContainerId = $this->Auth->user('container_id');
 
-        $commands = $this->Command->serviceCommands('list');
-        $eventhandlers = $this->Command->eventhandlerCommands('list');
+        /** @var $CommandsTable CommandsTable */
+        $CommandsTable = TableRegistry::getTableLocator()->get('Commands');
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        $commands = $CommandsTable->getCommandByTypeAsList(CHECK_COMMAND);
+        $eventhandlers = $CommandsTable->getCommandByTypeAsList(EVENTHANDLER_COMMAND);
+
 
         if ($this->hasRootPrivileges === true) {
-            $containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_SERVICETEMPLATE, [], $this->hasRootPrivileges, [CT_SERVICETEMPLATEGROUP]);
+            $containers = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_SERVICETEMPLATE, [], $this->hasRootPrivileges, [CT_SERVICETEMPLATEGROUP]);
         } else {
-            $containers = $this->Tree->easyPath($this->getWriteContainers(), OBJECT_SERVICETEMPLATE, [], $this->hasRootPrivileges, [CT_SERVICETEMPLATEGROUP]);
+            $containers = $ContainersTable->easyPath($this->getWriteContainers(), OBJECT_SERVICETEMPLATE, [], $this->hasRootPrivileges, [CT_SERVICETEMPLATEGROUP]);
         }
 
         $this->Frontend->set('ServicetemplateActiveChecksEnabled_', __('1'));
@@ -794,37 +798,29 @@ class ServicetemplatesController extends AppController {
                 }
             }
             if ($this->request->data('Servicetemplate.command_id')) {
-                if ($commandsForChangelog = $this->Command->find('list', [
-                    'conditions' => [
-                        'Command.id' => $this->request->data['Servicetemplate']['command_id'],
-                    ],
-                ])
-                ) {
-                    foreach ($commandsForChangelog as $commandId => $commandName) {
-                        $ext_data_for_changelog['CheckCommand'] = [
-                            'id'   => $commandId,
-                            'name' => $commandName,
-                        ];
-                    }
-                    unset($commandsForChangelog);
+                /** @var $Commands CommandsTable */
+                $Commands = TableRegistry::getTableLocator()->get('Commands');
+                $commandsForChangelog = $Commands->getCommandByIdAsList($this->request->data['Servicetemplate']['command_id']);
+                foreach ($commandsForChangelog as $commandId => $commandName) {
+                    $ext_data_for_changelog['CheckCommand'] = [
+                        'id'   => $commandId,
+                        'name' => $commandName,
+                    ];
                 }
+                unset($commandsForChangelog);
             }
 
             if ($this->request->data('Servicetemplate.eventhandler_command_id')) {
-                if ($commandsForChangelog = $this->Command->find('list', [
-                    'conditions' => [
-                        'Command.id' => $this->request->data['Servicetemplate']['eventhandler_command_id'],
-                    ],
-                ])
-                ) {
-                    foreach ($commandsForChangelog as $commandId => $commandName) {
-                        $ext_data_for_changelog['EventhandlerCommand'] = [
-                            'id'   => $commandId,
-                            'name' => $commandName,
-                        ];
-                    }
-                    unset($commandsForChangelog);
+                /** @var $Commands CommandsTable */
+                $Commands = TableRegistry::getTableLocator()->get('Commands');
+                $commandsForChangelog = $Commands->getCommandByIdAsList($this->request->data['Servicetemplate']['eventhandler_command_id']);
+                foreach ($commandsForChangelog as $commandId => $commandName) {
+                    $ext_data_for_changelog['EventhandlerCommand'] = [
+                        'id'   => $commandId,
+                        'name' => $commandName,
+                    ];
                 }
+                unset($commandsForChangelog);
             }
 
             $this->request->data['Servicetemplate']['uuid'] = $this->Servicetemplate->createUUID();
@@ -893,9 +889,9 @@ class ServicetemplatesController extends AppController {
                 }
 
                 //Refil data that was loaded by ajax due to selected container id
-                if ($this->Container->exists($this->request->data('Servicetemplate.container_id'))) {
+                if ($ContainersTable->existsById($this->request->data('Servicetemplate.container_id'))) {
                     $container_id = $this->request->data('Servicetemplate.container_id');
-                    $containerIds = $this->Tree->resolveChildrenOfContainerIds($container_id);
+                    $containerIds = $ContainersTable->resolveChildrenOfContainerIds($container_id);
 
                     $_timeperiods = $this->Timeperiod->timeperiodsByContainerId($containerIds, 'list');
                     $_contacts = $this->Contact->contactsByContainerId($containerIds, 'list');
@@ -1315,7 +1311,11 @@ class ServicetemplatesController extends AppController {
             $this->setFlash(__('Please choose at least one Servicetemplate'), false);
             $this->redirect(['action' => 'index']);
         }
-        $resolvedPathContainerName = $this->Tree->easyPath([$checkedContanerId], OBJECT_SERVICETEMPLATEGROUP, [], $this->hasRootPrivileges);
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        $resolvedPathContainerName = $ContainersTable->easyPath([$checkedContanerId], OBJECT_SERVICETEMPLATEGROUP, [], $this->hasRootPrivileges);
         if (!isset($resolvedPathContainerName[$checkedContanerId])) {
             $this->setFlash(__('Please choose at least one Servicetemplate'), false);
             $this->redirect(['action' => 'index']);
@@ -1330,7 +1330,7 @@ class ServicetemplatesController extends AppController {
             $this->redirect(['action' => 'index']);
         }
 
-        $myContainerId = $this->Tree->resolveChildrenOfContainerIds($checkedContanerId);
+        $myContainerId = $ContainersTable->resolveChildrenOfContainerIds($checkedContanerId);
         $allServicetemplates = $this->Servicetemplate->servicetemplatesByContainerId($myContainerId, 'list');
         $allServicetemplateGroups = $this->Servicetemplategroup->find('all', [
             'conditions' => ['Container.parent_id' => $checkedContanerId],
@@ -1494,12 +1494,9 @@ class ServicetemplatesController extends AppController {
         ]);
         //Checking if the servicetemplade has own arguments defined
         if (empty($commandarguments)) {
-            $commandarguments = $this->Commandargument->find('all', [
-                'recursive'  => -1,
-                'conditions' => [
-                    'Commandargument.command_id' => $command_id,
-                ],
-            ]);
+            /** @var $CommandargumentsTable CommandargumentsTable */
+            $CommandargumentsTable = TableRegistry::getTableLocator()->get('Commandarguments');
+            $commandarguments = $CommandargumentsTable->getByCommandId($command_id);
         }
 
         $this->set('commandarguments', $commandarguments);
@@ -1521,8 +1518,12 @@ class ServicetemplatesController extends AppController {
                 'sizeof'        => 0,
             ],
         ];
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
         //$result['contacts']['contacts'] = $this->Contact->contactsByServicetemplateId($servicetemplate_id, 'list');
-        $containerIds = $this->Tree->resolveChildrenOfContainerIds($servicetemplate_id);
+        $containerIds = $ContainersTable->resolveChildrenOfContainerIds($servicetemplate_id);
         $result['contacts']['contacts'] = $this->Contact->contactsByContainerId($containerIds, 'list');
 
         $result['contacts']['sizeof'] = sizeof($result['contacts']['contacts']);
@@ -1537,17 +1538,11 @@ class ServicetemplatesController extends AppController {
 
     public function loadArgumentsAdd($command_id = null) {
         $this->allowOnlyAjaxRequests();
-        $this->loadModel('Commandargument');
 
-        //Deleting associations that we dont get values of other hosttemplates
-        $this->Commandargument->unbindModel(
-            ['hasOne' => ['Servicetemplatecommandargumentvalue', 'Servicecommandargumentvalue', 'Hosttemplatecommandargumentvalue', 'Hostcommandargumentvalue']]
-        );
-        $commandarguments = $this->Commandargument->find('all', [
-            'conditions' => [
-                'Commandargument.command_id' => $command_id,
-            ],
-        ]);
+
+        /** @var $CommandargumentsTable CommandargumentsTable */
+        $CommandargumentsTable = TableRegistry::getTableLocator()->get('Commandarguments');
+        $commandarguments = $CommandargumentsTable->getByCommandId($command_id);
 
         $this->set('commandarguments', $commandarguments);
         $this->render('load_arguments');
@@ -1555,17 +1550,10 @@ class ServicetemplatesController extends AppController {
 
     public function loadNagArgumentsAdd($command_id = null) {
         $this->allowOnlyAjaxRequests();
-        $this->loadModel('Commandargument');
 
-        //Deleting associations that we dont get values of other hosttemplates
-        $this->Commandargument->unbindModel(
-            ['hasOne' => ['Servicetemplatecommandargumentvalue', 'Servicecommandargumentvalue', 'Hosttemplatecommandargumentvalue', 'Hostcommandargumentvalue']]
-        );
-        $commandarguments = $this->Commandargument->find('all', [
-            'conditions' => [
-                'Commandargument.command_id' => $command_id,
-            ],
-        ]);
+        /** @var $CommandargumentsTable CommandargumentsTable */
+        $CommandargumentsTable = TableRegistry::getTableLocator()->get('Commandarguments');
+        $commandarguments = $CommandargumentsTable->getByCommandId($command_id);
 
         $this->set('commandarguments', $commandarguments);
         $this->render('load_nag_arguments');
@@ -1587,12 +1575,9 @@ class ServicetemplatesController extends AppController {
         $test = [];
         $commandarguments = [];
         if ($command_id) {
-            $commandarguments = $this->Commandargument->find('all', [
-                'recursive'  => -1,
-                'conditions' => [
-                    'Commandargument.command_id' => $command_id,
-                ],
-            ]);
+            /** @var $CommandargumentsTable CommandargumentsTable */
+            $CommandargumentsTable = TableRegistry::getTableLocator()->get('Commandarguments');
+            $commandarguments = $CommandargumentsTable->getByCommandId($command_id);
             foreach ($commandarguments as $key => $commandargument) {
                 if ($servicetemplate_id) {
                     $servicetemplate_command_argument_value = $this->Servicetemplatecommandargumentvalue->find('first', [
@@ -1629,12 +1614,9 @@ class ServicetemplatesController extends AppController {
         $test = [];
         $commandarguments = [];
         if ($command_id) {
-            $commandarguments = $this->Commandargument->find('all', [
-                'recursive'  => -1,
-                'conditions' => [
-                    'Commandargument.command_id' => $command_id,
-                ],
-            ]);
+            /** @var $CommandargumentsTable CommandargumentsTable */
+            $CommandargumentsTable = TableRegistry::getTableLocator()->get('Commandarguments');
+            $commandarguments = $CommandargumentsTable->getByCommandId($command_id);
             foreach ($commandarguments as $key => $commandargument) {
                 if ($servicetemplate_id) {
                     $servicetemplate_command_argument_value = $this->Servicetemplateeventcommandargumentvalue->find('first', [
@@ -1664,24 +1646,27 @@ class ServicetemplatesController extends AppController {
 
     public function loadElementsByContainerId($containerId = null) {
         $this->allowOnlyAjaxRequests();
-        if (!$this->Container->exists($containerId)) {
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        if (!$ContainersTable->existsById($containerId)) {
             throw new NotFoundException(__('Invalid hosttemplate'));
         }
 
-        $containerIds = $this->Tree->resolveChildrenOfContainerIds($containerId);
+        $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId);
 
         $timeperiods = $timeperiods = $this->Timeperiod->timeperiodsByContainerId($containerIds, 'list');
-        $timeperiods = $this->Timeperiod->makeItJavaScriptAble($timeperiods);
+        $timeperiods = Api::makeItJavaScriptAble($timeperiods);
         $checkperiods = $timeperiods;
 
         $contacts = $this->Contact->contactsByContainerId($containerIds, 'list');
-        $contacts = $this->Timeperiod->makeItJavaScriptAble($contacts);
+        $contacts = Api::makeItJavaScriptAble($contacts);
 
         $contactgroups = $this->Contactgroup->contactgroupsByContainerId($containerIds, 'list');
-        $contactgroups = $this->Timeperiod->makeItJavaScriptAble($contactgroups);
+        $contactgroups = Api::makeItJavaScriptAble($contactgroups);
 
         $servicegroups = $this->Servicegroup->servicegroupsByContainerId($containerIds, 'list');
-        $servicegroups = $this->Servicegroup->makeItJavaScriptAble($servicegroups);
+        $servicegroups = Api::makeItJavaScriptAble($servicegroups);
 
         $this->set(compact(['timeperiods', 'checkperiods', 'contacts', 'contactgroups', 'servicegroups']));
         $this->set('_serialize', ['timeperiods', 'checkperiods', 'contacts', 'contactgroups', 'servicegroups']);
@@ -1695,11 +1680,14 @@ class ServicetemplatesController extends AppController {
         $selected = $this->request->query('selected');
         $ServicetemplateFilter = new ServicetemplateFilter($this->request);
 
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
         $containerIds = [ROOT_CONTAINER, $containerId];
         if ($containerId == ROOT_CONTAINER) {
-            $containerIds = $this->Tree->resolveChildrenOfContainerIds(ROOT_CONTAINER, true);
+            $containerIds = $ContainersTable->resolveChildrenOfContainerIds(ROOT_CONTAINER, true);
         }
-        $servicetemplates = $this->Servicetemplate->makeItJavaScriptAble(
+        $servicetemplates = Api::makeItJavaScriptAble(
             $this->Servicetemplate->getServicetemplatesForAngular($containerIds, $ServicetemplateFilter, $selected)
         );
         $this->set(compact(['servicetemplates']));

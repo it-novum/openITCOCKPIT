@@ -1257,7 +1257,7 @@ class HtmlHelper extends AppHelper {
  */
 	public function loadConfig($configFile, $path = null) {
 		if (!$path) {
-			$path = CONFIG;
+			$path = OLD_CONFIG;
 		}
 		$file = null;
 		$reader = 'php';

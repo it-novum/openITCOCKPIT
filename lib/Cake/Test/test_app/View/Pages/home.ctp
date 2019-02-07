@@ -1,6 +1,6 @@
 <p>
 	<?php
-		if (is_writable(TMP)):
+		if (is_writable(OLD_TMP)):
 			echo '<span class="notice success">';
 				echo __d('cake_dev', 'Your tmp directory is writable.');
 			echo '</span>';
@@ -16,11 +16,11 @@
 		$settings = Cache::settings();
 		if (!empty($settings)):
 			echo '<span class="notice success">';
-				echo __d('cake_dev', 'The %s is being used for caching. To change the config edit %s/core.php ', '<em>'. $settings['engine'] . 'Engine</em>', CONFIG);
+				echo __d('cake_dev', 'The %s is being used for caching. To change the config edit %s/core.php ', '<em>'. $settings['engine'] . 'Engine</em>', OLD_CONFIG);
 			echo '</span>';
 		else:
 			echo '<span class="notice">';
-				echo __d('cake_dev', 'Your cache is NOT working. Please check the settings in %s/core.php', CONFIG);
+				echo __d('cake_dev', 'Your cache is NOT working. Please check the settings in %s/core.php', OLD_CONFIG);
 			echo '</span>';
 		endif;
 	?>
@@ -28,7 +28,7 @@
 <p>
 	<?php
 		$filePresent = null;
-		if (file_exists(CONFIG . 'database.php')):
+		if (file_exists(OLD_CONFIG . 'database.php')):
 			echo '<span class="notice success">';
 				echo __d('cake_dev', 'Your database configuration file is present.');
 				$filePresent = true;

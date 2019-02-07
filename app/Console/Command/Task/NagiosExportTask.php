@@ -22,12 +22,14 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+use App\Model\Table\CommandsTable;
+use App\Model\Table\MacrosTable;
+use Cake\ORM\TableRegistry;
 
 /**
  * Class NagiosExportTask
  * @property Hosttemplate $Hosttemplate
  * @property Timeperiod $Timeperiod
- * @property Command $Command
  * @property Contact $Contact
  * @property Contactgroup $Contactgroup
  * @property Container $Container
@@ -36,11 +38,9 @@
  * @property Servicetemplatecommandargumentvalue $Servicetemplatecommandargumentvalue
  * @property Hostcommandargumentvalue $Hostcommandargumentvalue
  * @property Servicecommandargumentvalue $Servicecommandargumentvalue
- * @property Commandargument $Commandargument
  * @property Hostgroup $Hostgroup
  * @property Hostescalation $Hostescalation
  * @property Host $Host
- * @property Macro $Macro
  * @property Servicetemplate $Servicetemplate
  * @property Service $Service
  * @property Systemsetting $Systemsetting
@@ -62,7 +62,6 @@ class NagiosExportTask extends AppShell {
     public $uses = [
         'Hosttemplate',
         'Timeperiod',
-        'Command',
         'Contact',
         'Contactgroup',
         'Container',
@@ -71,11 +70,9 @@ class NagiosExportTask extends AppShell {
         'Servicetemplatecommandargumentvalue',
         'Hostcommandargumentvalue',
         'Servicecommandargumentvalue',
-        'Commandargument',
         'Hostgroup',
         'Hostescalation',
         'Host',
-        'Macro',
         'Servicetemplate',
         'Service',
         'Systemsetting',
@@ -158,19 +155,14 @@ class NagiosExportTask extends AppShell {
      * @param null|string $uuid
      */
     public function exportCommands($uuid = null) {
+        /** @var $CommandsTable CommandsTable */
+        $CommandsTable = TableRegistry::getTableLocator()->get('Commands');
+
         if ($uuid !== null) {
             $commands = [];
-            $commands[] = $this->Command->findByUuid($uuid);
+            $commands[] = $CommandsTable->getCommandByUuid($uuid);
         } else {
-            $commands = $this->Command->find('all', [
-                'recursive' => -1,
-                'contain'   => [],
-                'fields'    => [
-                    'id',
-                    'uuid',
-                    'command_line',
-                ],
-            ]);
+            $commands = $CommandsTable->getAllCommands();
         }
 
         if (!is_dir($this->conf['path'] . $this->conf['commands'])) {
@@ -621,6 +613,9 @@ class NagiosExportTask extends AppShell {
 
 
         foreach ($hosts as $host) {
+            /** @var $CommandsTable CommandsTable */
+            $CommandsTable = TableRegistry::getTableLocator()->get('Commands');
+
             if (!$this->conf['minified']) {
                 $file = new File($this->conf['path'] . $this->conf['hosts'] . $host['Host']['uuid'] . $this->conf['suffix']);
                 $content = $this->fileHeader();
@@ -673,14 +668,8 @@ class NagiosExportTask extends AppShell {
                         $command_id = Hash::extract($commandarguments, '{n}.Commandargument.command_id');
                         if (!empty($command_id)) {
                             $command_id = array_pop($command_id);
-                            $command = $this->Command->find('first', [
-                                'recurisve'  => -1,
-                                'conditions' => [
-                                    'Command.id' => $command_id,
-                                ],
-                                'fields'     => ['Command.uuid'],
-                            ]);
-                            $content .= $this->addContent('check_command', 1, $command['Command']['uuid'] . '!' . implode('!', Hash::extract($commandarguments, '{n}.value')) . '; ' . implode('!', Hash::extract($commandarguments, '{n}.Commandargument.human_name')));
+                            $command = $CommandsTable->getCommandUuidByCommandId($command_id);
+                            $content .= $this->addContent('check_command', 1, $command . '!' . implode('!', Hash::extract($commandarguments, '{n}.value')) . '; ' . implode('!', Hash::extract($commandarguments, '{n}.Commandargument.human_name')));
                             unset($command);
                         }
                     }
@@ -882,6 +871,9 @@ class NagiosExportTask extends AppShell {
      * @param $commandarguments
      */
     public function exportSatHost($host, $satelliteId, $commandarguments) {
+        /** @var $CommandsTable CommandsTable */
+        $CommandsTable = TableRegistry::getTableLocator()->get('Commands');
+
         if (!is_dir($this->conf['satellite_path'] . $satelliteId . DS . $this->conf['hosts'])) {
             mkdir($this->conf['satellite_path'] . $satelliteId . DS . $this->conf['hosts']);
         }
@@ -939,14 +931,8 @@ class NagiosExportTask extends AppShell {
                 $command_id = Hash::extract($commandarguments, '{n}.Commandargument.command_id');
                 if (!empty($command_id)) {
                     $command_id = array_pop($command_id);
-                    $command = $this->Command->find('first', [
-                        'recurisve'  => -1,
-                        'conditions' => [
-                            'Command.id' => $command_id,
-                        ],
-                        'fields'     => ['Command.uuid'],
-                    ]);
-                    $content .= $this->addContent('check_command', 1, $command['Command']['uuid'] . '!' . implode('!', Hash::extract($commandarguments, '{n}.value')) . '; ' . implode('!', Hash::extract($commandarguments, '{n}.Commandargument.human_name')));
+                    $command = $CommandsTable->getCommandUuidByCommandId($command_id);
+                    $content .= $this->addContent('check_command', 1, $command . '!' . implode('!', Hash::extract($commandarguments, '{n}.value')) . '; ' . implode('!', Hash::extract($commandarguments, '{n}.Commandargument.human_name')));
                     unset($command);
                 }
             }
@@ -1291,6 +1277,9 @@ class NagiosExportTask extends AppShell {
                 ],
             ]);
             foreach ($services as $service) {
+                /** @var $CommandsTable CommandsTable */
+                $CommandsTable = TableRegistry::getTableLocator()->get('Commands');
+
                 if (!$this->conf['minified']) {
                     $file = new File($this->conf['path'] . $this->conf['services'] . $service['Service']['uuid'] . $this->conf['suffix']);
                     $content = $this->fileHeader();
@@ -1342,14 +1331,8 @@ class NagiosExportTask extends AppShell {
                             $command_id = Hash::extract($commandarguments, '{n}.Commandargument.command_id');
                             if (!empty($command_id)) {
                                 $command_id = array_pop($command_id);
-                                $command = $this->Command->find('first', [
-                                    'recurisve'  => -1,
-                                    'conditions' => [
-                                        'Command.id' => $command_id,
-                                    ],
-                                    'fields'     => ['Command.uuid'],
-                                ]);
-                                $content .= $this->addContent('check_command', 1, $command['Command']['uuid'] . '!' . implode('!', Hash::extract($commandarguments, '{n}.value')) . '; ' . implode('!', Hash::extract($commandarguments, '{n}.Commandargument.human_name')));
+                                $command = $CommandsTable->getCommandUuidByCommandId($command_id);
+                                $content .= $this->addContent('check_command', 1, $command . '!' . implode('!', Hash::extract($commandarguments, '{n}.value')) . '; ' . implode('!', Hash::extract($commandarguments, '{n}.Commandargument.human_name')));
                                 unset($command);
                             }
                         }
@@ -1371,14 +1354,8 @@ class NagiosExportTask extends AppShell {
                             $command_id = Hash::extract($eventcommandarguments, '{n}.Commandargument.command_id');
                             if (!empty($command_id)) {
                                 $command_id = array_pop($command_id);
-                                $command = $this->Command->find('first', [
-                                    'recurisve'  => -1,
-                                    'conditions' => [
-                                        'Command.id' => $command_id,
-                                    ],
-                                    'fields'     => ['Command.uuid'],
-                                ]);
-                                $content .= $this->addContent('event_handler', 1, $command['Command']['uuid'] . '!' . implode('!', Hash::extract($eventcommandarguments, '{n}.value')) . '; ' . implode('!', Hash::extract($eventcommandarguments, '{n}.Commandargument.human_name')));
+                                $command = $CommandsTable->getCommandUuidByCommandId($command_id);
+                                $content .= $this->addContent('event_handler', 1, $command . '!' . implode('!', Hash::extract($eventcommandarguments, '{n}.value')) . '; ' . implode('!', Hash::extract($eventcommandarguments, '{n}.Commandargument.human_name')));
                                 unset($command);
                             }
                         }
@@ -1570,6 +1547,10 @@ class NagiosExportTask extends AppShell {
      * @param $eventcommandarguments
      */
     public function exportSatService($service, $host, $commandarguments, $eventcommandarguments) {
+        /** @var $CommandsTable CommandsTable */
+        $CommandsTable = TableRegistry::getTableLocator()->get('Commands');
+
+
         $satelliteId = $host['Host']['satellite_id'];
         if (!is_dir($this->conf['satellite_path'] . $satelliteId . DS . $this->conf['services'])) {
             mkdir($this->conf['satellite_path'] . $satelliteId . DS . $this->conf['services']);
@@ -1619,14 +1600,8 @@ class NagiosExportTask extends AppShell {
                 $command_id = Hash::extract($commandarguments, '{n}.Commandargument.command_id');
                 if (!empty($command_id)) {
                     $command_id = array_pop($command_id);
-                    $command = $this->Command->find('first', [
-                        'recurisve'  => -1,
-                        'conditions' => [
-                            'Command.id' => $command_id,
-                        ],
-                        'fields'     => ['Command.uuid'],
-                    ]);
-                    $content .= $this->addContent('check_command', 1, $command['Command']['uuid'] . '!' . implode('!', Hash::extract($commandarguments, '{n}.value')) . '; ' . implode('!', Hash::extract($commandarguments, '{n}.Commandargument.human_name')));
+                    $command = $CommandsTable->getCommandUuidByCommandId($command_id);
+                    $content .= $this->addContent('check_command', 1, $command . '!' . implode('!', Hash::extract($commandarguments, '{n}.value')) . '; ' . implode('!', Hash::extract($commandarguments, '{n}.Commandargument.human_name')));
                     unset($command);
                 }
             }
@@ -1647,14 +1622,8 @@ class NagiosExportTask extends AppShell {
                 $command_id = Hash::extract($eventcommandarguments, '{n}.Commandargument.command_id');
                 if (!empty($command_id)) {
                     $command_id = array_pop($command_id);
-                    $command = $this->Command->find('first', [
-                        'recurisve'  => -1,
-                        'conditions' => [
-                            'Command.id' => $command_id,
-                        ],
-                        'fields'     => ['Command.uuid'],
-                    ]);
-                    $content .= $this->addContent('event_handler', 1, $command['Command']['uuid'] . '!' . implode('!', Hash::extract($eventcommandarguments, '{n}.value')) . '; ' . implode('!', Hash::extract($eventcommandarguments, '{n}.Commandargument.human_name')));
+                    $command = $CommandsTable->getCommandUuidByCommandId($command_id);
+                    $content .= $this->addContent('event_handler', 1, $command . '!' . implode('!', Hash::extract($eventcommandarguments, '{n}.value')) . '; ' . implode('!', Hash::extract($eventcommandarguments, '{n}.Commandargument.human_name')));
                     unset($command);
                 }
             }
@@ -2559,12 +2528,9 @@ class NagiosExportTask extends AppShell {
             $file->create();
         }
 
-        $macros = $this->Macro->find('all', [
-            'fields' => [
-                'name',
-                'value',
-            ],
-        ]);
+        /** @var $Macro MacrosTable */
+        $Macro = TableRegistry::getTableLocator()->get('Macros');
+        $macros = $Macro->getAllMacrosInCake2Format();
 
         foreach ($macros as $macro) {
             $content .= $this->addContent($macro['Macro']['name'] . '=' . $macro['Macro']['value'], 0);
@@ -2583,7 +2549,7 @@ class NagiosExportTask extends AppShell {
             return strpos($value, 'Module') !== false;
         });
         foreach ($modulePlugins as $pluginName) {
-            if (file_exists(APP . 'Plugin/' . $pluginName . '/Console/Command/Task/' . $pluginName . 'NagiosExportTask.php')) {
+            if (file_exists(OLD_APP . 'Plugin/' . $pluginName . '/Console/Command/Task/' . $pluginName . 'NagiosExportTask.php')) {
                 $this->externalTasks[$pluginName] = $pluginName . 'NagiosExport';
             }
         }

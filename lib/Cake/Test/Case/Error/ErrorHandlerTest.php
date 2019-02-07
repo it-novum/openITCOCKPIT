@@ -56,7 +56,7 @@ class ErrorHandlerTest extends CakeTestCase {
 		parent::setUp();
 		App::build(array(
 			'View' => array(
-				CAKE . 'Test' . DS . 'test_app' . DS . 'View' . DS
+				OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'View' . DS
 			)
 		), App::RESET);
 		Router::reload();
@@ -160,8 +160,8 @@ class ErrorHandlerTest extends CakeTestCase {
 	public function testHandleErrorDebugOff() {
 		Configure::write('debug', 0);
 		Configure::write('Error.trace', false);
-		if (file_exists(LOGS . 'debug.log')) {
-			unlink(LOGS . 'debug.log');
+		if (file_exists(OLD_LOGS . 'debug.log')) {
+			unlink(OLD_LOGS . 'debug.log');
 		}
 
 		set_error_handler('ErrorHandler::handleError');
@@ -169,14 +169,14 @@ class ErrorHandlerTest extends CakeTestCase {
 
 		$out .= '';
 
-		$result = file(LOGS . 'debug.log');
+		$result = file(OLD_LOGS . 'debug.log');
 		$this->assertEquals(1, count($result));
 		$this->assertRegExp(
 			'/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} (Notice|Debug): Notice \(8\): Undefined variable:\s+out in \[.+ line \d+\]$/',
 			$result[0]
 		);
-		if (file_exists(LOGS . 'debug.log')) {
-			unlink(LOGS . 'debug.log');
+		if (file_exists(OLD_LOGS . 'debug.log')) {
+			unlink(OLD_LOGS . 'debug.log');
 		}
 	}
 
@@ -188,8 +188,8 @@ class ErrorHandlerTest extends CakeTestCase {
 	public function testHandleErrorLoggingTrace() {
 		Configure::write('debug', 0);
 		Configure::write('Error.trace', true);
-		if (file_exists(LOGS . 'debug.log')) {
-			unlink(LOGS . 'debug.log');
+		if (file_exists(OLD_LOGS . 'debug.log')) {
+			unlink(OLD_LOGS . 'debug.log');
 		}
 
 		set_error_handler('ErrorHandler::handleError');
@@ -197,15 +197,15 @@ class ErrorHandlerTest extends CakeTestCase {
 
 		$out .= '';
 
-		$result = file(LOGS . 'debug.log');
+		$result = file(OLD_LOGS . 'debug.log');
 		$this->assertRegExp(
 			'/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} (Notice|Debug): Notice \(8\): Undefined variable:\s+out in \[.+ line \d+\]$/',
 			$result[0]
 		);
 		$this->assertRegExp('/^Trace:/', $result[1]);
 		$this->assertRegExp('/^ErrorHandlerTest\:\:testHandleErrorLoggingTrace\(\)/', $result[3]);
-		if (file_exists(LOGS . 'debug.log')) {
-			unlink(LOGS . 'debug.log');
+		if (file_exists(OLD_LOGS . 'debug.log')) {
+			unlink(OLD_LOGS . 'debug.log');
 		}
 	}
 
@@ -228,8 +228,8 @@ class ErrorHandlerTest extends CakeTestCase {
  * @return void
  */
 	public function testHandleExceptionLog() {
-		if (file_exists(LOGS . 'error.log')) {
-			unlink(LOGS . 'error.log');
+		if (file_exists(OLD_LOGS . 'error.log')) {
+			unlink(OLD_LOGS . 'error.log');
 		}
 		Configure::write('Exception.log', true);
 		$error = new NotFoundException('Kaboom!');
@@ -239,7 +239,7 @@ class ErrorHandlerTest extends CakeTestCase {
 		$result = ob_get_clean();
 		$this->assertRegExp('/Kaboom!/', $result, 'message missing.');
 
-		$log = file(LOGS . 'error.log');
+		$log = file(OLD_LOGS . 'error.log');
 		$this->assertContains('[NotFoundException] Kaboom!', $log[0], 'message missing.');
 		$this->assertContains('ErrorHandlerTest->testHandleExceptionLog', $log[2], 'Stack trace missing.');
 	}
@@ -250,8 +250,8 @@ class ErrorHandlerTest extends CakeTestCase {
  * @return void
  */
 	public function testHandleExceptionLogSkipping() {
-		if (file_exists(LOGS . 'error.log')) {
-			unlink(LOGS . 'error.log');
+		if (file_exists(OLD_LOGS . 'error.log')) {
+			unlink(OLD_LOGS . 'error.log');
 		}
 		Configure::write('Exception.log', true);
 		Configure::write('Exception.skipLog', array('NotFoundException'));
@@ -268,7 +268,7 @@ class ErrorHandlerTest extends CakeTestCase {
 		$result = ob_get_clean();
 		$this->assertRegExp('/Fooled you!/', $result, 'message missing.');
 
-		$log = file(LOGS . 'error.log');
+		$log = file(OLD_LOGS . 'error.log');
 		$this->assertNotContains('[NotFoundException] Kaboom!', $log[0], 'message should not be logged.');
 		$this->assertContains('[ForbiddenException] Fooled you!', $log[0], 'message missing.');
 	}
@@ -281,7 +281,7 @@ class ErrorHandlerTest extends CakeTestCase {
 	public function testLoadPluginHandler() {
 		App::build(array(
 			'Plugin' => array(
-				CAKE . 'Test' . DS . 'test_app' . DS . 'Plugin' . DS
+				OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'Plugin' . DS
 			)
 		), App::RESET);
 		CakePlugin::load('TestPlugin');
@@ -329,15 +329,15 @@ class ErrorHandlerTest extends CakeTestCase {
  * @return void
  */
 	public function testHandleFatalErrorLog() {
-		if (file_exists(LOGS . 'error.log')) {
-			unlink(LOGS . 'error.log');
+		if (file_exists(OLD_LOGS . 'error.log')) {
+			unlink(OLD_LOGS . 'error.log');
 		}
 
 		ob_start();
 		ErrorHandler::handleFatalError(E_ERROR, 'Something wrong', __FILE__, __LINE__);
 		ob_clean();
 
-		$log = file(LOGS . 'error.log');
+		$log = file(OLD_LOGS . 'error.log');
 		$this->assertContains(__FILE__, $log[0], 'missing filename');
 		$this->assertContains('[FatalErrorException] Something wrong', $log[1], 'message missing.');
 	}

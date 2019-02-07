@@ -8,7 +8,7 @@ if (Configure::read('debug') == 0 && file_exists(WWW_ROOT . 'css/app_build.css')
 }
 echo $this->fetch('css');
 
-$DesignModule = APP . 'Plugin' . DS . 'DesignModule' . DS . 'webroot' . DS . 'css' . DS . 'style.css';
+$DesignModule = OLD_APP . 'Plugin' . DS . 'DesignModule' . DS . 'webroot' . DS . 'css' . DS . 'style.css';
 if (file_exists($DesignModule)) {
 
     if (!Cache::read('design_module_style_time', 'long')) {

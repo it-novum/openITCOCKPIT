@@ -53,10 +53,10 @@ class CommandListShellTest extends CakeTestCase {
 		parent::setUp();
 		App::build(array(
 			'Plugin' => array(
-				CAKE . 'Test' . DS . 'test_app' . DS . 'Plugin' . DS
+				OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'Plugin' . DS
 			),
 			'Console/Command' => array(
-				CAKE . 'Test' . DS . 'test_app' . DS . 'Console' . DS . 'Command' . DS
+				OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'Console' . DS . 'Command' . DS
 			)
 		), App::RESET);
 		CakePlugin::load(array('TestPlugin', 'TestPluginTwo'));

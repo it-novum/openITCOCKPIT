@@ -63,9 +63,9 @@ class ClearCache {
         }
 
         if (count($folders) > 1) {
-            $files = glob(CACHE . '{' . implode(',', $folders) . '}' . DS . '*', GLOB_BRACE);
+            $files = glob(OLD_CACHE . '{' . implode(',', $folders) . '}' . DS . '*', GLOB_BRACE);
         } else {
-            $files = glob(CACHE . $folders[0] . DS . '*');
+            $files = glob(OLD_CACHE . $folders[0] . DS . '*');
         }
 
         foreach ($files as $file) {

@@ -22,6 +22,9 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+use App\Model\Table\ContainersTable;
+use Cake\ORM\TableRegistry;
+use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 
 
 /**
@@ -62,12 +65,15 @@ class ContactgroupsController extends AppController {
     ];
 
     public function index() {
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
         $options = [
             'order'      => [
                 'Container.name' => 'asc',
             ],
             'conditions' => [
-                'Container.parent_id' => $this->Tree->resolveChildrenOfContainerIds($this->MY_RIGHTS),
+                'Container.parent_id' => $ContainersTable->resolveChildrenOfContainerIds($this->MY_RIGHTS),
             ],
         ];
 
@@ -94,10 +100,13 @@ class ContactgroupsController extends AppController {
         if (!$this->Contactgroup->exists($id)) {
             throw new NotFoundException(__('Invalid contact group'));
         }
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
         if ($this->hasRootPrivileges === true) {
-            $containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_CONTACTGROUP, [], $this->hasRootPrivileges);
+            $containers = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_CONTACTGROUP, [], $this->hasRootPrivileges);
         } else {
-            $containers = $this->Tree->easyPath($this->getWriteContainers(), OBJECT_CONTACTGROUP, [], $this->hasRootPrivileges);
+            $containers = $ContainersTable->easyPath($this->getWriteContainers(), OBJECT_CONTACTGROUP, [], $this->hasRootPrivileges);
         }
         $contactgroup = $this->Contactgroup->findById($id);
 
@@ -116,10 +125,13 @@ class ContactgroupsController extends AppController {
             throw new NotFoundException(__('Invalid contactgroup'));
         }
 
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
         if ($this->hasRootPrivileges === true) {
-            $containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_CONTACTGROUP, [], $this->hasRootPrivileges);
+            $containers = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_CONTACTGROUP, [], $this->hasRootPrivileges);
         } else {
-            $containers = $this->Tree->easyPath($this->getWriteContainers(), OBJECT_CONTACTGROUP, [], $this->hasRootPrivileges);
+            $containers = $ContainersTable->easyPath($this->getWriteContainers(), OBJECT_CONTACTGROUP, [], $this->hasRootPrivileges);
         }
         $contactgroup = $this->Contactgroup->findById($id);
 
@@ -130,8 +142,11 @@ class ContactgroupsController extends AppController {
             return;
         }
 
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
         if ($this->request->is('post') || $this->request->is('put')) {
-            $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->request->data['Container']['parent_id']);
+            $containerIds = $ContainersTable->resolveChildrenOfContainerIds($this->request->data['Container']['parent_id']);
             $contacts = $this->Contact->contactsByContainerId($containerIds, 'list');
 
             $ext_data_for_changelog = [];
@@ -183,7 +198,7 @@ class ContactgroupsController extends AppController {
                 $this->setFlash(__('Contactgroup could not be saved'), false);
             }
         } else {
-            $containerIds = $this->Tree->resolveChildrenOfContainerIds($contactgroup['Container']['parent_id']);
+            $containerIds = $ContainersTable->resolveChildrenOfContainerIds($contactgroup['Container']['parent_id']);
             $contacts = $this->Contact->contactsByContainerId($containerIds, 'list');
             $contactgroup['Contactgroup']['Contact'] = Hash::combine($contactgroup['Contact'], '{n}.id', '{n}.id');
         }
@@ -200,10 +215,13 @@ class ContactgroupsController extends AppController {
 
     public function add() {
         $userId = $this->Auth->user('id');
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
         if ($this->hasRootPrivileges === true) {
-            $containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_CONTACTGROUP, [], $this->hasRootPrivileges);
+            $containers = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_CONTACTGROUP, [], $this->hasRootPrivileges);
         } else {
-            $containers = $this->Tree->easyPath($this->getWriteContainers(), OBJECT_CONTACTGROUP, [], $this->hasRootPrivileges);
+            $containers = $ContainersTable->easyPath($this->getWriteContainers(), OBJECT_CONTACTGROUP, [], $this->hasRootPrivileges);
         }
 
         $this->Frontend->set('data_placeholder', __('Please choose a contact'));
@@ -211,8 +229,11 @@ class ContactgroupsController extends AppController {
 
         $contacts = [];
         if ($this->request->is('post') || $this->request->is('put')) {
+            /** @var $ContainersTable ContainersTable */
+            $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
             if (isset($this->request->data['Container']['parent_id'])) {
-                $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->request->data['Container']['parent_id']);
+                $containerIds = $ContainersTable->resolveChildrenOfContainerIds($this->request->data['Container']['parent_id']);
                 $contacts = $this->Contact->contactsByContainerId($containerIds, 'list');
             }
 
@@ -288,9 +309,12 @@ class ContactgroupsController extends AppController {
     public function loadContacts($containerIds = null) {
         $this->allowOnlyAjaxRequests();
 
-        $containerIds = $this->Tree->resolveChildrenOfContainerIds($containerIds);
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerIds);
         $contacts = $this->Contact->contactsByContainerId($containerIds, 'list');
-        $contacts = $this->Contact->makeItJavaScriptAble($contacts);
+        $contacts = Api::makeItJavaScriptAble($contacts);
 
         $data = [
             'contacts' => $contacts,

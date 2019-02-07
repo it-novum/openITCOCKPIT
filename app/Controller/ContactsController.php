@@ -22,13 +22,16 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+use App\Model\Table\CommandsTable;
+use App\Model\Table\ContainersTable;
+use Cake\ORM\TableRegistry;
+use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\PHPVersionChecker;
 
 
 /**
  * @property Contact $Contact
  * @property Container $Container
- * @property Command $Command
  * @property Timeperiod $Timeperiod
  * @property Customvariable $Customvariable
  */
@@ -36,7 +39,6 @@ class ContactsController extends AppController {
     public $uses = [
         'Contact',
         'Container',
-        'Command',
         'Timeperiod',
         'Customvariable',
         'User'
@@ -168,25 +170,10 @@ class ContactsController extends AppController {
         }
 
         /******** Push Notifications ********/
-        $hostPushComamndId = $this->Command->find('first', [
-            'recursive'  => -1,
-            'conditions' => [
-                'Command.uuid' => 'cd13d22e-acd4-4a67-997b-6e120e0d3153'
-            ],
-            'fields'     => [
-                'Command.id'
-            ]
-        ])['Command']['id'];
-
-        $servicePushComamndId = $this->Command->find('first', [
-            'recursive'  => -1,
-            'conditions' => [
-                'Command.uuid' => 'c23255b7-5b1a-40b4-b614-17837dc376af'
-            ],
-            'fields'     => [
-                'Command.id'
-            ]
-        ])['Command']['id'];
+        /** @var $Commands CommandsTable */
+        $Commands = TableRegistry::getTableLocator()->get('Commands');
+        $hostPushComamndId = $Commands->getCommandIdByCommandUuid('cd13d22e-acd4-4a67-997b-6e120e0d3153');
+        $servicePushComamndId = $Commands->getCommandIdByCommandUuid('c23255b7-5b1a-40b4-b614-17837dc376af');
 
         $this->Frontend->setJson('hostPushComamndId', $hostPushComamndId);
         $this->Frontend->setJson('servicePushComamndId', $servicePushComamndId);
@@ -226,8 +213,15 @@ class ContactsController extends AppController {
 
         $this->set('MY_WRITABLE_CONTAINERS', $this->getWriteContainers());
 
-        $containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_CONTACT, [], $this->hasRootPrivileges, [CT_CONTACTGROUP]);
-        $notification_commands = $this->Command->notificationCommands('list');
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        $containers = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_CONTACT, [], $this->hasRootPrivileges, [CT_CONTACTGROUP]);
+
+        /** @var $CommandsTable CommandsTable */
+        $CommandsTable = TableRegistry::getTableLocator()->get('Commands');
+        $notification_commands = $CommandsTable->getCommandByTypeAsList(NOTIFICATION_COMMAND);
+
 
         $containerIds = Hash::extract($contact, 'Container.{n}.id');
 
@@ -316,7 +310,7 @@ class ContactsController extends AppController {
         $this->request->data = Hash::merge($contact, $this->request->data);
 
         if ($containerIds !== '') {
-            $containerIds = $this->Tree->resolveChildrenOfContainerIds($containerIds);
+            $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerIds);
             $_timeperiods = $this->Timeperiod->timeperiodsByContainerId($containerIds, 'list');
             $_users = $this->User->usersByContainerId($containerIds, 'list');
         }
@@ -329,25 +323,10 @@ class ContactsController extends AppController {
         $userId = $this->Auth->user('id');
 
         /******** Push Notifications ********/
-        $hostPushComamndId = $this->Command->find('first', [
-            'recursive'  => -1,
-            'conditions' => [
-                'Command.uuid' => 'cd13d22e-acd4-4a67-997b-6e120e0d3153'
-            ],
-            'fields'     => [
-                'Command.id'
-            ]
-        ])['Command']['id'];
-
-        $servicePushComamndId = $this->Command->find('first', [
-            'recursive'  => -1,
-            'conditions' => [
-                'Command.uuid' => 'c23255b7-5b1a-40b4-b614-17837dc376af'
-            ],
-            'fields'     => [
-                'Command.id'
-            ]
-        ])['Command']['id'];
+        /** @var $Commands CommandsTable */
+        $Commands = TableRegistry::getTableLocator()->get('Commands');
+        $hostPushComamndId = $Commands->getCommandIdByCommandUuid('cd13d22e-acd4-4a67-997b-6e120e0d3153');
+        $servicePushComamndId = $Commands->getCommandIdByCommandUuid('c23255b7-5b1a-40b4-b614-17837dc376af');
 
         $this->Frontend->setJson('hostPushComamndId', $hostPushComamndId);
         $this->Frontend->setJson('servicePushComamndId', $servicePushComamndId);
@@ -376,12 +355,18 @@ class ContactsController extends AppController {
 
         $this->CustomValidationErrors->checkForRefill($customFieldsToRefill);
 
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        /** @var $CommandsTable CommandsTable */
+        $CommandsTable = TableRegistry::getTableLocator()->get('Commands');
+
         if ($this->hasRootPrivileges === true) {
-            $containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_CONTACT, [], $this->hasRootPrivileges, [CT_CONTACTGROUP]);
+            $containers = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_CONTACT, [], $this->hasRootPrivileges, [CT_CONTACTGROUP]);
         } else {
-            $containers = $this->Tree->easyPath($this->getWriteContainers(), OBJECT_CONTACT, [], $this->hasRootPrivileges, [CT_CONTACTGROUP]);
+            $containers = $ContainersTable->easyPath($this->getWriteContainers(), OBJECT_CONTACT, [], $this->hasRootPrivileges, [CT_CONTACTGROUP]);
         }
-        $notification_commands = $this->Command->notificationCommands('list');
+
+        $notification_commands = $CommandsTable->getCommandByTypeAsList(NOTIFICATION_COMMAND);
         $timeperiods = $this->Timeperiod->find('list');
 
         $_timeperiods = [];
@@ -404,7 +389,7 @@ class ContactsController extends AppController {
             if (isset($this->request->data['Container']['Container'])) {
                 $containerIds = $this->request->data['Container']['Container'];
                 if ($containerIds !== '') {
-                    $containerIds = $this->Tree->resolveChildrenOfContainerIds($containerIds);
+                    $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerIds);
                     $_timeperiods = $this->Timeperiod->timeperiodsByContainerId($containerIds, 'list');
 
                     $_users = $this->User->usersByContainerId($containerIds, 'list');
@@ -505,7 +490,7 @@ class ContactsController extends AppController {
         if ($this->request->is('post') || $this->request->is('put')) {
             $samaccountname = str_replace('string:', '', $this->request->data('Ldap.samaccountname'));
             if ($PHPVersionChecker->isVersionGreaterOrEquals7Dot1()) {
-                require_once APP . 'vendor_freedsx_ldap' . DS . 'autoload.php';
+                require_once OLD_APP . 'vendor_freedsx_ldap' . DS . 'autoload.php';
                 $ldap = new \FreeDSx\Ldap\LdapClient([
                     'servers'               => [$systemsettings['FRONTEND']['FRONTEND.LDAP.ADDRESS']],
                     'port'                  => (int)$systemsettings['FRONTEND']['FRONTEND.LDAP.PORT'],
@@ -575,7 +560,7 @@ class ContactsController extends AppController {
 
         if ($PHPVersionChecker->isVersionGreaterOrEquals7Dot1()) {
             $usersForSelect = [];
-            require_once APP . 'vendor_freedsx_ldap' . DS . 'autoload.php';
+            require_once OLD_APP . 'vendor_freedsx_ldap' . DS . 'autoload.php';
             $ldap = new \FreeDSx\Ldap\LdapClient([
                 'servers'               => [$systemsettings['FRONTEND']['FRONTEND.LDAP.ADDRESS']],
                 'port'                  => (int)$systemsettings['FRONTEND']['FRONTEND.LDAP.PORT'],
@@ -639,7 +624,7 @@ class ContactsController extends AppController {
             $usersForSelect = $this->Ldap->findAllUser();
         }
 
-        $usersForSelect = $this->Contact->makeItJavaScriptAble($usersForSelect);
+        $usersForSelect = Api::makeItJavaScriptAble($usersForSelect);
 
         $isPhp7Dot1 = $PHPVersionChecker->isVersionGreaterOrEquals7Dot1();
         $this->set(compact(['usersForSelect', 'systemsettings', 'isPhp7Dot1']));
@@ -653,7 +638,7 @@ class ContactsController extends AppController {
         $samaccountname = $this->request->query('samaccountname');
         if (!empty($samaccountname) && strlen($samaccountname) > 2) {
             $systemsettings = $this->Systemsetting->findAsArraySection('FRONTEND');
-            require_once APP . 'vendor_freedsx_ldap' . DS . 'autoload.php';
+            require_once OLD_APP . 'vendor_freedsx_ldap' . DS . 'autoload.php';
 
             $ldap = new \FreeDSx\Ldap\LdapClient([
                 'servers'               => [$systemsettings['FRONTEND']['FRONTEND.LDAP.ADDRESS']],
@@ -725,7 +710,7 @@ class ContactsController extends AppController {
             }
         }
 
-        $usersForSelect = $this->User->makeItJavaScriptAble($usersForSelect);
+        $usersForSelect = Api::makeItJavaScriptAble($usersForSelect);
 
         $this->set('usersForSelect', $usersForSelect);
         $this->set('_serialize', ['usersForSelect']);
@@ -896,11 +881,14 @@ class ContactsController extends AppController {
     public function loadTimeperiods() {
         $this->allowOnlyAjaxRequests();
 
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
         $timePeriods = [];
         if (isset($this->request->data['container_ids'])) {
-            $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->request->data['container_ids']);
+            $containerIds = $ContainersTable->resolveChildrenOfContainerIds($this->request->data['container_ids']);
             $timePeriods = $this->Timeperiod->timeperiodsByContainerId($containerIds, 'list');
-            $timePeriods = $this->Timeperiod->makeItJavaScriptAble($timePeriods);
+            $timePeriods = Api::makeItJavaScriptAble($timePeriods);
         }
 
         $data = [
@@ -911,13 +899,14 @@ class ContactsController extends AppController {
     }
 
     public function loadUsersByContainerId() {
-        //$this->allowOnlyAjaxRequests();
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
 
         $users = [];
         if (isset($this->request->data['container_ids'])) {
-            $containerIds = $this->Tree->resolveChildrenOfContainerIds($this->request->data['container_ids']);
+            $containerIds = $ContainersTable->resolveChildrenOfContainerIds($this->request->data['container_ids']);
             $users = $this->User->usersByContainerId($containerIds, 'list');
-            $users = $this->User->makeItJavaScriptAble($users);
+            $users = Api::makeItJavaScriptAble($users);
         }
 
         $data = [

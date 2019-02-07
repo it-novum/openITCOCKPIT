@@ -71,27 +71,27 @@
                     <ul class="nav nav-tabs pull-right" id="widget-tab-1">
                         <?php if ($this->Acl->hasPermission('index')): ?>
                             <li class="">
-                                <a href="<?php echo Router::url(array_merge(['controller' => 'hosts', 'action' => 'index'], $this->params['named'])); ?>"><i
+                                <a ui-sref="HostsIndex"><i
                                             class="fa fa-stethoscope"></i> <span
                                             class="hidden-mobile hidden-tablet"> <?php echo __('Monitored'); ?> </span>
                                 </a>
                             </li>
                         <?php endif; ?>
                         <li class="active">
-                            <a href="<?php echo Router::url(array_merge(['controller' => 'hosts', 'action' => 'notMonitored'], $this->params['named'])); ?>"><i
+                            <a ui-sref="HostsNotMonitored"><i
                                         class="fa fa-user-md"></i> <span
                                         class="hidden-mobile hidden-tablet"> <?php echo __('Not monitored'); ?> </span></a>
                         </li>
                         <?php if ($this->Acl->hasPermission('disabled')): ?>
                             <li>
-                                <a href="<?php echo Router::url(array_merge(['controller' => 'hosts', 'action' => 'disabled'], $this->params['named'])); ?>"><i
+                                <a ui-sref="HostsDisabled"><i
                                             class="fa fa-power-off"></i> <span
                                             class="hidden-mobile hidden-tablet"> <?php echo __('Disabled'); ?> </span></a>
                             </li>
                         <?php endif; ?>
                         <?php if ($this->Acl->hasPermission('index', 'DeletedHosts')): ?>
                             <li>
-                                <a href="<?php echo Router::url(array_merge(['controller' => 'deleted_hosts', 'action' => 'index'], $this->params['named'])); ?>"><i
+                                <a ui-sref="DeletedHostsIndex"><i
                                             class="fa fa-trash-o"></i> <span
                                             class="hidden-mobile hidden-tablet"> <?php echo __('Deleted'); ?> </span></a>
                             </li>
@@ -214,7 +214,7 @@
 
                                     <td>
                                         <?php if ($this->Acl->hasPermission('browser')): ?>
-                                            <a href="/hosts/browser/{{ host.Host.id }}">
+                                            <a ui-sref="HostsBrowser({id:host.Host.id})">
                                                 {{ host.Host.hostname }}
                                             </a>
                                         <?php else: ?>

@@ -312,7 +312,7 @@
 
             <div class="modal-footer">
                 <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
-                    <a class="btn btn-primary" href="/services/browser/{{currentServiceDetailsId}}">
+                    <a class="btn btn-primary" ui-sref="ServicesBrowser({id:currentServiceDetailsId})">
                         <i class="fa fa-external-link"></i>
                         <?php echo __('Open details'); ?>
                     </a>

@@ -69,10 +69,10 @@ class Configure {
 		if ($boot) {
 			static::_appDefaults();
 
-			if (!include CONFIG . 'core.php') {
+			if (!include OLD_CONFIG . 'core.php') {
 				trigger_error(__d('cake_dev',
 						"Can't find application core file. Please create %s, and make sure it is readable by PHP.",
-						CONFIG . 'core.php'),
+						OLD_CONFIG . 'core.php'),
 					E_USER_ERROR
 				);
 			}
@@ -95,10 +95,10 @@ class Configure {
 			}
 			static::_setErrorHandlers($error, $exception);
 
-			if (!include CONFIG . 'bootstrap.php') {
+			if (!include OLD_CONFIG . 'bootstrap.php') {
 				trigger_error(__d('cake_dev',
 						"Can't find application bootstrap file. Please create %s, and make sure it is readable by PHP.",
-						CONFIG . 'bootstrap.php'),
+						OLD_CONFIG . 'bootstrap.php'),
 					E_USER_ERROR
 				);
 			}
@@ -126,7 +126,7 @@ class Configure {
 		static::write('App', (array)static::read('App') + array(
 			'base' => false,
 			'baseUrl' => false,
-			'dir' => APP_DIR,
+			'dir' => OLD_APP_DIR,
 			'webroot' => WEBROOT_DIR,
 			'www_root' => WWW_ROOT
 		));
@@ -407,7 +407,7 @@ class Configure {
  */
 	public static function version() {
 		if (!isset(static::$_values['Cake']['version'])) {
-			require CAKE . 'Config' . DS . 'config.php';
+			require OLD_CAKE . 'Config' . DS . 'config.php';
 			static::write($config);
 		}
 		return static::$_values['Cake']['version'];

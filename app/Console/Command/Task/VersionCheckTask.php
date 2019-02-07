@@ -22,6 +22,7 @@
 //  License agreement and license key will be shipped with the order
 //  confirmation.
 
+use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\Http;
 use itnovum\openITCOCKPIT\Core\Interfaces\CronjobInterface;
 use itnovum\openITCOCKPIT\Core\PackagemanagerRequestBuilder;
@@ -48,14 +49,17 @@ class VersionCheckTask extends AppShell implements CronjobInterface {
      */
     public function getNewVersion() {
         $this->loadModel('Register');
-        $this->loadModel('Proxy');
 
-        $License = new License($this->Register->find('first'));
+        /** @var $Proxy App\Model\Table\ProxiesTable */
+        $Proxy = TableRegistry::getTableLocator()->get('Proxies');
+        $Registers = TableRegistry::getTableLocator()->get('Registers');
+        $License = $Registers->getLicense();
+        $License = new License($License);
         $packagemanagerRequestBuilder = new PackagemanagerRequestBuilder(ENVIRONMENT, $License->getLicense());
         $http = new Http(
             $packagemanagerRequestBuilder->getUrl(),
             $packagemanagerRequestBuilder->getOptions(),
-            $this->Proxy->getSettings()
+            $Proxy->getSettings()
         );
 
         //Send https request
@@ -82,7 +86,7 @@ class VersionCheckTask extends AppShell implements CronjobInterface {
      */
     public function saveNewVersion($availableVersion) {
         $newConfig = sprintf($this->getConfigTemplate(), $availableVersion);
-        $fileName = APP . 'Lib' . DS . 'AvailableVersion.php';
+        $fileName = OLD_APP . 'Lib' . DS . 'AvailableVersion.php';
         file_put_contents($fileName, $newConfig);
     }
 
@@ -90,7 +94,7 @@ class VersionCheckTask extends AppShell implements CronjobInterface {
      * @return string
      */
     public function getConfigTemplate() {
-        $fileName = APP . 'src' . DS . 'itnovum' . DS . 'openITCOCKPIT' . DS . 'Core' . DS . 'AvailableVersionTemplate.txt';
+        $fileName = OLD_APP . 'src' . DS . 'itnovum' . DS . 'openITCOCKPIT' . DS . 'Core' . DS . 'AvailableVersionTemplate.txt';
 
         return file_get_contents($fileName);
     }

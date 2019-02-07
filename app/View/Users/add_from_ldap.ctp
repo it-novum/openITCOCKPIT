@@ -68,7 +68,7 @@ use itnovum\openITCOCKPIT\Core\PHPVersionChecker;
                                         chosen="users"
                                         ng-options="user.key as user.value for user in users"
                                         callback="loadUsersByString"
-                                        ng-model="selectedSamAccountName">
+                                        ng-model="data.selectedSamAccountName">
                                 </select>
                                 <div>
                                     <div class="help-block">
@@ -82,7 +82,7 @@ use itnovum\openITCOCKPIT\Core\PHPVersionChecker;
                                         class="form-control"
                                         chosen="users"
                                         ng-options="user.key as user.value for user in users"
-                                        ng-model="selectedSamAccountName">
+                                        ng-model="data.selectedSamAccountName">
                                 </select>
                             <?php endif; ?>
                             <div ng-repeat="error in errors">

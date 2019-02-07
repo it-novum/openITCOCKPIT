@@ -20,7 +20,7 @@ App::uses('Dispatcher', 'Routing');
 App::uses('DispatcherFilter', 'Routing');
 
 if (!class_exists('AppController', false)) {
-	require_once CAKE . 'Test' . DS . 'test_app' . DS . 'Controller' . DS . 'AppController.php';
+	require_once OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'Controller' . DS . 'AppController.php';
 } elseif (!defined('APP_CONTROLLER_EXISTS')) {
 	define('APP_CONTROLLER_EXISTS', true);
 }
@@ -205,7 +205,7 @@ class SomePagesController extends AppController {
  * @return CakeResponse
  */
 	public function sendfile() {
-		$this->response->file(CAKE . 'Test' . DS . 'test_app' . DS . 'Vendor' . DS . 'css' . DS . 'test_asset.css');
+		$this->response->file(OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'Vendor' . DS . 'css' . DS . 'test_asset.css');
 		return $this->response;
 	}
 
@@ -796,7 +796,7 @@ class DispatcherTest extends CakeTestCase {
  */
 	public function testDispatchBasic() {
 		App::build(array(
-			'View' => array(CAKE . 'Test' . DS . 'test_app' . DS . 'View' . DS)
+			'View' => array(OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'View' . DS)
 		));
 		$Dispatcher = new TestDispatcher();
 		Configure::write('App.baseUrl', '/index.php');
@@ -827,7 +827,7 @@ class DispatcherTest extends CakeTestCase {
 
 		unset($Dispatcher);
 
-		require CAKE . 'Config' . DS . 'routes.php';
+		require OLD_CAKE . 'Config' . DS . 'routes.php';
 		$Dispatcher = new TestDispatcher();
 		Configure::write('App.baseUrl', '/timesheets/index.php');
 
@@ -1024,7 +1024,7 @@ class DispatcherTest extends CakeTestCase {
 		$this->assertEquals(array('param' => 'value', 'param2' => 'value2'), $Dispatcher->controller->params['named']);
 
 		Router::reload();
-		require CAKE . 'Config' . DS . 'routes.php';
+		require OLD_CAKE . 'Config' . DS . 'routes.php';
 		$Dispatcher = new TestDispatcher();
 		$Dispatcher->base = false;
 
@@ -1046,7 +1046,7 @@ class DispatcherTest extends CakeTestCase {
 		Configure::write('Routing.prefixes', array('admin'));
 
 		Router::reload();
-		require CAKE . 'Config' . DS . 'routes.php';
+		require OLD_CAKE . 'Config' . DS . 'routes.php';
 		$Dispatcher = new TestDispatcher();
 
 		$url = new CakeRequest('admin/my_plugin/my_plugin/add/5/param:value/param2:value2');
@@ -1069,7 +1069,7 @@ class DispatcherTest extends CakeTestCase {
 		Configure::write('Routing.prefixes', array('admin'));
 		CakePlugin::load('ArticlesTest', array('path' => '/fake/path'));
 		Router::reload();
-		require CAKE . 'Config' . DS . 'routes.php';
+		require OLD_CAKE . 'Config' . DS . 'routes.php';
 
 		$Dispatcher = new TestDispatcher();
 
@@ -1128,7 +1128,7 @@ class DispatcherTest extends CakeTestCase {
 
 		Router::reload();
 		App::build(array(
-			'Plugin' => array(CAKE . 'Test' . DS . 'test_app' . DS . 'Plugin' . DS)
+			'Plugin' => array(OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'Plugin' . DS)
 		), App::RESET);
 		CakePlugin::load(array('TestPlugin', 'TestPluginTwo'));
 
@@ -1204,7 +1204,7 @@ class DispatcherTest extends CakeTestCase {
 	public function testTestPluginDispatch() {
 		$Dispatcher = new TestDispatcher();
 		App::build(array(
-			'Plugin' => array(CAKE . 'Test' . DS . 'test_app' . DS . 'Plugin' . DS)
+			'Plugin' => array(OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'Plugin' . DS)
 		), App::RESET);
 		CakePlugin::load(array('TestPlugin', 'TestPluginTwo'));
 		Router::reload();
@@ -1231,8 +1231,8 @@ class DispatcherTest extends CakeTestCase {
  */
 	public function testDispatcherFilterSubscriber() {
 		App::build(array(
-			'View' => array(CAKE . 'Test' . DS . 'test_app' . DS . 'View' . DS),
-			'Plugin' => array(CAKE . 'Test' . DS . 'test_app' . DS . 'Plugin' . DS)
+			'View' => array(OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'View' . DS),
+			'Plugin' => array(OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'Plugin' . DS)
 		), App::RESET);
 
 		CakePlugin::load('TestPlugin');
@@ -1288,7 +1288,7 @@ class DispatcherTest extends CakeTestCase {
  */
 	public function testDispatcherFilterSuscriberMissing() {
 		App::build(array(
-			'Plugin' => array(CAKE . 'Test' . DS . 'test_app' . DS . 'Plugin' . DS)
+			'Plugin' => array(OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'Plugin' . DS)
 		), App::RESET);
 
 		CakePlugin::load('TestPlugin');
@@ -1308,7 +1308,7 @@ class DispatcherTest extends CakeTestCase {
  */
 	public function testDispatcherFilterCallable() {
 		App::build(array(
-			'View' => array(CAKE . 'Test' . DS . 'test_app' . DS . 'View' . DS)
+			'View' => array(OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'View' . DS)
 		), App::RESET);
 
 		$dispatcher = new TestDispatcher();
@@ -1413,9 +1413,9 @@ class DispatcherTest extends CakeTestCase {
 		Router::reload();
 
 		App::build(array(
-			'Plugin' => array(CAKE . 'Test' . DS . 'test_app' . DS . 'Plugin' . DS),
-			'Vendor' => array(CAKE . 'Test' . DS . 'test_app' . DS . 'Vendor' . DS),
-			'View' => array(CAKE . 'Test' . DS . 'test_app' . DS . 'View' . DS)
+			'Plugin' => array(OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'Plugin' . DS),
+			'Vendor' => array(OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'Vendor' . DS),
+			'View' => array(OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'View' . DS)
 		));
 		CakePlugin::load(array('TestPlugin', 'TestPluginTwo'));
 		Configure::write('Dispatcher.filters', array('AssetDispatcher'));
@@ -1532,9 +1532,9 @@ class DispatcherTest extends CakeTestCase {
 		Router::reload();
 
 		App::build(array(
-			'Plugin' => array(CAKE . 'Test' . DS . 'test_app' . DS . 'Plugin' . DS),
-			'Vendor' => array(CAKE . 'Test' . DS . 'test_app' . DS . 'Vendor' . DS),
-			'View' => array(CAKE . 'Test' . DS . 'test_app' . DS . 'View' . DS)
+			'Plugin' => array(OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'Plugin' . DS),
+			'Vendor' => array(OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'Vendor' . DS),
+			'View' => array(OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'View' . DS)
 		));
 		CakePlugin::load(array('TestPlugin', 'PluginJs'));
 		Configure::write('Dispatcher.filters', array('AssetDispatcher'));
@@ -1545,7 +1545,7 @@ class DispatcherTest extends CakeTestCase {
 		$Dispatcher->dispatch(new CakeRequest($url), $response);
 		$result = ob_get_clean();
 
-		$path = CAKE . 'Test' . DS . 'test_app' . DS . str_replace('/', DS, $file);
+		$path = OLD_CAKE . 'Test' . DS . 'test_app' . DS . str_replace('/', DS, $file);
 		$file = file_get_contents($path);
 		$this->assertEquals($file, $result);
 
@@ -1614,7 +1614,7 @@ class DispatcherTest extends CakeTestCase {
 		Router::connect('/:controller/:action/*');
 
 		App::build(array(
-			'View' => array(CAKE . 'Test' . DS . 'test_app' . DS . 'View' . DS),
+			'View' => array(OLD_CAKE . 'Test' . DS . 'test_app' . DS . 'View' . DS),
 		), App::RESET);
 
 		$dispatcher = new TestDispatcher();
@@ -1736,10 +1736,10 @@ class DispatcherTest extends CakeTestCase {
 		}
 		$path = strtolower(Inflector::slug($path));
 
-		$filename = CACHE . 'views' . DS . $path . '.php';
+		$filename = OLD_CACHE . 'views' . DS . $path . '.php';
 
 		if (!file_exists($filename)) {
-			$filename = CACHE . 'views' . DS . $path . '_index.php';
+			$filename = OLD_CACHE . 'views' . DS . $path . '_index.php';
 		}
 		return $filename;
 	}

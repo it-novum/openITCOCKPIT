@@ -23,6 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use Cake\ORM\TableRegistry;
 use GuzzleHttp\Client;
 use itnovum\openITCOCKPIT\Core\Interfaces\CronjobInterface;
 use itnovum\openITCOCKPIT\Core\System\Health\StatisticsCollector;
@@ -34,7 +35,6 @@ use itnovum\openITCOCKPIT\Core\System\Health\StatisticsCollector;
  *
  * @property Host $Host
  * @property Service $Service
- * @property Proxy $Proxy
  * @property Systemsetting Systemsetting
  */
 class SystemMetricsTask extends AppShell implements CronjobInterface {
@@ -42,7 +42,6 @@ class SystemMetricsTask extends AppShell implements CronjobInterface {
     public $uses = [
         'Host',
         'Service',
-        'Proxy',
         'Systemsetting'
     ];
 
@@ -80,7 +79,10 @@ class SystemMetricsTask extends AppShell implements CronjobInterface {
             ]
         ];
 
-        $proxySettings = $this->Proxy->getSettings();
+        /** @var $Proxy App\Model\Table\ProxiesTable */
+        $Proxy = TableRegistry::getTableLocator()->get('Proxies');
+        $proxySettings = $Proxy->getSettings();
+
         if ($proxySettings['enabled']) {
             $params['proxy']['http'] = sprintf('%s:%s', $proxySettings['ipaddress'], $proxySettings['port']);
             $params['proxy']['https'] = $params['proxy']['http'];

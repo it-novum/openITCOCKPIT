@@ -175,7 +175,7 @@ class DebugConfigNagiosTask extends AppShell {
                 $result = $this->{$ModelName}->find('all', [
                     'conditions' => [
                         'Container.name LIKE'        => '%' . $input . '%',
-                        'Container.containertype_id' => $this->Constants->containertypeByModelName($ModelName),
+                        'Container.containertype_id' => $this->containertypeByModelName($ModelName),
                     ],
                     ['contain']  => [
                         'Container',
@@ -505,5 +505,31 @@ class DebugConfigNagiosTask extends AppShell {
                     }
                 }
         }
+    }
+
+    /**
+     * Returns the containerttype_id of by $ModelName
+     *
+     * @param string $modelName of the Model to check
+     *
+     * @return string with the containertype_id
+     */
+    private function containertypeByModelName($modelName = '') {
+        $objects = [
+            'Servicetemplate' => CT_SERVICETEMPLATEGROUP,
+            'Servicegroup'    => CT_SERVICEGROUP,
+            'Hostgroup'       => CT_HOSTGROUP,
+            'Contactgroup'    => CT_CONTACTGROUP,
+            //'Devicegroup' => CT_DEVICEGROUP,
+            'Location'        => CT_LOCATION,
+            'Tenant'          => CT_TENANT,
+            'Container'       => CT_GLOBAL,
+        ];
+
+        if (isset($objects[$modelName])) {
+            return $objects[$modelName];
+        }
+
+        throw new NotFoundException(__('Object not found'));
     }
 }

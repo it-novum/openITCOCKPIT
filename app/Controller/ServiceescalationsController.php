@@ -22,6 +22,9 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+use App\Model\Table\ContainersTable;
+use Cake\ORM\TableRegistry;
+use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 
 
 /**
@@ -188,7 +191,9 @@ class ServiceescalationsController extends AppController {
             return;
         }
 
-        $containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_SERVICEESCALATION, [], $this->hasRootPrivileges);
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        $containers = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_SERVICEESCALATION, [], $this->hasRootPrivileges);
         list($servicegroups, $services, $timeperiods, $contacts, $contactgroups) = $this->getAvailableDataByContainerId($serviceescalation['Serviceescalation']['container_id']);
 
         if ($this->request->is('post') || $this->request->is('put')) {
@@ -270,7 +275,9 @@ class ServiceescalationsController extends AppController {
         $contactgroups = [];
         $timeperiods = [];
 
-        $containers = $this->Tree->easyPath($this->MY_RIGHTS, OBJECT_SERVICEESCALATION, [], $this->hasRootPrivileges);
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        $containers = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_SERVICEESCALATION, [], $this->hasRootPrivileges);
 
         $customFieldsToRefill = [
             'Serviceescalation' => [
@@ -372,18 +379,22 @@ class ServiceescalationsController extends AppController {
         if (!$this->request->is('ajax')) {
             throw new MethodNotAllowedException();
         }
-        if (!$this->Container->exists($containerId)) {
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        if (!$ContainersTable->existsById($containerId)) {
             throw new NotFoundException(__('Invalid hosttemplate'));
         }
 
         list($servicegroups, $services, $timeperiods, $contacts, $contactgroups) =
             $this->getAvailableDataByContainerId($containerId);
 
-        $servicegroups = $this->Servicegroup->makeItJavaScriptAble($servicegroups);
-        $services = $this->Service->makeItJavaScriptAble($services);
-        $timeperiods = $this->Timeperiod->makeItJavaScriptAble($timeperiods);
-        $contacts = $this->Contact->makeItJavaScriptAble($contacts);
-        $contactgroups = $this->Contactgroup->makeItJavaScriptAble($contactgroups);
+        $servicegroups = Api::makeItJavaScriptAble($servicegroups);
+        $services = Api::makeItJavaScriptAble($services);
+        $timeperiods = Api::makeItJavaScriptAble($timeperiods);
+        $contacts = Api::makeItJavaScriptAble($contacts);
+        $contactgroups = Api::makeItJavaScriptAble($contactgroups);
 
         $servicegroupsExcluded = $servicegroups;
         $servicesExcluded = $services;
@@ -407,7 +418,10 @@ class ServiceescalationsController extends AppController {
      * @return array
      */
     protected function getAvailableDataByContainerId($containerIds) {
-        $containerIds = $this->Tree->resolveChildrenOfContainerIds($containerIds);
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerIds);
 
         $servicegroups = $this->Servicegroup->servicegroupsByContainerId($containerIds, 'list', 'id');
         $services = $this->Host->servicesByContainerIds($containerIds, 'list', ['forOptiongroup' => true]);

@@ -46,11 +46,11 @@ class ProjectTask extends AppShell {
 		if (isset($this->args[0])) {
 			$project = $this->args[0];
 		} else {
-			$appContents = array_diff(scandir(APP), array('.', '..'));
+			$appContents = array_diff(scandir(OLD_APP), array('.', '..'));
 			if (empty($appContents)) {
-				$suggestedPath = rtrim(APP, DS);
+				$suggestedPath = rtrim(OLD_APP, DS);
 			} else {
-				$suggestedPath = APP . 'myapp';
+				$suggestedPath = OLD_APP . 'myapp';
 			}
 		}
 
@@ -79,14 +79,14 @@ class ProjectTask extends AppShell {
 			if ($this->securitySalt($path) === true) {
 				$this->out(__d('cake_console', ' * Random hash key created for \'Security.salt\''));
 			} else {
-				$this->err(__d('cake_console', 'Unable to generate random hash for \'Security.salt\', you should change it in %s', CONFIG . 'core.php'));
+				$this->err(__d('cake_console', 'Unable to generate random hash for \'Security.salt\', you should change it in %s', OLD_CONFIG . 'core.php'));
 				$success = false;
 			}
 
 			if ($this->securityCipherSeed($path) === true) {
 				$this->out(__d('cake_console', ' * Random seed created for \'Security.cipherSeed\''));
 			} else {
-				$this->err(__d('cake_console', 'Unable to generate random seed for \'Security.cipherSeed\', you should change it in %s', CONFIG . 'core.php'));
+				$this->err(__d('cake_console', 'Unable to generate random seed for \'Security.cipherSeed\', you should change it in %s', OLD_CONFIG . 'core.php'));
 				$success = false;
 			}
 
@@ -114,8 +114,8 @@ class ProjectTask extends AppShell {
 			}
 			$success = $this->corePath($path, $hardCode) === true;
 			if ($success) {
-				$this->out(__d('cake_console', ' * CAKE_CORE_INCLUDE_PATH set to %s in %s', CAKE_CORE_INCLUDE_PATH, 'webroot/index.php'));
-				$this->out(__d('cake_console', ' * CAKE_CORE_INCLUDE_PATH set to %s in %s', CAKE_CORE_INCLUDE_PATH, 'webroot/test.php'));
+				$this->out(__d('cake_console', ' * CAKE_CORE_INCLUDE_PATH set to %s in %s', OLD_CAKE_CORE_INCLUDE_PATH, 'webroot/index.php'));
+				$this->out(__d('cake_console', ' * CAKE_CORE_INCLUDE_PATH set to %s in %s', OLD_CAKE_CORE_INCLUDE_PATH, 'webroot/test.php'));
 			} else {
 				$this->err(__d('cake_console', 'Unable to set CAKE_CORE_INCLUDE_PATH, you should change it in %s', $path . 'webroot' . DS . 'index.php'));
 				$success = false;
@@ -172,7 +172,7 @@ class ProjectTask extends AppShell {
 			$skel = $this->in(
 				__d('cake_console', "What is the path to the directory layout you wish to copy?"),
 				null,
-				CAKE . 'Console' . DS . 'Templates' . DS . 'skel'
+				OLD_CAKE . 'Console' . DS . 'Templates' . DS . 'skel'
 			);
 			if (!$skel) {
 				$this->err(__d('cake_console', 'The directory path you supplied was empty. Please try again.'));
@@ -181,7 +181,7 @@ class ProjectTask extends AppShell {
 					$skel = $this->in(
 						__d('cake_console', 'Directory path does not exist please choose another:'),
 						null,
-						CAKE . 'Console' . DS . 'Templates' . DS . 'skel'
+						OLD_CAKE . 'Console' . DS . 'Templates' . DS . 'skel'
 					);
 				}
 			}
@@ -237,8 +237,8 @@ class ProjectTask extends AppShell {
 		$File = new File($path . 'Console' . DS . 'cake.php');
 		$contents = $File->read();
 		if (preg_match('/(__CAKE_PATH__)/', $contents, $match)) {
-			$root = strpos(CAKE_CORE_INCLUDE_PATH, '/') === 0 ? " DS . '" : "'";
-			$replacement = $root . str_replace(DS, "' . DS . '", trim(CAKE_CORE_INCLUDE_PATH, DS)) . "'";
+			$root = strpos(OLD_CAKE_CORE_INCLUDE_PATH, '/') === 0 ? " DS . '" : "'";
+			$replacement = $root . str_replace(DS, "' . DS . '", trim(OLD_CAKE_CORE_INCLUDE_PATH, DS)) . "'";
 			$result = str_replace($match[0], $replacement, $contents);
 			if ($File->write($result)) {
 				return true;
@@ -314,7 +314,7 @@ class ProjectTask extends AppShell {
  * @return bool Success
  */
 	public function corePath($path, $hardCode = true) {
-		if (dirname($path) !== CAKE_CORE_INCLUDE_PATH) {
+		if (dirname($path) !== OLD_CAKE_CORE_INCLUDE_PATH) {
 			$filename = $path . 'webroot' . DS . 'index.php';
 			if (!$this->_replaceCorePath($filename, $hardCode)) {
 				return false;
@@ -337,10 +337,10 @@ class ProjectTask extends AppShell {
 	protected function _replaceCorePath($filename, $hardCode) {
 		$contents = file_get_contents($filename);
 
-		$root = strpos(CAKE_CORE_INCLUDE_PATH, '/') === 0 ? " DS . '" : "'";
-		$corePath = $root . str_replace(DS, "' . DS . '", trim(CAKE_CORE_INCLUDE_PATH, DS)) . "'";
+		$root = strpos(OLD_CAKE_CORE_INCLUDE_PATH, '/') === 0 ? " DS . '" : "'";
+		$corePath = $root . str_replace(DS, "' . DS . '", trim(OLD_CAKE_CORE_INCLUDE_PATH, DS)) . "'";
 
-		$composer = ROOT . DS . APP_DIR . DS . 'Vendor' . DS . 'cakephp' . DS . 'cakephp' . DS . 'lib';
+		$composer = OLD_ROOT . DS . OLD_APP_DIR . DS . 'Vendor' . DS . 'cakephp' . DS . 'cakephp' . DS . 'lib';
 		if (file_exists($composer)) {
 			$corePath = " ROOT . DS . APP_DIR . DS . 'Vendor' . DS . 'cakephp' . DS . 'cakephp' . DS . 'lib'";
 		}
@@ -362,7 +362,7 @@ class ProjectTask extends AppShell {
  * @return bool Success
  */
 	public function cakeAdmin($name) {
-		$path = (empty($this->configPath)) ? CONFIG : $this->configPath;
+		$path = (empty($this->configPath)) ? OLD_CONFIG : $this->configPath;
 		$File = new File($path . 'core.php');
 		$contents = $File->read();
 		if (preg_match('%(\s*[/]*Configure::write\(\'Routing.prefixes\',[\s\'a-z,\)\(]*\);)%', $contents, $match)) {

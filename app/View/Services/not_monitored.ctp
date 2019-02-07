@@ -70,21 +70,21 @@ $this->Paginator->options(['url' => $this->params['named']]);
                     <ul class="nav nav-tabs pull-right" id="widget-tab-1">
                         <?php if ($this->Acl->hasPermission('index')): ?>
                             <li class="">
-                                <a href="<?php echo Router::url(array_merge(['controller' => 'services', 'action' => 'index'], $this->params['named'])); ?>">
+                                <a ui-sref="ServicesIndex">
                                     <i class="fa fa-stethoscope"></i> <span
                                             class="hidden-mobile hidden-tablet"> <?php echo __('Monitored'); ?></span>
                                 </a>
                             </li>
                         <?php endif; ?>
                         <li class="active">
-                            <a href="<?php echo Router::url(array_merge(['controller' => 'services', 'action' => 'notMonitored'], $this->params['named'])); ?>">
+                            <a ui-sref="ServicesNotMonitored">
                                 <i class="fa fa-user-md"></i> <span
                                         class="hidden-mobile hidden-tablet"> <?php echo __('Not monitored'); ?></span>
                             </a>
                         </li>
                         <?php if ($this->Acl->hasPermission('disabled')): ?>
                             <li class="">
-                                <a href="<?php echo Router::url(array_merge(['controller' => 'services', 'action' => 'disabled'], $this->params['named'])); ?>">
+                                <a ui-sref="ServicesDisabled">
                                     <i class="fa fa-plug"></i> <span
                                             class="hidden-mobile hidden-tablet"> <?php echo __('Disabled'); ?></span>
                                 </a>
@@ -163,7 +163,7 @@ $this->Paginator->options(['url' => $this->params['named']]);
 
                                         <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
                                             <a class="padding-left-5 txt-color-blueDark"
-                                               href="/hosts/browser/{{host.Host.id}}">
+                                               ui-sref="HostsBrowser({id:host.Host.id})">
                                                 {{host.Host.hostname}} ({{host.Host.address}})
                                             </a>
                                         <?php else: ?>
@@ -195,7 +195,7 @@ $this->Paginator->options(['url' => $this->params['named']]);
 
                                     <td>
                                         <?php if ($this->Acl->hasPermission('browser')): ?>
-                                            <a href="/services/browser/{{ service.Service.id }}">
+                                            <a ui-sref="ServicesBrowser({id:service.Service.id})">
                                                 {{ service.Service.servicename }}
                                             </a>
                                         <?php else: ?>

@@ -136,7 +136,7 @@ class AppAuthComponent extends AuthComponent {
                         return false;
                     }
 
-                    require_once APP . 'vendor_freedsx_ldap' . DS . 'autoload.php';
+                    require_once OLD_APP . 'vendor_freedsx_ldap' . DS . 'autoload.php';
 
                     $ldap = new \FreeDSx\Ldap\LdapClient([
                         'servers'               => [$systemsettings['FRONTEND']['FRONTEND.LDAP.ADDRESS']],

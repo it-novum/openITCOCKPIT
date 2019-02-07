@@ -202,7 +202,7 @@ class GrafanaConfiguration extends GrafanaModuleAppModel {
         }
         $GrafanaApiConfiguration = GrafanaApiConfiguration::fromArray($grafanaConfiguration);
 
-        $client = $this->testConnection($GrafanaApiConfiguration, $this->Proxy->getSettings());
+        $client = $this->testConnection($GrafanaApiConfiguration, []);
 
         $request = new Request('POST', $this->GrafanaApiConfiguration->getApiUrl() . '/dashboards/db', ['content-type' => 'application/json'], $uuid);
 

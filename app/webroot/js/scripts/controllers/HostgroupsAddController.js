@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('HostgroupsAddController', function($scope, $http){
+    .controller('HostgroupsAddController', function($scope, $http, $state, NotyService){
 
 
         $scope.post = {
@@ -57,9 +57,15 @@ angular.module('openITCOCKPIT')
             $http.post("/hostgroups/add.json?angular=true",
                 $scope.post
             ).then(function(result){
+                NotyService.genericSuccess();
+                $state.go('HostgroupsIndex');
+
                 console.log('Data saved successfully');
-                window.location.href = '/hostgroups/index';
+                //window.location.href = '/hostgroups/index';
             }, function errorCallback(result){
+
+                NotyService.genericError();
+
                 if(result.data.hasOwnProperty('error')){
                     $scope.errors = result.data.error;
                 }

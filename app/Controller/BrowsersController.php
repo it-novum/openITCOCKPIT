@@ -25,6 +25,9 @@
 
 //App::import('Model', 'Host');
 //App::import('Model', 'Container');
+use App\Model\Table\ContainersTable;
+use Cake\ORM\TableRegistry;
+use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\ModuleManager;
 use itnovum\openITCOCKPIT\Monitoring\QueryHandler;
 
@@ -81,18 +84,22 @@ class BrowsersController extends AppController {
         $tenants = $tenantsFiltered;
         natcasesort($tenants);
 
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
         if ((int)$containerId === ROOT_CONTAINER && !empty($tenants)) {
             //First request if tenants are not empty or ROOT_CONTAINER
 
-            $this->set('containers', $this->Container->makeItJavaScriptAble($tenants));
-            $this->set('breadcrumbs', $this->Container->makeItJavaScriptAble([ROOT_CONTAINER => __('root')]));
+            $this->set('containers', Api::makeItJavaScriptAble($tenants));
+            $this->set('breadcrumbs', Api::makeItJavaScriptAble([ROOT_CONTAINER => __('root')]));
         } else {
             //Child container (or so)
 
             if ($this->hasRootPrivileges === true) {
-                $browser = Hash::extract($this->Container->children($containerId, true), '{n}.Container[containertype_id=/^(' . CT_GLOBAL . '|' . CT_TENANT . '|' . CT_LOCATION . '|' . CT_NODE . ')$/]');
+                $children = $ContainersTable->getChildren($containerId);
+                $browser = Hash::extract($children, '{n}[containertype_id=/^(' . CT_GLOBAL . '|' . CT_TENANT . '|' . CT_LOCATION . '|' . CT_NODE . ')$/]');
             } else {
-                $containerNest = Hash::nest($this->Container->children($containerId));
+                $containerNest = $ContainersTable->getChildren($containerId, true);
                 $browser = $this->Browser->getFirstContainers($containerNest, $this->MY_RIGHTS, [CT_GLOBAL, CT_TENANT, CT_LOCATION, CT_NODE]);
             }
 
@@ -111,23 +118,19 @@ class BrowsersController extends AppController {
                 $containers[$node['id']] = $node['name'];
             }
 
-            $currentContainer = $this->Container->find('first', [
-                'recursive'  => -1,
-                'conditions' => [
-                    'Container.id' => $containerId
-                ]
-            ]);
+            $currentContainer = $ContainersTable->get($containerId)->toArray();
+            
             $breadcrumbs = [];
-            $parents = $this->Container->getPath($currentContainer['Container']['parent_id']);
+            $parents = $ContainersTable->getPathByIdAndCacheResult($currentContainer['parent_id'], 'BrowsersIndex');
 
             foreach ($parents as $parentContainer) {
-                if (in_array((int)$parentContainer['Container']['id'], $this->MY_RIGHTS, true)) {
-                    $breadcrumbs[$parentContainer['Container']['id']] = $parentContainer['Container']['name'];
+                if (in_array((int)$parentContainer['id'], $this->MY_RIGHTS, true)) {
+                    $breadcrumbs[$parentContainer['id']] = $parentContainer['name'];
                 }
             }
-            $breadcrumbs[$currentContainer['Container']['id']] = $currentContainer['Container']['name'];
-            $this->set('containers', $this->Container->makeItJavaScriptAble($containers));
-            $this->set('breadcrumbs', $this->Container->makeItJavaScriptAble($breadcrumbs));
+            $breadcrumbs[$currentContainer['id']] = $currentContainer['name'];
+            $this->set('containers', Api::makeItJavaScriptAble($containers));
+            $this->set('breadcrumbs', Api::makeItJavaScriptAble($breadcrumbs));
 
         }
 

@@ -23,13 +23,25 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use Cake\ORM\TableRegistry;
+
 class SystemsettingsController extends AppController {
-    public $layout = 'Admin.default';
-    //public $components = ['Bbcode'];
-    //public $helpers = ['Bbcode'];
+    public $layout = 'angularjs';
 
     public function index() {
-        $all_systemsettings = $this->Systemsetting->findNice();
+        /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
+        $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
+        $all_systemsettings = $Systemsettings->getSettings();
+
+        foreach ($all_systemsettings as $key => $value){
+            foreach ($value as $key2 => $systemsetting){
+                $all_systemsettings[$key][$key2]['exploded'] = explode('.', $systemsetting['key'], 2)[1]; //This parse the PREFIX MONITORIN. or WEBSERVER. or WHATEVER. away
+            }
+        }
+
+        $this->set(compact(['all_systemsettings']));
+        $this->set('_serialize', ['all_systemsettings']);
+
         if ($this->request->is('post') || $this->request->is('put')) {
             if ($this->Systemsetting->saveAll($this->request->data)) {
                 Cache::clear(false, 'permissions');
@@ -52,7 +64,6 @@ class SystemsettingsController extends AppController {
             }
         }
 
-        $this->set(compact(['all_systemsettings']));
-        $this->set('_serialize', ['all_systemsettings']);
+
     }
 }

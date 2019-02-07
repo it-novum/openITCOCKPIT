@@ -64,7 +64,7 @@ class InstantReportTask extends AppShell implements CronjobInterface {
             $InstantreportsController = new InstantreportsController();
             $InstantreportsController->cronFromDate = $this->Instantreport->reportStartTime($mInstantReport['Instantreport']['send_interval']);
             $InstantreportsController->cronToDate = $this->Instantreport->reportEndTime($mInstantReport['Instantreport']['send_interval']);
-            $InstantreportsController->cronPdfName = APP . 'tmp/InstantReport_' . $mInstantReport['Instantreport']['id'] . '.pdf';
+            $InstantreportsController->cronPdfName = OLD_APP . 'tmp/InstantReport_' . $mInstantReport['Instantreport']['id'] . '.pdf';
             $InstantreportsController->generate($mInstantReport['Instantreport']['id']);
             $attachmentArray[preg_replace('[^0-9a-zA-Z_\s]', '_', $mInstantReport['Instantreport']['name']) . '.pdf'] = [
                 'file'     => $InstantreportsController->cronPdfName,
@@ -98,7 +98,7 @@ class InstantReportTask extends AppShell implements CronjobInterface {
     }
 
     public function cleanUp() {
-        $savePath = APP . '/webroot/img/charts/';
+        $savePath = OLD_APP . '/webroot/img/charts/';
         if (!is_dir($savePath)) {
             return false;
         }

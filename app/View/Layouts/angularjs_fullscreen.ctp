@@ -51,8 +51,8 @@ if (ENVIRONMENT === Environments::PRODUCTION) {
     $core = new Folder(WWW_ROOT . 'js' . DS . 'scripts');
     $uncompressedAngular = str_replace(WWW_ROOT, '', $core->findRecursive('.*\.js'));
     foreach (CakePlugin::loaded() as $pluginName) {
-        $plugin = new Folder(APP . 'Plugin' . DS . $pluginName . DS . 'webroot' . DS . 'js' . DS . 'scripts');
-        $filenames = str_replace(APP . 'Plugin' . DS . $pluginName . DS . 'webroot' . DS, '', $plugin->findRecursive('.*\.js'));
+        $plugin = new Folder(OLD_APP . 'Plugin' . DS . $pluginName . DS . 'webroot' . DS . 'js' . DS . 'scripts');
+        $filenames = str_replace(OLD_APP . 'Plugin' . DS . $pluginName . DS . 'webroot' . DS, '', $plugin->findRecursive('.*\.js'));
         if (!empty($filenames)) {
             $fullPath = [];
             foreach ($filenames as $filename) {

@@ -54,15 +54,13 @@
                         <?php echo __('Tenant'); ?>
                     </label>
                     <div class="col col-xs-11">
-
                         <select
                                 id="TenantSelect"
                                 data-placeholder="<?php echo __('Please choose'); ?>"
                                 class="form-control"
                                 chosen="tenants"
+                                ng-model="selectedTenant.id"
                                 ng-options="tenant.Container.id as tenant.Container.name for tenant in tenants"
-                                ng-model="selectedTenant"
-
                         >
                         </select>
 

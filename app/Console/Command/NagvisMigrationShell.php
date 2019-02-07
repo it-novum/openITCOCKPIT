@@ -96,7 +96,7 @@ class NagvisMigrationShell extends AppShell {
         $configFileList = $this->getFileList('getConfigfiles.php');
 
         //check download directory
-        $pluginPath = APP . 'Plugin' . DS . 'MapModule' . DS . 'webroot' . DS;
+        $pluginPath = OLD_APP . 'Plugin' . DS . 'MapModule' . DS . 'webroot' . DS;
         $dirName = 'NagvisMaps';
         $cfgDownloadDir = $pluginPath . $dirName;
         //create download dir if there is no one
@@ -1094,7 +1094,7 @@ class NagvisMigrationShell extends AppShell {
     protected function createDownloadDirectory($dir) {
         $this->out('<info>Creating Download Folder</info>');
         //take an example folder to get the rights
-        $exampleFolder = APP . 'Plugin' . DS . 'MapModule' . DS . 'webroot' . DS . 'js' . DS;
+        $exampleFolder = OLD_APP . 'Plugin' . DS . 'MapModule' . DS . 'webroot' . DS . 'js' . DS;
         $owner = posix_getpwuid(fileowner($exampleFolder));
         mkdir($dir, fileperms($exampleFolder));
         chown($dir, $owner['name']);

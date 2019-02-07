@@ -23,6 +23,9 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use App\Model\Table\ContainersTable;
+use Cake\ORM\TableRegistry;
+
 class Location extends AppModel {
     var $belongsTo = [
         'Container' => [
@@ -47,26 +50,35 @@ class Location extends AppModel {
 
     public function __delete($location, $userId) {
         if (is_numeric($location)) {
-            $locationId = $location;
-            $location = $this->findById($location);
+            $location = $this->find('first', [
+                'recursive'  => -1,
+                'conditions' => [
+                    'Location.id' => $location
+                ],
+                'contain'    => [
+                    'Container'
+                ]
+            ]);
         } else {
             $locationId = $location['Location']['id'];
         }
 
-        $Container = ClassRegistry::init('Container');
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
         $Host = ClassRegistry::init('Host');
         //CakePHP will delete the device groups for us but we need to cleanup the hosts
-        $nodes = $Container->find('all', [
-            'conditions' => [
-                'Container.parent_id' => $location['Container']['id'],
-            ],
-        ]);
+        $nodes = $ContainersTable->getAllContainerByParentId($location['Container']['id']);
 
         $hostIds = [];
         foreach ($nodes as $node) {
             $hosts = $Host->find('all', [
+                'recursive'  => -1,
+                'fields'     => [
+                    'Host.id',
+                    'Host.uuid'
+                ],
                 'conditions' => [
-                    'Host.container_id' => $node['Container']['id'],
+                    'Host.container_id' => $node['id'],
                 ],
             ]);
             $hostIds[] = Hash::extract($hosts, '{n}.Host.id');
@@ -78,7 +90,7 @@ class Location extends AppModel {
                     $Host->__delete($host, $userId);
                 }
             }
-            if ($Container->delete($location['Container']['id'])) {
+            if ($ContainersTable->deleteContainerById($location['Container']['id'])) {
                 return true;
             }
 

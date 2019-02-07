@@ -1,12 +1,14 @@
 angular.module('openITCOCKPIT')
-    .controller('HostsBrowserController', function($scope, $rootScope, $http, QueryStringService, SortService, $interval){
+    .controller('HostsBrowserController', function($scope, $rootScope, $http, QueryStringService, $stateParams, $state, SortService, $interval, StatusHelperService){
 
-        $scope.id = QueryStringService.getCakeId();
+        //$scope.id = QueryStringService.getCakeId();
+        $scope.id = $stateParams.id;
 
         $scope.activeTab = 'active';
         SortService.setSort('Servicestatus.current_state');
         SortService.setDirection('desc');
         $scope.currentPage = 1;
+        $scope.selectedTab = 'tab1';
 
         $scope.deleteUrl = '/services/delete/';
         $scope.deactivateUrl = '/services/deactivate/';
@@ -122,6 +124,15 @@ angular.module('openITCOCKPIT')
 
                 $scope.load();
                 $scope.loadGrafanaIframeUrl();
+
+                $scope.hostBrowserMenu = {
+                    hostId: $scope.mergedHost.Host.id,
+                    hostUuid: $scope.mergedHost.Host.uuid,
+                    allowEdit: $scope.mergedHost.Host.allowEdit,
+                    hostUrl: $scope.mergedHost.Host.host_url_replaced,
+                    docuExists: result.data.docuExists,
+                    isHostBrowser: true
+                };
 
                 $scope.init = false;
             });
@@ -390,20 +401,7 @@ angular.module('openITCOCKPIT')
         };
 
         var getHoststatusTextColor = function(){
-            switch($scope.hoststatus.currentState){
-                case 0:
-                case '0':
-                    return 'txt-color-green';
-
-                case 1:
-                case '1':
-                    return 'txt-color-red';
-
-                case 2:
-                case '2':
-                    return 'txt-color-blueLight';
-            }
-            return 'txt-primary';
+            return StatusHelperService.getHoststatusTextColor($scope.hoststatus.currentState);
         };
 
         var buildParentHostProblems = function(){

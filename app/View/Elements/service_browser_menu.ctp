@@ -23,79 +23,73 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 ?>
-<?php if ($this->request->params['action'] == 'browser' && $this->request->params['controller'] == 'services'): ?>
-    <span
-            ng-if="canSubmitExternalCommands && mergedService.Service.allowEdit"
-            ng-click="reschedule(getObjectsForExternalCommand())"
-            class="btn btn-default btn-sm">
-    <i class="fa fa-refresh fa-lg"></i>
+<span
+        ng-if="serviceBrowserMenu.isServiceBrowser && canSubmitExternalCommands && mergedService.Service.allowEdit"
+        ng-click="reschedule(getObjectsForExternalCommand())"
+        class="btn btn-default btn-sm">
+<i class="fa fa-refresh fa-lg"></i>
 </span>
-<?php endif; ?>
 <?php if ($this->Acl->hasPermission('view', 'documentations')): ?>
-    <span style="position:relative;">
-        <a href="/documentations/view/<?php echo $service['Service']['uuid']; ?>/service"
+    <span ng-if="serviceBrowserMenu.serviceType == 1" style="position:relative;">
+        <a ui-sref="DocumentationsView({uuid:serviceBrowserMenu.serviceUuid, type:'service'})"
            data-original-title="<?php echo __('Documentation'); ?>" data-placement="bottom" rel="tooltip"
            class="btn btn-default btn-sm"><i class="fa fa-book fa-lg"></i></a>
-        <?php if ($docuExists === true): ?>
-            <span class="badge bg-color-green docu-badge"><i class="fa fa-check"></i></span>
-        <?php endif; ?>
+        <span ng-show="serviceBrowserMenu.docuExists" class="badge bg-color-green docu-badge"><i
+                    class="fa fa-check"></i></span>
     </span>
 <?php endif; ?>
 <?php if ($this->Acl->hasPermission('serviceNotification', 'notifications')): ?>
-    <a href="/notifications/serviceNotification/<?php echo $service['Service']['id']; ?>"
+    <a ui-sref="NotificationsServiceNotification({id:serviceBrowserMenu.serviceId})"
        data-original-title="<?php echo _('Notifications'); ?>" data-placement="bottom" rel="tooltip"
        class="btn btn-default btn-sm"><i class="fa fa-envelope fa-lg"></i></a>
 <?php endif; ?>
 <?php if ($this->Acl->hasPermission('index', 'servicechecks')): ?>
-    <a href="/servicechecks/index/<?php echo $service['Service']['id']; ?>"
+    <a ui-sref="ServicechecksIndex({id:serviceBrowserMenu.serviceId})"
        data-original-title="<?php echo _('Check history'); ?>" data-placement="bottom" rel="tooltip"
        class="btn btn-default btn-sm"><i class="fa fa-check-square-o fa-lg"></i></a>
 <?php endif; ?>
 <?php if ($this->Acl->hasPermission('service', 'statehistories')): ?>
-    <a href="/statehistories/service/<?php echo $service['Service']['id']; ?>"
+    <a ui-sref="StatehistoriesService({id:serviceBrowserMenu.serviceId})"
        data-original-title="<?php echo _('State history'); ?>" data-placement="bottom" rel="tooltip"
        class="btn btn-default btn-sm"><i class="fa fa-history fa-lg"></i></a>
 <?php endif; ?>
 <?php if ($this->Acl->hasPermission('service', 'acknowledgements')): ?>
-    <a href="/acknowledgements/service/<?php echo $service['Service']['id']; ?>"
+    <a ui-sref="AcknowledgementsService({id:serviceBrowserMenu.serviceId})"
        data-original-title="<?php echo _('Acknowledgement history'); ?>" data-placement="bottom" rel="tooltip"
        class="btn btn-default btn-sm"><i class="fa fa-user fa-lg"></i></a>
 <?php endif; ?>
-<?php if ($service['Service']['service_url'] !== '' && $service['Service']['service_url'] !== null):
-    $serviceUrl = $service['Service']['service_url'];
-
-    $ServiceUrlHostMacroReplacer = new \itnovum\openITCOCKPIT\Core\HostMacroReplacer($service);
-    $serviceUrl = $ServiceUrlHostMacroReplacer->replaceBasicMacros($serviceUrl);
-    $ServiceUrlMacroReplacer = new \itnovum\openITCOCKPIT\Core\ServiceMacroReplacer($service);
-    $serviceUrl = $ServiceUrlMacroReplacer->replaceBasicMacros($serviceUrl);
-    ?>
-    <a href="<?php echo $serviceUrl; ?>" data-original-title="<?php echo _('External link'); ?>" data-placement="bottom"
-       rel="tooltip" target="_blank" class="btn btn-default btn-sm"><i class="fa fa-external-link fa-lg"></i></a>
+<a ng-show="serviceBrowserMenu.serviceUrl" href="{{ serviceBrowserMenu.serviceUrl }}"
+   data-original-title="<?php echo _('External link'); ?>" data-placement="bottom"
+   rel="tooltip" target="_blank" class="btn btn-default btn-sm"><i class="fa fa-external-link fa-lg"></i></a>
+<?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
+    <a ng-if="serviceBrowserMenu.allowEdit"
+       href="/hosts/edit/{{ serviceBrowserMenu.hostId }}/_controller:services/_action:browser/_id:{{ serviceBrowserMenu.hostId }}/"
+       data-original-title="<?php echo _('Edit host'); ?>"
+       data-placement="bottom" rel="tooltip" class="btn btn-default btn-sm"><i class="fa fa-cog fa-lg"></i></a>
 <?php endif; ?>
-<?php if ($allowEdit): ?>
-    <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
-        <a href="/hosts/edit/<?php echo $service['Host']['id']; ?>/_controller:services/_action:browser/_id:<?php echo $service['Service']['id']; ?>/"
-           data-original-title="<?php echo _('Edit host'); ?>"
-           data-placement="bottom" rel="tooltip" class="btn btn-default btn-sm"><i class="fa fa-cog fa-lg"></i></a>
-    <?php endif; ?>
-    <?php if ($this->Acl->hasPermission('edit', 'services')): ?>
-        <a href="/services/edit/<?php echo $service['Service']['id']; ?>/_controller:services/_action:browser/_id:<?php echo $service['Service']['id']; ?>/"
-           data-original-title="<?php echo _('Edit service'); ?>" data-placement="bottom" rel="tooltip"
-           class="btn btn-default btn-sm"><i class="fa fa-cogs fa-lg"></i></a>
-    <?php endif; ?>
+<?php if ($this->Acl->hasPermission('edit', 'services')): ?>
+    <a ng-if="serviceBrowserMenu.allowEdit"
+       href="/services/edit/{{ serviceBrowserMenu.serviceId }}/_controller:services/_action:browser/_id:{{ serviceBrowserMenu.serviceId }}/"
+       data-original-title="<?php echo _('Edit service'); ?>" data-placement="bottom" rel="tooltip"
+       class="btn btn-default btn-sm"><i class="fa fa-cogs fa-lg"></i></a>
 <?php endif; ?>
 
 <?php
-if ($this->Acl->hasPermission('edit', 'services') && !empty($additionalLinksList)):
-    if ($service['Service']['name'] === null || $service['Service']['name'] === ''):
-        $service['Service']['name'] = $service['Servicetemplate']['name'];
-    endif; ?>
+if ($this->Acl->hasPermission('edit', 'services') && !empty($additionalLinksList)): ?>
     <div class="btn-group">
         <a href="javascript:void(0);" class="btn btn-default btn-sm"><?php echo __('More'); ?></a>
         <a href="javascript:void(0);" data-toggle="dropdown" class="btn btn-default dropdown-toggle btn-sm"><span
                     class="caret"></span></a>
         <ul class="dropdown-menu dropdown-menu-right">
-            <?php echo $this->AdditionalLinks->renderAsListItems($additionalLinksList, $service['Service']['id'], $service); ?>
+            <?php
+            echo $this->AdditionalLinks->renderAsListItems(
+                $additionalLinksList,
+                '{{serviceBrowserMenu.serviceId}}',
+                [],
+                true,
+                'serviceBrowserMenu.allowEdit'
+            );
+            ?>
         </ul>
     </div>
 <?php endif; ?>

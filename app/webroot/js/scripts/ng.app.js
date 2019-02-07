@@ -1,4 +1,4 @@
-angular.module('openITCOCKPIT', ['gridster'])
+angular.module('openITCOCKPIT', ['gridster', 'ui.router'])
 
     .factory("httpInterceptor", function($q, $rootScope, $timeout){
         return {
@@ -90,6 +90,191 @@ angular.module('openITCOCKPIT', ['gridster'])
 
     })
 
+
+    .config(function($urlRouterProvider, $stateProvider){
+        $stateProvider
+
+            .state('DeletedHostsIndex', {
+                url: '/deletedHosts',
+                templateUrl: "/deletedHosts/index.html",
+                controller: "DeletedHostsIndexController"
+            })
+
+            .state('HostsIndex', {
+                url: '/hosts/index',
+                templateUrl: "/hosts/index.html",
+                controller: "HostsIndexController"
+            })
+
+            .state('HostsNotMonitored', {
+                url: '/hosts/notMonitored',
+                templateUrl: "/hosts/notMonitored.html",
+                controller: "HostsNotMonitoredController"
+            })
+
+            .state('HostsDisabled', {
+                url: '/hosts/disabled',
+                templateUrl: "/hosts/disabled.html",
+                controller: "HostsDisabledController"
+            })
+
+            .state('HostsBrowser', {
+                url: '/hosts/browser/:id',
+                templateUrl: "/hosts/browser.html",
+                controller: "HostsBrowserController"
+            })
+
+            .state('ServicesIndex', {
+                url: '/services/index',
+                templateUrl: "/services/index.html",
+                controller: "ServicesIndexController"
+            })
+
+            .state('ServicesNotMonitored', {
+                url: '/services/notMonitored',
+                templateUrl: "/services/notMonitored.html",
+                controller: "ServicesNotMonitoredController"
+            })
+
+            .state('ServicesBrowser', {
+                url: '/services/browser/:id',
+                templateUrl: "/services/browser.html",
+                controller: "ServicesBrowserController"
+            })
+
+            .state('ServicesDisabled', {
+                url: '/services/disabled',
+                templateUrl: "/services/disabled.html",
+                controller: "ServicesDisabledController"
+            })
+
+            .state('ServicechecksIndex', {
+                url: '/servicechecks/index/:id',
+                templateUrl: "/servicechecks/index.html",
+                controller: "ServicechecksIndexController"
+            })
+
+            .state('HostgroupsIndex', {
+                url: '/hostgroups/index',
+                templateUrl: "/hostgroups/index.html",
+                controller: "HostgroupsIndexController"
+            })
+
+            .state('HostgroupsAdd', {
+                url: '/hostgroups/add',
+                templateUrl: "/hostgroups/add.html",
+                controller: "HostgroupsAddController"
+            })
+
+            .state('HostgroupsEdit', {
+                url: '/hostgroups/edit/:id',
+                templateUrl: "/hostgroups/edit.html",
+                controller: "HostgroupsEditController"
+            })
+
+            .state('HostgroupsExtended', {
+                url: '/hostgroups/extended',
+                templateUrl: "/hostgroups/extended.html",
+                controller: "HostgroupsExtendedController"
+            })
+
+            .state('HostchecksIndex', {
+                url: '/hostchecks/index/:id',
+                templateUrl: "/hostchecks/index.html",
+                controller: "HostchecksIndexController"
+            })
+
+            .state('StatehistoriesHost', {
+                url: '/statehistories/host/:id',
+                templateUrl: "/statehistories/host.html",
+                controller: "StatehistoriesHostController"
+            })
+
+            .state('StatehistoriesService', {
+                url: '/statehistories/service/:id',
+                templateUrl: "/statehistories/service.html",
+                controller: "StatehistoriesServiceController"
+            })
+
+            .state('CommandsIndex', {
+                url: '/commands/index',
+                templateUrl: "/commands/index.html",
+                controller: "CommandsIndexController"
+            })
+
+            .state('CommandsAdd', {
+                url: '/commands/add',
+                templateUrl: "/commands/add.html",
+                controller: "CommandsAddController"
+            })
+
+            .state('CommandsEdit', {
+                url: '/commands/edit/:id',
+                templateUrl: "/commands/edit.html",
+                controller: "CommandsEditController"
+            })
+
+            .state('CommandsCopy', {
+                url: '/commands/copy/:ids',
+                templateUrl: "/commands/copy.html",
+                controller: "CommandsCopyController"
+            })
+
+            .state('TimeperiodsIndex', {
+                url: '/timeperiods/index',
+                templateUrl: "/timeperiods/index.html",
+                controller: "TimeperiodsIndexController"
+            })
+
+            .state('TimeperiodsAdd', {
+                url: '/timeperiods/add',
+                templateUrl: "/timeperiods/add.html",
+                controller: "TimeperiodsAddController"
+            })
+
+            .state('TimeperiodsEdit', {
+                url: '/timeperiods/edit/:id',
+                templateUrl: "/timeperiods/edit.html",
+                controller: "TimeperiodsEditController"
+            })
+
+            .state('TimeperiodsCopy', {
+                url: '/timeperiods/copy/:ids',
+                templateUrl: "/timeperiods/copy.html",
+                controller: "TimeperiodsCopyController"
+            })
+
+            .state('DocumentationsView', {
+                url: '/documentations/view/:uuid/:type',
+                templateUrl: "/documentations/view.html",
+                controller: "DocumentationsViewController"
+            })
+
+            .state('NotificationsHostNotification', {
+                url: '/notifications/hostNotification/:id',
+                templateUrl: "/notifications/hostNotification.html",
+                controller: "NotificationsHostNotificationController"
+            })
+
+            .state('NotificationsServiceNotification', {
+                url: '/notifications/serviceNotification/:id',
+                templateUrl: "/notifications/serviceNotification.html",
+                controller: "NotificationsServiceNotificationController"
+            })
+
+            .state('AcknowledgementsHost', {
+                url: '/acknowledgements/host/:id',
+                templateUrl: "/acknowledgements/host.html",
+                controller: "AcknowledgementsHostController"
+            })
+
+            .state('AcknowledgementsService', {
+                url: '/acknowledgements/service/:id',
+                templateUrl: "/acknowledgements/service.html",
+                controller: "AcknowledgementsServiceController"
+            })
+    })
+
     /*
     .config(function($urlRouterProvider, $stateProvider){
         //$urlRouterProvider.otherwise("/dashboard");
@@ -174,7 +359,12 @@ angular.module('openITCOCKPIT', ['gridster'])
 
     .filter('highlight', function($sce){
         return function(title, searchString){
-            if(searchString) title = title.replace(new RegExp('(' + searchString + ')', 'gi'),
+            searchString = searchString.replace(/\s/g, "");
+            let newSearchString = "";
+            for (var i = 0; i < searchString.length; i++) {
+                newSearchString += searchString.charAt(i)+"\\s*";
+            }
+            if(searchString) title = title.replace(new RegExp('(' + newSearchString + ')', 'gi'),
                 '<span class="search-highlight">$1</span>');
 
             return $sce.trustAsHtml(title)

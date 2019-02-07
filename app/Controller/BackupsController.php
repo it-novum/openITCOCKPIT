@@ -26,7 +26,6 @@
 class BackupsController extends AppController {
     public $layout = 'Admin.default';
     public $components = ['GearmanClient'];
-    public $uses = ['Proxy'];
 
     public function index() {
         $backup_files = $this->getBackupFiles();

@@ -29,6 +29,8 @@
  * a host belongsTo a container (many to one)
  */
 
+use App\Model\Table\ContainersTable;
+use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\HostgroupConditions;
 
 class Hostgroup extends AppModel {
@@ -73,24 +75,23 @@ class Hostgroup extends AppModel {
         if (!is_array($container_ids)) {
             $container_ids = [$container_ids];
         }
-        //Lookup for the tenant container of $container_id
-        $this->Container = ClassRegistry::init('Container');
 
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
         $tenantContainerIds = [];
 
         foreach ($container_ids as $container_id) {
             if ($container_id != ROOT_CONTAINER) {
-
                 // Get contaier id of the tenant container
                 // $container_id is may be a location, devicegroup or whatever, so we need to container id of the tenant container to load contactgroups and contacts
-                $path = $this->Container->getPath($container_id);
+                $path = $ContainersTable->getPathByIdAndCacheResult($container_id, 'HostgroupHostgroupsByContainerId');
 
                 foreach ($path as $containers) {
-                    if ($containers["Container"]["containertype_id"] == CT_HOSTGROUP) {
-                        $tenantContainerIds[] = $containers["Container"]['parent_id'];
+                    if ($containers['containertype_id'] == CT_HOSTGROUP) {
+                        $tenantContainerIds[] = $containers['parent_id'];
                     }
                 }
-                $tenantContainerIds[] = $path[1]['Container']['id'];
+                $tenantContainerIds[] = $path[1]['id'];
             } else {
                 $tenantContainerIds[] = ROOT_CONTAINER;
             }
@@ -100,11 +101,10 @@ class Hostgroup extends AppModel {
         $hostgroupsAsList = [];
 
         foreach ($tenantContainerIds as $tenantContainerId) {
-
-            $children = $this->Container->children($tenantContainerId, true);
+            $children = $ContainersTable->find('children', ['for' => $tenantContainerId])->disableHydration()->all()->toArray();
             foreach ($children as $child) {
-                if ($child['Container']['containertype_id'] == CT_HOSTGROUP) {
-                    $hostgroupsAsList[$child['Container']['id']] = $child['Container']['name'];
+                if ($child['containertype_id'] == CT_HOSTGROUP) {
+                    $hostgroupsAsList[$child['id']] = $child['name'];
                 }
             }
         }
@@ -159,8 +159,6 @@ class Hostgroup extends AppModel {
 
                 return $hostgroupsAsList;
         }
-
-        return [];
     }
 
     public function findHostgroups($type = 'all', $options = [], $index = 'id') {
@@ -168,15 +166,14 @@ class Hostgroup extends AppModel {
             return $this->find('all', $options);
         }
 
+        $return = [];
         if ($type == 'list') {
-            $return = [];
             $results = $this->find('all', $options);
             foreach ($results as $result) {
                 $return[$result['Hostgroup'][$index]] = $result['Container']['name'];
             }
-
-            return $return;
         }
+        return $return;
     }
 
     public function findList($options = [], $index = 'id') {

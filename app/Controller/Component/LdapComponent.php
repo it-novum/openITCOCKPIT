@@ -38,7 +38,7 @@ class LdapComponent extends Component {
         parent::__construct($collection, $settings);
 
         //Load external lib
-        require_once APP . 'Model' . DS . 'Adldap.php';
+        require_once OLD_APP . 'Model' . DS . 'Adldap.php';
 
         //Load Systemsettings
         $this->Systemsetting = ClassRegistry::init('Systemsetting');
