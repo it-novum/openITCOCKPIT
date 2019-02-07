@@ -50,7 +50,7 @@ if (isset($QueryHandler) && !$QueryHandler->exists()): ?>
             <i class="fa fa-cog fa-fw"></i>
             {{ mergedService.Service.name }}
             <?php echo __('on'); ?>
-            <a href="/ng/#!/hosts/browser/{{host.Host.id}}">
+            <a ui-sref="HostsBrowser({id:host.Host.id})">
                 <span>
                     {{ host.Host.name }}
                     ({{ host.Host.address }})
@@ -360,7 +360,7 @@ if (isset($QueryHandler) && !$QueryHandler->exists()): ?>
                                                 </div>
                                                 <div>
                                                     <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
-                                                        <a href="/hosts/browser/{{host.Host.id}}">
+                                                        <a ui-sref="HostsBrowser({id:host.Host.id})">
                                                             {{host.Host.name}}
                                                         </a>
                                                     <?php else: ?>
@@ -553,7 +553,7 @@ if (isset($QueryHandler) && !$QueryHandler->exists()): ?>
                                                     </td>
                                                     <td>
                                                         <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
-                                                            <a href="/hosts/browser/{{host.Host.id}}">
+                                                            <a ui-sref="HostsBrowser({id:host.Host.id})">
                                                                 {{ host.Host.name }}
                                                             </a>
                                                         <?php else: ?>

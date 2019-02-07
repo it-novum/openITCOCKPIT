@@ -444,7 +444,7 @@
 
                                     <td>
                                         <?php if ($this->Acl->hasPermission('browser')): ?>
-                                            <a href="/services/browser/{{ service.Service.id }}">
+                                            <a ui-sref="ServicesBrowser({id:service.Service.id})">
                                                 {{ service.Service.servicename }}
                                             </a>
                                         <?php else: ?>

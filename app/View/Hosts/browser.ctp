@@ -361,7 +361,7 @@ if (isset($QueryHandler) && !$QueryHandler->exists()): ?>
                                                 <div>
                                                     <ul>
                                                         <li ng-repeat="parentHostProblem in parentHostProblems">
-                                                            <a href="/hosts/browser/{{parentHostProblem.id}}">
+                                                            <a ui-sref="HostsBrowser({id:parentHostProblem.id})">
                                                                 {{parentHostProblem.name}}
                                                             </a>
                                                         </li>
@@ -464,7 +464,7 @@ if (isset($QueryHandler) && !$QueryHandler->exists()): ?>
                                                                 state="parentHoststatus[parenthost.uuid].currentState"></hoststatusicon>
                                                     </td>
                                                     <td>
-                                                        <a href="/hosts/browser/{{parenthost.id}}">
+                                                        <a ui-sref="HostsBrowser({id:parenthost.id})">
                                                             {{ parenthost.name }}
                                                         </a>
                                                     </td>
@@ -1182,7 +1182,7 @@ if (isset($QueryHandler) && !$QueryHandler->exists()): ?>
 
                                         <td class="text-center">
                                             <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
-                                                <a href="/services/browser/{{ service.Service.id }}"
+                                                <a ui-sref="ServicesBrowser({id:service.Service.id})"
                                                    class="txt-color-blueDark">
                                                     <i class="fa fa-lg fa-area-chart"
                                                        ng-mouseenter="mouseenter($event, mergedHost.Host.uuid, service)"
@@ -1208,7 +1208,7 @@ if (isset($QueryHandler) && !$QueryHandler->exists()): ?>
 
                                         <td>
                                             <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
-                                                <a href="/services/browser/{{ service.Service.id }}">
+                                                <a ui-sref="ServicesBrowser({id:service.Service.id})">
                                                     {{ service.Service.servicename }}
                                                 </a>
                                             <?php else: ?>
@@ -1320,7 +1320,7 @@ if (isset($QueryHandler) && !$QueryHandler->exists()): ?>
 
                                     <td>
                                         <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
-                                            <a href="/services/browser/{{ service.Service.id }}">
+                                            <a ui-sref="ServicesBrowser({id:service.Service.id})">
                                                 {{ service.Service.servicename }}
                                             </a>
                                         <?php else: ?>
@@ -1416,7 +1416,7 @@ if (isset($QueryHandler) && !$QueryHandler->exists()): ?>
 
                                         <td>
                                             <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
-                                                <a href="/services/browser/{{ service.Service.id }}">
+                                                <a ui-sref="ServicesBrowser({id:service.Service.id})">
                                                     {{ service.Service.servicename }}
                                                 </a>
                                             <?php else: ?>
