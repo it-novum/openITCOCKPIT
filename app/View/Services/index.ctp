@@ -152,23 +152,25 @@
 
                                 <div class="col-xs-12 col-md-6">
                                     <div class="form-group smart-form">
-                                        <i class="icon-prepend fa fa-filter"></i>
+                                        <label class="input"><i class="icon-prepend fa fa-filter"></i>
                                         <input type="text" class="input-sm"
                                                data-role="tagsinput"
                                                placeholder="<?php echo __('Filter by tags'); ?>"
                                                ng-model="filter.Service.keywords"
                                                ng-model-options="{debounce: 500}">
+                                        </label>
                                     </div>
                                 </div>
 
                                 <div class="col-xs-12 col-md-offset-6 col-md-6">
                                     <div class="form-group smart-form">
-                                        <i class="icon-prepend fa fa-filter"></i>
+                                        <label class="input"><i class="icon-prepend fa fa-filter"></i>
                                         <input type="text" class="input-sm"
                                                data-role="tagsinput"
                                                placeholder="<?php echo __('Filter by excluded tags'); ?>"
                                                ng-model="filter.Service.not_keywords"
                                                ng-model-options="{debounce: 500}">
+                                        </label>
                                     </div>
                                 </div>
 

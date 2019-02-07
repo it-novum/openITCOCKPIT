@@ -1,15 +1,15 @@
 angular.module('openITCOCKPIT')
-    .controller('StatehistoriesServiceController', function($scope, $http, $rootScope, $httpParamSerializer, SortService, QueryStringService){
+    .controller('StatehistoriesServiceController', function($scope, $http, $rootScope, $httpParamSerializer, SortService, QueryStringService, $stateParams, StatusHelperService, $interval){
 
         SortService.setSort(QueryStringService.getValue('sort', 'StatehistoryService.state_time'));
         SortService.setDirection(QueryStringService.getValue('direction', 'desc'));
         $scope.currentPage = 1;
 
-        $scope.id = QueryStringService.getCakeId();
+        $scope.id = $stateParams.id;
+        $scope.useScroll = true;
 
         var now = new Date();
-
-        $scope.useScroll = true;
+        var flappingInterval;
 
         /*** Filter Settings ***/
         var defaultFilter = function(){
@@ -67,6 +67,28 @@ angular.module('openITCOCKPIT')
                 $scope.scroll = result.data.scroll;
                 $scope.init = false;
             });
+
+            $http.get("/services/serviceBrowserMenu/" + $scope.id + ".json", {
+                params: {
+                    'angular': true
+                }
+            }).then(function(result) {
+                $scope.service = result.data.service;
+                $scope.servicestatus = result.data.servicestatus;
+                $scope.serviceStatusTextClass = StatusHelperService.getServicestatusTextColor($scope.servicestatus.currentState);
+
+                $scope.serviceBrowserMenu = {
+                    hostId: $scope.service.Host.id,
+                    hostUuid: $scope.service.Host.uuid,
+                    serviceId: $scope.service.Service.id,
+                    serviceUuid: $scope.service.Service.uuid,
+                    serviceType: $scope.service.Service.service_type,
+                    allowEdit: $scope.service.Service.allowEdit,
+                    serviceUrl: $scope.service.Service.service_url_replaced,
+                    docuExists: result.data.docuExists,
+                    isServiceBrowser: false
+                };
+            });
         };
 
         $scope.triggerFilter = function(){
@@ -90,6 +112,24 @@ angular.module('openITCOCKPIT')
             $scope.load();
         };
 
+        $scope.startFlapping = function() {
+            $scope.stopFlapping();
+            flappingInterval = $interval(function() {
+                if ($scope.flappingState === 0) {
+                    $scope.flappingState = 1;
+                } else {
+                    $scope.flappingState = 0;
+                }
+            }, 750);
+        };
+
+        $scope.stopFlapping = function() {
+            if (flappingInterval) {
+                $interval.cancel(flappingInterval);
+            }
+            flappingInterval = null;
+        };
+
         //Fire on page load
         defaultFilter();
         SortService.setCallback($scope.load);
@@ -98,5 +138,20 @@ angular.module('openITCOCKPIT')
             $scope.currentPage = 1;
             $scope.load();
         }, true);
+
+        $scope.$watch('servicestatus.isFlapping', function() {
+            if ($scope.servicestatus) {
+                if ($scope.servicestatus.hasOwnProperty('isFlapping')) {
+                    if ($scope.servicestatus.isFlapping === true) {
+                        $scope.startFlapping();
+                    }
+
+                    if ($scope.servicestatus.isFlapping === false) {
+                        $scope.stopFlapping();
+                    }
+
+                }
+            }
+        });
 
     });

@@ -75,23 +75,23 @@ if (isset($QueryHandler) && !$QueryHandler->exists()): ?>
                     {{ host.Host.name }} / {{ mergedService.Service.name }}
                 </h2>
                 <ul class="nav nav-tabs pull-right" id="widget-tab-1">
-                    <li class="active">
-                        <a href="#tab1" data-toggle="tab">
+                    <li class="active cursor-pointer">
+                        <a ng-click="selectedTab = 'tab1'; hideTimeline()" data-toggle="tab">
                             <i class="fa fa-lg fa-info"></i>
                             <span class="hidden-mobile hidden-tablet"> <?php echo __('Status information'); ?></span>
                         </a>
                     </li>
 
-                    <li class="">
-                        <a href="#tab2" data-toggle="tab">
+                    <li class="cursor-pointer">
+                        <a ng-click="selectedTab = 'tab2'; hideTimeline()" data-toggle="tab">
                             <i class="fa fa-lg fa-cog"></i>
                             <span class="hidden-mobile hidden-tablet"> <?php echo __('Service information'); ?> </span>
                         </a>
                     </li>
 
                     <?php if ($this->Acl->hasPermission('timeline', 'services')): ?>
-                        <li class="">
-                            <a href="#tab3" data-toggle="tab" ng-click="showTimeline()">
+                        <li class="cursor-pointer">
+                            <a ng-click="selectedTab = 'tab3'; showTimeline()" data-toggle="tab">
                                 <i class="fa fa-lg fa-clock-o"></i>
                                 <span class="hidden-mobile hidden-tablet"> <?php echo __('Timeline'); ?> </span>
                             </a>
@@ -113,7 +113,7 @@ if (isset($QueryHandler) && !$QueryHandler->exists()): ?>
 
                 <div class="widget-body no-padding">
                     <div class="tab-content no-padding">
-                        <div id="tab1" class="tab-pane fade active in">
+                        <div ng-show="selectedTab == 'tab1'" class="tab-pane fade active in">
                             <div class="hidden-sm hidden-md hidden-lg"
                                  ng-class="{'browser-state-green': stateIsOk(), 'browser-state-yellow': stateIsWarning(), 'browser-state-red': stateIsCritical(), 'browser-state-gray': stateIsUnknown(), 'browser-state-blue': stateIsNotInMonitoring()}"
                                  ng-if="servicestatus">
@@ -834,7 +834,7 @@ if (isset($QueryHandler) && !$QueryHandler->exists()): ?>
 
                         </div>
 
-                        <div id="tab2" class="tab-pane fade in">
+                        <div ng-show="selectedTab == 'tab2'" class="tab-pane active fade in">
                             <div class="row">
                                 <div class="col-xs-12 padding-10">
                                     <div class="row">
@@ -925,7 +925,7 @@ if (isset($QueryHandler) && !$QueryHandler->exists()): ?>
                             </div>
                         </div>
 
-                        <div id="tab3" class="fade in" ng-show="showTimelineTab">
+                        <div class="fade in active" ng-show="showTimelineTab && selectedTab == 'tab3'">
                             <div class="row">
                                 <div class="col-xs-12 padding-10">
                                     <div class="row">
@@ -1025,7 +1025,7 @@ if (isset($QueryHandler) && !$QueryHandler->exists()): ?>
 
 
                         <!-- render additional Tabs if necessary -->
-                        <?php echo $this->AdditionalLinks->renderAsTabs($additionalLinksTab, null, 'host'); ?>
+                        <?php echo $this->AdditionalLinks->renderAsTabs($additionalLinksTab, null, 'host', 'tab', null, true); ?>
                     </div>
 
                     <div class="widget-footer text-right"></div>

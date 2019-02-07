@@ -47,11 +47,10 @@ echo $this->Form->create('Documentation', [
                 <?php echo $this->element('host_browser_menu'); ?>
             </div>
             <div ng-if="type == 'service'" class="pull-right">
-                <a <!--ui-sref="ServicesBrowser({id:serviceBrowserMenu.serviceId})"-->
-                class="btn btn-primary btn-sm"><i
+                <a ui-sref="ServicesBrowser({id:serviceBrowserMenu.serviceId})" class="btn btn-primary btn-sm"><i
                         class="fa fa-arrow-circle-left"></i> <?php echo $this->Html->underline('b', __('Back to Service')); ?>
                 </a>
-                <?php //echo $this->element('service_browser_menu'); ?>
+                <?php echo $this->element('service_browser_menu'); ?>
             </div>
             <div ng-if="type == 'servicetemplate'" class="pull-right">
                 <a href="/servicetemplates/index" class="btn btn-primary btn-sm"><i

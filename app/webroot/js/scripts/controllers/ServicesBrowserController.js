@@ -1,7 +1,8 @@
 angular.module('openITCOCKPIT')
-    .controller('ServicesBrowserController', function($scope, $http, QueryStringService, $interval){
+    .controller('ServicesBrowserController', function($scope, $http, QueryStringService, $interval, $stateParams){
 
-        $scope.id = QueryStringService.getCakeId();
+        $scope.id = $stateParams.id;
+        $scope.selectedTab = 'tab1';
 
         $scope.showFlashSuccess = false;
 
@@ -122,10 +123,21 @@ angular.module('openITCOCKPIT')
                     $scope.currentDataSource = $scope.dataSources[0];
                 }
 
-
                 if($scope.mergedService.Service.has_graph){
                     loadGraph($scope.host.Host.uuid, $scope.mergedService.Service.uuid, false, graphStart, graphEnd, true);
                 }
+
+                $scope.serviceBrowserMenu = {
+                    hostId: $scope.host.Host.id,
+                    hostUuid: $scope.host.Host.uuid,
+                    serviceId: $scope.mergedService.Service.id,
+                    serviceUuid: $scope.mergedService.Service.uuid,
+                    serviceType: $scope.mergedService.Service.service_type,
+                    allowEdit: $scope.mergedService.Service.allowEdit,
+                    serviceUrl: $scope.mergedService.Service.service_url_replaced,
+                    docuExists: result.data.docuExists,
+                    isServiceBrowser: true
+                };
 
                 $scope.init = false;
             });

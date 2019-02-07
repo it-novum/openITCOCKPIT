@@ -2013,6 +2013,12 @@ class ServicesController extends AppController {
             $rawService['Service']['service_url'] = $rawService['Servicetemplate']['service_url'];
         }
 
+        $ServiceMacroReplacer = new \itnovum\openITCOCKPIT\Core\ServiceMacroReplacer($rawService);
+        $rawService['Service']['service_url_replaced'] = $rawService['Service']['service_url'];
+        if ($rawService['Service']['service_url'] !== '' && $rawService['Service']['service_url'] !== null) {
+            $rawService['Service']['service_url_replaced'] = $ServiceMacroReplacer->replaceBasicMacros($rawService['Service']['service_url']);
+        }
+
         $rawHost = $this->Host->find('first', $this->Host->getQueryForServiceBrowser($rawService['Service']['host_id']));
         $host = new \itnovum\openITCOCKPIT\Core\Views\Host($rawHost);
         $rawHost['Host']['is_satellite_host'] = $host->isSatelliteHost();
@@ -2105,6 +2111,11 @@ class ServicesController extends AppController {
         $mergedService['retryIntervalHuman'] = $UserTime->secondsInHumanShort($mergedService['Service']['retry_interval']);
         $mergedService['notificationIntervalHuman'] = $UserTime->secondsInHumanShort($mergedService['Service']['notification_interval']);
 
+        $ServiceMacroReplacer = new \itnovum\openITCOCKPIT\Core\ServiceMacroReplacer($mergedService);
+        $mergedService['Service']['service_url_replaced'] = $mergedService['Service']['service_url'];
+        if ($mergedService['Service']['service_url'] !== '' && $mergedService['Service']['service_url'] !== null) {
+            $mergedService['Service']['service_url_replaced'] = $ServiceMacroReplacer->replaceBasicMacros($mergedService['Service']['service_url']);
+        }
 
         // Replace $HOSTNAME$
         $ServiceMacroReplacerCommandLine = new HostMacroReplacer($rawHost);
@@ -2277,11 +2288,13 @@ class ServicesController extends AppController {
             }
         }
 
+        $docuExists = $this->Documentation->existsForUuid($mergedService['Service']['uuid']);
 
         $canSubmitExternalCommands = $this->hasPermission('externalcommands', 'hosts');
 
         $this->set('mergedService', $mergedService);
         $this->set('host', $rawHost);
+        $this->set('docuExists', $docuExists);
         $this->set('contacts', $contacts);
         $this->set('contactgroups', $contactgroups);
         $this->set('hoststatus', $hoststatus);
@@ -2296,6 +2309,7 @@ class ServicesController extends AppController {
             'host',
             'hoststatus',
             'servicestatus',
+            'docuExists',
             'contacts',
             'contactgroups',
             'acknowledgement',
@@ -3214,6 +3228,10 @@ class ServicesController extends AppController {
 
         if ($service['Service']['service_url'] === '' || $service['Service']['service_url'] === null) {
             $service['Service']['service_url'] = $service['Servicetemplate']['service_url'];
+        }
+
+        if ($service['Service']['name'] === '' || $service['Service']['name'] === null) {
+            $service['Service']['name'] = $service['Servicetemplate']['name'];
         }
 
         $rawHost = $this->Host->find('first', $this->Host->getQueryForServiceBrowser($service['Service']['host_id']));

@@ -35,7 +35,7 @@ angular.module('openITCOCKPIT')
                     };
                 }
 
-                if ($scope.host.Host.id) {
+                if ($scope.type === "host" && $scope.host.Host.id) {
                     $scope.id = $scope.host.Host.id;
                     $http.get("/hosts/hostBrowserMenu/" + $scope.host.Host.id + ".json", {
                         params: {
@@ -51,6 +51,29 @@ angular.module('openITCOCKPIT')
                             hostUrl: $scope.host.Host.host_url_replaced,
                             docuExists: result.data.docuExists,
                             isHostBrowser: false
+                        };
+                    });
+                }
+
+                if ($scope.type === "service" && $scope.service.Service.id) {
+                    $scope.id = $scope.service.Service.id;
+                    $http.get("/services/serviceBrowserMenu/" + $scope.service.Service.id + ".json", {
+                        params: {
+                            'angular': true
+                        }
+                    }).then(function(result) {
+                        $scope.service = result.data.service;
+
+                        $scope.serviceBrowserMenu = {
+                            hostId: $scope.service.Host.id,
+                            hostUuid: $scope.service.Host.uuid,
+                            serviceId: $scope.service.Service.id,
+                            serviceUuid: $scope.service.Service.uuid,
+                            serviceType: $scope.service.Service.service_type,
+                            allowEdit: $scope.service.Service.allowEdit,
+                            serviceUrl: $scope.service.Service.service_url_replaced,
+                            docuExists: result.data.docuExists,
+                            isServiceBrowser: false
                         };
                     });
                 }

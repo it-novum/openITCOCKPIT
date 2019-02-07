@@ -54,65 +54,14 @@ class StatehistoriesController extends AppController {
     public $layout = 'Admin.default';
 
     public function service($id = null) {
-        $this->layout = 'angularjs';
+        $this->layout = 'blank';
 
-        if (!$this->Service->exists($id)) {
+        if (!$this->Service->exists($id) && $id !== null) {
             throw new NotFoundException(__('Invalid service'));
         }
 
-        if (!$this->isAngularJsRequest()) {
+        if (!$this->isAngularJsRequest() && $id === null) {
             //Service for .html requests
-            $service = $this->Service->find('first', [
-                'recursive'  => -1,
-                'fields'     => [
-                    'Service.id',
-                    'Service.uuid',
-                    'Service.name',
-                    'Service.service_type',
-                    'Service.service_url'
-                ],
-                'contain'    => [
-                    'Host'            => [
-                        'fields' => [
-                            'Host.id',
-                            'Host.name',
-                            'Host.uuid',
-                            'Host.address'
-                        ],
-                        'Container',
-                    ],
-                    'Servicetemplate' => [
-                        'fields' => [
-                            'Servicetemplate.id',
-                            'Servicetemplate.name',
-                        ],
-                    ],
-                ],
-                'conditions' => [
-                    'Service.id' => $id,
-                ],
-            ]);
-
-            $containerIdsToCheck = Hash::extract($service, 'Host.Container.{n}.HostsToContainer.container_id');
-            $containerIdsToCheck[] = $service['Host']['container_id'];
-
-            //Check if user is permitted to see this object
-            if (!$this->allowedByContainerId($containerIdsToCheck, false)) {
-                $this->render403();
-                return;
-            }
-
-            $allowEdit = false;
-            if ($this->allowedByContainerId($containerIdsToCheck)) {
-                $allowEdit = true;
-            }
-
-            //Get meta data and push to front end
-            $ServicestatusFields = new ServicestatusFields($this->DbBackend);
-            $ServicestatusFields->currentState()->isFlapping();
-            $servicestatus = $this->Servicestatus->byUuid($service['Service']['uuid'], $ServicestatusFields);
-            $docuExists = $this->Documentation->existsForUuid($service['Service']['uuid']);
-            $this->set(compact(['service', 'servicestatus', 'docuExists', 'allowEdit']));
             return;
         }
 
@@ -122,11 +71,40 @@ class StatehistoriesController extends AppController {
             'fields'     => [
                 'Service.id',
                 'Service.uuid',
+                'Service.name',
+                'Service.service_type',
+                'Service.service_url'
+            ],
+            'contain'    => [
+                'Host'            => [
+                    'fields' => [
+                        'Host.id',
+                        'Host.name',
+                        'Host.uuid',
+                        'Host.address'
+                    ],
+                    'Container',
+                ],
+                'Servicetemplate' => [
+                    'fields' => [
+                        'Servicetemplate.id',
+                        'Servicetemplate.name',
+                    ],
+                ],
             ],
             'conditions' => [
                 'Service.id' => $id,
             ],
         ]);
+
+        $containerIdsToCheck = Hash::extract($service, 'Host.Container.{n}.HostsToContainer.container_id');
+        $containerIdsToCheck[] = $service['Host']['container_id'];
+
+        //Check if user is permitted to see this object
+        if (!$this->allowedByContainerId($containerIdsToCheck, false)) {
+            $this->render403();
+            return;
+        }
 
         $AngularStatehistoryControllerRequest = new \itnovum\openITCOCKPIT\Core\AngularJS\Request\StatehistoryControllerRequest($this->request);
 
