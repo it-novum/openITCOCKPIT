@@ -27,7 +27,7 @@ $config = [
     'menu' => [
 
         'grafanamodule' => [
-            'url'      => ['controller' => 'grafana_configuration', 'action' => 'index', 'plugin' => 'grafana_module'],
+            'url'      => ['controller' => 'grafana_userdashboards', 'action' => 'index', 'plugin' => 'grafana_module'],
             'title'    => 'Grafana',
             'icon'     => 'area-chart',
             'order'    => 2,
