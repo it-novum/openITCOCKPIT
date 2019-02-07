@@ -78,7 +78,7 @@
                         <ul class="dropdown-menu" id="menuHack-host">
                             <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
                                 <li>
-                                    <a href="/hosts/browser/{{ host.Host.id }}">
+                                    <a href="/ng/#!/hosts/browser/{{ host.Host.id }}">
                                         <i class="fa fa-desktop"></i> <?php echo __('Browser'); ?>
                                     </a>
                                 </li>
@@ -133,7 +133,7 @@
                             <?php endif; ?>
 
                             <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
-                                <a href="/hosts/browser/{{host.Host.id}}" class="btn btn-xs btn-primary hidden-mobile">
+                                <a href="/ng/#!/hosts/browser/{{host.Host.id}}" class="btn btn-xs btn-primary hidden-mobile">
                                     <i class="fa fa-desktop"></i>
                                     <?php echo __('Open host in browser'); ?>
                                 </a>
@@ -288,7 +288,7 @@
 
                                                 <td class="text-center">
                                                     <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
-                                                        <a href="/services/browser/{{ service.Service.id }}"
+                                                        <a href="/ng/#!/services/browser/{{ service.Service.id }}"
                                                            class="txt-color-blueDark">
                                                             <i class="fa fa-lg fa-area-chart"
                                                                ng-mouseenter="mouseenter($event, host, service)"
@@ -315,7 +315,7 @@
 
                                                 <td>
                                                     <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
-                                                        <a href="/services/browser/{{ service.Service.id }}">
+                                                        <a href="/ng/#!/services/browser/{{ service.Service.id }}">
                                                             {{ service.Service.servicename }}
                                                         </a>
                                                     <?php else: ?>
@@ -547,7 +547,7 @@
 
                                             <td>
                                                 <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
-                                                    <a href="/services/browser/{{ service.Service.id }}">
+                                                    <a href="/ng/#!/services/browser/{{ service.Service.id }}">
                                                         {{ service.Service.servicename }}
                                                     </a>
                                                 <?php else: ?>
@@ -684,7 +684,7 @@
 
                                                 <td>
                                                     <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
-                                                        <a href="/services/browser/{{ service.Service.id }}">
+                                                        <a href="/ng/#!/services/browser/{{ service.Service.id }}">
                                                             {{ service.Service.servicename }}
                                                         </a>
                                                     <?php else: ?>

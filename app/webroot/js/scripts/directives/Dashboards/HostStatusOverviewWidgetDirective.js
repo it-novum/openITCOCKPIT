@@ -108,7 +108,7 @@ angular.module('openITCOCKPIT').directive('hostStatusOverviewWidget', function($
                 };
                 var currentState = 'filter[Hoststatus.current_state][' + $scope.filter.Hoststatus.current_state + ']';
                 options[currentState] = 1;
-                return '/hosts/index/?' + $httpParamSerializer(options);
+                return '/ng/#!/hosts/index/?' + $httpParamSerializer(options);
             };
 
         },

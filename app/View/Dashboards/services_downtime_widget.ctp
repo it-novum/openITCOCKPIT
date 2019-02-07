@@ -164,7 +164,7 @@
             </td>
             <td>
                 <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
-                    <a href="/hosts/browser/{{ downtime.Host.id }}">
+                    <a href="/ng/#!/hosts/browser/{{ downtime.Host.id }}">
                         {{ downtime.Host.hostname }}
                     </a>
                 <?php else: ?>
@@ -173,7 +173,7 @@
             </td>
             <td>
                 <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
-                    <a href="/services/browser/{{ downtime.Service.id }}">
+                    <a href="/ng/#!/services/browser/{{ downtime.Service.id }}">
                         {{ downtime.Service.servicename }}
                     </a>
                 <?php else: ?>

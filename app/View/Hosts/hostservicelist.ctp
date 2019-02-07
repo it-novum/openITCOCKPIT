@@ -105,7 +105,7 @@
         </td>
         <td class="text-center">
             <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
-                <a href="/services/browser/{{ service.Service.id }}" class="txt-color-blueDark">
+                <a ui-sref="ServicesBrowser({id:service.Service.id})" class="txt-color-blueDark">
                     <i class="fa fa-lg fa-area-chart"
                        ng-mouseenter="mouseenter($event, service.Host, service)"
                        ng-mouseleave="mouseleave()"
@@ -145,7 +145,7 @@
 
         <td>
             <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
-                <a href="/services/browser/{{ service.Service.id }}">
+                <a ui-sref="ServicesBrowser({id:service.Service.id})">
                     {{ service.Service.servicename }}
                 </a>
             <?php else: ?>
