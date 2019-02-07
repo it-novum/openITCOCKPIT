@@ -47,11 +47,10 @@ echo $this->Form->create('Documentation', [
                 <?php echo $this->element('host_browser_menu'); ?>
             </div>
             <div ng-if="type == 'service'" class="pull-right">
-                <a <!--ui-sref="ServicesBrowser({id:serviceBrowserMenu.serviceId})"-->
-                class="btn btn-primary btn-sm"><i
+                <a ui-sref="ServicesBrowser({id:serviceBrowserMenu.serviceId})" class="btn btn-primary btn-sm"><i
                         class="fa fa-arrow-circle-left"></i> <?php echo $this->Html->underline('b', __('Back to Service')); ?>
                 </a>
-                <?php //echo $this->element('service_browser_menu'); ?>
+                <?php echo $this->element('service_browser_menu'); ?>
             </div>
             <div ng-if="type == 'servicetemplate'" class="pull-right">
                 <a href="/servicetemplates/index" class="btn btn-primary btn-sm"><i
@@ -81,7 +80,7 @@ echo $this->Form->create('Documentation', [
 </ul>
 
 <div class="tab-content padding-10">
-    <div ng-show="displayView" class="tab-pane active">
+    <div ng-show="docu.displayView" class="tab-pane active">
         <div class="row">
             <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                 <div class="jarviswidget">
@@ -93,7 +92,7 @@ echo $this->Form->create('Documentation', [
                         </h2>
                     </header>
                     <div ng-show="docuExists">
-                        <div class="widget-body" ng-bind-html="contentView"></div>
+                        <div class="widget-body" ng-bind-html="docu.contentView"></div>
                     </div>
 
                     <header ng-hide="docuExists">
@@ -113,7 +112,7 @@ echo $this->Form->create('Documentation', [
     </div>
 
     <!-- Tab nummer 2 -->
-    <div ng-show="!displayView" class="tab-pane active">
+    <div ng-show="!docu.displayView" class="tab-pane active">
         <div class="row">
             <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                 <div class="form-horizontal clear jarviswidget">
@@ -333,14 +332,14 @@ echo $this->Form->create('Documentation', [
                     <div class="form-group">
                         <label for="url" class="col col-md-2 control-label">URL:</label>
                         <div class="col col-xs-10">
-                            <input class="form-control" type="text" ng-model="hyperlink"
+                            <input class="form-control" type="text" ng-model="docu.hyperlink"
                                    placeholder="<?php echo __('https://openitcockpit.io'); ?>" style="width: 100%;">
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="description" class="col col-md-2 control-label">Description:</label>
                         <div class="col col-xs-10">
-                            <input class="form-control" style="width: 100%;" ng-model="hyperlinkDescription"
+                            <input class="form-control" style="width: 100%;" ng-model="docu.hyperlinkDescription"
                                    placeholder="<?php echo __('Official page for openITCOCKPIT'); ?>" type="text">
                         </div>
                     </div>

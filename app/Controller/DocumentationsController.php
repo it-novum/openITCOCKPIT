@@ -78,9 +78,6 @@ class DocumentationsController extends AppController {
         $allowEdit = false;
         $host = [];
         if ($type == 'host') {
-            if (!$this->Host->exists($uuid)) {
-                throw new NotFoundException(__('invalid host'));
-            }
 
             $host = $this->Host->find('first', [
                 'fields'     => [
@@ -99,6 +96,10 @@ class DocumentationsController extends AppController {
                     'Container',
                 ],
             ]);
+
+            if (empty($host)) {
+                throw new NotFoundException(__('invalid host'));
+            }
 
             $containerIdsToCheck = Hash::extract($host, 'Container.{n}.HostsToContainer.container_id');
             $containerIdsToCheck[] = $host['Host']['container_id'];
@@ -120,9 +121,6 @@ class DocumentationsController extends AppController {
 
         $service = [];
         if ($type == 'service') {
-            if (!$this->Service->exists($uuid)) {
-                throw new NotFoundException(__('invalid service'));
-            }
 
             $service = $this->Service->find('first', [
                 'recursive'  => -1,
@@ -143,6 +141,9 @@ class DocumentationsController extends AppController {
 
             ]);
 
+            if (empty($service)) {
+                throw new NotFoundException(__('invalid service'));
+            }
 
             $host = $this->Host->findById($service['Service']['host_id']);
             $containerIdsToCheck = Hash::extract($host, 'Container.{n}.HostsToContainer.container_id');

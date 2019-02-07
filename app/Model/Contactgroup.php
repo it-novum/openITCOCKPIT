@@ -117,7 +117,7 @@ class Contactgroup extends AppModel {
                 // Get container id of the tenant container
                 // $container_id is may be a location, devicegroup or whatever, so we need to container id of the tenant container to load contactgroups and contacts
                 $path = $ContainersTable->getPathByIdAndCacheResult($container_id, 'ContactGroupContactsByContainerId');
-                $tenantContainerIds[] = $path[1]['Container']['id'];
+                $tenantContainerIds[] = $path[1]['id'];
             } else {
                 $tenantContainerIds[] = ROOT_CONTAINER;
             }

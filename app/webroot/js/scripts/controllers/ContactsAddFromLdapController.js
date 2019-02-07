@@ -4,7 +4,9 @@ angular.module('openITCOCKPIT')
         $scope.init = true;
         $scope.isPhp7Dot1 = false;
 
-        $scope.selectedSamAccountName = '';
+        $scope.data = {
+            selectedSamAccountName: ''
+        };
         $scope.errors = false;
 
         $scope.loadUsers = function(searchString){

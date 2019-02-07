@@ -399,7 +399,7 @@
                                 </b>
                                 <input type="text" class="input-sm"
                                        placeholder="<?php echo __('Tab name'); ?>"
-                                       ng-model="newTabName">
+                                       ng-model="data.newTabName">
                             </label>
                             <div ng-repeat="error in errors.name">
                                 <div class="help-block text-danger">{{ error }}</div>
@@ -432,7 +432,7 @@
                                 class="form-control"
                                 chosen="sharedTabs"
                                 ng-options="sharedTab.id as sharedTab.name for sharedTab in sharedTabs"
-                                ng-model="createTabFromSharedTabId">
+                                ng-model="data.createTabFromSharedTabId">
                         </select>
                     </div>
                     <div class="col-xs-12 padding-top-10">
@@ -474,7 +474,7 @@
                         </label>
                         <div class="slidecontainer">
                             <input type="range" step="10" min="0" max="900" class="slider"
-                                   ng-model="viewTabRotateInterval" ng-mouseup="saveTabRotateInterval()">
+                                   ng-model="data.viewTabRotateInterval" ng-mouseup="saveTabRotateInterval()">
                             <div>
                                 <div class="help-block text-muted">{{ intervalText }}</div>
                             </div>
@@ -521,7 +521,7 @@
                                 </b>
                                 <input type="text" class="input-sm"
                                        placeholder="<?php echo __('New tab name'); ?>"
-                                       ng-model="renameTabName">
+                                       ng-model="data.renameTabName">
                             </label>
                             <div ng-repeat="error in errors.name">
                                 <div class="help-block text-danger">{{ error }}</div>
@@ -613,7 +613,7 @@
                                 </b>
                                 <input type="text" class="input-sm"
                                        placeholder="<?php echo __('New title of widget'); ?>"
-                                       ng-model="renameWidgetTitle">
+                                       ng-model="data.renameWidgetTitle">
                             </label>
                             <div ng-repeat="error in errors.name">
                                 <div class="help-block text-danger">{{ error }}</div>

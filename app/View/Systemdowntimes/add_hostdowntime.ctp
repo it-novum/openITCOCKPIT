@@ -60,8 +60,7 @@
                                     chosen="hosts"
                                     callback="loadHosts"
                                     ng-options="host.key as host.value for host in hosts"
-                                    ng-model="hostIds"
-                            >
+                                    ng-model="data.hostIds">
                             </select>
                             <div ng-repeat="error in errors.object_id">
                                 <div class="help-block text-danger">{{ error }}</div>

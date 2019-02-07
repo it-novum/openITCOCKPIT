@@ -2344,7 +2344,7 @@ class HostsController extends AppController {
                     ]
                 ]);
                 if (empty($lookupHost)) {
-                    throw new NotFoundException(__('Invalid host'));
+                    throw new NotFoundException(__('Host not found'));
                 }
                 $this->redirect([
                     'controller' => 'hosts',

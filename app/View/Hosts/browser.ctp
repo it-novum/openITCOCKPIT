@@ -361,7 +361,7 @@ if (isset($QueryHandler) && !$QueryHandler->exists()): ?>
                                                 <div>
                                                     <ul>
                                                         <li ng-repeat="parentHostProblem in parentHostProblems">
-                                                            <a href="/hosts/browser/{{parentHostProblem.id}}">
+                                                            <a ui-sref="HostsBrowser({id:parentHostProblem.id})">
                                                                 {{parentHostProblem.name}}
                                                             </a>
                                                         </li>
@@ -464,7 +464,7 @@ if (isset($QueryHandler) && !$QueryHandler->exists()): ?>
                                                                 state="parentHoststatus[parenthost.uuid].currentState"></hoststatusicon>
                                                     </td>
                                                     <td>
-                                                        <a href="/hosts/browser/{{parenthost.id}}">
+                                                        <a ui-sref="HostsBrowser({id:parenthost.id})">
                                                             {{ parenthost.name }}
                                                         </a>
                                                     </td>
@@ -1001,24 +1001,24 @@ if (isset($QueryHandler) && !$QueryHandler->exists()): ?>
                 <span class="widget-icon hidden-mobile"> <i class="fa fa-cogs"></i> </span>
                 <h2 class="hidden-mobile"><?php echo __('Service overview'); ?></h2>
                 <ul class="nav nav-tabs pull-right" id="widget-tab-1">
-                    <li class="active">
-                        <a href="#serviceTab1" data-toggle="tab" ng-click="changeTab('active')">
+                    <li class="active cursor-pointer">
+                        <a data-toggle="tab" ng-click="changeTab('active')">
                             <i class="fa fa-stethoscope"></i>
                             <span class="hidden-mobile hidden-tablet">
                                 <?php echo __('Active'); ?>
                             </span>
                         </a>
                     </li>
-                    <li>
-                        <a href="#serviceTab2" data-toggle="tab" ng-click="changeTab('notMonitored')">
+                    <li class="cursor-pointer">
+                        <a data-toggle="tab" ng-click="changeTab('notMonitored')">
                             <i class="fa fa-user-md"></i>
                             <span class="hidden-mobile hidden-tablet">
                                 <?php echo __('Not monitored'); ?>
                             </span>
                         </a>
                     </li>
-                    <li class="">
-                        <a href="#serviceTab3" data-toggle="tab" ng-click="changeTab('disabled')">
+                    <li class="cursor-pointer">
+                        <a data-toggle="tab" ng-click="changeTab('disabled')">
                             <i class="fa fa-plug"></i>
                             <span class="hidden-mobile hidden-tablet">
                                 <?php echo __('Disabled'); ?>
@@ -1182,7 +1182,7 @@ if (isset($QueryHandler) && !$QueryHandler->exists()): ?>
 
                                         <td class="text-center">
                                             <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
-                                                <a href="/services/browser/{{ service.Service.id }}"
+                                                <a ui-sref="ServicesBrowser({id:service.Service.id})"
                                                    class="txt-color-blueDark">
                                                     <i class="fa fa-lg fa-area-chart"
                                                        ng-mouseenter="mouseenter($event, mergedHost.Host.uuid, service)"
@@ -1208,7 +1208,7 @@ if (isset($QueryHandler) && !$QueryHandler->exists()): ?>
 
                                         <td>
                                             <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
-                                                <a href="/services/browser/{{ service.Service.id }}">
+                                                <a ui-sref="ServicesBrowser({id:service.Service.id})">
                                                     {{ service.Service.servicename }}
                                                 </a>
                                             <?php else: ?>
@@ -1320,7 +1320,7 @@ if (isset($QueryHandler) && !$QueryHandler->exists()): ?>
 
                                     <td>
                                         <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
-                                            <a href="/services/browser/{{ service.Service.id }}">
+                                            <a ui-sref="ServicesBrowser({id:service.Service.id})">
                                                 {{ service.Service.servicename }}
                                             </a>
                                         <?php else: ?>
@@ -1416,7 +1416,7 @@ if (isset($QueryHandler) && !$QueryHandler->exists()): ?>
 
                                         <td>
                                             <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
-                                                <a href="/services/browser/{{ service.Service.id }}">
+                                                <a ui-sref="ServicesBrowser({id:service.Service.id})">
                                                     {{ service.Service.servicename }}
                                                 </a>
                                             <?php else: ?>

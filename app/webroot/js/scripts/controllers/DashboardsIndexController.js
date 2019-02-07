@@ -7,9 +7,16 @@ angular.module('openITCOCKPIT')
         $scope.availableWidgets = [];
         $scope.fullscreen = false;
         $scope.errors = {};
-        $scope.viewTabRotateInterval = 0;
         $scope.intervalText = 'disabled';
         $scope.dashboardIsLocked = false;
+
+        $scope.data = {
+            newTabName: '',
+            createTabFromSharedTabId: null,
+            viewTabRotateInterval: 0,
+            renameTabName: '',
+            renameWidgetTitle: ''
+        };
 
         $scope.gridsterOpts = {
             minRows: 2, // the minimum height of the grid, in rows
@@ -86,7 +93,7 @@ angular.module('openITCOCKPIT')
                     $scope.activeTab = $scope.tabs[0].id;
                 }
 
-                $scope.viewTabRotateInterval = result.data.tabRotationInterval;
+                $scope.data.viewTabRotateInterval = result.data.tabRotationInterval;
                 updateInterval();
 
                 $scope.availableWidgets = result.data.widgets;
@@ -295,7 +302,7 @@ angular.module('openITCOCKPIT')
             $http.post("/dashboards/addNewTab.json?angular=true",
                 {
                     DashboardTab: {
-                        name: $scope.newTabName
+                        name: $scope.data.newTabName
                     }
                 }
             ).then(function(result){
@@ -314,7 +321,7 @@ angular.module('openITCOCKPIT')
             $http.post("/dashboards/createFromSharedTab.json?angular=true",
                 {
                     DashboardTab: {
-                        id: $scope.createTabFromSharedTabId
+                        id: $scope.data.createTabFromSharedTabId
                     }
                 }
             ).then(function(result){
@@ -335,7 +342,7 @@ angular.module('openITCOCKPIT')
             }
 
             $('#renameTabModal').modal('show');
-            $scope.renameTabName = currentTabName;
+            $scope.data.renameTabName = currentTabName;
         };
 
         $scope.renameTab = function(){
@@ -343,14 +350,14 @@ angular.module('openITCOCKPIT')
                 {
                     DashboardTab: {
                         id: $scope.activeTab,
-                        name: $scope.renameTabName
+                        name: $scope.data.renameTabName
                     }
                 }
             ).then(function(result){
                 $scope.errors = {};
                 for(var i in $scope.tabs){
                     if($scope.tabs[i].id === $scope.activeTab){
-                        $scope.tabs[i].name = $scope.renameTabName;
+                        $scope.tabs[i].name = $scope.data.renameTabName;
                     }
                 }
                 genericSuccess();
@@ -454,7 +461,7 @@ angular.module('openITCOCKPIT')
             $http.post("/dashboards/saveTabRotateInterval.json?angular=true",
                 {
                     User: {
-                        dashboard_tab_rotation: $scope.viewTabRotateInterval
+                        dashboard_tab_rotation: $scope.data.viewTabRotateInterval
                     }
                 }
             ).then(function(result){
@@ -520,11 +527,11 @@ angular.module('openITCOCKPIT')
                 return;
             }
 
-            $scope.renameWidgetTitle = '';
+            $scope.data.renameWidgetTitle = '';
             for(var i in $scope.activeWidgets){
                 if($scope.activeWidgets[i].id === widgetId){
                     $scope.currentWidgetId = widgetId;
-                    $scope.renameWidgetTitle = $scope.activeWidgets[i].title;
+                    $scope.data.renameWidgetTitle = $scope.activeWidgets[i].title;
                     break;
                 }
             }
@@ -541,14 +548,14 @@ angular.module('openITCOCKPIT')
                 {
                     Widget: {
                         id: $scope.currentWidgetId,
-                        name: $scope.renameWidgetTitle
+                        name: $scope.data.renameWidgetTitle
                     }
                 }
             ).then(function(result){
                 $scope.errors = {};
                 for(var i in $scope.activeWidgets){
                     if($scope.activeWidgets[i].id === $scope.currentWidgetId){
-                        $scope.activeWidgets[i].title = $scope.renameWidgetTitle;
+                        $scope.activeWidgets[i].title = $scope.data.renameWidgetTitle;
                     }
                 }
                 $scope.currentWidgetId = null;
@@ -651,8 +658,8 @@ angular.module('openITCOCKPIT')
                 $interval.cancel(intervalId);
             }
 
-            if($scope.viewTabRotateInterval > 0){
-                intervalId = $interval(rotateTab, ($scope.viewTabRotateInterval * 1000));
+            if($scope.data.viewTabRotateInterval > 0){
+                intervalId = $interval(rotateTab, ($scope.data.viewTabRotateInterval * 1000));
             }
         };
 
@@ -699,16 +706,16 @@ angular.module('openITCOCKPIT')
 
 
         /** On Load stuff **/
-        $scope.$watch('viewTabRotateInterval', function(){
+        $scope.$watch('data.viewTabRotateInterval', function(){
             if($scope.init){
                 return;
             }
 
-            if($scope.viewTabRotateInterval === 0){
+            if($scope.data.viewTabRotateInterval === 0){
                 $scope.intervalText = 'disabled';
             }else{
-                var min = parseInt($scope.viewTabRotateInterval / 60, 10);
-                var sec = parseInt($scope.viewTabRotateInterval % 60, 10);
+                var min = parseInt($scope.data.viewTabRotateInterval / 60, 10);
+                var sec = parseInt($scope.data.viewTabRotateInterval % 60, 10);
                 if(min > 0){
                     $scope.intervalText = min + ' minutes, ' + sec + ' seconds';
                     return;

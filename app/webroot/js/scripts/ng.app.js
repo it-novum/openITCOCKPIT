@@ -1,4 +1,4 @@
-angular.module('openITCOCKPIT', ['ui.router', 'gridster'])
+angular.module('openITCOCKPIT', ['gridster', 'ui.router'])
 
     .factory("httpInterceptor", function($q, $rootScope, $timeout){
         return {
@@ -90,6 +90,7 @@ angular.module('openITCOCKPIT', ['ui.router', 'gridster'])
 
     })
 
+
     .config(function($urlRouterProvider, $stateProvider){
         $stateProvider
 
@@ -121,6 +122,36 @@ angular.module('openITCOCKPIT', ['ui.router', 'gridster'])
                 url: '/hosts/browser/:id',
                 templateUrl: "/hosts/browser.html",
                 controller: "HostsBrowserController"
+            })
+
+            .state('ServicesIndex', {
+                url: '/services/index',
+                templateUrl: "/services/index.html",
+                controller: "ServicesIndexController"
+            })
+
+            .state('ServicesNotMonitored', {
+                url: '/services/notMonitored',
+                templateUrl: "/services/notMonitored.html",
+                controller: "ServicesNotMonitoredController"
+            })
+
+            .state('ServicesBrowser', {
+                url: '/services/browser/:id',
+                templateUrl: "/services/browser.html",
+                controller: "ServicesBrowserController"
+            })
+
+            .state('ServicesDisabled', {
+                url: '/services/disabled',
+                templateUrl: "/services/disabled.html",
+                controller: "ServicesDisabledController"
+            })
+
+            .state('ServicechecksIndex', {
+                url: '/servicechecks/index/:id',
+                templateUrl: "/servicechecks/index.html",
+                controller: "ServicechecksIndexController"
             })
 
             .state('HostgroupsIndex', {
@@ -157,6 +188,12 @@ angular.module('openITCOCKPIT', ['ui.router', 'gridster'])
                 url: '/statehistories/host/:id',
                 templateUrl: "/statehistories/host.html",
                 controller: "StatehistoriesHostController"
+            })
+
+            .state('StatehistoriesService', {
+                url: '/statehistories/service/:id',
+                templateUrl: "/statehistories/service.html",
+                controller: "StatehistoriesServiceController"
             })
 
             .state('CommandsIndex', {
@@ -219,10 +256,22 @@ angular.module('openITCOCKPIT', ['ui.router', 'gridster'])
                 controller: "NotificationsHostNotificationController"
             })
 
+            .state('NotificationsServiceNotification', {
+                url: '/notifications/serviceNotification/:id',
+                templateUrl: "/notifications/serviceNotification.html",
+                controller: "NotificationsServiceNotificationController"
+            })
+
             .state('AcknowledgementsHost', {
                 url: '/acknowledgements/host/:id',
                 templateUrl: "/acknowledgements/host.html",
                 controller: "AcknowledgementsHostController"
+            })
+
+            .state('AcknowledgementsService', {
+                url: '/acknowledgements/service/:id',
+                templateUrl: "/acknowledgements/service.html",
+                controller: "AcknowledgementsServiceController"
             })
     })
 
