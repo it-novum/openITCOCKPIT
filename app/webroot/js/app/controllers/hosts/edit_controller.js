@@ -998,7 +998,7 @@ App.Controllers.HostsEditController = Frontend.AppController.extend({
     },
 
 
-    loadInitialData: function(selector, selectedHostIds, callback){
+    loadInitialData: function(selector, selectedHostIds){
         var containerId = $('#HostContainerId').val();
         var self = this;
 
@@ -1016,7 +1016,8 @@ App.Controllers.HostsEditController = Frontend.AppController.extend({
             data: {
                 'angular': true,
                 'selected[]': selectedHostIds, //ids
-                'containerId': containerId
+                'containerId': containerId,
+                'hostId': $('#HostId').val()
             },
             success: function(response){
                 var $selector = $(selector);
@@ -1024,10 +1025,6 @@ App.Controllers.HostsEditController = Frontend.AppController.extend({
                 $selector.append(list);
                 $selector.val(selectedHostIds);
                 $selector.trigger('chosen:updated');
-
-                if(callback != undefined){
-                    callback();
-                }
             }
         });
     },
@@ -1080,8 +1077,7 @@ App.Controllers.HostsEditController = Frontend.AppController.extend({
     },
 
     updateSlider: function(_options){
-        // console.log('updateSlider called with options: ' + _options);
-        // console.log(_options);
+
         var options = _options || {};
         options.value = parseInt(_options.value, 10) || 0;
         options.selector = _options.selector || null;

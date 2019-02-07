@@ -259,9 +259,8 @@ $allowSharing = $hostSharingPermissions->allowSharing();
                                     'wrapInput' => 'col col-xs-10 col-md-10 col-lg-10',
                                 ]
                             );
-
                             echo $this->Form->input('Host.Parenthost', [
-                                    'options'          => $_parenthosts,
+                                    'options'          => [],
                                     'data-placeholder' => __('Please, start typing...'),
                                     'class'            => 'chosen,',
                                     'multiple'         => true,
@@ -269,7 +268,6 @@ $allowSharing = $hostSharingPermissions->allowSharing();
                                     'label'            => ['text' => __('Parent hosts'), 'class' => 'col-xs-1 col-md-1 col-lg-1'],
                                     'required'         => true,
                                     'wrapInput'        => 'col col-xs-10 col-md-10 col-lg-10',
-                                    'selected'         => $this->Html->getParameter('Host.Parenthost', $host['Parenthost']),
                                     'div'              => [
                                         'class' => 'form-group',
                                     ],
