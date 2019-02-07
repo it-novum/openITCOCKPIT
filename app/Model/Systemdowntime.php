@@ -376,6 +376,9 @@ class Systemdowntime extends AppModel {
             'conditions' => [
                 'HostsToContainers.container_id' => $Conditions->getContainerIds()
             ],
+            'group' => [
+                'Systemdowntime.id'
+            ],
             'order'      => $Conditions->getOrder()
         ];
 
