@@ -70,7 +70,7 @@ App.Controllers.HostsEditController = Frontend.AppController.extend({
             url: '/hosts/loadParentHostsById/' + hostID + '.json',
             data: {
                 'angular': true,
-                //'id': hostID
+                'id': hostID
             },
             success: function(response){
                 self.loadInitialData('#HostParenthost', response.parenthost);
