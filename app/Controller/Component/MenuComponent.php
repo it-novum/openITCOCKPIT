@@ -1,5 +1,5 @@
 <?php
-// Copyright (C) <2015>  <it-novum GmbH>
+// Copyright (C) <2019>  <it-novum GmbH>
 //
 // This file is dual licensed
 //
@@ -32,15 +32,51 @@ class MenuComponent extends Component {
      */
     public function compileMenu() {
         Configure::load('menu');
+
+        $menu = Configure::read('menu');
+        Configure::delete('menu');
+
         $modulePlugins = array_filter(CakePlugin::loaded(), function ($value) {
             return strpos($value, 'Module') !== false;
         });
+
         foreach ($modulePlugins as $pluginName) {
             Configure::load($pluginName . '.' . 'menu');
-        }
-        $menuOrder = [];
-        $menu = Configure::read('menu');
+            $moduleMenu = Configure::read('menu');
+            if(!empty($moduleMenu)){
+                foreach($moduleMenu as $key => $value){
+                    if(!isset($menu[$key]) && !empty($moduleMenu[$key])){
+                        $menu[$key] = [];
+                    }
+                    if(isset($menu[$key]) && !empty($moduleMenu[$key])){
+                        if(!isset($menu[$key]['children']) && !empty($moduleMenu[$key]['children'])){
+                            $menu[$key]['children'] = [];
+                            if(!isset($menu[$key]['title']) && isset($moduleMenu[$key]['title'])) {
+                                $menu[$key]['title'] = $moduleMenu[$key]['title'];
+                            }
+                            if(!isset($menu[$key]['icon']) && isset($moduleMenu[$key]['icon'])) {
+                                $menu[$key]['icon'] = $moduleMenu[$key]['icon'];
+                            }
+                            if(!isset($menu[$key]['order']) && isset($moduleMenu[$key]['order'])) {
+                                $menu[$key]['order'] = $moduleMenu[$key]['order'];
+                            }
+                        }
+                        if(isset($menu[$key]['children']) && !empty($moduleMenu[$key]['children'])){
+                            foreach($moduleMenu[$key]['children'] as $child){
+                                $menu[$key]['children'][] = $child;
+                            }
+                        }
+                        if(isset($moduleMenu[$key]['url'])){
+                            $menu[$key] = $moduleMenu[$key];
+                        }
+                    }
+                }
+            }
 
+            Configure::delete('menu');
+        }
+
+        $menuOrder = [];
         foreach ($menu as $key => $menuItem) {
             if (isset($menuItem['order'])) {
                 $menuOrder[$key] = $menuItem['order'];
@@ -51,31 +87,34 @@ class MenuComponent extends Component {
         asort($menuOrder);
 
         $finalMenu = [];
-        foreach ($menuOrder as $key => $dev_null) {
-            if (isset($menu[$key]['parent'])) {
-                if (array_key_exists($menu[$key]['parent'], $finalMenu)) {
-                    //merge 
-                    $finalMenu[$menu[$key]['parent']]['children'] = Hash::merge($finalMenu[$menu[$key]['parent']]['children'], $menu[$key]['children']);
-                } else {
-                    if (array_key_exists($menu[$key]['parent'], $menuOrder)) {
-                        //create the new key
-                        $finalMenu[$menu[$key]['parent']]['children'] = $menu[$key]['children'];
-                    } else {
-                        //create the menu as there were no parent set
-                        $finalMenu[$key] = $menu[$key];
-                    }
-                }
-            } else {
-                if (array_key_exists($key, $finalMenu)) {
-                    //merge
+        foreach ($menuOrder as $key => $order){
+            if(isset($menu[$key]) && isset($menu[$key]['url'])){
+                if(isset($finalMenu[$key])) {
                     $finalMenu[$key] = Hash::merge($finalMenu[$key], $menu[$key]);
                 } else {
-                    //create
                     $finalMenu[$key] = $menu[$key];
                 }
+            } else if(isset($menu[$key]) && isset($menu[$key]['children']) && !empty($menu[$key]['children'])){
+                if(isset($finalMenu[$key]) && isset($finalMenu[$key]['children'])) {
+                    $finalMenu[$key]['children'] = Hash::merge($finalMenu[$key]['children'], $menu[$key]['children']);
+                } else {
+                    if(!isset($finalMenu[$key])){
+                        $finalMenu[$key] = [];
+                        if(!isset($finalMenu[$key]['title']) && isset($menu[$key]['title'])) {
+                            $finalMenu[$key]['title'] = $menu[$key]['title'];
+                        }
+                        if(!isset($finalMenu[$key]['icon']) && isset($menu[$key]['icon'])) {
+                            $finalMenu[$key]['icon'] = $menu[$key]['icon'];
+                        }
+                        if(!isset($finalMenu[$key]['order']) && isset($menu[$key]['order'])) {
+                            $finalMenu[$key]['order'] = $menu[$key]['order'];
+                        }
+                    }
+                    $finalMenu[$key]['children'] = $menu[$key]['children'];
+                }
+
             }
         }
-        unset($menu);
 
         return $finalMenu;
     }
@@ -89,9 +128,10 @@ class MenuComponent extends Component {
     public function filterMenuByAcl($menu, $permissions, $realUrl = false) {
         $_menu = [];
         foreach ($menu as $parentKey => $parentNode) {
+            $_childNodes = [];
             $_parentNode = [];
             //Dashboard is always allowed
-            if ($parentNode['url']['controller'] === 'dashboard' && $parentNode['url']['action'] === 'index' && $parentNode['url']['plugin'] === 'admin') {
+            if (isset($parentNode['url']) && $parentNode['url']['controller'] === 'dashboards' && $parentNode['url']['action'] === 'index') {
                 if ($realUrl) {
                     $parentNode['url_array'] = $parentNode['url'];
                     $parentNode['url'] = Router::url($parentNode['url']);
@@ -101,74 +141,61 @@ class MenuComponent extends Component {
             }
 
             if (isset($parentNode['children']) && !empty($parentNode['children'])) {
-                if ($this->checkPermissions($parentNode['url']['plugin'], $parentNode['url']['controller'], $parentNode['url']['action'], $permissions)) {
-                    $_parentNode = $parentNode;
-                    unset($_parentNode['children']);
-                    // special way for maps becouse the are multiple logical root elements for the "maps" element
-                } else if ($parentNode['url']['controller'] == 'statusmaps') {
-                    if ($this->checkPermissions($parentNode['url']['plugin'], 'automaps', $parentNode['url']['action'], $permissions) ||
-                        $this->checkPermissions('map_module', 'maps', $parentNode['url']['action'], $permissions) ||
-                        $this->checkPermissions('map_module', 'rotations', $parentNode['url']['action'], $permissions)
-                    ) {
-                        $_parentNode = $parentNode;
-                        unset($_parentNode['children']);
+
+                foreach ($parentNode['children'] as $childKey => $childNode) {
+                    if (!isset($childNode['url']['plugin'])) {
+                        $childNode['url']['plugin'] = '';
                     }
-                }
-                $_childNodes = [];
-                if (!empty($parentNode['children']) && !empty($_parentNode)) {
-                    foreach ($parentNode['children'] as $childKey => $childNode) {
-                        if (!isset($childNode['url']['plugin'])) {
-                            $childNode['url']['plugin'] = '';
+                    if ($this->checkPermissions($childNode['url']['plugin'], $childNode['url']['controller'], $childNode['url']['action'], $permissions)) {
+                        if ($realUrl) {
+                            $childNode['url_array'] = $childNode['url'];
+                            $childNode['url'] = Router::url($childNode['url']);
                         }
-                        if ($this->checkPermissions($childNode['url']['plugin'], $childNode['url']['controller'], $childNode['url']['action'], $permissions)) {
-                            if ($realUrl) {
-                                $childNode['url_array'] = $childNode['url'];
-                                $childNode['url'] = Router::url($childNode['url']);
+                        $_childNodes[$childKey] = $childNode;
+                    } else {
+                        //Check if we have any fallback actions like by DowntimesController
+                        if (isset($childNode['fallback_actions'])) {
+                            if (!is_array($childNode['fallback_actions'])) {
+                                $childNode['fallback_actions'] = [$childNode['fallback_actions']];
                             }
-                            $_childNodes[$childKey] = $childNode;
-                        } else {
-                            //Check if we have any fallback actions like by DowntimesController
-                            if (isset($childNode['fallback_actions'])) {
-                                if (!is_array($childNode['fallback_actions'])) {
-                                    $childNode['fallback_actions'] = [$childNode['fallback_actions']];
-                                }
-                                foreach ($childNode['fallback_actions'] as $fallbackAction) {
-                                    if ($this->checkPermissions($childNode['url']['plugin'], $childNode['url']['controller'], $fallbackAction, $permissions)) {
-                                        $childNode['url']['action'] = $fallbackAction;
-                                        if ($realUrl) {
-                                            $childNode['url_array'] = $childNode['url'];
-                                            $childNode['url'] = Router::url($childNode['url']);
-                                        }
-                                        $_childNodes[$childKey] = $childNode;
-                                        break;
+                            foreach ($childNode['fallback_actions'] as $fallbackAction) {
+                                if ($this->checkPermissions($childNode['url']['plugin'], $childNode['url']['controller'], $fallbackAction, $permissions)) {
+                                    $childNode['url']['action'] = $fallbackAction;
+                                    if ($realUrl) {
+                                        $childNode['url_array'] = $childNode['url'];
+                                        $childNode['url'] = Router::url($childNode['url']);
                                     }
+                                    $_childNodes[$childKey] = $childNode;
+                                    break;
                                 }
                             }
                         }
                     }
                 }
+                if(!empty($_childNodes) && isset($parentNode['children'])){
+                    unset($parentNode['children']);
+                    $_parentNode = $parentNode;
+                }
+
             } else {
                 if ($this->checkPermissions($parentNode['url']['plugin'], $parentNode['url']['controller'], $parentNode['url']['action'], $permissions)) {
                     if ($realUrl) {
                         $parentNode['url_array'] = $parentNode['url'];
                         $parentNode['url'] = Router::url($parentNode['url']);
                     }
+                    if(isset($parentNode['children']) && empty($parentNode['children'])){
+                        unset($parentNode['children']);
+                    }
                     $_menu[$parentKey] = $parentNode;
                 }
             }
 
-
             if (!empty($_childNodes) && !empty($_parentNode)) {
-                $_parentNode['children'] = $_childNodes;
                 $_menu[$parentKey] = $_parentNode;
-                if ($realUrl) {
-                    if (is_array($_menu[$parentKey]['url'])) {
-                        $_menu[$parentKey]['url_array'] = $_menu[$parentKey]['url'];
-                        $_menu[$parentKey]['url'] = Router::url($_menu[$parentKey]['url']);
-                    }
-                }
+                $_menu[$parentKey]['children'] = $_childNodes;
             }
         }
+
         return $_menu;
     }
 
@@ -210,6 +237,7 @@ class MenuComponent extends Component {
         $jsMenu = [];
         foreach ($menu as $parentKey => $_parentNode) {
             $_parentNode['id'] = $parentKey;
+
             $parentNode = $_parentNode;
             $parentNode['children'] = [];
             if (isset($_parentNode['children'])) {
