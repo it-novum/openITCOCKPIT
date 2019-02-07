@@ -159,6 +159,14 @@ class ConfigGenerator {
      * @param $value
      * @return string
      */
+    public function asUcfirstBoolString($value) {
+        return ucfirst($this->asBoolString($value));
+    }
+
+    /**
+     * @param $value
+     * @return string
+     */
     public function asString($value) {
         return (string)$value;
     }

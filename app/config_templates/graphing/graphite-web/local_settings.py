@@ -24,7 +24,7 @@ SECRET_KEY = ''.join([random.choice(string.printable) for i in range(64)])
 # Set your local timezone (Django's default is America/Chicago)
 # If your graphs appear to be offset by a couple hours then this probably
 # needs to be explicitly set to your local timezone.
-TIME_ZONE = 'Europe/Berlin'
+TIME_ZONE = '{{timezone}}'
 
 # Override this to provide documentation specific to your Graphite deployment
 #DOCUMENTATION_URL = "http://graphite.readthedocs.org/"
