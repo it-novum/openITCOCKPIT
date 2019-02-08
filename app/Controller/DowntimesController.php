@@ -50,7 +50,7 @@ class DowntimesController extends AppController {
     public $components = ['GearmanClient'];
 
     public function host() {
-        $this->layout = 'angularjs';
+        $this->layout = 'blank';
         if (!$this->isAngularJsRequest()) {
             return;
         }
@@ -141,7 +141,7 @@ class DowntimesController extends AppController {
 
 
     public function service() {
-        $this->layout = 'angularjs';
+        $this->layout = 'blank';
         if (!$this->isAngularJsRequest()) {
             return;
         }
@@ -232,11 +232,13 @@ class DowntimesController extends AppController {
 
     public function index() {
         if (isset($this->PERMISSIONS['downtimes']['host'])) {
-            $this->redirect(['action' => 'host']);
+            //$this->redirect(['action' => 'host']);
+            $this->redirect('/ng/#!/downtimes/host');
         }
 
         if (isset($this->PERMISSIONS['downtimes']['service'])) {
-            $this->redirect(['action' => 'service']);
+            //$this->redirect(['action' => 'service']);
+            $this->redirect('/ng/#!/downtimes/service');
         }
     }
 

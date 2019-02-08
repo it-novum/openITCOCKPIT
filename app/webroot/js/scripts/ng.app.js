@@ -94,14 +94,32 @@ angular.module('openITCOCKPIT', ['gridster', 'ui.router'])
     .config(function($urlRouterProvider, $stateProvider){
         $stateProvider
 
+            .state('BrowsersIndex', {
+                url: '/browsers/index',
+                templateUrl: "/browsers/index.html",
+                controller: "BrowsersIndexController"
+            })
+
             .state('DeletedHostsIndex', {
                 url: '/deletedHosts',
                 templateUrl: "/deletedHosts/index.html",
                 controller: "DeletedHostsIndexController"
             })
 
+            .state('DowntimesHost', {
+                url: '/downtimes/host',
+                templateUrl: "/downtimes/host.html",
+                controller: "DowntimesHostController"
+            })
+
+            .state('DowntimesService', {
+                url: '/downtimes/service',
+                templateUrl: "/downtimes/service.html",
+                controller: "DowntimesServiceController"
+            })
+
             .state('HostsIndex', {
-                url: '/hosts/index',
+                url: '/hosts/index/:id',
                 templateUrl: "/hosts/index.html",
                 controller: "HostsIndexController"
             })
@@ -152,6 +170,36 @@ angular.module('openITCOCKPIT', ['gridster', 'ui.router'])
                 url: '/servicechecks/index/:id',
                 templateUrl: "/servicechecks/index.html",
                 controller: "ServicechecksIndexController"
+            })
+
+            .state('SystemdowntimesAddHostdowntime', {
+                url: '/systemdowntimes/addHostdowntime/:id',
+                params: {
+                    id: null
+                },
+                templateUrl: "/systemdowntimes/addHostdowntime.html",
+                controller: "SystemdowntimesAddHostdowntimeController"
+            })
+
+            .state('SystemdowntimesAddHostgroupdowntime', {
+                url: '/systemdowntimes/addHostgroupdowntime',
+                templateUrl: "/systemdowntimes/addHostgroupdowntime.html",
+                controller: "SystemdowntimesAddHostgroupdowntimeController"
+            })
+
+            .state('SystemdowntimesAddServicedowntime', {
+                url: '/systemdowntimes/addServicedowntime/:id',
+                params: {
+                    id: null
+                },
+                templateUrl: "/systemdowntimes/addServicedowntime.html",
+                controller: "SystemdowntimesAddServicedowntimeController"
+            })
+
+            .state('SystemdowntimesAddContainerdowntime', {
+                url: '/systemdowntimes/addContainerdowntime',
+                templateUrl: "/systemdowntimes/addContainerdowntime.html",
+                controller: "SystemdowntimesAddContainerdowntimeController"
             })
 
             .state('HostgroupsIndex', {

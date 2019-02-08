@@ -301,10 +301,12 @@ class SystemdowntimesController extends AppController {
     }
 
     public function addHostdowntime() {
-        $this->layout = 'angularjs';
+        $this->layout = 'blank';
 
         if (!$this->isAngularJsRequest()) {
-            $this->set('back_url', $this->referer());
+            // ship html template
+            return;
+            //$this->set('back_url', $this->referer());
         }
 
         if ($this->request->is('post') || $this->request->is('put')) {
@@ -382,9 +384,11 @@ class SystemdowntimesController extends AppController {
 
 
     public function addHostgroupdowntime() {
-        $this->layout = 'angularjs';
+        $this->layout = 'blank';
         if (!$this->isAngularJsRequest()) {
-            $this->set('back_url', $this->referer());
+            // ship html template
+            return;
+            //$this->set('back_url', $this->referer());
         }
 
 
@@ -464,9 +468,11 @@ class SystemdowntimesController extends AppController {
     }
 
     public function addServicedowntime() {
-        $this->layout = 'angularjs';
+        $this->layout = 'blank';
         if (!$this->isAngularJsRequest()) {
-            $this->set('back_url', $this->referer());
+            // ship html template
+            return;
+            //$this->set('back_url', $this->referer());
         }
 
 
@@ -553,10 +559,12 @@ class SystemdowntimesController extends AppController {
 
 
     public function addContainerdowntime() {
-        $this->layout = 'angularjs';
+        $this->layout = 'blank';
 
         if (!$this->isAngularJsRequest()) {
-            $this->set('back_url', $this->referer());
+            // ship html template
+            return;
+            //$this->set('back_url', $this->referer());
         }
 
 

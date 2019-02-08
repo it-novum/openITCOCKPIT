@@ -49,7 +49,7 @@ use itnovum\openITCOCKPIT\Core\RFCRouter;
 </ol>
 
 
-<?php if (!$QueryHandler->exists()): ?>
+<?php if (isset($QueryHandler) && !$QueryHandler->exists()): ?>
     <div class="alert alert-danger alert-block">
         <a href="#" data-dismiss="alert" class="close">×</a>
         <h4 class="alert-heading"><i class="fa fa-warning"></i> <?php echo __('Monitoring Engine is not running!'); ?>
@@ -554,7 +554,7 @@ use itnovum\openITCOCKPIT\Core\RFCRouter;
 
                                 <td>
                                     <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
-                                        <a href="/ng/#!/hosts/browser/{{ host.Host.id }}">
+                                        <a ui-sref="HostsBrowser({id:host.Host.id})">
                                             {{ host.Host.hostname }}
                                         </a>
                                     <?php else: ?>

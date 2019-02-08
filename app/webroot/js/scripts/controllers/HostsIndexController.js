@@ -1,12 +1,12 @@
 angular.module('openITCOCKPIT')
-    .controller('HostsIndexController', function($scope, $http, $rootScope, $httpParamSerializer, SortService, MassChangeService, QueryStringService){
+    .controller('HostsIndexController', function($scope, $http, $rootScope, $httpParamSerializer, SortService, MassChangeService, QueryStringService, $stateParams){
         $rootScope.lastObjectName = null;
 
         SortService.setSort(QueryStringService.getValue('sort', 'Hoststatus.current_state'));
         SortService.setDirection(QueryStringService.getValue('direction', 'desc'));
         $scope.currentPage = 1;
 
-        $scope.id = QueryStringService.getCakeId();
+        $scope.id = $stateParams.id;
 
         $scope.useScroll = true;
 

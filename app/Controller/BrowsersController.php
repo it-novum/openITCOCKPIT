@@ -55,6 +55,8 @@ class BrowsersController extends AppController {
     ];
 
     function index($containerId = null) {
+        $this->layout = 'blank';
+
         $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
 
         if (!$this->isApiRequest()) {

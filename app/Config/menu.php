@@ -147,6 +147,7 @@ $config = [
                 ],
                 [
                     'url'               => ['controller' => 'browsers', 'action' => 'index'],
+                    'state'             => 'BrowsersIndex',
                     'title'             => 'Browser',
                     'icon'              => 'list',
                 ],

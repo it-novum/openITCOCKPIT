@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('SystemdowntimesAddHostdowntimeController', function($scope, $http, QueryStringService){
+    .controller('SystemdowntimesAddHostdowntimeController', function($scope, $http, QueryStringService, $stateParams){
 
         $scope.init = true;
         $scope.errors = null;
@@ -7,7 +7,10 @@ angular.module('openITCOCKPIT')
         $scope.data = {
             hostIds: []
         };
-        $scope.data.hostIds.push(QueryStringService.getCakeId());
+
+        if($stateParams.id !== null){
+            $scope.data.hostIds.push($stateParams.id);
+        }
 
         $scope.Downtime = {
             is_recurring: false

@@ -79,7 +79,26 @@
 
                     <span class="widget-icon hidden-mobile"> <i class="fa fa-power-off"></i> </span>
                     <h2 class="hidden-mobile"><?php echo __('Service downtimes overview'); ?> </h2>
-                    <?php echo $this->element('Downtimes/tabs'); ?>
+
+                    <ul class="nav nav-tabs pull-right" id="widget-tab-1">
+                        <?php if ($this->Acl->hasPermission('host', 'downtimes')): ?>
+                            <li class="">
+                                <a ui-sref="DowntimesHost">
+                                    <i class="fa fa-desktop"></i>
+                                    <span class="hidden-mobile hidden-tablet"> <?php echo __('Host downtimes'); ?></span>
+                                </a>
+                            </li>
+                        <?php endif; ?>
+                        <?php if ($this->Acl->hasPermission('service', 'downtimes')): ?>
+                            <li class="active">
+                                <a ui-sref="DowntimesService">
+                                    <i class="fa fa-cog"></i>
+                                    <span class="hidden-mobile hidden-tablet"> <?php echo __('Service downtimes'); ?></span>
+                                </a>
+                            </li>
+                        <?php endif; ?>
+                    </ul>
+
                 </header>
                 <div>
 
