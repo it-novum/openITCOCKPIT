@@ -14,7 +14,9 @@ angular.module('openITCOCKPIT')
         $scope.init = true;
         $scope.hasError = null;
 
-        $scope.timeperiodranges = [];
+        $scope.timeperiod = {
+            ranges: []
+        };
 
         $scope.load = function(){
             $http.get("/containers/loadContainersForAngular.json", {
@@ -28,44 +30,59 @@ angular.module('openITCOCKPIT')
         };
 
 
-        $scope.removeArg = function(timeperiodrange){
+        $scope.removeTimerange = function(rangeIndex){
             var timeperiodranges = [];
-            for(var i in $scope.timeperiodranges){
-                if($scope.timeperiodranges[i].id !== timeperiodrange.id){
-                    timeperiodranges.push($scope.timeperiodranges[i])
+            for(var i in $scope.timeperiod.ranges){
+                if(i !== rangeIndex){
+                    timeperiodranges.push($scope.timeperiod.ranges[i])
                 }
             }
-
-            $scope.args = _.sortBy(args, 'day');
+            $scope.timeperiod.ranges = _(timeperiodranges)
+                .chain()
+                .flatten()
+                .sortBy(
+                    function(range){
+                        return [range.day, range.start];
+                    })
+                .value();
         };
 
-        $scope.addArg = function(){
-            var count = $scope.length(timeperiodranges)+1;
+        $scope.addTimerange = function(){
+            var count = $scope.timeperiod.ranges.length + 1;
 
-            $scope.timeperiodranges.push({
+            $scope.timeperiod.ranges.push({
                 id: count,
-                day: '',
+                day: '1',
                 start: '',
                 end: ''
 
             });
-            $scope.timeperiodranges = _.sortBy($scope.timeperiodranges, 'day');
+            $scope.timeperiod.ranges = _($scope.timeperiod.ranges)
+                .chain()
+                .flatten()
+                .sortBy(
+                    function(range){
+                        return [range.day, range.start];
+                    })
+                .value();
         };
 
 
         $scope.submit = function(){
-            return;
             var index = 0;
-            for(var i in $scope.args){
-                if(!/\S/.test($scope.args[i].human_name)){
+            for(var i in $scope.timeperiod.ranges){
+                if(!/^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/.test($scope.timeperiod.ranges[i].start) || !/^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/.test($scope.timeperiod.ranges[i].end)){
                     continue;
                 }
                 $scope.post.Timeperiod.timeperiodranges[index] = {
-                    'name': $scope.args[i].name,
-                    'human_name': $scope.args[i].human_name
+                    'day': $scope.timeperiod.ranges[i].day,
+                    'start': $scope.timeperiod.ranges[i].start,
+                    'end': $scope.timeperiod.ranges[i].end
                 };
                 index++;
             }
+            console.log($scope.post.Timeperiod);
+            return;
             $http.post("/timeperiods/add.json?angular=true",
                 $scope.post
             ).then(function(result){
