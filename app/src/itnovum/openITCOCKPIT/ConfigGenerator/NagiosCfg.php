@@ -228,6 +228,13 @@ class NagiosCfg extends ConfigGenerator implements ConfigInterface {
             $configToExport['retention_update_interval'] = ceil($configToExport['retention_update_interval'] / 60);
         }
 
+        $statusenginePath = 'naemon';
+        if ($MonitoringEngine->isNagios()) {
+            $statusenginePath = 'nagios';
+        }
+
+        $configToExport['statusengine_path'] = $statusenginePath;
+
         return $this->saveConfigFile($configToExport);
     }
 
