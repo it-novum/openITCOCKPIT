@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('InstantreportsAddController', function($scope, $http, NotyService){
+    .controller('InstantreportsAddController', function($scope, $state, $http, NotyService){
         $scope.types = {
             TYPE_HOSTGROUPS: '1',
             TYPE_HOSTS: '2',
@@ -130,8 +130,8 @@ angular.module('openITCOCKPIT')
             $http.post("/instantreports/add.json?angular=true",
                 $scope.post
             ).then(function(result){
-                window.location.href = '/ng/#!/instantreports/index';
                 NotyService.genericSuccess();
+                $state.go('InstantreportsIndex');
             }, function errorCallback(result){
                 if(result.data.hasOwnProperty('error')){
                     $scope.errors = result.data.error;

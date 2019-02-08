@@ -96,7 +96,6 @@ angular.module('openITCOCKPIT')
                 $scope.post
             ).then(function(result){
                 console.log('Data saved successfully');
-                //window.location.href = '/hostgroups/index';
                 NotyService.genericSuccess();
                 $state.go('HostgroupsIndex');
 

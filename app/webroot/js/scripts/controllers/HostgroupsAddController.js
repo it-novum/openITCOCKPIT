@@ -61,7 +61,6 @@ angular.module('openITCOCKPIT')
                 $state.go('HostgroupsIndex');
 
                 console.log('Data saved successfully');
-                //window.location.href = '/hostgroups/index';
             }, function errorCallback(result){
 
                 NotyService.genericError();

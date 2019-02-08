@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('SystemdowntimesAddServicedowntimeController', function($scope, $http, QueryStringService, $stateParams){
+    .controller('SystemdowntimesAddServicedowntimeController', function($scope, $state, $http, QueryStringService, $stateParams, NotyService){
 
         $scope.init = true;
         $scope.errors = null;
@@ -69,15 +69,17 @@ angular.module('openITCOCKPIT')
             $http.post("/systemdowntimes/addServicedowntime.json?angular=true", $scope.post).then(
                 function(result){
                     $scope.errors = null;
+                    NotyService.genericSuccess();
                     if($scope.post.Systemdowntime.is_recurring){
-                        window.location.href = '/systemdowntimes/service';
+                        $state.go('SystemdowntimesService');
                     }else{
-                        window.location.href = '/downtimes/service';
+                        $state.go('DowntimesService');
                     }
                 },
                 function errorCallback(result){
                     if(result.data.hasOwnProperty('error')){
                         $scope.errors = result.data.error[0];
+                        NotyService.genericError();
                     }
                 }
             );

@@ -325,7 +325,6 @@ class SystemdowntimesController extends AppController {
                     $this->Systemdowntime->create();
                     if ($this->Systemdowntime->saveAll($this->request->data)) {
                         if ($this->isAngularJsRequest()) {
-                            $this->setFlash(__('Recurring Downtime successfully saved'));
                             $this->set('success', true);
                             $this->set('_serialize', ['success']);
                         }
@@ -372,7 +371,6 @@ class SystemdowntimesController extends AppController {
                         ];
                         $this->GearmanClient->sendBackground('createHostDowntime', $payload);
                     }
-                    $this->setFlash(__('Downtime/s successfully created'));
                     $this->set('success', true);
                     $this->set('_serialize', ['success']);
                     return;
@@ -408,7 +406,6 @@ class SystemdowntimesController extends AppController {
                     $this->Systemdowntime->create();
                     if ($this->Systemdowntime->saveAll($this->request->data)) {
                         if ($this->isAngularJsRequest()) {
-                            $this->setFlash(__('Recurring Downtime successfully saved'));
                             $this->set('success', true);
                             $this->set('_serialize', ['success']);
                         }
@@ -457,7 +454,6 @@ class SystemdowntimesController extends AppController {
 
                         $this->GearmanClient->sendBackground('createHostgroupDowntime', $payload);
                     }
-                    $this->setFlash(__('Downtime/s successfully created'));
                     $this->set('success', true);
                     $this->set('_serialize', ['success']);
                     return;
@@ -492,7 +488,6 @@ class SystemdowntimesController extends AppController {
                     $this->Systemdowntime->create();
                     if ($this->Systemdowntime->saveAll($this->request->data)) {
                         if ($this->isAngularJsRequest()) {
-                            $this->setFlash(__('Recurring Downtime successfully saved'));
                             $this->set('success', true);
                             $this->set('_serialize', ['success']);
                         }
@@ -547,7 +542,6 @@ class SystemdowntimesController extends AppController {
                         ];
                         $this->GearmanClient->sendBackground('createServiceDowntime', $payload);
                     }
-                    $this->setFlash(__('Downtime/s successfully created'));
                     $this->set('success', true);
                     $this->set('_serialize', ['success']);
                     return;
@@ -614,7 +608,6 @@ class SystemdowntimesController extends AppController {
                     $this->Systemdowntime->create();
                     if ($this->Systemdowntime->saveAll($this->request->data)) {
                         if ($this->isAngularJsRequest()) {
-                            $this->setFlash(__('Recurring Downtime successfully saved'));
                             $this->set('success', true);
                             $this->set('_serialize', ['success']);
                         }
@@ -660,7 +653,6 @@ class SystemdowntimesController extends AppController {
                         ];
                         $this->GearmanClient->sendBackground('createHostDowntime', $payload);
                     }
-                    $this->setFlash(__('Downtime/s successfully created'));
                     $this->set('success', true);
                     $this->set('_serialize', ['success']);
                     return;
