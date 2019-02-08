@@ -110,18 +110,15 @@ class GrafanaUserdashboardsController extends GrafanaModuleAppController {
             $this->Paginator->settings = array_merge($this->Paginator->settings, $query);
             $allUserdashboards = $this->Paginator->paginate('GrafanaUserdashboard', [], [key($this->Paginator->settings['order'])]);
         }
-
         foreach ($allUserdashboards as $key => $dashboard) {
             $allUserdashboards[$key]['GrafanaUserdashboard']['allowEdit'] = false;
             if ($this->hasRootPrivileges == true) {
                 $allUserdashboards[$key]['GrafanaUserdashboard']['allowEdit'] = true;
                 continue;
             } else {
-                foreach ($dashboard['Container'] as $cKey => $container) {
-                    if ($this->MY_RIGHTS_LEVEL[$container['id']] == WRITE_RIGHT) {
-                        $allUserdashboards[$key]['GrafanaUserdashboard']['allowEdit'] = true;
-                        continue;
-                    }
+                if ($this->MY_RIGHTS_LEVEL[$dashboard['Container']['id']] == WRITE_RIGHT) {
+                    $allUserdashboards[$key]['GrafanaUserdashboard']['allowEdit'] = true;
+                    continue;
                 }
             }
         }
@@ -202,7 +199,7 @@ class GrafanaUserdashboardsController extends GrafanaModuleAppController {
 
     }
 
-    public function getGrafanaUserdashboardUrl($userdashboardId) {
+    /*public function getGrafanaUserdashboardUrl($userdashboardId) {
 
         $userdashboardData = $this->GrafanaUserdashboardData->find('all', [
             'recursive'  => -1,
@@ -221,7 +218,7 @@ class GrafanaUserdashboardsController extends GrafanaModuleAppController {
 
         $this->set('userdashboardDataForGrafana', $userdashboardDataForGrafana);
         $this->set('_serialize', ['userdashboardDataForGrafana']);
-    }
+    }*/
 
     public function edit($id) {
         if (!$this->GrafanaUserdashboard->exists($id)) {

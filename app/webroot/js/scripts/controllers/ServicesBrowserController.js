@@ -375,7 +375,7 @@ angular.module('openITCOCKPIT')
             var self = this;
             var $graph_data_tooltip = $('#graph_data_tooltip');
 
-            var fooJS = new Date(timestamp + ($scope.timezone.server_timezone_offset * 1000));
+            var fooJS = new Date(timestamp + ($scope.timezone.user_offset * 1000));
             var fixTime = function(value){
                 if(value < 10){
                     return '0' + value;
@@ -467,7 +467,7 @@ angular.module('openITCOCKPIT')
                 defaultTheme: false
             };
             options.xaxis.tickFormatter = function(val, axis){
-                var fooJS = new Date(val + ($scope.timezone.server_timezone_offset * 1000));
+                var fooJS = new Date(val + ($scope.timezone.user_offset * 1000));
                 var fixTime = function(value){
                     if(value < 10){
                         return '0' + value;

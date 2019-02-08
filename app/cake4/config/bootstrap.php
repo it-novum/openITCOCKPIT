@@ -104,7 +104,7 @@ if (Configure::read('debug')) {
  * Set the default server timezone. Using UTC makes time calculations / conversions easier.
  * Check http://php.net/manual/en/timezones.php for list of valid timezone strings.
  */
-date_default_timezone_set(Configure::read('App.defaultTimezone'));
+//date_default_timezone_set(Configure::read('App.defaultTimezone'));
 $defaultTimeZone = 'Europe/Berlin';
 if ($dateDefaultTimeZone = date_default_timezone_get()) {
     $defaultTimeZone = $dateDefaultTimeZone;

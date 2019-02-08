@@ -22,17 +22,17 @@
 //  License agreement and license key will be shipped with the order
 //  confirmation.
 
-
 use itnovum\openITCOCKPIT\ConfigGenerator\GraphingDocker;
 
 /** @var GraphingDocker $GraphingDocker */
-?>
 
+$timezones = CakeTime::listTimezones();
+
+?>
 
 <form ng-submit="submit();" class="form-horizontal">
 
     <div class="row">
-
         <div class="form-group required" ng-class="{'has-error': errors.Configfile.carbon_path}">
             <label class="col col-md-2 control-label">
                 <?php echo __('Carbon storage path'); ?>
@@ -48,6 +48,26 @@ use itnovum\openITCOCKPIT\ConfigGenerator\GraphingDocker;
             </div>
             <div class="helpText text-muted col-md-offset-2 col-md-6">
                 <?php echo h($GraphingDocker->getHelpText('carbon_path')); ?>
+            </div>
+        </div>
+
+        <div class="form-group required" ng-class="{'has-error': errors.Configfile.WHISPER_FALLOCATE_CREATE}">
+            <label class="col col-md-2 control-label" for="WHISPER_FALLOCATE_CREATE">
+                WHISPER_FALLOCATE_CREATE
+            </label>
+            <div class="col col-md-10 padding-top-7">
+                <input
+                        type="checkbox"
+                        id="WHISPER_FALLOCATE_CREATE"
+                        ng-false-value="0"
+                        ng-true-value="1"
+                        ng-model="post.bool.WHISPER_FALLOCATE_CREATE">
+                <div ng-repeat="error in errors.Configfile.WHISPER_FALLOCATE_CREATE">
+                    <div class="help-block text-danger">{{ error }}</div>
+                </div>
+            </div>
+            <div class="helpText text-muted col-md-offset-2 col-md-6">
+                <?php echo h($GraphingDocker->getHelpText('WHISPER_FALLOCATE_CREATE')); ?>
             </div>
         </div>
 
@@ -123,6 +143,44 @@ use itnovum\openITCOCKPIT\ConfigGenerator\GraphingDocker;
             </div>
             <div class="helpText text-muted col-md-offset-2 col-md-6">
                 <?php echo h($GraphingDocker->getHelpText('local_graphite_http_port')); ?>
+            </div>
+        </div>
+
+        <div class="form-group required" ng-class="{'has-error': errors.Configfile.timezone}">
+            <label class="col col-md-2 control-label">
+                <?php echo __('Graphite-Web timezone'); ?>
+            </label>
+            <div class="col col-xs-10">
+
+                <select
+                        data-placeholder="<?php echo __('Please choose'); ?>"
+                        class="form-control"
+                        chosen="{}"
+                        ng-init="post.string.timezone = post.string.timezone || 'Europe/Berlin'"
+                        ng-model="post.string.timezone">
+                    <?php foreach ($timezones as $continent => $continentTimezons): ?>
+                        <optgroup label="<?php echo h($continent); ?>">
+                            <?php foreach ($continentTimezons as $timezoneKey => $timezoneName): ?>
+                                <option value="<?php echo h($timezoneKey); ?>"><?php echo h($timezoneName); ?></option>
+                            <?php endforeach; ?>
+                        </optgroup>
+                    <?php endforeach;; ?>
+                </select>
+                <div ng-repeat="error in errors.Configfile.timezone">
+                    <div class="help-block text-danger">{{ error }}</div>
+                </div>
+            </div>
+            <div class="helpText text-muted col-md-offset-2 col-md-6">
+                <?php echo h($GraphingDocker->getHelpText('timezone')); ?>
+                <br/>
+                <?php echo __('Server timezone is:'); ?>
+                <strong>
+                    <?php echo h(date_default_timezone_get()); ?>
+                </strong>
+                <?php echo __('Current server time:'); ?>
+                <strong>
+                    <?php echo date('d.m.Y H:i:s'); ?>
+                </strong>
             </div>
         </div>
 

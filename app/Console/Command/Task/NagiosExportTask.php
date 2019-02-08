@@ -721,6 +721,7 @@ class NagiosExportTask extends AppShell {
                         $content .= $this->addContent('freshness_threshold', 1, (int)$host['Host']['freshness_threshold'] + $checkInterrval + $this->FRESHNESS_THRESHOLD_ADDITION);
                     } else {
                         //Passive service on the master system
+                        $content .= $this->addContent('check_freshness', 1, 1);
                         $content .= $this->addContent('freshness_threshold', 1, (int)$host['Host']['freshness_threshold'] + $this->FRESHNESS_THRESHOLD_ADDITION);
                     }
                 }
@@ -1412,6 +1413,7 @@ class NagiosExportTask extends AppShell {
                         $content .= $this->addContent('freshness_threshold', 1, (int)$service['Service']['freshness_threshold'] + $checkInterrval + $this->FRESHNESS_THRESHOLD_ADDITION);
                     } else {
                         //Passive service on the master system
+                        $content .= $this->addContent('check_freshness', 1, 1);
                         $content .= $this->addContent('freshness_threshold', 1, (int)$service['Service']['freshness_threshold'] + $this->FRESHNESS_THRESHOLD_ADDITION);
                     }
                 }
