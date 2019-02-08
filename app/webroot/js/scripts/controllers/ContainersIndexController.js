@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('ContainersIndexController', function($scope, $http, $timeout){
+    .controller('ContainersIndexController', function($scope, $http, $timeout, $stateParams){
 
         $scope.init = true;
 
@@ -11,6 +11,10 @@ angular.module('openITCOCKPIT')
         $scope.selectedTenantForNode = null;
         $scope.errors = null;
 
+        console.log($stateParams.id);
+        if($stateParams.id != null){
+            $scope.selectedTenant.id = $stateParams.id;
+        }
 
         $scope.post = {
             Container: {

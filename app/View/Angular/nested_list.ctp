@@ -25,7 +25,7 @@
         <?php endif; ?>
 
         <?php if ($this->Acl->hasPermission('add', 'containers')): ?>
-            <add-node container="container" callback="callback"
+            <add-node container="container" tenant="tenant" callback="callback"
                       ng-if="container.Container.allow_edit === true"></add-node>
         <?php endif; ?>
 
@@ -37,7 +37,7 @@
     </div>
 
     <ol class="dd-list">
-        <nested-list container="container" ng-repeat="container in container.children"
+        <nested-list container="container" tenant="tenant" ng-repeat="container in container.children"
                      callback="callback"></nested-list>
     </ol>
 

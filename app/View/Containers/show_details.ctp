@@ -44,7 +44,9 @@
                     <span class="widget-icon"> <i class="fa fa-sitemap fa-rotate-270"></i> </span>
                     <h2><?php echo __('Objects overview'); ?> "{{containerDetails.Container.name}}"</h2>
                     <div class="widget-toolbar" role="menu">
-                        <?php echo $this->Utils->backButton(__('Back'), $back_url); ?>
+                        <a ui-sref="ContainersIndex({id: post.Container.tenant})" class="btn btn-default btn-xs" iconcolor="white">
+                            <i class="glyphicon glyphicon-white glyphicon-arrow-left"></i> <?php echo __('Back'); ?>
+                        </a>
                     </div>
                 </header>
                 <div class="widget-body">

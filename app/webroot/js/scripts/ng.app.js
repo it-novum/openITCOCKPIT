@@ -106,6 +106,30 @@ angular.module('openITCOCKPIT', ['gridster', 'ui.router'])
                 controller: "ConfigurationFilesIndexController"
             })
 
+            .state('ContainersIndex', {
+                url: '/containers/index/:id',
+                params: {
+                    id: {
+                        value: null,
+                        squash: true
+                    }
+                },
+                templateUrl: "/containers/index.html",
+                controller: "ContainersIndexController"
+            })
+
+            .state('ContainersShowDetails', {
+                url: '/containers/showDetails/:id/:tenant',
+                params: {
+                    tenant: {
+                        value: null,
+                        squash: true
+                    }
+                },
+                templateUrl: "/containers/showDetails.html",
+                controller: "ContainersShowDetailsController"
+            })
+
             .state('DeletedHostsIndex', {
                 url: '/deletedHosts',
                 templateUrl: "/deletedHosts/index.html",
@@ -223,7 +247,10 @@ angular.module('openITCOCKPIT', ['gridster', 'ui.router'])
             .state('SystemdowntimesAddHostdowntime', {
                 url: '/systemdowntimes/addHostdowntime/:id',
                 params: {
-                    id: null
+                    id: {
+                        value: null,
+                        squash: true
+                    }
                 },
                 templateUrl: "/systemdowntimes/addHostdowntime.html",
                 controller: "SystemdowntimesAddHostdowntimeController"
@@ -238,7 +265,10 @@ angular.module('openITCOCKPIT', ['gridster', 'ui.router'])
             .state('SystemdowntimesAddServicedowntime', {
                 url: '/systemdowntimes/addServicedowntime/:id',
                 params: {
-                    id: null
+                    id: {
+                        value: null,
+                        squash: true
+                    }
                 },
                 templateUrl: "/systemdowntimes/addServicedowntime.html",
                 controller: "SystemdowntimesAddServicedowntimeController"

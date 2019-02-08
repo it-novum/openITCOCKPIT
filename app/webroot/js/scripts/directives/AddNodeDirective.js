@@ -4,6 +4,7 @@ angular.module('openITCOCKPIT').directive('addNode', function($http, $interval){
         templateUrl: '/containers/add.html',
         scope: {
             'container': '=',
+            'tenant': '=',
             'callback': '='
         },
 

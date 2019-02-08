@@ -37,9 +37,8 @@ class ContainersController extends AppController {
     public $layout = 'Admin.default';
 
     public function index() {
-        $this->layout = 'angularjs';
-        $this->set('empty', null);
-        $this->set('_serialize', ['empty']);
+        $this->layout = 'blank';
+        return;
     }
 
 
@@ -489,12 +488,9 @@ class ContainersController extends AppController {
     }
 
     public function showDetails($id = null) {
-        $this->layout = 'angularjs';
+        $this->layout = 'blank';
 
-        if (!$this->isAngularJsRequest()) {
-            $this->set('back_url', $this->referer());
-        }
-        if (!$this->isApiRequest()) {
+        if (!$this->isApiRequest() && $id === null) {
             //Only ship HTML template for angular
             return;
         }

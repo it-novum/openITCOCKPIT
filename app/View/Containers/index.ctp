@@ -128,7 +128,7 @@
                         <div class="widget-body">
                             <div class="dd dd-nodrag containers-dd" id="nestable">
                                 <ol class="dd-list" ng-repeat="container in containers">
-                                    <nested-list container="container" callback="load"></nested-list>
+                                    <nested-list container="container" tenant="selectedTenant.id" callback="load"></nested-list>
                                 </ol>
                             </div>
                         </div>
