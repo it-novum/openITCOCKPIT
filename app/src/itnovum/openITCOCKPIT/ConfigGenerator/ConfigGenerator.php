@@ -254,7 +254,7 @@ class ConfigGenerator {
         $mergedConfiguration = [];
         $dbRecords = $this->flatDbResult($dbRecords);
 
-        foreach ($this->defaults as $type => $fields) {
+        foreach ($this->getDefaults() as $type => $fields) {
             foreach ($fields as $key => $defaultValue) {
 
                 //Check for missing keys in database
