@@ -66,6 +66,7 @@ $config = [
                 ],
                 [
                     'url'               => ['controller' => 'ConfigurationFiles', 'action' => 'index'],
+                    'state'             => 'ConfigurationFilesIndex',
                     'title'             => 'Config file editor',
                     'icon'              => 'file-text-o',
                 ],
@@ -304,6 +305,7 @@ $config = [
             'children' => [
                 [
                     'url'               => ['controller' => 'instantreports', 'action' => 'index'],
+                    'state'             => 'InstantreportsIndex',
                     'title'             => 'Instant Report',
                     'icon'              => 'file-image-o',
                 ],

@@ -100,6 +100,12 @@ angular.module('openITCOCKPIT', ['gridster', 'ui.router'])
                 controller: "BrowsersIndexController"
             })
 
+            .state('ConfigurationFilesIndex', {
+                url: '/ConfigurationFiles/index',
+                templateUrl: "/ConfigurationFiles/index.html",
+                controller: "ConfigurationFilesIndexController"
+            })
+
             .state('DeletedHostsIndex', {
                 url: '/deletedHosts',
                 templateUrl: "/deletedHosts/index.html",
@@ -140,6 +146,24 @@ angular.module('openITCOCKPIT', ['gridster', 'ui.router'])
                 url: '/hosts/browser/:id',
                 templateUrl: "/hosts/browser.html",
                 controller: "HostsBrowserController"
+            })
+
+            .state('InstantreportsIndex', {
+                url: '/instantreports/index',
+                templateUrl: "/instantreports/index.html",
+                controller: "InstantreportsIndexController"
+            })
+
+            .state('InstantreportsAdd', {
+                url: '/instantreports/add',
+                templateUrl: "/instantreports/add.html",
+                controller: "InstantreportsAddController"
+            })
+
+            .state('InstantreportsEdit', {
+                url: '/instantreports/edit/:id',
+                templateUrl: "/instantreports/edit.html",
+                controller: "InstantreportsEditController"
             })
 
             .state('ServicesIndex', {

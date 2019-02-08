@@ -48,17 +48,11 @@
                             <?php echo __('Refresh'); ?>
                         </button>
                         <?php
-                        if ($this->Acl->hasPermission('add')):
-                            echo $this->Html->link(
-                                __('New'),
-                                '/' . $this->params['controller'] . '/add', [
-                                    'class' => 'btn btn-xs btn-success',
-                                    'icon'  => 'fa fa-plus'
-                                ]
-                            );
-                            echo " "; //Fix HTML
-                        endif;
-                        ?>
+                        if ($this->Acl->hasPermission('add')): ?>
+                            <a ui-sref="InstantreportsAdd" class="btn btn-xs btn-success" icon="fa fa-plus">
+                                <i class="fa fa-plus"></i> <?php echo __('New'); ?>
+                            </a>
+                        <?php endif; ?>
                         <button type="button" class="btn btn-xs btn-primary" ng-click="triggerFilter()">
                             <i class="fa fa-filter"></i>
                             <?php echo __('Filter'); ?>
@@ -268,7 +262,7 @@
                                     <td class="width-50">
                                         <div class="btn-group">
                                             <?php if ($this->Acl->hasPermission('edit')): ?>
-                                                <a href="/instantreports/edit/{{ instantreport.Instantreport.id}}"
+                                                <a ui-sref="InstantreportsEdit({id:instantreport.Instantreport.id})"
                                                    class="btn btn-default">
                                                     &nbsp;<i class="fa fa-cog"></i>&nbsp;
                                                 </a>
@@ -283,7 +277,7 @@
                                                 id="menuHack-{{instantreport.Instantreport.id}}">
                                                 <?php if ($this->Acl->hasPermission('edit')): ?>
                                                     <li>
-                                                        <a href="/instantreports/edit/{{instantreport.Instantreport.id}}">
+                                                        <a ui-sref="InstantreportsEdit({id:instantreport.Instantreport.id})">
                                                             <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
                                                         </a>
                                                     </li>
