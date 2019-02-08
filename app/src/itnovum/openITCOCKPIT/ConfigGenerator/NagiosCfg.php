@@ -141,6 +141,18 @@ class NagiosCfg extends ConfigGenerator implements ConfigInterface {
         return 'nagios-cfg';
     }
 
+    public function getDefaults() {
+        $default = parent::getDefaults();
+
+        $MonitoringEngine = new MonitoringEngine();
+        if ($MonitoringEngine->isNagios()) {
+            // https://statusengine.org/broker/#installation
+            $default['bool']['statusengine_use_log_data'] = 0;
+        }
+
+        return $default;
+    }
+
     /**
      * @param string $key
      * @return string
