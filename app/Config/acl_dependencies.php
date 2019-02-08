@@ -320,8 +320,6 @@ $config = [
                 'delete' => ['mass_delete'],
             ],
             'Downtimes'             => [
-                'host'    => ['index'],
-                'service' => ['index'],
                 'delete'  => ['mass_delete'],
             ],
             'Administrators'        => [

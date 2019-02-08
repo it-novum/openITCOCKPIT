@@ -119,7 +119,7 @@ angular.module('openITCOCKPIT', ['gridster', 'ui.router'])
             })
 
             .state('HostsIndex', {
-                url: '/hosts/index/:id',
+                url: '/hosts/index',
                 templateUrl: "/hosts/index.html",
                 controller: "HostsIndexController"
             })

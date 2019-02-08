@@ -167,19 +167,38 @@ class MenuComponent extends Component {
                             if (!is_array($childNode['fallback_actions'])) {
                                 $childNode['fallback_actions'] = [$childNode['fallback_actions']];
                             }
-                            foreach ($childNode['fallback_actions'] as $fallbackAction) {
-                                if ($this->checkPermissions($childNode['url']['plugin'], $childNode['url']['controller'], $fallbackAction, $permissions)) {
-                                    $childNode['url']['action'] = $fallbackAction;
-                                    if ($realUrl) {
-                                        $childNode['url_array'] = $childNode['url'];
-                                        $childNode['url'] = Router::url($childNode['url']);
-                                        if($childNode['url_array']['action'] === 'index'){
-                                            $childNode['url'] = $childNode['url'].'/index';
+                            foreach ($childNode['fallback_actions'] as $fallbackKey => $fallbackAction) {
+                                if(is_integer($fallbackKey)){   //old scheme
+                                    if ($this->checkPermissions($childNode['url']['plugin'], $childNode['url']['controller'], $fallbackAction, $permissions)) {
+                                        $childNode['url']['action'] = $fallbackAction;
+                                        if ($realUrl) {
+                                            $childNode['url_array'] = $childNode['url'];
+                                            $childNode['url'] = Router::url($childNode['url']);
+                                            if($childNode['url_array']['action'] === 'index'){
+                                                $childNode['url'] = $childNode['url'].'/index';
+                                            }
                                         }
+                                        $_childNodes[$childKey] = $childNode;
+                                        break;
                                     }
-                                    $_childNodes[$childKey] = $childNode;
-                                    break;
+                                } else {    //new ng spa state scheme
+                                    if ($this->checkPermissions($childNode['url']['plugin'], $childNode['url']['controller'], $fallbackKey, $permissions)) {
+                                        $childNode['url']['action'] = $fallbackKey;
+                                        if(isset($childNode['url']['state'])){
+                                            $childNode['url']['state'] = $fallbackAction;
+                                        }
+                                        if ($realUrl) {
+                                            $childNode['url_array'] = $childNode['url'];
+                                            $childNode['url'] = Router::url($childNode['url']);
+                                            if($childNode['url_array']['action'] === 'index'){
+                                                $childNode['url'] = $childNode['url'].'/index';
+                                            }
+                                        }
+                                        $_childNodes[$childKey] = $childNode;
+                                        break;
+                                    }
                                 }
+
                             }
                         }
                     }

@@ -230,10 +230,11 @@ $config = [
                     'icon'              => 'list-alt',
                 ],
                 [
-                    'url'               => ['controller' => 'downtimes', 'action' => 'index'],
+                    'url'               => ['controller' => 'downtimes', 'action' => 'host'],
+                    'state'             => 'DowntimesHost',
                     'title'             => 'Downtimes',
                     'icon'              => 'power-off',
-                    'fallback_actions'  => ['host', 'service'],
+                    'fallback_actions'  => ['service' => 'DowntimesService'],
                 ],
                 [
                     'url'               => ['controller' => 'systemdowntimes', 'action' => 'index'],

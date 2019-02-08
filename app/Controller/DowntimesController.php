@@ -230,18 +230,6 @@ class DowntimesController extends AppController {
         $this->set('_serialize', $toJson);
     }
 
-    public function index() {
-        if (isset($this->PERMISSIONS['downtimes']['host'])) {
-            //$this->redirect(['action' => 'host']);
-            $this->redirect('/ng/#!/downtimes/host');
-        }
-
-        if (isset($this->PERMISSIONS['downtimes']['service'])) {
-            //$this->redirect(['action' => 'service']);
-            $this->redirect('/ng/#!/downtimes/service');
-        }
-    }
-
     public function validateDowntimeInputFromBrowser() {
         $this->render(false);
         if (isset($this->request->data['from']) && isset($this->request->data['to'])) {
