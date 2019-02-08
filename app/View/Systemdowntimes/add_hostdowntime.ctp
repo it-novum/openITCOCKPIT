@@ -40,7 +40,9 @@
         <span class="widget-icon hidden-mobile hidden-tablet"> <i class="fa fa-power-off"></i> </span>
         <h2 class="hidden-mobile hidden-tablet"><?php echo __('Create host downtime'); ?></h2>
         <div class="widget-toolbar" role="menu">
-            <?php echo $this->Utils->backButton(__('Back'), $back_url); ?>
+            <a ui-sref="DowntimesHost" class="btn btn-default btn-xs" iconcolor="white">
+                <i class="glyphicon glyphicon-white glyphicon-arrow-left"></i> <?php echo __('Back'); ?>
+            </a>
         </div>
     </header>
     <div>
@@ -245,7 +247,7 @@
                        ng-click="saveNewHostDowntime()"
                 >
                 &nbsp;
-                <a href="<?php echo $back_url; ?>" class="btn btn-default">
+                <a ui-sref="DowntimesHost" class="btn btn-default">
                     <?php echo __('Cancel'); ?>
                 </a>
             </div>

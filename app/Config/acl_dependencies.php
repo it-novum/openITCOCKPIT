@@ -320,8 +320,6 @@ $config = [
                 'delete' => ['mass_delete'],
             ],
             'Downtimes'             => [
-                'host'    => ['index'],
-                'service' => ['index'],
                 'delete'  => ['mass_delete'],
             ],
             'Administrators'        => [
@@ -407,7 +405,6 @@ $config = [
                 'Servicetemplates'      => ['index'],
                 'Statehistories'        => ['service', 'host'],
                 'Statusmaps'            => ['index', 'hostAndServicesSummaryStatus'],
-                'Systemdowntimes'       => ['index'],
                 'Systemfailures'        => ['index'],
                 'Systemsettings'        => ['index', 'host', 'service', 'hostgroup', 'node'],
                 'Tenants'               => ['index'],

@@ -6,8 +6,6 @@ angular.module('openITCOCKPIT')
         SortService.setDirection(QueryStringService.getValue('direction', 'desc'));
         $scope.currentPage = 1;
 
-        $scope.id = QueryStringService.getCakeId();
-
         $scope.useScroll = true;
 
 
