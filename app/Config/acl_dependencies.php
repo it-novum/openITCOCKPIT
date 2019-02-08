@@ -405,7 +405,6 @@ $config = [
                 'Servicetemplates'      => ['index'],
                 'Statehistories'        => ['service', 'host'],
                 'Statusmaps'            => ['index', 'hostAndServicesSummaryStatus'],
-                'Systemdowntimes'       => ['index'],
                 'Systemfailures'        => ['index'],
                 'Systemsettings'        => ['index', 'host', 'service', 'hostgroup', 'node'],
                 'Tenants'               => ['index'],

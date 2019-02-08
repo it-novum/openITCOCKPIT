@@ -81,7 +81,7 @@ class SystemdowntimesController extends AppController {
     }
 
     public function host() {
-        $this->layout = 'angularjs';
+        $this->layout = 'blank';
 
         if (!$this->isAngularJsRequest()) {
             //Only ship template
@@ -130,7 +130,8 @@ class SystemdowntimesController extends AppController {
     }
 
     public function service() {
-        $this->layout = 'angularjs';
+        $this->layout = 'blank';
+
         if (!$this->isAngularJsRequest()) {
             //Only ship template
             return;
@@ -206,7 +207,7 @@ class SystemdowntimesController extends AppController {
     }
 
     public function hostgroup() {
-        $this->layout = 'angularjs';
+        $this->layout = 'blank';
 
         if (!$this->isAngularJsRequest()) {
             //Only ship template
@@ -254,7 +255,7 @@ class SystemdowntimesController extends AppController {
     }
 
     public function node() {
-        $this->layout = 'angularjs';
+        $this->layout = 'blank';
 
         if (!$this->isAngularJsRequest()) {
             //Only ship template

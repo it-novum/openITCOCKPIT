@@ -5,7 +5,6 @@ angular.module('openITCOCKPIT')
         SortService.setDirection(QueryStringService.getValue('direction', 'desc'));
         $scope.currentPage = 1;
 
-
         /*** Filter Settings ***/
         var defaultFilter = function(){
             $scope.filter = {

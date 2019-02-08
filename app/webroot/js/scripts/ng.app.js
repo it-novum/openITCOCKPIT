@@ -172,6 +172,30 @@ angular.module('openITCOCKPIT', ['gridster', 'ui.router'])
                 controller: "ServicechecksIndexController"
             })
 
+            .state('SystemdowntimesHost', {
+                url: '/systemdowntimes/host',
+                templateUrl: "/systemdowntimes/host.html",
+                controller: "SystemdowntimesHostController"
+            })
+
+            .state('SystemdowntimesService', {
+                url: '/systemdowntimes/service',
+                templateUrl: "/systemdowntimes/service.html",
+                controller: "SystemdowntimesServiceController"
+            })
+
+            .state('SystemdowntimesHostgroup', {
+                url: '/systemdowntimes/hostgroup',
+                templateUrl: "/systemdowntimes/hostgroup.html",
+                controller: "SystemdowntimesHostgroupController"
+            })
+
+            .state('SystemdowntimesNode', {
+                url: '/systemdowntimes/node',
+                templateUrl: "/systemdowntimes/node.html",
+                controller: "SystemdowntimesNodeController"
+            })
+
             .state('SystemdowntimesAddHostdowntime', {
                 url: '/systemdowntimes/addHostdowntime/:id',
                 params: {

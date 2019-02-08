@@ -237,10 +237,11 @@ $config = [
                     'fallback_actions'  => ['service' => 'DowntimesService'],
                 ],
                 [
-                    'url'               => ['controller' => 'systemdowntimes', 'action' => 'index'],
+                    'url'               => ['controller' => 'systemdowntimes', 'action' => 'host'],
+                    'state'             => 'SystemdowntimesHost',
                     'title'             => 'Recurring downtimes',
                     'icon'              => 'history fa-flip-horizontal',
-                    'fallback_actions'  => ['host', 'service'],
+                    'fallback_actions'  => ['service' => 'SystemdowntimesService'],
                 ],
                 [
                     'url'               => ['controller' => 'logentries', 'action' => 'index'],
