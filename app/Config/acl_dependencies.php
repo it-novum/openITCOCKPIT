@@ -233,9 +233,6 @@ $config = [
             'Downtimereports'       => [
                 'index' => ['createPdfReport'],
             ],
-            'Graphgenerators'       => [
-                'listing' => ['saveGraphTemplate', 'loadGraphTemplate'],
-            ],
             'Hostdependencies'      => [
                 'index' => ['view'],
                 'add'   => ['loadElementsByContainerId'],
@@ -248,10 +245,9 @@ $config = [
             ],
             'Hostgroups'            => [
                 'index'    => ['listToPdf', 'view', 'loadHostgroupsByString', 'loadHosgroupsByContainerId'],
-                'extended' => ['listToPdf'],
                 'add'      => ['loadHosts', 'mass_add', 'loadHosttemplates', 'loadContainers'],
                 'edit'     => ['loadHosts', 'loadHosttemplates', 'loadContainers'],
-                'extended' => ['loadHostgroupWithHostsById']
+                'extended' => ['loadHostgroupWithHostsById', 'listToPdf']
             ],
             'Hosts'                 => [
                 'index'      => ['getHostByAjax', 'listToPdf', 'ajaxList', 'loadHostsByContainerId', 'loadHostsByString', 'loadHostById', 'allocateServiceTemplateGroup', 'getServiceTemplatesfromGroup'],
@@ -382,7 +378,6 @@ $config = [
                 'Downtimereports'       => ['index', 'host', 'service'],
                 'Exports'               => ['index'],
                 'GraphCollections'      => ['index', 'display'],
-                'Graphgenerators'       => ['index'],
                 'Hostchecks'            => ['index'],
                 'Hostdependencies'      => ['index'],
                 'Hostescalations'       => ['index'],
