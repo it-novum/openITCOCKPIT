@@ -418,6 +418,24 @@ angular.module('openITCOCKPIT', ['gridster', 'ui.router'])
                 controller: "CommandsCopyController"
             })
 
+            .state('TenantsIndex', {
+                url: '/tenants/index',
+                templateUrl: "/tenants/index.html",
+                controller: "TenantsIndexController"
+            })
+
+            .state('TenantsAdd', {
+                url: '/tenants/add',
+                templateUrl: "/tenants/add.html",
+                controller: "TenantsAddController"
+            })
+
+            .state('TenantsEdit', {
+                url: '/tenants/edit/:id',
+                templateUrl: "/tenants/edit.html",
+                controller: "TenantsEditController"
+            })
+
             .state('TimeperiodsIndex', {
                 url: '/timeperiods/index',
                 templateUrl: "/timeperiods/index.html",

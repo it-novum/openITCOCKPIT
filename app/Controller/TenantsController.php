@@ -58,6 +58,8 @@ class TenantsController extends AppController {
     ];
 
     public function index() {
+        $this->layout = 'blank';
+
         if (!$this->isApiRequest()) {
             //Only ship template for AngularJs
             return;
@@ -126,6 +128,8 @@ class TenantsController extends AppController {
     }
 
     public function add() {
+        $this->layout = 'blank';
+
         if (!$this->isApiRequest()) {
             //Only ship HTML template for angular
             return;
@@ -145,9 +149,6 @@ class TenantsController extends AppController {
                     return;
                 } else {
                     if ($this->request->ext != 'json') {
-                        if ($this->isAngularJsRequest()) {
-                            $this->setFlash(__('<a href="/tenants/edit/%s">Tenant</a> successfully saved', $this->Tenant->id));
-                        }
                         $this->serializeId();
                         return;
                     }
@@ -157,7 +158,6 @@ class TenantsController extends AppController {
                     $this->serializeErrorMessage();
                     return;
                 }
-                $this->setFlash(__('Could not save data'), false);
             }
         }
     }
@@ -200,6 +200,8 @@ class TenantsController extends AppController {
     }
 
     public function edit($id = null) {
+        $this->layout = 'blank';
+
         if (!$this->isApiRequest()) {
             //Only ship HTML template for angular
             return;
@@ -225,7 +227,6 @@ class TenantsController extends AppController {
             $this->request->data['Tenant']['id'] = $tenant['Tenant']['id'];
             if ($this->Tenant->saveAll($this->request->data)) {
                 Cache::clear(false, 'permissions');
-                $this->setFlash(__('<a href="/tenants/edit/%s">Tenant</a> successfully saved', $this->Tenant->id));
             } else {
                 if ($this->request->ext == 'json') {
                     $this->serializeErrorMessage();

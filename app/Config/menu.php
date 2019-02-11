@@ -210,6 +210,7 @@ $config = [
                 ],
                 [
                     'url'               => ['controller' => 'tenants', 'action' => 'index'],
+                    'state'             => 'TenantsIndex',
                     'title'             => 'Tenants',
                     'icon'              => 'home',
                 ],
