@@ -253,6 +253,7 @@ $config = [
                 ],
                 [
                     'url'               => ['controller' => 'notifications', 'action' => 'index'],
+                    'state'             => 'NotificationsIndex',
                     'title'             => 'Notifications',
                     'icon'              => 'envelope',
                 ],

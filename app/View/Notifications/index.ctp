@@ -64,16 +64,16 @@ echo $this->Html->script('lib/FlappingWorkaround.js');
                     <h2><?php echo __('Notifications'); ?> </h2>
                     <ul class="nav nav-tabs pull-right" id="widget-tab-1">
                         <?php if ($this->Acl->hasPermission('index', 'notifications')): ?>
-                            <li class="<?php echo ($this->action === 'index') ? 'active' : ''; ?>">
-                                <a href="<?php echo Router::url(['controller' => 'notifications', 'action' => 'index']); ?>">
+                            <li class="active">
+                                <a ui-sref="NotificationsIndex">
                                     <i class="fa fa-desktop"></i>
                                     <span class="hidden-mobile hidden-tablet"> <?php echo __('Host notifications'); ?></span>
                                 </a>
                             </li>
                         <?php endif; ?>
                         <?php if ($this->Acl->hasPermission('services', 'notifications')): ?>
-                            <li class="<?php echo ($this->action === 'services') ? 'active' : ''; ?>">
-                                <a href="<?php echo Router::url(['controller' => 'notifications', 'action' => 'services']); ?>">
+                            <li class="">
+                                <a ui-sref="NotificationsServices">
                                     <i class="fa fa-cog"></i>
                                     <span class="hidden-mobile hidden-tablet"> <?php echo __('Service notifications'); ?></span>
                                 </a>
@@ -247,7 +247,7 @@ echo $this->Html->script('lib/FlappingWorkaround.js');
                                         <hoststatusicon state="Notification.NotificationHost.state"></hoststatusicon>
                                     </td>
                                     <td>
-                                        <a href="/hosts/browser/{{ Notification.Host.id }}">{{
+                                        <a ui-sref="HostsBrowser({id:Notification.Host.id})">{{
                                             Notification.Host.hostname }}</a>
                                     </td>
                                     <td>
@@ -258,7 +258,7 @@ echo $this->Html->script('lib/FlappingWorkaround.js');
                                             Notification.Contact.name }}</a>
                                     </td>
                                     <td>
-                                        <a href="/commands/edit/{{ Notification.Command.id }}">{{
+                                        <a ui-sref="CommandsEdit({id:Notification.Command.id})">{{
                                             Notification.Command.name }}</a>
                                     </td>
                                     <td>

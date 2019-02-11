@@ -190,6 +190,18 @@ angular.module('openITCOCKPIT', ['gridster', 'ui.router'])
                 controller: "InstantreportsEditController"
             })
 
+            .state('NotificationsIndex', {
+                url: '/notifications/index',
+                templateUrl: "/notifications/index.html",
+                controller: "NotificationsIndexController"
+            })
+
+            .state('NotificationsServices', {
+                url: '/notifications/services',
+                templateUrl: "/notifications/services.html",
+                controller: "NotificationsServicesController"
+            })
+
             .state('ServicesIndex', {
                 url: '/services/index',
                 templateUrl: "/services/index.html",
