@@ -25,6 +25,8 @@
 namespace itnovum\openITCOCKPIT\ConfigGenerator;
 
 
+use itnovum\openITCOCKPIT\Core\System\Health\MonitoringEngine;
+
 class phpNstaMaster extends ConfigGenerator implements ConfigInterface {
 
     protected $templateDir = 'phpNSTA';
@@ -166,6 +168,20 @@ class phpNstaMaster extends ConfigGenerator implements ConfigInterface {
             }
         }
 
+        $grepCommand = 'ps -eaf | grep "/opt/openitc/nagios/bin/naemon -d /etc/openitcockpit/nagios.cfg" |grep -v "grep"';
+        $MonitoringEngine = new MonitoringEngine();
+        if($MonitoringEngine->isNagios()){
+            $grepCommand = 'ps -eaf | grep "/opt/openitc/nagios/bin/nagios -d /etc/openitcockpit/nagios.cfg" |grep -v "grep"';
+
+            if($configToExport['use_spooldir'] == '3'){
+                //Query handler not supported by Nagios 4.x
+                //Fallback to nagios.cmd
+                $configToExport['use_spooldir'] = '2';
+            }
+
+        }
+
+        $configToExport['grep_command'] = $grepCommand;
         return $this->saveConfigFile($configToExport);
     }
 
