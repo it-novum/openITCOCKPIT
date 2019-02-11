@@ -31,41 +31,26 @@ class SystemsettingsController extends AppController {
     public function index() {
         /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
         $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
-       // debug($Systemsettings->getSystemsettings());
+        // debug($Systemsettings->getSystemsettings());
         $this->set(compact([]));
         $this->set('_serialize', []);
 
         if ($this->request->is('post') || $this->request->is('put')) {
             $systemsettingsEntity = $Systemsettings->getSystemsettings(true);
-            debug($this->request->data);
             $normalizedData = [];
-            foreach ($this->request->data as $requestData){
+            foreach ($this->request->data as $requestData) {
                 foreach ($requestData as $data)
-                $normalizedData[] = $data;
+                    $normalizedData[] = $data;
             }
-            debug($normalizedData);
-
-            $systemsettingsNewEntities = $Systemsettings->patchEntities($systemsettingsEntity,$normalizedData);
-            debug($systemsettingsNewEntities);
-            $result = $Systemsettings->saveMany($systemsettingsNewEntities);
-            debug($result);
-
-            /*
-            $Systemsettings->getConnection()->transactional(function() use ($Systemsettings, $systemsettingsNewEntities){
-                foreach($systemsettingsNewEntities as $entity){
-                    $Systemsettings->save($entity, ['atomic' => false]);
-                }
-            });
-*/
-
+            $systemsettingsPatchedEntities = $Systemsettings->patchEntities($systemsettingsEntity, $normalizedData);
+            $result = $Systemsettings->saveMany($systemsettingsPatchedEntities);
             Cache::clear(false, 'permissions');
-      /*       if ($systemsettingsNewEntities->hasErrors()) {
+            if (!$result) {
                 $this->response->statusCode(400);
-                $this->set('error', $Systemsettings->getErrors());
+                $this->set('error',[]);
                 $this->set('_serialize', ['error']);
                 return;
             }
-*/
             //Update systemname in session
             $systemsettings = $this->Systemsetting->findAsArraySection('FRONTEND');
             if (isset($systemsettings['FRONTEND']['FRONTEND.SYSTEMNAME'])) {
@@ -77,13 +62,13 @@ class SystemsettingsController extends AppController {
         }
     }
 
-    public function getSystemsettings(){
+    public function getSystemsettings() {
         /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
         $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
         $all_systemsettings = $Systemsettings->getSettings();
 
-        foreach ($all_systemsettings as $key => $value){
-            foreach ($value as $key2 => $systemsetting){
+        foreach ($all_systemsettings as $key => $value) {
+            foreach ($value as $key2 => $systemsetting) {
                 $all_systemsettings[$key][$key2]['exploded'] = explode('.', $systemsetting['key'], 2)[1]; //This parse the PREFIX MONITORIN. or WEBSERVER. or WHATEVER. away
             }
         }

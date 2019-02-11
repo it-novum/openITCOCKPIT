@@ -43,8 +43,10 @@ angular.module('openITCOCKPIT')
             $http.post('/systemsettings/index.json?angular=true',
                 $scope.systemsettings
             ).then(function(result){
+                NotyService.genericSuccess();
                 console.log('Data saved successfully');
             }, function errorCallback(result){
+                NotyService.genericError();
                 if(result.data.hasOwnProperty('error')){
                     $scope.errors = result.data.error;
                 }

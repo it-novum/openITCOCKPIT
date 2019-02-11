@@ -53,30 +53,6 @@ class SystemsettingsTable extends Table {
             ->integer('id')
             ->allowEmptyString('id', 'create');
 
-        $validator
-            ->scalar('key')
-            ->maxLength('key', 255)
-            ->requirePresence('key', 'create')
-            ->allowEmptyString('key', false);
-
-        $validator
-            ->scalar('value')
-            ->maxLength('value', 255)
-            ->requirePresence('value', 'create')
-            ->allowEmptyString('value', false);
-
-        $validator
-            ->scalar('info')
-            ->maxLength('info', 1500)
-            ->requirePresence('info', 'create')
-            ->allowEmptyString('info', false);
-
-        $validator
-            ->scalar('section')
-            ->maxLength('section', 255)
-            ->requirePresence('section', 'create')
-            ->allowEmptyString('section', false);
-
         return $validator;
     }
 
