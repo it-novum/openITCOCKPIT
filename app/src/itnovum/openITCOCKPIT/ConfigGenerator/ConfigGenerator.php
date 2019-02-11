@@ -159,6 +159,14 @@ class ConfigGenerator {
      * @param $value
      * @return string
      */
+    public function asUcfirstBoolString($value) {
+        return ucfirst($this->asBoolString($value));
+    }
+
+    /**
+     * @param $value
+     * @return string
+     */
     public function asString($value) {
         return (string)$value;
     }
@@ -246,7 +254,7 @@ class ConfigGenerator {
         $mergedConfiguration = [];
         $dbRecords = $this->flatDbResult($dbRecords);
 
-        foreach ($this->defaults as $type => $fields) {
+        foreach ($this->getDefaults() as $type => $fields) {
             foreach ($fields as $key => $defaultValue) {
 
                 //Check for missing keys in database

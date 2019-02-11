@@ -25,7 +25,7 @@ angular.module('openITCOCKPIT').directive('menu', function($http, $timeout, $htt
             };
 
             $scope.isActiveChild = function(childNode){
-                if(childNode.url_array.plugin === $scope.phpplugin){
+                if(childNode.url_array.plugin == $scope.phpplugin){
                     if(childNode.url_array.controller === $scope.phpcontroller){
                         if(childNode.url_array.action === $scope.phpaction){
                             return true;
@@ -36,7 +36,7 @@ angular.module('openITCOCKPIT').directive('menu', function($http, $timeout, $htt
             };
 
             $scope.isActiveParent = function(parentNode){
-                if(parentNode.url_array.plugin === $scope.phpplugin){
+                if(parentNode.url_array && parentNode.url_array.plugin == $scope.phpplugin){
                     if(parentNode.url_array.controller === $scope.phpcontroller){
                         if(parentNode.url_array.action === $scope.phpaction){
                             return true;
@@ -111,11 +111,11 @@ angular.module('openITCOCKPIT').directive('menu', function($http, $timeout, $htt
 
                 $scope.menuMatches = [];
                 $scope.menuFilterPosition = -1;
-                searchString = searchString.toLowerCase();
+                searchString = searchString.toLowerCase().replace(/ /g,'');
                 for(var parentKey in $scope.menu){
                     if($scope.menu[parentKey].children.length === 0){
                         //Search parent records, that have no child elements
-                        var parentTitle = $scope.menu[parentKey].title.toLowerCase();
+                        var parentTitle = $scope.menu[parentKey].title.toLowerCase().replace(/ /g,'');
                         if(parentTitle.match(searchString)){
                             $scope.menuMatches.push($scope.menu[parentKey]);
                         }
@@ -123,7 +123,7 @@ angular.module('openITCOCKPIT').directive('menu', function($http, $timeout, $htt
 
                     //Search in child items
                     for(var childKey in $scope.menu[parentKey].children){
-                        var title = $scope.menu[parentKey].children[childKey].title.toLowerCase();
+                        var title = $scope.menu[parentKey].children[childKey].title.toLowerCase().replace(/ /g,'');
                         if(title.match(searchString)){
                             $scope.menuMatches.push($scope.menu[parentKey].children[childKey]);
                         }

@@ -43,13 +43,17 @@ class GraphingDocker extends ConfigGenerator implements ConfigInterface {
     protected $defaults = [
         'string' => [
             'carbon_path'           => '/var/lib/graphite/whisper',
-            'carbon_storage_schema' => '60s:365d'
+            'carbon_storage_schema' => '60s:365d',
+            'timezone'              => 'Europe/Berlin'
         ],
         'int'    => [
             'number_of_carbon_cache_instances' => 2,
             'number_of_carbon_c_relay_workers' => 4,
             'local_graphite_http_port'         => 8888,
             'local_graphite_plaintext_port'    => 2003,
+        ],
+        'bool'   => [
+            'WHISPER_FALLOCATE_CREATE' => 1
         ]
     ];
 
@@ -81,7 +85,9 @@ class GraphingDocker extends ConfigGenerator implements ConfigInterface {
             'number_of_carbon_cache_instances' => __('Number of carbon cache instances for multi core CPU scaling'),
             'number_of_carbon_c_relay_workers' => __('Number of Carbon-C-Relay worker threads. (Carbon-Cache load balancer)'),
             'local_graphite_http_port'         => __('Local HTTP port used by Graphite-Web'),
-            'local_graphite_plaintext_port'    => __('Local plaintext port to send metrics to Carbon-C-Relay.')
+            'local_graphite_plaintext_port'    => __('Local plaintext port to send metrics to Carbon-C-Relay.'),
+            'WHISPER_FALLOCATE_CREATE'         => __(' Only beneficial on linux filesystems that support the fallocate system call. It maintains the benefits of contiguous reads/writes, but with a potentially much faster creation speed, by allowing the kernel to handle the block allocation and zero-ing. Enabling this option may allow a large increase of MAX_CREATES_PER_MINUTE. If enabled on an OS or filesystem that is unsupported this option will gracefully fallback to standard POSIX file access methods.'),
+            'timezone'                         => __('Set your local timezone for Graphite-Web. (Django\'s default is America/Chicago) If your graphs appear to be offset by a couple hours then this probably needs to be explicitly set to your local timezone. Set this value to the same timezone, as your servers timezone is!')
         ];
 
         if (isset($help[$key])) {
@@ -156,6 +162,9 @@ class GraphingDocker extends ConfigGenerator implements ConfigInterface {
                 'port'         => 2003
             ];
         }
+
+        $configToExport['WHISPER_FALLOCATE_CREATE'] = $this->asUcfirstBoolString($config['bool']['WHISPER_FALLOCATE_CREATE']);
+
         //docker-compose.yml
         if (!file_put_contents($this->linkedOutfile, $twig->render($this->getTemplateName(), $configToExport))) {
             $success = false;

@@ -405,7 +405,7 @@ angular.module('openITCOCKPIT')
             options.height = '500px';
             options.colors = colors.border;
             options.xaxis.tickFormatter = function(val, axis){
-                var fooJS = new Date(val + ($scope.timezone.server_timezone_offset * 1000));
+                var fooJS = new Date(val + ($scope.timezone.user_offset * 1000));
                 var fixTime = function(value){
                     if(value < 10){
                         return '0' + value;

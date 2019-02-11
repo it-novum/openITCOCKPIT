@@ -2197,3 +2197,7 @@ label[class^='aco-host']:after, label[class^='aco-service']:after {
 }
 
 iframe { -webkit-backface-visibility:hidden }
+
+#myTabContent1 .widget-body{
+    word-wrap: break-word;
+}

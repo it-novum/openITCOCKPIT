@@ -60,7 +60,7 @@
             <div class="btn-header pull-right">
                 <span>
                     <?php if ($exportRunningHeaderInfo === false): ?>
-                        <a href="/exports/index"
+                        <a href="/exports/index" sudo-server-connect=""
                            data-original-title="<?php echo __('Refresh monitoring configuration'); ?>"
                            data-placement="left" rel="tooltip" data-container="body">
                             <i class="fa fa-retweet"></i>
