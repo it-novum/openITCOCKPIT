@@ -39,6 +39,7 @@ $config = [
             'children' => [
                 [
                     'url'               => ['controller' => 'statusmaps', 'action' => 'index'],
+                    'state'             => 'StatusmapsIndex',
                     'title'             => 'Status Map',
                     'icon'              => 'globe',
                 ],
@@ -124,6 +125,7 @@ $config = [
                 ],
                 [
                     'url'               => ['controller' => 'statistics', 'action' => 'index'],
+                    'state'             => 'StatisticsIndex',
                     'title'             => 'Anonymous statistics',
                     'icon'              => 'line-chart ',
                 ],

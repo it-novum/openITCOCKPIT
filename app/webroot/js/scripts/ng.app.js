@@ -232,6 +232,18 @@ angular.module('openITCOCKPIT', ['gridster', 'ui.router'])
                 controller: "ServicechecksIndexController"
             })
 
+            .state('StatisticsIndex', {
+                url: '/statistics/index',
+                templateUrl: "/statistics/index.html",
+                controller: "StatisticsIndexController"
+            })
+
+            .state('StatusmapsIndex', {
+                url: '/statusmaps/index',
+                templateUrl: "/statusmaps/index.html",
+                controller: "StatusmapsIndexController"
+            })
+
             .state('SystemdowntimesHost', {
                 url: '/systemdowntimes/host',
                 templateUrl: "/systemdowntimes/host.html",

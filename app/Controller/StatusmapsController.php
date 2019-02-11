@@ -53,6 +53,12 @@ class StatusmapsController extends AppController {
     public $components = ['StatusMap'];
 
     public function index() {
+        $this->layout = 'blank';
+
+        if (!$this->isAngularJsRequest()) {
+            return;
+        }
+
         if (!$this->isApiRequest()) {
             $masterInstanceName = $this->Systemsetting->getMasterInstanceName();
             $ModuleManager = new ModuleManager('DistributeModule');
@@ -74,9 +80,6 @@ class StatusmapsController extends AppController {
             $this->set('satellites', $satellites);
         }
 
-        if (!$this->isAngularJsRequest()) {
-            return;
-        }
         session_write_close();
 
         $allHostIds = [];
