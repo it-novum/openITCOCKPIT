@@ -175,6 +175,7 @@ $config = [
                 ],
                 [
                     'url'               => ['controller' => 'servicegroups', 'action' => 'index'],
+                    'state'             => 'ServicegroupsIndex',
                     'title'             => 'Service Groups',
                     'icon'              => 'cogs',
                 ],
@@ -252,6 +253,7 @@ $config = [
                 ],
                 [
                     'url'               => ['controller' => 'notifications', 'action' => 'index'],
+                    'state'             => 'NotificationsIndex',
                     'title'             => 'Notifications',
                     'icon'              => 'envelope',
                 ],

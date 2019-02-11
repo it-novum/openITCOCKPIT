@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('ServicegroupsAddController', function($scope, $http){
+    .controller('ServicegroupsAddController', function($scope, $http, $state, NotyService){
 
 
         $scope.post = {
@@ -61,8 +61,12 @@ angular.module('openITCOCKPIT')
             $http.post("/servicegroups/add.json?angular=true",
                 $scope.post
             ).then(function(result){
-                window.location.href = '/servicegroups/index';
+                NotyService.genericSuccess();
+                $state.go('ServicegroupsIndex');
+
+                console.log('Data saved successfully');
             }, function errorCallback(result){
+                NotyService.genericError();
                 if(result.data.hasOwnProperty('error')){
                     $scope.errors = result.data.error;
                 }

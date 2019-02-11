@@ -190,6 +190,18 @@ angular.module('openITCOCKPIT', ['gridster', 'ui.router'])
                 controller: "InstantreportsEditController"
             })
 
+            .state('NotificationsIndex', {
+                url: '/notifications/index',
+                templateUrl: "/notifications/index.html",
+                controller: "NotificationsIndexController"
+            })
+
+            .state('NotificationsServices', {
+                url: '/notifications/services',
+                templateUrl: "/notifications/services.html",
+                controller: "NotificationsServicesController"
+            })
+
             .state('ServicesIndex', {
                 url: '/services/index',
                 templateUrl: "/services/index.html",
@@ -308,6 +320,30 @@ angular.module('openITCOCKPIT', ['gridster', 'ui.router'])
                 url: '/hostchecks/index/:id',
                 templateUrl: "/hostchecks/index.html",
                 controller: "HostchecksIndexController"
+            })
+
+            .state('ServicegroupsIndex', {
+                url: '/servicegroups/index',
+                templateUrl: "/servicegroups/index.html",
+                controller: "ServicegroupsIndexController"
+            })
+
+            .state('ServicegroupsAdd', {
+                url: '/servicegroups/add',
+                templateUrl: "/servicegroups/add.html",
+                controller: "ServicegroupsAddController"
+            })
+
+            .state('ServicegroupsEdit', {
+                url: '/servicegroups/edit/:id',
+                templateUrl: "/servicegroups/edit.html",
+                controller: "ServicegroupsEditController"
+            })
+
+            .state('ServicegroupsExtended', {
+                url: '/servicegroups/extended',
+                templateUrl: "/servicegroups/extended.html",
+                controller: "ServicegroupsExtendedController"
             })
 
             .state('StatehistoriesHost', {
