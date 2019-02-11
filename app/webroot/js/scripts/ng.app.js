@@ -130,6 +130,12 @@ angular.module('openITCOCKPIT', ['gridster', 'ui.router'])
                 controller: "ContainersShowDetailsController"
             })
 
+            .state('CurrentstatereportsIndex', {
+                url: '/currentstatereports/index',
+                templateUrl: "/currentstatereports/index.html",
+                controller: "CurrentstatereportsIndexController"
+            })
+
             .state('DeletedHostsIndex', {
                 url: '/deletedHosts',
                 templateUrl: "/deletedHosts/index.html",
@@ -188,6 +194,12 @@ angular.module('openITCOCKPIT', ['gridster', 'ui.router'])
                 url: '/instantreports/edit/:id',
                 templateUrl: "/instantreports/edit.html",
                 controller: "InstantreportsEditController"
+            })
+
+            .state('LogentriesIndex', {
+                url: '/logentries/index',
+                templateUrl: "/logentries/index.html",
+                controller: "LogentriesIndexController"
             })
 
             .state('NotificationsIndex', {

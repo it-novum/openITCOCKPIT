@@ -44,7 +44,12 @@ class CurrentstatereportsController extends AppController {
     ];
 
     public function index() {
-        $this->layout = 'angularjs';
+        $this->layout = 'blank';
+
+        if (!$this->isApiRequest()) {
+            return;
+        }
+
         $userContainerId = $this->Auth->user('container_id');
         $currentStateData = [];
         $serviceStatusExists = false;

@@ -250,6 +250,7 @@ $config = [
                 ],
                 [
                     'url'               => ['controller' => 'logentries', 'action' => 'index'],
+                    'state'             => 'LogentriesIndex',
                     'title'             => 'Log Entries',
                     'icon'              => 'file-text-o',
                 ],
@@ -321,6 +322,7 @@ $config = [
                 ],
                 [
                     'url'               => ['controller' => 'currentstatereports', 'action' => 'index'],
+                    'state'             => 'CurrentstatereportsIndex',
                     'title'             => 'Current State Report',
                     'icon'              => 'file-image-o',
                 ],
