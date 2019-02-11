@@ -5,7 +5,7 @@ angular.module('openITCOCKPIT')
 
         $scope.init = true;
         $scope.load = function(){
-            $http.get("/systemsettings/index.json", {
+            $http.get("/systemsettings/getSystemsettings.json", {
                 params: {
                     'angular': true,
                 }
@@ -32,11 +32,23 @@ angular.module('openITCOCKPIT')
             }
         };
 
-
         $scope.generateOptions = function(){
             for(var i = 1; i < 107; i++){
                 $scope.dropdownOptionSequence.push(i);
             }
+        };
+
+        $scope.submit = function(){
+            console.log($scope.systemsettings);
+            $http.post('/systemsettings/index.json?angular=true',
+                $scope.systemsettings
+            ).then(function(result){
+                console.log('Data saved successfully');
+            }, function errorCallback(result){
+                if(result.data.hasOwnProperty('error')){
+                    $scope.errors = result.data.error;
+                }
+            });
         };
 
         $scope.generateOptions();
