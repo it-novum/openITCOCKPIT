@@ -39,6 +39,7 @@ $config = [
             'children' => [
                 [
                     'url'               => ['controller' => 'statusmaps', 'action' => 'index'],
+                    'state'             => 'StatusmapsIndex',
                     'title'             => 'Status Map',
                     'icon'              => 'globe',
                 ],
@@ -124,6 +125,7 @@ $config = [
                 ],
                 [
                     'url'               => ['controller' => 'statistics', 'action' => 'index'],
+                    'state'             => 'StatisticsIndex',
                     'title'             => 'Anonymous statistics',
                     'icon'              => 'line-chart ',
                 ],
@@ -175,6 +177,7 @@ $config = [
                 ],
                 [
                     'url'               => ['controller' => 'servicegroups', 'action' => 'index'],
+                    'state'             => 'ServicegroupsIndex',
                     'title'             => 'Service Groups',
                     'icon'              => 'cogs',
                 ],
@@ -247,11 +250,13 @@ $config = [
                 ],
                 [
                     'url'               => ['controller' => 'logentries', 'action' => 'index'],
+                    'state'             => 'LogentriesIndex',
                     'title'             => 'Log Entries',
                     'icon'              => 'file-text-o',
                 ],
                 [
                     'url'               => ['controller' => 'notifications', 'action' => 'index'],
+                    'state'             => 'NotificationsIndex',
                     'title'             => 'Notifications',
                     'icon'              => 'envelope',
                 ],
@@ -317,6 +322,7 @@ $config = [
                 ],
                 [
                     'url'               => ['controller' => 'currentstatereports', 'action' => 'index'],
+                    'state'             => 'CurrentstatereportsIndex',
                     'title'             => 'Current State Report',
                     'icon'              => 'file-image-o',
                 ],

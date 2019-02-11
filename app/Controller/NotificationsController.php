@@ -51,14 +51,14 @@ class NotificationsController extends AppController {
     public $layout = 'Admin.default';
 
     public function index() {
-        $this->layout = "angularjs";
-
-        if (!isset($this->Paginator->settings['conditions'])) {
-            $this->Paginator->settings['conditions'] = [];
-        }
+        $this->layout = "blank";
 
         if (!$this->isAngularJsRequest()) {
             return;
+        }
+
+        if (!isset($this->Paginator->settings['conditions'])) {
+            $this->Paginator->settings['conditions'] = [];
         }
 
         $AngularNotificationsOverviewControllerRequest = new \itnovum\openITCOCKPIT\Core\AngularJS\Request\NotificationsOverviewControllerRequest($this->request);
@@ -117,14 +117,14 @@ class NotificationsController extends AppController {
     }
 
     public function services() {
-        $this->layout = "angularjs";
-
-        if (!isset($this->Paginator->settings['conditions'])) {
-            $this->Paginator->settings['conditions'] = [];
-        }
+        $this->layout = "blank";
 
         if (!$this->isAngularJsRequest()) {
             return;
+        }
+
+        if (!isset($this->Paginator->settings['conditions'])) {
+            $this->Paginator->settings['conditions'] = [];
         }
 
         $AngularNotificationsOverviewControllerRequest = new \itnovum\openITCOCKPIT\Core\AngularJS\Request\NotificationsOverviewControllerRequest($this->request);

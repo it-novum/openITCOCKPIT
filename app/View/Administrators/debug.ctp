@@ -41,7 +41,7 @@ use itnovum\openITCOCKPIT\Core\System\Health\LsbRelease;
     <?php if ($isDebuggingMode): ?>
         <div class="col-xs-12 col-lg-2">
             <div class="pull-right">
-                <a href="/Administrators/querylog" class="btn btn-default btn-xl btn-block">
+                <a href="/ng/#!/Administrators/querylog" class="btn btn-default btn-xl btn-block">
                     <i class="fa fa-database"></i>
                     <?php echo __('Show SQL query log'); ?>
                 </a>

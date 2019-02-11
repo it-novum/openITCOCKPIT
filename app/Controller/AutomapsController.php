@@ -141,9 +141,14 @@ class AutomapsController extends AppController {
         $this->request->data = Hash::merge($automap, $this->request->data);
     }
 
-    public function view($id) {
-        $this->layout = 'angularjs';
-        if (!$this->Automap->exists($id)) {
+    public function view($id = null) {
+        $this->layout = 'blank';
+
+        if (!$this->isApiRequest() && $id === null) {
+            return;
+        }
+
+        if (!$this->Automap->exists($id) && $id !== null) {
             throw new NotFoundException(__('Invalid automap'));
         }
 

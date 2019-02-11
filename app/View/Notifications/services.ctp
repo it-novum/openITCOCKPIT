@@ -66,16 +66,16 @@ echo $this->Html->script('lib/FlappingWorkaround.js');
                     <h2><?php echo __('Notifications'); ?> </h2>
                     <ul class="nav nav-tabs pull-right" id="widget-tab-1">
                         <?php if ($this->Acl->hasPermission('index', 'notifications')): ?>
-                            <li class="<?php echo ($this->action === 'index') ? 'active' : ''; ?>">
-                                <a href="<?php echo Router::url(['controller' => 'notifications', 'action' => 'index']); ?>">
+                            <li class="">
+                                <a ui-sref="NotificationsIndex">
                                     <i class="fa fa-desktop"></i>
                                     <span class="hidden-mobile hidden-tablet"> <?php echo __('Host notifications'); ?></span>
                                 </a>
                             </li>
                         <?php endif; ?>
                         <?php if ($this->Acl->hasPermission('services', 'notifications')): ?>
-                            <li class="<?php echo ($this->action === 'services') ? 'active' : ''; ?>">
-                                <a href="<?php echo Router::url(['controller' => 'notifications', 'action' => 'services']); ?>">
+                            <li class="active">
+                                <a ui-sref="NotificationsServices">
                                     <i class="fa fa-cog"></i>
                                     <span class="hidden-mobile hidden-tablet"> <?php echo __('Service notifications'); ?></span>
                                 </a>
@@ -261,7 +261,7 @@ echo $this->Html->script('lib/FlappingWorkaround.js');
                                     </td>
                                     <td>
                                         <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
-                                            <a href="/hosts/browser/{{ Notification.Host.id }}">{{
+                                            <a ui-sref="HostsBrowser({id:Notification.Host.id})">{{
                                                 Notification.Host.hostname }}</a>
                                         <?php else: ?>
                                             {{ Notification.Host.hostname }}
@@ -269,7 +269,7 @@ echo $this->Html->script('lib/FlappingWorkaround.js');
                                     </td>
                                     <td>
                                         <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
-                                            <a href="/services/browser/{{ Notification.Service.id }}">{{
+                                            <a ui-sref="ServicesBrowser({id:Notification.Service.id})">{{
                                                 Notification.Service.servicename }}</a>
                                         <?php else: ?>
                                             {{ Notification.Service.servicename }}
@@ -289,7 +289,7 @@ echo $this->Html->script('lib/FlappingWorkaround.js');
                                     </td>
                                     <td>
                                         <?php if ($this->Acl->hasPermission('edit', 'commands')): ?>
-                                            <a href="/commands/edit/{{ Notification.Command.id }}">{{
+                                            <a ui-sref="CommandsEdit({id:Notification.Command.id})">{{
                                                 Notification.Command.name }}</a>
                                         <?php else: ?>
                                             {{ Notification.Command.name }}

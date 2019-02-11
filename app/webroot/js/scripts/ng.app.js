@@ -94,6 +94,18 @@ angular.module('openITCOCKPIT', ['gridster', 'ui.router'])
     .config(function($urlRouterProvider, $stateProvider){
         $stateProvider
 
+            .state('AdministratorsQuerylog', {
+                url: '/Administrators/querylog',
+                templateUrl: "/Administrators/querylog.html",
+                controller: "AdministratorsQuerylogController"
+            })
+
+            .state('AutomapsView', {
+                url: '/automaps/view/:id',
+                templateUrl: "/automaps/view.html",
+                controller: "AutomapsViewController"
+            })
+
             .state('BrowsersIndex', {
                 url: '/browsers/index',
                 templateUrl: "/browsers/index.html",
@@ -128,6 +140,12 @@ angular.module('openITCOCKPIT', ['gridster', 'ui.router'])
                 },
                 templateUrl: "/containers/showDetails.html",
                 controller: "ContainersShowDetailsController"
+            })
+
+            .state('CurrentstatereportsIndex', {
+                url: '/currentstatereports/index',
+                templateUrl: "/currentstatereports/index.html",
+                controller: "CurrentstatereportsIndexController"
             })
 
             .state('DeletedHostsIndex', {
@@ -190,6 +208,24 @@ angular.module('openITCOCKPIT', ['gridster', 'ui.router'])
                 controller: "InstantreportsEditController"
             })
 
+            .state('LogentriesIndex', {
+                url: '/logentries/index',
+                templateUrl: "/logentries/index.html",
+                controller: "LogentriesIndexController"
+            })
+
+            .state('NotificationsIndex', {
+                url: '/notifications/index',
+                templateUrl: "/notifications/index.html",
+                controller: "NotificationsIndexController"
+            })
+
+            .state('NotificationsServices', {
+                url: '/notifications/services',
+                templateUrl: "/notifications/services.html",
+                controller: "NotificationsServicesController"
+            })
+
             .state('ServicesIndex', {
                 url: '/services/index',
                 templateUrl: "/services/index.html",
@@ -218,6 +254,18 @@ angular.module('openITCOCKPIT', ['gridster', 'ui.router'])
                 url: '/servicechecks/index/:id',
                 templateUrl: "/servicechecks/index.html",
                 controller: "ServicechecksIndexController"
+            })
+
+            .state('StatisticsIndex', {
+                url: '/statistics/index',
+                templateUrl: "/statistics/index.html",
+                controller: "StatisticsIndexController"
+            })
+
+            .state('StatusmapsIndex', {
+                url: '/statusmaps/index',
+                templateUrl: "/statusmaps/index.html",
+                controller: "StatusmapsIndexController"
             })
 
             .state('SystemdowntimesHost', {
@@ -308,6 +356,30 @@ angular.module('openITCOCKPIT', ['gridster', 'ui.router'])
                 url: '/hostchecks/index/:id',
                 templateUrl: "/hostchecks/index.html",
                 controller: "HostchecksIndexController"
+            })
+
+            .state('ServicegroupsIndex', {
+                url: '/servicegroups/index',
+                templateUrl: "/servicegroups/index.html",
+                controller: "ServicegroupsIndexController"
+            })
+
+            .state('ServicegroupsAdd', {
+                url: '/servicegroups/add',
+                templateUrl: "/servicegroups/add.html",
+                controller: "ServicegroupsAddController"
+            })
+
+            .state('ServicegroupsEdit', {
+                url: '/servicegroups/edit/:id',
+                templateUrl: "/servicegroups/edit.html",
+                controller: "ServicegroupsEditController"
+            })
+
+            .state('ServicegroupsExtended', {
+                url: '/servicegroups/extended',
+                templateUrl: "/servicegroups/extended.html",
+                controller: "ServicegroupsExtendedController"
             })
 
             .state('StatehistoriesHost', {

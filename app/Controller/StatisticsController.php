@@ -42,6 +42,8 @@ class StatisticsController extends AppController {
     public $layout = 'angularjs';
 
     public function index() {
+        $this->layout = 'blank';
+
         if (!$this->isAngularJsRequest()) {
             $StatisticsCollector = new StatisticsCollector($this->Host, $this->Service);
             $statisticsAsJson = json_encode($StatisticsCollector->getData(), JSON_PRETTY_PRINT);

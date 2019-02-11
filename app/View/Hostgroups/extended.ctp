@@ -69,7 +69,7 @@
     <div class="col col-xs-1">
         <div class="btn-group">
             <?php if ($this->Acl->hasPermission('edit')): ?>
-                <a href="/hostgroups/edit/{{post.Hostgroup.id}}"
+                <a ui-sref="HostgroupsEdit({id:post.Hostgroup.id})"
                    class="btn btn-default btn-md">&nbsp;<i class="fa fa-md fa-cog"></i>
                 </a>
             <?php else: ?>
@@ -83,7 +83,7 @@
             <ul class="dropdown-menu dropdown-menu-right" ng-if="hostgroup.Hosts.length > 0">
                 <?php if ($this->Acl->hasPermission('edit')): ?>
                     <li>
-                        <a href="/hostgroups/edit/{{post.Hostgroup.id}}">
+                        <a ui-sref="HostgroupsEdit({id:post.Hostgroup.id})">
                             <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
                         </a>
                     </li>
@@ -149,12 +149,10 @@
                         </button>
 
                         <?php if ($this->Acl->hasPermission('add')): ?>
-                            <?php echo $this->Html->link(
-                                __('New'), '/' . $this->params['controller'] . '/add', [
-                                    'class' => 'btn btn-xs btn-success',
-                                    'icon'  => 'fa fa-plus'
-                                ]
-                            ); ?>
+                            <a ui-sref="HostgroupsAdd" class="btn btn-xs btn-success">
+                                <i class="fa fa-plus"></i>
+                                <?php echo __('New'); ?>
+                            </a>
                         <?php endif; ?>
                     </div>
                     <span class="widget-icon hidden-mobile"> <i class="fa fa-sidemap"></i> </span>
@@ -165,7 +163,7 @@
                     <?php if ($this->Acl->hasPermission('extended')): ?>
                         <ul class="nav nav-tabs pull-right" id="widget-tab-1">
                             <li>
-                                <a href="/hostgroups/index"><i class="fa fa-minus-square"></i>
+                                <a ui-sref="HostgroupsIndex"><i class="fa fa-minus-square"></i>
                                     <span class="hidden-mobile hidden-tablet"><?php echo __('Default overview'); ?></span></a>
                             </li>
                         </ul>

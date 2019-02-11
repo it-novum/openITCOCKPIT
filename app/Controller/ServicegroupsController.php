@@ -67,6 +67,7 @@ class ServicegroupsController extends AppController {
 
 
     public function index() {
+        $this->layout = 'blank';
         if (!$this->isApiRequest()) {
             //Only ship template for AngularJs
             return;
@@ -132,7 +133,8 @@ class ServicegroupsController extends AppController {
     }
 
     public function edit($id = null) {
-        if (!$this->isApiRequest()) {
+        $this->layout = 'blank';
+        if (!$this->isApiRequest() && $id === null) {
             //Only ship HTML template for angular
             return;
         }
@@ -256,7 +258,6 @@ class ServicegroupsController extends AppController {
                 if ($changelog_data) {
                     CakeLog::write('log', serialize($changelog_data));
                 }
-                $this->setFlash(__('<a href="/servicegroups/edit/%s">Servicegroup</a> successfully saved', $this->Servicegroup->id));
             } else {
                 if ($this->request->ext == 'json') {
                     $this->serializeErrorMessage();
@@ -269,6 +270,7 @@ class ServicegroupsController extends AppController {
     }
 
     public function add() {
+        $this->layout = 'blank';
         if (!$this->isApiRequest()) {
             //Only ship HTML template for angular
             return;
@@ -345,9 +347,6 @@ class ServicegroupsController extends AppController {
                 }
 
                 if ($this->request->ext == 'json') {
-                    if ($this->isAngularJsRequest()) {
-                        $this->setFlash(__('<a href="/servicegroups/edit/%s">Servicegroup</a> successfully saved', $this->Servicegroup->id));
-                    }
                     $this->serializeId();
                     return;
                 }
@@ -356,7 +355,6 @@ class ServicegroupsController extends AppController {
                     $this->serializeErrorMessage();
                     return;
                 }
-                $this->setFlash(__('Could not save data'), false);
             }
         }
     }
@@ -836,7 +834,7 @@ class ServicegroupsController extends AppController {
     }
 
     public function extended() {
-        $this->layout = 'angularjs';
+        $this->layout = 'blank';
         $User = new User($this->Auth);
 
         if (!$this->isApiRequest()) {
