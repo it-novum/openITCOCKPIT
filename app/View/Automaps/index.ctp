@@ -111,7 +111,7 @@
                                         ?>
                                         <tr>
                                             <td>
-                                                <a href="/<?php echo $this->params['controller']; ?>/view/<?php echo $automap['Automap']['id']; ?>"><?php echo h($automap['Automap']['name']); ?></a>
+                                                <a href="/ng/#!/<?php echo $this->params['controller']; ?>/view/<?php echo $automap['Automap']['id']; ?>"><?php echo h($automap['Automap']['name']); ?></a>
                                             </td>
                                             <td><?php echo h($automap['Automap']['description']); ?></td>
                                             <td><?php echo h($automap['Automap']['host_regex']); ?></td>
@@ -158,7 +158,7 @@
                                                         <?php endif; ?>
                                                         <?php if ($this->Acl->hasPermission('view')): ?>
                                                             <li>
-                                                                <a href="<?php echo Router::url([
+                                                                <a href="/ng/#!<?php echo Router::url([
                                                                     'action' => 'view',
                                                                     $automap['Automap']['id']
                                                                 ]); ?>">

@@ -326,7 +326,7 @@ class AdministratorsController extends AppController {
     }
 
     public function querylog() {
-        $this->layout = 'angularjs';
+        $this->layout = 'blank';
     }
 }
 
