@@ -310,6 +310,30 @@ angular.module('openITCOCKPIT', ['gridster', 'ui.router'])
                 controller: "HostchecksIndexController"
             })
 
+            .state('ServicegroupsIndex', {
+                url: '/servicegroups/index',
+                templateUrl: "/servicegroups/index.html",
+                controller: "ServicegroupsIndexController"
+            })
+
+            .state('ServicegroupsAdd', {
+                url: '/servicegroups/add',
+                templateUrl: "/servicegroups/add.html",
+                controller: "ServicegroupsAddController"
+            })
+
+            .state('ServicegroupsEdit', {
+                url: '/servicegroups/edit/:id',
+                templateUrl: "/servicegroups/edit.html",
+                controller: "ServicegroupsEditController"
+            })
+
+            .state('ServicegroupsExtended', {
+                url: '/servicegroups/extended',
+                templateUrl: "/servicegroups/extended.html",
+                controller: "ServicegroupsExtendedController"
+            })
+
             .state('StatehistoriesHost', {
                 url: '/statehistories/host/:id',
                 templateUrl: "/statehistories/host.html",

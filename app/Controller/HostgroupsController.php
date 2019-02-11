@@ -148,7 +148,7 @@ class HostgroupsController extends AppController {
 
     public function edit($id = null) {
         $this->layout = 'blank';
-        if (!$this->isApiRequest()) {
+        if (!$this->isApiRequest() && $id === null) {
             //Only ship HTML template for angular
             return;
         }
