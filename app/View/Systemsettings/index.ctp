@@ -160,7 +160,7 @@
                                                         </div>
                                                         <div ng-switch-default>
                                                             <input type="text" id="SystemsettingValue"
-                                                                   value="{{systemsetting.value}}"
+                                                                   ng-model="systemsetting.value"
                                                                    class="form-control systemsetting-input">
                                                         </div>
                                                     </div>

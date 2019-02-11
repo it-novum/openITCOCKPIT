@@ -31,9 +31,16 @@ class SystemsettingsController extends AppController {
     public function index() {
         /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
         $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
-        // debug($Systemsettings->getSystemsettings());
-        $this->set(compact([]));
-        $this->set('_serialize', []);
+        $all_systemsettings = $Systemsettings->getSettings();
+
+        foreach ($all_systemsettings as $key => $value) {
+            foreach ($value as $key2 => $systemsetting) {
+                $all_systemsettings[$key][$key2]['exploded'] = explode('.', $systemsetting['key'], 2)[1]; //This parse the PREFIX MONITORIN. or WEBSERVER. or WHATEVER. away
+            }
+        }
+
+        $this->set(compact(['all_systemsettings']));
+        $this->set('_serialize', ['all_systemsettings']);
 
         if ($this->request->is('post') || $this->request->is('put')) {
             $systemsettingsEntity = $Systemsettings->getSystemsettings(true);
@@ -45,6 +52,7 @@ class SystemsettingsController extends AppController {
             $systemsettingsPatchedEntities = $Systemsettings->patchEntities($systemsettingsEntity, $normalizedData);
             $result = $Systemsettings->saveMany($systemsettingsPatchedEntities);
             Cache::clear(false, 'permissions');
+            //debug($result);
             if (!$result) {
                 $this->response->statusCode(400);
                 $this->set('error',[]);
@@ -52,28 +60,16 @@ class SystemsettingsController extends AppController {
                 return;
             }
             //Update systemname in session
-            $systemsettings = $this->Systemsetting->findAsArraySection('FRONTEND');
+         /*   $systemsettings = $Systemsettings->findAsArraySection('FRONTEND');
+            debug($systemsettings);
+            die();
             if (isset($systemsettings['FRONTEND']['FRONTEND.SYSTEMNAME'])) {
                 $this->Session->write('FRONTEND.SYSTEMNAME', $systemsettings['FRONTEND']['FRONTEND.SYSTEMNAME']);
             }
             if (isset($systemsettings['FRONTEND']['FRONTEND.EXPORT_RUNNING'])) {
                 $this->Session->write('FRONTEND.EXPORT_RUNNING', $systemsettings['FRONTEND']['FRONTEND.EXPORT_RUNNING']);
             }
+         */
         }
-    }
-
-    public function getSystemsettings() {
-        /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
-        $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
-        $all_systemsettings = $Systemsettings->getSettings();
-
-        foreach ($all_systemsettings as $key => $value) {
-            foreach ($value as $key2 => $systemsetting) {
-                $all_systemsettings[$key][$key2]['exploded'] = explode('.', $systemsetting['key'], 2)[1]; //This parse the PREFIX MONITORIN. or WEBSERVER. or WHATEVER. away
-            }
-        }
-
-        $this->set(compact(['all_systemsettings']));
-        $this->set('_serialize', ['all_systemsettings']);
     }
 }

@@ -5,7 +5,7 @@ angular.module('openITCOCKPIT')
 
         $scope.init = true;
         $scope.load = function(){
-            $http.get("/systemsettings/getSystemsettings.json", {
+            $http.get("/systemsettings/index.json", {
                 params: {
                     'angular': true,
                 }
