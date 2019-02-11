@@ -1,10 +1,10 @@
 <?php
+
 namespace App\Model\Table;
 
+use Cake\ORM\Locator\LocatorAwareTrait;
 use Cake\ORM\Query;
-use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
-use Cake\Utility\Hash;
 use Cake\Validation\Validator;
 use Model;
 
@@ -22,8 +22,9 @@ use Model;
  *
  * @mixin \Cake\ORM\Behavior\TimestampBehavior
  */
-class SystemsettingsTable extends Table
-{
+class SystemsettingsTable extends Table {
+    use LocatorAwareTrait;
+
 
     /**
      * Initialize method
@@ -31,8 +32,7 @@ class SystemsettingsTable extends Table
      * @param array $config The configuration for the Table.
      * @return void
      */
-    public function initialize(array $config)
-    {
+    public function initialize(array $config) {
         parent::initialize($config);
 
         $this->setTable('systemsettings');
@@ -48,8 +48,7 @@ class SystemsettingsTable extends Table
      * @param \Cake\Validation\Validator $validator Validator instance.
      * @return \Cake\Validation\Validator
      */
-    public function validationDefault(Validator $validator)
-    {
+    public function validationDefault(Validator $validator) {
         $validator
             ->integer('id')
             ->allowEmptyString('id', 'create');
@@ -82,9 +81,23 @@ class SystemsettingsTable extends Table
     }
 
 
-    public function getSettings(){
-        $systemsettings = $this->find('all');
-        $systemsettings = $systemsettings->disableHydration()->toArray();
+    /**
+     * @param bool $asEntity
+     * @return array|Query
+     */
+    public function getSystemsettings($asEntity = false) {
+        $query = $this->find('all');
+        if ($asEntity) {
+            return $query->all()->toArray();
+        }
+        return $query->disableHydration()->toArray();
+    }
+
+    /**
+     * @return array
+     */
+    public function getSettings() {
+        $systemsettings = $this->getSystemsettings();
         $all_systemsettings = [];
         foreach ($systemsettings as $systemsetting) {
             $all_systemsettings[$systemsetting['section']][] = $systemsetting;
@@ -104,8 +117,8 @@ class SystemsettingsTable extends Table
             foreach ($sSection as $sSettingOptionKey) {
                 // looping through our Settings
                 foreach ($all_systemsettings as $nsSectionName => $nsSection) {
-                  //  debug($nsSectionName);
-                   // debug($nsSection);
+                    //  debug($nsSectionName);
+                    // debug($nsSection);
                     if ($sSectionName === $nsSectionName) {
                         foreach ($nsSection as $nsSectionK => $nsSettingOption) {
                             if ($sSettingOptionKey === $nsSettingOption['key']) {
@@ -133,7 +146,19 @@ class SystemsettingsTable extends Table
     }
 
     public function findAsArraySection($section = '') {
+        $return = [];
+        $systemsettings = $this->findAllBySection($section);
 
+        $all_systemsettings = [];
+        $all_systemsettings[$section] = Hash::extract($systemsettings, '{n}.Systemsetting[section=' . $section . ']');
+
+        foreach ($all_systemsettings as $key => $values) {
+            $return[$key] = [];
+            foreach ($values as $value) {
+                $return[$key][$value['key']] = $value['value'];
+            }
+        }
+        return $return;
     }
 
     public function getMasterInstanceName() {
