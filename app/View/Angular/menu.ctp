@@ -54,7 +54,8 @@
 
 
     <li ng-repeat="parentNode in menu" ng-class="{'open': isActiveParent(parentNode)}">
-        <a ng-if="parentNode.isAngular != 1" href="{{ parentHref(parentNode) }}">
+        <a ng-if="parentNode.isAngular != 1" ng-href="{{ parentHref(parentNode) == '#' ? '' : parentHref(parentNode) }}"
+           ng-class="{'cursor-pointer': parentHref(parentNode) == '#'}">
 
             <i class="fa fa-lg fa-fw fa-{{ parentNode.icon }}"></i>
             <span class="menu-item-parent">{{ parentNode.title }}</span>
