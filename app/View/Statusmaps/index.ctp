@@ -64,7 +64,10 @@ echo $this->Html->css('vendor/css3-percentage-loader/circle.css', ['inline' => f
         </h2>
 
         <div class="widget-toolbar" role="menu">
-            <?php echo $this->Utils->backButton(); ?>
+            <a href="/statusmaps/index" class="btn btn-default btn-xs">
+                <i class="fa fa-undo"></i>
+                <?php echo __('Reset'); ?>
+            </a>
         </div>
 
         <div class="widget-toolbar">
