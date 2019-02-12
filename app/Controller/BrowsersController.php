@@ -60,7 +60,9 @@ class BrowsersController extends AppController {
         $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
 
         if (!$this->isApiRequest()) {
-            $masterInstanceName = $this->Systemsetting->getMasterInstanceName();
+            /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
+            $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
+            $masterInstanceName = $Systemsettings->getMasterInstanceName();
             $SatelliteNames = [];
             $ModuleManager = new ModuleManager('DistributeModule');
             if ($ModuleManager->moduleExists()) {
@@ -121,7 +123,7 @@ class BrowsersController extends AppController {
             }
 
             $currentContainer = $ContainersTable->get($containerId)->toArray();
-            
+
             $breadcrumbs = [];
             $parents = $ContainersTable->getPathByIdAndCacheResult($currentContainer['parent_id'], 'BrowsersIndex');
 

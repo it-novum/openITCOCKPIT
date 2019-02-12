@@ -128,7 +128,10 @@ class HostsController extends AppController {
         $this->layout = 'blank';
         $User = new User($this->Auth);
 
-        $masterInstanceName = $this->Systemsetting->getMasterInstanceName();
+        /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
+        $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
+        $masterInstanceName = $Systemsettings->getMasterInstanceName();
+
         $SatelliteNames = [];
         $ModuleManager = new ModuleManager('DistributeModule');
         if ($ModuleManager->moduleExists()) {
@@ -346,7 +349,9 @@ class HostsController extends AppController {
     public function notMonitored() {
         $this->layout = 'blank';
 
-        $masterInstanceName = $this->Systemsetting->getMasterInstanceName();
+        /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
+        $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
+        $masterInstanceName = $Systemsettings->getMasterInstanceName();
         $SatelliteNames = [];
         $ModuleManager = new ModuleManager('DistributeModule');
         if ($ModuleManager->moduleExists()) {
@@ -1471,7 +1476,9 @@ class HostsController extends AppController {
     public function disabled() {
         $this->layout = 'blank';
 
-        $masterInstanceName = $this->Systemsetting->getMasterInstanceName();
+        /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
+        $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
+        $masterInstanceName = $Systemsettings->getMasterInstanceName();
         $SatelliteNames = [];
         $ModuleManager = new ModuleManager('DistributeModule');
         if ($ModuleManager->moduleExists()) {
@@ -2328,9 +2335,12 @@ class HostsController extends AppController {
                     $this->set('GrafanaConfiguration', $GrafanaConfiguration);
                 }
             }
+            /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
+            $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
+            $masterInstanceName = $Systemsettings->getMasterInstanceName();
             $this->set('username', $User->getFullName());
             $this->set('QueryHandler', new QueryHandler($this->Systemsetting->getQueryHandlerPath()));
-            $this->set('masterInstanceName', $this->Systemsetting->getMasterInstanceName());
+            $this->set('masterInstanceName', $masterInstanceName);
             //Only ship template
             return;
         }
