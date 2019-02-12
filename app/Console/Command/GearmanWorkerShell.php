@@ -91,7 +91,9 @@ class GearmanWorkerShell extends AppShell {
         }
 
         try {
-            $this->_systemsettings = $this->Systemsetting->findAsArray();
+            /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
+            $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
+            $this->_systemsettings = $Systemsettings->findAsArray();
         } catch (Exception $e) {
             debug($e->getMessage());
             exit(3);
@@ -685,7 +687,9 @@ class GearmanWorkerShell extends AppShell {
                 break;
 
             case 'check_background_processes':
-                $systemsetting = $this->Systemsetting->findAsArray();
+                /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
+                $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
+                $systemsetting = $Systemsettings->findAsArray();
                 $errorRedirect = ' 2> /dev/null';
 
                 $state = [
