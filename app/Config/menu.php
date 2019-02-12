@@ -225,16 +225,6 @@ $config = [
                     'icon'              => 'location-arrow',
                 ],
                 [
-                    'url'               => ['controller' => 'graphgenerators', 'action' => 'index'],
-                    'title'             => 'Graph Generator',
-                    'icon'              => 'area-chart',
-                ],
-                [
-                    'url'               => ['controller' => 'graph_collections', 'action' => 'index'],
-                    'title'             => 'Graph Collections',
-                    'icon'              => 'list-alt',
-                ],
-                [
                     'url'               => ['controller' => 'downtimes', 'action' => 'host'],
                     'state'             => 'DowntimesHost',
                     'title'             => 'Downtimes',
