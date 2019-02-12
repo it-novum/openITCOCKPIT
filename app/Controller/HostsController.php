@@ -141,7 +141,9 @@ class HostsController extends AppController {
         }
 
         if (!$this->isApiRequest()) {
-            $this->set('QueryHandler', new QueryHandler($this->Systemsetting->getQueryHandlerPath()));
+            /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
+            $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
+            $this->set('QueryHandler', new QueryHandler($Systemsettings->getQueryHandlerPath()));
             $this->set('username', $User->getFullName());
             $this->set('satellites', $SatelliteNames);
             //Only ship HTML template
@@ -2337,10 +2339,9 @@ class HostsController extends AppController {
             }
             /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
             $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
-            $masterInstanceName = $Systemsettings->getMasterInstanceName();
+            $this->set('QueryHandler', new QueryHandler($Systemsettings->getQueryHandlerPath()));
             $this->set('username', $User->getFullName());
-            $this->set('QueryHandler', new QueryHandler($this->Systemsetting->getQueryHandlerPath()));
-            $this->set('masterInstanceName', $masterInstanceName);
+            $this->set('masterInstanceName', $Systemsettings->getMasterInstanceName());
             //Only ship template
             return;
         }
