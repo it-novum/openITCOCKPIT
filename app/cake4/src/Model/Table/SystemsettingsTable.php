@@ -2,10 +2,10 @@
 
 namespace App\Model\Table;
 
+use Cake\Cache\Cache;
 use Cake\ORM\Locator\LocatorAwareTrait;
 use Cake\ORM\Query;
 use Cake\ORM\Table;
-use Cake\Utility\Hash;
 use Cake\Validation\Validator;
 use Model;
 
@@ -118,8 +118,21 @@ class SystemsettingsTable extends Table {
         return $sortedSystemSettings;
     }
 
+    /**
+     * @return array
+     */
     public function findAsArray() {
-
+        $systemsettings = $this->getSettings();
+        $return = [];
+        if (!is_null($systemsettings)) {
+            foreach ($systemsettings as $key => $value) {
+                $return[$key] = [];
+                foreach ($value as $systemsetting) {
+                    $return[$key][$systemsetting['key']] = $systemsetting['value'];
+                }
+            }
+        }
+        return $return;
     }
 
     /**
@@ -133,7 +146,7 @@ class SystemsettingsTable extends Table {
         $systemsettings = $query->disableHydration()->toArray();
 
         $return = [];
-        if(!is_null($systemsettings)){
+        if (!is_null($systemsettings)) {
             foreach ($systemsettings as $values) {
                 $return[$section][$values['key']] = $values['value'];
             }
@@ -141,11 +154,25 @@ class SystemsettingsTable extends Table {
         return $return;
     }
 
+    /**
+     * @return mixed
+     */
     public function getMasterInstanceName() {
-
+        if (!Cache::read('systemsettings_master_instance', 'permissions')) {
+            $name = $this->findAsArraySection('FRONTEND')['FRONTEND']['FRONTEND.MASTER_INSTANCE'];
+            Cache::write('systemsettings_master_instance', $name, 'permissions');
+        }
+        return Cache::read('systemsettings_master_instance', 'permissions');
     }
 
+    /**
+     * @return mixed
+     */
     public function getQueryHandlerPath() {
-
+        if (!Cache::read('systemsettings_qh_path', 'permissions')) {
+            $path = $this->findByKey('MONITORING.QUERY_HANDLER')['Systemsetting']['value'];
+            Cache::write('systemsettings_qh_path', $path, 'permissions');
+        }
+        return Cache::read('systemsettings_qh_path', 'permissions');
     }
 }
