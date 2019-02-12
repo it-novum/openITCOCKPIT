@@ -41,7 +41,9 @@
         <span class="widget-icon"> <i class="fa fa-pencil-square-o"></i> </span>
         <h2><?php echo __('Create Instant Report'); ?></h2>
         <div class="widget-toolbar" role="menu">
-            <?php echo $this->Utils->backButton(); ?>
+            <a ui-sref="InstantreportsIndex" class="btn btn-default btn-xs" iconcolor="white">
+                <i class="glyphicon glyphicon-white glyphicon-arrow-left"></i> <?php echo __('Back to list'); ?>
+            </a>
         </div>
     </header>
     <div class="widget-body">
@@ -327,7 +329,7 @@
                     <div class="well formactions ">
                         <div class="pull-right">
                             <input class="btn btn-primary" type="submit" value="Save">&nbsp;
-                            <a href="/instantreports/index" class="btn btn-default">
+                            <a ui-sref="InstantreportsIndex" class="btn btn-default">
                                 <?php echo __('Cancel'); ?>
                             </a>
                         </div>

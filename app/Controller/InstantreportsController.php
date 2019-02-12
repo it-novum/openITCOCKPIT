@@ -67,7 +67,7 @@ class InstantreportsController extends AppController {
     ];
 
     public function index() {
-        $this->layout = 'angularjs';
+        $this->layout = 'blank';
         if (!$this->isApiRequest()) {
             //Only ship template for AngularJs
             return;
@@ -116,7 +116,7 @@ class InstantreportsController extends AppController {
     }
 
     public function add() {
-        $this->layout = 'angularjs';
+        $this->layout = 'blank';
         if (!$this->isApiRequest()) {
             //Only ship template for AngularJs
             return;
@@ -133,9 +133,6 @@ class InstantreportsController extends AppController {
             $this->request->data['Service'] = $this->request->data('Instantreport.Service');
             if ($this->Instantreport->saveAll($this->request->data)) {
                 if ($this->request->ext == 'json') {
-                    if ($this->isAngularJsRequest()) {
-                        $this->setFlash(__('<a href="/instantreports/edit/%s">Instantreport</a> successfully saved', $this->Instantreport->id));
-                    }
                     $this->serializeId();
                     return;
                 }
@@ -144,18 +141,17 @@ class InstantreportsController extends AppController {
                     $this->serializeErrorMessage();
                     return;
                 }
-                $this->setFlash(__('Could not save data'), false);
             }
         }
     }
 
     public function edit($id = null) {
-        $this->layout = 'angularjs';
+        $this->layout = 'blank';
         if (!$this->isApiRequest()) {
             //Only ship template for AngularJs
             return;
         }
-        if (!$this->Instantreport->exists($id)) {
+        if (!$this->Instantreport->exists($id) && $id !== null) {
             throw new NotFoundException(__('Invalid Instant report'));
         }
 
@@ -192,9 +188,6 @@ class InstantreportsController extends AppController {
             $this->request->data['Service'] = $this->request->data('Instantreport.Service');
             if ($this->Instantreport->saveAll($this->request->data)) {
                 if ($this->request->ext == 'json') {
-                    if ($this->isAngularJsRequest()) {
-                        $this->setFlash(__('<a href="/instantreports/edit/%s">Instantreport</a> successfully saved', $this->Instantreport->id));
-                    }
                     $this->serializeId();
                     return;
                 }

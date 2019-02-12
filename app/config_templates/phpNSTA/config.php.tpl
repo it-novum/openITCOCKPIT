@@ -445,7 +445,7 @@ $config = [
          * @since 1.4
          * @version 1.8.0
          **/
-        'grep_for_nagios'             => 'ps -eaf | grep "/opt/openitc/nagios/bin/naemon -d /etc/openitcockpit/nagios.cfg" |grep -v "grep"',
+        'grep_for_nagios'             => '{{grep_command|raw}}',
 
         /**
          * nagios4x_compatibility

@@ -1,15 +1,19 @@
 angular.module('openITCOCKPIT')
-    .controller('ContainersShowDetailsController', function($scope, $http, $timeout, QueryStringService){
+    .controller('ContainersShowDetailsController', function($scope, $http, $timeout, $stateParams){
 
         $scope.init = true;
 
         $scope.post = {
             Container: {
-                id: null
+                id: null,
+                tenant: null
             }
         };
 
-        $scope.post.Container.id = QueryStringService.getCakeId();
+        $scope.post.Container.id = $stateParams.id;
+        if($stateParams.tenant){
+            $scope.post.Container.tenant = $stateParams.tenant;
+        }
 
 
         $scope.loadContainerDetails = function(){

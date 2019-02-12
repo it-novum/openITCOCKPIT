@@ -33,8 +33,8 @@ class SystemsettingsController extends AppController {
         $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
         $all_systemsettings = $Systemsettings->getSettings();
 
-        foreach ($all_systemsettings as $key => $value){
-            foreach ($value as $key2 => $systemsetting){
+        foreach ($all_systemsettings as $key => $value) {
+            foreach ($value as $key2 => $systemsetting) {
                 $all_systemsettings[$key][$key2]['exploded'] = explode('.', $systemsetting['key'], 2)[1]; //This parse the PREFIX MONITORIN. or WEBSERVER. or WHATEVER. away
             }
         }
@@ -43,27 +43,30 @@ class SystemsettingsController extends AppController {
         $this->set('_serialize', ['all_systemsettings']);
 
         if ($this->request->is('post') || $this->request->is('put')) {
-            if ($this->Systemsetting->saveAll($this->request->data)) {
-                Cache::clear(false, 'permissions');
-
-                //Update systemname in session
-                $systemsettings = $this->Systemsetting->findAsArraySection('FRONTEND');
-                if (isset($systemsettings['FRONTEND']['FRONTEND.SYSTEMNAME'])) {
-                    $this->Session->write('FRONTEND.SYSTEMNAME', $systemsettings['FRONTEND']['FRONTEND.SYSTEMNAME']);
-                }
-                if (isset($systemsettings['FRONTEND']['FRONTEND.EXPORT_RUNNING'])) {
-                    $this->Session->write('FRONTEND.EXPORT_RUNNING', $systemsettings['FRONTEND']['FRONTEND.EXPORT_RUNNING']);
-                }
-
-
-                $this->setFlash(__('Settings saved successfully'));
-
-                return $this->redirect(['action' => 'index']);
-            } else {
-                $this->setFlash(__('Data could not be saved'), false);
+            $systemsettingsEntity = $Systemsettings->getSystemsettings(true);
+            $normalizedData = [];
+            foreach ($this->request->data as $requestData) {
+                foreach ($requestData as $data)
+                    $normalizedData[] = $data;
+            }
+            $systemsettingsPatchedEntities = $Systemsettings->patchEntities($systemsettingsEntity, $normalizedData);
+            $result = $Systemsettings->saveMany($systemsettingsPatchedEntities);
+            Cache::clear(false, 'permissions');
+            //debug($result);
+            if (!$result) {
+                $this->response->statusCode(400);
+                $this->set('error',[]);
+                $this->set('_serialize', ['error']);
+                return;
+            }
+            //Update systemname in session
+            $systemsettings = $Systemsettings->findAsArraySection('FRONTEND');
+            if (isset($systemsettings['FRONTEND']['FRONTEND.SYSTEMNAME'])) {
+                $this->Session->write('FRONTEND.SYSTEMNAME', $systemsettings['FRONTEND']['FRONTEND.SYSTEMNAME']);
+            }
+            if (isset($systemsettings['FRONTEND']['FRONTEND.EXPORT_RUNNING'])) {
+                $this->Session->write('FRONTEND.EXPORT_RUNNING', $systemsettings['FRONTEND']['FRONTEND.EXPORT_RUNNING']);
             }
         }
-
-
     }
 }

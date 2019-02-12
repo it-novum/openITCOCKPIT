@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('CurrentstatereportsIndexController', function($scope, $http, $timeout){
+    .controller('CurrentstatereportsIndexController', function($scope, $http, $timeout, NotyService){
 
         $scope.init = true;
         $scope.errors = null;
@@ -58,6 +58,8 @@ angular.module('openITCOCKPIT')
                     return;
                 }
 
+                NotyService.genericSuccess();
+
                 if($scope.post.Currentstatereport.report_format === 'pdf'){
                     window.location = '/currentstatereports/createPdfReport.pdf';
                 }
@@ -69,6 +71,7 @@ angular.module('openITCOCKPIT')
                 $scope.errors = null;
             }, function errorCallback(result){
                 $scope.generatingReport = false;
+                NotyService.genericError();
                 if(result.data.hasOwnProperty('error')){
                     $scope.errors = result.data.error;
                 }

@@ -40,7 +40,9 @@
         <span class="widget-icon"> <i class="fa fa-pencil-square-o"></i> </span>
         <h2><?php echo __('Create Current State Report'); ?></h2>
         <div class="widget-toolbar" role="menu">
-            <?php echo $this->Utils->backButton(); ?>
+            <a ui-sref="CurrentstatereportsIndex" class="btn btn-default btn-xs" iconcolor="white">
+                <i class="glyphicon glyphicon-white glyphicon-arrow-left"></i> <?php echo __('Back to list'); ?>
+            </a>
         </div>
     </header>
     <div>
@@ -141,7 +143,7 @@
                        ng-click="createCurrentStateReport()"
                 >
                 &nbsp;
-                <a href="/currentstatereports" class="btn btn-default">
+                <a ui-sref="CurrentstatereportsIndex" class="btn btn-default">
                     <?php echo __('Cancel'); ?>
                 </a>
             </div>

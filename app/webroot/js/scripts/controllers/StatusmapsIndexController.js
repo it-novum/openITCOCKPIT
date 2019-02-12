@@ -23,13 +23,16 @@ angular.module('openITCOCKPIT')
         $scope.timer = null;
         $scope.hasBrowserRight = false;
 
-        $scope.container = document.getElementById('statusmap');
+        angular.element(document).ready(function () {
+            $scope.container = document.getElementById('statusmap');
 
-        var offset = $($scope.container).offset();
-        var height = (window.innerHeight - offset.top);
-        $($($scope.container)).css({
-            'height': height
+            var offset = $($scope.container).offset();
+            var height = (window.innerHeight - offset.top);
+            $($($scope.container)).css({
+                'height': height
+            });
         });
+
 
         $scope.load = function(){
             $scope.mutex = true;
@@ -253,7 +256,7 @@ angular.module('openITCOCKPIT')
             var data = {
                 nodes: $scope.nodes,
                 edges: $scope.edges
-            }
+            };
 
 
             network = new vis.Network($scope.container, data, options);

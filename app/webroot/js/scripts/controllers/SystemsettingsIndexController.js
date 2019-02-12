@@ -32,11 +32,26 @@ angular.module('openITCOCKPIT')
             }
         };
 
-
         $scope.generateOptions = function(){
             for(var i = 1; i < 107; i++){
                 $scope.dropdownOptionSequence.push(i);
             }
+        };
+
+        $scope.submit = function(){
+            console.log($scope.systemsettings);
+            $http.post('/systemsettings/index.json?angular=true',
+                $scope.systemsettings
+            ).then(function(result){
+                NotyService.genericSuccess();
+                console.log('Data saved successfully');
+                $scope.load();
+            }, function errorCallback(result){
+                NotyService.genericError();
+                if(result.data.hasOwnProperty('error')){
+                    $scope.errors = result.data.error;
+                }
+            });
         };
 
         $scope.generateOptions();

@@ -40,6 +40,7 @@ class ConfigurationFilesController extends AppController {
     public $layout = 'angularjs';
 
     public function index() {
+        $this->layout = 'blank';
         if (!$this->isAngularJsRequest()) {
             //Only ship HTML Template
             return;

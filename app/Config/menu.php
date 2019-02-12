@@ -39,6 +39,7 @@ $config = [
             'children' => [
                 [
                     'url'               => ['controller' => 'statusmaps', 'action' => 'index'],
+                    'state'             => 'StatusmapsIndex',
                     'title'             => 'Status Map',
                     'icon'              => 'globe',
                 ],
@@ -66,6 +67,7 @@ $config = [
                 ],
                 [
                     'url'               => ['controller' => 'ConfigurationFiles', 'action' => 'index'],
+                    'state'             => 'ConfigurationFilesIndex',
                     'title'             => 'Config file editor',
                     'icon'              => 'file-text-o',
                 ],
@@ -123,6 +125,7 @@ $config = [
                 ],
                 [
                     'url'               => ['controller' => 'statistics', 'action' => 'index'],
+                    'state'             => 'StatisticsIndex',
                     'title'             => 'Anonymous statistics',
                     'icon'              => 'line-chart ',
                 ],
@@ -174,6 +177,7 @@ $config = [
                 ],
                 [
                     'url'               => ['controller' => 'servicegroups', 'action' => 'index'],
+                    'state'             => 'ServicegroupsIndex',
                     'title'             => 'Service Groups',
                     'icon'              => 'cogs',
                 ],
@@ -211,6 +215,7 @@ $config = [
                 ],
                 [
                     'url'               => ['controller' => 'containers', 'action' => 'index'],
+                    'state'             => 'ContainersIndex',
                     'title'             => 'Nodes',
                     'icon'              => 'link',
                 ],
@@ -218,16 +223,6 @@ $config = [
                     'url'               => ['controller' => 'locations', 'action' => 'index'],
                     'title'             => 'Locations',
                     'icon'              => 'location-arrow',
-                ],
-                [
-                    'url'               => ['controller' => 'graphgenerators', 'action' => 'index'],
-                    'title'             => 'Graph Generator',
-                    'icon'              => 'area-chart',
-                ],
-                [
-                    'url'               => ['controller' => 'graph_collections', 'action' => 'index'],
-                    'title'             => 'Graph Collections',
-                    'icon'              => 'list-alt',
                 ],
                 [
                     'url'               => ['controller' => 'downtimes', 'action' => 'host'],
@@ -245,11 +240,13 @@ $config = [
                 ],
                 [
                     'url'               => ['controller' => 'logentries', 'action' => 'index'],
+                    'state'             => 'LogentriesIndex',
                     'title'             => 'Log Entries',
                     'icon'              => 'file-text-o',
                 ],
                 [
                     'url'               => ['controller' => 'notifications', 'action' => 'index'],
+                    'state'             => 'NotificationsIndex',
                     'title'             => 'Notifications',
                     'icon'              => 'envelope',
                 ],
@@ -304,6 +301,7 @@ $config = [
             'children' => [
                 [
                     'url'               => ['controller' => 'instantreports', 'action' => 'index'],
+                    'state'             => 'InstantreportsIndex',
                     'title'             => 'Instant Report',
                     'icon'              => 'file-image-o',
                 ],
@@ -314,6 +312,7 @@ $config = [
                 ],
                 [
                     'url'               => ['controller' => 'currentstatereports', 'action' => 'index'],
+                    'state'             => 'CurrentstatereportsIndex',
                     'title'             => 'Current State Report',
                     'icon'              => 'file-image-o',
                 ],

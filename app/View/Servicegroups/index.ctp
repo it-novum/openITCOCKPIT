@@ -50,7 +50,7 @@
                         </button>
 
                         <?php if ($this->Acl->hasPermission('add')): ?>
-                            <a href="/servicegroups/add" class="btn btn-xs btn-success">
+                            <a ui-sref="ServicegroupsAdd" class="btn btn-xs btn-success">
                                 <i class="fa fa-plus"></i>
                                 <?php echo __('New'); ?>
                             </a>
@@ -68,7 +68,7 @@
                     <?php if ($this->Acl->hasPermission('extended')): ?>
                         <ul class="nav nav-tabs pull-right" id="widget-tab-1">
                             <li>
-                                <a href="/servicegroups/extended"><i class="fa fa-plus-square"></i>
+                                <a ui-sref="ServicegroupsExtended"><i class="fa fa-plus-square"></i>
                                     <span class="hidden-mobile hidden-tablet"><?php echo __('Extended overview'); ?></span></a>
                             </li>
                         </ul>
@@ -147,7 +147,7 @@
                                         {{ servicegroup.Servicegroup.description }}
                                     </td>
                                     <td class="text-center">
-                                        <a href="/servicegroups/edit/{{servicegroup.Servicegroup.id}}"
+                                        <a ui-sref="ServicegroupsEdit({id:servicegroup.Servicegroup.id})"
                                            ng-if="servicegroup.Servicegroup.allowEdit">
                                             <i class="fa fa-cog fa-lg txt-color-teal"></i>
                                         </a>

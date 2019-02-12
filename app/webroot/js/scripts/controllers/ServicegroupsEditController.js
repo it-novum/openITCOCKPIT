@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('ServicegroupsEditController', function($scope, $http, QueryStringService){
+    .controller('ServicegroupsEditController', function($scope, $http, $state, $stateParams, NotyService){
 
 
         $scope.post = {
@@ -15,7 +15,7 @@ angular.module('openITCOCKPIT')
             }
         };
 
-        $scope.id = QueryStringService.getCakeId();
+        $scope.id = $stateParams.id;
 
         $scope.deleteUrl = "/servicegroups/delete/" + $scope.id + ".json?angular=true";
         $scope.sucessUrl = '/servicegroups/index';
@@ -101,8 +101,10 @@ angular.module('openITCOCKPIT')
                 $scope.post
             ).then(function(result){
                 console.log('Data saved successfully');
-                window.location.href = '/servicegroups/index';
+                NotyService.genericSuccess();
+                $state.go('ServicegroupsIndex');
             }, function errorCallback(result){
+                NotyService.genericError();
                 if(result.data.hasOwnProperty('error')){
                     $scope.errors = result.data.error;
                 }

@@ -37,7 +37,7 @@ class LogentriesController extends AppController {
 
     public $components = ['ListFilter.ListFilter', 'RequestHandler', 'Uuid'];
     public $helpers = ['ListFilter.ListFilter', 'Status', 'Monitoring', 'CustomValidationErrors', 'Uuid'];
-    public $layout = 'angularjs';
+    public $layout = 'blank';
 
 
     public function index() {

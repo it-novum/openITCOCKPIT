@@ -214,7 +214,7 @@ echo $this->Html->script('lib/FlappingWorkaround.js');
                                     <hoststatusicon state="Notification.NotificationHost.state"></hoststatusicon>
                                 </td>
                                 <td>
-                                    <a href="/hosts/browser/{{ Notification.Host.id }}">{{ Notification.Host.hostname
+                                    <a ui-sref="HostsBrowser({id:Notification.Host.id})">{{ Notification.Host.hostname
                                         }}</a>
                                 </td>
                                 <td>
@@ -225,7 +225,7 @@ echo $this->Html->script('lib/FlappingWorkaround.js');
                                         }}</a>
                                 </td>
                                 <td>
-                                    <a href="/commands/edit/{{ Notification.Command.id }}">{{ Notification.Command.name
+                                    <a ui-sref="CommandsEdit({id:Notification.Command.id})">{{ Notification.Command.name
                                         }}</a>
                                 </td>
                                 <td>

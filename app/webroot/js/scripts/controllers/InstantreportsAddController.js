@@ -1,11 +1,11 @@
 angular.module('openITCOCKPIT')
-    .controller('InstantreportsAddController', function($scope, $http){
+    .controller('InstantreportsAddController', function($scope, $state, $http, NotyService){
         $scope.types = {
             TYPE_HOSTGROUPS: '1',
             TYPE_HOSTS: '2',
             TYPE_SERVICEGROUPS: '3',
             TYPE_SERVICES: '4'
-        }
+        };
         $scope.post = {
             Instantreport: {
                 container_id: null,
@@ -130,10 +130,12 @@ angular.module('openITCOCKPIT')
             $http.post("/instantreports/add.json?angular=true",
                 $scope.post
             ).then(function(result){
-                window.location.href = '/instantreports/index';
+                NotyService.genericSuccess();
+                $state.go('InstantreportsIndex');
             }, function errorCallback(result){
                 if(result.data.hasOwnProperty('error')){
                     $scope.errors = result.data.error;
+                    NotyService.genericError();
                 }
             });
         };
@@ -143,7 +145,7 @@ angular.module('openITCOCKPIT')
             $scope.post.Instantreport.Host = [];
             $scope.post.Instantreport.Servicegroup = [];
             $scope.post.Instantreport.Service = [];
-        }
+        };
 
         $scope.$watch('post.Instantreport.container_id', function(){
             if($scope.init){

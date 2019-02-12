@@ -148,7 +148,7 @@ class HostgroupsController extends AppController {
 
     public function edit($id = null) {
         $this->layout = 'blank';
-        if (!$this->isApiRequest()) {
+        if (!$this->isApiRequest() && $id === null) {
             //Only ship HTML template for angular
             return;
         }
@@ -247,7 +247,6 @@ class HostgroupsController extends AppController {
                 if ($changelog_data) {
                     CakeLog::write('log', serialize($changelog_data));
                 }
-                $this->setFlash(__('<a href="/hostgroups/edit/%s">Hostgroup</a> successfully saved', $this->Hostgroup->id));
             } else {
                 if ($this->request->ext == 'json') {
                     $this->serializeErrorMessage();
@@ -331,9 +330,6 @@ class HostgroupsController extends AppController {
                 }
 
                 if ($this->request->ext == 'json') {
-                    if ($this->isAngularJsRequest()) {
-                        $this->setFlash(__('<a href="/hostgroups/edit/%s">Hostgroup</a> successfully saved', $this->Hostgroup->id));
-                    }
                     $this->serializeId();
                     return;
                 }
@@ -342,7 +338,6 @@ class HostgroupsController extends AppController {
                     $this->serializeErrorMessage();
                     return;
                 }
-                $this->setFlash(__('Could not save data'), false);
             }
         }
     }
