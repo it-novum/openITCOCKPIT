@@ -44,7 +44,9 @@ class RecurringDowntimesTask extends AppShell implements CronjobInterface {
         $this->params['quiet'] = $quiet;
         $this->stdout->styles('green', ['text' => 'green']);
 
-        $this->_systemsettings = $this->Systemsetting->findAsArraySection('MONITORING');
+        /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
+        $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
+        $this->_systemsettings = $Systemsettings->findAsArraySection('MONITORING');
 
         $this->out('Create recurring downtimes...', false);
 

@@ -22,6 +22,7 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+use Cake\ORM\TableRegistry;
 use GuzzleHttp\Client;
 
 /**
@@ -1069,7 +1070,9 @@ class GearmanWorkerShell extends AppShell {
             //DistributeModule is loaded and installed...
             $this->Satellite = ClassRegistry::init('DistributeModule.Satellite');
 
-            $monitoringSystemsettings = $this->Systemsetting->findAsArraySection('MONITORING');
+            /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
+            $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
+            $monitoringSystemsettings = $Systemsettings->findAsArraySection('MONITORING');
             if ($monitoringSystemsettings['MONITORING']['MONITORING.SINGLE_INSTANCE_SYNC'] == 1) {
                 $satellites = $this->Satellite->find('all', [
                     'recursive'  => -1,

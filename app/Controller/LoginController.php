@@ -23,6 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\Views\Logo;
 
 App::uses('Validation', 'Utility');
@@ -47,7 +48,9 @@ class LoginController extends AppController {
     }
 
     public function login($redirectBack = 0) {
-        $systemsettings = $this->Systemsetting->findAsArraySection('FRONTEND');
+        /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
+        $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
+        $systemsettings = $Systemsettings->findAsArraySection('FRONTEND');
 
         $disableLoginAnimation = false;
         if (isset($systemsettings['FRONTEND']['FRONTEND.DISABLE_LOGIN_ANIMATION'])) {
@@ -352,7 +355,9 @@ class LoginController extends AppController {
      * @return void
      */
     public function logout() {
-        $systemsettings = $this->Systemsetting->findAsArraySection('FRONTEND');
+        /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
+        $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
+        $systemsettings = $Systemsettings->findAsArraySection('FRONTEND');
         $this->Auth->logout();
         if ($systemsettings['FRONTEND']['FRONTEND.AUTH_METHOD'] === 'sso' && !empty($systemsettings['FRONTEND']['FRONTEND.SSO.LOG_OFF_LINK'])) {
             $this->redirect($systemsettings['FRONTEND']['FRONTEND.SSO.LOG_OFF_LINK']);
@@ -390,7 +395,9 @@ class LoginController extends AppController {
         ];
 
         $this->set('user', $user);
-        $systemsettings = $this->Systemsetting->findAsArraySection('FRONTEND');
+        /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
+        $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
+        $systemsettings = $Systemsettings->findAsArraySection('FRONTEND');
         $this->set('authMethod', $systemsettings['FRONTEND']['FRONTEND.AUTH_METHOD']);
 
         //Multilaguage für das Frontend
