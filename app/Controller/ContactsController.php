@@ -486,7 +486,9 @@ class ContactsController extends AppController {
 
     public function addFromLdap() {
         $this->layout = 'angularjs';
-        $systemsettings = $this->Systemsetting->findAsArraySection('FRONTEND');
+        /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
+        $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
+        $systemsettings = $Systemsettings->findAsArraySection('FRONTEND');
 
         $PHPVersionChecker = new PHPVersionChecker();
         if ($this->request->is('post') || $this->request->is('put')) {
@@ -639,7 +641,9 @@ class ContactsController extends AppController {
         $usersForSelect = [];
         $samaccountname = $this->request->query('samaccountname');
         if (!empty($samaccountname) && strlen($samaccountname) > 2) {
-            $systemsettings = $this->Systemsetting->findAsArraySection('FRONTEND');
+            /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
+            $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
+            $systemsettings = $Systemsettings->findAsArraySection('FRONTEND');
             require_once OLD_APP . 'vendor_freedsx_ldap' . DS . 'autoload.php';
 
             $ldap = new \FreeDSx\Ldap\LdapClient([
