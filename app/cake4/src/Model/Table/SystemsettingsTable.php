@@ -170,7 +170,7 @@ class SystemsettingsTable extends Table {
      */
     public function getQueryHandlerPath() {
         if (!Cache::read('systemsettings_qh_path', 'permissions')) {
-            $path = $this->findByKey('MONITORING.QUERY_HANDLER')['Systemsetting']['value'];
+            $path = $this->findAsArraySection('MONITORING')['MONITORING']['MONITORING.QUERY_HANDLER'];
             Cache::write('systemsettings_qh_path', $path, 'permissions');
         }
         return Cache::read('systemsettings_qh_path', 'permissions');
