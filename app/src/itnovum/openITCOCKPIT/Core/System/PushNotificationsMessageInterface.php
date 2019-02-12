@@ -26,6 +26,7 @@ namespace itnovum\openITCOCKPIT\Core\System;
 
 
 use App;
+use Cake\ORM\TableRegistry;
 use GearmanWorker;
 use itnovum\openITCOCKPIT\Core\PushNotificationClientRepository;
 use Ratchet\ConnectionInterface;
@@ -82,7 +83,9 @@ class PushNotificationsMessageInterface implements MessageComponentInterface {
      */
     public function __construct(Shell $CakeShell) {
         $this->CakeShell = $CakeShell;
-        $this->systemsettings = $this->CakeShell->Systemsetting->findAsArray();
+        /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
+        $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
+        $this->systemsettings = $Systemsettings->findAsArray();
 
         $this->apiKey = $this->systemsettings['SUDO_SERVER']['SUDO_SERVER.API_KEY'];
 

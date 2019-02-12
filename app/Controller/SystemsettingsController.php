@@ -24,6 +24,7 @@
 //	confirmation.
 
 use Cake\ORM\TableRegistry;
+use Cake\Cache\Cache;
 
 class SystemsettingsController extends AppController {
     public $layout = 'angularjs';

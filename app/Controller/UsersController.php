@@ -68,7 +68,9 @@ class UsersController extends AppController {
 
 
     public function index() {
-        $systemsettings = $this->Systemsetting->findAsArraySection('FRONTEND');
+        /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
+        $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
+        $systemsettings = $Systemsettings->findAsArraySection('FRONTEND');
 
         $this->loadModel('Container');
         $options = [
@@ -255,7 +257,9 @@ class UsersController extends AppController {
 
             $PHPVersionChecker = new PHPVersionChecker();
             if ($PHPVersionChecker->isVersionGreaterOrEquals7Dot1()) {
-                $systemsettings = $this->Systemsetting->findAsArraySection('FRONTEND');
+                /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
+                $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
+                $systemsettings = $Systemsettings->findAsArraySection('FRONTEND');
                 require_once OLD_APP . 'vendor_freedsx_ldap' . DS . 'autoload.php';
 
                 $ldap = new \FreeDSx\Ldap\LdapClient([
@@ -464,7 +468,9 @@ class UsersController extends AppController {
 
         $PHPVersionChecker = new PHPVersionChecker();
         if ($PHPVersionChecker->isVersionGreaterOrEquals7Dot1()) {
-            $systemsettings = $this->Systemsetting->findAsArraySection('FRONTEND');
+            /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
+            $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
+            $systemsettings = $Systemsettings->findAsArraySection('FRONTEND');
             require_once OLD_APP . 'vendor_freedsx_ldap' . DS . 'autoload.php';
 
             $ldap = new \FreeDSx\Ldap\LdapClient([
@@ -537,7 +543,9 @@ class UsersController extends AppController {
             }
         } else {
             $usersForSelect = $this->Ldap->findAllUser();
-            $systemsettings = $this->Systemsetting->findAsArraySection('FRONTEND');
+            /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
+            $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
+            $systemsettings = $Systemsettings->findAsArraySection('FRONTEND');
         }
 
         $usersForSelect = Api::makeItJavaScriptAble($usersForSelect);
@@ -553,7 +561,9 @@ class UsersController extends AppController {
         $usersForSelect = [];
         $samaccountname = $this->request->query('samaccountname');
         if (!empty($samaccountname) && strlen($samaccountname) > 2) {
-            $systemsettings = $this->Systemsetting->findAsArraySection('FRONTEND');
+            /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
+            $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
+            $systemsettings = $Systemsettings->findAsArraySection('FRONTEND');
             require_once OLD_APP . 'vendor_freedsx_ldap' . DS . 'autoload.php';
 
             $ldap = new \FreeDSx\Ldap\LdapClient([
@@ -660,7 +670,9 @@ class UsersController extends AppController {
         };
 
         $newPassword = $generatePassword();
-        $this->_systemsettings = $this->Systemsetting->findAsArray();
+        /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
+        $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
+        $this->_systemsettings = $Systemsettings->findAsArray();
 
         App::uses('CakeEmail', 'Network/Email');
         $Email = new CakeEmail();

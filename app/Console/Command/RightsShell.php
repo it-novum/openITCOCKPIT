@@ -23,6 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use Cake\ORM\TableRegistry;
 use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
 use Symfony\Component\Filesystem\Filesystem;
 
@@ -41,7 +42,9 @@ class RightsShell extends AppShell {
 
     private function setRights($dirs = []) {
         try {
-            $systemsettings = $this->Systemsetting->findAsArray();
+            /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
+            $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
+            $systemsettings = $Systemsettings->findAsArray();
             $user = $systemsettings['WEBSERVER']['WEBSERVER.USER'];
             $group = $systemsettings['WEBSERVER']['WEBSERVER.GROUP'];
 

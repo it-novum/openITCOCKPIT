@@ -632,7 +632,9 @@ class HostsController extends AppController {
         $host_for_changelog['Hostgroup'] = $hostgroups_for_changelog;
         $host_for_changelog['Parenthost'] = $parenthosts_for_changelog;
 
-        $masterInstance = $this->Systemsetting->findAsArraySection('FRONTEND')['FRONTEND']['FRONTEND.MASTER_INSTANCE'];
+        /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
+        $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
+        $masterInstance = $Systemsettings->findAsArraySection('FRONTEND')['FRONTEND']['FRONTEND.MASTER_INSTANCE'];
 
         $ContactsInherited = $this->__inheritContactsAndContactgroups($host);
         $this->Frontend->setJson('ContactsInherited', $ContactsInherited);
@@ -1186,7 +1188,9 @@ class HostsController extends AppController {
             $containers = $ContainersTable->easyPath($this->getWriteContainers(), OBJECT_HOST, [], $this->hasRootPrivileges, [CT_HOSTGROUP]);
         }
 
-        $masterInstance = $this->Systemsetting->findAsArraySection('FRONTEND')['FRONTEND']['FRONTEND.MASTER_INSTANCE'];
+        /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
+        $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
+        $masterInstance = $Systemsettings->findAsArraySection('FRONTEND')['FRONTEND']['FRONTEND.MASTER_INSTANCE'];
 
         $this->set('back_url', $this->referer());
 

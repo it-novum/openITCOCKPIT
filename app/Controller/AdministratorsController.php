@@ -43,7 +43,9 @@ class AdministratorsController extends AppController {
         $this->loadModel('Register');
 
 
-        $systemsetting = $this->Systemsetting->findAsArray();
+        /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
+        $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
+        $systemsetting = $Systemsettings->findAsArray();
         $this->set('systemsetting', $systemsetting);
 
 
@@ -304,7 +306,9 @@ class AdministratorsController extends AppController {
         try {
             $this->loadModel('Systemsetting');
             $recipientAddress = $this->Auth->user('email');
-            $_systemsettings = $this->Systemsetting->findAsArray();
+            /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
+            $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
+            $_systemsettings = $Systemsettings->findAsArray();
 
             $Email = new CakeEmail();
             $Email->config('default');

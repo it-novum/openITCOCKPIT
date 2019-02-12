@@ -23,6 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\ConfigGenerator\ConfigInterface;
 use itnovum\openITCOCKPIT\Core\Interfaces\CronjobInterface;
 
@@ -53,7 +54,9 @@ class ConfigGeneratorTask extends AppShell implements CronjobInterface {
 
         $this->out('Check for pending configuration files');
 
-        $systemsettings = $this->Systemsetting->findAsArray();
+        /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
+        $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
+        $systemsettings = $Systemsettings->findAsArray();
 
         $configFilesToGenerate = $this->ConfigurationQueue->getConfigFilesToGenerate();
 

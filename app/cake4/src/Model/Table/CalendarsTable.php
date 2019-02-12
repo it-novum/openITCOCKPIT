@@ -73,7 +73,7 @@ class CalendarsTable extends Table {
         $validator
             ->scalar('container_id')
             ->allowEmptyString('container_id', false)
-            ->greaterThan('container_id', 0)
+            ->greaterThan('container_id', 0);
 
         $validator
             ->scalar('description')

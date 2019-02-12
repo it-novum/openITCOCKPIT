@@ -23,6 +23,8 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use Cake\ORM\TableRegistry;
+
 class Coreconfig extends NagiosModuleAppModel {
     public $useTable = false;
 
@@ -34,7 +36,9 @@ class Coreconfig extends NagiosModuleAppModel {
     function __construct($id = false, $table = null, $ds = null) {
         parent::__construct($id, $table, $ds);
         $this->Systemsetting = ClassRegistry::init('Systemsetting');
-        $this->_systemsettings = $this->Systemsetting->findAsArray();
+        /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
+        $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
+        $this->_systemsettings = $Systemsettings->findAsArray();
         $this->Config = [];
     }
 

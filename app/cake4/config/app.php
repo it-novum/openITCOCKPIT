@@ -94,13 +94,22 @@ return [
             'url'       => null
         ],
 
-        'migration'     => [
+        'migration' => [
             'className' => 'Redis',
             'serialize' => true,
             'prefix'    => 'oitc_',
             'duration'  => '+30 minute',
             'host'      => '127.0.0.1',
             'port'      => 6379
+        ],
+
+        'permissions'   => [
+            'className'   => 'Redis',
+            'serialize'   => true,
+            'prefix'      => 'permissions_',
+            'duration'    => '+600 seconds',
+            'host'        => '127.0.0.1',
+            'port'        => 6379
         ],
 
         /**

@@ -23,6 +23,8 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use Cake\ORM\TableRegistry;
+
 class ExportsController extends AppController {
     public $layout = 'Admin.default';
 
@@ -56,7 +58,9 @@ class ExportsController extends AppController {
 
         $this->loadModel('Systemsetting');
 
-        $monitoringSystemsettings = $this->Systemsetting->findAsArraySection('MONITORING');
+        /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
+        $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
+        $monitoringSystemsettings = $Systemsettings->findAsArraySection('MONITORING');
 
         $this->set('gearmanReachable', $gearmanReachable);
         $this->set('monitoringSystemsettings', $monitoringSystemsettings);

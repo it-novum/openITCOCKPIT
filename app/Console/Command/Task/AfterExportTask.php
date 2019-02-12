@@ -23,6 +23,8 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use Cake\ORM\TableRegistry;
+
 class AfterExportTask extends AppShell {
 
     public $uses = [
@@ -43,8 +45,9 @@ class AfterExportTask extends AppShell {
     }
 
     public function execute() {
-
-        $monitoringSystemsettings = $this->Systemsetting->findAsArraySection('MONITORING');
+        /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
+        $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
+        $monitoringSystemsettings = $Systemsettings->findAsArraySection('MONITORING');
         if ($monitoringSystemsettings['MONITORING']['MONITORING.SINGLE_INSTANCE_SYNC'] == 1) {
             $satellites = $this->Satellite->find('all', [
                 'recursive'  => -1,

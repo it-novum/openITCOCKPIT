@@ -22,6 +22,7 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+use Cake\ORM\TableRegistry;
 
 /**
  * Class ProfileController
@@ -180,7 +181,9 @@ class ProfileController extends AppController {
             }
         }
         $paginatorLength = $this->Paginator->settings['limit'];
-        $systemsettings = $this->Systemsetting->findAsArraySection('FRONTEND');
+        /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
+        $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
+        $systemsettings = $Systemsettings->findAsArraySection('FRONTEND');
         $user = $this->User->findById($this->Auth->user('id'));
         $this->set(compact('user', 'systemsettings', 'dateformats', 'selectedUserTime', 'paginatorLength'));
     }
