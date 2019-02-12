@@ -76,7 +76,9 @@ class ContactsController extends AppController {
     ];
 
     function index() {
-        $systemsettings = $this->Systemsetting->findAsArraySection('FRONTEND');
+        /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
+        $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
+        $systemsettings = $Systemsettings->findAsArraySection('FRONTEND');
         $this->Contact->unbindModel([
                 'hasAndBelongsToMany' => ['HostCommands', 'ServiceCommands', 'Contactgroup'],
                 'belongsTo'           => ['HostTimeperiod', 'ServiceTimeperiod'],

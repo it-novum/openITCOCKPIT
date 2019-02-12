@@ -24,6 +24,7 @@
 //	confirmation.
 
 
+use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\PHPVersionChecker;
 
 App::uses('AuthComponent', 'Controller/Component');
@@ -109,8 +110,9 @@ class AppAuthComponent extends AuthComponent {
 
     public function login($user = null, $method = null, $options = []) {
         $_options = [];
-        $this->Systemsetting = ClassRegistry::init('Systemsetting');
-        $systemsettings = $this->Systemsetting->findAsArraySection('FRONTEND');
+        /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
+        $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
+        $systemsettings = $Systemsettings->findAsArraySection('FRONTEND');
 
         if ($method == null) {
             $method = $systemsettings['FRONTEND']['FRONTEND.AUTH_METHOD'];
