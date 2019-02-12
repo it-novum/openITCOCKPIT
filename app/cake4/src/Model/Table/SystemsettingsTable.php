@@ -122,17 +122,20 @@ class SystemsettingsTable extends Table {
 
     }
 
+    /**
+     * @param string $section
+     * @return array
+     */
     public function findAsArraySection($section = '') {
+        $query = $this->find()->where([
+            'section' => $section
+        ]);
+        $systemsettings = $query->disableHydration()->toArray();
+
         $return = [];
-        $systemsettings = $this->findAllBySection($section);
-
-        $all_systemsettings = [];
-        $all_systemsettings[$section] = Hash::extract($systemsettings, '{n}.Systemsetting[section=' . $section . ']');
-
-        foreach ($all_systemsettings as $key => $values) {
-            $return[$key] = [];
-            foreach ($values as $value) {
-                $return[$key][$value['key']] = $value['value'];
+        if(!is_null($systemsettings)){
+            foreach ($systemsettings as $values) {
+                $return[$section][$values['key']] = $values['value'];
             }
         }
         return $return;
