@@ -109,7 +109,9 @@ class NagiosExportTask extends AppShell {
         Configure::load('nagios');
         Configure::load('rrd');
         $this->conf = Configure::read('nagios.export');
-        $this->_systemsettings = $this->Systemsetting->findAsArray();
+        /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
+        $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
+        $this->_systemsettings = $Systemsettings->findAsArray();
         $this->FRESHNESS_THRESHOLD_ADDITION = (int)$this->_systemsettings['MONITORING']['MONITORING.FRESHNESS_THRESHOLD_ADDITION'];
 
         //Loading external tasks
