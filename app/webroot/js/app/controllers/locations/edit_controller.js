@@ -41,12 +41,16 @@ App.Controllers.LocationsEditController = Frontend.AppController.extend({
          */
         $('#LocationLatitude').keyup(function(){
             var locationLatitudeValue = $(this).val().replace(/,/gi, '.').replace(/[^\d.-]/g, '');
-            $(this).val(locationLatitudeValue);
+            if(locationLatitudeValue){
+                $(this).val(locationLatitudeValue);
+            }
         });
 
         $('#LocationLongitude').keyup(function(){
             var locationLongitudeValue = $(this).val().replace(/,/gi, '.').replace(/[^\d.-]/g, '');
-            $(this).val(locationLongitudeValue);
+            if(locationLongitudeValue){
+                $(this).val(locationLongitudeValue);
+            }
         });
 
         $('#LocationLatitude').change(function(){
@@ -89,18 +93,24 @@ App.Controllers.LocationsEditController = Frontend.AppController.extend({
         this.longitude = $('#LocationLongitude').val();
         this.longitude = parseFloat(this.longitude.replace(",", "."));
 
-        $('#LocationLatitude').val(this.latitude);
-        $('#LocationLongitude').val(this.longitude);
+        if(this.latitude){
+            $('#LocationLatitude').val(this.latitude);
+        }
+        if(this.longitude){
+            $('#LocationLongitude').val(this.longitude);
+        }
 
-        if((this.latitude > -505 && this.latitude < 533) && (this.longitude > -168 && this.longitude < 191)){
-            $('#LatitudeRangeError').hide();
+        if(this.latitude && this.longitude){
+            if((this.latitude > -505 && this.latitude < 533) && (this.longitude > -168 && this.longitude < 191)){
+                $('#LatitudeRangeError').hide();
 
-            this.$map.removeAllMarkers();
-            this.$map.reset();
-            this.$map.addMarker('markerIndex', {latLng: [this.latitude, this.longitude]});
-            this.setFocus(this.latitude, this.longitude);
-        }else{
-            $('#LatitudeRangeError').show();
+                this.$map.removeAllMarkers();
+                this.$map.reset();
+                this.$map.addMarker('markerIndex', {latLng: [this.latitude, this.longitude]});
+                this.setFocus(this.latitude, this.longitude);
+            }else{
+                $('#LatitudeRangeError').show();
+            }
         }
     },
 
