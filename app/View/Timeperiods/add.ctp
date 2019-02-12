@@ -167,8 +167,8 @@ $weekdays = [
                         </div>
                     </div>
                 </div>
-                <div class="col-md-9 col-md-offset-2 padding-top-5 text-right" ng-click="addTimerange()">
-                    <a class="btn btn-success btn-sm">
+                <div class="col-md-9 col-md-offset-2 padding-top-5 text-right">
+                    <a class="btn btn-success btn-sm" ng-click="addTimerange()">
                         <i class="fa fa-plus"></i>
                         <?php echo __('Add'); ?>
                     </a>
