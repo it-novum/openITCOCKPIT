@@ -64,7 +64,7 @@
                 <em class="fa fa-minus-square-o" ng-if="isActiveParent(parentNode)"></em>
             </b>
         </a>
-        <a ng-if="parentNode.isAngular == 1" href="/ng/#!{{ parentNode.url }}">
+        <a ng-if="parentNode.isAngular == 1" href="/ng/#!{{parentNode.url}}">
 
             <i class="fa fa-lg fa-fw fa-{{ parentNode.icon }}"></i>
             <span class="menu-item-parent">{{ parentNode.title }}</span>

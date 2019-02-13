@@ -27,6 +27,7 @@ $config = [
     'menu' => [
         'dashboard' => [
             'url'      => ['controller' => 'dashboards', 'action' => 'index', 'plugin' => ''],
+            'state'    => 'DashboardsIndex',
             'title'    => 'Dashboard',
             'icon'     => 'dashboard',
             'order'    => 1,

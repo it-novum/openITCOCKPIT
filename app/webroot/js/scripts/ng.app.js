@@ -148,6 +148,12 @@ angular.module('openITCOCKPIT', ['gridster', 'ui.router'])
                 controller: "CurrentstatereportsIndexController"
             })
 
+            .state('DashboardsIndex', {
+                url: '/dashboards/index',
+                templateUrl: "/dashboards/index.html",
+                controller: "DashboardsIndexController"
+            })
+
             .state('DeletedHostsIndex', {
                 url: '/deletedHosts',
                 templateUrl: "/deletedHosts/index.html",
