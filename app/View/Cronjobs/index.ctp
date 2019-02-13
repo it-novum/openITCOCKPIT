@@ -76,7 +76,7 @@
                                     <td>{{cronjob.Cronjob.task}}</td>
                                     <td>{{cronjob.Cronjob.plugin}}</td>
                                     <td>{{cronjob.Cronjob.interval}}</td>
-                                    <td>{{'usertime'}}</td>
+                                    <td>{{cronjob.Cronschedule.last_scheduled_usertime}}</td>
                                     <td class="text-center" ng-if="cronjob.Cronschedules.is_running == 0">
                                         <?php echo __('No'); ?>
                                     </td>

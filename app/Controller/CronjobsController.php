@@ -24,6 +24,7 @@
 //	confirmation.
 
 use Cake\ORM\TableRegistry;
+use itnovum\openITCOCKPIT\Core\Views\UserTime;
 
 class CronjobsController extends AppController {
     public $layout = 'angularjs';
@@ -33,6 +34,18 @@ class CronjobsController extends AppController {
         /** @var $Cronjobs App\Model\Table\CronjobsTable */
         $Cronjobs = TableRegistry::getTableLocator()->get('Cronjobs');
         $cronjobs = $Cronjobs->getCronjobs();
+
+        //add start_time as last_scheduled_usertime in usertime format
+        foreach ($cronjobs as $key => $cronjob){
+            if(isset($cronjob['Cronschedule'])){
+                $cronjobs[$key]['Cronschedule']['last_scheduled_usertime'] = null;
+                if(!empty($cronjob['Cronschedule']['start_time'])){
+                    $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
+                    $UserTime = $UserTime->format($cronjob['Cronschedule']['start_time']);
+                    $cronjobs[$key]['Cronschedule']['last_scheduled_usertime'] = $UserTime;
+                }
+            }
+        }
         $this->set(compact('cronjobs'));
         $this->set('_serialize', ['cronjobs']);
     }
