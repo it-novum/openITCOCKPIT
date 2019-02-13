@@ -334,6 +334,12 @@ angular.module('openITCOCKPIT', ['gridster', 'ui.router'])
                 controller: "SystemdowntimesAddContainerdowntimeController"
             })
 
+            .state('SystemsettingsIndex', {
+                url: '/systemsettings/index',
+                templateUrl: "/systemsettings/index.html",
+                controller: "SystemsettingsIndexController"
+            })
+
             .state('HostgroupsIndex', {
                 url: '/hostgroups/index',
                 templateUrl: "/hostgroups/index.html",

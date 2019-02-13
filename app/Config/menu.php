@@ -58,6 +58,7 @@ $config = [
             'children' => [
                 [
                     'url'               => ['controller' => 'systemsettings', 'action' => 'index'],
+                    'state'             => 'SystemsettingsIndex',
                     'title'             => 'System Settings',
                     'icon'              => 'wrench',
                 ],
