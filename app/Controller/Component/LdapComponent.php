@@ -23,6 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use Cake\ORM\TableRegistry;
 use Model\Adldap;
 
 /**
@@ -41,8 +42,9 @@ class LdapComponent extends Component {
         require_once OLD_APP . 'Model' . DS . 'Adldap.php';
 
         //Load Systemsettings
-        $this->Systemsetting = ClassRegistry::init('Systemsetting');
-        $this->_systemsettings = $this->Systemsetting->findAsArraySection('FRONTEND');
+        /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
+        $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
+        $this->_systemsettings = $Systemsettings->findAsArraySection('FRONTEND');
 
         if ($this->_systemsettings['FRONTEND']['FRONTEND.AUTH_METHOD'] == 'ldap') {
             //Only connect, if LDAP auth is enabled

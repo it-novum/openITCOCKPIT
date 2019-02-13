@@ -22,6 +22,7 @@
 //  License agreement and license key will be shipped with the order
 //  confirmation.
 
+use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\Interfaces\CronjobInterface;
 use Symfony\Component\Filesystem\Filesystem;
 
@@ -35,7 +36,9 @@ class InstantReportTask extends AppShell implements CronjobInterface {
     public function execute($quiet = false) {
         App::uses('Folder', 'Utility');
         App::uses('CakeEmail', 'Network/Email');
-        $this->_systemsettings = $this->Systemsetting->findAsArraySection('MONITORING');
+        /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
+        $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
+        $this->_systemsettings = $Systemsettings->findAsArraySection('MONITORING');
         $this->params['quiet'] = $quiet;
         $this->stdout->styles('green', ['text' => 'green']);
         $this->stdout->styles('red', ['text' => 'red']);

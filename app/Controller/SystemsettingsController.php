@@ -24,6 +24,7 @@
 //	confirmation.
 
 use Cake\ORM\TableRegistry;
+use Cake\Cache\Cache;
 
 class SystemsettingsController extends AppController {
     public $layout = 'angularjs';
@@ -60,16 +61,13 @@ class SystemsettingsController extends AppController {
                 return;
             }
             //Update systemname in session
-         /*   $systemsettings = $Systemsettings->findAsArraySection('FRONTEND');
-            debug($systemsettings);
-            die();
+            $systemsettings = $Systemsettings->findAsArraySection('FRONTEND');
             if (isset($systemsettings['FRONTEND']['FRONTEND.SYSTEMNAME'])) {
                 $this->Session->write('FRONTEND.SYSTEMNAME', $systemsettings['FRONTEND']['FRONTEND.SYSTEMNAME']);
             }
             if (isset($systemsettings['FRONTEND']['FRONTEND.EXPORT_RUNNING'])) {
                 $this->Session->write('FRONTEND.EXPORT_RUNNING', $systemsettings['FRONTEND']['FRONTEND.EXPORT_RUNNING']);
             }
-         */
         }
     }
 }

@@ -23,6 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\Views\Logo;
 
 App::uses('Validation', 'Utility');
@@ -47,7 +48,9 @@ class LoginController extends AppController {
     }
 
     public function login($redirectBack = 0) {
-        $systemsettings = $this->Systemsetting->findAsArraySection('FRONTEND');
+        /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
+        $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
+        $systemsettings = $Systemsettings->findAsArraySection('FRONTEND');
 
         $disableLoginAnimation = false;
         if (isset($systemsettings['FRONTEND']['FRONTEND.DISABLE_LOGIN_ANIMATION'])) {
@@ -295,7 +298,10 @@ class LoginController extends AppController {
         }
         //$this->layout = 'lock';
         $_user = $this->User->findById($id);
-        $this->_systemsettings = $this->Systemsetting->findAsArray();
+        
+        /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
+        $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
+        $this->_systemsettings = $Systemsettings->findAsArray();
 
         $generateToken = function () {
             $char = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
@@ -352,7 +358,9 @@ class LoginController extends AppController {
      * @return void
      */
     public function logout() {
-        $systemsettings = $this->Systemsetting->findAsArraySection('FRONTEND');
+        /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
+        $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
+        $systemsettings = $Systemsettings->findAsArraySection('FRONTEND');
         $this->Auth->logout();
         if ($systemsettings['FRONTEND']['FRONTEND.AUTH_METHOD'] === 'sso' && !empty($systemsettings['FRONTEND']['FRONTEND.SSO.LOG_OFF_LINK'])) {
             $this->redirect($systemsettings['FRONTEND']['FRONTEND.SSO.LOG_OFF_LINK']);
@@ -390,7 +398,9 @@ class LoginController extends AppController {
         ];
 
         $this->set('user', $user);
-        $systemsettings = $this->Systemsetting->findAsArraySection('FRONTEND');
+        /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
+        $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
+        $systemsettings = $Systemsettings->findAsArraySection('FRONTEND');
         $this->set('authMethod', $systemsettings['FRONTEND']['FRONTEND.AUTH_METHOD']);
 
         //Multilaguage für das Frontend

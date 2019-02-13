@@ -24,6 +24,7 @@
 //	confirmation.
 
 
+use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\ConfigGenerator\ConfigInterface;
 use itnovum\openITCOCKPIT\ConfigGenerator\GeneratorRegistry;
 
@@ -93,8 +94,10 @@ class ConfigGeneratorShell extends AppShell {
 
     public function generateAndReload() {
         $this->out('Generate all configuration files...    ');
-
-        $systemsettings = $this->Systemsetting->findAsArray();
+        
+        /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
+        $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
+        $systemsettings = $Systemsettings->findAsArray();
 
         $GeneratorRegistry = new GeneratorRegistry();
 

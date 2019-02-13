@@ -23,6 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\DbBackend;
 use itnovum\openITCOCKPIT\Core\NodeJS\ChartRenderClient;
 use itnovum\openITCOCKPIT\Core\PerfdataBackend;
@@ -41,7 +42,9 @@ class NagiosNotificationTask extends AppShell {
     public $uses = ['Rrd', 'Systemsetting', MONITORING_SERVICESTATUS];
 
     public function construct() {
-        $this->_systemsettings = $this->Systemsetting->findAsArray();
+        /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
+        $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
+        $this->_systemsettings = $Systemsettings->findAsArray();
 
         //Loading Cake libs
         App::uses('CakeEmail', 'Network/Email');

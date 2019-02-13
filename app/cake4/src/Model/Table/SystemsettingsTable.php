@@ -2,10 +2,10 @@
 
 namespace App\Model\Table;
 
+use Cake\Cache\Cache;
 use Cake\ORM\Locator\LocatorAwareTrait;
 use Cake\ORM\Query;
 use Cake\ORM\Table;
-use Cake\Utility\Hash;
 use Cake\Validation\Validator;
 use Model;
 
@@ -118,31 +118,61 @@ class SystemsettingsTable extends Table {
         return $sortedSystemSettings;
     }
 
+    /**
+     * @return array
+     */
     public function findAsArray() {
-
-    }
-
-    public function findAsArraySection($section = '') {
+        $systemsettings = $this->getSettings();
         $return = [];
-        $systemsettings = $this->findAllBySection($section);
-
-        $all_systemsettings = [];
-        $all_systemsettings[$section] = Hash::extract($systemsettings, '{n}.Systemsetting[section=' . $section . ']');
-
-        foreach ($all_systemsettings as $key => $values) {
-            $return[$key] = [];
-            foreach ($values as $value) {
-                $return[$key][$value['key']] = $value['value'];
+        if (!is_null($systemsettings)) {
+            foreach ($systemsettings as $key => $value) {
+                $return[$key] = [];
+                foreach ($value as $systemsetting) {
+                    $return[$key][$systemsetting['key']] = $systemsetting['value'];
+                }
             }
         }
         return $return;
     }
 
-    public function getMasterInstanceName() {
+    /**
+     * @param string $section
+     * @return array
+     */
+    public function findAsArraySection($section = '') {
+        $query = $this->find()->where([
+            'section' => $section
+        ]);
+        $systemsettings = $query->disableHydration()->toArray();
 
+        $return = [];
+        if (!is_null($systemsettings)) {
+            foreach ($systemsettings as $values) {
+                $return[$section][$values['key']] = $values['value'];
+            }
+        }
+        return $return;
     }
 
-    public function getQueryHandlerPath() {
+    /**
+     * @return mixed
+     */
+    public function getMasterInstanceName() {
+        if (!Cache::read('systemsettings_master_instance', 'permissions')) {
+            $name = $this->findAsArraySection('FRONTEND')['FRONTEND']['FRONTEND.MASTER_INSTANCE'];
+            Cache::write('systemsettings_master_instance', $name, 'permissions');
+        }
+        return Cache::read('systemsettings_master_instance', 'permissions');
+    }
 
+    /**
+     * @return mixed
+     */
+    public function getQueryHandlerPath() {
+        if (!Cache::read('systemsettings_qh_path', 'permissions')) {
+            $path = $this->findAsArraySection('MONITORING')['MONITORING']['MONITORING.QUERY_HANDLER'];
+            Cache::write('systemsettings_qh_path', $path, 'permissions');
+        }
+        return Cache::read('systemsettings_qh_path', 'permissions');
     }
 }

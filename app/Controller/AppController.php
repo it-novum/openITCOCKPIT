@@ -328,8 +328,11 @@ class AppController extends Controller {
      */
 
     protected function _beforeAction() {
+        /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
+        $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
+        $systemsettingsArray = $Systemsettings->findAsArray();
         if (!Cache::read('systemsettings', 'permissions')) {
-            Cache::write('systemsettings', $this->Systemsetting->findAsArray(), 'permissions');
+            Cache::write('systemsettings', $systemsettingsArray, 'permissions');
         }
         $systemsettings = Cache::read('systemsettings', 'permissions');
 
@@ -382,8 +385,11 @@ class AppController extends Controller {
         if ($this->Auth->loggedIn()) {
             $this->Frontend->setJson('websocket_url', 'wss://' . env('HTTP_HOST') . '/sudo_server');
 
+            /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
+            $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
+            $systemsettingsArray = $Systemsettings->findAsArray();
             if (!Cache::read('systemsettings', 'permissions')) {
-                Cache::write('systemsettings', $this->Systemsetting->findAsArray(), 'permissions');
+                Cache::write('systemsettings', $systemsettingsArray, 'permissions');
             }
             $systemsettings = Cache::read('systemsettings', 'permissions');
 

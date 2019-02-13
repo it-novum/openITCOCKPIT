@@ -322,7 +322,10 @@ class AngularController extends AppController {
         }
 
         if (!Cache::read('systemsettings', 'permissions')) {
-            Cache::write('systemsettings', $this->Systemsetting->findAsArray(), 'permissions');
+            /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
+            $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
+            $systemsettingsArray = $Systemsettings->findAsArray();
+            Cache::write('systemsettings', $systemsettingsArray, 'permissions');
         }
         session_write_close();
 
@@ -343,7 +346,10 @@ class AngularController extends AppController {
         }
 
         if (!Cache::read('systemsettings', 'permissions')) {
-            Cache::write('systemsettings', $this->Systemsetting->findAsArray(), 'permissions');
+            /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
+            $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
+            $systemsettingsArray = $Systemsettings->findAsArray();
+            Cache::write('systemsettings', $systemsettingsArray, 'permissions');
         }
         session_write_close();
 

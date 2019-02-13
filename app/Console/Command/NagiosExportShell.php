@@ -22,6 +22,7 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+use Cake\ORM\TableRegistry;
 
 /**
  * Class NagiosExportShell
@@ -54,7 +55,10 @@ class NagiosExportShell extends AppShell {
     public function main() {
         Configure::load('nagios');
         $this->conf = Configure::read('nagios.export');
-        $this->_systemsettings = $this->Systemsetting->findAsArray();
+
+        /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
+        $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
+        $this->_systemsettings = $Systemsettings->findAsArray();
 
         if (!is_dir($this->conf['path'] . $this->conf['config'])) {
             mkdir($this->conf['path'] . $this->conf['config']);

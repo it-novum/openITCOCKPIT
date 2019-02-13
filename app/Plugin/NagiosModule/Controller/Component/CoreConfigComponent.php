@@ -1,5 +1,7 @@
 <?php
 
+use Cake\ORM\TableRegistry;
+
 Class CoreConfigComponent extends Component {
 
     /*
@@ -8,8 +10,9 @@ Class CoreConfigComponent extends Component {
      */
 
     public function initialize(Controller $controller) {
-        $this->Systemsetting = ClassRegistry::init('Systemsetting');
-        $this->_systemsettings = $this->Systemsetting->findAsArray();
+        /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
+        $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
+        $this->_systemsettings = $Systemsettings->findAsArray();
         $this->Config = [];
     }
 

@@ -605,7 +605,9 @@ class ServicetemplatesController extends AppController {
 
 
     public function add($servicetemplatetype_id = null) {
-        $systemsettings = $this->Systemsetting->findAsArraySection('MONITORING');
+        /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
+        $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
+        $systemsettings = $Systemsettings->findAsArraySection('MONITORING');
         $active_checks_enabled = false;
         //If servicetemplate != checkMK servicetemplate
         if ($servicetemplatetype_id == GENERIC_SERVICE || $servicetemplatetype_id === null) {
