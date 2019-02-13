@@ -94,8 +94,6 @@ class SystemsettingsTable extends Table {
             foreach ($sSection as $sSettingOptionKey) {
                 // looping through our Settings
                 foreach ($all_systemsettings as $nsSectionName => $nsSection) {
-                    //  debug($nsSectionName);
-                    // debug($nsSection);
                     if ($sSectionName === $nsSectionName) {
                         foreach ($nsSection as $nsSectionK => $nsSettingOption) {
                             if ($sSettingOptionKey === $nsSettingOption['key']) {
