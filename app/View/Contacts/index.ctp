@@ -28,9 +28,9 @@
     <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
         <h1 class="page-title txt-color-blueDark">
             <i class="fa fa-user fa-fw "></i>
-            <?php echo __('Monitoring'); ?>
+            <?php echo __('Contacts'); ?>
             <span>>
-                <?php echo __('Contacts'); ?>
+                <?php echo __('Overview'); ?>
             </span>
         </h1>
     </div>
@@ -46,7 +46,7 @@
                         if ($this->Acl->hasPermission('add')):
                             echo $this->Html->link(__('New'), '/' . $this->params['controller'] . '/add', ['class' => 'btn btn-xs btn-success', 'icon' => 'fa fa-plus']);
                             echo " "; //Fix HTML
-                            if ($systemsettings['FRONTEND']['FRONTEND.AUTH_METHOD'] == 'ldap'):
+                            if ($isLdapAuth):
                                 echo $this->Html->link(__('Import from LDAP'), '/' . $this->params['controller'] . '/addFromLdap', ['class' => 'btn btn-xs btn-warning', 'icon' => 'fa fa-plus']);
                                 echo " "; //Fix HTML
                             endif;
@@ -191,5 +191,7 @@
                     </div>
                 </div>
             </div>
+        </article>
     </div>
 </section>
+

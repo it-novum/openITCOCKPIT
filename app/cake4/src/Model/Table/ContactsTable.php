@@ -2,9 +2,13 @@
 
 namespace App\Model\Table;
 
+use App\Lib\Traits\Cake2ResultTableTrait;
+use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
+use itnovum\openITCOCKPIT\Database\PaginateOMat;
+use itnovum\openITCOCKPIT\Filter\ContactsFilter;
 
 /**
  * Contacts Model
@@ -25,6 +29,9 @@ use Cake\Validation\Validator;
  */
 class ContactsTable extends Table {
 
+    use Cake2ResultTableTrait;
+    use PaginationAndScrollIndexTrait;
+
     /**
      * Initialize method
      *
@@ -39,8 +46,10 @@ class ContactsTable extends Table {
         $this->setPrimaryKey('id');
 
         $this->belongsToMany('Containers', [
-            'foreignKey' => 'contact_id',
-            'joinTable'  => 'contacts_to_hostcommands'
+            'className'        => 'Containers',
+            'foreignKey'       => 'contact_id',
+            'targetForeignKey' => 'container_id',
+            'joinTable'        => 'contacts_to_containers'
         ]);
         $this->belongsToMany('HostCommands', [
             'className'        => 'Commands',
@@ -212,4 +221,43 @@ class ContactsTable extends Table {
 
         return $rules;
     }
+
+    /**
+     * @param ContactsFilter $ContactsFilter
+     * @param null|PaginateOMat $PaginateOMat
+     * @param array $MY_RIGHTS
+     * @return array
+     */
+    public function getContactsIndex(ContactsFilter $ContactsFilter, $PaginateOMat = null, $MY_RIGHTS = []) {
+        $query = $this->find('all');
+        $query->contain(['Containers']);
+        $query->where($ContactsFilter->indexFilter());
+
+        $query->innerJoinWith('Containers', function ($q) use ($MY_RIGHTS) {
+            if (!empty($MY_RIGHTS)) {
+                return $q->where(['Containers.id IN' => $MY_RIGHTS]);
+            }
+            return $q;
+        });
+
+
+        $query->disableHydration();
+        $query->order($ContactsFilter->getOrderForPaginator('Contacts.name', 'asc'));
+
+
+        $result = [];
+        if ($PaginateOMat === null) {
+            //Just execute query
+            $result = $this->formatResultAsCake2($query->toArray(), false);
+        } else {
+            if ($PaginateOMat->useScroll()) {
+                $result = $this->scroll($query, $PaginateOMat->getHandler(), false);
+            } else {
+                $result = $this->paginate($query, $PaginateOMat->getHandler(), false);
+            }
+        }
+
+        return $result;
+    }
+
 }

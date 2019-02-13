@@ -175,4 +175,13 @@ class SystemsettingsTable extends Table {
         }
         return Cache::read('systemsettings_qh_path', 'permissions');
     }
+
+    public function isLdapAuth(){
+        if (!Cache::read('systemsettings_is_ldap_auth', 'permissions')) {
+            $settings = $this->findAsArraySection('FRONTEND');
+            $value = $settings['FRONTEND']['FRONTEND.AUTH_METHOD'] === 'ldap';
+            Cache::write('systemsettings_is_ldap_auth', $value, 'permissions');
+        }
+        return Cache::read('systemsettings_is_ldap_auth', 'permissions');
+    }
 }
