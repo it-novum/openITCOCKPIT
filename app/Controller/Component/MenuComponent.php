@@ -141,6 +141,9 @@ class MenuComponent extends Component {
                 if ($realUrl) {
                     $parentNode['url_array'] = $parentNode['url'];
                     $parentNode['url'] = Router::url($parentNode['url']);
+                    if($parentNode['url_array']['action'] === 'index'){
+                        $parentNode['url'] = $parentNode['url'].'/index';
+                    }
                 }
                 $_menu[$parentKey] = $parentNode;
                 continue;

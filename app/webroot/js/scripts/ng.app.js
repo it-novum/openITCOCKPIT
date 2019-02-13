@@ -148,6 +148,12 @@ angular.module('openITCOCKPIT', ['gridster', 'ui.router'])
                 controller: "CurrentstatereportsIndexController"
             })
 
+            .state('DashboardsIndex', {
+                url: '/dashboards/index',
+                templateUrl: "/dashboards/index.html",
+                controller: "DashboardsIndexController"
+            })
+
             .state('DeletedHostsIndex', {
                 url: '/deletedHosts',
                 templateUrl: "/deletedHosts/index.html",
@@ -416,6 +422,24 @@ angular.module('openITCOCKPIT', ['gridster', 'ui.router'])
                 url: '/commands/copy/:ids',
                 templateUrl: "/commands/copy.html",
                 controller: "CommandsCopyController"
+            })
+
+            .state('TenantsIndex', {
+                url: '/tenants/index',
+                templateUrl: "/tenants/index.html",
+                controller: "TenantsIndexController"
+            })
+
+            .state('TenantsAdd', {
+                url: '/tenants/add',
+                templateUrl: "/tenants/add.html",
+                controller: "TenantsAddController"
+            })
+
+            .state('TenantsEdit', {
+                url: '/tenants/edit/:id',
+                templateUrl: "/tenants/edit.html",
+                controller: "TenantsEditController"
             })
 
             .state('TimeperiodsIndex', {

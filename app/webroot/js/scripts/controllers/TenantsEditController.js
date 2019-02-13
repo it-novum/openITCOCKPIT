@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('TenantsEditController', function($scope, $http, QueryStringService){
+    .controller('TenantsEditController', function($scope, $http, $state, $stateParams, NotyService){
         $scope.post = {
             Tenant: {
                 //id: '',
@@ -20,7 +20,7 @@ angular.module('openITCOCKPIT')
         };
 
 
-        $scope.id = QueryStringService.getCakeId();
+        $scope.id = $stateParams.id;
 
         $scope.deleteUrl = "/tenants/delete/" + $scope.id + ".json?angular=true";
         $scope.sucessUrl = '/tenants/index';
@@ -57,8 +57,10 @@ angular.module('openITCOCKPIT')
                 $scope.post
             ).then(function(result){
                 console.log('Data saved successfully');
-                window.location.href = '/tenants/index';
+                NotyService.genericSuccess();
+                $state.go('TenantsIndex');
             }, function errorCallback(result){
+                NotyService.genericError();
                 if(result.data.hasOwnProperty('error')){
                     $scope.errors = result.data.error;
                 }
