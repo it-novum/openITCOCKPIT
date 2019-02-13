@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('TenantsAddController', function($scope, $http){
+    .controller('TenantsAddController', function($scope, $http, $state, NotyService){
         $scope.post = {
             Tenant: {
                 id: '',
@@ -23,9 +23,10 @@ angular.module('openITCOCKPIT')
             $http.post("/tenants/add.json?angular=true",
                 $scope.post
             ).then(function(result){
-
-                window.location.href = '/tenants/index';
+                NotyService.genericSuccess();
+                $state.go('TenantsIndex');
             }, function errorCallback(result){
+                NotyService.genericError();
                 if(result.data.hasOwnProperty('error')){
                     $scope.errors = result.data.error;
                 }

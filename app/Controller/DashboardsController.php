@@ -73,7 +73,7 @@ class DashboardsController extends AppController {
         //$Proxy = $TableLocator->get('Proxies');
         //debug($Proxy->find()->first());die();
 
-        $this->layout = 'angularjs';
+        $this->layout = 'blank';
         if (!$this->isAngularJsRequest()) {
             $askForHelp = false;
             if (!$this->Cookie->check('askAgainForHelp')) {
