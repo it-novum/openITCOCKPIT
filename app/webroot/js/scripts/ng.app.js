@@ -495,6 +495,37 @@ angular.module('openITCOCKPIT', ['gridster', 'ui.router'])
                 templateUrl: "/acknowledgements/service.html",
                 controller: "AcknowledgementsServiceController"
             })
+
+
+            .state('ContactsIndex', {
+                url: '/contacts/index',
+                templateUrl: "/contacts/index.html",
+                controller: "ContactsIndexController"
+            })
+
+            .state('ContactsAdd', {
+                url: '/contacts/add',
+                templateUrl: "/contacts/add.html",
+                controller: "ContactsAddController"
+            })
+
+            .state('ContactsEdit', {
+                url: '/contacts/edit/:id',
+                templateUrl: "/contacts/edit.html",
+                controller: "ContactsEditController"
+            })
+
+            .state('ContactsCopy', {
+                url: '/contacts/copy/:ids',
+                templateUrl: "/contacts/copy.html",
+                controller: "ContactsCopyController"
+            })
+
+            .state('ContactsLdap', {
+                url: '/contacts/ldap',
+                templateUrl: "/contacts/ldap.html",
+                controller: "ContactsLdapController"
+            })
     })
 
     /*
