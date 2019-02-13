@@ -77,6 +77,9 @@ $config = [
             'Automaps'         => [
                 'icon'
             ],
+            'Calendars'       => [
+                'loadCalendarsByContainerId'
+            ],
             'Containers'       => [
                 'byTenantForSelect', 'byTenant', 'loadContainersForAngular'
             ],

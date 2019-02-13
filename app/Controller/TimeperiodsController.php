@@ -229,91 +229,37 @@ class TimeperiodsController extends AppController {
             //Only ship HTML template for angular
             return;
         }
-        return;
-        $userId = $this->Auth->user('id');
-        /** @var $ContainersTable ContainersTable */
-        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
 
-        if ($this->hasRootPrivileges === true) {
-            $containers = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_TIMEPERIOD, [], $this->hasRootPrivileges);
-        } else {
-            $containers = $ContainersTable->easyPath($this->getWriteContainers(), OBJECT_TIMEPERIOD, [], $this->hasRootPrivileges);
-        }
-        $timeranges = (isset($this->request->data['Timerange'])) ? $this->request->data['Timerange'] : [];
-        $date = new DateTime();
-        $weekdays = [];
-        for ($i = 1; $i <= 7; $i++) {
-            $weekdays[$date->format('N')] = $date->format('l');
-            $date->modify('+1 day');
-        }
-        ksort($weekdays);
-        $day = [];
-        $start = [];
-        $end = [];
-        foreach ($timeranges as $key => $row) {
-            $day[$key] = $row['day'];
-            $start[$key] = $row['start'];
-            $end[$key] = $row['end'];
-        }
-        array_multisort($day, SORT_ASC, $start, SORT_ASC, $end, SORT_ASC, $timeranges);
-        $this->set(compact([
-            'containers',
-            'weekdays',
-            'timeranges',
-        ]));
+        /** @var $TimeperiodsTable TimeperiodsTable */
+        $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
+        if ($this->request->is('post') && $this->isAngularJsRequest()) {
+            $timeperiod = $TimeperiodsTable->newEntity();
+            $timeperiod = $TimeperiodsTable->patchEntity($timeperiod, $this->request->data('Timeperiod'));
+            $timeperiod->set('uuid', UUID::v4());
 
-        $this->set('timeranges', $timeranges);
-        if ($this->request->is('post') || $this->request->is('put')) {
-            $this->Timeperiod->set($this->request->data);
-            $this->request->data['Timeperiod']['uuid'] = UUID::v4();
-            if ($this->Timeperiod->saveAll($this->request->data)) {
-                $changelog_data = $this->Changelog->parseDataForChangelog(
-                    $this->params['action'],
-                    $this->params['controller'],
-                    $this->Timeperiod->id,
-                    OBJECT_TIMEPERIOD,
-                    [$this->request->data('Timeperiod.container_id')],
-                    $userId,
-                    $this->request->data['Timeperiod']['name'],
-                    $this->request->data
-                );
-                if ($changelog_data) {
-                    CakeLog::write('log', serialize($changelog_data));
-                }
-
-
-                if ($this->request->ext == 'json') {
-                    $this->serializeId();
-                } else {
-                    $this->setFlash(__('<a href="/timeperiods/edit/%s">Timeperiod</a> successfully saved', $this->Timeperiod->id));
-                    $this->redirect(['action' => 'index']);
-                }
-            } else {
-                if ($this->request->ext == 'json') {
-                    $this->serializeErrorMessage();
-                } else {
-                    $this->set('timerange_errors', $this->Timeperiod->validationErrors);
-                    $this->setFlash(__('Timeperiod could not be saved'), false);
-                }
+            $TimeperiodsTable->save($timeperiod);
+            if ($timeperiod->hasErrors()) {
+                $this->response->statusCode(400);
+                $this->serializeCake4ErrorMessage($timeperiod);
+                return;
             }
+            $userId = $this->Auth->user('id');
+            $requestData = $this->request->data;
+            $changelog_data = $this->Changelog->parseDataForChangelog(
+                'add',
+                $this->params['controller'],
+                $timeperiod->get('id'),
+                OBJECT_TIMEPERIOD,
+                [ROOT_CONTAINER],
+                $userId,
+                $requestData['Timeperiod']['name'],
+                $requestData
+            );
+            if ($changelog_data) {
+                CakeLog::write('log', serialize($changelog_data));
+            }
+            $this->serializeCake4Id($timeperiod);
         }
-
-        $containerIds = $ContainersTable->resolveChildrenOfContainerIds($this->MY_RIGHTS);
-        $query = [
-            'recursive'  => -1,
-            'contain'    => [
-                'Container',
-            ],
-            'conditions' => [
-                'Calendar.container_id' => $containerIds,
-            ],
-            'order'      => [
-                'Calendar.name' => 'ASC',
-            ],
-        ];
-
-        $calendars = $this->Calendar->find('list', $query);
-        $this->set('calendars', $calendars);
     }
 
     /**

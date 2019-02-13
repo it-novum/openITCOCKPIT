@@ -69,6 +69,7 @@ class TimeperiodTimerangesTable extends Table {
             ->requirePresence('end', 'create')
             ->allowEmptyString('end', false);
 
+
         return $validator;
     }
 
