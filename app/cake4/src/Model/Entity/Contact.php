@@ -76,6 +76,7 @@ class Contact extends Entity {
         'host_timeperiod'                    => true,
         'service_timeperiod'                 => true,
         'host_commands'                      => true,
-        'service_commands'                   => true
+        'service_commands'                   => true,
+        'containers'                         => true
     ];
 }

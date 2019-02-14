@@ -26,6 +26,7 @@ namespace App\Lib\Traits;
 
 
 use Cake\I18n\FrozenTime;
+use Cake\ORM\Association\BelongsToMany;
 use Cake\ORM\Association\HasMany;
 use Cake\Utility\Inflector;
 
@@ -119,7 +120,7 @@ trait Cake2ResultTableTrait {
                 //associated model
                 $assoc = $AssociationCollection->get($key);
                 $assocRecords = [];
-                if ($assoc instanceof HasMany) {
+                if ($assoc instanceof HasMany || $assoc instanceof BelongsToMany) {
                     foreach ($value as $assocRow) {
                         $assocRecord = [];
                         foreach ($assocRow as $assocKey => $assocValue) {
