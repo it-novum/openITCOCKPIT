@@ -36,12 +36,16 @@ App::uses('Folder', 'Utility');
 $appScripts = [];
 if (ENVIRONMENT === Environments::PRODUCTION) {
     $compressedAngularControllers = WWW_ROOT . 'js' . DS . 'compressed_angular_controllers.js';
-    $compressedAngularDrectives = WWW_ROOT . 'js' . DS . 'compressed_angular_directives.js';
+    $compressedAngularDirectives = WWW_ROOT . 'js' . DS . 'compressed_angular_directives.js';
     $compressedAngularServices = WWW_ROOT . 'js' . DS . 'compressed_angular_services.js';
-    if (file_exists($compressedAngularControllers) && file_exists($compressedAngularDrectives) && file_exists($compressedAngularServices)) {
+    $compressedAngularStates = WWW_ROOT . 'js' . DS . 'compressed_angular_states.js';
+    if (file_exists($compressedAngularControllers) && file_exists($compressedAngularDirectives) && file_exists($compressedAngularServices)) {
         $appScripts[] = str_replace(WWW_ROOT, '', $compressedAngularServices);
-        $appScripts[] = str_replace(WWW_ROOT, '', $compressedAngularDrectives);
+        $appScripts[] = str_replace(WWW_ROOT, '', $compressedAngularDirectives);
         $appScripts[] = str_replace(WWW_ROOT, '', $compressedAngularControllers);
+        if (file_exists($compressedAngularStates)) {
+            $appScripts[] = str_replace(WWW_ROOT, '', $compressedAngularStates);
+        }
     }
 } else {
     $core = new Folder(WWW_ROOT . 'js' . DS . 'scripts');
