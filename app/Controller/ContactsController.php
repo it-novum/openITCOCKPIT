@@ -740,10 +740,11 @@ class ContactsController extends AppController {
         }
 
 
-        if ($ContactsTable->allowDelete($id)) {
+        if (!$ContactsTable->allowDelete($id)) {
             $usedBy = [
                 [
                     'baseUrl' => '#',
+                    'state'   => 'ContactsUsedBy',
                     'message' => __('Used by other objects'),
                     'module'  => 'Core'
                 ]

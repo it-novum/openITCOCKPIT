@@ -243,14 +243,15 @@ class ContactsTable extends Table {
             '__ContactsToServiceescalations',
         ];
 
-        foreach ($tableNames as $tableName)
+        foreach ($tableNames as $tableName) {
             $LinkingTable = TableRegistry::getTableLocator()->get($tableName);
-        $count = $LinkingTable->find()
-            ->where(['contact_id' => $id])
-            ->count();
+            $count = $LinkingTable->find()
+                ->where(['contact_id' => $id])
+                ->count();
 
-        if ($count > 0) {
-            return false;
+            if ($count > 0) {
+                return false;
+            }
         }
 
         return true;

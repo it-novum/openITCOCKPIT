@@ -17,7 +17,13 @@
                                 {{ object }}
                                 <div class="text-danger" ng-repeat="issue in issueObjects[id]">
                                     <i class="fa fa-times"></i>
-                                    <a class="text-danger" href="{{issue.url}}">{{issue.message}}</a>
+                                    <a class="text-danger"
+                                       ng-if="!issue.isAngular"
+                                       href="{{issue.url}}">{{issue.message}}</a>
+
+                                    <a class="text-danger"
+                                       ng-if="issue.isAngular"
+                                       ng-click="goToStateMassDelete(issue)">{{issue.message}}</a>
                                 </div>
                             </li>
                         </ul>
