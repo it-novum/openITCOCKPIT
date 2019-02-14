@@ -85,13 +85,18 @@ class ContactsController extends AppController {
     ];
 
     public function index() {
-        if (!$this->isAngularJsRequest()) {
-            //Only ship HTML Template
-            return;
-        }
+        $this->layout = 'blank';
 
         /** @var $SystemsettingsTable SystemsettingsTable */
         $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
+
+        if (!$this->isAngularJsRequest()) {
+            //Only ship HTML Template
+            $this->set('isLdapAuth', $SystemsettingsTable->isLdapAuth());
+            return;
+        }
+
+
         /** @var $ContactsTable ContactsTable */
         $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
 
@@ -112,16 +117,15 @@ class ContactsController extends AppController {
                 $contactsWithContainers[$contact['Contact']['id']][] = $container['id'];
             }
 
-            $contacts[$key]['allowEdit'] = true;
+            $contacts[$key]['Contact']['allow_edit'] = true;
             if ($this->hasRootPrivileges === false) {
-                $contacts[$key]['allowEdit'] = false;
+                $contacts[$key]['Contact']['allow_edit'] = false;
                 if (!empty(array_intersect($contactsWithContainers[$contact['Contact']['id']], $this->getWriteContainers()))) {
-                    $contacts[$key]['allowEdit'] = true;
+                    $contacts[$key]['Contact']['allow_edit'] = true;
                 }
             }
         }
 
-        $this->set('isLdapAuth', $SystemsettingsTable->isLdapAuth());
         $this->set('all_contacts', $contacts);
         $toJson = ['all_contacts', 'paging'];
         if ($this->isScrollRequest()) {

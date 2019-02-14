@@ -184,6 +184,7 @@ $config = [
                 ],
                 [
                     'url'               => ['controller' => 'contacts', 'action' => 'index'],
+                    'state'             => 'ContactsIndex',
                     'title'             => 'Contacts',
                     'icon'              => 'user',
                 ],

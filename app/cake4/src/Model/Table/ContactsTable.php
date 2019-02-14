@@ -240,6 +240,7 @@ class ContactsTable extends Table {
             return $q;
         });
 
+        $query->distinct('Contacts.id');
 
         $query->disableHydration();
         $query->order($ContactsFilter->getOrderForPaginator('Contacts.name', 'asc'));
