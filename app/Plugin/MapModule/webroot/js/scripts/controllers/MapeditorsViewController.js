@@ -1,12 +1,13 @@
 angular.module('openITCOCKPIT')
-    .controller('MapeditorsViewController', function($scope, $http, QueryStringService, $timeout, $interval){
+    .controller('MapeditorsViewController', function($scope, $http, QueryStringService, $timeout, $interval, $stateParams){
 
         $scope.init = true;
-        $scope.id = QueryStringService.getCakeId();
+        $scope.id = $stateParams.id;
+        $scope.rotate = null;
 
-        $scope.fullscreen = QueryStringService.getValue('fullscreen', false) === 'true';
-        $scope.rotate = QueryStringService.getValue('rotation', null);
-        $scope.rotationInterval = parseInt(QueryStringService.getValue('interval', 0), 10) * 1000;
+        $scope.fullscreen = ($stateParams.fullscreen === 'true');
+        if($stateParams.rotation != null) $scope.rotate = $stateParams.rotation;
+        $scope.rotationInterval = parseInt($stateParams.interval, 10) * 1000;
         $scope.rotationPossition = 1;
 
 

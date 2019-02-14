@@ -41,6 +41,7 @@ class MapsController extends MapModuleAppController {
     ];
 
     public function index() {
+        $this->layout = 'blank';
         if (!$this->isApiRequest()) {
             //Only ship template for AngularJs
             return;
@@ -110,6 +111,7 @@ class MapsController extends MapModuleAppController {
 
 
     public function add() {
+        $this->layout = 'blank';
         if (!$this->isApiRequest()) {
             //Only ship template for AngularJs
             return;
@@ -130,9 +132,6 @@ class MapsController extends MapModuleAppController {
 
             if ($this->Map->saveAll($this->request->data)) {
                 if ($this->request->ext === 'json') {
-                    if ($this->isAngularJsRequest()) {
-                        $this->setFlash(__('<a href="/map_module/maps/edit/%s">Map</a> successfully saved', $this->Map->id));
-                    }
                     $this->serializeId();
                     return;
                 }
@@ -141,7 +140,6 @@ class MapsController extends MapModuleAppController {
                     $this->serializeErrorMessage();
                     return;
                 }
-                $this->setFlash(__('could not save data'), false);
             }
         }
     }
@@ -166,7 +164,8 @@ class MapsController extends MapModuleAppController {
     }
 
     public function edit($id = null) {
-        if (!$this->isApiRequest()) {
+        $this->layout = 'blank';
+        if (!$this->isApiRequest() && $id === null) {
             //Only ship HTML template for angular
             return;
         }
@@ -212,9 +211,6 @@ class MapsController extends MapModuleAppController {
             }
 
             if ($this->Map->saveAll($this->request->data)) {
-                if ($this->isAngularJsRequest()) {
-                    $this->setFlash(__('<a href="/map_module/maps/edit/%s">Map</a> successfully saved', $this->Map->id));
-                }
                 $this->serializeId();
                 return;
             } else {
@@ -222,7 +218,6 @@ class MapsController extends MapModuleAppController {
                     $this->serializeErrorMessage();
                     return;
                 }
-                $this->setFlash(__('could not save data'), false);
             }
         }
     }
@@ -256,6 +251,7 @@ class MapsController extends MapModuleAppController {
 
 
     public function copy($id = null) {
+        $this->layout = 'blank';
         if (!$this->isApiRequest()) {
             //Only ship HTML template for angular
             return;

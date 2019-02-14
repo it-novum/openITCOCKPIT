@@ -56,6 +56,7 @@ class RotationsController extends MapModuleAppController {
 
 
     public function index() {
+        $this->layout = 'blank';
         if (!$this->isApiRequest()) {
             //Only ship template for AngularJs
             return;
@@ -135,6 +136,7 @@ class RotationsController extends MapModuleAppController {
     }
 
     public function add() {
+        $this->layout = 'blank';
         if (!$this->isApiRequest()) {
             //Only ship template for AngularJs
             return;
@@ -147,9 +149,6 @@ class RotationsController extends MapModuleAppController {
 
             if ($this->Rotation->save($this->request->data)) {
                 if ($this->request->ext === 'json') {
-                    if ($this->isAngularJsRequest()) {
-                        $this->setFlash(__('<a href="/map_module/rotations/edit/%s">Rotation</a> successfully saved', $this->Rotation->id));
-                    }
                     $this->serializeId();
                     return;
                 }
@@ -158,7 +157,6 @@ class RotationsController extends MapModuleAppController {
                     $this->serializeErrorMessage();
                     return;
                 }
-                $this->setFlash(__('could not save data'), false);
             }
         }
     }
@@ -228,6 +226,7 @@ class RotationsController extends MapModuleAppController {
     }
 
     public function edit($id = null) {
+        $this->layout = 'blank';
         if (!$this->isApiRequest()) {
             //Only ship HTML template for angular
             return;
@@ -261,14 +260,12 @@ class RotationsController extends MapModuleAppController {
                     $this->serializeId();
                     return;
                 }
-                $this->setFlash(__('<a href="/map_module/rotations/edit/%s">Rotation</a> successfully saved', $this->Rotation->id));
 
             } else {
                 if ($this->request->ext === 'json') {
                     $this->serializeErrorMessage();
                     return;
                 }
-                $this->setFlash(__('could not save data'), false);
             }
         }
     }

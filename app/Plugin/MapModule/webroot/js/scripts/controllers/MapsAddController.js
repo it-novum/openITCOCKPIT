@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('MapsAddController', function($scope, $http){
+    .controller('MapsAddController', function($scope, $http, $state, NotyService){
 
         $scope.post = {
             Map: {
@@ -26,9 +26,10 @@ angular.module('openITCOCKPIT')
             $http.post("/map_module/maps/add.json?angular=true",
                 $scope.post
             ).then(function(result){
-                console.log('Data saved successfully');
-                window.location.href = '/map_module/maps/index';
+                NotyService.genericSuccess();
+                $state.go('MapsIndex');
             }, function errorCallback(result){
+                NotyService.genericError();
                 if(result.data.hasOwnProperty('error')){
                     $scope.errors = result.data.error;
                 }

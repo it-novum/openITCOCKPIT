@@ -75,9 +75,8 @@ class MapeditorsController extends MapModuleAppController {
      * @param int $id
      */
     ///map_module/mapeditors/view/20
-    public function view($id) {
-        if (!$this->isApiRequest()) {
-            $this->layout = 'angularjs';
+    public function view($id = null) {
+        if (!$this->isApiRequest() && $id === null) {
             $isFullscreen = false;
             if ($this->request->query('fullscreen') === 'true') {
                 $this->layout = 'angularjs_fullscreen';
@@ -1671,9 +1670,8 @@ class MapeditorsController extends MapModuleAppController {
 
     }
 
-    public function edit($id) {
-        if (!$this->isApiRequest()) {
-            $this->layout = 'angularjs';
+    public function edit($id = null) {
+        if (!$this->isApiRequest() && $id === null) {
             //Only ship template
 
             $gadgetPreviews = [

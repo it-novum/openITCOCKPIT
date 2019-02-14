@@ -46,23 +46,23 @@
             {{map.Map.name}}
         </h2>
         <div class="widget-toolbar" role="menu">
-            <a class="btn btn-xs btn-default" href="/map_module/maps">
+            <a class="btn btn-xs btn-default" ui-sref="MapsIndex">
                 <i class="glyphicon glyphicon-white glyphicon-arrow-left"></i>
                 <?php echo __('Back to list'); ?>
             </a>
             <?php if ($this->Acl->hasPermission('edit', 'mapeditors', 'mapmodule')): ?>
-                <a class="btn btn-xs btn-default" ng-href="/map_module/mapeditors/edit/{{map.Map.id}}">
+                <a class="btn btn-xs btn-default" ui-sref="MapeditorsEdit({id: map.Map.id})">
                     <i class="fa fa-edit"></i>
                     <?php echo __('Edit'); ?>
                 </a>
             <?php endif; ?>
-            <a class="btn btn-xs btn-default" ng-href="/map_module/mapeditors/view/{{map.Map.id}}?fullscreen=true"
+            <a class="btn btn-xs btn-default" ui-sref="MapeditorsView({id: map.Map.id, fullscreen: 'true'})"
                ng-show="!fullscreen">
                 <i class="fa fa-expand"></i>
                 <?php echo __('Fullscreen'); ?>
             </a>
 
-            <a class="btn btn-xs btn-default" ng-href="/map_module/mapeditors/view/{{map.Map.id}}?fullscreen=false"
+            <a class="btn btn-xs btn-default" ui-sref="MapeditorsView({id: map.Map.id, fullscreen: 'false'})"
                ng-show="fullscreen">
                 <i class="fa fa-compress "></i>
                 <?php echo __('Leave fullscreen'); ?>
