@@ -27,9 +27,15 @@ use Cake\ORM\TableRegistry;
 use Cake\Cache\Cache;
 
 class SystemsettingsController extends AppController {
-    public $layout = 'angularjs';
+    public $layout = 'blank';
 
     public function index() {
+
+        if (!$this->isApiRequest()) {
+            //Only ship template for AngularJs
+            return;
+        }
+
         /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
         $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
         $all_systemsettings = $Systemsettings->getSettings();
