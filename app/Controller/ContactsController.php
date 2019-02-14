@@ -28,6 +28,7 @@ use App\Model\Table\ContainersTable;
 use App\Model\Table\SystemsettingsTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
+use itnovum\openITCOCKPIT\Core\KeyValueStore;
 use itnovum\openITCOCKPIT\Core\PHPVersionChecker;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\ContactsFilter;
@@ -85,13 +86,18 @@ class ContactsController extends AppController {
     ];
 
     public function index() {
-        if (!$this->isAngularJsRequest()) {
-            //Only ship HTML Template
-            return;
-        }
+        $this->layout = 'blank';
 
         /** @var $SystemsettingsTable SystemsettingsTable */
         $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
+
+        if (!$this->isAngularJsRequest()) {
+            //Only ship HTML Template
+            $this->set('isLdapAuth', $SystemsettingsTable->isLdapAuth());
+            return;
+        }
+
+
         /** @var $ContactsTable ContactsTable */
         $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
 
@@ -112,16 +118,15 @@ class ContactsController extends AppController {
                 $contactsWithContainers[$contact['Contact']['id']][] = $container['id'];
             }
 
-            $contacts[$key]['allowEdit'] = true;
+            $contacts[$key]['Contact']['allow_edit'] = true;
             if ($this->hasRootPrivileges === false) {
-                $contacts[$key]['allowEdit'] = false;
+                $contacts[$key]['Contact']['allow_edit'] = false;
                 if (!empty(array_intersect($contactsWithContainers[$contact['Contact']['id']], $this->getWriteContainers()))) {
-                    $contacts[$key]['allowEdit'] = true;
+                    $contacts[$key]['Contact']['allow_edit'] = true;
                 }
             }
         }
 
-        $this->set('isLdapAuth', $SystemsettingsTable->isLdapAuth());
         $this->set('all_contacts', $contacts);
         $toJson = ['all_contacts', 'paging'];
         if ($this->isScrollRequest()) {
@@ -707,56 +712,24 @@ class ContactsController extends AppController {
         $this->set('_serialize', ['usersForSelect']);
     }
 
-    protected function __allowDelete($contact) {
-        if (is_numeric($contact)) {
-            $contactId = $contact;
-        } else {
-            $contactId = $contact['Contact']['id'];
+
+    /**
+     * @param null $id
+     */
+    public function delete($id = null) {
+        if (!$this->request->is('post')) {
+            throw new MethodNotAllowedException();
         }
 
-        $models = [
-            '__ContactsToContactgroups',
-            '__ContactsToHosttemplates',
-            '__ContactsToHosts',
-            '__ContactsToServicetemplates',
-            '__ContactsToServices',
-            '__ContactsToHostescalations',
-            '__ContactsToServiceescalations',
-        ];
-        foreach ($models as $model) {
-            $this->loadModel($model);
-            $count = $this->{$model}->find('count', [
-                'conditions' => [
-                    'contact_id' => $contactId,
-                ],
-            ]);
-            if ($count > 0) {
-                return false;
-            }
+        /** @var $ContactsTable ContactsTable */
+        $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
+
+        if (!$ContactsTable->exists($id)) {
+            throw new NotFoundException(__('Contact not found'));
         }
 
-        return true;
-    }
+        $contact = $ContactsTable->getContactById($id);
 
-    public function delete($id) {
-        if (!$this->Contact->exists($id)) {
-            throw new NotFoundException(__('Invalid contact'));
-        }
-        $userId = $this->Auth->user('id');
-        $contact = $this->Contact->find('first', [
-            'recursive'  => -1,
-            'contain'    => [
-                'Container.id',
-                'Container.name'
-            ],
-            'fields'     => [
-                'Contact.id',
-                'Contact.name'
-            ],
-            'conditions' => [
-                'Contact.id' => $id
-            ]
-        ]);
         if (!$this->allowedByContainerId(Hash::extract($contact, 'Container.{n}.id'))) {
             $this->render403();
             return;
@@ -767,107 +740,55 @@ class ContactsController extends AppController {
             return;
         }
 
-        if ($this->__allowDelete($id)) {
-            if ($this->Contact->delete($id)) {
-                $changelog_data = $this->Changelog->parseDataForChangelog(
-                    $this->params['action'],
-                    $this->params['controller'],
-                    $id,
-                    OBJECT_CONTACT,
-                    Hash::extract($contact['Container'], '{n}.id'),
-                    $userId,
-                    $contact['Contact']['name'],
-                    $contact
-                );
-                if ($changelog_data) {
-                    CakeLog::write('log', serialize($changelog_data));
-                }
-                $this->setFlash(__('Contact deleted'));
-                $this->redirect(['action' => 'index']);
-            } else {
-                $this->setFlash(__('Could not delete contact'), false);
-                $this->redirect(['action' => 'index']);
-            }
-        } else {
-            $contactsCanotDelete[$contact['Contact']['id']] = $contact['Contact']['name'];
-            $this->set(compact(['contactsCanotDelete']));
-            $this->render('mass_delete');
+
+        if (!$ContactsTable->allowDelete($id)) {
+            $usedBy = [
+                [
+                    'baseUrl' => '#',
+                    'state'   => 'ContactsUsedBy',
+                    'message' => __('Used by other objects'),
+                    'module'  => 'Core'
+                ]
+            ];
+
+            $this->response->statusCode(400);
+            $this->set('success', false);
+            $this->set('id', $id);
+            $this->set('message', __('Issue while deleting contact'));
+            $this->set('usedBy', $usedBy);
+            $this->set('_serialize', ['success', 'id', 'message', 'usedBy']);
+            return;
         }
+
+
+        $contactEntity = $ContactsTable->get($id);
+        if ($ContactsTable->delete($contactEntity)) {
+            $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+            $changelog_data = $this->Changelog->parseDataForChangelog(
+                'delete',
+                'contacts',
+                $id,
+                OBJECT_CONTACT,
+                Hash::extract($contact['Container'], '{n}.id'),
+                $User->getId(),
+                $contact['Contact']['name'],
+                $contact
+            );
+            if ($changelog_data) {
+                CakeLog::write('log', serialize($changelog_data));
+            }
+
+            $this->set('success', true);
+            $this->set('_serialize', ['success']);
+            return;
+        }
+
+        $this->response->statusCode(500);
+        $this->set('success', false);
+        $this->set('_serialize', ['success']);
+        return;
     }
 
-    public function mass_delete($id = null) {
-        $userId = $this->Auth->user('id');
-        if ($this->request->is('post') || $this->request->is('put')) {
-            foreach ($this->request->data('Contact.delete') as $contactId) {
-                $contact = $this->Contact->find('first', [
-                    'recursive'  => -1,
-                    'contain'    => [
-                        'Container.id',
-                        'Container.name'
-                    ],
-                    'fields'     => [
-                        'Contact.id',
-                        'Contact.name'
-                    ],
-                    'conditions' => [
-                        'Contact.id' => $contactId
-                    ]
-                ]);
-                if ($this->allowedByContainerId(Hash::extract($contact, 'Container.{n}.id'))) {
-                    if (empty(array_diff(Hash::extract($contact['Container'], '{n}.id'), $this->MY_RIGHTS))) {
-                        if ($this->Contact->delete($contact['Contact']['id'])) {
-                            $changelog_data = $this->Changelog->parseDataForChangelog(
-                                $this->params['action'],
-                                $this->params['controller'],
-                                $contact['Contact']['id'],
-                                OBJECT_CONTACT,
-                                Hash::extract($contact['Container'], '{n}.id'),
-                                $userId,
-                                $contact['Contact']['name'],
-                                $contact
-                            );
-                            if ($changelog_data) {
-                                CakeLog::write('log', serialize($changelog_data));
-                            }
-                        }
-                    }
-                }
-            }
-            $this->setFlash(__('Contacts deleted'));
-            $this->redirect(['action' => 'index']);
-        }
-        $contactsToDelete = [];
-        $contactsCanotDelete = [];
-        foreach (func_get_args() as $contactId) {
-            if ($this->Contact->exists($contactId)) {
-                $contact = $this->Contact->find('first', [
-                    'recursive'  => -1,
-                    'contain'    => [
-                        'Container.id',
-                        'Container.name'
-                    ],
-                    'fields'     => [
-                        'Contact.id',
-                        'Contact.name'
-                    ],
-                    'conditions' => [
-                        'Contact.id' => $contactId
-                    ]
-                ]);
-                if ($this->allowedByContainerId(Hash::extract($contact, 'Container.{n}.id'))) {
-                    if (empty(array_diff(Hash::extract($contact['Container'], '{n}.id'), $this->MY_RIGHTS))) {
-                        if ($this->__allowDelete($contactId)) {
-                            $contactsToDelete[] = $contact;
-                        } else {
-                            $contactsCanotDelete[$contactId] = $contact['Contact']['name'];
-                        }
-                    }
-                }
-            }
-        }
-        $count = sizeof($contactsToDelete) + sizeof($contactsCanotDelete);
-        $this->set(compact(['contactsToDelete', 'contactsCanotDelete', 'count']));
-    }
 
     public function loadTimeperiods() {
         $this->allowOnlyAjaxRequests();
@@ -908,130 +829,114 @@ class ContactsController extends AppController {
     }
 
     public function copy($id = null) {
-        $userId = $this->Auth->user('id');
-        $contacts = $this->Contact->find('all', [
-            'recursive'  => 0,
-            'contain'    => [
-                'Container' => [
-                    'fields' => [
-                        'Container.id'
-                    ],
-                ],
+        $this->layout = 'blank';
 
-                'Customvariable'    => [
-                    'fields' => [
-                        'name', 'value',
-                    ],
-                ],
-                'HostCommands'      => [
-                    'fields' => [
-                        'id',
-                        'name'
-                    ]
-                ],
-                'ServiceCommands'   => [
-                    'fields' => [
-                        'id',
-                        'name'
-                    ]
-                ],
-                'HostTimeperiod'    => [
-                    'fields' => [
-                        'HostTimeperiod.id',
-                        'HostTimeperiod.name',
-                    ]
-                ],
-                'ServiceTimeperiod' => [
-                    'fields' => [
-                        'ServiceTimeperiod.id',
-                        'ServiceTimeperiod.name',
-                    ]
-                ]
+        if (!$this->isAngularJsRequest()) {
+            //Only ship HTML Template
+            return;
+        }
 
-            ],
-            'conditions' => [
-                'Contact.id' => func_get_args(),
-            ],
-        ]);
-        $contacts = Hash::combine($contacts, '{n}.Contact.id', '{n}');
+        /** @var $ContactsTable ContactsTable */
+        $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
 
-        if ($this->request->is('post') || $this->request->is('put')) {
 
-            $datasource = $this->Contact->getDataSource();
-            try {
-                $datasource->begin();
-                foreach ($this->request->data['Contact'] as $sourceContactId => $newContact) {
-                    $newContact['uuid'] = UUID::v4();
-                    unset($contacts[$sourceContactId]['Contact']['id']); // remove contact id for save
-                    $newContactData = [
-                        'Contact'        => Hash::merge(
-                            $contacts[$sourceContactId]['Contact'],
-                            $newContact,
-                            [
-                                'HostCommands' => [
-                                    $contacts[$sourceContactId]['HostCommands'][0]['id']
-                                ]
-                            ],
-                            [
-                                'ServiceCommands' => [
-                                    $contacts[$sourceContactId]['ServiceCommands'][0]['id']
-                                ]
+        if ($this->request->is('get')) {
+            $contacts = $ContactsTable->getContactsForCopy(func_get_args());
+            $this->set('contacts', $contacts);
+            $this->set('_serialize', ['contacts']);
+            return;
+        }
+
+        $hasErrors = false;
+
+        if ($this->request->is('post')) {
+            $Cache = new KeyValueStore();
+
+            $postData = $this->request->data('data');
+            $userId = $this->Auth->user('id');
+
+            foreach ($postData as $index => $contactData) {
+                if (!isset($contactData['Contact']['id'])) {
+                    //Create/clone contact
+                    $sourceContactId = $contactData['Source']['id'];
+                    if (!$Cache->has($sourceContactId)) {
+                        $sourceContact = $ContactsTable->get($sourceContactId, [
+                            'contain' => [
+                                'Customvariables',
+                                'Containers'
                             ]
-                        ),
-                        'Customvariable' => Hash::insert(
-                            Hash::remove(
-                                $contacts[$newContact['source']]['Customvariable'], '{n}.object_id'
-                            ),
-                            '{n}.objecttype_id',
-                            OBJECT_CONTACT
-                        ),
-                        'Container'      => [
-                            'Container' =>
-                                Hash::extract($contacts[$sourceContactId]['Container'], '{n}.id')
+                        ])->toArray();
+                        foreach ($sourceContact['customvariables'] as $i => $customvariable) {
+                            unset($sourceContact['customvariables'][$i]['id']);
+                            unset($sourceContact['customvariables'][$i]['contact_id']);
+                        }
+
+                        $containers = Hash::extract($sourceContact['containers'], '{n}.id');
+                        $sourceContact['containers'] = $containers;
+
+                        $Cache->set($sourceContact['id'], $sourceContact);
+                    }
+
+                    $sourceContact = $Cache->get($sourceContactId);
+
+                    $newContactData = [
+                        'name'            => $contactData['Contact']['name'],
+                        'description'     => $contactData['Contact']['description'],
+                        'email'           => $contactData['Contact']['email'],
+                        'phone'           => $contactData['Contact']['phone'],
+                        'uuid'            => UUID::v4(),
+                        'customvariables' => $sourceContact['customvariables'],
+                        'containers'      => [
+                            '_ids' => $sourceContact['containers']
                         ]
                     ];
 
-                    $this->Contact->create();
-                    if (!$this->Contact->saveAll($newContactData)) {
-                        $errorMessage = 'Contacts could not be copied.';
-                        $errorFields = $this->Contact->invalidFields();
+                    $newContactEntity = $ContactsTable->newEntity($newContactData);
+                }
 
-                        if (!empty($errorFields)) {
-                            foreach ($errorFields as $errorFieldKey => $errorField) {
-                                if (!isset($newContactData['Contact'][$errorFieldKey]) || !isset($errorField[0])) continue;
-                                $errorMessage .= '<br />' . $newContactData['Contact'][$errorFieldKey] . ': ' . $errorField[0];
-                            }
-                        }
-                        throw new Exception($errorMessage);
-                    }
+                $action = 'copy';
+                if (isset($contactData['Contact']['id'])) {
+                    //Update existing contact
+                    //This happens, if a user copy multiple contacts, and one run into an validation error
+                    //All contacts without validation errors got already saved to the database
+                    $newContactEntity = $ContactsTable->get($contactData['Contact']['id']);
+                    $newContactEntity = $ContactsTable->patchEntity($newContactEntity, $contactData['Contact']);
+                    $newContactData = $newContactEntity->toArray();
+                    $action = 'edit';
+                }
+                $ContactsTable->save($newContactEntity);
+
+                $postData[$index]['Error'] = [];
+                if ($newContactEntity->hasErrors()) {
+                    $hasErrors = true;
+                    $postData[$index]['Error'] = $newContactEntity->getErrors();
+                } else {
+                    //No errors
+                    $postData[$index]['Contact']['id'] = $newContactEntity->get('id');
 
                     $changelog_data = $this->Changelog->parseDataForChangelog(
-                        $this->params['action'],
-                        $this->params['controller'],
-                        $this->Contact->id,
+                        $action,
+                        'contacts',
+                        $postData[$index]['Contact']['id'],
                         OBJECT_CONTACT,
-                        Hash::extract($contacts[$sourceContactId]['Container'], '{n}.id'),
+                        [ROOT_CONTAINER],
                         $userId,
-                        $newContact['name'],
-                        Hash::merge($contacts[$sourceContactId], ['Contact' => $newContact])
+                        $newContactEntity->get('name'),
+                        ['Contact' => $newContactData]
                     );
                     if ($changelog_data) {
                         CakeLog::write('log', serialize($changelog_data));
                     }
-
                 }
-                $datasource->commit();
-                $this->setFlash(__('Contacts are successfully copied'));
-                $this->redirect(['action' => 'index']);
-            } catch (Exception $e) {
-                $datasource->rollback();
-                $this->setFlash(__($e->getMessage()), false);
-                $this->redirect(['action' => 'index']);
             }
         }
 
-        $this->set(compact('contacts'));
-        $this->set('back_url', $this->referer());
+        if ($hasErrors) {
+            $this->response->statusCode(400);
+        }
+        $this->set('result', $postData);
+        $this->set('_serialize', ['result']);
+
     }
 
     public function addCustomMacro($counter) {
@@ -1041,15 +946,22 @@ class ContactsController extends AppController {
         $this->set('counter', $counter);
     }
 
+    /**
+     * @param null $id
+     * @todo Refactor with Cake4
+     */
     public function usedBy($id = null) {
-        $this->layout = 'angularjs';
+        $this->layout = 'blank';
         if (!$this->isApiRequest()) {
             //Only ship HTML template for angular
             return;
         }
 
-        if (!$this->Contact->exists($id)) {
-            throw new NotFoundException(__('Invalid contact'));
+        /** @var $ContactsTable ContactsTable */
+        $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
+
+        if (!$ContactsTable->exists($id)) {
+            throw new NotFoundException(__('Contact not found'));
         }
 
         $this->Contact->bindModel([

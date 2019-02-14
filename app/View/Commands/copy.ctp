@@ -27,13 +27,10 @@
     <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
         <h1 class="page-title txt-color-blueDark">
             <i class="fa fa-pencil-square-o fa-fw "></i>
-            <?php echo __('Monitoring'); ?>
+            <?php echo __('Commands'); ?>
             <span>>
-                <?php echo __('Commands'); ?>
-            </span>
-            <div class="third_level">>
                 <?php echo __('Copy'); ?>
-            </div>
+            </span>
         </h1>
     </div>
 </div>
@@ -105,6 +102,7 @@
                                           id="Command{{$index}}Description"></textarea>
                             </div>
                         </div>
+                    </fieldset>
                 </div>
             </div>
 
