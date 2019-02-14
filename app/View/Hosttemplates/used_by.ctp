@@ -81,7 +81,7 @@
                                 </td>
                                 <td class="">
                                     <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
-                                        <a href="/hosts/browser/{{ host.Host.id }}" target="_blank">
+                                        <a ui-sref="HostsBrowser({id: host.Host.id})" target="_blank">
                                             {{ host.Host.hostname }} ({{ host.Host.address }})
                                         </a>
                                     <?php else: ?>

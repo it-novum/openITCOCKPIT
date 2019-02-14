@@ -1,4 +1,4 @@
-angular.module('openITCOCKPIT', ['gridster', 'ui.router'])
+var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router'])
 
     .factory("httpInterceptor", function($q, $rootScope, $timeout){
         return {
@@ -368,6 +368,12 @@ angular.module('openITCOCKPIT', ['gridster', 'ui.router'])
                 url: '/hostchecks/index/:id',
                 templateUrl: "/hostchecks/index.html",
                 controller: "HostchecksIndexController"
+            })
+
+            .state('HosttemplatesUsedBy', {
+                url: '/hosttemplates/usedBy/:id',
+                templateUrl: "/hosttemplates/usedBy.html",
+                controller: "HosttemplatesUsedByController"
             })
 
             .state('ServicegroupsIndex', {
