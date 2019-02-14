@@ -1,6 +1,6 @@
 angular.module('openITCOCKPIT')
-    .controller('Grafana_userdashboardsEditorController', function($scope, $http, QueryStringService){
-        $scope.id = QueryStringService.getCakeId();
+    .controller('Grafana_userdashboardsEditorController', function($scope, $http, $stateParams){
+        $scope.id = $stateParams.id;
         $scope.name = '';
 
         $scope.load = function(){

@@ -47,12 +47,14 @@
                     <?php echo __('Delete'); ?>
                 </button>
             <?php endif; ?>
-            <?php echo $this->Utils->backButton() ?>
+            <a ui-sref="GrafanaUserdashboardsIndex" class="btn btn-default btn-xs" iconcolor="white">
+                <i class="glyphicon glyphicon-white glyphicon-arrow-left"></i> <?php echo __('Back to list'); ?>
+            </a>
         </div>
 
         <div class="widget-toolbar">
             <?php if ($this->Acl->hasPermission('editor', 'GrafanaUserdashboards', 'GrafanaModule')): ?>
-                <a href="/grafana_module/grafana_userdashboards/editor/{{id}}" class="btn btn-default btn-xs">
+                <a ui-sref="GrafanaUserdashboardsEditor({id: id})" class="btn btn-default btn-xs">
                     <i class="fa fa-edit"></i>
                     <?php echo __('Open in Editor'); ?>
                 </a>
@@ -104,7 +106,7 @@
                         <div class="well formactions ">
                             <div class="pull-right">
                                 <input class="btn btn-primary" type="submit" value="<?php echo __('Save'); ?>">&nbsp;
-                                <a href="/grafana_module/grafana_userdashboards/index"
+                                <a ui-sref="GrafanaUserdashboardsIndex"
                                    class="btn btn-default">Cancel</a>
                             </div>
                         </div>

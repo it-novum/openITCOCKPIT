@@ -1,18 +1,16 @@
 angular.module('openITCOCKPIT')
-    .controller('Grafana_userdashboardsEditController', function($scope, $http, QueryStringService){
+    .controller('Grafana_userdashboardsEditController', function($scope, $http, $stateParams, $state, NotyService){
 
-        $scope.id =
+        $scope.post = {
+            GrafanaUserdashboard: {
+                id: null,
+                container_id: null,
+                name: '',
+                configuration_id: null
+            }
+        };
 
-            $scope.post = {
-                GrafanaUserdashboard: {
-                    id: null,
-                    container_id: null,
-                    name: '',
-                    configuration_id: null
-                }
-            };
-
-        $scope.id = QueryStringService.getCakeId();
+        $scope.id = $stateParams.id;
 
         $scope.deleteUrl = "/grafana_module/grafana_userdashboards/delete/" + $scope.id + ".json?angular=true";
         $scope.sucessUrl = '/grafana_module/grafana_userdashboards/index';
@@ -57,9 +55,10 @@ angular.module('openITCOCKPIT')
             $http.post("/grafana_module/grafana_userdashboards/edit/" + $scope.id + ".json?angular=true",
                 $scope.post
             ).then(function(result){
-                console.log('Data saved successfully');
-                window.location.href = '/grafana_module/grafana_userdashboards/index';
+                NotyService.genericSuccess();
+                $state.go('GrafanaUserdashboardsIndex');
             }, function errorCallback(result){
+                NotyService.genericError();
                 if(result.data.hasOwnProperty('error')){
                     $scope.errors = result.data.error;
                 }

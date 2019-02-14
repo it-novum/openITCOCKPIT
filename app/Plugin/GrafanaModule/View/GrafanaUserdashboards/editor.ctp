@@ -49,12 +49,14 @@
         </h2>
         <div class="widget-toolbar">
             <?php if ($this->Acl->hasPermission('edit', 'GrafanaUserdashboards', 'GrafanaModule')): ?>
-                <a href="/grafana_module/grafana_userdashboards/edit/{{id}}" class="btn btn-default btn-xs">
+                <a ui-sref="GrafanaUserdashboardsEdit({id: id})" class="btn btn-default btn-xs">
                     <i class="fa fa-edit"></i>
                     <?php echo __('Edit settings'); ?>
                 </a>
             <?php endif; ?>
-            <?php echo $this->Utils->backButton() ?>
+            <a ui-sref="GrafanaUserdashboardsIndex" class="btn btn-default btn-xs" iconcolor="white">
+                <i class="glyphicon glyphicon-white glyphicon-arrow-left"></i> <?php echo __('Back to list'); ?>
+            </a>
         </div>
         <div class="widget-toolbar">
             <button class="btn btn-primary btn-xs" ng-click="synchronizeWithGrafana()">
