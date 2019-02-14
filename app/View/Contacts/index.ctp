@@ -274,6 +274,14 @@
                                                         </a>
                                                     </li>
                                                 <?php endif; ?>
+                                                <?php if ($this->Acl->hasPermission('usedBy', 'contacts')): ?>
+                                                    <li>
+                                                        <a ui-sref="ContactsUsedBy({id:contact.Contact.id})">
+                                                            <i class="fa fa-reply-all fa-flip-horizontal"></i>
+                                                            <?php echo __('Used by'); ?>
+                                                        </a>
+                                                    </li>
+                                                <?php endif; ?>
                                                 <?php if ($this->Acl->hasPermission('delete', 'contacts')): ?>
                                                     <li class="divider" ng-if="contact.Contact.allow_edit"></li>
                                                     <li ng-if="contact.Contact.allow_edit">

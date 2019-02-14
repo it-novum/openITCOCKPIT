@@ -961,15 +961,22 @@ class ContactsController extends AppController {
         $this->set('counter', $counter);
     }
 
+    /**
+     * @param null $id
+     * @todo Refactor with Cake4
+     */
     public function usedBy($id = null) {
-        $this->layout = 'angularjs';
+        $this->layout = 'blank';
         if (!$this->isApiRequest()) {
             //Only ship HTML template for angular
             return;
         }
 
-        if (!$this->Contact->exists($id)) {
-            throw new NotFoundException(__('Invalid contact'));
+        /** @var $ContactsTable ContactsTable */
+        $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
+
+        if (!$ContactsTable->exists($id)) {
+            throw new NotFoundException(__('Contact not found'));
         }
 
         $this->Contact->bindModel([

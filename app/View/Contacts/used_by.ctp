@@ -43,7 +43,10 @@
             <div class="jarviswidget jarviswidget-color-blueDark" id="wid-id-1" data-widget-editbutton="false">
                 <header>
                     <div class="widget-toolbar" role="menu">
-                        <?php echo $this->Utils->backButton(__('Back'), '/contacts/index'); ?>
+                        <a ui-sref="ContactsIndex" class="btn btn-default btn-xs">
+                            <i class="glyphicon glyphicon-white glyphicon-arrow-left"></i>
+                            <?php echo __('Back'); ?>
+                        </a>
                     </div>
 
                     <div class="jarviswidget-ctrls" role="menu">
