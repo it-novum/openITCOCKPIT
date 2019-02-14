@@ -370,6 +370,12 @@ angular.module('openITCOCKPIT', ['gridster', 'ui.router'])
                 controller: "HostchecksIndexController"
             })
 
+            .state('HosttemplatesUsedBy', {
+                url: '/hosttemplates/usedBy/:id',
+                templateUrl: "/hosttemplates/usedBy.html",
+                controller: "HosttemplatesUsedByController"
+            })
+
             .state('ServicegroupsIndex', {
                 url: '/servicegroups/index',
                 templateUrl: "/servicegroups/index.html",

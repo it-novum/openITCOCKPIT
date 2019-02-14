@@ -1156,7 +1156,7 @@ class HosttemplatesController extends AppController {
     }
 
     public function usedBy($id = null) {
-        $this->layout = 'angularjs';
+        $this->layout = 'blank';
         if (!$this->isApiRequest()) {
             //Only ship HTML template for angular
             return;
