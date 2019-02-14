@@ -61,14 +61,56 @@ class TimeperiodTimerangesTable extends Table {
             ->scalar('start')
             ->maxLength('start', 5)
             ->requirePresence('start', 'create')
-            ->allowEmptyString('start', false);
+            ->allowEmptyString('start', true)
+            ->regex('start', '/(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]|(24:00)$/', 'Please use 00:00 format')
+            ->lessThanField('start', 'end', 'The start time must be before the end time.');
 
         $validator
             ->scalar('end')
             ->maxLength('end', 5)
             ->requirePresence('end', 'create')
-            ->allowEmptyString('end', false);
+            ->allowEmptyString('end', true)
+            ->regex('end', '/(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]|(24:00)$/', 'Please use 00:00 format')
+            ->greaterThanField('end', 'start', 'The end time must be after the start time.');
 
+
+        /*
+         * 'day'   => [
+            'notBlank' => [
+                'rule'     => 'notBlank',
+                'message'  => 'This field cannot be left blank.',
+                'required' => true,
+            ],
+        ],
+        'start' => [
+            'notBlank'       => [
+                'rule'     => 'notBlank',
+                'message'  => 'This field cannot be left blank.',
+                'required' => true,
+            ],
+            'time'           => [
+                'rule'     => ['custom', '/^(([0-2][0-9]):([0-5][0-9]))$/'],
+                'message'  => 'Please enter a valid time (HH:MM).',
+                'required' => true,
+            ],
+            'startBeforeEnd' => [
+                'rule'    => ['startBeforeEnd', 'end'],
+                'message' => 'The start time must be before the end time.',
+            ],
+        ],
+        'end'   => [
+            'notBlank' => [
+                'rule'     => 'notBlank',
+                'message'  => 'This field cannot be left blank.',
+                'required' => true,
+            ],
+            'time'     => [
+                'rule'     => ['custom', '/^(([0-2][0-9]):([0-5][0-9])|(24:00))$/'],
+                'message'  => 'Please enter a valid time (HH:MM).',
+                'required' => true,
+            ],
+        ],
+         */
 
         return $validator;
     }

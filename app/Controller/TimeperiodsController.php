@@ -213,6 +213,7 @@ class TimeperiodsController extends AppController {
                 $this->setFlash(__('<a href="/timeperiods/edit/%s">Timeperiod</a> successfully saved', $this->Timeperiod->id));
                 $this->redirect(['action' => 'index']);
             } else {
+                debug($this->Timeperiod->validationErrors);
                 $this->set('timerange_errors', $this->Timeperiod->validationErrors);
                 $this->setFlash(__('Timeperiod could not be saved'), false);
             }
@@ -236,7 +237,7 @@ class TimeperiodsController extends AppController {
             $timeperiod = $TimeperiodsTable->newEntity();
             $timeperiod = $TimeperiodsTable->patchEntity($timeperiod, $this->request->data('Timeperiod'));
             $timeperiod->set('uuid', UUID::v4());
-
+            $TimeperiodsTable->checkRules($timeperiod);
             $TimeperiodsTable->save($timeperiod);
             if ($timeperiod->hasErrors()) {
                 $this->response->statusCode(400);

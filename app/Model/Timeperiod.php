@@ -106,6 +106,7 @@ class Timeperiod extends AppModel {
                                     $input_key--;
                                 }
                                 $error_arr[$day][] = $intern_counter;
+
                                 //	$this->invalidate('Timeperiod.'.$day.'.'.$intern_counter, 'state-error');
                                 $this->invalidate('Timerange.' . $day . '.' . $intern_counter . '.start', 'state-error');
 

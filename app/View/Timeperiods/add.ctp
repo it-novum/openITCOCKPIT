@@ -119,10 +119,15 @@ $weekdays = [
                         </div>
                     </div>
                     <div class="row">
-                        <fieldset class=" form-inline padding-10">
+                        <fieldset class=" form-inline padding-10">{{errors.validate_timeranges.length}}
                             <legend class="font-sm">
                                 <div>
-                                    <label><?php echo __('Time ranges:'); ?>  </label>
+                                    <label ng-class="{'text-danger': errors.validate_timeranges}">
+                                        <?php echo __('Time ranges:'); ?>
+                                    </label>
+                                </div>
+                                <div class="help-block text-danger" ng-show="errors.validate_timeranges">
+                                    <?php echo __('Do not enter overlapping timeframes'); ?>
                                 </div>
                             </legend>
                             <div ng-repeat="range in timeperiod.ranges">
@@ -149,28 +154,40 @@ $weekdays = [
                                         <label class="col col-md-3 control-label text-left">
                                             <?php echo __('Start'); ?>
                                         </label>
-                                        <div class="form-group smart-form">
-                                            <label class="input"> <i class="icon-prepend fa fa-clock-o"></i>
+                                        <div class="form-group smart-form col-md-5">
+                                            <label class="input"
+                                                   ng-class="{'state-error': errors.validate_timeranges[$index] ||
+                                                   errors.timeperiod_timeranges[$index].start}">
+                                                <i class="icon-prepend fa fa-clock-o"></i>
                                                 <input class="form-control input-sm" type="text"
                                                        placeholder="<?php echo __('00:00'); ?>"
                                                        size="5"
                                                        maxlength="5"
                                                        ng-model="range.start"/>
                                             </label>
+                                            <div ng-repeat="error in errors.timeperiod_timeranges[$index].start">
+                                                <div class=text-danger font-xs">{{ error }}</div>
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="col col-md-3">
                                         <label class="col col-md-3 control-label text-left">
                                             <?php echo __('End'); ?>
                                         </label>
-                                        <div class="form-group smart-form">
-                                            <label class="input"> <i class="icon-prepend fa fa-clock-o"></i>
+                                        <div class="form-group smart-form col-md-5">
+                                            <label class="input"
+                                                   ng-class="{'state-error': errors.validate_timeranges[$index] ||
+                                                   errors.timeperiod_timeranges[$index].end}">
+                                                <i class="icon-prepend fa fa-clock-o"></i>
                                                 <input class="form-control input-sm" type="text"
                                                        placeholder="<?php echo __('24:00'); ?>"
                                                        size="5"
                                                        maxlength="5"
                                                        ng-model="range.end">
                                             </label>
+                                            <div ng-repeat="error in errors.timeperiod_timeranges[$index].end">
+                                                <div class="help-block text-danger font-xs">{{ error }}</div>
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="col col-md-1">

@@ -47,6 +47,8 @@ angular.module('openITCOCKPIT')
                     timeperiodranges.push($scope.timeperiod.ranges[i])
                 }
             }
+            $scope.timeperiod.ranges = timeperiodranges;
+            /*
             $scope.timeperiod.ranges = _(timeperiodranges)
                 .chain()
                 .flatten()
@@ -55,6 +57,7 @@ angular.module('openITCOCKPIT')
                         return [range.day, range.start];
                     })
                 .value();
+                */
         };
 
         $scope.addTimerange = function(){
@@ -67,6 +70,8 @@ angular.module('openITCOCKPIT')
                 end: ''
 
             });
+            $scope.timeperiod.ranges = $scope.timeperiod.ranges;
+            /*
             $scope.timeperiod.ranges = _($scope.timeperiod.ranges)
                 .chain()
                 .flatten()
@@ -75,15 +80,13 @@ angular.module('openITCOCKPIT')
                         return [range.day, range.start];
                     })
                 .value();
+                */
         };
 
 
         $scope.submit = function(){
             var index = 0;
             for(var i in $scope.timeperiod.ranges){
-                if(!/^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/.test($scope.timeperiod.ranges[i].start) || !/^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/.test($scope.timeperiod.ranges[i].end)){
-                    continue;
-                }
                 $scope.post.Timeperiod.timeperiod_timeranges[index] = {
                     'day': $scope.timeperiod.ranges[i].day,
                     'start': $scope.timeperiod.ranges[i].start,
@@ -96,7 +99,7 @@ angular.module('openITCOCKPIT')
                 $scope.post
             ).then(function(result){
                 NotyService.genericSuccess();
-                $state.go('TimeperiodsIndex');
+    //            $state.go('TimeperiodsIndex');
             }, function errorCallback(result){
                 if(result.data.hasOwnProperty('error')){
                     NotyService.genericError();
