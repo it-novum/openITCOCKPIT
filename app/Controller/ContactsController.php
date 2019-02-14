@@ -28,6 +28,7 @@ use App\Model\Table\ContainersTable;
 use App\Model\Table\SystemsettingsTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
+use itnovum\openITCOCKPIT\Core\KeyValueStore;
 use itnovum\openITCOCKPIT\Core\PHPVersionChecker;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\ContactsFilter;
@@ -828,130 +829,114 @@ class ContactsController extends AppController {
     }
 
     public function copy($id = null) {
-        $userId = $this->Auth->user('id');
-        $contacts = $this->Contact->find('all', [
-            'recursive'  => 0,
-            'contain'    => [
-                'Container' => [
-                    'fields' => [
-                        'Container.id'
-                    ],
-                ],
+        $this->layout = 'blank';
 
-                'Customvariable'    => [
-                    'fields' => [
-                        'name', 'value',
-                    ],
-                ],
-                'HostCommands'      => [
-                    'fields' => [
-                        'id',
-                        'name'
-                    ]
-                ],
-                'ServiceCommands'   => [
-                    'fields' => [
-                        'id',
-                        'name'
-                    ]
-                ],
-                'HostTimeperiod'    => [
-                    'fields' => [
-                        'HostTimeperiod.id',
-                        'HostTimeperiod.name',
-                    ]
-                ],
-                'ServiceTimeperiod' => [
-                    'fields' => [
-                        'ServiceTimeperiod.id',
-                        'ServiceTimeperiod.name',
-                    ]
-                ]
+        if (!$this->isAngularJsRequest()) {
+            //Only ship HTML Template
+            return;
+        }
 
-            ],
-            'conditions' => [
-                'Contact.id' => func_get_args(),
-            ],
-        ]);
-        $contacts = Hash::combine($contacts, '{n}.Contact.id', '{n}');
+        /** @var $ContactsTable ContactsTable */
+        $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
 
-        if ($this->request->is('post') || $this->request->is('put')) {
 
-            $datasource = $this->Contact->getDataSource();
-            try {
-                $datasource->begin();
-                foreach ($this->request->data['Contact'] as $sourceContactId => $newContact) {
-                    $newContact['uuid'] = UUID::v4();
-                    unset($contacts[$sourceContactId]['Contact']['id']); // remove contact id for save
-                    $newContactData = [
-                        'Contact'        => Hash::merge(
-                            $contacts[$sourceContactId]['Contact'],
-                            $newContact,
-                            [
-                                'HostCommands' => [
-                                    $contacts[$sourceContactId]['HostCommands'][0]['id']
-                                ]
-                            ],
-                            [
-                                'ServiceCommands' => [
-                                    $contacts[$sourceContactId]['ServiceCommands'][0]['id']
-                                ]
+        if ($this->request->is('get')) {
+            $contacts = $ContactsTable->getContactsForCopy(func_get_args());
+            $this->set('contacts', $contacts);
+            $this->set('_serialize', ['contacts']);
+            return;
+        }
+
+        $hasErrors = false;
+
+        if ($this->request->is('post')) {
+            $Cache = new KeyValueStore();
+
+            $postData = $this->request->data('data');
+            $userId = $this->Auth->user('id');
+
+            foreach ($postData as $index => $contactData) {
+                if (!isset($contactData['Contact']['id'])) {
+                    //Create/clone contact
+                    $sourceContactId = $contactData['Source']['id'];
+                    if (!$Cache->has($sourceContactId)) {
+                        $sourceContact = $ContactsTable->get($sourceContactId, [
+                            'contain' => [
+                                'Customvariables',
+                                'Containers'
                             ]
-                        ),
-                        'Customvariable' => Hash::insert(
-                            Hash::remove(
-                                $contacts[$newContact['source']]['Customvariable'], '{n}.object_id'
-                            ),
-                            '{n}.objecttype_id',
-                            OBJECT_CONTACT
-                        ),
-                        'Container'      => [
-                            'Container' =>
-                                Hash::extract($contacts[$sourceContactId]['Container'], '{n}.id')
+                        ])->toArray();
+                        foreach ($sourceContact['customvariables'] as $i => $customvariable) {
+                            unset($sourceContact['customvariables'][$i]['id']);
+                            unset($sourceContact['customvariables'][$i]['contact_id']);
+                        }
+
+                        $containers = Hash::extract($sourceContact['containers'], '{n}.id');
+                        $sourceContact['containers'] = $containers;
+
+                        $Cache->set($sourceContact['id'], $sourceContact);
+                    }
+
+                    $sourceContact = $Cache->get($sourceContactId);
+
+                    $newContactData = [
+                        'name'            => $contactData['Contact']['name'],
+                        'description'     => $contactData['Contact']['description'],
+                        'email'           => $contactData['Contact']['email'],
+                        'phone'           => $contactData['Contact']['phone'],
+                        'uuid'            => UUID::v4(),
+                        'customvariables' => $sourceContact['customvariables'],
+                        'containers'      => [
+                            '_ids' => $sourceContact['containers']
                         ]
                     ];
 
-                    $this->Contact->create();
-                    if (!$this->Contact->saveAll($newContactData)) {
-                        $errorMessage = 'Contacts could not be copied.';
-                        $errorFields = $this->Contact->invalidFields();
+                    $newContactEntity = $ContactsTable->newEntity($newContactData);
+                }
 
-                        if (!empty($errorFields)) {
-                            foreach ($errorFields as $errorFieldKey => $errorField) {
-                                if (!isset($newContactData['Contact'][$errorFieldKey]) || !isset($errorField[0])) continue;
-                                $errorMessage .= '<br />' . $newContactData['Contact'][$errorFieldKey] . ': ' . $errorField[0];
-                            }
-                        }
-                        throw new Exception($errorMessage);
-                    }
+                $action = 'copy';
+                if (isset($contactData['Contact']['id'])) {
+                    //Update existing contact
+                    //This happens, if a user copy multiple contacts, and one run into an validation error
+                    //All contacts without validation errors got already saved to the database
+                    $newContactEntity = $ContactsTable->get($contactData['Contact']['id']);
+                    $newContactEntity = $ContactsTable->patchEntity($newContactEntity, $contactData['Contact']);
+                    $newContactData = $newContactEntity->toArray();
+                    $action = 'edit';
+                }
+                $ContactsTable->save($newContactEntity);
+
+                $postData[$index]['Error'] = [];
+                if ($newContactEntity->hasErrors()) {
+                    $hasErrors = true;
+                    $postData[$index]['Error'] = $newContactEntity->getErrors();
+                } else {
+                    //No errors
+                    $postData[$index]['Contact']['id'] = $newContactEntity->get('id');
 
                     $changelog_data = $this->Changelog->parseDataForChangelog(
-                        $this->params['action'],
-                        $this->params['controller'],
-                        $this->Contact->id,
+                        $action,
+                        'contacts',
+                        $postData[$index]['Contact']['id'],
                         OBJECT_CONTACT,
-                        Hash::extract($contacts[$sourceContactId]['Container'], '{n}.id'),
+                        [ROOT_CONTAINER],
                         $userId,
-                        $newContact['name'],
-                        Hash::merge($contacts[$sourceContactId], ['Contact' => $newContact])
+                        $newContactEntity->get('name'),
+                        ['Contact' => $newContactData]
                     );
                     if ($changelog_data) {
                         CakeLog::write('log', serialize($changelog_data));
                     }
-
                 }
-                $datasource->commit();
-                $this->setFlash(__('Contacts are successfully copied'));
-                $this->redirect(['action' => 'index']);
-            } catch (Exception $e) {
-                $datasource->rollback();
-                $this->setFlash(__($e->getMessage()), false);
-                $this->redirect(['action' => 'index']);
             }
         }
 
-        $this->set(compact('contacts'));
-        $this->set('back_url', $this->referer());
+        if ($hasErrors) {
+            $this->response->statusCode(400);
+        }
+        $this->set('result', $postData);
+        $this->set('_serialize', ['result']);
+
     }
 
     public function addCustomMacro($counter) {

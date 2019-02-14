@@ -599,7 +599,7 @@ class TimeperiodsController extends AppController {
                         $action,
                         'timeperiods',
                         $postData[$index]['Timeperiod']['id'],
-                        OBJECT_COMMAND,
+                        OBJECT_TIMEPERIOD,
                         [ROOT_CONTAINER],
                         $userId,
                         $newTimeperiodEntity->get('name'),

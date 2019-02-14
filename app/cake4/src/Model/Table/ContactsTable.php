@@ -120,93 +120,53 @@ class ContactsTable extends Table {
             ->scalar('description')
             ->maxLength('description', 255)
             ->requirePresence('description', 'create')
-            ->allowEmptyString('description', false);
+            ->allowEmptyString('description', true);
 
         $validator
-            ->email('email')
-            ->requirePresence('email', 'create')
-            ->allowEmptyString('email', false);
+            ->allowEmptyString('email', function ($context) {
+                return !empty($context['data']['email']) || !empty($context['data']['phone']);
+            }, __('You must at least specify either the email address or the phone number.'))
+            ->email('email');
 
         $validator
-            ->scalar('phone')
+            ->allowEmptyString('phone', true)
             ->maxLength('phone', 64)
-            ->requirePresence('phone', 'create')
-            ->allowEmptyString('phone', false);
+            ->allowEmptyString('email', function ($context) {
+                return !empty($context['data']['email']) || !empty($context['data']['phone']);
+            }, __('You must at least specify either the email address or the phone number.'))
+            ->regex('phone', '/[\d\s-\+]+/');
 
         $validator
-            ->integer('host_notifications_enabled')
-            ->requirePresence('host_notifications_enabled', 'create')
-            ->allowEmptyString('host_notifications_enabled', false);
+            ->integer('host_timeperiod_id')
+            ->allowEmptyString('host_timeperiod_id', false)
+            ->greaterThan('host_timeperiod_id', 0);
 
         $validator
-            ->integer('service_notifications_enabled')
-            ->requirePresence('service_notifications_enabled', 'create')
-            ->allowEmptyString('service_notifications_enabled', false);
+            ->integer('service_timeperiod_id')
+            ->allowEmptyString('service_timeperiod_id', false)
+            ->greaterThan('service_timeperiod_id', 0);
 
         $validator
-            ->integer('notify_service_recovery')
-            ->requirePresence('notify_service_recovery', 'create')
-            ->allowEmptyString('notify_service_recovery', false);
+            ->allowEmptyString('HostCommands', false)
+            ->multipleOptions('HostCommands', [
+                'min' => 1
+            ], __('You have to choose at least one command.'));
 
         $validator
-            ->integer('notify_service_warning')
-            ->requirePresence('notify_service_warning', 'create')
-            ->allowEmptyString('notify_service_warning', false);
+            ->allowEmptyString('ServiceCommands', false)
+            ->multipleOptions('ServiceCommands', [
+                'min' => 1
+            ], __('You have to choose at least one command.'));
 
-        $validator
-            ->integer('notify_service_unknown')
-            ->requirePresence('notify_service_unknown', 'create')
-            ->allowEmptyString('notify_service_unknown', false);
+        $validator->add('notify_host_recovery', 'custom', [
+            'rule'    => [$this, 'checkHostNotificationOptions'],
+            'message' => 'You have to choose at least one option.',
+        ]);
 
-        $validator
-            ->integer('notify_service_critical')
-            ->requirePresence('notify_service_critical', 'create')
-            ->allowEmptyString('notify_service_critical', false);
-
-        $validator
-            ->integer('notify_service_flapping')
-            ->requirePresence('notify_service_flapping', 'create')
-            ->allowEmptyString('notify_service_flapping', false);
-
-        $validator
-            ->integer('notify_service_downtime')
-            ->requirePresence('notify_service_downtime', 'create')
-            ->allowEmptyString('notify_service_downtime', false);
-
-        $validator
-            ->integer('notify_host_recovery')
-            ->requirePresence('notify_host_recovery', 'create')
-            ->allowEmptyString('notify_host_recovery', false);
-
-        $validator
-            ->integer('notify_host_down')
-            ->requirePresence('notify_host_down', 'create')
-            ->allowEmptyString('notify_host_down', false);
-
-        $validator
-            ->integer('notify_host_unreachable')
-            ->requirePresence('notify_host_unreachable', 'create')
-            ->allowEmptyString('notify_host_unreachable', false);
-
-        $validator
-            ->integer('notify_host_flapping')
-            ->requirePresence('notify_host_flapping', 'create')
-            ->allowEmptyString('notify_host_flapping', false);
-
-        $validator
-            ->integer('notify_host_downtime')
-            ->requirePresence('notify_host_downtime', 'create')
-            ->allowEmptyString('notify_host_downtime', false);
-
-        $validator
-            ->integer('host_push_notifications_enabled')
-            ->requirePresence('host_push_notifications_enabled', 'create')
-            ->allowEmptyString('host_push_notifications_enabled', false);
-
-        $validator
-            ->integer('service_push_notifications_enabled')
-            ->requirePresence('service_push_notifications_enabled', 'create')
-            ->allowEmptyString('service_push_notifications_enabled', false);
+        $validator->add('notify_service_recovery', 'custom', [
+            'rule'    => [$this, 'checkHostNotificationOptions'],
+            'message' => 'You have to choose at least one option.',
+        ]);
 
         return $validator;
     }
@@ -219,13 +179,68 @@ class ContactsTable extends Table {
      * @return \Cake\ORM\RulesChecker
      */
     public function buildRules(RulesChecker $rules) {
-        $rules->add($rules->isUnique(['email']));
         $rules->add($rules->isUnique(['uuid']));
         $rules->add($rules->existsIn(['user_id'], 'Users'));
-        $rules->add($rules->existsIn(['host_timeperiod_id'], 'HostTimeperiods'));
-        $rules->add($rules->existsIn(['service_timeperiod_id'], 'ServiceTimeperiods'));
 
         return $rules;
+    }
+
+    /**
+     * @param mixed $value
+     * @param array $context
+     * @return bool
+     *
+     * Custom validation rule for email and/or phone fields.
+     */
+    public function atLeastOne($value, $context) {
+        return !empty($context['data']['email']) || !empty($context['data']['phone']);
+    }
+
+    /**
+     * @param mixed $value
+     * @param array $context
+     * @return bool
+     */
+    public function checkHostNotificationOptions($value, $context) {
+        $notificationOptions = [
+            'notify_host_recovery',
+            'notify_host_down',
+            'notify_host_unreachable',
+            'notify_host_flapping',
+            'notify_host_downtime'
+        ];
+
+        foreach ($notificationOptions as $notificationOption) {
+            if (isset($context['data'][$notificationOption]) && $context['data'][$notificationOption] == 1) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @param mixed $value
+     * @param array $context
+     * @return bool
+     */
+    public function checkServiceNotificationOptions($value, $context) {
+        $notificationOptions = [
+            'notify_service_recovery',
+            'notify_service_warning',
+            'notify_service_unknown',
+            'notify_service_critical',
+            'notify_service_flapping',
+            'notify_service_downtime'
+        ];
+
+        foreach ($notificationOptions as $notificationOption) {
+            if (isset($context['data'][$notificationOption]) && $context['data'][$notificationOption] == 1) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -309,6 +324,27 @@ class ContactsTable extends Table {
             ->first();
 
         return $this->formatFirstResultAsCake2($query, true);
+    }
+
+    /**
+     * @param array $ids
+     * @return array
+     */
+    public function getContactsForCopy($ids = []) {
+        $query = $this->find()
+            ->select([
+                'Contacts.id',
+                'Contacts.name',
+                'Contacts.description',
+                'Contacts.email',
+                'Contacts.phone'
+            ])
+            ->where(['Contacts.id IN' => $ids])
+            ->order(['Contacts.id' => 'asc'])
+            ->disableHydration()
+            ->all();
+
+        return $this->formatResultAsCake2($query->toArray(), false);
     }
 
 }

@@ -27,13 +27,10 @@
     <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
         <h1 class="page-title txt-color-blueDark">
             <i class="fa fa-clock-o fa-fw "></i>
-            <?php echo __('Monitoring'); ?>
+            <?php echo __('Time periods'); ?>
             <span>>
-                <?php echo __('Commands'); ?>
+                <?php echo __('Copy'); ?>
             </span>
-            <div class="third_level">>
-                <?php echo __('Time Periods'); ?>
-            </div>
         </h1>
     </div>
 </div>
@@ -97,6 +94,7 @@
                                 </div>
                             </div>
                         </div>
+                    </fieldset>
                 </div>
             </div>
 
