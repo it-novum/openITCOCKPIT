@@ -261,4 +261,17 @@ class ContactsTable extends Table {
         return $result;
     }
 
+    /**
+     * @param int $id
+     * @return array
+     */
+    public function getContactById($id) {
+        $query = $this->find()
+            ->where([
+                'Contacts.id' => $id
+            ])
+            ->first();
+        return $this->formatFirstResultAsCake2($query->toArray(), false);
+    }
+
 }

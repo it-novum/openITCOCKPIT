@@ -711,6 +711,12 @@ class ContactsController extends AppController {
         $this->set('_serialize', ['usersForSelect']);
     }
 
+    /**
+     * @param $contact
+     * @return bool
+     * @deprecated
+     * @todo Refactor me with cake4
+     */
     protected function __allowDelete($contact) {
         if (is_numeric($contact)) {
             $contactId = $contact;
@@ -740,6 +746,75 @@ class ContactsController extends AppController {
         }
 
         return true;
+    }
+
+    /**
+     * @param null $id
+     */
+    public function delete($id = null) {
+        if (!$this->request->is('post')) {
+            throw new MethodNotAllowedException();
+        }
+
+        /** @var $ContactsTable ContactsTable */
+        $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
+
+        if (!$ContactsTable->exists($id)) {
+            throw new NotFoundException(__('Contact not found'));
+        }
+
+        $contact = $ContactsTable->getContactById($id);
+
+        if (!$this->allowedByContainerId(Hash::extract($timeperiod, 'Timeperiod.container_id'))) {
+            $this->render403();
+            return;
+        }
+
+        if (!$this->__allowDelete($timeperiod)) {
+            $usedBy = [
+                [
+                    'baseUrl' => '#',
+                    'message' => __('Used by other objects'),
+                    'module'  => 'Core'
+                ]
+            ];
+
+            $this->response->statusCode(400);
+            $this->set('success', false);
+            $this->set('id', $id);
+            $this->set('message', __('Issue while deleting timeperiod'));
+            $this->set('usedBy', $usedBy);
+            $this->set('_serialize', ['success', 'id', 'message', 'usedBy']);
+            return;
+        }
+
+
+        $timeperiodEntity = $TimeperiodsTable->get($id);
+        if ($TimeperiodsTable->delete($timeperiodEntity)) {
+            $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+            $changelog_data = $this->Changelog->parseDataForChangelog(
+                'delete',
+                'timeperiods',
+                $id,
+                OBJECT_TIMEPERIOD,
+                [$timeperiod['Timeperiod']['container_id']],
+                $User->getId(),
+                $timeperiod['Timeperiod']['name'],
+                $timeperiod
+            );
+            if ($changelog_data) {
+                CakeLog::write('log', serialize($changelog_data));
+            }
+
+            $this->set('success', true);
+            $this->set('_serialize', ['success']);
+            return;
+        }
+
+        $this->response->statusCode(500);
+        $this->set('success', false);
+        $this->set('_serialize', ['success']);
+        return;
     }
 
     public function delete($id) {
@@ -799,79 +874,6 @@ class ContactsController extends AppController {
         }
     }
 
-    public function mass_delete($id = null) {
-        $userId = $this->Auth->user('id');
-        if ($this->request->is('post') || $this->request->is('put')) {
-            foreach ($this->request->data('Contact.delete') as $contactId) {
-                $contact = $this->Contact->find('first', [
-                    'recursive'  => -1,
-                    'contain'    => [
-                        'Container.id',
-                        'Container.name'
-                    ],
-                    'fields'     => [
-                        'Contact.id',
-                        'Contact.name'
-                    ],
-                    'conditions' => [
-                        'Contact.id' => $contactId
-                    ]
-                ]);
-                if ($this->allowedByContainerId(Hash::extract($contact, 'Container.{n}.id'))) {
-                    if (empty(array_diff(Hash::extract($contact['Container'], '{n}.id'), $this->MY_RIGHTS))) {
-                        if ($this->Contact->delete($contact['Contact']['id'])) {
-                            $changelog_data = $this->Changelog->parseDataForChangelog(
-                                $this->params['action'],
-                                $this->params['controller'],
-                                $contact['Contact']['id'],
-                                OBJECT_CONTACT,
-                                Hash::extract($contact['Container'], '{n}.id'),
-                                $userId,
-                                $contact['Contact']['name'],
-                                $contact
-                            );
-                            if ($changelog_data) {
-                                CakeLog::write('log', serialize($changelog_data));
-                            }
-                        }
-                    }
-                }
-            }
-            $this->setFlash(__('Contacts deleted'));
-            $this->redirect(['action' => 'index']);
-        }
-        $contactsToDelete = [];
-        $contactsCanotDelete = [];
-        foreach (func_get_args() as $contactId) {
-            if ($this->Contact->exists($contactId)) {
-                $contact = $this->Contact->find('first', [
-                    'recursive'  => -1,
-                    'contain'    => [
-                        'Container.id',
-                        'Container.name'
-                    ],
-                    'fields'     => [
-                        'Contact.id',
-                        'Contact.name'
-                    ],
-                    'conditions' => [
-                        'Contact.id' => $contactId
-                    ]
-                ]);
-                if ($this->allowedByContainerId(Hash::extract($contact, 'Container.{n}.id'))) {
-                    if (empty(array_diff(Hash::extract($contact['Container'], '{n}.id'), $this->MY_RIGHTS))) {
-                        if ($this->__allowDelete($contactId)) {
-                            $contactsToDelete[] = $contact;
-                        } else {
-                            $contactsCanotDelete[$contactId] = $contact['Contact']['name'];
-                        }
-                    }
-                }
-            }
-        }
-        $count = sizeof($contactsToDelete) + sizeof($contactsCanotDelete);
-        $this->set(compact(['contactsToDelete', 'contactsCanotDelete', 'count']));
-    }
 
     public function loadTimeperiods() {
         $this->allowOnlyAjaxRequests();
