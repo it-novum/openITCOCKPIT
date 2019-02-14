@@ -23,10 +23,14 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 use App\Model\Table\CommandsTable;
+use App\Model\Table\ContactsTable;
 use App\Model\Table\ContainersTable;
+use App\Model\Table\SystemsettingsTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\PHPVersionChecker;
+use itnovum\openITCOCKPIT\Database\PaginateOMat;
+use itnovum\openITCOCKPIT\Filter\ContactsFilter;
 
 
 /**
@@ -34,8 +38,10 @@ use itnovum\openITCOCKPIT\Core\PHPVersionChecker;
  * @property Container $Container
  * @property Timeperiod $Timeperiod
  * @property Customvariable $Customvariable
+ * @property AppPaginatorComponent $Paginator
  */
 class ContactsController extends AppController {
+
     public $uses = [
         'Contact',
         'Container',
@@ -43,13 +49,16 @@ class ContactsController extends AppController {
         'Customvariable',
         'User'
     ];
+
     public $layout = 'Admin.default';
+
     public $components = [
         'ListFilter.ListFilter',
         'RequestHandler',
         'Ldap',
         'CustomValidationErrors'
     ];
+
     public $helpers = [
         'ListFilter.ListFilter',
         'CustomVariables',
@@ -75,74 +84,50 @@ class ContactsController extends AppController {
         ],
     ];
 
-    function index() {
-        /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
-        $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
-        $systemsettings = $Systemsettings->findAsArraySection('FRONTEND');
-        $this->Contact->unbindModel([
-                'hasAndBelongsToMany' => ['HostCommands', 'ServiceCommands', 'Contactgroup'],
-                'belongsTo'           => ['HostTimeperiod', 'ServiceTimeperiod'],
-            ]
-        );
-        $options = [
-            //'recursive' => -1,
-            'joins'      => [
-                [
-                    'table'      => 'contacts_to_containers',
-                    'type'       => 'INNER',
-                    'alias'      => 'ContactsToContainer',
-                    'conditions' => [
-                        'ContactsToContainer.contact_id = Contact.id',
-                    ],
-                ],
-                [
-                    'table'      => 'containers',
-                    'type'       => 'INNER',
-                    'alias'      => 'Container',
-                    'conditions' => [
-                        'Container.id = ContactsToContainer.container_id',
-                        'Container.containertype_id NOT' => CT_CONTACTGROUP,
-                    ],
-                ],
-            ],
-            'conditions' => [
-                'ContactsToContainer.container_id' => $this->MY_RIGHTS,
-            ],
-            'order'      => ['Contact.name' => 'asc'],
-            'group'      => ['Contact.id'],
-        ];
-
-        $query = Hash::merge($this->Paginator->settings, $options);
-        if ($this->isApiRequest()) {
-            unset($query['limit']);
-            $all_contacts = $this->Contact->find('all', $query);
-        } else {
-            $this->Paginator->settings = array_merge($this->Paginator->settings, $query);
-            $all_contacts = $this->Paginator->paginate();
+    public function index() {
+        if (!$this->isAngularJsRequest()) {
+            //Only ship HTML Template
+            return;
         }
 
-        $contactsWithContainers = [];
+        /** @var $SystemsettingsTable SystemsettingsTable */
+        $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
+        /** @var $ContactsTable ContactsTable */
+        $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
+
+
+        $ContactsFilter = new ContactsFilter($this->request);
+        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $ContactsFilter->getPage());
+
         $MY_RIGHTS = $this->MY_RIGHTS;
-        foreach ($all_contacts as $key => $contact) {
+        if ($this->hasRootPrivileges) {
+            $MY_RIGHTS = [];
+        }
+        $contacts = $ContactsTable->getContactsIndex($ContactsFilter, $PaginateOMat, $MY_RIGHTS);
+
+        $contactsWithContainers = [];
+        foreach ($contacts as $key => $contact) {
             $contactsWithContainers[$contact['Contact']['id']] = [];
             foreach ($contact['Container'] as $container) {
                 $contactsWithContainers[$contact['Contact']['id']][] = $container['id'];
             }
 
-            $all_contacts[$key]['allowEdit'] = true;
+            $contacts[$key]['allowEdit'] = true;
             if ($this->hasRootPrivileges === false) {
-                $all_contacts[$key]['allowEdit'] = false;
+                $contacts[$key]['allowEdit'] = false;
                 if (!empty(array_intersect($contactsWithContainers[$contact['Contact']['id']], $this->getWriteContainers()))) {
-                    $all_contacts[$key]['allowEdit'] = true;
+                    $contacts[$key]['allowEdit'] = true;
                 }
             }
-
         }
 
-        //$this->Paginator->settings['limit'] = 1;
-        $this->set(compact(['all_contacts', 'systemsettings']));
-        //Aufruf für json oder xml view: /nagios_module/hosts.json oder /nagios_module/hosts.xml
-        $this->set('_serialize', ['all_contacts']);
+        $this->set('isLdapAuth', $SystemsettingsTable->isLdapAuth());
+        $this->set('all_contacts', $contacts);
+        $toJson = ['all_contacts', 'paging'];
+        if ($this->isScrollRequest()) {
+            $toJson = ['all_contacts', 'scroll'];
+        }
+        $this->set('_serialize', $toJson);
     }
 
     public function view($id = null) {

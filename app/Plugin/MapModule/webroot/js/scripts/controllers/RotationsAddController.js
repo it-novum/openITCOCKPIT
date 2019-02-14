@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('RotationsAddController', function($scope, $http){
+    .controller('RotationsAddController', function($scope, $http, $state, NotyService){
 
         $scope.post = {
             Rotation: {
@@ -36,19 +36,16 @@ angular.module('openITCOCKPIT')
             $http.post("/map_module/rotations/add.json?angular=true",
                 $scope.post
             ).then(function(result){
-                console.log('Data saved successfully');
-                window.location.href = '/map_module/rotations/index';
+                NotyService.genericSuccess();
+                $state.go('RotationsIndex');
             }, function errorCallback(result){
+                NotyService.genericError();
                 if(result.data.hasOwnProperty('error')){
                     $scope.errors = result.data.error;
                 }
             });
 
         };
-
-        $scope.$watch('post', function(){
-            console.log($scope.post);
-        }, true);
 
         $scope.loadMaps();
         $scope.loadContainers();

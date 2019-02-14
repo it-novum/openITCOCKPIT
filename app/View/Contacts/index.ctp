@@ -23,14 +23,13 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 ?>
-<?php $this->Paginator->options(['url' => $this->params['named']]); ?>
 <div class="row">
     <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
         <h1 class="page-title txt-color-blueDark">
             <i class="fa fa-user fa-fw "></i>
-            <?php echo __('Monitoring'); ?>
+            <?php echo __('Contacts'); ?>
             <span>>
-                <?php echo __('Contacts'); ?>
+                <?php echo __('Overview'); ?>
             </span>
         </h1>
     </div>
@@ -39,14 +38,14 @@
 <section id="widget-grid" class="">
     <div class="row">
         <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-            <div class="jarviswidget jarviswidget-color-blueDark" id="wid-id-1" data-widget-editbutton="false">
+            <div class="jarviswidget jarviswidget-color-blueDark">
                 <header>
                     <div class="widget-toolbar" role="menu">
                         <?php
-                        if ($this->Acl->hasPermission('add')):
+                        if ($this->Acl->hasPermission('add', 'contacts')):
                             echo $this->Html->link(__('New'), '/' . $this->params['controller'] . '/add', ['class' => 'btn btn-xs btn-success', 'icon' => 'fa fa-plus']);
                             echo " "; //Fix HTML
-                            if ($systemsettings['FRONTEND']['FRONTEND.AUTH_METHOD'] == 'ldap'):
+                            if ($isLdapAuth):
                                 echo $this->Html->link(__('Import from LDAP'), '/' . $this->params['controller'] . '/addFromLdap', ['class' => 'btn btn-xs btn-warning', 'icon' => 'fa fa-plus']);
                                 echo " "; //Fix HTML
                             endif;
@@ -157,7 +156,7 @@
                                             </td>
                                         <?php endforeach; ?>
                                         <td>
-                                            <?php if ($contact['allowEdit'] === true && $this->Acl->hasPermission('edit')): ?>
+                                            <?php if ($contact['allowEdit'] === true && $this->Acl->hasPermission('edit', 'contacts')): ?>
                                                 <center>
                                                     <a href="/<?php echo $this->params['controller']; ?>/edit/<?php echo $contact['Contact']['id']; ?>"
                                                        data-original-title="<?php echo __('edit'); ?>"><i id="list_edit"
@@ -191,5 +190,7 @@
                     </div>
                 </div>
             </div>
+        </article>
     </div>
 </section>
+

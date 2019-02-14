@@ -182,7 +182,7 @@
                             <div class="well formactions ">
                                 <div class="pull-right">
                                     <input class="btn btn-primary" type="submit" value="Save">&nbsp;
-                                    <a href="/systemsettings" class="btn btn-default">Cancel</a>
+                                    <a ng-sref="SystemsettingsIndex" class="btn btn-default">Cancel</a>
                                 </div>
                             </div>
                         </div>

@@ -1,4 +1,4 @@
-angular.module('openITCOCKPIT', ['gridster', 'ui.router'])
+var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router'])
 
     .factory("httpInterceptor", function($q, $rootScope, $timeout){
         return {
@@ -146,6 +146,12 @@ angular.module('openITCOCKPIT', ['gridster', 'ui.router'])
                 url: '/currentstatereports/index',
                 templateUrl: "/currentstatereports/index.html",
                 controller: "CurrentstatereportsIndexController"
+            })
+
+            .state('DashboardsIndex', {
+                url: '/dashboards/index',
+                templateUrl: "/dashboards/index.html",
+                controller: "DashboardsIndexController"
             })
 
             .state('DeletedHostsIndex', {
@@ -328,6 +334,12 @@ angular.module('openITCOCKPIT', ['gridster', 'ui.router'])
                 controller: "SystemdowntimesAddContainerdowntimeController"
             })
 
+            .state('SystemsettingsIndex', {
+                url: '/systemsettings/index',
+                templateUrl: "/systemsettings/index.html",
+                controller: "SystemsettingsIndexController"
+            })
+
             .state('HostgroupsIndex', {
                 url: '/hostgroups/index',
                 templateUrl: "/hostgroups/index.html",
@@ -356,6 +368,12 @@ angular.module('openITCOCKPIT', ['gridster', 'ui.router'])
                 url: '/hostchecks/index/:id',
                 templateUrl: "/hostchecks/index.html",
                 controller: "HostchecksIndexController"
+            })
+
+            .state('HosttemplatesUsedBy', {
+                url: '/hosttemplates/usedBy/:id',
+                templateUrl: "/hosttemplates/usedBy.html",
+                controller: "HosttemplatesUsedByController"
             })
 
             .state('ServicegroupsIndex', {
@@ -418,6 +436,24 @@ angular.module('openITCOCKPIT', ['gridster', 'ui.router'])
                 controller: "CommandsCopyController"
             })
 
+            .state('TenantsIndex', {
+                url: '/tenants/index',
+                templateUrl: "/tenants/index.html",
+                controller: "TenantsIndexController"
+            })
+
+            .state('TenantsAdd', {
+                url: '/tenants/add',
+                templateUrl: "/tenants/add.html",
+                controller: "TenantsAddController"
+            })
+
+            .state('TenantsEdit', {
+                url: '/tenants/edit/:id',
+                templateUrl: "/tenants/edit.html",
+                controller: "TenantsEditController"
+            })
+
             .state('TimeperiodsIndex', {
                 url: '/timeperiods/index',
                 templateUrl: "/timeperiods/index.html",
@@ -470,6 +506,37 @@ angular.module('openITCOCKPIT', ['gridster', 'ui.router'])
                 url: '/acknowledgements/service/:id',
                 templateUrl: "/acknowledgements/service.html",
                 controller: "AcknowledgementsServiceController"
+            })
+
+
+            .state('ContactsIndex', {
+                url: '/contacts/index',
+                templateUrl: "/contacts/index.html",
+                controller: "ContactsIndexController"
+            })
+
+            .state('ContactsAdd', {
+                url: '/contacts/add',
+                templateUrl: "/contacts/add.html",
+                controller: "ContactsAddController"
+            })
+
+            .state('ContactsEdit', {
+                url: '/contacts/edit/:id',
+                templateUrl: "/contacts/edit.html",
+                controller: "ContactsEditController"
+            })
+
+            .state('ContactsCopy', {
+                url: '/contacts/copy/:ids',
+                templateUrl: "/contacts/copy.html",
+                controller: "ContactsCopyController"
+            })
+
+            .state('ContactsLdap', {
+                url: '/contacts/ldap',
+                templateUrl: "/contacts/ldap.html",
+                controller: "ContactsLdapController"
             })
     })
 

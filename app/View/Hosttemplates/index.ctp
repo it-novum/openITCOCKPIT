@@ -111,7 +111,7 @@
                                                     <?php endif; ?>
                                                     <?php if ($this->Acl->hasPermission('usedBy')): ?>
                                                         <li>
-                                                            <a href="/<?php echo $this->params['controller']; ?>/usedBy/<?php echo $hosttemplate['Hosttemplate']['id']; ?>"><i
+                                                            <a href="/ng/#!/hosttemplates/usedBy/<?php echo $hosttemplate['Hosttemplate']['id']; ?>"><i
                                                                         class="fa fa-reply-all fa-flip-horizontal"></i> <?php echo __('Used by'); ?>
                                                             </a>
                                                         </li>

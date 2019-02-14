@@ -27,6 +27,7 @@ $config = [
     'menu' => [
         'dashboard' => [
             'url'      => ['controller' => 'dashboards', 'action' => 'index', 'plugin' => ''],
+            'state'    => 'DashboardsIndex',
             'title'    => 'Dashboard',
             'icon'     => 'dashboard',
             'order'    => 1,
@@ -57,6 +58,7 @@ $config = [
             'children' => [
                 [
                     'url'               => ['controller' => 'systemsettings', 'action' => 'index'],
+                    'state'             => 'SystemsettingsIndex',
                     'title'             => 'System Settings',
                     'icon'              => 'wrench',
                 ],
@@ -210,6 +212,7 @@ $config = [
                 ],
                 [
                     'url'               => ['controller' => 'tenants', 'action' => 'index'],
+                    'state'             => 'TenantsIndex',
                     'title'             => 'Tenants',
                     'icon'              => 'home',
                 ],

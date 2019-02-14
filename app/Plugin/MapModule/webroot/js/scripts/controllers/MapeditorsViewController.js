@@ -1,12 +1,13 @@
 angular.module('openITCOCKPIT')
-    .controller('MapeditorsViewController', function($scope, $http, QueryStringService, $timeout, $interval){
+    .controller('MapeditorsViewController', function($scope, $http, QueryStringService, $timeout, $interval, $stateParams){
 
         $scope.init = true;
-        $scope.id = QueryStringService.getCakeId();
+        $scope.id = $stateParams.id;
+        $scope.rotate = null;
 
-        $scope.fullscreen = QueryStringService.getValue('fullscreen', false) === 'true';
-        $scope.rotate = QueryStringService.getValue('rotation', null);
-        $scope.rotationInterval = parseInt(QueryStringService.getValue('interval', 0), 10) * 1000;
+        $scope.fullscreen = ($stateParams.fullscreen === 'true');
+        if($stateParams.rotation != null) $scope.rotate = $stateParams.rotation;
+        $scope.rotationInterval = parseInt($stateParams.interval, 10) * 1000;
         $scope.rotationPossition = 1;
 
 
@@ -42,6 +43,30 @@ angular.module('openITCOCKPIT')
 
             }, $scope.rotationInterval);
         }
+
+        $scope.enterFullscreen = function(){
+            document.getElementById('left-panel').style.display = 'none';
+            document.getElementById('ribbon').style.display = 'none';
+            document.getElementById('header').style.display = 'none';
+            document.getElementById('main').style.marginLeft = '0px';
+            $('#content > .ng-scope > .row').css('display','none');
+        };
+
+        $scope.leaveFullscreen = function(){
+            document.getElementById('left-panel').style.display = 'block';
+            document.getElementById('ribbon').style.display = 'block';
+            document.getElementById('header').style.display = 'block';
+            document.getElementById('main').style.marginLeft = '220px';
+            $('#content > .ng-scope > .row').css('display','block');
+        };
+
+        $scope.$watch('fullscreen', function(){
+            if($scope.fullscreen){
+                $scope.enterFullscreen();
+            } else {
+                $scope.leaveFullscreen();
+            }
+        }, true);
 
 
     });

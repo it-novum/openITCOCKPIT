@@ -7,12 +7,17 @@ angular.module('openITCOCKPIT')
             Container: {
                 id: null,
                 tenant: null
-            }
+            },
+            backState: null
         };
 
         $scope.post.Container.id = $stateParams.id;
         if($stateParams.tenant){
-            $scope.post.Container.tenant = $stateParams.tenant;
+            if(isNaN($stateParams.tenant)){
+                $scope.post.backState = $stateParams.tenant;
+            } else {
+                $scope.post.Container.tenant = $stateParams.tenant;
+            }
         }
 
 

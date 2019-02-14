@@ -139,7 +139,9 @@ class HostgroupsController extends AppController {
     public function extended() {
         $this->layout = 'blank';
         if (!$this->isApiRequest()) {
-            $this->set('QueryHandler', new QueryHandler($this->Systemsetting->getQueryHandlerPath()));
+            /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
+            $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
+            $this->set('QueryHandler', new QueryHandler($Systemsettings->getQueryHandlerPath()));
             $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
             $this->set('username', $User->getFullName());
         }

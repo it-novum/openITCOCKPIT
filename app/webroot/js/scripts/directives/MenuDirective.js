@@ -27,12 +27,19 @@ angular.module('openITCOCKPIT').directive('menu', function($http, $timeout, $htt
             $scope.isActiveChild = function(childNode) {
                 let urlController = $scope.phpcontroller;
                 let urlAction = $scope.phpaction;
+                let urlPlugin = $scope.phpplugin;
                 if (window.location.href.includes('/ng/#!/')) {
                     let oldUrlParams = window.location.href.split('/ng/#!/')[1].split('/');
-                    urlController = oldUrlParams[0];
-                    urlAction = oldUrlParams[1] ? oldUrlParams[1] : "index";
+                    if(oldUrlParams[0].includes('_module')){
+                        urlPlugin = oldUrlParams[0];
+                        urlController = oldUrlParams[1];
+                        urlAction = oldUrlParams[2] ? oldUrlParams[2] : "index";
+                    } else {
+                        urlController = oldUrlParams[0];
+                        urlAction = oldUrlParams[1] ? oldUrlParams[1] : "index";
+                    }
                 }
-                if(childNode.url_array.plugin == $scope.phpplugin){
+                if(childNode.url_array.plugin == urlPlugin){
                     if(childNode.url_array.controller === urlController){
                         if(childNode.url_array.action === urlAction){
                             return true;
@@ -45,13 +52,20 @@ angular.module('openITCOCKPIT').directive('menu', function($http, $timeout, $htt
             $scope.isActiveParent = function(parentNode) {
                 let urlController = $scope.phpcontroller;
                 let urlAction = $scope.phpaction;
+                let urlPlugin = $scope.phpplugin;
                 if (window.location.href.includes('/ng/#!/')) {
                     let oldUrlParams = window.location.href.split('/ng/#!/')[1].split('/');
-                    urlController = oldUrlParams[0];
-                    urlAction = oldUrlParams[1] ? oldUrlParams[1] : "index";
+                    if(oldUrlParams[0].includes('_module')){
+                        urlPlugin = oldUrlParams[0];
+                        urlController = oldUrlParams[1];
+                        urlAction = oldUrlParams[2] ? oldUrlParams[2] : "index";
+                    } else {
+                        urlController = oldUrlParams[0];
+                        urlAction = oldUrlParams[1] ? oldUrlParams[1] : "index";
+                    }
                 }
 
-                if(parentNode.url_array && parentNode.url_array.plugin == $scope.phpplugin){
+                if(parentNode.url_array && parentNode.url_array.plugin == urlPlugin){
                     if(parentNode.url_array.controller === urlController){
                         if(parentNode.url_array.action === urlAction){
                             return true;

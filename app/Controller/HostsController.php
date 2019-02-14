@@ -128,7 +128,10 @@ class HostsController extends AppController {
         $this->layout = 'blank';
         $User = new User($this->Auth);
 
-        $masterInstanceName = $this->Systemsetting->getMasterInstanceName();
+        /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
+        $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
+        $masterInstanceName = $Systemsettings->getMasterInstanceName();
+
         $SatelliteNames = [];
         $ModuleManager = new ModuleManager('DistributeModule');
         if ($ModuleManager->moduleExists()) {
@@ -138,7 +141,9 @@ class HostsController extends AppController {
         }
 
         if (!$this->isApiRequest()) {
-            $this->set('QueryHandler', new QueryHandler($this->Systemsetting->getQueryHandlerPath()));
+            /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
+            $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
+            $this->set('QueryHandler', new QueryHandler($Systemsettings->getQueryHandlerPath()));
             $this->set('username', $User->getFullName());
             $this->set('satellites', $SatelliteNames);
             //Only ship HTML template
@@ -346,7 +351,9 @@ class HostsController extends AppController {
     public function notMonitored() {
         $this->layout = 'blank';
 
-        $masterInstanceName = $this->Systemsetting->getMasterInstanceName();
+        /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
+        $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
+        $masterInstanceName = $Systemsettings->getMasterInstanceName();
         $SatelliteNames = [];
         $ModuleManager = new ModuleManager('DistributeModule');
         if ($ModuleManager->moduleExists()) {
@@ -1471,7 +1478,9 @@ class HostsController extends AppController {
     public function disabled() {
         $this->layout = 'blank';
 
-        $masterInstanceName = $this->Systemsetting->getMasterInstanceName();
+        /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
+        $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
+        $masterInstanceName = $Systemsettings->getMasterInstanceName();
         $SatelliteNames = [];
         $ModuleManager = new ModuleManager('DistributeModule');
         if ($ModuleManager->moduleExists()) {
@@ -2328,9 +2337,11 @@ class HostsController extends AppController {
                     $this->set('GrafanaConfiguration', $GrafanaConfiguration);
                 }
             }
+            /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
+            $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
+            $this->set('QueryHandler', new QueryHandler($Systemsettings->getQueryHandlerPath()));
             $this->set('username', $User->getFullName());
-            $this->set('QueryHandler', new QueryHandler($this->Systemsetting->getQueryHandlerPath()));
-            $this->set('masterInstanceName', $this->Systemsetting->getMasterInstanceName());
+            $this->set('masterInstanceName', $Systemsettings->getMasterInstanceName());
             //Only ship template
             return;
         }

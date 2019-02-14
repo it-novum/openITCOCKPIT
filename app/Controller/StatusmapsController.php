@@ -60,7 +60,9 @@ class StatusmapsController extends AppController {
         }
 
         if (!$this->isApiRequest()) {
-            $masterInstanceName = $this->Systemsetting->getMasterInstanceName();
+            /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
+            $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
+            $masterInstanceName = $Systemsettings->getMasterInstanceName();
             $ModuleManager = new ModuleManager('DistributeModule');
             if ($ModuleManager->moduleExists()) {
                 $SatelliteModel = $ModuleManager->loadModel('Satellite');

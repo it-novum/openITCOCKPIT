@@ -71,6 +71,13 @@ class CompressShell extends AppShell {
         $this->compressFiles($angularServices, 'compressed_angular_services.js');
         $this->minifyJsFile('compressed_angular_services.js');
         $this->out('<green>done</green>');
+
+        //angular services
+        $this->out('Compress Angular states...    ', false);
+        $angularStates = $this->fetchAllPluginNGStateFiles();
+        $this->compressFiles($angularStates, 'compressed_angular_states.js');
+        $this->minifyJsFile('compressed_angular_states.js');
+        $this->out('<green>done</green>');
     }
 
     public function fetchAllJavaScriptComponents() {
@@ -133,6 +140,18 @@ class CompressShell extends AppShell {
         }
 
         return $this->removeDotFiles($angularServices);
+    }
+
+    public function fetchAllPluginNGStateFiles() {
+        $core = new Folder(WWW_ROOT . 'js' . DS . 'scripts' . DS . 'states');
+        $angularPluginStates = [];
+
+        foreach (CakePlugin::loaded() as $pluginName) {
+            $plugin = new Folder(OLD_APP . 'Plugin' . DS . $pluginName . DS . 'webroot' . DS . 'js' . DS . 'scripts');
+            $angularPluginStates = array_merge($angularPluginStates, $plugin->findRecursive('ng.states.js'));
+        }
+
+        return $this->removeDotFiles($angularPluginStates);
     }
 
     public function compressFiles($files, $outFileName) {

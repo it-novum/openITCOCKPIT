@@ -1,8 +1,8 @@
 angular.module('openITCOCKPIT')
-    .controller('MapeditorsEditController', function($scope, $http, QueryStringService){
+    .controller('MapeditorsEditController', function($scope, $http, $stateParams){
 
         $scope.init = true;
-        $scope.id = QueryStringService.getCakeId();
+        $scope.id = $stateParams.id;
         $scope.backgrounds = [];
 
         $scope.addNewObject = false;

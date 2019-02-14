@@ -94,8 +94,6 @@ class SystemsettingsTable extends Table {
             foreach ($sSection as $sSettingOptionKey) {
                 // looping through our Settings
                 foreach ($all_systemsettings as $nsSectionName => $nsSection) {
-                    //  debug($nsSectionName);
-                    // debug($nsSection);
                     if ($sSectionName === $nsSectionName) {
                         foreach ($nsSection as $nsSectionK => $nsSettingOption) {
                             if ($sSettingOptionKey === $nsSettingOption['key']) {
@@ -174,5 +172,14 @@ class SystemsettingsTable extends Table {
             Cache::write('systemsettings_qh_path', $path, 'permissions');
         }
         return Cache::read('systemsettings_qh_path', 'permissions');
+    }
+
+    public function isLdapAuth(){
+        if (!Cache::read('systemsettings_is_ldap_auth', 'permissions')) {
+            $settings = $this->findAsArraySection('FRONTEND');
+            $value = $settings['FRONTEND']['FRONTEND.AUTH_METHOD'] === 'ldap';
+            Cache::write('systemsettings_is_ldap_auth', $value, 'permissions');
+        }
+        return Cache::read('systemsettings_is_ldap_auth', 'permissions');
     }
 }

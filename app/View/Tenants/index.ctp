@@ -49,7 +49,7 @@
                         </button>
 
                         <?php if ($this->Acl->hasPermission('add')): ?>
-                            <a href="/tenants/add" class="btn btn-xs btn-success">
+                            <a ui-sref="TenantsAdd" class="btn btn-xs btn-success">
                                 <i class="fa fa-plus"></i>
                                 <?php echo __('New'); ?>
                             </a>
@@ -150,7 +150,7 @@
                                     <td class="width-50">
                                         <div class="btn-group">
                                             <?php if ($this->Acl->hasPermission('edit')): ?>
-                                                <a href="/tenants/edit/{{ tenant.Tenant.id}}"
+                                                <a ui-sref="TenantsEdit({id: tenant.Tenant.id})"
                                                    class="btn btn-default" ng-if="tenant.Tenant.allowEdit">
                                                     &nbsp;<i class="fa fa-cog"></i>&nbsp;
                                                 </a>
@@ -166,7 +166,7 @@
                                                 id="menuHack-{{tenant.Tenant.id}}">
                                                 <?php if ($this->Acl->hasPermission('edit')): ?>
                                                     <li>
-                                                        <a href="/tenants/edit/{{tenant.Tenant.id}}"
+                                                        <a ui-sref="TenantsEdit({id: tenant.Tenant.id})"
                                                            ng-if="tenant.Tenant.allowEdit">
                                                             <i class="fa fa-cog"></i> <?php echo __('Edit'); ?>
                                                         </a>
@@ -174,7 +174,7 @@
                                                 <?php endif; ?>
                                                 <?php if ($this->Acl->hasPermission('showDetails', 'containers')): ?>
                                                     <li>
-                                                        <a href="/containers/showDetails/{{ tenant.Tenant.container_id}}">
+                                                        <a ui-sref="ContainersShowDetails({id: tenant.Tenant.container_id, tenant: 'TenantsIndex'})">
                                                             <i class="fa fa-info-circle"></i> <?php echo __('Show details'); ?>
                                                         </a>
                                                     </li>

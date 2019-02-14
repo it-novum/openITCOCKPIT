@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('RotationsEditController', function($scope, $http, QueryStringService){
+    .controller('RotationsEditController', function($scope, $http, $stateParams, $state, NotyService){
 
         $scope.post = {
             Rotation: {
@@ -9,7 +9,7 @@ angular.module('openITCOCKPIT')
                 Map: []
             }
         };
-        $scope.id = QueryStringService.getCakeId();
+        $scope.id = $stateParams.id;
 
         $scope.deleteUrl = "/map_module/rotations/delete/" + $scope.id + ".json?angular=true";
         $scope.sucessUrl = '/map_module/rotations/index';
@@ -49,7 +49,6 @@ angular.module('openITCOCKPIT')
                     'angular': true
                 }
             }).then(function(result){
-                console.log(result.data);
                 $scope.containers = result.data.containers;
             });
         };
@@ -60,7 +59,6 @@ angular.module('openITCOCKPIT')
                     'angular': true
                 }
             }).then(function(result){
-                console.log(result.data);
                 $scope.maps = result.data.maps;
             });
         };
@@ -69,9 +67,10 @@ angular.module('openITCOCKPIT')
             $http.post("/map_module/rotations/edit/" + $scope.id + ".json?angular=true",
                 $scope.post
             ).then(function(result){
-                console.log('Data saved successfully');
-                window.location.href = '/map_module/rotations/index';
+                NotyService.genericSuccess();
+                $state.go('RotationsIndex');
             }, function errorCallback(result){
+                NotyService.genericError();
                 if(result.data.hasOwnProperty('error')){
                     $scope.errors = result.data.error;
                 }

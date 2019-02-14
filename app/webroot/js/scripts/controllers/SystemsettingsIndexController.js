@@ -3,7 +3,6 @@ angular.module('openITCOCKPIT')
         $scope.systemsettings = {};
         $scope.dropdownOptionSequence = [];
 
-        $scope.init = true;
         $scope.load = function(){
             $http.get("/systemsettings/index.json", {
                 params: {
@@ -11,7 +10,6 @@ angular.module('openITCOCKPIT')
                 }
             }).then(function(result){
                 $scope.systemsettings = result.data.all_systemsettings;
-                $scope.init = false;
             });
         };
 
@@ -53,6 +51,14 @@ angular.module('openITCOCKPIT')
                 }
             });
         };
+
+        $scope.$watch('systemsettings', function(){
+            if($scope.systemsettings.length != 0){
+                jQuery(function(){
+                    jQuery("[rel=tooltip]").tooltip();
+                });
+            }
+        });
 
         $scope.generateOptions();
         $scope.load();
