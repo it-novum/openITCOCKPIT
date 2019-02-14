@@ -6,6 +6,7 @@ use App\Lib\Traits\Cake2ResultTableTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
+use Cake\ORM\TableRegistry;
 use Cake\Validation\Validator;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\ContactsFilter;
@@ -223,6 +224,34 @@ class ContactsTable extends Table {
     }
 
     /**
+     * @param int $id
+     * @return bool
+     */
+    public function allowDelete($id) {
+        $tableNames = [
+            '__ContactsToContactgroups',
+            '__ContactsToHosttemplates',
+            '__ContactsToHosts',
+            '__ContactsToServicetemplates',
+            '__ContactsToServices',
+            '__ContactsToHostescalations',
+            '__ContactsToServiceescalations',
+        ];
+
+        foreach($tableNames as $tableName)
+        $LinkingTable = TableRegistry::getTableLocator()->get($tableName);
+        $count = $LinkingTable->find()
+            ->where(['contact_id' => $id])
+            ->count();
+
+        if ($count > 0) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
      * @param ContactsFilter $ContactsFilter
      * @param null|PaginateOMat $PaginateOMat
      * @param array $MY_RIGHTS
@@ -270,8 +299,11 @@ class ContactsTable extends Table {
             ->where([
                 'Contacts.id' => $id
             ])
+            ->contain(['Containers'])
+            ->disableHydration()
             ->first();
-        return $this->formatFirstResultAsCake2($query->toArray(), false);
+
+        return $this->formatFirstResultAsCake2($query, true);
     }
 
 }
