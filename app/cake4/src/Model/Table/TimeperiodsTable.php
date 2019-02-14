@@ -136,7 +136,6 @@ class TimeperiodsTable extends Table {
         $query->where($TimeperiodsFilter->indexFilter());
         $query->order($TimeperiodsFilter->getOrderForPaginator('Timeperiods.name', 'asc'));
 
-        $result = [];
         if ($PaginateOMat === null) {
             //Just execute query
             $result = $this->formatResultAsCake2($query->toArray(), false);

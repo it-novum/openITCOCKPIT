@@ -130,7 +130,6 @@ class CommandsTable extends Table {
         $query->where($CommandsFilter->indexFilter());
         $query->order($CommandsFilter->getOrderForPaginator('Commands.name', 'asc'));
 
-        $result = [];
         if ($PaginateOMat === null) {
             //Just execute query
             $result = $this->formatResultAsCake2($query->toArray(), false);

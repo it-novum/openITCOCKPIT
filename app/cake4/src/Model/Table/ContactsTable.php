@@ -52,18 +52,21 @@ class ContactsTable extends Table {
             'targetForeignKey' => 'container_id',
             'joinTable'        => 'contacts_to_containers'
         ]);
+
         $this->belongsToMany('HostCommands', [
             'className'        => 'Commands',
             'joinTable'        => 'contacts_to_hostcommands',
             'foreignKey'       => 'contact_id',
             'targetForeignKey' => 'command_id'
         ]);
+
         $this->belongsToMany('ServiceCommands', [
             'className'        => 'Commands',
             'joinTable'        => 'contacts_to_servicecommands',
             'foreignKey'       => 'contact_id',
             'targetForeignKey' => 'command_id',
         ]);
+
         $this->hasMany('Customvariables', [
             'conditions' => [
                 'objecttype_id' => OBJECT_CONTACT
@@ -75,11 +78,13 @@ class ContactsTable extends Table {
         $this->belongsTo('Users', [
             'foreignKey' => 'user_id'
         ]);
+
         $this->belongsTo('HostTimeperiods', [
             'className'  => 'Timeperiods',
             'foreignKey' => 'host_timeperiod_id',
             'joinType'   => 'INNER'
         ]);
+
         $this->belongsTo('ServiceTimeperiods', [
             'className'  => 'Timeperiods',
             'foreignKey' => 'service_timeperiod_id',
@@ -238,8 +243,8 @@ class ContactsTable extends Table {
             '__ContactsToServiceescalations',
         ];
 
-        foreach($tableNames as $tableName)
-        $LinkingTable = TableRegistry::getTableLocator()->get($tableName);
+        foreach ($tableNames as $tableName)
+            $LinkingTable = TableRegistry::getTableLocator()->get($tableName);
         $count = $LinkingTable->find()
             ->where(['contact_id' => $id])
             ->count();
@@ -275,7 +280,6 @@ class ContactsTable extends Table {
         $query->order($ContactsFilter->getOrderForPaginator('Contacts.name', 'asc'));
 
 
-        $result = [];
         if ($PaginateOMat === null) {
             //Just execute query
             $result = $this->formatResultAsCake2($query->toArray(), false);
