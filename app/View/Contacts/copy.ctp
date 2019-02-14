@@ -95,7 +95,7 @@
                             </div>
                         </div>
 
-                        <div class="form-group" ng-class="{'has-error': sourceContact.Error.email}">
+                        <div class="form-group required" ng-class="{'has-error': sourceContact.Error.email}">
                             <label for="Contact{{$index}}Email" class="col col-md-2 control-label">
                                 <?php echo('Email'); ?>
                             </label>
@@ -111,7 +111,7 @@
                             </div>
                         </div>
 
-                        <div class="form-group" ng-class="{'has-error': sourceContact.Error.phone}">
+                        <div class="form-group required" ng-class="{'has-error': sourceContact.Error.phone}">
                             <label for="Contact{{$index}}Phone" class="col col-md-2 control-label">
                                 <?php echo('Phone'); ?>
                             </label>
