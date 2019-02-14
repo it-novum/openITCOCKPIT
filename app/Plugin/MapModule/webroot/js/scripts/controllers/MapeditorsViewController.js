@@ -44,5 +44,29 @@ angular.module('openITCOCKPIT')
             }, $scope.rotationInterval);
         }
 
+        $scope.enterFullscreen = function(){
+            document.getElementById('left-panel').style.display = 'none';
+            document.getElementById('ribbon').style.display = 'none';
+            document.getElementById('header').style.display = 'none';
+            document.getElementById('main').style.marginLeft = '0px';
+            $('#content > .ng-scope > .row').css('display','none');
+        };
+
+        $scope.leaveFullscreen = function(){
+            document.getElementById('left-panel').style.display = 'block';
+            document.getElementById('ribbon').style.display = 'block';
+            document.getElementById('header').style.display = 'block';
+            document.getElementById('main').style.marginLeft = '220px';
+            $('#content > .ng-scope > .row').css('display','block');
+        };
+
+        $scope.$watch('fullscreen', function(){
+            if($scope.fullscreen){
+                $scope.enterFullscreen();
+            } else {
+                $scope.leaveFullscreen();
+            }
+        }, true);
+
 
     });

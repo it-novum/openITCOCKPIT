@@ -77,13 +77,7 @@ class MapeditorsController extends MapModuleAppController {
     ///map_module/mapeditors/view/20
     public function view($id = null) {
         if (!$this->isApiRequest() && $id === null) {
-            $isFullscreen = false;
-            if ($this->request->query('fullscreen') === 'true') {
-                $this->layout = 'angularjs_fullscreen';
-                $isFullscreen = true;
-            }
-            $this->set('isFullscreen', $isFullscreen);
-            //Only ship template
+            //Only ship html template
             return;
         }
 
