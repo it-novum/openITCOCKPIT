@@ -54,6 +54,12 @@ class GrafanaConfigurationController extends GrafanaModuleAppController {
     ];
 
     public function index() {
+        $this->layout = 'blank';
+        if (!$this->isAngularJsRequest()) {
+            //Only ship html template
+            return;
+        }
+
         //$this->request->data = Hash::merge($grafanaConfiguration, $this->request->data);
 
         //Save POST||PUT Request
@@ -73,10 +79,6 @@ class GrafanaConfigurationController extends GrafanaModuleAppController {
                 $this->GrafanaConfigurationHostgroupMembership->deleteAll(true);
 
                 if ($this->GrafanaConfiguration->saveAll($this->request->data)) {
-
-                    if ($this->isAngularJsRequest()) {
-                        $this->setFlash(__('Grafana configuration successfully saved'));
-                    }
                     $this->serializeId();
                     return;
                 }
