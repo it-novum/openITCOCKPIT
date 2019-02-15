@@ -25,6 +25,7 @@
 
 use App\Model\Table\ContainersTable;
 use Cake\ORM\TableRegistry;
+use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 
 App::uses('CalendarHolidays', 'Vendor/Date');
 
@@ -244,8 +245,22 @@ class CalendarsController extends AppController {
 
             $this->setFlash(__('The calendars were successfully deleted.'));
         } else {
-            $this->setFlash(__('Could not delte the calendars. The given arguments were invalid.'), false);
+            $this->setFlash(__('Could not delete the calendars. The given arguments were invalid.'), false);
         }
         $this->redirect(['action' => 'index']);
+    }
+
+    public function loadCalendarsByContainerId() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+        $containerId = $this->request->query('containerId');
+
+        $calendars = Api::makeItJavaScriptAble(
+            $this->Calendar->calendarsByContainerId($containerId, 'list')
+        );
+
+        $this->set('calendars', $calendars);
+        $this->set('_serialize', ['calendars']);
     }
 }

@@ -19,20 +19,18 @@
     </div>
 </div>
 
-<?php if ($hasGrafanaConfig === false): ?>
-    <div class="alert alert-danger alert-block">
-        <a class="close" data-dismiss="alert" href="#">×</a>
-        <h4 class="alert-heading"><?php echo __('No Grafana configuration found!'); ?></h4>
-        <?php
-        $msg = __('Grafana Configuration');
-        if ($this->Acl->hasPermission('index', 'GrafanaConfiguration', 'GrafanaModule')):
-            $msg = sprintf('<a href="/grafana_module/grafana_configuration">%s</a>', $msg);
-        endif;
-        ?>
+<div class="alert alert-danger alert-block" ng-hide="hasGrafanaConfig">
+    <a class="close" data-dismiss="alert" href="#">×</a>
+    <h4 class="alert-heading"><?php echo __('No Grafana configuration found!'); ?></h4>
+    <?php
+    $msg = __('Grafana Configuration');
+    if ($this->Acl->hasPermission('index', 'GrafanaConfiguration', 'GrafanaModule')):
+        $msg = sprintf('<a href="/grafana_module/grafana_configuration">%s</a>', $msg);
+    endif;
+    ?>
 
-        <?php echo __('A valid %s is required, before this feature can be used.', $msg); ?>
-    </div>
-<?php endif; ?>
+    <?php echo __('A valid %s is required, before this feature can be used.', $msg); ?>
+</div>
 
 
 <div class="jarviswidget">
@@ -40,7 +38,9 @@
         <span class="widget-icon hidden-mobile hidden-tablet"> <i class="fa fa-pencil-square-o"></i> </span>
         <h2 class="hidden-mobile hidden-tablet"><?php echo __('Create new user defined Grafana dashboard'); ?></h2>
         <div class="widget-toolbar" role="menu">
-            <?php echo $this->Utils->backButton() ?>
+            <a ui-sref="GrafanaUserdashboardsIndex" class="btn btn-default btn-xs" iconcolor="white">
+                <i class="glyphicon glyphicon-white glyphicon-arrow-left"></i> <?php echo __('Back to list'); ?>
+            </a>
         </div>
     </header>
     <div>
@@ -87,7 +87,7 @@
                         <div class="well formactions ">
                             <div class="pull-right">
                                 <input class="btn btn-primary" type="submit" value="<?php echo __('Save'); ?>">&nbsp;
-                                <a href="/grafana_module/grafana_userdashboards/index" class="btn btn-default">
+                                <a ui-sref="GrafanaUserdashboardsIndex" class="btn btn-default">
                                     <?php echo __('Cancel'); ?>
                                 </a>
                             </div>
