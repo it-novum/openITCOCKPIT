@@ -2200,8 +2200,14 @@ label[class^='aco-host']:after, label[class^='aco-service']:after {
     min-height: 0px !important;
 }
 
-iframe { -webkit-backface-visibility:hidden }
+iframe {
+    -webkit-backface-visibility: hidden
+}
 
-#myTabContent1 .widget-body{
+#myTabContent1 .widget-body {
     word-wrap: break-word;
+}
+
+.no-required:after {
+    content: ''!important;
 }

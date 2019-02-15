@@ -54,36 +54,16 @@ class ContactsController extends AppController {
     public $layout = 'Admin.default';
 
     public $components = [
-        'ListFilter.ListFilter',
         'RequestHandler',
         'Ldap',
         'CustomValidationErrors'
     ];
 
     public $helpers = [
-        'ListFilter.ListFilter',
         'CustomVariables',
         'CustomValidationErrors'
     ];
 
-    public $listFilters = [
-        'index' => [
-            'fields' => [
-                'Contact.name'  => [
-                    'label'      => 'Name',
-                    'searchType' => 'wildcard',
-                ],
-                'Contact.email' => [
-                    'label'      => 'Email',
-                    'searchType' => 'wildcard',
-                ],
-                'Contact.phone' => [
-                    'label'      => 'Pager',
-                    'searchType' => 'wildcard',
-                ],
-            ],
-        ],
-    ];
 
     public function index() {
         $this->layout = 'blank';
@@ -140,10 +120,15 @@ class ContactsController extends AppController {
             throw new MethodNotAllowedException();
 
         }
-        if (!$this->Contact->exists($id)) {
+
+        /** @var $ContactsTable ContactsTable */
+        $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
+
+        if (!$ContactsTable->exists($id)) {
             throw new NotFoundException(__('Invalid contact'));
         }
-        $contact = $this->Contact->findById($id);
+
+        $contact = $ContactsTable->getContactById($id);
         if (!$this->allowedByContainerId(Hash::extract($contact, 'Container.{n}.id'))) {
             throw new ForbiddenException('403 Forbidden');
         }
@@ -312,6 +297,17 @@ class ContactsController extends AppController {
     }
 
     public function add() {
+        $this->layout = 'blank';
+
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
+            return;
+        }
+
+
+        /**** OLD*****/
+
+
         $userId = $this->Auth->user('id');
 
         /******** Push Notifications ********/
@@ -791,7 +787,9 @@ class ContactsController extends AppController {
 
 
     public function loadTimeperiods() {
-        $this->allowOnlyAjaxRequests();
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
 
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
@@ -811,6 +809,10 @@ class ContactsController extends AppController {
     }
 
     public function loadUsersByContainerId() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
 
@@ -1089,6 +1091,43 @@ class ContactsController extends AppController {
         $this->set(compact(['contactWithRelations']));
         $this->set('_serialize', ['contactWithRelations']);
         $this->set('back_url', $this->referer());
+    }
+
+    public function loadContainers() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        if ($this->hasRootPrivileges === true) {
+            $containers = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_CONTACT, [], $this->hasRootPrivileges, [CT_CONTACTGROUP]);
+        } else {
+            $containers = $ContainersTable->easyPath($this->getWriteContainers(), OBJECT_CONTACT, [], $this->hasRootPrivileges, [CT_CONTACTGROUP]);
+        }
+
+
+        $this->set('containers', Api::makeItJavaScriptAble($containers));
+        $this->set('_serialize', ['containers']);
+    }
+
+    public function loadCommands() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        /** @var $Commands CommandsTable */
+        $Commands = TableRegistry::getTableLocator()->get('Commands');
+        $hostPushComamndId = $Commands->getCommandIdByCommandUuid('cd13d22e-acd4-4a67-997b-6e120e0d3153');
+        $servicePushComamndId = $Commands->getCommandIdByCommandUuid('c23255b7-5b1a-40b4-b614-17837dc376af');
+
+        $notificationCommands = $Commands->getCommandByTypeAsList(NOTIFICATION_COMMAND);
+
+        $this->set('hostPushComamndId', $hostPushComamndId);
+        $this->set('servicePushComamndId', $servicePushComamndId);
+        $this->set('notificationCommands', Api::makeItJavaScriptAble($notificationCommands));
+        $this->set('_serialize', ['hostPushComamndId', 'servicePushComamndId', 'notificationCommands']);
     }
 }
 

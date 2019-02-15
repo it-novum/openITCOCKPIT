@@ -166,7 +166,7 @@ $weekdays = [
                                                        ng-model="range.start"/>
                                             </label>
                                             <div ng-repeat="error in errors.timeperiod_timeranges[$index].start">
-                                                <div class=text-danger font-xs">{{ error }}</div>
+                                                <div class="text-danger font-xs">{{ error }}</div>
                                             </div>
                                         </div>
                                     </div>
@@ -186,7 +186,7 @@ $weekdays = [
                                                        ng-model="range.end">
                                             </label>
                                             <div ng-repeat="error in errors.timeperiod_timeranges[$index].end">
-                                                <div class="help-block text-danger font-xs">{{ error }}</div>
+                                                <div class="text-danger font-xs">{{ error }}</div>
                                             </div>
                                         </div>
                                     </div>
