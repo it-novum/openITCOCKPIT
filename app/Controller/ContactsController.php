@@ -140,10 +140,15 @@ class ContactsController extends AppController {
             throw new MethodNotAllowedException();
 
         }
-        if (!$this->Contact->exists($id)) {
+
+        /** @var $ContactsTable ContactsTable */
+        $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
+
+        if (!$ContactsTable->exists($id)) {
             throw new NotFoundException(__('Invalid contact'));
         }
-        $contact = $this->Contact->findById($id);
+
+        $contact = $ContactsTable->getContactById($id);
         if (!$this->allowedByContainerId(Hash::extract($contact, 'Container.{n}.id'))) {
             throw new ForbiddenException('403 Forbidden');
         }
