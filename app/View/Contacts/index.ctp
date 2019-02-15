@@ -186,24 +186,30 @@
                                     </td>
                                     <td>
                                         <span class="label-forced label-success margin-right-5"
+                                              title="<?php echo __('Recovery'); ?>"
                                               ng-show="contact.Contact.notify_host_recovery">
-                                            <?php echo __('Recovery'); ?>
+                                            <?php echo __('R'); ?>
                                         </span>
                                         <span class="label-forced label-danger margin-right-5"
+                                              title="<?php echo __('Down'); ?>"
                                               ng-show="contact.Contact.notify_host_down">
-                                            <?php echo __('Down'); ?>
+                                            <?php echo __('D'); ?>
                                         </span>
                                         <span class="label-forced label-default margin-right-5"
+                                              title="<?php echo __('Unreachable'); ?>"
                                               ng-show="contact.Contact.notify_host_unreachable">
-                                            <?php echo __('Unreachable'); ?>
+                                            <?php echo __('U'); ?>
                                         </span>
                                         <span class="label-forced label-primary margin-right-5"
+                                              title="<?php echo __('Flapping'); ?>"
                                               ng-show="contact.Contact.notify_host_flapping">
-                                            <?php echo __('Flapping'); ?>
+                                            <i class="fa fa-circle"></i>
+                                            <i class="fa fa-circle-o"></i>
                                         </span>
                                         <span class="label-forced label-primary"
+                                              title="<?php echo __('Downtime'); ?>"
                                               ng-show="contact.Contact.notify_host_downtime">
-                                            <?php echo __('Downtime'); ?>
+                                            <i class="fa fa-power-off"></i>
                                         </span>
                                     </td>
 
@@ -219,28 +225,35 @@
                                     </td>
                                     <td>
                                         <span class="label-forced label-success margin-right-5"
+                                              title="<?php echo __('Recovery'); ?>"
                                               ng-show="contact.Contact.notify_service_recovery">
-                                            <?php echo __('Recovery'); ?>
+                                            <?php echo __('R'); ?>
                                         </span>
                                         <span class="label-forced label-warning margin-right-5"
+                                              title="<?php echo __('Warning'); ?>"
                                               ng-show="contact.Contact.notify_service_warning">
-                                            <?php echo __('Warning'); ?>
+                                            <?php echo __('W'); ?>
                                         </span>
                                         <span class="label-forced label-danger margin-right-5"
+                                              title="<?php echo __('Critical'); ?>"
                                               ng-show="contact.Contact.notify_service_critical">
-                                            <?php echo __('Critical'); ?>
+                                            <?php echo __('C'); ?>
                                         </span>
                                         <span class="label-forced label-default margin-right-5"
+                                              title="<?php echo __('Unknown'); ?>"
                                               ng-show="contact.Contact.notify_service_unknown">
-                                            <?php echo __('Unknown'); ?>
+                                            <?php echo __('U'); ?>
                                         </span>
                                         <span class="label-forced label-primary margin-right-5"
+                                              title="<?php echo __('Flapping'); ?>"
                                               ng-show="contact.Contact.notify_service_flapping">
-                                            <?php echo __('Flapping'); ?>
+                                            <i class="fa fa-circle"></i>
+                                            <i class="fa fa-circle-o"></i>
                                         </span>
                                         <span class="label-forced label-primary"
+                                              title="<?php echo __('Downtime'); ?>"
                                               ng-show="contact.Contact.notify_service_downtime">
-                                            <?php echo __('Downtime'); ?>
+                                            <i class="fa fa-power-off"></i>
                                         </span>
                                     </td>
 
