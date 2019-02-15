@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('SystemsettingsIndexController', function($scope, $http, NotyService){
+    .controller('SystemsettingsIndexController', function($scope, $http, $state, NotyService){
         $scope.systemsettings = {};
         $scope.dropdownOptionSequence = [];
 
@@ -37,13 +37,12 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.submit = function(){
-            console.log($scope.systemsettings);
             $http.post('/systemsettings/index.json?angular=true',
                 $scope.systemsettings
             ).then(function(result){
                 NotyService.genericSuccess();
                 console.log('Data saved successfully');
-                $scope.load();
+                $state.go('SystemsettingsIndex');
             }, function errorCallback(result){
                 NotyService.genericError();
                 if(result.data.hasOwnProperty('error')){

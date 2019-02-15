@@ -153,7 +153,7 @@
                                                                    disabled="disabled" readonly="readonly">
                                                             <?php if ($this->Acl->hasPermission('index', 'statistics')): ?>
                                                                 <br/>
-                                                                <a href="/statistics/index">
+                                                                <a ui-sref="StatisticsIndex">
                                                                     <?php echo __('Click for more information.'); ?>
                                                                 </a>
                                                             <?php endif; ?>
