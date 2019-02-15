@@ -281,8 +281,14 @@ class GrafanaUserdashboardsController extends GrafanaModuleAppController {
 
     }
 
-    public function view($id) {
-        if (!$this->GrafanaUserdashboard->exists($id)) {
+    public function view($id = null) {
+        $this->layout = 'blank';
+        if (!$this->isAngularJsRequest() && $id === null) {
+            //Only ship html template
+            return;
+        }
+
+        if (!$this->GrafanaUserdashboard->exists($id) && $id !== null) {
             throw new NotFoundException();
         }
 
@@ -337,6 +343,7 @@ class GrafanaUserdashboardsController extends GrafanaModuleAppController {
         $this->set('dashboard', $dashboard);
         $this->set('allowEdit', $allowEdit);
         $this->set('dashboardFoundInGrafana', $dashboardFoundInGrafana);
+        $this->set('_serialize', ['dashboard', 'allowEdit', 'dashboardFoundInGrafana']);
     }
 
     public function getViewIframeUrl($id) {

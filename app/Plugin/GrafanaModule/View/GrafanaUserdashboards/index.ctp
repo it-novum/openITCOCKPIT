@@ -96,7 +96,7 @@
                     </td>
                     <td>
                         <?php if ($this->Acl->hasPermission('view', 'GrafanaUserdashboards', 'GrafanaModule')): ?>
-                            <a href="/grafana_module/grafana_userdashboards/view/{{ userdashboard.GrafanaUserdashboard.id }}"
+                            <a ui-sref="GrafanaUserdashboardsView({id: userdashboard.GrafanaUserdashboard.id})"
                                ng-show="userdashboard.GrafanaUserdashboard.grafana_url !== ''">
                                 {{ userdashboard.GrafanaUserdashboard.name }}
                             </a>
@@ -149,7 +149,7 @@
 
                                 <?php if ($this->Acl->hasPermission('view', 'GrafanaUserdashboards', 'GrafanaModule')): ?>
                                     <li>
-                                        <a href="/grafana_module/grafana_userdashboards/view/{{userdashboard.GrafanaUserdashboard.id}}">
+                                        <a ui-sref="GrafanaUserdashboardsView({id: userdashboard.GrafanaUserdashboard.id})">
                                             <i class="fa fa-eye"></i> <?php echo __('View'); ?></a>
                                     </li>
                                 <?php endif; ?>
