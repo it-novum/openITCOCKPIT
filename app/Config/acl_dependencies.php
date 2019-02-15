@@ -72,12 +72,13 @@ $config = [
                 'getPieChart',
                 'getHalfPieChart',
                 'getCumulatedHostAndServiceStateIcon',
-                'getHostAndServiceStateSummaryIcon'
+                'getHostAndServiceStateSummaryIcon',
+                'macros'
             ],
             'Automaps'         => [
                 'icon'
             ],
-            'Calendars'       => [
+            'Calendars'        => [
                 'loadCalendarsByContainerId'
             ],
             'Containers'       => [
@@ -203,9 +204,9 @@ $config = [
                 'delete' => ['mass_delete'],
             ],
             'Commands'              => [
-                'index'  => ['view'],
-                'add'    => ['getConsoleWelcome'],
-                'edit'   => ['getConsoleWelcome']
+                'index' => ['view'],
+                'add'   => ['getConsoleWelcome'],
+                'edit'  => ['getConsoleWelcome']
             ],
             'Timeperiods'           => [
                 'index'  => [
@@ -222,8 +223,8 @@ $config = [
             ],
             'Contacts'              => [
                 'index' => ['view'],
-                'add'   => ['loadTimeperiods', 'addCustomMacro', 'loadLdapUserByString', 'loadUsersByContainerId'],
-                'edit'  => ['loadTimeperiods', 'addCustomMacro', 'loadLdapUserByString', 'loadUsersByContainerId'],
+                'add'   => ['loadContainers', 'loadCommands', 'loadTimeperiods', 'addCustomMacro', 'loadLdapUserByString', 'loadUsersByContainerId'],
+                'edit'  => ['loadContainers', 'loadCommands', 'loadTimeperiods', 'addCustomMacro', 'loadLdapUserByString', 'loadUsersByContainerId'],
             ],
             'Cronjobs'              => [
                 'add'  => ['getTasks'],
@@ -319,7 +320,7 @@ $config = [
                 'delete' => ['mass_delete'],
             ],
             'Downtimes'             => [
-                'delete'  => ['mass_delete'],
+                'delete' => ['mass_delete'],
             ],
             'Administrators'        => [
                 'debug' => ['testMail', 'querylog'],
@@ -353,7 +354,7 @@ $config = [
             'Statistics'            => [
                 'index' => ['saveStatisticDecision']
             ],
-            'ConfigurationFiles' => [
+            'ConfigurationFiles'    => [
                 'edit' => ['NagiosCfg', 'AfterExport', 'NagiosModuleConfig', 'phpNSTAMaster', 'DbBackend', 'PerfdataBackend', 'GraphingDocker', 'StatusengineCfg', 'GraphiteWeb', 'restorDefault']
             ]
         ],

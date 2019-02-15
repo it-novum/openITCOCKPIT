@@ -690,4 +690,9 @@ class AngularController extends AppController {
         imagepng($image, null, 0);
         imagedestroy($image);
     }
+
+    public function macros(){
+        //Only ship HTML template
+        return;
+    }
 }
