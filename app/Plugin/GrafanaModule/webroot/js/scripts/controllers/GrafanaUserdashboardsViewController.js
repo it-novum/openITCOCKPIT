@@ -1,11 +1,25 @@
 angular.module('openITCOCKPIT')
-    .controller('Grafana_userdashboardsViewController', function($scope, $http, QueryStringService){
+    .controller('Grafana_userdashboardsViewController', function($scope, $http, $stateParams){
 
-        $scope.id = QueryStringService.getCakeId();
+        $scope.id = $stateParams.id;
         $scope.selectedTimerange = 'now-3h';
         $scope.selectedAutorefresh = '60s';
 
         $scope.dashboardFoundInGrafana = false;
+
+        $scope.load = function(){
+            $http.get("/grafana_module/grafana_userdashboards/view/" + $scope.id + ".json", {
+                params: {
+                    'angular': true,
+                }
+            }).then(function(result){
+                $scope.dashboard = result.data.dashboard;
+                $scope.allowEdit = result.data.allowEdit;
+                $scope.dashboardFoundInGrafana = result.data.dashboardFoundInGrafana;
+
+                $scope.loadIframeUrl();
+            });
+        };
 
         $scope.loadIframeUrl = function(){
             $http.get("/grafana_module/grafana_userdashboards/getViewIframeUrl/" + $scope.id + ".json", {
@@ -26,6 +40,6 @@ angular.module('openITCOCKPIT')
             $scope.loadIframeUrl();
         };
 
-        $scope.loadIframeUrl();
+        $scope.load();
 
     });

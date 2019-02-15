@@ -33,6 +33,7 @@ $config = [
             'children' => [
                 [
                     'url'               => ['controller' => 'grafana_userdashboards', 'action' => 'index', 'plugin' => 'grafana_module'],
+                    'state'             => 'GrafanaUserdashboardsIndex',
                     'title'             => 'User Dashboards',
                     'icon'              => 'area-chart',
                 ],
@@ -46,6 +47,7 @@ $config = [
             'children' => [
                 [
                     'url'               => ['controller' => 'grafana_configuration', 'action' => 'index', 'plugin' => 'grafana_module'],
+                    'state'             => 'GrafanaConfigurationIndex',
                     'title'             => 'Grafana',
                     'icon'              => 'area-chart',
                 ],

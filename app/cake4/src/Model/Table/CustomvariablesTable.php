@@ -58,8 +58,12 @@ class CustomvariablesTable extends Table {
             ->allowEmptyString('name', false, __('Macro name cannot be left blank.'))
             ->add('name', 'custom', [
                 'rule'    => function ($value, $context) {
-                debug($value);
-                debug($context);
+                //debug($value);
+                //DEBUG($CONTEXT);
+
+                    //Move to contactsTable??
+                    //Only one objecte here...
+                    return true;
                     // Custom logic that returns true/false
                 },
                 'message' => __('Macro name needs to be unique')
