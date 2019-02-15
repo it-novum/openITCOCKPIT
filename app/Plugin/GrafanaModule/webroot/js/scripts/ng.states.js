@@ -24,4 +24,16 @@ openITCOCKPIT.config(function($stateProvider){
             templateUrl: "/grafana_module/grafana_userdashboards/edit.html",
             controller: "Grafana_userdashboardsEditController"
         })
+
+        .state('GrafanaUserdashboardsView', {
+            url: '/grafana_module/grafana_userdashboards/view/:id',
+            templateUrl: "/grafana_module/grafana_userdashboards/view.html",
+            controller: "Grafana_userdashboardsViewController"
+        })
+
+        .state('GrafanaConfigurationIndex', {
+            url: '/grafana_module/grafana_configuration/index',
+            templateUrl: "/grafana_module/grafana_configuration/index.html",
+            controller: "Grafana_configurationIndexController"
+        })
 });
