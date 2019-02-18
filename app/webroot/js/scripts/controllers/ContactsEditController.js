@@ -1,26 +1,7 @@
 angular.module('openITCOCKPIT')
-    .controller('ContactsAddController', function($scope, $http, SudoService, $state, NotyService){
-        $scope.post = {
-            Contact: {
-                name: '',
-                description: '',
-                email: '',
-                notify_host_recovery: 0,
-                notify_service_recovery: 0,
-                host_push_notifications_enabled: 0,
-                service_push_notifications_enabled: 0,
-                containers: {
-                    _ids: []
-                },
-                host_commands: {
-                    _ids: []
-                },
-                service_commands: {
-                    _ids: []
-                },
-                customvariables: []
-            }
-        };
+    .controller('ContactsEditController', function($scope, $http, SudoService, $state, $stateParams, NotyService){
+
+        $scope.id = $stateParams.id;
 
         $scope.init = true;
 
@@ -35,6 +16,20 @@ angular.module('openITCOCKPIT')
             }).then(function(result){
                 $scope.containers = result.data.containers;
                 $scope.init = false;
+            });
+        };
+
+        $scope.loadContact = function(){
+            var params = {
+                'angular': true
+            };
+
+            $http.get("/contacts/edit/" + $scope.id + ".json", {
+                params: params
+            }).then(function(result){
+                $scope.post = result.data.contact;
+                $scope.init = false;
+                $scope.loadCommands();
             });
         };
 
@@ -123,7 +118,7 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.submit = function(){
-            $http.post("/contacts/add.json?angular=true",
+            $http.post("/contacts/edit/" + $scope.id + ".json?angular=true",
                 $scope.post
             ).then(function(result){
                 NotyService.genericSuccess();
@@ -176,7 +171,7 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.loadContainers();
-        $scope.loadCommands();
+        $scope.loadContact();
 
         jQuery(function(){
             jQuery("[rel=tooltip]").tooltip();

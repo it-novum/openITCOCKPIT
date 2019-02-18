@@ -7,6 +7,7 @@ use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
+use Cake\Utility\Hash;
 use Cake\Validation\Validator;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\ContactsFilter;
@@ -68,10 +69,11 @@ class ContactsTable extends Table {
         ]);
 
         $this->hasMany('Customvariables', [
-            'conditions' => [
+            'conditions'   => [
                 'objecttype_id' => OBJECT_CONTACT
             ],
-            'foreignKey' => 'object_id'
+            'foreignKey'   => 'object_id',
+            'saveStrategy' => 'replace'
         ])->setDependent(true);
 
 
@@ -407,6 +409,41 @@ class ContactsTable extends Table {
     }
 
     /**
+     * @param int $id
+     * @return array
+     */
+    public function getContactForEdit($id) {
+        $query = $this->find()
+            ->where([
+                'Contacts.id' => $id
+            ])
+            ->contain([
+                'Containers',
+                'HostCommands',
+                'ServiceCommands',
+                'Customvariables'
+            ])
+            ->disableHydration()
+            ->first();
+
+
+        $contact = $query;
+        $contact['containers'] = [
+            '_ids' => Hash::extract($query, 'containers.{n}.id')
+        ];
+        $contact['host_commands'] = [
+            '_ids' => Hash::extract($query, 'host_commands.{n}.id')
+        ];
+        $contact['service_commands'] = [
+            '_ids' => Hash::extract($query, 'service_commands.{n}.id')
+        ];
+
+        return [
+            'Contact' => $contact
+        ];
+    }
+
+    /**
      * @param \CakeRequest $Request
      * @return array
      */
@@ -460,6 +497,14 @@ class ContactsTable extends Table {
         }
 
         return $extDataForChangelog;
+    }
+
+    /**
+     * @param int $id
+     * @return bool
+     */
+    public function existsById($id) {
+        return $this->exists(['Contacts.id' => $id]);
     }
 
 }

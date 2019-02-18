@@ -55,14 +55,7 @@ class ContactsController extends AppController {
     public $layout = 'Admin.default';
 
     public $components = [
-        'RequestHandler',
         'Ldap',
-        'CustomValidationErrors'
-    ];
-
-    public $helpers = [
-        'CustomVariables',
-        'CustomValidationErrors'
     ];
 
 
@@ -125,7 +118,7 @@ class ContactsController extends AppController {
         /** @var $ContactsTable ContactsTable */
         $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
 
-        if (!$ContactsTable->exists($id)) {
+        if (!$ContactsTable->existsById($id)) {
             throw new NotFoundException(__('Invalid contact'));
         }
 
@@ -191,164 +184,85 @@ class ContactsController extends AppController {
             }
             $this->set('contact', $contact);
             $this->set('_serialize', ['contact']);
-
         }
     }
 
     public function edit($id = null) {
-        $userId = $this->Auth->user('id');
-        if (!$this->Contact->exists($id)) {
-            throw new NotFoundException(__('Invalid contact'));
+        $this->layout = 'blank';
+
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
+            return;
         }
 
-        /******** Push Notifications ********/
-        /** @var $Commands CommandsTable */
-        $Commands = TableRegistry::getTableLocator()->get('Commands');
-        $hostPushComamndId = $Commands->getCommandIdByCommandUuid('cd13d22e-acd4-4a67-997b-6e120e0d3153');
-        $servicePushComamndId = $Commands->getCommandIdByCommandUuid('c23255b7-5b1a-40b4-b614-17837dc376af');
+        /** @var $ContactsTable ContactsTable */
+        $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
 
-        $this->Frontend->setJson('hostPushComamndId', $hostPushComamndId);
-        $this->Frontend->setJson('servicePushComamndId', $servicePushComamndId);
+        if (!$ContactsTable->existsById($id)) {
+            throw new NotFoundException(__('Contact not found'));
+        }
 
-        $contact = $this->Contact->findById($id);
+        $contact = $ContactsTable->getContactForEdit($id);
+
+        if (!$this->allowedByContainerId($contact['Contact']['containers']['_ids'])) {
+            $this->render403();
+            return;
+        }
 
         if ($this->hasRootPrivileges === false) {
-            if (empty(array_intersect(Hash::extract($contact, 'Container.{n}.id'), $this->getWriteContainers()))) {
+            if (empty(array_intersect($contact['Contact']['containers']['_ids'], $this->getWriteContainers()))) {
                 $this->render403();
-
             }
         }
 
-        $customFieldsToRefill = [
-            'Contact' => [
-                'host_notifications_enabled',
-                'host_push_notifications_enabled',
-                'notify_host_recovery',
-                'notify_host_down',
-                'notify_host_unreachable',
-                'notify_host_flapping',
-                'notify_host_downtime',
+        if ($this->request->is('get') && $this->isAngularJsRequest()) {
+            //Return contact information
+            $this->set('contact', $contact);
+            $this->set('_serialize', ['contact']);
+            return;
+        }
 
-                'service_notifications_enabled',
-                'service_push_notifications_enabled',
-                'notify_service_recovery',
-                'notify_service_warning',
-                'notify_service_critical',
-                'notify_service_unknown',
-                'notify_service_flapping',
-                'notify_service_downtime'
-            ]
-        ];
+        if ($this->request->is('post') && $this->isAngularJsRequest()) {
+            //Update contact data
+            $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
 
-        $this->CustomValidationErrors->checkForRefill($customFieldsToRefill);
+            $contact = $ContactsTable->get($id);
+            $contact = $ContactsTable->patchEntity($contact, $this->request->data('Contact'));
 
+            $ContactsTable->save($contact);
+            if ($contact->hasErrors()) {
+                $this->response->statusCode(400);
+                $this->set('error', $contact->getErrors());
+                $this->set('_serialize', ['error']);
+                return;
+            } else {
+                //No errors
 
-        $this->set('MY_WRITABLE_CONTAINERS', $this->getWriteContainers());
+                /** @var $TimeperiodsTable TimeperiodsTable */
+                $extDataForChangelog = $ContactsTable->getExtDataForChangelog($this->request);
 
-        /** @var $ContainersTable ContainersTable */
-        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
-
-        $containers = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_CONTACT, [], $this->hasRootPrivileges, [CT_CONTACTGROUP]);
-
-        /** @var $CommandsTable CommandsTable */
-        $CommandsTable = TableRegistry::getTableLocator()->get('Commands');
-        $notification_commands = $CommandsTable->getCommandByTypeAsList(NOTIFICATION_COMMAND);
-
-
-        $containerIds = Hash::extract($contact, 'Container.{n}.id');
-
-        if ($this->request->is('post') || $this->request->is('put')) {
-            if (isset($this->request->data['Container']['Container'])) {
-                $containerIds = $this->request->data['Container']['Container'];
-            }
-
-            $ext_data_for_changelog = [
-                'HostTimeperiod'    => [
-                    'id'   => $this->request->data['Contact']['host_timeperiod_id'],
-                    'name' => isset($timeperiods[$this->request->data['Contact']['host_timeperiod_id']]) ? $timeperiods[$this->request->data['Contact']['host_timeperiod_id']] : '',
-                ],
-                'ServiceTimeperiod' => [
-                    'id'   => $this->request->data['Contact']['service_timeperiod_id'],
-                    'name' => isset($timeperiods[$this->request->data['Contact']['service_timeperiod_id']]) ? $timeperiods[$this->request->data['Contact']['service_timeperiod_id']] : '',
-                ],
-            ];
-
-            if (isset($this->request->data['Contact']['HostCommands']) && is_array($this->request->data['Contact']['HostCommands'])) {
-                foreach ($this->request->data['Contact']['HostCommands'] as $command_id) {
-                    $ext_data_for_changelog['HostCommands'][] = [
-                        'id'   => $command_id,
-                        'name' => $notification_commands[$command_id],
-                    ];
-                }
-            }
-            if (isset($this->request->data['Contact']['ServiceCommands']) && is_array($this->request->data['Contact']['ServiceCommands'])) {
-                foreach ($this->request->data['Contact']['ServiceCommands'] as $command_id) {
-                    $ext_data_for_changelog['ServiceCommands'][] = [
-                        'id'   => $command_id,
-                        'name' => $notification_commands[$command_id],
-                    ];
-                }
-            }
-
-            //Checks if the user deletes a customvariable/macro over the trash icon
-            if (!isset($this->request->data['Customvariable'])) {
-                $this->request->data['Customvariable'] = [];
-            }
-
-            $this->Contact->set($this->request->data);
-            if ($this->Contact->validates()) {
-                $this->Customvariable->deleteAll([
-                    'object_id'     => $contact['Contact']['id'],
-                    'objecttype_id' => OBJECT_CONTACT,
-                ], false);
-            }
-
-            $this->Contact->id = $id;
-            if ($this->Contact->saveAll($this->request->data)) {
                 $changelog_data = $this->Changelog->parseDataForChangelog(
-                    $this->params['action'],
-                    $this->params['controller'],
-                    $id,
+                    'edit',
+                    'contacts',
+                    $contact->id,
                     OBJECT_CONTACT,
-                    $containerIds,
-                    $userId,
-                    $this->request->data['Contact']['name'],
-                    array_merge($ext_data_for_changelog, $this->request->data),
-                    $contact
+                    $this->request->data('Contact.containers._ids'),
+                    $User->getId(),
+                    $contact->name,
+                    array_merge($extDataForChangelog, $this->request->data)
                 );
-
                 if ($changelog_data) {
                     CakeLog::write('log', serialize($changelog_data));
                 }
 
-                $this->setFlash(__('<a href="/contacts/edit/%s">Contact</a> successfully saved', $this->Contact->id));
-                $this->redirect(['action' => 'index']);
-            } else {
-                $this->setFlash(__('Contact could not be saved'), false);
+                if ($this->request->ext == 'json') {
+                    $this->serializeCake4Id($contact); // REST API ID serialization
+                    return;
+                }
             }
-            if (isset($this->Contact->validationErrors['notify_host_recovery'])) {
-                $this->set('validation_host_notification', $this->Contact->validationErrors['notify_host_recovery'][0]);
-            }
-            if (isset($this->Contact->validationErrors['notify_service_recovery'])) {
-                $this->set('validation_service_notification', $this->Contact->validationErrors['notify_service_recovery'][0]);
-            }
+            $this->set('contact', $contact);
+            $this->set('_serialize', ['contact']);
         }
-
-        if (!$this->request->is('post') && !$this->request->is('put')) {
-            $contact['Contact']['HostCommands'] = Hash::extract($contact['HostCommands'], '{n}.id');
-            $contact['Contact']['ServiceCommands'] = Hash::extract($contact['ServiceCommands'], '{n}.id');
-        }
-
-        $this->request->data = Hash::merge($contact, $this->request->data);
-
-        if ($containerIds !== '') {
-            $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerIds);
-            $_timeperiods = $this->Timeperiod->timeperiodsByContainerId($containerIds, 'list');
-            $_users = $this->User->usersByContainerId($containerIds, 'list');
-        }
-
-        $this->set(compact(['contact', 'containers', 'notification_commands', 'timeperiods', '_timeperiods', '_users']));
-        $this->set('_serialize', ['contact', 'notification_commands', 'timeperiods', '_timeperiods']);
     }
 
 
@@ -515,7 +429,7 @@ class ContactsController extends AppController {
         /** @var $ContactsTable ContactsTable */
         $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
 
-        if (!$ContactsTable->exists($id)) {
+        if (!$ContactsTable->existsById($id)) {
             throw new NotFoundException(__('Contact not found'));
         }
 
@@ -705,7 +619,7 @@ class ContactsController extends AppController {
         /** @var $ContactsTable ContactsTable */
         $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
 
-        if (!$ContactsTable->exists($id)) {
+        if (!$ContactsTable->existsById($id)) {
             throw new NotFoundException(__('Contact not found'));
         }
 

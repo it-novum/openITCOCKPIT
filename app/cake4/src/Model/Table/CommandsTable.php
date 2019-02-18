@@ -327,4 +327,12 @@ class CommandsTable extends Table {
 
         return $this->formatResultAsCake2($command->toArray(), $contain);
     }
+
+    /**
+     * @param int $id
+     * @return bool
+     */
+    public function existsById($id) {
+        return $this->exists(['Commands.id' => $id]);
+    }
 }
