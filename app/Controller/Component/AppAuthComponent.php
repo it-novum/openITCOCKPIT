@@ -138,8 +138,6 @@ class AppAuthComponent extends AuthComponent {
                         return false;
                     }
 
-                    require_once OLD_APP . 'vendor_freedsx_ldap' . DS . 'autoload.php';
-
                     $ldap = new \FreeDSx\Ldap\LdapClient([
                         'servers'               => [$systemsettings['FRONTEND']['FRONTEND.LDAP.ADDRESS']],
                         'port'                  => (int)$systemsettings['FRONTEND']['FRONTEND.LDAP.PORT'],
@@ -175,12 +173,12 @@ class AppAuthComponent extends AuthComponent {
                     }
 
 
-                    $filter = \FreeDSx\Ldap\Search\Filters::andPHP5(
+                    $filter = \FreeDSx\Ldap\Search\Filters::and(
                         \FreeDSx\Ldap\Search\Filters::raw($systemsettings['FRONTEND']['FRONTEND.LDAP.QUERY']),
                         \FreeDSx\Ldap\Search\Filters::equal('sAMAccountName', $samaccountname)
                     );
                     if ($systemsettings['FRONTEND']['FRONTEND.LDAP.TYPE'] === 'openldap') {
-                        $filter = \FreeDSx\Ldap\Search\Filters::andPHP5(
+                        $filter = \FreeDSx\Ldap\Search\Filters::and(
                             \FreeDSx\Ldap\Search\Filters::raw($systemsettings['FRONTEND']['FRONTEND.LDAP.QUERY']),
                             \FreeDSx\Ldap\Search\Filters::equal('dn', $samaccountname)
                         );

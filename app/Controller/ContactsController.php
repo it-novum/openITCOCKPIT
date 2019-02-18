@@ -281,7 +281,6 @@ class ContactsController extends AppController {
         if ($this->request->is('post') || $this->request->is('put')) {
             $samaccountname = str_replace('string:', '', $this->request->data('Ldap.samaccountname'));
             if ($PHPVersionChecker->isVersionGreaterOrEquals7Dot1()) {
-                require_once OLD_APP . 'vendor_freedsx_ldap' . DS . 'autoload.php';
                 $ldap = new \FreeDSx\Ldap\LdapClient([
                     'servers'               => [$systemsettings['FRONTEND']['FRONTEND.LDAP.ADDRESS']],
                     'port'                  => (int)$systemsettings['FRONTEND']['FRONTEND.LDAP.PORT'],
@@ -302,12 +301,12 @@ class ContactsController extends AppController {
                     $systemsettings['FRONTEND']['FRONTEND.LDAP.PASSWORD']
                 );
 
-                $filter = \FreeDSx\Ldap\Search\Filters::andPHP5(
+                $filter = \FreeDSx\Ldap\Search\Filters::and(
                     \FreeDSx\Ldap\Search\Filters::raw($systemsettings['FRONTEND']['FRONTEND.LDAP.QUERY']),
                     \FreeDSx\Ldap\Search\Filters::equal('sAMAccountName', $samaccountname)
                 );
                 if ($systemsettings['FRONTEND']['FRONTEND.LDAP.TYPE'] === 'openldap') {
-                    $filter = \FreeDSx\Ldap\Search\Filters::andPHP5(
+                    $filter = \FreeDSx\Ldap\Search\Filters::and(
                         \FreeDSx\Ldap\Search\Filters::raw($systemsettings['FRONTEND']['FRONTEND.LDAP.QUERY']),
                         \FreeDSx\Ldap\Search\Filters::equal('dn', $samaccountname)
                     );
@@ -351,7 +350,6 @@ class ContactsController extends AppController {
 
         if ($PHPVersionChecker->isVersionGreaterOrEquals7Dot1()) {
             $usersForSelect = [];
-            require_once OLD_APP . 'vendor_freedsx_ldap' . DS . 'autoload.php';
             $ldap = new \FreeDSx\Ldap\LdapClient([
                 'servers'               => [$systemsettings['FRONTEND']['FRONTEND.LDAP.ADDRESS']],
                 'port'                  => (int)$systemsettings['FRONTEND']['FRONTEND.LDAP.PORT'],
@@ -847,7 +845,6 @@ class ContactsController extends AppController {
             /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
             $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
             $systemsettings = $Systemsettings->findAsArraySection('FRONTEND');
-            require_once OLD_APP . 'vendor_freedsx_ldap' . DS . 'autoload.php';
 
             $ldap = new \FreeDSx\Ldap\LdapClient([
                 'servers'               => [$systemsettings['FRONTEND']['FRONTEND.LDAP.ADDRESS']],
@@ -869,12 +866,12 @@ class ContactsController extends AppController {
                 $systemsettings['FRONTEND']['FRONTEND.LDAP.PASSWORD']
             );
 
-            $filter = \FreeDSx\Ldap\Search\Filters::andPHP5(
+            $filter = \FreeDSx\Ldap\Search\Filters::and(
                 \FreeDSx\Ldap\Search\Filters::raw($systemsettings['FRONTEND']['FRONTEND.LDAP.QUERY']),
                 \FreeDSx\Ldap\Search\Filters::contains('sAMAccountName', $samaccountname)
             );
             if ($systemsettings['FRONTEND']['FRONTEND.LDAP.TYPE'] === 'openldap') {
-                $filter = \FreeDSx\Ldap\Search\Filters::andPHP5(
+                $filter = \FreeDSx\Ldap\Search\Filters::and(
                     \FreeDSx\Ldap\Search\Filters::raw($systemsettings['FRONTEND']['FRONTEND.LDAP.QUERY']),
                     \FreeDSx\Ldap\Search\Filters::contains('uid', $samaccountname)
                 );
