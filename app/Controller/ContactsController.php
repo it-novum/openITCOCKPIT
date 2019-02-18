@@ -29,6 +29,7 @@ use App\Model\Table\SystemsettingsTable;
 use App\Model\Table\TimeperiodsTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\KeyValueStore;
 use itnovum\openITCOCKPIT\Core\PHPVersionChecker;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
@@ -226,13 +227,13 @@ class ContactsController extends AppController {
             //Update contact data
             $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
 
-            $contact = $ContactsTable->get($id);
-            $contact = $ContactsTable->patchEntity($contact, $this->request->data('Contact'));
+            $contactEntity = $ContactsTable->get($id);
+            $contactEntity = $ContactsTable->patchEntity($contactEntity, $this->request->data('Contact'));
 
-            $ContactsTable->save($contact);
-            if ($contact->hasErrors()) {
+            $ContactsTable->save($contactEntity);
+            if ($contactEntity->hasErrors()) {
                 $this->response->statusCode(400);
-                $this->set('error', $contact->getErrors());
+                $this->set('error', $contactEntity->getErrors());
                 $this->set('_serialize', ['error']);
                 return;
             } else {
@@ -244,11 +245,11 @@ class ContactsController extends AppController {
                 $changelog_data = $this->Changelog->parseDataForChangelog(
                     'edit',
                     'contacts',
-                    $contact->id,
+                    $contactEntity->id,
                     OBJECT_CONTACT,
                     $this->request->data('Contact.containers._ids'),
                     $User->getId(),
-                    $contact->name,
+                    $contactEntity->name,
                     array_merge($extDataForChangelog, $this->request->data)
                 );
                 if ($changelog_data) {
@@ -256,11 +257,11 @@ class ContactsController extends AppController {
                 }
 
                 if ($this->request->ext == 'json') {
-                    $this->serializeCake4Id($contact); // REST API ID serialization
+                    $this->serializeCake4Id($contactEntity); // REST API ID serialization
                     return;
                 }
             }
-            $this->set('contact', $contact);
+            $this->set('contact', $contactEntity);
             $this->set('_serialize', ['contact']);
         }
     }

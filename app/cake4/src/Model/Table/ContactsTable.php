@@ -373,14 +373,15 @@ class ContactsTable extends Table {
 
     /**
      * @param int $id
+     * @param array $contain
      * @return array
      */
-    public function getContactById($id) {
+    public function getContactById($id, $contain = ['Containers']) {
         $query = $this->find()
             ->where([
                 'Contacts.id' => $id
             ])
-            ->contain(['Containers'])
+            ->contain($contain)
             ->disableHydration()
             ->first();
 
@@ -407,6 +408,7 @@ class ContactsTable extends Table {
 
         return $this->formatResultAsCake2($query->toArray(), false);
     }
+
 
     /**
      * @param int $id
