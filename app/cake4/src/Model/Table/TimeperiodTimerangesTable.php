@@ -67,6 +67,7 @@ class TimeperiodTimerangesTable extends Table {
                     if (!empty($context['data']['start']) && !empty($context['data']['end'])) {
                         return $context['data']['start'] < $context['data']['end'];
                     }
+                    return true;
                 },
                 'message' => __('The start time must be before the end time.')
             ]);
@@ -81,6 +82,7 @@ class TimeperiodTimerangesTable extends Table {
                     if (!empty($context['data']['start']) && !empty($context['data']['end'])) {
                         return $context['data']['start'] < $context['data']['end'];
                     }
+                    return true;
                 },
                 'message' => __('The end time must be after the start time.')
             ]);
@@ -97,7 +99,6 @@ class TimeperiodTimerangesTable extends Table {
      */
     public function buildRules(RulesChecker $rules) {
         $rules->add($rules->existsIn(['timeperiod_id'], 'Timeperiods'));
-
         return $rules;
     }
 }
