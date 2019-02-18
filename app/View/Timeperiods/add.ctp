@@ -55,10 +55,10 @@ $weekdays = [
             <?php echo __('Add timeperiod'); ?>
         </h2>
         <div class="widget-toolbar" role="menu">
-            <a class="btn btn-default" ui-sref="TimeperiodsIndex">
+            <button class="btn btn-default" ui-sref="TimeperiodsIndex">
                 <i class="fa fa-arrow-left"></i>
                 <?php echo __('Back to list'); ?>
-            </a>
+            </button>
         </div>
     </header>
     <div>
