@@ -126,7 +126,7 @@ $weekdays = [
                                         <?php echo __('Time ranges:'); ?>
                                     </label>
                                 </div>
-                                <div class="help-block text-danger" ng-show="errors.validate_timeranges">
+                                <div class="text-danger" ng-show="errors.validate_timeranges">
                                     <?php echo __('Do not enter overlapping timeframes'); ?>
                                 </div>
                             </legend>

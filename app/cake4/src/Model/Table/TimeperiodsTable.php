@@ -92,68 +92,6 @@ class TimeperiodsTable extends Table {
                 'provider' => 'table',
                 'message'  => __('This timeperiod name has already been taken.')
             ]);
-        /*
-                $validator
-                    ->add('validate_timeranges', 'custom', [
-                        'rule'    => function ($value, $context) {
-                            if (empty($context['data']['timeperiod_timeranges'])) {
-                                return true;
-                            }
-                            $error_arr = [];
-                            foreach ($context['data']['timeperiod_timeranges'] as $key => $row) {
-                                $day[$key] = $row['day'];
-                                $start[$key] = $row['start'];
-                            }
-                            array_multisort($day, SORT_ASC, $start, SORT_ASC, $context['data']['timeperiod_timeranges']);
-                            $check_timerange_array = [];
-                            foreach ($context['data']['timeperiod_timeranges'] as $key => $timerange) {
-                                $check_timerange_array[$timerange['day']][] = [
-                                    'start' => $timerange['start'],
-                                    'end'   => $timerange['end']
-                                ];
-                            }
-                            $error_arr = [];
-                            foreach ($check_timerange_array as $day => $timerange_data) {
-                                if (sizeof($timerange_data) > 1) {
-                                    $intern_counter = 0;
-                                    $tmp_start = $check_timerange_array[$day][$intern_counter]['start'];
-                                    $tmp_end = $check_timerange_array[$day][$intern_counter]['end'];
-                                    for ($input_key = 0; $input_key < sizeof($timerange_data); $input_key++) {
-                                        $intern_counter++;
-                                        if (isset($timerange_data[$intern_counter])) {
-                                            if ($tmp_start <= $timerange_data[$intern_counter]['start'] &&
-                                                $tmp_end > $timerange_data[$intern_counter]['start']
-                                            ) {
-                                                if ($tmp_end <= $timerange_data[$intern_counter]['end']) {
-                                                    $tmp_end = $timerange_data[$intern_counter]['end'];
-                                                } else {
-                                                    $input_key--;
-                                                }
-                                                $error_arr[$day][] = $intern_counter;
-
-                                                //	$this->invalidate('Timeperiod.'.$day.'.'.$intern_counter, 'state-error');
-                                                //$this->invalidate('Timerange.' . $day . '.' . $intern_counter . '.start', 'state-error');
-                                                //$this->setErrors('Timerange.' . $day . '.' . $intern_counter . '.start', ['state-error']);
-
-                                            } else {
-                                                $tmp_start = $timerange_data[$intern_counter]['start'];
-                                                $tmp_end = $timerange_data[$intern_counter]['end'];
-                                                $input_key++;
-
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                            if (sizeof($error_arr) > 0) {
-                                return false;
-                            }
-                            return true;
-                        },
-                        'message' => __('Do not enter overlapping time frames')
-                    ]);
-        */
-
         $validator
             ->scalar('description')
             ->maxLength('description', 255)
@@ -175,17 +113,6 @@ class TimeperiodsTable extends Table {
         $rules->add($rules->isUnique(['uuid']));
         $rules->add($rules->existsIn(['container_id'], 'Containers'));
         $rules->add(function ($entity, $options) {
-
-         /*
-            $entity->setInvalidField('validate_timeranges', false);
-            $entity->setErrors([
-                'validate_timeranges' => [
-                    1 => 'kaputt 1',
-                    3 => 'kaputt 3'
-                ]
-            ]);
-
-         */
             if (!empty($entity->timeperiod_timeranges)) {
                 $data = [];
                 foreach ($entity->timeperiod_timeranges as $timeperiodTimerangEentity) {
@@ -196,29 +123,27 @@ class TimeperiodsTable extends Table {
                     ];
                 }
                 $errors = $this->checkTimerangeOvelapping($data);
-                $entity->setInvalidField('validate_timeranges', false);
-
-                if(!empty($errors)){
+                if (!empty($errors)) {
                     $entity->setInvalidField('validate_timeranges', false);
-
                     $entity->setErrors([
                         'validate_timeranges' => $errors
                     ]);
                     return false;
                 }
+                return true;
             }
 
             /** @var $entity Entity */
 
             /**
-            $entity->setInvalidField('validate_timeranges', false);
-            $entity->setErrors([
-                'validate_timeranges' => [
-                    1 => 'kaputt 1',
-                    3 => 'kaputt 3'
-                ]
-            ]);
-            //   debug($options);
+             * $entity->setInvalidField('validate_timeranges', false);
+             * $entity->setErrors([
+             * 'validate_timeranges' => [
+             * 1 => 'kaputt 1',
+             * 3 => 'kaputt 3'
+             * ]
+             * ]);
+             * //   debug($options);
              */
         }, 'validate_timeranges');
 
@@ -277,7 +202,7 @@ class TimeperiodsTable extends Table {
      * @param int|array $containerIds
      * @return array
      */
-    public function getCommandByContainerIdsAsList($containerIds = []) {
+    public function getTimeperiodByContainerIdsAsList($containerIds = []) {
         if (!is_array($containerIds)) {
             $containerIds = [$containerIds];
         }

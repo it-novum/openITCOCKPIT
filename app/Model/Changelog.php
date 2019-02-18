@@ -37,16 +37,12 @@ class Changelog extends AppModel {
     public function getCompareRules() {
         $_objectDefaults = [
             'command'              => [
-                'Command'         => '{(command_type|name|description|command_line)}',
+                'Command'                  => '{(command_type|name|description|command_line)}',
                 'Command.commandarguments' => '{n}.{(id|name|human_name)}',
             ],
-            /*'devicegroup' => [
-                'Devicegroup' => '{(description)}',
-                'Container' => '{(name)}',
-            ],*/
             'timeperiod'           => [
-                'Timeperiod' => '{(name|description)}',
-                'Timerange'  => '{n}.{(id|day|start|end)}',
+                'Timeperiod'                       => '{(name|description)}',
+                'Timeperiod.timeperiod_timeranges' => '{n}.{(id|day|start|end)}',
             ],
             'contact'              => [
                 'Contact'           => '{(name|description|email|phone|notify_).*}',
