@@ -54,7 +54,7 @@
             <form ng-submit="submit();" class="form-horizontal">
 
                 <div class="row">
-                    <div class="form-group required" ng-class="{'has-error': errors.Container}">
+                    <div class="form-group required" ng-class="{'has-error': errors.containers}">
                         <label class="col col-md-2 control-label">
                             <?php echo __('Container'); ?>
                         </label>
@@ -68,7 +68,7 @@
                                     ng-options="container.key as container.value for container in containers"
                                     ng-model="post.Contact.containers._ids">
                             </select>
-                            <div ng-repeat="error in errors.Container">
+                            <div ng-repeat="error in errors.containers">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
                         </div>
@@ -211,7 +211,7 @@
                                         </div>
                                     </div>
 
-                                    <div class="form-group required"
+                                    <div class="form-group"
                                          ng-class="{'has-error': errors.host_notifications_enabled}">
                                         <label class="col col-md-4 control-label" for="hostNotificationsEnabled">
                                             <?php echo __('Host notifications enabled'); ?>
@@ -289,11 +289,17 @@
                                     ?>
 
                                     <fieldset>
-                                        <legend class="font-sm">
+                                        <legend class="font-sm"
+                                                ng-class="{'has-error-no-form': errors.notify_host_recovery}">
                                             <div class="required">
                                                 <label>
                                                     <?php echo __('Host notification options'); ?>
                                                 </label>
+
+                                                <div ng-repeat="error in errors.notify_host_recovery">
+                                                    <div class="text-danger">{{ error }}</div>
+                                                </div>
+
                                             </div>
                                         </legend>
                                         <?php foreach ($hostOptions as $hostOption): ?>
@@ -373,7 +379,7 @@
                                         </div>
                                     </div>
 
-                                    <div class="form-group required"
+                                    <div class="form-group"
                                          ng-class="{'has-error': errors.service_notifications_enabled}">
                                         <label class="col col-md-4 control-label" for="serviceNotificationsEnabled">
                                             <?php echo __('Service notifications enabled'); ?>
@@ -456,11 +462,16 @@
                                     ?>
 
                                     <fieldset>
-                                        <legend class="font-sm">
+                                        <legend class="font-sm"
+                                                ng-class="{'has-error-no-form': errors.notify_service_recovery}">
                                             <div class="required">
                                                 <label>
                                                     <?php echo __('Service notification options'); ?>
                                                 </label>
+
+                                                <div ng-repeat="error in errors.notify_service_recovery">
+                                                    <div class="text-danger">{{ error }}</div>
+                                                </div>
                                             </div>
                                         </legend>
                                         <?php foreach ($serviceOptions as $serviceOption): ?>
@@ -505,11 +516,16 @@
 
                 <div class="row">
                     <fieldset class="form-inline padding-10 ng-binding">
-                        <legend class="font-sm">
+                        <legend class="font-sm" ng-class="{'has-error-no-form': errors.customvariables_unique}">
                             <div>
                                 <label>
                                     <?php echo __('Define contact macros'); ?>
                                 </label>
+
+                                <div ng-repeat="error in errors.customvariables_unique">
+                                    <div class="text-danger">{{ error }}</div>
+                                </div>
+
                             </div>
                         </legend>
                         <div class="row" ng-repeat="customvariable in post.Contact.customvariables">
@@ -517,6 +533,7 @@
                                               macro-name="'<?php echo __('CONTACT'); ?>'"
                                               index="$index"
                                               callback="deleteMacroCallback"
+                                              errors="getMacroErrors($index)"
                             ></macros-directive>
                         </div>
 

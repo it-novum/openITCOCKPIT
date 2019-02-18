@@ -2209,5 +2209,13 @@ iframe {
 }
 
 .no-required:after {
-    content: ''!important;
+    content: '' !important;
+}
+
+.has-error-no-form {
+    border: 1px solid #b94a48;
+}
+
+.has-error-force .control-label{
+    border-color: #b94a48;
 }

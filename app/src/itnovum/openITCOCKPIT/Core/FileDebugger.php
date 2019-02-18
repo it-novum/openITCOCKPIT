@@ -31,7 +31,7 @@ class FileDebugger {
      * @param mixed $data
      * @param string $filename
      */
-    public static function dump($data, $filename = '/tmp/debug.log') {
+    public static function dump($data, $filename = '/tmp/debug.log', $wipe = false) {
         if ($data === null) {
             $data = 'NULL';
         }
@@ -49,5 +49,9 @@ class FileDebugger {
         fwrite($file, var_export($data, true));
         fwrite($file, PHP_EOL);
         fclose($file);
+    }
+
+    public static function wipe($filename = '/tmp/debug.log'){
+        fclose(fopen($filename, 'w+'));
     }
 }

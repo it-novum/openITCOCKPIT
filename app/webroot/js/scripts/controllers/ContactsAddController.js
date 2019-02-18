@@ -107,6 +107,17 @@ angular.module('openITCOCKPIT')
             $scope.post.Contact.customvariables.splice(index, 1);
         };
 
+        $scope.getMacroErrors = function(index){
+            if(typeof $scope.errors !== "undefined"){
+                if(typeof $scope.errors.customvariables !== "undefined"){
+                    if(typeof $scope.errors.customvariables[index] !== 'undefined'){
+                        return $scope.errors.customvariables[index];
+                    }
+                }
+            }
+            return false;
+        };
+
         $scope.submit = function(){
             console.log($scope.post);
             $http.post("/contacts/add.json?angular=true",
@@ -122,6 +133,14 @@ angular.module('openITCOCKPIT')
 
                 if(result.data.hasOwnProperty('error')){
                     $scope.errors = result.data.error;
+
+                    if($scope.errors.hasOwnProperty('customvariables')){
+                        if($scope.errors.customvariables.hasOwnProperty('custom')){
+                            $scope.errors.customvariables_unique = [
+                                $scope.errors.customvariables.custom
+                            ];
+                        }
+                    }
                 }
             });
 
