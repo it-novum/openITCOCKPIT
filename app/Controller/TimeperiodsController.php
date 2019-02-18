@@ -243,23 +243,27 @@ class TimeperiodsController extends AppController {
                 $this->response->statusCode(400);
                 $this->serializeCake4ErrorMessage($timeperiod);
                 return;
+            } else {
+                //No errors
+                $userId = $this->Auth->user('id');
+                $requestData = $this->request->data;
+                $changelog_data = $this->Changelog->parseDataForChangelog(
+                    'add',
+                    $this->params['controller'],
+                    $timeperiod->get('id'),
+                    OBJECT_TIMEPERIOD,
+                    [ROOT_CONTAINER],
+                    $userId,
+                    $requestData['Timeperiod']['name'],
+                    $requestData
+                );
+                if ($changelog_data) {
+                    CakeLog::write('log', serialize($changelog_data));
+                }
+                $this->serializeCake4Id($timeperiod);
             }
-            $userId = $this->Auth->user('id');
-            $requestData = $this->request->data;
-            $changelog_data = $this->Changelog->parseDataForChangelog(
-                'add',
-                $this->params['controller'],
-                $timeperiod->get('id'),
-                OBJECT_TIMEPERIOD,
-                [ROOT_CONTAINER],
-                $userId,
-                $requestData['Timeperiod']['name'],
-                $requestData
-            );
-            if ($changelog_data) {
-                CakeLog::write('log', serialize($changelog_data));
-            }
-            $this->serializeCake4Id($timeperiod);
+            $this->set('timeperiod', $timeperiod);
+            $this->set('_serialize', ['timeperiod']);
         }
     }
 
@@ -575,7 +579,7 @@ class TimeperiodsController extends AppController {
 
         /** @var $TimeperiodsTable TimeperiodsTable */
         $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
-        $timeperiods = $TimeperiodsTable->getCommandByContainerIdsAsList([
+        $timeperiods = $TimeperiodsTable->getTimeperiodByContainerIdsAsList([
             ROOT_CONTAINER, $containerId
         ]);
 

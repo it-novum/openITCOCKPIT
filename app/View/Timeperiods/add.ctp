@@ -126,7 +126,7 @@ $weekdays = [
                                         <?php echo __('Time ranges:'); ?>
                                     </label>
                                 </div>
-                                <div class="help-block text-danger" ng-show="errors.validate_timeranges">
+                                <div class="text-danger" ng-show="errors.validate_timeranges">
                                     <?php echo __('Do not enter overlapping timeframes'); ?>
                                 </div>
                             </legend>
@@ -166,7 +166,7 @@ $weekdays = [
                                                        ng-model="range.start"/>
                                             </label>
                                             <div ng-repeat="error in errors.timeperiod_timeranges[$index].start">
-                                                <div class=text-danger font-xs">{{ error }}</div>
+                                                <div class="text-danger font-xs">{{ error }}</div>
                                             </div>
                                         </div>
                                     </div>
@@ -186,7 +186,7 @@ $weekdays = [
                                                        ng-model="range.end">
                                             </label>
                                             <div ng-repeat="error in errors.timeperiod_timeranges[$index].end">
-                                                <div class="help-block text-danger font-xs">{{ error }}</div>
+                                                <div class="text-danger font-xs">{{ error }}</div>
                                             </div>
                                         </div>
                                     </div>
