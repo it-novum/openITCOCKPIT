@@ -23,7 +23,6 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
-use App\Model\Table\ContainersTable;
 use App\Model\Table\TimeperiodsTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
@@ -117,112 +116,63 @@ class TimeperiodsController extends AppController {
      * @todo refactor me
      */
     public function edit($id = null) {
-        $userId = $this->Auth->user('id');
-        if (!$this->Timeperiod->exists($id)) {
-            throw new NotFoundException(__('Invalid timeperiod'));
-        }
-
-        /** @var $ContainersTable ContainersTable */
-        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
-
-        if ($this->hasRootPrivileges === true) {
-            $containers = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_TIMEPERIOD, [], $this->hasRootPrivileges);
-        } else {
-            $containers = $ContainersTable->easyPath($this->getWriteContainers(), OBJECT_TIMEPERIOD, [], $this->hasRootPrivileges);
-        }
-        $timeperiod = $this->Timeperiod->findById($id);
-
-        if (!$this->allowedByContainerId(Hash::extract($timeperiod, 'Timeperiod.container_id'))) {
-            $this->render403();
-
+        $this->layout = 'blank';
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
             return;
         }
 
-        $_timeperiod = $timeperiod; //for changelog :(
-        if (isset($this->request->data['Timerange'])) {
-            $timeperiod['Timerange'] = Hash::merge($timeperiod['Timerange'], $this->request->data['Timerange']);
+        /** @var $TimeperiodsTable TimeperiodsTable */
+        $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
+        if (!$TimeperiodsTable->existsById( $id)) {
+            throw new NotFoundException('Time period not found');
         }
-        $date = new DateTime();
-        $weekdays = [];
-        for ($i = 1; $i <= 7; $i++) {
-            $weekdays[$date->format('N')] = $date->format('l');
-            $date->modify('+1 day');
-        }
-        ksort($weekdays);
-        if (!$timeperiod) {
-            throw new NotFoundException(__('Invalid timeperiod'));
-        }
+        $timeperiod = $TimeperiodsTable->get($id, [
+            'contain' => 'timeperiodtimeranges'
+        ]);
+        $timeperiodForChangeLog = $timeperiod;
 
-        $day = [];
-        $start = [];
-        $end = [];
-        foreach ($timeperiod['Timerange'] as $key => $row) {
-            $day[$key] = $row['day'];
-            $start[$key] = $row['start'];
-            $end[$key] = $row['end'];
-        }
-        array_multisort($day, SORT_ASC, $start, SORT_ASC, $end, SORT_ASC, $timeperiod['Timerange']);
+        if ($this->request->is('post') && $this->isAngularJsRequest()) {
+            $timeperiod = $TimeperiodsTable->patchEntity($timeperiod, $this->request->data('Timeperiod'));
+            $TimeperiodsTable->checkRules($timeperiod);
+            $TimeperiodsTable->save($timeperiod);
+            if ($timeperiod->hasErrors()) {
+                $this->response->statusCode(400);
+                $this->set('error', $timeperiod->getErrors());
+                $this->set('_serialize', ['error']);
+                return;
+            } else {
+                //No errors
+                $userId = $this->Auth->user('id');
+                $requestData = $this->request->data;
 
-        $containerIds = $ContainersTable->resolveChildrenOfContainerIds($this->MY_RIGHTS);
-        $query = [
-            'recursive'  => -1,
-            'contain'    => [
-                'Container',
-            ],
-            'conditions' => [
-                'Calendar.container_id' => $containerIds,
-            ],
-            'order'      => [
-                'Calendar.name' => 'ASC',
-            ],
-        ];
-        $calendars = $this->Calendar->find('list', $query);
-        $this->set(compact(['containers', 'weekdays', 'timeperiod', 'calendars']));
-        $this->set('_serialize', ['timeperiod']);
-        if ($this->request->is('post') || $this->request->is('put')) {
-            $this->Timeperiod->id = $id;
-            $this->loadModel('Timerange');
-
-            $timeranges = $this->Timerange->find('all', [
-                'conditions' => [
-                    'Timerange.timeperiod_id' => $id,
-                ],
-            ]);
-
-            /* Alle Zeitscheiben die nicht mehr verwendet werden, müssen gelöscht werden*/
-            foreach ($timeranges as $timerange) {
-                if (!in_array($timerange['Timerange']['id'], Hash::extract($this->request->data, 'Timerange.{n}.id'))) {
-                    $this->Timerange->delete($timerange['Timerange']['id']);
-                }
-            }
-            if ($this->Timeperiod->saveAll($this->request->data)) {
                 $changelog_data = $this->Changelog->parseDataForChangelog(
-                    $this->params['action'],
+                    'edit',
                     $this->params['controller'],
-                    $this->Timeperiod->id,
+                    $timeperiod->get('id'),
                     OBJECT_TIMEPERIOD,
-                    [$this->request->data('Timeperiod.container_id')],
+                    [$requestData['Timeperiod']['container_id']],
                     $userId,
-                    $this->request->data('Timeperiod.name'),
-                    $this->request->data,
-                    $_timeperiod
+                    $requestData['Timeperiod']['name'],
+                    $requestData,
+                    ['Timeperiod' => $timeperiodForChangeLog->toArray()]
                 );
                 if ($changelog_data) {
                     CakeLog::write('log', serialize($changelog_data));
                 }
-                $this->setFlash(__('<a href="/timeperiods/edit/%s">Timeperiod</a> successfully saved', $this->Timeperiod->id));
-                $this->redirect(['action' => 'index']);
-            } else {
-                debug($this->Timeperiod->validationErrors);
-                $this->set('timerange_errors', $this->Timeperiod->validationErrors);
-                $this->setFlash(__('Timeperiod could not be saved'), false);
+                if ($this->request->ext == 'json') {
+                    $this->serializeCake4Id($timeperiod); // REST API ID serialization
+                    return;
+                }
             }
         }
+
+        $this->set('timeperiod', $timeperiod);
+        $this->set('_serialize', ['timeperiod']);
     }
 
     /**
      * @throws Exception
-     * @todo refactor me
      */
     public function add() {
         $this->layout = 'blank';

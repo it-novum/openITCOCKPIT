@@ -112,6 +112,7 @@ class TimeperiodsTable extends Table {
         $rules->add($rules->isUnique(['name']));
         $rules->add($rules->isUnique(['uuid']));
         $rules->add($rules->existsIn(['container_id'], 'Containers'));
+        /** @var $entity Entity */
         $rules->add(function ($entity, $options) {
             if (!empty($entity->timeperiod_timeranges)) {
                 $data = [];
@@ -132,19 +133,6 @@ class TimeperiodsTable extends Table {
                 }
                 return true;
             }
-
-            /** @var $entity Entity */
-
-            /**
-             * $entity->setInvalidField('validate_timeranges', false);
-             * $entity->setErrors([
-             * 'validate_timeranges' => [
-             * 1 => 'kaputt 1',
-             * 3 => 'kaputt 3'
-             * ]
-             * ]);
-             * //   debug($options);
-             */
         }, 'validate_timeranges');
 
         return $rules;
@@ -282,5 +270,13 @@ class TimeperiodsTable extends Table {
             }
         }
         return $error_arr;
+    }
+
+    /**
+     * @param int $id
+     * @return bool
+     */
+    public function existsById($id) {
+        return $this->exists(['Timeperiod.id' => $id]);
     }
 }
