@@ -5,6 +5,8 @@ angular.module('openITCOCKPIT')
                 name: '',
                 description: '',
                 email: '',
+                notify_host_recovery: 0,
+                notify_service_recovery: 0,
                 containers: {
                     _ids: []
                 },

@@ -8,7 +8,6 @@ use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Validation\Validator;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\ContactsFilter;
 
@@ -183,10 +182,34 @@ class ContactsTable extends Table {
             ], __('You have to choose at least one option.'));
 
         $validator
+            ->allowEmptyString('customvariables', true)
             ->add('customvariables', 'custom', [
                 'rule'    => [$this, 'checkMacroNames'],
                 'message' => _('Macro name needs to be unique')
             ]);
+
+        $booleanFields = [
+            'host_notifications_enabled',
+            'service_notifications_enabled',
+            'notify_service_warning',
+            'notify_service_unknown',
+            'notify_service_critical',
+            'notify_service_flapping',
+            'notify_service_downtime',
+            'notify_host_down',
+            'notify_host_unreachable',
+            'notify_host_flapping',
+            'notify_host_downtime',
+            'host_push_notifications_enabled',
+            'service_push_notifications_enabled'
+        ];
+
+        foreach ($booleanFields as $booleanField) {
+            $validator
+                ->integer($booleanField)
+                ->lessThanOrEqual($booleanField, 1)
+                ->greaterThanOrEqual($booleanField, 0);
+        }
 
         return $validator;
     }
@@ -267,8 +290,8 @@ class ContactsTable extends Table {
         if (isset($context['data']['customvariables']) && is_array($context['data']['customvariables'])) {
             $usedNames = [];
 
-            foreach($context['data']['customvariables'] as $macro){
-                if(in_array($macro['name'], $usedNames, true)){
+            foreach ($context['data']['customvariables'] as $macro) {
+                if (in_array($macro['name'], $usedNames, true)) {
                     //Macro name not unique
                     return false;
                 }
