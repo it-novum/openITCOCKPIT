@@ -5,7 +5,8 @@ angular.module('openITCOCKPIT').directive('macrosDirective', function($http){
         scope: {
             'macro': '=',
             'macroName': '=',
-            'callback': '='
+            'callback': '=',
+            'index': '='
         },
 
         controller: function($scope){

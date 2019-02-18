@@ -114,7 +114,7 @@ class CommandsController extends AppController {
                     CakeLog::write('log', serialize($changelog_data));
                 }
                 if ($this->request->ext == 'json') {
-                    $this->serializeId(); // REST API ID serialization
+                    $this->serializeCake4Id($command); // REST API ID serialization
                     return;
                 }
             }
@@ -168,7 +168,7 @@ class CommandsController extends AppController {
                     CakeLog::write('log', serialize($changelog_data));
                 }
                 if ($this->request->ext == 'json') {
-                    $this->serializeId(); // REST API ID serialization
+                    $this->serializeCake4Id($command); // REST API ID serialization
                     return;
                 }
             }

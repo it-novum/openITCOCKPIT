@@ -103,8 +103,28 @@ angular.module('openITCOCKPIT')
             });
         };
 
-        $scope.deleteMacroCallback = function(macro){
-            console.log(macro);
+        $scope.deleteMacroCallback = function(macro, index){
+            $scope.post.Contact.customvariables.splice(index, 1);
+        };
+
+        $scope.submit = function(){
+            console.log($scope.post);
+            $http.post("/contacts/add.json?angular=true",
+                $scope.post
+            ).then(function(result){
+                NotyService.genericSuccess();
+                //$state.go('ContactsIndex');
+
+                console.log('Data saved successfully');
+            }, function errorCallback(result){
+
+                NotyService.genericError();
+
+                if(result.data.hasOwnProperty('error')){
+                    $scope.errors = result.data.error;
+                }
+            });
+
         };
 
         $scope.loadContainers();
