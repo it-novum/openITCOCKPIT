@@ -47,7 +47,7 @@ class CommandsTable extends Table {
         $this->setPrimaryKey('id');
 
         $this->hasMany('Commandarguments', [
-            'foreignKey' => 'command_id',
+            'foreignKey'   => 'command_id',
             'saveStrategy' => 'replace'
         ])->setDependent(true);
 

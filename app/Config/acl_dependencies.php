@@ -223,8 +223,8 @@ $config = [
             ],
             'Contacts'              => [
                 'index' => ['view'],
-                'add'   => ['loadContainers', 'loadCommands', 'loadTimeperiods', 'addCustomMacro', 'loadLdapUserByString', 'loadUsersByContainerId'],
-                'edit'  => ['loadContainers', 'loadCommands', 'loadTimeperiods', 'addCustomMacro', 'loadLdapUserByString', 'loadUsersByContainerId'],
+                'add'   => ['loadContainers', 'loadCommands', 'loadTimeperiods', 'loadLdapUserByString', 'loadUsersByContainerId'],
+                'edit'  => ['loadContainers', 'loadCommands', 'loadTimeperiods', 'loadLdapUserByString', 'loadUsersByContainerId'],
             ],
             'Cronjobs'              => [
                 'add'  => ['getTasks'],

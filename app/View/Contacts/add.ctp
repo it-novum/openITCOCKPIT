@@ -111,7 +111,7 @@
                         <div class="col col-xs-10">
                             <input
                                     class="form-control"
-                                    type="text"
+                                    type="email"
                                     placeholder="user@example.org"
                                     ng-model="post.Contact.email">
                             <div ng-repeat="error in errors.email">
@@ -136,7 +136,7 @@
                         </div>
                     </div>
 
-                    <div class="form-group required" ng-class="{'has-error': errors.user_id}">
+                    <div class="form-group" ng-class="{'has-error': errors.user_id}">
                         <label class="col col-md-2 control-label">
                             <?php echo __('User'); ?>
                         </label>
@@ -222,13 +222,15 @@
                                             <label class="checkbox small-checkbox-label no-required">
                                                 <input type="checkbox" name="checkbox"
                                                        id="hostNotificationsEnabled"
+                                                       ng-true-value="1"
+                                                       ng-false-value="0"
                                                        ng-model="post.Contact.host_notifications_enabled">
                                                 <i class="checkbox-primary"></i>
                                             </label>
                                         </div>
                                     </div>
 
-                                    <div class="form-group required"
+                                    <div class="form-group"
                                          ng-class="{'has-error': errors.host_push_notifications_enabled}">
                                         <label class="col col-md-4 control-label" for="hostPushNotificationEnabled">
                                             <?php echo __('Push notifications to browser'); ?>
@@ -244,6 +246,8 @@
                                         <div class="col-xs-8 smart-form">
                                             <label class="checkbox small-checkbox-label no-required">
                                                 <input type="checkbox" name="checkbox"
+                                                       ng-true-value="1"
+                                                       ng-false-value="0"
                                                        id="hostPushNotificationEnabled"
                                                        ng-model="post.Contact.host_push_notifications_enabled">
                                                 <i class="checkbox-primary"></i>
@@ -304,6 +308,8 @@
                                                 <div class="col-xs-8 smart-form">
                                                     <label class="checkbox small-checkbox-label no-required">
                                                         <input type="checkbox" name="checkbox"
+                                                               ng-true-value="1"
+                                                               ng-false-value="0"
                                                                id="<?php echo $hostOption['field']; ?>"
                                                                ng-model="post.Contact.<?php echo $hostOption['field']; ?>">
                                                         <i class="checkbox-<?php echo $hostOption['class']; ?>"></i>
@@ -377,6 +383,8 @@
                                         <div class="col-xs-8 smart-form">
                                             <label class="checkbox small-checkbox-label no-required">
                                                 <input type="checkbox" name="checkbox"
+                                                       ng-true-value="1"
+                                                       ng-false-value="0"
                                                        id="serviceNotificationsEnabled"
                                                        ng-model="post.Contact.service_notifications_enabled">
                                                 <i class="checkbox-primary"></i>
@@ -384,7 +392,7 @@
                                         </div>
                                     </div>
 
-                                    <div class="form-group required"
+                                    <div class="form-group"
                                          ng-class="{'has-error': errors.service_push_notifications_enabled}">
                                         <label class="col col-md-4 control-label" for="servicePushNotificationEnabled">
                                             <?php echo __('Push notifications to browser'); ?>
@@ -400,6 +408,8 @@
                                         <div class="col-xs-8 smart-form">
                                             <label class="checkbox small-checkbox-label no-required">
                                                 <input type="checkbox" name="checkbox"
+                                                       ng-true-value="1"
+                                                       ng-false-value="0"
                                                        id="servicePushNotificationEnabled"
                                                        ng-model="post.Contact.service_push_notifications_enabled">
                                                 <i class="checkbox-primary"></i>
@@ -465,6 +475,8 @@
                                                 <div class="col-xs-8 smart-form">
                                                     <label class="checkbox small-checkbox-label no-required">
                                                         <input type="checkbox" name="checkbox"
+                                                               ng-true-value="1"
+                                                               ng-false-value="0"
                                                                id="<?php echo $serviceOption['field']; ?>"
                                                                ng-model="post.Contact.<?php echo $serviceOption['field']; ?>">
                                                         <i class="checkbox-<?php echo $serviceOption['class']; ?>"></i>
@@ -503,13 +515,14 @@
                         <div class="row" ng-repeat="customvariable in post.Contact.customvariables">
                             <macros-directive macro="customvariable"
                                               macro-name="'<?php echo __('CONTACT'); ?>'"
+                                              index="$index"
                                               callback="deleteMacroCallback"
                             ></macros-directive>
                         </div>
 
                         <div class="row">
                             <div class="col-md-9 col-md-offset-2 padding-top-10 text-right">
-                                <button class="btn btn-success btn-sm" ng-click="addMacro()">
+                                <button type="button" class="btn btn-success btn-sm" ng-click="addMacro()">
                                     <i class="fa fa-plus"></i>
                                     <?php echo __('Add new macro'); ?>
                                 </button>

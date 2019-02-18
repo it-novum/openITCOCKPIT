@@ -26,6 +26,7 @@ use App\Model\Table\CommandsTable;
 use App\Model\Table\ContactsTable;
 use App\Model\Table\ContainersTable;
 use App\Model\Table\SystemsettingsTable;
+use App\Model\Table\TimeperiodsTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\KeyValueStore;
@@ -138,6 +139,60 @@ class ContactsController extends AppController {
         }
         $this->set('contact', $contact);
         $this->set('_serialize', ['contact']);
+    }
+
+    public function add() {
+        $this->layout = 'blank';
+
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
+            return;
+        }
+
+        if ($this->request->is('post')) {
+            $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+
+            /** @var $ContactsTable ContactsTable */
+            $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
+            $this->request->data['Contact']['uuid'] = UUID::v4();
+            $contact = $ContactsTable->newEntity();
+            $contact = $ContactsTable->patchEntity($contact, $this->request->data('Contact'));
+
+            $ContactsTable->save($contact);
+            if ($contact->hasErrors()) {
+                $this->response->statusCode(400);
+                $this->set('error', $contact->getErrors());
+                $this->set('_serialize', ['error']);
+                return;
+            } else {
+                //No errors
+
+                /** @var $TimeperiodsTable TimeperiodsTable */
+                $extDataForChangelog = $ContactsTable->getExtDataForChangelog($this->request);
+
+                $changelog_data = $this->Changelog->parseDataForChangelog(
+                    'add',
+                    'contacts',
+                    $contact->id,
+                    OBJECT_CONTACT,
+                    $this->request->data('Contact.containers._ids'),
+                    $User->getId(),
+                    $contact->name,
+                    array_merge($extDataForChangelog, $this->request->data)
+                );
+                if ($changelog_data) {
+                    CakeLog::write('log', serialize($changelog_data));
+                }
+
+                if ($this->request->ext == 'json') {
+                    $this->serializeCake4Id($contact); // REST API ID serialization
+                    return;
+                }
+            }
+            $this->set('contact', $contact);
+            $this->set('_serialize', ['contact']);
+
+        }
     }
 
     public function edit($id = null) {
@@ -296,179 +351,6 @@ class ContactsController extends AppController {
         $this->set('_serialize', ['contact', 'notification_commands', 'timeperiods', '_timeperiods']);
     }
 
-    public function add() {
-        $this->layout = 'blank';
-
-        if (!$this->isApiRequest()) {
-            //Only ship HTML template for angular
-            return;
-        }
-
-
-        /**** OLD*****/
-
-
-        $userId = $this->Auth->user('id');
-
-        /******** Push Notifications ********/
-        /** @var $Commands CommandsTable */
-        $Commands = TableRegistry::getTableLocator()->get('Commands');
-        $hostPushComamndId = $Commands->getCommandIdByCommandUuid('cd13d22e-acd4-4a67-997b-6e120e0d3153');
-        $servicePushComamndId = $Commands->getCommandIdByCommandUuid('c23255b7-5b1a-40b4-b614-17837dc376af');
-
-        $this->Frontend->setJson('hostPushComamndId', $hostPushComamndId);
-        $this->Frontend->setJson('servicePushComamndId', $servicePushComamndId);
-
-
-        $customFieldsToRefill = [
-            'Contact' => [
-                'host_notifications_enabled',
-                'host_push_notifications_enabled',
-                'notify_host_recovery',
-                'notify_host_down',
-                'notify_host_unreachable',
-                'notify_host_flapping',
-                'notify_host_downtime',
-
-                'service_notifications_enabled',
-                'service_push_notifications_enabled',
-                'notify_service_recovery',
-                'notify_service_warning',
-                'notify_service_critical',
-                'notify_service_unknown',
-                'notify_service_flapping',
-                'notify_service_downtime'
-            ]
-        ];
-
-        $this->CustomValidationErrors->checkForRefill($customFieldsToRefill);
-
-        /** @var $ContainersTable ContainersTable */
-        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
-        /** @var $CommandsTable CommandsTable */
-        $CommandsTable = TableRegistry::getTableLocator()->get('Commands');
-
-        if ($this->hasRootPrivileges === true) {
-            $containers = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_CONTACT, [], $this->hasRootPrivileges, [CT_CONTACTGROUP]);
-        } else {
-            $containers = $ContainersTable->easyPath($this->getWriteContainers(), OBJECT_CONTACT, [], $this->hasRootPrivileges, [CT_CONTACTGROUP]);
-        }
-
-        $notification_commands = $CommandsTable->getCommandByTypeAsList(NOTIFICATION_COMMAND);
-        $timeperiods = $this->Timeperiod->find('list');
-
-        $_timeperiods = [];
-        $_users = [];
-
-        $isLdap = false;
-        if ($this->getNamedParameter('ldap', 0) == 1) {
-            $isLdap = true;
-            $this->request->data['Contact']['email'] = $this->getNamedParameter('email', '');
-            $this->request->data['Contact']['name'] = $this->getNamedParameter('samaccountname', '');
-        }
-
-        $Customvariable = [];
-        if (isset($this->request->data['Customvariable'])) {
-            $Customvariable = $this->request->data['Customvariable'];
-        }
-
-        if ($this->request->is('post') || $this->request->is('put')) {
-            $containerIds = [];
-            if (isset($this->request->data['Container']['Container'])) {
-                $containerIds = $this->request->data['Container']['Container'];
-                if ($containerIds !== '') {
-                    $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerIds);
-                    $_timeperiods = $this->Timeperiod->timeperiodsByContainerId($containerIds, 'list');
-
-                    $_users = $this->User->usersByContainerId($containerIds, 'list');
-                }
-            }
-
-            $ext_data_for_changelog = [
-                'HostTimeperiod'    => [
-                    'id'   => $this->request->data['Contact']['host_timeperiod_id'],
-                    'name' => isset($timeperiods[$this->request->data['Contact']['host_timeperiod_id']]) ? $timeperiods[$this->request->data['Contact']['host_timeperiod_id']] : '',
-                ],
-                'ServiceTimeperiod' => [
-                    'id'   => $this->request->data['Contact']['service_timeperiod_id'],
-                    'name' => isset($timeperiods[$this->request->data['Contact']['service_timeperiod_id']]) ? $timeperiods[$this->request->data['Contact']['service_timeperiod_id']] : '',
-                ],
-            ];
-
-            if (is_array($this->request->data['Contact']['HostCommands'])) {
-                foreach ($this->request->data['Contact']['HostCommands'] as $command_id) {
-                    $ext_data_for_changelog['HostCommands'][] = [
-                        'id'   => $command_id,
-                        'name' => $notification_commands[$command_id],
-                    ];
-                }
-            }
-            if (is_array($this->request->data['Contact']['ServiceCommands'])) {
-                foreach ($this->request->data['Contact']['ServiceCommands'] as $command_id) {
-                    $ext_data_for_changelog['ServiceCommands'][] = [
-                        'id'   => $command_id,
-                        'name' => $notification_commands[$command_id],
-                    ];
-                }
-            }
-
-            $this->request->data['Contact']['uuid'] = UUID::v4();
-
-            if ($this->Contact->saveAll($this->request->data)) {
-                $changelog_data = $this->Changelog->parseDataForChangelog(
-                    $this->params['action'],
-                    $this->params['controller'],
-                    $this->Contact->id,
-                    OBJECT_CONTACT,
-                    $this->request->data('Container.Container'),
-                    $userId,
-                    $this->request->data['Contact']['name'],
-                    array_merge($ext_data_for_changelog, $this->request->data)
-                );
-                if ($changelog_data) {
-                    CakeLog::write('log', serialize($changelog_data));
-                }
-
-                if ($this->request->ext === 'json') {
-                    $this->serializeId();
-
-                    return;
-                }
-                $this->setFlash(__('<a href="/contacts/edit/%s">Contact</a> successfully saved', $this->Contact->id));
-                $this->redirect(['action' => 'index']);
-            } else {
-                foreach ($this->Customvariable->validationErrors as $customVariableValidationError) {
-                    if (isset($customVariableValidationError['name'])) {
-                        $this->set('customVariableValidationError', current($customVariableValidationError['name']));
-                    }
-                }
-
-                foreach ($this->Customvariable->validationErrors as $customVariableValidationError) {
-                    if (isset($customVariableValidationError['value'])) {
-                        $this->set('customVariableValidationErrorValue', current($customVariableValidationError['value']));
-                    }
-                }
-            }
-            if ($this->request->ext === 'json') {
-                $this->serializeErrorMessage();
-
-                return;
-            }
-
-            if (isset($this->Contact->validationErrors['notify_host_recovery'])) {
-                $this->set('validation_host_notification', $this->Contact->validationErrors['notify_host_recovery'][0]);
-            }
-
-            if (isset($this->Contact->validationErrors['notify_service_recovery'])) {
-                $this->set('validation_service_notification', $this->Contact->validationErrors['notify_service_recovery'][0]);
-            }
-
-            $this->setFlash(__('Contact could not be saved'), false);
-        }
-        $this->set(compact(['containers', '_timeperiods', 'timeperiods', 'notification_commands', 'isLdap', 'Customvariable', '_users']));
-        $this->set('_serialize', ['containers', '_timeperiods', 'timeperiods', 'notification_commands']);
-
-    }
 
     public function addFromLdap() {
         $this->layout = 'angularjs';
@@ -621,93 +503,6 @@ class ContactsController extends AppController {
         $this->set('_serialize', ['usersForSelect', 'isPhp7Dot1']);
     }
 
-    public function loadLdapUserByString() {
-        $this->layout = 'blank';
-
-        $usersForSelect = [];
-        $samaccountname = $this->request->query('samaccountname');
-        if (!empty($samaccountname) && strlen($samaccountname) > 2) {
-            /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
-            $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
-            $systemsettings = $Systemsettings->findAsArraySection('FRONTEND');
-            require_once OLD_APP . 'vendor_freedsx_ldap' . DS . 'autoload.php';
-
-            $ldap = new \FreeDSx\Ldap\LdapClient([
-                'servers'               => [$systemsettings['FRONTEND']['FRONTEND.LDAP.ADDRESS']],
-                'port'                  => (int)$systemsettings['FRONTEND']['FRONTEND.LDAP.PORT'],
-                'ssl_allow_self_signed' => true,
-                'ssl_validate_cert'     => false,
-                'use_tls'               => (bool)$systemsettings['FRONTEND']['FRONTEND.LDAP.USE_TLS'],
-                'base_dn'               => $systemsettings['FRONTEND']['FRONTEND.LDAP.BASEDN'],
-            ]);
-            if ((bool)$systemsettings['FRONTEND']['FRONTEND.LDAP.USE_TLS']) {
-                $ldap->startTls();
-            }
-            $ldap->bind(
-                sprintf(
-                    '%s%s',
-                    $systemsettings['FRONTEND']['FRONTEND.LDAP.USERNAME'],
-                    $systemsettings['FRONTEND']['FRONTEND.LDAP.SUFFIX']
-                ),
-                $systemsettings['FRONTEND']['FRONTEND.LDAP.PASSWORD']
-            );
-
-            $filter = \FreeDSx\Ldap\Search\Filters::andPHP5(
-                \FreeDSx\Ldap\Search\Filters::raw($systemsettings['FRONTEND']['FRONTEND.LDAP.QUERY']),
-                \FreeDSx\Ldap\Search\Filters::contains('sAMAccountName', $samaccountname)
-            );
-            if ($systemsettings['FRONTEND']['FRONTEND.LDAP.TYPE'] === 'openldap') {
-                $filter = \FreeDSx\Ldap\Search\Filters::andPHP5(
-                    \FreeDSx\Ldap\Search\Filters::raw($systemsettings['FRONTEND']['FRONTEND.LDAP.QUERY']),
-                    \FreeDSx\Ldap\Search\Filters::contains('uid', $samaccountname)
-                );
-            }
-            if ($systemsettings['FRONTEND']['FRONTEND.LDAP.TYPE'] === 'openldap') {
-                $requiredFields = ['uid', 'mail', 'sn', 'givenname'];
-                $search = FreeDSx\Ldap\Operations::search($filter, 'uid', 'mail', 'sn', 'givenname', 'displayname', 'dn');
-            } else {
-                $requiredFields = ['samaccountname', 'mail', 'sn', 'givenname'];
-                $search = FreeDSx\Ldap\Operations::search($filter, 'samaccountname', 'mail', 'sn', 'givenname', 'displayname', 'dn');
-            }
-
-            $paging = $ldap->paging($search, 100);
-            while ($paging->hasEntries()) {
-                foreach ($paging->getEntries() as $entry) {
-                    $userDn = (string)$entry->getDn();
-                    if (empty($userDn)) {
-                        continue;
-                    }
-
-                    $entry = $entry->toArray();
-                    $entry = array_combine(array_map('strtolower', array_keys($entry)), array_values($entry));
-                    foreach ($requiredFields as $requiredField) {
-                        if (!isset($entry[$requiredField])) {
-                            continue 2;
-                        }
-                    }
-
-                    if (isset($entry['uid'])) {
-                        $entry['samaccountname'] = $entry['uid'];
-                    }
-
-                    $displayName = sprintf(
-                        '%s, %s (%s)',
-                        $entry['givenname'][0],
-                        $entry['sn'][0],
-                        $entry['samaccountname'][0]
-                    );
-                    $usersForSelect[$entry['samaccountname'][0]] = $displayName;
-                }
-                $paging->end();
-            }
-        }
-
-        $usersForSelect = Api::makeItJavaScriptAble($usersForSelect);
-
-        $this->set('usersForSelect', $usersForSelect);
-        $this->set('_serialize', ['usersForSelect']);
-    }
-
 
     /**
      * @param null $id
@@ -783,51 +578,6 @@ class ContactsController extends AppController {
         $this->set('success', false);
         $this->set('_serialize', ['success']);
         return;
-    }
-
-
-    public function loadTimeperiods() {
-        if (!$this->isAngularJsRequest()) {
-            throw new MethodNotAllowedException();
-        }
-
-        /** @var $ContainersTable ContainersTable */
-        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
-
-        $timePeriods = [];
-        if (isset($this->request->data['container_ids'])) {
-            $containerIds = $ContainersTable->resolveChildrenOfContainerIds($this->request->data['container_ids']);
-            $timePeriods = $this->Timeperiod->timeperiodsByContainerId($containerIds, 'list');
-            $timePeriods = Api::makeItJavaScriptAble($timePeriods);
-        }
-
-        $data = [
-            'timeperiods' => $timePeriods,
-        ];
-        $this->set($data);
-        $this->set('_serialize', array_keys($data));
-    }
-
-    public function loadUsersByContainerId() {
-        if (!$this->isAngularJsRequest()) {
-            throw new MethodNotAllowedException();
-        }
-
-        /** @var $ContainersTable ContainersTable */
-        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
-
-        $users = [];
-        if (isset($this->request->data['container_ids'])) {
-            $containerIds = $ContainersTable->resolveChildrenOfContainerIds($this->request->data['container_ids']);
-            $users = $this->User->usersByContainerId($containerIds, 'list');
-            $users = Api::makeItJavaScriptAble($users);
-        }
-
-        $data = [
-            'users' => $users,
-        ];
-        $this->set($data);
-        $this->set('_serialize', array_keys($data));
     }
 
     public function copy($id = null) {
@@ -939,13 +689,6 @@ class ContactsController extends AppController {
         $this->set('result', $postData);
         $this->set('_serialize', ['result']);
 
-    }
-
-    public function addCustomMacro($counter) {
-        $this->allowOnlyAjaxRequests();
-
-        $this->set('objecttype_id', OBJECT_CONTACT);
-        $this->set('counter', $counter);
     }
 
     /**
@@ -1093,6 +836,52 @@ class ContactsController extends AppController {
         $this->set('back_url', $this->referer());
     }
 
+    /******* AJAX METHODS ******/
+
+    public function loadTimeperiods() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        $timePeriods = [];
+        if (isset($this->request->data['container_ids'])) {
+            $containerIds = $ContainersTable->resolveChildrenOfContainerIds($this->request->data['container_ids']);
+            $timePeriods = $this->Timeperiod->timeperiodsByContainerId($containerIds, 'list');
+            $timePeriods = Api::makeItJavaScriptAble($timePeriods);
+        }
+
+        $data = [
+            'timeperiods' => $timePeriods,
+        ];
+        $this->set($data);
+        $this->set('_serialize', array_keys($data));
+    }
+
+    public function loadUsersByContainerId() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        $users = [];
+        if (isset($this->request->data['container_ids'])) {
+            $containerIds = $ContainersTable->resolveChildrenOfContainerIds($this->request->data['container_ids']);
+            $users = $this->User->usersByContainerId($containerIds, 'list');
+            $users = Api::makeItJavaScriptAble($users);
+        }
+
+        $data = [
+            'users' => $users,
+        ];
+        $this->set($data);
+        $this->set('_serialize', array_keys($data));
+    }
+
     public function loadContainers() {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
@@ -1128,6 +917,93 @@ class ContactsController extends AppController {
         $this->set('servicePushComamndId', $servicePushComamndId);
         $this->set('notificationCommands', Api::makeItJavaScriptAble($notificationCommands));
         $this->set('_serialize', ['hostPushComamndId', 'servicePushComamndId', 'notificationCommands']);
+    }
+
+    public function loadLdapUserByString() {
+        $this->layout = 'blank';
+
+        $usersForSelect = [];
+        $samaccountname = $this->request->query('samaccountname');
+        if (!empty($samaccountname) && strlen($samaccountname) > 2) {
+            /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
+            $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
+            $systemsettings = $Systemsettings->findAsArraySection('FRONTEND');
+            require_once OLD_APP . 'vendor_freedsx_ldap' . DS . 'autoload.php';
+
+            $ldap = new \FreeDSx\Ldap\LdapClient([
+                'servers'               => [$systemsettings['FRONTEND']['FRONTEND.LDAP.ADDRESS']],
+                'port'                  => (int)$systemsettings['FRONTEND']['FRONTEND.LDAP.PORT'],
+                'ssl_allow_self_signed' => true,
+                'ssl_validate_cert'     => false,
+                'use_tls'               => (bool)$systemsettings['FRONTEND']['FRONTEND.LDAP.USE_TLS'],
+                'base_dn'               => $systemsettings['FRONTEND']['FRONTEND.LDAP.BASEDN'],
+            ]);
+            if ((bool)$systemsettings['FRONTEND']['FRONTEND.LDAP.USE_TLS']) {
+                $ldap->startTls();
+            }
+            $ldap->bind(
+                sprintf(
+                    '%s%s',
+                    $systemsettings['FRONTEND']['FRONTEND.LDAP.USERNAME'],
+                    $systemsettings['FRONTEND']['FRONTEND.LDAP.SUFFIX']
+                ),
+                $systemsettings['FRONTEND']['FRONTEND.LDAP.PASSWORD']
+            );
+
+            $filter = \FreeDSx\Ldap\Search\Filters::andPHP5(
+                \FreeDSx\Ldap\Search\Filters::raw($systemsettings['FRONTEND']['FRONTEND.LDAP.QUERY']),
+                \FreeDSx\Ldap\Search\Filters::contains('sAMAccountName', $samaccountname)
+            );
+            if ($systemsettings['FRONTEND']['FRONTEND.LDAP.TYPE'] === 'openldap') {
+                $filter = \FreeDSx\Ldap\Search\Filters::andPHP5(
+                    \FreeDSx\Ldap\Search\Filters::raw($systemsettings['FRONTEND']['FRONTEND.LDAP.QUERY']),
+                    \FreeDSx\Ldap\Search\Filters::contains('uid', $samaccountname)
+                );
+            }
+            if ($systemsettings['FRONTEND']['FRONTEND.LDAP.TYPE'] === 'openldap') {
+                $requiredFields = ['uid', 'mail', 'sn', 'givenname'];
+                $search = FreeDSx\Ldap\Operations::search($filter, 'uid', 'mail', 'sn', 'givenname', 'displayname', 'dn');
+            } else {
+                $requiredFields = ['samaccountname', 'mail', 'sn', 'givenname'];
+                $search = FreeDSx\Ldap\Operations::search($filter, 'samaccountname', 'mail', 'sn', 'givenname', 'displayname', 'dn');
+            }
+
+            $paging = $ldap->paging($search, 100);
+            while ($paging->hasEntries()) {
+                foreach ($paging->getEntries() as $entry) {
+                    $userDn = (string)$entry->getDn();
+                    if (empty($userDn)) {
+                        continue;
+                    }
+
+                    $entry = $entry->toArray();
+                    $entry = array_combine(array_map('strtolower', array_keys($entry)), array_values($entry));
+                    foreach ($requiredFields as $requiredField) {
+                        if (!isset($entry[$requiredField])) {
+                            continue 2;
+                        }
+                    }
+
+                    if (isset($entry['uid'])) {
+                        $entry['samaccountname'] = $entry['uid'];
+                    }
+
+                    $displayName = sprintf(
+                        '%s, %s (%s)',
+                        $entry['givenname'][0],
+                        $entry['sn'][0],
+                        $entry['samaccountname'][0]
+                    );
+                    $usersForSelect[$entry['samaccountname'][0]] = $displayName;
+                }
+                $paging->end();
+            }
+        }
+
+        $usersForSelect = Api::makeItJavaScriptAble($usersForSelect);
+
+        $this->set('usersForSelect', $usersForSelect);
+        $this->set('_serialize', ['usersForSelect']);
     }
 }
 

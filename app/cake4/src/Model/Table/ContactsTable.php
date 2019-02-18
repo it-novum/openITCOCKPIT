@@ -347,4 +347,60 @@ class ContactsTable extends Table {
         return $this->formatResultAsCake2($query->toArray(), false);
     }
 
+    /**
+     * @param \CakeRequest $Request
+     * @return array
+     */
+    public function getExtDataForChangelog(\CakeRequest $Request) {
+        $extDataForChangelog = [
+            'HostTimeperiod'    => [],
+            'ServiceTimeperiod' => [],
+            'HostCommands'      => [],
+            'ServiceCommands'   => []
+        ];
+
+        /** @var $CommandsTable CommandsTable */
+        $CommandsTable = TableRegistry::getTableLocator()->get('Commands');
+        /** @var $TimeperiodsTable TimeperiodsTable */
+        $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
+
+        foreach ($Request->data('Contact.host_commands._ids') as $id) {
+            $command = $CommandsTable->getCommandById($id);
+            if (!empty($command)) {
+                $extDataForChangelog['HostCommands'][] = [
+                    'id'   => $command['Command']['id'],
+                    'name' => $command['Command']['name']
+                ];
+            }
+        }
+
+        foreach ($Request->data('Contact.service_commands._ids') as $id) {
+            $command = $CommandsTable->getCommandById($id);
+            if (!empty($command)) {
+                $extDataForChangelog['ServiceCommands'][] = [
+                    'id'   => $command['Command']['id'],
+                    'name' => $command['Command']['name']
+                ];
+            }
+        }
+
+        $timeperiod = $TimeperiodsTable->getTimeperiodById($Request->data('Contact.host_timeperiod_id'));
+        if (!empty($timeperiod)) {
+            $extDataForChangelog['HostTimeperiod'] = [
+                'id'   => $timeperiod['Timeperiod']['id'],
+                'name' => $timeperiod['Timeperiod']['name']
+            ];
+        }
+
+        $timeperiod = $TimeperiodsTable->getTimeperiodById($Request->data('Contact.service_timeperiod_id'));
+        if (!empty($timeperiod)) {
+            $extDataForChangelog['ServiceTimeperiod'] = [
+                'id'   => $timeperiod['Timeperiod']['id'],
+                'name' => $timeperiod['Timeperiod']['name']
+            ];
+        }
+
+        return $extDataForChangelog;
+    }
+
 }
