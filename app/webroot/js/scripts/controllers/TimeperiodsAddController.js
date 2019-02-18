@@ -99,7 +99,7 @@ angular.module('openITCOCKPIT')
                 $scope.post
             ).then(function(result){
                 NotyService.genericSuccess();
-    //            $state.go('TimeperiodsIndex');
+                $state.go('TimeperiodsIndex');
             }, function errorCallback(result){
                 if(result.data.hasOwnProperty('error')){
                     NotyService.genericError();
