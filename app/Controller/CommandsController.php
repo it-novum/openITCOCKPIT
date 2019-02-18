@@ -65,7 +65,7 @@ class CommandsController extends AppController {
 
         /** @var CommandsTable $Commands */
         $Commands = TableRegistry::getTableLocator()->get('Commands');
-        if (!$Commands->exists($id)) {
+        if (!$Commands->existsById($id)) {
             throw new NotFoundException(__('Invalid command'));
         }
 
@@ -132,7 +132,7 @@ class CommandsController extends AppController {
 
         /** @var $Commands CommandsTable */
         $Commands = TableRegistry::getTableLocator()->get('Commands');
-        if (!$Commands->exists($id)) {
+        if (!$Commands->existsById($id)) {
             throw new NotFoundException('Command not found');
         }
         $command = $Commands->get($id, [
@@ -188,7 +188,7 @@ class CommandsController extends AppController {
 
         /** @var CommandsTable $Commands */
         $Commands = TableRegistry::getTableLocator()->get('Commands');
-        if (!$Commands->exists($id)) {
+        if (!$Commands->existsById($id)) {
             throw new NotFoundException(__('Invalid command'));
         }
 
