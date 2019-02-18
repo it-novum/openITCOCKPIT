@@ -535,7 +535,7 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router'])
 
             .state('ContactsLdap', {
                 url: '/contacts/ldap',
-                templateUrl: "/contacts/ldap.html",
+                templateUrl: "/contacts/addFromLdap.html",
                 controller: "ContactsLdapController"
             })
 

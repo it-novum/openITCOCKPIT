@@ -29,7 +29,6 @@ use App\Model\Table\SystemsettingsTable;
 use App\Model\Table\TimeperiodsTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\KeyValueStore;
 use itnovum\openITCOCKPIT\Core\PHPVersionChecker;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
@@ -268,7 +267,12 @@ class ContactsController extends AppController {
 
 
     public function addFromLdap() {
-        $this->layout = 'angularjs';
+        $this->layout = 'blank';
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
+            return;
+        }
+
         /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
         $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
         $systemsettings = $Systemsettings->findAsArraySection('FRONTEND');
