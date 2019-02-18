@@ -19,7 +19,7 @@ angular.module('openITCOCKPIT').directive('chosen', function($http, $filter, $ro
 
             var unwatchModel = $scope.$watch(attrs.ngModel, function(){
                 element.trigger('chosen:updated');
-            });
+            }, true);
 
             var unwatchSource = $scope.$watchCollection(attrs.chosen, function(){
                 element.trigger('chosen:updated');

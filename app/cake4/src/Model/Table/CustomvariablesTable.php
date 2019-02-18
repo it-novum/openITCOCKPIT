@@ -56,18 +56,7 @@ class CustomvariablesTable extends Table {
             ->maxLength('name', 255)
             ->requirePresence('name', 'create')
             ->allowEmptyString('name', false, __('Macro name cannot be left blank.'))
-            ->add('name', 'custom', [
-                'rule'    => function ($value, $context) {
-                //debug($value);
-                //DEBUG($CONTEXT);
-
-                    //Move to contactsTable??
-                    //Only one objecte here...
-                    return true;
-                    // Custom logic that returns true/false
-                },
-                'message' => __('Macro name needs to be unique')
-            ]);
+            ->regex('name', '/[\d\w\_]/', __('Macro name contains illegal characters'));
 
         $validator
             ->scalar('value')

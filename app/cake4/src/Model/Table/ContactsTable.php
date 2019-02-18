@@ -126,7 +126,7 @@ class ContactsTable extends Table {
             ->allowEmptyString('email', function ($context) {
                 return !empty($context['data']['email']) || !empty($context['data']['phone']);
             }, __('You must at least specify either the email address or the phone number.'))
-            ->email('email');
+            ->email('email', false, __('Invalid email address'));
 
         $validator
             ->allowEmptyString('phone', true)
@@ -139,34 +139,77 @@ class ContactsTable extends Table {
         $validator
             ->integer('host_timeperiod_id')
             ->allowEmptyString('host_timeperiod_id', false)
+            ->requirePresence('host_timeperiod_id')
             ->greaterThan('host_timeperiod_id', 0);
 
         $validator
             ->integer('service_timeperiod_id')
             ->allowEmptyString('service_timeperiod_id', false)
+            ->requirePresence('service_timeperiod_id')
             ->greaterThan('service_timeperiod_id', 0);
 
         $validator
-            ->allowEmptyString('HostCommands', false)
-            ->multipleOptions('HostCommands', [
+            ->allowEmptyString('host_commands', false)
+            ->multipleOptions('host_commands', [
                 'min' => 1
             ], __('You have to choose at least one command.'));
 
         $validator
-            ->allowEmptyString('ServiceCommands', false)
-            ->multipleOptions('ServiceCommands', [
+            ->allowEmptyString('service_commands', false)
+            ->multipleOptions('service_commands', [
                 'min' => 1
             ], __('You have to choose at least one command.'));
 
-        $validator->add('notify_host_recovery', 'custom', [
-            'rule'    => [$this, 'checkHostNotificationOptions'],
-            'message' => 'You have to choose at least one option.',
-        ]);
+        $validator
+            ->requirePresence('notify_host_recovery', true, __('You have to choose at least one option.'))
+            ->add('notify_host_recovery', 'custom', [
+                'rule'    => [$this, 'checkHostNotificationOptions'],
+                'message' => 'You have to choose at least one option.',
+            ]);
 
-        $validator->add('notify_service_recovery', 'custom', [
-            'rule'    => [$this, 'checkHostNotificationOptions'],
-            'message' => 'You have to choose at least one option.',
-        ]);
+        $validator
+            ->requirePresence('notify_service_recovery', true, __('You have to choose at least one option.'))
+            ->add('notify_service_recovery', 'custom', [
+                'rule'    => [$this, 'checkHostNotificationOptions'],
+                'message' => 'You have to choose at least one option.',
+            ]);
+
+        $validator
+            ->requirePresence('containers', true, __('You have to choose at least one option.'))
+            ->allowEmptyString('containers', false)
+            ->multipleOptions('containers', [
+                'min' => 1
+            ], __('You have to choose at least one option.'));
+
+        $validator
+            ->allowEmptyString('customvariables', true)
+            ->add('customvariables', 'custom', [
+                'rule'    => [$this, 'checkMacroNames'],
+                'message' => _('Macro name needs to be unique')
+            ]);
+
+        $booleanFields = [
+            'host_notifications_enabled',
+            'service_notifications_enabled',
+            'notify_service_warning',
+            'notify_service_unknown',
+            'notify_service_critical',
+            'notify_service_flapping',
+            'notify_service_downtime',
+            'notify_host_down',
+            'notify_host_unreachable',
+            'notify_host_flapping',
+            'notify_host_downtime',
+            'host_push_notifications_enabled',
+            'service_push_notifications_enabled'
+        ];
+
+        foreach ($booleanFields as $booleanField) {
+            $validator
+                ->integer($booleanField)
+                ->lessThanOrEqual($booleanField, 1)
+                ->greaterThanOrEqual($booleanField, 0);
+        }
 
         return $validator;
     }
@@ -241,6 +284,22 @@ class ContactsTable extends Table {
         }
 
         return false;
+    }
+
+    public function checkMacroNames($value, $context) {
+        if (isset($context['data']['customvariables']) && is_array($context['data']['customvariables'])) {
+            $usedNames = [];
+
+            foreach ($context['data']['customvariables'] as $macro) {
+                if (in_array($macro['name'], $usedNames, true)) {
+                    //Macro name not unique
+                    return false;
+                }
+                $usedNames[] = $macro['name'];
+            }
+        }
+
+        return true;
     }
 
     /**

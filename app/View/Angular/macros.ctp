@@ -31,18 +31,24 @@
             $_{{macroName}}{{macro.name}}$
         </span>
     </div>
-    <div class="col-xs-12 col-lg-4">
+    <div class="col-xs-12 col-lg-4 required" ng-class="{'has-error-force': errors.name}">
         <label class="control-label">
             <?php echo __('Name'); ?>
         </label>
         <input class="form-control" style="width:100%;"
                type="text" ng-model="macro.name">
+        <div ng-repeat="error in errors.name">
+            <div class="text-danger">{{ error }}</div>
+        </div>
     </div>
-    <div class="col-xs-12 col-lg-4">
+    <div class="col-xs-12 col-lg-4 required" ng-class="{'has-error-force': errors.name}">
         <label class="control-label">
             <?php echo __('Value'); ?>
         </label>
         <input class="form-control" style="width:100%" type="text" ng-model="macro.value">
+        <div ng-repeat="error in errors.value">
+            <div class="text-danger">{{ error }}</div>
+        </div>
     </div>
     <div class="col-xs-12 col-sm-1">
         <label><!-- just a spacer for a nice layout --> &nbsp;</label>
