@@ -12,6 +12,7 @@ angular.module('openITCOCKPIT')
 
         $scope.init = true;
         $scope.hasError = null;
+        $scope.errors = {};
 
         $scope.timeperiod = {
             ranges: []
@@ -47,17 +48,19 @@ angular.module('openITCOCKPIT')
                     timeperiodranges.push($scope.timeperiod.ranges[i])
                 }
             }
-            $scope.timeperiod.ranges = timeperiodranges;
-            /*
-            $scope.timeperiod.ranges = _(timeperiodranges)
-                .chain()
-                .flatten()
-                .sortBy(
-                    function(range){
-                        return [range.day, range.start];
-                    })
-                .value();
-                */
+            if(typeof $scope.errors.validate_timeranges !== 'undefined' ||
+                typeof $scope.errors.timeperiod_timeranges !== 'undefined'){
+                $scope.timeperiod.ranges = timeperiodranges;
+            }else{
+                $scope.timeperiod.ranges = _(timeperiodranges)
+                    .chain()
+                    .flatten()
+                    .sortBy(
+                        function(range){
+                            return [range.day, range.start];
+                        })
+                    .value();
+            }
         };
 
         $scope.addTimerange = function(){
@@ -70,17 +73,19 @@ angular.module('openITCOCKPIT')
                 end: ''
 
             });
-            $scope.timeperiod.ranges = $scope.timeperiod.ranges;
-            /*
-            $scope.timeperiod.ranges = _($scope.timeperiod.ranges)
-                .chain()
-                .flatten()
-                .sortBy(
-                    function(range){
-                        return [range.day, range.start];
-                    })
-                .value();
-                */
+            if(typeof $scope.errors.validate_timeranges !== 'undefined' ||
+                typeof $scope.errors.timeperiod_timeranges !== 'undefined'){
+                $scope.timeperiod.ranges = $scope.timeperiod.ranges;
+            }else{
+                $scope.timeperiod.ranges = _($scope.timeperiod.ranges)
+                    .chain()
+                    .flatten()
+                    .sortBy(
+                        function(range){
+                            return [range.day, range.start];
+                        })
+                    .value();
+            }
         };
 
 
