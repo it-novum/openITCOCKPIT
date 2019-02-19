@@ -55,7 +55,11 @@ class DowntimereportsController extends AppController {
         $userContainerIds = $ContainersTable->resolveChildrenOfContainerIds(
             $this->MY_RIGHTS,
             $this->hasRootPrivileges);
-        $timeperiods = $this->Timeperiod->timeperiodsByContainerId($userContainerIds, 'list');
+        $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
+        $timeperiods = $TimeperiodsTable->find('list')
+            ->where(['Timeperiods.container_id IN' => $userContainerIds])
+            ->toArray();
+
         $downtimeServices = [];
         $downtimeHosts = [];
         $downtimeReportData = [];
