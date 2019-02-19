@@ -278,16 +278,17 @@ class InstantreportsController extends AppController {
         $instantReportData = [];
         $allHostsServices = $this->getAllHostsServices($instantReport);
         if (!empty($allHostsServices['Hosts']) || !empty($allHostsServices['Services'])) {
-            $timeperiod = $this->Timeperiod->find('first', [
-                'conditions' => [
-                    'Timeperiod.id' => $instantReport['Instantreport']['timeperiod_id'],
-                ],
-            ]);
+            $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
+            $timeperiod = $TimeperiodsTable->find()
+                ->where(['id' => $instantReport['Instantreport']['timeperiod_id']])
+                ->contain('TimeperiodTimeranges')
+                ->first()
+                ->toArray();
             $timeSlicesGlobal = Hash::insert(
                 $this->Instantreport->createDateRanges(
                     $baseStartDate,
                     $baseEndDate,
-                    $timeperiod['Timerange']),
+                    $timeperiod['timeperiod_timeranges']),
                 '{n}.is_downtime', false
             );
 

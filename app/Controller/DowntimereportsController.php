@@ -55,7 +55,11 @@ class DowntimereportsController extends AppController {
         $userContainerIds = $ContainersTable->resolveChildrenOfContainerIds(
             $this->MY_RIGHTS,
             $this->hasRootPrivileges);
-        $timeperiods = $this->Timeperiod->timeperiodsByContainerId($userContainerIds, 'list');
+        $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
+        $timeperiods = $TimeperiodsTable->find('list')
+            ->where(['Timeperiods.container_id IN' => $userContainerIds])
+            ->toArray();
+
         $downtimeServices = [];
         $downtimeHosts = [];
         $downtimeReportData = [];
@@ -78,11 +82,13 @@ class DowntimereportsController extends AppController {
                     'startDate' => $startDate,
                     'endDate'   => $endDate,
                 ];
-                $timeperiod = $this->Timeperiod->find('first', [
-                    'conditions' => [
-                        'Timeperiod.id' => $this->request->data('Downtimereport.timeperiod_id'),
-                    ],
-                ]);
+                $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
+                $timeperiod = $TimeperiodsTable->find()
+                    ->where(['id' => $this->request->data('Downtimereport.timeperiod_id')])
+                    ->contain('TimeperiodTimeranges')
+                    ->first()
+                    ->toArray();
+
                 $DowntimeHostConditions = new DowntimeHostConditions();
                 $DowntimeHostConditions->setOrder(['DowntimeHost.scheduled_start_time' => 'asc']);
                 $DowntimeHostConditions->setFrom($startTimeStamp);
@@ -105,7 +111,7 @@ class DowntimereportsController extends AppController {
                     $timeSlices = $this->Downtimereport->createDateRanges(
                         $this->request->data('Downtimereport.start_date'),
                         $this->request->data('Downtimereport.end_date'),
-                        $timeperiod['Timerange']
+                        $timeperiod['timeperiod_timeranges']
                     );
                     unset($timeperiod);
                     $totalTime = Hash::apply(Hash::map($timeSlices, '{n}', ['Downtimereport', 'calculateTotalTime']), '{n}', 'array_sum');
