@@ -55,7 +55,8 @@ class TimeperiodsTable extends Table {
         ]);
 
         $this->hasMany('TimeperiodTimeranges', [
-            'foreignKey' => 'timeperiod_id'
+            'foreignKey' => 'timeperiod_id',
+            'saveStrategy' => 'replace'
         ])->setDependent(true);
     }
 
@@ -71,27 +72,24 @@ class TimeperiodsTable extends Table {
             ->allowEmptyString('id', 'create');
 
         $validator
-            ->integer('container_id')
-            ->greaterThan('container_id', 0)
-            ->requirePresence('container_id', 'create')
-            ->allowEmptyString('container_id', false);
-
-        $validator
             ->scalar('uuid')
             ->maxLength('uuid', 37)
             ->requirePresence('uuid', 'create')
-            ->allowEmptyString('uuid', false);
+            ->allowEmptyString('uuid', false)
+            ->add('uuid', 'unique', ['rule' => 'validateUnique', 'provider' => 'table']);
+
+        $validator
+            ->integer('container_id')
+            ->greaterThan('container_id', 0)
+            ->requirePresence('container_id')
+            ->allowEmptyString('container_id', false);
 
         $validator
             ->scalar('name')
             ->maxLength('name', 255)
-            ->requirePresence('name', 'create')
-            ->allowEmptyString('name', false)
-            ->add('name', 'unique', [
-                'rule'     => 'validateUnique',
-                'provider' => 'table',
-                'message'  => __('This timeperiod name has already been taken.')
-            ]);
+            ->requirePresence('name')
+            ->allowEmptyString('name', false);
+
         $validator
             ->scalar('description')
             ->maxLength('description', 255)
@@ -109,7 +107,6 @@ class TimeperiodsTable extends Table {
      * @return \Cake\ORM\RulesChecker
      */
     public function buildRules(RulesChecker $rules) {
-        $rules->add($rules->isUnique(['name']));
         $rules->add($rules->isUnique(['uuid']));
         $rules->add($rules->existsIn(['container_id'], 'Containers'));
         /** @var $entity Entity */
@@ -255,10 +252,6 @@ class TimeperiodsTable extends Table {
                             }
                             $error_arr[$intern_counter]['Timeperiod'][$day] = 'state-error';
                             $timeranges[$intern_counter] = 'error';
-
-                            //	$this->invalidate('Timeperiod.'.$day.'.'.$intern_counter, 'state-error');
-                            //$this->invalidate('Timerange.' . $day . '.' . $intern_counter . '.start', 'state-error');
-
                         } else {
                             $tmp_start = $timerange_data[$intern_counter]['start'];
                             $tmp_end = $timerange_data[$intern_counter]['end'];
@@ -277,6 +270,6 @@ class TimeperiodsTable extends Table {
      * @return bool
      */
     public function existsById($id) {
-        return $this->exists(['Timeperiod.id' => $id]);
+        return $this->exists(['Timeperiods.id' => $id]);
     }
 }

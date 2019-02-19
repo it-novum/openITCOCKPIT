@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('TimeperiodsEditController', function($scope, $http, SudoService, $state, $stateParams, NotyService){
+    .controller('TimeperiodsEditController', function($scope, $http, SudoService, $state, $stateParams, $location, NotyService){
         $scope.post = {
             Timeperiod: {
                 container_id: '',
@@ -37,7 +37,6 @@ angular.module('openITCOCKPIT')
                         end: $scope.timeperiod.timeperiod_timeranges[key].end
                     });
                 }
-                console.log($scope.timeperiod.ranges);
 
                 $scope.post.Timeperiod.name = $scope.timeperiod.name;
                 $scope.post.Timeperiod.description = $scope.timeperiod.description;
@@ -133,10 +132,15 @@ angular.module('openITCOCKPIT')
                 index++;
             }
 
-            $http.post("/timeperiods/add.json?angular=true",
+            $http.post("/timeperiods/edit/" + $scope.id + ".json?angular=true",
                 $scope.post
             ).then(function(result){
-                NotyService.genericSuccess();
+                NotyService.genericSuccess({
+                    message: '<u><a href="' + $location.absUrl() + '" class="txt-color-white"> '
+                        + $scope.successMessage.objectName
+                        + '</a></u> ' + $scope.successMessage.message,
+                    timeout: 10000
+                });
                 $state.go('TimeperiodsIndex');
             }, function errorCallback(result){
                 if(result.data.hasOwnProperty('error')){

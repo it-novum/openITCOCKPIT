@@ -63,7 +63,8 @@ $weekdays = [
     </header>
     <div>
         <div class="widget-body">
-            <form ng-submit="submit();" class="form-horizontal">
+            <form ng-submit="submit();" class="form-horizontal" ng-init="successMessage=
+            {objectName : '<?php echo __('Timeperiod'); ?>' , message: '<?php echo __('created successfully'); ?>'}">
                 <div class="row">
                     <div class="form-group required" ng-class="{'has-error': errors.container_id}">
                         <label class="col col-md-2 control-label">

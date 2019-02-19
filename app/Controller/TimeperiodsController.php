@@ -130,7 +130,7 @@ class TimeperiodsController extends AppController {
         $timeperiod = $TimeperiodsTable->get($id, [
             'contain' => 'timeperiodtimeranges'
         ]);
-        $timeperiodForChangeLog = $timeperiod;
+        $timeperiodForChangeLog['Timeperiod'] = $timeperiod->toArray();
 
         if ($this->request->is('post') && $this->isAngularJsRequest()) {
             $timeperiod = $TimeperiodsTable->patchEntity($timeperiod, $this->request->data('Timeperiod'));
@@ -155,7 +155,7 @@ class TimeperiodsController extends AppController {
                     $userId,
                     $requestData['Timeperiod']['name'],
                     $requestData,
-                    ['Timeperiod' => $timeperiodForChangeLog->toArray()]
+                    $timeperiodForChangeLog
                 );
                 if ($changelog_data) {
                     CakeLog::write('log', serialize($changelog_data));
