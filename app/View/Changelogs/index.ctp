@@ -91,7 +91,7 @@
                                                     7 => __('Sunday'),
                                                 ],
                                             ],
-                                            'Timerange'  => [
+                                            'Timeperiod.timeperiod_timeranges'  => [
                                                 'day' => [
                                                     1 => __('Monday'),
                                                     2 => __('Tuesday'),
@@ -371,7 +371,7 @@
     </section>
 <?php
 function recordExists($model_name, $id) {
-    $excluded_models = ['Timerange', 'Hosttemplatecommandargumentvalue', 'Servicetemplatecommandargumentvalue'];
+    $excluded_models = ['Timeperiod.timeperiod_timeranges', 'Hosttemplatecommandargumentvalue', 'Servicetemplatecommandargumentvalue'];
     if (in_array($model_name, $excluded_models)) {
         return false;
     }

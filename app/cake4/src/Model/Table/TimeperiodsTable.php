@@ -55,7 +55,8 @@ class TimeperiodsTable extends Table {
         ]);
 
         $this->hasMany('TimeperiodTimeranges', [
-            'foreignKey' => 'timeperiod_id'
+            'foreignKey' => 'timeperiod_id',
+            'saveStrategy' => 'replace'
         ])->setDependent(true);
     }
 
