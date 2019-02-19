@@ -515,7 +515,9 @@ use itnovum\openITCOCKPIT\Core\System\Health\LsbRelease;
         else if (strstr($agent, "Mac OS X 10.10")) $os = "Mac OS X - Yosemite";
         else if (strstr($agent, "Mac OS X 10.11")) $os = "Mac OS X - El Capitan";
 
-        else if (strstr($agent, "Mac OS X 10.12")) $os = "macOS Sierra ";
+        else if (strstr($agent, "Mac OS X 10.12")) $os = "macOS Sierra";
+        else if (strstr($agent, "Mac OS X 10.13")) $os = "macOS High Sierra";
+        else if (strstr($agent, "Mac OS X 10.14")) $os = "macOS Mojave";
 
         //Chrome
         else if (strstr($agent, "Mac OS X 10_5")) $os = "Mac OS X - Leopard";
@@ -526,7 +528,9 @@ use itnovum\openITCOCKPIT\Core\System\Health\LsbRelease;
         else if (strstr($agent, "Mac OS X 10_10")) $os = "Mac OS X - Yosemite";
         else if (strstr($agent, "Mac OS X 10_11")) $os = "Mac OS X - El Capitan";
 
-        else if (strstr($agent, "Mac OS X 10_12")) $os = "macOS Sierra ";
+        else if (strstr($agent, "Mac OS X 10_12")) $os = "macOS Sierra";
+        else if (strstr($agent, "Mac OS X 10_13")) $os = "macOS High Sierra";
+        else if (strstr($agent, "Mac OS X 10_14")) $os = "macOS Mojave";
 
         else if (strstr($agent, "Mac OS")) $os = "Mac OS X";
         else if (strstr($agent, "Linux")) $os = "Linux";

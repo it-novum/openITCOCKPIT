@@ -75,30 +75,6 @@ class Contactgroup extends AppModel {
         //$this->primaryKey = 'id';
     }
 
-
-    public function saveContactgroup($data = []) {
-        debug($data);
-        if ($this->saveAll($data)) {
-            $contactgroup = $this->findById($this->id);
-            if (isset($data['Contact']) && !empty($data['Contact'])) {
-                foreach ($data['Contact'] as $contact_id) {
-                    $contact = $this->Contact->findById($contact_id);
-                    $contact['Container']['ContactsToContainer']['contact_id'] = $contact_id;
-                    debug($contactgroup['Contactgroup']['container_id']);
-                    $contact['Container']['ContactsToContainer']['container_id'] = $contactgroup['Contactgroup']['container_id'];
-                    if ($this->Contact->saveAll($contact, ['validate' => false])) {
-                        // $this->setFlash(__('contact group successfully saved'));
-                        //$this->redirect(['action' => 'index']);
-                        echo "jup";
-                    } else {
-                        //$this->setFlash(__('could not save data'), false);
-                        echo "not";
-                    }
-                }
-            }
-        }
-    }
-
     public function contactgroupsByContainerId($container_ids = [], $type = 'all', $index = 'id') {
         if (!is_array($container_ids)) {
             $container_ids = [$container_ids];

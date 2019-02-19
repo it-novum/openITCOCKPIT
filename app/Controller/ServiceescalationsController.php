@@ -22,6 +22,7 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+use App\Model\Table\ContactsTable;
 use App\Model\Table\ContainersTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
@@ -420,13 +421,15 @@ class ServiceescalationsController extends AppController {
     protected function getAvailableDataByContainerId($containerIds) {
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        /** @var $ContactsTable ContactsTable */
+        $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
 
         $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerIds);
 
         $servicegroups = $this->Servicegroup->servicegroupsByContainerId($containerIds, 'list', 'id');
         $services = $this->Host->servicesByContainerIds($containerIds, 'list', ['forOptiongroup' => true]);
         $timeperiods = $this->Timeperiod->timeperiodsByContainerId($containerIds, 'list');
-        $contacts = $this->Contact->contactsByContainerId($containerIds, 'list');
+        $contacts = $ContactsTable->contactsByContainerId($containerIds, 'list');
         $contactgroups = $this->Contactgroup->contactgroupsByContainerId($containerIds, 'list');
 
         return [$servicegroups, $services, $timeperiods, $contacts, $contactgroups];

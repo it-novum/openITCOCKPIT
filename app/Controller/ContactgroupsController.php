@@ -22,6 +22,7 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+use App\Model\Table\ContactsTable;
 use App\Model\Table\ContainersTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
@@ -144,27 +145,19 @@ class ContactgroupsController extends AppController {
 
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        /** @var $ContactsTable ContactsTable */
+        $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
 
         if ($this->request->is('post') || $this->request->is('put')) {
             $containerIds = $ContainersTable->resolveChildrenOfContainerIds($this->request->data['Container']['parent_id']);
-            $contacts = $this->Contact->contactsByContainerId($containerIds, 'list');
+            $contacts = $ContactsTable->contactsByContainerId($containerIds, 'list');
 
             $ext_data_for_changelog = [];
             if (isset($this->request->data['Contactgroup']['Contact']) && is_array($this->request->data['Contactgroup']['Contact'])) {
-                foreach ($this->request->data['Contactgroup']['Contact'] as $contact_id) {
-                    $_contact = $this->Contact->find('first', [
-                        'recursive'  => -1,
-                        'fields'     => [
-                            'Contact.id',
-                            'Contact.name',
-                        ],
-                        'conditions' => [
-                            'Contact.id' => $contact_id,
-                        ],
-                    ]);
+                foreach($ContactsTable->getContactsAsList($this->request->data['Contactgroup']['Contact']) as $_contactId => $_contactName){
                     $ext_data_for_changelog['Contact'][] = [
-                        'id'   => $contact_id,
-                        'name' => $_contact['Contact']['name'],
+                        'id'   => $_contactId,
+                        'name' => $_contactName
                     ];
                 }
             }
@@ -199,7 +192,7 @@ class ContactgroupsController extends AppController {
             }
         } else {
             $containerIds = $ContainersTable->resolveChildrenOfContainerIds($contactgroup['Container']['parent_id']);
-            $contacts = $this->Contact->contactsByContainerId($containerIds, 'list');
+            $contacts = $ContactsTable->contactsByContainerId($containerIds, 'list');
             $contactgroup['Contactgroup']['Contact'] = Hash::combine($contactgroup['Contact'], '{n}.id', '{n}.id');
         }
 
@@ -217,6 +210,8 @@ class ContactgroupsController extends AppController {
         $userId = $this->Auth->user('id');
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        /** @var $ContactsTable ContactsTable */
+        $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
 
         if ($this->hasRootPrivileges === true) {
             $containers = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_CONTACTGROUP, [], $this->hasRootPrivileges);
@@ -234,7 +229,7 @@ class ContactgroupsController extends AppController {
 
             if (isset($this->request->data['Container']['parent_id'])) {
                 $containerIds = $ContainersTable->resolveChildrenOfContainerIds($this->request->data['Container']['parent_id']);
-                $contacts = $this->Contact->contactsByContainerId($containerIds, 'list');
+                $contacts = $ContactsTable->contactsByContainerId($containerIds, 'list');
             }
 
             $this->request->data['Contactgroup']['uuid'] = UUID::v4();
@@ -242,22 +237,12 @@ class ContactgroupsController extends AppController {
             $ext_data_for_changelog = [];
             //Save Contact associations -> Array Format [Contact] => data
             if (isset($this->request->data['Contactgroup']['Contact']) && is_array($this->request->data['Contactgroup']['Contact'])) {
-                foreach ($this->request->data['Contactgroup']['Contact'] as $contact_id) {
-                    $_contact = $this->Contact->find('first', [
-                        'recursive'  => -1,
-                        'fields'     => [
-                            'Contact.id',
-                            'Contact.name',
-                        ],
-                        'conditions' => [
-                            'Contact.id' => $contact_id,
-                        ],
-                    ]);
+
+                foreach($ContactsTable->getContactsAsList($this->request->data['Contactgroup']['Contact']) as $_contactId => $_contactName){
                     $ext_data_for_changelog['Contact'][] = [
-                        'id'   => $contact_id,
-                        'name' => $_contact['Contact']['name'],
+                        'id'   => $_contactId,
+                        'name' => $_contactName
                     ];
-                    unset($_contact);
                 }
             }
             if (isset($this->request->data['Container']['name'])) {
@@ -311,9 +296,11 @@ class ContactgroupsController extends AppController {
 
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        /** @var $ContactsTable ContactsTable */
+        $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
 
         $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerIds);
-        $contacts = $this->Contact->contactsByContainerId($containerIds, 'list');
+        $contacts = $ContactsTable->contactsByContainerId($containerIds, 'list');
         $contacts = Api::makeItJavaScriptAble($contacts);
 
         $data = [

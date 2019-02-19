@@ -22,6 +22,7 @@
 //  License agreement and license key will be shipped with the order
 //  confirmation.
 
+use App\Model\Table\ContactsTable;
 use App\Model\Table\ContainersTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
@@ -360,25 +361,12 @@ class AngularController extends AppController {
 
         $User = new User($this->Auth);
 
-        $contact = $this->Contact->find('first', [
-            'fields'     => [
-                'Contact.id'
-            ],
-            'recursive'  => -1,
-            'conditions' => [
-                'AND' => [
-                    'Contact.user_id' => $User->getId(),
-                    'OR'              => [
-                        'host_push_notifications_enabled'    => 1,
-                        'service_push_notifications_enabled' => 1
-                    ]
-                ]
-            ]
-        ]);
+        /** @var $ContactsTable ContactsTable */
+        $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
 
         $this->set('user', [
             'id'             => $User->getId(),
-            'hasPushContact' => !empty($contact)
+            'hasPushContact' => $ContactsTable->hasUserAPushContact($User->getId())
         ]);
 
         $this->set('websocket', $websocketConfig);
@@ -691,12 +679,12 @@ class AngularController extends AppController {
         imagedestroy($image);
     }
 
-    public function macros(){
+    public function macros() {
         //Only ship HTML template
         return;
     }
 
-    public function ldap_configuration(){
+    public function ldap_configuration() {
         if (!$this->isApiRequest()) {
             //Only ship HTML template
             return;
@@ -712,8 +700,8 @@ class AngularController extends AppController {
 
         $systemsettings = Cache::read('systemsettings', 'permissions');
         $ldapConfig = [
-            'host' => $systemsettings['FRONTEND']['FRONTEND.LDAP.ADDRESS'],
-            'query' => $systemsettings['FRONTEND']['FRONTEND.LDAP.QUERY'],
+            'host'    => $systemsettings['FRONTEND']['FRONTEND.LDAP.ADDRESS'],
+            'query'   => $systemsettings['FRONTEND']['FRONTEND.LDAP.QUERY'],
             'base_dn' => $systemsettings['FRONTEND']['FRONTEND.LDAP.BASEDN']
         ];
 

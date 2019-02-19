@@ -23,6 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use App\Model\Table\ContactsTable;
 use App\Model\Table\TimeperiodsTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
@@ -231,17 +232,9 @@ class TimeperiodsController extends AppController {
         }
 
         //Check contacts
-        $this->loadModel('Contact');
-        $contactCount = $this->Contact->find('count', [
-            'recursive'  => -1,
-            'conditions' => [
-                'or' => [
-                    'host_timeperiod_id'    => $timeperiodId,
-                    'service_timeperiod_id' => $timeperiodId,
-                ],
-            ],
-        ]);
-        if ($contactCount > 0) {
+        /** @var $ContactsTable ContactsTable */
+        $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
+        if($ContactsTable->isTimeperiodUsedByContacts($timeperiodId)){
             return false;
         }
 

@@ -24,6 +24,7 @@
 //	confirmation.
 
 use App\Model\Table\CommandsTable;
+use App\Model\Table\ContactsTable;
 use Cake\ORM\TableRegistry;
 
 class SyncTablesShell extends AppShell {
@@ -105,10 +106,9 @@ class SyncTablesShell extends AppShell {
     public function syncContacts() {
         $this->info('Start synchronization for contact objects');
 
-
-        $contacts = $this->Contact->find('all', [
-            'recursive' => -1,
-        ]);
+        /** @var $ContactsTable ContactsTable */
+        $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
+        $contacts = $ContactsTable->getContactsForCrateDBSync();
         $sizeof = sizeof($contacts);
 
         $crateContact = [];

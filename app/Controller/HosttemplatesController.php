@@ -24,6 +24,7 @@
 //	confirmation.
 use App\Model\Table\CommandargumentsTable;
 use App\Model\Table\CommandsTable;
+use App\Model\Table\ContactsTable;
 use App\Model\Table\ContainersTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
@@ -191,11 +192,13 @@ class HosttemplatesController extends AppController {
         $CommandargumentsTable = TableRegistry::getTableLocator()->get('Commandarguments');
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        /** @var $ContactsTable ContactsTable */
+        $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
 
         $commandarguments = $CommandargumentsTable->getByCommandId($hosttemplate['CheckCommand']['id']);
 
         // Data required for changelog
-        $contacts = $this->Contact->find('list');
+        $contacts = $ContactsTable->getContactsAsList();
         $contactgroups = $this->Contactgroup->findList();
         $timeperiods = $this->Timeperiod->find('list');
         $commands = $CommandsTable->getCommandByTypeAsList(HOSTCHECK_COMMAND);
@@ -229,7 +232,7 @@ class HosttemplatesController extends AppController {
         $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId);
 
         $_timeperiods = $this->Timeperiod->timeperiodsByContainerId($containerIds, 'list');
-        $_contacts = $this->Contact->contactsByContainerId($containerIds, 'list');
+        $_contacts = $ContactsTable->contactsByContainerId($containerIds, 'list');
         $_contactgroups = $this->Contactgroup->contactgroupsByContainerId($containerIds, 'list');
         $_hostgroups = $this->Hostgroup->hostgroupsByContainerId($containerIds, 'list', 'id');
 
@@ -257,12 +260,7 @@ class HosttemplatesController extends AppController {
             ];
 
             if ($this->request->data('Hosttemplate.Contact')) {
-                if ($contactsForChangelog = $this->Contact->find('list', [
-                    'conditions' => [
-                        'Contact.id' => $this->request->data['Hosttemplate']['Contact'],
-                    ],
-                ])
-                ) {
+                if ($contactsForChangelog = $ContactsTable->getContactsAsList($this->request->data['Hosttemplate']['Contact'])) {
                     foreach ($contactsForChangelog as $contactId => $contactName) {
                         $ext_data_for_changelog['Contact'][] = [
                             'id'   => $contactId,
@@ -500,7 +498,7 @@ class HosttemplatesController extends AppController {
                     $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId);
 
                     $_timeperiods = $this->Timeperiod->timeperiodsByContainerId($containerIds, 'list');
-                    $_contacts = $this->Contact->contactsByContainerId($containerIds, 'list');
+                    $_contacts = $ContactsTable->contactsByContainerId($containerIds, 'list');
                     $_contactgroups = $this->Contactgroup->contactgroupsByContainerId($containerIds, 'list');
                     $_hostgroups = $this->Hostgroup->hostgroupsByContainerId($containerIds, 'list', 'id');
                 }
@@ -566,6 +564,8 @@ class HosttemplatesController extends AppController {
         $CommandsTable = TableRegistry::getTableLocator()->get('Commands');
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        /** @var $ContactsTable ContactsTable */
+        $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
 
         $commands = $CommandsTable->getCommandByTypeAsList(HOSTCHECK_COMMAND);
 
@@ -590,13 +590,7 @@ class HosttemplatesController extends AppController {
                 'Contactgroup' => [],
             ];
             if ($this->request->data('Hosttemplate.Contact')) {
-                if ($contactsForChangelog = $this->Contact->find('list', [
-                    'recursive'  => -1,
-                    'conditions' => [
-                        'Contact.id' => $this->request->data['Hosttemplate']['Contact'],
-                    ],
-                ])
-                ) {
+                if ($contactsForChangelog = $ContactsTable->getContactsAsList($this->request->data['Hosttemplate']['Contact'])) {
                     foreach ($contactsForChangelog as $contactId => $contactName) {
                         $ext_data_for_changelog['Contact'][] = [
                             'id'   => $contactId,
@@ -777,7 +771,7 @@ class HosttemplatesController extends AppController {
                     $containerIds = $ContainersTable->resolveChildrenOfContainerIds($container_id);
 
                     $_timeperiods = $this->Timeperiod->timeperiodsByContainerId($containerIds, 'list');
-                    $_contacts = $this->Contact->contactsByContainerId($containerIds, 'list');
+                    $_contacts = $ContactsTable->contactsByContainerId($containerIds, 'list');
                     $_contactgroups = $this->Contactgroup->contactgroupsByContainerId($containerIds, 'list');
                     $_hostgroups = $this->Hostgroup->hostgroupsByContainerId($containerIds, 'list', 'id');
                 }
@@ -1243,6 +1237,8 @@ class HosttemplatesController extends AppController {
 
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        /** @var $ContactsTable ContactsTable */
+        $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
 
         if (!$ContainersTable->existsById($container_id)) {
             throw new NotFoundException(__('Invalid Container'));
@@ -1254,7 +1250,7 @@ class HosttemplatesController extends AppController {
         $timeperiods = Api::makeItJavaScriptAble($timeperiods);
         $checkperiods = $timeperiods;
 
-        $contacts = $this->Contact->contactsByContainerId($containerIds, 'list');
+        $contacts = $ContactsTable->contactsByContainerId($containerIds, 'list');
         $contacts = Api::makeItJavaScriptAble($contacts);
 
         $contactgroups = $this->Contactgroup->contactgroupsByContainerId($containerIds, 'list');
