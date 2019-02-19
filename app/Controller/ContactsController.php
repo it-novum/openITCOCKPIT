@@ -52,16 +52,10 @@ class ContactsController extends AppController {
         'User'
     ];
 
-    public $layout = 'Admin.default';
-
-    public $components = [
-        'Ldap',
-    ];
+    public $layout = 'blank';
 
 
     public function index() {
-        $this->layout = 'blank';
-
         /** @var $SystemsettingsTable SystemsettingsTable */
         $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
 
@@ -135,8 +129,6 @@ class ContactsController extends AppController {
     }
 
     public function add() {
-        $this->layout = 'blank';
-
         if (!$this->isApiRequest()) {
             //Only ship HTML template for angular
             return;
@@ -188,8 +180,6 @@ class ContactsController extends AppController {
     }
 
     public function edit($id = null) {
-        $this->layout = 'blank';
-
         if (!$this->isApiRequest()) {
             //Only ship HTML template for angular
             return;
@@ -267,7 +257,6 @@ class ContactsController extends AppController {
 
 
     public function addFromLdap() {
-        $this->layout = 'blank';
         if (!$this->isApiRequest()) {
             //Only ship HTML template for angular
             return;
@@ -352,8 +341,6 @@ class ContactsController extends AppController {
     }
 
     public function copy($id = null) {
-        $this->layout = 'blank';
-
         if (!$this->isAngularJsRequest()) {
             //Only ship HTML Template
             return;
@@ -467,7 +454,6 @@ class ContactsController extends AppController {
      * @todo Refactor with Cake4
      */
     public function usedBy($id = null) {
-        $this->layout = 'blank';
         if (!$this->isApiRequest()) {
             //Only ship HTML template for angular
             return;
