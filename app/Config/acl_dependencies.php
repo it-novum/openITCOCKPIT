@@ -73,7 +73,8 @@ $config = [
                 'getHalfPieChart',
                 'getCumulatedHostAndServiceStateIcon',
                 'getHostAndServiceStateSummaryIcon',
-                'macros'
+                'macros',
+                'ldap_configuration'
             ],
             'Automaps'         => [
                 'icon'

@@ -695,4 +695,29 @@ class AngularController extends AppController {
         //Only ship HTML template
         return;
     }
+
+    public function ldap_configuration(){
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template
+            return;
+        }
+
+        if (!Cache::read('systemsettings', 'permissions')) {
+            /** @var $Systemsettings App\Model\Table\SystemsettingsTable */
+            $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
+            $systemsettingsArray = $Systemsettings->findAsArray();
+            Cache::write('systemsettings', $systemsettingsArray, 'permissions');
+        }
+        session_write_close();
+
+        $systemsettings = Cache::read('systemsettings', 'permissions');
+        $ldapConfig = [
+            'host' => $systemsettings['FRONTEND']['FRONTEND.LDAP.ADDRESS'],
+            'query' => $systemsettings['FRONTEND']['FRONTEND.LDAP.QUERY'],
+            'base_dn' => $systemsettings['FRONTEND']['FRONTEND.LDAP.BASEDN']
+        ];
+
+        $this->set('ldapConfig', $ldapConfig);
+        $this->set('_serialize', ['ldapConfig']);
+    }
 }
