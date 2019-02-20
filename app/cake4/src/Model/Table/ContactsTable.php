@@ -310,13 +310,13 @@ class ContactsTable extends Table {
      */
     public function allowDelete($id) {
         $tableNames = [
-            '__ContactsToContactgroups',
-            '__ContactsToHosttemplates',
-            '__ContactsToHosts',
-            '__ContactsToServicetemplates',
-            '__ContactsToServices',
-            '__ContactsToHostescalations',
-            '__ContactsToServiceescalations',
+            'ContactsToContactgroups',
+            'ContactsToHosttemplates',
+            'ContactsToHosts',
+            'ContactsToServicetemplates',
+            'ContactsToServices',
+            'ContactsToHostescalations',
+            'ContactsToServiceescalations',
         ];
 
         foreach ($tableNames as $tableName) {

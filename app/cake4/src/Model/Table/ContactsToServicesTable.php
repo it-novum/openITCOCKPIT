@@ -13,7 +13,7 @@ use Cake\Validation\Validator;
  * This is a Table Object for an linking table xxx_to_yyy
  * Only use this Table object for find()->count() operations!
  */
-class __ContactsToServicesTable extends Table {
+class ContactsToServicesTable extends Table {
 
 
     /**

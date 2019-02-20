@@ -7,13 +7,13 @@ use Cake\ORM\Table;
 use Cake\Validation\Validator;
 
 /**
- * Class __ContactsToServiceescalationsTable
+ * Class __ContactsToHostsTable
  * @package App\Model\Table
  *
  * This is a Table Object for an linking table xxx_to_yyy
  * Only use this Table object for find()->count() operations!
  */
-class __ContactsToServiceescalationsTable extends Table {
+class ContactsToHostsTable extends Table {
 
 
     /**
@@ -25,7 +25,7 @@ class __ContactsToServiceescalationsTable extends Table {
     public function initialize(array $config) {
         parent::initialize($config);
 
-        $this->setTable('contacts_to_serviceescalations');
+        $this->setTable('contacts_to_hosts');
         $this->setPrimaryKey('id');
     }
 

@@ -6,15 +6,15 @@ use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
 
-
 /**
- * Class __ContactsToContactgroupsTable
+ * Class __ContactsToServiceescalationsTable
  * @package App\Model\Table
  *
  * This is a Table Object for an linking table xxx_to_yyy
  * Only use this Table object for find()->count() operations!
  */
-class __ContactsToContactgroupsTable extends Table {
+class ContactsToServiceescalationsTable extends Table {
+
 
     /**
      * Initialize method
@@ -25,7 +25,7 @@ class __ContactsToContactgroupsTable extends Table {
     public function initialize(array $config) {
         parent::initialize($config);
 
-        $this->setTable('contacts_to_contactgroups');
+        $this->setTable('contacts_to_serviceescalations');
         $this->setPrimaryKey('id');
     }
 

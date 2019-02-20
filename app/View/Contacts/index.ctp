@@ -130,7 +130,6 @@
                             <table id="contact_list" class="table table-striped table-hover table-bordered smart-form">
                                 <thead>
                                 <tr>
-                                    <?php $order = $this->Paginator->param('order'); ?>
                                     <th class="no-sort width-15">
                                         <i class="fa fa-check-square-o fa-lg"></i>
                                     </th>
