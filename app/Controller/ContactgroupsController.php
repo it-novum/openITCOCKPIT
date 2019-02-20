@@ -234,90 +234,81 @@ class ContactgroupsController extends AppController {
         }
     }
 
-    /**
-     * @param $contactgroup
-     * @return bool
-     * @deprecated Use ContactgroupsTable::allowDelete($id)
-     */
-    protected function __allowDelete($contactgroup) {
-        if (is_numeric($contactgroup)) {
-            $contactgroupId = $contactgroup;
-        } else {
-            $contactgroupId = $contactgroup['Contactgroup']['id'];
-        }
-
-        $models = [
-            '__ContactgroupsToHosttemplates',
-            '__ContactgroupsToHosts',
-            '__ContactgroupsToServicetemplates',
-            '__ContactgroupsToServices',
-            '__ContactgroupsToHostescalations',
-            '__ContactgroupsToServiceescalations',
-        ];
-
-        foreach ($models as $model) {
-            $this->loadModel($model);
-            $count = $this->{$model}->find('count', [
-                'conditions' => [
-                    'contactgroup_id' => $contactgroupId,
-                ],
-            ]);
-            if ($count > 0) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
     public function delete($id) {
-        if (!$this->Contactgroup->exists($id)) {
-            throw new NotFoundException(__('Invalid contact group'));
+        if (!$this->request->is('post')) {
+            throw new MethodNotAllowedException();
         }
-        $userId = $this->Auth->user('id');
 
-        $contactgroup = $this->Contactgroup->find('first', [
-            'recursive'  => -1,
-            'contain'    => [
-                'Container'
-            ],
-            'conditions' => [
-                'Contactgroup.id' => $id
+        /** @var $ContactgroupsTable ContactgroupsTable */
+        $ContactgroupsTable = TableRegistry::getTableLocator()->get('Contactgroups');
+
+        if (!$ContactgroupsTable->existsById($id)) {
+            throw new NotFoundException(__('Contact group not found'));
+        }
+
+        $contactgroupEntity = $ContactgroupsTable->get($id, [
+            'contain' => [
+                'Containers'
             ]
         ]);
 
-        if (!$this->allowedByContainerId(Hash::extract($contactgroup, 'Container.parent_id'))) {
+        if (!$this->isWritableContainer($contactgroupEntity->get('container')->get('parent_id'))) {
             $this->render403();
             return;
         }
 
-        if ($this->__allowDelete($id)) {
-            if ($this->Contactgroup->delete($id)) {
-                Cache::clear(false, 'permissions');
-                $changelog_data = $this->Changelog->parseDataForChangelog(
-                    $this->params['action'],
-                    $this->params['controller'],
-                    $id,
-                    OBJECT_CONTACTGROUP,
-                    $contactgroup['Container']['parent_id'],
-                    $userId,
-                    $contactgroup['Container']['name'],
-                    $contactgroup
-                );
-                if ($changelog_data) {
-                    CakeLog::write('log', serialize($changelog_data));
-                }
-                $this->setFlash(__('Contactgroup deleted'));
-                $this->redirect(['action' => 'index']);
-            } else {
-                $this->setFlash(__('Could not delete contactgroup'), false);
-                $this->redirect(['action' => 'index']);
-            }
-        } else {
-            $contactgroupsCanotDelete[$contactgroup['Contactgroup']['id']] = $contactgroup['Container']['name'];
-            $this->set(compact(['contactgroupsCanotDelete']));
-            $this->render('mass_delete');
+        if (!$ContactgroupsTable->allowDelete($id)) {
+            $usedBy = [
+                [
+                    'baseUrl' => '#',
+                    'state'   => 'ContactgroupsUsedBy',
+                    'message' => __('Used by other objects'),
+                    'module'  => 'Core'
+                ]
+            ];
+
+            $this->response->statusCode(400);
+            $this->set('success', false);
+            $this->set('id', $id);
+            $this->set('message', __('Issue while deleting contact'));
+            $this->set('usedBy', $usedBy);
+            $this->set('_serialize', ['success', 'id', 'message', 'usedBy']);
+            return;
         }
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        $container = $ContainersTable->get($contactgroupEntity->get('container')->get('id'), [
+            'contain' => [
+                'Contactgroups'
+            ]
+        ]);
+
+        if ($ContainersTable->delete($container)) {
+            $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+            Cache::clear(false, 'permissions');
+            $changelog_data = $this->Changelog->parseDataForChangelog(
+                'delete',
+                'contactgroup',
+                $id,
+                OBJECT_CONTACTGROUP,
+                $contactgroupEntity->get('container')->get('parent_id'),
+                $User->getId(),
+                $contactgroupEntity->get('container')->get('name'),
+                $contactgroupEntity->toArray()
+            );
+            if ($changelog_data) {
+                CakeLog::write('log', serialize($changelog_data));
+            }
+
+            $this->set('success', true);
+            $this->set('_serialize', ['success']);
+            return;
+        }
+
+        $this->response->statusCode(500);
+        $this->set('success', false);
+        $this->set('_serialize', ['success']);
     }
 
 

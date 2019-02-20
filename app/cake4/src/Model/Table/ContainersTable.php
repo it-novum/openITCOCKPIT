@@ -77,6 +77,11 @@ class ContainersTable extends Table {
 
         $this->addBehavior('Tree');
 
+        $this->hasMany('Contactgroups', [
+            'foreignKey' => 'container_id',
+            'cascadeCallbacks' => true
+        ])->setDependent(true);
+
         //$this->belongsTo('ParentContainers', [
         //    'className' => 'Containers',
         //    'foreignKey' => 'parent_id'
@@ -95,9 +100,7 @@ class ContainersTable extends Table {
         $this->hasMany('ChangelogsToContainers', [
             'foreignKey' => 'container_id'
         ]);
-        $this->hasMany('Contactgroups', [
-            'foreignKey' => 'container_id'
-        ]);
+
         $this->hasMany('ContactsToContainers', [
             'foreignKey' => 'container_id'
         ]);
