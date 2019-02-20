@@ -22,10 +22,15 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+use App\Model\Table\__ContactsToContactgroupsTable;
+use App\Model\Table\ContactgroupsTable;
 use App\Model\Table\ContactsTable;
+use App\Model\Table\ContactsToContactgroupsTable;
 use App\Model\Table\ContainersTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
+use itnovum\openITCOCKPIT\Database\PaginateOMat;
+use itnovum\openITCOCKPIT\Filter\ContactgroupsFilter;
 
 
 /**
@@ -43,56 +48,43 @@ class ContactgroupsController extends AppController {
         'Contact',
         'User',
     ];
-    public $layout = 'Admin.default';
-    public $components = [
-        'ListFilter.ListFilter',
-        'RequestHandler',
-    ];
-    public $helpers = ['ListFilter.ListFilter'];
 
-    public $listFilters = [
-        'index' => [
-            'fields' => [
-                'Container.name'           => [
-                    'label'      => 'Name',
-                    'searchType' => 'wildcard',
-                ],
-                'Contactgroup.description' => [
-                    'label'      => 'Alias',
-                    'searchType' => 'wildcard',
-                ],
-            ],
-        ],
-    ];
+    public $layout = 'blank';
+
 
     public function index() {
-        $this->layout = 'blank';
-
-        /** @var $ContainersTable ContainersTable */
-        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
-
-        $options = [
-            'order'      => [
-                'Container.name' => 'asc',
-            ],
-            'conditions' => [
-                'Container.parent_id' => $ContainersTable->resolveChildrenOfContainerIds($this->MY_RIGHTS),
-            ],
-        ];
-
-        $query = Hash::merge($this->Paginator->settings, $options);
-
-        if ($this->isApiRequest()) {
-            unset($query['limit']);
-            $all_contactgroups = $this->Contactgroup->find('all', $query);
-        } else {
-            $this->Paginator->settings = array_merge($this->Paginator->settings, $query);
-            $all_contactgroups = $this->Paginator->paginate();
+        if (!$this->isAngularJsRequest()) {
+            //Only ship HTML Template
+            return;
         }
 
-        $this->set('all_contactgroups', $all_contactgroups);
-        //Aufruf für json oder xml view: /nagios_module/hosts.json oder /nagios_module/hosts.xml
-        $this->set('_serialize', ['all_contactgroups']);
+        /** @var $ContactgroupsTable ContactgroupsTable */
+        $ContactgroupsTable = TableRegistry::getTableLocator()->get('Contactgroups');
+        /** @var $ContactsToContactgroupsTable ContactsToContactgroupsTable */
+        $ContactsToContactgroupsTable = TableRegistry::getTableLocator()->get('ContactsToContactgroups');
+
+        $ContactgroupsFilter = new ContactgroupsFilter($this->request);
+        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $ContactgroupsFilter->getPage());
+
+        $MY_RIGHTS = [];
+        if ($this->hasRootPrivileges === false) {
+            /** @var $ContainersTable ContainersTable */
+            $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+            $MY_RIGHTS = $ContainersTable->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+        }
+        $contactgroups = $ContactgroupsTable->getContactgroupsIndex($ContactgroupsFilter, $PaginateOMat, $MY_RIGHTS);
+        foreach ($contactgroups as $index => $contactgroup) {
+            $contactgroups[$index]['Contactgroup']['allow_edit'] = $this->isWritableContainer($contactgroup['Contactgroup']['container']['parent_id']);
+            $contactgroups[$index]['Contactgroup']['contact_count'] = $ContactsToContactgroupsTable->getContactsCountByContactgroupId($contactgroup['Contactgroup']['id']);
+        }
+
+
+        $this->set('all_contactgroups', $contactgroups);
+        $toJson = ['all_contactgroups', 'paging'];
+        if ($this->isScrollRequest()) {
+            $toJson = ['all_contactgroups', 'scroll'];
+        }
+        $this->set('_serialize', $toJson);
     }
 
     public function view($id = null) {
@@ -156,7 +148,7 @@ class ContactgroupsController extends AppController {
 
             $ext_data_for_changelog = [];
             if (isset($this->request->data['Contactgroup']['Contact']) && is_array($this->request->data['Contactgroup']['Contact'])) {
-                foreach($ContactsTable->getContactsAsList($this->request->data['Contactgroup']['Contact']) as $_contactId => $_contactName){
+                foreach ($ContactsTable->getContactsAsList($this->request->data['Contactgroup']['Contact']) as $_contactId => $_contactName) {
                     $ext_data_for_changelog['Contact'][] = [
                         'id'   => $_contactId,
                         'name' => $_contactName
@@ -240,7 +232,7 @@ class ContactgroupsController extends AppController {
             //Save Contact associations -> Array Format [Contact] => data
             if (isset($this->request->data['Contactgroup']['Contact']) && is_array($this->request->data['Contactgroup']['Contact'])) {
 
-                foreach($ContactsTable->getContactsAsList($this->request->data['Contactgroup']['Contact']) as $_contactId => $_contactName){
+                foreach ($ContactsTable->getContactsAsList($this->request->data['Contactgroup']['Contact']) as $_contactId => $_contactName) {
                     $ext_data_for_changelog['Contact'][] = [
                         'id'   => $_contactId,
                         'name' => $_contactName
