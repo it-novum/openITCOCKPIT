@@ -7,6 +7,7 @@ use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use Cake\ORM\Entity;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
+use Cake\ORM\TableRegistry;
 use Cake\Validation\Validator;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\TimeperiodsFilter;
@@ -272,4 +273,49 @@ class TimeperiodsTable extends Table {
     public function existsById($id) {
         return $this->exists(['Timeperiods.id' => $id]);
     }
+
+    public function timeperiodsByContainerId($container_ids = [], $type = 'all') {
+        if (!is_array($container_ids)) {
+            $container_ids = [$container_ids];
+        }
+
+        $container_ids = array_unique($container_ids);
+
+        /** @var $TimeperiodsTable TimeperiodsTable */
+        $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        $tenantContainerIds = [];
+        foreach ($container_ids as $container_id) {
+            if ($container_id != ROOT_CONTAINER) {
+                $path = $ContainersTable->getPathByIdAndCacheResult($container_id, 'TimeperiodTimeperiodsByContainerId');
+                // Get container id of the tenant container
+                if (isset($path[1])) {
+                    $tenantContainerIds[] = $path[1]['id'];
+                }
+            } else {
+                $tenantContainerIds[] = ROOT_CONTAINER;
+            }
+        }
+        $tenantContainerIds = array_unique($tenantContainerIds);
+
+        $containerIds = array_unique(array_merge($tenantContainerIds, $container_ids));
+
+        $query = $this->find('all');
+        $query->contain(['Containers']);
+        $query->innerJoinWith('Containers', function ($q) use ($containerIds) {
+            return $q->where(['Containers.id IN' => $containerIds]);
+        });
+
+        $query->distinct('Timeperiods.id');
+        $query->disableHydration();
+
+        if ($type === 'all') {
+            return $this->formatResultAsCake2($query->toArray());
+        }
+
+        return $this->formatListAsCake2($query->toArray());
+    }
+
 }
