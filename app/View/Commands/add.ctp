@@ -27,11 +27,10 @@
     <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
         <h1 class="page-title txt-color-blueDark">
             <i class="fa fa-terminal fa-fw "></i>
-            <?php echo __('Monitoring'); ?>
+            <?php echo __('Commands'); ?>
             <span>>
-                <?php echo __('Commands'); ?>
+                <?php echo __('Add'); ?>
             </span>
-            <div class="third_level"> <?php echo ucfirst($this->params['action']); ?></div>
         </h1>
     </div>
 </div>
@@ -47,7 +46,7 @@
 <div class="jarviswidget" id="wid-id-0">
     <header>
         <span class="widget-icon"> <i class="fa fa-terminal"></i> </span>
-        <h2><?php echo __('Add command'); ?></h2>
+        <h2><?php echo __('Create new command'); ?></h2>
         <div class="widget-toolbar" role="menu">
             <?php if ($this->Acl->hasPermission('index', 'macros')): ?>
                 <a ng-click="showMacros()"
