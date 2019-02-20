@@ -420,12 +420,15 @@ class ServiceescalationsController extends AppController {
     protected function getAvailableDataByContainerId($containerIds) {
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
 
         $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerIds);
 
         $servicegroups = $this->Servicegroup->servicegroupsByContainerId($containerIds, 'list', 'id');
         $services = $this->Host->servicesByContainerIds($containerIds, 'list', ['forOptiongroup' => true]);
-        $timeperiods = $this->Timeperiod->timeperiodsByContainerId($containerIds, 'list');
+        $timeperiods = $TimeperiodsTable->find('list')
+            ->where(['Timeperiods.container_id IN' => $containerIds])
+            ->toArray();
         $contacts = $this->Contact->contactsByContainerId($containerIds, 'list');
         $contactgroups = $this->Contactgroup->contactgroupsByContainerId($containerIds, 'list');
 
