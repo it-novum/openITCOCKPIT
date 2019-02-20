@@ -24,6 +24,8 @@
 //	confirmation.
 
 
+use Cake\ORM\TableRegistry;
+
 class Instantreport extends AppModel {
 
     CONST EVALUATION_HOSTS = 1;
@@ -266,10 +268,14 @@ class Instantreport extends AppModel {
     }
 
     public function timeRanges($data) {
-        $timeperiod = ClassRegistry::init('Timeperiod', false);
-        $selectedTimeperiod = $timeperiod->findById($data['timeperiod_id']);
+        $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
+        $selectedTimeperiod = $TimeperiodsTable->find()
+            ->where(['id' => $data['timeperiod_id']])
+            ->contain('TimeperiodTimeranges')
+            ->first()
+            ->toArray();
+        return !(empty($selectedTimeperiod['timeperiod_timeranges']));
 
-        return !(empty($selectedTimeperiod['Timerange']));
     }
 
     /**
