@@ -170,6 +170,8 @@ class HostescalationsController extends AppController {
 
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        /** @var $TimeperiodsTable TimeperiodsTable */
+        $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
         /** @var $ContactsTable ContactsTable */
         $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
 
@@ -178,7 +180,8 @@ class HostescalationsController extends AppController {
         $containerIds = $ContainersTable->resolveChildrenOfContainerIds($hostescalation['Hostescalation']['container_id']);
         $hostgroups = $this->Hostgroup->hostgroupsByContainerId($containerIds, 'list', 'id');
         $hosts = $this->Host->hostsByContainerId($containerIds, 'list');
-        $timeperiods = $this->Timeperiod->timeperiodsByContainerId($containerIds, 'list');
+        $timeperiods = $TimeperiodsTable->timeperiodsByContainerId($containerIds, 'list');
+
         $contacts = $ContactsTable->contactsByContainerId($containerIds, 'list');
         $contactgroups = $this->Contactgroup->contactgroupsByContainerId($containerIds, 'list');
 
@@ -192,7 +195,7 @@ class HostescalationsController extends AppController {
                 $containerIds = $ContainersTable->resolveChildrenOfContainerIds($this->request->data('Hostescalation.container_id'));
                 $hostgroups = $this->Hostgroup->hostgroupsByContainerId($containerIds, 'list', 'id');
                 $hosts = $this->Host->hostsByContainerId($containerIds, 'list');
-                $timeperiods = $this->Timeperiod->timeperiodsByContainerId($containerIds, 'list');
+                $timeperiods = $TimeperiodsTable->timeperiodsByContainerId($containerIds, 'list');
                 $contacts = $ContactsTable->contactsByContainerId($containerIds, 'list');
                 $contactgroups = $this->Contactgroup->contactgroupsByContainerId($containerIds, 'list');
             }
@@ -255,6 +258,8 @@ class HostescalationsController extends AppController {
     public function add() {
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        /** @var $TimeperiodsTable TimeperiodsTable */
+        $TimeperiodsTable = TableRegistry::getTableLocator()->get('TimeperiodsTable');
         /** @var $ContactsTable ContactsTable */
         $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
 
@@ -321,7 +326,7 @@ class HostescalationsController extends AppController {
                         $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerIds);
                         $hostgroups = $this->Hostgroup->hostgroupsByContainerId($containerIds, 'list', 'id');
                         $hosts = $this->Host->hostsByContainerId($containerIds, 'list');
-                        $timeperiods = $this->Timeperiod->timeperiodsByContainerId($containerIds, 'list');
+                        $timeperiods = $TimeperiodsTable->timeperiodsByContainerId($containerIds, 'list');
                         $contacts = $ContactsTable->contactsByContainerId($containerIds, 'list');
                         $contactgroups = $this->Contactgroup->contactgroupsByContainerId($containerIds, 'list');
                     }
@@ -354,6 +359,8 @@ class HostescalationsController extends AppController {
         $this->allowOnlyAjaxRequests();
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        /** @var $TimeperiodsTable TimeperiodsTable */
+        $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
         /** @var $ContactsTable ContactsTable */
         $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
 
@@ -371,7 +378,7 @@ class HostescalationsController extends AppController {
         $hosts = Api::makeItJavaScriptAble($hosts);
         $hostsExcluded = $hosts;
 
-        $timeperiods = $this->Timeperiod->timeperiodsByContainerId($containerIds, 'list');
+        $timeperiods = $TimeperiodsTable->timeperiodsByContainerId($containerIds, 'list');
         $timeperiods = Api::makeItJavaScriptAble($timeperiods);
 
         $contacts = $ContactsTable->contactsByContainerId($containerIds, 'list');

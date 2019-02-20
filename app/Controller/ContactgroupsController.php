@@ -33,7 +33,7 @@ use itnovum\openITCOCKPIT\Core\AngularJS\Api;
  * @property Container $Container
  * @property Contact $Contact
  * @property User $User
- * @property ChangelogComponent $Changelog
+ * @property Changelog $Changelog
  */
 class ContactgroupsController extends AppController {
 
@@ -66,6 +66,8 @@ class ContactgroupsController extends AppController {
     ];
 
     public function index() {
+        $this->layout = 'blank';
+
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
 
