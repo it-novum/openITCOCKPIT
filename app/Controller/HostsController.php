@@ -555,12 +555,14 @@ class HostsController extends AppController {
         $CommandsTable = TableRegistry::getTableLocator()->get('Commands');
         /** @var $ContactsTable ContactsTable */
         $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
+        /** @var $TimeperiodsTable TimeperiodsTable */
+        $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
 
         // Data required for changelog
         $contacts = $ContactsTable->getContactsAsList();
         $hosts = $this->Host->find('list');
         $contactgroups = $this->Contactgroup->findList();
-        $timeperiods = $this->Timeperiod->find('list');
+        $timeperiods = $TimeperiodsTable->getTimeperiodsAsList();
         $commands = $CommandsTable->getCommandByTypeAsList(HOSTCHECK_COMMAND);
         $hosttemplates = $this->Hosttemplate->find('list');
         $hostgroups = $this->Hostgroup->findList([
@@ -580,15 +582,13 @@ class HostsController extends AppController {
 
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
-        /** @var $ContactsTable ContactsTable */
-        $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
 
         $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId);
 
         $_hosttemplates = $this->Hosttemplate->hosttemplatesByContainerId($containerIds, 'list', $host['Host']['host_type']);
         $_hostgroups = $this->Hostgroup->hostgroupsByContainerId($containerIds, 'list', 'id');
         $_parenthosts = $this->Host->hostsByContainerIdExcludeHostId($containerIds, 'list', $id);
-        $_timeperiods = $this->Timeperiod->timeperiodsByContainerId($containerIds, 'list');
+        $_timeperiods = $TimeperiodsTable->timeperiodsByContainerId($containerIds, 'list');
         $_contacts = $ContactsTable->contactsByContainerId($containerIds, 'list');
         $_contactgroups = $this->Contactgroup->contactgroupsByContainerId($containerIds, 'list');
 
@@ -758,12 +758,7 @@ class HostsController extends AppController {
                 }
             }
             if ($this->request->data('Host.notify_period_id')) {
-                if ($timeperiodsForChangelog = $this->Timeperiod->find('list', [
-                    'conditions' => [
-                        'Timeperiod.id' => $this->request->data['Host']['notify_period_id'],
-                    ],
-                ])
-                ) {
+                if ($timeperiodsForChangelog = $TimeperiodsTable->getTimeperiodsAsList($this->request->data['Host']['notify_period_id'])) {
                     foreach ($timeperiodsForChangelog as $timeperiodId => $timeperiodName) {
                         $ext_data_for_changelog['NotifyPeriod'] = [
                             'id'   => $timeperiodId,
@@ -774,12 +769,7 @@ class HostsController extends AppController {
                 }
             }
             if ($this->request->data('Host.check_period_id')) {
-                if ($timeperiodsForChangelog = $this->Timeperiod->find('list', [
-                    'conditions' => [
-                        'Timeperiod.id' => $this->request->data['Host']['check_period_id'],
-                    ],
-                ])
-                ) {
+                if ($timeperiodsForChangelog = $TimeperiodsTable->getTimeperiodsAsList($this->request->data['Host']['check_period_id'])) {
                     foreach ($timeperiodsForChangelog as $timeperiodId => $timeperiodName) {
                         $ext_data_for_changelog['CheckPeriod'] = [
                             'id'   => $timeperiodId,
@@ -1190,6 +1180,8 @@ class HostsController extends AppController {
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
         /** @var $ContactsTable ContactsTable */
         $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
+        /** @var $TimeperiodsTable TimeperiodsTable */
+        $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
 
         $commands = $CommandsTable->getCommandByTypeAsList(HOSTCHECK_COMMAND);
 
@@ -1274,12 +1266,7 @@ class HostsController extends AppController {
                 }
             }
             if ($this->request->data('Host.notify_period_id')) {
-                if ($timeperiodsForChangelog = $this->Timeperiod->find('list', [
-                    'conditions' => [
-                        'Timeperiod.id' => $this->request->data['Host']['notify_period_id'],
-                    ],
-                ])
-                ) {
+                if ($timeperiodsForChangelog = $TimeperiodsTable->getTimeperiodsAsList($this->request->data['Host']['notify_period_id'])) {
                     foreach ($timeperiodsForChangelog as $timeperiodId => $timeperiodName) {
                         $ext_data_for_changelog['NotifyPeriod'] = [
                             'id'   => $timeperiodId,
@@ -1290,12 +1277,7 @@ class HostsController extends AppController {
                 }
             }
             if ($this->request->data('Host.check_period_id')) {
-                if ($timeperiodsForChangelog = $this->Timeperiod->find('list', [
-                    'conditions' => [
-                        'Timeperiod.id' => $this->request->data['Host']['check_period_id'],
-                    ],
-                ])
-                ) {
+                if ($timeperiodsForChangelog = $TimeperiodsTable->getTimeperiodsAsList($this->request->data['Host']['check_period_id'])) {
                     foreach ($timeperiodsForChangelog as $timeperiodId => $timeperiodName) {
                         $ext_data_for_changelog['CheckPeriod'] = [
                             'id'   => $timeperiodId,
@@ -1304,6 +1286,7 @@ class HostsController extends AppController {
                     }
                     unset($timeperiodsForChangelog);
                 }
+
             }
             if ($this->request->data('Host.hosttemplate_id')) {
                 if ($hosttemplatesForChangelog = $this->Hosttemplate->find('list', [
@@ -1437,14 +1420,14 @@ class HostsController extends AppController {
                     $this->setFlash(__('Data could not be saved'), false);
                 }
                 //Refil data that was loaded by ajax due to selected container id
-                if($ContainersTable->existsById($this->request->data('Host.container_id'))){
+                if ($ContainersTable->existsById($this->request->data('Host.container_id'))) {
                     $container_id = $this->request->data('Host.container_id');
 
                     $containerIds = $ContainersTable->resolveChildrenOfContainerIds($container_id);
                     $_hosttemplates = $this->Hosttemplate->hosttemplatesByContainerId($containerIds, 'list');
                     $_hostgroups = $this->Hostgroup->hostgroupsByContainerId($containerIds, 'list', 'id');
                     //$_parenthosts = $this->Host->hostsByContainerId($containerIds, 'list');
-                    $_timeperiods = $this->Timeperiod->timeperiodsByContainerId($containerIds, 'list');
+                    $_timeperiods = $TimeperiodsTable->timeperiodsByContainerId($containerIds, 'list');
                     $_contacts = $ContactsTable->contactsByContainerId($containerIds, 'list');
                     $_contactgroups = $this->Contactgroup->contactgroupsByContainerId($containerIds, 'list');
                 }
@@ -3108,6 +3091,8 @@ class HostsController extends AppController {
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
         /** @var $ContactsTable ContactsTable */
         $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
+        /** @var $TimeperiodsTable TimeperiodsTable */
+        $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
 
         if (!$ContainersTable->existsById($container_id)) {
             throw new NotFoundException(__('Invalid hosttemplate'));
@@ -3141,7 +3126,7 @@ class HostsController extends AppController {
         }
         $parenthosts = Api::makeItJavaScriptAble($parenthosts);
 
-        $timeperiods = $this->Timeperiod->timeperiodsByContainerId($containerIds, 'list');
+        $timeperiods = $TimeperiodsTable->timeperiodsByContainerId($containerIds, 'list');
         $timeperiods = Api::makeItJavaScriptAble($timeperiods);
         $checkperiods = $timeperiods;
 
@@ -3525,15 +3510,8 @@ class HostsController extends AppController {
         $timeperiodId = ($host['Host']['check_period_id']) ? $host['Host']['check_period_id'] : $host['Hosttemplate']['check_period_id'];
         //$notifyPeriodId = ($host['Host']['notify_period_id']) ? $host['Host']['notify_period_id'] : $host['Hosttemplate']['notify_period_id'];
 
-        $checkTimePeriod = $this->Timeperiod->find('first', [
-            'recursive'  => -1,
-            'contain'    => [
-                'Timerange'
-            ],
-            'conditions' => [
-                'Timeperiod.id' => $timeperiodId
-            ]
-        ]);
+        $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
+        $checkTimePeriod = $TimeperiodsTable->getTimeperiodWithTimerangesById($timeperiodId);
 
         $UserTime = new UserTime($this->Auth->user('timezone'), $this->Auth->user('dateformat'));
 
@@ -3557,11 +3535,10 @@ class HostsController extends AppController {
         if (!is_numeric($end) || $end < 0) {
             $end = time();
         }
-
         $timeRanges = $this->DateRange->createDateRanges(
             date('d-m-Y H:i:s', $start),
             date('d-m-Y H:i:s', $end),
-            $checkTimePeriod['Timerange']
+            $checkTimePeriod['Timeperiod']['timeperiod_timeranges']
         );
 
         $TimeRangeSerializer = new TimeRangeSerializer($timeRanges, $UserTime);
@@ -3735,7 +3712,7 @@ class HostsController extends AppController {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
-        if(!$this->Host->exists($id)){
+        if (!$this->Host->exists($id)) {
             throw new NotFoundException();
         }
 
