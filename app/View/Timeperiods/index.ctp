@@ -29,7 +29,7 @@
             <i class="fa fa-clock-o fa-fw "></i>
             <?php echo __('Monitoring'); ?>
             <span>>
-                <?php echo __('Time Periods'); ?>
+                <?php echo __('Time periods'); ?>
             </span>
         </h1>
     </div>
@@ -62,7 +62,7 @@
                     </div>
 
                     <span class="widget-icon hidden-mobile"> <i class="fa fa-clock-o"></i> </span>
-                    <h2 class="hidden-mobile"><?php echo __('Time Periods overview'); ?></h2>
+                    <h2 class="hidden-mobile"><?php echo __('Time periods overview'); ?></h2>
 
                 </header>
                 <div>

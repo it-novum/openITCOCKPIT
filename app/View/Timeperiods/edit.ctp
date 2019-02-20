@@ -37,13 +37,10 @@ $weekdays = [
     <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
         <h1 class="page-title txt-color-blueDark">
             <i class="fa fa-clock-o fa-fw "></i>
-            <?php echo __('Monitoring'); ?>
+            <?php echo __('Time periods'); ?>
             <span>>
-                <?php echo __('Time Periods'); ?>
+                <?php echo __('Edit'); ?>
             </span>
-            <div class="third_level">
-                <?php echo ucfirst($this->params['action']); ?>
-            </div>
         </h1>
     </div>
 </div>
@@ -52,13 +49,17 @@ $weekdays = [
     <header>
         <span class="widget-icon"> <i class="fa fa-clock-o"></i> </span>
         <h2>
-            <?php echo __('Edit timeperiod'); ?>
+            <?php echo __('Edit time period'); ?>:
+            {{post.Timeperiod.name}}
         </h2>
         <div class="widget-toolbar" role="menu">
             <button class="btn btn-default" ui-sref="TimeperiodsIndex">
                 <i class="fa fa-arrow-left"></i>
                 <?php echo __('Back to list'); ?>
             </button>
+        </div>
+        <div class="widget-toolbar text-muted cursor-default hidden-xs hidden-sm hidden-md">
+            UUID: {{timeperiod.uuid}}
         </div>
     </header>
     <div>
