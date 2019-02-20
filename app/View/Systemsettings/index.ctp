@@ -120,7 +120,7 @@
                                                         </div>
                                                         <div ng-switch-when="FRONTEND.LDAP.PASSWORD|MONITORING.ACK_RECEIVER_PASSWORD|FRONTEND.SSO.CLIENT_SECRET"
                                                              ng-switch-when-separator="|">
-                                                            <input type="password" id="SystemsettingValue"
+                                                            <input type="password"
                                                                    ng-model="systemsetting.value"
                                                                    class="form-control systemsetting-input">
                                                         </div>
@@ -159,7 +159,7 @@
                                                             <?php endif; ?>
                                                         </div>
                                                         <div ng-switch-default>
-                                                            <input type="text" id="SystemsettingValue"
+                                                            <input type="text"
                                                                    ng-model="systemsetting.value"
                                                                    class="form-control systemsetting-input">
                                                         </div>
