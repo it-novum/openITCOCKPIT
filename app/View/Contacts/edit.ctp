@@ -51,6 +51,9 @@
                 </a>
             <?php endif; ?>
         </div>
+        <div class="widget-toolbar text-muted cursor-default hidden-xs hidden-sm hidden-md">
+            UUID: {{post.Contact.uuid}}
+        </div>
     </header>
     <div>
         <div class="widget-body">

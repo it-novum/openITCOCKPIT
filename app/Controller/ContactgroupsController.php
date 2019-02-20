@@ -115,8 +115,6 @@ class ContactgroupsController extends AppController {
         }
 
         if ($this->request->is('post')) {
-            $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
-
             /** @var $ContactgroupsTable ContactgroupsTable */
             $ContactgroupsTable = TableRegistry::getTableLocator()->get('Contactgroups');
             $this->request->data['Contactgroup']['uuid'] = UUID::v4();
@@ -161,6 +159,16 @@ class ContactgroupsController extends AppController {
 
 
     public function edit($id = null) {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
+            return;
+        }
+
+
+        return;
+        /*********** OLD CODE ********************/
+
+
         $userId = $this->Auth->user('id');
         if (!$this->Contactgroup->exists($id)) {
             throw new NotFoundException(__('Invalid contactgroup'));
@@ -328,70 +336,6 @@ class ContactgroupsController extends AppController {
         }
     }
 
-    public function mass_delete($id = null) {
-        $userId = $this->Auth->user('id');
-        if ($this->request->is('post') || $this->request->is('put')) {
-            foreach ($this->request->data('Contactgroup.delete') as $contactgroupId) {
-                if ($this->Contactgroup->exists($contactgroupId)) {
-                    $contactgroup = $this->Contactgroup->find('first', [
-                        'recursive'  => -1,
-                        'contain'    => [
-                            'Container'
-                        ],
-                        'conditions' => [
-                            'Contactgroup.id' => $contactgroupId
-                        ]
-                    ]);
-                    if ($this->allowedByContainerId(Hash::extract($contactgroup, 'Container.parent_id'))) {
-                        if ($this->Contactgroup->delete($contactgroupId)) {
-                            $changelog_data = $this->Changelog->parseDataForChangelog(
-                                $this->params['action'],
-                                $this->params['controller'],
-                                $contactgroupId,
-                                OBJECT_CONTACTGROUP,
-                                $contactgroup['Container']['parent_id'],
-                                $userId,
-                                $contactgroup['Container']['name'],
-                                $contactgroup
-                            );
-                            if ($changelog_data) {
-                                CakeLog::write('log', serialize($changelog_data));
-                            }
-                        }
-                    }
-                }
-            }
-            Cache::clear(false, 'permissions');
-            $this->setFlash(__('Contact groups deleted'));
-            $this->redirect(['action' => 'index']);
-        }
-        $contactgroupsToDelete = [];
-        $contactgroupsCanotDelete = [];
-        foreach (func_get_args() as $contactgroupId) {
-            if ($this->Contactgroup->exists($contactgroupId)) {
-                $contactgroup = $this->Contactgroup->find('first', [
-                    'recursive'  => -1,
-                    'contain'    => [
-                        'Container'
-                    ],
-                    'conditions' => [
-                        'Contactgroup.id' => $contactgroupId
-                    ]
-                ]);
-                if ($this->allowedByContainerId(Hash::extract($contactgroup, 'Container.parent_id'))) {
-                    if ($this->__allowDelete($contactgroupId)) {
-                        $contactgroupsToDelete[$contactgroupId] = $contactgroup;
-                    } else {
-                        $contactgroupsCanotDelete[$contactgroupId] = $contactgroup['Container']['name'];
-                    }
-                }
-            }
-        }
-        $count = sizeof($contactgroupsToDelete) + sizeof($contactgroupsCanotDelete);
-        $this->set(compact(['contactgroupsToDelete', 'contactgroupsCanotDelete', 'count']));
-
-
-    }
 
     public function copy($id = null) {
         $userId = $this->Auth->user('id');
