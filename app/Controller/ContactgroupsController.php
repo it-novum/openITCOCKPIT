@@ -234,7 +234,11 @@ class ContactgroupsController extends AppController {
         }
     }
 
-
+    /**
+     * @param $contactgroup
+     * @return bool
+     * @deprecated Use ContactgroupsTable::allowDelete($id)
+     */
     protected function __allowDelete($contactgroup) {
         if (is_numeric($contactgroup)) {
             $contactgroupId = $contactgroup;

@@ -215,6 +215,34 @@ class ContactgroupsTable extends Table {
      * @param int $id
      * @return bool
      */
+    public function allowDelete($id) {
+        $tableNames = [
+            'ContactgroupsToHosttemplates',
+            'ContactgroupsToHosts',
+            'ContactgroupsToServicetemplates',
+            'ContactgroupsToServices',
+            'ContactgroupsToHostescalations',
+            'ContactgroupsToServiceescalations',
+        ];
+
+        foreach ($tableNames as $tableName) {
+            $LinkingTable = TableRegistry::getTableLocator()->get($tableName);
+            $count = $LinkingTable->find()
+                ->where(['contactgroup_id' => $id])
+                ->count();
+
+            if ($count > 0) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * @param int $id
+     * @return bool
+     */
     public function existsById($id) {
         return $this->exists(['Contactgroups.id' => $id]);
     }
