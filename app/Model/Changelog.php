@@ -50,7 +50,7 @@ class Changelog extends AppModel {
                 'ServiceTimeperiod' => '{(id|name)}',
                 'HostCommands'      => '{n}.{(id|name)}',
                 'ServiceCommands'   => '{n}.{(id|name)}',
-                'Customvariable'    => '{n}.{(id|name|value)}',
+                'Contact.customvariables'    => '{n}.{(id|name|value)}',
             ],
             'contactgroup'         => [
                 'Contactgroup' => '{(description)}',
