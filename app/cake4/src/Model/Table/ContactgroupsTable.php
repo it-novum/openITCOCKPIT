@@ -7,6 +7,7 @@ use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
+use Cake\Utility\Hash;
 use Cake\Validation\Validator;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\ContactgroupsFilter;
@@ -159,6 +160,33 @@ class ContactgroupsTable extends Table {
         $result = $this->formatFirstResultAsCake2($query, true);
         unset($result['Container'], $result['Contactstocontactgroup']);
         return $result;
+    }
+
+    /**
+     * @param int $id
+     * @return array
+     */
+    public function getContactgroupForEdit($id) {
+        $query = $this->find()
+            ->where([
+                'Contactgroups.id' => $id
+            ])
+            ->contain([
+                'Containers',
+                'Contacts',
+            ])
+            ->disableHydration()
+            ->first();
+
+
+        $contact = $query;
+        $contact['contacts'] = [
+            '_ids' => Hash::extract($query, 'contacts.{n}.id')
+        ];
+
+        return [
+            'Contactgroup' => $contact
+        ];
     }
 
     /**

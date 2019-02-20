@@ -227,7 +227,6 @@ class ContactsController extends AppController {
             } else {
                 //No errors
 
-                /** @var $TimeperiodsTable TimeperiodsTable */
                 $extDataForChangelog = $ContactsTable->getExtDataForChangelog($this->request);
 
                 $changelog_data = $this->Changelog->parseDataForChangelog(

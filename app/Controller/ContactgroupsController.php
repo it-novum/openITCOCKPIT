@@ -164,6 +164,75 @@ class ContactgroupsController extends AppController {
             return;
         }
 
+        /** @var $ContactgroupsTable ContactgroupsTable */
+        $ContactgroupsTable = TableRegistry::getTableLocator()->get('Contactgroups');
+
+        if (!$ContactgroupsTable->existsById($id)) {
+            throw new NotFoundException(__('Contact group not found'));
+        }
+
+        $contactgroup = $ContactgroupsTable->getContactgroupForEdit($id);
+
+        if (!$this->isWritableContainer($contactgroup['Contactgroup']['container']['parent_id'])) {
+            $this->render403();
+            return;
+        }
+
+        if ($this->request->is('get') && $this->isAngularJsRequest()) {
+            //Return contact information
+            $this->set('contactgroup', $contactgroup);
+            $this->set('_serialize', ['contactgroup']);
+            return;
+        }
+
+        if ($this->request->is('post') && $this->isAngularJsRequest()) {
+            //Update contact data
+            $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+
+            $contactgroupEntity = $ContactgroupsTable->get($id, [
+                'contain' => [
+                    'Containers'
+                ]
+            ]);
+            $contactgroupEntity = $ContactgroupsTable->patchEntity($contactgroupEntity, $this->request->data('Contactgroup'));
+
+            $ContactgroupsTable->save($contactgroupEntity);
+            if ($contactgroupEntity->hasErrors()) {
+                $this->response->statusCode(400);
+                $this->set('error', $contactgroupEntity->getErrors());
+                $this->set('_serialize', ['error']);
+                return;
+            } else {
+                //No errors
+
+                $extDataForChangelog = $ContactgroupsTable->getExtDataForChangelog($this->request);
+
+                $changelog_data = $this->Changelog->parseDataForChangelog(
+                    'edit',
+                    'contactgroups',
+                    $contactgroupEntity->get('id'),
+                    OBJECT_CONTACTGROUP,
+                    $contactgroupEntity->get('container')->get('parent_id'),
+                    $User->getId(),
+                    $contactgroupEntity->get('container')->get('name'),
+                    array_merge($this->request->data, $extDataForChangelog),
+                    [
+                        'Contactgroup' => $contactgroupEntity->toArray()
+                    ]
+                );
+                if ($changelog_data) {
+                    CakeLog::write('log', serialize($changelog_data));
+                }
+
+                if ($this->request->ext == 'json') {
+                    $this->serializeCake4Id($contactgroupEntity); // REST API ID serialization
+                    return;
+                }
+            }
+            $this->set('contactgroup', $contactgroupEntity);
+            $this->set('_serialize', ['contactgroup']);
+        }
+
 
         return;
         /*********** OLD CODE ********************/
