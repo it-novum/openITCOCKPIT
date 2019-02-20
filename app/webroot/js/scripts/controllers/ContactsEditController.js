@@ -68,32 +68,6 @@ angular.module('openITCOCKPIT')
             });
         };
 
-
-        $scope.submit = function(){
-            var index = 0;
-            for(var i in $scope.args){
-                if(!/\S/.test($scope.args[i].human_name)){
-                    continue;
-                }
-                $scope.post.Command.commandarguments[index] = {
-                    'name': $scope.args[i].name,
-                    'human_name': $scope.args[i].human_name
-                };
-                index++;
-            }
-            $http.post("/commands/add.json?angular=true",
-                $scope.post
-            ).then(function(result){
-                NotyService.genericSuccess();
-                $state.go('CommandsIndex');
-            }, function errorCallback(result){
-                if(result.data.hasOwnProperty('error')){
-                    NotyService.genericError();
-                    $scope.errors = result.data.error;
-                }
-            });
-        };
-
         $scope.addMacro = function(){
             $scope.post.Contact.customvariables.push({
                 objecttype_id: 32,

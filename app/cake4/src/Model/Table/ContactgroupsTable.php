@@ -6,6 +6,7 @@ use App\Lib\Traits\Cake2ResultTableTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
+use Cake\ORM\TableRegistry;
 use Cake\Validation\Validator;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\ContactgroupsFilter;
@@ -79,8 +80,14 @@ class ContactgroupsTable extends Table {
         $validator
             ->scalar('description')
             ->maxLength('description', 255)
-            ->requirePresence('description', 'create')
-            ->allowEmptyString('description', false);
+            ->allowEmptyString('description', true);
+
+        $validator
+            ->requirePresence('contacts', true, __('You have to choose at least one contact.'))
+            ->allowEmptyString('contacts', false)
+            ->multipleOptions('contacts', [
+                'min' => 1
+            ], __('You have to choose at least one contact.'));
 
         return $validator;
     }
@@ -152,6 +159,28 @@ class ContactgroupsTable extends Table {
         $result = $this->formatFirstResultAsCake2($query, true);
         unset($result['Container'], $result['Contactstocontactgroup']);
         return $result;
+    }
+
+    /**
+     * @param \CakeRequest $Request
+     * @return array
+     */
+    public function getExtDataForChangelog(\CakeRequest $Request) {
+        $extDataForChangelog = [
+            'Contact' => []
+        ];
+
+        /** @var $ContactsTable ContactsTable */
+        $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
+
+        foreach ($ContactsTable->getContactsAsList($Request->data('Contactgroup.contacts._ids')) as $contactId => $contactName) {
+            $extDataForChangelog['Contact'][] = [
+                'id'   => $contactId,
+                'name' => $contactName
+            ];
+        }
+
+        return $extDataForChangelog;
     }
 
     /**

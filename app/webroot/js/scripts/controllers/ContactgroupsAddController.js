@@ -1,0 +1,75 @@
+angular.module('openITCOCKPIT')
+    .controller('ContactgroupsAddController', function($scope, $http, SudoService, $state, NotyService){
+        $scope.post = {
+            Contactgroup: {
+                description: '',
+                container: {
+                    parent_id: null
+                },
+                contacts: {
+                    _ids: []
+                }
+            }
+        };
+
+        $scope.init = true;
+
+
+        $scope.loadContainers = function(){
+            var params = {
+                'angular': true
+            };
+
+            $http.get("/contactgroups/loadContainers.json", {
+                params: params
+            }).then(function(result){
+                $scope.containers = result.data.containers;
+                $scope.init = false;
+            });
+        };
+
+
+        $scope.loadContacts = function(){
+            var id = $scope.post.Contactgroup.container.parent_id;
+            $http.post("/contactgroups/loadContacts/" + id + ".json?angular=true", {}).then(function(result){
+                $scope.contacts = result.data.contacts;
+            });
+        };
+
+        $scope.submit = function(){
+            $http.post("/contactgroups/add.json?angular=true",
+                $scope.post
+            ).then(function(result){
+                NotyService.genericSuccess();
+                $state.go('ContactgroupsIndex');
+
+                console.log('Data saved successfully');
+            }, function errorCallback(result){
+
+                NotyService.genericError();
+
+                if(result.data.hasOwnProperty('error')){
+                    $scope.errors = result.data.error;
+
+                    if($scope.errors.hasOwnProperty('customvariables')){
+                        if($scope.errors.customvariables.hasOwnProperty('custom')){
+                            $scope.errors.customvariables_unique = [
+                                $scope.errors.customvariables.custom
+                            ];
+                        }
+                    }
+                }
+            });
+
+        };
+
+        $scope.loadContainers();
+
+        $scope.$watch('post.Contactgroup.container.parent_id', function(){
+            if($scope.init){
+                return;
+            }
+            $scope.loadContacts();
+        }, true);
+
+    });

@@ -31,5 +31,6 @@ class Contactgroup extends Entity {
         'container_id' => true,
         'description'  => true,
         'container'    => true,
+        'contacts'     => true
     ];
 }

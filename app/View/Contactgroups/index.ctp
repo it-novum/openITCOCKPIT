@@ -141,7 +141,18 @@
 
                                     <td>{{contactgroup.Contactgroup.container.name}}</td>
                                     <td>{{contactgroup.Contactgroup.description}}</td>
-                                    <td>{{contactgroup.Contactgroup.contact_count}}</td>
+                                    <td>
+                                        <span ng-show="contactgroup.Contactgroup.contact_count">
+                                            {{contactgroup.Contactgroup.contact_count}}
+                                        </span>
+
+                                        <span class="label-forced label-danger margin-right-5"
+                                              title="<?php echo __('Down'); ?>"
+                                              ng-show="contactgroup.Contactgroup.contact_count === 0">
+                                            <?php echo __('Empty'); ?>
+                                        </span>
+
+                                    </td>
 
 
                                     <td class="width-50">

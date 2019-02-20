@@ -214,13 +214,11 @@ $config = [
                     'view',
                     'loadTimeperiodsByContainerId'
                 ],
-                'delete' => ['mass_delete'],
             ],
             'Contactgroups'         => [
                 'index'  => ['view'],
-                'add'    => ['loadContacts'],
-                'edit'   => ['loadContacts'],
-                'delete' => ['mass_delete'],
+                'add'    => ['loadContacts', 'loadContainers'],
+                'edit'   => ['loadContacts', 'loadContainers'],
             ],
             'Contacts'              => [
                 'index' => ['view'],

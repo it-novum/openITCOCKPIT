@@ -108,6 +108,58 @@ class ContactgroupsController extends AppController {
         $this->set('_serialize', ['contactgroup']);
     }
 
+    public function add() {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
+            return;
+        }
+
+        if ($this->request->is('post')) {
+            $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+
+            /** @var $ContactgroupsTable ContactgroupsTable */
+            $ContactgroupsTable = TableRegistry::getTableLocator()->get('Contactgroups');
+            $this->request->data['Contactgroup']['uuid'] = UUID::v4();
+            $this->request->data['Contactgroup']['container']['containertype_id'] = CT_CONTACTGROUP;
+            $contactgroup = $ContactgroupsTable->newEntity();
+            $contactgroup = $ContactgroupsTable->patchEntity($contactgroup, $this->request->data('Contactgroup'));
+
+            $ContactgroupsTable->save($contactgroup);
+            if ($contactgroup->hasErrors()) {
+                $this->response->statusCode(400);
+                $this->set('error', $contactgroup->getErrors());
+                $this->set('_serialize', ['error']);
+                return;
+            } else {
+                //No errors
+                $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
+                $extDataForChangelog = $ContactgroupsTable->getExtDataForChangelog($this->request);
+                Cache::clear(false, 'permissions');
+                $changelog_data = $this->Changelog->parseDataForChangelog(
+                    'add',
+                    'contactgroups',
+                    $contactgroup->get('id'),
+                    OBJECT_CONTACTGROUP,
+                    $contactgroup->get('container')->get('parent_id'),
+                    $User->getId(),
+                    $contactgroup->get('container')->get('name'),
+                    array_merge($this->request->data, $extDataForChangelog)
+                );
+                if ($changelog_data) {
+                    CakeLog::write('log', serialize($changelog_data));
+                }
+
+                if ($this->request->ext == 'json') {
+                    $this->serializeCake4Id($contactgroup); // REST API ID serialization
+                    return;
+                }
+            }
+            $this->set('contactgroup', $contactgroup);
+            $this->set('_serialize', ['contactgroup']);
+        }
+    }
+
+
     public function edit($id = null) {
         $userId = $this->Auth->user('id');
         if (!$this->Contactgroup->exists($id)) {
@@ -194,109 +246,6 @@ class ContactgroupsController extends AppController {
         $this->set('_serialize', array_keys($data));
     }
 
-    public function add() {
-        $userId = $this->Auth->user('id');
-        /** @var $ContainersTable ContainersTable */
-        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
-        /** @var $ContactsTable ContactsTable */
-        $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
-
-        if ($this->hasRootPrivileges === true) {
-            $containers = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_CONTACTGROUP, [], $this->hasRootPrivileges);
-        } else {
-            $containers = $ContainersTable->easyPath($this->getWriteContainers(), OBJECT_CONTACTGROUP, [], $this->hasRootPrivileges);
-        }
-
-        $this->Frontend->set('data_placeholder', __('Please choose a contact'));
-        $this->Frontend->set('data_placeholder_empty', __('No entries found'));
-
-        $contacts = [];
-        if ($this->request->is('post') || $this->request->is('put')) {
-            /** @var $ContainersTable ContainersTable */
-            $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
-
-            if (isset($this->request->data['Container']['parent_id'])) {
-                $containerIds = $ContainersTable->resolveChildrenOfContainerIds($this->request->data['Container']['parent_id']);
-                $contacts = $ContactsTable->contactsByContainerId($containerIds, 'list');
-            }
-
-            $this->request->data['Contactgroup']['uuid'] = UUID::v4();
-            $this->request->data['Container']['containertype_id'] = CT_CONTACTGROUP;
-            $ext_data_for_changelog = [];
-            //Save Contact associations -> Array Format [Contact] => data
-            if (isset($this->request->data['Contactgroup']['Contact']) && is_array($this->request->data['Contactgroup']['Contact'])) {
-
-                foreach ($ContactsTable->getContactsAsList($this->request->data['Contactgroup']['Contact']) as $_contactId => $_contactName) {
-                    $ext_data_for_changelog['Contact'][] = [
-                        'id'   => $_contactId,
-                        'name' => $_contactName
-                    ];
-                }
-            }
-            if (isset($this->request->data['Container']['name'])) {
-                $ext_data_for_changelog['Container']['name'] = $this->request->data['Container']['name'];
-            }
-            if (isset($this->request->data['Contactgroup']['Contact'])) {
-                $this->request->data['Contact'] = $this->request->data['Contactgroup']['Contact'];
-            }
-            if ($this->Contactgroup->saveAll($this->request->data)) {
-                Cache::clear(false, 'permissions');
-                $changelog_data = $this->Changelog->parseDataForChangelog(
-                    $this->params['action'],
-                    $this->params['controller'],
-                    $this->Contactgroup->id,
-                    OBJECT_CONTACTGROUP,
-                    $this->request->data('Container.parent_id'),
-                    $userId,
-                    $this->request->data['Container']['name'],
-                    array_merge($this->request->data, $ext_data_for_changelog)
-                );
-                if ($changelog_data) {
-                    CakeLog::write('log', serialize($changelog_data));
-                }
-
-                // for rest usage
-                if ($this->request->ext == 'json') {
-                    $this->serializeId();
-
-                    return;
-                }
-
-                $this->setFlash(__('<a href="/contactgroups/edit/%s">Contact group</a> successfully saved', $this->Contactgroup->id));
-                $this->redirect(['action' => 'index']);
-            } else {
-                if ($this->request->ext == 'json') {
-                    $this->serializeErrorMessage();
-
-                    return;
-                }
-
-                $this->setFlash(__('Could not save data'), false);
-            }
-        }
-
-        $this->set(compact(['containers', 'contacts']));
-        $this->set('_serialize', ['containers', 'contacts']);
-    }
-
-    public function loadContacts($containerIds = null) {
-        $this->allowOnlyAjaxRequests();
-
-        /** @var $ContainersTable ContainersTable */
-        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
-        /** @var $ContactsTable ContactsTable */
-        $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
-
-        $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerIds);
-        $contacts = $ContactsTable->contactsByContainerId($containerIds, 'list');
-        $contacts = Api::makeItJavaScriptAble($contacts);
-
-        $data = [
-            'contacts' => $contacts,
-        ];
-        $this->set($data);
-        $this->set('_serialize', array_keys($data));
-    }
 
     protected function __allowDelete($contactgroup) {
         if (is_numeric($contactgroup)) {
@@ -646,5 +595,50 @@ class ContactgroupsController extends AppController {
         $this->set(compact(['contactgroupWithRelations']));
         $this->set('_serialize', ['contactgroupWithRelations']);
         $this->set('back_url', $this->referer());
+    }
+
+
+    /****************************
+     *       AJAX METHODS       *
+     ****************************/
+
+    public function loadContainers() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+
+        if ($this->hasRootPrivileges === true) {
+            $containers = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_CONTACTGROUP, [], $this->hasRootPrivileges);
+        } else {
+            $containers = $ContainersTable->easyPath($this->getWriteContainers(), OBJECT_CONTACTGROUP, [], $this->hasRootPrivileges);
+        }
+
+        $this->set('containers', Api::makeItJavaScriptAble($containers));
+        $this->set('_serialize', ['containers']);
+    }
+
+    public function loadContacts($containerIds = null) {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        /** @var $ContactsTable ContactsTable */
+        $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
+
+        $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerIds);
+        $contacts = $ContactsTable->contactsByContainerId($containerIds, 'list');
+        $contacts = Api::makeItJavaScriptAble($contacts);
+
+        $data = [
+            'contacts' => $contacts,
+        ];
+        $this->set($data);
+        $this->set('_serialize', array_keys($data));
     }
 }

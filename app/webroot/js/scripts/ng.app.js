@@ -554,7 +554,7 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router'])
             .state('ContactgroupsAdd', {
                 url: '/contactgroups/add',
                 templateUrl: "/contactgroups/add.html",
-                controller: "ContactsAddController"
+                controller: "ContactgroupsAddController"
             })
 
             .state('ContactgroupsEdit', {
