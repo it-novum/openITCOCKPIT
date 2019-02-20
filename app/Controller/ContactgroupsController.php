@@ -90,23 +90,17 @@ class ContactgroupsController extends AppController {
     public function view($id = null) {
         if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();
-
         }
-        if (!$this->Contactgroup->exists($id)) {
+
+        /** @var $ContactgroupsTable ContactgroupsTable */
+        $ContactgroupsTable = TableRegistry::getTableLocator()->get('Contactgroups');
+
+        if (!$ContactgroupsTable->existsById($id)) {
             throw new NotFoundException(__('Invalid contact group'));
         }
-        /** @var $ContainersTable ContainersTable */
-        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
 
-        if ($this->hasRootPrivileges === true) {
-            $containers = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_CONTACTGROUP, [], $this->hasRootPrivileges);
-        } else {
-            $containers = $ContainersTable->easyPath($this->getWriteContainers(), OBJECT_CONTACTGROUP, [], $this->hasRootPrivileges);
-        }
-        $contactgroup = $this->Contactgroup->findById($id);
-
-
-        if (!$this->allowedByContainerId(Hash::extract($contactgroup, 'Container.parent_id'))) {
+        $contactgroup = $ContactgroupsTable->getContactgroupById($id);
+        if (!$this->allowedByContainerId($contactgroup['Contactgroup']['container']['parent_id'])) {
             throw new ForbiddenException('403 Forbidden');
         }
 

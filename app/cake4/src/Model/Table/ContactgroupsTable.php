@@ -134,4 +134,31 @@ class ContactgroupsTable extends Table {
 
         return $result;
     }
+
+    /**
+     * @param int $id
+     * @param array $contain
+     * @return array
+     */
+    public function getContactgroupById($id, $contain = ['Containers', 'Contacts']) {
+        $query = $this->find()
+            ->where([
+                'Contactgroups.id' => $id
+            ])
+            ->contain($contain)
+            ->disableHydration()
+            ->first();
+
+        $result = $this->formatFirstResultAsCake2($query, true);
+        unset($result['Container'], $result['Contactstocontactgroup']);
+        return $result;
+    }
+
+    /**
+     * @param int $id
+     * @return bool
+     */
+    public function existsById($id) {
+        return $this->exists(['Contactgroups.id' => $id]);
+    }
 }
