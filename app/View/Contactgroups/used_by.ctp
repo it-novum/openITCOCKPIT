@@ -43,7 +43,12 @@
             <div class="jarviswidget jarviswidget-color-blueDark" id="wid-id-1" data-widget-editbutton="false">
                 <header>
                     <div class="widget-toolbar" role="menu">
-                        <?php echo $this->Utils->backButton(__('Back'), '/contactgroups/index'); ?>
+                        <?php if ($this->Acl->hasPermission('index', 'contactgroups')): ?>
+                            <a class="btn btn-default" ui-sref="ContactgroupsIndex">
+                                <i class="fa fa-arrow-left"></i>
+                                <?php echo __('Back to list'); ?>
+                            </a>
+                        <?php endif; ?>
                     </div>
 
                     <div class="jarviswidget-ctrls" role="menu">

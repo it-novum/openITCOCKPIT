@@ -397,8 +397,11 @@ class ContactgroupsController extends AppController {
         $this->set('back_url', $this->referer());
     }
 
+    /**
+     * @param null $id
+     * @todo Refactor with Cake4
+     */
     public function usedBy($id = null) {
-        $this->layout = 'angularjs';
         if (!$this->isApiRequest()) {
             //Only ship HTML template for angular
             return;

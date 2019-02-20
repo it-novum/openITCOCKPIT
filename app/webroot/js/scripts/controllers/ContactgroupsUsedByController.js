@@ -1,6 +1,8 @@
 angular.module('openITCOCKPIT')
-    .controller('ContactgroupsUsedByController', function($scope, $http, QueryStringService){
-        $scope.id = QueryStringService.getCakeId();
+    .controller('ContactgroupsUsedByController', function($scope, $http, $stateParams){
+
+        $scope.id = $stateParams.id;
+
         $scope.total = 0;
         $scope.load = function(){
             $http.get("/contactgroups/usedBy/" + $scope.id + ".json", {
