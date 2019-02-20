@@ -35,6 +35,9 @@ use Cake\ORM\Entity;
  * @property \App\Model\Entity\User $user
  * @property \App\Model\Entity\Timeperiod $host_timeperiod
  * @property \App\Model\Entity\Timeperiod $service_timeperiod
+ * @property Customvariable $customvariables
+ * @property Command $host_commands
+ * @property Command $service_commands
  */
 class Contact extends Entity {
 
@@ -79,4 +82,99 @@ class Contact extends Entity {
         'service_commands'                   => true,
         'containers'                         => true
     ];
+
+    /**
+     * @return string
+     */
+    public function getHostNotificationOptionsForCfg() {
+        $cfgValues = [];
+        $fields = [
+            'notify_host_recovery'    => 'r',
+            'notify_host_down'        => 'd',
+            'notify_host_unreachable' => 'u',
+            'notify_host_flapping'    => 'f',
+            'notify_host_downtime'    => 's'
+        ];
+        foreach ($fields as $field => $cfgValue) {
+            if ($this->get($field) === 1) {
+                $cfgValues[] = $cfgValue;
+            }
+        }
+
+        if (empty($cfgValues)) {
+            //Config error!
+            $cfgValues = ['r'];
+        }
+        return implode(',', $cfgValues);
+    }
+
+    /**
+     * @return string
+     */
+    public function getServiceNotificationOptionsForCfg() {
+        $cfgValues = [];
+        $fields = [
+            'notify_service_recovery' => 'r',
+            'notify_service_warning'  => 'w',
+            'notify_service_critical' => 'c',
+            'notify_service_unknown'  => 'u',
+            'notify_service_flapping' => 'f',
+            'notify_service_downtime' => 's'
+        ];
+        foreach ($fields as $field => $cfgValue) {
+            if ($this->get($field) === 1) {
+                $cfgValues[] = $cfgValue;
+            }
+        }
+
+        if (empty($cfgValues)) {
+            //Config error!
+            $cfgValues = ['r'];
+        }
+        return implode(',', $cfgValues);
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasCustomvariables() {
+        return !empty($this->customvariables);
+    }
+
+    /**
+     * @return array
+     */
+    public function getCustomvariablesForCfg() {
+        $cfgValues = [];
+        foreach ($this->customvariables as $Customvariable) {
+            /** @var Customvariable $Customvariable */
+            $key = sprintf('_%s', $Customvariable->get('name'));
+            $cfgValues[$key] = $Customvariable->get('value');
+        }
+        return $cfgValues;
+    }
+
+    public function getHostCommandsForCfg() {
+        $hostCommandUuids = [];
+        foreach ($this->host_commands as $HostCommand) {
+            /** @var Command $HostCommand */
+            $hostCommandUuids[] = $HostCommand->get('uuid');
+        }
+
+        return implode(',', $hostCommandUuids);
+    }
+
+    public function getServiceCommandsForCfg() {
+        $serviceCommandUuids = [];
+        foreach ($this->service_commands as $ServiceCommand) {
+            /** @var Command $ServiceCommand */
+            $serviceCommandUuids[] = $ServiceCommand->get('uuid');
+        }
+
+        return implode(',', $serviceCommandUuids);
+    }
+
+    public function getHostTimeperiodForCfg(){
+        debug($this->host_timeperiod);
+    }
 }

@@ -25,6 +25,7 @@
 
 use App\Model\Table\CommandargumentsTable;
 use App\Model\Table\CommandsTable;
+use App\Model\Table\ContactsTable;
 use App\Model\Table\ContainersTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AcknowledgedServiceConditions;
@@ -650,6 +651,8 @@ class ServicesController extends AppController {
         $CommandsTable = TableRegistry::getTableLocator()->get('Commands');
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        /** @var $ContactsTable ContactsTable */
+        $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
 
         $userContainerId = $this->Auth->user('container_id');
         $myContainerId = $ContainersTable->resolveChildrenOfContainerIds($this->MY_RIGHTS);
@@ -662,7 +665,7 @@ class ServicesController extends AppController {
         $servicetemplates = $this->Servicetemplate->servicetemplatesByContainerId($myContainerId, 'list');
         $timeperiods = $this->Timeperiod->find('list');
         $containerIds = $ContainersTable->resolveChildrenOfContainerIds($this->MY_RIGHTS);
-        $contacts = $this->Contact->contactsByContainerId($containerIds, 'list', 'id');
+        $contacts = $ContactsTable->contactsByContainerId($containerIds, 'list');
         $contactgroups = $this->Contactgroup->contactgroupsByContainerId($containerIds, 'list', 'id');
         $commands = $CommandsTable->getCommandByTypeAsList(CHECK_COMMAND);
         $eventhandlers = $CommandsTable->getCommandByTypeAsList(EVENTHANDLER_COMMAND);
@@ -870,6 +873,8 @@ class ServicesController extends AppController {
         $CommandargumentsTable = TableRegistry::getTableLocator()->get('Commandarguments');
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        /** @var $ContactsTable ContactsTable */
+        $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
 
         $userContainerId = $this->Auth->user('container_id');
         $hosts = $this->Host->find('list');
@@ -878,7 +883,7 @@ class ServicesController extends AppController {
         $timeperiods = $this->Timeperiod->find('list');
         //container_id = 1 => ROOT
         $containerIds = $ContainersTable->resolveChildrenOfContainerIds($this->MY_RIGHTS);
-        $contacts = $this->Contact->contactsByContainerId($containerIds, 'list', 'id');
+        $contacts = $ContactsTable->contactsByContainerId($containerIds, 'list');
         $contactgroups = $this->Contactgroup->contactgroupsByContainerId($containerIds, 'list', 'id');
         $commands = $CommandsTable->getCommandByTypeAsList(CHECK_COMMAND);
         $eventhandlers = $CommandsTable->getCommandByTypeAsList(EVENTHANDLER_COMMAND);
@@ -975,12 +980,7 @@ class ServicesController extends AppController {
                 'Servicegroup' => [],
             ];
             if ($this->request->data('Service.Contact')) {
-                if ($contactsForChangelog = $this->Contact->find('list', [
-                    'conditions' => [
-                        'Contact.id' => $this->request->data['Service']['Contact'],
-                    ],
-                ])
-                ) {
+                if ($ContactsTable->getContactsAsList($this->request->data['Service']['Contact'])) {
                     foreach ($contactsForChangelog as $contactId => $contactName) {
                         $ext_data_for_changelog['Contact'][] = [
                             'id'   => $contactId,
@@ -1739,10 +1739,12 @@ class ServicesController extends AppController {
 
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        /** @var $ContactsTable ContactsTable */
+        $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
 
         //container_id = 1 => ROOT
         $containerIds = $ContainersTable->resolveChildrenOfContainerIds($container_id);
-        $result['contacts']['contacts'] = $this->Contact->contactsByContainerId($containerIds, 'list');
+        $result['contacts']['contacts'] = $ContactsTable->contactsByContainerId($containerIds, 'list');
         $result['contacts']['sizeof'] = sizeof($result['contacts']['contacts']);
         //container_id = 1 => ROOT
         $result['contactgroups']['contactgroups'] = $this->Contactgroup->contactgroupsByContainerId($containerIds, 'list');
@@ -2689,14 +2691,12 @@ class ServicesController extends AppController {
      * @return array
      */
     protected function getChangelogDataForAdd() {
+        /** @var $ContactsTable ContactsTable */
+        $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
+
         $changelogData = [];
         if ($this->request->data('Service.Contact')) {
-            if ($contactsForChangelog = $this->Contact->find('list', [
-                'conditions' => [
-                    'Contact.id' => $this->request->data['Service']['Contact'],
-                ],
-            ])
-            ) {
+            if ($contactsForChangelog = $ContactsTable->getContactsAsList($this->request->data['Service']['Contact'])) {
                 foreach ($contactsForChangelog as $contactId => $contactName) {
                     $changelogData['Contact'][] = [
                         'id'   => $contactId,

@@ -446,6 +446,197 @@ class ContactsTable extends Table {
     }
 
     /**
+     * @return array
+     */
+    public function getContactsForCrateDBSync() {
+        $query = $this->find()
+            ->select([
+                'Contacts.id',
+                'Contacts.name',
+                'Contacts.uuid'
+            ])
+            ->disableHydration()
+            ->all();
+
+        return $this->formatResultAsCake2($query->toArray(), false);
+    }
+
+
+    /**
+     * @param null $uuid
+     * @return array|\Cake\ORM\Query
+     */
+    public function getContactsForExport($uuid = null) {
+        $query = $this->find()
+            ->contain([
+                'Containers',
+                'HostCommands',
+                'ServiceCommands',
+                'HostTimeperiods',
+                'ServiceTimeperiods',
+                'Customvariables'
+            ]);
+        if (!empty($uuid)) {
+            if (!is_array($uuid)) {
+                $uuid = [$uuid];
+            }
+            $query->where([
+                'Contacts.uuid IN' => $uuid
+            ]);
+        }
+        $query->all();
+        return $query;
+    }
+
+    /**
+     * @param string $name
+     * @param array $contain
+     * @return array
+     */
+    public function getContactByName($name, $contain = ['Containers']) {
+        $query = $this->find()
+            ->where([
+                'Contacts.name' => $name
+            ])
+            ->contain($contain)
+            ->disableHydration()
+            ->first();
+
+        return $this->formatFirstResultAsCake2($query, true);
+    }
+
+    /**
+     * @param int $timeperiodId
+     * @return bool
+     */
+    public function isTimeperiodUsedByContacts($timeperiodId) {
+        $count = $this->find()
+            ->where([
+                'OR' => [
+                    'Contacts.host_timeperiod_id'    => $timeperiodId,
+                    'Contacts.service_timeperiod_id' => $timeperiodId
+                ]
+            ])->count();
+
+        if ($count > 0) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public function contactsByContainerId($container_ids = [], $type = 'all') {
+        if (!is_array($container_ids)) {
+            $container_ids = [$container_ids];
+        }
+
+        $container_ids = array_unique($container_ids);
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        $tenantContainerIds = [];
+        foreach ($container_ids as $container_id) {
+            if ($container_id != ROOT_CONTAINER) {
+                $path = $ContainersTable->getPathByIdAndCacheResult($container_id, 'ContactContactsByContainerId');
+                // Get container id of the tenant container
+                if (isset($path[1])) {
+                    $tenantContainerIds[] = $path[1]['id'];
+                }
+            } else {
+                $tenantContainerIds[] = ROOT_CONTAINER;
+            }
+        }
+        $tenantContainerIds = array_unique($tenantContainerIds);
+
+        $containerIds = array_unique(array_merge($tenantContainerIds, $container_ids));
+
+        $query = $this->find('all');
+        $query->contain(['Containers']);
+        $query->innerJoinWith('Containers', function ($q) use ($containerIds) {
+            return $q->where(['Containers.id IN' => $containerIds]);
+        });
+
+        $query->distinct('Contacts.id');
+        $query->disableHydration();
+
+        if ($type === 'all') {
+            return $this->formatResultAsCake2($query->toArray());
+        }
+
+        return $this->formatListAsCake2($query->toArray());
+    }
+
+    /**
+     * @param array $ids
+     * @return array
+     */
+    public function getContactsAsList($ids = []) {
+        if (!is_array($ids)) {
+            $ids = [$ids];
+        }
+
+        $query = $this->find()
+            ->select([
+                'Contacts.id',
+                'Contacts.name'
+            ])
+            ->disableHydration();
+        if (!empty($ids)) {
+            $query->where([
+                'Contacts.id IN' => $ids
+            ]);
+        }
+
+        return $this->formatListAsCake2($query->toArray());
+    }
+
+    /**
+     * @param $userId
+     * @return bool
+     */
+    public function hasUserAPushContact($userId){
+        $query = $this->find()
+            ->select(['Contacts.id'])
+            ->where([
+                [
+                    'AND' => [
+                        'Contacts.user_id' => $userId,
+                        'OR'              => [
+                            'Contacts.host_push_notifications_enabled'    => 1,
+                            'Contacts.service_push_notifications_enabled' => 1
+                        ]
+                    ]
+                ]
+            ])
+            ->disableHydration()
+            ->first();
+
+
+        return $query !== null;
+    }
+
+    public function getAllInfoContacts(){
+        $query = $this->find()
+            ->select([
+                'Contacts.id',
+                'Contacts.name',
+                'Contacts.uuid'
+            ])
+            ->where([
+                'Contacts.name' => 'info'
+            ])
+            ->disableHydration()
+            ->all();
+
+        if($query === null){
+            return [];
+        }
+
+        return $query->toArray();
+    }
+
+    /**
      * @param \CakeRequest $Request
      * @return array
      */

@@ -23,6 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 use App\Model\Table\CommandsTable;
+use App\Model\Table\ContactsTable;
 use App\Model\Table\MacrosTable;
 use Cake\ORM\TableRegistry;
 
@@ -213,21 +214,10 @@ class NagiosExportTask extends AppShell {
      * @param null|string $uuid
      */
     public function exportContacts($uuid = null) {
-        if ($uuid !== null) {
-            $contacts = [];
-            $contacts[] = $this->Contact->findByUuid($uuid);
-        } else {
-            $contacts = $this->Contact->find('all', [
-                'recursive' => -1,
-                'contain'   => [
-                    'HostTimeperiod',
-                    'ServiceTimeperiod',
-                    'HostCommands',
-                    'ServiceCommands',
-                    'Customvariable',
-                ],
-            ]);
-        }
+        /** @var $ContactsTable ContactsTable */
+        $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
+        $contacts = $ContactsTable->getContactsForExport();
+
 
         if (!is_dir($this->conf['path'] . $this->conf['contacts'])) {
             mkdir($this->conf['path'] . $this->conf['contacts']);
@@ -243,6 +233,7 @@ class NagiosExportTask extends AppShell {
         }
 
         foreach ($contacts as $contact) {
+            /** @var \App\Model\Entity\Contact $contact */
             if (!$this->conf['minified']) {
                 $file = new File($this->conf['path'] . $this->conf['contacts'] . $contact['Contact']['uuid'] . $this->conf['suffix']);
                 $content = $this->fileHeader();
@@ -252,30 +243,33 @@ class NagiosExportTask extends AppShell {
             }
 
             $content .= $this->addContent('define contact{', 0);
-            $content .= $this->addContent('contact_name', 1, $contact['Contact']['uuid']);
-            $content .= $this->addContent('alias', 1, $this->escapeLastBackslash($contact['Contact']['description']));
-            $content .= $this->addContent('host_notifications_enabled', 1, $contact['Contact']['host_notifications_enabled']);
-            $content .= $this->addContent('service_notifications_enabled', 1, $contact['Contact']['service_notifications_enabled']);
-            $content .= $this->addContent('host_notification_period', 1, $contact['HostTimeperiod']['uuid']);
-            $content .= $this->addContent('service_notification_period', 1, $contact['ServiceTimeperiod']['uuid']);
-            $content .= $this->addContent('host_notification_commands', 1, implode(',', Hash::extract($contact['HostCommands'], '{n}.uuid')));
-            $content .= $this->addContent('service_notification_commands', 1, implode(',', Hash::extract($contact['ServiceCommands'], '{n}.uuid')));
-            $content .= $this->addContent('host_notification_options', 1, $this->contactHostNotificationOptions($contact['Contact']));
-            $content .= $this->addContent('service_notification_options', 1, $this->contactServiceNotificationOptions($contact['Contact']));
-            $content .= $this->addContent('email', 1, $contact['Contact']['email']);
-            if (!empty($contact['Contact']['phone'])) {
-                $content .= $this->addContent('pager', 1, $contact['Contact']['phone']);
+            $content .= $this->addContent('contact_name', 1, $contact->get('uuid'));
+            $content .= $this->addContent('alias', 1, $this->escapeLastBackslash($contact->get('description')));
+            $content .= $this->addContent('host_notifications_enabled', 1, $contact->get('host_notifications_enabled'));
+            $content .= $this->addContent('service_notifications_enabled', 1, $contact->get('service_notifications_enabled'));
+            $content .= $this->addContent('host_notification_period', 1, $contact->get('host_timeperiod')->get('uuid'));
+            $content .= $this->addContent('service_notification_period', 1, $contact->get('service_timeperiod')->get('uuid'));
+            $content .= $this->addContent('host_notification_commands', 1, $contact->getHostCommandsForCfg());
+            $content .= $this->addContent('service_notification_commands', 1, $contact->getServiceCommandsForCfg());
+            $content .= $this->addContent('host_notification_options', 1, $contact->getHostNotificationOptionsForCfg());
+            $content .= $this->addContent('service_notification_options', 1, $contact->getServiceNotificationOptionsForCfg());
+            if (!empty($contact->get('email'))) {
+                $content .= $this->addContent('email', 1, $contact->get('email'));
+            }
+            if (!empty($contact->get('phone'))) {
+                $content .= $this->addContent('pager', 1, $contact->get('phone'));
             }
 
-            if (!empty($contact['Customvariable'])) {
+            if ($contact->hasCustomvariables()) {
                 $content .= $this->nl();
                 $content .= $this->addContent(';Custom  variables:', 1);
-                foreach ($contact['Customvariable'] as $customvariable) {
-                    $content .= $this->addContent('_' . $customvariable['name'], 1, $customvariable['value']);
+                foreach ($contact->getCustomvariablesForCfg() as $varName => $varValue) {
+                    $content .= $this->addContent($varName, 1, $varValue);
                 }
             }
 
             if (!empty($contact['Contact']['user_id'])) {
+                $content .= $this->addContent(';OITC user association:', 1);
                 $content .= $this->addContent('_OITCUSERID', 1, $contact['Contact']['user_id']);
             }
 

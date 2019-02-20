@@ -153,6 +153,9 @@ class CommandsTable extends Table {
      * @return array
      */
     public function getCommandById($id) {
+        if($id === null){
+            return [];
+        }
         $command = $this->find('all')
             ->contain('Commandarguments')
             ->where(['Commands.id' => $id])
