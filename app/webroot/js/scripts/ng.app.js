@@ -544,6 +544,36 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router'])
                 templateUrl: "/contacts/usedBy.html",
                 controller: "ContactsUsedByController"
             })
+
+            .state('ContactgroupsIndex', {
+                url: '/contactgroups/index',
+                templateUrl: "/contactgroups/index.html",
+                controller: "ContactgroupsIndexController"
+            })
+
+            .state('ContactgroupsAdd', {
+                url: '/contactgroups/add',
+                templateUrl: "/contactgroups/add.html",
+                controller: "ContactsAddController"
+            })
+
+            .state('ContactgroupsEdit', {
+                url: '/contactgroups/edit/:id',
+                templateUrl: "/contactgroups/edit.html",
+                controller: "ContactgroupsEditController"
+            })
+
+            .state('ContactgroupsCopy', {
+                url: '/contactgroups/copy/:ids',
+                templateUrl: "/contactgroups/copy.html",
+                controller: "ContactgroupsCopyController"
+            })
+
+            .state('ContactgroupsUsedBy', {
+                url: '/contactgroups/usedBy/:id',
+                templateUrl: "/contactgroups/usedBy.html",
+                controller: "ContactgroupsUsedByController"
+            })
     })
 
     /*
