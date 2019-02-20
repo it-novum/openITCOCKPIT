@@ -164,94 +164,74 @@ class ContactgroupsController extends AppController {
             return;
         }
 
+        /** @var $ContactgroupsTable ContactgroupsTable */
+        $ContactgroupsTable = TableRegistry::getTableLocator()->get('Contactgroups');
 
-        return;
-        /*********** OLD CODE ********************/
-
-
-        $userId = $this->Auth->user('id');
-        if (!$this->Contactgroup->exists($id)) {
-            throw new NotFoundException(__('Invalid contactgroup'));
+        if (!$ContactgroupsTable->existsById($id)) {
+            throw new NotFoundException(__('Contact group not found'));
         }
 
-        /** @var $ContainersTable ContainersTable */
-        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        $contactgroup = $ContactgroupsTable->getContactgroupForEdit($id);
 
-        if ($this->hasRootPrivileges === true) {
-            $containers = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_CONTACTGROUP, [], $this->hasRootPrivileges);
-        } else {
-            $containers = $ContainersTable->easyPath($this->getWriteContainers(), OBJECT_CONTACTGROUP, [], $this->hasRootPrivileges);
-        }
-        $contactgroup = $this->Contactgroup->findById($id);
-
-
-        if (!$this->allowedByContainerId(Hash::extract($contactgroup, 'Container.parent_id'))) {
+        if (!$this->isWritableContainer($contactgroup['Contactgroup']['container']['parent_id'])) {
             $this->render403();
-
             return;
         }
 
-        /** @var $ContainersTable ContainersTable */
-        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
-        /** @var $ContactsTable ContactsTable */
-        $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
+        if ($this->request->is('get') && $this->isAngularJsRequest()) {
+            //Return contact information
+            $this->set('contactgroup', $contactgroup);
+            $this->set('_serialize', ['contactgroup']);
+            return;
+        }
 
-        if ($this->request->is('post') || $this->request->is('put')) {
-            $containerIds = $ContainersTable->resolveChildrenOfContainerIds($this->request->data['Container']['parent_id']);
-            $contacts = $ContactsTable->contactsByContainerId($containerIds, 'list');
+        if ($this->request->is('post') && $this->isAngularJsRequest()) {
+            //Update contact data
+            $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
 
-            $ext_data_for_changelog = [];
-            if (isset($this->request->data['Contactgroup']['Contact']) && is_array($this->request->data['Contactgroup']['Contact'])) {
-                foreach ($ContactsTable->getContactsAsList($this->request->data['Contactgroup']['Contact']) as $_contactId => $_contactName) {
-                    $ext_data_for_changelog['Contact'][] = [
-                        'id'   => $_contactId,
-                        'name' => $_contactName
-                    ];
-                }
-            }
-            if (isset($this->request->data['Container']['name'])) {
-                $ext_data_for_changelog['Container']['name'] = $this->request->data['Container']['name'];
-            }
+            $contactgroupEntity = $ContactgroupsTable->get($id, [
+                'contain' => [
+                    'Containers'
+                ]
+            ]);
+            $contactgroupEntity = $ContactgroupsTable->patchEntity($contactgroupEntity, $this->request->data('Contactgroup'));
 
-            $this->request->data['Contact'] = $this->request->data['Contactgroup']['Contact'];
-            $this->request->data['Container']['id'] = $this->request->data['Contactgroup']['container_id'];
+            $ContactgroupsTable->save($contactgroupEntity);
+            if ($contactgroupEntity->hasErrors()) {
+                $this->response->statusCode(400);
+                $this->set('error', $contactgroupEntity->getErrors());
+                $this->set('_serialize', ['error']);
+                return;
+            } else {
+                //No errors
 
-            //Save Contact associations -> Array Format [Contact] => data
-            if ($this->Contactgroup->saveAll($this->request->data)) {
-                Cache::clear(false, 'permissions');
+                $extDataForChangelog = $ContactgroupsTable->getExtDataForChangelog($this->request);
+
                 $changelog_data = $this->Changelog->parseDataForChangelog(
-                    $this->params['action'],
-                    $this->params['controller'],
-                    $this->Contactgroup->id,
+                    'edit',
+                    'contactgroups',
+                    $contactgroupEntity->get('id'),
                     OBJECT_CONTACTGROUP,
-                    $this->request->data('Container.parent_id'),
-                    $userId,
-                    $this->request->data['Container']['name'],
-                    array_merge($this->request->data, $ext_data_for_changelog),
-                    $contactgroup
+                    $contactgroupEntity->get('container')->get('parent_id'),
+                    $User->getId(),
+                    $contactgroupEntity->get('container')->get('name'),
+                    array_merge($this->request->data, $extDataForChangelog),
+                    [
+                        'Contactgroup' => $contactgroupEntity->toArray()
+                    ]
                 );
                 if ($changelog_data) {
                     CakeLog::write('log', serialize($changelog_data));
                 }
-                $this->setFlash(__('<a href="/contactgroups/edit/%s">Contact group</a> successfully saved', $this->Contactgroup->id));
-                $this->redirect(['action' => 'index']);
-            } else {
-                $this->setFlash(__('Contactgroup could not be saved'), false);
-            }
-        } else {
-            $containerIds = $ContainersTable->resolveChildrenOfContainerIds($contactgroup['Container']['parent_id']);
-            $contacts = $ContactsTable->contactsByContainerId($containerIds, 'list');
-            $contactgroup['Contactgroup']['Contact'] = Hash::combine($contactgroup['Contact'], '{n}.id', '{n}.id');
-        }
 
-        $this->request->data = Hash::merge($contactgroup, $this->request->data); // Is used in the template file
-        $data = [
-            'contactgroup' => $contactgroup,
-            'containers'   => $containers,
-            'contacts'     => $contacts,
-        ];
-        $this->set($data);
-        $this->set('_serialize', array_keys($data));
+                if ($this->request->ext == 'json') {
+                    $this->serializeCake4Id($contactgroupEntity); // REST API ID serialization
+                    return;
+                }
+            }
+            $this->set('contactgroup', $contactgroupEntity);
+            $this->set('_serialize', ['contactgroup']);
+        }
     }
 
 
