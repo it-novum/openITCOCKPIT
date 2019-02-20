@@ -191,6 +191,7 @@ $config = [
                 ],
                 [
                     'url'               => ['controller' => 'contactgroups', 'action' => 'index'],
+                    'state'             => 'ContactgroupsIndex',
                     'title'             => 'Contact Groups',
                     'icon'              => 'users',
                 ],
