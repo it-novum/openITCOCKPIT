@@ -184,6 +184,16 @@ class TimeperiodsTable extends Table {
         return $this->formatFirstResultAsCake2($query->toArray(), false);
     }
 
+    public function getTimeperiodWithTimerangesById($id) {
+        $query = $this->find()
+            ->contain('TimeperiodTimeranges')
+            ->where([
+                'Timeperiods.id' => $id
+            ])
+            ->first();
+        return $this->formatFirstResultAsCake2($query->toArray(), false);
+    }
+
     /**
      * @param int|array $containerIds
      * @return array
@@ -202,6 +212,30 @@ class TimeperiodsTable extends Table {
             ->all();
 
         return $this->formatListAsCake2($timeperiods->toArray());
+    }
+
+    /**
+     * @param array $ids
+     * @return array
+     */
+    public function getTimeperiodsAsList($ids = []) {
+        if (!is_array($ids)) {
+            $ids = [$ids];
+        }
+
+        $query = $this->find()
+            ->select([
+                'Timeperiods.id',
+                'Timeperiods.name'
+            ])
+            ->disableHydration();
+        if (!empty($ids)) {
+            $query->where([
+                'Timeperiods.id IN' => $ids
+            ]);
+        }
+
+        return $this->formatListAsCake2($query->toArray());
     }
 
     /**
