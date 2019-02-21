@@ -190,6 +190,75 @@ class ContactgroupsTable extends Table {
     }
 
     /**
+     * @param array $containerIds
+     * @param string $type
+     * @param string $index
+     * @return array
+     * @deprecated Use self::getContactgroupsByContainerId()
+     */
+    public function contactgroupsByContainerId($containerIds = [], $type = 'all', $index = 'id') {
+        return $this->getContactgroupsByContainerId($containerIds, $type, $index);
+    }
+
+    /**
+     * @param array $containerIds
+     * @param string $type
+     * @param string $index
+     * @return array
+     */
+    public function getContactgroupsByContainerId($containerIds = [], $type = 'all', $index = 'id') {
+        if (!is_array($containerIds)) {
+            $containerIds = [$containerIds];
+        }
+
+        //Lookup for the tenant container of $container_id
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+
+        $tenantContainerIds = [];
+
+        foreach ($containerIds as $containerId) {
+            if ($containerId != ROOT_CONTAINER) {
+
+                // Get container id of the tenant container
+                // $container_id is may be a location, devicegroup or whatever, so we need to container id of the tenant container to load contactgroups and contacts
+                $path = $ContainersTable->getPathByIdAndCacheResult($containerId, 'ContactGroupContactsByContainerId');
+                if (isset($path[1])) {
+                    $tenantContainerIds[] = $path[1]['id'];
+                }
+            } else {
+                $tenantContainerIds[] = ROOT_CONTAINER;
+            }
+        }
+        $tenantContainerIds = array_unique($tenantContainerIds);
+
+        $query = $this->find()
+            ->contain(['Containers'])
+            ->where([
+                'Containers.parent_id IN'     => $tenantContainerIds,
+                'Containers.containertype_id' => CT_CONTACTGROUP
+            ])
+            ->disableHydration()
+            ->all();
+
+        $records = $query->toArray();
+        if (empty($records) || is_null($records)) {
+            return [];
+        }
+
+        if ($type === 'all') {
+            return $records;
+        }
+
+        $list = [];
+        foreach ($records as $record) {
+            $list[$record[$index]] = $record['container']['name'];
+        }
+        return $list;
+    }
+
+    /**
      * @param \CakeRequest $Request
      * @return array
      */
