@@ -156,6 +156,8 @@ class ServicedependenciesController extends AppController {
         }
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        /** @var $TimeperiodsTable TimeperiodsTable */
+        $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
 
         $serviceDependencyContainerIds = $ContainersTable->resolveChildrenOfContainerIds($serviceDependencyContainerId);
 
@@ -169,7 +171,7 @@ class ServicedependenciesController extends AppController {
             'forOptiongroup' => true,
         ]);
 
-        $timeperiods = $this->Timeperiod->timeperiodsByContainerId($serviceDependencyContainerIds, 'list');
+        $timeperiods = $TimeperiodsTable->timeperiodsByContainerId($serviceDependencyContainerIds, 'list');
 
         if ($this->request->is('post') || $this->request->is('put')) {
             $containerId = $this->request->data('Servicedependency.container_id');
@@ -184,7 +186,7 @@ class ServicedependenciesController extends AppController {
                 ]);
 
                 $servicegroups = $this->Servicegroup->servicegroupsByContainerId($containerIds, 'list', 'id');
-                $timeperiods = $this->Timeperiod->timeperiodsByContainerId($containerIds, 'list');
+                $timeperiods = $TimeperiodsTable->timeperiodsByContainerId($containerIds, 'list');
             }
 
             $_services = (is_array($this->request->data('Servicedependency.Service'))) ? $this->request->data['Servicedependency']['Service'] : [];
@@ -258,6 +260,8 @@ class ServicedependenciesController extends AppController {
         $this->CustomValidationErrors->checkForRefill($customFieldsToRefill);
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        /** @var $TimeperiodsTable TimeperiodsTable */
+        $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
 
         $containers = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_SERVICEDEPENDENCY, [], $this->hasRootPrivileges);
         $services = [];
@@ -300,7 +304,7 @@ class ServicedependenciesController extends AppController {
                             'forOptiongroup' => true,
                         ]);
                         $servicegroups = $this->Servicegroup->servicegroupsByContainerId($containerIds, 'list', 'id');
-                        $timeperiods = $this->Timeperiod->timeperiodsByContainerId($containerIds, 'list');
+                        $timeperiods = $TimeperiodsTable->timeperiodsByContainerId($containerIds, 'list');
                     }
                 }
             }
@@ -342,6 +346,8 @@ class ServicedependenciesController extends AppController {
 
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        /** @var $TimeperiodsTable TimeperiodsTable */
+        $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
         if (!$ContainersTable->existsById($containerId)) {
             throw new NotFoundException(__('Invalid hosttemplate'));
         }
@@ -361,7 +367,7 @@ class ServicedependenciesController extends AppController {
             false,
             $Constants->containerProperties(OBJECT_TIMEPERIOD)
         );
-        $timeperiods = $this->Timeperiod->timeperiodsByContainerId($timeperiodContainerIds, 'list');
+        $timeperiods = $TimeperiodsTable->timeperiodsByContainerId($timeperiodContainerIds, 'list');
 
         $servicegroups = Api::makeItJavaScriptAble($servicegroups);
         $servicegroupsDependent = $servicegroups;
