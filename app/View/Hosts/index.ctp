@@ -409,7 +409,7 @@ $this->Paginator->options(['url' => $this->params['named']]);
 
                                     <td class="text-center">
                                         <?php if ($this->Acl->hasPermission('serviceList', 'services')): ?>
-                                            <a href="/services/serviceList/{{ host.Host.id }}"
+                                            <a ui-sref="ServicesServiceList({id: host.Host.id})"
                                                class="txt-color-blueDark"
                                                ng-if="host.Host.has_graphs">
                                                 <i class="fa fa-lg fa-area-chart"></i>
@@ -563,7 +563,7 @@ $this->Paginator->options(['url' => $this->params['named']]);
                                                 <?php endif; ?>
                                                 <?php if ($this->Acl->hasPermission('serviceList', 'services')): ?>
                                                     <li>
-                                                        <a href="/services/serviceList/{{host.Host.id}}">
+                                                        <a ui-sref="ServicesServiceList({id: host.Host.id})">
                                                             <i class="fa fa-list"></i> <?php echo __('Service List'); ?>
                                                         </a>
                                                     </li>

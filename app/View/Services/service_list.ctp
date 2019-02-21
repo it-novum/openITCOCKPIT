@@ -142,32 +142,32 @@
                         <span class="widget-icon hidden-mobile"> <i class="fa fa-desktop"></i> </span>
                         <h2 class="hidden-mobile">{{ host.Host.name }} </h2>
                         <ul class="nav nav-tabs pull-right" id="widget-tab-1">
-                            <li class="active">
-                                <a href="#tab1" data-toggle="tab" ng-click="changeTab('active')">
+                            <li class="active cursor-pointer">
+                                <a data-toggle="tab" ng-click="changeTab('active')">
                                     <i class="fa fa-stethoscope"></i>
                                     <span class="hidden-mobile hidden-tablet">
                                         <?php echo __('Active'); ?>
                                     </span>
                                 </a>
                             </li>
-                            <li>
-                                <a href="#tab2" data-toggle="tab" ng-click="changeTab('notMonitored')">
+                            <li class="cursor-pointer">
+                                <a data-toggle="tab" ng-click="changeTab('notMonitored')">
                                     <i class="fa fa-user-md"></i>
                                     <span class="hidden-mobile hidden-tablet">
                                         <?php echo __('Not monitored'); ?>
                                     </span>
                                 </a>
                             </li>
-                            <li class="">
-                                <a href="#tab3" data-toggle="tab" ng-click="changeTab('disabled')">
+                            <li class="cursor-pointer">
+                                <a data-toggle="tab" ng-click="changeTab('disabled')">
                                     <i class="fa fa-plug"></i>
                                     <span class="hidden-mobile hidden-tablet">
                                         <?php echo __('Disabled'); ?>
                                     </span>
                                 </a>
                             </li>
-                            <li class="">
-                                <a href="#tab4" data-toggle="tab" ng-click="changeTab('deleted')">
+                            <li class="cursor-pointer">
+                                <a data-toggle="tab" ng-click="changeTab('deleted')">
                                     <i class="fa fa-trash-o"></i>
                                     <span class="hidden-mobile hidden-tablet">
                                         <?php echo __('Deleted'); ?>
@@ -181,7 +181,7 @@
                         <div class="widget-body no-padding">
                             <div class="tab-content">
 
-                                <div id="tab1" class="tab-pane fade active in">
+                                <div class="tab-pane fade active in">
                                     <div class="mobile_table">
                                         <table id="host_list"
                                                class="table table-striped table-hover table-bordered smart-form"
@@ -508,7 +508,7 @@
 
                                 </div> <!-- close tab1 -->
 
-                                <div id="tab2" class="tab-pane fade">
+                                <div class="tab-pane fade">
 
                                     <table class="table table-striped table-hover table-bordered smart-form"
                                            ng-if="activeTab === 'notMonitored'">
@@ -644,7 +644,7 @@
 
                                 </div> <!-- cloase tab2 -->
 
-                                <div id="tab3" class="tab-pane fade">
+                                <div class="tab-pane fade">
 
                                     <div class="mobile_table">
                                         <table class="table table-striped table-hover table-bordered smart-form"
@@ -781,7 +781,7 @@
 
                                 </div> <!-- cloase tab4 -->
 
-                                <div id="tab4" class="tab-pane fade">
+                                <div class="tab-pane fade">
 
                                     <div class="mobile_table">
                                         <table class="table table-striped table-hover table-bordered smart-form"

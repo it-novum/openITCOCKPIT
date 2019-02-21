@@ -22,6 +22,7 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+use App\Model\Table\ContactgroupsTable;
 use App\Model\Table\ContactsTable;
 use App\Model\Table\ContainersTable;
 use Cake\ORM\TableRegistry;
@@ -425,6 +426,8 @@ class ServiceescalationsController extends AppController {
         $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
         /** @var $ContactsTable ContactsTable */
         $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
+        /** @var $ContactgroupsTable ContactgroupsTable */
+        $ContactgroupsTable = TableRegistry::getTableLocator()->get('Contactgroups');
 
         $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerIds);
 
@@ -434,7 +437,7 @@ class ServiceescalationsController extends AppController {
             ->where(['Timeperiods.container_id IN' => $containerIds])
             ->toArray();
         $contacts = $ContactsTable->contactsByContainerId($containerIds, 'list');
-        $contactgroups = $this->Contactgroup->contactgroupsByContainerId($containerIds, 'list');
+        $contactgroups = $ContactgroupsTable->getContactgroupsByContainerId($containerIds, 'list', 'id');
 
         return [$servicegroups, $services, $timeperiods, $contacts, $contactgroups];
     }

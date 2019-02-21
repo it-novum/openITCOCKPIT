@@ -190,6 +190,75 @@ class ContactgroupsTable extends Table {
     }
 
     /**
+     * @param array $containerIds
+     * @param string $type
+     * @param string $index
+     * @return array
+     * @deprecated Use self::getContactgroupsByContainerId()
+     */
+    public function contactgroupsByContainerId($containerIds = [], $type = 'all', $index = 'id') {
+        return $this->getContactgroupsByContainerId($containerIds, $type, $index);
+    }
+
+    /**
+     * @param array $containerIds
+     * @param string $type
+     * @param string $index
+     * @return array
+     */
+    public function getContactgroupsByContainerId($containerIds = [], $type = 'all', $index = 'id') {
+        if (!is_array($containerIds)) {
+            $containerIds = [$containerIds];
+        }
+
+        //Lookup for the tenant container of $container_id
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+
+        $tenantContainerIds = [];
+
+        foreach ($containerIds as $containerId) {
+            if ($containerId != ROOT_CONTAINER) {
+
+                // Get container id of the tenant container
+                // $container_id is may be a location, devicegroup or whatever, so we need to container id of the tenant container to load contactgroups and contacts
+                $path = $ContainersTable->getPathByIdAndCacheResult($containerId, 'ContactGroupContactsByContainerId');
+                if (isset($path[1])) {
+                    $tenantContainerIds[] = $path[1]['id'];
+                }
+            } else {
+                $tenantContainerIds[] = ROOT_CONTAINER;
+            }
+        }
+        $tenantContainerIds = array_unique($tenantContainerIds);
+
+        $query = $this->find()
+            ->contain(['Containers'])
+            ->where([
+                'Containers.parent_id IN'     => $tenantContainerIds,
+                'Containers.containertype_id' => CT_CONTACTGROUP
+            ])
+            ->disableHydration()
+            ->all();
+
+        $records = $query->toArray();
+        if (empty($records) || is_null($records)) {
+            return [];
+        }
+
+        if ($type === 'all') {
+            return $records;
+        }
+
+        $list = [];
+        foreach ($records as $record) {
+            $list[$record[$index]] = $record['container']['name'];
+        }
+        return $list;
+    }
+
+    /**
      * @param array $dataToParse
      * @return array
      */
@@ -209,6 +278,146 @@ class ContactgroupsTable extends Table {
         }
 
         return $extDataForChangelog;
+    }
+
+    /**
+     * @return array
+     */
+    public function getAllContactsAsList() {
+        $query = $this->find()
+            ->select([
+                'Containers.id',
+                'Containers.name',
+                'Contactgroups.id'
+            ])
+            ->contain(['Containers'])
+            ->where([
+                'Containers.containertype_id' => CT_CONTACTGROUP
+            ])
+            ->disableHydration()
+            ->all();
+
+        $records = $query->toArray();
+        if (empty($records)) {
+            return [];
+        }
+        $list = [];
+        foreach ($records as $record) {
+            $list[$record['id']] = $record['container']['name'];
+        }
+        return $list;
+    }
+
+    /**
+     * @param array $ids
+     * @return array
+     */
+    public function getContactgroupsAsList($ids = []) {
+        if (!is_array($ids)) {
+            $ids = [$ids];
+        }
+
+        $query = $this->find()
+            ->select([
+                'Containers.id',
+                'Containers.name',
+                'Contactgroups.id'
+            ])
+            ->contain(['Containers'])
+            ->where([
+                'Contactgroups.id IN'         => $ids,
+                'Containers.containertype_id' => CT_CONTACTGROUP
+            ])
+            ->disableHydration()
+            ->all();
+
+        $records = $query->toArray();
+        if (empty($records)) {
+            return [];
+        }
+        $list = [];
+        foreach ($records as $record) {
+            $list[$record['id']] = $record['container']['name'];
+        }
+        return $list;
+    }
+
+    /**
+     * @param null $uuid
+     * @return array|\Cake\ORM\Query
+     */
+    public function getContactgroupsForExport($uuid = null) {
+        $query = $this->find()
+            ->contain([
+                'Containers',
+                'Contacts'
+            ]);
+        if (!empty($uuid)) {
+            if (!is_array($uuid)) {
+                $uuid = [$uuid];
+            }
+            $query->where([
+                'Contactgroups.uuid IN' => $uuid
+            ]);
+        }
+        $query->all();
+        return $query;
+    }
+
+    /**
+     * @param array $containerIds
+     * @return array
+     */
+    public function getContactgroupsByContainerIdsForContainerDelete($containerIds) {
+        if (!is_array($containerIds)) {
+            $containerIds = [$containerIds];
+        }
+
+        $query = $this->find()
+            ->select([
+                'Containers.id',
+                'Containers.name',
+                'Contactgroups.id'
+            ])
+            ->contain(['Containers'])
+            ->where([
+                'Contactgroups.container_id IN' => $containerIds,
+            ])
+            ->disableHydration()
+            ->all();
+
+        $result = $query->toArray();
+        if (empty($result)) {
+            return [];
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param array $ids
+     * @return array
+     */
+    public function getContactgroupsForCopy($ids = []) {
+        if(!is_array($ids)){
+            $ids = [$ids];
+        }
+
+        $query = $this->find()
+            ->select([
+                'Containers.id',
+                'Containers.name',
+                'Contactgroups.id',
+                'Contactgroups.description',
+            ])
+            ->contain(['Containers'])
+            ->where([
+                'Contactgroups.id IN' => $ids,
+            ])
+            ->disableHydration()
+            ->all();
+
+        return $this->formatResultAsCake2($query->toArray(), false);
     }
 
     /**

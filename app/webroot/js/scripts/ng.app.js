@@ -148,6 +148,12 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router'])
                 controller: "CurrentstatereportsIndexController"
             })
 
+            .state('CronjobsIndex', {
+                url: '/cronjobs/index',
+                templateUrl: "/cronjobs/index.html",
+                controller: "CronjobsIndexController"
+            })
+
             .state('DashboardsIndex', {
                 url: '/dashboards/index',
                 templateUrl: "/dashboards/index.html",
@@ -254,6 +260,12 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router'])
                 url: '/services/disabled',
                 templateUrl: "/services/disabled.html",
                 controller: "ServicesDisabledController"
+            })
+
+            .state('ServicesServiceList', {
+                url: '/services/serviceList/:id',
+                templateUrl: "/services/serviceList.html",
+                controller: "ServicesServiceListController"
             })
 
             .state('ServicechecksIndex', {
@@ -376,6 +388,12 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router'])
                 controller: "HosttemplatesUsedByController"
             })
 
+            .state('RegistersIndex', {
+                url: '/registers/index',
+                templateUrl: "/registers/index.html",
+                controller: "RegistersIndexController"
+            })
+
             .state('ServicegroupsIndex', {
                 url: '/servicegroups/index',
                 templateUrl: "/servicegroups/index.html",
@@ -412,6 +430,12 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router'])
                 controller: "StatehistoriesServiceController"
             })
 
+            .state('SupportsIssue', {
+                url: '/supports/issue',
+                templateUrl: "/supports/issue.html",
+                controller: "SupportsIssueController"
+            })
+
             .state('CommandsIndex', {
                 url: '/commands/index',
                 templateUrl: "/commands/index.html",
@@ -434,6 +458,12 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router'])
                 url: '/commands/copy/:ids',
                 templateUrl: "/commands/copy.html",
                 controller: "CommandsCopyController"
+            })
+
+            .state('ProxyIndex', {
+                url: '/proxy/index',
+                templateUrl: "/proxy/index.html",
+                controller: "ProxyIndexController"
             })
 
             .state('TenantsIndex', {

@@ -23,6 +23,8 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+use App\Model\Table\ContactgroupsTable;
+use App\Model\Table\ContactsTable;
 use App\Model\Table\ContainersTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
@@ -425,25 +427,12 @@ class ContainersController extends AppController {
                         break;
                     case CT_CONTACTGROUP:
                         //Check contact groups to delete
-                        $Contactgroup = ClassRegistry::init('Contactgroup');
-                        $contactgroupsToDelete = $Contactgroup->find('all', [
-                            'recursive'  => -1,
-                            'contain'    => [
-                                'Container' => [
-                                    'fields' => [
-                                        'Container.id',
-                                    ],
-                                ],
-                            ],
-                            'conditions' => [
-                                'Contactgroup.container_id' => $containerIds,
-                            ],
-                            'fields'     => [
-                                'Contactgroup.id',
-                            ],
-                        ]);
-                        foreach ($contactgroupsToDelete as $containerId) {
-                            $this->Container->__delete($containerId);
+
+                        /** @var $ContactgroupsTable ContactgroupsTable */
+                        $ContactgroupsTable = TableRegistry::getTableLocator()->get('Contactgroups');
+                        $contactgroups = $ContactgroupsTable->getContactgroupsByContainerIdsForContainerDelete($containerIds);
+                        foreach ($contactgroups as $contactgroup) {
+                            $this->Container->__delete($contactgroup['container']['id']);
                         }
                         break;
                 }

@@ -3,6 +3,7 @@
 namespace App\Model\Entity;
 
 use Cake\ORM\Entity;
+use Cake\Utility\Hash;
 
 /**
  * Contactgroup Entity
@@ -33,4 +34,35 @@ class Contactgroup extends Entity {
         'container'    => true,
         'contacts'     => true
     ];
+
+    /**
+     * @return string
+     */
+    public function getDescriptionForCfg(){
+        if(!empty($this->description)){
+            return $this->description;
+        }
+
+        return $this->uuid;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasContacts(){
+        return !empty($this->contacts);
+    }
+
+    /**
+     * @return string
+     */
+    public function getContactsForCfg(){
+        $contactUuids = [];
+        foreach($this->contacts as $contact){
+            /** @var Contact $contact */
+            $contactUuids[] = $contact->uuid;
+        }
+
+        return implode(',', $contactUuids);
+    }
 }

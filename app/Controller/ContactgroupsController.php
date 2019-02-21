@@ -22,13 +22,13 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
-use App\Model\Table\__ContactsToContactgroupsTable;
 use App\Model\Table\ContactgroupsTable;
 use App\Model\Table\ContactsTable;
 use App\Model\Table\ContactsToContactgroupsTable;
 use App\Model\Table\ContainersTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
+use itnovum\openITCOCKPIT\Core\KeyValueStore;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\ContactgroupsFilter;
 
@@ -39,6 +39,8 @@ use itnovum\openITCOCKPIT\Filter\ContactgroupsFilter;
  * @property Contact $Contact
  * @property User $User
  * @property Changelog $Changelog
+ *
+ * @property AppPaginatorComponent $Paginator
  */
 class ContactgroupsController extends AppController {
 
@@ -310,88 +312,106 @@ class ContactgroupsController extends AppController {
 
 
     public function copy($id = null) {
-        $userId = $this->Auth->user('id');
-        $contactgroups = $this->Contactgroup->find('all', [
-            'recursive'  => -1,
-            'contain'    => [
-                'Container' => [
-                    'fields' => [
-                        'Container.name',
-                        'Container.parent_id',
-                        'Container.containertype_id',
-                    ]
-                ],
-                'Contact'   => [
-                    'fields' => [
-                        'Contact.id',
-                        'Contact.name'
-                    ]
-                ]
-            ],
-            'fields'     => [
-                'Contactgroup.description'
-            ],
-            'conditions' => [
-                'Contactgroup.id' => func_get_args(),
-            ],
-        ]);
+        if (!$this->isAngularJsRequest()) {
+            //Only ship HTML Template
+            return;
+        }
 
-        $contactgroups = Hash::combine($contactgroups, '{n}.Contactgroup.id', '{n}');
-        if ($this->request->is('post') || $this->request->is('put')) {
-            $datasource = $this->Contactgroup->getDataSource();
-            try {
-                $datasource->begin();
-                foreach ($this->request->data['Contactgroup'] as $sourceContactGroupId => $newContactGroup) {
-                    $newContactGroupData = [
-                        'Container'    => [
-                            'parent_id'        => $contactgroups[$sourceContactGroupId]['Container']['parent_id'],
-                            'name'             => $newContactGroup['name'],
-                            'containertype_id' => $contactgroups[$sourceContactGroupId]['Container']['containertype_id'],
-                        ],
-                        'Contactgroup' => [
-                            'description' => $newContactGroup['description'],
-                            'uuid'        => UUID::v4(),
-                            'Contact'     => Hash::extract($contactgroups[$sourceContactGroupId]['Contact'], '{n}.id'),
-                        ],
-                        'Contact'      => Hash::extract($contactgroups[$sourceContactGroupId]['Contact'], '{n}.id')
-                    ];
-                    $this->Contactgroup->create();
-                    if (!$this->Contactgroup->saveAll($newContactGroupData)) {
-                        throw new Exception('Some of the Contactgroups could not be copied');
-                    }
-                    $changelog_data = $this->Changelog->parseDataForChangelog(
-                        $this->params['action'],
-                        $this->params['controller'],
-                        $this->Contactgroup->id,
-                        OBJECT_CONTACTGROUP,
-                        $contactgroups[$sourceContactGroupId]['Container']['parent_id'],
-                        $userId,
-                        $newContactGroup['name'],
-                        Hash::merge($contactgroups[$sourceContactGroupId], [
-                            'Contactgroup' => [
-                                'description' => $newContactGroup['description']
-                            ],
-                            'Container'    => [
-                                'name' => $newContactGroup['name']
+        /** @var $ContactgroupsTable ContactgroupsTable */
+        $ContactgroupsTable = TableRegistry::getTableLocator()->get('Contactgroups');
+
+        if ($this->request->is('get')) {
+            $contactgroups = $ContactgroupsTable->getContactgroupsForCopy(func_get_args());
+            $this->set('contactgroups', $contactgroups);
+            $this->set('_serialize', ['contactgroups']);
+            return;
+        }
+
+        $hasErrors = false;
+
+        if ($this->request->is('post')) {
+            $Cache = new KeyValueStore();
+
+            $postData = $this->request->data('data');
+            $userId = $this->Auth->user('id');
+
+            foreach ($postData as $index => $contactgroupData) {
+                if (!isset($contactgroupData['Contactgroup']['id'])) {
+                    //Create/clone contact group
+                    $sourceContactgroupId = $contactgroupData['Source']['id'];
+                    if (!$Cache->has($sourceContactgroupId)) {
+                        $sourceContactgroup = $ContactgroupsTable->get($sourceContactgroupId, [
+                            'contain' => [
+                                'Containers',
+                                'Contacts'
                             ]
-                        ])
+                        ])->toArray();
+                        $contacts = Hash::extract($sourceContactgroup['contacts'], '{n}.id');
+                        $sourceContactgroup['contacts'] = $contacts;
+
+                        $Cache->set($sourceContactgroup['id'], $sourceContactgroup);
+                    }
+
+                    $sourceContactgroup = $Cache->get($sourceContactgroupId);
+
+                    $newContactgroupData = [
+                        'description' => $contactgroupData['Contactgroup']['description'],
+                        'uuid'        => UUID::v4(),
+                        'container'   => [
+                            'name'             => $contactgroupData['Contactgroup']['container']['name'],
+                            'containertype_id' => CT_CONTACTGROUP,
+                            'parent_id'        => $sourceContactgroup['container']['parent_id']
+                        ],
+                        'contacts'    => [
+                            '_ids' => $sourceContactgroup['contacts']
+                        ]
+                    ];
+
+                    $newContactgroupEntity = $ContactgroupsTable->newEntity($newContactgroupData);
+                }
+
+                $action = 'copy';
+                if (isset($contactgroupData['Contact']['id'])) {
+                    //Update existing contact
+                    //This happens, if a user copy multiple contacts, and one run into an validation error
+                    //All contacts without validation errors got already saved to the database
+                    $newContactgroupEntity = $ContactgroupsTable->get($contactgroupData['Contactgroup']['id']);
+                    $newContactgroupEntity = $ContactgroupsTable->patchEntity($newContactgroupEntity, $contactgroupData['Contactgroup']);
+                    $newContactgroupData = $newContactgroupEntity->toArray();
+                    $action = 'edit';
+                }
+                $ContactgroupsTable->save($newContactgroupEntity);
+
+                $postData[$index]['Error'] = [];
+                if ($newContactgroupEntity->hasErrors()) {
+                    $hasErrors = true;
+                    $postData[$index]['Error'] = $newContactgroupEntity->getErrors();
+                } else {
+                    //No errors
+                    $postData[$index]['Contactgroup']['id'] = $newContactgroupEntity->get('id');
+
+                    $changelog_data = $this->Changelog->parseDataForChangelog(
+                        $action,
+                        'contactgroups',
+                        $postData[$index]['Contactgroup']['id'],
+                        OBJECT_CONTACTGROUP,
+                        $newContactgroupEntity->get('container')->get('parent_id'),
+                        $userId,
+                        $newContactgroupEntity->get('container')->get('name'),
+                        ['Contactgroup' => $newContactgroupData]
                     );
                     if ($changelog_data) {
                         CakeLog::write('log', serialize($changelog_data));
                     }
                 }
-                $datasource->commit();
-                Cache::clear(false, 'permissions');
-                $this->setFlash(__('Contactgroups are successfully copied'));
-                $this->redirect(['action' => 'index']);
-            } catch (Exception $e) {
-                $datasource->rollback();
-                $this->setFlash(__($e->getMessage()), false);
-                $this->redirect(['action' => 'index']);
             }
         }
-        $this->set(compact('contactgroups'));
-        $this->set('back_url', $this->referer());
+
+        if ($hasErrors) {
+            $this->response->statusCode(400);
+        }
+        $this->set('result', $postData);
+        $this->set('_serialize', ['result']);
     }
 
     /**

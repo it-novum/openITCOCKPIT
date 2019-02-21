@@ -30,6 +30,11 @@ class CronjobsController extends AppController {
     public $layout = 'angularjs';
 
     public function index() {
+        $this->layout = 'blank';
+
+        if (!$this->isApiRequest()) {
+            return;
+        }
 
         /** @var $Cronjobs App\Model\Table\CronjobsTable */
         $Cronjobs = TableRegistry::getTableLocator()->get('Cronjobs');

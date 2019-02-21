@@ -276,7 +276,7 @@
                                                 <?php endif; ?>
                                                 <?php if ($this->Acl->hasPermission('serviceList', 'services')): ?>
                                                     <li>
-                                                        <a href="/services/serviceList/{{host.Host.id}}">
+                                                        <a ui-sref="ServicesServiceList({id: host.Host.id})">
                                                             <i class="fa fa-list"></i> <?php echo __('Service List'); ?>
                                                         </a>
                                                     </li>

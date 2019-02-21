@@ -32,6 +32,10 @@
 use App\Model\Table\ContainersTable;
 use Cake\ORM\TableRegistry;
 
+/**
+ * Class Contactgroup
+ * @deprecated
+ */
 class Contactgroup extends AppModel {
     //public $primaryKey = 'container_id';
 //	public $primaryKeyArray = array('id','container_id');
@@ -75,6 +79,13 @@ class Contactgroup extends AppModel {
         //$this->primaryKey = 'id';
     }
 
+    /**
+     * @param array $container_ids
+     * @param string $type
+     * @param string $index
+     * @return array|null
+     * @deprecated
+     */
     public function contactgroupsByContainerId($container_ids = [], $type = 'all', $index = 'id') {
         if (!is_array($container_ids)) {
             $container_ids = [$container_ids];
@@ -135,6 +146,10 @@ class Contactgroup extends AppModel {
         return [];
     }
 
+    /**
+     * @return array
+     * @deprecated
+     */
     public function findList() {
         $return = [];
         $results = $this->find('all', [
