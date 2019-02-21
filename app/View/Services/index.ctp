@@ -371,7 +371,7 @@
 
                                         <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
                                             <a class="padding-left-5 txt-color-blueDark"
-                                               href="/hosts/browser/{{host.Host.id}}">
+                                               ui-sref="HostsBrowser({id: host.Host.id})">
                                                 {{host.Host.hostname}} ({{host.Host.address}})
                                             </a>
                                         <?php else: ?>
@@ -380,7 +380,7 @@
 
                                         <?php if ($this->Acl->hasPermission('serviceList', 'services')): ?>
                                             <a class="pull-right txt-color-blueDark"
-                                               href="/services/serviceList/{{host.Host.id}}">
+                                               ui-sref="ServicesServiceList({id: host.Host.id})">
                                                 <i class="fa fa-list"
                                                    title=" <?php echo __('Go to Service list'); ?>"></i>
                                             </a>

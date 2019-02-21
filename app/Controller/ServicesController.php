@@ -2392,11 +2392,20 @@ class ServicesController extends AppController {
         $this->render('load_services');
     }
 
-    public function serviceList($host_id) {
-        $this->layout = 'angularjs';
+    public function serviceList($host_id = null) {
+        $this->layout = 'blank';
         $User = new User($this->Auth);
 
-        if (!$this->Host->exists($host_id)) {
+        if (!$this->isApiRequest() && $host_id === null) {
+            $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
+            $this->set('QueryHandler', new QueryHandler($Systemsettings->getQueryHandlerPath()));
+            $this->set('username', $User->getFullName());
+            //Only ship HTML template
+            return;
+        }
+
+
+        if (!$this->Host->exists($host_id) && $host_id !== null) {
             throw new NotFoundException(__('Invalid host'));
         }
 
