@@ -133,7 +133,7 @@ class ContactgroupsController extends AppController {
             } else {
                 //No errors
                 $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->Auth);
-                $extDataForChangelog = $ContactgroupsTable->getExtDataForChangelog($this->request);
+                $extDataForChangelog = $ContactgroupsTable->resolveDataForChangelog($this->request->data);
                 Cache::clear(false, 'permissions');
                 $changelog_data = $this->Changelog->parseDataForChangelog(
                     'add',
@@ -174,6 +174,7 @@ class ContactgroupsController extends AppController {
         }
 
         $contactgroup = $ContactgroupsTable->getContactgroupForEdit($id);
+        $contactgroupForChangeLog = $contactgroup;
 
         if (!$this->isWritableContainer($contactgroup['Contactgroup']['container']['parent_id'])) {
             $this->render403();
@@ -206,9 +207,7 @@ class ContactgroupsController extends AppController {
                 return;
             } else {
                 //No errors
-
-                $extDataForChangelog = $ContactgroupsTable->getExtDataForChangelog($this->request);
-
+                
                 $changelog_data = $this->Changelog->parseDataForChangelog(
                     'edit',
                     'contactgroups',
@@ -217,10 +216,8 @@ class ContactgroupsController extends AppController {
                     $contactgroupEntity->get('container')->get('parent_id'),
                     $User->getId(),
                     $contactgroupEntity->get('container')->get('name'),
-                    array_merge($this->request->data, $extDataForChangelog),
-                    [
-                        'Contactgroup' => $contactgroupEntity->toArray()
-                    ]
+                    array_merge($ContactgroupsTable->resolveDataForChangelog($this->request->data), $this->request->data),
+                    array_merge($ContactgroupsTable->resolveDataForChangelog($contactgroupForChangeLog), $contactgroupForChangeLog)
                 );
                 if ($changelog_data) {
                     CakeLog::write('log', serialize($changelog_data));

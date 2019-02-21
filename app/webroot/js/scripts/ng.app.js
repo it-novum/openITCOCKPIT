@@ -382,12 +382,6 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router'])
                 controller: "HostchecksIndexController"
             })
 
-            .state('HosttemplatesUsedBy', {
-                url: '/hosttemplates/usedBy/:id',
-                templateUrl: "/hosttemplates/usedBy.html",
-                controller: "HosttemplatesUsedByController"
-            })
-
             .state('RegistersIndex', {
                 url: '/registers/index',
                 templateUrl: "/registers/index.html",
@@ -603,6 +597,36 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router'])
                 url: '/contactgroups/usedBy/:id',
                 templateUrl: "/contactgroups/usedBy.html",
                 controller: "ContactgroupsUsedByController"
+            })
+
+            .state('HosttemplatesIndex', {
+                url: '/hosttemplates/index',
+                templateUrl: "/hosttemplates/index.html",
+                controller: "HosttemplatesIndexController"
+            })
+
+            .state('HosttemplatesAdd', {
+                url: '/hosttemplates/add',
+                templateUrl: "/hosttemplates/add.html",
+                controller: "HosttemplatesAddController"
+            })
+
+            .state('HosttemplatesEdit', {
+                url: '/hosttemplates/edit/:id',
+                templateUrl: "/hosttemplates/edit.html",
+                controller: "HosttemplatesEditController"
+            })
+
+            .state('HosttemplatesCopy', {
+                url: '/hosttemplates/copy/:ids',
+                templateUrl: "/hosttemplates/copy.html",
+                controller: "HosttemplatesCopyController"
+            })
+
+            .state('HosttemplatesUsedBy', {
+                url: '/hosttemplates/usedBy/:id',
+                templateUrl: "/hosttemplates/usedBy.html",
+                controller: "HosttemplatesUsedByController"
             })
     })
 

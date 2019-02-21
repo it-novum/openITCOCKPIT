@@ -29,6 +29,11 @@ use Cake\ORM\TableRegistry;
 
 App::uses('Timerange', 'Model');
 
+/**
+ * Class Timeperiod
+ * @deprecated
+ */
+
 class Timeperiod extends AppModel {
 
     public $hasMany = [
@@ -71,11 +76,22 @@ class Timeperiod extends AppModel {
         ],
     ];
 
+    /**
+     * Timeperiod constructor.
+     * @param bool $id
+     * @param null $table
+     * @param null $ds
+     * @deprecated
+     */
     public function __construct($id = false, $table = null, $ds = null) {
         parent::__construct($id, $table, $ds);
         App::uses('UUID', 'Lib');
     }
 
+    /**
+     * @return bool
+     * @deprecated
+     */
     public function checkTimerangeOvelapping() {
         $error_arr = [];
         if (isset($this->data['Timerange']) && sizeof($this->data['Timerange']) > 0) {
@@ -128,6 +144,12 @@ class Timeperiod extends AppModel {
         return true;
     }
 
+    /**
+     * @param array $container_ids
+     * @param string $type
+     * @return array|null
+     * @deprecated
+     */
     public function timeperiodsByContainerId($container_ids = [], $type = 'all') {
         if (!is_array($container_ids)) {
             $container_ids = [$container_ids];
