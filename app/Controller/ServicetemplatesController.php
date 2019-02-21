@@ -206,6 +206,8 @@ class ServicetemplatesController extends AppController {
         $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
         /** @var $ContactgroupsTable ContactgroupsTable */
         $ContactgroupsTable = TableRegistry::getTableLocator()->get('Contactgroups');
+        /** @var $TimeperiodsTable TimeperiodsTable */
+        $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
 
         $commands = $CommandsTable->getCommandByTypeAsList(CHECK_COMMAND);
         $eventHandlers = $CommandsTable->getCommandByTypeAsList(EVENTHANDLER_COMMAND);
@@ -234,7 +236,7 @@ class ServicetemplatesController extends AppController {
 
         $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId);
 
-        $timeperiods = $this->Timeperiod->timeperiodsByContainerId($containerIds, 'list');
+        $timeperiods = $TimeperiodsTable->timeperiodsByContainerId($containerIds, 'list');
         $contacts = $ContactsTable->contactsByContainerId($containerIds, 'list');
         $contactGroups = $ContactgroupsTable->getContactgroupsByContainerId($containerIds, 'list', 'id');
         $serviceGroups = $this->Servicegroup->servicegroupsByContainerId($containerIds, 'list');
@@ -314,12 +316,7 @@ class ServicetemplatesController extends AppController {
                 }
             }
             if ($this->request->data('Servicetemplate.notify_period_id')) {
-                if ($timeperiodsForChangelog = $this->Timeperiod->find('list', [
-                    'conditions' => [
-                        'Timeperiod.id' => $this->request->data['Servicetemplate']['notify_period_id'],
-                    ],
-                ])
-                ) {
+                if ($timeperiodsForChangelog = $TimeperiodsTable->getTimeperiodsAsList($this->request->data['Servicetemplate']['notify_period_id'])) {
                     foreach ($timeperiodsForChangelog as $timeperiodId => $timeperiodName) {
                         $ext_data_for_changelog['NotifyPeriod'] = [
                             'id'   => $timeperiodId,
@@ -330,12 +327,7 @@ class ServicetemplatesController extends AppController {
                 }
             }
             if ($this->request->data('Servicetemplate.check_period_id')) {
-                if ($timeperiodsForChangelog = $this->Timeperiod->find('list', [
-                    'conditions' => [
-                        'Timeperiod.id' => $this->request->data['Servicetemplate']['check_period_id'],
-                    ],
-                ])
-                ) {
+                if ($timeperiodsForChangelog = $TimeperiodsTable->getTimeperiodsAsList($this->request->data['Servicetemplate']['check_period_id'])) {
                     foreach ($timeperiodsForChangelog as $timeperiodId => $timeperiodName) {
                         $ext_data_for_changelog['CheckPeriod'] = [
                             'id'   => $timeperiodId,
@@ -558,7 +550,7 @@ class ServicetemplatesController extends AppController {
                         $containerIds = $this->request->data('Servicetemplate.container_id');
                         $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerIds);
 
-                        $timeperiods = $this->Timeperiod->timeperiodsByContainerId($containerIds, 'list');
+                        $timeperiods = $TimeperiodsTable->timeperiodsByContainerId($containerIds, 'list');
                         $contacts = $ContactsTable->contactsByContainerId($containerIds, 'list');
                         $contactGroups = $ContactgroupsTable->getContactgroupsByContainerId($containerIds, 'list', 'id');
                         $serviceGroups = $this->Servicegroup->servicegroupsByContainerId($containerIds, 'list');
@@ -647,6 +639,8 @@ class ServicetemplatesController extends AppController {
         $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
         /** @var $ContactgroupsTable ContactgroupsTable */
         $ContactgroupsTable = TableRegistry::getTableLocator()->get('Contactgroups');
+        /** @var $TimeperiodsTable TimeperiodsTable */
+        $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
 
         $commands = $CommandsTable->getCommandByTypeAsList(CHECK_COMMAND);
         $eventhandlers = $CommandsTable->getCommandByTypeAsList(EVENTHANDLER_COMMAND);
@@ -736,36 +730,28 @@ class ServicetemplatesController extends AppController {
                 }
             }
             if ($this->request->data('Servicetemplate.notify_period_id')) {
-                if ($timeperiodsForChangelog = $this->Timeperiod->find('list', [
-                    'conditions' => [
-                        'Timeperiod.id' => $this->request->data['Servicetemplate']['notify_period_id'],
-                    ],
-                ])
-                ) {
+                if ($timeperiodsForChangelog = $TimeperiodsTable->getTimeperiodsAsList($this->request->data['Servicetemplate']['notify_period_id'])) {
                     foreach ($timeperiodsForChangelog as $timeperiodId => $timeperiodName) {
-                        $ext_data_for_changelog['NotifyPeriod'] = [
+                        $ext_data_for_changelog['NotifyPeriod']= [
                             'id'   => $timeperiodId,
-                            'name' => $timeperiodName,
+                            'name' => $timeperiodName
                         ];
                     }
                     unset($timeperiodsForChangelog);
                 }
+
             }
             if ($this->request->data('Servicetemplate.check_period_id')) {
-                if ($timeperiodsForChangelog = $this->Timeperiod->find('list', [
-                    'conditions' => [
-                        'Timeperiod.id' => $this->request->data['Servicetemplate']['check_period_id'],
-                    ],
-                ])
-                ) {
+                if ($timeperiodsForChangelog = $TimeperiodsTable->getTimeperiodsAsList($this->request->data['Servicetemplate']['check_period_id'])) {
                     foreach ($timeperiodsForChangelog as $timeperiodId => $timeperiodName) {
-                        $ext_data_for_changelog['CheckPeriod'] = [
+                        $ext_data_for_changelog['CheckPeriod']= [
                             'id'   => $timeperiodId,
-                            'name' => $timeperiodName,
+                            'name' => $timeperiodName
                         ];
                     }
                     unset($timeperiodsForChangelog);
                 }
+
             }
             if ($this->request->data('Servicetemplate.command_id')) {
                 /** @var $Commands CommandsTable */
@@ -863,7 +849,7 @@ class ServicetemplatesController extends AppController {
                     $container_id = $this->request->data('Servicetemplate.container_id');
                     $containerIds = $ContainersTable->resolveChildrenOfContainerIds($container_id);
 
-                    $_timeperiods = $this->Timeperiod->timeperiodsByContainerId($containerIds, 'list');
+                    $_timeperiods = $TimeperiodsTable->timeperiodsByContainerId($containerIds, 'list');
                     $_contacts = $ContactsTable->contactsByContainerId($containerIds, 'list');
                     $_contactgroups = $ContactgroupsTable->getContactgroupsByContainerId($containerIds, 'list', 'id');
                     $_servicegroups = $this->Servicegroup->servicegroupsByContainerId($containerIds, 'list');
@@ -1624,6 +1610,8 @@ class ServicetemplatesController extends AppController {
         $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
         /** @var $ContactgroupsTable ContactgroupsTable */
         $ContactgroupsTable = TableRegistry::getTableLocator()->get('Contactgroups');
+        /** @var $TimeperiodsTable TimeperiodsTable */
+        $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
 
         if (!$ContainersTable->existsById($containerId)) {
             throw new NotFoundException(__('Invalid hosttemplate'));
@@ -1631,7 +1619,7 @@ class ServicetemplatesController extends AppController {
 
         $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId);
 
-        $timeperiods = $timeperiods = $this->Timeperiod->timeperiodsByContainerId($containerIds, 'list');
+        $timeperiods = $TimeperiodsTable->timeperiodsByContainerId($containerIds, 'list');
         $timeperiods = Api::makeItJavaScriptAble($timeperiods);
         $checkperiods = $timeperiods;
 

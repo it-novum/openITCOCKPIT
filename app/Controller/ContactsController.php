@@ -599,11 +599,13 @@ class ContactsController extends AppController {
 
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        /** @var $TimeperiodsTable TimeperiodsTable */
+        $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
 
         $timePeriods = [];
         if (isset($this->request->data['container_ids'])) {
             $containerIds = $ContainersTable->resolveChildrenOfContainerIds($this->request->data['container_ids']);
-            $timePeriods = $this->Timeperiod->timeperiodsByContainerId($containerIds, 'list');
+            $timePeriods = $TimeperiodsTable->timeperiodsByContainerId($containerIds, 'list');
             $timePeriods = Api::makeItJavaScriptAble($timePeriods);
         }
 
