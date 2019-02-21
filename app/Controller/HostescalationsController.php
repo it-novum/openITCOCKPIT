@@ -22,8 +22,10 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+use App\Model\Table\ContactgroupsTable;
 use App\Model\Table\ContactsTable;
 use App\Model\Table\ContainersTable;
+use App\Model\Table\TimeperiodsTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 
@@ -174,6 +176,8 @@ class HostescalationsController extends AppController {
         $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
         /** @var $ContactsTable ContactsTable */
         $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
+        /** @var $ContactgroupsTable ContactgroupsTable */
+        $ContactgroupsTable = TableRegistry::getTableLocator()->get('Contactgroups');
 
         $containers = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_HOSTESCALATION, [], $this->hasRootPrivileges);
 
@@ -183,7 +187,7 @@ class HostescalationsController extends AppController {
         $timeperiods = $TimeperiodsTable->timeperiodsByContainerId($containerIds, 'list');
 
         $contacts = $ContactsTable->contactsByContainerId($containerIds, 'list');
-        $contactgroups = $this->Contactgroup->contactgroupsByContainerId($containerIds, 'list');
+        $contactgroups = $ContactgroupsTable->getContactgroupsByContainerId($containerIds, 'list', 'id');
 
         $this->Frontend->set('data_placeholder', __('Please choose'));
         $this->Frontend->set('data_placeholder_empty', __('No entries found'));
@@ -197,7 +201,7 @@ class HostescalationsController extends AppController {
                 $hosts = $this->Host->hostsByContainerId($containerIds, 'list');
                 $timeperiods = $TimeperiodsTable->timeperiodsByContainerId($containerIds, 'list');
                 $contacts = $ContactsTable->contactsByContainerId($containerIds, 'list');
-                $contactgroups = $this->Contactgroup->contactgroupsByContainerId($containerIds, 'list');
+                $contactgroups = $ContactgroupsTable->getContactgroupsByContainerId($containerIds, 'list', 'id');
             }
 
             $this->request->data['Contact']['Contact'] = $this->request->data['Hostescalation']['Contact'];
@@ -262,6 +266,8 @@ class HostescalationsController extends AppController {
         $TimeperiodsTable = TableRegistry::getTableLocator()->get('TimeperiodsTable');
         /** @var $ContactsTable ContactsTable */
         $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
+        /** @var $ContactgroupsTable ContactgroupsTable */
+        $ContactgroupsTable = TableRegistry::getTableLocator()->get('Contactgroups');
 
         $containers = $ContainersTable->easyPath($this->MY_RIGHTS, OBJECT_HOSTESCALATION, [], $this->hasRootPrivileges);
 
@@ -328,7 +334,7 @@ class HostescalationsController extends AppController {
                         $hosts = $this->Host->hostsByContainerId($containerIds, 'list');
                         $timeperiods = $TimeperiodsTable->timeperiodsByContainerId($containerIds, 'list');
                         $contacts = $ContactsTable->contactsByContainerId($containerIds, 'list');
-                        $contactgroups = $this->Contactgroup->contactgroupsByContainerId($containerIds, 'list');
+                        $contactgroups = $ContactgroupsTable->getContactgroupsByContainerId($containerIds, 'list', 'id');
                     }
                 }
             }
@@ -363,6 +369,8 @@ class HostescalationsController extends AppController {
         $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
         /** @var $ContactsTable ContactsTable */
         $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
+        /** @var $ContactgroupsTable ContactgroupsTable */
+        $ContactgroupsTable = TableRegistry::getTableLocator()->get('Contactgroups');
 
         if (!$ContainersTable->existsById($containerId)) {
             throw new NotFoundException(__('Invalid hosttemplate'));
@@ -384,7 +392,7 @@ class HostescalationsController extends AppController {
         $contacts = $ContactsTable->contactsByContainerId($containerIds, 'list');
         $contacts = Api::makeItJavaScriptAble($contacts);
 
-        $contactgroups = $this->Contactgroup->contactgroupsByContainerId($containerIds, 'list');
+        $contactgroups = $ContactgroupsTable->getContactgroupsByContainerId($containerIds, 'list', 'id');
         $contactgroups = Api::makeItJavaScriptAble($contactgroups);
 
         $this->set(compact(['hosts', 'hostsExcluded', 'hostgroups', 'hostgroupsExcluded', 'timeperiods', 'contacts', 'contactgroups']));

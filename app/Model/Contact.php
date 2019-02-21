@@ -28,6 +28,10 @@ use App\Model\Table\ContainersTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\ValueObjects\LastDeletedId;
 
+/**
+ * Class Contact
+ * @deprecated
+ */
 class Contact extends AppModel {
     public $hasAndBelongsToMany = [
         'Container'       => [
@@ -204,6 +208,13 @@ class Contact extends AppModel {
      */
     private $LastDeletedId = null;
 
+    /**
+     * Contact constructor.
+     * @param bool $id
+     * @param null $table
+     * @param null $ds
+     * @deprecated
+     */
     public function __construct($id = false, $table = null, $ds = null) {
         parent::__construct($id, $table, $ds);
         $this->notification_options = [
@@ -227,6 +238,12 @@ class Contact extends AppModel {
     }
 
 
+    /**
+     * @param $data
+     * @param $notification_type
+     * @return bool
+     * @deprecated
+     */
     function checkNotificationOptions($data, $notification_type) {
         foreach ($this->data as $request) {
             foreach ($request as $request_key => $request_value) {
@@ -239,6 +256,11 @@ class Contact extends AppModel {
         return false;
     }
 
+    /**
+     * @param $var
+     * @return bool
+     * @deprecated
+     */
     public function filterZero($var) {
         if ($var == 0) {
             return false;
@@ -247,6 +269,11 @@ class Contact extends AppModel {
         return true;
     }
 
+    /**
+     * @param array $options
+     * @return bool|void
+     * @deprecated
+     */
     public function beforeValidate($options = []) {
         foreach ($this->hasAndBelongsToMany as $k => $v) {
             if (isset($this->data[$k][$k])) {
@@ -255,6 +282,11 @@ class Contact extends AppModel {
         }
     }
 
+    /**
+     * @param array $options
+     * @return bool
+     * @deprecated
+     */
     public function beforeSave($options = []) {
         foreach (array_keys($this->hasAndBelongsToMany) as $model) {
             if (isset($this->data[$this->name][$model])) {
@@ -270,6 +302,7 @@ class Contact extends AppModel {
      * @param bool $created
      * @param array $options
      * @return bool|void
+     * @deprecated
      */
     public function afterSave($created, $options = []) {
         if ($this->DbBackend->isCrateDb() && isset($this->data['Contact']['id'])) {
@@ -284,11 +317,19 @@ class Contact extends AppModel {
         parent::afterSave($created, $options);
     }
 
+    /**
+     * @param bool $cascade
+     * @return bool
+     * @deprecated
+     */
     public function beforeDelete($cascade = true) {
         $this->LastDeletedId = new LastDeletedId($this->id);
         return parent::beforeDelete($cascade);
     }
 
+    /**
+     * @deprecated
+     */
     public function afterDelete() {
         if ($this->LastDeletedId !== null) {
             if ($this->DbBackend->isCrateDb() && $this->LastDeletedId->hasId()) {
@@ -301,6 +342,12 @@ class Contact extends AppModel {
         parent::afterDelete();
     }
 
+    /**
+     * @param array $container_ids
+     * @param string $type
+     * @return array|null
+     * @deprecated
+     */
     public function contactsByContainerId($container_ids = [], $type = 'all') {
         if (!is_array($container_ids)) {
             $container_ids = [$container_ids];
@@ -347,9 +394,13 @@ class Contact extends AppModel {
         ]);
     }
 
-    /*
+    /**
+     * @param $data
+     * @return bool
+     * @deprecated
+     *
      * Custom validation rule for email and/or phone fields.
-    */
+     */
     public function atLeastOne($data) {
         $result = !empty($this->data[$this->name]['email']) || !empty($this->data[$this->name]['phone']);
 

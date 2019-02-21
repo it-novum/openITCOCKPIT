@@ -24,6 +24,7 @@
 //	confirmation.
 use App\Model\Table\CommandargumentsTable;
 use App\Model\Table\CommandsTable;
+use App\Model\Table\ContactgroupsTable;
 use App\Model\Table\ContactsTable;
 use App\Model\Table\ContainersTable;
 use Cake\ORM\TableRegistry;
@@ -203,6 +204,8 @@ class ServicetemplatesController extends AppController {
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
         /** @var $ContactsTable ContactsTable */
         $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
+        /** @var $ContactgroupsTable ContactgroupsTable */
+        $ContactgroupsTable = TableRegistry::getTableLocator()->get('Contactgroups');
 
         $commands = $CommandsTable->getCommandByTypeAsList(CHECK_COMMAND);
         $eventHandlers = $CommandsTable->getCommandByTypeAsList(EVENTHANDLER_COMMAND);
@@ -233,7 +236,7 @@ class ServicetemplatesController extends AppController {
 
         $timeperiods = $this->Timeperiod->timeperiodsByContainerId($containerIds, 'list');
         $contacts = $ContactsTable->contactsByContainerId($containerIds, 'list');
-        $contactGroups = $this->Contactgroup->contactgroupsByContainerId($containerIds, 'list');
+        $contactGroups = $ContactgroupsTable->getContactgroupsByContainerId($containerIds, 'list', 'id');
         $serviceGroups = $this->Servicegroup->servicegroupsByContainerId($containerIds, 'list');
 
         //Fehlende bzw. neu angelegte CommandArgummente ermitteln und anzeigen
@@ -273,27 +276,11 @@ class ServicetemplatesController extends AppController {
                 }
             }
             if ($this->request->data('Servicetemplate.Contactgroup')) {
-                if ($contactgroupsForChangelog = $this->Contactgroup->find('all', [
-                    'recursive'  => -1,
-                    'contain'    => [
-                        'Container' => [
-                            'fields' => [
-                                'Container.name',
-                            ],
-                        ],
-                    ],
-                    'fields'     => [
-                        'Contactgroup.id',
-                    ],
-                    'conditions' => [
-                        'Contactgroup.id' => $this->request->data['Servicetemplate']['Contactgroup'],
-                    ],
-                ])
-                ) {
-                    foreach ($contactgroupsForChangelog as $contactgroupData) {
+                if ($contactgroupsForChangelog = $ContactgroupsTable->getContactgroupsAsList($this->request->data['Servicetemplate']['Contactgroup'])) {
+                    foreach ($contactgroupsForChangelog as $contactgroupId => $contactgroupName) {
                         $ext_data_for_changelog['Contactgroup'][] = [
-                            'id'   => $contactgroupData['Contactgroup']['id'],
-                            'name' => $contactgroupData['Container']['name'],
+                            'id'   => $contactgroupId,
+                            'name' => $contactgroupName,
                         ];
                     }
                     unset($contactgroupsForChangelog);
@@ -573,7 +560,7 @@ class ServicetemplatesController extends AppController {
 
                         $timeperiods = $this->Timeperiod->timeperiodsByContainerId($containerIds, 'list');
                         $contacts = $ContactsTable->contactsByContainerId($containerIds, 'list');
-                        $contactGroups = $this->Contactgroup->contactgroupsByContainerId($containerIds, 'list');
+                        $contactGroups = $ContactgroupsTable->getContactgroupsByContainerId($containerIds, 'list', 'id');
                         $serviceGroups = $this->Servicegroup->servicegroupsByContainerId($containerIds, 'list');
                     }
                 }
@@ -658,6 +645,8 @@ class ServicetemplatesController extends AppController {
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
         /** @var $ContactsTable ContactsTable */
         $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
+        /** @var $ContactgroupsTable ContactgroupsTable */
+        $ContactgroupsTable = TableRegistry::getTableLocator()->get('Contactgroups');
 
         $commands = $CommandsTable->getCommandByTypeAsList(CHECK_COMMAND);
         $eventhandlers = $CommandsTable->getCommandByTypeAsList(EVENTHANDLER_COMMAND);
@@ -709,27 +698,11 @@ class ServicetemplatesController extends AppController {
                 }
             }
             if ($this->request->data('Servicetemplate.Contactgroup')) {
-                if ($contactgroupsForChangelog = $this->Contactgroup->find('all', [
-                    'recursive'  => -1,
-                    'contain'    => [
-                        'Container' => [
-                            'fields' => [
-                                'Container.name',
-                            ],
-                        ],
-                    ],
-                    'fields'     => [
-                        'Contactgroup.id',
-                    ],
-                    'conditions' => [
-                        'Contactgroup.id' => $this->request->data['Servicetemplate']['Contactgroup'],
-                    ],
-                ])
-                ) {
-                    foreach ($contactgroupsForChangelog as $contactgroupData) {
+                if ($contactgroupsForChangelog = $ContactgroupsTable->getContactgroupsAsList($this->request->data['Servicetemplate']['Contactgroup'])) {
+                    foreach ($contactgroupsForChangelog as $contactgroupId => $contactgroupName) {
                         $ext_data_for_changelog['Contactgroup'][] = [
-                            'id'   => $contactgroupData['Contactgroup']['id'],
-                            'name' => $contactgroupData['Container']['name'],
+                            'id'   => $contactgroupId,
+                            'name' => $contactgroupName
                         ];
                     }
                     unset($contactgroupsForChangelog);
@@ -892,7 +865,7 @@ class ServicetemplatesController extends AppController {
 
                     $_timeperiods = $this->Timeperiod->timeperiodsByContainerId($containerIds, 'list');
                     $_contacts = $ContactsTable->contactsByContainerId($containerIds, 'list');
-                    $_contactgroups = $this->Contactgroup->contactgroupsByContainerId($containerIds, 'list');
+                    $_contactgroups = $ContactgroupsTable->getContactgroupsByContainerId($containerIds, 'list', 'id');
                     $_servicegroups = $this->Servicegroup->servicegroupsByContainerId($containerIds, 'list');
                 }
             }
@@ -1503,7 +1476,8 @@ class ServicetemplatesController extends AppController {
         $this->allowOnlyAjaxRequests();
 
         $this->loadModel('Contact');
-        $this->loadModel('Contactgroup');
+        /** @var $ContactgroupsTable ContactgroupsTable */
+        $ContactgroupsTable = TableRegistry::getTableLocator()->get('Contactgroups');
 
         $result = [
             'contacts'      => [
@@ -1526,7 +1500,7 @@ class ServicetemplatesController extends AppController {
 
         $result['contacts']['sizeof'] = sizeof($result['contacts']['contacts']);
         //container_id = 1 => ROOT
-        $result['contactgroups']['contactgroups'] = $this->Contactgroup->contactgroupsByContainerId($containerIds, 'list');
+        $result['contactgroups']['contactgroups'] = $ContactgroupsTable->getContactgroupsByContainerId($containerIds, 'list', 'id');
         $result['contactgroups']['sizeof'] = sizeof($result['contactgroups']['contactgroups']);
 
         $this->set(compact(['result']));
@@ -1648,6 +1622,8 @@ class ServicetemplatesController extends AppController {
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
         /** @var $ContactsTable ContactsTable */
         $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
+        /** @var $ContactgroupsTable ContactgroupsTable */
+        $ContactgroupsTable = TableRegistry::getTableLocator()->get('Contactgroups');
 
         if (!$ContainersTable->existsById($containerId)) {
             throw new NotFoundException(__('Invalid hosttemplate'));
@@ -1662,7 +1638,7 @@ class ServicetemplatesController extends AppController {
         $contacts = $ContactsTable->contactsByContainerId($containerIds, 'list');
         $contacts = Api::makeItJavaScriptAble($contacts);
 
-        $contactgroups = $this->Contactgroup->contactgroupsByContainerId($containerIds, 'list');
+        $contactgroups = $ContactgroupsTable->getContactgroupsByContainerId($containerIds, 'list', 'id');
         $contactgroups = Api::makeItJavaScriptAble($contactgroups);
 
         $servicegroups = $this->Servicegroup->servicegroupsByContainerId($containerIds, 'list');
