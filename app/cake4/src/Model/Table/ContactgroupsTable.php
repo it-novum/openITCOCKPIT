@@ -281,6 +281,120 @@ class ContactgroupsTable extends Table {
     }
 
     /**
+     * @return array
+     */
+    public function getAllContactsAsList() {
+        $query = $this->find()
+            ->select([
+                'Containers.id',
+                'Containers.name',
+                'Contactgroups.id'
+            ])
+            ->contain(['Containers'])
+            ->where([
+                'Containers.containertype_id' => CT_CONTACTGROUP
+            ])
+            ->disableHydration()
+            ->all();
+
+        $records = $query->toArray();
+        if (empty($records)) {
+            return [];
+        }
+        $list = [];
+        foreach ($records as $record) {
+            $list[$record['id']] = $record['container']['name'];
+        }
+        return $list;
+    }
+
+    /**
+     * @param array $ids
+     * @return array
+     */
+    public function getContactgroupsAsList($ids = []) {
+        if (!is_array($ids)) {
+            $ids = [$ids];
+        }
+
+        $query = $this->find()
+            ->select([
+                'Containers.id',
+                'Containers.name',
+                'Contactgroups.id'
+            ])
+            ->contain(['Containers'])
+            ->where([
+                'Contactgroups.id IN'         => $ids,
+                'Containers.containertype_id' => CT_CONTACTGROUP
+            ])
+            ->disableHydration()
+            ->all();
+
+        $records = $query->toArray();
+        if (empty($records)) {
+            return [];
+        }
+        $list = [];
+        foreach ($records as $record) {
+            $list[$record['id']] = $record['container']['name'];
+        }
+        return $list;
+    }
+
+    /**
+     * @param null $uuid
+     * @return array|\Cake\ORM\Query
+     */
+    public function getContactgroupsForExport($uuid = null) {
+        $query = $this->find()
+            ->contain([
+                'Containers',
+                'Contacts'
+            ]);
+        if (!empty($uuid)) {
+            if (!is_array($uuid)) {
+                $uuid = [$uuid];
+            }
+            $query->where([
+                'Contactgroups.uuid IN' => $uuid
+            ]);
+        }
+        $query->all();
+        return $query;
+    }
+
+    /**
+     * @param array $containerIds
+     * @return array
+     */
+    public function getContactgroupsByContainerIdsForContainerDelete($containerIds) {
+        if (!is_array($containerIds)) {
+            $containerIds = [$containerIds];
+        }
+
+        $query = $this->find()
+            ->select([
+                'Containers.id',
+                'Containers.name',
+                'Contactgroups.id'
+            ])
+            ->contain(['Containers'])
+            ->where([
+                'Contactgroups.container_id IN' => $containerIds,
+            ])
+            ->disableHydration()
+            ->all();
+
+        $result = $query->toArray();
+        if (empty($result)) {
+            return [];
+        }
+
+        return $result;
+    }
+
+    /**
      * @param int $id
      * @return bool
      */

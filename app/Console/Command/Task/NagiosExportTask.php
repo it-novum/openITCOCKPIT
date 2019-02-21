@@ -23,6 +23,7 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 use App\Model\Table\CommandsTable;
+use App\Model\Table\ContactgroupsTable;
 use App\Model\Table\ContactsTable;
 use App\Model\Table\MacrosTable;
 use Cake\ORM\TableRegistry;
@@ -290,22 +291,10 @@ class NagiosExportTask extends AppShell {
      * @param null|string $uuid
      */
     public function exportContactgroups($uuid = null) {
-        if ($uuid !== null) {
-            $contactgroups = [];
-            $contactgroups[] = $this->Contactgroup->findByUuid($uuid);
-        } else {
-            $contactgroups = $this->Contactgroup->find('all', [
-                'recursive' => -1,
-                'contain'   => [
-                    'Contact' => [
-                        'fields' => [
-                            'Contact.id',
-                            'Contact.uuid',
-                        ],
-                    ],
-                ],
-            ]);
-        }
+        /** @var $ContactgroupsTable ContactgroupsTable */
+        $ContactgroupsTable = TableRegistry::getTableLocator()->get('Contactgroups');
+        $contactgroups = $ContactgroupsTable->getContactgroupsForExport($uuid);
+
 
         if (!is_dir($this->conf['path'] . $this->conf['contactgroups'])) {
             mkdir($this->conf['path'] . $this->conf['contactgroups']);
@@ -321,27 +310,30 @@ class NagiosExportTask extends AppShell {
 
 
         foreach ($contactgroups as $contactgroup) {
-            if (!empty($contactgroup['Contact'])) {
-                if (!$this->conf['minified']) {
-                    $file = new File($this->conf['path'] . $this->conf['contactgroups'] . $contactgroup['Contactgroup']['uuid'] . $this->conf['suffix']);
-                    $content = $this->fileHeader();
-                    if (!$file->exists()) {
-                        $file->create();
-                    }
-                }
+            /** @var \App\Model\Entity\Contactgroup $contactgroup */
 
-                $content .= $this->addContent('define contactgroup{', 0);
-                $content .= $this->addContent('contactgroup_name', 1, $contactgroup['Contactgroup']['uuid']);
-                $content .= $this->addContent('alias', 1, $this->escapeLastBackslash(
-                    $contactgroup['Contactgroup']['description']
-                ));
-                $content .= $this->addContent('members', 1, implode(',', Hash::extract($contactgroup['Contact'], '{n}.uuid')));
-                $content .= $this->addContent('}', 0);
-                if (!$this->conf['minified']) {
-                    $file->write($content);
-                    $file->close();
+            if (!$this->conf['minified']) {
+                $file = new File($this->conf['path'] . $this->conf['contactgroups'] . $contactgroup->uuid . $this->conf['suffix']);
+                $content = $this->fileHeader();
+                if (!$file->exists()) {
+                    $file->create();
                 }
             }
+
+            $content .= $this->addContent('define contactgroup{', 0);
+            $content .= $this->addContent('contactgroup_name', 1, $contactgroup->uuid);
+            $content .= $this->addContent('alias', 1, $this->escapeLastBackslash(
+                $contactgroup->getDescriptionForCfg()
+            ));
+            if ($contactgroup->hasContacts()) {
+                $content .= $this->addContent('members', 1, $contactgroup->getContactsForCfg());
+            }
+            $content .= $this->addContent('}', 0);
+            if (!$this->conf['minified']) {
+                $file->write($content);
+                $file->close();
+            }
+
         }
         if ($this->conf['minified']) {
             $file->write($content);
