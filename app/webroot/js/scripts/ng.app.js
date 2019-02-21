@@ -418,6 +418,12 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router'])
                 controller: "StatehistoriesServiceController"
             })
 
+            .state('SupportsIssue', {
+                url: '/supports/issue',
+                templateUrl: "/supports/issue.html",
+                controller: "SupportsIssueController"
+            })
+
             .state('CommandsIndex', {
                 url: '/commands/index',
                 templateUrl: "/commands/index.html",

@@ -337,6 +337,7 @@ $config = [
             'children' => [
                 [
                     'url'               => ['controller' => 'supports', 'action' => 'issue'],
+                    'state'             => 'SupportsIssue',
                     'title'             => 'Report an issue',
                     'icon'              => 'bug',
                 ],

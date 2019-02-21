@@ -26,7 +26,7 @@ use Cake\ORM\TableRegistry;
 
 class SupportsController extends AppController {
 
-    public $layout = 'Admin.default';
+    public $layout = 'blank';
 
     public $uses = [
         'Register'
