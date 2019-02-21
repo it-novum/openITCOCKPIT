@@ -256,6 +256,12 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router'])
                 controller: "ServicesDisabledController"
             })
 
+            .state('ServicesServiceList', {
+                url: '/services/serviceList/:id',
+                templateUrl: "/services/serviceList.html",
+                controller: "ServicesServiceListController"
+            })
+
             .state('ServicechecksIndex', {
                 url: '/servicechecks/index/:id',
                 templateUrl: "/servicechecks/index.html",
