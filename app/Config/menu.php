@@ -161,6 +161,7 @@ $config = [
                 ],
                 [
                     'url'               => ['controller' => 'hosttemplates', 'action' => 'index'],
+                    'state'             => 'HosttemplatesIndex',
                     'title'             => 'Host Templates',
                     'icon'              => 'pencil-square-o',
                 ],

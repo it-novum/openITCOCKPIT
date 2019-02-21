@@ -28,9 +28,12 @@ use App\Model\Table\CommandsTable;
 use App\Model\Table\ContactgroupsTable;
 use App\Model\Table\ContactsTable;
 use App\Model\Table\ContainersTable;
+use App\Model\Table\HosttemplatesTable;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\Views\ContainerPermissions;
+use itnovum\openITCOCKPIT\Database\PaginateOMat;
+use itnovum\openITCOCKPIT\Filter\HosttemplateFilter;
 
 
 /**
@@ -41,6 +44,8 @@ use itnovum\openITCOCKPIT\Core\Views\ContainerPermissions;
  * @property Container $Container
  * @property Customvariable $Customvariable
  * @property Hosttemplatecommandargumentvalue $Hosttemplatecommandargumentvalue
+ *
+ * @property AppPaginatorComponent $Paginator
  */
 class HosttemplatesController extends AppController {
     public $uses = [
@@ -65,24 +70,50 @@ class HosttemplatesController extends AppController {
         'CustomValidationErrors',
     ];
     public $helpers = [
-        'ListFilter.ListFilter',
         'CustomValidationErrors',
         'CustomVariables',
     ];
 
-    public $listFilters = [
-        'index' => [
-            'fields' => [
-                'Hosttemplate.name' => [
-                    'label'      => 'Templatename',
-                    'searchType' => 'wildcard',
-                ],
-            ],
-        ],
-    ];
-
 
     public function index() {
+        if (!$this->isAngularJsRequest()) {
+            //Only ship HTML Template
+            return;
+        }
+
+        /** @var $HosttemplatesTable HosttemplatesTable */
+        $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
+
+        $HosttemplateFilter = new HosttemplateFilter($this->request);
+        $PaginateOMat = new PaginateOMat($this->Paginator, $this, $this->isScrollRequest(), $HosttemplateFilter->getPage());
+
+        $MY_RIGHTS = $this->MY_RIGHTS;
+        if ($this->hasRootPrivileges) {
+            $MY_RIGHTS = [];
+        }
+        $hosttemplates = $HosttemplatesTable->getHosttemplatesIndex($HosttemplateFilter, $PaginateOMat, $MY_RIGHTS);
+
+        foreach ($hosttemplates as $index => $hosttemplate) {
+            $hosttemplates[$index]['Hosttemplate']['allow_edit'] = true;
+            if ($this->hasRootPrivileges === false) {
+                $hosttemplates[$index]['Hosttemplate']['allow_edit'] = $this->isWritableContainer($hosttemplate['Hosttemplate']['container_id']);
+            }
+        }
+
+
+        $this->set('all_hosttemplates', $hosttemplates);
+        $toJson = ['all_hosttemplates', 'paging'];
+        if ($this->isScrollRequest()) {
+            $toJson = ['all_hosttemplates', 'scroll'];
+        }
+        $this->set('_serialize', $toJson);
+
+        return;
+
+
+        /************** OLD CODE **********************/
+
+
         $query = [
             'order'      => [
                 'Hosttemplate.name' => 'asc',

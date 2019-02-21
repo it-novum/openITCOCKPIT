@@ -83,7 +83,7 @@ angular.module('openITCOCKPIT')
                 params: {
                     'angular': true,
                     'containerId': $scope.post.Container.parent_id,
-                    'filter[Hosttemplate.name]': searchString,
+                    'filter[Hosttemplates.name]': searchString,
                     'selected[]': $scope.post.Hostgroup.Hosttemplate
                 }
             }).then(function(result){
