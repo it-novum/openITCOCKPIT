@@ -91,7 +91,7 @@
                                     </td>
                                     <td class="text-center">
                                         <!-- modal edit -->
-                                        <a href="#" ng-click="triggerEditModal(cronjob.Cronjob);"
+                                        <a class="cursor-pointer" ng-click="triggerEditModal(cronjob.Cronjob);"
                                            data-original-title="<?php echo __('Edit'); ?>" data-placement="left"
                                            rel="tooltip" data-container="body">
                                             <i class="fa fa-gear fa-lg txt-color-teal"></i>

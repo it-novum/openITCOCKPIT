@@ -113,6 +113,7 @@ $config = [
                 ],
                 [
                     'url'               => ['controller' => 'cronjobs', 'action' => 'index'],
+                    'state'             => 'CronjobsIndex',
                     'title'             => 'Cron Jobs',
                     'icon'              => 'clock-o',
                 ],
