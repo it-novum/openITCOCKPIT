@@ -64,6 +64,7 @@ $config = [
                 ],
                 [
                     'url'               => ['controller' => 'proxy', 'action' => 'index'],
+                    'state'             => 'ProxyIndex',
                     'title'             => 'Proxy Settings',
                     'icon'              => 'bolt',
                 ],
@@ -112,11 +113,13 @@ $config = [
                 ],
                 [
                     'url'               => ['controller' => 'cronjobs', 'action' => 'index'],
+                    'state'             => 'CronjobsIndex',
                     'title'             => 'Cron Jobs',
                     'icon'              => 'clock-o',
                 ],
                 [
                     'url'               => ['controller' => 'registers', 'action' => 'index'],
+                    'state'             => 'RegistersIndex',
                     'title'             => 'Registration',
                     'icon'              => 'check-square-o ',
                 ],
@@ -336,6 +339,7 @@ $config = [
             'children' => [
                 [
                     'url'               => ['controller' => 'supports', 'action' => 'issue'],
+                    'state'             => 'SupportsIssue',
                     'title'             => 'Report an issue',
                     'icon'              => 'bug',
                 ],

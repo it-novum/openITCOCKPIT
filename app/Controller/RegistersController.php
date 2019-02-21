@@ -34,6 +34,12 @@ class RegistersController extends AppController {
     public $components = ['GearmanClient'];
 
     public function index() {
+        $this->layout = 'blank';
+
+        if (!$this->isApiRequest()) {
+            return;
+        }
+
         $TableLocator = $this->getTableLocator();
         $Registers = $TableLocator->get('Registers');
 

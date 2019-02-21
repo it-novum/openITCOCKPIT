@@ -155,7 +155,7 @@
                     <div class="well formactions ">
                         <div class="pull-right">
                             <input class="btn btn-primary" type="submit" value="Register">&nbsp;
-                            <a href="/registers/index" class="btn btn-default">Cancel</a>
+                            <a ng-click="load()" class="btn btn-default">Cancel</a>
                         </div>
                     </div>
                 </div>
